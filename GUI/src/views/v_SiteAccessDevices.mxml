@@ -1,0 +1,1357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  creationComplete="creationCompleteHandler(event)"
+		  gap="2" width="100%" height="100%">
+	
+	<s:states>
+		<s:State name="normal" enterState="this.toolbar.enabled=true"/>
+		<s:State name="widget" enterState="this.toolbar.enabled=true"/>
+		<s:State name="edit" enterState="callLater(function():void{dataGrid.ensureCellIsVisible(idx);});this.toolbar.enabled=false"/>
+		<s:State name="create" enterState="this.toolbar.enabled=false"/>
+		<s:State name="detail" enterState="view_detailsHandler(event);this.toolbar.enabled=false"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.fiber.runtime.lib.DateTimeFunc;
+			
+			import components.ActionDialog;
+			import components.ConfirmDialog;
+			import components.DeleteDialog;
+			import components.ExportData;
+			import components.MessageDialog;
+			import components.TransactionsDlg;
+			import components.ViewPopupDlg;
+			
+			import dm.remoteBulkListService;
+			import dm.remoteDataService;
+			import dm.remoteListService;
+			import dm.utils.tools;
+			
+			import flash.events.KeyboardEvent;
+			import flash.globalization.LocaleID;
+			
+			import flashx.textLayout.container.ScrollPolicy;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			
+			public static const MAIN_WINDOW_WIDTH:int = 1500;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable] public var labelWidth:uint = 120;
+			[Bindable] public var labelHeight:uint = 26;
+			[Bindable] public var fieldWidth:uint = 200;
+			[Bindable] public var fieldHeight:uint = 26;
+			[Bindable] public var spaceWidth:uint = 15;
+			[Bindable] public var spaceHeight:uint = 2;
+			
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='ADV_DEVICE';
+			private var currentDirection:String="ASC";
+			
+			private var currentOffset:int=0;
+			private var currentPageSize:int=1000;
+			[Bindable] private var totalLength:int=0;
+			[Bindable] private var currentLength:int=0;
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			private var currentSorts:Object=new Object();
+			private var currentOrders:Object=new Object();
+			//private var currentSorts:Object={dh_cmpt_no:'ASC'};
+			//private var currentOrders:Object={dh_cmpt_no:1};
+			private var currentSortSeq:int=0;
+			
+			private var  originalItems:ArrayCollection;
+			
+			
+			private var confirmReport:ActionDialog;
+			
+			//private var exportContents:String="";
+			private var f:FileReference = new FileReference();
+			
+			
+			[Bindable] private var pagedRecords:remoteListService;
+			
+			private var deleteAction:remoteDataService = new remoteDataService( "SiteAccessDeviceService.delete", null, deleteData_resultHandler, 1 );
+			private var createAction:remoteDataService = new remoteDataService( "SiteAccessDeviceService.create", null, createData_resultHandler, 1 );
+			private var updateAction:remoteDataService = new remoteDataService( "SiteAccessDeviceService.update", null, updateData_resultHandler, 1 );
+			
+			private var advChecker:remoteDataService = new remoteDataService( "SiteAccessDeviceService.isSiteAccessDeviceExisted", null, advChecker_resultHandler, 2 );
+			
+			private var gridColumnSequenceMaker:remoteDataService = new remoteDataService( "ScreenGridColumnService.lookupGridColumnSequence", null, gridColumnSequenceMaker_resultHandler, 1 );
+			private var _gridColumnSequenceString:String="";
+			
+			
+			[Bindable] private var advTypeList:remoteDataService = new remoteDataService( "SiteAccessDeviceService.lookupSiteAccessDeviceTypeList", null, lookupSiteAccessDeviceTypeList_resultHandler );
+			[Bindable] private var advCodeListAvail:remoteDataService = new remoteDataService( "SiteAccessDeviceService.lookupSiteAccessDeviceCodeListAvail", null, lookupSiteAccessDeviceCodeListAvail_resultHandler );
+			[Bindable] private var advCodeList:remoteDataService = new remoteDataService( "SiteAccessDeviceService.lookupSiteAccessDeviceCodeList", null, lookupSiteAccessDeviceCodeList_resultHandler );
+			[Bindable] private var areaList:remoteDataService = new remoteDataService( "ListLibraryService.lookupArea", null, null );
+			[Bindable] private var roleList:remoteDataService = new remoteDataService( "ListLibraryService.lookupRoles", null, null );
+			
+			
+			//private var genData:ExportData = new ExportData();
+			
+			public var parentParams:Object = new Object();
+			public var mainListSelection:int = -1;
+			private var _saveButtonClicked:Boolean=false;
+			
+			public var isPopupWindow:Boolean=false;
+			
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				pagedRecords = new remoteListService( this.dataGrid, "SiteAccessDeviceService.getPaged", null, getPageData_resultHandler );
+				trace ("-------------start creationCompleteHandler");
+				this.gridColumnSequenceMaker.service( "SITEACCESSDEVICES" );
+				trace ("------------End creationCompleteHandler");
+			}
+			
+			protected function gridColumnSequenceMaker_resultHandler():void
+			{
+				this._gridColumnSequenceString =  gridColumnSequenceMaker.dataString;
+				
+				if ( _gridColumnSequenceString.length > 0 )
+				{
+					global.adjustGridColumnSequence( _gridColumnSequenceString.substr(1), dataGrid );
+				}
+				
+				this.startTheWindow();
+			}
+			
+			protected function startTheWindow():void
+			{
+				trace ("-------------start startTheWindow");
+				//pagedRecords = new remoteListService( this.dataGrid, "SiteAccessDeviceService.getPaged", null, getPageData_resultHandler );
+				//resourceManager.localeChain = ['zh_CN'];
+				//global.LanguageCode="CHN";
+				
+				var value:String = global.getValueFromSiteConfigSettings( "SITE_AUTO_FILTER_WHEN_OPEN_SCREEN" );
+				if ( value == 'Y' )
+				{
+					if ( this.isPopupWindow == false )
+					{
+						this.startFiltering();
+					}
+				}
+				else
+				{
+					;
+				}
+				
+				this.advCodeList.service(  );
+				this.advTypeList.service(  );
+				this.areaList.service(  );
+				this.roleList.service(  );
+				
+				trace ("------------End startTheWindow");
+				
+				
+				//trace("this.grid.scroller1111", this.dataGrid.scroller);
+				//trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+				this.dataGrid.scroller.verticalScrollBar.addEventListener(Event.CHANGE, verticalScrollBarChanged);
+				this.dataGrid.addEventListener(KeyboardEvent.KEY_UP, reportKeyUp);
+				this.dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+				
+			}
+			
+			
+			
+			protected function startLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				//this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				//this.panel.enabled = false;
+				
+				currentLength=0;
+				currentOffset = 0;
+				
+				//this.exportContents = this.genData.prepExportHeader( dataGrid );
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				this.pb.values(0, 0);
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			protected function endLoadingPages():void
+			{
+//				this.btn_create.enabled = this.canCreate;
+				this.btn_export.enabled = true;
+				this.dataGrid.enabled = true;
+				this.toolbar.enabled = true;
+				//this.panel.enabled = true;
+				//this.pb.values(totalCount, totalCount);
+				this.pb.values(pagedRecords.totalCount, pagedRecords.totalCount, true);
+				
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = false;
+				
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				//if ( totalLength > totalCount )
+				if ( pagedRecords.totalLength > pagedRecords.totalCount )
+				{
+					this.resumeBtn.enabled = true;
+				}
+				else
+				{
+					this.resumeBtn.enabled = false;
+				}
+			}
+			
+			protected function exportCsvHandler(event:MouseEvent):void
+			{
+				this.confirmReport = new ActionDialog( doExport, cancelExport, resourceManager.getString('default','CONFIRM_REPORT_CSV') );
+				
+				//this.startLoadingPages();
+			}
+			
+			private function getPageData_resultHandler():void
+			{
+				// if not finished
+				if(pagedRecords.length < pagedRecords.totalCount)
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+				}
+				else
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+					
+					this.endLoadingPages();
+					
+					this.dataGrid.selectedIndex = this.mainListSelection;
+					if ( this.mainListSelection >= 0)
+					{
+						this.dataGrid_selectionChangeHandler(null);
+					}
+					this.mainListSelection = -1;
+				}
+				
+			}
+			
+			
+			public function doExport():void
+			{
+				//genData.prepOther(dataGrid,'allocationlist.csv', this.pagedRecords);
+				
+				//f.save( this.exportContents, "allocationlist.csv" );
+				f.save( pagedRecords.exportContents, "advlist.csv" );
+				
+				this.endLoadingPages();
+			}
+			
+			
+			public function cancelExport():void
+			{
+				this.endLoadingPages();
+				
+				//trace( this.exportContents );
+			}
+			
+			public function doNothing():void
+			{
+			}
+			
+			
+			
+			
+			protected function lookupSiteAccessDeviceTypeList_resultHandler():void
+			{
+				trace ("--------------Start lookupSiteAccessDeviceTypeList_resultHandler");
+				trace ("----------------End lookupSiteAccessDeviceTypeList_resultHandler");
+			}
+			
+			
+			private function verticalScrollBarChanged(event:Event):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function reportKeyUp(event:KeyboardEvent):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				if(event.column.dataField!='NA')
+				{
+					var currentRenderer:IGridItemRenderer;
+					var dir:String;
+					
+					if ( global.sortingBySingleColumn == true )
+					{	// sorted by single column only
+						for (var i:int=0; i < dataGrid.columns.length; i++)
+						{
+							currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+							if ( currentRenderer != null)
+							{
+								(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+							}
+							//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+						}
+					}
+					else
+					{	// sorted by multiple columns
+						;
+					}
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if( currentSorts.hasOwnProperty(event.column.dataField ) )
+					{
+						dir = currentSorts[event.column.dataField];
+						if( dir=="ASC" )
+						{
+							dir = "DESC";
+						}
+						else if ( dir == "DESC" )
+						{
+							dir = "";
+						}
+						else if ( dir == "" )
+						{
+							dir = "ASC";
+						}
+						else 
+						{
+							dir = "ASC";
+						}
+						
+						if ( dir != "" )
+						{
+							currentSorts[event.column.dataField] = dir;	
+						}
+						else
+						{
+							delete currentSorts[event.column.dataField];
+							delete currentOrders[event.column.dataField];
+						}
+					}
+					else
+					{
+						if ( global.sortingBySingleColumn == true )
+						{	// sorted by single column only
+							currentSorts = new Object();
+							currentOrders = new Object();
+							currentSortSeq = 0;
+						}
+						else
+						{	// sorted by multiple columns
+							;
+						}
+						currentSorts[event.column.dataField] = "ASC";	
+						dir = currentSorts[event.column.dataField];
+						currentSortSeq += 1;
+						currentOrders[event.column.dataField] = currentSortSeq;	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+					this.startFiltering();
+				}
+			}
+			
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				if(currentState != 'widget')
+				{
+					if ( dataGrid.selectedIndex < 0 )
+					{
+						return;
+					}
+					
+					idx=dataGrid.selectedIndex;
+					//dataGrid.ensureCellIsVisible(idx+11);
+					dataGrid.ensureCellIsVisible(idx);
+
+					currentState = "edit";					
+					this.btn_save.enabled = this.canUpdate;
+				}
+			}
+			
+			private function checkSiteAccessDeviceKey():void
+			{
+				var code:String = "";
+				if ( this.adv_code.selectedIndex >= 0 )
+				{
+					code = 	this.adv_code.selectedItem.adv_code;
+				}
+				
+				advChecker.service( code );
+			}
+			
+			protected function advChecker_resultHandler( ):void
+			{
+				trace ("advChecker", advChecker.dataInteger);
+				if ( advChecker.dataInteger > 0 )
+				{
+					global.msgWarning( resourceManager.getString('default','ALERT__SITEACCESSDEVICE_EXIST') );
+					this.btn_save.enabled = this.canCreate;
+				}
+				else
+				{
+					if ( this._saveButtonClicked == true )
+					{
+						this.createRecord();
+					}
+				}
+				
+				this._saveButtonClicked = false;
+			}
+			
+			
+			
+			protected function cancel_clickHandler():void
+			{
+				clearDetail();
+				if ( currentState== "create" )
+				{
+					dataGrid.enabled=true;
+				}
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+			}			
+			
+			protected function lookupSiteAccessDeviceCodeList_resultHandler():void
+			{
+				/* if ( currentState == "create" || currentState == "edit" )
+				{
+					this.adv_code.selectedIndex = tools.getItemIndexFromCode( _partner_address, advCodeList, "adv_code");
+				} */
+			}
+			
+			
+			
+			protected function fltr_adv_device_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_adv_area_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_adv_code_keyUpHandler(event:KeyboardEvent):void
+			{
+				var keyCode:uint = 0;
+				if (event == null)
+				{
+					keyCode=0;
+				}
+				else
+				{
+					keyCode=event.keyCode;
+				}
+				
+				if ( keyCode == 13 )
+				{
+					if (currentState == "edit") clearDetail();
+					this.filterBtn.setFocus();
+					startFiltering();
+				}
+			}
+			
+			private function startFiltering():void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				fields = new Object();
+				types = new Object();
+				
+				if (fltr_adv_device.selectedIndex > -1) 
+				{
+					fields["adv_device"] = advTypeList[fltr_adv_device.selectedIndex].adv_device_type;
+				}
+				else
+				{
+					if ( global.setComboBoxNoSelection == true )
+					{
+						fltr_adv_device.selectedIndex = -1;
+					}
+					fields["adv_device"] = "";
+				}
+				types["adv_device"] = "EXACT_STRING";
+				
+				if(fltr_adv_code.text!='')
+				{					
+					fields["adv_code"] = fltr_adv_code.text;
+				}
+				else
+				{
+					fields["adv_code"] = "";
+				}
+				types["adv_code"] = "STRING";
+				
+				if (fltr_adv_area.selectedIndex > -1) 
+				{
+					fields["adv_area"] = areaList[fltr_adv_area.selectedIndex].area_k;
+				}
+				else
+				{
+					if ( global.setComboBoxNoSelection == true )
+					{
+						fltr_adv_area.selectedIndex = -1;
+					}
+					fields["adv_area"] = "";
+				}
+				types["adv_area"] = "EXACT_STRING";
+				
+				currentFields = fields;
+				currentTypes = types;
+				
+				this.startLoadingPages();
+				
+				trace("this.grid.scroller3333", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			private function findByAdvCode(code:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["adv_code"] = code;
+				types["adv_code"] = "EXACT_STRING";
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				//this.pagedRecords.service( fields, types, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( fields, types, currentSorts, currentOrders );
+			}
+			
+			protected function resetRecords(event:MouseEvent):void
+			{
+				this.setFilters( this.parentParams );
+				return;
+			}
+			
+			protected function filterRecords(event:MouseEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				this.startFiltering();
+			}
+			
+			protected function refreshRecords(event:MouseEvent):void
+			{
+				if ( currentState != "widget" )
+				{
+					currentState = 'normal';
+					dataGrid.enabled=true;
+				}
+				clearDetail();
+				
+				fltr_adv_device.selectedIndex = -1;
+				fltr_adv_area.selectedIndex = -1;
+				fltr_adv_code.text = "";
+				
+				dataGrid.selectedIndex = -1;
+				currentFilter = null;
+				currentOrder = null;
+				currentFields = new Object();
+				currentTypes = new Object();
+				
+				currentSorts = new Object();
+				currentOrders = new Object();
+				var currentRenderer:IGridItemRenderer;
+				for (var i:int=0; i < dataGrid.columns.length; i++)
+				{
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					if ( currentRenderer != null)
+					{
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+					}
+					//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+				}
+				this.startFiltering();
+				//this.startLoadingPages();
+				trace("this.grid.scroller2222", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			protected function clearDetail(): void
+			{
+				if (currentState != 'widget')
+				{
+				}
+			}			
+			
+			private function editRecord():void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				if (adv_code.selectedIndex>=0)
+				{
+					obj.adv_code = advCodeList[adv_code.selectedIndex].adv_code;
+				}
+				else
+				{
+					obj.adv_code = dataGrid.selectedItem.adv_code;
+				}
+				
+				if (adv_device.selectedIndex>=0)
+				{
+					obj.adv_device = advTypeList[adv_device.selectedIndex].adv_device_type;
+				}
+				else
+				{
+					obj.adv_device = dataGrid.selectedItem.adv_device;
+				}
+				
+				if (adv_area.selectedIndex>=0)
+				{
+					obj.adv_area = areaList[adv_area.selectedIndex].area_k;
+				}
+				else
+				{
+					obj.adv_area = dataGrid.selectedItem.adv_area;
+				}
+				
+				if (adv_security.selectedIndex>=0)
+				{
+					obj.adv_security = roleList[adv_security.selectedIndex].role_id;
+				}
+				else
+				{
+					obj.adv_security = dataGrid.selectedItem.adv_security;
+				}
+				
+				obj.adv_lockout = adv_lockout.selected?'Y':'N';
+				obj.adv_pin_pass = adv_pin_pass.selected?'Y':'N';
+				
+				obj.adv_port = adv_port.text;
+				obj.adv_type = adv_type.text;
+				
+				updateAction.service( obj );
+			}
+			
+			protected function updateData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.updateAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var code:String="";
+				if (adv_code.selectedIndex>=0)
+				{
+					code = advCodeList[adv_code.selectedIndex].adv_code;
+				}
+				
+				currentState="normal";
+				findByAdvCode( code );
+				
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			private function doDelete(): void
+			{
+				var errors:String="";
+				var index:int=0;
+
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				else
+				{
+					var canDelete:DeleteDialog = new DeleteDialog(deleteRecord, hasPassword);
+				}
+			}
+			
+			private function deleteRecord():void
+			{
+				var obj:Object = new Object();
+				
+				if (adv_code.selectedIndex>=0)
+				{
+					obj.adv_code = advCodeList[adv_code.selectedIndex].adv_code;
+				}
+				else
+				{
+					obj.adv_code = dataGrid.selectedItem.adv_code;
+				}
+				
+				if (adv_device.selectedIndex>=0)
+				{
+					obj.adv_device = advTypeList[adv_device.selectedIndex].adv_device_type;
+				}
+				else
+				{
+					obj.adv_device = dataGrid.selectedItem.adv_device;
+				}
+				
+				if (adv_area.selectedIndex>=0)
+				{
+					obj.adv_area = areaList[adv_area.selectedIndex].area_k;
+				}
+				else
+				{
+					obj.adv_area = dataGrid.selectedItem.adv_area;
+				}
+				
+				if (adv_security.selectedIndex>=0)
+				{
+					obj.adv_security = roleList[adv_security.selectedIndex].role_id;
+				}
+				else
+				{
+					obj.adv_security = dataGrid.selectedItem.adv_security;
+				}
+				
+				obj.adv_lockout = adv_lockout.selected?'Y':'N';
+				obj.adv_pin_pass = adv_pin_pass.selected?'Y':'N';
+				
+				obj.adv_port = adv_port.text;
+				obj.adv_type = adv_type.text;
+				
+				deleteAction.service( obj );
+			}
+			
+			protected function deleteData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.deleteAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+				}
+				
+				
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return index;
+			}
+			
+			private function createRecord():void
+			{
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				if (adv_code.selectedIndex>=0)
+				{
+					obj.adv_code = advCodeListAvail[adv_code.selectedIndex].adv_code;
+				}
+				else
+				{
+					obj.adv_code = "";
+				}
+				
+				if (adv_device.selectedIndex>=0)
+				{
+					obj.adv_device = advTypeList[adv_device.selectedIndex].adv_device_type;
+				}
+				else
+				{
+					obj.adv_device = advTypeList[0].adv_device_type;
+				}
+				
+				if (adv_area.selectedIndex>=0)
+				{
+					obj.adv_area = areaList[adv_area.selectedIndex].area_k;
+				}
+				else
+				{
+					obj.adv_area = "";
+				}
+				
+				if (adv_security.selectedIndex>=0)
+				{
+					obj.adv_security = roleList[adv_security.selectedIndex].role_id;
+				}
+				else
+				{
+					obj.adv_security = 0;
+				}
+				
+				obj.adv_lockout = adv_lockout.selected?'Y':'N';
+				obj.adv_pin_pass = adv_pin_pass.selected?'Y':'N';
+				
+				obj.adv_port = adv_port.text;
+				obj.adv_type = adv_type.text;
+				
+				
+				createAction.service( obj );
+			}
+			
+			protected function createData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.createAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				}
+				
+				var code:String="";
+				if (adv_code.selectedIndex>=0)
+				{
+					code = advCodeListAvail[adv_code.selectedIndex].adv_code;
+				}
+				
+				currentState="normal";
+				findByAdvCode( code );
+				
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			protected function createNewRecordAction(event:MouseEvent):void
+			{	
+				if ( this.advCodeListAvail.length == 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__SITEACCESSDEVICE_USEUP') );
+					return;
+				}
+				
+				idx=dataGrid.selectedIndex;
+				dataGrid.ensureCellIsVisible(idx);
+				currentState="create";
+				this.btn_save.enabled = this.canCreate;
+				dataGrid.enabled=false;
+				//this.equipCmptsList.visible = false;
+			}
+			
+			protected function createNewRecord(event:MouseEvent):void
+			{	
+				this.advCodeListAvail.service(  );
+			}
+			
+			protected function lookupSiteAccessDeviceCodeListAvail_resultHandler():void
+			{
+				this.createNewRecordAction( null );
+			}
+			
+			public function closeDialogHandler():void
+			{
+				/* if (adv_area.selectedIndex>=0)
+				{
+					_partner_address = advCodeList[adv_area.selectedIndex].address_code;
+				}
+				else
+				{
+					_partner_address = "";
+				}
+				
+				this.advCodeList.service(); */
+				
+				/*
+				var code:String="-1";
+				code = this.adv_code.text;
+				var id:int=-1;
+				id = int(this.partner_seq.text);
+				
+				this.mainListSelection = 0;
+				currentState="normal";
+				findByAdvCode( code );
+				*/
+			}
+			
+			
+			public function getArrayCollection(obj:Object):ArrayCollection
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				temp.addItem( obj );
+				return temp;
+			}
+			
+			public function convertDateToLocaleString(dt:String):String
+			{
+				var dt_string:String;
+				var dt_date:Date = new Date();
+				
+				dt_string = ""; 
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+					dt_string = dateFormatter.format( dt_date);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_string;
+			}
+			
+			public function convertDateToLocale(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_date;
+			}
+			
+			public function convertDateToLocaleLong(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					//dt_date = DateField.stringToDate(dt,"YYYY-MM-DD HH:NN:SS");
+					dt_date = DateTimeFunc.createDate(
+						int(dt.substr(0, 4))
+						, int(dt.substr(5, 2))
+						, int(dt.substr(8, 2))
+						, int(dt.substr(11, 2))
+						, int(dt.substr(14, 2))
+						, int(dt.substr(17, 2))
+					);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_date;
+			}
+			
+			public function getDefaultDate():Date
+			{
+				var now_date:Date;
+				var def_date:Date;
+				
+				now_date = new Date();
+				def_date = DateTimeFunc.dateAdd( "yyyy", 1, now_date );
+				
+				//trace ("getDefaultDate", now_date, def_date);
+				
+				return def_date;
+			}
+			
+			protected function view_detailsHandler(event:FlexEvent):void
+			{
+			}
+			
+			protected function save_clickHandler():void
+			{
+				this.btn_save.enabled = false;
+				doSave();
+				//this.confirmSave = new ActionDialog( doSave, doNothing, resourceManager.getString('default','CONFIRM_SAVE_RATIOS') );
+				
+				//this.startLoadingPages();
+			}
+			
+			protected function doSave():void
+			{
+				if (currentState == "create")
+				{
+					//createRecord();
+					this._saveButtonClicked = true;
+					checkSiteAccessDeviceKey();
+					//checkBaseProductKeyBeforeCreate();
+				}
+				if (currentState == "edit")
+				{
+					editRecord();
+				}
+				if (currentState == "detail")
+				{
+					editRecord();
+				}
+			}
+			
+			
+			
+			protected function killBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=true;
+				pagedRecords.interruptor=true;
+				trace("WTF >>>>>>>>>>");
+			}
+			
+			protected function resumeBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				this.resumeLoadingPages();
+				trace("RESUME >>>>>>>>>>");
+			}
+			
+			protected function resumeLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+//				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				
+				//pb.values(pagedRecords.length,totalLength);
+				pb.values(pagedRecords.length,pagedRecords.totalLength);
+				//currentPage = int(this.pagedRecords.length/currentPageSize) + 1;
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			public function setFilters( params:*=false ): void
+			{
+				if ( params == false )
+				{
+					return;
+				}
+				
+				this.parentParams = params;
+				
+				currentState = "normal";
+				
+				trace ("...............................in setFilters");
+				tools.pr( params);
+				
+				var po:Object=new Object();
+				
+				po["adv_code"] = tools.getObjAttribute( params, "adv_code", "" );
+				po["adv_device"] = tools.getObjAttribute( params, "adv_device", "" );
+				
+				var fields:Object;
+				var types:Object;
+				
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["adv_code"] = po["adv_code"];
+				types["adv_code"] = "EXACT_STRING";
+				fields["adv_device"] = po["adv_device"];
+				types["adv_device"] = "EXACT_STRING";
+				
+				currentFields = fields;
+				currentTypes = types;
+				this.startLoadingPages();
+				
+				if ( po.hasOwnProperty( "adv_device" ) )
+				{
+					this.fltr_adv_device.selectedIndex = tools.getItemIndexFromCode( po["adv_device"], advTypeList, "adv_device_type");
+				}
+				
+				this.fltr_adv_code.text = po["adv_code"];
+				
+				
+				pb.values(pagedRecords.length,pagedRecords.length)
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateFormatter" locale="{LocaleID.DEFAULT}" dateStyle="short" timeStyle="none"/>
+		<s:DateTimeFormatter id="dateConvert" dateTimePattern="yyyy-MM-dd"/>
+		<s:DateTimeFormatter id="dateConvertLong" dateTimePattern="yyyy-MM-dd HH:mm:ss"/>
+		<components:ValidationGroup id="vg" action="{save_clickHandler}" defaultButton="{btn_save}" parentScreen="{this}" isProtected="{hasPassword}"/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:VGroup width="100%" id="toolbar"  >
+			<s:HGroup gap="5" paddingBottom="2" paddingTop="2" width="100%">
+				<components:DKI_ValidatorInput id="fltr_adv_code" validationType="search" minWidth="180" height="{labelHeight}" width="100%"
+											   keyUp="fltr_adv_code_keyUpHandler(event)" restrict="A-Za-z0-9 \-" 
+											   prompt="{resourceManager.getString('default','ADV_CODE')+resourceManager.getString('default','FILTER')}"/>
+				
+				<components:DKI_DropDownList id="fltr_adv_device" width="180" height="100%"
+											 change="fltr_adv_device_changeHandler(event)" cornerRadius="10"
+											 labelField="adv_device_name" prompt="{resourceManager.getString('default','ADV_DEVICE')+resourceManager.getString('default','FILTER')}"
+											 dataProvider="{advTypeList}"/>
+				
+				<components:DKI_DropDownList id="fltr_adv_area" width="180" height="100%"
+											 change="fltr_adv_area_changeHandler(event)" cornerRadius="10"
+											 labelField="area_desc" prompt="{resourceManager.getString('default','ADV_AREA')+resourceManager.getString('default','FILTER')}"
+											 dataProvider="{areaList}"/>
+				
+				
+				<!--/s:HGroup>
+				<s:HGroup gap="5" paddingBottom="2" paddingTop="2" width="100%"-->
+				<s:Spacer width="100%"/>
+				<components:DKI_Button id="filterBtn" height="24" noLabel="false" click="filterRecords(event)"
+									   type="filteron"/>
+				<components:DKI_Button id="resetBtn" height="24" noLabel="false" click="refreshRecords(event)"
+									   type="filteroff"/>
+				<!--components:DKI_Button height="100%" label="{resourceManager.getString('default','RESET')+resourceManager.getString('default','FILTER')}" click="resetRecords(event)"
+									   width.widget="100%" type="refresh"/-->
+				<components:DKI_Button id="btn_export" label="{resourceManager.getString('default','EXPORTDATA')}" type="report" click="exportCsvHandler(event)" includeIn="normal"/>
+				<components:DKI_Button id="btn_create" label="{resourceManager.getString('default','CREATE')}" height="24" click="createNewRecord(event)" includeIn="normal" enabled="{this.canCreate}" type="create"/>	
+			</s:HGroup>
+		</s:VGroup>
+		
+		
+		<s:DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="4"
+					selectionChange="dataGrid_selectionChangeHandler(event)"
+					skinClass="skins.DKI_DataGrid_Skin"
+					height.widget="100%">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="adv_code" headerText="{resourceManager.getString('default','ADV_CODE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="adv_device" headerText="{resourceManager.getString('default','ADV_DEVICE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="adv_port" headerText="{resourceManager.getString('default','ADV_PORT')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="adv_area" headerText="{resourceManager.getString('default','ADV_AREA_CODE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="adv_area_name" headerText="{resourceManager.getString('default','ADV_AREA_NAME')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="adv_lockout" headerText="{resourceManager.getString('default','ADV_LOCKOUT')}" visible="true" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+						<s:GridColumn dataField="adv_pin_pass" headerText="{resourceManager.getString('default','ADV_PIN_PASS')}" visible="true" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+						<s:GridColumn dataField="adv_security" headerText="{resourceManager.getString('default','ADV_SECURITY')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="adv_security_name" headerText="{resourceManager.getString('default','ADV_SECURITY_NAME')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="adv_type" headerText="{resourceManager.getString('default','ADV_TYPE')}" visible="true"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			<s:dataProvider>
+				<!--s:AsyncListView id="pgList" list="{getPagedResult.lastResult}"/-->
+				<s:AsyncListView id="pgList" list="{pagedRecords}"/>
+			</s:dataProvider>
+		</s:DataGrid>
+		<s:HGroup width="100%">
+			<components:Downloader id="pb" width="100%" height="18"/>
+			<!--mx:ProgressBar id="pb" width="100%" height="22" visible="false" includeInLayout="false"  mode="manual" source="{this.pgList}" label="{this.currentLength} records shown from {this.currentLength} loaded out of {this.totalLength} found." labelPlacement="center"/-->
+			<s:Button id="killBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="killBtn_clickHandler(event)"/>
+			<s:Button id="resumeBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="resumeBtn_clickHandler(event)"/>
+		</s:HGroup>
+	</s:Panel>
+	
+	<s:Panel id="details" includeIn="edit,create,detail" width="100%" height="240"
+			 itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+			<!--s:TileLayout/-->
+		</s:layout>
+		
+		<s:Spacer height="5"/>
+		<s:VGroup width="100%" gap="15">
+			
+			<s:HGroup width="100%">
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','ADV_CODE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="adv_code" 
+													  dataProvider="{advCodeList}" dataProvider.create="{advCodeListAvail}" 
+													  labelField="adv_code" 
+													  selectedItem="{dataGrid.selectedItem.adv_code}" enabled="false" enabled.edit="false"
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ADV_CODE')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','ADV_CODE')}" 
+													  />
+					
+				</s:HGroup>
+				
+				<s:Spacer width="{spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','ADV_DEVICE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="adv_device" 
+													  dataProvider="{advTypeList}" 
+													  labelField="adv_device_type" 
+													  selectedItem="{dataGrid.selectedItem.adv_device}" enabled="false" enabled.edit="true"
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ADV_DEVICE')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','ADV_DEVICE')}" 
+													  />
+				</s:HGroup>
+				
+				<s:Spacer width="{spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','ADV_PORT')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="adv_port" width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.adv_port}" text.create=""
+												   visible="true" enabled="true" editable="true" enabled.detail="false" editable.detail="false"
+												   required="true"
+												   automationName="{resourceManager.getString('default','ADV_PORT')}" maxChars="6"
+												   validationGroup="{vg}"
+												   validationType="alphanumeric"/>
+				</s:HGroup>
+				
+				<s:Spacer width="{spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','ADV_AREA')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="adv_area" 
+													  dataProvider="{areaList}" 
+													  labelField="area_desc" 
+													  selectedItem="{dataGrid.selectedItem.adv_area+' - '+ dataGrid.selectedItem.adv_area_name}" enabled="false" enabled.edit="true"
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ADV_AREA')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','ADV_AREA')}" 
+													  />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:HGroup width="100%">
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','ADV_LOCKOUT')}" verticalAlign="middle"/>
+					<components:DKI_ToggleSwitch id="adv_lockout" width="{fieldWidth}" height="{fieldHeight}" selected="{dataGrid.selectedItem.adv_lockout=='Y'?true:false}"/>
+				</s:HGroup>
+				
+				<s:Spacer width="{spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','ADV_PIN_PASS')}" verticalAlign="middle"/>
+					<components:DKI_ToggleSwitch id="adv_pin_pass" width="{fieldWidth}" height="{fieldHeight}" selected="{dataGrid.selectedItem.adv_pin_pass=='Y'?true:false}"/>
+				</s:HGroup>
+				
+				<s:Spacer width="{spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','ADV_SECURITY')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="adv_security" 
+													  dataProvider="{roleList}" 
+													  labelField="role_name" 
+													  selectedItem="{dataGrid.selectedItem.adv_security_name}" enabled="false" enabled.edit="true"
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ADV_SECURITY')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','ADV_SECURITY')}" 
+													  />
+				</s:HGroup>
+				
+				<s:Spacer width="{spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','ADV_TYPE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="adv_type" width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.adv_type}" text.create=""
+												   visible="true" enabled="true" editable="true" enabled.detail="false" editable.detail="false"
+												   required="false"
+												   automationName="{resourceManager.getString('default','ADV_TYPE')}" maxChars="16"
+												   validationGroup="{vg}"
+												   validationType="alphanumeric"/>
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+		</s:VGroup>
+		
+		<s:Spacer height="20" />
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_delete" label="{resourceManager.getString('default','DELETE')}" height="100%" click="doDelete()" includeIn="edit" enabled="{this.canDelete}" type="delete"/>
+			<components:DKI_Button id="btn_save" label.create="{resourceManager.getString('default','SAVE')}" label="{resourceManager.getString('default','UPDATE')}" height="100%" includeIn="edit,create" enabled.create="{this.canCreate}" enabled="{this.canUpdate}" type.create="create" type="edit"/>
+			<components:DKI_Button id="btn_cancel" label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel"/>
+		</s:HGroup>
+	</s:Panel>
+	
+</s:VGroup>

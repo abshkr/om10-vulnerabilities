@@ -1,0 +1,1540 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="1200" height="540"
+		 xmlns:components="components.*" xmlns:companiesservice="services.companiesservice.*"
+		 initialize="panel1_initializeHandler(event)"
+		 skinClass="skins.UserProfileSkin" title="Special Actions">
+	
+	
+	
+	
+	
+	<s:states>
+		<s:State name="normal" />
+		<s:State name="disabled" />
+		<s:State name="reporting" />
+		<s:State name="special" />
+		<s:State name="template" />
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import dm.remoteDataService;
+			import dm.utils.tools;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.validators.RegExpValidator;
+			
+			import spark.events.GridEvent;
+			import spark.events.GridItemEditorEvent;
+			import spark.events.IndexChangeEvent;
+			
+			import valueObjects.Companys;
+			import valueObjects.PrintersLookup;
+			
+			[Bindable] public var code:String;
+			[Bindable] public var cmpyName:String;
+			[Bindable] public var canUpdate:Boolean=false;
+			[Bindable] public var isSupplier:Boolean = false;
+			[Bindable] public var isDrawer:Boolean = false;
+			[Bindable] private var headArr:ArrayCollection=new ArrayCollection([{id:'Supplier Company Settings', title:'0'},{id:'Others', title:'1'},{id:'Print Settings', title:'2'},{id:'Transportation Documents', title:'3'}]);
+			[Bindable] private var cmpy:Companys;
+			[Bindable] private var documentPrinters:ArrayCollection;
+			[Bindable] private var documentDisplayList:ArrayCollection;
+			[Bindable] private var loadReportPrinters:ArrayCollection;
+			[Bindable] private var driverInstructionsPrinters:ArrayCollection;
+			[Bindable] private var company:ArrayCollection;
+			[Bindable] private var emailRecepient:String;
+			[Bindable] private var labelWidth:int=360;
+			
+			[Bindable] private var tankerLoadWeightTolerance:String = '0';
+			[Bindable] private var canValidateSchedule:Boolean = false;
+			[Bindable] private var canValidateScheduleMaxWeight:Boolean = false;
+			[Bindable] private var canDrawerAuthAtGate:Boolean = false;
+			
+			[Bindable] private var linkToSecondDrawerFlag:Boolean = false;
+			[Bindable] private var linkedSecondDrawer:String = "";
+			
+			
+			[Bindable] private var companyList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCompanyByCode", null, lookupCompanyByCode_resultHandler );
+			[Bindable] private var templateList:remoteDataService = new remoteDataService( "DocumentTemplateService.getCompanyTemplate", null, getCompanyTemplate_resultHandler );
+			[Bindable] private var templateTypeList:remoteDataService = new remoteDataService( "DocumentTemplateService.lookupTemplateType", null, null );
+			[Bindable] private var templateLocaleList:remoteDataService = new remoteDataService( "DocumentTemplateService.lookupTemplateLocale", null, null );
+			[Bindable] private var drawerList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCompanyAll", null, lookupDrawer_resultHandler );
+			
+			private var updateDocumentTemplateAction:remoteDataService = new remoteDataService( "DocumentTemplateService.updateDocumentTemplate", null, updateDocumentTemplate_resultHandler, 1 );
+			private var replaceCompanyConfigAction:remoteDataService = new remoteDataService( "CompanyConfigService.replace", null, replaceCompanyConfig_resultHandler, 1 );
+			private var companyConfigList:remoteDataService = new remoteDataService( "CompanyConfigService.getData", null, lookupCompanyConfig_resultHandler );
+			
+			private var errorDialog:ErrorDialog;
+			public var originalX:Number=0;
+			public var originalY:Number=0;
+			public var originalW:Number=1200;
+			public var originalH:Number=540;
+			
+			[Bindable] public var isExtBlendAllowed:Boolean = false;
+
+			protected function panel1_initializeHandler(event:FlexEvent):void
+			{
+				
+				templateList.service( code );
+				companyList.service( code );
+				templateTypeList.service(  );
+				templateLocaleList.service(  );
+				companyConfigList.service(  );
+				
+/* 				
+				getCompaniesResponse.token = companyService.getRecord(code);
+				documentPrintersLookup.token = companyService.lookupDocumentsPrinterLookup(code);
+				loadReportsPrintersLookup.token = companyService.lookupLoadReportPrinter(code);
+				driverInstructionsPrintersLookup.token = companyService.lookupDriverInstructions(code);
+ */				
+			}
+			
+			protected function lookupCompanyConfig_resultHandler():void
+			{
+				for each( var o:Object in companyConfigList.source )
+				{
+					if ( o['cmpy_code'] == code )
+					{
+						if ( o['config_key'] == 'LOAD_VEHICLE_WEIGHT_TOLERANCE' )
+						{
+							tankerLoadWeightTolerance = o['config_value'];
+						}
+						if ( o['config_key'] == 'VALIDATE_SCHEDULE_AVAILABITILTY' )
+						{
+							canValidateSchedule = o['config_value']=='Y'?true:false;
+						}
+						if ( o['config_key'] == 'VALIDATE_SCHEDULE_MAX_WEIGHT' )
+						{
+							canValidateScheduleMaxWeight = o['config_value']=='Y'?true:false;
+						}
+						if ( o['config_key'] == 'AUTH_AT_GATE' )
+						{
+							canDrawerAuthAtGate = o['config_value']=='Y'?true:false;
+						}
+						if ( o['config_key'] == 'CMPY_2ND_DRAWER_FLAG' )
+						{
+							this.linkToSecondDrawerFlag = o['config_value']=='Y'?true:false;
+						}
+						if ( o['config_key'] == 'CMPY_2ND_DRAWER' )
+						{
+							this.linkedSecondDrawer = o['config_value'];
+							if ( this.linkedSecondDrawer == null )
+							{
+								this.linkedSecondDrawer = "";
+							}
+						}
+					}
+				}
+				
+				this.drawerList.service( 4 );
+			}
+			
+			protected function lookupDrawer_resultHandler():void
+			{
+				if ( currentState == "normal" )
+				{
+					this.linked2ndDrawer.selectedIndex = tools.getItemIndexFromCode(this.linkedSecondDrawer, drawerList, "cmpy_code");
+				}
+				
+			}
+			
+			protected function linked2ndDrawer_changeHandler(event:IndexChangeEvent):void
+			{
+				// TODO Auto-generated method stub
+				if ( this.linked2ndDrawer.selectedIndex >= 0 )
+				{
+					this.linkedSecondDrawer = this.linked2ndDrawer.selectedItem.cmpy_code;
+				}
+				else
+				{
+					this.linkedSecondDrawer = "";
+				}
+			}
+			
+			protected function getCompanyTemplate_resultHandler():void
+			{
+				
+			}
+			
+			protected function lookupCompanyByCode_resultHandler():void
+			{
+				if ( this.companyList.length > 0 )
+				{
+					emailRecepient = this.companyList.source[0].cmpy_report_receivers;
+					//setFlags(this.companyList.source[0]);
+				}
+				
+				getCompaniesResponse.token = companyService.getRecord(code);
+				documentPrintersLookup.token = companyService.lookupDocumentsPrinterLookup(code);
+				loadReportsPrintersLookup.token = companyService.lookupLoadReportPrinter(code);
+				driverInstructionsPrintersLookup.token = companyService.lookupDriverInstructions(code);
+			}
+			
+			protected function driverInstructionsPrintersLookup_resultHandler(event:ResultEvent):void
+			{
+				driverInstructionsPrinters = driverInstructionsPrintersLookup.lastResult;
+				this.cmpyDriverInstructions.enabled = true;
+				setSelectedItem(driverInstructionsPrinters);
+			}
+			
+			protected function documentPrintersLookup_resultHandler(event:ResultEvent):void
+			{
+				documentPrinters = documentPrintersLookup.lastResult;
+				this.cmpyDefaultPrinter.enabled = true;
+				setSelectedItem(documentPrinters);
+			}
+			
+			protected function loadReportsPrintersLookup_resultHandler(event:ResultEvent):void
+			{
+				loadReportPrinters = loadReportsPrintersLookup.lastResult;
+				this.cmpyLoadReport.enabled = true;
+				setSelectedItem(loadReportPrinters);
+			}
+			
+			protected function getCompaniesResponse_resultHandler(event:ResultEvent):void
+			{
+				company = getCompaniesResponse.lastResult;
+				cmpy = company.source[0] as Companys;
+				setFlags(company.source[0]);
+			}
+			
+			private function closeDlg():void
+			{
+				dispatchEvent(new CloseEvent(CloseEvent.CLOSE,true, false));
+			}
+			
+			
+			private function setFlags(obj:Object):void
+			{
+				
+				trace(ObjectUtil.toString(obj));
+				
+				if(obj.hasOwnProperty("cmpy_report_receivers"))
+					emailRecepient = obj.cmpy_report_receivers;
+				
+				if(obj.cmpy_trip_strt !=null)
+					tripStartAt.value = parseInt(obj.cmpy_trip_strt);
+				
+				if(obj.cmpy_trip_end !=null)
+					tripEndAt.value = parseInt(obj.cmpy_trip_end);
+				
+				if(obj.cmpy_trip_last != null)
+					lastUsed.value = parseInt(obj.cmpy_trip_last);
+				
+				if(obj.cmpy_host_docs != null && obj.cmpy_host_docs == "Y")
+					hostPrint.selected = true;
+				else
+					hostPrint.selected = false;
+				
+				if(obj.cmpy_comms_ok != null && obj.cmpy_comms_ok == "Y")
+					hostComs.selected = true
+				else
+					hostComs.selected = false
+				
+				if(obj.cmpy_log_ld_del != null && obj.cmpy_log_ld_del == "Y")
+					delLogged.selected = true;
+				else
+					delLogged.selected = false;
+				
+				if(obj.cmpy_auto_ld != null && obj.cmpy_auto_ld == "Y")
+					autoComplete.selected = true;
+				else
+					autoComplete.selected = false;
+				
+				if(obj.cmpy_ord_carrier != null && obj.cmpy_ord_carrier == "Y")
+					ignoreOrderLoads.selected = true;
+				else
+					ignoreOrderLoads.selected = false;
+				
+				if(obj.cmpy_bay_loop_ch != null && obj.cmpy_bay_loop_ch == "Y")
+					equipmentArea.selected = true;
+				else
+					equipmentArea.selected = false;
+				
+				if(obj.cmpy_flag_2 != null && obj.cmpy_flag_2 == "Y")
+					autoTankerConfig.selected = true;
+				else
+					autoTankerConfig.selected = false;
+				
+				if(obj.cmpy_ldtol_flag != null && obj.cmpy_ldtol_flag == 1)
+					doLoadTolleranceCheck.selected = true;
+				else
+					doLoadTolleranceCheck.selected = false;
+				
+				if(obj.cmpy_bltol_flag != null && obj.cmpy_bltol_flag == 1)
+					doBlendTolleranceCheck.selected = true;
+				else
+					doBlendTolleranceCheck.selected = false;
+				
+				if(obj.cmpy_ord_strt != null)
+					orderStartAt.value = parseInt(obj.cmpy_ord_strt);
+				
+				if(obj.cmpy_ord_end != null)
+					orderEndAt.value = parseInt(obj.cmpy_ord_end);
+				
+				if(obj.cmpy_ord_last != null)
+					lastOrderNoUsed.value = parseInt(obj.cmpy_ord_last);
+				
+				if(obj.cmpy_tkr_cfg != null && obj.cmpy_tkr_cfg == "Y")
+					configAuto.selected = true;
+				else
+					configAuto.selected = false;
+				
+				if(obj.cmpy_tkr_activat != null && obj.cmpy_tkr_activat == "Y")
+					activateAuto.selected = true;
+				else
+					activateAuto.selected = false;
+				
+				if(obj.cmpy_wipe_ordets != null && obj.cmpy_wipe_ordets == "Y")
+					hostUpdate.selected = true;
+				else
+					hostUpdate.selected = false;
+				
+				if(obj.cmpy_wgh_complet != null && obj.cmpy_wgh_complet == "Y")
+					cmpyWghComplete.selected = true;
+				else
+					cmpyWghComplete.selected = false;
+				
+				//Can't find an entry for this property in the DB so ignoring it for now.
+				/* if(obj.prod_mvm != null && obj.prod_mvm == "Y")
+				siteMovement.selected = true;
+				else
+				siteMovement.selected = false; */
+				
+				if(obj.cmpy_auto_reconc != null && obj.cmpy_auto_reconc == "Y")
+					reconcilePrevLoad.selected = true;
+				else
+					reconcilePrevLoad.selected = false;
+				
+				if(obj.cmpy_mod_drawer != null && obj.cmpy_mod_drawer == "Y")
+					canChangeDrawer.selected = true;
+				else
+					canChangeDrawer.selected = false;
+				
+				if(obj.cmpy_must_sealno != null && obj.cmpy_must_sealno == "Y")
+					newLoadSealSet.selected = true;
+				else
+					newLoadSealSet.selected = false;
+				
+				if(obj.cmpy_req_pin_flag != null && obj.cmpy_req_pin_flag == 1)
+					comboTagMustHavePin.selected = true;
+				else
+					comboTagMustHavePin.selected = false;
+				
+				if(obj.cmpy_enable_expd != null && obj.cmpy_enable_expd == "Y")
+					enablePinExpire.selected = true;
+				else
+					enablePinExpire.selected = false;
+				
+				
+				
+				if(obj.cmpy_schd_rev_repost != null && obj.cmpy_schd_rev_repost == "Y")
+					reverseSchedules.selected = true;
+				else
+					reverseSchedules.selected = false;
+				
+				if(obj.cmpy_movements_rev != null && obj.cmpy_movements_rev == "Y")
+					reverseMovements.selected = true;
+				else
+					reverseMovements.selected = false;
+				
+				if(obj.cmpy_schd_archive != null && obj.cmpy_schd_archive == "Y")
+					archiveSchedules.selected = true;
+				else
+					archiveSchedules.selected = false;
+				
+				
+				
+				if(obj.cmpy_vet !=null && parseInt(obj.cmpy_vet) <= loadSpecVetting.dataProvider.length)
+					loadSpecVetting.selectedIndex = parseInt(obj.cmpy_vet)+1;
+				
+				if(obj.cmpy_rtn_prompt !=null && parseInt(obj.cmpy_rtn_prompt) <= carrierLocation.dataProvider.length)
+					carrierLocation.selectedIndex = parseInt(obj.cmpy_rtn_prompt);
+				
+				if(obj.cmpy_schd_rev_repost=="Y") reverseSchedules.selected=true else reverseSchedules.selected=false;
+				if(obj.cmpy_movements_rev=="Y") reverseMovements.selected=true else reverseMovements.selected=false;
+				if(obj.cmpy_schd_archive=="Y") archiveSchedules.selected=true else archiveSchedules.selected=false;
+			}
+			
+			protected function okBtn_clickHandler(event:MouseEvent):void
+			{
+				if ( currentState == "template" )
+				{
+					updateDocumentTemplate();	
+				}
+				else
+				{
+					//updateCompany();
+				}
+				
+				var isOK:Boolean=false;
+				isOK = updateCompany();
+				if ( isOK == true )
+				{
+					this.replaceCompanyConfig();
+				}
+			}
+			
+			private function updateDocumentTemplate():void
+			{
+				//global.msgWarning("Document Template");
+				if ( this.checkItemFields() == false )
+				{
+					return;
+				}
+				
+				updateDocumentTemplateAction.service( this.templateList.source );
+			}
+			
+			protected function updateDocumentTemplate_resultHandler():void
+			{
+				if ( this.updateDocumentTemplateAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				templateList.service( code );
+				//PopUpManager.removePopUp(this);
+				//this.panel1_initializeHandler(null);
+			}
+			
+			private function replaceCompanyConfig():void
+			{
+				var obj:Object= new Object();
+				
+				obj['cmpy_code'] = code;
+				
+				obj['config_key'] = 'VALIDATE_SCHEDULE_MAX_WEIGHT';
+				obj['config_value'] = this.canValidateScheduleMaxWeight?'Y':'N';
+				obj['config_comment'] = 'Maximum Loadable Weight Check at DLI (Y/N)';
+				replaceCompanyConfigAction.service( obj );
+				
+				obj['config_key'] = 'VALIDATE_SCHEDULE_AVAILABITILTY';
+				obj['config_value'] = this.canValidateSchedule?'Y':'N';
+				obj['config_comment'] = 'Validate Load Schedule Availability at DLI (Y/N)';
+				replaceCompanyConfigAction.service( obj );
+				
+				obj['config_key'] = 'LOAD_VEHICLE_WEIGHT_TOLERANCE';
+				obj['config_value'] = this.tankerLoadWeightTolerance;
+				obj['config_comment'] = 'Tolerance in percentage (%) of the Total Load Vehicle Weight (0-20)';
+				replaceCompanyConfigAction.service( obj );
+				
+				obj['config_key'] = 'AUTH_AT_GATE';
+				obj['config_value'] = this.canDrawerAuthAtGate?'Y':'N';
+				obj['config_comment'] = 'Load Authorization at DLI (Y/N)';
+				replaceCompanyConfigAction.service( obj );
+				
+				if ( this.isExtBlendAllowed && this.isDrawer )
+				{
+					obj['config_key'] = 'CMPY_2ND_DRAWER_FLAG';
+					obj['config_value'] = this.linkToSecondDrawerFlag?'Y':'N';
+					obj['config_comment'] = 'Link to second Drawer Company (Y/N)';
+					replaceCompanyConfigAction.service( obj );
+					
+					obj['config_key'] = 'CMPY_2ND_DRAWER';
+					obj['config_value'] = this.linkedSecondDrawer;
+					obj['config_comment'] = 'Linked Drawer Company';
+					replaceCompanyConfigAction.service( obj );
+				}
+				
+			}
+			
+			protected function replaceCompanyConfig_resultHandler():void
+			{
+			}
+			
+			private function updateCompany():Boolean
+			{
+				if ( this.isExtBlendAllowed && this.isDrawer )
+				{
+					if ( this.linkToSecondDrawerFlag == true && this.linkedSecondDrawer.length == 0 )
+					{
+						global.msgWarning( resourceManager.getString('default','specialactions.msg.must_have_2nd_drawer') );
+						return false;
+					}
+				}
+				
+				if ( Number(tankerLoadWeightTolerance)>20 || Number(tankerLoadWeightTolerance) < 0 )
+				{
+					global.msgWarning( resourceManager.getString('default','specialactions.msg.tolerance_out_range') );
+					return false;
+				}
+				
+				var obj:Object = new Object();
+				obj.cmpy_code = code;
+				obj.cmpy_trip_strt = tripStartAt.value;
+				obj.cmpy_name = cmpyName;
+				obj.cmpy_trip_end = tripEndAt.value;
+				obj.cmpy_trip_last = lastUsed.value;
+				obj.cmpy_ord_strt = orderStartAt.value;
+				obj.cmpy_ord_end = orderEndAt.value;
+				obj.cmpy_ord_last = lastOrderNoUsed.value; 
+				
+				if(closeoutEmail){
+					emailRecepient = closeoutEmail.text;
+					if(closeoutEmail.isValid || emailRecepient == ""){
+						obj.cmpy_report_receivers = emailRecepient;
+					}else{
+						global.msgFail(resourceManager.getString('default','specialactions.msg.invalid_closeout_email'));
+						return false;
+					}
+				}
+				
+				
+				if(hostPrint.selected)
+					obj.cmpy_host_docs = "Y";
+				else
+					obj.cmpy_host_docs = "N";
+				if(hostComs.selected)
+					obj.cmpy_comms_ok = "Y";
+				else
+					obj.cmpy_comms_ok = "N";
+				if(delLogged.selected)
+					obj.cmpy_log_ld_del = "Y";
+				else
+					obj.cmpy_log_ld_del = "N";
+				if(autoComplete.selected)
+					obj.cmpy_auto_ld = "Y";
+				else
+					obj.cmpy_auto_ld = "N";
+				if(ignoreOrderLoads.selected)
+					obj.cmpy_ord_carrier = "Y";
+				else
+					obj.cmpy_ord_carrier = "N";
+				if(equipmentArea.selected)
+					obj.cmpy_bay_loop_ch = "Y";
+				else
+					obj.cmpy_bay_loop_ch = "N";
+				if(autoTankerConfig.selected)
+					obj.cmpy_flag_2 = "Y";
+				else
+					obj.cmpy_flag_2 = "N";
+				
+				if(doLoadTolleranceCheck.selected)
+					obj.cmpy_ldtol_flag = 1;
+				else
+					obj.cmpy_ldtol_flag = 0; 
+				
+				if(doBlendTolleranceCheck.selected)
+					obj.cmpy_bltol_flag = 1;
+				else
+					obj.cmpy_bltol_flag = 0;
+				
+				if(configAuto.selected)
+					obj.cmpy_tkr_cfg = "Y";
+				else
+					obj.cmpy_tkr_cfg = "N";
+				if(activateAuto.selected)
+					obj.cmpy_tkr_activat = "Y";
+				else
+					obj.cmpy_tkr_activat = "N";
+				if(hostUpdate.selected)
+					obj.cmpy_wipe_ordets = "Y";
+				else
+					obj.cmpy_wipe_ordets = "N";
+				if(reconcilePrevLoad.selected)
+					obj.cmpy_auto_reconc = "Y";
+				else
+					obj.cmpy_auto_reconc = "N";
+				if(canChangeDrawer.selected)
+					obj.cmpy_mod_drawer = "Y";
+				else
+					obj.cmpy_mod_drawer = "N";
+				if(newLoadSealSet.selected)
+					obj.cmpy_must_sealno = "Y";
+				else
+					obj.cmpy_must_sealno = "N";
+				if(comboTagMustHavePin.selected)
+					obj.cmpy_req_pin_flag = 1;
+				else
+					obj.cmpy_req_pin_flag = 0;
+				if(enablePinExpire.selected)
+					obj.cmpy_enable_expd = "Y";
+				else
+					obj.cmpy_enable_expd = "N";
+				
+				if(cmpyWghComplete.selected)
+					obj.cmpy_wgh_complet = "Y"
+				else
+					obj.cmpy_wgh_complet = "N";
+				
+				obj.cmpy_schd_rev_repost = reverseSchedules.selected?"Y":"N";
+				obj.cmpy_movements_rev   = reverseMovements.selected?"Y":"N";
+				obj.cmpy_schd_archive    = archiveSchedules.selected?"Y":"N";
+				
+				obj.cmpy_vet = loadSpecVetting.selectedIndex-1;
+				obj.cmpy_rtn_prompt = carrierLocation.selectedIndex;
+				if(isSupplier && cmpyDefaultPrinter.initialized)
+				{
+					if(cmpyDefaultPrinter.selectedIndex >= 0)
+					{
+						obj.cmpy_bol_vp_name = cmpyDefaultPrinter.selectedItem.prntr;
+					}
+					else
+					{
+						obj.cmpy_bol_vp_name = "";
+					}
+					
+					if(cmpyLoadReport.selectedIndex >= 0)
+					{
+						obj.cmpy_ld_rep_vp = cmpyLoadReport.selectedItem.prntr;
+					}
+					else
+					{
+						obj.cmpy_ld_rep_vp = "";
+					}
+					
+					if(cmpyDriverInstructions.selectedIndex >= 0)
+					{
+						obj.cmpy_drv_inst_vp = cmpyDriverInstructions.selectedItem.prntr;
+					}
+					else
+					{
+						obj.cmpy_drv_inst_vp = "";
+					}
+					
+				}
+				updateCompaniesResponse.token = companyService.update(code, obj);
+				
+				return true;
+			}
+			
+			
+			
+			protected function cancelBtn_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function tabbar1_changeHandler(event:IndexChangeEvent):void
+			{
+				//[Bindable] private var headArr:ArrayCollection=new ArrayCollection([{id:'Supplier Company Settings'},{id:'Others'},{id:'Print Settings'},{id:'Transportation Documents'}]);
+				var idStr:String = this.headArr.getItemAt(event.newIndex).id
+				switch(idStr)
+				{
+					case 'Supplier Company Settings': 
+						currentState='normal';
+						this.height = this.originalH;
+						this.width = this.originalW;
+						this.x = this.originalX;
+						this.y = this.originalY;
+						break
+					case 'Others': 
+						currentState='special';
+						this.height = this.originalH;
+						this.width = this.originalW;
+						this.x = this.originalX;
+						this.y = this.originalY;
+						break
+					case 'Print Settings': 
+						currentState='reporting';
+						this.height = 200;
+						this.width = this.originalW;
+						this.x = this.originalX;
+						this.y = this.originalY;
+						break
+					case 'Transportation Documents': 
+						currentState='template';
+						this.height = 660;
+						this.width = 1400;
+						this.x = this.originalX-(this.width-this.originalW)/2;
+						this.y = this.originalY-(this.height-this.originalH)/2;
+						break
+				}
+			}
+			
+			protected function tabbar1_changeHandler2(event:IndexChangeEvent):void
+			{
+				switch(event.newIndex)
+				{
+					case 0: currentState='normal';
+						this.height = 450;
+						break
+					case 1: currentState='special';
+						this.height = 450;
+						break
+					case 2: currentState='reporting';
+						this.height=200;
+						break
+					case 3: currentState='template';
+						this.height=450;
+						break
+				}
+			}
+			
+			
+			
+			protected function updateCompaniesResponse_resultHandler(event:ResultEvent):void
+			{
+				if (event.result == "Success")
+				{
+					if ( currentState != 'template' )
+					{
+						global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+					}
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				//PopUpManager.removePopUp(this);
+				//this.panel1_initializeHandler(null);
+			}
+			
+			
+			protected function tabBar_creationCompleteHandler(event:FlexEvent):void
+			{
+				// headArr:ArrayCollection=new ArrayCollection([{id:'Supplier Company Settings'},{id:'Others'},{id:'Print Settings'},{id:'Transportation Documents'}]);
+				headArr[0].title = resourceManager.getString('default','specialactions.lbl.suppliersettings');
+				headArr[1].title = resourceManager.getString('default','specialactions.lbl.others');
+				headArr[2].title = resourceManager.getString('default','specialactions.lbl.printsettings');
+				headArr[3].title = resourceManager.getString('default','specialactions.lbl.transportdocuments');
+				
+				if ( global.getValueFromSiteConfigSettings("BOL_DN_TEMPLATE_GUI_ENABLED") != 'Y' )
+				{
+					if ( headArr.length >= 4 )
+					{
+						headArr.removeItemAt(3);
+					}
+				}
+				
+				if(!isDrawer && !isSupplier)
+				{
+					if ( headArr.length >= 4 )
+					{
+						headArr.removeItemAt(3);
+					}
+				}
+				if(!isSupplier)
+				{
+					headArr.removeItemAt(2);
+				}
+				
+				headArr.refresh();
+			}
+			
+			private function createPrinterText(item:Object):String
+			{
+				var usage:String = item.hasOwnProperty("usage")?" - "+item.usage:"";
+				var cmpy:String = item.hasOwnProperty("cmpy")?item.cmpy:""
+				if(item.hasOwnProperty("cmpy_bol_vp_name") && item.cmpy_bol_vp_name != null)
+					return cmpy + (cmpy==""?"":" - ") +item.cmpy_bol_vp_name + usage;
+				if(item.hasOwnProperty("cmpy_ld_rep_vp") && item.cmpy_ld_rep_vp != null )
+					return cmpy + (cmpy==""?"":" - ") + item.cmpy_ld_rep_vp + usage;
+				if(item.hasOwnProperty("cmpy_drv_inst_vp") && item.cmpy_drv_inst_vp != null)
+					return cmpy + (cmpy==""?"":" - ") + item.cmpy_drv_inst_vp + usage;
+				if(item.hasOwnProperty("prntr") && item.prntr != null)
+					return cmpy + (cmpy==""?"":" - ") + item.prntr + usage;
+				return cmpy+usage;
+			}
+			
+			private function setSelectedItem(items:ArrayCollection):void
+			{
+				var count:int = 0;
+				
+				//cmpyDefaultPrinter.selectedIndex = -1;
+				//cmpyLoadReport.selectedIndex = -1;
+				//cmpyDriverInstructions.selectedIndex = -1;
+				
+				for each(var item:Object in items)
+				{
+					if(item.cmpy == code || item.cmpy=='ANY')
+					{
+						if( item.cmpy_bol_vp_name != null && company.source[0].cmpy_bol_vp_name!=null && item.cmpy_bol_vp_name == company.source[0].cmpy_bol_vp_name )
+							cmpyDefaultPrinter.selectedIndex = count;
+						
+						if( item.cmpy_ld_rep_vp != null && company.source[0].cmpy_ld_rep_vp != null && item.cmpy_ld_rep_vp == company.source[0].cmpy_ld_rep_vp )
+							cmpyLoadReport.selectedIndex = count;
+						
+						if( item.cmpy_drv_inst_vp != null && company.source[0].cmpy_drv_inst_vp!=null && item.cmpy_drv_inst_vp == company.source[0].cmpy_drv_inst_vp )
+							cmpyDriverInstructions.selectedIndex = count;
+					}
+					
+					
+					count++;
+				}
+				/*
+				var count:int = 0;
+				
+				cmpyDefaultPrinter.selectedIndex = -1;
+				cmpyLoadReport.selectedIndex = -1;
+				cmpyDriverInstructions.selectedIndex = -1;
+				
+				for each(var item:Object in items)
+				{
+				if(item.cmpy == code || item.cmpy == 'ANY' )
+				{
+				if( (item.cmpy_bol_vp_name != null && item.cmpy_bol_vp_name == company.source[0].cmpy_bol_vp_name) && (company.source[0].cmpy_bol_vp_name!=null || company.source[0].cmpy_bol_vp_name!="") )
+				cmpyDefaultPrinter.selectedIndex = count;
+				
+				if( (item.cmpy_ld_rep_vp!= null && item.cmpy_ld_rep_vp == company.source[0].cmpy_ld_rep_vp) && (company.source[0].cmpy_ld_rep_vp!=null || company.source[0].cmpy_ld_rep_vp!="") )
+				cmpyLoadReport.selectedIndex = count;
+				
+				if( (item.cmpy_drv_inst_vp!=null && item.cmpy_drv_inst_vp == company.source[0].cmpy_drv_inst_vp) && (company.source[0].cmpy_drv_inst_vp!=null || company.source[0].cmpy_drv_inst_vp!="") )
+				cmpyDriverInstructions.selectedIndex = count;
+				}
+				
+				count++;
+				}
+				
+				*/
+				
+				
+			}
+			
+			
+			public function toggleCellEditability(event:GridEvent):void
+			{
+				var i:int;
+				var cln:GridColumn;
+				
+				if ( event.rowIndex < 0 || event.columnIndex < 0 || event.rowIndex > templateGrid.dataProviderLength-1)
+				{
+					trace ("***********current cell, out of range:", event.columnIndex, event.rowIndex);
+					return;	
+				}
+				
+				trace ("***********current cell, in the range:", event.columnIndex, event.rowIndex);
+				
+				for ( i=0; i<templateGrid.columns.length; i++ )
+				{
+					cln = (templateGrid.columns.getItemAt(i) as GridColumn);
+					//trace ("***********current row action:", event.rowIndex, ">>"+templateGrid.dataProvider[event.rowIndex].action+"<<");
+					
+					// check the status of template_cmpy_status
+					if (  templateGrid.dataProvider[event.rowIndex].template_cmpy_status <= 0  )
+					{
+						templateGrid.dataProvider[event.rowIndex].template_cmpy_flag = 'N';
+						if ( cln.dataField == "template_cmpy_status" )
+						{
+							cln.editable = true;
+						}
+						else
+						{
+							cln.editable = false;
+						}
+						if ( cln.dataField == "template_cmpy_flag" )
+						{
+							cln.editable = false;
+							templateGrid.selectedItem[cln.dataField] = "N";
+							templateGrid.invalidateCell(event.rowIndex, i);
+						}
+						continue;
+					}
+					else
+					{
+						if ( cln.dataField == "template_cmpy_flag" 
+							|| cln.dataField == "template_cmpy_status" 
+							|| cln.dataField == "template_cmpy_email" 
+//							|| cln.dataField == "template_cmpy_copies" 
+							|| cln.dataField == "template_cmpy_footers" 
+							|| cln.dataField == "template_identifier" 
+							|| cln.dataField == "template_warn_percent" 
+							|| cln.dataField == "template_warn_qty" 
+							|| cln.dataField == "template_print_flag" 
+						)
+						{
+							cln.editable = true;
+							if ( cln.dataField == "template_warn_percent" || cln.dataField == "template_warn_qty" )
+							{
+								if (  templateGrid.dataProvider[event.rowIndex].template_type_id != 2  )
+								{
+									cln.editable = false;
+								}
+							}
+						}
+						else
+						{
+							cln.editable = false;
+						}
+					}
+					
+				}
+				
+				
+			}
+			
+			public function checkIdentifierUniqueness( obj:Object ):Boolean
+			{
+				var is_unique:Boolean = true;
+				
+				for each ( var x:Object in this.templateGrid.dataProvider)
+				{
+					// check the status of template_cmpy_status
+					if (  x.template_cmpy_status <= 0 || ( x.template_code == obj.template_code && x.template_cmpy_code == obj.template_cmpy_code ) )
+					{
+						continue;
+					}
+					else
+					{
+						if ( x.template_cmpy_code == code && x.template_type_id == obj.template_type_id && x.template_identifier == obj.template_identifier )
+						{
+							is_unique = false;
+							break;
+						}
+					}
+				}
+				
+				return is_unique;
+			}
+			
+			public function checkItemFields():Boolean
+			{
+				var x:Object;
+				var obj:Object;
+				var errGrid:ArrayCollection=new ArrayCollection();
+
+				var emailsValidator:RegExpValidator = new RegExpValidator();
+				var footersValidator:RegExpValidator = new RegExpValidator();
+				
+				emailsValidator.expression = "^[\\w.-]+@\\w[\\w.-]+\\.[\\w.-]*[a-z][a-z]*([\\;\\:][ \t\v\n\r\f]*[\\w.-]+@\\w[\\w.-]+\\.[\\w.-]*[a-z][a-z]*)*$";
+				emailsValidator.noMatchError='email expected(user@address.com;user2@abc.com;...)';
+				emailsValidator.enabled=true;
+				
+				footersValidator.expression = "^([A-Za-z0-9-_]+[ \t\v\n\r\f]*)*([\\;\\:][ \t\v\n\r\f]*([A-Za-z0-9-_]+[ \t\v\n\r\f]*)*)*$";
+				footersValidator.noMatchError='Expecting A-Z,a-z,0-9, _-;A-Z,a-z,0-9, _-;...';
+				footersValidator.enabled=true;
+				
+				for each ( x in this.templateGrid.dataProvider)
+				{
+					// check the status of template_cmpy_status
+					if (  x.template_cmpy_status <= 0  )
+					{
+						continue;
+					}
+					else
+					{
+						var footersText:String = String(x.template_cmpy_footers);
+						var emailsText:String = String(x.template_cmpy_email);
+						
+						var arrFooters:Array = footersText.match(footersValidator.expression);
+						var arrEmails:Array = emailsText.match(emailsValidator.expression);
+						
+						if ( arrFooters == null || (arrFooters!=null && arrFooters.length==0) )
+						{
+							obj=new Object();
+							obj['name'] = String(x.template_name) + "[" + String(x.template_locale) + "]";
+							obj['description'] = resourceManager.getString('default','specialactions.msg.validation.footer_format');
+							errGrid.addItem( obj );
+						}
+						if ( arrEmails == null || (arrEmails!=null && arrEmails.length==0) )
+						{
+							obj=new Object();
+							obj['name'] = String(x.template_name) + "[" + String(x.template_locale) + "]";
+							obj['description'] = resourceManager.getString('default','specialactions.msg.validation.email_format');
+							errGrid.addItem( obj );
+						}
+						
+						if ( footersText.length > 256 )
+						{
+							obj=new Object();
+							obj['name'] = String(x.template_name) + "[" + String(x.template_locale) + "]";
+							obj['description'] = resourceManager.getString('default','specialactions.msg.validation.footer_maxlen');
+							errGrid.addItem( obj );
+						}
+						if ( emailsText.length > 256 )
+						{
+							obj=new Object();
+							obj['name'] = String(x.template_name) + "[" + String(x.template_locale) + "]";
+							obj['description'] = resourceManager.getString('default','specialactions.msg.validation.email_maxlen');
+							errGrid.addItem( obj );
+						}
+						
+						if ( String(x.template_identifier).length > 20 )
+						{
+							obj=new Object();
+							obj['name'] = String(x.template_name) + "[" + String(x.template_locale) + "]";
+							obj['description'] = resourceManager.getString('default','specialactions.msg.validation.identifier_maxlen');
+							errGrid.addItem( obj );
+						}
+						
+						if ( this.checkIdentifierUniqueness( x ) == false )
+						{
+							obj=new Object();
+							obj['name'] = String(x.template_name) + "[" + String(x.template_locale) + "]";
+							obj['description'] = "'" + x.template_identifier + "' - " + resourceManager.getString('default','specialactions.msg.validation.identifier_dup');
+							errGrid.addItem( obj );
+						}
+						
+						if ( tools.isValueNumeric( x.template_warn_percent ) == false )
+						{
+							obj=new Object();
+							obj['name'] = String(x.template_name) + "[" + String(x.template_locale) + "]";
+							obj['description'] = resourceManager.getString('default','specialactions.msg.validation.trigger_number');
+							errGrid.addItem( obj );
+						}
+						else
+						{
+							if ( int( x.template_warn_percent ) < 0 )
+							{
+								obj=new Object();
+								obj['name'] = String(x.template_name) + "[" + String(x.template_locale) + "]";
+								obj['description'] = resourceManager.getString('default','specialactions.msg.validation.trigger_nonneg_number');
+								errGrid.addItem( obj );
+							}
+							if ( int( x.template_warn_percent ) > 100 )
+							{
+								obj=new Object();
+								obj['name'] = String(x.template_name) + "[" + String(x.template_locale) + "]";
+								obj['description'] = resourceManager.getString('default','specialactions.msg.validation.trigger_range');
+								errGrid.addItem( obj );
+							}
+						}
+						
+						if ( tools.isValueNumeric( x.template_warn_qty ) == false )
+						{
+							obj=new Object();
+							obj['name'] = String(x.template_name) + "[" + String(x.template_locale) + "]";
+							obj['description'] = resourceManager.getString('default','specialactions.msg.validation.trigger_number');
+							errGrid.addItem( obj );
+						}
+						else
+						{
+							if ( int( x.template_warn_qty ) < 0 )
+							{
+								obj=new Object();
+								obj['name'] = String(x.template_name) + "[" + String(x.template_locale) + "]";
+								obj['description'] = resourceManager.getString('default','specialactions.msg.validation.trigger_nonneg_number');
+								errGrid.addItem( obj );
+							}
+						}
+					}
+					
+				}
+				
+				
+				if ( errGrid.length > 0 )
+				{
+					errorDialog = new ErrorDialog( closeErrorDialog, resourceManager.getString('default','VALIDATION__PROMPT'), errGrid, resourceManager.getString('default','VALIDATION__TITLE'));
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+			
+			public function closeErrorDialog():void
+			{
+				PopUpManager.removePopUp(this.errorDialog.dialog );	
+			}
+			
+			public function manageFinishEdit(event:GridItemEditorEvent = null):void
+			{
+				//this.checkItemFields();
+				
+				var i:int;
+				var cln:GridColumn;
+				
+				if ( event.rowIndex < 0 || event.columnIndex < 0 || event.rowIndex > templateGrid.dataProviderLength-1)
+				{
+					trace ("***********current cell, out of range:", event.columnIndex, event.rowIndex);
+					return;	
+				}
+				
+				trace ("***********current cell, in the range:", event.columnIndex, event.rowIndex);
+				
+				for ( i=0; i<templateGrid.columns.length; i++ )
+				{
+					cln = (templateGrid.columns.getItemAt(i) as GridColumn);
+					//trace ("***********current row action:", event.rowIndex, ">>"+templateGrid.dataProvider[event.rowIndex].action+"<<");
+					
+					// check the status of template_cmpy_status
+					if (  templateGrid.dataProvider[event.rowIndex].template_cmpy_status <= 0  )
+					{
+						templateGrid.dataProvider[event.rowIndex].template_cmpy_flag = 'N';
+						if ( cln.dataField == "template_cmpy_status" )
+						{
+							cln.editable = true;
+						}
+						else
+						{
+							cln.editable = false;
+						}
+						if ( cln.dataField == "template_cmpy_flag" )
+						{
+							cln.editable = false;
+							templateGrid.selectedItem[cln.dataField] = "N";
+							templateGrid.invalidateCell(event.rowIndex, i);
+						}
+						continue;
+					}
+					else
+					{
+						if ( cln.dataField == "template_cmpy_flag" 
+							|| cln.dataField == "template_cmpy_status" 
+							|| cln.dataField == "template_cmpy_email" 
+//							|| cln.dataField == "template_cmpy_copies" 
+							|| cln.dataField == "template_cmpy_footers" 
+							|| cln.dataField == "template_identifier" 
+							|| cln.dataField == "template_warn_percent" 
+							|| cln.dataField == "template_warn_qty" 
+							|| cln.dataField == "template_print_flag" 
+						)
+						{
+							cln.editable = true;
+							if ( cln.dataField == "template_warn_percent" || cln.dataField == "template_warn_qty" )
+							{
+								if (  templateGrid.dataProvider[event.rowIndex].template_type_id != 2  )
+								{
+									cln.editable = false;
+								}
+							}
+						}
+						else
+						{
+							cln.editable = false;
+						}
+					}
+					
+				}
+				
+				/*
+				var emailsValidator:RegExpValidator = new RegExpValidator();
+				var footersValidator:RegExpValidator = new RegExpValidator();
+				
+				emailsValidator.expression = "^[\\w.-]+@\\w[\\w.-]+\\.[\\w.-]*[a-z][a-z]*([\\;\\:][ \t\v\n\r\f]*[\\w.-]+@\\w[\\w.-]+\\.[\\w.-]*[a-z][a-z]*)*$";
+				emailsValidator.noMatchError='email expected(user@address.com;user2@abc.com;...)';
+				emailsValidator.enabled=true;
+				
+				footersValidator.expression = "^([A-Za-z0-9-_]+[ \t\v\n\r\f]*)*([\\;\\:][ \t\v\n\r\f]*([A-Za-z0-9-_]+[ \t\v\n\r\f]*)*)*$";
+				footersValidator.noMatchError='Expecting A-Z,a-z,0-9, _-;A-Z,a-z,0-9, _-;...';
+				footersValidator.enabled=true;
+				
+				//footersValidator.validate();
+				
+				var footersText:String = String(templateGrid.dataProvider[event.rowIndex].template_cmpy_footers);
+				var emailsText:String = String(templateGrid.dataProvider[event.rowIndex].template_cmpy_email);
+				
+				var arrFooters:Array = footersText.match(footersValidator.expression);
+				var arrEmails:Array = emailsText.match(emailsValidator.expression);
+				
+				var errors:String="";
+				var index:int=0;
+				if ( arrFooters == null || (arrFooters!=null && arrFooters.length==0) )
+				{
+					index += 1;
+					errors += String(index) + ". Line " + String(event.rowIndex) + ": " + footersValidator.noMatchError;
+				}
+				if ( arrEmails == null || (arrEmails!=null && arrEmails.length==0) )
+				{
+					index += 1;
+					errors += String(index) + ". Line " + String(event.rowIndex) + ": " + emailsValidator.noMatchError;
+				}
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				*/
+				
+				templateGrid.dataProvider[event.rowIndex].template_cmpy_copies = String(templateGrid.dataProvider[event.rowIndex].template_cmpy_footers).split(";").length;
+			}
+			
+			protected function fltr_identifier_keyUpHandler(event:KeyboardEvent):void
+			{
+				if ( event.keyCode != 13 )
+				{
+					return;
+				}
+				
+				doFiltering();
+			}
+			
+			protected function fltr_name_keyUpHandler(event:KeyboardEvent):void
+			{
+				if ( event.keyCode != 13 )
+				{
+					return;
+				}
+				
+				doFiltering();
+			}
+			
+			protected function refreshRecord():void
+			{
+				fltr_identifier.text = "";
+				fltr_name.text = "";
+				fltr_type.selectedIndex = -1;
+				fltr_locale.selectedIndex = -1;
+				
+				doFiltering();
+			}
+			
+			protected function doFiltering():void
+			{
+				var locale_code:String="-1";
+				var type_id:int=-1;
+				var temp_identifier:String="-1";
+				var temp_name:String="-1";
+				
+				if(fltr_identifier.text!='')
+				{
+					temp_identifier = fltr_identifier.text;
+				}
+				
+				if(fltr_name.text!='')
+				{
+					temp_name = fltr_name.text;
+				}
+				
+				if (fltr_type.selectedIndex > -1) 
+				{
+					type_id = this.templateTypeList[fltr_type.selectedIndex].template_type_id;
+				}
+				
+				if (fltr_locale.selectedIndex > -1) 
+				{
+					locale_code = this.templateLocaleList[fltr_locale.selectedIndex].locale_code;
+				}
+				
+				templateList.service( code, locale_code, type_id, temp_identifier, temp_name );
+			}
+			
+			protected function link2ndDrawerFlag_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				if ( link2ndDrawerFlag.selected == false )
+				{
+					linked2ndDrawer.selectedIndex = -1;
+					this.linkedSecondDrawer = "";
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<companiesservice:CompaniesService id="companyService" channelSet="{global.channelSet}"
+										   fault="global.msgSuccess(global.UpdateSuccess)"
+										   showBusyCursor="true"/>
+		<s:CallResponder id="getCompaniesResponse" result="getCompaniesResponse_resultHandler(event)"/>
+		<s:CallResponder id="updateCompaniesResponse" result="updateCompaniesResponse_resultHandler(event)"/>
+		<s:CallResponder id="documentPrintersLookup" result="documentPrintersLookup_resultHandler(event)"/>
+		<s:CallResponder id="loadReportsPrintersLookup" result="loadReportsPrintersLookup_resultHandler(event)"/>
+		<s:CallResponder id="driverInstructionsPrintersLookup" result="driverInstructionsPrintersLookup_resultHandler(event)"/>
+	</fx:Declarations>
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<s:BorderContainer borderColor="0x000000" backgroundAlpha="0" cornerRadius="8" width="100%" height="100">
+		<s:TabBar id="tabBar" dataProvider="{headArr}" labelField="title" change="tabbar1_changeHandler(event)" width="100%" alpha="0.78" creationComplete="tabBar_creationCompleteHandler(event)"/>
+		<s:VGroup gap="8" includeIn="normal" horizontalCenter="0" verticalCenter="0">
+			<s:Spacer height="20"/>
+			<s:HGroup>
+				<s:Spacer width="8"/>
+				<s:Label text="" width="150"/>
+				<s:Label text="{resourceManager.getString('default','specialactions.lbl.startat')}" width="150" textAlign="center"/>
+				<s:Label text="{resourceManager.getString('default','specialactions.lbl.endat')}" width="150" textAlign="center"/>
+				<s:Label text="{resourceManager.getString('default','specialactions.lbl.lastused')}" width="150" textAlign="center"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:Spacer width="8"/>
+				<s:Label text="{resourceManager.getString('default','specialactions.lbl.autotripno')}" width="150" height="24" verticalAlign="middle"/>
+				<components:DKI_NumericStepper id="tripStartAt" minimum="1" maximum="999999999" cornerRadius="8" alpha="0.70" width="150"/>
+				<components:DKI_NumericStepper id="tripEndAt" minimum="1" maximum="999999999" cornerRadius="8" alpha="0.70" width="150"/>
+				<components:DKI_NumericStepper id="lastUsed" minimum="1" maximum="999999999" cornerRadius="8" alpha="0.70" width="150"/>
+			</s:HGroup>
+		</s:VGroup>
+		<s:VGroup gap="8" includeIn="special" itemCreationPolicy="immediate" horizontalCenter="0" verticalCenter="0">
+			<s:Spacer height="20"/>
+			<s:HGroup>
+				<s:Spacer width="8"/>
+				<s:Label text="" width="150"/>
+				<s:Label text="{resourceManager.getString('default','specialactions.lbl.startat')}" width="150" textAlign="center"/>
+				<s:Label text="{resourceManager.getString('default','specialactions.lbl.endat')}" width="150" textAlign="center"/>
+				<s:Label text="{resourceManager.getString('default','specialactions.lbl.lastused')}" width="150" textAlign="center"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:Spacer width="8"/>
+				<s:Label text="{resourceManager.getString('default','specialactions.lbl.autoorderno')}" width="150" height="24" verticalAlign="middle"/>
+				<components:DKI_NumericStepper id="orderStartAt"  minimum="1" maximum="999999999" cornerRadius="8" alpha="0.70" width="150"/>
+				<components:DKI_NumericStepper id="orderEndAt" minimum="1" maximum="999999999" cornerRadius="8" alpha="0.70" width="150"/>
+				<components:DKI_NumericStepper id="lastOrderNoUsed" minimum="1" maximum="999999999" cornerRadius="8" alpha="0.70" width="150"/>
+			</s:HGroup>
+		</s:VGroup>
+		<s:VGroup gap="8" includeIn="reporting" itemCreationPolicy="immediate" horizontalCenter="0" verticalCenter="0">
+			<s:Spacer height="20"/>
+			<s:HGroup>
+				<s:VGroup>
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.defaultprinters.document')}" width="{labelWidth}"/>
+					<components:DKI_DropDownList id="cmpyDefaultPrinter" requireSelection="false" enabled="false" width="{labelWidth}" dataProvider="{documentPrinters}" labelFunction="createPrinterText" creationComplete="{setSelectedItem(documentPrinters)}"/>
+				</s:VGroup>
+				<s:Spacer width="20"/>
+				<s:VGroup>
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.defaultprinters.loadreport')}" width="{labelWidth}"/>
+					<components:DKI_DropDownList id="cmpyLoadReport" requireSelection="false" enabled="false" width="{labelWidth}" dataProvider="{loadReportPrinters}" labelFunction="createPrinterText" creationComplete="{setSelectedItem(loadReportPrinters)}"/>
+				</s:VGroup>
+				<s:Spacer width="20"/>
+				<s:VGroup>
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.defaultprinters.instructions')}" width="{labelWidth}"/>
+					<components:DKI_DropDownList id="cmpyDriverInstructions" requireSelection="false" enabled="false" width="{labelWidth}" dataProvider="{driverInstructionsPrinters}" labelFunction="createPrinterText" creationComplete="{setSelectedItem(driverInstructionsPrinters)}"/>
+				</s:VGroup>
+			</s:HGroup>
+		</s:VGroup>
+		
+		<s:VGroup gap="8" includeIn="template" itemCreationPolicy="immediate" horizontalCenter="0" verticalCenter="0">
+			<s:Spacer height="20"/>
+			<s:HGroup>
+				<s:VGroup>
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.transportdoc.template_identifier')}" width="{labelWidth}"/>
+					<components:DKI_ValidatorInput id="fltr_identifier" validationType="search" minWidth="200" height="24" width="{labelWidth}"
+												   keyUp="fltr_identifier_keyUpHandler(event)"  
+												   />
+				</s:VGroup>
+				<s:Spacer width="20"/>
+				<s:VGroup>
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.transportdoc.template_type')}" width="{labelWidth/2}"/>
+					<components:DKI_DropDownList id="fltr_type" requireSelection="false" enabled="true" width="{labelWidth/2}" dataProvider="{this.templateTypeList}" labelField="template_type_name" change="doFiltering()"/>
+				</s:VGroup>
+				<s:Spacer width="20"/>
+				<s:VGroup>
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.transportdoc.template_locale')}" width="{labelWidth/2}"/>
+					<components:DKI_DropDownList id="fltr_locale" requireSelection="false" enabled="true" width="{labelWidth/2}" dataProvider="{this.templateLocaleList}" labelField="locale_name" change="doFiltering()"/>
+				</s:VGroup>
+				<s:Spacer width="20"/>
+				<s:VGroup>
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.transportdoc.template_name')}" width="{labelWidth}"/>
+					<components:DKI_ValidatorInput id="fltr_name" validationType="search" minWidth="200" height="24" width="{labelWidth}"
+												   keyUp="fltr_name_keyUpHandler(event)"  
+												   />
+				</s:VGroup>
+				<s:Spacer width="20"/>
+				<s:VGroup>
+					<s:Label text=""/>
+					<components:DKI_Button type="refresh" label="{resourceManager.getString('default','CLEAR')}" click="refreshRecord()"/>
+				</s:VGroup>
+			</s:HGroup>
+		</s:VGroup>
+	</s:BorderContainer>
+	
+	
+	<s:BorderContainer borderColor="0x000000" backgroundAlpha="0" cornerRadius="8" width="100%" height="100%" excludeFrom="reporting">		
+		<s:HGroup width="100%" paddingTop="15" paddingLeft="30" includeIn="normal" horizontalCenter="0" verticalCenter="0">
+			<s:VGroup gap="8" width="50%">
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.printdocs')}" width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="hostPrint"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.commsup')}"  width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="hostComs" enabled="false"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.loaddeletion')}"  width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="delLogged"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.autocompleteloads')}"  width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="autoComplete"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.ignorecarrier')}"  width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="ignoreOrderLoads"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.reverse_repost_schd')}"  width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="reverseSchedules"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.reverse_mov')}"  width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="reverseMovements"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.archive_schd')}"  width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="archiveSchedules"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25" visible="{this.isExtBlendAllowed}" includeInLayout="{this.isExtBlendAllowed}">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.cmpyconfig.tick_2nd_drawer')}"  width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="link2ndDrawerFlag" selected="@{linkToSecondDrawerFlag}" click="link2ndDrawerFlag_clickHandler(event)" />
+				</s:HGroup>
+				<s:HGroup width="100%" height="25" visible="{this.isExtBlendAllowed}" includeInLayout="{this.isExtBlendAllowed}">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.cmpyconfig.link_2nd_drawer')}" width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_DropDownList id="linked2ndDrawer" height="25" width="200" labelField="cmpy_name" dataProvider="{drawerList}" enabled="{link2ndDrawerFlag.selected}" change="linked2ndDrawer_changeHandler(event)" />
+				</s:HGroup>
+			</s:VGroup>
+			<s:VGroup gap="8" width="50%" >
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.reconcileprevious')}" width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="reconcilePrevLoad"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.autotankerconfig')}" width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="autoTankerConfig"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25" visible="{!global.OMLITE}" includeInLayout="{!global.OMLITE}">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.loadtolerancecheck')}" width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="doLoadTolleranceCheck"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25" visible="{!global.OMLITE}" includeInLayout="{!global.OMLITE}">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.blendtolerancecheck')}" width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="doBlendTolleranceCheck"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.loadsstarted')}" width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="cmpyWghComplete"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.cmpyconfig.wght_chk_dli')}" width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="enableValidateScheduleMaxWeight" selected="@{canValidateScheduleMaxWeight}"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.cmpyconfig.load_auth_dli')}" width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="enableDrawerAuthAtGate" selected="@{canDrawerAuthAtGate}"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.cmpyconfig.schd_valid_dli')}"  width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="enableValidateSchedule" selected="@{canValidateSchedule}"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.cmpyconfig.wght_tolerance')}"  width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ValidatorInput validationType="numeric_non_negative" id="wgtTolerance" width="100" text="@{tankerLoadWeightTolerance}" />
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					
+				</s:HGroup>
+			</s:VGroup>
+		</s:HGroup>
+		
+		
+		<s:VGroup width="100%" height="100%" includeIn="special" horizontalCenter="0" verticalCenter="0">
+			
+			
+			<s:HGroup width="100%" paddingTop="15" paddingLeft="30" includeIn="special" itemCreationPolicy="immediate" horizontalCenter="0" verticalCenter="0">
+				<s:VGroup gap="8" width="50%">
+					<s:HGroup width="100%" height="25">
+						<s:Label text="{resourceManager.getString('default','specialactions.lbl.vettingflag')}" width="{labelWidth}" paddingRight="5"/>
+						<components:DKI_DropDownList id="loadSpecVetting" height="25">
+							<s:ArrayCollection>
+								<fx:String>{resourceManager.getString('default','specialactions.vetlist.none')}</fx:String>
+								<fx:String>{resourceManager.getString('default','specialactions.vetlist.carrier')}</fx:String>
+								<fx:String>{resourceManager.getString('default','specialactions.vetlist.primemover')}</fx:String>
+								<fx:String>{resourceManager.getString('default','specialactions.vetlist.trailer')}</fx:String>
+								<fx:String>{resourceManager.getString('default','specialactions.vetlist.all')}</fx:String>
+							</s:ArrayCollection>
+						</components:DKI_DropDownList>
+					</s:HGroup>
+					<s:HGroup width="100%" height="25">
+						<s:Label text="{resourceManager.getString('default','specialactions.lbl.returnsentry')}"  width="{labelWidth}" paddingRight="5"/>
+						<components:DKI_DropDownList id="carrierLocation" height="25">
+							<s:ArrayCollection>
+								<fx:String>{resourceManager.getString('default','specialactions.carrlist.bayonly')}</fx:String>
+								<fx:String>{resourceManager.getString('default','specialactions.carrlist.baygate')}</fx:String>
+								<fx:String>{resourceManager.getString('default','specialactions.carrlist.gatedevice')}</fx:String>
+								<fx:String>{resourceManager.getString('default','specialactions.carrlist.gateonly')}</fx:String>
+								<fx:String>{resourceManager.getString('default','specialactions.carrlist.deviceonly')}</fx:String>
+								<fx:String>{resourceManager.getString('default','specialactions.carrlist.hostbay')}</fx:String>
+								<fx:String>{resourceManager.getString('default','specialactions.carrlist.hostonly')}</fx:String>
+								<fx:String>{resourceManager.getString('default','specialactions.carrlist.none')}</fx:String>
+							</s:ArrayCollection>
+						</components:DKI_DropDownList>
+					</s:HGroup>
+					<s:HGroup width="100%" height="25">
+						<s:Label text="{resourceManager.getString('default','specialactions.lbl.tankersautoconfig')}"  width="{labelWidth}" paddingRight="5"/>
+						<components:DKI_ToggleSwitch id="configAuto"/>
+					</s:HGroup>
+					<s:HGroup width="100%" height="25">
+						<s:Label text="{resourceManager.getString('default','specialactions.lbl.tankersautoactivate')}"  width="{labelWidth}" paddingRight="5"/>
+						<components:DKI_ToggleSwitch id="activateAuto"/>
+					</s:HGroup>
+					<s:HGroup width="100%" height="25">
+						<s:Label text="{resourceManager.getString('default','specialactions.lbl.hostupdate')}"  width="{labelWidth}" paddingRight="5"/>
+						<components:DKI_ToggleSwitch id="hostUpdate"/>
+					</s:HGroup>
+				</s:VGroup>
+				<s:VGroup gap="8" includeIn="special" itemCreationPolicy="immediate" width="50%">
+					<s:HGroup width="100%" height="25" visible="false" includeInLayout="false">
+						<s:Label text="{resourceManager.getString('default','specialactions.lbl.productreceipts')}" width="{labelWidth}" paddingRight="5"/>
+						<components:DKI_ToggleSwitch id="siteMovement"/>
+					</s:HGroup>
+					<s:HGroup width="100%" height="25">
+						<s:Label text="{resourceManager.getString('default','specialactions.lbl.equiploadauth')}" width="{labelWidth}" paddingRight="5"/>
+						<components:DKI_ToggleSwitch id="equipmentArea"/>
+					</s:HGroup>
+					<s:HGroup width="100%" height="25">
+						<s:Label text="{resourceManager.getString('default','specialactions.lbl.changedrawer')}" width="{labelWidth}" paddingRight="5"/>
+						<components:DKI_ToggleSwitch id="canChangeDrawer"/>
+					</s:HGroup>
+					<s:HGroup width="100%" height="25">
+						<s:Label text="{resourceManager.getString('default','specialactions.lbl.setsealnumber')}" width="{labelWidth}" paddingRight="5"/>
+						<components:DKI_ToggleSwitch id="newLoadSealSet"/>
+					</s:HGroup>
+					<s:HGroup width="100%" height="25">
+						<s:Label text="{resourceManager.getString('default','specialactions.lbl.tagpins')}" width="{labelWidth}" paddingRight="5"/>
+						<components:DKI_ToggleSwitch id="comboTagMustHavePin"/>
+					</s:HGroup>
+					<s:HGroup width="100%" height="25">
+						<s:Label text="{resourceManager.getString('default','specialactions.lbl.expirycheck')}" width="{labelWidth}" paddingRight="5"/>
+						<components:DKI_ToggleSwitch id="enablePinExpire"/>
+					</s:HGroup>
+				</s:VGroup>
+			</s:HGroup>
+			<s:HGroup paddingLeft="30"  width="100%" height="25">
+				<s:Label text="{resourceManager.getString('default','specialactions.lbl.closeout_email')}"  width="{labelWidth}" paddingRight="5"/>
+				<components:DKI_ValidatorInput validationType="email" id="closeoutEmail" width="650" text="@{emailRecepient}" />
+			</s:HGroup>
+			<s:HGroup paddingLeft="30">
+				<s:Label width="100%"  
+						 text="{'( '+resourceManager.getString('default','NOTE_LABEL')+' '+resourceManager.getString('default','NOTE_EMAIL__DELIMITER')+' )'}" 
+						 verticalAlign="middle"/>
+			</s:HGroup>
+			
+		</s:VGroup>
+		<s:VGroup gap="8" includeIn="template" itemCreationPolicy="immediate" horizontalCenter="0">
+			<s:Spacer height="0"/>
+			
+			<s:HGroup width="100%">
+				<s:DataGrid id="templateGrid" width="{this.width-40}" height="100%" requestedRowCount="16" dataProvider="{this.templateList}"
+							skinClass="skins.DKI_DataGrid_Skin" editable="true" gridClick="toggleCellEditability(event)" gridItemEditorSessionSave="manageFinishEdit(event)">
+					<s:columns>
+						<s:ArrayList>
+							<s:source>
+								<s:GridColumn dataField="template_cmpy_status" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_cmpy_status')}" visible="true" editable="true" 
+											  itemRenderer="renderers.GridCheckRender" itemEditor="itemeditors.GridCheckEditor" width="60"></s:GridColumn>
+								<s:GridColumn dataField="template_cmpy_code" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_cmpy_code')}" visible="false" editable="false"></s:GridColumn>
+								<s:GridColumn dataField="template_cmpy_name" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_cmpy_name')}" visible="false" editable="false"></s:GridColumn>
+								<s:GridColumn dataField="template_cmpy_type" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_cmpy_type')}" visible="false" editable="false"></s:GridColumn>
+								<s:GridColumn dataField="template_cmpy_email_def" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_cmpy_email_def')}" visible="false" editable="false"></s:GridColumn>
+								<s:GridColumn dataField="template_code" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_code')}" visible="false" editable="false" width="150"></s:GridColumn>
+								<s:GridColumn dataField="template_name" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_name')}" visible="true" editable="false" width="150"></s:GridColumn>
+								<s:GridColumn dataField="template_locale" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_locale')}" visible="false" editable="false" width="80"></s:GridColumn>
+								<s:GridColumn dataField="template_locale_name" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_locale_name')}" visible="true" editable="false" width="80"></s:GridColumn>
+								<s:GridColumn dataField="template_type_id" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_type_id')}" visible="false" editable="false"></s:GridColumn>
+								<s:GridColumn dataField="template_type" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_type')}" visible="true" editable="false" width="110"></s:GridColumn>
+								<s:GridColumn dataField="template_identifier" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_identifier')}" visible="true" editable="true" width="150"></s:GridColumn>
+								<s:GridColumn dataField="template_file" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_file')}" visible="false" editable="false"></s:GridColumn>
+								<s:GridColumn dataField="template_note" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_note')}" visible="false" editable="false"></s:GridColumn>
+								<s:GridColumn dataField="template_cmpy_flag" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_cmpy_flag')}" visible="true" editable="true" 
+											  itemRenderer="renderers.GridCheckRender" itemEditor="itemeditors.GridCheckEditor" width="115"></s:GridColumn>
+								<s:GridColumn dataField="template_cmpy_copies" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_cmpy_copies')}" visible="true" editable="false" width="100"></s:GridColumn>
+								<s:GridColumn dataField="template_cmpy_footers" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_cmpy_footers')}" visible="true" editable="true" width="250"></s:GridColumn>
+								<s:GridColumn dataField="template_cmpy_email" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_cmpy_email')}" visible="true" editable="true"></s:GridColumn>
+								<s:GridColumn dataField="template_warn_percent" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_warn_percent')}" visible="true" editable="true" width="110"></s:GridColumn>
+								<s:GridColumn dataField="template_warn_qty" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_warn_qty')}" visible="false" editable="true" width="120"></s:GridColumn>
+								<s:GridColumn dataField="template_print_flag" headerText="{resourceManager.getString('default','specialactions.grid.transportdoc.template_print_flag')}" visible="true" editable="true" 
+											  itemRenderer="renderers.GridCheckRender" itemEditor="itemeditors.GridCheckEditor" width="60"></s:GridColumn>
+							</s:source>
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+			</s:HGroup>	
+			
+		</s:VGroup>
+	</s:BorderContainer>
+	<s:HGroup horizontalAlign="right" verticalAlign="bottom" paddingLeft="5" paddingBottom="5" right="5" width="100%">
+		<s:Spacer width="100%"/>
+		<components:DKI_Button id="okBtn" label="{resourceManager.getString('default','UPDATE')}" type="save" click="okBtn_clickHandler(event)" enabled="{canUpdate}"/>
+		<components:DKI_Button id="cancelBtn" label="{resourceManager.getString('default','CLOSE')}" type="close" click="cancelBtn_clickHandler(event)"/>
+	</s:HGroup>
+</s:Panel>

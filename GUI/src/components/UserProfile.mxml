@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:layout="org.alivepdf.layout.*"
+		 xmlns:components="components.*"
+		 xmlns:personnelservice="services.personnelservice.*"
+		 width="400" minHeight="100" creationComplete="creationCompleteHandler(event)"
+		 skinClass="skins.UserProfileSkin" title="User Profile" xmlns:passwordcheckservice="services.passwordcheckservice.*">
+	<s:layout>
+		<s:VerticalLayout paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
+	</s:layout>
+	
+	<s:states>
+		<s:State name="default"/>
+		<s:State name="password"/>
+	</s:states>
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.HTTPService;
+			
+			import spark.events.TextOperationEvent;
+			
+			import valueObjects.Gui_Personnel;
+			
+			[Bindable] private var usr:String;
+			[Bindable] private var user:String = global.username;
+			[Bindable] private var setOK:Boolean  = false;
+			private var dataChanged: Boolean = false;
+			[Bindable] private var personnel:Gui_Personnel = new Gui_Personnel();
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				switch(global.passComplexity){
+					case 6: 
+						//global.passStr = "requires characters or numbers ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						global.passStr = resourceManager.getString('default','global.msg.PASSWORD_COMPLEXITY_MEDIUM') + " ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						break;
+					case 7:
+						//global.passStr = "requires number,uppercase and lowercase ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						global.passStr = resourceManager.getString('default','global.msg.PASSWORD_COMPLEXITY_HIGH') + " ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						break;
+					case 15: 
+						//global.passStr = "requires number,uppercase, lowercase and a symbol '!@#$%^&*+=)(' ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						global.passStr = resourceManager.getString('default','global.msg.PASSWORD_COMPLEXITY_SUPER') + " '!@#$%^&*+=)(' ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						break;
+					default:
+						//global.passStr = "only length constraints required ("+global.minPassLength+" ~ "+global.maxPassLength+")";;
+						global.passStr = resourceManager.getString('default','global.msg.PASSWORD_COMPLEXITY_LOW') + " ("+global.minPassLength+" ~ "+global.maxPassLength+")";;
+				}
+				
+				this.title = resourceManager.getString('default','m_userprofile');
+				addEventListener("passIsOK",isPass,false);
+				getRecordResult.token = personnelService.getRecord(global.user);
+			}
+			
+			protected function getRecordResult_resultHandler(event:ResultEvent):void
+			{
+				if (event.result.length != 1)
+				{
+					//global.msgWarning('Cannot edit this user');
+					global.msgWarning( resourceManager.getString('default','USER_PROFILE.ALERT.WARNING.CANNOT_EDIT_USER') );
+					closeDlg();
+				}else{
+				
+					personnel =  getRecordResult.lastResult[0];
+					//usr = "Name (id:"+ personnel.per_code+")";
+					usr = resourceManager.getString('default','PER_NAME') + " (" + resourceManager.getString('default','PER_CODE') + ": "+ personnel.per_code + ")";
+					user_name.text = personnel.per_name;
+					user_dept.text = personnel.per_department as String;
+					
+				}				
+			}
+			
+			public function resetProfile(): void
+			{
+			  setOK = dataChanged = passTester.passOk = cb.selected = false;
+			  
+			}
+			
+			protected function updateUserHandler(event:MouseEvent):void
+			{
+				switch(currentState)
+				{
+					case 'default':
+						personnel.per_department = user_dept.text;
+						personnel.per_name = user_name.text;
+						if ( personnel.per_exp_d1_dmy != null && personnel.per_exp_d1_dmy != "" )
+						{
+							if( personnel.per_exp_d1_dmy.length - (personnel.per_exp_d1_dmy.lastIndexOf(':')+1) > 2 )
+							{
+								personnel.per_exp_d1_dmy = personnel.per_exp_d1_dmy.substr(0, personnel.per_exp_d1_dmy.lastIndexOf(':'));
+							}
+						}
+						if ( personnel.per_exp_d2_dmy != null && personnel.per_exp_d2_dmy != "" )
+						{
+							if( personnel.per_exp_d2_dmy.length - (personnel.per_exp_d2_dmy.lastIndexOf(':')+1) > 2 )
+							{
+								personnel.per_exp_d2_dmy = personnel.per_exp_d2_dmy.substr(0, personnel.per_exp_d2_dmy.lastIndexOf(':'));
+							}
+						}
+						if ( personnel.per_exp_d3_dmy != null && personnel.per_exp_d3_dmy != "" )
+						{
+							if( personnel.per_exp_d3_dmy.length - (personnel.per_exp_d3_dmy.lastIndexOf(':')+1) > 2 )
+							{
+								personnel.per_exp_d3_dmy = personnel.per_exp_d3_dmy.substr(0, personnel.per_exp_d3_dmy.lastIndexOf(':'));
+							}
+						}
+						updateResult.token = personnelService.update(personnel,null);
+						break;
+					case 'password':
+						// MC -- make it more secure
+						
+						switch(global.pwdComplexity(passTester.newPass.text, passTester.confPass.text)){
+							case 0:
+								global.amfRequest("SecureAuth.updatePassword",
+									function(o:Object):void{
+										trace("SUCCESS UPDATE",o);
+
+										
+										if(o.hasOwnProperty("MSG_CODE")){
+											if(o.MSG_CODE == "0"){
+												
+												/* if( o.hasOwnProperty("MSG_DESC") ){
+													global.msgSuccess(o.MSG_DESC);
+												}else{
+													global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+												} */
+												global.msgSuccess(resourceManager.getString('default','USER_PROFILE.ALERT.SUCCESS.CHANGE_DONE'));
+												
+												// this line needs to go away.
+												global.userpass = passTester.newPass.text;
+												closeDlg();
+											}else{
+												passTester.oldPass.text	= "";
+												passTester.newPass.text = "";
+												passTester.confPass.text= "";
+												// Check all these
+												if(o.hasOwnProperty("MSG_CODE")){
+													switch(o.MSG_CODE){
+														//case 2:global.msgFail("Can not change password as it has previously been used");return;
+														case 2:global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.CANNOT_CHANGE_PASSWORD') );return;
+														//case 5:global.msgFail("Password change interval prevented password change");return;
+														case 5:global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.PASSWORD_INTERVAL') );return;
+														//case 6:global.msgFail("You are not permitted to change your password, Contact Administrator");return;
+														case 6:global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.NOT_PERMIT_CHANGE_PASSWORD') );return;
+														//case '100000':case 100000:global.msgFail("Invalid current password");return;
+														case '100000':case 100000:global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.INVALID_PASSWORD') );return;
+													}
+												}
+												//global.msgFail("Password change failed, Please try again later");
+												global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.PASSWORD_CHANGE_ERROR') );
+											}
+										}
+									},
+									function(o:Object):void{trace("FAILED UPDATE",o)},
+									global.nonsense(global.user, passTester.oldPass.text),
+									global.nonsense(global.user, passTester.newPass.text)
+								);
+								break;
+							case 1:	
+								//global.msgFail("Password complexity does not meet requirements:-"+global.passStr);
+								global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.PASSWORD_COMPLEXITY') +global.passStr);
+								passTester.confPass.text='';
+								passTester.newPass.text='';
+								break;
+							case 3:	
+								//global.msgFail("Password length invalid");
+								global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.PASSWORD_LENGTH') );
+								passTester.confPass.text='';
+								passTester.newPass.text='';
+								break;
+							case 4:	
+								//global.msgFail("Password mismatch");
+								global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.PASSWORD_MISMATCH') );
+								passTester.confPass.text='';
+								passTester.newPass.text='';
+								break;
+						}
+						/*
+						var passObj:Object = {per_code:global.user,per_password:passTester.newPass.text};
+						if (passTester.oldPass.text == global.userpass)
+							getPasswordResult.token = passwordCheckService.checkPwdValidity(passObj)
+						else
+						{
+							passTester.oldPass.text="";
+							passTester.newPass.text="";
+							passTester.confPass.text="";
+							global.msgFail('Incorrect existing password');
+						}
+						*/
+						break;
+						
+				}
+			}
+			
+			protected function input_changeHandler(event:TextOperationEvent):void
+			{
+				dataChanged = true;
+				chkPass();
+			}
+			
+			protected function isPass(event:Event):void
+			{
+				setOK = passTester.canChange;
+			}
+			
+			protected function cb_changeHandler(event:Event):void
+			{
+				if (cb.selected == true)
+				{
+					currentState="password";
+					passTester.canChange = false;
+					passTester.newPass.text = passTester.confPass.text = "";
+					setOK = false;
+				}
+				else
+				{
+					currentState="default";
+					chkPass();
+				}
+				
+			}
+			
+			protected function chkPass(): void
+			{
+				if (dataChanged == true || passTester.canChange == true) setOK = true else setOK = false;
+			}
+			
+			protected function updateResult_resultHandler(event:ResultEvent):void
+			{
+				if (event.result == "0")
+				{
+					global.msgSuccess(global.UpdateSuccess);
+					closeDlg();
+				}
+				else
+					global.msgFail(global.UpdateError);
+			}
+						
+			private function onPassResult(event:ResultEvent):void
+			{
+				if ((event.result as XML).MSG_CODE == "0")
+				{	
+					global.userpass = passTester.newPass.text;	
+					global.msgSuccess( resourceManager.getString('default','USER_PROFILE.ALERT.SUCCESS.CHANGE_DONE') );
+					setTimeout(closeDlg,1000);
+				}
+				else
+				{
+					global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.UNKNOWN_ERROR') );
+					
+				}
+			}
+			
+			private function closeDlg():void
+			{
+				dispatchEvent(new CloseEvent(CloseEvent.CLOSE,true, false));
+			}
+			
+			private function onPassError(event:FaultEvent):void
+			{
+				global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.CHANGE_ERROR') );
+			}
+			
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<personnelservice:PersonnelService id="personnelService" channelSet="{global.channelSet}"
+										   fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+										   showBusyCursor="true"/>
+		<s:CallResponder id="getRecordResult" result="getRecordResult_resultHandler(event)"/>
+		<s:CallResponder id="updateResult" result="updateResult_resultHandler(event)"/>
+		
+	</fx:Declarations>
+	<s:Label text="{usr}" verticalAlign="bottom" height="20"/>
+	<components:DKI_ValidatorInput id="user_name" width="100%" text="" maxChars="16" change="input_changeHandler(event)" enabled.password="false"/>
+	<s:Label text="{resourceManager.getString('default','PER_DEPARTMENT')}" verticalAlign="bottom" height="20"/>
+	<components:DKI_ValidatorInput id="user_dept" width="100%" text="" maxChars="16" change="input_changeHandler(event)" enabled.password="false"/>
+	<s:Spacer height="5"/>
+	<s:CheckBox id="cb" label="{resourceManager.getString('default','CHANGE_PASSWORD')}" selected="false" change="cb_changeHandler(event)"/>
+	<components:PasswordChanger id="passTester" includeIn="password" itemCreationPolicy="immediate"/>
+	<s:Line width="100%" height="6"/>
+	<s:HGroup width="100%">
+		<s:Spacer width="100%"/>
+		<components:DKI_Button type="cancel" label="{resourceManager.getString('default','CANCEL')}" click="closeDlg()"/>
+		<components:DKI_Button type="save"   label="{resourceManager.getString('default','OK')}" enabled="{setOK}" click="updateUserHandler(event)"/>
+	</s:HGroup>
+</s:Panel>

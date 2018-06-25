@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" clipAndEnableScrolling="true">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.DateField;
+			import flash.globalization.LocaleID;
+			
+			override public function prepare(hasBeenRecycled:Boolean):void 
+			{
+				if (data != null)
+				{
+					if( column.labelFunction != null ) 
+					{
+						var date:Date = new Date();
+						var str:String = column.labelFunction( data, column );
+						//trace ( "in  DateRender.mxml", column.dataField, str);
+						if ( str == null )
+						{
+							str = "";
+						}
+						date = DateField.stringToDate(str,"YYYY-MM-DD");
+						lblData.text = dateFormatter.format(date);
+					}
+					else
+					//if (data[column.dataField])
+					{
+						if ((data[column.dataField]!=null) && (data[column.dataField]!='null') && (data[column.dataField]!=''))
+						{
+							var date:Date = new Date();
+							var str:String=data[column.dataField];
+							date = DateField.stringToDate(str,"YYYY-MM-DD");
+							lblData.text = dateFormatter.format(date);
+						}
+						else
+						{
+							lblData.text='';
+						}
+					}
+				}
+				else
+				{
+					lblData.text='';
+				}
+					
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateFormatter" locale="{LocaleID.DEFAULT}" dateStyle="short" timeStyle="none"/>
+	</fx:Declarations>
+	<s:HGroup width="100%" height="100%" paddingLeft="4">
+		<s:Label id="lblData" width="100%" height="100%" verticalAlign="middle" lineBreak="explicit"/>
+	</s:HGroup>	
+</s:GridItemRenderer>

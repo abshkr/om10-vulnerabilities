@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" creationComplete="getIcon()"
+		  xmlns:s="library://ns.adobe.com/flex/spark" fontWeight="bold" minHeight="24" minWidth="60"
+		  xmlns:mx="library://ns.adobe.com/flex/mx" skinClass="skins.DKI_Button_Skin">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			public var type:String;
+			
+			protected function getIcon():void
+			{
+				var ret:String='assets/icons/';
+				
+				switch(type){
+					case 'create': ret+='create.png'; break;
+					case 'update': ret+='update.png'; break;
+					case 'cancel': ret+='canc.png'; break;
+					case 'save': ret+='save.png'; break;
+					case 'clear': ret+='clear.png'; break;
+					case 'edit': ret+='edit1.png'; break;
+					case 'delete': ret+='delete.png'; break;
+					case 'report':ret+='page.png';break;
+					case 'printer':ret+='printer.png';break;
+					case 'refresh':ret+='refresh.png';break;
+					case 'tag':ret+='tag.png';break;
+				}
+				
+				this.setStyle('icon', ret);
+			}
+
+			
+		]]>
+	</fx:Script>
+</s:Button>
+ 

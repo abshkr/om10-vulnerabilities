@@ -1,0 +1,886 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  xmlns:companiesservice="services.companiesservice.*"
+		  currentState="normal"
+		  width="100%" height="100%"
+		  gap="2" creationComplete="creationCompleteHandler(event)">
+
+	<s:states>
+		<s:State name="widget"/>
+		<s:State name="normal"/>
+		<s:State name="edit" enterState="
+				 callLater(function():void{dataGrid.ensureCellIsVisible(dataGrid.selectedIndex);});"/>
+		<s:State name="create"/>
+	</s:states>		
+	
+	<fx:Script>
+		<![CDATA[
+			import components.DKI_AlertBox;
+			import components.DKI_SpecialActionsConfig;
+			import components.ViewPopupDlg;
+			
+			import dm.remoteDataService;
+			import dm.utils.tools;
+			
+			import flashx.textLayout.events.ScrollEvent;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ItemResponder;
+			import mx.collections.errors.ItemPendingError;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			import renderers.CompanyTypeRenderer;
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.core.NavigationUnit;
+			import spark.events.GridEvent;
+			import spark.events.GridSelectionEvent;
+			
+			import valueObjects.Companys;
+			
+			import views.v_Addresses;
+			import views.v_CompanyRelation;
+			
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+
+			[Bindable] private var company_vo:Companys = new Companys();
+			[Bindable] private var hasSiteManager:Boolean = false;
+			private var editRecord:String ="edit";
+			private var idx:int=-1;
+			private var current_code:String='';
+			private var pending: Boolean = false;
+			private var dlg:DKI_SpecialActionsConfig;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='';
+			private var currentDirection:String="ASC";	
+			private var currentSorts:Object=new Object();
+			private var currentOrders:Object=new Object();
+			
+			[Bindable] private var plantArr:ArrayCollection=new ArrayCollection();
+			private var _saveButtonClicked:Boolean=false;
+			
+			private var formColumnSettingsMaker:remoteDataService = new remoteDataService( "ScreenFormColumnService.lookupFormColumnSettings", null, formColumnSettingsMaker_resultHandler, 1 );
+			private var _formColumnSettingsString:String="";
+			
+			
+			[Bindable] private var addressList:remoteDataService = new remoteDataService( "AddressService.lookupAddressContent", null, lookupAddress_resultHandler );
+			private var setCompanyAddress:remoteDataService = new remoteDataService( "AddressService.setCompanyAddress", null, setCompanyAddress_resultHandler, 1 );
+			private var getCompanyAddress:remoteDataService = new remoteDataService( "AddressService.getCompanyAddress", null, getCompanyAddress_resultHandler, 1 );
+			[Bindable] private var _company_address:String="";
+			public var addressesPopup:ViewPopupDlg = new ViewPopupDlg( "Addresses", new v_Addresses(), closeDialogHandler );
+			public var companyRelationsPopup:ViewPopupDlg = new ViewPopupDlg( "Company Relations", new v_CompanyRelation(), closeCompanyRelationDialogHandler );
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				this.formColumnSettingsMaker.service( "COMPANIES" );
+				
+				this.addressList.service();
+				
+				companyTypesResult.token = companiesService.getTypes();
+				dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+			}
+			
+			protected function dataGrid_creationCompleteHandler(event:FlexEvent):void
+			{
+				getCompanyResult.token = companiesService.getCompanies(currentFilter,currentOrder);
+			}
+			
+			protected function formColumnSettingsMaker_resultHandler():void
+			{
+				this._formColumnSettingsString =  formColumnSettingsMaker.dataString;
+			}
+			
+			
+			protected function lookupAddress_resultHandler():void
+			{
+				if ( currentState == "create" || currentState == "edit" )
+				{
+					this.company_address.selectedIndex = tools.getItemIndexFromCode( _company_address, addressList, "address_code");
+				}
+			}
+			
+			protected function getCompanyAddress_resultHandler():void
+			{
+				this._company_address =  getCompanyAddress.dataString;
+				this.company_address.selectedIndex = tools.getItemIndexFromCode( _company_address, addressList, "address_code");
+				
+				if ( _company_address.length > 0 )
+				{
+					//this._company_address += "....................AMF................";
+				}
+				
+			}
+			
+			protected function setCompanyAddress_resultHandler():void
+			{
+				if ( this.setCompanyAddress.dataString == "OK" )
+				{
+					//global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+					
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','COMPANY_ADDRESS_EDIT_FAIL'));
+				}
+				
+			}
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				var currentRenderer:IGridItemRenderer;
+				if(event.columnIndex <=1)
+				{
+					for (var i:int=0; i<dataGrid.columns.length; i++){
+						currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+					}
+					
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if(currentOrder.indexOf(event.column.dataField, 0) != -1){
+						if(currentDirection=="ASC") currentDirection="DESC";
+						else currentDirection="ASC";
+					}else{
+						currentDirection="ASC";	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(currentDirection);
+					currentOrder = "ORDER BY nlssort (" + event.column.dataField + ", 'NLS_SORT=BINARY_CI') " + currentDirection;
+					getCompanyResult.token = companiesService.getCompanies(currentFilter,currentOrder);
+				}
+			}		
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{							
+				idx=dataGrid.selectedIndex;
+				if (currentState != 'widget')
+				{
+					this.getCompanyAddress.service( dataGrid.selectedItem.cmpy_code );
+					
+					currentState = "edit";
+					this.btn_save.enabled = this.canUpdate;
+					editRecord = "edit";
+					cmpy_codeTextInput.text = dataGrid.selectedItem.cmpy_code;
+					cmpy_nameTextInput.text = dataGrid.selectedItem.cmpy_name;
+					cmpy_aoiTextInput.text = dataGrid.selectedItem.cmpy_aoi;
+					companyTypes.companyType = dataGrid.selectedItem.cmpy_type;
+					cmpy_codeTextInput.enabled = false;
+					companyTypes.manager.enabled = false;
+					this.toggleValidationRequired();
+					
+					if ( _formColumnSettingsString.length > 0 )
+					{
+						global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+					}
+					
+					if ( global.getValueFromSiteConfigSettings("SITE_COMPANY_RELATION_ALLOWED") == 'Y' )
+					{
+						if ( this.isRoleFound( dataGrid.selectedItem.cmpy_type ) == true )
+						//if ( (dataGrid.selectedItem.cmpy_type & 0x02) > 0 )
+						{
+							this.btn_company_relations.enabled = this.canUpdate;
+							this.btn_company_relations.visible = true;
+						}
+						else
+						{
+							this.btn_company_relations.enabled = false;
+							this.btn_company_relations.visible = false;
+						}
+					}
+					else
+					{
+						this.btn_company_relations.enabled = false;
+						this.btn_company_relations.visible = false;
+					}
+				}
+			}
+			
+			protected function isRoleFound( type:int ):Boolean
+			{
+				var proles:String = global.getValueFromSiteConfigSettings("SITE_COMPANY_RELATION_PARENT_ROLES");
+				if ( proles == "" )
+				{
+					proles = "1";
+				}
+				var arrRoles:Array=proles.split(",");
+				var roleFound:Boolean = false;
+				for ( var i:int=0; i<arrRoles.length; i++ )
+				{
+					var bitValue:Number = Math.pow(2,Number(arrRoles[i]) );
+					if ( (type & int(bitValue) ) > 0 )
+					{
+						roleFound = true;
+						break;
+					}
+				}
+				
+				return roleFound;
+			}
+			
+			protected function cancel_clickHandler(event:MouseEvent):void
+			{
+				companyTypes.manager.enabled = false;
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+				cmpy_codeTextInput.enabled = false;
+			}
+			
+			private function doNothing():void
+			{
+				
+			}
+			
+			protected function updateRecord():void
+			{	
+				if(currentState == "create")
+				{
+					if(!checkSelected())
+					{
+						var alert:DKI_AlertBox = new DKI_AlertBox();
+						alert.callBack=doNothing;
+						alert.msg = resourceManager.getString('default','global.msg.selectcmpytype');
+						PopUpManager.addPopUp(alert,this,true);
+						PopUpManager.centerPopUp(alert);
+						this.btn_save.enabled = this.canCreate;
+						return;
+					}
+				}
+				
+				if(editRecord=='update')
+				{ 
+					company_vo.cmpy_name = cmpy_nameTextInput.text;
+					company_vo.cmpy_plant = plant_code.text;
+					company_vo.cmpy_aoi = cmpy_aoiTextInput.text;
+					company_vo.cmpy_type = String(companyTypes.companyType); 
+				}
+				
+				var new_vo:Object = new Object();
+				new_vo.cmpy_code = cmpy_codeTextInput.text;
+				new_vo.cmpy_name = cmpy_nameTextInput.text;
+				new_vo.cmpy_plant = plant_code.text;
+				new_vo.cmpy_aoi = cmpy_aoiTextInput.text;
+				new_vo.cmpy_type = String(companyTypes.companyType);
+				if(editRecord=='create') new_vo.cmpy_code = cmpy_codeTextInput.text;
+				switch(editRecord)
+				{
+					case 'edit':  updateCompany.token = companiesService.update(new_vo.cmpy_code, new_vo);
+					break;
+					case 'create': 	createCompany.token = companiesService.create(new_vo);
+					break;
+				}
+			}
+			
+			
+						
+			protected function searchText_keyUpHandler(event:KeyboardEvent):void
+			{		
+				idx = -1;
+				
+				var arr:Object = new Object();
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				if(searchText.text!='')
+				{					
+					fields["cmpy_code||cmpy_name"] = searchText.text+"||"+searchText.text;
+				}
+				else
+				{
+					fields["cmpy_code||cmpy_name"] = "";
+				}
+				types["cmpy_code||cmpy_name"] = "STRING||STRING";
+				
+				arr["fields"] = fields;
+				arr["types"] = types;
+				
+				currentFilter = JSON.stringify( arr );
+				trace(">>>>> look heere SQL Filter: "+currentFilter);
+				trace(">>>>> look heere SQL Order:  "+currentOrder);
+				getCompanyResult.token = companiesService.getCompanies(currentFilter,'');
+				//getCompanyResult.token = companiesService.getCompanies(currentFilter,currentOrder);
+			}
+			
+			protected function createNewRecord(event:MouseEvent):void
+			{
+				currentState="create";
+				this.btn_save.enabled = this.canCreate;
+				editRecord = "create";
+				companyTypes.companyType=0;
+				if (!company_vo) company_vo = new Companys();
+				clearDetail();
+				cmpy_codeTextInput.enabled = true;
+				
+				this.toggleValidationRequired();
+				
+				if ( _formColumnSettingsString.length > 0 )
+				{
+					global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+				}
+			}		
+			
+			protected function clearDetail(): void
+			{
+				if (currentState != 'widget')
+				{
+					cmpy_codeTextInput.text="";
+					cmpy_nameTextInput.text="";
+					plant_code.text="";
+					cmpy_aoiTextInput.text="";
+				}
+			}
+			
+			private function checkSelected():Boolean
+			{
+				if(companyTypes.supplier.selected)
+					return true;
+				if(companyTypes.drawer.selected)
+					return true;
+				if(companyTypes.carrier.selected)
+					return true;
+				if(companyTypes.customer.selected)
+					return true;
+				if(companyTypes.issuer.selected)
+					return true;
+				if(companyTypes.employer.selected)
+					return true;
+				if(companyTypes.host.selected)
+					return true;
+				if(companyTypes.manager.selected)
+					return true;
+				return false;
+			}
+			
+			protected function scrollForward_effectEndHandler(event:EffectEvent):void
+			{
+				scrollForward.end();
+				if (pending==false)
+				{
+					scrollDn.valueBy = dataGrid.scroller.viewport.getVerticalScrollPositionDelta(NavigationUnit.PAGE_DOWN);
+				}	
+			}			
+			
+			protected function itemPending(index:int, ipe:ItemPendingError):Object
+			{
+				pending = true;	
+				return null;
+			}			
+			
+			private function companyCreated(event:Event):void
+			{
+				pending = false;
+				current_code = cmpy_codeTextInput.text;
+				currentState = 'normal';
+				clearDetail();
+			}
+			
+			private function deleteRecord():void
+			{
+				var alert:DKI_AlertBox = new DKI_AlertBox();
+				alert.callBack=doDelete;
+				//alert.msg = resourceManager.getString('default','global.lbl.deleteitem');
+				alert.msg = resourceManager.getString('default','CONFIRM_DELETE');
+				PopUpManager.addPopUp(alert,this,true);
+				PopUpManager.centerPopUp(alert);
+			}
+			
+			private function doDelete():void
+			{
+				deleteCompany.token = companiesService.delete_method(dataGrid.selectedItem.cmpy_code);
+			}
+			
+			protected function deleteCompany_resultHandler(event:ResultEvent):void
+			{
+				trace(event.result);
+				if (event.result == "Success")
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+				}
+				else
+					global.msgFail(resourceManager.getString('default','COMPANY_HAS_CHILDREN'));
+				
+				currentFilter="";
+				currentState="normal";
+				getCompanyResult.token = companiesService.getCompanies(currentFilter,currentOrder);
+			}
+			
+			protected function updateCurrentFilter():void
+			{
+				var arr:Object = new Object();
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				if(cmpy_codeTextInput.text!='')
+				{					
+					fields["cmpy_code||cmpy_name"] = cmpy_codeTextInput.text+"||"+cmpy_codeTextInput.text;
+				}
+				else
+				{
+					fields["cmpy_code||cmpy_name"] = "";
+				}
+				types["cmpy_code||cmpy_name"] = "STRING||STRING";
+				
+				arr["fields"] = fields;
+				arr["types"] = types;
+				
+				currentFilter = JSON.stringify( arr );
+			}
+			
+			protected function createCompany_resultHandler(event:ResultEvent):void
+			{
+				if (event.result == "Success")
+				{
+					this.writeCompanyAddress();
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+				}
+				else if(event.result == "MSG_OMCS: 0")
+				{
+					if(cmpy_codeTextInput.text.length < 1)
+						global.msgFail(resourceManager.getString('default','global.msg.cmpynocode'))
+					else
+						global.msgFail(resourceManager.getString('default','global.msg.cmpycodeerr'))
+				}
+				else if(event.result == "MSG_OMCS: 1")
+					global.msgFail(resourceManager.getString('default','global.msg.cmpynameerr'));
+				else
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				
+				this.updateCurrentFilter();
+				currentState="normal";
+				getCompanyResult.token = companiesService.getCompanies(currentFilter,currentOrder);
+			}
+			
+			protected function updateCompany_resultHandler(event:ResultEvent):void
+			{
+				if (event.result == "Success")
+				{
+					this.writeCompanyAddress();
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else if(event.result == "MSG_OMCS: 1")
+					global.msgFail(resourceManager.getString('default','global.msg.cmpynameerr'));
+				else
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));				
+				
+				this.updateCurrentFilter();
+				currentState="normal";
+				getCompanyResult.token = companiesService.getCompanies(currentFilter,currentOrder);
+			}
+			
+			protected function launchSpecialActions_clickHandler(event:MouseEvent):void
+			{
+				dlg = new DKI_SpecialActionsConfig();
+				dlg.addEventListener(CloseEvent.CLOSE,closePopUp);
+				dlg.code = dataGrid.selectedItem.cmpy_code;
+				dlg.cmpyName = dataGrid.selectedItem.cmpy_name;
+				dlg.canUpdate = canUpdate;
+				if(dataGrid.selectedItem.supplier == "Y")
+				{
+					dlg.isSupplier = true;
+				}
+				else
+				{
+					dlg.isSupplier = false;
+				}
+				if(dataGrid.selectedItem.drawer == "Y")
+				{
+					dlg.isDrawer = true;
+				}
+				else
+				{
+					dlg.isDrawer = false;
+				}
+				
+				if ( global.getValueFromSiteConfigSettings("SITE_EXTERNAL_BLENDING_ALLOWED") == 'Y' )
+				{
+					dlg.isExtBlendAllowed = dlg.isDrawer;
+				}
+				else
+				{
+					dlg.isExtBlendAllowed = false;
+				}
+				
+				dlg.title = resourceManager.getString('default','specialactions.lbl.specialactions') + " ( " + this.cmpy_codeTextInput.text + " - " + this.cmpy_nameTextInput.text + " [ " + this.getCompanyTypeText() + " ] )";
+				
+				PopUpManager.addPopUp(dlg,this,true);
+				PopUpManager.centerPopUp(dlg);
+				// record the original location of popup dialog
+				dlg.originalX = dlg.x;
+				dlg.originalY = dlg.y;
+				dlg.originalW = dlg.width;
+				dlg.originalH = dlg.height;
+			}
+			
+			protected function closePopUp(event:CloseEvent):void
+			{
+				PopUpManager.removePopUp(dlg);
+			}
+			
+			private function checkSiteManager():Boolean
+			{
+				return false;
+			}
+			
+			private function companyTypesClicked():void
+			{
+				if(companyTypes.supplier.selected)
+				{
+					companyTypes.drawer.selected = true;
+					plant_code.enabled = true;
+					companyTypes.set_flags();
+				}
+				if(!companyTypes.supplier.selected)
+				{
+					plant_code.enabled = false;
+					plant_code.text='';
+				}
+			}
+			
+			protected function companyCodeChecker():void
+			{
+				// TODO Auto-generated method stub
+				CompanyLookupResult.token = companiesService.getRecord( this.cmpy_codeTextInput.text );
+				
+			}
+			
+			protected function CompanyLookupResult_resultHandler(event:ResultEvent):void
+			{
+				// TODO Auto-generated method stub
+				if ( CompanyLookupResult.lastResult.length > 0 )
+				{
+					//global.msgWarning( resourceManager.getString('default','ALERT__DRAWER_PRODUCT_EXIST') );
+					global.msgWarning( resourceManager.getString('default','COMPANY_EXISTED') );
+					this.btn_save.enabled = this.canCreate;
+				}
+				else
+				{
+					if ( this._saveButtonClicked == true )
+					{
+						this.updateRecord();
+					}
+				}
+				
+				this._saveButtonClicked = false;
+			}
+			
+			protected function doSave():void
+			{
+				this.btn_save.enabled = false;
+				if (currentState == "create")
+				{
+					this._saveButtonClicked = true;
+					companyCodeChecker();
+				}
+				if (currentState == "edit")
+				{
+					updateRecord();
+				}
+			}
+			
+			protected function toggleValidationRequired():void
+			{
+				if( StringUtil.trim( this.cmpy_aoiTextInput.text ).length > 0 )
+				{
+					this.cmpy_aoiTextInput.required = true;
+				}
+				else
+				{
+					this.cmpy_aoiTextInput.required = false;
+				}
+				
+				if( StringUtil.trim( this.plant_code.text ).length > 0 )
+				{
+					this.plant_code.required = true;
+				}
+				else
+				{
+					this.plant_code.required = false;
+				}
+			}
+			
+			private function getCompanyTypeText():String
+			{
+				var types:String="";
+				
+				if(companyTypes.manager.selected)
+				{
+					types += ", " + resourceManager.getString('default','SITE_MANAGER');
+				}
+				if(companyTypes.supplier.selected)
+				{
+					types += ", " + resourceManager.getString('default','SUPPLIER');
+				}
+				if(companyTypes.drawer.selected)
+				{
+					types += ", " + resourceManager.getString('default','DRAWER');
+				}
+				if(companyTypes.carrier.selected)
+				{
+					types += ", " + resourceManager.getString('default','CARRIER');
+				}
+				if(companyTypes.customer.selected)
+				{
+					types += ", " + resourceManager.getString('default','CUSTOMER');
+				}
+				if(companyTypes.issuer.selected)
+				{
+					types += ", " + resourceManager.getString('default','ISSUER');
+				}
+				if(companyTypes.employer.selected)
+				{
+					types += ", " + resourceManager.getString('default','EMPLOYER');
+				}
+				if(companyTypes.host.selected)
+				{
+					types += ", " + resourceManager.getString('default','HOST');
+				}
+				
+				return types.substring( 2 );
+			}
+			
+			
+			public function writeCompanyAddress():void
+			{
+				var cmpy_code; 
+				var cmpy_addr;
+				
+				cmpy_code = cmpy_codeTextInput.text;
+				
+				if (company_address.selectedIndex>=0)
+				{
+					cmpy_addr = addressList[company_address.selectedIndex].address_code;
+				}
+				else
+				{
+					cmpy_addr = "";
+				}
+				
+				
+				this.setCompanyAddress.service( cmpy_code, cmpy_addr );
+				
+			}
+			
+			public function goToAddresses():void
+			{
+				
+				this.addressesPopup.popupTitle = resourceManager.getString('default','m_addresses');
+				this.addressesPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+				
+				this.addressesPopup.parentWidth = this.width;
+				this.addressesPopup.parentHeight = this.height;
+				
+				trace ( "*******************Pop up a screen to manage addresses!");
+				addressesPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				if ( this.company_address.selectedIndex >= 0 )
+				{
+					params["address_code"] = this.company_address.selectedItem.address_code;
+				}
+				else
+				{
+					params["address_code"] = "";
+				}
+				//params["address_code"] = dataGrid.selectedItem.partner_addr_code;
+				
+				addressesPopup.setFilters( params ); 
+			}
+			
+			public function goToCompanyRelations():void
+			{
+				
+				this.companyRelationsPopup.popupTitle = resourceManager.getString('default','m_companyrelations');
+				this.companyRelationsPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+				
+				this.companyRelationsPopup.parentWidth = this.width;
+				this.companyRelationsPopup.parentHeight = this.height;
+				
+				trace ( "*******************Pop up a screen to manage addresses!");
+				companyRelationsPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				params["parent_cmpy_role"] = 1;
+				params["parent_cmpy_code"] = this.cmpy_codeTextInput.text;
+				params["child_cmpy_role"] = -1;
+				params["child_cmpy_code"] = "";
+				
+				companyRelationsPopup.setFilters( params ); 
+			}
+			
+			public function closeDialogHandler():void
+			{
+				if (company_address.selectedIndex>=0)
+				{
+					_company_address = addressList[company_address.selectedIndex].address_code;
+				}
+				else
+				{
+					_company_address = "";
+				}
+
+				this.addressList.service();
+				
+			}
+			
+			public function closeCompanyRelationDialogHandler():void
+			{
+				this.searchText_keyUpHandler( null );
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:Animate id="scrollForward" startDelay="225" duration="250" effectEnd="scrollForward_effectEndHandler(event)">
+			<s:motionPaths>
+				<s:SimpleMotionPath id="scrollDn" property="verticalScrollPosition" />
+			</s:motionPaths>
+		</s:Animate>
+		<companiesservice:CompaniesService id="companiesService" fault="global.msgFail(global.RetrieveError)" channelSet="{global.channelSet}"/>
+		<s:CallResponder id="getCompanyResult"/>
+		<s:CallResponder id="companyTypesResult"/>
+		<s:CallResponder id="CompanyLookupResult" result="CompanyLookupResult_resultHandler(event)"/>
+		<s:CallResponder id="createCompany" result="createCompany_resultHandler(event)"/>
+		<s:CallResponder id="deleteCompany" result="deleteCompany_resultHandler(event)"/>
+		<s:CallResponder id="updateCompany" result="updateCompany_resultHandler(event)"/>
+		<components:ValidationGroup id="vg" action="{doSave}" defaultButton="{btn_save}"/>
+	</fx:Declarations>
+	
+	<fx:Binding destination="company_vo" source="dataGrid.selectedItem as Companys"/>
+	
+	<s:Panel id="panel" width="100%" height="100%" minHeight="0"
+			 skinClass="skins.WidgetPanelSkin" title="Search"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		<s:HGroup id="toolbar" width="100%" gap="5" paddingBottom="2" paddingTop="2">
+			<s:HGroup gap="5" width="100%">
+				<components:DKI_ValidatorInput id="searchText" validationType="search" width="160" height="100%" keyUp="searchText_keyUpHandler(event)" prompt="{resourceManager.getString('default','SEARCH_CODENAME')}"/>
+				<components:DKI_Button type="refresh" label="{resourceManager.getString('default','CLEAR')}" click="searchText.text='';searchText_keyUpHandler(null)"/>
+				<s:Spacer width="100%"/>
+			</s:HGroup>
+			<components:DKI_Button label="{resourceManager.getString('default','CREATE')}" height="100%" type="create" click="createNewRecord(event)" includeIn="normal,edit" enabled="{canCreate}"/>
+		</s:HGroup>
+		
+		<components:DKI_DataGrid id="dataGrid" width="100%" height="100%" minWidth="0"
+					creationComplete="dataGrid_creationCompleteHandler(event)" requestedRowCount="2"
+					selectionChange="dataGrid_selectionChangeHandler(event)" sortableColumns="true">
+			<components:columns>
+				<s:ArrayList>
+					<s:GridColumn dataField="cmpy_code" headerText="{resourceManager.getString('default','COMPANY_CODE')}" width="100"></s:GridColumn>
+					<s:GridColumn dataField="cmpy_name" headerText="{resourceManager.getString('default','COMPANY_NAME')}" width="200" width.widget="250"></s:GridColumn>
+					<s:GridColumn dataField="cmpy_plant" headerText="{resourceManager.getString('default','PLANT_CODE')}" width="100"></s:GridColumn>
+					<s:GridColumn dataField="cmpy_aoi" headerText="{resourceManager.getString('default','AOI_NO')}" width="60" excludeFrom="widget"></s:GridColumn>
+					<s:GridColumn dataField="site_manager" headerText="{resourceManager.getString('default','SITE_MANAGER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
+					<s:GridColumn dataField="supplier" headerText="{resourceManager.getString('default','SUPPLIER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
+					<s:GridColumn dataField="carrier" headerText="{resourceManager.getString('default','CARRIER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
+					<s:GridColumn dataField="customer" headerText="{resourceManager.getString('default','CUSTOMER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
+					<s:GridColumn dataField="drawer" headerText="{resourceManager.getString('default','DRAWER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
+					<s:GridColumn dataField="issuer" headerText="{resourceManager.getString('default','ISSUER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
+					<s:GridColumn dataField="employer" headerText="{resourceManager.getString('default','EMPLOYER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
+					<s:GridColumn dataField="host" headerText="{resourceManager.getString('default','HOST')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
+				</s:ArrayList>
+			</components:columns>
+			<s:AsyncListView list="{getCompanyResult.lastResult}"/>
+		</components:DKI_DataGrid>
+	</s:Panel>	
+		
+	<s:Panel id="details" title="Company Details" width="100%" height="180" skinClass="skins.WidgetPanelSkin" includeIn="edit,create" itemCreationPolicy="immediate">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		<s:HGroup width="100%" height="100%" gap="14" paddingBottom="4" paddingLeft="5"
+				  paddingRight="8" paddingTop="8" requestedColumnCount="4">
+			
+			<s:VGroup>
+				<s:HGroup>
+					<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','COMPANY_CODE')}" verticalAlign="middle" width="105"/>
+					<components:DKI_ValidatorInput id="cmpy_codeTextInput" text="{company_vo.cmpy_code}" width="200" focusOut="companyCodeChecker()" 
+												   validationType="alphanumeric" validationGroup="{vg}" 
+												   automationName="{resourceManager.getString('default','COMPANY_CODE')}" maxChars="8" required="true" enabled="false"/>
+				</s:HGroup>
+				
+				<s:HGroup>
+					<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','PLANT_CODE')}" verticalAlign="middle" width="105"/>
+					<components:DKI_ValidatorInput id="plant_code" text="{company_vo.cmpy_plant}" width="200" validationType="alphanumeric" validationGroup="{vg}" 
+												   automationName="{resourceManager.getString('default','PLANT_CODE')}" enabled="{companyTypes.supplier.selected}" change="toggleValidationRequired()"/>
+				</s:HGroup>
+				
+				<s:HGroup>
+					<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','COMPANY_NAME')}" verticalAlign="middle" width="105"/>
+					<components:DKI_ValidatorInput id="cmpy_nameTextInput" text="{company_vo.cmpy_name}" width="200" maxChars="49" validationType="document" validationGroup="{vg}" 
+												   automationName="{resourceManager.getString('default','COMPANY_NAME')}" required="true"/>
+				</s:HGroup>				
+				
+				<s:HGroup>
+					<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','AOI_NO')}" verticalAlign="middle" width="105"/>			
+					<components:DKI_ValidatorInput id="cmpy_aoiTextInput" validationType="integer" width="200" text="{company_vo.cmpy_aoi}" maxChars="1" validationGroup="{vg}" 
+												   automationName="{resourceManager.getString('default','AOI_NO')}" required="false" change="toggleValidationRequired()"/>					
+				</s:HGroup>			
+			</s:VGroup>
+			<s:Spacer width="10" height="10"/>		
+			<s:VGroup>
+				<s:HGroup>
+					<s:Label text="{resourceManager.getString('default','COMPANY_TYPE')}" height="28" fontWeight="bold" verticalAlign="middle" width="105"/>
+					<components:DKI_CompanyTypes id="companyTypes"
+												 companyType="{int(company_vo.cmpy_type)}"
+												 width="387" click="{companyTypesClicked()}"/>
+				</s:HGroup>
+				<s:Spacer height="48"/>		
+				<s:HGroup>
+					<s:Label width="105" height="28" text="{resourceManager.getString('default','COMPANY_ADDRESS')}" fontWeight="bold" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="company_address" 
+													  dataProvider="{addressList}" 
+													  labelField="address_text" 
+													  selectedItem="" enabled="false" enabled.edit="true"
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+													  width="400" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','COMPANY_ADDRESS')}"
+													  required="false" validationGroup="{vg}" automationName="{resourceManager.getString('default','COMPANY_ADDRESS')}" 
+													  />
+					<s:Spacer width="10" />		
+					<components:DKI_Button id="btn_addresses" label="{resourceManager.getString('default','m_addresses')}" includeIn="edit,create" type="default" 
+										   enabled="{this.canUpdate}" visible="{this.canUpdate}" includeInLayout="{this.canUpdate}" click="goToAddresses();"/>
+				</s:HGroup>
+			</s:VGroup>
+		</s:HGroup>
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button label="{resourceManager.getString('default','m_companyrelations')}" id="btn_company_relations" type="report" click="goToCompanyRelations()" enabled="{(currentState != 'create') ? true : false}" visible="false"/>
+			<components:DKI_Button label="{resourceManager.getString('default','specialactions.lbl.specialactions')}" id="launchSpecialActions" type="report" click="launchSpecialActions_clickHandler(event)" enabled="{(currentState != 'create') ? true : false}"/>
+			<components:DKI_Button id="btn_save" label.create="{resourceManager.getString('default','SAVE')}" label.edit="{resourceManager.getString('default','UPDATE')}" height="100%" type.create="save" type.edit="update" enabled="false" enabled.create="{canCreate}" enabled.edit="{canUpdate}"/>
+			<components:DKI_Button label="{resourceManager.getString('default','DELETE')}" height="100%" click="deleteRecord()" type="delete" includeIn="edit" enabled="{canDelete}"/>
+			<components:DKI_Button label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler(event)" type="cancel" enabled="true"/>
+		</s:HGroup>
+	</s:Panel>
+</s:VGroup>

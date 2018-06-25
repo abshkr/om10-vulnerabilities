@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" 
+					xmlns:equipmentlistservice="services.equipmentlistservice.*"
+					clipAndEnableScrolling="true">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.core.BitmapAsset;
+			
+			[Embed (source="/assets/icons/lock.png")]
+			[Bindable]
+			public var lock:Class;
+			
+			[Embed (source="/assets/icons/unlocked.png")]
+			[Bindable]
+			public var unlock:Class;
+			
+			private var lockObject:BitmapAsset = new lock() as BitmapAsset;
+			private var unlockObject:BitmapAsset = new unlock() as BitmapAsset;
+			
+			
+			override public function prepare(hasBeenRecycled:Boolean):void 
+			{
+				if (data)
+				{
+					if (data[column.dataField] != null)
+					{
+						var s:String = (data[column.dataField] as String).toUpperCase();
+						if ( s == 'Y' || s=="1") img.source=lockObject else  img.source=unlockObject;
+					}
+				}
+			}
+			
+			protected function img_clickHandler():void
+			{
+				// TODO Auto-generated method stub
+				if (data)
+				{
+					if (data[column.dataField] != null)
+					{
+						if ( data[column.dataField] == 'Y' )
+						{
+							data[column.dataField] = 'N';
+						}
+						else if ( data[column.dataField] == 'N' )
+						{
+							data[column.dataField] = 'Y';
+						}
+						else if ( data[column.dataField] == '1' )
+						{
+							data[column.dataField] = '0';
+						}
+						else if ( data[column.dataField] == '0' )
+						{
+							data[column.dataField] = '1';
+						}
+						else
+						{
+							data[column.dataField] = '0';
+						}
+						var s:String = (data[column.dataField] as String).toUpperCase();
+						if ( s == 'Y' || s=="1") img.source=lockObject else  img.source=unlockObject;
+						
+						if ( data.hasOwnProperty("eqpt_id") && data.hasOwnProperty("cmpt_no") )
+						{
+							//global.msgFail("Eqpt="+data["eqpt_id"] + "---cmpt no="+data["cmpt_no"]);
+							toggleResult.token = equipmentListService.toggleCompartmentLock( data["eqpt_id"], data["cmpt_no"]);
+						}
+						
+					}
+				}
+			}
+			
+			private function toggleResultHandler(event:Event):void
+			{
+				if ( toggleResult.lastResult == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','global.prompts.succ_toggle_cmpt_lock'));
+				}
+				else
+				{
+					global.msgSuccess(resourceManager.getString('default','global.prompts.fail_toggle_cmpt_lock'));
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<equipmentlistservice:EquipmentListService id="equipmentListService" channelSet="{global.channelSet}"
+												   fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+												   showBusyCursor="true"/>
+		<s:CallResponder id="toggleResult" result="toggleResultHandler(event)" fault="global.msgFail(resourceManager.getString('default','global.prompts.fail_toggle_cmpt_lock2'))"/>
+	</fx:Declarations>
+	
+	<s:Group width="100%" height="100%" mouseEnabledWhereTransparent="true">
+		<s:Image id="img" verticalCenter="0" horizontalCenter="0" click="img_clickHandler()"/>
+	</s:Group>
+	
+</s:GridItemRenderer>

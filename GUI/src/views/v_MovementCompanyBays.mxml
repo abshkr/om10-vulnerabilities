@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 currentState="normal"
+		 xmlns:components="components.*"
+		 width="100%" height="100%" 
+		 xmlns:controllers="controllers.*" xmlns:dm="dm.*" 
+		 creationComplete="controller.creationCompleteHandler(event)">
+	<s:states>
+		<s:State name="widget"/>
+		<s:State name="normal" enterState="
+				 	mainList.selectedIndex = -1;
+				 "/>
+		<s:State name="edit"/>
+		<s:State name="create" enterState="
+				 	frmBay.selectedIndex = frmCompany.selectedIndex = frmType.selectedIndex = -1;
+				 "/>
+	</s:states>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<dm:DM />
+		<controllers:C_MovementCompanyBays id="controller" view="{this}"/>
+	</fx:Declarations>
+	<s:Panel id="mainPanel" width="100%" height="100%" skinClass="skins.WidgetPanelSkin"
+			 title="Bays for Companys"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:HGroup width="100%" paddingBottom="2" paddingLeft="2" paddingRight="2" paddingTop="2" verticalAlign="middle"  enabled="true" enabled.create="false">
+			<s:Label id="fltBayLabel" includeIn="create,edit,normal" text="{resourceManager.getString('default','CMPYBAY.LABEL.BAY')}:" textAlign="right"/>
+			<components:DKI_DropDownList id="fltBay" selectedIndex="@{C_MovementCompanyBays.BAY_INDEX}" useVirtualLayout="false"
+							width="100%" prompt="{resourceManager.getString('default','CMPYBAY.PROMPT.BAY')}" dataProvider="{DM.MovementCompanyBays.bays}" labelField="BAD_PHYSCODE" contentBackgroundAlpha="1" change="controller.refreshMainFilter();"/>
+			<s:Label id="fltCompanyLabel" includeIn="create,edit,normal" text="{resourceManager.getString('default','CMPYBAY.LABEL.SUPPLIER')}:" textAlign="right"/>
+			<components:DKI_DropDownList id="fltCompany" selectedIndex="@{C_MovementCompanyBays.COMPANY_INDEX}" useVirtualLayout="false" 
+							width="100%" prompt="{resourceManager.getString('default','CMPYBAY.PROMPT.COMPANY')}" dataProvider="{DM.MovementCompanyBays.companys}" labelField="CODE_NAME" contentBackgroundAlpha="1" change="controller.refreshMainFilter();"/>
+			<s:Label id="fltTypeLabel" includeIn="create,edit,normal" text="{resourceManager.getString('default','CMPYBAY.LABEL.BAY_TYPE')}:" textAlign="right"/>
+			<components:DKI_DropDownList id="fltType" selectedIndex="@{C_MovementCompanyBays.TYPE_INDEX}" useVirtualLayout="false" 
+							width="100%" minWidth="150" prompt="{resourceManager.getString('default','CMPYBAY.PROMPT.BAY_TYPE')}" dataProvider="{DM.MovementCompanyBays.types}" labelField="BAY_TYPE_NAME"  contentBackgroundAlpha="1" change="controller.refreshMainFilter();"/>
+			<components:DKI_Button id="btnClear" type="refresh" label="{resourceManager.getString('default','CLEAR')}" click="controller.clearFilter();"/>
+			<s:Spacer includeIn="create,edit,normal" width="100%"/>
+			<components:DKI_Button id="btnCreate" type="create" includeIn="normal" label="{resourceManager.getString('default','CREATE')}" click.normal="currentState = 'create'" enabled="{controller.canCreate}" />
+		</s:HGroup>
+		<!--
+		CREATE TABLE BA_CMPY_LNK
+		(
+		BACL_BAY_CODE     VARCHAR2 (60 Byte),
+		BACL_CMPY_CODE    VARCHAR2 (16 Byte),
+		BACL_BAY_TYPE     NUMBER (2),
+		CONSTRAINT PK_BA_CMPY_LNK
+		PRIMARY KEY(BACL_BAY_CODE,BACL_CMPY_CODE),
+		CONSTRAINT FK_BCL_BACL_BAY_CD FOREIGN KEY (BACL_BAY_CODE)
+		REFERENCES BA_DEVICE (BAD_PHYSCODE),
+		CONSTRAINT FK_BCL_BACL_CMPY_CD FOREIGN KEY (BACL_CMPY_CODE)
+		REFERENCES COMPANYS (CMPY_CODE)
+		);
+		
+		select bacl.BACL_BAY_CODE, bacl.BACL_CMPY_CODE, cmpy.CMPY_NAME, bacl.BACL_BAY_TYPE, btyp.BAY_TYPE_TEXT 
+		from BA_CMPY_LNK bacl, COMPANYS cmpy, GUI_BAY_TYPES btyp 
+		where bacl.BACL_CMPY_CODE = cmpy.CMPY_CODE and btyp.BAY_TYPE_CODE = bacl.BACL_BAY_TYPE 
+		
+		GUI_BAY_TYPES is a view based on table MSG_LOOKUP.
+		
+		The following is the mapping between table columns and grid and form fields:
+		========================================================================================
+		Table Column                    Grid Column                    Form Field
+		========================================================================================
+		BACL_BAY_CODE                   clnBay                         frmBay
+		BACL_CMPY_CODE                  clnCmpyCode                    frmCompany
+		BACL_BAY_TYPE                   clnBayType                     frmType
+		========================================================================================
+		-->
+		<s:DataGrid id="mainList" width="100%" height="100%" 
+					dataProvider="{DM.MovementCompanyBays}"  enabled="true" enabled.create="false"
+					selectionChange="currentState='edit';controller.editSelected();" selectionChange.widget="null">
+			<s:columns>
+				<s:ArrayList>
+					<s:GridColumn dataField="clnBay"      headerText="{resourceManager.getString('default','CMPYBAY.LABEL.BAY_CODE')}"></s:GridColumn>
+					<s:GridColumn dataField="clnCmpyCode" headerText="{resourceManager.getString('default','CMPYBAY.LABEL.CMPY_CODE')}"></s:GridColumn>
+					<s:GridColumn dataField="clnCmpyName" headerText="{resourceManager.getString('default','CMPYBAY.LABEL.CMPY_NAME')}"></s:GridColumn>
+					<s:GridColumn dataField="clnBayType"  headerText="{resourceManager.getString('default','CMPYBAY.LABEL.BAY_TYPE')}"></s:GridColumn>
+				</s:ArrayList>
+			</s:columns>
+		</s:DataGrid>
+	</s:Panel>
+	<s:Panel id="detailsPanel" includeIn="edit,create" width="100%" height="200"
+			 skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:Spacer width="100%" height="5"/>
+		<s:HGroup width="100%" gap="20" paddingBottom="2" paddingLeft="5" paddingRight="2"
+				  paddingTop="2" verticalAlign="middle">
+			<s:Label id="frmBayLabel" text="{resourceManager.getString('default','CMPYBAY.LABEL.BAY')}:" textAlign="right"/>
+			<components:DKI_DropDownList id="frmBay" enabled="true" enabled.edit="false" width="200" prompt="{resourceManager.getString('default','CMPYBAY.PROMPT.BAY')}" 
+							selectedIndex="-1" dataProvider="{DM.MovementCompanyBays.bays}" labelField="BAD_PHYSCODE"/>
+			<s:Label id="frmCompanyLabel" text="{resourceManager.getString('default','CMPYBAY.LABEL.COMPANY')}:" textAlign="right"/>
+			<components:DKI_DropDownList id="frmCompany"  enabled="true" enabled.edit="false" width="200" prompt="{resourceManager.getString('default','CMPYBAY.PROMPT.COMPANY')}" selectedIndex="-1" 
+							dataProvider="{DM.MovementCompanyBays.companys}" labelField="CODE_NAME" useVirtualLayout="false">
+			</components:DKI_DropDownList>
+			<s:Label id="frmTypeLabel" text="{resourceManager.getString('default','CMPYBAY.LABEL.BAY_TYPE')}:" textAlign="right"/>
+			<components:DKI_DropDownList id="frmType" width="200" prompt="{resourceManager.getString('default','CMPYBAY.PROMPT.BAY')}" selectedIndex="-1" 
+										 dataProvider="{DM.MovementCompanyBays.types}" labelField="BAY_TYPE_NAME"/>
+		</s:HGroup>
+		
+		<s:Spacer height="20" />
+		
+		<s:HGroup width="100%" gap="5" paddingBottom="4" paddingRight="5" paddingTop="4">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btnDelete" label="{resourceManager.getString('default','DELETE')}" height="100%" includeIn="edit" type="delete" click="controller.remove();" enabled="{controller.canDelete}"/>
+			<components:DKI_Button id="btnSave" label.create="{resourceManager.getString('default','SAVE')}" label="{resourceManager.getString('default','UPDATE')}" height="100%" includeIn="edit,create" 
+								   type.create="create" click.create="controller.create();"  
+								   type.edit  ="edit"   click.edit="controller.update();"
+								   enabled.create="{controller.canCreate}" enabled.edit="{controller.canUpdate}"/>
+			<components:DKI_Button id="btnCancel" label="{resourceManager.getString('default','CANCEL')}" height="100%" enabled="true" type="cancel" click="currentState='normal'"/>
+		</s:HGroup>
+	</s:Panel>
+</s:VGroup>

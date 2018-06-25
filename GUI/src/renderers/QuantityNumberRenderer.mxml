@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" clipAndEnableScrolling="true">
+	
+	<fx:Script>
+		<![CDATA[
+			import dm.utils.tools;
+			
+			override public function prepare(hasBeenRecycled:Boolean):void {
+				
+				var str:String="";
+				if (data)
+				{
+					if ( data[column.dataField] != null && data[column.dataField] != "" )
+					{
+						if ( (data['BCLASS_DESC'] != null && data['BCLASS_DESC']=='Additive')
+						  || (data['trsf_bs_prodcls'] != null && data['trsf_bs_prodcls']=='Additive')         // For Manual Transaction - Base & Base Total(Base Product) grid.
+						  )
+						{
+							str = tools.roundString( data[column.dataField], 3 );
+						}
+						else if (
+							(data['trsf_drawerprod_row'] != null && data['trsf_drawerprod_row']=='DRAWERPROD') // For Manual Transaction - Compartment(Drawer Product) grid.
+								)
+						{
+							str = tools.roundString( data[column.dataField], 0 );
+						}
+						else
+						{
+							str = tools.roundString( data[column.dataField], 0 );
+						}
+						
+						//column.dataTipField = data[column.dataField];
+					}
+				}
+				
+				lblData.text = str;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Label id="lblData" top="9" left="7"/>
+	
+</s:GridItemRenderer>

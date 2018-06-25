@@ -1,0 +1,1091 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  creationComplete="creationCompleteHandler(event)"
+		  gap="2" width="100%" height="100%">
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="edit" enterState="
+				 callLater(function():void{dataGrid.ensureCellIsVisible(idx);});"/>
+		<s:State name="create"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.fiber.runtime.lib.DateTimeFunc;
+			
+			import components.ActionDialog;
+			import components.ConfirmDialog;
+			import components.DKI_AlertBox;
+			import components.DeleteDialog;
+			import components.ExportData;
+			import components.MessageDialog;
+			
+			import dm.remoteDataService;
+			import dm.remoteListService;
+			import dm.utils.tools;
+			
+			import flash.events.KeyboardEvent;
+			import flash.globalization.LocaleID;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			
+			
+			public static const MAIN_WINDOW_WIDTH:int = 1500;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable] public var labelWidth:uint = 120;
+			[Bindable] public var labelHeight:uint = 26;
+			[Bindable] public var fieldWidth:uint = 200;
+			[Bindable] public var fieldHeight:uint = 26;
+			[Bindable] public var spaceWidth:uint = 15;
+			[Bindable] public var spaceHeight:uint = 2;
+			
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='physical_printer_code';
+			private var currentDirection:String="ASC";
+			
+			private var currentOffset:int=0;
+			private var currentPageSize:int=1000;
+			[Bindable] private var totalLength:int=0;
+			[Bindable] private var currentLength:int=0;
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			private var currentSorts:Object=new Object();
+			private var currentOrders:Object=new Object();
+			private var currentSortSeq:int=0;
+			
+			private var eq_filter:String=null;
+			
+			private var confirmDelete:DKI_AlertBox;
+			
+			private var  originalItems:ArrayCollection;
+			
+			
+			private var confirmReport:ActionDialog;
+			
+			//private var exportContents:String="";
+			private var f:FileReference = new FileReference();
+			
+			
+			//private var getData:Responder = new Responder(getData_resultHandler);
+			
+			//private var pagedRecords:ArrayCollection=new ArrayCollection();
+			//private var pagedRecords:remoteDataService = new remoteDataService( "PhysicalPrinterService.getPaged", getData, null );
+			[Bindable] private var pagedRecords:remoteListService;
+			
+			private var deleteAction:remoteDataService = new remoteDataService( "PhysicalPrinterService.delete", null, deleteData_resultHandler, 1 );
+			private var createAction:remoteDataService = new remoteDataService( "PhysicalPrinterService.create", null, createData_resultHandler, 1 );
+			private var updateAction:remoteDataService = new remoteDataService( "PhysicalPrinterService.update", null, updateData_resultHandler, 1 );
+			
+			private var physicalPrinterChecker:remoteDataService = new remoteDataService( "PhysicalPrinterService.isPhysicalPrinterExisted", null, physicalPrinterChecker_resultHandler, 2 );
+			private var physicalPrinterAreaChecker:remoteDataService = new remoteDataService( "PhysicalPrinterService.isPhysicalPrinterAreaMultiple", null, physicalPrinterAreaChecker_resultHandler, 2 );
+			private var defaultPrinterChecker:remoteDataService = new remoteDataService( "PhysicalPrinterService.isPhysicalPrinterUsedAsDefault", null, defaultPrinterChecker_resultHandler, 2 );
+			
+			[Bindable] private var defaultPrinterCompanyList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCompanyWithDefaultPrinters", null, defaultPrinterCompanyList_resultHandler );
+			
+			[Bindable] private var areaList:remoteDataService = new remoteDataService( "ListLibraryService.lookupArea", null, null );
+			
+			
+			private var pageCount:int=1;
+			[Bindable] public  var bytesTotal:Number  = 1000000;
+			[Bindable] public  var bytesLoaded:Number = 0;
+			//			[Bindable] public  var totalCount:Number  = 0;
+			
+			//			[Bindable] private var currentPage:Number 		= 1;
+			//private var pageBy:int = 1000;
+			[Bindable] private var finishedAllPages:Boolean =  true;
+			//			[Bindable] private var interruptor:Boolean 		=  false;
+			//[Bindable] private var orderArr:ArrayCollection=new ArrayCollection();
+			
+			
+			//private var genData:ExportData = new ExportData();
+			
+			public var mainListSelection:int = -1;
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				trace ("-------------start creationCompleteHandler");
+				pagedRecords = new remoteListService( this.dataGrid, "PhysicalPrinterService.getPaged", null, getPageData_resultHandler );
+				//resourceManager.localeChain = ['zh_CN'];
+				//global.LanguageCode="CHN";
+				
+				this.startFiltering();
+				
+				this.areaList.service( );
+				
+				trace ("------------End creationCompleteHandler");
+				
+				
+				//trace("this.grid.scroller1111", this.dataGrid.scroller);
+				//trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+				this.dataGrid.scroller.verticalScrollBar.addEventListener(Event.CHANGE, verticalScrollBarChanged);
+				this.dataGrid.addEventListener(KeyboardEvent.KEY_UP, reportKeyUp);
+				this.dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+			}
+			
+			
+			
+			protected function startLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				//this.panel.enabled = false;
+				
+				currentLength=0;
+				currentOffset = 0;
+				
+				//this.exportContents = this.genData.prepExportHeader( dataGrid );
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				this.pb.values(0, 0);
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			protected function endLoadingPages():void
+			{
+				this.btn_create.enabled = this.canCreate;
+				this.btn_export.enabled = true;
+				this.dataGrid.enabled = true;
+				this.toolbar.enabled = true;
+				//this.panel.enabled = true;
+				//this.pb.values(totalCount, totalCount);
+				this.pb.values(pagedRecords.totalCount, pagedRecords.totalCount, true);
+				
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = false;
+				
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				//if ( totalLength > totalCount )
+				if ( pagedRecords.totalLength > pagedRecords.totalCount )
+				{
+					this.resumeBtn.enabled = true;
+				}
+				else
+				{
+					this.resumeBtn.enabled = false;
+				}
+			}
+			
+			protected function exportCsvHandler(event:MouseEvent):void
+			{
+				this.confirmReport = new ActionDialog( doExport, cancelExport, resourceManager.getString('default','CONFIRM_REPORT_CSV') );
+				
+				//this.startLoadingPages();
+			}
+			
+			private function getPageData_resultHandler():void
+			{
+				// if not finished
+				if(pagedRecords.length < pagedRecords.totalCount)
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+				}
+				else
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+					
+					this.endLoadingPages();
+					
+					this.dataGrid.selectedIndex = this.mainListSelection;
+					if ( this.mainListSelection >= 0)
+					{
+						this.dataGrid_selectionChangeHandler(null);
+					}
+					this.mainListSelection = -1;
+					
+				}
+				
+			}
+			
+			
+			public function doExport():void
+			{
+				//genData.prepOther(dataGrid,'orderlist.csv', this.pagedRecords);
+				
+				//f.save( this.exportContents, "orderlist.csv" );
+				f.save( pagedRecords.exportContents, "phyprinterlist.csv" );
+				
+				this.endLoadingPages();
+			}
+			
+			
+			public function cancelExport():void
+			{
+				this.endLoadingPages();
+				
+				//trace( this.exportContents );
+			}
+			
+			
+			
+			private function verticalScrollBarChanged(event:Event):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function reportKeyUp(event:KeyboardEvent):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				if(event.column.dataField!='NA')
+				{
+					var currentRenderer:IGridItemRenderer;
+					var dir:String;
+					
+					if ( global.sortingBySingleColumn == true )
+					{	// sorted by single column only
+						for (var i:int=0; i < dataGrid.columns.length; i++)
+						{
+							currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+							if ( currentRenderer != null)
+							{
+								(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+							}
+							//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+						}
+					}
+					else
+					{	// sorted by multiple columns
+						;
+					}
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if( currentSorts.hasOwnProperty(event.column.dataField ) )
+					{
+						dir = currentSorts[event.column.dataField];
+						if( dir=="ASC" )
+						{
+							dir = "DESC";
+						}
+						else if ( dir == "DESC" )
+						{
+							dir = "";
+						}
+						else if ( dir == "" )
+						{
+							dir = "ASC";
+						}
+						else 
+						{
+							dir = "ASC";
+						}
+						
+						if ( dir != "" )
+						{
+							currentSorts[event.column.dataField] = dir;	
+						}
+						else
+						{
+							delete currentSorts[event.column.dataField];
+							delete currentOrders[event.column.dataField];
+						}
+					}
+					else
+					{
+						if ( global.sortingBySingleColumn == true )
+						{	// sorted by single column only
+							currentSorts = new Object();
+							currentOrders = new Object();
+							currentSortSeq = 0;
+						}
+						else
+						{	// sorted by multiple columns
+							;
+						}
+						currentSorts[event.column.dataField] = "ASC";	
+						dir = currentSorts[event.column.dataField];
+						currentSortSeq += 1;
+						currentOrders[event.column.dataField] = currentSortSeq;	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+					this.startFiltering();
+				}
+			}
+			
+			
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				idx=dataGrid.selectedIndex;
+				dataGrid.ensureCellIsVisible(idx);
+				
+				currentState = "edit";					
+				this.btn_save.enabled = this.canUpdate;
+			}
+			
+			
+			protected function cancel_clickHandler():void
+			{
+				clearDetail();
+				if ( currentState== "create" )
+				{
+					dataGrid.enabled=true;
+				}
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+			}			
+			
+			protected function fltr_phyprinter_keyUpHandler(event:KeyboardEvent):void
+			{
+				var keyCode:uint = 0;
+				if (event == null)
+				{
+					keyCode=0;
+				}
+				else
+				{
+					keyCode=event.keyCode;
+				}
+				
+				if ( keyCode == 13 )
+				{
+					if (currentState == "edit") clearDetail();
+					this.filterBtn.setFocus();
+					startFiltering();
+				}
+			}
+			
+			protected function fltr_sysprinter_keyUpHandler(event:KeyboardEvent):void
+			{
+				var keyCode:uint = 0;
+				if (event == null)
+				{
+					keyCode=0;
+				}
+				else
+				{
+					keyCode=event.keyCode;
+				}
+				
+				if ( keyCode == 13 )
+				{
+					if (currentState == "edit") clearDetail();
+					this.filterBtn.setFocus();
+					startFiltering();
+				}
+			}
+			
+			protected function fltr_area_changeHandler(event:IndexChangeEvent):void
+			{
+				//if (currentState == "edit") clearDetail();
+				//startFiltering();
+			}
+			
+			private function startFiltering():void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				fields = new Object();
+				types = new Object();
+				
+				
+				if(fltr_phyprinter.text!='')
+				{					
+					fields["prntr"] = fltr_phyprinter.text;
+				}
+				else
+				{
+					fields["prntr"] = "";
+				}
+				types["prntr"] = "STRING";
+				
+				if(fltr_sysprinter.text!='')
+				{					
+					fields["sys_prntr"] = fltr_sysprinter.text;
+				}
+				else
+				{
+					fields["sys_prntr"] = "";
+				}
+				types["sys_prntr"] = "STRING";
+				
+				if (fltr_area.selectedIndex > -1) 
+				{
+					fields["prntr_area"] = areaList[fltr_area.selectedIndex].area_k;
+				}
+				else
+				{
+					fields["prntr_area"] = "";
+				}
+				types["prntr_area"] = "EXACT_STRING";
+				
+				currentFields = fields;
+				currentTypes = types;
+				
+				this.startLoadingPages();
+				
+				trace("this.grid.scroller3333", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			private function findByID(id:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["prntr"] = id;
+				types["prntr"] = "STRING";
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				//this.pagedRecords.service( fields, types, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( fields, types, currentSorts, currentOrders );
+			}
+			
+			protected function filterRecords(event:MouseEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				this.startFiltering();
+			}
+			
+			protected function refreshRecords(event:MouseEvent):void
+			{
+				currentState = 'normal';
+				dataGrid.enabled=true;
+
+				clearDetail();
+				fltr_phyprinter.text = "";
+				fltr_sysprinter.text = "";
+				fltr_area.selectedIndex = -1;
+				dataGrid.selectedIndex = -1;
+				currentFilter = null;
+				currentOrder = null;
+				currentFields = new Object();
+				currentTypes = new Object();
+				
+				currentSorts = new Object();
+				currentOrders = new Object();
+				var currentRenderer:IGridItemRenderer;
+				for (var i:int=0; i < dataGrid.columns.length; i++)
+				{
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					if ( currentRenderer != null)
+					{
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+					}
+					//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+				}
+				this.startLoadingPages();
+				trace("this.grid.scroller2222", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			protected function clearDetail(): void
+			{
+			}			
+			
+			private function editRecord():void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.prntr = physical_printer_code.text;
+				obj.sys_prntr = physical_printer_name.text;
+				
+				obj.prntr_lock = (physical_printer_lock.selected==true?"Y":"N");
+				
+				if (physical_printer_area.selectedIndex>=0)
+				{
+					obj.prntr_area = areaList[physical_printer_area.selectedIndex].area_k;
+				}
+				else
+				{
+					obj.prntr_area = ""; //dataGrid.selectedItem.prntr_area;
+				}
+				
+				updateAction.service( obj );
+			}
+			
+			protected function updateData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.updateAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var txt:String;
+				txt = this.physical_printer_code.text;
+				
+				currentState="normal";
+				this.findByID( txt );
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			private function doDelete(): void
+			{
+				var errors:String="";
+				var index:int=0;
+
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				else
+				{
+					var canDelete:DeleteDialog = new DeleteDialog(deleteRecord, hasPassword);
+				}
+			}
+			
+			private function deleteRecord():void
+			{
+				var obj:Object = new Object();
+				
+				
+				obj.prntr = physical_printer_code.text;
+				obj.sys_prntr = physical_printer_name.text;
+				
+				obj.prntr_lock = (physical_printer_lock.selected==true?"Y":"N");
+				
+				if (physical_printer_area.selectedIndex>=0)
+				{
+					obj.prntr_area = areaList[physical_printer_area.selectedIndex].area_k;
+				}
+				else
+				{
+					obj.prntr_area = dataGrid.selectedItem.prntr_area;
+				}
+				
+				deleteAction.service( obj );
+			}
+			
+			protected function deleteData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.deleteAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+				}
+				else
+				{
+					if ( this.deleteAction.dataString == "DEPENDENCIES" )
+					{
+						global.msgFail( resourceManager.getString('default','ALERT__PHYSICAL_PRINTER_DELETE') );
+					}
+					else
+					{
+						global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+					}
+					
+				}
+				
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+			}
+			
+			private function checkPhysicalPrinter():void
+			{
+				var code:String;
+				
+				code = physical_printer_code.text;
+				
+				physicalPrinterChecker.service( code );
+			}
+			
+			protected function physicalPrinterChecker_resultHandler( ):void
+			{
+				trace ("isPhysicalPrinterExisted", physical_printer_code.text, physicalPrinterChecker.dataInteger);
+				if ( physicalPrinterChecker.dataInteger > 0 )
+				{
+					//var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__PHYSICAL_PRINTER_EXIST') );
+					physical_printer_code.errorString = resourceManager.getString('default','ALERT__PHYSICAL_PRINTER_EXIST');
+					this.btn_save.enabled = this.canCreate;
+				}
+				else
+				{
+					physical_printer_code.errorString = "";
+				}
+			}
+			
+			private function checkMultipleAreaPerPrinter():void
+			{
+				var printer:String;
+				var area:String;
+				var logic:String;
+				
+				printer = physical_printer_name.text;
+				logic = physical_printer_code.text;
+				
+				if (physical_printer_area.selectedIndex>=0)
+				{
+					area = areaList[physical_printer_area.selectedIndex].area_k;
+				}
+				else
+				{
+					area = "";
+				}
+				
+				physicalPrinterAreaChecker.service( printer, area, logic );
+			}
+			
+			protected function physicalPrinterAreaChecker_resultHandler( ):void
+			{
+				trace ("isPhysicalPrinterAreaMultiple", physicalPrinterAreaChecker.dataInteger);
+				if ( physicalPrinterAreaChecker.dataInteger > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__PHYSICAL_PRINTER_AREA_DEFINED') );
+					//physical_printer_code.errorString = resourceManager.getString('default','ALERT__PHYSICAL_PRINTER_EXIST');
+				}
+				else
+				{
+					//physical_printer_code.errorString = "";
+				}
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+
+				var code:String;
+				var digits:String="0123456789";
+				
+				code = physical_printer_code.text;
+				
+				if ( code.length < 3 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','ALERT_CODE_LENGTH_SHORT') + "\n";
+				}
+				else
+				{
+					if ( code.charAt(0) != "P" )
+					{
+						index += 1;
+						errors += String(index) + ". " + resourceManager.getString('default','ALERT_CODE_START_WITH_P') + "\n";
+					}
+					if ( digits.indexOf( code.charAt(1) ) < 0 )
+					{
+						index += 1;
+						errors += String(index) + ". " + resourceManager.getString('default','ALERT_CODE_NON_NUMERIC_P2') + "\n";
+					}
+					if ( digits.indexOf( code.charAt(2) ) < 0 )
+					{
+						index += 1;
+						errors += String(index) + ". " + resourceManager.getString('default','ALERT_CODE_NON_NUMERIC_P3') + "\n";
+					}
+				}
+				
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return index;
+			}
+			
+			private function createRecord():void
+			{
+				var order_num:int;
+				
+				order_num = physicalPrinterChecker.dataInteger;
+				trace ("isPhysicalPrinterExisted", physical_printer_code.text, order_num);
+				if ( order_num > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__PHYSICAL_PRINTER_EXIST') );
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.prntr = physical_printer_code.text;
+				obj.sys_prntr = physical_printer_name.text;
+				
+				obj.prntr_lock = (physical_printer_lock.selected==true?"Y":"N");
+				
+				if (physical_printer_area.selectedIndex>=0)
+				{
+					obj.prntr_area = areaList[physical_printer_area.selectedIndex].area_k;
+				}
+				else
+				{
+					obj.prntr_area = "";
+				}
+				
+				createAction.service( obj );
+			}
+			
+			protected function createData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.createAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				}
+				
+				var txt:String;
+				txt = this.physical_printer_code.text;
+				
+				currentState="normal";
+				this.findByID( txt );
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			protected function createNewRecord(event:MouseEvent):void
+			{	
+				idx=dataGrid.selectedIndex;
+				dataGrid.ensureCellIsVisible(idx);
+				currentState="create";
+				this.btn_save.enabled = this.canCreate;
+				dataGrid.enabled=false;
+				//this.equipCmptsList.visible = false;
+			}
+			
+			
+			protected function save_clickHandler():void
+			{
+				this.btn_save.enabled = false;
+				if (currentState == "create")
+				{
+					createRecord();
+				}
+				if (currentState == "edit")
+				{
+					editRecord();
+				}
+			}
+			
+			
+			protected function killBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=true;
+				pagedRecords.interruptor=true;
+				trace("WTF >>>>>>>>>>");
+			}
+			
+			protected function resumeBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				this.resumeLoadingPages();
+				trace("RESUME >>>>>>>>>>");
+			}
+			
+			protected function resumeLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				
+				//pb.values(pagedRecords.length,totalLength);
+				pb.values(pagedRecords.length,pagedRecords.totalLength);
+				//currentPage = int(this.pagedRecords.length/currentPageSize) + 1;
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			private function checkDefaultPrinter():void
+			{
+				if ( this.physical_printer_lock.selected == false )
+				{
+					return;
+				}
+				
+				var code:String;
+				var usage:String;
+				var printer:String;
+				
+				printer = this.physical_printer_code.text;
+				
+				
+				//defaultPrinterChecker.service( printer );
+				this.defaultPrinterCompanyList.service( printer );
+			}
+			
+			protected function defaultPrinterChecker_resultHandler( ):void
+			{
+				trace ("isPhysicalPrinterUsedAsDefault",  defaultPrinterChecker.dataInteger);
+				if ( defaultPrinterChecker.dataInteger > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__PHYSICAL_PRINTER_LOCK') );
+				}
+				else
+				{
+					;
+				}
+			}
+			
+			protected function defaultPrinterCompanyList_resultHandler( ):void
+			{
+				trace ("lookupCompanyWithDefaultPrinters",  defaultPrinterCompanyList.length);
+				if ( defaultPrinterCompanyList.length > 0 )
+				{
+					var msg:String="";
+					var printer:String = this.physical_printer_code.text;
+					
+					msg += resourceManager.getString('default','ALERT__PHYSICAL_PRINTER_LOCK_HEAD') + "\n\n";
+					for ( var i:int=0; i<defaultPrinterCompanyList.length; i++ )
+					{
+						var str:String="";
+						str += defaultPrinterCompanyList.source[i].cmpy_desc + ": ";
+						if ( defaultPrinterCompanyList.source[i].cmpy_bol_vp_name == printer )
+						{
+							//str += "BOL, ";
+							str += resourceManager.getString('default','global.lbl.bol') + ", ";
+						}
+						if ( defaultPrinterCompanyList.source[i].cmpy_ld_rep_vp == printer )
+						{
+							//str += "LD_REPORT, ";
+							str += resourceManager.getString('default','global.lbl.loadreport') + ", ";
+						}
+						if ( defaultPrinterCompanyList.source[i].cmpy_drv_inst_vp == printer )
+						{
+							//str += "DLI, ";
+							str += resourceManager.getString('default','global.lbl.driverinstruction') + ", ";
+						}
+						
+						msg +=  str.substr(0, str.length-2) + "\n";
+					}
+					msg += "\n" + resourceManager.getString('default','ALERT__PHYSICAL_PRINTER_LOCK_TAIL') + "\n";
+					//var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__LOGICAL_PRINTER_EXIST') );
+					var errorBox:MessageDialog = new MessageDialog( msg, 500 );
+				}
+				else
+				{
+					;
+				}
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<components:ValidationGroup id="vg" action="{save_clickHandler}" defaultButton="{btn_save}" isProtected="{hasPassword}"/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin"
+	>
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		<s:HGroup id="toolbar" width="100%" gap="5" paddingBottom="2" paddingTop="2">
+			<components:DKI_ValidatorInput id="fltr_phyprinter" validationType="search" width="200" height="{labelHeight}" 
+										   keyUp="fltr_phyprinter_keyUpHandler(event)"  restrict="A-Za-z0-9"
+										   prompt="{resourceManager.getString('default','PHYSICAL_PRINTER_CODE')+resourceManager.getString('default','FILTER')}"/>
+			<components:DKI_ValidatorInput id="fltr_sysprinter" validationType="search" width="200" height="{labelHeight}" 
+										   keyUp="fltr_sysprinter_keyUpHandler(event)"  restrict="A-Za-z0-9_"
+										   prompt="{resourceManager.getString('default','PHYSICAL_PRINTER_NAME')+resourceManager.getString('default','FILTER')}"/>
+			<components:DKI_DropDownList id="fltr_area" width="200" height="100%"
+											change="fltr_area_changeHandler(event)" cornerRadius="10"
+											labelField="area_desc" prompt="{resourceManager.getString('default','PHYSICAL_PRINTER_AREA')+resourceManager.getString('default','FILTER')}"
+											dataProvider="{areaList}"/>
+			
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="filterBtn" height="24" noLabel="false" click="filterRecords(event)"
+								   type="filteron"/>
+			<components:DKI_Button id="resetBtn" height="24" noLabel="false" click="refreshRecords(event)"
+								   type="filteroff"/>
+			<components:DKI_Button id="btn_export" label="{resourceManager.getString('default','EXPORTDATA')}" type="report" click="exportCsvHandler(event)" includeIn="normal"/>
+			<components:DKI_Button id="btn_create" label="{resourceManager.getString('default','CREATE')}" height="24" click="createNewRecord(event)" includeIn="normal" enabled="{this.canCreate}" type="create"/>			
+		</s:HGroup>
+		<s:DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="4"
+					selectionChange="dataGrid_selectionChangeHandler(event)"
+					skinClass="skins.DKI_DataGrid_Skin">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="prntr" headerText="{resourceManager.getString('default','PHYSICAL_PRINTER_CODE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="sys_prntr" headerText="{resourceManager.getString('default','PHYSICAL_PRINTER_NAME')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="prntr_lock" headerText="{resourceManager.getString('default','PHYSICAL_PRINTER_LOCK')}" visible="true" itemRenderer="renderers.GridLockRender"></s:GridColumn>
+						<s:GridColumn dataField="prntr_area" headerText="{resourceManager.getString('default','PHYSICAL_PRINTER_AREAID')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="area_name" headerText="{resourceManager.getString('default','PHYSICAL_PRINTER_AREA')}" visible="true"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			<s:dataProvider>
+				<s:AsyncListView id="pgList" list="{pagedRecords}"/>
+			</s:dataProvider>
+		</s:DataGrid>
+		<s:HGroup width="100%">
+			<components:Downloader id="pb" width="100%" height="18"/>
+			<s:Button id="killBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="killBtn_clickHandler(event)"/>
+			<s:Button id="resumeBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="resumeBtn_clickHandler(event)"/>
+		</s:HGroup>
+	</s:Panel>
+	
+	<s:Panel id="details" includeIn="edit,create" width="100%" height="160"
+			 itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+			<!--s:TileLayout/-->
+		</s:layout>
+		
+		<s:Spacer height="5"/>
+		<s:VGroup>
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','PHYSICAL_PRINTER_CODE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="physical_printer_code" maxChars="3" restrict="P0-9"
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.prntr}" editable="false" enabled="false" 
+												   text.create="" editable.create="true" enabled.create="true" change="checkPhysicalPrinter()" 
+												   required="true" validationType="alphanumeric" validationGroup="{vg}" automationName="{resourceManager.getString('default','PHYSICAL_PRINTER_CODE')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','PHYSICAL_PRINTER_NAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="physical_printer_name" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.sys_prntr}" editable="true" enabled="true" 
+												   text.create="" 
+												   required="true" validationType="alphanumeric" validationGroup="{vg}" automationName="{resourceManager.getString('default','PHYSICAL_PRINTER_NAME')}" 
+												   />
+				</s:HGroup>
+			</s:HGroup>
+			
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','PHYSICAL_PRINTER_LOCK')}" verticalAlign="middle"/>
+					<s:CheckBox id="physical_printer_lock" width="{fieldWidth}"
+								label="" fontWeight="bold" 
+								selected="{dataGrid.selectedItem.prntr_lock=='Y'?true:false}" enabled="true" 
+								selected.create="false"
+								 click="checkDefaultPrinter()"
+								/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','PHYSICAL_PRINTER_AREA')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="physical_printer_area" 
+													  dataProvider="{areaList}" 
+													  labelField="area_desc" 
+													  selectedItem="{dataGrid.selectedItem.prntr_area+' - '+dataGrid.selectedItem.area_name}" enabled="true"
+													  selectedItem.create="" selectedIndex.create="-1" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  change="checkMultipleAreaPerPrinter()"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','PHYSICAL_PRINTER_AREA')}"
+													  required="false" validationGroup="{vg}" automationName="{resourceManager.getString('default','PHYSICAL_PRINTER_AREA')}" 
+													  />
+				</s:HGroup>
+			</s:HGroup>
+			
+		</s:VGroup>
+		
+		<s:Spacer height="0" />
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_delete" label="{resourceManager.getString('default','DELETE')}" height="100%" click="doDelete()" includeIn="edit" enabled="{this.canDelete}" type="delete"/>
+			<components:DKI_Button id="btn_save" label.create="{resourceManager.getString('default','SAVE')}" label="{resourceManager.getString('default','UPDATE')}" height="100%" includeIn="edit,create" enabled.create="{this.canCreate}" enabled="{this.canUpdate}" type.create="create" type="edit"/>
+			<components:DKI_Button id="btn_cancel" label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel"/>
+		</s:HGroup>
+	</s:Panel>
+	
+</s:VGroup>

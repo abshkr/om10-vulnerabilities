@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:components="components.*"
+		 xmlns:equipmenttypesservice="services.equipmenttypesservice.*"
+		 width="640" height="300" creationComplete="panel1_creationCompleteHandler(event)"
+		 skinClass="skins.DialogBoxSkin" title="New Equipment Details">
+	
+	<fx:Script>
+		<![CDATA[
+			import dm.remoteDataService;
+			
+			import events.ObjEvent;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			import spark.events.IndexChangeEvent;
+			import spark.events.TextOperationEvent;
+			
+ 			private var _arr:ArrayCollection = new ArrayCollection();
+			[Bindable] public var nComp:String = '';
+			[Bindable] public var maxSeals:int = 5;
+			[Bindable] public var maxCharacters:int = 1;
+			
+			public var _callback:Function;
+			
+			private var maxSealsChecker:remoteDataService = new remoteDataService( "EquipmentTypeService.getMaxNumberOfSeals", null, maxSealsChecker_resultHandler, 2 );
+			[Bindable] private var productUnitList:remoteDataService = new remoteDataService( "ListLibraryService.lookupProductUnit", null, lookupProductUnit_resultHandler );
+			
+			
+			protected function lookupProductUnit_resultHandler( ):void
+			{
+				global.measuresArr = new ArrayCollection();
+				
+				for ( var i:int=0; i < this.productUnitList.length; i++ )
+				{
+					var o:Object = this.productUnitList.getItemAt( i );
+					var item:Object = new Object();
+					item['id'] = o['unit_id'];
+					item['desc'] = o['unit_name'];
+					global.measuresArr.addItem( item );
+				}
+			}
+			
+			protected function saveDetails():void
+			{				
+				if(arr.length > 0 && unit.selectedIndex != -1)
+				{
+					var canclose:Boolean=true;
+					for(var i:int=0; i < arr.length; i++)
+					{
+						if(arr[i].cmpt_capacit < 0) canclose=false;
+					}
+					
+					if(canclose)
+					{
+						_callback(arr);
+						PopUpManager.removePopUp(this);
+					}
+				}
+				else
+					val1.validate();
+			}
+			
+			protected function closeWindow(event:MouseEvent):void
+			{
+				_callback(null);
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function compartments_changeHandler(event:TextOperationEvent):void
+			{						
+				//vg.removeAllValidators();
+				
+				arr = new ArrayCollection();
+				for(var i:int=1; i<=new int(compartments.text); i++){
+					var obj:Object = new Object();
+					obj.id = i;
+					obj.cmpt_capacit = 0;
+					obj.unit = 5;
+					if(unit.selectedIndex>-1) obj.unit = unit.selectedItem.id;
+					arr.addItem(obj);
+				}
+			}
+			
+			protected function panel1_creationCompleteHandler(event:FlexEvent):void
+			{
+				if(arr.length > 0)
+				{
+					var idx:int=-1;
+					for (var i:int=0; i<unit.dataProvider.length; i++)
+					{
+						if(unit.dataProvider.getItemAt(i).id == arr[0].unit) unit.selectedIndex=i;
+					}
+				}
+				
+				this.maxSealsChecker.service();
+				this.productUnitList.service();
+				
+			}
+			
+			protected function maxSealsChecker_resultHandler( ):void
+			{
+				trace ("getMaxNumberOfSeals",  maxSealsChecker.dataInteger);
+				if ( maxSealsChecker.dataInteger > 0 )
+				{
+					this.maxSeals = maxSealsChecker.dataInteger;
+				}
+				else
+				{
+					this.maxSeals = 5;
+				}
+				maxCharacters = String( maxSeals ).length;
+			}
+			
+			public function checkDataRange(num:int):Boolean
+			{
+				if ( num > maxSeals )
+				{
+					global.msgWarning( resourceManager.getString('default','global.msg.seal_num_gt_max') + " [" + maxSeals + "]." );
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			
+			
+			protected function unit_changeHandler(event:IndexChangeEvent):void
+			{
+				if(arr.length>0)
+				{
+					for (var i:int=0; i<arr.length; i++)
+					{
+						arr[i].unit = unit.selectedItem.id;
+					}
+					var temp:ArrayCollection = compList.dataProvider as ArrayCollection;
+					_arr.refresh();
+					compList.invalidateDisplayList();
+				}
+			}
+			
+			public function getUnitDescription(id:int):String
+			{
+				var ret:String='';
+				for (var i:int=0; i<unit.dataProvider.length; i++)
+				{
+					if(unit.dataProvider.getItemAt(i).id == id) ret = unit.dataProvider.getItemAt(i).desc;
+				}
+				return ret;
+			}
+			
+			[Bindable]
+			public function get arr():ArrayCollection
+			{
+				return _arr;
+			}
+
+			public function set arr(value:ArrayCollection):void
+			{
+				_arr = value;
+			}
+			
+			public function isNumSealColumnVisible():Boolean
+			{
+				var value:String = global.getValueFromSiteConfigSettings( "SITE_USE_SEAL" );
+				if ( value == 'Y' )
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			
+
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<mx:Validator id="val1" source="{compartments}" property="text" required="true" />
+		<s:CallResponder id="getUnitsLookupResult"/>
+		<equipmenttypesservice:EquipmentTypesService id="equipmentTypesService"  channelSet="{global.channelSet}"
+													 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+													 showBusyCursor="true"/>
+		
+		<components:ValidationGroup id="vg" action="{saveDetails}" defaultButton="{cmpt_ok}" parentScreen="{this}"/>
+	</fx:Declarations>
+	
+	<s:VGroup top="10" left="10" right="10" height="100%" width="100%">
+		<s:HGroup>
+			<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','ETYP_CMPT_EDITOR.TOTAL_CMPTS')}" verticalAlign="middle" />
+			<components:DKI_ValidatorInput width="100" id="compartments" change="compartments_changeHandler(event)" text="{nComp}" prompt="{resourceManager.getString('default','global.lbl.required')}"/>
+			<components:DKI_DropDownList id="unit" width="120" change="unit_changeHandler(event)" requireSelection="true"
+										 dataProvider="{global.measuresArr}" labelField="desc" prompt="{resourceManager.getString('default','global.lbl.selectunit')}"/>
+
+		</s:HGroup>		
+				  
+		<components:DKI_List width="100%" height="100%" contentBackgroundAlpha="0" id="compList" dataProvider="{arr}" borderVisible="false">
+			<components:itemRenderer>
+				<fx:Component>
+					<s:ItemRenderer autoDrawBackground="false">
+						<s:HGroup width="100%">
+							<s:Label text="{resourceManager.getString('default','ETYP_CMPT_EDITOR.LINE_CMPT_NO')+String(itemIndex+1)}" height="28" verticalAlign="middle"/>
+							<s:Spacer width="30" />
+							<s:Label text="{global.gCapacityLabel}" height="28" verticalAlign="middle"/>
+							<!--s:Label text="{'Compartment no.'+String(itemIndex+1)+' Safe Fill'}" height="28" verticalAlign="middle"/>
+							<s:Spacer width="40" /-->
+							<!--components:DKI_ValidatorInput tabFocusEnabled="true" tabEnabled="true" 
+														   validationType="integer" required="true" width="120" id="mytext" text="{data.cmpt_capacit}" change="{data.cmpt_capacit=mytext.text}"/-->
+							<components:DKI_ValidatorInput tabFocusEnabled="true" tabEnabled="true" restrict="0-9" 
+														   validationType="integer" required="true" validationGroup="{outerDocument.vg}" 
+														   automationName="{resourceManager.getString('default','ETYP_CMPT_EDITOR.LINE_CMPT_NO')+String(itemIndex+1)+' '+global.gCapacityLabel}" 
+														   width="120" id="mytext" text="{data.cmpt_capacit}" change="{data.cmpt_capacit=mytext.text}"/>
+							
+							<s:Label text="{outerDocument.getUnitDescription(data.unit)}" height="28" verticalAlign="middle"/>
+							<s:Spacer width="30" />
+							<s:Label text="{resourceManager.getString('default','ETYP_CMPT_EDITOR.LINE_TOTAL_SEALS')}" height="28" verticalAlign="middle" visible="{outerDocument.isNumSealColumnVisible()}"/>
+							<components:DKI_ValidatorInput tabFocusEnabled="true" tabEnabled="true" validationType="integer" required="false" restrict="0-9" maxChars="{outerDocument.maxCharacters}" width="70" 
+														   id="numSeals" text="{data.cmpt_n_seals}" visible="{outerDocument.isNumSealColumnVisible()}" 
+														   change="{data.cmpt_n_seals=numSeals.text; if(outerDocument.checkDataRange(data.cmpt_n_seals)){data.cmpt_n_seals=numSeals.text=String(outerDocument.maxSeals);} }"/>
+						</s:HGroup>
+					</s:ItemRenderer>
+				</fx:Component>
+			</components:itemRenderer>
+		</components:DKI_List>
+		<s:Spacer height="5" />
+		<s:HGroup width="100%">
+			<s:Spacer width="100%" />
+			<!--components:DKI_Button id="cmpt_ok" label="{resourceManager.getString('default','OK')}" click="saveDetails()" type="save" /-->
+			<components:DKI_Button id="cmpt_ok" label="{resourceManager.getString('default','OK')}" type="save" />
+			<components:DKI_Button id="cmpt_cancel" label="{resourceManager.getString('default','CANCEL')}" click="closeWindow(event)" type="cancel"/>
+		</s:HGroup>
+		<s:Spacer height="5" />
+	</s:VGroup>	
+</s:Panel>

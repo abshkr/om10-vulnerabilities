@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:components="components.*"
+		  xmlns:manualtransactionsservice="services.manualtransactionsservice.*"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="100%" height="100%"
+		  horizontalAlign="left"
+		  xmlns:controllers="controllers.*" 
+		  xmlns:dm="dm.*">
+	
+	<s:states>
+		<s:State name="normal" enterState="controller.initialize()"/>
+	</s:states>
+	
+	<fx:Declarations>
+		<dm:DM />
+		<controllers:C_ManualTransactionsData id="controller" view="{this}"/>
+		
+		<s:DateTimeFormatter id="dateConvert" dateTimePattern="dd/MM/yyyy HH:mm:ss"/>
+
+		<s:Animate id="scrollForward" startDelay="225" duration="250" effectEnd="controller.scrollForward_effectEndHandler(event)">
+			<s:motionPaths>
+				<s:SimpleMotionPath id="scrollDn" property="verticalScrollPosition" />
+			</s:motionPaths>
+		</s:Animate>
+		
+		<manualtransactionsservice:ManualTransactionsService id="manualtransactionsservice" channelSet="{global.channelSet}"
+												   fault="global.msgFail(event.fault.faultDetail)"
+												   showBusyCursor="true"/>
+
+	</fx:Declarations>
+	
+	<s:Panel id="panel" width="100%" height="100%" minHeight="0" skinClass="skins.WidgetPanelSkin"
+			 title="{resourceManager.getString('default','MTRAN.TITLE')}">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+
+		<s:VGroup width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+			<!-- Manual Transaction DATA -->
+			<s:HGroup includeIn="normal" width="100%" height="100%" gap="-1">
+				<s:VGroup width="100%" height="100%">
+					<s:HGroup includeIn="normal" width="100%" height="100%">
+						<components:DKI_DataGrid id="mtData" width="100%" height="100%" minWidth="0"
+												 requestedRowCount="7" sortableColumns="true" editable="false"
+												 dataProvider="{DM.ManualTransactionsData.mtDataArr}"
+												 creationComplete="controller.dataGrid_creationCompleteHandler(event)" 
+												 selectionChange="controller.dataGrid_changeHandler(event)"
+												 doubleClickEnabled="true" doubleClick="controller.dataGrid_doubleclickHandler(event)"
+												 dataTipFunction="controller.buildTip">
+							<components:columns>
+								<s:ArrayList>
+									<s:GridColumn dataField="mt_id" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_ID')}" width="60" editable="false"/>
+									<s:GridColumn dataField="mt_status" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_STATUS')}" width="50" itemRenderer="renderers.UserDataStatRenderer" rendererIsEditable="false" showDataTips="true"/>
+									<s:GridColumn dataField="mt_user" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_USER')}" width="100" editable="false"/>
+									<s:GridColumn dataField="mt_create_date" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_CREATE_DATE')}" width="125" editable="false"/>
+									<s:GridColumn dataField="mt_type" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_TYPE')}" width="120" editable="false"/>
+									<s:GridColumn dataField="mt_supplier" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_SUPPLIER')}" width="100" editable="false"/>
+									<s:GridColumn dataField="mt_customer" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_CUSTOMER')}" width="100" editable="false"/>
+									<s:GridColumn dataField="mt_trip_no" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_TRIP_NO')}" width="100" editable="false"/>
+									<s:GridColumn dataField="mt_order_no" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_ORDER_NO')}" width="100" editable="false"/>
+									<s:GridColumn dataField="mt_carrier" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_CARRIER')}" width="100" editable="false"/>
+									<s:GridColumn dataField="mt_tanker" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_TANKER')}" width="100" editable="false"/>
+									<s:GridColumn dataField="mt_driver" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_DRIVER')}" width="80" editable="false"/>
+									<s:GridColumn dataField="mt_tas_ref" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_TAS_REF')}" width="200" editable="false"/>
+									<s:GridColumn dataField="mt_user_comments" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_USER_COMMENTS')}" width="200" editable="false"/>
+									<s:GridColumn dataField="mt_datetime_st" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_DATETIME_ST')}" width="125" editable="false"/>
+									<s:GridColumn dataField="mt_datetime_ed" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_DATETIME_ED')}" width="125" editable="false"/>
+									<s:GridColumn dataField="mt_update_date" headerText="{resourceManager.getString('default','MTRAN.LOAD_WIN.MT_UPDATE_DATE')}" width="125" editable="false"/>
+								</s:ArrayList>
+							</components:columns>
+						</components:DKI_DataGrid>
+					</s:HGroup>
+				</s:VGroup>
+			</s:HGroup>
+
+			<s:HGroup includeIn="normal" width="100%" horizontalAlign="right">
+				<components:DKI_Button id="okBtn" includeIn="normal" height="100%"
+									   label="{resourceManager.getString('default','button.lbl.LOAD')}"
+									   enabled="true" type="ok"
+									   click="controller.load()"/>
+				<components:DKI_Button id="deleteBtn" includeIn="normal" height="100%"
+									   label="{resourceManager.getString('default','DELETE')}"
+									   enabled="true" type="delete"
+									   click="controller.onDelete()"/>
+			</s:HGroup>
+		</s:VGroup>
+	</s:Panel>
+</s:VGroup>

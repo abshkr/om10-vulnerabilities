@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" clipAndEnableScrolling="true">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.core.BitmapAsset;
+			
+			[Embed (source="/assets/icons/edit1.png")]
+			[Bindable] public var edit:Class;
+			
+			[Embed (source="/assets/icons/save.png")]
+			[Bindable] public var submit:Class;
+			
+			[Embed (source="/assets/icons/info.png")]
+			[Bindable] public var unknown:Class;
+
+			private var editObject:BitmapAsset = new edit() as BitmapAsset;
+			private var submitObject:BitmapAsset = new submit() as BitmapAsset;
+			private var unknownObject:BitmapAsset = new unknown() as BitmapAsset;
+			
+			override public function prepare(hasBeenRecycled:Boolean):void 
+			{
+				if (data)
+				{
+					if (data[column.dataField] != null)
+					{
+						var str:String = (data[column.dataField] as String).toUpperCase();
+						if (str.toUpperCase() == 'N')
+							img.source = editObject; 
+						else if (str.toUpperCase() == 'S')
+							img.source = submitObject;
+						else
+							img.source = unknownObject;
+					}
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Group width="100%" height="100%" mouseEnabledWhereTransparent="true">
+		<s:Image id="img" verticalCenter="0" horizontalCenter="0"/>
+	</s:Group>
+	
+</s:GridItemRenderer>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:companyservice="services.companyservice.*"
+				xmlns:prodownershipservice="services.prodownershipservice.*"
+				height="130" width="260" autoDrawBackground="true" xmlns:components="components.*">
+
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="selected"/>
+		<s:State name="hovered"/>
+	</s:states>
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable] private var supplier : String;
+			[Bindable] private var maxVolume : int = 1000000;
+			[Bindable] private var corner:int = 10;
+			[Embed(source="/assets/default_logo.png")]
+			[Bindable] public var logo:Class;
+			
+			
+			override public function set data(value:Object):void 
+			{      
+				if(value != null)
+				{
+					super.data=value;
+					supplier = data.cmpy_name;
+				}
+			}
+						
+			protected function btn_commit_clickHandler(event:MouseEvent):void
+			{
+				//var tmpInt:int = reasonsLookupResult.lastResult[reasonsLU.selectedIndex].pmv_transfer_class_id;
+				//adjustOwnershipResult.token = prodOwnershipService.adjustOwnership(
+				//	ns.value-data.ownship_qty,data.supp_cmpy, data.base_prod_code, tmpInt)
+				//btn_commit.enabled=false;
+			}
+			
+			protected function adjustOwnershipResult_resultHandler(event:ResultEvent):void
+			{
+				dispatchEvent(new Event("dataRefresh",true,false));
+			}
+			
+			
+			protected function hs_changeHandler(event:Event):void
+			{
+				data.adjustment = hs.value;
+				dispatchEvent(new Event("dataRefresh",true,false));
+			}
+			
+		]]>
+	</fx:Script>
+	<s:Rect id="selbox"
+			topLeftRadiusY="{corner}" topLeftRadiusX="{corner}" topRightRadiusX="{corner}" topRightRadiusY="{corner}"
+			bottomLeftRadiusY="{corner}" bottomLeftRadiusX="{corner}" bottomRightRadiusX="{corner}" bottomRightRadiusY="{corner}">
+		<s:fill>
+			<s:SolidColor id="bgFill" color="0x000000" alpha.normal="0.0" alpha.selected="0.8" alpha.hovered="0.5"/>
+		</s:fill>
+	</s:Rect>
+	<s:VGroup width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5"
+			  paddingTop="5">
+		<s:HGroup height="24" width="100%">
+			<s:Image width="24" height="24" source="{logo}" scaleMode="stretch" fillMode="scale" verticalCenter="0" horizontalCenter="0"/>
+			<s:Label width="100%" height="24" text="{supplier}" verticalAlign="middle"/>
+		</s:HGroup>	
+		<s:VGroup width="100%">
+			<components:DKI_ValidatorInput width="100%" height="22" text="{'Owned: '+data.ownship_qty}" editable="false"/> 
+			<components:DKI_ValidatorInput width="100%" height="22" text="{'Transfer: '+data.adjustment}" editable="false"/>
+		</s:VGroup>
+		<s:HSlider id="hs" width="100%" height="17" change="hs_changeHandler(event)"
+				   liveDragging="true" minimum="0" maximum="{data.ownship_qty}" stepSize="100" value="0"/>
+	</s:VGroup>
+	
+</s:ItemRenderer>

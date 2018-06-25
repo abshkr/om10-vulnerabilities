@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="15">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:Rect id="shadow" left="-1" right="-1" top="-1" bottom="-1" radiusX="2">
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry color="0x000000" alpha="0.01"/>
+				<s:GradientEntry color="0x000000" alpha="0.07"/>
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+	
+	<!-- layer 2: fill -->
+	<!--- @private -->
+	<s:Rect id="fill" left="1" right="1" top="1" bottom="1" radiusX="2">
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry color="{global.color1_normal}" alpha="0.85" />
+				<s:GradientEntry color="{global.color2_normal}" alpha="0.85" />
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+	
+	<s:Rect id="lowlight" left="1" right="1" top="1" bottom="1" radiusX="2">
+		<s:fill>
+			<s:LinearGradient rotation="270">
+				<s:GradientEntry color="0x000000" ratio="0.0" alpha="0.0627" />
+				<s:GradientEntry color="0x000000" ratio="0.48" alpha="0.0099" />
+				<s:GradientEntry color="0x000000" ratio="0.48001" alpha="0" />
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+	
+	<s:Rect id="highlight" left="1" right="1" top="1" bottom="1" radiusX="2">
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry color="0xFFFFFF" ratio="0.0" alpha="0.33"/>
+				<s:GradientEntry color="0xFFFFFF" ratio="0.48" alpha="0.33" />
+				<s:GradientEntry color="0xFFFFFF" ratio="0.48001" alpha="0" />
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+	
+	<!-- layer 5: highlight stroke (all states except down) -->
+	<!--- @private -->
+	<s:Rect id="highlightStroke" left="1" right="1" top="1" bottom="1" radiusX="2">
+		<s:stroke>
+			<s:LinearGradientStroke rotation="90" weight="1">
+				<s:GradientEntry color="0xFFFFFF"/>
+				<s:GradientEntry color="0xD8D8D8"/>
+			</s:LinearGradientStroke>
+		</s:stroke>
+	</s:Rect>
+	
+
+	<s:Rect id="border" left="0" right="0" top="0" bottom="0" width="69" height="20" radiusX="2">
+		<s:stroke>
+			<s:LinearGradientStroke rotation="90" weight="1">
+				<s:GradientEntry color="0x000000" alpha="0.5625"/>
+				<s:GradientEntry color="0x000000" alpha="0.75"/>
+			</s:LinearGradientStroke>
+		</s:stroke>
+	</s:Rect>
+	
+	<mx:VRule left="142" top="1" bottom="1"/>
+	<mx:VRule left="210" top="1" bottom="1"/>
+	<s:HGroup height="100%" width="100%">
+		<s:Label text="Server DateTime" width="142" height="100%" verticalAlign="middle" textAlign="center" fontWeight="bold"/>
+		<s:Label text="Event" width="66" height="100%" verticalAlign="middle" textAlign="center" fontWeight="bold"/>
+		<s:Label text="Message" width="100%" height="100%" verticalAlign="middle" textAlign="center" fontWeight="bold"/>
+	</s:HGroup>
+	
+	
+</s:Group>

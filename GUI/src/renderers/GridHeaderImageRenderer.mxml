@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" 
+					xmlns:components="components.*" width="100%"
+					>
+	<fx:Script>
+		<![CDATA[
+			import mx.core.BitmapAsset;
+			[Embed (source="/assets/icons/create.png")]
+			[Bindable]
+			public var typeCreate:Class;
+			
+			[Embed (source="/assets/icons/edit1.png")]
+			[Bindable]
+			public var typeEdit:Class;
+			
+			[Embed (source="/assets/icons/delete.png")]
+			[Bindable]
+			public var typeDelete:Class;
+			
+			[Embed (source="/assets/icons/blank.png")]
+			[Bindable]
+			public var blank:Class;
+			
+			private var typeCreateObject:BitmapAsset = new typeCreate() as BitmapAsset;
+			private var typeEditObject:BitmapAsset = new typeEdit() as BitmapAsset;
+			private var typeDeleteObject:BitmapAsset = new typeDelete() as BitmapAsset;
+			private var blankObject:BitmapAsset = new blank() as BitmapAsset;
+			
+			private function handleImageClick(event:Event):void
+			{
+				// your click handler code
+				trace("=============================header button is clicked =======================");
+				this.dispatchEvent(new Event("GRID_HEADER_BUTTON_CLICKED", true, false));
+			}
+		]]>
+	</fx:Script>
+	<s:HGroup top="4" left="4" bottom="4" right="4" textAlign="center">
+		<s:Image source="{typeCreate}" height="18" width="100%" scaleMode="letterbox" useHandCursor="true" buttonMode="true" click="handleImageClick(event)"/>
+	</s:HGroup>
+</s:GridItemRenderer>

@@ -1,0 +1,2097 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  creationComplete="creationCompleteHandler(event)"
+		  gap="2" width="100%" height="100%">
+	
+	<s:states>
+		<s:State name="normal" enterState="this.toolbar.enabled=true"/>
+		<s:State name="widget" enterState="this.toolbar.enabled=true"/>
+		<s:State name="edit" enterState="callLater(function():void{dataGrid.ensureCellIsVisible(idx);});addressLineGrid.enabled=true;this.toolbar.enabled=false"/>
+		<s:State name="create" enterState="addressLineGrid.enabled=false;this.toolbar.enabled=false"/>
+		<s:State name="detail" enterState="view_detailsHandler(event);addressLineGrid.enabled=true;this.toolbar.enabled=false"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.fiber.runtime.lib.DateTimeFunc;
+			
+			import components.ActionDialog;
+			import components.ConfirmDialog;
+			import components.DeleteDialog;
+			import components.ErrorDialog;
+			import components.ExportData;
+			import components.MessageDialog;
+			import components.TransactionsDlg;
+			import components.ViewPopupDlg;
+			
+			import dm.remoteBulkListService;
+			import dm.remoteDataService;
+			import dm.remoteListService;
+			import dm.utils.tools;
+			
+			import flash.events.KeyboardEvent;
+			import flash.globalization.LocaleID;
+			
+			import flashx.textLayout.container.ScrollPolicy;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			import mx.validators.RegExpValidator;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridItemEditorEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			
+			
+			public static const MAIN_WINDOW_WIDTH:int = 1500;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable] public var labelWidth:uint = 160;
+			[Bindable] public var labelHeight:uint = 26;
+			[Bindable] public var fieldWidth:uint = 240;
+			[Bindable] public var fieldHeight:uint = 26;
+			[Bindable] public var spaceWidth:uint = 15;
+			[Bindable] public var spaceHeight:uint = 2;
+			
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='address_code';
+			private var currentDirection:String="ASC";
+			
+			private var currentOffset:int=0;
+			private var currentPageSize:int=1000;
+			[Bindable] private var totalLength:int=0;
+			[Bindable] private var currentLength:int=0;
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			//private var currentSorts:Object=new Object();
+			//private var currentOrders:Object=new Object();
+			private var currentSorts:Object={address_code:'ASC'};
+			private var currentOrders:Object={address_code:1};
+			private var currentSortSeq:int=0;
+			
+			
+			private var confirmReport:ActionDialog;
+			private var confirmSave:ActionDialog;
+			private var errorDialog:ErrorDialog;
+			
+			//private var exportContents:String="";
+			private var f:FileReference = new FileReference();
+			
+			
+			//private var getData:Responder = new Responder(getData_resultHandler);
+			
+			//private var pagedRecords:ArrayCollection=new ArrayCollection();
+			//private var pagedRecords:remoteDataService = new remoteDataService( "AddressService.getPaged", getData, null );
+			[Bindable] private var pagedRecords:remoteListService;
+			
+			[Bindable] private var addressLineList:remoteDataService = new remoteDataService( "AddressService.getAddressLines", null, addressLineList_resultHandler );
+			
+			private var deleteAction:remoteDataService = new remoteDataService( "AddressService.delete", null, deleteData_resultHandler, 1 );
+			private var createAction:remoteDataService = new remoteDataService( "AddressService.create", null, createData_resultHandler, 1 );
+			private var updateAction:remoteDataService = new remoteDataService( "AddressService.update", null, updateData_resultHandler, 1 );
+			private var updateAddressTemplateAction:remoteDataService = new remoteDataService( "AddressService.updateAddressTemplate", null, updateAddressTemplateData_resultHandler, 1 );
+			
+			private var addressKeyChecker:remoteDataService = new remoteDataService( "AddressService.isAddressExisted", null, addressKeyChecker_resultHandler, 2 );
+			private var addressLineKeyChecker:remoteDataService = new remoteDataService( "AddressService.isAddressLineExisted", null, addressLineKeyChecker_resultHandler, 2 );
+			
+			private var gridColumnSequenceMaker:remoteDataService = new remoteDataService( "ScreenGridColumnService.lookupGridColumnSequence", null, gridColumnSequenceMaker_resultHandler, 1 );
+			private var _gridColumnSequenceString:String="";
+			private var formColumnSettingsMaker:remoteDataService = new remoteDataService( "ScreenFormColumnService.lookupFormColumnSettings", null, formColumnSettingsMaker_resultHandler, 1 );
+			private var _formColumnSettingsString:String="";
+			
+			
+			[Bindable] private var addressTypeList:remoteDataService = new remoteDataService( "AddressService.lookupAddressType", null, lookupAddressType_resultHandler );
+			
+			
+			public var parentParams:Object = new Object();
+			public var mainListSelection:int = -1;
+			private var _saveButtonClicked:Boolean=false;
+			
+			public var isPopupWindow:Boolean=false;
+			
+			public var addressTemplateString:String="";
+			public var addressTemplateArray:Array=new Array();
+			public var addressLineSettings:ArrayCollection = new ArrayCollection();
+
+			/* [Embed(source="/assets/fonts/Kinnari.ttf", mimeType="application/x-font", embedAsCFF="true", fontFamily="ThaiFontFamilyKinnari")]
+			private var ThaiFontKinnari:Class;			
+			[Embed(source="/assets/fonts/Garuda.ttf", mimeType="application/x-font", embedAsCFF="true", fontFamily="ThaiFontFamilyGaruda")]
+			private var ThaiFontGaruda:Class;			
+			[Embed(source="/assets/fonts/Loma.ttf", mimeType="application/x-font", embedAsCFF="true", fontFamily="ThaiFontFamilyLoma")]
+			private var ThaiFontLoma:Class;			
+			[Embed(source="/assets/fonts/Norasi.ttf", mimeType="application/x-font", embedAsCFF="true", fontFamily="ThaiFontFamilyNorasi")]
+			private var ThaiFontNorasi:Class; */			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				/* Font.registerFont(ThaiFontKinnari);
+				Font.registerFont(ThaiFontGaruda);
+				Font.registerFont(ThaiFontLoma);
+				Font.registerFont(ThaiFontNorasi);
+				
+				//this.setStyle('fontSize', 13 );
+				this.setStyle('fontFamily', 'ThaiFontFamilyGaruda'); */
+				
+				this.formColumnSettingsMaker.service( "ADDRESSES" );
+				
+				trace ("-------------start creationCompleteHandler");
+				pagedRecords = new remoteListService( this.dataGrid, "AddressService.getPaged", null, getPageData_resultHandler );
+				//resourceManager.localeChain = ['zh_CN'];
+				//global.LanguageCode="CHN";
+				this.gridColumnSequenceMaker.service( "ADDRESSES" );
+				
+				
+				var value:String = global.getValueFromSiteConfigSettings( "SITE_AUTO_FILTER_WHEN_OPEN_SCREEN" );
+				if ( value == 'Y' )
+				{
+					if ( this.isPopupWindow == false )
+					{
+						this.startFiltering();
+					}
+				}
+				else
+				{
+					;
+				}
+				
+				// get the default address template
+				this.getAddressTemplate();
+				
+				this.addressTypeList.service( );
+				
+				trace ("------------End creationCompleteHandler");
+				
+				
+				//trace("this.grid.scroller1111", this.dataGrid.scroller);
+				//trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+				this.dataGrid.scroller.verticalScrollBar.addEventListener(Event.CHANGE, verticalScrollBarChanged);
+				this.dataGrid.addEventListener(KeyboardEvent.KEY_UP, reportKeyUp);
+				this.dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+					
+			}
+			
+			protected function formColumnSettingsMaker_resultHandler():void
+			{
+				this._formColumnSettingsString =  formColumnSettingsMaker.dataString;
+				
+				this.addressLineSettings = global.adjustFormGridSettings( this._formColumnSettingsString );
+			}
+			
+			
+			protected function getAddressTemplate():void
+			{
+				addressTemplateString = global.getValueFromSiteConfigSettings("SITE_ADDRESS_TEMPLATE");
+				addressTemplateString = StringUtil.trim( addressTemplateString );
+				if ( addressTemplateString.length > 0 )
+				{
+					addressTemplateArray = addressTemplateString.split( "," );
+				}
+				else
+				{
+					addressTemplateArray = new Array();
+				}
+			}
+			
+			protected function startLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				//this.panel.enabled = false;
+				
+				currentLength=0;
+				currentOffset = 0;
+				
+				//this.exportContents = this.genData.prepExportHeader( dataGrid );
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				this.pb.values(0, 0);
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			protected function endLoadingPages():void
+			{
+				this.btn_create.enabled = this.canCreate;
+				this.btn_export.enabled = true;
+				this.dataGrid.enabled = true;
+				this.toolbar.enabled = true;
+				//this.panel.enabled = true;
+				//this.pb.values(totalCount, totalCount);
+				this.pb.values(pagedRecords.totalCount, pagedRecords.totalCount, true);
+				
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = false;
+				
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				//if ( totalLength > totalCount )
+				if ( pagedRecords.totalLength > pagedRecords.totalCount )
+				{
+					this.resumeBtn.enabled = true;
+				}
+				else
+				{
+					this.resumeBtn.enabled = false;
+				}
+			}
+			
+			protected function exportCsvHandler(event:MouseEvent):void
+			{
+				this.confirmReport = new ActionDialog( doExport, cancelExport, resourceManager.getString('default','CONFIRM_REPORT_CSV') );
+				
+				//this.startLoadingPages();
+			}
+			
+			private function getPageData_resultHandler():void
+			{
+				// if not finished
+				if(pagedRecords.length < pagedRecords.totalCount)
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+				}
+				else
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+					
+					this.endLoadingPages();
+					
+					this.dataGrid.selectedIndex = this.mainListSelection;
+					if ( this.mainListSelection >= 0)
+					{
+						this.dataGrid_selectionChangeHandler(null);
+					}
+					this.mainListSelection = -1;
+					
+				}
+				
+			}
+			
+			
+			public function doExport():void
+			{
+				//genData.prepOther(dataGrid,'tankGrouplist.csv', this.pagedRecords);
+				
+				//f.save( this.exportContents, "tankGrouplist.csv" );
+				f.save( pagedRecords.exportContents, "addresslist.csv" );
+				
+				this.endLoadingPages();
+			}
+			
+			
+			public function cancelExport():void
+			{
+				this.endLoadingPages();
+				
+				//trace( this.exportContents );
+			}
+			
+			public function doNothing():void
+			{
+			}
+			
+			
+			private function verticalScrollBarChanged(event:Event):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function reportKeyUp(event:KeyboardEvent):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				if(event.column.dataField!='prod_items')
+				{
+					var currentRenderer:IGridItemRenderer;
+					var dir:String;
+					
+					if ( global.sortingBySingleColumn == true )
+					{	// sorted by single column only
+						for (var i:int=0; i < dataGrid.columns.length; i++)
+						{
+							currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+							if ( currentRenderer != null)
+							{
+								(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+							}
+							//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+						}
+					}
+					else
+					{	// sorted by multiple columns
+						;
+					}
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if( currentSorts.hasOwnProperty(event.column.dataField ) )
+					{
+						dir = currentSorts[event.column.dataField];
+						if( dir=="ASC" )
+						{
+							dir = "DESC";
+						}
+						else if ( dir == "DESC" )
+						{
+							dir = "";
+						}
+						else if ( dir == "" )
+						{
+							dir = "ASC";
+						}
+						else 
+						{
+							dir = "ASC";
+						}
+						
+						if ( dir != "" )
+						{
+							currentSorts[event.column.dataField] = dir;	
+						}
+						else
+						{
+							delete currentSorts[event.column.dataField];
+							delete currentOrders[event.column.dataField];
+						}
+					}
+					else
+					{
+						if ( global.sortingBySingleColumn == true )
+						{	// sorted by single column only
+							currentSorts = new Object();
+							currentOrders = new Object();
+							currentSortSeq = 0;
+						}
+						else
+						{	// sorted by multiple columns
+							;
+						}
+						currentSorts[event.column.dataField] = "ASC";	
+						dir = currentSorts[event.column.dataField];
+						currentSortSeq += 1;
+						currentOrders[event.column.dataField] = currentSortSeq;	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+					this.startFiltering();
+				}
+			}
+			
+			
+			protected function addressLineList_resultHandler():void
+			{
+				trace ("--------------Start addressLineList_resultHandler");
+				
+				if ( addressLineList.length>0 )
+				{
+					this.addressLineGrid.dataProvider = null;
+					this.addressLineGrid.dataProvider = addressLineList;
+				}
+				else
+				{
+					this.addressLineGrid.dataProvider = null;
+				}
+				
+				trace ("----------------End addressLineList_resultHandler");
+			}
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				if(currentState != 'widget')
+				{
+					idx=dataGrid.selectedIndex;
+					//dataGrid.ensureCellIsVisible(idx+11);
+					dataGrid.ensureCellIsVisible(idx);
+					
+					currentState = "edit";
+					this.btn_save.enabled = this.canUpdate;
+					
+					if ( _formColumnSettingsString.length > 0 )
+					{
+						global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+					}
+					
+					// get the tank group item details
+					this.btn_createLine.enabled = true;
+					this.btn_deleteLine.enabled = false;
+					this.btn_updateLine.enabled = false;
+					
+					this.addressLineList.service( dataGrid.selectedItem.address_code  );
+				}
+			}
+			
+			protected function addressLineGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				if ( addressLineGrid.selectedIndex < 0 )
+				{
+					this.btn_deleteLine.enabled = false;
+					this.btn_updateLine.enabled = false;
+					return;
+				}
+				
+				tools.pr( addressLineGrid.selectedItem );
+				
+				if ( addressLineGrid.selectedItem.address_action == '+' )
+				{
+					this.btn_deleteLine.enabled = true;
+					this.btn_updateLine.enabled = false;
+				}
+				else if ( addressLineGrid.selectedItem.address_action == '-' )
+				{
+					this.btn_deleteLine.enabled = true;
+					this.btn_updateLine.enabled = false;
+				}
+				else if ( addressLineGrid.selectedItem.address_action == '*' )
+				{
+					this.btn_deleteLine.enabled = true;
+					this.btn_updateLine.enabled = false;
+				}
+				else
+				{
+					this.btn_deleteLine.enabled = true;
+					this.btn_updateLine.enabled = true;
+				}
+				
+				
+				
+				trace( "addressLineGrid.selectedItem", addressLineGrid.selectedItem );
+
+				var addr_code:String;
+				var addr_line:int;
+				addr_code = addressLineGrid.selectedItem.db_addr_line_id;
+				addr_line = addressLineGrid.selectedItem.db_addrline_no;
+				
+				addressLineKeyChecker.service( addr_code, addr_line );
+			}
+			
+			protected function cancel_clickHandler():void
+			{
+				clearDetail();
+				if ( currentState== "create" )
+				{
+					dataGrid.enabled=true;
+				}
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+			}			
+			
+			protected function gridColumnSequenceMaker_resultHandler():void
+			{
+				this._gridColumnSequenceString =  gridColumnSequenceMaker.dataString;
+				
+				if ( _gridColumnSequenceString.length > 0 )
+				{
+					global.adjustGridColumnSequence( _gridColumnSequenceString.substr(1), dataGrid );
+				}
+				
+			}
+			
+			private function lookupAddressType_resultHandler():void
+			{
+				global.contactLineTypes = new ArrayCollection( this.addressTypeList.source );
+			}
+
+			
+			protected function fltr_address_keyUpHandler(event:KeyboardEvent):void
+			{
+				if ( event.keyCode != 13 )
+				{
+					return;
+				}
+				if (currentState == "edit") clearDetail();
+				this.filterBtn.setFocus();
+				startFiltering();
+			}
+			
+			private function startFiltering():void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				fields = new Object();
+				types = new Object();
+				
+				
+				if(fltr_address.text!='')
+				{					
+					fields["address_code||address_text"] = fltr_address.text + "||" + fltr_address.text;
+				}
+				else
+				{
+					fields["address_code||address_text"] = "";
+				}
+				types["address_code||address_text"] = "STRING||STRING";
+				
+				currentFields = fields;
+				currentTypes = types;
+				
+				this.startLoadingPages();
+				
+				trace("this.grid.scroller3333", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			private function findByPrimaryKey(key:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["address_code"] = key;
+				types["address_code"] = "EXACT_STRING";
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				//this.pagedRecords.service( fields, types, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( fields, types, currentSorts, currentOrders );
+			}
+			
+			protected function filterRecords(event:MouseEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				this.startFiltering();
+			}
+			
+			protected function refreshRecords(event:MouseEvent):void
+			{
+				if ( currentState != "widget" )
+				{
+					currentState = 'normal';
+					dataGrid.enabled=true;
+				}
+				clearDetail();
+				fltr_address.text = "";
+				
+				dataGrid.selectedIndex = -1;
+				currentFilter = null;
+				currentOrder = null;
+				currentFields = new Object();
+				currentTypes = new Object();
+				
+				currentSorts = new Object();
+				currentOrders = new Object();
+				var currentRenderer:IGridItemRenderer;
+				for (var i:int=0; i < dataGrid.columns.length; i++)
+				{
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					if ( currentRenderer != null)
+					{
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+					}
+					//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+				}
+				this.startFiltering();
+				//this.startLoadingPages();
+				trace("this.grid.scroller2222", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			protected function clearDetail(): void
+			{
+				if (currentState != 'widget')
+				{
+				}
+			}			
+			
+			private function editRecord():void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				if ( this.checkItemFields() == false )
+				{
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.db_address_key = address_code.text;
+				
+				
+				obj.has_items = 0;
+				var items:ArrayCollection=new ArrayCollection();
+				var x:Object;
+				var actions:ArrayCollection=new ArrayCollection();
+				var action:Object;
+				for each ( x in this.addressLineGrid.dataProvider)
+				{
+					action = new Object();
+					action.option = 0;  // do nothing
+					trace( "********X", x.db_addr_line_id, x.db_addrline_no, x.address_action);
+					if ( x.address_action == '+' )
+					{
+						action.option = 1;
+					}
+					else if ( x.address_action == '*' )
+					{
+						action.option = 2;
+					}
+					else if ( x.address_action == '-' )
+					{
+						action.option = 3;
+					}
+					else
+					{
+						action.option = 0;
+					}
+					
+					actions.addItem(action);
+					if ( action.option == 1 )
+					{
+						x.db_addr_line_id = obj.db_address_key;
+					}
+					items.addItem( Object(x) );
+					obj.has_items = 1;
+					trace( "********X", x.db_addr_line_id, x.db_addrline_no, "***********action", action.option);
+				}
+				obj.addr_items = items.source;
+				obj.actions = actions.source;
+				
+				//nc.call( 'AddressService.update', updateData, obj );
+				updateAction.service( obj );
+			}
+			
+			protected function updateData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.updateAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var key:String;
+				key = address_code.text;
+				
+				currentState="normal";
+				findByPrimaryKey( key );
+
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			private function editAddressTemplate():void
+			{
+				
+				this.addressTemplateString = "";				
+				
+				for each ( var x:Object in this.addressLineGrid.dataProvider)
+				{
+					if ( this.addressTemplateString.length > 0 )
+					{
+						this.addressTemplateString += ",";	
+					}
+					
+					this.addressTemplateString += String(x.db_addr_line_type);
+				}
+
+				updateAddressTemplateAction.service( this.addressTemplateString );
+			}
+			
+			protected function updateAddressTemplateData_resultHandler( ):void
+			{
+				//clearDetail();
+				if ( this.updateAddressTemplateAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','ALERT__OK__SET_ADDRESS_TEMPLATE'));
+					global.setValueIntoSiteConfigSettings( 'SITE_ADDRESS_TEMPLATE', addressTemplateString );
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ALERT__ER__SET_ADDRESS_TEMPLATE'));
+				}
+				
+				this.getAddressTemplate();
+			}
+			
+			private function doDelete(): void
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				
+				/*
+				TODO - is this product used by other records?
+				*/
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				else
+				{
+					var canDelete:DeleteDialog = new DeleteDialog(deleteRecord, hasPassword);
+				}
+			}
+			
+			private function deleteRecord():void
+			{
+				var obj:Object = new Object();
+				
+				
+				obj.db_address_key = dataGrid.selectedItem.address_code;
+
+				deleteAction.service( obj );
+			}
+			
+			protected function deleteData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.deleteAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+				}
+				
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+			}
+			
+			private function checkAddressKey():void
+			{
+				
+				addressKeyChecker.service( this.address_code.text );
+			}
+			
+			protected function addressKeyChecker_resultHandler( ):void
+			{
+				if ( addressKeyChecker.dataInteger > 0 )
+				{
+					global.msgWarning( resourceManager.getString('default','ALERT__ADDRESS_EXIST') );
+					this.btn_save.enabled = this.canCreate;
+				}
+				else
+				{
+					if ( this._saveButtonClicked == true )
+					{
+						this.createRecord();
+					}
+				}
+				
+				this._saveButtonClicked = false;
+				
+			}
+			
+			protected function addressLineKeyChecker_resultHandler( ):void
+			{
+				if ( addressLineKeyChecker.dataInteger > 0 )
+				{
+					//global.msgWarning( resourceManager.getString('default','ALERT__TANKGROUP_ITEM_EXIST') );
+				}
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				// TODO.....
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return index;
+			}
+			
+			private function createRecord():void
+			{
+				var prod_num:int;
+				
+				prod_num = addressKeyChecker.dataInteger;
+				if ( prod_num > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__ADDRESS_EXIST') );
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				if ( this.checkItemFields() == false )
+				{
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.db_address_key = address_code.text;
+				
+				
+				obj.has_items = 0;
+				var items:ArrayCollection=new ArrayCollection();
+				var x:Object;
+				for each ( x in this.addressLineGrid.dataProvider)
+				{
+					trace( "********X", x.db_addr_line_id, x.db_addrline_no);
+					//if ( x.address_action == '+' )
+					{
+						x.db_addr_line_id = obj.db_address_key;
+						
+						items.addItem(x);
+						obj.has_items = 1;
+					}
+				}
+				obj.addr_items = items.source;
+				
+				createAction.service( obj );
+			}
+			
+			protected function createData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.createAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				}
+				
+				var key:String;
+				key = address_code.text;
+				
+				currentState="normal";
+				findByPrimaryKey( key );
+				
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			protected function createNewRecord(event:MouseEvent):void
+			{	
+				idx=dataGrid.selectedIndex;
+				dataGrid.ensureCellIsVisible(idx);
+				currentState="create";
+				dataGrid.enabled=false;
+				this.btn_save.enabled = this.canCreate;
+				
+				this.addressLineList.service( "-1" );
+				//this.equipCmptsList.visible = false;
+				
+				if ( _formColumnSettingsString.length > 0 )
+				{
+					global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+				}
+				
+				this.btn_createLine.enabled = false;
+				this.btn_deleteLine.enabled = false;
+				this.btn_updateLine.enabled = false;
+			}
+			
+			
+			public function getArrayCollection(obj:Object):ArrayCollection
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				temp.addItem( obj );
+				return temp;
+			}
+			
+			public function convertDateToLocaleString(dt:String):String
+			{
+				var dt_string:String;
+				var dt_date:Date = new Date();
+				
+				dt_string = ""; 
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+					dt_string = dateFormatter.format( dt_date);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_string;
+			}
+			
+			public function convertDateToLocale(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_date;
+			}
+			
+			public function convertDateToLocaleLong(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					//dt_date = DateField.stringToDate(dt,"YYYY-MM-DD HH:NN:SS");
+					dt_date = DateTimeFunc.createDate(
+						int(dt.substr(0, 4))
+						, int(dt.substr(5, 2))
+						, int(dt.substr(8, 2))
+						, int(dt.substr(11, 2))
+						, int(dt.substr(14, 2))
+						, int(dt.substr(17, 2))
+					);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_date;
+			}
+			
+			public function getDefaultDate():Date
+			{
+				var now_date:Date;
+				var def_date:Date;
+				
+				now_date = new Date();
+				def_date = DateTimeFunc.dateAdd( "yyyy", 1, now_date );
+				
+				//trace ("getDefaultDate", now_date, def_date);
+				
+				return def_date;
+			}
+			
+			protected function view_detailsHandler(event:FlexEvent):void
+			{
+			}
+			
+			
+			protected function dateLabelFunction(item:Object, column:GridColumn):String
+			{
+				var ret:String = "";
+				
+				ret = item [column.dataField];
+				return ret;
+			}
+			
+			protected function save_clickHandler():void
+			{
+				this.btn_save.enabled = false;
+				doSave();
+				//this.confirmSave = new ActionDialog( doSave, doNothing, resourceManager.getString('default','CONFIRM_SAVE_RATIOS') );
+				
+				//this.startLoadingPages();
+			}
+			
+			protected function doSave():void
+			{
+				if (currentState == "create")
+				{
+					//createRecord();
+					this._saveButtonClicked = true;
+					checkAddressKey();
+					//checkAddressKeyBeforeCreate();
+				}
+				if (currentState == "edit")
+				{
+					editRecord();
+				}
+				if (currentState == "detail")
+				{
+					editRecord();
+				}
+			}
+			
+			public function closeDialogHandler():void
+			{
+				/* this.mainListSelection = this.dataGrid.selectedIndex;
+				this.currentState = "normal";
+				this.dataGrid.selectedIndex = -1;
+				this.startFiltering(); */
+			}
+			
+			
+			public function checkItemFields():Boolean
+			{
+				var x:Object;
+				var obj:Object;
+				var errGrid:ArrayCollection=new ArrayCollection();
+				var lineSetting:Object;
+				
+				var emailsValidator:RegExpValidator = new RegExpValidator();
+				var stringValidator:RegExpValidator = new RegExpValidator();
+				var numberValidator:RegExpValidator = new RegExpValidator();
+				
+				emailsValidator.expression = "^[\\w.-]+@\\w[\\w.-]+\\.[\\w.-]*[a-z][a-z]*([\\;\\:][ \t\v\n\r\f]*[\\w.-]+@\\w[\\w.-]+\\.[\\w.-]*[a-z][a-z]*)*$";
+				emailsValidator.noMatchError=resourceManager.getString('default','VALIDATION__FIELD__EMAIL__NOMATCH');
+				emailsValidator.enabled=true;
+				
+				stringValidator.expression='^([A-Za-z0-9-_/\\\\\'\\&\\[\\]\\<\\>\\(\\)\\{\\}\\,\\.]+[ \t\v\n\r\f]*)+$';
+				stringValidator.noMatchError=resourceManager.getString('default','VALIDATION__FIELD__STRING__ALPHANUMERIC__NOMATCH');
+				stringValidator.enabled=true;
+				
+				numberValidator.expression='^(-?(([1-9]\\d*)|(0)))(\\.\\d+)?$';
+				numberValidator.noMatchError=resourceManager.getString('default','VALIDATION__FIELD__NUMBER__NOMATCH');
+				numberValidator.enabled=true;
+				
+				/*
+				1	STREET
+				2	CITY1
+				3	CITY2
+				4	DISTRICT
+				5	POSTAL_CODE
+				6	STATE
+				7	COUNTRY
+				8	TEL
+				9	NAME
+				10	EMAIL
+				11	FAX
+				12	TEMPL_ID
+				*/
+				
+				for each ( x in this.addressLineGrid.dataProvider)
+				{
+					trace("............................................x.db_addr_line_type", ">>"+String(x.db_addr_line_type)+"<<",  x.db_addrline_no);
+					if ( x.db_addr_line_type == null || String(x.db_addr_line_type) == ""  )
+					{
+						continue;
+					}
+					
+					x.db_addr_line_typename = this.getLineTypeLabel( x.db_addr_line_type );
+					
+					for each ( lineSetting in this.addressLineSettings )
+					{
+						if ( x.hasOwnProperty( lineSetting['parent_column'] ) )
+						{
+							if ( String(x[lineSetting['parent_column']]) == lineSetting['parent_value'] )
+							{
+								var byteLength:int = global.getTextByteLength( String(x.db_addr_line) );
+								
+								if ( lineSetting['length'] > 0 && byteLength > lineSetting['length'] )
+								{
+									obj=new Object();
+									obj['name'] = String(x.db_addrline_no) + ":" + String(x.db_addr_line_typename) + " ";
+									obj['description'] = resourceManager.getString('default','VALIDATION__FIELD__STRING__LENGTH_BYTE') + String(byteLength) + resourceManager.getString('default','VALIDATION__FIELD__STRING__LENGTH_TOOLONG') + String(lineSetting['length']) + ".";
+									errGrid.addItem( obj );
+								}
+								
+								if ( lineSetting['validation'] == "document" )
+								{
+									// do nothing
+								}
+								else if ( lineSetting['validation'] == "email" )
+								{
+									var emailsText:String = String(x.db_addr_line);
+									
+									var arrEmails:Array = emailsText.match(emailsValidator.expression);
+									
+									if ( arrEmails == null || (arrEmails!=null && arrEmails.length==0) )
+									{
+										obj=new Object();
+										obj['name'] = String(x.db_addrline_no) + ":" + String(x.db_addr_line_typename) + " ";
+										obj['description'] = emailsValidator.noMatchError;
+										errGrid.addItem( obj );
+									}
+								}
+								else if ( lineSetting['validation'] == "numeric" )
+								{
+									var numberText:String = String(x.db_addr_line);
+									
+									var arrNumbers:Array = numberText.match(numberValidator.expression);
+									
+									if ( arrNumbers == null || (arrNumbers!=null && arrNumbers.length==0) )
+									{
+										obj=new Object();
+										obj['name'] = String(x.db_addrline_no) + ":" + String(x.db_addr_line_typename) + " ";
+										obj['description'] = numberValidator.noMatchError;
+										errGrid.addItem( obj );
+									}
+								}
+								else
+								{
+									var stringText:String = String(x.db_addr_line);
+									
+									var arrStrings:Array = stringText.match(stringValidator.expression);
+									
+									if ( arrStrings == null || (arrStrings!=null && arrStrings.length==0) )
+									{
+										obj=new Object();
+										obj['name'] = String(x.db_addrline_no) + ":" + String(x.db_addr_line_typename) + " ";
+										obj['description'] = stringValidator.noMatchError;
+										errGrid.addItem( obj );
+									}
+								}
+							}
+						}
+						
+					}
+					
+				}
+				
+				
+				if ( errGrid.length > 0 )
+				{
+					errorDialog = new ErrorDialog( closeErrorDialog, resourceManager.getString('default','VALIDATION__PROMPT'), errGrid, resourceManager.getString('default','VALIDATION__TITLE'));
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+			
+			
+			public function checkItemFields2():Boolean
+			{
+				var x:Object;
+				var obj:Object;
+				var errGrid:ArrayCollection=new ArrayCollection();
+				
+				var emailsValidator:RegExpValidator = new RegExpValidator();
+				var stringValidator:RegExpValidator = new RegExpValidator();
+				var numberValidator:RegExpValidator = new RegExpValidator();
+				
+				emailsValidator.expression = "^[\\w.-]+@\\w[\\w.-]+\\.[\\w.-]*[a-z][a-z]*([\\;\\:][ \t\v\n\r\f]*[\\w.-]+@\\w[\\w.-]+\\.[\\w.-]*[a-z][a-z]*)*$";
+				emailsValidator.noMatchError='email expected(user@address.com;user2@abc.com;...)';
+				emailsValidator.enabled=true;
+				
+				stringValidator.expression='^([A-Za-z0-9-_/\\\\\'\\&\\[\\]\\<\\>\\(\\)\\{\\}\\,\\.]+[ \t\v\n\r\f]*)+$';
+				stringValidator.noMatchError="Expecting A-Z,a-z,0-9, _-/\\'&[]<>(){},.";
+				stringValidator.enabled=true;
+				
+				numberValidator.expression='^([A-Za-z0-9-_/\\\\\'\\&\\[\\]\\<\\>\\(\\)\\{\\}\\,\\.]+[ \t\v\n\r\f]*)+$';
+				numberValidator.noMatchError="Expecting A-Z,a-z,0-9, _-/\\'&[]<>(){},.";
+				numberValidator.enabled=true;
+				
+				/*
+				1	STREET
+				2	CITY1
+				3	CITY2
+				4	DISTRICT
+				5	POSTAL_CODE
+				6	STATE
+				7	COUNTRY
+				8	TEL
+				9	NAME
+				10	EMAIL
+				11	FAX
+				12	TEMPL_ID
+				*/
+				
+				for each ( x in this.addressLineGrid.dataProvider)
+				{
+					trace("............................................x.db_addr_line_type", ">>"+String(x.db_addr_line_type)+"<<",  x.db_addrline_no);
+					if ( x.db_addr_line_type == null || String(x.db_addr_line_type) == ""  )
+					{
+						continue;
+					}
+					
+					x.db_addr_line_typename = this.getLineTypeLabel( x.db_addr_line_type );
+					
+					// check the status of template_cmpy_status
+					if (  x.db_addr_line_type == 1
+						||x.db_addr_line_type == 2
+						||x.db_addr_line_type == 3
+						||x.db_addr_line_type == 4
+						||x.db_addr_line_type == 6
+						||x.db_addr_line_type == 7
+						||x.db_addr_line_type == 9
+						||x.db_addr_line_type == 12
+					)
+					{
+						continue;
+					}
+					else if (  x.db_addr_line_type == 10  )
+					{
+						var emailsText:String = String(x.db_addr_line);
+						
+						var arrEmails:Array = emailsText.match(emailsValidator.expression);
+						
+						if ( arrEmails == null || (arrEmails!=null && arrEmails.length==0) )
+						{
+							obj=new Object();
+							obj['name'] = String(x.db_addrline_no) + ":" + String(x.db_addr_line_typename) + " ";
+							obj['description'] = "Emails should contain 'abc@def.com' separated by ';'";
+							errGrid.addItem( obj );
+						}
+						
+						if ( emailsText.length > 120 )
+						{
+							obj=new Object();
+							obj['name'] = String(x.db_addrline_no) + ":" + String(x.db_addr_line_typename) + " ";
+							obj['description'] = "The maximum length of Emails is 120.";
+							errGrid.addItem( obj );
+						}
+						
+					}
+					else
+					{
+						var stringText:String = String(x.db_addr_line);
+						
+						var arrStrings:Array = stringText.match(stringValidator.expression);
+						
+						if ( arrStrings == null || (arrStrings!=null && arrStrings.length==0) )
+						{
+							obj=new Object();
+							obj['name'] = String(x.db_addrline_no) + ":" + String(x.db_addr_line_typename) + " ";
+							obj['description'] = "Expecting A-Z,a-z,0-9, _-/\\'&[]<>(){},.";
+							errGrid.addItem( obj );
+						}
+						
+						if ( stringText.length > 120 )
+						{
+							obj=new Object();
+							obj['name'] = String(x.db_addrline_no) + ":" + String(x.db_addr_line_typename) + " ";
+							obj['description'] = "The maximum length of text is 120.";
+							errGrid.addItem( obj );
+						}
+						
+					}
+					
+				}
+				
+				
+				if ( errGrid.length > 0 )
+				{
+					errorDialog = new ErrorDialog( closeErrorDialog, resourceManager.getString('default','VALIDATION__PROMPT'), errGrid, resourceManager.getString('default','VALIDATION__TITLE'));
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+			
+			public function closeErrorDialog():void
+			{
+				PopUpManager.removePopUp(this.errorDialog.dialog );	
+			}
+			
+			protected function killBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=true;
+				pagedRecords.interruptor=true;
+				trace("WTF >>>>>>>>>>");
+			}
+			
+			protected function resumeBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				this.resumeLoadingPages();
+				trace("RESUME >>>>>>>>>>");
+			}
+			
+			protected function resumeLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				
+				//pb.values(pagedRecords.length,totalLength);
+				pb.values(pagedRecords.length,pagedRecords.totalLength);
+				//currentPage = int(this.pagedRecords.length/currentPageSize) + 1;
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			
+			
+			protected function address_line_updHandler():void
+			{
+				this.btn_updateLine.enabled = false;
+				this.btn_deleteLine.enabled = false;
+				
+				if ( this.addressLineGrid.selectionMode == "multipleRows" )
+				{
+					this.updateMultipleAddressLines();
+				}
+				else
+				{
+					this.updateSingleAddressLine();
+				}
+			}
+			
+			protected function updateMultipleAddressLines():void
+			{
+				if ( addressLineGrid.selectedItems==null || addressLineGrid.selectedItems.length == 0 )
+				{
+					return;
+				}
+				
+				var x:Object;
+				var y:Object;
+				var updateInGrid:Boolean=false;
+				var len:int;
+				var i;
+				
+				len = addressLineGrid.dataProvider.length;
+				for ( i=len-1; i>=0; i-=1 )
+				{
+					x = addressLineGrid.dataProvider.getItemAt( i );
+					for each(y in addressLineGrid.selectedItems)
+					{
+						if ( x.db_addrline_no == y.db_addrline_no )
+						{
+							if ( y.address_action == '+' )
+							{
+								;
+							}
+							else if ( y.address_action == '-' )
+							{
+								;
+							}
+							else if ( y.address_action == '*' )
+							{
+								;
+							}
+							else
+							{
+								x.address_action = '*';
+								y.address_action = '*';
+								updateInGrid = true;
+							}
+						}
+					}
+				}
+				
+				var temp:* = addressLineGrid.dataProvider;
+				addressLineGrid.dataProvider = null;
+				addressLineGrid.dataProvider = temp;
+				
+				if ( updateInGrid == true )
+				{
+					this.adjustAddressLineList();	//???? may not need 
+				}
+				
+			}
+			
+			protected function updateSingleAddressLine():void
+			{
+				if ( addressLineGrid.selectedIndex < 0 )
+				{
+					return;
+				}
+				
+				var x:Object;
+				var updateInGrid:Boolean=false;
+				
+				for each(x in addressLineGrid.dataProvider)
+				{
+					if ( x.db_addrline_no == addressLineGrid.selectedItem.db_addrline_no )
+					{
+						if ( addressLineGrid.selectedItem.address_action == '+' )
+						{
+							;
+						}
+						else if ( addressLineGrid.selectedItem.address_action == '-' )
+						{
+							;
+						}
+						else if ( addressLineGrid.selectedItem.address_action == '*' )
+						{
+							;
+						}
+						else
+						{
+							x.address_action = '-';
+							addressLineGrid.selectedItem.address_action = '-';
+							updateInGrid = true;
+						}
+						break;
+					}
+				}
+				
+				var temp:* = addressLineGrid.dataProvider;
+				addressLineGrid.dataProvider = null;
+				addressLineGrid.dataProvider = temp;
+				
+				if ( updateInGrid == true )
+				{
+					this.adjustAddressLineList();
+				}
+				
+			}
+			
+			protected function address_line_delHandler():void
+			{
+				this.btn_deleteLine.enabled = false;
+				this.btn_updateLine.enabled = false;
+				
+				if ( this.addressLineGrid.selectionMode == "multipleRows" )
+				{
+					this.deleteMultipleAddressLines();
+				}
+				else
+				{
+					this.deleteSingleAddressLine();
+				}
+			}
+			
+			protected function deleteMultipleAddressLines():void
+			{
+				if ( addressLineGrid.selectedItems==null || addressLineGrid.selectedItems.length == 0 )
+				{
+					return;
+				}
+				
+				var x:Object;
+				var y:Object;
+				var removedFromGrid:Boolean=false;
+				var len:int;
+				var i;
+				
+				len = addressLineGrid.dataProvider.length;
+				for ( i=len-1; i>=0; i-=1 )
+				{
+					x = addressLineGrid.dataProvider.getItemAt( i );
+					for each(y in addressLineGrid.selectedItems)
+					{
+						if ( x.db_addrline_no == y.db_addrline_no )
+						{
+							if ( y.address_action == '+' )
+							{
+								this.addressLineGrid.dataProvider.removeItemAt( i );
+								removedFromGrid = true;
+							}
+							else if ( y.address_action == '-' )
+							{
+								x.address_action = '';
+								y.address_action = '';
+							}
+							else if ( y.address_action == '*' )
+							{
+								x.address_action = '';
+								y.address_action = '';
+							}
+							else
+							{
+								x.address_action = '-';
+								y.address_action = '-';
+							}
+						}
+					}
+				}
+				
+				var temp:* = addressLineGrid.dataProvider;
+				addressLineGrid.dataProvider = null;
+				addressLineGrid.dataProvider = temp;
+				
+				if ( removedFromGrid == true )
+				{
+					this.adjustAddressLineList();	//???? may not need 
+				}
+				
+			}
+			
+			protected function deleteSingleAddressLine():void
+			{
+				if ( addressLineGrid.selectedIndex < 0 )
+				{
+					return;
+				}
+				
+				var x:Object;
+				var removedFromGrid:Boolean=false;
+				
+				for each(x in addressLineGrid.dataProvider)
+				{
+					if ( x.db_addrline_no == addressLineGrid.selectedItem.db_addrline_no )
+					{
+						if ( addressLineGrid.selectedItem.address_action == '+' )
+						{
+							this.addressLineGrid.dataProvider.removeItemAt(addressLineGrid.selectedIndex);
+							removedFromGrid = true;
+						}
+						else if ( addressLineGrid.selectedItem.address_action == '-' )
+						{
+							x.address_action = '';
+							addressLineGrid.selectedItem.address_action = '';
+						}
+						else if ( addressLineGrid.selectedItem.address_action == '*' )
+						{
+							x.address_action = '';
+							addressLineGrid.selectedItem.address_action = '';
+						}
+						else
+						{
+							x.address_action = '-';
+							addressLineGrid.selectedItem.address_action = '-';
+						}
+						break;
+					}
+				}
+				
+				var temp:* = addressLineGrid.dataProvider;
+				addressLineGrid.dataProvider = null;
+				addressLineGrid.dataProvider = temp;
+				
+				if ( removedFromGrid == true )
+				{
+					this.adjustAddressLineList();
+				}
+				
+			}
+			
+			protected function address_line_addHandler():void
+			{
+				this.btn_updateLine.enabled = false;
+				this.btn_deleteLine.enabled = false;
+				
+				if ( currentState == "create" )
+				{
+					this.addDefaultAddressLines();
+				}
+				else
+				{
+					this.addSingleAddressLine();
+				}
+			}
+			
+			protected function addMultipleAddressLines():void
+			{
+				/* var x:Object;
+				var y:Object;
+				
+				if ( this.address_line.selectedItems.length > 0 )
+				{
+					for each( y in this.address_line.selectedItems )
+					{
+						x = new Object();
+						
+						x.address_action 			= '+';
+						x.db_addr_line_id 			= this.address_code.text;
+						x.db_addrline_no 			= this.addressLineGrid.dataProviderLength + 1;
+						x.db_addr_line 				= "";
+						x.db_addr_line_type			= y.address_type_id;
+						x.db_addr_line_typename		= y.address_type_name;
+						if ( this.addressLineGrid.dataProvider == null )
+						{
+							this.addressLineGrid.dataProvider = new ArrayCollection();
+						}
+						this.addressLineGrid.dataProvider.addItem(x);
+					}
+				}
+				
+				this.adjustAddressLineList(); */
+			}
+			
+			protected function addSingleAddressLine():void
+			{
+				var x:Object;
+				var y:Object;
+				var next_id:int;
+				
+				// find the next id
+				next_id = 0;
+				if ( this.addressLineGrid.dataProvider == null )
+				{
+					this.addressLineGrid.dataProvider = new ArrayCollection();
+				}
+				else
+				{
+					for each( y in this.addressLineGrid.dataProvider )
+					{
+						if ( next_id < int(y.db_addrline_no) )
+						{
+							next_id = int(y.db_addrline_no);
+						}
+					}
+				}
+				
+				x = new Object();
+				
+				x.address_action 			= '+';
+				x.db_addr_line_id 			= this.address_code.text;
+				x.db_addrline_no 			= next_id + 1;
+				x.db_addr_line 				= "";
+				x.db_addr_line_type			= "";
+				x.db_addr_line_typename		= "";
+				this.addressLineGrid.dataProvider.addItem(x);
+				
+				this.adjustAddressLineList();
+			}
+			
+			protected function addDefaultAddressLines():void
+			{
+				var x:Object;
+				var y:Object;
+				var next_id:int;
+				var i:int;
+				
+				if ( this.addressLineGrid.dataProvider == null )
+				{
+					this.addressLineGrid.dataProvider = new ArrayCollection();
+				}
+				
+				if ( this.addressLineGrid.dataProvider.length == 0 && this.addressTemplateArray.length > 0 )
+				{
+					next_id = 0;
+					
+					for each( y in this.addressTemplateArray )
+					{
+						next_id += 1;
+						
+						x = new Object();
+						
+						x.address_action 			= '+';
+						x.db_addr_line_id 			= this.address_code.text;
+						x.db_addrline_no 			= next_id;
+						x.db_addr_line 				= "";
+						x.db_addr_line_type			= int(y);
+						x.db_addr_line_typename		= this.getLineTypeLabel( int(y) );
+						this.addressLineGrid.dataProvider.addItem(x);
+					}
+					
+					this.adjustAddressLineList();
+				}
+				else
+				{
+					this.addSingleAddressLine();
+				}
+				
+			}
+			
+			
+			protected function adjustAddressLineList():void
+			{
+			}
+			
+			
+			
+			protected function getLineTypeLabel(line_type_id:int):String
+			{
+				var ret:String = "";
+
+				for each( var obj:Object in this.addressTypeList )
+				{
+					if ( obj.address_type_id == line_type_id )
+					{
+						ret = obj.address_type_name;
+					}
+				}
+				
+				return ret;
+			}
+			
+			protected function lineTypeLabelFunction(item:Object, column:GridColumn):String
+			{
+				var ret:String = "";
+				
+				ret = this.getLineTypeLabel( item [column.dataField] );
+				
+				/* for each( var obj:Object in this.addressTypeList )
+				{
+					if ( obj.address_type_id == item [column.dataField])
+					{
+						ret = obj.address_type_name;
+					}
+				} */
+				
+				return ret;
+			}
+			
+			public function toggleCellEditability(event:GridEvent):void
+			{
+				var i:int;
+				var cln:GridColumn;
+				var obj:Object;
+				var msg:String;
+				
+				//this.toggleDeleteButton();
+				
+				if ( event.rowIndex < 0 || event.columnIndex < 0 || event.rowIndex > this.addressLineGrid.dataProviderLength-1)
+				{
+					trace ("***********current cell, out of range:", event.columnIndex, event.rowIndex);
+					return;	
+				}
+				
+				obj = this.addressLineGrid.dataProvider[event.rowIndex];
+				if ( obj == null )
+				{
+					return;
+				}
+				
+				trace ("***********current cell, in the range:", event.columnIndex, event.rowIndex);
+				
+				for ( i=0; i<this.addressLineGrid.columns.length; i++ )
+				{
+					cln = (this.addressLineGrid.columns.getItemAt(i) as GridColumn);
+					
+					//trace ("***********current row action:", event.rowIndex, ">>"+view.itemList.dataProvider[event.rowIndex].action+"<<");
+					
+					// if  no action is initialized, not editable
+					if ( obj.hasOwnProperty( "address_action" ) )
+					{
+						if ( obj.address_action == "" || obj.address_action == " " || obj.address_action == "-" )
+						{
+							cln.editable = false;
+							continue;
+						}
+					}
+					else
+					{
+						cln.editable = false;
+						continue;
+					}
+					
+					
+					if ( i != event.columnIndex )
+					{
+						cln.editable = false;
+					}
+					else
+					{
+						if ( cln.dataField == "db_addr_line" || cln.dataField == "db_addr_line_type" )
+						{
+							if ( obj.address_action == "+" || obj.address_action == "*" )
+							{
+								cln.editable = true;
+							}
+							else
+							{
+								cln.editable = false;
+							}
+						}
+						else
+						{
+							cln.editable = false;
+						}
+					}
+				}
+				
+				
+			}
+			
+			protected function addressLineGrid_gridClickHandler(event:GridEvent):void
+			{
+				// TODO Auto-generated method stub
+				this.toggleCellEditability(event);
+			}
+			
+			protected function cleanInvalidCharsFromText( txt:String, charset:String, maxlen:int ):String
+			{
+				var new_txt:String="";
+				var i:int;
+				var len:int;
+				var invalid:Boolean = false;
+				var errors:String="";
+				var index:int=0;
+				
+				len = txt.length;
+				for( i=0; i<len; i++ )
+				{
+					var c:String = txt.charAt(i);
+					if ( charset.indexOf(c) >= 0 || charset.length==0 )
+					{
+						new_txt += c;
+					}
+					else
+					{
+						invalid = true;
+					}
+				}
+				
+				if ( invalid == true )
+				{
+					index += 1;
+					errors += String(index) + ". " + "Expecting A-Z,a-z,0-9, _-, and the invalid characters in value [" + txt + "] has been cleaned. \n";
+				}
+				
+				if ( new_txt.length > maxlen )
+				{
+					index += 1;
+					errors += String(index) + ". " + "Maximum length is " + maxlen + ", and the value [" + new_txt + "] has been truncated to [";
+					new_txt = new_txt.substr(0, maxlen);
+					errors += new_txt + "]. \n";
+				}
+				
+				/* if ( errors.length>0 )
+				{
+				global.msgWarning( errors );
+				} */
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return new_txt;
+			}
+			
+			protected function addressLineGrid_gridItemEditorSessionSaveHandler(event:GridItemEditorEvent):void
+			{
+				// do nothing
+				return;
+				
+				var alphanumeric_charset:String="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 _-";
+				if (event.column.dataField == 'db_addr_line')
+				{
+					var new_txt:String;
+					new_txt = this.cleanInvalidCharsFromText( this.addressLineGrid.dataProvider[addressLineGrid.selectedIndex].db_addr_line, alphanumeric_charset, 120 );
+					//new_txt = this.cleanInvalidCharsFromText( this.addressLineGrid.dataProvider[addressLineGrid.selectedIndex].db_addr_line, "", 120 );
+					this.addressLineGrid.dataProvider[addressLineGrid.selectedIndex].db_addr_line = new_txt;
+				}
+			}
+			
+			public function setFilters( params:*=false ): void
+			{
+				if ( params == false )
+				{
+					return;
+				}
+				
+				this.parentParams = params;
+				
+				currentState = "normal";
+				
+				trace ("...............................in setFilters");
+				tools.pr( params);
+				
+				var po:Object=new Object();
+				
+				po["address_code"] = tools.getObjAttribute( params, "address_code", "" );
+				
+				var fields:Object;
+				var types:Object;
+				
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["address_code"] = po["address_code"];
+				types["address_code"] = "EXACT_STRING";
+				
+				currentFields = fields;
+				currentTypes = types;
+				this.startLoadingPages();
+				
+				this.fltr_address.text = po["address_code"];
+				
+				
+				pb.values(pagedRecords.length,pagedRecords.length)
+			}
+			
+			protected function btn_set_template_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				this.editAddressTemplate();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateFormatter" locale="{LocaleID.DEFAULT}" dateStyle="short" timeStyle="none"/>
+		<s:DateTimeFormatter id="dateConvert" dateTimePattern="yyyy-MM-dd"/>
+		<s:DateTimeFormatter id="dateConvertLong" dateTimePattern="yyyy-MM-dd HH:mm:ss"/>
+		<components:ValidationGroup id="vg" action="{save_clickHandler}" defaultButton="{btn_save}" parentScreen="{this}" isProtected="{hasPassword}"/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:VGroup width="100%" id="toolbar"  >
+			<s:HGroup gap="5" paddingBottom="2" paddingTop="2" width="100%">
+				<components:DKI_ValidatorInput id="fltr_address" validationType="search" minWidth="200" height="{labelHeight}" width="300"
+											   keyUp="fltr_address_keyUpHandler(event)" 
+											   prompt="{resourceManager.getString('default','ADDRESS_CODE')+resourceManager.getString('default','FILTER')}"/>
+				
+				<s:Spacer width="100%"/>
+				<components:DKI_Button id="filterBtn" height="24" noLabel="false" click="filterRecords(event)"
+									   type="filteron"/>
+				<components:DKI_Button id="resetBtn" height="24" noLabel="false" click="refreshRecords(event)"
+									   type="filteroff"/>
+				<components:DKI_Button id="btn_export" label="{resourceManager.getString('default','EXPORTDATA')}" type="report" click="exportCsvHandler(event)" includeIn="normal"/>
+				<components:DKI_Button id="btn_create" label="{resourceManager.getString('default','CREATE')}" height="24" click="createNewRecord(event)" includeIn="normal" enabled="{this.canCreate}" type="create"/>	
+			</s:HGroup>
+		</s:VGroup>
+			
+		
+		<s:DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="4"
+					selectionChange="dataGrid_selectionChangeHandler(event)"
+					skinClass="skins.DKI_DataGrid_Skin"
+					height.widget="100%">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="address_code" headerText="{resourceManager.getString('default','ADDRESS_CODE')}" visible="true" width="200"></s:GridColumn>
+						<s:GridColumn dataField="address_text" headerText="{resourceManager.getString('default','ADDRESS_TEXT')}" visible="true"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			<s:dataProvider>
+				<!--s:AsyncListView id="pgList" list="{getPagedResult.lastResult}"/-->
+				<s:AsyncListView id="pgList" list="{pagedRecords}"/>
+			</s:dataProvider>
+		</s:DataGrid>
+		<s:HGroup width="100%">
+			<components:Downloader id="pb" width="100%" height="18"/>
+			<!--mx:ProgressBar id="pb" width="100%" height="22" visible="false" includeInLayout="false"  mode="manual" source="{this.pgList}" label="{this.currentLength} records shown from {this.currentLength} loaded out of {this.totalLength} found." labelPlacement="center"/-->
+			<s:Button id="killBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="killBtn_clickHandler(event)"/>
+			<s:Button id="resumeBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="resumeBtn_clickHandler(event)"/>
+		</s:HGroup>
+	</s:Panel>
+	
+	<s:Panel id="details" includeIn="edit,create,detail" width="100%" height="450"
+			 itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+			<!--s:TileLayout/-->
+		</s:layout>
+		
+		<s:Spacer height="5"/>
+		<s:VGroup width="100%">
+			<s:HGroup width="100%">
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','ADDRESS_CODE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="address_code" maxChars="40" 
+												   width="{fieldWidth*2}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.address_code}" editable="false" enabled="false" 
+												   text.create="" editable.create="true" enabled.create="true" focusOut="checkAddressKey()" 
+												   required="true" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','ADDRESS_CODE')}" 
+												   />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			
+			<s:Spacer height="5" />
+			
+			<mx:HRule width="100%"/>
+			
+			<s:HGroup>
+				<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','ADDRESS_LINES')}" verticalAlign="middle"/>
+				<components:DKI_Button id="btn_createLine" cornerRadius="0" label="{resourceManager.getString('default','BUTTON__ADD_LINE')}" toolTip="{resourceManager.getString('default','TOOLTIP__ICON_CROSS_ADDRLINE')}" height="100%" click="address_line_addHandler()" enabled="{this.address_code.text.length>0}" type="create"/>
+				<components:DKI_Button id="btn_deleteLine" cornerRadius="0" label="{resourceManager.getString('default','BUTTON__REMOVE_LINE')}" toolTip="{resourceManager.getString('default','TOOLTIP__ICON_TRASH_ADDRLINE')}" height="100%" click="address_line_delHandler()" enabled="false" type="delete"/>
+				<components:DKI_Button id="btn_updateLine" cornerRadius="0" label="{resourceManager.getString('default','BUTTON__EDIT_LINE')}" toolTip="{resourceManager.getString('default','TOOLTIP__ICON_PEN_ADDRLINE')}" height="100%" click="address_line_updHandler()" enabled="false" type="edit"/>
+			</s:HGroup>
+
+			<s:HGroup width="100%" verticalAlign="middle">
+				
+				<s:DataGrid id="addressLineGrid" width="100%" height="240" requestedRowCount="4" excludeFrom="widget,normal"
+							selectionChange="addressLineGrid_selectionChangeHandler(event)"
+							skinClass="skins.DKI_DataGrid_Skin" visible="true" enabled="{this.address_code.text.length>0}" selectionMode="multipleRows"
+							editable="true" editable.detail="false" gridClick="addressLineGrid_gridClickHandler(event)"
+							gridItemEditorSessionSave="addressLineGrid_gridItemEditorSessionSaveHandler(event)"
+							>
+					<s:columns>
+						<s:ArrayList>
+							<s:source>
+								<s:GridColumn dataField="address_action" headerText="{resourceManager.getString('default','ADDRESS_ACTION')}" visible="true" editable="false" width="32" itemRenderer="renderers.GridMarkRenderer"></s:GridColumn>
+								<s:GridColumn dataField="db_addr_line_id" headerText="{resourceManager.getString('default','DB_ADDR_LINE_ID')}" visible="false" editable="false"></s:GridColumn>
+								<s:GridColumn dataField="db_addrline_no" headerText="{resourceManager.getString('default','DB_ADDRLINE_NO')}" visible="true" editable="false" width="120"></s:GridColumn>
+								<s:GridColumn dataField="db_addr_line_type" headerText="{resourceManager.getString('default','DB_ADDR_LINE_TYPE')}" visible="true" editable="false" width="160" 
+											  labelFunction="lineTypeLabelFunction" itemEditor="itemeditors.AddressLineTypeEditor"></s:GridColumn>
+								<s:GridColumn dataField="db_addr_line_typename" headerText="{resourceManager.getString('default','DB_ADDR_LINE_TYPENAME')}" visible="false" editable="false"></s:GridColumn>
+								<s:GridColumn dataField="db_addr_line" headerText="{resourceManager.getString('default','DB_ADDR_LINE')}" visible="true" editable="false"></s:GridColumn>
+							</s:source>
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+				
+			</s:HGroup>
+			
+		</s:VGroup>
+		
+		<s:Spacer height="20" />
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_set_template" label="{resourceManager.getString('default','BUTTON__SET_ADDRESS_TEMPLATE')}" height="100%" 
+								   includeIn="edit,create,detail" enabled="{this.canUpdate}" type="edit" click="btn_set_template_clickHandler(event)"/>
+			<components:DKI_Button id="btn_delete" label="{resourceManager.getString('default','BUTTON__DELETE_ADDRESS')}" height="100%" click="doDelete()" includeIn="edit" enabled="{this.canDelete}" type="delete"/>
+			<components:DKI_Button id="btn_save" label.create="{resourceManager.getString('default','BUTTON__SAVE_ADDRESS')}" label="{resourceManager.getString('default','BUTTON__UPDATE_ADDRESS')}" height="100%" 
+								   includeIn="edit,create,detail" enabled.create="{this.canCreate}" enabled="{this.canUpdate}" type.create="create" type="edit" focusEnabled="true" focusEnabled.create="false"/>
+			<components:DKI_Button id="btn_cancel" label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel" focusEnabled="true" focusEnabled.create="false"/>
+		</s:HGroup>
+	</s:Panel>
+	
+</s:VGroup>

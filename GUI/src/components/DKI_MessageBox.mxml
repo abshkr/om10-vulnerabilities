@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel skinClass="skins.WidgetPanelSkin"
+		 xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 xmlns:components="components.*" 
+		 width="324" height="100%" title="Warning">
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable] public var msg:String;
+			[Bindable] public var warned:Boolean=true;
+			
+			public var callBack:Function;
+			
+			protected function dki_button1_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp(this);				
+			}
+		]]>
+	</fx:Script>
+	
+	<s:VGroup width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5">
+		<s:HGroup width="100%" verticalAlign="middle">
+			<s:Image source="assets/icons/warning.png" visible="{warned}" includeInLayout="{warned}" />
+			<s:Image source="assets/icons/save.png" visible="{!warned}" includeInLayout="{!warned}" />
+			<s:Spacer width="20" />
+			<s:Label width="100%" fontFamily="Arial" fontSize="13" fontWeight="bold" text="{msg}" textAlign="left"/>
+		</s:HGroup>
+		<s:HGroup width="100%">
+			<s:Spacer width="100%" />
+			<components:DKI_Button label="{resourceManager.getString('default','OK')}" icon="cancel" click="dki_button1_clickHandler(event)"/>
+		</s:HGroup>
+	</s:VGroup>
+	
+</s:Panel>

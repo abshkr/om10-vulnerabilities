@@ -1,0 +1,1688 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  xmlns:equipmentlistservice="services.equipmentlistservice.*"
+		  xmlns:companiesservice="services.companiesservice.*"
+		  xmlns:equipmenttypesservice="services.equipmenttypesservice.*"
+		  xmlns:personnelservice="services.personnelservice.*"
+		  creationComplete="creationCompleteHandler(event)"
+		  currentState="normal" gap="2"
+		  width="100%" height="100%">
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="widget"/>
+		<s:State name="edit" enterState="
+				 callLater(function():void{dataGrid.ensureCellIsVisible(dataGrid.selectedIndex);});"/>
+		<s:State name="create"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.fiber.runtime.lib.DateTimeFunc;
+			
+			import components.BusyIndicator;
+			import components.DKI_AlertBox;
+			import components.DeleteDialog;
+			import components.MessageDialog;
+			import components.ViewPopupDlg;
+			import components.ExpiryDateDetailsEditorAdv;
+			
+			import dm.remoteDataService;
+			
+			import flash.events.KeyboardEvent;
+			import flash.globalization.LocaleID;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			import renderers.TranspEquipmentRenderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			
+			import valueObjects.Gui_Equipment_List;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable] public var labelWidth:uint = 80;
+			[Bindable] public var labelHeight:uint = 26;
+			[Bindable] public var fieldWidth:uint = 200;
+			[Bindable] public var fieldHeight:uint = 26;
+			[Bindable] public var spaceWidth:uint = 20;
+			[Bindable] public var spaceHeight:uint = 2;
+			[Bindable] public var isFlatbed = false;
+
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='eqpt_title';
+			private var currentDirection:String="ASC";
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			private var currentSorts:Object=new Object();
+			private var currentOrders:Object=new Object();
+			private var currentSortSeq:int=0;
+			private var eq_filter:String=null;
+			private var confirmDelete:DKI_AlertBox;
+			
+			private var processingAnimation:BusyIndicator = new BusyIndicator();
+			
+			private var gridColumnSequenceMaker:remoteDataService = new remoteDataService( "ScreenGridColumnService.lookupGridColumnSequence", null, gridColumnSequenceMaker_resultHandler, 1 );
+			private var _gridColumnSequenceString:String="";
+			private var formColumnSettingsMaker:remoteDataService = new remoteDataService( "ScreenFormColumnService.lookupFormColumnSettings", null, formColumnSettingsMaker_resultHandler, 1 );
+			private var _formColumnSettingsString:String="";
+			
+			private var _cFactory:ClassFactory;
+			private var _eFactory:ClassFactory;
+			
+			//public var eddPopup:ViewPopupDlg = new ViewPopupDlg( "Expiry Date Details", new v_ExpiryDateDetails(), closeDialogHandler );
+			public var eddPopup:ViewPopupDlg = new ViewPopupDlg( "Expiry Date Details", new ExpiryDateDetailsEditorAdv(), closeDialogHandler );
+			
+			private var expiryDateTargetChecker:remoteDataService = new remoteDataService( "GenericExpiryDateService.isExpiryDateTargetEnabled", null, expiryDateTargetChecker_resultHandler, 2 );
+			[Bindable] private var genericTrailerExpiryDates:Boolean=false;
+			private var edd_old_key:String="";
+			private var updateEddKeyAction:remoteDataService = new remoteDataService( "ExpiryDateDetailService.updateExpiryDateDetailKey", null, updateEddKeyData_resultHandler, 1 );
+			private var deleteEddKeyAction:remoteDataService = new remoteDataService( "ExpiryDateDetailService.delete", null, deleteEddKeyData_resultHandler, 1 );
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				this.formColumnSettingsMaker.service( "EQUIPMENT_LIST" );
+				
+				_cFactory = new ClassFactory( TranspEquipmentRenderer ); 
+				_cFactory.properties = {isLockedVisible:false};		
+				_eFactory = new ClassFactory( TranspEquipmentRenderer ); 
+				_eFactory.properties = {isLockedVisible:true};		
+				
+				this.gridColumnSequenceMaker.service( "EQUIPMENT_LIST" );
+				
+				processingAnimation.width = processingAnimation.height = 80;
+				//PopUpManager.addPopUp(processingAnimation, this, true);
+				//PopUpManager.centerPopUp(processingAnimation);
+				getEquipLoadTypesResult.token = equipmentListService.getEquipLoadTypes( );
+				transpEqptTypeLookup.token = equipmentListService.transpEqptTypeLookup('0', '-1');
+				dataGrid.scroller.verticalScrollBar.addEventListener(Event.CHANGE, verticalScrollBarChanged);
+				dataGrid.addEventListener(KeyboardEvent.KEY_UP, reportKeyUp);
+				dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+				lookupResult.token = companiesService.lookupByType(2);  //.lookup();
+				//lookupResult2.token = equipmentTypesService.lookup();
+				lookupResult2.token = equipmentListService.transpEqptTypeLookup('0', '-1');
+				getAreas.token = personnelService.getAreas();
+				getPagedResult.token = equipmentListService.getEquipmentList( currentFields, currentTypes, currentSorts, currentOrders);
+				
+				this.expiryDateTargetChecker.service("TRANSP_EQUIP");
+			}
+			
+			protected function formColumnSettingsMaker_resultHandler():void
+			{
+				this._formColumnSettingsString =  formColumnSettingsMaker.dataString;
+			}
+			
+			
+			protected function gridColumnSequenceMaker_resultHandler():void
+			{
+				this._gridColumnSequenceString =  gridColumnSequenceMaker.dataString;
+				
+				if ( _gridColumnSequenceString.length > 0 )
+				{
+					global.adjustGridColumnSequence( _gridColumnSequenceString.substr(1), dataGrid );
+				}
+				
+			}
+			
+			
+			private function verticalScrollBarChanged(event:Event):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function reportKeyUp(event:KeyboardEvent):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				if(event.column.dataField!='composition' && event.column.dataField!='compartments')
+				{
+					var currentRenderer:IGridItemRenderer;
+					var dir:String;
+					
+					if ( global.sortingBySingleColumn == true )
+					{	// sorted by single column only
+						for (var i:int=0; i < dataGrid.columns.length; i++)
+						{
+							currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+							if ( currentRenderer != null)
+							{
+								(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+							}
+							//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+						}
+					}
+					else
+					{	// sorted by multiple columns
+						;
+					}
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if( currentSorts.hasOwnProperty(event.column.dataField ) )
+					{
+						dir = currentSorts[event.column.dataField];
+						if( dir=="ASC" )
+						{
+							dir = "DESC";
+						}
+						else if ( dir == "DESC" )
+						{
+							dir = "";
+						}
+						else if ( dir == "" )
+						{
+							dir = "ASC";
+						}
+						else 
+						{
+							dir = "ASC";
+						}
+						
+						if ( dir != "" )
+						{
+							currentSorts[event.column.dataField] = dir;	
+						}
+						else
+						{
+							delete currentSorts[event.column.dataField];
+							delete currentOrders[event.column.dataField];
+						}
+					}
+					else
+					{
+						if ( global.sortingBySingleColumn == true )
+						{	// sorted by single column only
+							currentSorts = new Object();
+							currentOrders = new Object();
+							currentSortSeq = 0;
+						}
+						else
+						{	// sorted by multiple columns
+							;
+						}
+						currentSorts[event.column.dataField] = "ASC";	
+						dir = currentSorts[event.column.dataField];
+						currentSortSeq += 1;
+						currentOrders[event.column.dataField] = currentSortSeq;	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+					this.startFiltering();
+					//getPagedResult.token = equipmentListService.getPaged(currentFilter,currentOrder,currentDirection, 0, 100);
+					//getPagedResult.token = equipmentTypesService.getAll();
+				}
+			}
+			
+						
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				if(currentState != 'widget')
+				{
+					idx=dataGrid.selectedIndex;
+					dataGrid.ensureCellIsVisible(idx);
+					
+					// get the detailed composition including its equipments and compartments
+					var etyp_id:int=-1;
+					var owner:String="-1";
+					var eqpt:String="-1";
+					var option:int=1;
+					
+					etyp_id = int( dataGrid.selectedItem.eqpt_etp );
+					owner = dataGrid.selectedItem.eqpt_owner;
+					eqpt = dataGrid.selectedItem.eqpt_code;
+					getEquipmentComposition.token = equipmentListService.getEquipmentComposition(etyp_id, owner, eqpt, option);
+					
+					isEqptUsedByTanker.token = equipmentListService.isEqptUsedByTanker( dataGrid.selectedItem.eqpt_code );
+					currentState = "edit";					
+					this.equipCmptsList.visible = true;
+					this.equipCmptsList.itemRenderer = this._eFactory;
+					
+					if ( _formColumnSettingsString.length > 0 )
+					{
+						global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+					}
+					
+					this.eqpt_exp_d1_dmy.enabled = !this.genericTrailerExpiryDates;
+					this.eqpt_exp_d2_dmy.enabled = !this.genericTrailerExpiryDates;
+					this.eqpt_exp_d3_dmy.enabled = !this.genericTrailerExpiryDates;
+				}
+				if(dataGrid.selectedItem.etyp_category!=null){
+					isFlatbed = ((dataGrid.selectedItem.etyp_category as String).toUpperCase() == "F");
+				}else{
+					isFlatbed = false;
+				}
+			}
+			
+			protected function cancel_clickHandler():void
+			{
+				clearDetail();
+				if ( currentState== "create" )
+				{
+					dataGrid.enabled=true;
+					deleteEddKey();
+				}
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+			}			
+			
+			protected function selectByHandler(event:MouseEvent):void
+			{
+				if ((event.target as ToggleButton).selected)
+					(event.target as ToggleButton).label = resourceManager.getString('default','EQPT_TITLE'); 
+				else
+					(event.target as ToggleButton).label = resourceManager.getString('default','EQPT_CODE'); 
+			}			
+			
+			protected function searchText_keyUpHandler(event:KeyboardEvent):void
+			{
+				var keyCode:uint = 0;
+				if (event == null)
+				{
+					keyCode=0;
+				}
+				else
+				{
+					keyCode=event.keyCode;
+				}
+				
+				if ( keyCode == 13 )
+				{
+					if (currentState == "edit") clearDetail();
+					startFiltering();
+				}
+				//if (currentState == "edit") clearDetail();
+				//startFiltering();
+			}
+			
+			protected function fltr_company_changeHandler(event:IndexChangeEvent):void
+			{
+				if ( fltr_company.dropDown != null )
+				{
+					fltr_company.width = fltr_company.dropDown.width + 25;
+					fltr_company.invalidateDisplayList();
+					
+					trace( "fltr_company.........................", fltr_company.dropDown.width );
+				}
+				
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_eqptype_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			private function startFiltering():void
+			{
+				var companyFilter:String = '';  
+				var eqptypeFilter:String = '';
+				var nameFilter:String = '';
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				if (fltr_company.selectedIndex > -1) 
+				{
+					companyFilter = "eqpt_owner='"+lookupResult.lastResult[fltr_company.selectedIndex].cmpy_code+"' ";
+					fields["eqpt_owner"] = lookupResult.lastResult[fltr_company.selectedIndex].cmpy_code;
+					if ( fields["eqpt_owner"] == "ANY" )
+					{
+						companyFilter = '';
+						fields["eqpt_owner"] = "";
+					}
+				}
+				else
+				{
+					if ( global.setComboBoxNoSelection == true )
+					{
+						fltr_company.selectedIndex = -1;
+					}
+					companyFilter = '';
+					fields["eqpt_owner"] = "";
+				}
+				types["eqpt_owner"] = "EXACT_STRING";
+				
+				if ( this.currentState != "widget" )
+				{
+					if (fltr_eqptype.selectedIndex > -1) 
+					{
+						eqptypeFilter = "eqpt_etp="+lookupResult2.lastResult[fltr_eqptype.selectedIndex].etyp_id+" ";
+						fields["eqpt_etp"] = lookupResult2.lastResult[fltr_eqptype.selectedIndex].etyp_id;
+					}
+					else
+					{
+						if ( global.setComboBoxNoSelection == true )
+						{
+							fltr_eqptype.selectedIndex = -1;
+						}
+						eqptypeFilter = '';
+						fields["eqpt_etp"] = "";
+					}
+					types["eqpt_etp"] = "NUMBER";
+				}
+				
+				if(searchText.text!='')
+				{					
+					nameFilter = "((UPPER(eqpt_code) LIKE UPPER('%"+(searchText.text)+"%') ) or "
+						+ "(UPPER(eqpt_title) LIKE UPPER('%"+(searchText.text)+"%') )) ";
+					fields["eqpt_code||eqpt_title"] = searchText.text+"||"+searchText.text;
+					/*
+					if (!tb.selected)
+					{
+						nameFilter = "(UPPER(eqpt_code) LIKE UPPER('%"+(searchText.text)+"%') ) ";
+						fields["eqpt_code"] = searchText.text;
+						fields["eqpt_title"] = "";
+					}
+					else
+					{
+						nameFilter = "(UPPER(eqpt_title) LIKE UPPER('%"+(searchText.text)+"%') ) ";
+						fields["eqpt_code"] = "";
+						fields["eqpt_title"] = searchText.text;
+					}
+					*/
+				}
+				else
+				{
+					nameFilter = '';
+					//fields["eqpt_code"] = "";
+					//fields["eqpt_title"] = "";
+					fields["eqpt_code||eqpt_title"] = "";
+				}
+				//types["eqpt_code"] = "STRING";
+				//types["eqpt_title"] = "STRING";
+				types["eqpt_code||eqpt_title"] = "STRING||STRING";
+				
+				currentFilter = "WHERE 1=1 ";
+				if ( nameFilter.length > 0 )
+				{
+					currentFilter += "AND " + nameFilter;
+				}
+				if ( companyFilter.length > 0 )
+				{
+					currentFilter += "AND " + companyFilter;
+				}
+				if ( eqptypeFilter.length > 0 )
+				{
+					currentFilter += "AND " + eqptypeFilter;
+				}
+				currentFields = fields;
+				currentTypes = types;
+				getPagedResult.token = equipmentListService.getEquipmentList( currentFields, currentTypes, currentSorts, currentOrders);
+				
+				trace("this.grid.scroller3333", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			private function findByCode(code:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["eqpt_code"] = code;
+				types["eqpt_code"] = "STRING";
+				
+				getPagedResult.token = equipmentListService.getEquipmentList( fields, types, currentSorts, currentOrders);
+			}
+			
+			private function findByID(id:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["eqpt_id"] = id;
+				types["eqpt_id"] = "NUMBER";
+				
+				getPagedResult.token = equipmentListService.getEquipmentList( fields, types, currentSorts, currentOrders);
+			}
+			
+			protected function refreshRecords(event:MouseEvent):void
+			{
+				if ( currentState != "widget" )
+				{
+					currentState = 'normal';
+					dataGrid.enabled=true;
+				}
+				clearDetail();
+				fltr_company.selectedIndex = -1;
+				if ( currentState != "widget" )
+				{
+					fltr_eqptype.selectedIndex = -1;
+				}
+				searchText.text = '';
+				dataGrid.selectedIndex = -1;
+				currentFilter = null;
+				currentOrder = null;
+				currentFields = new Object();
+				currentTypes = new Object();
+				
+				currentSorts = new Object();
+				currentOrders = new Object();
+				var currentRenderer:IGridItemRenderer;
+				for (var i:int=0; i < dataGrid.columns.length; i++)
+				{
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					if ( currentRenderer != null)
+					{
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+					}
+					//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+				}
+//				getPagedResult.token = equipmentListService.getPaged(currentFilter,"",currentOrder, currentDirection);
+				getPagedResult.token = equipmentListService.getEquipmentList( currentFields, currentTypes, currentSorts, currentOrders);
+				trace("this.grid.scroller2222", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			protected function clearDetail(): void
+			{
+				if (currentState != 'widget')
+				{
+					/*
+					if(tnkr_codeTextInput)
+					{
+					tnkr_codeTextInput.text='';
+					tnkr_base_siteTextInput.text='';
+					equipment_nameTextInput.text='';
+					tnkr_carrier_name.selectedIndex=-1;
+					tnkr_manager_name.selectedIndex=-1;
+					tnkr_licence_expiry.selectedDate=null;
+					tnkr_dglic_exp.selectedDate=null;
+					tnkr_ins_exp.selectedDate=null;
+					tnkr_lock.selected=false;
+					tnkr_active.selected=false;
+					tnkr_bay_loop_ch.selected=false;
+					depot1.selectedIndex=-1;
+					depot2.selectedIndex=-1;
+					depot3.selectedIndex=-1;
+					tnkr_promptTextInput.text='';
+					tnkr_tripsTextInput.text='';
+					}
+					*/
+				}
+			}			
+			
+			private function editRecord():void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				trace ( "selectedindex", eqpt_owner.selectedIndex, eqpt_etp.selectedIndex, eqpt_area.selectedIndex, eqpt_load_type.selectedIndex);
+				
+				if (eqpt_owner.selectedIndex>=0)
+				{
+					obj.eqpt_owner = lookupResult.lastResult[eqpt_owner.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.eqpt_owner = dataGrid.selectedItem.eqpt_owner;
+				}
+				obj.eqpt_code = eqpt_code.text;
+				obj.eqpt_id = eqpt_id.text;
+				obj.eqpt_title = eqpt_title.text;
+				if (eqpt_etp.selectedIndex>=0)
+				{
+					obj.eqpt_etp = transpEqptTypeLookup.lastResult[eqpt_etp.selectedIndex].etyp_id;
+				}
+				else
+				{
+					obj.eqpt_etp = dataGrid.selectedItem.eqpt_etp;
+				}
+				//obj.eqpt_lock = (eqpt_lock.selected==true?"Y":"N");
+				//obj.eqp_must_tare_in = (eqp_must_tare_in.selected==true?"Y":"N");
+				obj.eqpt_lock = (eqpt_lock.selected==true?"on":"");
+				obj.eqp_must_tare_in = (eqp_must_tare_in.selected==true?"on":"");
+				obj.eqpt_empty_kg = eqpt_empty_kg.text;
+				obj.eqpt_max_gross = eqpt_max_gross.text;
+				obj.eqpt_comments = eqpt_comments.text;
+				
+				//obj.eqpt_exp_d1_dmy = eqpt_exp_d1_dmy.textDate;
+				//obj.eqpt_exp_d2_dmy = eqpt_exp_d2_dmy.textDate;
+				//obj.eqpt_exp_d3_dmy = eqpt_exp_d3_dmy.textDate;
+				/* obj.eqpt_exp_d1_dmy = dateConvert.format(eqpt_exp_d1_dmy.selectedDate);
+				obj.eqpt_exp_d2_dmy = dateConvert.format(eqpt_exp_d2_dmy.selectedDate);
+				obj.eqpt_exp_d3_dmy = dateConvert.format(eqpt_exp_d3_dmy.selectedDate); */
+				
+				obj.eqpt_exp_d1_dmy = global.convertDateTimeToIsoString( eqpt_exp_d1_dmy.selectedDate, eqpt_exp_d1_dmy.timeEnabled, "" ); 
+				obj.eqpt_exp_d2_dmy = global.convertDateTimeToIsoString( eqpt_exp_d2_dmy.selectedDate, eqpt_exp_d2_dmy.timeEnabled, "" ); 
+				obj.eqpt_exp_d3_dmy = global.convertDateTimeToIsoString( eqpt_exp_d3_dmy.selectedDate, eqpt_exp_d3_dmy.timeEnabled, "" ); 
+				
+				if (eqpt_area.selectedIndex>=0)
+				{
+					obj.eqpt_area = getAreas.lastResult[eqpt_area.selectedIndex].area_k;
+				}
+				else
+				{
+					obj.eqpt_area = dataGrid.selectedItem.eqpt_area;
+				}
+				if (eqpt_load_type.selectedIndex>=0)
+				{
+					obj.eqpt_load_type = getEquipLoadTypesResult.lastResult[eqpt_load_type.selectedIndex].LD_TYPE_CODE;
+				}
+				else
+				{
+					obj.eqpt_load_type = dataGrid.selectedItem.eqpt_load_type;
+				}
+				
+				trace ("equipCmptsList", equipCmptsList );
+				trace ("equipCmptsList.dataProvider", equipCmptsList.dataProvider );
+				trace ("equipCmptsList.dataProvider[0]", equipCmptsList.dataProvider[0] );
+				trace ("equipCmptsList(equipCmptsList.dataProvider[0] as Gui_Equipment_List )", (equipCmptsList.dataProvider[0] as Gui_Equipment_List ) );
+//				trace ("equipCmptsList", Gui_Equipment_List(equipCmptsList.dataProvider[0]) );
+				trace ("equipCmptsList.dataProvider[0].eqpt_id", equipCmptsList.dataProvider[0].equipment[0].eqpt_id );
+				trace ("equipCmptsList.dataProvider[0].compartments", equipCmptsList.dataProvider[0].compartments );
+				trace ("equipCmptsList.dataProvider[0].equipment[0].compartments", equipCmptsList.dataProvider[0].equipment[0].compartments );
+				//trace ("equipCmptsList",  );
+				//obj.compartments = (equipCmptsList.dataProvider[0] as Gui_Equipment_List).compartments;
+				//obj.compartments = (equipCmptsList.dataProvider[0] as Gui_Equipment_List).compartments;
+				obj.compartments = (equipCmptsList.dataProvider[0]).equipment[0].compartments;
+				//obj.compartments = (equipCmptsList.dataProvider);
+				
+				updateResult.token = equipmentListService.update(obj);
+				/*
+				clearDetail();
+				currentState="normal";
+				this.findByID(obj.eqpt_id);
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+				*/
+			}
+			
+			private function updateResultHandler(event:Event):void
+			{
+				clearDetail();
+				if ( updateResult.lastResult == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var txt:String;
+				txt = this.eqpt_id.text;
+				
+				currentState="normal";
+				this.findByID( txt );
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			private function doDelete(): void
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				//if ( eqpt_lock.selected == true )
+				if ( dataGrid.selectedItem.eqpt_lock == "Y" )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','ALERT__LOCKED_EQPT_CANNOT_BE_DELETED') + "\n";
+				}
+				//if ( eqp_must_tare_in.selected == true )
+				if ( dataGrid.selectedItem.eqp_must_tare_in == "Y" )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','ALERT__TAREIN_EQPT_CANNOT_BE_DELETED') + "\n";
+				}
+				
+				trace ( "isEqptUsedByTanker", eqpt_code.text, dataGrid.selectedItem.eqpt_code, isEqptUsedByTanker.lastResult);
+				if ( isEqptUsedByTanker.lastResult > 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','ALERT__EQPT_HAS_TANKER') + "\n";
+				}
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				else
+				{
+					var canDelete:DeleteDialog = new DeleteDialog(deleteRecord, hasPassword);
+				}
+			}
+			
+			private function deleteRecord():void
+			{
+				var obj:Object = new Object();
+				
+				obj.eqpt_owner = dataGrid.selectedItem.eqpt_owner;
+				obj.eqpt_code = dataGrid.selectedItem.eqpt_code;
+				obj.eqpt_id = dataGrid.selectedItem.eqpt_id;
+				obj.eqpt_title = dataGrid.selectedItem.eqpt_title;
+				obj.eqpt_etp = dataGrid.selectedItem.eqpt_etp;
+				obj.eqpt_lock = dataGrid.selectedItem.eqpt_lock;
+				obj.eqp_must_tare_in = dataGrid.selectedItem.eqp_must_tare_in;
+				obj.eqpt_empty_kg = dataGrid.selectedItem.eqpt_empty_kg;
+				obj.eqpt_max_gross = dataGrid.selectedItem.eqpt_max_gross;
+				obj.eqpt_exp_d1_dmy = dataGrid.selectedItem.eqpt_exp_d1_dmy;
+				obj.eqpt_exp_d2_dmy = dataGrid.selectedItem.eqpt_exp_d2_dmy;
+				obj.eqpt_exp_d3_dmy = dataGrid.selectedItem.eqpt_exp_d3_dmy;
+				obj.eqpt_area = dataGrid.selectedItem.eqpt_area;
+				obj.eqpt_load_type = dataGrid.selectedItem.eqpt_load_type;
+				
+				removeResult.token = equipmentListService.remove(obj);
+				/*
+				clearDetail();
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+				*/
+			}
+			
+			private function removeResultHandler(event:Event):void
+			{
+				clearDetail();
+				if ( removeResult.lastResult == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+				}
+				
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+				//dataGrid.enabled=true;
+			}
+			
+			private function checkEqptCode():void
+			{
+				isEqptExisted.token = equipmentListService.isEqptExisted( eqpt_code.text );
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				if ( StringUtil.trim(eqpt_code.text).length == 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','ENTER')+resourceManager.getString('default','EQPT_CODE') + "\n";
+				}
+				if ( StringUtil.trim(eqpt_title.text).length == 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','ENTER')+resourceManager.getString('default','EQPT_TITLE') + "\n";
+				}
+				
+				if ( eqpt_etp.selectedIndex == -1 )//< 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','SELECT')+resourceManager.getString('default','EQPT_ETP_TITLE') + "\n";
+				}
+				if ( eqpt_owner.selectedIndex == -1 )//< 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','SELECT')+resourceManager.getString('default','EQPT_OWNER_NAME') + "\n";
+				}
+				if ( eqpt_area.selectedIndex == -1 )//< 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','SELECT')+resourceManager.getString('default','EQPT_AREA_NAME') + "\n";
+				}
+				if ( eqpt_load_type.selectedIndex == -1 )//< 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','SELECT')+resourceManager.getString('default','EQPT_LOAD_TYPE') + "\n";
+				}
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return index;
+			}
+			
+			private function createRecord():void
+			{
+				var eqpt_num:int;
+				
+				eqpt_num = isEqptExisted.lastResult;
+				trace ("isEqptExisted", eqpt_code.text, eqpt_num);
+				if ( eqpt_num > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__EQPT_CODE_EXIST') );
+					return;
+				}
+				
+				if ( this.checkFields() > 0 )
+				{
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				if (eqpt_owner.selectedIndex>=0)
+				{
+					obj.eqpt_owner = lookupResult.lastResult[eqpt_owner.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.eqpt_owner = lookupResult.lastResult[0].cmpy_code;
+				}
+				obj.eqpt_code = eqpt_code.text;
+				obj.eqpt_id = eqpt_id.text;
+				obj.eqpt_title = eqpt_title.text;
+				if (eqpt_etp.selectedIndex>=0)
+				{
+					obj.eqpt_etp = transpEqptTypeLookup.lastResult[eqpt_etp.selectedIndex].etyp_id;
+				}
+				else
+				{
+					obj.eqpt_etp = transpEqptTypeLookup.lastResult[0].etyp_id;
+				}
+				//obj.eqpt_lock = (eqpt_lock.selected==true?"Y":"N");
+				//obj.eqp_must_tare_in = (eqp_must_tare_in.selected==true?"Y":"N");
+				obj.eqpt_lock = (eqpt_lock.selected==true?"on":"");
+				obj.eqp_must_tare_in = (eqp_must_tare_in.selected==true?"on":"");
+				obj.eqpt_empty_kg = eqpt_empty_kg.text;
+				obj.eqpt_max_gross = eqpt_max_gross.text;
+				obj.eqpt_comments = eqpt_comments.text;
+				
+				//obj.eqpt_exp_d1_dmy = eqpt_exp_d1_dmy.textDate;
+				//obj.eqpt_exp_d2_dmy = eqpt_exp_d2_dmy.textDate;
+				//obj.eqpt_exp_d3_dmy = eqpt_exp_d3_dmy.textDate;
+				/* obj.eqpt_exp_d1_dmy = dateConvert.format(eqpt_exp_d1_dmy.selectedDate);
+				obj.eqpt_exp_d2_dmy = dateConvert.format(eqpt_exp_d2_dmy.selectedDate);
+				obj.eqpt_exp_d3_dmy = dateConvert.format(eqpt_exp_d3_dmy.selectedDate); */
+				
+				obj.eqpt_exp_d1_dmy = global.convertDateTimeToIsoString( eqpt_exp_d1_dmy.selectedDate, eqpt_exp_d1_dmy.timeEnabled, "" ); 
+				obj.eqpt_exp_d2_dmy = global.convertDateTimeToIsoString( eqpt_exp_d2_dmy.selectedDate, eqpt_exp_d2_dmy.timeEnabled, "" ); 
+				obj.eqpt_exp_d3_dmy = global.convertDateTimeToIsoString( eqpt_exp_d3_dmy.selectedDate, eqpt_exp_d3_dmy.timeEnabled, "" ); 
+				
+				if (eqpt_area.selectedIndex>=0)
+				{
+					obj.eqpt_area = getAreas.lastResult[eqpt_area.selectedIndex].area_k;
+				}
+				else
+				{
+					obj.eqpt_area = getAreas.lastResult[0].area_k;
+				}
+				if (eqpt_load_type.selectedIndex>=0)
+				{
+					obj.eqpt_load_type = getEquipLoadTypesResult.lastResult[eqpt_load_type.selectedIndex].LD_TYPE_CODE;
+				}
+				else
+				{
+					obj.eqpt_load_type = getEquipLoadTypesResult.lastResult[0].LD_TYPE_CODE;
+				}
+				
+				trace ("equipCmptsList", equipCmptsList );
+				trace ("equipCmptsList.dataProvider", equipCmptsList.dataProvider );
+				trace ("equipCmptsList.dataProvider[0]", equipCmptsList.dataProvider[0] );
+				trace ("equipCmptsList(equipCmptsList.dataProvider[0] as Gui_Equipment_List )", (equipCmptsList.dataProvider[0] as Gui_Equipment_List ) );
+				//				trace ("equipCmptsList", Gui_Equipment_List(equipCmptsList.dataProvider[0]) );
+				trace ("equipCmptsList.dataProvider[0].eqpt_id", equipCmptsList.dataProvider[0].equipment[0].eqpt_id );
+				trace ("equipCmptsList.dataProvider[0].compartments", equipCmptsList.dataProvider[0].compartments );
+				trace ("equipCmptsList.dataProvider[0].equipment[0].compartments", equipCmptsList.dataProvider[0].equipment[0].compartments );
+				trace ("equipCmptsList.dataProvider[0].equipment[0].compartments", equipCmptsList.dataProvider[0].equipment[0].hasOwnProperty("compartments") );
+				//trace ("equipCmptsList",  );
+				//obj.compartments = (equipCmptsList.dataProvider[0] as Gui_Equipment_List).compartments;
+				if ( equipCmptsList.dataProvider[0].equipment[0].hasOwnProperty("compartments") == true )
+				{
+					obj.compartments = (equipCmptsList.dataProvider[0]).equipment[0].compartments;
+					obj.has_cmpt = "1";
+				}
+				else
+				{
+					obj.compartments = null;
+					obj.has_cmpt = "0";
+				}
+				//obj.compartments = (equipCmptsList.dataProvider);
+
+				createResult.token = equipmentListService.create(obj);
+				/*
+				clearDetail();
+				currentState="normal";
+				this.findByCode(obj.eqpt_code);
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+				*/
+			}
+			
+			private function createResultHandler(event:Event):void
+			{
+				clearDetail();
+				var rtnString:String = String(createResult.lastResult);
+				if ( rtnString.indexOf("OK") == 0 )
+//				if ( createResult.lastResult == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+					var arr:Array = rtnString.split("__");
+					var newId:String="";
+					if ( arr.length>1 )
+					{
+						newId = arr[1];
+					}
+					var cmpy:String="";
+					if (eqpt_owner.selectedIndex>=0)
+					{
+						cmpy = lookupResult.lastResult[eqpt_owner.selectedIndex].cmpy_code;
+					}
+					updateEddKey(cmpy, newId);
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+					deleteEddKey();
+				}
+				
+				var txt:String;
+				txt = this.eqpt_code.text;
+				
+				currentState="normal";
+				this.findByCode( txt );
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			/* private function doDelete(event:TextEvent):void
+			{
+				trace( "I am in doDelete");
+				confirmDelete.removeEventListener('confirm',doDelete);
+				if (event.text=='OK')
+				{
+					var ob:Object = new Object();
+					ob.eqpt_id = dataGrid.selectedItem.eqpt_id;
+				}
+				removeResult.token = equipmentListService.remove(ob);
+				clearDetail();
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+			} */
+			
+			protected function createNewRecord(event:MouseEvent):void
+			{	
+				idx=dataGrid.selectedIndex;
+				dataGrid.ensureCellIsVisible(idx);
+				currentState="create";
+				dataGrid.enabled=false;
+				transpEqptTypeLookup.token = equipmentListService.transpEqptTypeLookup('0', '-1');
+				this.equipCmptsList.visible = false;
+				this.equipCmptsList.itemRenderer = this._cFactory;
+				
+				if ( _formColumnSettingsString.length > 0 )
+				{
+					global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+				}
+				
+				this.eqpt_exp_d1_dmy.enabled = !this.genericTrailerExpiryDates;
+				this.eqpt_exp_d2_dmy.enabled = !this.genericTrailerExpiryDates;
+				this.eqpt_exp_d3_dmy.enabled = !this.genericTrailerExpiryDates;
+			}
+			
+			protected function refilterEqptTypes(event:Event):void
+			{	var cmpt_num:String;
+				
+				if ( eqpt_cmpt_num.text.length == 0 )
+				{
+					cmpt_num = "-1";
+				}
+				else
+				{
+					cmpt_num = eqpt_cmpt_num.text;
+				}
+				transpEqptTypeLookup.token = equipmentListService.transpEqptTypeLookup('0', cmpt_num);
+			}
+			
+			protected function getNewEqptComposition():void
+			{
+				if(currentState == 'create')
+				{
+					// get the detailed composition including its equipments and compartments
+					var etyp_id:int=-1;
+					var owner:String="-1";
+					var eqpt:String="-1";
+					var option:int=1;
+					
+					if (eqpt_owner.selectedIndex>=0)
+					{
+						owner = lookupResult.lastResult[eqpt_owner.selectedIndex].cmpy_code;
+					}
+					else
+					{
+						owner = "-1";
+					}
+					if (eqpt_etp.selectedIndex>=0)
+					{
+						etyp_id = transpEqptTypeLookup.lastResult[eqpt_etp.selectedIndex].etyp_id;
+					}
+					else
+					{
+						etyp_id = -1;
+					}
+					
+					getEquipmentComposition.token = equipmentListService.getEquipmentComposition(etyp_id, owner, eqpt, option);
+					this.equipCmptsList.visible = true;
+					
+				}
+			}
+			
+		
+			public function getArrayCollection(obj:Object):ArrayCollection
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				temp.addItem( obj );
+				return temp;
+			}
+			
+			
+			public function convertDateToLocaleString(dt:String):String
+			{
+				var dt_string:String;
+				var dt_date:Date = new Date();
+				
+				dt_string = ""; 
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+					dt_string = dateFormatter.format( dt_date);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_string;
+			}
+			
+			public function convertDateToLocale(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+				}
+				else
+				{
+					dt_date = null;
+				}
+				return dt_date;
+			}
+			
+			public function isValueInteger( val:String ):Boolean
+			{
+				if ( !isNaN(Number(val)) ) 
+				{
+					if ( Math.floor(Number(val)) == Math.ceil(Number(val)) ) 
+					{
+						return true;
+					}
+				}
+				
+				return false;
+			}		
+			
+			public function getDefaultDate():Date
+			{
+				if ( !genericTrailerExpiryDates )
+				{
+					return null;
+				}
+				var value:String = global.getValueFromSiteConfigSettings( "SITE_DEFAULT_EQPT_EXPIRY" );
+				
+				if ( value == null )
+				{
+					value = "";
+				}
+				value = StringUtil.trim( value );
+				
+				var now_date:Date;
+				var def_date:Date;
+				
+				if ( value.length > 0 && this.isValueInteger(value)==false )
+				{
+					def_date = DateField.stringToDate( value,"YYYY-MM-DD" );
+				}
+				else
+				{
+					if ( value.length == 0 )
+					{
+						value = "-1";
+					}
+					now_date = new Date();
+					def_date = DateTimeFunc.dateAdd( "d", int(value), now_date );
+				}
+				
+				/* if ( value.length > 0 && value != "-1" )
+				{
+				def_date = DateField.stringToDate( value,"YYYY-MM-DD" );
+				}
+				else
+				{
+				now_date = new Date();
+				def_date = DateTimeFunc.dateAdd( "d", -1, now_date );
+				} */
+				
+				return def_date;
+			}
+			
+			protected function save_clickHandler():void
+			{
+				if (currentState == "create")
+				{
+					createRecord();
+				}
+				if (currentState == "edit")
+				{
+					editRecord();
+				}
+			}
+			
+			protected function unlock_clickHandler():void
+			{
+				this.unlockResult.token = this.equipmentListService.unlockEquipmentCompartments( this.eqpt_id.text );
+			}			
+			
+			private function unlockResultHandler(event:Event):void
+			{
+				clearDetail();
+				if ( unlockResult.lastResult == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','global.msg.succ_unlock_eqpt_cmpt'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','global.msg.fail_unlock_eqpt_cmpt'));
+				}
+				
+				var txt:String;
+				txt = this.eqpt_id.text;
+				
+				currentState="normal";
+				this.findByID( txt );
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			protected function lookupResult_resultHandler(event:ResultEvent):void
+			{
+				// TODO Auto-generated method stub
+				var len:int=0;
+				var new_len:int=0;
+				var str:String="";
+				for ( var i:int=0; i<fltr_company.dataProvider.length; i++ )
+				{
+					new_len = (fltr_company.dataProvider.getItemAt(i).cmpy_name as String).length;
+					if ( new_len > len )
+					{
+						len = new_len;
+						str = (fltr_company.dataProvider.getItemAt(i).cmpy_name as String);
+					}
+				}
+				
+				var lbl:TextField= new TextField();
+				lbl.visible=false;
+				lbl.text = str;
+				var metrics:TextLineMetrics = lbl.getLineMetrics(0);
+				trace( "var metrics:TextLineMetrics = lbl.getLineMetrics(0);....................", metrics.width, fltr_company.width );
+				
+				fltr_company.width = metrics.width + 25;
+				fltr_company.invalidateDisplayList();
+				
+			}
+			
+			protected function getEquipmentComposition_resultHandler(event:ResultEvent):void
+			{
+				return;
+				// TODO Auto-generated method stub
+				var factory:ClassFactory = new ClassFactory(TranspEquipmentRenderer); 
+				
+				if ( currentState = "create" )
+				{
+					//(this.equipCmptsList.itemRenderer as ClassFactory).properties = {isLockedVisible:false};
+					factory.properties = {isLockedVisible:false};		
+				}
+				if ( currentState = "edit" )
+				{
+					//(this.equipCmptsList.itemRenderer as ClassFactory).properties = {isLockedVisible:true};
+					factory.properties = {isLockedVisible:true};		
+				}
+				
+				this.equipCmptsList.itemRenderer = factory;
+			}
+			
+			public function goToExpiryDateDetails():void
+			{
+				
+				this.eddPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+				
+				this.eddPopup.parentWidth = this.width;
+				this.eddPopup.parentHeight = 500;//this.height;
+				eddPopup.popupTitle = resourceManager.getString('default','m_equipmentlist') + "::" + resourceManager.getString('default','ED_EXP_DATES');
+				
+				trace ( "*******************Pop up a screen to manage expiry dates!");
+				eddPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				params["ed_target_code"] = "TRANSP_EQUIP";
+				if ( currentState == "create" )
+				{
+					params["ed_object_id"] = this.eqpt_code.text;
+				}
+				else
+				{
+					params["ed_object_id"] = this.eqpt_id.text;
+				}
+				
+				var cmpy:String="";
+				if (eqpt_owner.selectedIndex>=0)
+				{
+					cmpy = lookupResult.lastResult[eqpt_owner.selectedIndex].cmpy_code;
+				}
+				params["ed_cmpy_code"] = cmpy;
+				
+				this.edd_old_key = params["ed_cmpy_code"] + "__" + params["ed_object_id"]; 
+				
+				eddPopup.setFilters( params ); 
+			}
+			
+			public function closeDialogHandler():void
+			{
+				if ( this.eddPopup.popupView.hasOwnProperty('expiryDateDetailLineList') )
+				{
+					this.eqpt_exp_d1_dmy.selectedDate = null;
+					this.eqpt_exp_d2_dmy.selectedDate = null;
+					this.eqpt_exp_d3_dmy.selectedDate = null;
+					
+					var dates:ArrayCollection = eddPopup.popupView.expiryDateDetailLineList;
+					for each ( var o:Object in dates )
+					{
+						if ( o.hasOwnProperty("ed_target_code") && o.ed_target_code == "TRANSP_EQUIP" &&  o.hasOwnProperty("ed_exp_date") )
+						{
+							if ( o.hasOwnProperty("ed_type_code") && o.ed_type_code == "EQPT_EXPIRY_DATE_1" )
+							{
+								this.eqpt_exp_d1_dmy.selectedDate = convertDateToLocale( o.ed_exp_date );
+							}
+							if ( o.hasOwnProperty("ed_type_code") && o.ed_type_code == "EQPT_EXPIRY_DATE_2" )
+							{
+								this.eqpt_exp_d2_dmy.selectedDate = convertDateToLocale( o.ed_exp_date );
+							}
+							if ( o.hasOwnProperty("ed_type_code") && o.ed_type_code == "EQPT_EXPIRY_DATE_3" )
+							{
+								this.eqpt_exp_d3_dmy.selectedDate = convertDateToLocale( o.ed_exp_date );
+							}
+						}
+					}
+					
+					if ( currentState == "edit" && this.dataGrid.selectedIndex>=0 )
+					{
+						this.dataGrid.selectedItem.eqpt_exp_d1_dmy = global.convertDateTimeToIsoString( eqpt_exp_d1_dmy.selectedDate, eqpt_exp_d1_dmy.timeEnabled, "" ); 
+						this.dataGrid.selectedItem.eqpt_exp_d2_dmy = global.convertDateTimeToIsoString( eqpt_exp_d2_dmy.selectedDate, eqpt_exp_d2_dmy.timeEnabled, "" ); 
+						this.dataGrid.selectedItem.eqpt_exp_d3_dmy = global.convertDateTimeToIsoString( eqpt_exp_d3_dmy.selectedDate, eqpt_exp_d3_dmy.timeEnabled, "" ); 
+					}
+				}
+			}
+			
+			protected function expiryDateTargetChecker_resultHandler():void
+			{
+				if ( expiryDateTargetChecker.dataInteger > 0 )
+				{
+					this.genericTrailerExpiryDates = true;
+				}
+				else
+				{
+					this.genericTrailerExpiryDates = false;
+				}
+			}
+			
+			protected function updateEddKey(newCmpy:String, newId:String):void
+			{
+				if ( this.edd_old_key.length > 0 )
+				{
+					// get the old data
+					var oldObj:Object = new Object();
+					var arr:Array = edd_old_key.split("__");
+					oldObj.ed_target_code = "TRANSP_EQUIP";
+					oldObj.ed_cmpy_code = arr[0];
+					oldObj.ed_object_id = arr[1];
+					
+					// get the new data
+					var newObj:Object = new Object();
+					newObj.ed_target_code = "TRANSP_EQUIP";
+					newObj.ed_cmpy_code = newCmpy;
+					newObj.ed_object_id = newId;
+					
+					this.updateEddKeyAction.service( oldObj, newObj );					
+					edd_old_key = "";
+				}
+			}
+			
+			protected function updateEddKeyData_resultHandler( ):void
+			{
+			}
+			
+			protected function deleteEddKey():void
+			{
+				if ( this.edd_old_key.length > 0 )
+				{
+					// get the old data
+					var oldObj:Object = new Object();
+					var arr:Array = edd_old_key.split("__");
+					oldObj.ed_target_code = "TRANSP_EQUIP";
+					oldObj.ed_cmpy_code = arr[0];
+					oldObj.ed_object_id = arr[1];
+					
+					this.deleteEddKeyAction.service( oldObj );					
+					edd_old_key = "";
+				}
+			}
+			
+			protected function deleteEddKeyData_resultHandler( ):void
+			{
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateFormatter" locale="{LocaleID.DEFAULT}" dateStyle="short" timeStyle="none"/>
+		<s:DateTimeFormatter id="dateConvert" dateTimePattern="yyyy-MM-dd"/>
+		<s:CallResponder id="getPagedResult" result="PopUpManager.removePopUp(processingAnimation)"/>
+		<s:CallResponder id="getEquipLoadTypesResult"/>
+		<s:CallResponder id="transpEqptTypeLookup"/>
+		<s:CallResponder id="getEquipmentComposition" result="getEquipmentComposition_resultHandler(event)"/>
+		<s:CallResponder id="getEquipmentsByTypeAndCode"/>
+		<s:CallResponder id="isEqptExisted"/>
+		<s:CallResponder id="isEqptUsedByTanker"/>
+		<equipmentlistservice:EquipmentListService id="equipmentListService" channelSet="{global.channelSet}"
+												   fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+												   showBusyCursor="true"/>
+		<s:CallResponder id="lookupResult" result="lookupResult_resultHandler(event)"/>
+		<s:CallResponder id="lookupResult2"/>
+		<companiesservice:CompaniesService id="companiesService" channelSet="{global.channelSet}"
+										   fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+										   showBusyCursor="true"/>
+		<equipmenttypesservice:EquipmentTypesService id="equipmentTypesService" channelSet="{global.channelSet}"
+													 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+													 showBusyCursor="true"/>
+		<s:CallResponder id="getAreas"/>
+		<personnelservice:PersonnelService id="personnelService" channelSet="{global.channelSet}"
+										   fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+										   showBusyCursor="true"/>
+		<s:CallResponder id="unlockResult" result="unlockResultHandler(event)" fault="global.msgFail(resourceManager.getString('default','global.msg.fail_unlock_eqpt_cmpt'))"/>
+		<s:CallResponder id="removeResult" result="removeResultHandler(event)" fault="global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'))"/>
+		<s:CallResponder id="updateResult" result="updateResultHandler(event)" fault="global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'))"/>
+		<s:CallResponder id="createResult" result="createResultHandler(event)" fault="global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'))"/>
+		<components:ValidationGroup id="vg" action="{save_clickHandler}" defaultButton="{btn_save}"/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		<s:HGroup id="toolbar" width="100%" gap="5" paddingBottom="2" paddingTop="2">
+			<!--s:HGroup gap="-20">
+				<components:DKI_ToggleButton skinClass="skins.DKI_ToggleSearchButton_Skin"  id="tb" width="80" height="{labelHeight}" label="{resourceManager.getString('default','EQPT_TITLE')}" click="selectByHandler(event)" selected="true"/>
+				<components:DKI_ValidatorInput id="searchText" width="160" height="{labelHeight}" keyUp="searchText_keyUpHandler(event)" width.widget="140"/>
+			</s:HGroup-->
+			<components:DKI_ValidatorInput id="searchText" validationType="search" width="160" height="100%"
+									   keyUp="searchText_keyUpHandler(event)"
+									   width.widget="140" prompt="{resourceManager.getString('default','global.prompts.searchbyequipment')}"/>
+			
+			<components:DKI_DropDownList id="fltr_company" width="188" height="100%"
+										 change="fltr_company_changeHandler(event)" cornerRadius="10"
+										 labelField="cmpy_name" prompt="{resourceManager.getString('default','EQPT_OWNER_NAME')+resourceManager.getString('default','FILTER')}"
+										 width.edit="182" width.widget="160" dataProvider="{lookupResult.lastResult}"/>
+			<components:DKI_DropDownList id="fltr_eqptype" width="188" height="100%"
+										 change="fltr_eqptype_changeHandler(event)" cornerRadius="10"
+										 labelField="etyp_title" prompt="{resourceManager.getString('default','EQPT_ETP_TITLE')+resourceManager.getString('default','FILTER')}"
+										 width.edit="182" width.widget="160" visible.widget="false" excludeFrom="widget" dataProvider="{lookupResult2.lastResult}"/>
+			<components:DKI_Button height="100%" label="{resourceManager.getString('default','CLEAR')+resourceManager.getString('default','FILTER')}" type="refresh" click="refreshRecords(event)"
+								   width.widget="100%"/>
+			<s:Spacer width="100%" excludeFrom="widget"/>
+			<components:DKI_Button label="{resourceManager.getString('default','CREATE')}" height="100%" click="createNewRecord(event)" includeIn="normal" enabled="{this.canCreate}" type="create"/>			
+		</s:HGroup>
+		<s:DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="4"
+					selectionChange="dataGrid_selectionChangeHandler(event)"
+					skinClass="skins.DKI_DataGrid_Skin"
+					height.widget="100%">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="eqpt_id" headerText="{resourceManager.getString('default','EQPT_ID')}"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_code" headerText="{resourceManager.getString('default','EQPT_CODE')}"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_title" headerText="{resourceManager.getString('default','EQPT_TITLE')}"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_tanker" headerText="{resourceManager.getString('default','EQPT_TANKER')}"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_owner" headerText="{resourceManager.getString('default','EQPT_OWNER')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_owner_name" headerText="{resourceManager.getString('default','EQPT_OWNER_NAME')}"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_etp" headerText="{resourceManager.getString('default','EQPT_ETP')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_etp_title" headerText="{resourceManager.getString('default','EQPT_ETP_TITLE')}"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_lock" headerText="{resourceManager.getString('default','EQPT_LOCK')}" itemRenderer="renderers.GridLockRender"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_load_type" headerText="{resourceManager.getString('default','EQPT_LOAD_TYPE')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_load_type_name" headerText="{resourceManager.getString('default','EQPT_LOAD_TYPE_NAME')}"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_exp_d1_dmy" headerText="{global.exp1}" itemRenderer="renderers.DateRenderer" visible.widget="false"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_exp_d2_dmy" headerText="{global.exp2}" itemRenderer="renderers.DateRenderer" visible.widget="false"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_exp_d3_dmy" headerText="{global.exp3}" itemRenderer="renderers.DateRenderer" visible.widget="false"></s:GridColumn>
+						<s:GridColumn dataField="eqp_must_tare_in" headerText="{resourceManager.getString('default','EQP_MUST_TARE_IN')}" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_area" headerText="{resourceManager.getString('default','EQPT_AREA')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_area_name" headerText="{resourceManager.getString('default','EQPT_AREA_NAME')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_max_gross" headerText="{resourceManager.getString('default','EQPT_MAX_GROSS')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_empty_kg" headerText="{resourceManager.getString('default','EQPT_EMPTY_KG')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_last_modified" headerText="{resourceManager.getString('default','LAST_MODIFIED')}" itemRenderer="renderers.DateRenderer" visible="true" visible.widget="false"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_last_used" headerText="{resourceManager.getString('default','LAST_USED')}" itemRenderer="renderers.DateRenderer" visible="true" visible.widget="false"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			<s:dataProvider>
+				<s:AsyncListView list="{getPagedResult.lastResult}"/>
+			</s:dataProvider>
+		</s:DataGrid>
+	</s:Panel>
+
+	<s:Panel id="details" includeIn="edit,create" width="100%" height="480"
+			 itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		<s:Spacer height="5"/>
+		<s:HGroup>
+			<s:VGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','EQPT_OWNER_NAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="eqpt_owner" 
+											 dataProvider="{lookupResult.lastResult}" 
+											 labelField="cmpy_name" 
+											 selectedItem.edit="{dataGrid.selectedItem.eqpt_owner_name}" enabled.edit="false" 
+											 selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+											 width="{fieldWidth}" height="{fieldHeight}" 
+											 prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','EQPT_OWNER_NAME')}"  
+											 change="getNewEqptComposition()"
+											 required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','EQPT_OWNER_NAME')}" 
+											 />
+					<!--s:Label width="{labelWidth}" height="{labelHeight}" text="{eqpt_owner.selectedIndex}" verticalAlign="middle"/-->
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','EQPT_CODE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="eqpt_code" 
+												   maxChars="20"
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text.edit="{dataGrid.selectedItem.eqpt_code}" editable.edit="false" enabled.edit="false"
+												   text.create="" editable.create="true" enabled.create="true"
+												   change.create="checkEqptCode()"
+												   required="true" validationType="alphanumericspecial_nosq" validationGroup="{vg}" automationName="{resourceManager.getString('default','EQPT_CODE')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','EQPT_TITLE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="eqpt_title" 
+												   maxChars="40"
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text.edit="{dataGrid.selectedItem.eqpt_title}" editable.edit="true" 
+												   text.create="" editable.create="true"
+												   required="true" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','EQPT_TITLE')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				
+				
+				<s:VGroup paddingLeft="{this.genericTrailerExpiryDates?2:0}">
+					<s:Rect height="150" width="{labelWidth+fieldWidth+15}" radiusX="0" radiusY="0" includeInLayout="false" visible="{this.genericTrailerExpiryDates}">
+						<s:stroke>
+							<s:SolidColorStroke color="0x888888"/>
+						</s:stroke>
+					</s:Rect>
+					<s:Spacer height="2" visible="{this.genericTrailerExpiryDates}" includeInLayout="{this.genericTrailerExpiryDates}"/>
+					<s:HGroup>
+						<s:Label width="{labelWidth}" height="{labelHeight}" text="{global.exp1}" verticalAlign="middle"/>
+						<!--components:DKI_DateTimeRange hideTime="true" id="eqpt_exp_d1_dmy" selectedDate.edit="{convertDateToLocale(dataGrid.selectedItem.eqpt_exp_d1_dmy)}" selectedDate.create="{getDefaultDate()}" width="{fieldWidth}" height="{fieldHeight}" /-->
+						<components:DKI_DateTime id="eqpt_exp_d1_dmy" 
+												 selectedDate="{convertDateToLocale(dataGrid.selectedItem.eqpt_exp_d1_dmy)}" enabled="true" 
+												 selectedDate.create="{getDefaultDate()}" enabled.create="true" 
+												 width="{fieldWidth}" height="{fieldHeight}" timeEnabled="false" enableNull="true"
+												 />
+					</s:HGroup>
+					<s:Spacer height="{spaceHeight}" />
+					<s:HGroup>
+						<s:Label width="{labelWidth}" height="{labelHeight}" text="{global.exp2}" verticalAlign="middle"/>
+						<!--components:DKI_DateTimeRange hideTime="true" id="eqpt_exp_d2_dmy" selectedDate.edit="{convertDateToLocale(dataGrid.selectedItem.eqpt_exp_d2_dmy)}" selectedDate.create="{getDefaultDate()}" width="{fieldWidth}" height="{fieldHeight}" /-->
+						<components:DKI_DateTime id="eqpt_exp_d2_dmy" 
+												 selectedDate="{convertDateToLocale(dataGrid.selectedItem.eqpt_exp_d2_dmy)}" enabled="true" 
+												 selectedDate.create="{getDefaultDate()}" enabled.create="true" 
+												 width="{fieldWidth}" height="{fieldHeight}" timeEnabled="false" enableNull="true"
+												 />
+					</s:HGroup>
+					<s:Spacer height="{spaceHeight}" />
+					<s:HGroup>
+						<s:Label width="{labelWidth}" height="{labelHeight}" text="{global.exp3}" verticalAlign="middle"/>
+						<!--components:DKI_DateTimeRange hideTime="true" id="eqpt_exp_d3_dmy" selectedDate.edit="{convertDateToLocale(dataGrid.selectedItem.eqpt_exp_d3_dmy)}" selectedDate.create="{getDefaultDate()}" width="{fieldWidth}" height="{fieldHeight}"/-->
+						<components:DKI_DateTime id="eqpt_exp_d3_dmy" 
+												 selectedDate="{convertDateToLocale(dataGrid.selectedItem.eqpt_exp_d3_dmy)}" enabled="true" 
+												 selectedDate.create="{getDefaultDate()}" enabled.create="true" 
+												 width="{fieldWidth}" height="{fieldHeight}" timeEnabled="false" enableNull="true"
+												 />
+					</s:HGroup>
+					<s:HGroup visible="{this.genericTrailerExpiryDates}" includeInLayout="{this.genericTrailerExpiryDates}">
+						<s:Label width="{labelWidth}" height="100%" text="" verticalAlign="middle"/>
+						<components:DKI_Button id="btn_expirydates" label="{resourceManager.getString('default','ED_EXP_DATES')}" width="{fieldWidth}" height="100%" includeIn="edit,create" type="default" 
+											   enabled.create="{this.canCreate &amp;&amp; (this.eqpt_code.text.length>0)  &amp;&amp; (this.eqpt_owner.selectedIndex>=0)}" enabled.edit="{this.canUpdate}" 
+											   visible="{this.genericTrailerExpiryDates}" includeInLayout="{this.genericTrailerExpiryDates}" click="goToExpiryDateDetails();"/>
+					</s:HGroup>
+					<s:Spacer height="2" visible="{this.genericTrailerExpiryDates}" includeInLayout="{this.genericTrailerExpiryDates}"/>
+				</s:VGroup>
+				
+				
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight-10}" text="  "/>
+					<s:CheckBox label="{resourceManager.getString('default','EQPT_LOCK')}" fontWeight="bold" id="eqpt_lock" selected.edit="{dataGrid.selectedItem.eqpt_lock=='Y'?true:false}" enabled.edit="true" selected.create="false" enabled.create="true"/>
+				</s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight-10}" text="  "/>
+					<s:CheckBox label="{resourceManager.getString('default','EQP_MUST_TARE_IN')}" fontWeight="bold" id="eqp_must_tare_in" selected.edit="{dataGrid.selectedItem.eqp_must_tare_in=='Y'?true:false}" enabled.edit="{!isFlatbed}" selected.create="false" enabled.create="{!isFlatbed}"/>
+				</s:HGroup>
+			</s:VGroup>
+			<s:Spacer width="{spaceWidth}" />
+			<s:VGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','EQPT_ETP_TITLE')}" verticalAlign="middle"/>
+					<s:TextInput id="eqpt_cmpt_num" width.create="30" width.edit="0" height="{fieldHeight}" text.create="" includeInLayout="false" visible="false" includeInLayout.create="true" visible.create="true" change="refilterEqptTypes(event)" toolTip="Filter by number of compartments"/>
+					<components:DKI_ValidatorComboBox id="eqpt_etp" 
+											 dataProvider="{transpEqptTypeLookup.lastResult}" 
+											 labelField="etyp_title" 
+											 selectedItem.edit="{dataGrid.selectedItem.eqpt_etp_title}" enabled.edit="false" 
+											 selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+											 width="{fieldWidth}" width.create="{fieldWidth-36}" height="{fieldHeight}" 
+											 prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','EQPT_ETP_TITLE')}" 
+											 change="getNewEqptComposition()"
+											 required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','EQPT_ETP_TITLE')}" 
+											 />
+					<!--s:Label width="{labelWidth}" height="{labelHeight}" text="{dataGrid.selectedItem.eqpt_etp}" verticalAlign="middle"/-->
+					<!--s:Label width="{labelWidth}" height="{labelHeight}" text="{eqpt_etp.selectedIndex}" verticalAlign="middle"/-->
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','EQPT_ID')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="eqpt_id" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text.edit="{dataGrid.selectedItem.eqpt_id}" enabled.edit="false" 
+												   text.create="" enabled.create="false" 
+												   required="false" validationType="integer" validationGroup="{vg}" automationName="{resourceManager.getString('default','EQPT_ID')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','EQPT_AREA_NAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="eqpt_area" 
+											 dataProvider="{getAreas.lastResult}" 
+											 labelField="area_name" 
+											 selectedItem.edit="{dataGrid.selectedItem.eqpt_area_name}" enabled.edit="true" 
+											 selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+											 width="{fieldWidth}" height="{fieldHeight}" 
+											 prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','EQPT_AREA_NAME')}"
+											 required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','EQPT_AREA_NAME')}" 
+											 />
+					<!--s:Label width="{labelWidth}" height="{labelHeight}" text="{eqpt_area.selectedIndex}" verticalAlign="middle"/-->
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','EQPT_LOAD_TYPE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="eqpt_load_type" 
+											 dataProvider="{getEquipLoadTypesResult.lastResult}" 
+											 labelField="LD_TYPE_TEXT" 
+											 selectedItem.edit="{dataGrid.selectedItem.eqpt_load_type_name}" enabled.edit="true" 
+											 selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+											 width="{fieldWidth}" height="{fieldHeight}" 
+											 prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','EQPT_LOAD_TYPE')}"
+											 required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','EQPT_LOAD_TYPE')}" 
+											 />
+					<!--s:Label width="{labelWidth}" height="{labelHeight}" text="{eqpt_load_type.selectedIndex}" verticalAlign="middle"/-->
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','EQPT_EMPTY_KG')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="eqpt_empty_kg" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text.edit="{dataGrid.selectedItem.eqpt_empty_kg}" editable.edit="true" 
+												   text.create="0" editable.create="true"  restrict="0-9"
+												   required="false" validationType="integer" validationGroup="{vg}" automationName="{resourceManager.getString('default','EQPT_EMPTY_KG')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','EQPT_MAX_GROSS')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="eqpt_max_gross" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text.edit="{dataGrid.selectedItem.eqpt_max_gross}" editable.edit="{!isFlatbed}" 
+												   text.create="0" editable.create="{!isFlatbed}" enabled="{!isFlatbed}"  restrict="0-9"
+												   required="false" validationType="integer" validationGroup="{vg}" automationName="{resourceManager.getString('default','EQPT_MAX_GROSS')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" text="{resourceManager.getString('default','global.lbl.comments')}"/>
+				</s:HGroup>
+				<s:HGroup>
+					<!--s:TextArea id="eqpt_comments" width="{labelWidth+fieldWidth+20}" text="{dataGrid.selectedItem.eqpt_comments}" height="150" maxChars="800" restrict="A-Z a-z0-9_,.=/\-\\"/-->	
+					<s:TextArea id="eqpt_comments" width="{labelWidth+fieldWidth+20}" text="{dataGrid.selectedItem.eqpt_comments}" height="150" maxChars="800"/>	
+				</s:HGroup>
+			</s:VGroup>
+			<!--s:VGroup>
+				<s:HGroup width="{fieldWidth}" height="100%" gap="14" paddingBottom="4" paddingLeft="5" paddingRight="8" paddingTop="0" requestedColumnCount="4">
+					<components:DKI_List id="detailsList" contentBackgroundAlpha="0" left="10" height="100%" width="100%" itemRenderer="renderers.equipmentRenderer" borderVisible="false" dataProvider="{dataGrid.selectedItem.composition}" mouseOver="{detailsList.selectedIndex=-1}">
+						<components:layout>
+							<s:HorizontalLayout gap="0"/>
+						</components:layout>
+					</components:DKI_List>			
+				</s:HGroup>
+			</s:VGroup-->
+			<!--s:VGroup>
+			<s:HGroup width="100%" height="100%" gap="4" paddingBottom="4" paddingLeft="5" paddingRight="8" paddingTop="0" requestedColumnCount="4" visible.edit="true" visible.create="false">
+			<components:DKI_List id="equipCmptsList" contentBackgroundAlpha="0" left="10" height="100%" width="100%" itemRenderer="renderers.TranspEquipmentRenderer" borderVisible="false" dataProvider="{getArrayCollection( dataGrid.selectedItem )}" mouseOver="{equipCmptsList.selectedIndex=-1}">
+			<components:layout>
+			<s:HorizontalLayout gap="0"/>
+			</components:layout>
+			</components:DKI_List>			
+			</s:HGroup>
+			</s:VGroup-->
+			<s:VGroup>
+				<s:HGroup width="100%" height="100%" gap="14" paddingBottom="4" paddingLeft="5" paddingRight="8" paddingTop="0" requestedColumnCount="4">
+					<components:DKI_List id="equipCmptsList" contentBackgroundAlpha="0" left="10" height="100%" width="100%" itemRenderer="renderers.TranspEquipmentRenderer" borderVisible="false" dataProvider="{getEquipmentComposition.lastResult}" mouseOver="{equipCmptsList.selectedIndex=-1}">
+						<components:layout>
+							<s:HorizontalLayout gap="0"/>
+						</components:layout>
+					</components:DKI_List>			
+				</s:HGroup>
+			</s:VGroup>
+			<!--s:VGroup>
+				<s:DataGrid id="equipCmptsList" width="100%" height="100%" requestedRowCount="10" dataProvider="@{dataGrid.selectedItem.compartments}"
+							skinClass="skins.DKI_DataGrid_Skin"
+							height.widget="100%"
+							visible="{dataGrid.selectedItem.compartments.length>0}" editable="true">
+					<s:columns>
+						<s:ArrayList>
+							<s:source>
+								<s:GridColumn dataField="cmpt_no" headerText="{resourceManager.getString('default','EQPT_CMPT_NO')}" width="40" editable="false"></s:GridColumn>
+								<s:GridColumn dataField="adj_safefill" headerText="{global.gSafefillLabel}" width="70" editable="true"></s:GridColumn>
+								<s:GridColumn dataField="adj_capacity" headerText="{global.gCapacityLabel}" width="70" editable="true"></s:GridColumn>
+								<s:GridColumn dataField="unit_title" headerText="{resourceManager.getString('default','EQPT_CMPT_UNIT')}" width="60" editable="false"></s:GridColumn>
+							</s:source>
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+			</s:VGroup-->
+			<!--s:VGroup>
+			<s:HGroup width="100%" height="100%" gap="14" paddingBottom="4" paddingLeft="5" paddingRight="8" paddingTop="0" requestedColumnCount="1">
+			<s:SkinnableDataContainer id="equipCmptsList" itemRenderer="renderers.EquipmentCompartmentsRenderer" dataProvider="{getArrayCollection( dataGrid.selectedItem )}" >
+			</s:SkinnableDataContainer>			
+			</s:HGroup>
+			</s:VGroup-->
+		</s:HGroup>
+		
+		<s:Spacer height="{spaceHeight*5}" />
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_unlock" label="{resourceManager.getString('default','button.lbl.UNLOCK_ALL_CMPTS')}" height="100%" click="unlock_clickHandler()" includeIn="edit" enabled="{this.canUpdate}" type="unlock"/>
+			<components:DKI_Button id="btn_delete" label="{resourceManager.getString('default','DELETE')}" height="100%" click="doDelete()" includeIn="edit" enabled="{this.canDelete}" type="delete"/>
+			<components:DKI_Button id="btn_save" label.create="{resourceManager.getString('default','SAVE')}" label="{resourceManager.getString('default','UPDATE')}" height="100%" includeIn="edit,create" enabled.create="{this.canCreate}" enabled.edit="{this.canUpdate}" type.create="create" type.edit="edit"/>
+			<components:DKI_Button id="btn_cancel" label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel"/>
+		</s:HGroup>
+	</s:Panel>
+
+
+</s:VGroup>

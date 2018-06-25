@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="400" height="300"
+			   xmlns:components="components.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			public var journalArr:ArrayCollection = new ArrayCollection();
+			
+			protected function rbg_changeHandler(event:Event):void
+			{
+				btn_create.enabled=true;
+				trace(rbg.selectedValue);
+			}
+			
+			protected function btn_save_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<s:RadioButtonGroup id="rbg" change="rbg_changeHandler(event)"/> 
+	</fx:Declarations>
+	<s:VGroup paddingLeft="10" paddingTop="5" paddingRight="10" paddingBottom="5" gap="8">
+		<s:RadioButton label="Selected Range" groupName="rbg"/>
+		<s:RadioButton label="With Filter" groupName="rbg"/>
+		<s:RadioButton label="Filtered Selection" groupName="rbg"/>
+		<s:Spacer height="100%"/>
+		<s:HGroup width="100%" gap="5">
+			<s:Spacer width="100%"/>
+			<s:Button id="btn_create" icon="{glyph.button_create}" enabled="false"/>
+			<s:Button id="btn_save" icon="{glyph.button_save}" click="btn_save_clickHandler(event)"/>
+		</s:HGroup>
+	</s:VGroup>
+</s:BorderContainer>

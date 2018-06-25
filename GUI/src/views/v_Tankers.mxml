@@ -1,0 +1,1911 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  xmlns:tankersservice="services.tankersservice.*"
+		  xmlns:companiesservice="services.companiesservice.*"
+		  xmlns:equipmenttypesservice="services.equipmenttypesservice.*"
+		  xmlns:personnelservice="services.personnelservice.*"
+		  width="100%" height="100%" creationComplete="creationCompleteHandler(event)"
+		  gap="2">
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="widget"/>
+		<s:State name="edit" enterState="
+				 callLater(function():void{dataGrid.ensureCellIsVisible(idx);});"/>
+		<s:State name="create"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.fiber.runtime.lib.DateTimeFunc;
+			
+			import components.ActionDialog;
+			import components.BusyIndicator;
+			import components.DKI_AlertBox;
+			import components.DeleteDialog;
+			import components.ExpiryDateDetailsEditorAdv;
+			import components.MessageDialog;
+			import components.ViewPopupDlg;
+			
+			import dm.remoteDataService;
+			
+			import flash.events.KeyboardEvent;
+			import flash.globalization.LocaleID;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			
+			import valueObjects.GUI_Tankers;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable] public var labelWidth:int = 80;
+			[Bindable] public var labelHeight:int = 26;
+			[Bindable] public var fieldWidth:int = 200;
+			[Bindable] public var fieldHeight:int = 26;
+			[Bindable] public var spaceWidth:int = 20;
+			[Bindable] public var spaceHeight:int = -2;
+			
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='tnkr_title';
+			private var currentDirection:String="ASC";
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			private var currentSorts:Object=new Object();
+			private var currentOrders:Object=new Object();
+			private var currentSortSeq:int=0;
+			
+			private var eq_filter:String=null;
+			
+			private var confirmDelete:DKI_AlertBox;
+			private var processingAnimation:BusyIndicator = new BusyIndicator();
+			
+			private var gridColumnSequenceMaker:remoteDataService = new remoteDataService( "ScreenGridColumnService.lookupGridColumnSequence", null, gridColumnSequenceMaker_resultHandler, 1 );
+			private var _gridColumnSequenceString:String="";
+			private var formColumnSettingsMaker:remoteDataService = new remoteDataService( "ScreenFormColumnService.lookupFormColumnSettings", null, formColumnSettingsMaker_resultHandler, 1 );
+			private var _formColumnSettingsString:String="";
+			
+			//public var eddPopup:ViewPopupDlg = new ViewPopupDlg( "Expiry Date Details", new v_ExpiryDateDetails(), closeDialogHandler );
+			public var eddPopup:ViewPopupDlg = new ViewPopupDlg( "Expiry Date Details", new ExpiryDateDetailsEditorAdv(), closeDialogHandler );
+			
+			private var expiryDateTargetChecker:remoteDataService = new remoteDataService( "GenericExpiryDateService.isExpiryDateTargetEnabled", null, expiryDateTargetChecker_resultHandler, 2 );
+			[Bindable] private var genericTankerExpiryDates:Boolean=false;
+			private var edd_old_key:String="";
+			private var updateEddKeyAction:remoteDataService = new remoteDataService( "ExpiryDateDetailService.updateExpiryDateDetailKey", null, updateEddKeyData_resultHandler, 1 );
+			private var deleteEddKeyAction:remoteDataService = new remoteDataService( "ExpiryDateDetailService.delete", null, deleteEddKeyData_resultHandler, 1 );
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				this.formColumnSettingsMaker.service( "TANKER_LIST" );
+				
+				this.gridColumnSequenceMaker.service( "TANKER_LIST" );
+				
+				processingAnimation.width = processingAnimation.height = 80;
+				//PopUpManager.addPopUp(processingAnimation, this, true);
+				//PopUpManager.centerPopUp(processingAnimation);
+				terminalLookup.token = tankersService.terminalLookup( );
+				tankerEqptTypeLookup.token = tankersService.tnkrEqptTypeLookup('-1', '-1');
+				dataGrid.scroller.verticalScrollBar.addEventListener(Event.CHANGE, verticalScrollBarChanged);
+				dataGrid.addEventListener(KeyboardEvent.KEY_UP, reportKeyUp);
+				dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+				lookupResult.token = companiesService.lookupByType(2);  //.lookup();
+				lookupResult2.token = equipmentTypesService.lookup();
+				getPagedResult.token = tankersService.getTankers( currentFields, currentTypes, currentSorts, currentOrders);
+				
+				this.expiryDateTargetChecker.service("TANKERS");
+			}
+			
+			protected function formColumnSettingsMaker_resultHandler():void
+			{
+				this._formColumnSettingsString =  formColumnSettingsMaker.dataString;
+			}
+			
+			
+			protected function gridColumnSequenceMaker_resultHandler():void
+			{
+				this._gridColumnSequenceString =  gridColumnSequenceMaker.dataString;
+				
+				if ( _gridColumnSequenceString.length > 0 )
+				{
+					global.adjustGridColumnSequence( _gridColumnSequenceString.substr(1), dataGrid );
+				}
+				
+			}
+			
+			
+			private function verticalScrollBarChanged(event:Event):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function reportKeyUp(event:KeyboardEvent):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				if(event.column.dataField!='composition' && event.column.dataField!='compartments')
+				{
+					var currentRenderer:IGridItemRenderer;
+					var dir:String;
+					
+					if ( global.sortingBySingleColumn == true )
+					{	// sorted by single column only
+						for (var i:int=0; i < dataGrid.columns.length; i++)
+						{
+							currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+							if ( currentRenderer != null)
+							{
+								(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+							}
+							//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+						}
+					}
+					else
+					{	// sorted by multiple columns
+						;
+					}
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if( currentSorts.hasOwnProperty(event.column.dataField ) )
+					{
+						dir = currentSorts[event.column.dataField];
+						if( dir=="ASC" )
+						{
+							dir = "DESC";
+						}
+						else if ( dir == "DESC" )
+						{
+							dir = "";
+						}
+						else if ( dir == "" )
+						{
+							dir = "ASC";
+						}
+						else 
+						{
+							dir = "ASC";
+						}
+						
+						if ( dir != "" )
+						{
+							currentSorts[event.column.dataField] = dir;	
+						}
+						else
+						{
+							delete currentSorts[event.column.dataField];
+							delete currentOrders[event.column.dataField];
+						}
+					}
+					else
+					{
+						if ( global.sortingBySingleColumn == true )
+						{	// sorted by single column only
+							currentSorts = new Object();
+							currentOrders = new Object();
+							currentSortSeq = 0;
+						}
+						else
+						{	// sorted by multiple columns
+							;
+						}
+						currentSorts[event.column.dataField] = "ASC";	
+						dir = currentSorts[event.column.dataField];
+						currentSortSeq += 1;
+						currentOrders[event.column.dataField] = currentSortSeq;	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+					this.startFiltering();
+					//getPagedResult.token = tankersService.getPaged(currentFilter,currentOrder,currentDirection, 0, 100);
+					//getPagedResult.token = equipmentTypesService.getAll();
+				}
+			}
+			
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				if(currentState != 'widget')
+				{
+					idx=dataGrid.selectedIndex;
+					callLater(function():void{dataGrid.ensureCellIsVisible(idx);});
+					
+					// get the detailed composition including its equipments and compartments
+					var etyp_id:int=-1;
+					var tanker:String="-1";
+					var owner:String="-1";
+					var option:int=1;
+					
+					etyp_id = int( dataGrid.selectedItem.tnkr_etp );
+					tanker = dataGrid.selectedItem.tnkr_code;
+					owner = dataGrid.selectedItem.tnkr_owner;
+					getTankerComposition.token = tankersService.getTankerComposition(etyp_id, tanker, owner, option);
+					//dataGrid.selectedItem.composition = getTankerComposition.lastResult;
+					isTankerScheduled.token = tankersService.isTankerScheduled( dataGrid.selectedItem.tnkr_code );
+					
+					currentState = "edit";	
+					
+					this.detailsList.visible = true;
+					
+					if ( _formColumnSettingsString.length > 0 )
+					{
+						global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+					}
+					
+					this.tnkr_lic_exp.enabled = !this.genericTankerExpiryDates;
+					this.tnkr_dglic_exp.enabled = !this.genericTankerExpiryDates;
+					this.tnkr_ins_exp.enabled = !this.genericTankerExpiryDates;
+				}
+			}
+			
+			protected function cancel_clickHandler():void
+			{
+				clearDetail();
+				if ( currentState== "create" )
+				{
+					dataGrid.enabled=true;
+					deleteEddKey();
+				}
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+			}			
+			
+			protected function selectByHandler(event:MouseEvent):void
+			{
+				if ((event.target as ToggleButton).selected)
+					(event.target as ToggleButton).label = resourceManager.getString('default','TNKR_NAME'); 
+				else
+					(event.target as ToggleButton).label = resourceManager.getString('default','TNKR_CODE'); 
+			}			
+			
+			protected function searchText_keyUpHandler(event:KeyboardEvent):void
+			{
+				var keyCode:uint = 0;
+				if (event == null)
+				{
+					keyCode=0;
+				}
+				else
+				{
+					keyCode=event.keyCode;
+				}
+				
+				if ( keyCode == 13 )
+				{
+					if (currentState == "edit") clearDetail();
+					startFiltering();
+				}
+				
+				//if (currentState == "edit") clearDetail();
+				//startFiltering();
+			}
+			
+			protected function fltr_terminal_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_company_changeHandler(event:IndexChangeEvent):void
+			{
+				if ( fltr_company.dropDown != null )
+				{
+					fltr_company.width = fltr_company.dropDown.width + 25;
+					fltr_company.invalidateDisplayList();
+					
+					trace( "fltr_company.........................", fltr_company.dropDown.width );
+				}
+				
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_eqptype_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			private function startFiltering():void
+			{
+				var terminalFilter:String = '';  
+				var companyFilter:String = '';  
+				var eqptypeFilter:String = '';
+				var nameFilter:String = '';
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				if (fltr_company.selectedIndex > -1) 
+				{
+					companyFilter = "tnkr_owner='"+lookupResult.lastResult[fltr_company.selectedIndex].cmpy_code+"' ";
+					fields["tnkr_owner"] = lookupResult.lastResult[fltr_company.selectedIndex].cmpy_code;
+					if ( fields["tnkr_owner"] == "ANY" )
+					{
+						companyFilter = '';
+						fields["tnkr_owner"] = "";
+					}
+				}
+				else
+				{
+					if ( global.setComboBoxNoSelection == true )
+					{
+						fltr_company.selectedIndex = -1;
+					}
+					companyFilter = '';
+					fields["tnkr_owner"] = "";
+				}
+				types["tnkr_owner"] = "EXACT_STRING";
+				
+				if ( this.currentState != "widget" )
+				{
+					if (fltr_terminal.selectedIndex > -1) 
+					{
+						terminalFilter = "tnkr_base_site='"+terminalLookup.lastResult[fltr_terminal.selectedIndex].term_code+"' ";
+						fields["tnkr_base_site"] = terminalLookup.lastResult[fltr_terminal.selectedIndex].term_code;
+					}
+					else
+					{
+						if ( global.setComboBoxNoSelection == true )
+						{
+							fltr_terminal.selectedIndex = -1;
+						}
+						terminalFilter = '';
+						fields["tnkr_base_site"] = "";
+					}
+					types["tnkr_base_site"] = "EXACT_STRING";
+					
+					if (fltr_eqptype.selectedIndex > -1) 
+					{
+						eqptypeFilter = "tnkr_etp="+lookupResult2.lastResult[fltr_eqptype.selectedIndex].etyp_id+" ";
+						fields["tnkr_etp"] = lookupResult2.lastResult[fltr_eqptype.selectedIndex].etyp_id;
+					}
+					else
+					{
+						if ( global.setComboBoxNoSelection == true )
+						{
+							fltr_eqptype.selectedIndex = -1;
+						}
+						eqptypeFilter = '';
+						fields["tnkr_etp"] = "";
+					}
+					types["tnkr_etp"] = "NUMBER";
+				}
+				
+				if(searchText.text!='')
+				{
+					nameFilter = "((UPPER(tnkr_code) LIKE UPPER('%"+(searchText.text)+"%') ) or "
+						+ "(UPPER(tnkr_name) LIKE UPPER('%"+(searchText.text)+"%') )) ";
+					fields["tnkr_code||tnkr_name"] = searchText.text+"||"+searchText.text;
+					/*
+					if (!tb.selected)
+					{
+						nameFilter = "(UPPER(tnkr_code) LIKE UPPER('%"+(searchText.text)+"%') ) ";
+						fields["tnkr_code"] = searchText.text;
+						fields["tnkr_name"] = "";
+					}
+					else
+					{
+						nameFilter = "(UPPER(tnkr_name) LIKE UPPER('%"+(searchText.text)+"%') ) ";
+						fields["tnkr_code"] = "";
+						fields["tnkr_name"] = searchText.text;
+					}
+					*/
+				}
+				else
+				{
+					nameFilter = '';
+					fields["tnkr_code||tnkr_name"] = "";
+					//fields["tnkr_code"] = "";
+					//fields["tnkr_name"] = "";
+				}
+				//types["tnkr_code"] = "STRING";
+				//types["tnkr_name"] = "STRING";
+				types["tnkr_code||tnkr_name"] = "STRING||STRING";
+				
+				
+				currentFilter = "WHERE 1=1 ";
+				if ( nameFilter.length > 0 )
+				{
+					currentFilter += "AND " + nameFilter;
+				}
+				if ( companyFilter.length > 0 )
+				{
+					currentFilter += "AND " + companyFilter;
+				}
+				if ( terminalFilter.length > 0 )
+				{
+					currentFilter += "AND " + terminalFilter;
+				}
+				if ( eqptypeFilter.length > 0 )
+				{
+					currentFilter += "AND " + eqptypeFilter;
+				}
+				currentFields = fields;
+				currentTypes = types;
+				//				getPagedResult.token = tankersService.getPaged(currentFilter,currentOrder, currentDirection);
+				getPagedResult.token = tankersService.getTankers( currentFields, currentTypes, currentSorts, currentOrders);
+				
+				trace("this.grid.scroller3333", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			private function findByCode(code:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["tnkr_code"] = code;
+				types["tnkr_code"] = "STRING";
+				
+				getPagedResult.token = tankersService.getTankers( fields, types, currentSorts, currentOrders);
+			}
+			
+			protected function refreshRecords(event:MouseEvent):void
+			{
+				if ( currentState != "widget" )
+				{
+					currentState = 'normal';
+					dataGrid.enabled=true;
+				}
+				clearDetail();
+				fltr_company.selectedIndex = -1;
+				if ( currentState != "widget" )
+				{
+					fltr_terminal.selectedIndex = -1;
+					fltr_eqptype.selectedIndex = -1;
+				}
+				searchText.text = '';
+				dataGrid.selectedIndex = -1;
+				currentFilter = null;
+				currentOrder = null;
+				currentFields = new Object();
+				currentTypes = new Object();
+				
+				currentSorts = new Object();
+				currentOrders = new Object();
+				var currentRenderer:IGridItemRenderer;
+				for (var i:int=0; i < dataGrid.columns.length; i++)
+				{
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					if ( currentRenderer != null)
+					{
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+					}
+					//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+				}
+				//getPagedResult.token = tankersService.getPaged(currentFilter,"",currentOrder, currentDirection);
+				getPagedResult.token = tankersService.getTankers( currentFields, currentTypes, currentSorts, currentOrders);
+				trace("this.grid.scroller2222", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			protected function clearDetail(): void
+			{
+				if (currentState != 'widget')
+				{
+					/*
+					if(tnkr_codeTextInput)
+					{
+					tnkr_codeTextInput.text='';
+					tnkr_base_siteTextInput.text='';
+					equipment_nameTextInput.text='';
+					tnkr_carrier_name.selectedIndex=-1;
+					tnkr_manager_name.selectedIndex=-1;
+					tnkr_licence_expiry.selectedDate=null;
+					tnkr_dglic_exp.selectedDate=null;
+					tnkr_ins_exp.selectedDate=null;
+					tnkr_lock.selected=false;
+					tnkr_active.selected=false;
+					tnkr_bay_loop_ch.selected=false;
+					depot1.selectedIndex=-1;
+					depot2.selectedIndex=-1;
+					depot3.selectedIndex=-1;
+					tnkr_promptTextInput.text='';
+					tnkr_tripsTextInput.text='';
+					}
+					*/
+				}
+			}			
+			
+			private function editRecord():void
+			{
+				if ( this.checkFields() > 0 )
+				{
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				trace ( "selectedindex", tnkr_owner.selectedIndex, tnkr_etp.selectedIndex);
+				
+				obj.tnkr_code = tnkr_code.text;
+				obj.tnkr_name = tnkr_name.text;
+				
+				if (tnkr_carrier.selectedIndex>=0)
+				{
+					obj.tnkr_carrier = lookupResult.lastResult[tnkr_carrier.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.tnkr_carrier = dataGrid.selectedItem.tnkr_carrier;
+				}
+				if (tnkr_owner.selectedIndex>=0)
+				{
+					obj.tnkr_owner = lookupResult.lastResult[tnkr_owner.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.tnkr_owner = dataGrid.selectedItem.tnkr_owner;
+				}
+				if (tnkr_etp.selectedIndex>=0)
+				{
+					obj.tnkr_etp = tankerEqptTypeLookup.lastResult[tnkr_etp.selectedIndex].etyp_id;
+				}
+				else
+				{
+					obj.tnkr_etp = dataGrid.selectedItem.tnkr_etp;
+				}
+				
+				if (tnkr_base_site.selectedIndex>=0)
+				{
+					obj.tnkr_base_site = terminalLookup.lastResult[tnkr_base_site.selectedIndex].term_code;
+				}
+				else
+				{
+					obj.tnkr_base_site = dataGrid.selectedItem.tnkr_base_site;
+				}
+				if (tnkr_dest_depot.selectedIndex>=0)
+				{
+					obj.tnkr_dest_depot = terminalLookup.lastResult[tnkr_dest_depot.selectedIndex].term_code;
+				}
+				else
+				{
+					obj.tnkr_dest_depot = dataGrid.selectedItem.tnkr_dest_depot;
+				}
+				if (tnkr_last_depot.selectedIndex>=0)
+				{
+					obj.tnkr_last_depot = terminalLookup.lastResult[tnkr_last_depot.selectedIndex].term_code;
+				}
+				else
+				{
+					obj.tnkr_last_depot = dataGrid.selectedItem.tnkr_last_depot;
+				}
+				if (tnkr_cur_depot.selectedIndex>=0)
+				{
+					obj.tnkr_cur_depot = terminalLookup.lastResult[tnkr_cur_depot.selectedIndex].term_code;
+				}
+				else
+				{
+					obj.tnkr_cur_depot = dataGrid.selectedItem.tnkr_cur_depot;
+				}
+				
+				obj.tnkr_pin = tnkr_pin.text;
+				obj.tnkr_lock = (tnkr_lock.selected==true?"on":"");
+				obj.tnkr_active = (tnkr_active.selected==true?"on":"");
+				obj.tnkr_bay_loop_ch = (tnkr_bay_loop_ch.selected==true?"on":"");
+				obj.tnkr_archive = (tnkr_archive.selected==true?"on":"");
+				
+				obj.tnkr_ntrips = tnkr_ntrips.text;
+				obj.tnkr_own_txt = tnkr_own_txt.text;
+
+				/* obj.tnkr_lic_exp = dateConvert.format(tnkr_lic_exp.selectedDate);
+				obj.tnkr_dglic_exp = dateConvert.format(tnkr_dglic_exp.selectedDate);
+				obj.tnkr_ins_exp = dateConvert.format(tnkr_ins_exp.selectedDate); */
+
+				obj.tnkr_lic_exp = global.convertDateTimeToIsoString( tnkr_lic_exp.selectedDate, tnkr_lic_exp.timeEnabled, "" ); 
+				obj.tnkr_dglic_exp = global.convertDateTimeToIsoString( tnkr_dglic_exp.selectedDate, tnkr_dglic_exp.timeEnabled, "" ); 
+				obj.tnkr_ins_exp = global.convertDateTimeToIsoString( tnkr_ins_exp.selectedDate, tnkr_ins_exp.timeEnabled, "" ); 
+				
+				obj.tnkr_stats = tnkr_stats.text; //????
+				obj.tnkr_last_trip = tnkr_last_trip.text;
+				obj.tnkr_max_kg = tnkr_max_kg.text;
+				obj.remarks = remarks.text;
+				
+				// now add the values related to equipment list
+				obj.eqpt_count = detailsList.dataProvider.length;
+				var i:int;
+				var eqpt_code_string:String;
+				var etyp_id_string:String;
+				var etyp_id_value:String;
+				var code_array:Array = new Array();
+				for (i=0; i<obj.eqpt_count; i++)
+				{
+					//trace( "1****equipment list", detailsList.dataProvider[i].equipment );
+					//trace( "1****equipment list", detailsList.dataProvider[i].equipment[0] );
+					if ( obj.eqpt_count > 1 )
+					{
+						etyp_id_value = String(detailsList.dataProvider[i].eqc_sub_item);
+					}
+					else
+					{
+						etyp_id_value = String(detailsList.dataProvider[i].etyp_id);
+					}
+					eqpt_code_string = "eqpt_" + String(i+1);
+					if ( detailsList.dataProvider[i].equipment == null 
+						|| detailsList.dataProvider[i].equipment[0] == null 
+						|| detailsList.dataProvider[i].equipment[0].eqpt_code == null 
+						|| detailsList.dataProvider[i].equipment[0].eqpt_code == "" )
+					{
+						obj[eqpt_code_string] = obj.tnkr_code + "_" + etyp_id_value + "_" + detailsList.dataProvider[i].idx;
+					}
+					else
+					{
+						obj[eqpt_code_string] = detailsList.dataProvider[i].equipment[0].eqpt_code;
+					}
+					
+					etyp_id_string = "etyp_" + String(i+1);
+					obj[etyp_id_string] = etyp_id_value;
+					
+					code_array[i] = obj[eqpt_code_string];
+					
+					trace( "2****equipment list", obj.eqpt_count, eqpt_code_string, obj[eqpt_code_string], etyp_id_string, obj[etyp_id_string] );
+				}
+				
+				if ( this.checkDupValueInArray( code_array ) == true )
+				{
+					global.msgFail(resourceManager.getString('default','global.msg.dup_eqpt_in_tnkr'));
+					return;
+				}
+				
+				updateResult.token = tankersService.update(obj);
+				/*
+				clearDetail();
+				currentState="normal";
+				this.findByCode(obj.tnkr_code);
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+				*/
+			}
+			
+			private function updateResultHandler(event:Event):void
+			{
+				clearDetail();
+				if ( updateResult.lastResult == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var txt:String;
+				txt = this.tnkr_code.text;
+				
+				currentState="normal";
+				this.findByCode( txt );
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			private function doDelete():void
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				//if ( tnkr_lock.selected == true )
+				if ( dataGrid.selectedItem.tnkr_lock == "Y" )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','ALERT__LOCKED_TANKER_CANNOT_BE_DELETED') + "\n";
+				}
+				//if ( tnkr_active.selected == true )
+				if ( dataGrid.selectedItem.tnkr_active == "Y" )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','ALERT__ACTIVE_TANKER_CANNOT_BE_DELETED') + "\n";
+				}
+				//if ( tnkr_bay_loop_ch.selected == true )
+				if ( dataGrid.selectedItem.tnkr_bay_loop_ch == "Y" )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','ALERT__BAYCHK_TANKER_CANNOT_BE_DELETED') + "\n";
+				}
+				//if ( tnkr_archive.selected == true )
+				if ( dataGrid.selectedItem.tnkr_archive == "Y" )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','ALERT__ARCHIVE_TANKER_CANNOT_BE_DELETED') + "\n";
+				}
+				
+				trace ( "isTankerScheduled", tnkr_code.text, dataGrid.selectedItem.tnkr_code, isTankerScheduled.lastResult, isTankerScheduled.token.result);
+				if ( isTankerScheduled.lastResult > 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','ALERT__TANKER_HAS_SCHEDULE') + "\n";
+				}
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				else
+				{
+					var canDelete:DeleteDialog = new DeleteDialog(deleteRecord,hasPassword);
+				}
+			}
+			
+			private function deleteRecord():void
+			{
+				var obj:Object = new Object();
+				
+				
+				obj.tnkr_code = dataGrid.selectedItem.tnkr_code;
+				obj.tnkr_name = dataGrid.selectedItem.tnkr_name;
+				obj.tnkr_carrier = dataGrid.selectedItem.tnkr_carrier;
+				obj.tnkr_owner = dataGrid.selectedItem.tnkr_owner;
+				obj.tnkr_etp = dataGrid.selectedItem.tnkr_etp;
+				obj.tnkr_base_site = dataGrid.selectedItem.tnkr_base_site;
+				obj.tnkr_dest_depot = dataGrid.selectedItem.tnkr_dest_depot;
+				obj.tnkr_last_depot = dataGrid.selectedItem.tnkr_last_depot;
+				obj.tnkr_cur_depot = dataGrid.selectedItem.tnkr_cur_depot;
+				obj.tnkr_pin = dataGrid.selectedItem.tnkr_pin;
+				obj.tnkr_lock = dataGrid.selectedItem.tnkr_lock;
+				obj.tnkr_active = dataGrid.selectedItem.tnkr_active;
+				obj.tnkr_bay_loop_ch = dataGrid.selectedItem.tnkr_bay_loop_ch;
+				obj.tnkr_archive = dataGrid.selectedItem.tnkr_archive;
+				obj.tnkr_ntrips = dataGrid.selectedItem.tnkr_ntrips;
+				obj.tnkr_own_txt = dataGrid.selectedItem.tnkr_own_txt;
+				obj.tnkr_lic_exp = dataGrid.selectedItem.tnkr_lic_exp;
+				obj.tnkr_dglic_exp = dataGrid.selectedItem.tnkr_dglic_exp;
+				obj.tnkr_ins_exp = dataGrid.selectedItem.tnkr_ins_exp;
+				obj.tnkr_stats = dataGrid.selectedItem.tnkr_stats;
+				obj.tnkr_last_trip = dataGrid.selectedItem.tnkr_last_trip;
+				obj.tnkr_max_kg = dataGrid.selectedItem.tnkr_max_kg;
+
+				//removeResult.token = tankersService.delete_method(obj);
+				removeResult.token = tankersService.remove(obj);
+				/*
+				clearDetail();
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+				*/
+			}
+			
+			private function removeResultHandler(event:Event):void
+			{
+				clearDetail();
+				if ( removeResult.lastResult == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+				}
+				
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+				//dataGrid.enabled=true;
+			}
+			
+			private function checkTankerCode():void
+			{
+				isTankerExisted.token = tankersService.isTankerExisted( tnkr_code.text );
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				if ( StringUtil.trim(tnkr_code.text).length == 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','ENTER')+resourceManager.getString('default','TNKR_CODE') + "\n";
+				}
+				if ( StringUtil.trim(tnkr_name.errorString).length > 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','TNKR_NAME') + ": " + tnkr_name.errorString + "\n";
+				}
+				
+/* 				if ( StringUtil.trim(tnkr_name.text).length == 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','ENTER')+resourceManager.getString('default','TNKR_NAME') + "\n";
+				}
+ */				
+				if ( tnkr_etp.selectedIndex == -1 )//< 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','SELECT')+resourceManager.getString('default','TNKR_EQPT_NAME') + "\n";
+				}
+				if ( tnkr_owner.selectedIndex == -1 )//< 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','SELECT')+resourceManager.getString('default','TNKR_OWNER_NAME') + "\n";
+				}
+				if ( tnkr_carrier.selectedIndex == -1 )//< 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','SELECT')+resourceManager.getString('default','TNKR_CARRIER_NAME') + "\n";
+				}
+				if ( tnkr_base_site.selectedIndex == -1 )//< 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','SELECT')+resourceManager.getString('default','TNKR_BASE_SITE_NAME') + "\n";
+				}
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return index;
+			}
+			
+			private function doCreate():void
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				
+				// now add the values related to equipment list
+				var i:int;
+				var eqpt_selected:Boolean=true;
+				for (i=0; i<detailsList.dataProvider.length; i++)
+				{
+					if ( detailsList.dataProvider[i].equipment == null 
+						|| detailsList.dataProvider[i].equipment[0] == null 
+						|| detailsList.dataProvider[i].equipment[0].eqpt_code == null 
+						|| detailsList.dataProvider[i].equipment[0].eqpt_code == "" )
+					{
+						eqpt_selected = false;
+						errors = resourceManager.getString('default','ALERT__SELECT_EXIST_EQPT_1') + String(i+1) + resourceManager.getString('default','ALERT__SELECT_EXIST_EQPT_2');
+						break;
+					}
+				}
+				
+				if ( eqpt_selected == false )
+				{
+					var errorBox:ActionDialog = new ActionDialog( createRecord, doNothing, errors );
+				}
+				else
+				{
+					this.createRecord();
+				}
+			}
+			
+			private function doNothing():void
+			{
+				
+			}
+			
+			private function createRecord():void
+			{
+				var tnkr_num:int;
+				
+				tnkr_num = isTankerExisted.lastResult;
+				trace ("isTankerExisted", tnkr_code.text, tnkr_num);
+				if ( tnkr_num > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__TANKER_CODE_EXIST') );
+					return;
+				}
+				
+				if ( this.checkFields() > 0 )
+				{
+					return;
+				}
+				
+				
+				var obj:Object = new Object();
+				
+				
+				obj.tnkr_code = tnkr_code.text;
+				obj.tnkr_name = tnkr_name.text;
+				
+				if (tnkr_carrier.selectedIndex>=0)
+				{
+					obj.tnkr_carrier = lookupResult.lastResult[tnkr_carrier.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.tnkr_carrier = lookupResult.lastResult[0].cmpy_code;
+				}
+				if (tnkr_owner.selectedIndex>=0)
+				{
+					obj.tnkr_owner = lookupResult.lastResult[tnkr_owner.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.tnkr_owner = lookupResult.lastResult[0].cmpy_code;
+				}
+				if (tnkr_etp.selectedIndex>=0)
+				{
+					obj.tnkr_etp = tankerEqptTypeLookup.lastResult[tnkr_etp.selectedIndex].etyp_id;
+				}
+				else
+				{
+					obj.tnkr_etp = tankerEqptTypeLookup.lastResult[0].etyp_id;
+				}
+				
+				if (tnkr_base_site.selectedIndex>=0)
+				{
+					obj.tnkr_base_site = terminalLookup.lastResult[tnkr_base_site.selectedIndex].term_code;
+				}
+				else
+				{
+					obj.tnkr_base_site = terminalLookup.lastResult[0].term_code;
+				}
+				if (tnkr_dest_depot.selectedIndex>=0)
+				{
+					obj.tnkr_dest_depot = terminalLookup.lastResult[tnkr_dest_depot.selectedIndex].term_code;
+				}
+				else
+				{
+					obj.tnkr_dest_depot = terminalLookup.lastResult[0].term_code;
+				}
+				if (tnkr_last_depot.selectedIndex>=0)
+				{
+					obj.tnkr_last_depot = terminalLookup.lastResult[tnkr_last_depot.selectedIndex].term_code;
+				}
+				else
+				{
+					obj.tnkr_last_depot = terminalLookup.lastResult[0].term_code;
+				}
+				if (tnkr_cur_depot.selectedIndex>=0)
+				{
+					obj.tnkr_cur_depot = terminalLookup.lastResult[tnkr_cur_depot.selectedIndex].term_code;
+				}
+				else
+				{
+					obj.tnkr_cur_depot = terminalLookup.lastResult[0].term_code;
+				}
+				
+				obj.tnkr_pin = tnkr_pin.text;
+				obj.tnkr_lock = (tnkr_lock.selected==true?"on":"");
+				obj.tnkr_active = (tnkr_active.selected==true?"on":"");
+				obj.tnkr_bay_loop_ch = (tnkr_bay_loop_ch.selected==true?"on":"");
+				obj.tnkr_archive = (tnkr_archive.selected==true?"on":"");
+				
+				obj.tnkr_ntrips = tnkr_ntrips.text;
+				obj.tnkr_own_txt = tnkr_own_txt.text;
+				
+				/* obj.tnkr_lic_exp = dateConvert.format(tnkr_lic_exp.selectedDate);
+				obj.tnkr_dglic_exp = dateConvert.format(tnkr_dglic_exp.selectedDate);
+				obj.tnkr_ins_exp = dateConvert.format(tnkr_ins_exp.selectedDate); */
+				
+				obj.tnkr_lic_exp = global.convertDateTimeToIsoString( tnkr_lic_exp.selectedDate, tnkr_lic_exp.timeEnabled, "" ); 
+				obj.tnkr_dglic_exp = global.convertDateTimeToIsoString( tnkr_dglic_exp.selectedDate, tnkr_dglic_exp.timeEnabled, "" ); 
+				obj.tnkr_ins_exp = global.convertDateTimeToIsoString( tnkr_ins_exp.selectedDate, tnkr_ins_exp.timeEnabled, "" ); 
+				
+				obj.tnkr_stats = tnkr_stats.text; //????
+				obj.tnkr_last_trip = tnkr_last_trip.text;
+				obj.tnkr_max_kg = tnkr_max_kg.text;
+				obj.remarks = remarks.text;
+				
+				// now add the values related to equipment list
+				obj.eqpt_count = detailsList.dataProvider.length;
+				var i:int;
+				var eqpt_code_string:String;
+				var etyp_id_string:String;
+				var etyp_id_value:String;
+				var code_array:Array = new Array();
+				for (i=0; i<obj.eqpt_count; i++)
+				{
+					//trace( "1****equipment list", detailsList.dataProvider[i].equipment );
+					//trace( "1****equipment list", detailsList.dataProvider[i].equipment[0] );
+					if ( obj.eqpt_count > 1 )
+					{
+						etyp_id_value = String(detailsList.dataProvider[i].eqc_sub_item);
+					}
+					else
+					{
+						etyp_id_value = String(detailsList.dataProvider[i].etyp_id);
+					}
+					eqpt_code_string = "eqpt_" + String(i+1);
+					trace("detailsList.dataProvider[i].equipment", detailsList.dataProvider[i].equipment);
+					if ( detailsList.dataProvider[i].equipment == null 
+						|| detailsList.dataProvider[i].equipment[0] == null 
+						|| detailsList.dataProvider[i].equipment[0].eqpt_code == null 
+						|| detailsList.dataProvider[i].equipment[0].eqpt_code == "" )
+					{
+						obj[eqpt_code_string] = obj.tnkr_code + "_" + etyp_id_value + "_" + detailsList.dataProvider[i].idx;
+					}
+					else
+					{
+						obj[eqpt_code_string] = detailsList.dataProvider[i].equipment[0].eqpt_code;
+					}
+					
+					etyp_id_string = "etyp_" + String(i+1);
+					obj[etyp_id_string] = etyp_id_value;
+					
+					code_array[i] = obj[eqpt_code_string];
+					
+					trace( "2****equipment list", obj.eqpt_count, eqpt_code_string, obj[eqpt_code_string], etyp_id_string, obj[etyp_id_string] );
+				}
+				
+				if ( this.checkDupValueInArray( code_array ) == true )
+				{
+					global.msgFail(resourceManager.getString('default','global.msg.dup_eqpt_in_tnkr'));
+					return;
+				}
+				
+				createResult.token = tankersService.create(obj);
+				/*
+				clearDetail();
+				currentState="normal";
+				this.findByCode(obj.tnkr_code);
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+				*/
+			}
+			
+			private function createResultHandler(event:Event):void
+			{
+				clearDetail();
+				if ( createResult.lastResult == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+					var newId:String=this.tnkr_code.text;
+					var cmpy:String="";
+					if (tnkr_owner.selectedIndex>=0)
+					{
+						cmpy = lookupResult.lastResult[tnkr_owner.selectedIndex].cmpy_code;
+					}
+					updateEddKey(cmpy, newId);
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+					deleteEddKey();
+				}
+				
+				var txt:String;
+				txt = this.tnkr_code.text;
+				
+				currentState="normal";
+				this.findByCode( txt );
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			protected function createNewRecord(event:MouseEvent):void
+			{	
+				idx=dataGrid.selectedIndex;
+				callLater(function():void{dataGrid.ensureCellIsVisible(idx);});
+				currentState="create";
+				dataGrid.enabled=false;
+				tankerEqptTypeLookup.token = tankersService.tnkrEqptTypeLookup('-1', '-1');
+				this.detailsList.visible = false;
+				
+				if ( _formColumnSettingsString.length > 0 )
+				{
+					global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+				}
+				
+				this.tnkr_lic_exp.enabled = !this.genericTankerExpiryDates;
+				this.tnkr_dglic_exp.enabled = !this.genericTankerExpiryDates;
+				this.tnkr_ins_exp.enabled = !this.genericTankerExpiryDates;
+			}
+			
+			protected function refilterEqptTypes(event:Event):void
+			{	var cmpt_num:String;
+				
+				if ( tnkr_cmpt_num.text.length == 0 )
+				{
+					cmpt_num = "-1";
+				}
+				else
+				{
+					cmpt_num = tnkr_cmpt_num.text;
+				}
+				tankerEqptTypeLookup.token = tankersService.tnkrEqptTypeLookup('-1', cmpt_num);
+			}
+			
+			protected function getNewTnkrComposition():void
+			{
+				if(currentState == 'create')
+				{
+					// get the detailed composition including its equipments and compartments
+					var etyp_id:int=-1;
+					var tanker:String="-1";
+					var owner:String="-1";
+					var option:int=1;
+					
+					if (tnkr_owner.selectedIndex>=0)
+					{
+						owner = lookupResult.lastResult[tnkr_owner.selectedIndex].cmpy_code;
+					}
+					else
+					{
+						owner = "-1";
+					}
+					if (tnkr_etp.selectedIndex>=0)
+					{
+						etyp_id = tankerEqptTypeLookup.lastResult[tnkr_etp.selectedIndex].etyp_id;
+					}
+					else
+					{
+						etyp_id = -1;
+					}
+					
+					getTankerComposition.token = tankersService.getTankerComposition(etyp_id, tanker, owner, option);
+					//dataGrid.selectedItem.composition = getTankerComposition.lastResult;
+					this.detailsList.visible = true;
+				}
+			}
+			
+			
+			public function getArrayCollection(obj:Object):ArrayCollection
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				temp.addItem( obj );
+				return temp;
+			}
+			
+			
+			public function convertDateToLocaleString(dt:String):String
+			{
+				var dt_string:String;
+				var dt_date:Date = new Date();
+				
+				dt_string = ""; 
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+					dt_string = dateFormatter.format( dt_date);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_string;
+			}
+			
+			public function convertDateToLocale(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+				}
+				else
+				{
+					dt_date = null;
+				}
+				return dt_date;
+			}
+			
+			public function isValueInteger( val:String ):Boolean
+			{
+				if ( !isNaN(Number(val)) ) 
+				{
+					if ( Math.floor(Number(val)) == Math.ceil(Number(val)) ) 
+					{
+						return true;
+					}
+				}
+				
+				return false;
+			}		
+			
+			public function getDefaultDate():Date
+			{
+				if ( !genericTankerExpiryDates )
+				{
+					return null;
+				}
+				var value:String = global.getValueFromSiteConfigSettings( "SITE_DEFAULT_TNKR_EXPIRY" );
+				
+				if ( value == null )
+				{
+					value = "";
+				}
+				value = StringUtil.trim( value );
+				
+				var now_date:Date;
+				var def_date:Date;
+				
+				if ( value.length > 0 && this.isValueInteger(value)==false )
+				{
+					def_date = DateField.stringToDate( value,"YYYY-MM-DD" );
+				}
+				else
+				{
+					if ( value.length == 0 )
+					{
+						value = "-1";
+					}
+					now_date = new Date();
+					def_date = DateTimeFunc.dateAdd( "d", int(value), now_date );
+				}
+				
+				/* if ( value.length > 0 && value != "-1" )
+				{
+					def_date = DateField.stringToDate( value,"YYYY-MM-DD" );
+				}
+				else
+				{
+					now_date = new Date();
+					def_date = DateTimeFunc.dateAdd( "d", -1, now_date );
+				} */
+				
+				return def_date;
+			}
+			
+			protected function save_clickHandler():void
+			{
+				if (currentState == "create")
+				{
+					doCreate();
+				}
+				if (currentState == "edit")
+				{
+					editRecord();
+				}
+			}
+			
+			protected function getTankerComposition_resultHandler(event:ResultEvent):void
+			{
+				// TODO Auto-generated method stub
+				trace('>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<', this.details.width, this.width, FlexGlobals.topLevelApplication.main.width );
+				this.detailsList.width = this.width - fieldWidth*2 - labelWidth*2 - spaceWidth*3 - (eqptListGrp.gap*2+eqptListGrp.paddingLeft+eqptListGrp.paddingRight);
+				//this.detailsList.width = FlexGlobals.topLevelApplication.main.width - fieldWidth*2 - labelWidth*2 - spaceWidth*2;
+				this.detailsList.invalidateDisplayList();
+			}
+			
+			protected function checkDupValueInArray(arr:Array):Boolean
+			{
+				var i:int;
+				var j:int;
+				var len:int;
+				
+				len = arr.length;
+				for (i=0; i<len; i++)
+				{
+					for (j=0; j<len; j++)
+					{
+						if ( i!=j && arr[i]==arr[j])
+						{
+							return true;
+						}
+					}
+				}
+				
+				return false;
+			}
+			
+			protected function unlock_clickHandler():void
+			{
+				this.unlockResult.token = this.tankersService.unlockTankerCompartments( this.tnkr_code.text);
+			}			
+			
+			private function unlockResultHandler(event:Event):void
+			{
+				clearDetail();
+				if ( unlockResult.lastResult == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','global.msg.succ_unlock_tnkr_cmpt'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','global.msg.fail_unlock_tnkr_cmpt'));
+				}
+				
+				var txt:String;
+				txt = this.tnkr_code.text;
+				
+				currentState="normal";
+				this.findByCode( txt );
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			protected function tnkr_code_focusOutHandler(event:FocusEvent):void
+			{
+				var tmpStr:String = tnkr_code.text;
+				tmpStr = tmpStr.substr(tmpStr.length-1,1);
+				if (tmpStr=="-" || tmpStr=="_") tnkr_code.text = tnkr_code.text.substr(0,tnkr_code.text.length-1);
+			}
+			
+			protected function lookupResult_resultHandler(event:ResultEvent):void
+			{
+				// TODO Auto-generated method stub
+				var len:int=0;
+				var new_len:int=0;
+				var str:String="";
+				for ( var i:int=0; i<fltr_company.dataProvider.length; i++ )
+				{
+					new_len = (fltr_company.dataProvider.getItemAt(i).cmpy_name as String).length;
+					if ( new_len > len )
+					{
+						len = new_len;
+						str = (fltr_company.dataProvider.getItemAt(i).cmpy_name as String);
+					}
+				}
+				
+				var lbl:TextField= new TextField();
+				lbl.visible=false;
+				lbl.text = str;
+				var metrics:TextLineMetrics = lbl.getLineMetrics(0);
+				trace( "var metrics:TextLineMetrics = lbl.getLineMetrics(0);....................", metrics.width, fltr_company.width );
+				
+				fltr_company.width = metrics.width + 25;
+				fltr_company.invalidateDisplayList();
+				
+			}
+			
+			public function goToExpiryDateDetails():void
+			{
+				
+				this.eddPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+				
+				this.eddPopup.parentWidth = this.width;
+				this.eddPopup.parentHeight = 500;//this.height;
+				eddPopup.popupTitle = resourceManager.getString('default','m_tankers') + "::" + resourceManager.getString('default','ED_EXP_DATES');
+				
+				trace ( "*******************Pop up a screen to manage expiry dates!");
+				eddPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				params["ed_target_code"] = "TANKERS";
+				params["ed_object_id"] = this.tnkr_code.text;
+				
+				var cmpy:String="";
+				if (tnkr_owner.selectedIndex>=0)
+				{
+					cmpy = lookupResult.lastResult[tnkr_owner.selectedIndex].cmpy_code;
+				}
+				params["ed_cmpy_code"] = cmpy;
+				
+				this.edd_old_key = params["ed_cmpy_code"] + "__" + params["ed_object_id"]; 
+				
+				eddPopup.setFilters( params ); 
+			}
+			
+			public function closeDialogHandler():void
+			{
+				if ( this.eddPopup.popupView.hasOwnProperty('expiryDateDetailLineList') )
+				{
+					this.tnkr_lic_exp.selectedDate = null;
+					this.tnkr_dglic_exp.selectedDate = null;
+					this.tnkr_ins_exp.selectedDate = null;
+					
+					var dates:ArrayCollection = eddPopup.popupView.expiryDateDetailLineList;
+					for each ( var o:Object in dates )
+					{
+						if ( o.hasOwnProperty("ed_target_code") && o.ed_target_code == "TANKERS" &&  o.hasOwnProperty("ed_exp_date") )
+						{
+							if ( o.hasOwnProperty("ed_type_code") && o.ed_type_code == "TNKR_EXPIRY_DATE_1" )
+							{
+								this.tnkr_lic_exp.selectedDate = convertDateToLocale( o.ed_exp_date );
+							}
+							if ( o.hasOwnProperty("ed_type_code") && o.ed_type_code == "TNKR_EXPIRY_DATE_2" )
+							{
+								this.tnkr_dglic_exp.selectedDate = convertDateToLocale( o.ed_exp_date );
+							}
+							if ( o.hasOwnProperty("ed_type_code") && o.ed_type_code == "TNKR_EXPIRY_DATE_3" )
+							{
+								this.tnkr_ins_exp.selectedDate = convertDateToLocale( o.ed_exp_date );
+							}
+						}
+					}
+					
+					if ( currentState == "edit" && this.dataGrid.selectedIndex>=0 )
+					{
+						this.dataGrid.selectedItem.tnkr_lic_exp = global.convertDateTimeToIsoString( tnkr_lic_exp.selectedDate, tnkr_lic_exp.timeEnabled, "" ); 
+						this.dataGrid.selectedItem.tnkr_dglic_exp = global.convertDateTimeToIsoString( tnkr_dglic_exp.selectedDate, tnkr_dglic_exp.timeEnabled, "" ); 
+						this.dataGrid.selectedItem.tnkr_ins_exp = global.convertDateTimeToIsoString( tnkr_ins_exp.selectedDate, tnkr_ins_exp.timeEnabled, "" ); 
+					}
+				}
+			}
+			
+			protected function expiryDateTargetChecker_resultHandler():void
+			{
+				if ( expiryDateTargetChecker.dataInteger > 0 )
+				{
+					this.genericTankerExpiryDates = true;
+				}
+				else
+				{
+					this.genericTankerExpiryDates = false;
+				}
+
+				/*
+				var expiryDateMode:int = int(global.getValueFromSiteConfigSettings( "SITE_EXPIRY_DATE_MANAGE_MODE" ));
+				var includeAllGenericExpiryDates:Boolean = false;
+				if ( (expiryDateMode & 0x02) > 0 )
+				{
+					includeAllGenericExpiryDates = true;
+				}
+				
+				var includeAllTankerExpiryDate:Boolean = false;
+				for each ( var obj:Object in this.expiryDateTargetList.source )
+				{
+					if ( obj['edta_target_code'] == "TANKERS" )
+					{
+						if ( int(obj['edta_status']) > 0 )
+						{
+							includeAllTankerExpiryDate = true;
+							break;
+						}
+					}
+				}
+
+				this.genericTankerExpiryDates = (includeAllGenericExpiryDates && includeAllTankerExpiryDate);
+				*/
+			}
+			
+			protected function updateEddKey(newCmpy:String, newId:String):void
+			{
+				if ( this.edd_old_key.length > 0 )
+				{
+					// get the old data
+					var oldObj:Object = new Object();
+					var arr:Array = edd_old_key.split("__");
+					oldObj.ed_target_code = "TANKERS";
+					oldObj.ed_cmpy_code = arr[0];
+					oldObj.ed_object_id = arr[1];
+					
+					// get the new data
+					var newObj:Object = new Object();
+					newObj.ed_target_code = "TANKERS";
+					newObj.ed_cmpy_code = newCmpy;
+					newObj.ed_object_id = newId;
+					
+					this.updateEddKeyAction.service( oldObj, newObj );					
+					edd_old_key = "";
+				}
+			}
+			
+			protected function updateEddKeyData_resultHandler( ):void
+			{
+			}
+			
+			protected function deleteEddKey():void
+			{
+				if ( this.edd_old_key.length > 0 )
+				{
+					// get the old data
+					var oldObj:Object = new Object();
+					var arr:Array = edd_old_key.split("__");
+					oldObj.ed_target_code = "TANKERS";
+					oldObj.ed_cmpy_code = arr[0];
+					oldObj.ed_object_id = arr[1];
+					
+					this.deleteEddKeyAction.service( oldObj );					
+					edd_old_key = "";
+				}
+			}
+			
+			protected function deleteEddKeyData_resultHandler( ):void
+			{
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateFormatter" locale="{LocaleID.DEFAULT}" dateStyle="short" timeStyle="none"/>
+		<s:DateTimeFormatter id="dateConvert" dateTimePattern="yyyy-MM-dd"/>
+		<s:CallResponder id="getPagedResult" result="PopUpManager.removePopUp(processingAnimation)"/>
+		<s:CallResponder id="terminalLookup"/>
+		<s:CallResponder id="tankerEqptTypeLookup"/>
+		<s:CallResponder id="getTankerComposition" result="getTankerComposition_resultHandler(event)"/>
+		<s:CallResponder id="getEquipmentsByTypeAndOwner"/>
+		<s:CallResponder id="getEquipmentsByTypeAndTanker"/>
+		<s:CallResponder id="isTankerExisted"/>
+		<s:CallResponder id="isTankerScheduled"/>
+		<tankersservice:TankersService id="tankersService"  channelSet="{global.channelSet}"
+												   fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+												   showBusyCursor="true"/>
+		<s:CallResponder id="lookupResult" result="lookupResult_resultHandler(event)"/>
+		<companiesservice:CompaniesService id="companiesService"  channelSet="{global.channelSet}"
+										   fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+										   showBusyCursor="true"/>
+		<s:CallResponder id="lookupResult2"/>
+		<equipmenttypesservice:EquipmentTypesService id="equipmentTypesService"  channelSet="{global.channelSet}"
+													 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+													 showBusyCursor="true"/>
+		<s:CallResponder id="unlockResult" result="unlockResultHandler(event)" fault="global.msgFail(resourceManager.getString('default','global.msg.fail_unlock_tnkr_cmpt'))"/>
+		<s:CallResponder id="removeResult" result="removeResultHandler(event)" fault="global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'))"/>
+		<s:CallResponder id="updateResult" result="updateResultHandler(event)" fault="global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'))"/>
+		<s:CallResponder id="createResult" result="createResultHandler(event)" fault="global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'))"/>
+		<components:ValidationGroup id="vg" action="{save_clickHandler}" defaultButton="{btn_save}"/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		<s:HGroup id="toolbar" width="100%" gap="5" paddingBottom="2" paddingTop="2">
+			<components:DKI_ValidatorInput id="searchText" validationType="search" width="160" height="100%"
+									   keyUp="searchText_keyUpHandler(event)"
+									   width.widget="140" prompt="{resourceManager.getString('default','global.prompts.searchbytanker')}"/>
+			
+			<components:DKI_DropDownList id="fltr_terminal" width="188" height="100%" requireSelection="true"
+										 change="fltr_terminal_changeHandler(event)" cornerRadius="10"
+										 labelField="term_name" prompt="{resourceManager.getString('default','TNKR_BASE_SITE_NAME')+resourceManager.getString('default','FILTER')}"
+										 width.edit="182" width.widget="160" visible.widget="false" excludeFrom="widget" dataProvider="{terminalLookup.lastResult}"/>
+			<components:DKI_DropDownList id="fltr_company" width="188" height="100%" useVirtualLayout="false"
+										 change="fltr_company_changeHandler(event)" cornerRadius="10"
+										 labelField="cmpy_name" prompt="{resourceManager.getString('default','TNKR_OWNER_NAME')+resourceManager.getString('default','FILTER')}"
+										 width.edit="182" width.widget="160" dataProvider="{lookupResult.lastResult}"/>
+			<components:DKI_DropDownList id="fltr_eqptype" width="188" height="100%"
+										 change="fltr_eqptype_changeHandler(event)" cornerRadius="10"
+										 labelField="etyp_title" prompt="{resourceManager.getString('default','TNKR_EQPT_NAME')+resourceManager.getString('default','FILTER')}"
+										 width.edit="182" width.widget="160" visible.widget="false" excludeFrom="widget" dataProvider="{lookupResult2.lastResult}"/>
+			<components:DKI_Button height="100%" label="{resourceManager.getString('default','CLEAR')+resourceManager.getString('default','FILTER')}" type="refresh" click="refreshRecords(event)"
+								   width.widget="100%"/>
+			<s:Spacer width="100%" excludeFrom="widget"/>
+			<components:DKI_Button label="{resourceManager.getString('default','CREATE')}" height="100%" click="createNewRecord(event)" includeIn="normal" enabled="{this.canCreate}" type="create"/>			
+		</s:HGroup>
+		<s:DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="4"
+					selectionChange="dataGrid_selectionChangeHandler(event)"
+					skinClass="skins.DKI_DataGrid_Skin"
+					height.widget="100%">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="tnkr_code" headerText="{resourceManager.getString('default','TNKR_CODE')}"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_name" headerText="{resourceManager.getString('default','TNKR_NAME')}"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_carrier" headerText="{resourceManager.getString('default','TNKR_CARRIER')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_carrier_name" headerText="{resourceManager.getString('default','TNKR_CARRIER_NAME')}"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_owner" headerText="{resourceManager.getString('default','TNKR_OWNER')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_owner_name" headerText="{resourceManager.getString('default','TNKR_OWNER_NAME')}"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_etp" headerText="{resourceManager.getString('default','TNKR_ETP')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_eqpt_name" headerText="{resourceManager.getString('default','TNKR_EQPT_NAME')}"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_base_site" headerText="{resourceManager.getString('default','TNKR_BASE_SITE')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_base_site_name" headerText="{resourceManager.getString('default','TNKR_BASE_SITE_NAME')}"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_dest_depot" headerText="{resourceManager.getString('default','TNKR_DEST_DEPOT')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_dest_depot_name" headerText="{resourceManager.getString('default','TNKR_DEST_DEPOT_NAME')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_last_depot" headerText="{resourceManager.getString('default','TNKR_LAST_DEPOT')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_last_depot_name" headerText="{resourceManager.getString('default','TNKR_LAST_DEPOT_NAME')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_cur_depot" headerText="{resourceManager.getString('default','TNKR_CUR_DEPOT')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_cur_depot_name" headerText="{resourceManager.getString('default','TNKR_CUR_DEPOT_NAME')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_lock" headerText="{resourceManager.getString('default','TNKR_LOCK')}" itemRenderer="renderers.GridLockRender"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_active" headerText="{resourceManager.getString('default','TNKR_ACTIVE')}" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_bay_loop_ch" headerText="{resourceManager.getString('default','TNKR_BAY_LOOP_CH')}" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_archive" headerText="{resourceManager.getString('default','TNKR_ARCHIVE')}" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_lic_exp" headerText="{global.exp7}" itemRenderer="renderers.DateRenderer" visible="true" visible.widget="false"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_dglic_exp" headerText="{global.exp8}" itemRenderer="renderers.DateRenderer" visible="true" visible.widget="false"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_ins_exp" headerText="{global.exp9}" itemRenderer="renderers.DateRenderer" visible="true" visible.widget="false"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_last_modified" headerText="{resourceManager.getString('default','LAST_MODIFIED')}" itemRenderer="renderers.DateRenderer" visible="true" visible.widget="false"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_last_used" headerText="{resourceManager.getString('default','LAST_USED')}" itemRenderer="renderers.DateRenderer" visible="true" visible.widget="false"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			<s:dataProvider>
+				<s:AsyncListView list="{getPagedResult.lastResult}"/>
+			</s:dataProvider>
+		</s:DataGrid>
+	</s:Panel>
+	
+	<s:Panel id="details" includeIn="edit,create" width="100%" height="500"
+			 itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		<s:Spacer height="5"/>
+		<s:HGroup>
+			<s:VGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_BASE_SITE_NAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="tnkr_base_site" 
+											 dataProvider="{terminalLookup.lastResult}" 
+											 labelField="term_name" 
+											 selectedItem.edit="{dataGrid.selectedItem.tnkr_base_site_name}" enabled.edit="false" 
+											 selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+											 width="{fieldWidth}" height="{fieldHeight}" 
+											 prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','TNKR_BASE_SITE_NAME')}"
+											 required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','TNKR_BASE_SITE_NAME')}" 
+											 />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_OWNER_NAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="tnkr_owner" 
+											 change="getNewTnkrComposition()" 
+											 dataProvider="{lookupResult.lastResult}" 
+											 labelField="cmpy_name" 
+											 selectedItem.edit="{dataGrid.selectedItem.tnkr_owner_name}" enabled.edit="false" 
+											 selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+											 width="{fieldWidth}" height="{fieldHeight}" 
+											 prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','TNKR_OWNER_NAME')}"
+											 required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','TNKR_OWNER_NAME')}" 
+											 />
+					<!--s:Label width="20" height="{labelHeight}" text="{tnkr_owner.selectedIndex}" verticalAlign="middle"/-->
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_CODE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="tnkr_code" 
+												   maxChars="20"
+												   focusOut="tnkr_code_focusOutHandler(event)"
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text.edit="{dataGrid.selectedItem.tnkr_code}" editable.edit="false" enabled.edit="false" 
+												   text.create="" editable.create="true" enabled.create="true"
+												   change.create="checkTankerCode()"
+												   required="true" validationType="alphanumericspecial_nosq" validationGroup="{vg}" automationName="{resourceManager.getString('default','TNKR_CODE')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_NAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="tnkr_name" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   maxChars="40"
+												   text.edit="{dataGrid.selectedItem.tnkr_name}" editable.edit="true" 
+												   text.create="" editable.create="true"
+												   required="false" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','TNKR_NAME')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+
+				
+				<s:VGroup paddingLeft="{this.genericTankerExpiryDates?2:0}">
+					<s:Rect height="145" width="{labelWidth+fieldWidth+15}" radiusX="0" radiusY="0" includeInLayout="false" visible="{this.genericTankerExpiryDates}">
+						<s:stroke>
+							<s:SolidColorStroke color="0x888888"/>
+						</s:stroke>
+					</s:Rect>
+					<s:Spacer height="2" visible="{this.genericTankerExpiryDates}" includeInLayout="{this.genericTankerExpiryDates}"/>
+					<s:HGroup>
+						<s:Label width="{labelWidth}" height="{labelHeight}" text="{global.exp7}" verticalAlign="middle"/>
+						<components:DKI_DateTime id="tnkr_lic_exp" 
+												 selectedDate="{convertDateToLocale(dataGrid.selectedItem.tnkr_lic_exp)}" enabled="true" 
+												 selectedDate.create="{getDefaultDate()}" enabled.create="true" 
+												 width="{fieldWidth}" height="{fieldHeight}" timeEnabled="false" enableNull="true"
+												 />
+					</s:HGroup>
+					<s:Spacer height="{spaceHeight}" />
+					<s:HGroup>
+						<s:Label width="{labelWidth}" height="{labelHeight}" text="{global.exp8}" verticalAlign="middle"/>
+						<components:DKI_DateTime id="tnkr_dglic_exp" 
+												 selectedDate="{convertDateToLocale(dataGrid.selectedItem.tnkr_dglic_exp)}" enabled="true" 
+												 selectedDate.create="{getDefaultDate()}" enabled.create="true" 
+												 width="{fieldWidth}" height="{fieldHeight}" timeEnabled="false" enableNull="true"
+												 />
+					</s:HGroup>
+					<s:Spacer height="{spaceHeight}" />
+					<s:HGroup>
+						<s:Label width="{labelWidth}" height="{labelHeight}" text="{global.exp9}" verticalAlign="middle"/>
+						<components:DKI_DateTime id="tnkr_ins_exp" 
+												 selectedDate="{convertDateToLocale(dataGrid.selectedItem.tnkr_ins_exp)}" enabled="true" 
+												 selectedDate.create="{getDefaultDate()}" enabled.create="true" 
+												 width="{fieldWidth}" height="{fieldHeight}" timeEnabled="false" enableNull="true"
+												 />
+					</s:HGroup>
+					<s:HGroup visible="{this.genericTankerExpiryDates}" includeInLayout="{this.genericTankerExpiryDates}">
+						<s:Label width="{labelWidth}" height="100%" text="" verticalAlign="middle"/>
+						<components:DKI_Button id="btn_expirydates" label="{resourceManager.getString('default','ED_EXP_DATES')}" width="{fieldWidth}" height="100%" includeIn="edit,create" type="default" 
+											   enabled.create="{this.canCreate &amp;&amp; (this.tnkr_code.text.length>0)  &amp;&amp; (this.tnkr_owner.selectedIndex>=0)}" enabled.edit="{this.canUpdate}" 
+											   visible="{this.genericTankerExpiryDates}" includeInLayout="{this.genericTankerExpiryDates}" click="goToExpiryDateDetails();"/>
+					</s:HGroup>
+					<s:Spacer height="2" visible="{this.genericTankerExpiryDates}" includeInLayout="{this.genericTankerExpiryDates}"/>
+				</s:VGroup>
+				
+				
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_NTRIPS')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="tnkr_ntrips" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text.edit="{dataGrid.selectedItem.tnkr_ntrips}" editable.edit="true" 
+												   text.create="" editable.create="true" restrict="0-9"
+												   required="false" validationType="integer" validationGroup="{vg}" automationName="{resourceManager.getString('default','TNKR_NTRIPS')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_LAST_TRIP')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="tnkr_last_trip" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text.edit="{dataGrid.selectedItem.tnkr_last_trip}" editable.edit="false" 
+												   text.create="" editable.create="false" restrict="0-9"
+												   required="false" validationType="integer" validationGroup="{vg}" automationName="{resourceManager.getString('default','TNKR_LAST_TRIP')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight-10}" text="  "/>
+					<s:CheckBox width="{fieldWidth/2}" label="{resourceManager.getString('default','TNKR_LOCK')}" fontWeight="bold" id="tnkr_lock" selected.edit="{dataGrid.selectedItem.tnkr_lock=='Y'?true:false}" enabled.edit="true" selected.create="false" enabled.create="true"/>
+					<s:CheckBox width="{fieldWidth/2}" label="{resourceManager.getString('default','TNKR_ACTIVE')}" fontWeight="bold" id="tnkr_active" selected.edit="{dataGrid.selectedItem.tnkr_active=='Y'?true:false}" enabled.edit="true" selected.create="false" enabled.create="true"/>
+				</s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight-10}" text="  "/>
+					<s:CheckBox width="{fieldWidth/2}" label="{resourceManager.getString('default','TNKR_BAY_LOOP_CH')}" fontWeight="bold" id="tnkr_bay_loop_ch" selected.edit="{dataGrid.selectedItem.tnkr_bay_loop_ch=='Y'?true:false}" enabled.edit="true" selected.create="false" enabled.create="true"/>
+					<s:CheckBox width="{fieldWidth/2}" label="{resourceManager.getString('default','TNKR_ARCHIVE')}" fontWeight="bold" id="tnkr_archive" selected.edit="{dataGrid.selectedItem.tnkr_archive=='Y'?true:false}" enabled.edit="true" selected.create="false" enabled.create="true"/>
+				</s:HGroup>
+			</s:VGroup>
+			<s:Spacer width="{spaceWidth}" />
+			<s:VGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_EQPT_NAME')}" verticalAlign="middle"/>
+					<s:TextInput id="tnkr_cmpt_num" width.create="30" width.edit="0" height="{fieldHeight}" text.create="" includeInLayout="false" visible="false" includeInLayout.create="true" visible.create="true" change="refilterEqptTypes(event)" toolTip="Filter by number of compartments"/>
+					
+					<components:DKI_ValidatorComboBox id="tnkr_etp" 
+											 dataProvider="{tankerEqptTypeLookup.lastResult}" 
+											 labelField="etyp_title" 
+											 selectedItem.edit="{dataGrid.selectedItem.tnkr_eqpt_name}" enabled.edit="false" 
+											 selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+											 width="{fieldWidth}"
+											 width.create="{fieldWidth-36}" height="{fieldHeight}" 
+											 prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','TNKR_EQPT_NAME')}" 
+											 change="getNewTnkrComposition()"
+											 required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','TNKR_EQPT_NAME')}" 
+											 />
+					<!--s:Label width="20" height="{labelHeight}" text="{dataGrid.selectedItem.tnkr_etp}" verticalAlign="middle"/-->
+					<!--s:Label width="20" height="{labelHeight}" text="{tnkr_etp.selectedIndex}" verticalAlign="middle"/-->
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_CARRIER_NAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="tnkr_carrier" 
+											 dataProvider="{lookupResult.lastResult}" 
+											 labelField="cmpy_name" 
+											 selectedItem.edit="{dataGrid.selectedItem.tnkr_carrier_name}" enabled.edit="true" 
+											 selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+											 width="{fieldWidth}" height="{fieldHeight}" 
+											 prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','TNKR_CARRIER_NAME')}"
+											 required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','TNKR_CARRIER_NAME')}" 
+											 />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_OWN_TXT')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="tnkr_own_txt" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text.edit="{dataGrid.selectedItem.tnkr_own_txt}" editable.edit="true" 
+												   text.create="" editable.create="true"
+												   required="false" validationType="alphanumeric" validationGroup="{vg}" automationName="{resourceManager.getString('default','TNKR_OWN_TXT')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_PIN')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="tnkr_pin" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text.edit="{dataGrid.selectedItem.tnkr_pin}" editable.edit="true" 
+												   text.create="" editable.create="true"
+												   required="false" validationType="integer" validationGroup="{vg}" automationName="{resourceManager.getString('default','TNKR_PIN')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_DEST_DEPOT_NAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="tnkr_dest_depot" 
+											 dataProvider="{terminalLookup.lastResult}" 
+											 labelField="term_name" 
+											 selectedItem.edit="{dataGrid.selectedItem.tnkr_dest_depot_name}" enabled.edit="true" 
+											 selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+											 width="{fieldWidth}" height="{fieldHeight}" 
+											 prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','TNKR_DEST_DEPOT_NAME')}"
+											 required="false"
+											 />
+					<!--s:Label width="20" height="{labelHeight}" text="{tnkr_dest_depot.selectedIndex}" verticalAlign="middle"/-->
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_LAST_DEPOT_NAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="tnkr_last_depot" 
+											 dataProvider="{terminalLookup.lastResult}" 
+											 labelField="term_name" 
+											 selectedItem.edit="{dataGrid.selectedItem.tnkr_last_depot_name}" enabled.edit="true" 
+											 selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+											 width="{fieldWidth}" height="{fieldHeight}" 
+											 prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','TNKR_LAST_DEPOT_NAME')}"
+											 required="false"
+											 />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_CUR_DEPOT_NAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="tnkr_cur_depot" 
+											 dataProvider="{terminalLookup.lastResult}" 
+											 labelField="term_name" 
+											 selectedItem.edit="{dataGrid.selectedItem.tnkr_cur_depot_name}" enabled.edit="true" 
+											 selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+											 width="{fieldWidth}" height="{fieldHeight}" 
+											 prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','TNKR_CUR_DEPOT_NAME')}"
+											 required="false"
+											 />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_STATS')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="tnkr_stats" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text.edit="{dataGrid.selectedItem.tnkr_stats}" editable.edit="false"
+												   text.create="" editable.create="false"
+												   />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_MAX_KG')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="tnkr_max_kg" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text.edit="{dataGrid.selectedItem.tnkr_max_kg}" editable.edit="true" 
+												   text.create="0" editable.create="true" restrict="0-9"
+												   required="false" validationType="integer" validationGroup="{vg}" automationName="{resourceManager.getString('default','TNKR_MAX_KG')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer height="{spaceHeight}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" text="{resourceManager.getString('default','global.lbl.comments')}"/>
+				</s:HGroup>
+				<s:HGroup>
+					<!--s:TextArea id="remarks" width="{labelWidth+fieldWidth+20}" text="{dataGrid.selectedItem.remarks}" height="130" maxChars="800" restrict="A-Z a-z0-9_,.=/\-\\"/-->	
+					<s:TextArea id="remarks" width="{labelWidth+fieldWidth+20}" text="{dataGrid.selectedItem.remarks}" height="130" maxChars="800"/>	
+				</s:HGroup>
+			</s:VGroup>
+			<s:Spacer width="{spaceWidth}" />
+			<s:VGroup >
+				<s:HGroup id="eqptListGrp" gap="14" paddingBottom="4" paddingLeft="5" paddingRight="8" paddingTop="0" requestedColumnCount="2">
+					
+					<components:DKI_List horizontalScrollPolicy="on" id="detailsList" contentBackgroundAlpha="0" left="10" height="100%" width="{1100-labelWidth*2-spaceWidth*2}" itemRenderer="renderers.TankerRenderer" borderVisible="false" dataProvider="{getTankerComposition.lastResult}" mouseOver="{detailsList.selectedIndex=-1}">
+					<components:layout>
+					<s:HorizontalLayout gap="0"/>
+					</components:layout>
+					</components:DKI_List>			
+				</s:HGroup>
+			</s:VGroup>
+		</s:HGroup>
+		
+		<s:Spacer height="{spaceHeight*1}" />
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_unlock" label="{resourceManager.getString('default','button.lbl.UNLOCK_ALL_CMPTS')}" height="100%" click="unlock_clickHandler()" includeIn="edit" enabled="{this.canUpdate}" type="unlock"/>
+			<components:DKI_Button id="btn_delete" label="{resourceManager.getString('default','DELETE')}" height="100%" click="doDelete()" includeIn="edit" enabled="{this.canDelete}" type="delete"/>
+			<components:DKI_Button id="btn_save" label.create="{resourceManager.getString('default','SAVE')}" label="{resourceManager.getString('default','UPDATE')}" height="100%" includeIn="edit,create" enabled.create="{this.canCreate}" enabled.edit="{this.canUpdate}" type.create="create" type.edit="edit"/>
+			<components:DKI_Button id="btn_cancel" label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel"/>
+		</s:HGroup>
+	</s:Panel>
+	
+	
+</s:VGroup>

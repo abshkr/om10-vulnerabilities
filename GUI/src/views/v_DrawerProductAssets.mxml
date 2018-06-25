@@ -1,0 +1,1009 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  creationComplete="creationCompleteHandler(event)"
+		  gap="2" width="100%" height="100%">
+	
+	<s:states>
+		<s:State name="normal" enterState="this.toolbar.enabled=true"/>
+		<s:State name="widget" enterState="this.toolbar.enabled=true"/>
+		<s:State name="edit" enterState="callLater(function():void{dataGrid.ensureCellIsVisible(idx);});this.toolbar.enabled=false"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import components.ActionDialog;
+			import components.ColorChooser;
+			import components.ErrorDialog;
+			import components.ImageManager;
+			import components.MessageDialog;
+			import components.ViewPopupDlg;
+			
+			import dm.remoteDataService;
+			import dm.remoteListService;
+			import dm.utils.tools;
+			
+			import flash.events.KeyboardEvent;
+			import flash.globalization.LocaleID;
+			
+			import flashx.textLayout.container.ScrollPolicy;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.events.DropdownEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.skins.halo.PopUpButtonSkin;
+			import mx.skins.halo.PopUpIcon;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			import spark.events.TextOperationEvent;
+			
+			import views.v_GenericProducts;
+			
+			
+			public static const MAIN_WINDOW_WIDTH:int = 1500;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			[Bindable] public var canCreateGenProd:Boolean = false;
+			[Bindable] public var canDeleteGenProd:Boolean = false;
+			
+			[Bindable] public var labelWidth:uint = 100;
+			[Bindable] public var labelHeight:uint = 26;
+			[Bindable] public var fieldWidth:uint = 240;
+			[Bindable] public var fieldHeight:uint = 26;
+			[Bindable] public var spaceWidth:uint = 15;
+			[Bindable] public var spaceHeight:uint = 2;
+			
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='prod_cmpycode';
+			private var currentDirection:String="ASC";
+			
+			private var currentOffset:int=0;
+			private var currentPageSize:int=1000;
+			[Bindable] private var totalLength:int=0;
+			[Bindable] private var currentLength:int=0;
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			//private var currentSorts:Object=new Object();
+			//private var currentOrders:Object=new Object();
+			private var currentSorts:Object={prod_cmpycode:'ASC'};
+			private var currentOrders:Object={prod_cmpycode:1};
+			private var currentSortSeq:int=0;
+			
+			private var  originalItems:ArrayCollection;
+			
+			
+			private var confirmReport:ActionDialog;
+			private var confirmSave:ActionDialog;
+			private var errorDialog:ErrorDialog;
+			
+			//private var exportContents:String="";
+			private var f:FileReference = new FileReference();
+			
+			
+			//private var getData:Responder = new Responder(getData_resultHandler);
+			
+			//private var pagedRecords:ArrayCollection=new ArrayCollection();
+			//private var pagedRecords:remoteDataService = new remoteDataService( "DrawerProductAssetService.getPaged", getData, null );
+			[Bindable] private var pagedRecords:remoteListService;
+			
+			private var updateAction:remoteDataService = new remoteDataService( "DrawerProductAssetService.updateProductAssets", null, updateData_resultHandler, 1 );
+			
+			[Bindable] private var drawerList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCompanyAll", null, lookupCompany_resultHandler );
+			[Bindable] private var productImageList:remoteDataService = new remoteDataService( "DrawerProductAssetService.lookupProductImages", null, lookupProductImages_resultHandler );
+			
+			public var mainListSelection:int = -1;
+			private var _saveButtonClicked:Boolean=false;
+			
+			public var imageManagerPopup:ViewPopupDlg = new ViewPopupDlg( "Manage Images", new ImageManager(), afterCloseImageManager );
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				trace ("-------------start creationCompleteHandler");
+				pagedRecords = new remoteListService( this.dataGrid, "DrawerProductAssetService.getPaged", null, getPageData_resultHandler );
+				//resourceManager.localeChain = ['zh_CN'];
+				//global.LanguageCode="CHN";
+				
+				var value:String = global.getValueFromSiteConfigSettings( "SITE_AUTO_FILTER_WHEN_OPEN_SCREEN" );
+				if ( value == 'Y' )
+				{
+					this.startFiltering();
+				}
+				else
+				{
+					;
+				}
+				
+				this.drawerList.service( 4 );
+				this.productImageList.service();
+				
+				
+				trace ("------------End creationCompleteHandler");
+				
+				
+				//trace("this.grid.scroller1111", this.dataGrid.scroller);
+				//trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+				this.dataGrid.scroller.verticalScrollBar.addEventListener(Event.CHANGE, verticalScrollBarChanged);
+				this.dataGrid.addEventListener(KeyboardEvent.KEY_UP, reportKeyUp);
+				this.dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+				
+			}
+			
+			
+			protected function startLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				//this.panel.enabled = false;
+				
+				currentLength=0;
+				currentOffset = 0;
+				
+				//this.exportContents = this.genData.prepExportHeader( dataGrid );
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				this.pb.values(0, 0);
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			protected function endLoadingPages():void
+			{
+				this.btn_export.enabled = true;
+				this.dataGrid.enabled = true;
+				this.toolbar.enabled = true;
+				//this.panel.enabled = true;
+				//this.pb.values(totalCount, totalCount);
+				this.pb.values(pagedRecords.totalCount, pagedRecords.totalCount, true);
+				
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = false;
+				
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				//if ( totalLength > totalCount )
+				if ( pagedRecords.totalLength > pagedRecords.totalCount )
+				{
+					this.resumeBtn.enabled = true;
+				}
+				else
+				{
+					this.resumeBtn.enabled = false;
+				}
+				
+				//this.fltr_product.setFocus();
+				var len:int = this.fltr_product.text.length;
+				this.fltr_product.selectRange(len, len);
+			}
+			
+			protected function exportCsvHandler(event:MouseEvent):void
+			{
+				this.confirmReport = new ActionDialog( doExport, cancelExport, resourceManager.getString('default','CONFIRM_REPORT_CSV') );
+				
+				//this.startLoadingPages();
+			}
+			
+			private function getPageData_resultHandler():void
+			{
+				// if not finished
+				if(pagedRecords.length < pagedRecords.totalCount)
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+				}
+				else
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+					
+					this.endLoadingPages();
+					
+					this.dataGrid.selectedIndex = this.mainListSelection;
+					if ( this.mainListSelection >= 0)
+					{
+						this.dataGrid_selectionChangeHandler(null);
+					}
+					this.mainListSelection = -1;
+					
+				}
+				
+			}
+			
+			
+			public function doExport():void
+			{
+				//genData.prepOther(dataGrid,'drawerProductlist.csv', this.pagedRecords);
+				
+				//f.save( this.exportContents, "drawerProductlist.csv" );
+				f.save( pagedRecords.exportContents, "drawerProductAssetlist.csv" );
+				
+				this.endLoadingPages();
+			}
+			
+			
+			public function cancelExport():void
+			{
+				this.endLoadingPages();
+				
+				//trace( this.exportContents );
+			}
+			
+			public function doNothing():void
+			{
+			}
+			
+			
+			private function verticalScrollBarChanged(event:Event):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function reportKeyUp(event:KeyboardEvent):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				if(event.column.dataField!='prod_items')
+				{
+					var currentRenderer:IGridItemRenderer;
+					var dir:String;
+					
+					if ( global.sortingBySingleColumn == true )
+					{	// sorted by single column only
+						for (var i:int=0; i < dataGrid.columns.length; i++)
+						{
+							currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+							if ( currentRenderer != null)
+							{
+								(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+							}
+							//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+						}
+					}
+					else
+					{	// sorted by multiple columns
+						;
+					}
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if( currentSorts.hasOwnProperty(event.column.dataField ) )
+					{
+						dir = currentSorts[event.column.dataField];
+						if( dir=="ASC" )
+						{
+							dir = "DESC";
+						}
+						else if ( dir == "DESC" )
+						{
+							dir = "";
+						}
+						else if ( dir == "" )
+						{
+							dir = "ASC";
+						}
+						else 
+						{
+							dir = "ASC";
+						}
+						
+						if ( dir != "" )
+						{
+							currentSorts[event.column.dataField] = dir;	
+						}
+						else
+						{
+							delete currentSorts[event.column.dataField];
+							delete currentOrders[event.column.dataField];
+						}
+					}
+					else
+					{
+						if ( global.sortingBySingleColumn == true )
+						{	// sorted by single column only
+							currentSorts = new Object();
+							currentOrders = new Object();
+							currentSortSeq = 0;
+						}
+						else
+						{	// sorted by multiple columns
+							;
+						}
+						currentSorts[event.column.dataField] = "ASC";	
+						dir = currentSorts[event.column.dataField];
+						currentSortSeq += 1;
+						currentOrders[event.column.dataField] = currentSortSeq;	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+					this.startFiltering();
+				}
+			}
+
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				if(currentState != 'widget')
+				{
+					idx=dataGrid.selectedIndex;
+					//dataGrid.ensureCellIsVisible(idx+11);
+					dataGrid.ensureCellIsVisible(idx);
+					
+					currentState = "edit";
+					
+					this.prod_backcolor2.initialize();
+					
+					this.prod_backcolor2.selectedColor = dataGrid.selectedItem.prod_backcolor;
+					this.prod_textcolor2.selectedColor = dataGrid.selectedItem.prod_textcolor;
+					
+					this.prod_image.selectedIndex = -1;
+					for ( var i:int=0; i<this.productImageList.length; i++ )
+					{
+						var o:Object = this.productImageList.getItemAt( i );
+						if (o.name == this.dataGrid.selectedItem.prod_image)
+						{
+							this.prod_image.selectedIndex = i;
+							//this.prod_image.ensureIndexIsVisible( i );
+							//callLater(function():void{this.prod_image.ensureIndexIsVisible( this.prod_image.selectedIndex );});
+							break;
+						}
+					}
+					
+					this.btn_save.enabled = this.canUpdate;
+				}
+			}
+			
+			protected function cancel_clickHandler():void
+			{
+				clearDetail();
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+			}			
+			
+			protected function lookupCompany_resultHandler():void
+			{
+				if ( currentState == "edit")
+				{
+					prod_cmpycode.selectedItem = dataGrid.selectedItem.prod_cmpyname;
+				}
+				
+				if ( currentFields.hasOwnProperty( "prod_cmpycode" ) )
+				{
+					this.fltr_drawer.selectedIndex = tools.getItemIndexFromCode( currentFields["prod_cmpycode"], drawerList, "cmpy_code");
+				}
+			}
+			
+			protected function lookupProductImages_resultHandler():void
+			{
+				if ( currentState == "edit")
+				{
+					this.prod_image.dataProvider = null;
+					this.prod_image.dataProvider = this.productImageList;
+					
+					this.prod_image.selectedIndex = -1;
+					for ( var i:int=0; i<this.productImageList.length; i++ )
+					{
+						var o:Object = this.productImageList.getItemAt( i );
+						if (o.name == this.dataGrid.selectedItem.prod_image)
+						{
+							this.prod_image.selectedIndex = i;
+							this.prod_image.ensureIndexIsVisible( i );
+							//callLater(function():void{this.prod_image.ensureIndexIsVisible( this.prod_image.selectedIndex );});
+							break;
+						}
+					}
+				}
+			}
+			
+			
+			protected function fltr_product_keyUpHandler(event:KeyboardEvent):void
+			{
+				if ( event.keyCode != 13 )
+				{
+					return;
+				}
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_drawer_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			private function startFiltering():void
+			{
+				var productFilter:String = '';  
+				var drawerFilter:String = '';  
+				var fields:Object;
+				var types:Object;
+				
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				fields = new Object();
+				types = new Object();
+				
+				
+				if(fltr_product.text!='')
+				{					
+					productFilter = "((UPPER(prod_code) LIKE UPPER('%"+(fltr_product.text)+"%') ) or "
+						+ "(UPPER(prod_name) LIKE UPPER('%"+(fltr_product.text)+"%') )) ";
+					fields["prod_code||prod_name"] = fltr_product.text+"||"+fltr_product.text;
+				}
+				else
+				{
+					productFilter = '';
+					fields["prod_code||prod_name"] = "";
+				}
+				types["prod_code||prod_name"] = "STRING||STRING";
+				
+				
+				if (fltr_drawer.selectedIndex > -1) 
+				{
+					drawerFilter = "prod_cmpycode='"+drawerList[fltr_drawer.selectedIndex].cmpy_code+"' ";
+					fields["prod_cmpycode"] = drawerList[fltr_drawer.selectedIndex].cmpy_code;
+					if ( fields["prod_cmpycode"] == "ANY" )
+					{
+						drawerFilter = '';
+						fields["prod_cmpycode"] = "";
+					}
+				}
+				else
+				{
+					if ( global.setComboBoxNoSelection == true )
+					{
+						fltr_drawer.selectedIndex = -1;
+					}
+					drawerFilter = '';
+					fields["prod_cmpycode"] = "";
+				}
+				types["prod_cmpycode"] = "EXACT_STRING";
+				
+				
+				currentFilter = "WHERE 1=1 ";
+				if ( productFilter.length > 0 )
+				{
+					currentFilter += "AND " + productFilter;
+				}
+				if ( drawerFilter.length > 0 )
+				{
+					currentFilter += "AND " + drawerFilter;
+				}
+				
+				currentFields = fields;
+				currentTypes = types;
+				
+				this.startLoadingPages();
+				
+				trace("this.grid.scroller3333", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			private function findByPrimaryKey(cmpy:String, prod:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["prod_cmpycode"] = cmpy;
+				types["prod_cmpycode"] = "EXACT_STRING";
+				fields["prod_code"] = prod;
+				types["prod_code"] = "EXACT_STRING";
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				//this.pagedRecords.service( fields, types, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( fields, types, currentSorts, currentOrders );
+			}
+			
+			protected function filterRecords(event:MouseEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				this.startFiltering();
+			}
+			
+			protected function refreshRecords(event:MouseEvent):void
+			{
+				if ( currentState != "widget" )
+				{
+					currentState = 'normal';
+					dataGrid.enabled=true;
+				}
+				clearDetail();
+				fltr_product.text = "";
+				fltr_drawer.selectedIndex = -1;
+				
+				dataGrid.selectedIndex = -1;
+				currentFilter = null;
+				currentOrder = null;
+				currentFields = new Object();
+				currentTypes = new Object();
+				
+				currentSorts = new Object();
+				currentOrders = new Object();
+				var currentRenderer:IGridItemRenderer;
+				for (var i:int=0; i < dataGrid.columns.length; i++)
+				{
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					if ( currentRenderer != null)
+					{
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+					}
+					//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+				}
+				this.startFiltering();
+				//this.startLoadingPages();
+				trace("this.grid.scroller2222", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			protected function clearDetail(): void
+			{
+				if (currentState != 'widget')
+				{
+				}
+			}			
+			
+			private function editRecord():void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.prod_code = prod_code.text;
+				obj.prod_name = prod_name.text;
+				obj.prod_backcolor = prod_backcolor.text;
+				obj.prod_textcolor = prod_textcolor.text;
+				
+				if (prod_cmpycode.selectedIndex>=0)
+				{
+					obj.prod_cmpycode = drawerList[prod_cmpycode.selectedIndex].cmpy_code;
+					obj.prod_cmpyname = drawerList[prod_cmpycode.selectedIndex].cmpy_name;
+				}
+				else
+				{
+					obj.prod_cmpycode = dataGrid.selectedItem.prod_cmpycode;
+					obj.prod_cmpyname = dataGrid.selectedItem.prod_cmpyname;
+				}
+				
+				if (prod_image.selectedIndex>=0)
+				{
+					obj.prod_image = this.productImageList[prod_image.selectedIndex].name;
+				}
+				else
+				{
+					obj.prod_image = "";//dataGrid.selectedItem.prod_image;
+				}
+				
+				updateAction.service( obj.prod_cmpycode, obj.prod_code, obj.prod_backcolor, obj.prod_textcolor, obj.prod_image );
+			}
+			
+			protected function updateData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.updateAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var cmpy:String;
+				var prod:String;
+				cmpy = drawerList[prod_cmpycode.selectedIndex].cmpy_code;
+				prod = prod_code.text;
+				
+				currentState="normal";
+				findByPrimaryKey( cmpy, prod );
+				
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return index;
+			}
+			
+			
+			
+			protected function save_clickHandler():void
+			{
+				this.btn_save.enabled = false;
+				doSave();
+				//this.confirmSave = new ActionDialog( doSave, doNothing, resourceManager.getString('default','CONFIRM_SAVE_RATIOS') );
+				
+				//this.startLoadingPages();
+			}
+			
+			protected function doSave():void
+			{
+				if (currentState == "edit")
+				{
+					editRecord();
+				}
+			}
+			
+			public function closeDialogHandler():void
+			{
+				/* this.mainListSelection = this.dataGrid.selectedIndex;
+				this.currentState = "normal";
+				this.dataGrid.selectedIndex = -1;
+				this.startFiltering(); */
+			}
+			
+			
+			
+			public function closeErrorDialog():void
+			{
+				PopUpManager.removePopUp(this.errorDialog.dialog );	
+			}
+			
+			
+			protected function killBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=true;
+				pagedRecords.interruptor=true;
+				trace("WTF >>>>>>>>>>");
+			}
+			
+			protected function resumeBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				this.resumeLoadingPages();
+				trace("RESUME >>>>>>>>>>");
+			}
+			
+			protected function resumeLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				
+				//pb.values(pagedRecords.length,totalLength);
+				pb.values(pagedRecords.length,pagedRecords.totalLength);
+				//currentPage = int(this.pagedRecords.length/currentPageSize) + 1;
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			protected function prod_backcolor_closeHandler(event:DropdownEvent):void
+			{
+				// TODO Auto-generated method stub
+				//global.msgWarning( this.prod_backcolor.selectedColor );
+				this.prod_backcolor.text = this.prod_backcolor2.selectedColor;
+			}
+			
+			protected function prod_textcolor_closeHandler(event:DropdownEvent):void
+			{
+				// TODO Auto-generated method stub
+				//global.msgWarning( this.prod_textcolor.selectedColor );
+				this.prod_textcolor.text = this.prod_textcolor2.selectedColor;
+			}
+			
+			protected function prod_backcolor_changeHandler(event:TextOperationEvent):void
+			{
+				// TODO Auto-generated method stub
+				this.prod_backcolor2.selectedColor = this.prod_backcolor.text;
+			}
+			
+			protected function prod_textcolor_changeHandler(event:TextOperationEvent):void
+			{
+				// TODO Auto-generated method stub
+				this.prod_textcolor2.selectedColor = this.prod_textcolor.text;
+			}
+			
+			protected function prod_image_valueCommitHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				this.prod_image.ensureIndexIsVisible( this.prod_image.selectedIndex );
+				//callLater(function():void{this.prod_image.ensureIndexIsVisible( this.prod_image.selectedIndex );});
+			}
+			
+			protected function popupImageManager(event:MouseEvent)
+			{
+				this.imageManagerPopup.popupTitle = resourceManager.getString('default','IMAGEMANAGER.LABEL.TITLE');
+				this.imageManagerPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+				
+				this.imageManagerPopup.parentWidth = this.width*0.75;
+				this.imageManagerPopup.parentHeight = this.height*0.5;
+				
+				trace ( "*******************Pop up a screen to manage partnership!");
+				imageManagerPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				imageManagerPopup.setFilters( params ); 
+			}
+			
+			public function afterCloseImageManager():void
+			{
+				this.productImageList.service();
+			}
+			
+			protected function imageFilter_keyUpHandler(event:KeyboardEvent):void
+			{
+				// TODO Auto-generated method stub
+				var img:String="-1";
+				if(imageFilter.text!='')
+				{					
+					img = imageFilter.text;
+				}
+				
+				this.productImageList.service( img );
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<components:ValidationGroup id="vg" action="{save_clickHandler}" defaultButton="{btn_save}" isProtected="{hasPassword}"/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:VGroup width="100%" id="toolbar"  >
+			<s:HGroup gap="5" paddingBottom="2" paddingTop="2" width="100%">
+				<components:DKI_ComboBox id="fltr_drawer" width="180" height="100%" enabled="true"
+										 change="fltr_drawer_changeHandler(event)" cornerRadius="10"
+										 labelField="cmpy_name" prompt="{resourceManager.getString('default','PROD_CMPYNAME')+resourceManager.getString('default','FILTER')}"
+										 dataProvider="{drawerList}"/>
+				<components:DKI_ValidatorInput id="fltr_product" validationType="search" minWidth="160" height="{labelHeight}" width="100%"
+											   keyUp="fltr_product_keyUpHandler(event)"  
+											   prompt="{resourceManager.getString('default','PROD_CODE')+'/'+resourceManager.getString('default','PROD_NAME')+resourceManager.getString('default','FILTER')}"/>
+				
+				<!--/s:HGroup>
+				<s:HGroup gap="5" paddingBottom="2" paddingTop="2" width="100%"-->
+				<s:Spacer width="100%"/>
+				<components:DKI_Button id="filterBtn" height="24" noLabel="false" click="filterRecords(event)"
+									   type="filteron"/>
+				<components:DKI_Button id="resetBtn" height="24" noLabel="false" click="refreshRecords(event)"
+									   type="filteroff"/>
+				<components:DKI_Button id="btn_export" label="{resourceManager.getString('default','EXPORTDATA')}" type="report" click="exportCsvHandler(event)" includeIn="normal"/>
+			</s:HGroup>
+		</s:VGroup>
+		
+		
+		<s:DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="4"
+					selectionChange="dataGrid_selectionChangeHandler(event)"
+					skinClass="skins.DKI_DataGrid_Skin"
+					height.widget="100%">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="prod_cmpycode" headerText="{resourceManager.getString('default','PROD_CMPYCODE')}" visible="true" width="100"></s:GridColumn>
+						<s:GridColumn dataField="prod_cmpyname" headerText="{resourceManager.getString('default','PROD_CMPYNAME')}" visible="true" width="150"></s:GridColumn>
+						<s:GridColumn dataField="prod_code" headerText="{resourceManager.getString('default','PROD_CODE')}" visible="true" width="100"></s:GridColumn>
+						<s:GridColumn dataField="prod_name" headerText="{resourceManager.getString('default','PROD_NAME')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="prod_class" headerText="{resourceManager.getString('default','PROD_CLASS')}" visible="true" width="100"></s:GridColumn>
+						<s:GridColumn dataField="prod_backcolor" headerText="{resourceManager.getString('default','PROD_BACKCOLOR')}" visible="true" width="200" itemRenderer="renderers.ColorRectRenderer"></s:GridColumn>
+						<s:GridColumn dataField="prod_textcolor" headerText="{resourceManager.getString('default','PROD_TEXTCOLOR')}" visible="true" width="200" itemRenderer="renderers.ColorRectRenderer"></s:GridColumn>
+						<!--<s:GridColumn dataField="prod_backcolor2" headerText="{resourceManager.getString('default','PROD_BACKCOLOR')}" visible="true" itemRenderer="renderers.ColorChooserRenderer"></s:GridColumn>
+						<s:GridColumn dataField="prod_textcolor2" headerText="{resourceManager.getString('default','PROD_TEXTCOLOR')}" visible="true" itemRenderer="renderers.ColorChooserRenderer"></s:GridColumn>-->
+						<s:GridColumn dataField="prod_image" headerText="{resourceManager.getString('default','PROD_IMAGE')}" itemRenderer="renderers.GridImageRenderer" visible="true"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			<s:dataProvider>
+				<!--s:AsyncListView id="pgList" list="{getPagedResult.lastResult}"/-->
+				<s:AsyncListView id="pgList" list="{pagedRecords}"/>
+			</s:dataProvider>
+		</s:DataGrid>
+		<s:HGroup width="100%">
+			<components:Downloader id="pb" width="100%" height="18"/>
+			<!--mx:ProgressBar id="pb" width="100%" height="22" visible="false" includeInLayout="false"  mode="manual" source="{this.pgList}" label="{this.currentLength} records shown from {this.currentLength} loaded out of {this.totalLength} found." labelPlacement="center"/-->
+			<s:Button id="killBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="killBtn_clickHandler(event)"/>
+			<s:Button id="resumeBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="resumeBtn_clickHandler(event)"/>
+		</s:HGroup>
+	</s:Panel>
+	
+	<s:Panel id="details" includeIn="edit" width="100%" height="400"
+			 itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+			<!--s:TileLayout/-->
+		</s:layout>
+		
+		<s:Spacer height="5"/>
+		<s:VGroup width="100%">
+
+			<s:HGroup width="100%">
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','PROD_CMPYNAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="prod_cmpycode" 
+													  dataProvider="{drawerList}" 
+													  labelField="cmpy_name" 
+													  selectedItem="{dataGrid.selectedItem.prod_cmpyname}" enabled="false" enabled.edit="false" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','PROD_CMPYNAME')}"  
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','PROD_CMPYNAME')}" 
+													  />
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','PROD_CODE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="prod_code" maxChars="18" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.prod_code}" editable="false" enabled="false" 
+												   required="true" validationType="alphanumeric" validationGroup="{vg}" automationName="{resourceManager.getString('default','PROD_CODE')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','PROD_NAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="prod_name" maxChars="40" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.prod_name}" editable="false" enabled="false" 
+												   required="true" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','PROD_NAME')}" 
+												   />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:Spacer height="{this.spaceHeight}" />
+			
+			<s:HGroup width="100%">
+				
+				<s:HGroup id="bcGrp">
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','PROD_BACKCOLOR')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="prod_backcolor" maxChars="32" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.prod_backcolor}" editable="true" enabled="true" change="prod_backcolor_changeHandler(event)" 
+												   required="false" validationType="color_value" validationGroup="{vg}" automationName="{resourceManager.getString('default','PROD_BACKCOLOR')}" 
+												   />
+					<components:ColorChooser id="prod_backcolor2" width="{fieldWidth}" height="24" close="prod_backcolor_closeHandler(event)"/>
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:Spacer height="{this.spaceHeight}" />
+			
+			<s:HGroup width="100%">
+				
+				<s:HGroup id="tcGrp">
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','PROD_TEXTCOLOR')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="prod_textcolor" maxChars="32" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.prod_textcolor}" editable="true" enabled="true" change="prod_textcolor_changeHandler(event)" 
+												   required="false" validationType="color_value" validationGroup="{vg}" automationName="{resourceManager.getString('default','PROD_TEXTCOLOR')}" 
+												   />
+					<components:ColorChooser id="prod_textcolor2" width="{fieldWidth}" height="24" close="prod_textcolor_closeHandler(event)"/>
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:Spacer height="{this.spaceHeight}" />
+			
+			<mx:HRule width="100%"/>
+			
+			<s:HGroup width="100%">
+				<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','IMAGEMANAGER.LABEL.FIELD')}" verticalAlign="middle"/>
+				<components:DKI_ValidatorInput id="imageFilter" width="{fieldWidth}" validationType="search" prompt="{resourceManager.getString('default','IMAGEMANAGER.LABEL.FILTER')}" keyUp="imageFilter_keyUpHandler(event)"/>
+				<components:DKI_Button id="btn_image" label="{resourceManager.getString('default','IMAGEMANAGER.BUTTON.MANAGE')}"  includeIn="edit" 
+									   enabled="{this.canUpdate}" type="edit" focusEnabled="true" click="popupImageManager(event);"/>
+			</s:HGroup> 
+			
+			<s:HGroup width="100%">
+				
+				<s:HGroup>
+					<components:DKI_List id="prod_image" width="{this.width-10}" height="150" labelField="name"
+										 dataProvider="{this.productImageList}" cacheAsBitmap="true" useVirtualLayout="false"
+										 itemRenderer="renderers.ProductImageRenderer"
+										 valueCommit="prod_image_valueCommitHandler(event)" 
+										 >
+						<components:layout>
+							<s:HorizontalLayout gap="10"/>
+						</components:layout>
+					</components:DKI_List>	
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:Spacer height="5" />
+			
+		</s:VGroup>
+		
+		<s:Spacer height="0" />
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_save" label="{resourceManager.getString('default','UPDATE')}" height="100%" includeIn="edit" 
+								   enabled="{this.canUpdate}" type="edit" focusEnabled="true"/>
+			<components:DKI_Button id="btn_cancel" label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel" focusEnabled="true"/>
+		</s:HGroup>
+	</s:Panel>
+	
+</s:VGroup>

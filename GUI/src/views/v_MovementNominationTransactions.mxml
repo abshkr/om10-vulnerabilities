@@ -1,0 +1,289 @@
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  xmlns:skins="skins.*" 
+		  xmlns:controllers="controllers.*"
+		  width="100%" height="100%" creationComplete="controller.init();" 
+		  currentState="Receipt" xmlns:dm="dm.*" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" xmlns:layout="org.alivepdf.layout.*" >
+	<fx:Script>
+		<![CDATA[
+			import mx.utils.StringUtil;
+			
+			import spark.events.TextOperationEvent;
+			
+			protected function alq_changeHandler(event:TextOperationEvent):void
+			{
+				// TODO Auto-generated method stub
+				if ( StringUtil.trim(alq.text).length > 0 )
+				{
+					uomcb.enabled = true;
+					uomcb.requireSelection = true;
+					if ( uomcb.selectedIndex == -1 )
+					{
+						uomcb.selectedIndex = 0;
+					}
+				}
+				else
+				{
+					uomcb.enabled = false;
+					uomcb.requireSelection = false;
+					uomcb.selectedIndex = -1;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+
+	
+	<s:states>
+		<s:State name="Receipt"/>
+		<s:State name="Transfer"/>
+		<s:State name="Disposal"/>
+	</s:states>
+	
+	
+	<fx:Declarations>
+		<controllers:C_MovementNominationTransactions id="controller" view="{this}" />
+		<dm:DM/>
+	</fx:Declarations>
+	<s:HGroup width="100%" height="100%">
+		<s:VGroup width="100%" height="100%">
+			<s:HGroup width="100%">
+				<s:Label width="100" height="25" textAlign="right" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.NOMID')}"/>
+				<components:DKI_ValidatorInput height="25" width="100%" editable="false" text="{C_MovementNominationTransactions.INL1}" />
+				<s:Label width="100" height="25" textAlign="right" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.NOMKEY')}"/>
+				<components:DKI_ValidatorInput height="25" width="100%" editable="false" text="{C_MovementNominationTransactions.INL2}" />
+				<s:Label width="100" height="25" textAlign="right" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.NOMTERM')}"/>
+				<components:DKI_ValidatorInput height="25" width="100%" editable="false" text="{C_MovementNominationTransactions.INL3}" />	
+			</s:HGroup>
+			<s:HGroup width="100%">
+				<s:Label width="100" height="25" textAlign="right" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.ITEMID')}"/>
+				<components:DKI_ValidatorInput height="25" width="100%" editable="false" text="{C_MovementNominationTransactions.IIL1}" />
+				<s:Label width="100" height="25" textAlign="right" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.ITEMKEY')}"/>
+				<components:DKI_ValidatorInput height="25" width="100%" editable="false" text="{C_MovementNominationTransactions.IIL2}" />
+				<s:Label width="100" height="25" textAlign="right" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.ITEMSTAT')}"/>
+				<components:DKI_ValidatorInput height="25" width="100%" editable="false" text="{C_MovementNominationTransactions.IIL3}" />	
+			</s:HGroup>
+			<mx:HRule width="100%"/>
+			<s:HGroup width="100%">
+				<s:Label width="100" height="25" textAlign="right" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.TYPE')}"/>
+				<components:DKI_ValidatorInput height="25" width="100%" editable="false" text="{currentState}" />
+				<s:Label width="100" height="25" textAlign="right" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.BOL')}"/>
+				<components:DKI_ValidatorInput height="25" width="100%" text="@{C_MovementNominationTransactions.TAS_NUM}"/>
+				<s:Label width="100" height="25" textAlign="right" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.DT_START')}"/>
+				<components:DKI_DateTimeRange limitDate="true" id="startTime" width="100%" selectedDate="@{C_MovementNominationTransactions.TIME_START}" />	
+			</s:HGroup>
+			<s:HGroup width="100%">
+				<s:Label width="100" height="25" textAlign="right" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.CARRIER')}"/>
+				<components:DKI_ComboBox openOnInput="true" id="carrierCode" 	height="25" width="100%" prompt="{resourceManager.getString('default','MOVTRAN.PROMPT.CARRIER')}" dataProvider="{DM.SpecialMovements.tankerData}" labelField="carrier" change="controller.bindToTanker();" />
+				<s:Label width="100" height="25" textAlign="right" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.TANKER')}"/>
+				<components:DKI_ComboBox openOnInput="true" id="tankerCode" 	height="25" width="100%" prompt="{resourceManager.getString('default','MOVTRAN.PROMPT.TANKER')}" dataProvider="{C_MovementNominationTransactions.tankers}" change="controller.bindTanker();"/>
+				<s:Label width="100" height="25" textAlign="right" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.DT_END')}"/>
+				<components:DKI_DateTimeRange limitDate="true" id="endTime" width="100%" selectedDate="@{C_MovementNominationTransactions.TIME_END}"/>	
+				
+			</s:HGroup>
+			<mx:HRule width="100%"/>
+			<s:HGroup width="100%">
+				<s:VGroup width="250%" height="100%">
+					
+					<s:HGroup width="100%" height="100%">
+						<s:VGroup width="100">
+							<s:Label height="35" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.FROMTITLE')}" fontSize="15" fontWeight="bold"/>
+							<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.FROMPLANT')}" 	textAlign="right"/>
+							<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.FROMDRAWPROD')}" 	 	textAlign="right"/>
+							<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.FROMARM')}" 	 		textAlign="right"/>
+							<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.FROMTANK')}" 		 	textAlign="right"/>
+						</s:VGroup>
+						<s:VGroup width="100%" enabled="{currentState!='Receipt'}">
+							<s:Label height="35" width="100%" verticalAlign="middle" text="" fontSize="15"/>
+							<components:DKI_ValidatorInput id="fromPlant" 	height="25" width="100%" editable="false" text="{C_MovementNominationTransactions.PLANT_FROM}" />
+							<components:DKI_ValidatorInput id="fromDrawer" 	height="25" width="100%" editable="false" text="{C_MovementNominationTransactions.STR_PROD_FROM}" />
+							<!--<components:DKI_ComboBox openOnInput="true" id="fromArm" 	height="25" width="100%" labelField="armCode" prompt="{resourceManager.getString('default','MOVTRAN.PROMPT.ARM')}" dataProvider="{C_MovementNominationTransactions.arms}" change="controller.updateArmData()" enabled="{!(currentState=='Disposal'&amp;&amp;fromTank.selectedIndex>-1)}"/>-->
+							<components:DKI_ComboBox openOnInput="true" id="fromArm" 	height="25" width="100%" labelField="armCode" prompt="{resourceManager.getString('default','MOVTRAN.PROMPT.ARM')}" dataProvider="{C_MovementNominationTransactions.arms}" change="controller.updateArmData()" enabled="{!(currentState=='Disposal'&amp;&amp;fromTank.selectedIndex>-1)&amp;&amp;(!(currentState=='Transfer'))}"/>
+							<components:DKI_ComboBox openOnInput="true" id="fromTank" 	height="25" width="100%" labelField="tankUI" prompt="{resourceManager.getString('default','MOVTRAN.PROMPT.TANK')}" dataProvider="{C_MovementNominationTransactions.TANK_FROM}" change="controller.bindFromProd()" enabled="{!(currentState=='Disposal'&amp;&amp;fromArm.selectedIndex>-1) &amp;&amp; C_MovementNominationTransactions.bases.length &lt;= 1}"/>
+						</s:VGroup>
+						<s:VGroup width="100">
+							<s:Label height="35" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.TOTITLE')}" fontSize="15"  fontWeight="bold"/>
+							<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.TOPLANT')}"  	textAlign="right"/>
+							<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.TODRAWPROD')}" 	 	textAlign="right"/>
+							<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.TOTANK')}" 		 	textAlign="right"/>
+						</s:VGroup>
+						<s:VGroup width="100%" enabled="{currentState!='Disposal'}">
+							<s:Label height="35" width="100%" verticalAlign="middle" text="" fontSize="15"/>
+							<components:DKI_ValidatorInput id="toPlant" 	height="25" width="100%" editable="false" text="{C_MovementNominationTransactions.PLANT_TO}" />
+							<components:DKI_ValidatorInput id="toDrawer" 	height="25" width="100%" editable="false" text="{C_MovementNominationTransactions.STR_PROD_TO}" />
+							<components:DKI_ComboBox openOnInput="true"  id="toTank" 	height="25" width="100%" labelField="tankUI" prompt="{resourceManager.getString('default','MOVTRAN.PROMPT.TANK')}" dataProvider="{C_MovementNominationTransactions.TANK_TO}" change="controller.bindToProd()" />						
+						</s:VGroup>
+					</s:HGroup> 
+					<s:HGroup width="100%">
+						<s:Label height="25" width="100" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.COMMENT')}" textAlign="right"/>
+						<s:TextInput height="25" width="100%" text="@{C_MovementNominationTransactions.COMMENT}"/>
+					</s:HGroup>
+				</s:VGroup>
+				
+				<s:VGroup width="100">
+					<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.PLAN_QTY')}" 	textAlign="right"/>
+					<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.OBS_QTY')}" 		textAlign="right"/>
+					<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.STD_QTY')}" 		textAlign="right"/>
+					<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.MASS')}" 		textAlign="right"/>
+					<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.OBS_TEMP')}" 		textAlign="right"/>
+					<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.STD_DENS')}"	textAlign="right"/>
+					<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.ALT_QTY')}" 	textAlign="right" />
+				</s:VGroup>	
+				<s:VGroup width="100%">
+					<s:HGroup height="25" width="100%" verticalAlign="middle">
+						<components:DKI_ValidatorInput width="125" validationType="integer" id="pq" editable="false" restrict="0-9" text="@{C_MovementNominationTransactions.PLN_AMB}"/>
+						<s:Label text="{C_MovementNominationTransactions.PLANNED_QTY_UNIT}" width="100%"/>		
+						<components:DKI_ValidatorInput width="120" validationType="integer" id="availQty" editable="false" restrict="0-9" text="@{C_MovementNominationTransactions.AVAIL_AMB}"/>
+						<s:Label height="25" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','datagrid.headercaption.available')}" 	textAlign="left"/>
+					</s:HGroup>
+					<s:HGroup height="25" width="100%" verticalAlign="middle">
+						<components:DKI_ValidatorInput width="125" validationType="integer_nonzero" maxChars="{global.MAX_NUMBER_DIGITS}" id="aq" restrict="0-9" text="@{C_MovementNominationTransactions.QTY_AMB}" required="true" change="controller.AmbQtyChangedInForm()"/>
+						<s:Label text="{resourceManager.getString('default','MOVTRAN.LABEL.OBS_QTY_UNIT')}" width="100%"/>
+						<components:DKI_Button label="{resourceManager.getString('default','CALCULATE')}"   type="refresh" click="controller.calc();" enabled="{ 
+											   (C_MovementNominationTransactions.TEMP_AMB.length>0)&amp;&amp;
+											   (C_MovementNominationTransactions.DENS_COR.length>0)&amp;&amp;
+											   (
+											   ((C_MovementNominationTransactions.QTY_AMB.length>0))||
+											   ((C_MovementNominationTransactions.QTY_COR.length>0))||
+											   ((C_MovementNominationTransactions.MASS_AMB.length>0))
+											   )											   
+											   }"/>		
+					</s:HGroup>
+					<s:HGroup height="25" width="100%" verticalAlign="middle">
+						<components:DKI_ValidatorInput width="125" validationType="integer_nonzero" maxChars="{global.MAX_NUMBER_DIGITS}" id="sq" restrict="0-9" text="@{C_MovementNominationTransactions.QTY_COR}" required="true" change="controller.StdQtyChangedInForm()"/>
+						<s:Label text="{resourceManager.getString('default','MOVTRAN.LABEL.STD_QTY_UNIT')}" width="100%"/>		
+					</s:HGroup>
+					<s:HGroup height="25" width="100%" verticalAlign="middle">
+						<components:DKI_ValidatorInput width="125" validationType="integer_nonzero" maxChars="{global.MAX_NUMBER_DIGITS}" id="mq" restrict="0-9" text="@{C_MovementNominationTransactions.MASS_AMB}" required="true" change="controller.MassQtyChangedInForm()"/>
+						<s:Label text="{resourceManager.getString('default','MOVTRAN.LABEL.MASS_UNIT')}" width="100%"/>	
+					</s:HGroup>
+					<s:HGroup height="25" width="100%" verticalAlign="middle">
+						<components:DKI_ValidatorInput width="125" validationType="numeric" id="at" restrict="{(at.selectionActivePosition==0&amp;&amp;at.text.indexOf('-')==-1)?'0-9\\-':at.text.indexOf('.')==-1?'0-9.':'0-9'}" text="@{C_MovementNominationTransactions.TEMP_AMB}" required="true" change="controller.updateBaseTemp()"/>
+						<s:Label text="{resourceManager.getString('default','MOVTRAN.LABEL.OBS_TEMP_UNIT')}" width="100%"/>	
+					</s:HGroup>
+					<s:HGroup height="25" width="100%" verticalAlign="middle">
+						<components:DKI_ValidatorInput width="125" validationType="numeric" id="sd" restrict="{sd.text.length==0?'0-9':sd.text.indexOf('.')==-1?'0-9.':'0-9'}" text="@{C_MovementNominationTransactions.DENS_COR}" required="true" change="controller.updateBaseDens()"/>
+						<s:Label text="{resourceManager.getString('default','MOVTRAN.LABEL.STD_DENS_UNIT')}" width="100%"/>
+					</s:HGroup>
+					<s:HGroup height="25" width="100%" verticalAlign="middle">
+						<components:DKI_ValidatorInput width="125" validationType="integer_nonzero" maxChars="{global.MAX_NUMBER_DIGITS}" id="alq" restrict="0-9" text="@{C_MovementNominationTransactions.ALTERNATE_QTY}" required="false" change="alq_changeHandler(event)"/>
+						<components:DKI_ComboBox id="uomcb"  openOnInput="true"  width="100%" selectedIndex="-1" requireSelection="false" enabled="false" dataProvider="{DM.SpecialMovements.volumeUnitsAmb}" labelField="Symbol"/>	
+					</s:HGroup>
+				</s:VGroup>
+				
+			</s:HGroup>
+			<mx:HRule width="100%"/>
+			<s:Label height="35" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.BASE_PROD_DET')}" fontSize="15"  fontWeight="bold"/>
+			<s:VGroup gap="-1" width="100%" height="100%" enabled="{currentState=='Disposal' &amp;&amp; fromArm.selectedIndex>-1}">
+				
+				<s:DataGrid width="100%" height="100%" id="dg1" horizontalScrollPolicy="off" gridItemEditorSessionSave="controller.updateBaseDetail()" 
+							dataProvider="{C_MovementNominationTransactions.bases}" editable="true" >
+				
+					<s:columns>
+						<s:ArrayList>
+							<s:GridColumn id="trsf_bs_prodcd" 	dataField="BASE_GUI"   		headerText="{resourceManager.getString('default','MOVTRAN.LABEL.BASE_GUI')}" 		width="180" editable="false"/>
+							<s:GridColumn id="trsf_bs_tk_cd" 	dataField="TANK_CODE" 		headerText="{resourceManager.getString('default','MOVTRAN.LABEL.TANK_CODE')}" 			width="100" editable="false"/>
+							<s:GridColumn id="trsf_bs_prodcls" 	dataField="BCLASS_DESC"		headerText="{resourceManager.getString('default','MOVTRAN.LABEL.BCLASS_DESC')}" 					editable="false"/>
+							<s:GridColumn id="trsf_bs_den" 		dataField="TANK_DENS"		headerText="{resourceManager.getString('default','MOVTRAN.LABEL.TANK_DENS')}" 	width="110" editable="true"/>
+							<s:GridColumn id="trsf_bs_temp" 	dataField="Temperature"		headerText="{resourceManager.getString('default','MOVTRAN.LABEL.TEMPERATURE')}" 			width="100" editable="false"/>
+							<s:GridColumn id="trsf_bs_qty_amb" 	dataField="amb_vol"			headerText="{resourceManager.getString('default','MOVTRAN.LABEL.AMB_VOL')}" 		width="100" editable="true" itemRenderer="renderers.QuantityNumberRenderer"/>
+							<s:GridColumn id="trsf_bs_qty_cor" 	dataField="cor_vol" 		headerText="{resourceManager.getString('default','MOVTRAN.LABEL.COR_VOL')}" 		width="100" editable="true" itemRenderer="renderers.QuantityNumberRenderer"/>
+							<s:GridColumn id="trsf_bs_load_kg" 	dataField="liq_kg"		  	headerText="{resourceManager.getString('default','MOVTRAN.LABEL.LIQ_KG')}" 			width="100" editable="true" itemRenderer="renderers.QuantityNumberRenderer"/>
+						</s:ArrayList>
+					</s:columns>
+				
+				</s:DataGrid>
+				
+				<s:DataGrid dataProvider="{C_MovementNominationTransactions.baseTotals}" rollOverColor="#FFFFFF" selectionColor="#FFFFFF" width="100%" 
+							id="dg1f" minHeight="0" requestedMaxRowCount="1"  requestedMinRowCount="1" 
+							requestedRowCount="1" rowHeight="{dg2.rowHeight}" height="{dg2.rowHeight}">
+					<s:columns>
+						<s:ArrayList>
+							<s:GridColumn width="{ trsf_bs_prodcd.width+
+										  			trsf_bs_tk_cd.width+
+										  		  trsf_bs_prodcls.width+
+										  			  trsf_bs_den.width+
+										  			 trsf_bs_temp.width}"	dataField="total"/>
+							<s:GridColumn width="{trsf_bs_qty_amb.width}" 	dataField="qtyTotalRound"/>
+							<s:GridColumn width="{trsf_bs_qty_cor.width}"  	dataField="stdTotalRound"/>
+							<s:GridColumn width="{trsf_bs_load_kg.width}"  	dataField="massTotalRound"/>
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+					
+			</s:VGroup>
+			<mx:HRule width="100%"/>
+			<s:Label height="35" width="100%" verticalAlign="middle" text="{resourceManager.getString('default','MOVTRAN.LABEL.METER_TOTAL_DET')}" fontSize="15"  fontWeight="bold"/>
+			<s:VGroup gap="-1" width="100%" height="100%" enabled="{currentState=='Disposal' &amp;&amp; fromArm.selectedIndex>-1}">
+				
+				
+				
+				<s:DataGrid dataProvider="{C_MovementNominationTransactions.meterTotals}" rollOverColor="#FFFFFF" selectionColor="#FFFFFF" 
+							width="100%" id="dg2h" minHeight="0" requestedMaxRowCount="0"  requestedMinRowCount="0" requestedRowCount="0" 
+							height="{dg2.rowHeight}" resizableColumns="false" mouseChildren="false" mouseEnabled="false">
+					<s:columns>
+						<s:ArrayList>
+							<s:GridColumn width="{dg2r1.width+dg2r2.width}" 				headerText=""/>
+							<s:GridColumn width="{dg2r3.width+dg2r4.width+dg2r5.width}"	 	headerText="{resourceManager.getString('default','MOVTRAN.LABEL.OBS_HEADER')}"/>
+							<s:GridColumn width="{dg2r6.width+dg2r7.width+dg2r8.width}" 	headerText="{resourceManager.getString('default','MOVTRAN.LABEL.STD_HEADER')}"/>
+							<s:GridColumn width="{dg2r9.width+dg2r10.width+dg2r11.width}" 	headerText="{resourceManager.getString('default','MOVTRAN.LABEL.MASS_HEADER')}"/>
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+				
+				
+				
+				<s:DataGrid width="100%" height="100%" id="dg2" horizontalScrollPolicy="off" gridItemEditorSessionSave="controller.updateMeterDetail()" 
+							dataProvider="{C_MovementNominationTransactions.meters}" editable="true" >
+					<s:columns>
+						<s:ArrayList>
+							<s:GridColumn id="dg2r1"  			  dataField="BASE_GUI"			headerText="{resourceManager.getString('default','MOVTRAN.LABEL.BASE_GUI')}" 		editable="false"/>
+							<s:GridColumn id="dg2r2"  width="100" dataField="STREAM_MTRCODE"	headerText="{resourceManager.getString('default','MOVTRAN.LABEL.METER_CODE')}"			editable="false"/>
+	
+							<s:GridColumn id="dg2r3"  width="90" dataField="open_amb"		headerText="{resourceManager.getString('default','MOVTRAN.LABEL.OPEN_AMB')}"		editable="true"/>
+							<s:GridColumn id="dg2r4"  width="90" dataField="close_amb"    	headerText="{resourceManager.getString('default','MOVTRAN.LABEL.CLOSE_AMB')}"			editable="true"/>
+							<s:GridColumn id="dg2r5"  width="90" dataField="quantity_amb"  	headerText="{resourceManager.getString('default','MOVTRAN.LABEL.QUANTITY_AMB')}"			editable="false"/>
+							<s:GridColumn id="dg2r6"  width="90" dataField="open_cor"      	headerText="{resourceManager.getString('default','MOVTRAN.LABEL.OPEN_COR')}"		editable="true"/>
+							<s:GridColumn id="dg2r7"  width="90" dataField="close_cor"     	headerText="{resourceManager.getString('default','MOVTRAN.LABEL.CLOSE_COR')}"			editable="true"/>
+							<s:GridColumn id="dg2r8"  width="90" dataField="quantity_cor" 	headerText="{resourceManager.getString('default','MOVTRAN.LABEL.QUANTITY_COR')}"			editable="false"/>
+							<s:GridColumn id="dg2r9"  width="90" dataField="open_kg"		headerText="{resourceManager.getString('default','MOVTRAN.LABEL.OPEN_KG')}"		editable="true"/>
+							<s:GridColumn id="dg2r10" width="90" dataField="close_kg"      	headerText="{resourceManager.getString('default','MOVTRAN.LABEL.CLOSE_KG')}"			editable="true"/>
+							<s:GridColumn id="dg2r11" width="90" dataField="quantity_kg" 	headerText="{resourceManager.getString('default','MOVTRAN.LABEL.QUANTITY_KG')}"			editable="false"/>
+						</s:ArrayList>
+					</s:columns>
+				
+				</s:DataGrid>
+				
+				<s:DataGrid dataProvider="{C_MovementNominationTransactions.meterTotals}" rollOverColor="#FFFFFF" selectionColor="#FFFFFF" width="100%" id="dg2f" minHeight="0" requestedMaxRowCount="1"  requestedMinRowCount="1" requestedRowCount="1" rowHeight="{dg2.rowHeight}" height="{dg2.rowHeight}"  >
+					<s:columns>
+						<s:ArrayList>
+							<s:GridColumn width="{dg2r1.width+dg2r2.width}"  dataField="total" />
+							<s:GridColumn width="{dg2r3.width+dg2r4.width}"  dataField="total1" />
+							<s:GridColumn width="{dg2r5.width}" 			 dataField="quantity_amb"/>
+							<s:GridColumn width="{dg2r6.width+dg2r7.width}"  dataField="total2" />
+							<s:GridColumn width="{dg2r8.width}" 			 dataField="quantity_cor"/>
+							<s:GridColumn width="{dg2r9.width+dg2r10.width}" dataField="total3" />
+							<s:GridColumn width="{dg2r11.width}" 			 dataField="quantity_kg"/>
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+				
+			</s:VGroup>
+			
+			<mx:HRule width="100%"/>
+			<s:HGroup width="100%" horizontalAlign="right">
+				<components:DKI_Button label="{resourceManager.getString('default','button.lbl.SUBMIT')}" type="forward" click="controller.doMovement()"/>
+			</s:HGroup>
+			
+		</s:VGroup>
+	</s:HGroup>
+	
+	
+	
+	<fx:Binding source="dg1f.grid.horizontalScrollPosition" destination="dg1.grid.horizontalScrollPosition"/>
+	<fx:Binding source="dg2f.grid.horizontalScrollPosition" destination="dg2.grid.horizontalScrollPosition"/>
+	<fx:Binding source="dg2f.grid.horizontalScrollPosition" destination="dg2h.grid.horizontalScrollPosition"/>
+	
+</s:VGroup>

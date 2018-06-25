@@ -1,0 +1,2069 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  creationComplete="creationCompleteHandler(event)"
+		  gap="2" width="100%" height="100%">
+	
+	<s:states>
+		<s:State name="normal" enterState="this.toolbar.enabled=true"/>
+		<s:State name="widget" enterState="this.toolbar.enabled=true"/>
+		<s:State name="edit" enterState="callLater(function():void{dataGrid.ensureCellIsVisible(idx);});tankGroupItemGrid.enabled=true;this.toolbar.enabled=false"/>
+		<s:State name="create" enterState="tankGroupItemGrid.enabled=false;this.toolbar.enabled=false"/>
+		<s:State name="detail" enterState="view_detailsHandler(event);tankGroupItemGrid.enabled=true;this.toolbar.enabled=false"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.fiber.runtime.lib.DateTimeFunc;
+			
+			import components.ActionDialog;
+			import components.ConfirmDialog;
+			import components.DeleteDialog;
+			import components.ErrorDialog;
+			import components.ExportData;
+			import components.MessageDialog;
+			import components.TransactionsDlg;
+			import components.ViewPopupDlg;
+			
+			import dm.remoteBulkListService;
+			import dm.remoteDataService;
+			import dm.remoteListService;
+			import dm.utils.tools;
+			
+			import flash.events.KeyboardEvent;
+			import flash.globalization.LocaleID;
+			
+			import flashx.textLayout.container.ScrollPolicy;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			
+			
+			public static const MAIN_WINDOW_WIDTH:int = 1500;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable] public var labelWidth:uint = 100;
+			[Bindable] public var labelHeight:uint = 26;
+			[Bindable] public var fieldWidth:uint = 240;
+			[Bindable] public var fieldHeight:uint = 26;
+			[Bindable] public var spaceWidth:uint = 15;
+			[Bindable] public var spaceHeight:uint = 2;
+			
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='tgr_name';
+			private var currentDirection:String="ASC";
+			
+			private var currentOffset:int=0;
+			private var currentPageSize:int=1000;
+			[Bindable] private var totalLength:int=0;
+			[Bindable] private var currentLength:int=0;
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			//private var currentSorts:Object=new Object();
+			//private var currentOrders:Object=new Object();
+			private var currentSorts:Object={tgr_name:'ASC'};
+			private var currentOrders:Object={tgr_name:1};
+			private var currentSortSeq:int=0;
+			
+			private var  originalItems:ArrayCollection;
+			
+			
+			private var confirmReport:ActionDialog;
+			private var confirmSave:ActionDialog;
+			private var errorDialog:ErrorDialog;
+			
+			//private var exportContents:String="";
+			private var f:FileReference = new FileReference();
+			
+			
+			//private var getData:Responder = new Responder(getData_resultHandler);
+			
+			//private var pagedRecords:ArrayCollection=new ArrayCollection();
+			//private var pagedRecords:remoteDataService = new remoteDataService( "TankGroupService.getPaged", getData, null );
+			[Bindable] private var pagedRecords:remoteListService;
+			
+			[Bindable] private var tankGroupItemList:remoteDataService = new remoteDataService( "TankGroupService.getTankGroupItems", null, tankGroupItemList_resultHandler );
+			[Bindable] private var tankGroupItemInitList:remoteDataService = new remoteDataService( "TankGroupService.initTankGroupItems", null, tankGroupItemInitList_resultHandler );
+			
+			private var deleteAction:remoteDataService = new remoteDataService( "TankGroupService.delete", null, deleteData_resultHandler, 1 );
+			private var createAction:remoteDataService = new remoteDataService( "TankGroupService.create", null, createData_resultHandler, 1 );
+			private var updateAction:remoteDataService = new remoteDataService( "TankGroupService.update", null, updateData_resultHandler, 1 );
+			private var createLinkAction:remoteDataService = new remoteDataService( "TankGroupService.createLink", null, createLinkData_resultHandler, 1 );
+			private var deleteLinkAction:remoteDataService = new remoteDataService( "TankGroupService.deleteLink", null, deleteLinkData_resultHandler, 1 );
+			private var activateLinkAction:remoteDataService = new remoteDataService( "TankGroupService.activateLink", null, activateLinkData_resultHandler, 1 );
+			
+			private var tankGroupKeyChecker:remoteDataService = new remoteDataService( "TankGroupService.isTankGroupKeyUsed", null, tankGroupKeyChecker_resultHandler, 2 );
+			//private var tankGroupKeyCheckerBeforeCreate:remoteDataService = new remoteDataService( "TankGroupService.isTankGroupKeyUsed", null, tankGroupKeyCheckerBeforeCreate_resultHandler, 2 );
+			private var tankGroupItemKeyChecker:remoteDataService = new remoteDataService( "TankGroupService.isTankGroupItemKeyUsed", null, tankGroupItemKeyChecker_resultHandler, 2 );
+			
+			private var gridColumnSequenceMaker:remoteDataService = new remoteDataService( "ScreenGridColumnService.lookupGridColumnSequence", null, gridColumnSequenceMaker_resultHandler, 1 );
+			private var _gridColumnSequenceString:String="";
+			private var formColumnSettingsMaker:remoteDataService = new remoteDataService( "ScreenFormColumnService.lookupFormColumnSettings", null, formColumnSettingsMaker_resultHandler, 1 );
+			private var _formColumnSettingsString:String="";
+			private var formButtonSettingsMaker:remoteDataService = new remoteDataService( "ScreenFormButtonService.lookupFormButtonSettings", null, formButtonSettingsMaker_resultHandler, 1 );
+			private var _formButtonSettingsString:String="";
+			
+			
+			[Bindable] private var baseProductList:remoteDataService = new remoteDataService( "ListLibraryService.lookupTankBaseProduct", null, lookupBaseProduct_resultHandler );
+			[Bindable] private var terminalList:remoteDataService = new remoteDataService( "ListLibraryService.lookupTerminal", null, lookupTerminal_resultHandler );
+			[Bindable] private var tankList:remoteDataService = new remoteDataService( "ListLibraryService.lookupTanks", null, null );
+			[Bindable] private var loneTankList:remoteDataService = new remoteDataService( "ListLibraryService.lookupTanksNotInGroup", null, null );
+			
+			[Bindable] private var availableTanks:ArrayCollection=new ArrayCollection();
+			
+			
+			public var mainListSelection:int = -1;
+			private var _saveButtonClicked:Boolean=false;
+			
+			private var selectedTank:Object=new Object();
+			
+
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				this.formColumnSettingsMaker.service( "TANK_GROUP" );
+				this.formButtonSettingsMaker.service( "TANK_GROUP" );
+				
+				trace ("-------------start creationCompleteHandler");
+				pagedRecords = new remoteListService( this.dataGrid, "TankGroupService.getPaged", null, getPageData_resultHandler );
+				//resourceManager.localeChain = ['zh_CN'];
+				//global.LanguageCode="CHN";
+				this.gridColumnSequenceMaker.service( "TANK_GROUP" );
+				
+				
+				var value:String = global.getValueFromSiteConfigSettings( "SITE_AUTO_FILTER_WHEN_OPEN_SCREEN" );
+				if ( value == 'Y' )
+				{
+					this.startFiltering();
+				}
+				else
+				{
+					;
+				}
+				
+				this.tankGroupItemInitList.service();
+				
+				this.baseProductList.service( );
+				this.terminalList.service();
+				this.tankList.service("-1", "-1", "-1");
+				this.loneTankList.service("-1");
+				
+				trace ("------------End creationCompleteHandler");
+				
+				
+				//trace("this.grid.scroller1111", this.dataGrid.scroller);
+				//trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+				this.dataGrid.scroller.verticalScrollBar.addEventListener(Event.CHANGE, verticalScrollBarChanged);
+				this.dataGrid.addEventListener(KeyboardEvent.KEY_UP, reportKeyUp);
+				this.dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+					
+			}
+			
+			protected function formColumnSettingsMaker_resultHandler():void
+			{
+				this._formColumnSettingsString =  formColumnSettingsMaker.dataString;
+			}
+			
+			protected function formButtonSettingsMaker_resultHandler():void
+			{
+				this._formButtonSettingsString =  formButtonSettingsMaker.dataString;
+			}
+			
+			
+			
+			protected function startLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				//this.panel.enabled = false;
+				
+				currentLength=0;
+				currentOffset = 0;
+				
+				//this.exportContents = this.genData.prepExportHeader( dataGrid );
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				this.pb.values(0, 0);
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			protected function endLoadingPages():void
+			{
+				this.btn_create.enabled = this.canCreate;
+				this.btn_export.enabled = true;
+				this.dataGrid.enabled = true;
+				this.toolbar.enabled = true;
+				//this.panel.enabled = true;
+				//this.pb.values(totalCount, totalCount);
+				this.pb.values(pagedRecords.totalCount, pagedRecords.totalCount, true);
+				
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = false;
+				
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				//if ( totalLength > totalCount )
+				if ( pagedRecords.totalLength > pagedRecords.totalCount )
+				{
+					this.resumeBtn.enabled = true;
+				}
+				else
+				{
+					this.resumeBtn.enabled = false;
+				}
+			}
+			
+			protected function exportCsvHandler(event:MouseEvent):void
+			{
+				this.confirmReport = new ActionDialog( doExport, cancelExport, resourceManager.getString('default','CONFIRM_REPORT_CSV') );
+				
+				//this.startLoadingPages();
+			}
+			
+			private function getPageData_resultHandler():void
+			{
+				// if not finished
+				if(pagedRecords.length < pagedRecords.totalCount)
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+				}
+				else
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+					
+					this.endLoadingPages();
+					
+					this.dataGrid.selectedIndex = this.mainListSelection;
+					if ( this.mainListSelection >= 0)
+					{
+						this.dataGrid_selectionChangeHandler(null);
+					}
+					this.mainListSelection = -1;
+					
+				}
+				
+			}
+			
+			
+			public function doExport():void
+			{
+				//genData.prepOther(dataGrid,'tankGrouplist.csv', this.pagedRecords);
+				
+				//f.save( this.exportContents, "tankGrouplist.csv" );
+				f.save( pagedRecords.exportContents, "tankGrouplist.csv" );
+				
+				this.endLoadingPages();
+			}
+			
+			
+			public function cancelExport():void
+			{
+				this.endLoadingPages();
+				
+				//trace( this.exportContents );
+			}
+			
+			public function doNothing():void
+			{
+			}
+			
+			
+			private function verticalScrollBarChanged(event:Event):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function reportKeyUp(event:KeyboardEvent):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				if(event.column.dataField!='prod_items')
+				{
+					var currentRenderer:IGridItemRenderer;
+					var dir:String;
+					
+					if ( global.sortingBySingleColumn == true )
+					{	// sorted by single column only
+						for (var i:int=0; i < dataGrid.columns.length; i++)
+						{
+							currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+							if ( currentRenderer != null)
+							{
+								(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+							}
+							//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+						}
+					}
+					else
+					{	// sorted by multiple columns
+						;
+					}
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if( currentSorts.hasOwnProperty(event.column.dataField ) )
+					{
+						dir = currentSorts[event.column.dataField];
+						if( dir=="ASC" )
+						{
+							dir = "DESC";
+						}
+						else if ( dir == "DESC" )
+						{
+							dir = "";
+						}
+						else if ( dir == "" )
+						{
+							dir = "ASC";
+						}
+						else 
+						{
+							dir = "ASC";
+						}
+						
+						if ( dir != "" )
+						{
+							currentSorts[event.column.dataField] = dir;	
+						}
+						else
+						{
+							delete currentSorts[event.column.dataField];
+							delete currentOrders[event.column.dataField];
+						}
+					}
+					else
+					{
+						if ( global.sortingBySingleColumn == true )
+						{	// sorted by single column only
+							currentSorts = new Object();
+							currentOrders = new Object();
+							currentSortSeq = 0;
+						}
+						else
+						{	// sorted by multiple columns
+							;
+						}
+						currentSorts[event.column.dataField] = "ASC";	
+						dir = currentSorts[event.column.dataField];
+						currentSortSeq += 1;
+						currentOrders[event.column.dataField] = currentSortSeq;	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+					this.startFiltering();
+				}
+			}
+			
+			
+			protected function tankGroupItemInitList_resultHandler( ):void
+			{
+				trace ("---------------start tankGroupItemInitList_resultHandler");
+				
+				if (currentState == "edit")
+				{
+					trace ("---------------edit tankGroupItemInitList_resultHandler");
+					this.tankGroupItemGrid.dataProvider = this.prepareTankGroupItems();
+				}
+				if (currentState == "create")
+				{
+					trace ("---------------create tankGroupItemInitList_resultHandler");
+					this.tankGroupItemGrid.dataProvider = this.prepareTankGroupItems();
+				}
+				if (currentState == "detail")
+				{
+					trace ("tankGroupItemInitList_resultHandler", dataGrid,  dataGrid.selectedItem );
+					if ( dataGrid.selectedItem != null )
+					{
+						this.tankGroupItemGrid.dataProvider = this.tankGroupItemList;//  dataGrid.selectedItem.prod_items;
+						this.originalItems = new ArrayCollection();
+						for each(var x:Object in this.tankGroupItemList)
+						{
+							trace( "tankGroupItemInitList_resultHandler x", x.tank_code, x.tank_basecode, x.tank_active );
+							this.originalItems.addItem(ObjectUtil.copy(x));
+						}
+						
+					}
+				}
+				
+				this.adjustLoneTankList();
+				
+				trace ("---------------End tankGroupItemInitList_resultHandler");
+			}
+			
+			protected function tankGroupItemList_resultHandler():void
+			{
+				trace ("--------------Start tankGroupItemList_resultHandler");
+				
+				if ( tankGroupItemList.length>0 )
+				{
+					this.tankGroupItemGrid.dataProvider = null;
+					this.tankGroupItemGrid.dataProvider = tankGroupItemList;
+				}
+				else
+				{
+					this.tankGroupItemGrid.dataProvider = null;
+				}
+				
+				this.tankGroupItemInitList.service( ); 
+				trace ("----------------End tankGroupItemList_resultHandler");
+			}
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				if(currentState != 'widget')
+				{
+					idx=dataGrid.selectedIndex;
+					//dataGrid.ensureCellIsVisible(idx+11);
+					dataGrid.ensureCellIsVisible(idx);
+					
+					currentState = "edit";
+					this.btn_save.enabled = this.canUpdate;
+					
+					if ( _formColumnSettingsString.length > 0 )
+					{
+						global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+					}
+					
+					if ( _formButtonSettingsString.length > 0 )
+					{
+						global.adjustFormButtonSettings( _formButtonSettingsString.substr(1), this );
+					}
+					
+					// get the tank group item details
+					this.btn_createLink.enabled = false;
+					this.btn_activateLink.enabled = false;
+					this.btn_deleteLink.enabled = false;
+					
+					this.tankGroupItemList.service( dataGrid.selectedItem.tgr_name  );
+				}
+			}
+			
+			private function prepareTankGroupItems():ArrayCollection
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				var used:Boolean;
+				var x:Object;
+				var y:Object;
+				
+				this.originalItems = new ArrayCollection( );
+				
+				trace ("*****************start prepareTankGroupItems************");
+				
+				trace ("dataGrid", dataGrid);
+				
+				if ( dataGrid==null || dataGrid.selectedItem==null || this.tankGroupItemList==null || this.tankGroupItemList.length==0 )
+				{
+					trace ("*****************dataGrid is null************");
+					return temp;	
+				}
+				
+				trace ("dataGrid.selectedItem", dataGrid.selectedItem);
+				trace ("dataGrid.selectedItem.tgr_tanklist", dataGrid.selectedItem.tgr_tanklist);
+				for each(x in this.tankGroupItemList)
+				{
+					trace( "prepareTankGroupItems x", x.tank_code, x.tank_basecode, x.tank_active );
+					temp.addItem(x);
+					this.originalItems.addItem(ObjectUtil.copy(x));
+				}
+				
+				trace ("*****************end of inside prepareTankGroupItems************");
+				
+				return temp;
+			}
+			
+			private function mergeTankGroupItems():ArrayCollection
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				var used:Boolean;
+				var x:Object;
+				var y:Object;
+				
+				this.originalItems = new ArrayCollection( );
+				
+				trace ("*****************start mergeTankGroupItems************");
+				
+				trace ("dataGrid", dataGrid);
+				
+				if ( dataGrid==null || dataGrid.selectedItem==null || this.tankGroupItemList==null || this.tankGroupItemList.length==0 )
+				{
+					trace ("*****************dataGrid is null************");
+					for each(x in tankGroupItemInitList)
+					{
+						temp.addItem(x);
+						this.originalItems.addItem(ObjectUtil.copy(x));
+						trace( "mergeTankGroupItems xy", x.tank_code, x.tank_basecode, x.tank_active );
+					}
+					return temp;
+				}
+				
+				trace ("dataGrid.selectedItem", dataGrid.selectedItem);
+				trace ("dataGrid.selectedItem.tgr_tanklist", dataGrid.selectedItem.tgr_tanklist);
+				for each(x in this.tankGroupItemList)
+				{
+					trace( "mergeTankGroupItems x", x.tank_code, x.tank_basecode, x.tank_active );
+					temp.addItem(x);
+					this.originalItems.addItem(ObjectUtil.copy(x));
+				}
+				
+				for each(x in tankGroupItemInitList)
+				{
+					used = false;
+					for each(y in tankGroupItemList)
+					{
+						if ( y.tank_code == x.tank_code && y.tank_basecode == x.tank_basecode )
+						{
+							used = true;
+							break;
+						}
+					}
+					if ( used == false )
+					{
+						trace( "mergeTankGroupItems y", x.tank_code, x.tank_basecode, x.tank_active );
+						temp.addItem(x);
+						this.originalItems.addItem(ObjectUtil.copy(x));
+					}
+				}
+				
+				//this.originalItems = new ArrayCollection( temp.source );
+				//this.originalItems = ObjectUtil.copy(temp);
+				trace ("*****************end of inside mergeTankGroupItems************");
+				
+				return temp;
+			}
+			
+			protected function tankGroupItemGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				if ( tankGroupItemGrid.selectedIndex < 0 )
+				{
+					this.btn_activateLink.enabled = false;
+					this.btn_deleteLink.enabled = false;
+					return;
+				}
+				
+				tools.pr( tankGroupItemGrid.selectedItem );
+				
+				if ( tankGroupItemGrid.selectedItem.tank_action == '+' )
+				{
+					this.btn_activateLink.enabled = false;
+					this.btn_deleteLink.enabled = true;
+				}
+				else if ( tankGroupItemGrid.selectedItem.tank_action == '-' )
+				{
+					this.btn_activateLink.enabled = true;
+					//this.btn_deleteLink.enabled = false;
+					this.btn_deleteLink.enabled = true;
+				}
+				else
+				{
+					this.btn_activateLink.enabled = true;
+					this.btn_deleteLink.enabled = true;
+				}
+				
+				
+				
+				trace( "tankGroupItemGrid.selectedItem", tankGroupItemGrid.selectedItem );
+
+				var tank_code:String;
+				var tank_sitecode:String;
+				tank_code = tankGroupItemGrid.selectedItem.tank_code;
+				tank_sitecode = tankGroupItemGrid.selectedItem.tank_sitecode;
+				
+				tankGroupItemKeyChecker.service( tank_code, tank_sitecode );
+			}
+			
+			protected function cancel_clickHandler():void
+			{
+				clearDetail();
+				if ( currentState== "create" )
+				{
+					dataGrid.enabled=true;
+				}
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+			}			
+			
+			protected function gridColumnSequenceMaker_resultHandler():void
+			{
+				this._gridColumnSequenceString =  gridColumnSequenceMaker.dataString;
+				
+				if ( _gridColumnSequenceString.length > 0 )
+				{
+					global.adjustGridColumnSequence( _gridColumnSequenceString.substr(1), dataGrid );
+				}
+				
+			}
+			
+			private function lookupBaseProduct_resultHandler():void
+			{
+				if ( currentFields.hasOwnProperty( "tgr_basecode" ) )
+				{
+					this.fltr_baseproduct.selectedIndex = tools.getItemIndexFromCode( currentFields["tgr_basecode"], baseProductList, "base_code");
+				}
+			}
+			
+			private function lookupTerminal_resultHandler():void
+			{
+				if ( currentFields.hasOwnProperty( "tgr_sitecode" ) )
+				{
+					this.fltr_terminal.selectedIndex = tools.getItemIndexFromCode( currentFields["tgr_sitecode"], terminalList, "term_code");
+				}
+			}
+
+			
+			protected function fltr_tankgroup_keyUpHandler(event:KeyboardEvent):void
+			{
+				if ( event.keyCode != 13 )
+				{
+					return;
+				}
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_terminal_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_tankcode_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_baseproduct_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			private function startFiltering():void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				fields = new Object();
+				types = new Object();
+				
+				
+				if(fltr_tankgroup.text!='')
+				{					
+					fields["tgr_name"] = fltr_tankgroup.text;
+				}
+				else
+				{
+					fields["tgr_name"] = "";
+				}
+				types["tgr_name"] = "STRING";
+				
+				if ( this.currentState != "widget" )
+				{
+					if (fltr_terminal.selectedIndex > -1) 
+					{
+						fields["tgr_sitecode"] = terminalList[fltr_terminal.selectedIndex].term_code;
+					}
+					else
+					{
+						if ( global.setComboBoxNoSelection == true )
+						{
+							fltr_terminal.selectedIndex = -1;
+						}
+						fields["tgr_sitecode"] = "";
+					}
+					types["tgr_sitecode"] = "EXACT_STRING";
+					
+					if (fltr_tankcode.selectedIndex > -1) 
+					{
+						fields["tgr_tankcode||tgr_tanklist"] = tankList[fltr_tankcode.selectedIndex].tank_code;
+					}
+					else
+					{
+						if ( global.setComboBoxNoSelection == true )
+						{
+							fltr_tankcode.selectedIndex = -1;
+						}
+						fields["tgr_tankcode||tgr_tanklist"] = "";
+					}
+					types["tgr_tankcode||tgr_tanklist"] = "EXACT_STRING||STRING";
+					
+					if (fltr_baseproduct.selectedIndex > -1) 
+					{
+						fields["tgr_basecode"] = baseProductList[fltr_baseproduct.selectedIndex].base_code;
+					}
+					else
+					{
+						if ( global.setComboBoxNoSelection == true )
+						{
+							fltr_baseproduct.selectedIndex = -1;
+						}
+						fields["tgr_basecode"] = "";
+					}
+					types["tgr_basecode"] = "EXACT_STRING";
+					
+				}
+				
+				currentFields = fields;
+				currentTypes = types;
+				
+				this.startLoadingPages();
+				
+				trace("this.grid.scroller3333", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			private function findByPrimaryKey(grp:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["tgr_name"] = grp;
+				types["tgr_name"] = "EXACT_STRING";
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				//this.pagedRecords.service( fields, types, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( fields, types, currentSorts, currentOrders );
+			}
+			
+			protected function filterRecords(event:MouseEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				this.startFiltering();
+			}
+			
+			protected function refreshRecords(event:MouseEvent):void
+			{
+				if ( currentState != "widget" )
+				{
+					currentState = 'normal';
+					dataGrid.enabled=true;
+				}
+				clearDetail();
+				fltr_tankgroup.text = "";
+				if ( currentState != "widget" )
+				{
+					fltr_terminal.selectedIndex = -1;
+					fltr_tankcode.selectedIndex = -1;
+					fltr_baseproduct.selectedIndex = -1;
+				}
+				
+				dataGrid.selectedIndex = -1;
+				currentFilter = null;
+				currentOrder = null;
+				currentFields = new Object();
+				currentTypes = new Object();
+				
+				currentSorts = new Object();
+				currentOrders = new Object();
+				var currentRenderer:IGridItemRenderer;
+				for (var i:int=0; i < dataGrid.columns.length; i++)
+				{
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					if ( currentRenderer != null)
+					{
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+					}
+					//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+				}
+				this.startFiltering();
+				//this.startLoadingPages();
+				trace("this.grid.scroller2222", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			protected function clearDetail(): void
+			{
+				if (currentState != 'widget')
+				{
+				}
+			}			
+			
+			private function editRecord():void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				if ( this.checkItemFields() == false )
+				{
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.tgr_name = tgr_name.text;
+				
+				
+				obj.has_items = 0;
+				var items:ArrayCollection=new ArrayCollection();
+				var x:Object;
+				var y:Object;
+				var actions:ArrayCollection=new ArrayCollection();
+				var action:Object;
+				var match_found:Boolean=false;
+				for each ( x in this.tankGroupItemGrid.dataProvider)
+				{
+					action = new Object();
+					action.option = 0;  // do nothing
+					trace( "********X", x.tank_code, x.tank_active, x.tank_action);
+					match_found = false;
+					for each ( y in this.originalItems )
+					{
+						if ( x.tank_code == y.tank_code && x.tank_sitecode == y.tank_sitecode )
+						{
+							if ( x.tank_action == '+' )
+							{
+								action.option = 1;
+							}
+							else if ( x.tank_action == '*' )
+							{
+								action.option = 2;
+							}
+							else if ( x.tank_action == '-' )
+							{
+								action.option = 3;
+							}
+							else
+							{
+								action.option = 0;
+							}
+
+							match_found = true;
+						}
+						if ( match_found == true )
+						{
+							trace( "********Y found", y.tank_code, y.tank_active, action.option);
+							break;
+						}
+						//trace( "********Y", y.tank_code, y.tank_active, action.option);
+					}
+					actions.addItem(action);
+					if ( action.option == 1 )
+					{
+						x.tank_active = 0;
+						x.tank_group = obj.tgr_name;
+					}
+					items.addItem(Object(x));
+					obj.has_items = 1;
+					trace( "********X", x.tank_code, x.tank_active, "***********action", action.option);
+				}
+				obj.tank_items = items.source;
+				obj.actions = actions.source;
+				
+				//nc.call( 'TankGroupService.update', updateData, obj );
+				updateAction.service( obj );
+			}
+			
+			protected function updateData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.updateAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+					this.loneTankList.service( "-1" );
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var grp:String;
+				grp = tgr_name.text;
+				
+				currentState="normal";
+				findByPrimaryKey( grp );
+
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			private function doDelete(): void
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				
+				/*
+				TODO - is this product used by other records?
+				*/
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				else
+				{
+					var canDelete:DeleteDialog = new DeleteDialog(deleteRecord, hasPassword);
+				}
+			}
+			
+			private function deleteRecord():void
+			{
+				var obj:Object = new Object();
+				
+				
+				obj.tgr_name = dataGrid.selectedItem.tgr_name;
+
+				deleteAction.service( obj );
+			}
+			
+			protected function deleteData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.deleteAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+					this.loneTankList.service( "-1" );
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+				}
+				
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+			}
+			
+			private function createLinkRecord():void
+			{
+				if ( this.tankGroupItemGrid.selectedIndex < 0 )
+				{
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				obj.tank_group = this.tankGroupItemGrid.selectedItem.tank_group;
+				obj.tank_code = this.tankGroupItemGrid.selectedItem.tank_code;
+								
+				
+				createLinkAction.service( obj );
+			}
+			
+			protected function createLinkData_resultHandler( ):void
+			{
+				if ( this.createLinkAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+					this.loneTankList.service( "-1" );
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				}
+				
+				//this.tankGroupClassList.service();
+			}
+			
+			private function deleteLinkRecord():void
+			{
+				if ( this.tankGroupItemGrid.selectedIndex < 0 )
+				{
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				obj.tank_group = this.tankGroupItemGrid.selectedItem.tank_group;
+				obj.tank_code = this.tankGroupItemGrid.selectedItem.tank_code;
+				
+				
+				deleteLinkAction.service( obj );
+			}
+			
+			protected function deleteLinkData_resultHandler( ):void
+			{
+				if ( this.deleteLinkAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+					this.loneTankList.service( "-1" );
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+				}
+				
+				//this.tankGroupClassList.service();
+			}
+			
+			private function activateLinkRecord():void
+			{
+				if ( this.tankGroupItemGrid.selectedIndex < 0 )
+				{
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				obj.tank_group = this.tankGroupItemGrid.selectedItem.tank_group;
+				obj.tank_code = this.tankGroupItemGrid.selectedItem.tank_code;
+				obj.tank_active_new = obj.tank_code;
+				
+				obj.tank_active_old = obj.tank_code;
+				for each ( var y:Object in this.originalItems )
+				{
+					if ( y.tank_active == 1 )
+					{
+						obj.tank_active_old = y.tank_code;
+						break;
+					}
+				}
+				
+				activateLinkAction.service( obj );
+			}
+			
+			protected function activateLinkData_resultHandler( ):void
+			{
+				if ( this.activateLinkAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+					this.loneTankList.service( "-1" );
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var grp:String;
+				grp = tgr_name.text
+				
+				this.mainListSelection = 0;
+				currentState="normal";
+				findByPrimaryKey( grp );
+			}
+			
+			private function checkTankGroupKey():void
+			{
+				var obj:Object=new Object();
+				
+				obj.tgr_name = this.tgr_name.text;
+				
+				tankGroupKeyChecker.service( obj.tgr_name );
+			}
+			
+			protected function tankGroupKeyChecker_resultHandler( ):void
+			{
+				if ( tankGroupKeyChecker.dataInteger > 0 )
+				{
+					global.msgWarning( resourceManager.getString('default','ALERT__TANKGROUP_EXIST') );
+					this.btn_save.enabled = this.canCreate;
+				}
+				else
+				{
+					if ( this._saveButtonClicked == true )
+					{
+						this.createRecord();
+					}
+				}
+				
+				this._saveButtonClicked = false;
+				
+			}
+/* 			
+			private function checkTankGroupKeyBeforeCreate():void
+			{
+				var obj:Object=new Object();
+				
+				obj.tgr_name = this.tgr_name.text;
+				
+				tankGroupKeyCheckerBeforeCreate.service( obj.tgr_name );
+			}
+			
+			protected function tankGroupKeyCheckerBeforeCreate_resultHandler( ):void
+			{
+				if ( tankGroupKeyCheckerBeforeCreate.dataInteger > 0 )
+				{
+					global.msgWarning( resourceManager.getString('default','ALERT__TANKGROUP_EXIST') );
+					//var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__DRAWER_PRODUCT_EXIST') );
+					this.btn_save.enabled = this.canCreate;
+				}
+				else
+				{
+					createRecord();
+				}
+			}
+ */			
+			
+			protected function tankGroupItemKeyChecker_resultHandler( ):void
+			{
+				if ( tankGroupItemKeyChecker.dataInteger > 0 )
+				{
+					//global.msgWarning( resourceManager.getString('default','ALERT__TANKGROUP_ITEM_EXIST') );
+				}
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				// TODO.....
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return index;
+			}
+			
+			private function createRecord():void
+			{
+				var prod_num:int;
+				
+				prod_num = tankGroupKeyChecker.dataInteger;
+				if ( prod_num > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__TANKGROUP_EXIST') );
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				if ( this.checkItemFields() == false )
+				{
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.tgr_name = tgr_name.text;
+				
+				
+				obj.has_items = 0;
+				var items:ArrayCollection=new ArrayCollection();
+				var x:Object;
+				for each ( x in this.tankGroupItemGrid.dataProvider)
+				{
+					trace( "********X", x.tank_code, x.tank_active);
+					//if ( x.tank_active > 0 )
+					{
+						x.tank_active = 0;
+						x.tank_group = obj.tgr_name;
+						
+						items.addItem(x);
+						obj.has_items = 1;
+					}
+				}
+				obj.tank_items = items.source;
+				
+				createAction.service( obj );
+			}
+			
+			protected function createData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.createAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+					this.loneTankList.service( "-1" );
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				}
+				
+				var grp:String;
+				grp = tgr_name.text;
+				
+				currentState="normal";
+				findByPrimaryKey( grp );
+				
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			protected function createNewRecord(event:MouseEvent):void
+			{	
+				idx=dataGrid.selectedIndex;
+				dataGrid.ensureCellIsVisible(idx);
+				currentState="create";
+				dataGrid.enabled=false;
+				this.btn_save.enabled = this.canCreate;
+				
+				if ( _formColumnSettingsString.length > 0 )
+				{
+					global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+				}
+				
+				if ( _formButtonSettingsString.length > 0 )
+				{
+					global.adjustFormButtonSettings( _formButtonSettingsString.substr(1), this );
+				}
+				
+				this.tankGroupItemList.service( "-1" );
+				//this.equipCmptsList.visible = false;
+			}
+			
+			
+			public function getArrayCollection(obj:Object):ArrayCollection
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				temp.addItem( obj );
+				return temp;
+			}
+			
+			public function convertDateToLocaleString(dt:String):String
+			{
+				var dt_string:String;
+				var dt_date:Date = new Date();
+				
+				dt_string = ""; 
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+					dt_string = dateFormatter.format( dt_date);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_string;
+			}
+			
+			public function convertDateToLocale(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_date;
+			}
+			
+			public function convertDateToLocaleLong(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					//dt_date = DateField.stringToDate(dt,"YYYY-MM-DD HH:NN:SS");
+					dt_date = DateTimeFunc.createDate(
+						int(dt.substr(0, 4))
+						, int(dt.substr(5, 2))
+						, int(dt.substr(8, 2))
+						, int(dt.substr(11, 2))
+						, int(dt.substr(14, 2))
+						, int(dt.substr(17, 2))
+					);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_date;
+			}
+			
+			public function getDefaultDate():Date
+			{
+				var now_date:Date;
+				var def_date:Date;
+				
+				now_date = new Date();
+				def_date = DateTimeFunc.dateAdd( "yyyy", 1, now_date );
+				
+				//trace ("getDefaultDate", now_date, def_date);
+				
+				return def_date;
+			}
+			
+			protected function view_detailsHandler(event:FlexEvent):void
+			{
+			}
+			
+			
+			protected function dateLabelFunction(item:Object, column:GridColumn):String
+			{
+				var ret:String = "";
+				
+				ret = item [column.dataField];
+				return ret;
+			}
+			
+			protected function save_clickHandler():void
+			{
+				this.btn_save.enabled = false;
+				doSave();
+				//this.confirmSave = new ActionDialog( doSave, doNothing, resourceManager.getString('default','CONFIRM_SAVE_RATIOS') );
+				
+				//this.startLoadingPages();
+			}
+			
+			protected function doSave():void
+			{
+				if (currentState == "create")
+				{
+					//createRecord();
+					this._saveButtonClicked = true;
+					checkTankGroupKey();
+					//checkTankGroupKeyBeforeCreate();
+				}
+				if (currentState == "edit")
+				{
+					editRecord();
+				}
+				if (currentState == "detail")
+				{
+					editRecord();
+				}
+			}
+			
+			public function closeDialogHandler():void
+			{
+				/* this.mainListSelection = this.dataGrid.selectedIndex;
+				this.currentState = "normal";
+				this.dataGrid.selectedIndex = -1;
+				this.startFiltering(); */
+			}
+			
+			
+			public function checkItemFields():Boolean
+			{
+				var x:Object;
+				var obj:Object;
+				var errGrid:ArrayCollection=new ArrayCollection();
+				
+				
+				if ( errGrid.length > 0 )
+				{
+					errorDialog = new ErrorDialog( closeErrorDialog, resourceManager.getString('default','VALIDATION__PROMPT'), errGrid, resourceManager.getString('default','VALIDATION__TITLE'));
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+			
+			public function closeErrorDialog():void
+			{
+				PopUpManager.removePopUp(this.errorDialog.dialog );	
+			}
+			
+			protected function killBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=true;
+				pagedRecords.interruptor=true;
+				trace("WTF >>>>>>>>>>");
+			}
+			
+			protected function resumeBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				this.resumeLoadingPages();
+				trace("RESUME >>>>>>>>>>");
+			}
+			
+			protected function resumeLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				
+				//pb.values(pagedRecords.length,totalLength);
+				pb.values(pagedRecords.length,pagedRecords.totalLength);
+				//currentPage = int(this.pagedRecords.length/currentPageSize) + 1;
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			
+			
+			protected function lone_tank_actHandler():void
+			{
+				this.btn_activateLink.enabled = false;
+				
+				this.activateLinkRecord();
+			}
+			
+			protected function lone_tank_delHandler():void
+			{
+				this.btn_deleteLink.enabled = false;
+				
+				if ( this.tankGroupItemGrid.selectionMode == "multipleRows" )
+				{
+					this.deleteMultipleLoneTanks();
+				}
+				else
+				{
+					this.deleteSingleLoneTank();
+				}
+			}
+			
+			protected function deleteMultipleLoneTanks():void
+			{
+				if ( tankGroupItemGrid.selectedItems.length == 0 )
+				{
+					return;
+				}
+				
+				var x:Object;
+				var y:Object;
+				var removedFromGrid:Boolean=false;
+				var len:int;
+				var i;
+				
+				len = tankGroupItemGrid.dataProvider.length;
+				for ( i=len-1; i>=0; i-=1 )
+				{
+					x = tankGroupItemGrid.dataProvider.getItemAt( i );
+					for each(y in tankGroupItemGrid.selectedItems)
+					{
+						if ( x.tank_code == y.tank_code )
+						{
+							if ( y.tank_action == '+' )
+							{
+								this.tankGroupItemGrid.dataProvider.removeItemAt( i );
+								removedFromGrid = true;
+							}
+							else if ( y.tank_action == '-' )
+							{
+								x.tank_action = '';
+								y.tank_action = '';
+							}
+							else
+							{
+								x.tank_action = '-';
+								y.tank_action = '-';
+							}
+						}
+					}
+				}
+				
+				var temp:* = tankGroupItemGrid.dataProvider;
+				tankGroupItemGrid.dataProvider = null;
+				tankGroupItemGrid.dataProvider = temp;
+				
+				if ( removedFromGrid == true )
+				{
+					this.adjustLoneTankList();
+				}
+				
+			}
+			
+			protected function deleteSingleLoneTank():void
+			{
+				if ( tankGroupItemGrid.selectedIndex < 0 )
+				{
+					return;
+				}
+				
+				var x:Object;
+				var removedFromGrid:Boolean=false;
+				
+				for each(x in tankGroupItemGrid.dataProvider)
+				{
+					if ( x.tank_code == tankGroupItemGrid.selectedItem.tank_code )
+					{
+						if ( tankGroupItemGrid.selectedItem.tank_action == '+' )
+						{
+							this.tankGroupItemGrid.dataProvider.removeItemAt(tankGroupItemGrid.selectedIndex);
+							removedFromGrid = true;
+						}
+						else if ( tankGroupItemGrid.selectedItem.tank_action == '-' )
+						{
+							x.tank_action = '';
+							tankGroupItemGrid.selectedItem.tank_action = '';
+						}
+						else
+						{
+							x.tank_action = '-';
+							tankGroupItemGrid.selectedItem.tank_action = '-';
+						}
+						break;
+					}
+				}
+				
+				var temp:* = tankGroupItemGrid.dataProvider;
+				tankGroupItemGrid.dataProvider = null;
+				tankGroupItemGrid.dataProvider = temp;
+				
+				if ( removedFromGrid == true )
+				{
+					this.adjustLoneTankList();
+				}
+				
+			}
+			
+			protected function lone_tank_addHandler():void
+			{
+				if ( this.lone_tank.allowMultipleSelection == true )
+				{
+					this.addMultipleLoneTanks();
+				}
+				else
+				{
+					this.addSingleLoneTank();
+				}
+				
+				//this.adjustLoneTankList();
+			}
+			
+			protected function addMultipleLoneTanks():void
+			{
+				//var temp:ArrayCollection = new ArrayCollection;
+				//var used:Boolean;
+				var x:Object;
+				var y:Object;
+				
+				if ( this.lone_tank.selectedItems.length > 0 )
+				{
+					for each(x in tankGroupItemInitList)
+					{
+						for each( y in this.lone_tank.selectedItems )
+						{
+							if ( x.tank_code == y.tank_code )
+							{
+								this.originalItems.addItem(ObjectUtil.copy(x));
+								x.tank_action = '+';
+								x.tank_active = '0';
+								x.tank_group = this.tgr_name.text;
+								this.tankGroupItemGrid.dataProvider.addItem(x);
+							}
+						}
+					}
+				}
+				
+				this.adjustLoneTankList();
+			}
+			
+			protected function addSingleLoneTank():void
+			{
+				//var temp:ArrayCollection = new ArrayCollection;
+				//var used:Boolean;
+				var x:Object;
+				var y:Object;
+				
+				if ( this.lone_tank.selectedIndex>=0 )
+				{
+					y = this.lone_tank.selectedItem
+					for each(x in tankGroupItemInitList)
+					{
+						if ( x.tank_code == y.tank_code )
+						{
+							this.originalItems.addItem(ObjectUtil.copy(x));
+							x.tank_action = '+';
+							x.tank_active = '0';
+							x.tank_group = this.tgr_name.text;
+							this.tankGroupItemGrid.dataProvider.addItem(x);
+							break;
+						}
+					}
+				}
+				
+				this.adjustLoneTankList();
+			}
+			
+			protected function lone_tank_addHandler1():void
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				var used:Boolean;
+				var x:Object;
+				var y:Object;
+				
+				if ( this.lone_tank.selectedIndex >= 0 || this.lone_tank.selectedItems.length > 0 )
+				{
+					if ( this.lone_tank.selectedItems.length == 1 )
+					{
+						for each(x in tankGroupItemInitList)
+						{
+							if ( x.tank_code == this.lone_tank.selectedItem.tank_code )
+							{
+								this.originalItems.addItem(ObjectUtil.copy(x));
+								x.tank_action = '+';
+								x.tank_active = '0';
+								x.tank_group = this.tgr_name.text;
+								this.tankGroupItemGrid.dataProvider.addItem(x);
+								break;
+							}
+						}
+					}
+					else
+					{
+						for each(x in tankGroupItemInitList)
+						{
+							for each( y in this.lone_tank.selectedItems )
+							{
+								if ( x.tank_code == y.tank_code )
+								{
+									this.originalItems.addItem(ObjectUtil.copy(x));
+									x.tank_action = '+';
+									x.tank_active = '0';
+									x.tank_group = this.tgr_name.text;
+									this.tankGroupItemGrid.dataProvider.addItem(x);
+								}
+							}
+						}
+					}
+				}
+				
+				this.adjustLoneTankList();
+			}
+			
+			protected function adjustLoneTankList():void
+			{
+				if ( currentState != 'edit' && currentState != 'create' )
+				{
+					return;
+				}
+				trace ("length of tankGroupItemGrid.dataProvider===================================", tankGroupItemGrid.dataProvider.length, tankGroupItemGrid.dataProviderLength );
+				
+				if ( this.tankGroupItemGrid.dataProviderLength <= 0 )
+				{
+					// empty the filter
+					this.selectedTank = new Object();
+					this.availableTanks.refresh();
+				}
+				
+				this.availableTanks.removeAll();
+				
+				var grp_base:String="";
+				for each( var o:Object in this.loneTankList )
+				{
+					var used:Boolean=false;
+					for each( var r:Object in this.tankGroupItemGrid.dataProvider )
+					//for each( var r:Object in this.tankGroupItemList )
+					{
+						if ( r.hasOwnProperty("tank_basecode") )
+						{
+							grp_base = r.tank_basecode;
+						}
+						if ( o.hasOwnProperty("tank_code") && r.hasOwnProperty("tank_code") && o.tank_code == r.tank_code )
+						{
+							used = true;
+							grp_base = r.tank_basecode;
+							break;
+						}
+					}
+					if ( used == false )
+					{
+						if ( grp_base.length== 0 || grp_base == o.tank_basecode )
+						{
+							var tankObj:Object;
+							tankObj = ObjectUtil.copy(o);
+							this.availableTanks.addItem(tankObj);
+							//trace("1......................................", grp_base, o.tank_basecode, o.tank_code, availableTanks.length);
+							trace("2......................................", grp_base, tankObj.tank_basecode, tankObj.tank_code, availableTanks.length);
+						}
+						
+					}
+				}
+				
+				trace ("length of availableTanks===================================", availableTanks.length );
+				//tools.pr(availableTanks);
+				lone_tank.dataProvider = null;
+				lone_tank.dataProvider = this.availableTanks;
+				trace ("length of lone_tank.dataProvider===================================", lone_tank.dataProvider.length );
+				
+				if ( this.tankGroupItemGrid.dataProviderLength <= 0 )
+				{
+					filterLoneTankListBySelections();
+					////adjustLoneTankListBySelections();
+				}
+				
+				trace ("length of availableTanks2===================================", availableTanks.length );
+				trace ("length of lone_tank.dataProvider2===================================", lone_tank.dataProvider.length );
+			}
+			
+			protected function lone_tank_changeHandler(event:IndexChangeEvent):void
+			{
+				// TODO Auto-generated method stub
+				if ( this.tankGroupItemGrid.dataProviderLength <= 0 )
+				{
+					filterLoneTankListBySelections();
+					//adjustLoneTankListBySelections();
+				}
+			}
+			
+			protected function adjustLoneTankListBySelections():void
+			{
+				if ( this.lone_tank.selectedIndex >= 0 && this.lone_tank.selectedItem!=null )
+				{
+					this.selectedTank = this.lone_tank.selectedItem;
+				}
+				else
+				{
+					this.selectedTank = new Object();
+				}
+				
+				
+				this.availableTanks.removeAll();
+				
+				for each( var o:Object in this.loneTankList )
+				{
+					var used:Boolean=false;
+					if ( selectedTank.hasOwnProperty("tank_basecode") )
+					{
+						if ( o.hasOwnProperty("tank_basecode") && selectedTank.tank_basecode==o.tank_basecode )
+						{
+							used = true;
+						}
+						else
+						{
+							used = false;
+						}
+					}
+					else
+					{
+						used = true;
+					}
+					
+					if ( used == true )
+					{
+						this.availableTanks.addItem(ObjectUtil.copy(o));
+					}
+				}
+				
+				lone_tank.dataProvider = null;
+				lone_tank.dataProvider = this.availableTanks;
+				//lone_tank.selectedItem = selectedTank;
+			}
+			
+			protected function filterLoneTankListBySelections():void
+			{
+				if ( this.lone_tank.selectedIndex >= 0 && this.lone_tank.selectedItem!=null )
+				{
+					this.selectedTank = this.lone_tank.selectedItem;
+				}
+				else
+				{
+					this.selectedTank = new Object();
+					//this.lone_tank.selectedIndices.splice(0, this.lone_tank.selectedIndices.length);
+				}
+				
+				this.availableTanks.filterFunction = availableTanks_filterFunc;
+				this.availableTanks.refresh();
+			}
+			
+			protected function availableTanks_filterFunc(item:Object):Boolean
+			{
+				if ( selectedTank.hasOwnProperty("tank_basecode") )
+				{
+					if ( item.hasOwnProperty("tank_basecode") && selectedTank.tank_basecode==item.tank_basecode )
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				}
+				else
+				{
+					return true;
+				}
+				
+			}
+			
+			protected function clear_clickHandler():void
+			{
+				//this.mainListSelection = this.dataGrid.selectedIndex;
+				//this.dataGrid.selectedIndex = -1;
+				//this.dataGrid.selectedIndex = this.mainListSelection;
+				//return;
+				
+				this.lone_tank.dataProvider = null;
+				this.lone_tank.dataProvider = this.availableTanks;
+				
+				//trace("..............clear_clickHandler.............................", this.lone_tank.selectedIndex, this.lone_tank.selectedItem, this.lone_tank.selectedItems.length, this.lone_tank.selectedIndices.length )
+				this.lone_tank.selectedItems.splice(0, this.lone_tank.selectedItems.length);
+				trace("..............clear_clickHandler.............................", this.lone_tank.selectedIndex, this.lone_tank.selectedItem, this.lone_tank.selectedItems.length, this.lone_tank.selectedIndices.length )
+				this.lone_tank.selectedIndices.splice(0, this.lone_tank.selectedIndices.length);
+				trace("..............clear_clickHandler.............................", this.lone_tank.selectedIndex, this.lone_tank.selectedItem, this.lone_tank.selectedItems.length, this.lone_tank.selectedIndices.length )
+				this.lone_tank.selectedItem = null;
+				//trace("..............clear_clickHandler.............................", this.lone_tank.selectedIndex, this.lone_tank.selectedItem, this.lone_tank.selectedItems.length, this.lone_tank.selectedIndices.length )
+				this.lone_tank.selectedIndex = -1;
+				//trace("..............clear_clickHandler.............................", this.lone_tank.selectedIndex, this.lone_tank.selectedItem, this.lone_tank.selectedItems.length, this.lone_tank.selectedIndices.length )
+
+				//this.lone_tank.dispatchEvent( new IndexChangeEvent( IndexChangeEvent.CHANGE ) );
+				//return;
+				
+				if ( this.tankGroupItemGrid.dataProviderLength <= 0 )
+				{
+					filterLoneTankListBySelections();
+					//adjustLoneTankListBySelections();
+				}
+				
+				trace("..............clear_clickHandler.............................", this.lone_tank.selectedIndex, this.lone_tank.selectedItem, this.lone_tank.selectedItems.length, this.lone_tank.selectedIndices.length )
+				this.lone_tank.dataProvider = null;
+				//this.lone_tank.invalidateDisplayList();
+				this.lone_tank.dataProvider = this.availableTanks;
+				//this.lone_tank.invalidateDisplayList();
+				
+				trace("--------------------------------------------------------------");
+				tools.pr( this.lone_tank.selectedItem );
+				trace("--------------------------------------------------------------");
+				tools.pr(this.lone_tank.selectedItems);
+				trace("--------------------------------------------------------------");
+				tools.pr(this.lone_tank.selectedIndices);
+				
+				this.lone_tank.invalidateDisplayList();
+				//this.lone_tank.invalidateSkinState();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateFormatter" locale="{LocaleID.DEFAULT}" dateStyle="short" timeStyle="none"/>
+		<s:DateTimeFormatter id="dateConvert" dateTimePattern="yyyy-MM-dd"/>
+		<s:DateTimeFormatter id="dateConvertLong" dateTimePattern="yyyy-MM-dd HH:mm:ss"/>
+		<components:ValidationGroup id="vg" action="{save_clickHandler}" defaultButton="{btn_save}" isProtected="{hasPassword}"/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:VGroup width="100%" id="toolbar"  >
+			<s:HGroup gap="5" paddingBottom="2" paddingTop="2" width="100%">
+				<components:DKI_ValidatorInput id="fltr_tankgroup" validationType="search" minWidth="160" height="{labelHeight}" width="200"
+											   keyUp="fltr_tankgroup_keyUpHandler(event)"  restrict="A-Za-z0-9 \-"
+											   prompt="{resourceManager.getString('default','TGR_NAME')+resourceManager.getString('default','FILTER')}"/>
+				
+				<components:DKI_ComboBox id="fltr_baseproduct" width="180" height="100%"
+										change="fltr_baseproduct_changeHandler(event)" cornerRadius="10"
+										labelField="base_text" prompt="{resourceManager.getString('default','TANK_PRODUCT')+resourceManager.getString('default','FILTER')}"
+										visible.widget="false" excludeFrom="widget" dataProvider="{baseProductList}"/>
+				
+				<components:DKI_ComboBox id="fltr_terminal" width="180" height="100%" enabled="true"
+										change="fltr_terminal_changeHandler(event)" cornerRadius="10"
+										labelField="term_desc" prompt="{resourceManager.getString('default','TANK_TERMINAL')+resourceManager.getString('default','FILTER')}"
+										visible.widget="false" excludeFrom="widget" dataProvider="{terminalList}"/>
+				
+				<components:DKI_ComboBox id="fltr_tankcode" width="180" height="100%"
+										change="fltr_tankcode_changeHandler(event)" cornerRadius="10"
+										labelField="tank_desc" prompt="{resourceManager.getString('default','TANK_TANK')+resourceManager.getString('default','FILTER')}"
+										visible.widget="false" excludeFrom="widget" dataProvider="{tankList}"/>
+				
+				<s:Spacer width="100%"/>
+				<components:DKI_Button id="filterBtn" height="24" noLabel="false" click="filterRecords(event)"
+									   type="filteron"/>
+				<components:DKI_Button id="resetBtn" height="24" noLabel="false" click="refreshRecords(event)"
+									   type="filteroff"/>
+				<components:DKI_Button id="btn_export" label="{resourceManager.getString('default','EXPORTDATA')}" type="report" click="exportCsvHandler(event)" includeIn="normal"/>
+				<components:DKI_Button id="btn_create" label="{resourceManager.getString('default','CREATE')}" height="24" click="createNewRecord(event)" includeIn="normal" enabled="{this.canCreate}" type="create"/>	
+			</s:HGroup>
+		</s:VGroup>
+			
+		
+		<s:DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="4"
+					selectionChange="dataGrid_selectionChangeHandler(event)"
+					skinClass="skins.DKI_DataGrid_Skin"
+					height.widget="100%">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="tgr_name" headerText="{resourceManager.getString('default','TGR_NAME')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="tgr_tankcount" headerText="{resourceManager.getString('default','TGR_TANKCOUNT')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="tgr_tanklist" headerText="{resourceManager.getString('default','TGR_TANKLIST')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="tgr_tankcode" headerText="{resourceManager.getString('default','TGR_TANKCODE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="tgr_basecode" headerText="{resourceManager.getString('default','TGR_BASECODE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="tgr_basename" headerText="{resourceManager.getString('default','TGR_BASENAME')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="tgr_sitecode" headerText="{resourceManager.getString('default','TGR_SITECODE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="tgr_sitename" headerText="{resourceManager.getString('default','TGR_SITENAME')}" visible="true"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			<s:dataProvider>
+				<!--s:AsyncListView id="pgList" list="{getPagedResult.lastResult}"/-->
+				<s:AsyncListView id="pgList" list="{pagedRecords}"/>
+			</s:dataProvider>
+		</s:DataGrid>
+		<s:HGroup width="100%">
+			<components:Downloader id="pb" width="100%" height="18"/>
+			<!--mx:ProgressBar id="pb" width="100%" height="22" visible="false" includeInLayout="false"  mode="manual" source="{this.pgList}" label="{this.currentLength} records shown from {this.currentLength} loaded out of {this.totalLength} found." labelPlacement="center"/-->
+			<s:Button id="killBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="killBtn_clickHandler(event)"/>
+			<s:Button id="resumeBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="resumeBtn_clickHandler(event)"/>
+		</s:HGroup>
+	</s:Panel>
+	
+	<s:Panel id="details" includeIn="edit,create,detail" width="100%" height="450"
+			 itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+			<!--s:TileLayout/-->
+		</s:layout>
+		
+		<s:Spacer height="5"/>
+		<s:VGroup width="100%">
+			<s:HGroup width="100%">
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TGR_NAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="tgr_name" maxChars="16" 
+												   width="{fieldWidth*2}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.tgr_name}" editable="false" enabled="false" 
+												   text.create="" editable.create="true" enabled.create="true" focusOut="checkTankGroupKey()" 
+												   required="true" validationType="alphanumeric" validationGroup="{vg}" automationName="{resourceManager.getString('default','TGR_NAME')}" 
+												   />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			
+			<s:Spacer height="5" />
+			
+			<mx:HRule width="100%"/>
+			
+			<!--s:HGroup>
+				<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TANK_TANK')}" verticalAlign="middle"/>
+				<components:SearchComboWithCase id="lone_tank" width="{fieldWidth*2}" height="{fieldHeight}" isTextFieldReset="false" enabled="true" visible="true"
+												cornerRadius="10"
+												labelField="tank_desc" change="lone_tank_changeHandler(event)" 
+												prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','TANK_TANK')}"
+												dataProvider="{availableTanks}"/>
+				<components:DKI_Button id="btn_createLink" cornerRadius="0" label="{resourceManager.getString('default','CREATE')}" width="32" height="100%" click="lone_tank_addHandler()" enabled="{lone_tank.selectedIndex>=0}" type="create"/>
+				<components:DKI_Button id="btn_deleteLink" cornerRadius="0" label="{resourceManager.getString('default','DELETE')}" width="32" height="100%" click="lone_tank_delHandler()" enabled="false" type="delete"/>
+				<components:DKI_Button id="btn_activateLink" cornerRadius="0" label="{resourceManager.getString('default','ACTIVATE')}" width="32" height="100%" click="lone_tank_actHandler()" enabled="false" type="edit"/>
+			</s:HGroup-->
+
+			<s:HGroup width="100%" verticalAlign="middle">
+				
+				<s:VGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TGR_TANK_AVAILABLE')}" verticalAlign="middle"/>
+					<components:DKI_List id="lone_tank" width="{fieldWidth}" height="240"  enabled="true" visible="true" allowMultipleSelection="true"
+													labelField="tank_desc" change="lone_tank_changeHandler(event)" 
+													dataProvider="{availableTanks}"/>
+				</s:VGroup>
+				
+				<s:VGroup>
+					<components:DKI_Button id="btn_createLink" cornerRadius="0" label="{resourceManager.getString('default','BUTTON__ADD_MEMBER')}" toolTip="{resourceManager.getString('default','TOOLTIP__ICON_CROSS')}" width="32" height="100%" click="lone_tank_addHandler()" enabled="{lone_tank.selectedIndex>=0}" type="create"/>
+					<components:DKI_Button id="btn_deleteLink" cornerRadius="0" label="{resourceManager.getString('default','BUTTON__REMOVE_MEMBER')}" toolTip="{resourceManager.getString('default','TOOLTIP__ICON_TRASH')}" width="32" height="100%" click="lone_tank_delHandler()" enabled="false" type="delete"/>
+				</s:VGroup>
+				
+				<s:VGroup width="100%">
+					<s:Label width="100%" height="{labelHeight}" text="{resourceManager.getString('default','TGR_TANK_MEMBER')}" verticalAlign="middle"/>
+					<s:DataGrid id="tankGroupItemGrid" width="100%" height="240" requestedRowCount="4" excludeFrom="widget,normal"
+								selectionChange="tankGroupItemGrid_selectionChangeHandler(event)"
+								skinClass="skins.DKI_DataGrid_Skin" visible="true" enabled="{this.tgr_name.text.length>0}" selectionMode="multipleRows"
+								editable="true" editable.detail="false"
+								>
+						<s:columns>
+							<s:ArrayList>
+								<s:source>
+									<s:GridColumn dataField="tank_action" headerText="{resourceManager.getString('default','TANK_ACTION')}" visible="true" editable="false" width="32" itemRenderer="renderers.GridMarkRenderer"></s:GridColumn>
+									<s:GridColumn dataField="tank_code" headerText="{resourceManager.getString('default','TANK_CODE')}" visible="true" editable="false"></s:GridColumn>
+									<s:GridColumn dataField="tank_basecode" headerText="{resourceManager.getString('default','TANK_BASECODE')}" visible="true" editable="false"></s:GridColumn>
+									<s:GridColumn dataField="tank_basename" headerText="{resourceManager.getString('default','TANK_BASENAME')}" visible="true" editable="false"></s:GridColumn>
+									<s:GridColumn dataField="tank_active" headerText="{resourceManager.getString('default','TANK_ACTIVE')}" visible="true" editable="false" itemRenderer="renderers.GridCheckNullRenderer"></s:GridColumn>
+									<s:GridColumn dataField="tank_group" headerText="{resourceManager.getString('default','TANK_GROUP')}" visible="true" editable="false"></s:GridColumn>
+									<s:GridColumn dataField="tank_sitecode" headerText="{resourceManager.getString('default','TANK_SITECODE')}" visible="true" editable="false"></s:GridColumn>
+									<s:GridColumn dataField="tank_sitename" headerText="{resourceManager.getString('default','TANK_SITENAME')}" visible="true" editable="false"></s:GridColumn>
+								</s:source>
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+				</s:VGroup>
+				
+			</s:HGroup>
+			
+		</s:VGroup>
+		
+		<s:Spacer height="0" />
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<components:DKI_Button id="btn_clear" label="{resourceManager.getString('default','BUTTON__CLEAR_SELECTION')}" toolTip="{resourceManager.getString('default','TOOLTIP__BTN_CLEAR')}" height="100%" click="clear_clickHandler()" enabled="true" type="clear"/>
+			
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_activateLink" cornerRadius="0" label="{resourceManager.getString('default','ACTIVATE')}" height="100%" click="lone_tank_actHandler()" enabled="false" type="save"/>
+			<components:DKI_Button id="btn_delete" label="{resourceManager.getString('default','BUTTON__DELETE_GROUP')}" height="100%" click="doDelete()" includeIn="edit" enabled="{this.canDelete}" type="delete"/>
+			<components:DKI_Button id="btn_save" label.create="{resourceManager.getString('default','BUTTON__SAVE_GROUP')}" label="{resourceManager.getString('default','BUTTON__UPDATE_GROUP')}" height="100%" 
+								   includeIn="edit,create,detail" enabled.create="{this.canCreate}" enabled="{this.canUpdate}" type.create="create" type="edit" focusEnabled="true" focusEnabled.create="false"/>
+			<components:DKI_Button id="btn_cancel" label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel" focusEnabled="true" focusEnabled.create="false"/>
+		</s:HGroup>
+	</s:Panel>
+	
+</s:VGroup>

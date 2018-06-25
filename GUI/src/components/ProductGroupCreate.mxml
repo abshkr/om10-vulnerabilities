@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 width="400" height="300" title="Create New Product Group">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			
+			[Bindable] public var inpDesc:String="";
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				dispatchEvent(new CloseEvent(CloseEvent.CLOSE,true, false));
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:VGroup verticalCenter="0" horizontalCenter="0" gap="15">
+		<s:TextInput id="prodName" text="{inpDesc}"/>
+		<s:Button label="Close" click="button1_clickHandler(event)"/>
+	</s:VGroup>
+</s:Panel>

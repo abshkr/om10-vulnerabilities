@@ -1,0 +1,1939 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  creationComplete="creationCompleteHandler(event)"
+		  gap="2" width="100%" height="100%">
+	
+	<s:states>
+		<s:State name="normal" enterState="this.toolbar.enabled=true"/>
+		<s:State name="widget" enterState="this.toolbar.enabled=true"/>
+		<s:State name="edit" enterState="callLater(function():void{dataGrid.ensureCellIsVisible(idx);});this.toolbar.enabled=false"/>
+		<s:State name="create" enterState="this.toolbar.enabled=false"/>
+		<s:State name="detail" enterState="view_detailsHandler(event);this.toolbar.enabled=false"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.fiber.runtime.lib.DateTimeFunc;
+			
+			import components.ActionDialog;
+			import components.ConfirmDialog;
+			import components.DeleteDialog;
+			import components.ErrorDialog;
+			import components.ExportData;
+			import components.MessageDialog;
+			import components.TransactionsDlg;
+			import components.ViewPopupDlg;
+			
+			import dm.remoteBulkListService;
+			import dm.remoteDataService;
+			import dm.remoteListService;
+			import dm.utils.tools;
+			
+			import flash.events.KeyboardEvent;
+			import flash.globalization.LocaleID;
+			
+			import flashx.textLayout.container.ScrollPolicy;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			
+			
+			public static const MAIN_WINDOW_WIDTH:int = 1500;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable] public var labelWidth:uint = 110;
+			[Bindable] public var labelHeight:uint = 26;
+			[Bindable] public var fieldWidth:uint = 230;
+			[Bindable] public var fieldHeight:uint = 26;
+			[Bindable] public var spaceWidth:uint = 15;
+			[Bindable] public var spaceHeight:uint = 5;
+			
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='cust_account';
+			private var currentDirection:String="ASC";
+			
+			private var currentOffset:int=0;
+			private var currentPageSize:int=1000;
+			[Bindable] private var totalLength:int=0;
+			[Bindable] private var currentLength:int=0;
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			//private var currentSorts:Object=new Object();
+			//private var currentOrders:Object=new Object();
+			private var currentSorts:Object={cust_account:'ASC'};
+			private var currentOrders:Object={cust_account:1};
+			private var currentSortSeq:int=0;
+			
+			
+			private var confirmReport:ActionDialog;
+			private var confirmSave:ActionDialog;
+			private var errorDialog:ErrorDialog;
+			
+			//private var exportContents:String="";
+			private var f:FileReference = new FileReference();
+			
+			
+			//private var getData:Responder = new Responder(getData_resultHandler);
+			
+			//private var pagedRecords:ArrayCollection=new ArrayCollection();
+			//private var pagedRecords:remoteDataService = new remoteDataService( "CustomerService.getPaged", getData, null );
+			[Bindable] private var pagedRecords:remoteListService;
+			
+			private var deleteAction:remoteDataService = new remoteDataService( "CustomerService.delete", null, deleteData_resultHandler, 1 );
+			private var createAction:remoteDataService = new remoteDataService( "CustomerService.create", null, createData_resultHandler, 1 );
+			private var updateAction:remoteDataService = new remoteDataService( "CustomerService.update", null, updateData_resultHandler, 1 );
+			
+			private var customerKeyChecker:remoteDataService = new remoteDataService( "CustomerService.isCustomerAccountNumberUsed", null, customerKeyChecker_resultHandler, 2 );
+			private var customerAccountChecker:remoteDataService = new remoteDataService( "CustomerService.isCustomerAccountExisted", null, customerAccountChecker_resultHandler, 2 );
+			
+			private var gridColumnSequenceMaker:remoteDataService = new remoteDataService( "ScreenGridColumnService.lookupGridColumnSequence", null, gridColumnSequenceMaker_resultHandler, 1 );
+			private var _gridColumnSequenceString:String="";
+			private var formColumnSettingsMaker:remoteDataService = new remoteDataService( "ScreenFormColumnService.lookupFormColumnSettings", null, formColumnSettingsMaker_resultHandler, 1 );
+			private var _formColumnSettingsString:String="";
+			
+			
+			[Bindable] private var delvLocationList:remoteBulkListService = new remoteBulkListService( "ListLibraryService.lookupDelvLocationByPage", null, lookupDelvLocationByPage_resultHandler );
+			
+			[Bindable] private var customerSupplierList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCompany", null, lookupCustomerSupplier_resultHandler );
+			[Bindable] private var customerCompanyList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCompany", null, lookupCustomerCompany_resultHandler );
+			[Bindable] private var addressList:remoteDataService = new remoteDataService( "PartnerService.lookupAddressContent", null, lookupAddress_resultHandler );
+			[Bindable] private var availCustomerCompanyList:remoteDataService = new remoteDataService( "CustomerService.lookupAvailableCustomerCompany", null, lookupAvailableCustomerCompany_resultHandler );
+
+			[Bindable] private var customerSaleTypeList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCustomerSaleType", null, null );
+			[Bindable] private var customerPriceTypeList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCustomerPriceType", null, null );
+			[Bindable] private var customerInvoiceTypeList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCustomerInvoiceType", null, null );
+			[Bindable] private var customerTermsTypeList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCustomerTermsType", null, null );
+			[Bindable] private var customerCategoryList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCustomerCategory", null, lookupCustomerCategory_resultHandler );
+			
+			//private var genData:ExportData = new ExportData();
+			
+			public var parentParams:Object = new Object();
+			public var mainListSelection:int = -1;
+			private var _saveButtonClicked:Boolean=false;
+			
+			public var isPopupWindow:Boolean=false;
+			
+			public var addressesPopup:ViewPopupDlg = new ViewPopupDlg( "Addresses", new v_Addresses(), closeAddressDialogHandler );
+			public var allocationsPopup:ViewPopupDlg = new ViewPopupDlg( "Allocations", new v_Allocations(), closeAllocationDialogHandler );
+			public var categoriesPopup:ViewPopupDlg = new ViewPopupDlg( "Customer Categories", new v_CustomerCategories(), closeCategoryDialogHandler );
+			public var openOrdersPopup:ViewPopupDlg = new ViewPopupDlg( "Open Orders", new v_OrderListing(), closeOrderDialogHandler );
+			public var deliveryLocationsPopup:ViewPopupDlg = new ViewPopupDlg( "Delivery Locations", new v_DeliveryLocations(), closeDelvlocDialogHandler );
+		
+			private var _cust_address:String="";
+			private var _cust_category:String="";
+			private var _cust_delvloc:String="";
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				this.formColumnSettingsMaker.service( "CUSTOMERS" );
+				
+				trace ("-------------start creationCompleteHandler");
+				pagedRecords = new remoteListService( this.dataGrid, "CustomerService.getPaged", null, getPageData_resultHandler );
+				//resourceManager.localeChain = ['zh_CN'];
+				//global.LanguageCode="CHN";
+				this.gridColumnSequenceMaker.service( "CUSTOMERS" );
+				
+				
+				var value:String = global.getValueFromSiteConfigSettings( "SITE_AUTO_FILTER_WHEN_OPEN_SCREEN" );
+				if ( value == 'Y' )
+				{
+					if ( this.isPopupWindow == false )
+					{
+						this.startFiltering();
+					}
+				}
+				else
+				{
+					;
+				}
+				
+				this.delvLocationList.listService( {delv_grid:'CSTDLV'}, {delv_grid:'EXACT_STRING'}, new Object(), new Object() );
+				
+				this.customerSupplierList.service( 1 );
+				this.customerCompanyList.service( 3 );
+				this.availCustomerCompanyList.service( '-1', 1 );
+				this.addressList.service(  );
+				
+				this.customerSaleTypeList.service( );
+				this.customerPriceTypeList.service( );
+				this.customerInvoiceTypeList.service( );
+				this.customerTermsTypeList.service( );
+				this.customerCategoryList.service( );
+				
+				
+				trace ("------------End creationCompleteHandler");
+				
+				
+				//trace("this.grid.scroller1111", this.dataGrid.scroller);
+				//trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+				this.dataGrid.scroller.verticalScrollBar.addEventListener(Event.CHANGE, verticalScrollBarChanged);
+				this.dataGrid.addEventListener(KeyboardEvent.KEY_UP, reportKeyUp);
+				this.dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+				
+			}
+			
+			
+			private function lookupCustomerSupplier_resultHandler():void
+			{
+				if ( currentFields.hasOwnProperty( "cust_supp_code" ) )
+				{
+					this.fltr_supplier.selectedIndex = tools.getItemIndexFromCode( currentFields["cust_supp_code"], customerSupplierList, "cmpy_code");
+				}
+				
+				if (currentState == "edit" || currentState == "detail")
+				{
+					//this.cust_supp_code.selectedItem = dataGrid.selectedItem.cust_supp_name;
+					this.cust_supp_code.selectedIndex = tools.getItemIndexFromCode( dataGrid.selectedItem.cust_supp_code, customerSupplierList, "cmpy_code");
+				}
+			}
+			
+			private function lookupCustomerCompany_resultHandler():void
+			{
+				if ( currentFields.hasOwnProperty( "cust_cmpy_code" ) )
+				{
+					this.fltr_company.selectedIndex = tools.getItemIndexFromCode( currentFields["cust_cmpy_code"], customerCompanyList, "cmpy_code");
+				}
+				
+				/* if (currentState == "edit" || currentState == "detail")
+				{
+					this.cust_cmpy_code.selectedItem = dataGrid.selectedItem.cust_cmpy_name;
+				} */
+			}
+			
+			private function lookupAvailableCustomerCompany_resultHandler():void
+			{
+				/* if ( currentFields.hasOwnProperty( "cust_cmpy_code" ) )
+				{
+					this.fltr_company.selectedIndex = tools.getItemIndexFromCode( currentFields["cust_cmpy_code"], customerCompanyList, "cmpy_code");
+				} */
+				
+				if (currentState == "edit" || currentState == "detail")
+				{
+					//this.cust_cmpy_code.selectedItem = dataGrid.selectedItem.cust_cmpy_name;
+					this.cust_cmpy_code.selectedIndex = tools.getItemIndexFromCode( dataGrid.selectedItem.cust_cmpy_code, availCustomerCompanyList, "cmpy_code");
+				}
+			}
+			
+			protected function lookupAddress_resultHandler():void
+			{
+				if ( currentState == "create" || currentState == "edit" )
+				{
+					this.cust_addr_code.selectedIndex = tools.getItemIndexFromCode( _cust_address, addressList, "address_code");
+				}
+			}
+			
+			protected function lookupCustomerCategory_resultHandler():void
+			{
+				if (currentState == "edit" || currentState == "detail")
+				{
+					this.cust_ctgr_code.selectedIndex = tools.getItemIndexFromCode( _cust_category, customerCategoryList, "category_code");
+				}
+			}
+			
+			private function lookupDelvLocationByPage_resultHandler():void
+			{
+				if (currentState == "edit" || currentState == "detail")
+				{
+					//this.cust_delv_code.selectedItem = dataGrid.selectedItem.cust_delv_code+' - '+dataGrid.selectedItem.cust_delv_name;
+					this.cust_delv_code.selectedIndex = tools.getItemIndexFromCode( _cust_delvloc, this.delvLocationList, "delv_code");
+				}
+			}
+			
+			
+			protected function formColumnSettingsMaker_resultHandler():void
+			{
+				this._formColumnSettingsString =  formColumnSettingsMaker.dataString;
+			}
+			
+			
+			protected function startLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				//this.panel.enabled = false;
+				
+				currentLength=0;
+				currentOffset = 0;
+				
+				//this.exportContents = this.genData.prepExportHeader( dataGrid );
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				this.pb.values(0, 0);
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			protected function endLoadingPages():void
+			{
+				this.btn_create.enabled = this.canCreate;
+				this.btn_export.enabled = true;
+				this.dataGrid.enabled = true;
+				this.toolbar.enabled = true;
+				//this.panel.enabled = true;
+				//this.pb.values(totalCount, totalCount);
+				this.pb.values(pagedRecords.totalCount, pagedRecords.totalCount, true);
+				
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = false;
+				
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				//if ( totalLength > totalCount )
+				if ( pagedRecords.totalLength > pagedRecords.totalCount )
+				{
+					this.resumeBtn.enabled = true;
+				}
+				else
+				{
+					this.resumeBtn.enabled = false;
+				}
+				
+				//this.fltr_account.setFocus();
+				var len:int = this.fltr_account.text.length;
+				this.fltr_account.selectRange(len, len);
+			}
+			
+			protected function exportCsvHandler(event:MouseEvent):void
+			{
+				this.confirmReport = new ActionDialog( doExport, cancelExport, resourceManager.getString('default','CONFIRM_REPORT_CSV') );
+				
+				//this.startLoadingPages();
+			}
+			
+			private function getPageData_resultHandler():void
+			{
+				// if not finished
+				if(pagedRecords.length < pagedRecords.totalCount)
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+				}
+				else
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+					
+					this.endLoadingPages();
+					
+					this.dataGrid.selectedIndex = this.mainListSelection;
+					if ( this.mainListSelection >= 0)
+					{
+						this.dataGrid_selectionChangeHandler(null);
+					}
+					this.mainListSelection = -1;
+					
+				}
+				
+			}
+			
+			
+			public function doExport():void
+			{
+				//genData.prepOther(dataGrid,'customerlist.csv', this.pagedRecords);
+				
+				//f.save( this.exportContents, "customerlist.csv" );
+				f.save( pagedRecords.exportContents, "customerlist.csv" );
+				
+				this.endLoadingPages();
+			}
+			
+			
+			public function cancelExport():void
+			{
+				this.endLoadingPages();
+				
+				//trace( this.exportContents );
+			}
+			
+			public function doNothing():void
+			{
+			}
+			
+			
+			private function verticalScrollBarChanged(event:Event):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function reportKeyUp(event:KeyboardEvent):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				if(event.column.dataField!='prod_items')
+				{
+					var currentRenderer:IGridItemRenderer;
+					var dir:String;
+					
+					if ( global.sortingBySingleColumn == true )
+					{	// sorted by single column only
+						for (var i:int=0; i < dataGrid.columns.length; i++)
+						{
+							currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+							if ( currentRenderer != null)
+							{
+								(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+							}
+							//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+						}
+					}
+					else
+					{	// sorted by multiple columns
+						;
+					}
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if( currentSorts.hasOwnProperty(event.column.dataField ) )
+					{
+						dir = currentSorts[event.column.dataField];
+						if( dir=="ASC" )
+						{
+							dir = "DESC";
+						}
+						else if ( dir == "DESC" )
+						{
+							dir = "";
+						}
+						else if ( dir == "" )
+						{
+							dir = "ASC";
+						}
+						else 
+						{
+							dir = "ASC";
+						}
+						
+						if ( dir != "" )
+						{
+							currentSorts[event.column.dataField] = dir;	
+						}
+						else
+						{
+							delete currentSorts[event.column.dataField];
+							delete currentOrders[event.column.dataField];
+						}
+					}
+					else
+					{
+						if ( global.sortingBySingleColumn == true )
+						{	// sorted by single column only
+							currentSorts = new Object();
+							currentOrders = new Object();
+							currentSortSeq = 0;
+						}
+						else
+						{	// sorted by multiple columns
+							;
+						}
+						currentSorts[event.column.dataField] = "ASC";	
+						dir = currentSorts[event.column.dataField];
+						currentSortSeq += 1;
+						currentOrders[event.column.dataField] = currentSortSeq;	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+					this.startFiltering();
+				}
+			}
+			
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				if(currentState != 'widget')
+				{
+					idx=dataGrid.selectedIndex;
+					//dataGrid.ensureCellIsVisible(idx+11);
+					dataGrid.ensureCellIsVisible(idx);
+					
+					currentState = "edit";					
+					this.btn_save.enabled = this.canUpdate;
+					
+					if ( dataGrid.selectedIndex >= 0 )
+					{
+						if ( dataGrid.selectedItem.cust_order_count==0 && dataGrid.selectedItem.cust_dloc_count==0 && dataGrid.selectedItem.cust_alloc_lockid==null && dataGrid.selectedItem.cust_alloc_lockname==null )
+						{
+							this.btn_delete.enabled = this.canDelete;
+						}
+						else
+						{
+							this.btn_delete.enabled = false;
+						}
+					}
+					
+					if ( _formColumnSettingsString.length > 0 )
+					{
+						global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+					}
+					
+					// get selectedIndex for company list
+					if ( this.dataGrid.selectedIndex>=0 )
+					{
+						cust_supp_code.selectedIndex = tools.getItemIndexFromCode( this.dataGrid.selectedItem.cust_supp_code, this.customerSupplierList, "cmpy_code");
+						cust_cmpy_code.selectedIndex = tools.getItemIndexFromCode( this.dataGrid.selectedItem.cust_cmpy_code, this.availCustomerCompanyList, "cmpy_code");
+					}
+				}
+			}
+			
+			protected function cancel_clickHandler():void
+			{
+				clearDetail();
+				if ( currentState== "create" )
+				{
+					dataGrid.enabled=true;
+				}
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+			}			
+			
+			protected function gridColumnSequenceMaker_resultHandler():void
+			{
+				this._gridColumnSequenceString =  gridColumnSequenceMaker.dataString;
+				
+				if ( _gridColumnSequenceString.length > 0 )
+				{
+					global.adjustGridColumnSequence( _gridColumnSequenceString.substr(1), dataGrid );
+				}
+				
+			}
+			
+			
+			protected function fltr_account_keyUpHandler(event:KeyboardEvent):void
+			{
+				if ( event.keyCode != 13 )
+				{
+					return;
+				}
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_supplier_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_company_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			private function startFiltering():void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				fields = new Object();
+				types = new Object();
+				
+				
+				if(fltr_account.text!='')
+				{					
+					fields["cust_account||cust_cmpy_code||cust_cmpy_name"] = fltr_account.text+"||"+fltr_account.text+"||"+fltr_account.text;
+				}
+				else
+				{
+					fields["cust_account||cust_cmpy_code||cust_cmpy_name"] = "";
+				}
+				types["cust_account||cust_cmpy_code||cust_cmpy_name"] = "STRING||STRING||STRING";
+				
+				
+				if ( this.currentState != "widget" )
+				{
+					if (fltr_supplier.selectedIndex > -1) 
+					{
+						fields["cust_supp_code"] = customerSupplierList[fltr_supplier.selectedIndex].cmpy_code;
+					}
+					else
+					{
+						if ( global.setComboBoxNoSelection == true )
+						{
+							fltr_supplier.selectedIndex = -1;
+						}
+						fields["cust_supp_code"] = "";
+					}
+					types["cust_supp_code"] = "EXACT_STRING";
+					
+					if (fltr_company.selectedIndex > -1) 
+					{
+						fields["cust_cmpy_code"] = customerCompanyList[fltr_company.selectedIndex].cmpy_code;
+					}
+					else
+					{
+						if ( global.setComboBoxNoSelection == true )
+						{
+							fltr_company.selectedIndex = -1;
+						}
+						fields["cust_cmpy_code"] = "";
+					}
+					types["cust_cmpy_code"] = "EXACT_STRING";
+					
+				}
+				
+				currentFilter = "WHERE 1=1 ";
+				
+				currentFields = fields;
+				currentTypes = types;
+				
+				this.startLoadingPages();
+				
+				trace("this.grid.scroller3333", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			private function findByPrimaryKey(code:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["cust_account"] = code;
+				types["cust_account"] = "EXACT_STRING";
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				//this.pagedRecords.service( fields, types, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( fields, types, currentSorts, currentOrders );
+			}
+			
+			protected function filterRecords(event:MouseEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				this.startFiltering();
+			}
+			
+			protected function refreshRecords(event:MouseEvent):void
+			{
+				if ( currentState != "widget" )
+				{
+					currentState = 'normal';
+					dataGrid.enabled=true;
+				}
+				clearDetail();
+				fltr_account.text = "";
+				if ( currentState != "widget" )
+				{
+					fltr_supplier.selectedIndex = -1;
+					fltr_company.selectedIndex = -1;
+				}
+				
+				dataGrid.selectedIndex = -1;
+				currentFilter = null;
+				currentOrder = null;
+				currentFields = new Object();
+				currentTypes = new Object();
+				
+				currentSorts = new Object();
+				currentOrders = new Object();
+				var currentRenderer:IGridItemRenderer;
+				for (var i:int=0; i < dataGrid.columns.length; i++)
+				{
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					if ( currentRenderer != null)
+					{
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+					}
+					//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+				}
+				this.startFiltering();
+				//this.startLoadingPages();
+				trace("this.grid.scroller2222", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			protected function clearDetail(): void
+			{
+				if (currentState != 'widget')
+				{
+				}
+			}			
+			
+			private function editRecord():void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.cust_account 			= cust_account.text;
+				
+				if (cust_supp_code.selectedIndex>=0)
+				{
+					obj.cust_supp_code = customerSupplierList[cust_supp_code.selectedIndex].cmpy_code;
+					obj.cust_supp_name = customerSupplierList[cust_supp_code.selectedIndex].cmpy_name;
+				}
+				else
+				{
+					obj.cust_supp_code = dataGrid.selectedItem.cust_supp_code;
+					obj.cust_supp_name = dataGrid.selectedItem.cust_supp_name;
+				}
+				
+				if (cust_cmpy_code.selectedIndex>=0)
+				{
+					obj.cust_cmpy_code = availCustomerCompanyList[cust_cmpy_code.selectedIndex].cmpy_code;
+					obj.cust_cmpy_name = availCustomerCompanyList[cust_cmpy_code.selectedIndex].cmpy_name;
+				}
+				else
+				{
+					obj.cust_cmpy_code = dataGrid.selectedItem.cust_cmpy_code;
+					obj.cust_cmpy_name = dataGrid.selectedItem.cust_cmpy_name;
+				}
+				
+				if (cust_addr_code.selectedIndex>=0)
+				{
+					obj.cust_addr_code = addressList[cust_addr_code.selectedIndex].address_code;
+				}
+				else
+				{
+					obj.cust_addr_code = dataGrid.selectedItem.cust_addr_code;
+				}
+
+				
+				obj.cust_contact 			= cust_contact.text;
+				obj.cust_phone_no 			= cust_phone_no.text;
+				obj.cust_ord_days 			= cust_ord_days.text;
+				obj.cust_crd_days 			= cust_crd_days.text;
+				obj.cust_crd_limit 			= cust_crd_limit.text;
+				obj.cust_balance 			= cust_balance.text;
+				obj.cust_appr_total 		= 0.0;
+				
+				if (cust_pricetype_id.selectedIndex>=0)
+				{
+					obj.cust_pricetype_id = customerPriceTypeList[cust_pricetype_id.selectedIndex].price_type_id;
+					obj.cust_pricetype_name = customerPriceTypeList[cust_pricetype_id.selectedIndex].price_type_name;
+				}
+				else
+				{
+					obj.cust_pricetype_id = ""; //dataGrid.selectedItem.cust_pricetype_id;
+					obj.cust_pricetype_name = ""; //dataGrid.selectedItem.cust_pricetype_name;
+				}
+				
+				if (cust_invtype_id.selectedIndex>=0)
+				{
+					obj.cust_invtype_id = customerInvoiceTypeList[cust_invtype_id.selectedIndex].invoice_type_id;
+					obj.cust_invtype_name = customerInvoiceTypeList[cust_invtype_id.selectedIndex].invoice_type_name;
+				}
+				else
+				{
+					obj.cust_invtype_id = ""; //dataGrid.selectedItem.cust_invtype_id;
+					obj.cust_invtype_name = ""; //dataGrid.selectedItem.cust_invtype_name;
+				}
+				
+				if (cust_saletype_id.selectedIndex>=0)
+				{
+					obj.cust_saletype_id = customerSaleTypeList[cust_saletype_id.selectedIndex].sale_type_id;
+					obj.cust_saletype_name = customerSaleTypeList[cust_saletype_id.selectedIndex].sale_type_name;
+				}
+				else
+				{
+					obj.cust_saletype_id = ""; //dataGrid.selectedItem.cust_saletype_id;
+					obj.cust_saletype_name = ""; //dataGrid.selectedItem.cust_saletype_name;
+				}
+				
+				if (cust_crd_terms.selectedIndex>=0)
+				{
+					obj.cust_crd_terms = customerTermsTypeList[cust_crd_terms.selectedIndex].terms_type_id;
+					obj.cust_terms_name = customerTermsTypeList[cust_crd_terms.selectedIndex].terms_type_name;
+				}
+				else
+				{
+					obj.cust_crd_terms = ""; //dataGrid.selectedItem.cust_crd_terms;
+					obj.cust_terms_name = ""; //dataGrid.selectedItem.cust_terms_name;
+				}
+				
+				if (cust_ctgr_code.selectedIndex>=0)
+				{
+					obj.cust_ctgr_code = customerCategoryList[cust_ctgr_code.selectedIndex].category_code;
+					obj.cust_ctgr_text = customerCategoryList[cust_ctgr_code.selectedIndex].category_name;
+				}
+				else
+				{
+					obj.cust_ctgr_code = ""; //dataGrid.selectedItem.cust_ctgr_code;
+					obj.cust_ctgr_text = ""; //dataGrid.selectedItem.cust_ctgr_text;
+				}
+				
+				if (cust_delv_code.selectedIndex>=0)
+				{
+					obj.cust_delv_code = delvLocationList[cust_delv_code.selectedIndex].delv_code;
+					obj.cust_delv_name = delvLocationList[cust_delv_code.selectedIndex].delv_name;
+				}
+				else
+				{
+					obj.cust_delv_code = ""; //dataGrid.selectedItem.cust_delv_code;
+					obj.cust_delv_name = ""; //dataGrid.selectedItem.cust_delv_name;
+				}
+				
+				updateAction.service( obj );
+			}
+			
+			protected function updateData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.updateAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var code:String;
+				code = cust_account.text;
+				
+				currentState="normal";
+				findByPrimaryKey( code );
+				
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			private function doDelete(): void
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				
+				/*
+				TODO - is this product used by other records?
+				*/
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				else
+				{
+					var canDelete:DeleteDialog = new DeleteDialog(deleteRecord, hasPassword);
+				}
+			}
+			
+			private function deleteRecord():void
+			{
+				var obj:Object = new Object();
+				
+				
+				obj.cust_account 			= cust_account.text;
+				
+				if (cust_supp_code.selectedIndex>=0)
+				{
+					obj.cust_supp_code = customerSupplierList[cust_supp_code.selectedIndex].cmpy_code;
+					obj.cust_supp_name = customerSupplierList[cust_supp_code.selectedIndex].cmpy_name;
+				}
+				else
+				{
+					obj.cust_supp_code = dataGrid.selectedItem.cust_supp_code;
+					obj.cust_supp_name = dataGrid.selectedItem.cust_supp_name;
+				}
+				
+				if (cust_cmpy_code.selectedIndex>=0)
+				{
+					obj.cust_cmpy_code = availCustomerCompanyList[cust_cmpy_code.selectedIndex].cmpy_code;
+					obj.cust_cmpy_name = availCustomerCompanyList[cust_cmpy_code.selectedIndex].cmpy_name;
+				}
+				else
+				{
+					obj.cust_cmpy_code = dataGrid.selectedItem.cust_cmpy_code;
+					obj.cust_cmpy_name = dataGrid.selectedItem.cust_cmpy_name;
+				}
+				
+				if (cust_addr_code.selectedIndex>=0)
+				{
+					obj.cust_addr_code = addressList[cust_addr_code.selectedIndex].address_code;
+				}
+				else
+				{
+					obj.cust_addr_code = dataGrid.selectedItem.cust_addr_code;
+				}
+				
+				deleteAction.service( obj );
+			}
+			
+			protected function deleteData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.deleteAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+				}
+				
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+			}
+			
+			private function checkCustomerKey():void
+			{
+				var obj:Object=new Object();
+				
+				obj.cust_account = this.cust_account.text;
+				
+				customerKeyChecker.service( obj.cust_account );
+			}
+			
+			protected function customerKeyChecker_resultHandler( ):void
+			{
+				if ( customerKeyChecker.dataInteger > 0 )
+				{
+					global.msgWarning( resourceManager.getString('default','ALERT__CUSTOMER_ACCOUNT_USED') );
+					this.btn_save.enabled = this.canCreate;
+				}
+				else
+				{
+					if ( this._saveButtonClicked == true )
+					{
+						this.createRecord();
+					}
+				}
+				
+				this._saveButtonClicked = false;
+			}
+			
+			private function checkCustomerAccount():void
+			{
+				var obj:Object=new Object();
+				
+				if (cust_supp_code.selectedIndex>=0)
+				{
+					obj.cust_supp_code = customerSupplierList[cust_supp_code.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.cust_supp_code = "-1";
+				}
+				
+				if (cust_cmpy_code.selectedIndex>=0)
+				{
+					obj.cust_cmpy_code = availCustomerCompanyList[cust_cmpy_code.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.cust_cmpy_code = "-1";
+				}
+				
+				customerAccountChecker.service( obj.cust_supp_code, obj.cust_cmpy_code );
+			}
+			
+			protected function customerAccountChecker_resultHandler( ):void
+			{
+				if ( customerAccountChecker.dataInteger > 0 )
+				{
+					global.msgWarning( resourceManager.getString('default','ALERT__CUSTOMER_ACCOUNT_EXIST') );
+					this.btn_save.enabled = this.canCreate;
+				}
+				else
+				{
+					if ( this._saveButtonClicked == true )
+					{
+						this.createRecord();
+					}
+				}
+				
+				this._saveButtonClicked = false;
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors, 400 );
+				}
+				
+				return index;
+			}
+
+			private function createRecord():void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.cust_account 			= cust_account.text;
+				
+				if (cust_supp_code.selectedIndex>=0)
+				{
+					obj.cust_supp_code = customerSupplierList[cust_supp_code.selectedIndex].cmpy_code;
+					obj.cust_supp_name = customerSupplierList[cust_supp_code.selectedIndex].cmpy_name;
+				}
+				else
+				{
+					obj.cust_supp_code = "";
+					obj.cust_supp_name = "";
+				}
+				
+				if (cust_cmpy_code.selectedIndex>=0)
+				{
+					obj.cust_cmpy_code = availCustomerCompanyList[cust_cmpy_code.selectedIndex].cmpy_code;
+					obj.cust_cmpy_name = availCustomerCompanyList[cust_cmpy_code.selectedIndex].cmpy_name;
+				}
+				else
+				{
+					obj.cust_cmpy_code = "";
+					obj.cust_cmpy_name = "";
+				}
+				
+				if (cust_addr_code.selectedIndex>=0)
+				{
+					obj.cust_addr_code = addressList[cust_addr_code.selectedIndex].address_code;
+				}
+				else
+				{
+					obj.cust_addr_code = "";
+				}
+				
+				
+				obj.cust_contact 			= cust_contact.text;
+				obj.cust_phone_no 			= cust_phone_no.text;
+				obj.cust_ord_days 			= cust_ord_days.text;
+				obj.cust_crd_days 			= cust_crd_days.text;
+				obj.cust_crd_limit 			= cust_crd_limit.text;
+				obj.cust_balance 			= cust_balance.text;
+				obj.cust_appr_total 		= 0.0;
+				
+				if (cust_pricetype_id.selectedIndex>=0)
+				{
+					obj.cust_pricetype_id = customerPriceTypeList[cust_pricetype_id.selectedIndex].price_type_id;
+					obj.cust_pricetype_name = customerPriceTypeList[cust_pricetype_id.selectedIndex].price_type_name;
+				}
+				else
+				{
+					obj.cust_pricetype_id = 0;
+					obj.cust_pricetype_name = customerPriceTypeList[0].price_type_name;
+				}
+				
+				if (cust_invtype_id.selectedIndex>=0)
+				{
+					obj.cust_invtype_id = customerInvoiceTypeList[cust_invtype_id.selectedIndex].invoice_type_id;
+					obj.cust_invtype_name = customerInvoiceTypeList[cust_invtype_id.selectedIndex].invoice_type_name;
+				}
+				else
+				{
+					obj.cust_invtype_id = 1;
+					obj.cust_invtype_name = customerInvoiceTypeList[1].invoice_type_name;
+				}
+				
+				if (cust_saletype_id.selectedIndex>=0)
+				{
+					obj.cust_saletype_id = customerSaleTypeList[cust_saletype_id.selectedIndex].sale_type_id;
+					obj.cust_saletype_name = customerSaleTypeList[cust_saletype_id.selectedIndex].sale_type_name;
+				}
+				else
+				{
+					obj.cust_saletype_id = 3;
+					obj.cust_saletype_name = customerSaleTypeList[3].sale_type_name;
+				}
+				
+				if (cust_crd_terms.selectedIndex>=0)
+				{
+					obj.cust_crd_terms = customerTermsTypeList[cust_crd_terms.selectedIndex].terms_type_id;
+					obj.cust_terms_name = customerTermsTypeList[cust_crd_terms.selectedIndex].terms_type_name;
+				}
+				else
+				{
+					obj.cust_crd_terms = 0;
+					obj.cust_terms_name = customerTermsTypeList[0].terms_type_name;
+				}
+				
+				if (cust_ctgr_code.selectedIndex>=0)
+				{
+					obj.cust_ctgr_code = customerCategoryList[cust_ctgr_code.selectedIndex].category_code;
+					obj.cust_ctgr_text = customerCategoryList[cust_ctgr_code.selectedIndex].category_name;
+				}
+				else
+				{
+					obj.cust_ctgr_code = "";
+					obj.cust_ctgr_text = "";
+				}
+				
+				if (cust_delv_code.selectedIndex>=0)
+				{
+					obj.cust_delv_code = delvLocationList[cust_delv_code.selectedIndex].delv_code;
+					obj.cust_delv_name = delvLocationList[cust_delv_code.selectedIndex].delv_name;
+				}
+				else
+				{
+					obj.cust_delv_code = "";
+					obj.cust_delv_name = "";
+				}
+				
+				createAction.service( obj );
+			}
+			
+			protected function createData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.createAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				}
+				
+				var code:String;
+				code = cust_account.text;
+				
+				currentState="normal";
+				findByPrimaryKey( code );
+				
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			protected function createNewRecord(event:MouseEvent):void
+			{	
+				idx=dataGrid.selectedIndex;
+				dataGrid.ensureCellIsVisible(idx);
+				currentState="create";
+				this.btn_save.enabled = this.canCreate;
+				dataGrid.enabled=false;
+				
+				if ( fltr_supplier.selectedIndex >= 0 )
+				{
+					this.cust_supp_code.selectedIndex = fltr_supplier.selectedIndex;
+				}
+				if ( _formColumnSettingsString.length > 0 )
+				{
+					global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+				}
+			}
+			
+			
+			public function getArrayCollection(obj:Object):ArrayCollection
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				temp.addItem( obj );
+				return temp;
+			}
+			
+			public function convertDateToLocaleString(dt:String):String
+			{
+				var dt_string:String;
+				var dt_date:Date = new Date();
+				
+				dt_string = ""; 
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+					dt_string = dateFormatter.format( dt_date);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_string;
+			}
+			
+			public function convertDateToLocale(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_date;
+			}
+			
+			public function convertDateToLocaleLong(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					//dt_date = DateField.stringToDate(dt,"YYYY-MM-DD HH:NN:SS");
+					dt_date = DateTimeFunc.createDate(
+						int(dt.substr(0, 4))
+						, int(dt.substr(5, 2))
+						, int(dt.substr(8, 2))
+						, int(dt.substr(11, 2))
+						, int(dt.substr(14, 2))
+						, int(dt.substr(17, 2))
+					);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_date;
+			}
+			
+			public function getDefaultDate():Date
+			{
+				var now_date:Date;
+				var def_date:Date;
+				
+				now_date = new Date();
+				def_date = DateTimeFunc.dateAdd( "yyyy", 1, now_date );
+				
+				//trace ("getDefaultDate", now_date, def_date);
+				
+				return def_date;
+			}
+			
+			protected function view_detailsHandler(event:FlexEvent):void
+			{
+			}
+			
+			protected function save_clickHandler():void
+			{
+				this.btn_save.enabled = false;
+				doSave();
+				//this.confirmSave = new ActionDialog( doSave, doNothing, resourceManager.getString('default','CONFIRM_SAVE_RATIOS') );
+				
+				//this.startLoadingPages();
+			}
+			
+			protected function doSave():void
+			{
+				if (currentState == "create")
+				{
+					//createRecord();
+					this._saveButtonClicked = true;
+					checkCustomerKey();
+					//checkCustomerKeyBeforeCreate();
+				}
+				if (currentState == "edit")
+				{
+					editRecord();
+				}
+				if (currentState == "detail")
+				{
+					editRecord();
+				}
+			}
+			
+			protected function killBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=true;
+				pagedRecords.interruptor=true;
+				trace("WTF >>>>>>>>>>");
+			}
+			
+			protected function resumeBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				this.resumeLoadingPages();
+				trace("RESUME >>>>>>>>>>");
+			}
+			
+			protected function resumeLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				
+				//pb.values(pagedRecords.length,totalLength);
+				pb.values(pagedRecords.length,pagedRecords.totalLength);
+				//currentPage = int(this.pagedRecords.length/currentPageSize) + 1;
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			
+			public function goToAddresses():void
+			{
+				
+				this.addressesPopup.popupTitle = resourceManager.getString('default','m_addresses');
+				this.addressesPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+				
+				this.addressesPopup.parentWidth = this.width;
+				this.addressesPopup.parentHeight = this.height;
+				
+				trace ( "*******************Pop up a screen to manage addresses!");
+				addressesPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				if ( this.cust_addr_code.selectedIndex >= 0 )
+				{
+					params["address_code"] = this.cust_addr_code.selectedItem.address_code;
+				}
+				else
+				{
+					params["address_code"] = "";
+				}
+				//params["address_code"] = dataGrid.selectedItem.partner_addr_code;
+				
+				addressesPopup.setFilters( params ); 
+			}
+			
+			public function closeAddressDialogHandler():void
+			{
+				if (cust_addr_code.selectedIndex>=0)
+				{
+					_cust_address = addressList[cust_addr_code.selectedIndex].address_code;
+				}
+				else
+				{
+					_cust_address = "";
+				}
+				
+				this.addressList.service();
+			}
+			
+			public function goToCategories():void
+			{
+				
+				this.categoriesPopup.popupTitle = resourceManager.getString('default','m_customercategories');
+				this.categoriesPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+				
+				this.categoriesPopup.parentWidth = this.width;
+				this.categoriesPopup.parentHeight = this.height;
+				
+				trace ( "*******************Pop up a screen to manage categories!");
+				categoriesPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				if ( this.cust_ctgr_code.selectedIndex >= 0 )
+				{
+					params["category_code"] = this.cust_ctgr_code.selectedItem.category_code;
+				}
+				else
+				{
+					params["category_code"] = "";
+				}
+				
+				categoriesPopup.setFilters( params ); 
+			}
+			
+			public function closeCategoryDialogHandler():void
+			{
+				if (cust_ctgr_code.selectedIndex>=0)
+				{
+					_cust_category = customerCategoryList[cust_ctgr_code.selectedIndex].category_code;
+				}
+				else
+				{
+					_cust_category = "";
+				}
+				
+				this.customerCategoryList.service();
+			}
+			
+			public function goToAllocations():void
+			{
+				
+				this.allocationsPopup.popupTitle = resourceManager.getString('default','m_allocations');
+				this.allocationsPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+				
+				this.allocationsPopup.parentWidth = this.width;
+				this.allocationsPopup.parentHeight = this.height;
+				
+				trace ( "*******************Pop up a screen to manage allocations!");
+				allocationsPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				if ( this.cust_supp_code.selectedIndex >= 0 )
+				{
+					params["alloc_suppcode"] = this.cust_supp_code.selectedItem.cmpy_code;
+				}
+				else
+				{
+					params["alloc_suppcode"] = "";
+				}
+				if ( this.cust_cmpy_code.selectedIndex >= 0 )
+				{
+					params["alloc_cmpycode"] = this.cust_cmpy_code.selectedItem.cmpy_code;
+				}
+				else
+				{
+					params["alloc_cmpycode"] = "";
+				}
+				params["alloc_type"] = 3;
+				
+				allocationsPopup.setFilters( params ); 
+			}
+			
+			public function closeAllocationDialogHandler():void
+			{
+				// need refresh the list?
+				
+				var txt:String;
+				txt = this.cust_account.text;
+				
+				this.mainListSelection = 0;
+				currentState="normal";
+				this.findByPrimaryKey( txt );
+			}
+			
+			public function goToOpenOrders():void
+			{
+				
+				this.openOrdersPopup.popupTitle = resourceManager.getString('default','m_orderlisting');
+				this.openOrdersPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+				
+				this.openOrdersPopup.parentWidth = this.width;
+				this.openOrdersPopup.parentHeight = this.height;
+				
+				trace ( "*******************Pop up a screen to manage open orders!");
+				openOrdersPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				if ( this.cust_supp_code.selectedIndex >= 0 )
+				{
+					params["order_supp_code"] = this.cust_supp_code.selectedItem.cmpy_code;
+				}
+				else
+				{
+					params["order_supp_code"] = "";
+				}
+				params["order_cust_acnt"] = this.cust_account.text;
+				
+				openOrdersPopup.setFilters( params ); 
+			}
+			
+			public function closeOrderDialogHandler():void
+			{
+				// need refresh the list?
+				
+				var txt:String;
+				txt = this.cust_account.text;
+				
+				this.mainListSelection = 0;
+				currentState="normal";
+				this.findByPrimaryKey( txt );
+			}
+			
+			public function goToDeliveryLocations():void
+			{
+				
+				this.deliveryLocationsPopup.popupTitle = resourceManager.getString('default','m_deliverylocations');
+				this.deliveryLocationsPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+				
+				this.openOrdersPopup.parentWidth = this.width;
+				this.openOrdersPopup.parentHeight = this.height;
+				
+				trace ( "*******************Pop up a screen to manage delivery locations!");
+				deliveryLocationsPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				if ( this.cust_supp_code.selectedIndex >= 0 )
+				{
+					params["delv_cust_suppcode"] = this.cust_supp_code.selectedItem.cmpy_code;
+				}
+				else
+				{
+					params["delv_cust_suppcode"] = "";
+				}
+				params["delv_cust_acct"] = this.cust_account.text;
+				params["from_customer"] = 1;
+				
+				deliveryLocationsPopup.setFilters( params ); 
+			}
+			
+			public function closeDelvlocDialogHandler():void
+			{
+				// need refresh the list?
+				if (cust_delv_code.selectedIndex>=0)
+				{
+					_cust_delvloc = this.delvLocationList[cust_delv_code.selectedIndex].delv_code;
+				}
+				else
+				{
+					_cust_delvloc = "";
+				}
+				
+				delvLocationList.currentPage=1;
+				delvLocationList.removeAll();
+				delvLocationList.refresh();
+				this.delvLocationList.listService( {delv_grid:'CSTDLV'}, {delv_grid:'EXACT_STRING'}, new Object(), new Object() );
+				
+				var txt:String;
+				txt = this.cust_account.text;
+				
+				this.mainListSelection = 0;
+				currentState="normal";
+				this.findByPrimaryKey( txt );
+			}
+			
+
+			protected function adjustCustomerCompany():void
+			{
+				var supplier:String;
+				
+				trace( "adjustCustomerCompany", this.cust_supp_code.selectedIndex );
+				
+				if ( this.cust_supp_code.selectedIndex < 0 )
+				{
+					supplier = "-1";
+				}
+				else
+				{
+					supplier = customerSupplierList[cust_supp_code.selectedIndex].cmpy_code;
+				}
+				
+				if ( currentState == "create" )
+				{
+					this.availCustomerCompanyList.service( supplier, -1 );
+				}
+				else
+				{
+					this.availCustomerCompanyList.service( supplier, 1 );
+				}
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateFormatter" locale="{LocaleID.DEFAULT}" dateStyle="short" timeStyle="none"/>
+		<s:DateTimeFormatter id="dateConvert" dateTimePattern="yyyy-MM-dd"/>
+		<s:DateTimeFormatter id="dateConvertLong" dateTimePattern="yyyy-MM-dd HH:mm:ss"/>
+		<components:ValidationGroup id="vg" action="{save_clickHandler}" defaultButton="{btn_save}" parentScreen="{this}" isProtected="{hasPassword}"/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:VGroup width="100%" id="toolbar"  >
+			<s:HGroup gap="5" paddingBottom="2" paddingTop="2" width="100%">
+				<components:DKI_DropDownList id="fltr_supplier" width="200" height="100%"
+											 change="fltr_supplier_changeHandler(event)" cornerRadius="10"
+											 labelField="cmpy_desc" prompt="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_SUPPLIER')+resourceManager.getString('default','FILTER')}"
+											 visible.widget="false" excludeFrom="widget" dataProvider="{this.customerSupplierList}"/>
+				<components:DKI_ValidatorInput id="fltr_account" validationType="search" minWidth="160" height="{labelHeight}" width="100%"
+											   keyUp="fltr_account_keyUpHandler(event)"  
+											   prompt="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ACCOUNT')+resourceManager.getString('default','FILTER')}"/>
+				
+				<components:DKI_DropDownList id="fltr_company" width="200" height="100%"
+											 change="fltr_company_changeHandler(event)" cornerRadius="10"
+											 labelField="cmpy_desc" prompt="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_COMPANY')+resourceManager.getString('default','FILTER')}"
+											 visible="false" excludeFrom="widget" dataProvider="{this.customerCompanyList}"/>
+				
+				<s:Spacer width="100%"/>
+				<components:DKI_Button id="filterBtn" height="24" noLabel="false" click="filterRecords(event)"
+									   type="filteron"/>
+				<components:DKI_Button id="resetBtn" height="24" noLabel="false" click="refreshRecords(event)"
+									   type="filteroff"/>
+				<components:DKI_Button id="btn_export" label="{resourceManager.getString('default','EXPORTDATA')}" type="report" click="exportCsvHandler(event)" includeIn="normal"/>
+				<components:DKI_Button id="btn_create" label="{resourceManager.getString('default','CREATE')}" height="24" click="createNewRecord(event)" includeIn="normal" enabled="{this.canCreate}" type="create"/>	
+			</s:HGroup>
+		</s:VGroup>
+		
+		
+		<s:DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="4"
+					selectionChange="dataGrid_selectionChangeHandler(event)"
+					skinClass="skins.DKI_DataGrid_Skin"
+					height.widget="100%">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="cust_account" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ACCOUNT')}" visible="true" width="130"></s:GridColumn>
+						<s:GridColumn dataField="cust_cmpy_code" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CMPY_CODE')}" visible="true" width="160"></s:GridColumn>
+						<s:GridColumn dataField="cust_cmpy_name" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CMPY_NAME')}" visible="true" width="240"></s:GridColumn>
+						<s:GridColumn dataField="cust_cmpy_flag" headerText="{resourceManager.getString('default','CUSTOMER')}?" itemRenderer="renderers.GridCheckRender" visible="true" width="80"/>
+						<s:GridColumn dataField="cust_supp_code" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_SUPP_CODE')}" visible="true" width="160"></s:GridColumn>
+						<s:GridColumn dataField="cust_supp_name" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_SUPP_NAME')}" visible="true" width="240"></s:GridColumn>
+						<s:GridColumn dataField="cust_supp_flag" headerText="{resourceManager.getString('default','SUPPLIER')}?" itemRenderer="renderers.GridCheckRender" visible="true" width="80"/>
+						<s:GridColumn dataField="cust_addr_code" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ADDR_CODE')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_addr_text" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ADDRESS')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_addr_desc" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ADDRESS')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="cust_alloc_lockid" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ALLOC_LOCKID')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_alloc_lockname" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ALLOC_LOCK')}" visible="true" width="130"></s:GridColumn>
+						<s:GridColumn dataField="cust_order_count" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ORDER_COUNT')}" visible="true" width="100"></s:GridColumn>
+						<s:GridColumn dataField="cust_dloc_count" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_DLOC_COUNT')}" visible="true" width="100"></s:GridColumn>
+						
+						<s:GridColumn dataField="cust_contact" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CONTACT')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_phone_no" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_PHONE_NO')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_crd_limit" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CRD_LIMIT')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_balance" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_BALANCE')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_appr_total" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_APPR_TOTAL')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_ord_days" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ORD_DAYS')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_crd_days" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CRD_DAYS')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_pricetype_id" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_PRICETYPE_ID')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_pricetype_name" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_PRICETYPE_NAME')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_ctgr_code" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CTGR_CODE')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_ctgr_text" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CTGR_TEXT')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_delv_code" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_DELV_CODE')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_delv_name" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_DELV_NAME')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_invtype_id" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_INVTYPE_ID')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_invtype_name" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_INVTYPE_NAME')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_saletype_id" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_SALETYPE_ID')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_saletype_name" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_SALETYPE_NAME')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_crd_terms" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CRD_TERMS')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="cust_terms_name" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_TERMS_NAME')}" visible="false"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			<s:dataProvider>
+				<!--s:AsyncListView id="pgList" list="{getPagedResult.lastResult}"/-->
+				<s:AsyncListView id="pgList" list="{pagedRecords}"/>
+			</s:dataProvider>
+		</s:DataGrid>
+		<s:HGroup width="100%">
+			<components:Downloader id="pb" width="100%" height="18"/>
+			<!--mx:ProgressBar id="pb" width="100%" height="22" visible="false" includeInLayout="false"  mode="manual" source="{this.pgList}" label="{this.currentLength} records shown from {this.currentLength} loaded out of {this.totalLength} found." labelPlacement="center"/-->
+			<s:Button id="killBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="killBtn_clickHandler(event)"/>
+			<s:Button id="resumeBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="resumeBtn_clickHandler(event)"/>
+		</s:HGroup>
+	</s:Panel>
+	
+	<s:Panel id="details" includeIn="edit,create,detail" width="100%" height="240"
+			 itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+			<!--s:TileLayout/-->
+		</s:layout>
+		
+		<s:Spacer height="5"/>
+		<s:VGroup width="100%">
+			
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ACCOUNT')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="cust_account" maxChars="40" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.cust_account}" editable="false" enabled="false" 
+												   text.create="" editable.create="true" enabled.create="true" focusOut="checkCustomerKey()" 
+												   required="true" validationType="alphanumeric" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ACCOUNT')}" 
+												   />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_SUPPLIER')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="cust_supp_code" 
+													  dataProvider="{customerSupplierList}" 
+													  labelField="cmpy_desc" 
+													  selectedItem="" enabled="false" 
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','CUSTOMER.LABEL.CUST_SUPPLIER')}"
+													  change="adjustCustomerCompany()" valueCommit="adjustCustomerCompany()"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_SUPPLIER')}" 
+													  />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_COMPANY')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="cust_cmpy_code" 
+													  dataProvider="{availCustomerCompanyList}" 
+													  labelField="cmpy_desc" 
+													  selectedItem="" enabled="false" 
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','CUSTOMER.LABEL.CUST_COMPANY')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_COMPANY')}" 
+													  />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ADDRESS')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="cust_addr_code" 
+													  dataProvider="{addressList}" 
+													  labelField="address_text" 
+													  selectedItem="{dataGrid.selectedItem.cust_addr_code+'['+String(dataGrid.selectedItem.cust_addr_text)+']'}" enabled="false" enabled.edit="true"
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','CUSTOMER.LABEL.CUST_ADDRESS')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ADDRESS')}" 
+													  />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:Spacer height="{this.spaceHeight}" />
+			
+			<s:HGroup width="100%" visible="false" visible.edit="true">
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CATEGORY')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="cust_ctgr_code" 
+													  dataProvider="{customerCategoryList}" 
+													  labelField="category_name" 
+													  selectedItem="{dataGrid.selectedItem.cust_ctgr_text}" enabled="false" enabled.edit="true"
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="false" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','CUSTOMER.LABEL.CUST_CATEGORY')}"
+													  required="false" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CATEGORY')}" 
+													  />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_DELV_LOC')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="cust_delv_code" 
+													  dataProvider="{delvLocationList}" 
+													  labelField="delv_desc" 
+													  selectedItem="{dataGrid.selectedItem.cust_delv_code+' - '+dataGrid.selectedItem.cust_delv_name}" enabled="false" enabled.edit="true" 
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="false" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','CUSTOMER.LABEL.CUST_DELV_LOC')}"
+													  required="false" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_DELV_LOC')}" 
+													  />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CONTACT')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="cust_contact" maxChars="100" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.cust_contact}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="" editable.create="false" enabled.create="false" 
+												   required="false" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CONTACT')}" 
+												   />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_PHONE_NO')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="cust_phone_no" maxChars="40" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.cust_phone_no}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="" editable.create="false" enabled.create="false" 
+												   required="false" validationType="alphanumeric" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_PHONE_NO')}" 
+												   />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:Spacer height="{this.spaceHeight}" />
+			
+			<s:HGroup width="100%" visible="false" visible.edit="true">
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_PRICE_TYPE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="cust_pricetype_id" 
+													  dataProvider="{customerPriceTypeList}" 
+													  labelField="price_type_name" 
+													  selectedItem="{dataGrid.selectedItem.cust_pricetype_name}" enabled="false" enabled.edit="true"
+													  selectedIndex.create="0" enabled.create="false" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','CUSTOMER.LABEL.CUST_PRICE_TYPE')}"
+													  required="false" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_PRICE_TYPE')}" 
+													  />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_INVOICE_TYPE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="cust_invtype_id" 
+													  dataProvider="{customerInvoiceTypeList}" 
+													  labelField="invoice_type_name" 
+													  selectedItem="{dataGrid.selectedItem.cust_invtype_name}" enabled="false" enabled.edit="true" 
+													  selectedIndex.create="1" enabled.create="false" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','CUSTOMER.LABEL.CUST_INVOICE_TYPE')}"
+													  required="false" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_INVOICE_TYPE')}" 
+													  />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_SALE_TYPE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="cust_saletype_id" 
+													  dataProvider="{customerSaleTypeList}" 
+													  labelField="sale_type_name" 
+													  selectedItem="{dataGrid.selectedItem.cust_saletype_name}" enabled="false" enabled.edit="true"
+													  selectedIndex.create="3" enabled.create="false" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','CUSTOMER.LABEL.CUST_SALE_TYPE')}"
+													  required="false" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_SALE_TYPE')}" 
+													  />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CRD_TERMS')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="cust_crd_terms" 
+													  dataProvider="{customerTermsTypeList}" 
+													  labelField="terms_type_name" 
+													  selectedItem="{dataGrid.selectedItem.cust_terms_name}" enabled="false" enabled.edit="true"
+													  selectedIndex.create="0" enabled.create="false" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','CUSTOMER.LABEL.CUST_CRD_TERMS')}"
+													  required="false" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CRD_TERMS')}" 
+													  />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:Spacer height="{this.spaceHeight}" />
+			
+			<s:HGroup width="100%" visible="false" visible.edit="true">
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ORD_DAYS')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="cust_ord_days" maxChars="4" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.cust_ord_days}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="0" editable.create="false" enabled.create="false" 
+												   required="false" validationType="integer_non_negative" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ORD_DAYS')}" 
+												   />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CRD_DAYS')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="cust_crd_days" maxChars="2" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.cust_crd_days}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="0" editable.create="false" enabled.create="false" 
+												   required="false" validationType="integer_non_negative" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CRD_DAYS')}" 
+												   />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_BALANCE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="cust_balance" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.cust_balance}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="0.0" editable.create="false" enabled.create="false" 
+												   required="false" validationType="numeric" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_BALANCE')}" 
+												   />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CRD_LIMIT')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="cust_crd_limit" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.cust_crd_limit}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="0.0" editable.create="false" enabled.create="false" 
+												   required="false" validationType="numeric" validationGroup="{vg}" automationName="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_CRD_LIMIT')}" 
+												   />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			
+			<s:Spacer height="5" />
+			
+		</s:VGroup>
+		
+		<s:Spacer height="0" />
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<components:DKI_Button id="btn_addresses" label="{resourceManager.getString('default','m_addresses')}" includeIn="edit,create" type="default" enabled="{this.canUpdate}" visible="{this.canUpdate}" includeInLayout="{this.canUpdate}" click="goToAddresses();"/>
+			<components:DKI_Button id="btn_categories" label="{resourceManager.getString('default','m_customercategories')}" includeIn="edit" type="default" enabled="{this.canUpdate}" visible="{this.canUpdate}" includeInLayout="{this.canUpdate}" click="goToCategories();"/>
+			<components:DKI_Button id="btn_allocations" label="{resourceManager.getString('default','m_allocations')}" includeIn="edit" type="default" enabled="{this.canUpdate}" visible="{this.canUpdate}" includeInLayout="{this.canUpdate}" click="goToAllocations();"/>
+			<components:DKI_Button id="btn_orders" label="{resourceManager.getString('default','m_orderlisting')}" includeIn="edit" type="default" enabled="{this.canUpdate}" visible="{this.canUpdate}" includeInLayout="{this.canUpdate}" click="goToOpenOrders();"/>
+			<components:DKI_Button id="btn_delvloc" label="{resourceManager.getString('default','m_deliverylocations')}" includeIn="edit" type="default" enabled="{this.canUpdate}" visible="{this.canUpdate}" includeInLayout="{this.canUpdate}" click="goToDeliveryLocations();"/>
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_delete" label="{resourceManager.getString('default','DELETE')}" height="100%" click="doDelete()" includeIn="edit" enabled="{this.canDelete}" type="delete"/>
+			<components:DKI_Button id="btn_save" label.create="{resourceManager.getString('default','SAVE')}" label="{resourceManager.getString('default','UPDATE')}" height="100%" includeIn="edit,create,detail" 
+								   enabled.create="{this.canCreate}" enabled="{this.canUpdate}" type.create="create" type="edit" focusEnabled="true" focusEnabled.create="false"/>
+			<components:DKI_Button id="btn_cancel" label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel" focusEnabled="true" focusEnabled.create="false"/>
+		</s:HGroup>
+	</s:Panel>
+	
+</s:VGroup>

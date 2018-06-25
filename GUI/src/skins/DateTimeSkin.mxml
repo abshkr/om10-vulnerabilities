@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" 
+		xmlns:fb="http://ns.adobe.com/flashbuilder/2009" minWidth="140" height="24" 
+		xmlns:mx="library://ns.adobe.com/flex/mx" 
+		xmlns:components="components.*" contentBackgroundAlpha="1.0">
+	
+	<fx:Metadata>[HostComponent("components.DKI_DateTime")]</fx:Metadata>
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="open"/>
+		<s:State name="disabled"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.CalendarLayoutChangeEvent;
+			import mx.events.FlexEvent;
+			
+			[Bindable] [Embed (source="/assets/icons/calendar.png" )] private var ico_calendar:Class;
+			[Bindable] [Embed (source="/assets/icons/unchecked.png" )] private var ico_null:Class;
+			
+			protected function expander_clickHandler(event:MouseEvent):void
+			{
+				currentState = (currentState=='normal')?'open':'normal';
+				//disp.displayPopUp = (currentState=='normal')?false:true;
+			}
+			
+			protected function calendar_creationCompleteHandler(event:FlexEvent):void
+			{
+				calendar.selectableRange=hostComponent.dateRange;
+				calendar.selectedDate = hostComponent.selectedDate;
+			}
+			
+			protected function nullify_clickHandler(event:MouseEvent):void
+			{
+				hostComponent.selectedDate=null;
+			}
+		]]>
+	</fx:Script>
+	<s:PopUpAnchor id="popUp"  displayPopUp.normal="false" displayPopUp.open="true" includeIn="open"
+				   left="0" right="0" top="0" bottom="0" itemDestructionPolicy="auto"
+				   popUpPosition="below" popUpWidthMatchesAnchorWidth="false">
+		<s:BorderContainer width="180" backgroundColor="0xFFFFFF" backgroundAlpha="1.0" focusEnabled="false">
+			<s:layout>
+				<s:VerticalLayout gap="-15"/>
+			</s:layout>
+			<mx:DateChooser id="calendar" width="100%" borderVisible="false" yearNavigationEnabled="true" 
+							creationComplete="calendar_creationCompleteHandler(event)" focusEnabled="false" selectedDate="{hostComponent.selectedDate}"/> 
+			<s:HGroup width="100%" paddingLeft="5" paddingRight="5" visible="{hostComponent.timeEnabled}">
+				<s:Label text="{resourceManager.getString('default','global.lbl.hours')}" height="100%" verticalAlign="middle"/>
+				<components:DKI_NumericStepper id="hours" width="50%" minimum="0" maximum="23" focusEnabled="false" value="{hostComponent.selectedDate.hours}"/>
+				<s:Label text="{resourceManager.getString('default','global.lbl.minutes')}" height="100%" verticalAlign="middle"/>
+				<components:DKI_NumericStepper id="minutes" width="50%" minimum="0" maximum="59" focusEnabled="false" value="{hostComponent.selectedDate.minutes}"/>
+			</s:HGroup>
+			<s:Spacer height="35"/>
+			<s:HGroup width="100%" paddingLeft="5" paddingRight="5" paddingBottom="5">
+				<s:Spacer width="100%"/>
+				<components:DKI_Button id="okBtn" label="{resourceManager.getString('default','OK')}" click="currentState='normal'" focusEnabled="false"/>
+			</s:HGroup>
+		</s:BorderContainer>
+	</s:PopUpAnchor>	
+	<s:HGroup width="{hostComponent.width}" minWidth="140">
+		<s:TextInput id="dateText" width="100%" text="{hostComponent.currentDate}" editable="false" focusEnabled="false" enabled="{hostComponent.enabled}"/>
+		<s:Image id="expander" width="22" height="22" source="{ico_calendar}" scaleMode="letterbox" buttonMode="true" 
+				 focusEnabled="false" click="expander_clickHandler(event)"/>
+		<s:Image id="nullify" width="14" height="22" source="{ico_null}" scaleMode="letterbox" toolTip="clear date" buttonMode="true" 
+				 focusEnabled="false" click="nullify_clickHandler(event)" visible="{hostComponent.enableNull}"/>
+	</s:HGroup>
+	
+</s:Skin>

@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  currentState="normal"
+		  width="100%" height="100%" 
+		  xmlns:controllers="controllers.*" 
+		  xmlns:dm="dm.*" xmlns:flexiframe="com.google.code.flexiframe.*" 
+		  xmlns:transactionsservice="services.transactionsservice.*" 
+		  creationComplete="controller.creationCompleteHandler(event)">
+	<s:states>
+		<s:State name="widget" enterState="this.toolbar1.enabled=true;this.toolbar2.enabled=true"/>
+		<s:State name="normal" enterState="mainList.selectedIndex = -1;controller.addDateTimeListener();this.toolbar1.enabled=true;this.toolbar2.enabled=true;"/>
+		<s:State name="edit" enterState="this.toolbar1.enabled=false;this.toolbar2.enabled=false"/>
+		<s:State name="create" enterState="this.toolbar1.enabled=false;this.toolbar2.enabled=false"/>
+		<s:State name="detail" enterState="this.toolbar1.enabled=false;this.toolbar2.enabled=false"/>
+		<s:State name="bol" enterState="this.toolbar1.enabled=false;this.toolbar2.enabled=false"/>
+		<s:State name="ticket" enterState="this.toolbar1.enabled=false;this.toolbar2.enabled=false"/>
+	</s:states>
+	<fx:Script>
+		<![CDATA[
+			import components.ConfirmDialog;
+			
+			import mx.core.FlexGlobals;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			public var confirmDlg:ConfirmDialog;
+			[Bindable] public var isTripEditable:Boolean=false;
+			
+			protected function btnReverseTrip_clickHandler(event:MouseEvent):void
+			{
+				confirmDlg = new ConfirmDialog(callReverse,resourceManager.getString('default','MOVSCHD.MESSAGE.CONFIRM_NOM_SCHD_REV'));
+			}
+			
+			public function callReverse():void
+			{
+				reverseTransactions.token = transactionsService.reverseTransactions(mainList.selectedItem.payload.SUPPLIER_CODE, mainList.selectedItem.payload.SHLS_TRIP_NO,false,global.user);
+			}
+			
+			protected function reverseTransactions_resultHandler(event:ResultEvent):void
+			{
+				if (event.message.body.result_code == 0)
+				{
+					global.msgSuccess(event.message.body.result_string)
+				}
+				else
+					global.msgWarning(event.message.body.result_string);
+				
+				controller.refreshMainFilter();
+			}
+			
+			protected function reverseTransactions_faultHandler(event:FaultEvent):void
+			{
+				global.msgFail(resourceManager.getString('default','MOVSCHD.MESSAGE.UNKNOWN_SERVER_ERROR'));
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		
+		<dm:DM />
+		<controllers:C_MovementSchedules id="controller" view="{this}"/>
+		
+		<components:ValidationGroup id="vg" action="{controller.save_clickHandler}" defaultButton="{btnSave}" isProtected="{controller.hasPassword}"/>
+		
+		<transactionsservice:TransactionsService id="transactionsService" channelSet="{global.channelSet}"
+												 fault="global.msgFail(event.fault.faultDetail)"
+												 showBusyCursor="true"/>
+		<s:CallResponder id="reverseTransactions" result="reverseTransactions_resultHandler(event)" fault="reverseTransactions_faultHandler(event)"/>
+		
+	</fx:Declarations>
+	<s:Panel id="mainPanel" width="100%" height="100%" skinClass="skins.WidgetPanelSkin"
+			 title="Nominations"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:HGroup id="toolbar1" width="100%" paddingBottom="2" paddingLeft="2" paddingRight="2" paddingTop="2"
+				  verticalAlign="middle">
+			<s:Label id="fltTerminalLabel" includeIn="create,edit,normal,detail" text="{resourceManager.getString('default','MOVSCHD.LABEL.TERMINAL')}" width="70"/>
+			<components:DKI_DropDownList id="fltTerminal" dataProvider="{DM.MovementSchedules.terminals}" labelField="CODE_NAME" 
+										 prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.TERMINAL')}" useVirtualLayout="false" 
+										 width="120" width.widget="120" change="controller.refreshMainFilterOnChange();"/>
+			
+			<s:Label id="fltNominationKeyLabel" includeIn="create,edit,normal,detail" text="{resourceManager.getString('default','MOVSCHD.LABEL.NOMKEY')}" width="70"/>
+			<components:DKI_ValidatorInput id="fltNominationKey" width="120" prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.NOMKEY')}"
+										   width.widget="120" keyUp="controller.keyUpHandler(event)"/>
+			
+			<s:Label id="fltSupplierLabel" includeIn="create,edit,normal,detail" text="{resourceManager.getString('default','MOVSCHD.LABEL.SUPPLIER')}" width="50"/>
+			<components:DKI_DropDownList id="fltSupplier" dataProvider="{DM.MovementSchedules.suppliers}" labelField="CODE_NAME" 
+										 includeIn="create,edit,normal,detail" 
+										 prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.SUPPLIER')}" useVirtualLayout="false"
+										 width="120" change="controller.refreshMainFilterOnChange();"/>
+			
+			<s:Label id="fltTripNumberLabel" includeIn="create,edit,normal,detail" text="{resourceManager.getString('default','MOVSCHD.LABEL.TRIPNO')}" width="50"/>
+			<components:DKI_ValidatorInput id="fltTripNumber" width="120" prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.TRIPNO')}"
+										   width.widget="120" keyUp="controller.keyUpHandler(event)"/>
+			
+			<s:Label id="fltCarrierLabel" includeIn="create,edit,normal,detail" text="{resourceManager.getString('default','MOVSCHD.LABEL.CARRIER')}" width="50"/>
+			<components:DKI_DropDownList id="fltCarrier" dataProvider="{DM.MovementSchedules.carriers}"  labelField="CODE_NAME"
+										 includeIn="create,edit,normal,detail" 
+										 prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.CARRIER')}" useVirtualLayout="false"
+										 width="120" change="controller.refreshMainFilterOnChange();"/>
+			
+			<s:Label id="fltTimeFromLabel" includeIn="create,edit,normal,detail" text="{resourceManager.getString('default','global.lbl.datefrom')}" width="50"/>
+			<components:DKI_DateTime id="fltTimeFrom" width="150" timeEnabled="false" enableNull="true" 
+									 includeInLayout="true" includeInLayout.widget="false" dateChange="controller.onDateBoxChanged"
+									 visible="true" visible.widget="false"/>
+			
+			<components:DKI_Button id="btnClear" label="{resourceManager.getString('default','CLEAR')}" click="controller.clearFilter();" type="refresh"/>
+			<s:Spacer includeIn="create,edit,normal,detail" width="100%"/>
+			<components:DKI_Button id="btnCreate" includeIn="normal" label="{resourceManager.getString('default','CREATE')}" visible="{isTripEditable}"
+								   click.normal="currentState='create'; callLater(controller.initCreateForm);" enabled="{controller.canCreate}" type="create"/>
+		</s:HGroup>
+		<s:HGroup id="toolbar2" width="100%" paddingBottom="2" paddingLeft="2" paddingRight="2" paddingTop="2"
+				  verticalAlign="middle">
+			<s:Label id="fltNominationTypeLabel" includeIn="create,edit,normal,detail" text="{resourceManager.getString('default','MOVSCHD.LABEL.NOMTYPE')}" width="70"/>
+			<components:DKI_DropDownList id="fltNominationType" dataProvider="{DM.MovementSchedules.movItemTypes}" 
+										 includeIn="create,edit,normal,detail" 
+										 prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.NOMTYPE')}" useVirtualLayout="false"
+										 width="120" change="controller.refreshMainFilterOnChange();"/>
+			
+			<s:Label id="fltNominationItemLabel" includeIn="create,edit,normal,detail" text="{resourceManager.getString('default','MOVSCHD.LABEL.NOMITEM')}" width="70"/>
+			<components:DKI_ValidatorInput id="fltNominationItem" includeIn="create,edit,normal,detail" width="120" prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.NOMITEM')}"
+										   keyUp="controller.keyUpHandler(event)"/>
+			
+			<s:Label id="fltDrawerLabel" includeIn="create,edit,normal,detail" text="{resourceManager.getString('default','MOVSCHD.LABEL.DRAWER')}" width="50"/>
+			<components:DKI_DropDownList id="fltDrawer" dataProvider="{DM.MovementSchedules.drawers}"  labelField="CODE_NAME"
+										 includeIn="create,edit,normal,detail" 
+										 prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.DRAWER')}" useVirtualLayout="false"
+										 width="120" change="controller.refreshMainFilterOnChange();"/>
+			
+			<s:Label id="fltTripStatusLabel" includeIn="create,edit,normal,detail" text="{resourceManager.getString('default','MOVSCHD.LABEL.TRIPSTAT')}" width="50"/>
+			<components:DKI_DropDownList id="fltTripStatus" dataProvider="{DM.MovementSchedules.tripStatus}"  labelField="CODE_NAME"
+										 includeIn="create,edit,normal,detail" 
+										 prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.TRIPSTAT')}" useVirtualLayout="false" 
+										 width="120" change="controller.refreshMainFilterOnChange();"/>
+			
+			<s:Label id="fltVehicleLabel" includeIn="create,edit,normal,detail" text="{resourceManager.getString('default','MOVSCHD.LABEL.VEHICLE')}" width="50"/>
+			<components:DKI_DropDownList id="fltVehicle" dataProvider="{DM.MovementSchedules.vehicles}"  labelField="CODE_NAME"
+										 includeIn="create,edit,normal,detail" 
+										 prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.VEHICLE')}" useVirtualLayout="false"
+										 width="120" change="controller.refreshMainFilterOnChange();"/>
+			
+			<s:Label id="fltTimeToLabel" includeIn="create,edit,normal,detail" text="{resourceManager.getString('default','global.lbl.dateto')}" width="50"/>
+			<components:DKI_DateTime id="fltTimeTo" width="150" timeEnabled="false" enableNull="true" 
+									 includeInLayout="true" includeInLayout.widget="false" dateChange="controller.onDateBoxChanged"
+									 visible="true" visible.widget="false"/>
+			
+			<components:DKI_Button id="btnExport" visible="{isTripEditable}" includeIn="normal" label="{resourceManager.getString('default','button.lbl.EXPORT')}"/>
+		</s:HGroup>
+		<!--s:DataGrid id="mainList" width="100%" height="100%" requestedRowCount="4" enabled="true" enabled.create="false"
+		skinClass="skins.DKI_DataGrid_Skin" sortableColumns="false" 
+		selectionChange="callLater(controller.editSelected);" selectionChange.widget="null"-->
+		<!--s:DataGrid id="mainList" width="100%" height="100%" requestedRowCount="4" enabled="true" enabled.create="false"
+		dataProvider="{DM.MovementSchedules}" skinClass="skins.DKI_DataGrid_Skin" sortableColumns="false" 
+		selectionChange="callLater(controller.editSelected);" selectionChange.widget="null"-->
+		<components:DKI_DataPagingGrid id="mainList" width="100%" height="100%" requestedRowCount="4" enabled="true" enabled.create="false"
+									   dataProvider="{DM.MovementSchedules}" skinClass="skins.DKI_DataGrid_Skin" sortableColumns="false" 
+									   selectionChange="callLater(controller.editSelected);" selectionChange.widget="null"
+									   sortingBySingleColumn="true" useCustomSorting="true" pageSize="40" typicalItem="{controller.mlTypicalItems}"
+									   mapObj="{controller.mapObj}" orderCollection="{controller.orderCollection}" 
+									   filterAction="controller.refreshMainFilter" retrieveAction="controller.refreshMainFilter">
+			<!--
+			=======================================================================================================
+			Table Column         Data Type            Grid Column in itemList        Form Field in detailsPanel
+			=======================================================================================================
+			MOVEMENTS
+			SHL_TANKER           VARCHAR2(40 BYTE)    clnTripVehicle                 frmVehicle
+			SHLS_TRIP_NO         NUMBER(9,0)          clnTripNumber                  frmTripNumber
+			SHLS_SUPP            VARCHAR2(16 BYTE)    clnTripSupplier                frmSupplier
+			SHLS_CALDATE         DATE                 clnTripDate                    frmTimeSchedule
+			OPERATOR             VARCHAR2(12 BYTE)    clnTripOperator
+			STATS                VARCHAR2(1 BYTE)     clnTripStatus
+			LD_START             DATE                 clnTripStart
+			LD_END               DATE                 clnTripEnd
+			SHLS_LD_TYPE         NUMBER(2,0)          clnTripUnload*
+			SHLS_IOTYPE          NUMBER(2,0)          clnTripUnload
+			
+			SHLS_TERMINAL        VARCHAR2(16 BYTE)                                   frmTerminal
+			SHLS_DRAWER          VARCHAR2(16 BYTE)                                   frmDrawer
+			SHLS_SHIFT           NUMBER(4,0)                                         frmShift
+			SHLS_PRIORITY        NUMBER(9,0)                                         frmPriority
+			
+			MOV_SCHEDULES
+			MS_MOVEID            NUMBER(9,0)          clnTripMovement
+			MS_SHLSTRIP          NUMBER(9,0)          clnTripNumber
+			MS_SHLSSUPP          VARCHAR2(16 BYTE)    clnTripSupplier
+			MS_INVOICED          VARCHAR2(2 BYTE)
+			MS_TICKETED          VARCHAR2(2 BYTE)		
+			
+			LOADS
+			LOAD_CARRIER         VARCHAR2(16 BYTE)    clnTripCarrier                 frmCarrier		
+			LOAD_TYPE            NUMBER(2,0)          clnTripType		  
+			LOAD_REVERSE_COUNT   NUMBER(2,0)          clnTripReversed*
+			LOAD_REVERSE_FLAG    NUMBER(2,0)          clnTripReversed
+			
+			MOVEMENTS				
+			SHLS_PROFILE         NUMBER(4,0)
+			SHLS_REAL_PRF        VARCHAR2(16 BYTE)
+			SHL_MAVIS_TYPE       VARCHAR2(2 BYTE)
+			SHL_SENT_TO_HOST     VARCHAR2(2 BYTE)
+			SHL_COMMS_LOCK       VARCHAR2(2 BYTE)
+			SHL_PRIME_MOVER      NUMBER(9,0)
+			SHL_PRELOADER        VARCHAR2(12 BYTE)
+			SHL_RET_REP          VARCHAR2(2 BYTE)
+			SHL_DEL_REP          VARCHAR2(2 BYTE)
+			SHL_VAR_REP          VARCHAR2(2 BYTE)
+			SHL_OLD_REP          VARCHAR2(2 BYTE)
+			SHLS_AUTO_SCHED      VARCHAR2(2 BYTE)
+			RTN_STAT             NUMBER(2,0)
+			SHL_CMPLT_MTHD       NUMBER(2,0)
+			SHL_DURATN_MIN       NUMBER(9,0)
+			SHLS_NTH_IN_SHIF     NUMBER(4,0)
+			SHLS_ORIG_TKR        VARCHAR2(40 BYTE)
+			SHLS_DRIVER          VARCHAR2(12 BYTE)
+			SHLS_AUTO_CODE       NUMBER(2,0)
+			SHL_PASSED_ON        VARCHAR2(2 BYTE)
+			SHL_FLEET_DATA       VARCHAR2(40 BYTE)
+			SHL_DEBRIEFED        VARCHAR2(2 BYTE)
+			SHL_RET_LOC          VARCHAR2(16 BYTE)
+			SHL_IPM              VARCHAR2(16 BYTE)
+			SHLS_REF_NO          VARCHAR2(16 BYTE)
+			SHL_SENT_RSS         VARCHAR2(2 BYTE)
+			SHL_NOT_SENT_LOG     VARCHAR2(2 BYTE)
+			SHL_RSS_DEL          VARCHAR2(2 BYTE)
+			SHL_RSS_INFDEL       VARCHAR2(2 BYTE)
+			SHL_TRAILER1         NUMBER(9,0)
+			SHL_TRAILER2         NUMBER(9,0)
+			SHL_APPROVED         VARCHAR2(2 BYTE)
+			SHLS_APPR_TRM        VARCHAR2(16 BYTE)
+			SHL_IS_DRUMFILL      VARCHAR2(2 BYTE)
+			SHLSLOAD_LD_TRM      VARCHAR2(16 BYTE)
+			SHLSLOAD_LOAD_ID     NUMBER(6,0)
+			SHLS_TRIP_NO_2       NUMBER(9,0)
+			SHLS_SEAL_NO         VARCHAR2(40 BYTE)
+			NR_LOADING_TRSA      NUMBER(2,0)
+			SHLS_EXP             DATE
+			SHLS_CLASS           NUMBER(2,0)
+			
+			========================================================================================
+			-->
+			<components:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="clnTripNumber" headerText="{resourceManager.getString('default','datagrid.headercaption.tripno')}" ></s:GridColumn>
+						<s:GridColumn dataField="clnTripDate" itemRenderer="renderers.DateRenderer" headerText="{resourceManager.getString('default','datagrid.headercaption.Date')}" width="70"></s:GridColumn>
+						<s:GridColumn dataField="clnTripStatus" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.TRIPSTAT')}" ></s:GridColumn>
+						<s:GridColumn dataField="clnTripCarrier" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.CARRIER')}" visible.widget="false" ></s:GridColumn>
+						<s:GridColumn dataField="clnTripVehicle" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.VEHICLE')}" visible.widget="false" ></s:GridColumn>
+						<s:GridColumn dataField="clnTripSupplier" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.SUPPLIER')}" visible.widget="false" ></s:GridColumn>
+						<s:GridColumn dataField="clnTripMovement" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.NOMKEY')}" ></s:GridColumn>
+						<s:GridColumn dataField="clnTripStart" itemRenderer="renderers.DateTimeRenderer" headerText="{resourceManager.getString('default','datagrid.headercaption.loadstart')}" width="120"></s:GridColumn>
+						<s:GridColumn dataField="clnTripEnd" itemRenderer="renderers.DateTimeRenderer" headerText="{resourceManager.getString('default','datagrid.headercaption.loadend')}" width="120" visible.widget="false"></s:GridColumn>
+						<s:GridColumn dataField="TRSF_PRODUCT" width="120" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.PRODUCT')}" ></s:GridColumn>
+						<s:GridColumn dataField="TRSF_QTY_AMB" width="70" headerText="{resourceManager.getString('default','datagrid.headercaption.amb')}" ></s:GridColumn>
+						<s:GridColumn dataField="TRSF_QTY_COR" width="70" headerText="{resourceManager.getString('default','datagrid.headercaption.std')}" ></s:GridColumn>
+						<s:GridColumn dataField="TRSF_LOAD_KG" width="70" headerText="{resourceManager.getString('default','datagrid.headercaption.mass')}" ></s:GridColumn>
+						<s:GridColumn dataField="DT_POSTED" itemRenderer="renderers.DateTimeRenderer" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.POSTEDON')}" width="120"></s:GridColumn>
+						<s:GridColumn dataField="TRSA_ALT_QTY" width="70" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.ALT_QTY')}" ></s:GridColumn>
+						<s:GridColumn dataField="TRSA_ALT_UNT" width="60" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.ALT_UNIT')}" ></s:GridColumn>
+						<s:GridColumn dataField="clnTripType" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.TRIPTYPE')}" visible.widget="false" ></s:GridColumn>
+						<s:GridColumn dataField="clnTripReversed" headerText="{resourceManager.getString('default','datagrid.headercaption.reversed')}" itemRenderer="renderers.GridCheckNullRenderer" visible.widget="false" ></s:GridColumn>
+						<s:GridColumn dataField="clnTripUnload" headerText="{resourceManager.getString('default','datagrid.headercaption.unload')}" itemRenderer="renderers.SchedUnload" visible.widget="false" ></s:GridColumn>
+						<s:GridColumn dataField="clnTripOperator" headerText="{resourceManager.getString('default','datagrid.headercaption.lastmodifieduser')}" ></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</components:columns>
+			
+			<!--s:dataProvider>
+			<s:AsyncListView createPendingItemFunction="controller.createPendingItem" list="{DM.MovementSchedules}"/>
+			</s:dataProvider-->
+		</components:DKI_DataPagingGrid>
+	</s:Panel>
+	<s:Panel id="detailsPanel" includeIn="edit,create,detail" width="100%" height="400"
+			 skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:Spacer width="100%" height="5"/>
+		<s:HGroup width="100%" gap="0" paddingBottom="2" paddingLeft="5" paddingRight="2"
+				  paddingTop="2" verticalAlign="middle">
+			<s:Label id="frmTerminalLabel" text="{resourceManager.getString('default','MOVSCHD.LABEL.TERMINAL')}" width="75"/>
+			<components:DKI_ValidatorDropDown id="frmTerminal" width="150" dataProvider="{DM.MovementSchedules.terminals}" labelField="CODE_NAME" prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.TERMINAL')}"
+											  enabled="false" enabled.create="true" enabled.edit="true"
+											  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','MOVSCHD.LABEL.TERMINAL')}" 
+											  />
+			<s:Spacer width="20"/>
+			<s:Label id="frmSupplierLabel" text="{resourceManager.getString('default','MOVSCHD.LABEL.SUPPLIER')}" width="75"/>
+			<components:DKI_ValidatorDropDown id="frmSupplier" dataProvider="{DM.MovementSchedules.suppliers}" 
+											  labelField="CODE_NAME" width="150" prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.SUPPLIER')}"
+											  enabled="false" enabled.create="true" enabled.edit="true"
+											  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','MOVSCHD.LABEL.SUPPLIER')}" 
+											  />
+			<s:Spacer width="20"/>
+			<s:Label id="frmCarrierLabel" text="{resourceManager.getString('default','MOVSCHD.LABEL.CARRIER')}" width="75"/>
+			<components:DKI_ValidatorDropDown id="frmCarrier" dataProvider="{DM.MovementSchedules.carriers}" labelField="CODE_NAME" width="150" prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.CARRIER')}" change="controller.filterVehiclesList()"
+											  enabled="false" enabled.create="true" enabled.edit="true"
+											  required="false" validationGroup="{vg}" automationName="{resourceManager.getString('default','MOVSCHD.LABEL.CARRIER')}" 
+											  />
+			<s:Spacer width="20"/>
+			<s:Label id="frmTripNumberLabel" text="{resourceManager.getString('default','MOVSCHD.LABEL.TRIPNO')}" width="75"/>
+			<components:DKI_ValidatorInput id="frmTripNumber" width="150" prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.TRIPNO')}"
+										   enabled="false" enabled.create="true" change="controller.isTripKeyUsed()"
+										   required="true" validationType="integer_nonzero" validationGroup="{vg}" automationName="{resourceManager.getString('default','MOVSCHD.LABEL.TRIPNO')}" 
+										   />
+		</s:HGroup>
+		<s:HGroup width="100%" gap="0" paddingBottom="2" paddingLeft="5" paddingRight="2"
+				  paddingTop="2" verticalAlign="middle">
+			<s:Label id="frmTimeScheduleLabel" text="{resourceManager.getString('default','global.lbl.scheddate')}" width="75"/>
+			<components:DKI_DateTime id="frmTimeSchedule" width="150" timeEnabled="false" enableNull="true" enabled="false" enabled.create="true" enabled.edit="true"/>					
+			<s:Spacer width="20"/>
+			<s:Label id="frmDrawerLabel" text="{resourceManager.getString('default','MOVSCHD.LABEL.DRAWER')}" width="75"/>
+			<components:DKI_ValidatorDropDown id="frmDrawer" dataProvider="{DM.MovementSchedules.drawers}" 
+											  labelField="CODE_NAME" width="150" prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.DRAWER')}"
+											  enabled="false" enabled.create="true" enabled.edit="true"
+											  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','MOVSCHD.LABEL.DRAWER')}" 
+											  />
+			<s:Spacer width="20"/>
+			<s:Label id="frmVehicleLabel" text="{resourceManager.getString('default','MOVSCHD.LABEL.VEHICLE')}" width="75"/>
+			<components:DKI_ValidatorDropDown id="frmVehicle" dataProvider="{DM.MovementSchedules.vehicles}" labelField="CODE_NAME" width="150" prompt="{resourceManager.getString('default','MOVSCHD.PROMPT.VEHICLE')}"
+											  enabled="false" enabled.create="true" enabled.edit="true"
+											  required="false" validationGroup="{vg}" automationName="{resourceManager.getString('default','MOVSCHD.LABEL.VEHICLE')}" 
+											  />
+			<s:Spacer width="20"/>
+			<s:Label id="frmShiftLabel" text="{resourceManager.getString('default','global.lbl.shift')}" width="50"/>
+			<components:DKI_ValidatorInput id="frmShift" width="100" prompt="{resourceManager.getString('default','global.lbl.shift')}"
+										   enabled="true"
+										   required="false" validationType="integer" automationName="{resourceManager.getString('default','global.lbl.shift')}" 
+										   />
+			<s:Spacer width="20"/>
+			<s:Label id="frmPriorityLabel" text="{resourceManager.getString('default','global.lbl.priority')}" width="50"/>
+			<components:DKI_ValidatorInput id="frmPriority" width="100" prompt="{resourceManager.getString('default','global.lbl.priority')}"
+										   enabled="true"
+										   required="false" validationType="integer" automationName="{resourceManager.getString('default','global.lbl.priority')}" 
+										   />
+		</s:HGroup>
+		<s:HGroup width="100%" gap="0" paddingBottom="2" paddingLeft="5" paddingRight="2"
+				  paddingTop="2" verticalAlign="middle">
+			<s:DataGrid  id="itemList" width="100%" height="180" requestedRowCount="4" typicalItem="{controller.ilTypicalItem}"
+						 skinClass="skins.DKI_DataGrid_Skin" gridClick="controller.toggleCellEditability(event)"
+						 editable="false" editable.create="true" editable.edit="true">
+				<!--
+				CREATE TABLE MOV_SCHD_ITEMS
+				(
+				MSITM_SHLSTRIP       NUMBER(9),
+				MSITM_SHLSSUPP       VARCHAR2(16),
+				MSITM_LINEID         NUMBER(9),
+				MSITM_CMPTID         NUMBER(4),
+				MSITM_PRODCODE       VARCHAR2(36),
+				MSITM_PRODCMPY       VARCHAR2(16),
+				MSITM_MOVEID         NUMBER(9),
+				MSITM_MOVITEM        NUMBER(9),
+				MSITM_UNITTYPE       NUMBER(4),
+				MSITM_UNITID         NUMBER(4),
+				MSITM_SPECQTY        FLOAT,
+				MSITM_PRLDQTY        FLOAT,
+				MSITM_DELVQTY        FLOAT,
+				MSITM_PRSTQTY        FLOAT,
+				MSITM_BAYARM         VARCHAR2(12),
+				MSITM_STATUS         NUMBER(2),
+				MSITM_LOAD_DET       NUMBER(1),
+				MSITM_SEALNUM        NUMBER(9),
+				MSITM_TRAILER        NUMBER(9),
+				MSITM_TRAILERCOMP    NUMBER(4),
+				MSITM_FILLED         VARCHAR2(2),
+				MSITM_TRSA_ID        NUMBER(6),
+				MSITM_N_DRUMS        NUMBER(6),
+				MSITM_DRUM_SZ        FLOAT,
+				MSITM_RPT_DENS       FLOAT,
+				MSITM_RPT_TEMP       FLOAT,
+				MSITM_RPT_VCF        FLOAT,
+				MSITM_RPT_TUNIT      NUMBER(2),
+				MSITM_C_OF_E         FLOAT,
+				MSITM_MASS_FRCTN     FLOAT,
+				MSITM_HOST_DATA      VARCHAR2(64),
+				MSITM_TC_TODO        VARCHAR2(2),
+				MSITM_LOC_TEMP       FLOAT,
+				MSITM_LOC_VCF        FLOAT,
+				MSITM_LOC_DENS       FLOAT,
+				MSITM_CUSTOMER       VARCHAR2(16),
+				MSITM_DELVLOC        VARCHAR2(16),
+				MSITM_DTIM_CREATE    DATE,
+				MSITM_DTIM_EFFECT    DATE,
+				MSITM_DTIM_EXPIRY    DATE,
+				CONSTRAINT PK_MOV_SCHD_ITEMS
+				PRIMARY KEY(MSITM_SHLSTRIP,MSITM_SHLSSUPP,MSITM_LINEID),
+				CONSTRAINT FK_MSI_MSITM_SHLS_TRIP_SUPP FOREIGN KEY (MSITM_SHLSTRIP,MSITM_SHLSSUPP)
+				REFERENCES SCHEDULE (SHLS_TRIP_NO,SHLS_SUPP),
+				CONSTRAINT FK_MSI_MSITM_MOV_ID_ITEM FOREIGN KEY (MSITM_MOVEID,MSITM_MOVITEM)
+				REFERENCES MOVEMENT_ITEMS (MVITM_MOVE_ID,MVITM_LINE_ID)   
+				);
+				
+				The following is the mapping between table columns and grid and form fields:
+				=======================================================================================================
+				Table Column         Data Type            Grid Column in itemList        Form Field in detailsPanel
+				=======================================================================================================
+				MSITM_LINEID         NUMBER(9),           clnItemLine                                            
+				MSITM_MOVEID         NUMBER(9),           clnItemMovement                        
+				MSITM_MOVITEM        NUMBER(9),           clnItemMoveitem                
+				MSITM_TRAILER        NUMBER(9),           clnItemTrailer                        
+				MSITM_TRAILERCOMP    NUMBER(4),           clnItemTrailerComp                        
+				MSITM_CMPTID         NUMBER(4),           clnItemCompartment                        
+				MSITM_PRODCODE       VARCHAR2(36),        clnItemProduct                        
+				MSITM_SPECQTY        FLOAT,               clnItemQtyScheduled                 
+				MSITM_DELVQTY        FLOAT,               clnItemQtyDelivered                        
+				MSITM_PRLDQTY        FLOAT,               clnItemQtyPreloaded                
+				MSITM_PRSTQTY        FLOAT,               clnItemQtyPreset                        
+				MSITM_UNITID         NUMBER(4),           clnItemProdUnit                
+				MSITM_BAYARM         VARCHAR2(12),        clnItemBayarm                        
+				
+				MSITM_SHLSTRIP       NUMBER(9),           clnItemTrip                    frmTripNumber
+				MSITM_SHLSSUPP       VARCHAR2(16),        clnItemSupplier                frmSupplier                        
+				MSITM_PRODCMPY       VARCHAR2(16),        clnItemDrawer                  frmDrawer    
+				
+				MSITM_UNITTYPE       NUMBER(4),           
+				MSITM_STATUS         NUMBER(2),            
+				MSITM_LOAD_DET       NUMBER(1),            
+				MSITM_SEALNUM        NUMBER(9),           
+				MSITM_FILLED         VARCHAR2(2),         
+				MSITM_TRSA_ID        NUMBER(6),           
+				MSITM_N_DRUMS        NUMBER(6),           
+				MSITM_DRUM_SZ        FLOAT,               
+				MSITM_RPT_DENS       FLOAT,               
+				MSITM_RPT_TEMP       FLOAT,               
+				MSITM_RPT_VCF        FLOAT,               
+				MSITM_RPT_TUNIT      NUMBER(2),           
+				MSITM_C_OF_E         FLOAT,               
+				MSITM_MASS_FRCTN     FLOAT,               
+				MSITM_HOST_DATA      VARCHAR2(64),        
+				MSITM_TC_TODO        VARCHAR2(2),         
+				MSITM_LOC_TEMP       FLOAT,               
+				MSITM_LOC_VCF        FLOAT,               
+				MSITM_LOC_DENS       FLOAT,               
+				MSITM_CUSTOMER       VARCHAR2(16),        
+				MSITM_DELVLOC        VARCHAR2(16),        
+				MSITM_DTIM_CREATE    DATE,                
+				MSITM_DTIM_EFFECT    DATE,                
+				MSITM_DTIM_EXPIRY    DATE,                
+				
+				========================================================================================
+				-->
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn dataField="clnItemAction" headerText="  " editable="false" visible="{this.isTripEditable}"></s:GridColumn>
+						<s:GridColumn dataField="clnItemLine" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.LINEID')}" visible="true" editable="true" editable.detail="false"></s:GridColumn>
+						<s:GridColumn dataField="clnItemMovement" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.NOMID')}" visible="false" editable="true" editable.detail="false"></s:GridColumn>
+						<s:GridColumn dataField="clnItemMoveitem" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.NOMITEM')}" visible="true" editable="true" editable.detail="false"></s:GridColumn>
+						<s:GridColumn dataField="clnItemTrailer" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.EQPT')}" visible="true" editable="true" editable.detail="false" itemEditor="itemeditors.MovScheduleItemListEditor">
+						</s:GridColumn>
+						<s:GridColumn dataField="clnItemTrailerComp" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.EQPTCMPT')}" visible="true" editable="true" editable.detail="false"></s:GridColumn>
+						<s:GridColumn dataField="clnItemCompartment" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.CMPT')}" visible="true" editable="true" editable.detail="false"></s:GridColumn>
+						<s:GridColumn dataField="clnItemProduct" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.PRODUCT')}" visible="true" editable="true" editable.detail="false" itemEditor="itemeditors.MovScheduleItemListEditor">
+						</s:GridColumn>
+						<s:GridColumn dataField="clnItemQtyScheduled" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.QTY_SCHED')}" visible="true" editable="true" editable.detail="false"></s:GridColumn>
+						<s:GridColumn dataField="clnItemQtyPreset" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.QTY_PRESET')}" visible="true" editable="false"></s:GridColumn>
+						<s:GridColumn dataField="clnItemQtyDelivered" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.QTY_LOADED')}" visible="true" editable="false"></s:GridColumn>
+						<s:GridColumn dataField="clnItemQtyPreloaded" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.QTY_PRELOAD')}" visible="true" editable="false"></s:GridColumn>
+						<s:GridColumn dataField="clnItemProdUnit" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.PRODUNIT')}" visible="true"  editable="true" editable.detail="false" itemEditor="itemeditors.MovScheduleItemListEditor">
+						</s:GridColumn>
+						<s:GridColumn dataField="clnItemBayarm" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.BAYARM')}" visible="true"  editable="true" editable.detail="false" itemEditor="itemeditors.MovScheduleItemListEditor">
+						</s:GridColumn>
+						<s:GridColumn dataField="clnItemTrip" headerText="{resourceManager.getString('default','datagrid.headercaption.tripno')}" visible="false" editable="false"></s:GridColumn>
+						<s:GridColumn dataField="clnItemSupplier" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.SUPPLIER')}" visible="false" editable="false"></s:GridColumn>
+						<s:GridColumn dataField="clnItemDrawer" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.DRAWER')}" visible="false" editable="false"></s:GridColumn>
+					</s:ArrayList>
+				</s:columns>
+			</s:DataGrid>
+		</s:HGroup>
+		
+		<s:HGroup width="100%" gap="5" paddingBottom="4"
+				  paddingRight="5" paddingTop="4">
+			<components:DKI_Button id="btnCreateItem" label="{resourceManager.getString('default','button.lbl.ADD_ITEM')}" height="100%" visible="{isTripEditable}" includeIn="edit,create" type="create" click="controller.markCreation();"/>
+			<components:DKI_Button id="btnUpdateItem" label="{resourceManager.getString('default','button.lbl.UPD_ITEM')}" height="100%" visible="{isTripEditable}" includeIn="edit" type="edit" click="controller.markEdition();"/>
+			<components:DKI_Button id="btnDeleteItem" label="{resourceManager.getString('default','button.lbl.DEL_ITEM')}" height="100%" visible="{isTripEditable}" includeIn="edit" type="delete" click="controller.markDeletion();"/>
+			<components:DKI_Button id="btnCancelItem" label="{resourceManager.getString('default','button.lbl.RESET_ITEM')}" height="100%" visible="{isTripEditable}"  includeIn="edit,create" enabled="true" type="refresh" click="controller.markCancel();"/>
+			<s:Spacer width="100%"/>
+			<s:Label text="{resourceManager.getString('default','global.lbl.bol')}" height="100%" fontWeight="bold" verticalAlign="middle"/>
+			<components:DKI_Button id="btnBolView" label="{resourceManager.getString('default','button.lbl.VIEW')}" height="100%" width="75" enabled="{controller.canUpdate}" type="report" click="controller.bolView_clickHandler(event)" />
+			<components:DKI_Button id="btnBolPrint" label="{resourceManager.getString('default','button.lbl.PRINT')}" height="100%" width="75" enabled="{controller.canUpdate}" type="print" click="controller.bolPrint_clickHandler(event)" />
+			<mx:VRule height="25" width="4"/>
+			<components:DKI_Button id="btnLoadReport" label="{resourceManager.getString('default','global.lbl.loadreport')}" height="100%" enabled="{controller.canUpdate}" type="report" click="controller.loadView_clickHandler(event)"/>
+			<mx:VRule height="25" width="4"/>
+			<!--components:DKI_Button id="btnApprove" label="{resourceManager.getString('default','APPROVE')}" visible="{isTripEditable}" height="100%" includeIn="edit" type="ok"/-->
+			<!--components:DKI_Button id="btnSchedule" label="{resourceManager.getString('default','button.lbl.ACTV_SCHD')}" visible="{isTripEditable}" height="100%" includeIn="edit" type="default" click="controller.goToSchedule();"/-->
+			
+			<components:DKI_Button id="btnTransaction" label="{resourceManager.getString('default','button.lbl.VIEW_TRNS')}" height="100%" enabled="false" includeIn="edit" type="report" click="controller.goToTransaction();"/>
+			<components:DKI_Button id="btnMakeTransaction" label="{resourceManager.getString('default','button.lbl.MAKE_TRNS')}" height="100%" includeIn="edit" type="default" visible="{isTripEditable}" includeInLayout="false"  enabled="{controller.canCreate}" click="controller.goToMakeTransaction();"/>
+			<components:DKI_Button id="btnReverseTrip" label="{resourceManager.getString('default','button.lbl.REVE_TRNS')}" height="100%" enabled.create="{controller.canCreate}" type="edit" includeIn="edit" click="btnReverseTrip_clickHandler(event)"/>
+			
+			<components:DKI_Button id="btnDelete" label="{resourceManager.getString('default','DELETE')}" height="100%" enabled="{controller.canDelete}" visible="{isTripEditable}" includeIn="edit" type="delete" click="controller.remove();"/>
+			<!--components:DKI_Button id="btnSave" label.create="{resourceManager.getString('default','SAVE')}" label="{resourceManager.getString('default','UPDATE')}" height="100%" includeIn="edit,create,detail" 
+			type.create="create" type="edit" click.create="controller.create();" click.edit="controller.update();"/-->
+			<components:DKI_Button id="btnSave" label.create="{resourceManager.getString('default','SAVE')}" label="{resourceManager.getString('default','UPDATE')}" height="100%" visible="{isTripEditable}" includeIn="edit,create,detail" enabled.create="{controller.canCreate}" enabled="{controller.canUpdate}" 
+								   type.create="create" type="edit"/>
+			<components:DKI_Button id="btnCancel" label="{resourceManager.getString('default','CANCEL')}" height="100%" enabled="true" type="cancel" click="currentState='normal'"/>
+			
+		</s:HGroup>
+	</s:Panel>
+	
+	<s:Panel id="frame" width="100%" height="100%" skinClass="skins.WidgetPanelSkin" title="{resourceManager.getString('default','MOVNOM.TITLE.SCHD4NOM')}" includeIn="bol">
+		<s:VGroup width="100%" height="100%" paddingTop="3" paddingLeft="3" paddingRight="3" paddingBottom="3">
+			<flexiframe:IFrame id="frme" width="100%" height="100%"/>
+			<s:HGroup width="100%">
+				<s:Spacer width="100%"/>
+				<components:DKI_Button id="btn" label="{resourceManager.getString('default','OK')}" type="ok" click="currentState='normal'"/> 
+			</s:HGroup>
+		</s:VGroup>	
+	</s:Panel>
+</s:VGroup>

@@ -1,0 +1,353 @@
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:components="components.*"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 skinClass="skins.PopupSkinEdit"
+		 width="900" height="550"
+		 title="Load Schedule Repost" xmlns:manualtransactionsservice="services.manualtransactionsservice.*">
+	
+	<fx:Script>
+		<![CDATA[			
+			import mx.collections.ArrayCollection;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.rpc.CallResponder;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.RemoteObject;
+			
+			import spark.events.GridSelectionEvent;
+			
+			private var getTransactions:Responder = new  Responder(getTransactionDtls);
+			
+			private var nc:NetConnection = new NetConnection();
+			
+			[Bindable] private var trip:String='1001';
+			[Bindable] private var supplier:String='0001';
+			[Bindable] private var drawer:String='0001';
+			
+			
+			[Bindable] private var tripInfoArr: ArrayCollection = new ArrayCollection();
+			[Bindable] private var transArr:ArrayCollection = new ArrayCollection();
+			[Bindable] private var mtrsArr:ArrayCollection = new ArrayCollection();
+			[Bindable] private var baseArr:ArrayCollection = new ArrayCollection();
+			
+			private var trnsCount:int=0;
+			private var tfrsCount:int=0;
+			private var baseCount:int=0;
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+			}
+			
+			public function setParams(value:Object): void
+			{
+				supplier=value.supplier;
+				trip=value.trip;
+				drawer=value.drawer;
+				nc.objectEncoding = ObjectEncoding.AMF3;
+				nc.connect(global.gatewayURL);
+				//nc.connect("/amfservices/gateway/amf2/index.php");
+				//nc.call("RepostService.getTripTransactions",getTransactions,trip,supplier);
+				nc.call("RepostService.getTransactions",getTransactions,trip,supplier);
+			}
+
+			private function getTransactionDtls(obj:Object): void
+			{
+				tripInfoArr.removeAll();
+				mtrsArr.removeAll();
+				baseArr.removeAll();
+				tripInfoArr.source = obj as Array;
+				transArr.source = tripInfoArr[0].transfer as Array;
+				mtrsArr.source=transArr[0].meter as Array;
+				baseArr.source=transArr[0].bases as Array;
+				dataGrid.selectedIndex=0;
+				transactionDetailsGrid.selectedIndex=0;
+			}
+			
+			private function weiDate(value:String):String
+			{
+				var convDate:String = value.substr(8,2)+'.'+value.substr(5,2)+'.'+value.substr(0,4)+value.substr(11,2)+
+					':'+value.substr(14,2)+':'+value.substr(17,2);
+				return convDate;
+			}
+			
+			protected function transactionSelectionHandler(event:MouseEvent):void
+			{
+				if (dataGrid.selectedIndex > -1) dataGrid_selectionChangeHandler(null);
+			}
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				transArr.source = tripInfoArr[dataGrid.selectedIndex].transfer;
+				transArr.refresh();
+				if (transArr.source == null || transArr.length==0)
+				{
+					transactionDetailsGrid.selectedIndex=-1;
+					//mtrsArr.removeAll();
+					//baseArr.removeAll();
+				}	
+				else
+					transactionDetailsGrid.selectedIndex=0;
+				
+				transactionDetailsGrid_selectionChangeHandler(null);
+				/* if (transArr.length > 0)
+				{
+					mtrsArr.source=transArr[0].meter;
+				    baseArr.source=transArr[0].bases;
+					transactionDetailsGrid.selectedIndex=0;
+				}
+				mtrsArr.refresh;
+				baseArr.refresh; */				
+			}
+			
+			protected function transactionDetailsGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				//mtrsArr.removeAll();
+				//baseArr.removeAll();
+				if (transactionDetailsGrid.selectedIndex != -1)
+				{	
+					mtrsArr.source=transArr[transactionDetailsGrid.selectedIndex].meter;
+					baseArr.source=transArr[transactionDetailsGrid.selectedIndex].bases;
+				}	
+				//mtrsArr.refresh;
+				//baseArr.refresh;				
+			}
+			
+			protected function btn_save_clickHandler(event:MouseEvent):void
+			{
+				for (var i:int=0;i < tripInfoArr[dataGrid.selectedIndex].transfer.length;i++)
+				{
+					tripInfoArr[dataGrid.selectedIndex].transfer[i].Temperature =
+						tripInfoArr[dataGrid.selectedIndex].transfer[i].TRSF_TEMP;
+					tripInfoArr[dataGrid.selectedIndex].transfer[i].dens =
+						tripInfoArr[dataGrid.selectedIndex].transfer[i].TRSF_DENSITY;
+					tripInfoArr[dataGrid.selectedIndex].transfer[i].cor_vol =
+						tripInfoArr[dataGrid.selectedIndex].transfer[i].TRSF_QTY_COR;
+					tripInfoArr[dataGrid.selectedIndex].transfer[i].amb_vol =
+						tripInfoArr[dataGrid.selectedIndex].transfer[i].TRSF_QTY_AMB
+					tripInfoArr[dataGrid.selectedIndex].transfer[i].liq_kg =
+					 tripInfoArr[dataGrid.selectedIndex].transfer[i].TRSF_LOAD_KG;
+				}
+				transactionSelectionHandler(null);			
+			}
+			
+			protected function btn_clear_clickHandler(event:MouseEvent):void
+			{
+				for (var i:int=0;i < tripInfoArr[dataGrid.selectedIndex].transfer.length;i++)
+				{
+					tripInfoArr[dataGrid.selectedIndex].transfer[i].TRSF_TEMP =
+						tripInfoArr[dataGrid.selectedIndex].transfer[i].Temperature;
+					tripInfoArr[dataGrid.selectedIndex].transfer[i].TRSF_DENSITY =
+						tripInfoArr[dataGrid.selectedIndex].transfer[i].dens;
+					tripInfoArr[dataGrid.selectedIndex].transfer[i].TRSF_QTY_COR =
+						tripInfoArr[dataGrid.selectedIndex].transfer[i].cor_vol;
+					tripInfoArr[dataGrid.selectedIndex].transfer[i].TRSF_QTY_AMB =
+						tripInfoArr[dataGrid.selectedIndex].transfer[i].amb_vol
+					tripInfoArr[dataGrid.selectedIndex].transfer[i].TRSF_LOAD_KG =
+						tripInfoArr[dataGrid.selectedIndex].transfer[i].liq_kg;
+					transactionSelectionHandler(null);
+				}
+			}
+			
+			protected function btn_commit_clickHandler(event:MouseEvent):void
+			{
+				trnsCount=0;
+				commitTransactions(trnsCount);
+				var CommitObj:Object = new Object();
+				for (var i:int=0; i < tripInfoArr.length; i++)
+				{
+					
+				}
+			}
+			
+			private function commitTransactions(value:int):void
+			{
+				var selDate:String=dateConvert.format(tranDate.selectedDate);
+				if(trnsCount < tripInfoArr.length)
+				{
+					var transObj:Object = new Object();
+					transObj.Load_Number=tripInfoArr[value].Load_Number;
+					transObj.order_trip_ind=0;
+					transObj.Supplier=tripInfoArr[value].Supplier;
+					transObj.Drawer_Code=tripInfoArr[value].Supplier;
+					transObj.Operator_Code=global.user;
+					transObj.Tanker_Code=tripInfoArr[value].Tanker_Code;
+					transObj.Start_Time=selDate;
+					transObj.Finish_Time=selDate;
+					transObj.isnomi=0;
+
+					commitResponse.token=mts.do_create(0, transObj, tripInfoArr[value].numtrans, tripInfoArr[value].transfer, 0);
+				}
+			}
+			
+			protected function mts_faultHandler(event:FaultEvent):void
+			{
+				global.msgFail(event.fault.faultDetail);
+			}
+			
+			protected function commitResponse_resultHandler(event:ResultEvent):void
+			{
+				global.msgSuccess(tripInfoArr[trnsCount].TRSFTRID_TRSA_ID+" committed successfully");
+				trnsCount += 1;
+				commitTransactions(trnsCount);
+			}
+			
+			protected function commitResponse_faultHandler(event:FaultEvent):void
+			{
+				global.msgFail("process failed for "+tripInfoArr[trnsCount].TRSFTRID_TRSA_ID);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateConvert" dateTimePattern="dd.MM.yyyyHH:mm:ss"/>
+		<manualtransactionsservice:ManualTransactionsService id="mts" fault="mts_faultHandler(event)" showBusyCursor="true"  channelSet="{global.channelSet}"/>
+		<s:CallResponder id="commitResponse" result="commitResponse_resultHandler(event)" fault="commitResponse_faultHandler(event)"/>
+	</fx:Declarations>
+	
+	<s:Panel id="main" width="100%" height="100%" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout gap="6"/>
+		</s:layout>
+		<s:HGroup width="100%" height="28" paddingTop="2" paddingBottom="2" gap="-1">
+			<s:Label text="Repost For Trip No:" fontWeight="bold" fontSize="12" height="100%" verticalAlign="middle"/>
+			<s:Label text="{trip}" fontWeight="bold" fontSize="12" height="100%" verticalAlign="middle"/>
+			<s:Spacer width="8"/>
+			<s:Label text="Supplier:" fontWeight="bold" fontSize="12" height="100%" verticalAlign="middle"/>
+			<s:Label text="{supplier}" fontWeight="bold" fontSize="12" height="100%" verticalAlign="middle"/>
+			<s:Spacer width="100%"/>
+			<s:Label text="Repost Date:" fontWeight="bold" fontSize="12" height="100%" verticalAlign="middle"/>
+			<components:DKI_DateTime id="tranDate" selectedDate="{new Date()}" timeEnabled="true" width="150"/>
+		</s:HGroup>
+		<s:DataGrid id="dataGrid" width="100%" height="100%" dataProvider="{tripInfoArr}"
+					requestedRowCount="4" sortableColumns="true" selectionChange="dataGrid_selectionChangeHandler(event)" doubleClickEnabled="true" doubleClick="transactionSelectionHandler(event)">
+			<s:columns>
+				<s:ArrayList>
+					<s:GridColumn width="100" dataField="TRSA_BAY_CD" headerText="Bay"></s:GridColumn>
+					<s:GridColumn width="200" dataField="TRSA_ID" headerText="Transaction No."></s:GridColumn>
+					<s:GridColumn width="70" dataField="TRSA_TRIP" headerText="Trip No."></s:GridColumn>
+					<s:GridColumn dataField="TRSA_TANKER" headerText="Tanker"/>
+					<s:GridColumn dataField="TRSA_PER_NAME" headerText="Operator"/>
+					<s:GridColumn dataField="TRSA_ST_DMY" headerText="Start"/>
+					<s:GridColumn dataField="TRSA_ED_DMY" headerText="Finish"/>
+					<s:GridColumn width="80" dataField="TRSA_REVERSE" headerText="Prev Trs ID"/>
+					<s:GridColumn dataField="TRSA_TERMINAL" headerText="Terminal"/>
+					<!--<s:GridColumn width="100" dataField="bay" headerText="Bay"></s:GridColumn>
+					<s:GridColumn width="200" dataField="trnsID" headerText="Transaction No."></s:GridColumn>
+					<s:GridColumn width="70" dataField="trip" headerText="Trip No."></s:GridColumn>
+					<s:GridColumn dataField="tanker" headerText="Tanker"/>
+					<s:GridColumn dataField="operator" headerText="Operator"/>
+					<s:GridColumn dataField="start" headerText="Start"/>
+					<s:GridColumn dataField="finish" headerText="Finish"/>
+					<s:GridColumn width="80" dataField="prevtrans" headerText="Prev Trs ID"/>
+					<s:GridColumn dataField="terminal" headerText="Terminal"/>-->
+				</s:ArrayList>
+			</s:columns>
+		</s:DataGrid>
+		<s:HGroup width="100%" height="160">
+			<s:VGroup width="100%" gap="2" height="100%">
+				<s:Label text="Transaction Details" fontWeight="bold"/>
+				<s:DataGrid id="transactionDetailsGrid" width="100%" height="100%" dataProvider="{transArr}"
+							requestedRowCount="5" sortableColumns="false" editable="true" selectionChange="transactionDetailsGrid_selectionChangeHandler(event)">
+					<s:columns>
+						<s:ArrayList>
+							<s:GridColumn dataField="TRSF_ID" headerText="Transfer" width="90" editable="false"></s:GridColumn>
+							<s:GridColumn dataField="BAA_BAY_SEQ" headerText="Bay Arm" width="70" editable="false"></s:GridColumn>
+							<s:GridColumn dataField="EQPT_CODE" headerText="Trailer Code" width="100" editable="false"></s:GridColumn>
+							<s:GridColumn dataField="PROD_NAME" headerText="Product Name" width="150" editable="false"/>
+							<s:GridColumn dataField="TRSF_QTY_AMB" headerText="Litres(obs)" width="100" />
+							<s:GridColumn dataField="TRSF_QTY_COR" headerText="Litres(cor)" width="100"/>
+							<s:GridColumn dataField="TRSF_LOAD_KG" headerText="Mass(KG)" width="100"/>
+							<s:GridColumn dataField="TRSF_DENSITY" headerText="Dens(kg/m³)" width="100"/>
+							<s:GridColumn dataField="TRSF_TEMP" headerText="Tmp(C)"/>
+
+							<!--<s:GridColumn dataField="trsf_id" headerText="Transfer" width="90" editable="false"></s:GridColumn>
+							<s:GridColumn dataField="Arm_code" headerText="Bay Arm" width="70" editable="false"></s:GridColumn>
+							<s:GridColumn dataField="tanker" headerText="Trailer Code" width="100" editable="false"></s:GridColumn>
+							<s:GridColumn dataField="product" headerText="Product Name" width="150" editable="false"/>
+							<s:GridColumn dataField="amb_vol" headerText="Litres(obs)" width="100" />
+							<s:GridColumn dataField="cor_vol" headerText="Litres(cor)" width="100"/>
+							<s:GridColumn dataField="liq_kg" headerText="Mass(KG)" width="100"/>
+							<s:GridColumn dataField="dens" headerText="Dens(kg/m³)" width="100"/>
+							<s:GridColumn dataField="Temperature" headerText="Tmp(C)"/>-->
+							
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+				<s:HGroup width="100%">
+					<s:Spacer width="100%"/>
+					<components:DKI_Button id="btn_save" label="Update" type="ok" click="btn_save_clickHandler(event)"/> 
+					<components:DKI_Button id="btn_clear" label="Undo" type="refresh" click="btn_clear_clickHandler(event)"/> 
+				</s:HGroup>
+			</s:VGroup>
+		</s:HGroup>
+		<s:HGroup width="100%" height="160">
+			<s:VGroup width="100%" height="100%" gap="2">
+				
+				<mx:TabNavigator id="detailNavigator" width="100%" height="100%" selectedIndex="0">
+					<s:NavigatorContent width="100%" height="100%" label="Meter Details">
+						<s:DataGrid id="meterDatagrid" width="100%" height="100%" requestedRowCount="5" dataProvider="{mtrsArr}" 
+									sortableColumns="false" editable="false">
+							<s:columns>
+								<s:ArrayList>
+									<s:GridColumn dataField="BAA_BAY_SEQ" headerText="Arm" width="100"></s:GridColumn>
+									<s:GridColumn dataField="TRSB_METER" headerText="Meter Code" width="200"></s:GridColumn>
+									<s:GridColumn dataField="TRSF_OPN_AMB" headerText="Open Ambient Ltr" width="100"></s:GridColumn>
+									<s:GridColumn dataField="TRSF_CLS_AMB" headerText="Closing Ambient Ltr" width="110"/>
+									<s:GridColumn dataField="TRSF_OPN_COR" headerText="Opening Corrected Ltr" width="120"/>
+									<s:GridColumn dataField="TRSF_CLS_COR" headerText="Closing Corrected Ltr" width="120"/>
+									<s:GridColumn dataField="TRSF_OPEN_KG" headerText="Opening Mass (Kg)" width="120"/>
+									<s:GridColumn dataField="TRFS_CLOSE_KG" headerText="Closing Mass (Kg)" width="115"/>
+
+									<!--<s:GridColumn dataField="bay_Arm" headerText="Arm" width="100"></s:GridColumn>
+									<s:GridColumn dataField="Meter_Injector_Code" headerText="Meter Code" width="200"></s:GridColumn>
+									<s:GridColumn dataField="open_amb" headerText="Open Ambient Ltr" width="100"></s:GridColumn>
+									<s:GridColumn dataField="close_amb" headerText="Closing Ambient Ltr" width="110"/>
+									<s:GridColumn dataField="open_cor" headerText="Opening Corrected Ltr" width="120"/>
+									<s:GridColumn dataField="close_cor" headerText="Closing Corrected Ltr" width="120"/>
+									<s:GridColumn dataField="open_kg" headerText="Opening Mass (Kg)" width="120"/>
+									<s:GridColumn dataField="close_kg" headerText="Closing Mass (Kg)" width="115"/>-->
+								</s:ArrayList>
+							</s:columns>
+						</s:DataGrid>
+					</s:NavigatorContent>
+					<s:NavigatorContent width="100%" height="100%" label="Base Product Details">
+						<s:DataGrid id="baseDatagrid" width="100%" height="100%" dataProvider="{baseArr}"
+									requestedRowCount="5" sortableColumns="false" editable="false"> 
+							<s:columns>
+								<s:ArrayList>
+									<s:GridColumn dataField="BASE_CODE" headerText="Base Product Code" 	width="140"/>
+									<s:GridColumn dataField="BASE_NAME" headerText="Base Product Name" 	width="200"/>
+									<s:GridColumn dataField="TRSB_TK_TANKCODE" headerText="Tank Code" 			width="120"/>
+									<s:GridColumn dataField="TRSB_AVL" headerText="Litres (obs)"      	width="100"/>
+									<s:GridColumn dataField="TRSB_CVL" headerText="Liters (cor)"      	width="100"/>
+									<s:GridColumn dataField="TRSB_KG" headerText="Mass (Kg)"         	width="100"/>
+									<s:GridColumn dataField="TRSB_DNS" headerText="Density (Kg/m³)"   	width="110"/>
+									<s:GridColumn dataField="TRSB_TMP" headerText="Temperature (ºC)"  	width="110"/>
+									
+									<!--<s:GridColumn dataField="product_code" headerText="Base Product Code" 	width="140"/>
+									<s:GridColumn dataField="product_name" headerText="Base Product Name" 	width="200"/>
+									<s:GridColumn dataField="Tank_code" headerText="Tank Code" 			width="120"/>
+									<s:GridColumn dataField="TRSB_AVL" headerText="Litres (obs)"      	width="100"/>
+									<s:GridColumn dataField="TRSB_CVL" headerText="Liters (cor)"      	width="100"/>
+									<s:GridColumn dataField="TRSB_KG" headerText="Mass (Kg)"         	width="100"/>
+									<s:GridColumn dataField="TRSB_DNS" headerText="Density (Kg/m³)"   	width="110"/>
+									<s:GridColumn dataField="TRSB_TMP" headerText="Temperature (ºC)"  	width="110"/>-->
+
+								</s:ArrayList>
+							</s:columns>
+						</s:DataGrid>
+					</s:NavigatorContent>
+				</mx:TabNavigator>
+			</s:VGroup>	
+		</s:HGroup>
+		<s:HGroup width="100%" height="26" paddingTop="2" paddingBottom="2">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_commit" label="Commit Repost" type="update" click="btn_commit_clickHandler(event)"/> 
+			<components:DKI_Button id="btn_close" label="Cancel" type="cancel" click="dispatchEvent(new CloseEvent(CloseEvent.CLOSE,true, false))"/> 
+		</s:HGroup>
+	</s:Panel>	
+</s:Panel>
+

@@ -1,0 +1,1743 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  creationComplete="creationCompleteHandler(event)"
+		  gap="2" width="100%" height="100%">
+	
+	<s:states>
+		<s:State name="edit" enterState="expiryDateDetailLineGrid.enabled=true"/>
+		<s:State name="create" enterState="expiryDateDetailLineGrid.enabled=false"/>
+		<s:State name="detail" enterState="view_detailsHandler(event);expiryDateDetailLineGrid.enabled=true"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.fiber.runtime.lib.DateTimeFunc;
+			
+			import components.ActionDialog;
+			import components.ConfirmDialog;
+			import components.DeleteDialog;
+			import components.ErrorDialog;
+			import components.ExportData;
+			import components.MessageDialog;
+			import components.TransactionsDlg;
+			import components.ViewPopupDlg;
+			
+			import dm.remoteBulkListService;
+			import dm.remoteDataService;
+			import dm.remoteListService;
+			import dm.utils.tools;
+			
+			import flash.events.KeyboardEvent;
+			import flash.globalization.LocaleID;
+			
+			import flashx.textLayout.container.ScrollPolicy;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			import mx.validators.RegExpValidator;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridItemEditorEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			
+			
+			public static const MAIN_WINDOW_WIDTH:int = 1500;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable] public var labelWidth:uint = 120;
+			[Bindable] public var labelHeight:uint = 26;
+			[Bindable] public var fieldWidth:uint = 240;
+			[Bindable] public var fieldHeight:uint = 26;
+			[Bindable] public var spaceWidth:uint = 15;
+			[Bindable] public var spaceHeight:uint = 2;
+			
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='ed_object_id';
+			private var currentDirection:String="ASC";
+			
+			private var currentOffset:int=0;
+			private var currentPageSize:int=1000;
+			[Bindable] private var totalLength:int=0;
+			[Bindable] private var currentLength:int=0;
+			
+			[Bindable] public var isTargetEditable:Boolean = true;
+			[Bindable] public var currentExpiryTargetCode:String="";
+			[Bindable] public var currentExpiryCompanyCode:String="";
+			[Bindable] public var currentExpiryObjectId:String="";
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			//private var currentSorts:Object=new Object();
+			//private var currentOrders:Object=new Object();
+			private var currentSorts:Object={ed_object_id:'ASC'};
+			private var currentOrders:Object={ed_object_id:1};
+			private var currentSortSeq:int=0;
+			
+			
+			private var confirmReport:ActionDialog;
+			private var confirmSave:ActionDialog;
+			private var errorDialog:ErrorDialog;
+			
+			//private var exportContents:String="";
+			private var f:FileReference = new FileReference();
+			
+			
+			[Bindable] public var expiryDateDetailLineList:remoteDataService = new remoteDataService( "ExpiryDateDetailService.getExpiryDateDetailLines", null, expiryDateDetailLineList_resultHandler );
+			
+			private var deleteAction:remoteDataService = new remoteDataService( "ExpiryDateDetailService.delete", null, deleteData_resultHandler, 1 );
+			private var createAction:remoteDataService = new remoteDataService( "ExpiryDateDetailService.create", null, createData_resultHandler, 1 );
+			private var updateAction:remoteDataService = new remoteDataService( "ExpiryDateDetailService.update", null, updateData_resultHandler, 1 );
+			
+			private var expiryDateDetailKeyChecker:remoteDataService = new remoteDataService( "ExpiryDateDetailService.isExpiryDateDetailExisted", null, expiryDateDetailKeyChecker_resultHandler, 2 );
+			private var expiryDateDetailLineKeyChecker:remoteDataService = new remoteDataService( "ExpiryDateDetailService.isExpiryDateDetailLineExisted", null, expiryDateDetailLineKeyChecker_resultHandler, 2 );
+			
+			
+			[Bindable] private var companyTypeList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCompanyTypes", null, lookupCompanyType_resultHandler );
+			[Bindable] private var expiryDateTargetList:remoteDataService = new remoteDataService( "GenericExpiryDateService.getExpiryDateTargets", null, getExpiryDateTargets_resultHandler );
+			[Bindable] private var targetCompanyList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCompany", null, lookupTargetCompany_resultHandler );
+			[Bindable] private var expiryDateTypeList:remoteDataService = new remoteDataService( "ExpiryDateDetailService.lookupExpiryDateDetailType", null, lookupExpiryDateDetailType_resultHandler );
+			
+			[Bindable] private var availableTypes:ArrayCollection=new ArrayCollection();
+			
+			
+			public var parentParams:Object = new Object();
+			public var mainListSelection:int = -1;
+			private var _saveButtonClicked:Boolean=false;
+			
+			public var isPopupWindow:Boolean=false;
+			public var deftime:String="23:59:59";
+
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				trace ("-------------start creationCompleteHandler");
+				
+				this.companyTypeList.service();
+				this.expiryDateTargetList.service();
+				this.targetCompanyList.service();
+				
+				// get the default expiry date detail type template
+				this.expiryDateTypeList.service(currentExpiryTargetCode);
+				
+				trace ("------------End creationCompleteHandler");
+					
+			}
+			
+			
+			protected function lookupExpiryDateDetailType_resultHandler():void
+			{
+				//this.expirydatedetail_line_addHandler();
+				this.adjustAvailableTypes();
+			}
+			
+			protected function adjustAvailableTypes():void
+			{
+				this.availableTypes.removeAll();
+				
+				var grp_base:String="";
+				for each( var o:Object in this.expiryDateTypeList.source )
+				{
+					var used:Boolean=false;
+					for each( var r:Object in this.expiryDateDetailLineGrid.dataProvider )
+					{
+						if ( 
+							( o.hasOwnProperty("edt_target_code") && r.hasOwnProperty("ed_target_code") && o.edt_target_code == r.ed_target_code )
+						 && ( o.hasOwnProperty("edt_type_code") && r.hasOwnProperty("ed_type_code") && o.edt_type_code == r.ed_type_code )
+						)
+						{
+							used = true;
+							break;
+						}
+					}
+					if ( used == false )
+					{
+						var obj:Object;
+						obj = ObjectUtil.copy(o);
+						this.availableTypes.addItem(obj);
+					}
+				}
+				
+				this.expiryDateTypeLineGrid.dataProvider = null;
+				this.expiryDateTypeLineGrid.dataProvider = availableTypes;
+				
+			}
+			
+			
+			public function doNothing():void
+			{
+			}
+			
+			
+			protected function lookupCompanyType_resultHandler( ):void
+			{
+				global.gCompanyTypes = this.companyTypeList;
+			}
+			
+			protected function getExpiryDateTargets_resultHandler():void
+			{
+				for each ( var obj:Object in this.expiryDateTargetList.source )
+				{
+					var txt:String = obj['edta_target_desc'];
+					obj['edta_target_desc'] = global.getCurrentLanguageContent( txt, global.LanguageCode );
+				}
+				
+				var idInFormCreate:int=-1;
+				idInFormCreate = tools.getItemIndexFromCode( this.currentExpiryTargetCode, this.expiryDateTargetList, "edta_target_code");
+				this.ed_target_code.selectedIndex = idInFormCreate;
+			}
+			
+			protected function lookupTargetCompany_resultHandler():void
+			{
+				var idInFormCreate:int=-1;
+				idInFormCreate = tools.getItemIndexFromCode( this.currentExpiryCompanyCode, targetCompanyList, "cmpy_code");
+				this.ed_cmpy_code.selectedIndex = idInFormCreate;
+			}
+			
+			
+			protected function expiryDateDetailLineList_resultHandler():void
+			{
+				trace ("--------------Start expiryDateDetailLineList_resultHandler");
+				
+				if ( expiryDateDetailLineList.length>0 )
+				{
+					this.expiryDateDetailLineGrid.dataProvider = null;
+					this.expiryDateDetailLineGrid.dataProvider = expiryDateDetailLineList;
+					currentState = "edit";
+					this.btn_save.enabled = this.canUpdate;
+				}
+				else
+				{
+					this.expiryDateDetailLineGrid.dataProvider = null;
+					currentState = "create";
+					this.btn_save.enabled = this.canCreate;
+				}
+				
+				this.btn_createLine.enabled = false;
+				this.btn_deleteLine.enabled = false;
+				this.btn_updateLine.enabled = false;
+				if ( currentState != 'detail' )
+				{
+					this.adjustCreateLineButton();
+				}
+				
+				this.adjustAvailableTypes();
+//				this.expirydatedetail_line_addHandler();
+				trace ("----------------End expiryDateDetailLineList_resultHandler");
+			}
+			
+			protected function adjustCreateLineButton():void
+			{
+				if ( this.expiryDateTypeLineGrid.selectedItems!=null && this.expiryDateTypeLineGrid.selectedItems.length > 0 )
+				{
+					this.btn_createLine.enabled = isAddLineButtonEnabled;
+				}
+				else
+				{
+					this.btn_createLine.enabled = false;
+				}
+			}
+			
+			protected function expiryDateTypeLineGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				this.adjustCreateLineButton();
+			}
+			
+			protected function expiryDateDetailLineGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				this.adjustCreateLineButton();
+				
+				if ( expiryDateDetailLineGrid.selectedIndex < 0 )
+				{
+					this.btn_deleteLine.enabled = false;
+					this.btn_updateLine.enabled = false;
+					return;
+				}
+				
+				tools.pr( expiryDateDetailLineGrid.selectedItem );
+				
+				if ( expiryDateDetailLineGrid.selectedItem.ed_action == '+' )
+				{
+					this.btn_deleteLine.enabled = true;
+					this.btn_updateLine.enabled = false;
+				}
+				else if ( expiryDateDetailLineGrid.selectedItem.ed_action == '-' )
+				{
+					this.btn_deleteLine.enabled = true;
+					this.btn_updateLine.enabled = false;
+				}
+				else if ( expiryDateDetailLineGrid.selectedItem.ed_action == '*' )
+				{
+					this.btn_deleteLine.enabled = true;
+					this.btn_updateLine.enabled = false;
+				}
+				else
+				{
+					this.btn_deleteLine.enabled = true;
+					this.btn_updateLine.enabled = true;
+				}
+				
+				
+				
+				trace( "expiryDateDetailLineGrid.selectedItem", expiryDateDetailLineGrid.selectedItem );
+
+				var target_code:String="";
+				var cmpy_code:String="";
+				var object_id:String="";
+				var type_code:String="";
+				target_code = expiryDateDetailLineGrid.selectedItem.ed_target_code;
+				cmpy_code = expiryDateDetailLineGrid.selectedItem.ed_cmpy_code;
+				object_id = expiryDateDetailLineGrid.selectedItem.ed_object_id;
+				type_code = expiryDateDetailLineGrid.selectedItem.ed_type_code;
+				
+				expiryDateDetailLineKeyChecker.service( target_code, cmpy_code, object_id, type_code );
+			}
+			
+			protected function cancel_clickHandler():void
+			{
+				clearDetail();
+				currentState="detail";
+				this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE,true, false));
+				
+			}			
+
+			
+			
+			private function findByPrimaryKey(target_code:String, cmpy_code:String, object_id:String):void
+			{
+				
+				this.expiryDateDetailLineList.service( target_code, cmpy_code, object_id );
+			}
+			
+			protected function clearDetail(): void
+			{
+			}			
+			
+			private function editRecord():void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				if ( this.checkItemFields() == false )
+				{
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.ed_object_id = this.ed_object_id.text;
+				
+				if (ed_target_code.selectedIndex>=0)
+				{
+					obj.ed_target_code = this.expiryDateTargetList[ed_target_code.selectedIndex].edta_target_code;
+				}
+				else
+				{
+					obj.ed_target_code = this.currentExpiryTargetCode;
+				}
+				
+				if (ed_cmpy_code.selectedIndex>=0)
+				{
+					obj.ed_cmpy_code = this.targetCompanyList[ed_cmpy_code.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.ed_cmpy_code = this.currentExpiryCompanyCode;
+				}
+				
+				
+				obj.has_items = 0;
+				var items:ArrayCollection=new ArrayCollection();
+				var x:Object;
+				var actions:ArrayCollection=new ArrayCollection();
+				var action:Object;
+				for each ( x in this.expiryDateDetailLineGrid.dataProvider)
+				{
+					action = new Object();
+					action.option = 0;  // do nothing
+					trace( "********X", x.ed_target_code, x.ed_cmpy_code, x.ed_object_id, x.ed_action);
+					if ( x.ed_action == '+' )
+					{
+						action.option = 1;
+					}
+					else if ( x.ed_action == '*' )
+					{
+						action.option = 2;
+					}
+					else if ( x.ed_action == '-' )
+					{
+						action.option = 3;
+					}
+					else
+					{
+						action.option = 0;
+					}
+					
+					actions.addItem(action);
+					if ( action.option == 1 )
+					{
+						x.ed_target_code = obj.ed_target_code;
+						x.ed_cmpy_code = obj.ed_cmpy_code;
+						x.ed_object_id = obj.ed_object_id;
+					}
+					items.addItem( Object(x) );
+					obj.has_items = 1;
+					trace( "********X", x.ed_target_code, x.ed_cmpy_code, x.ed_object_id, "***********action", action.option);
+				}
+				obj.edd_items = items.source;
+				obj.actions = actions.source;
+				
+				updateAction.service( obj );
+			}
+			
+			protected function updateData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.updateAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var target_code:String="";
+				var cmpy_code:String="";
+				var object_id:String="";
+				
+				object_id = this.ed_object_id.text;
+				if (ed_target_code.selectedIndex>=0)
+				{
+					target_code = this.expiryDateTargetList[ed_target_code.selectedIndex].edta_target_code;
+				}
+				if (ed_cmpy_code.selectedIndex>=0)
+				{
+					cmpy_code = this.targetCompanyList[ed_cmpy_code.selectedIndex].cmpy_code;
+				}
+				
+				currentState="detail";
+				findByPrimaryKey( target_code, cmpy_code, object_id );
+			}
+			
+			private function doDelete(): void
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				
+				/*
+				TODO - is this product used by other records?
+				*/
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				else
+				{
+					var canDelete:DeleteDialog = new DeleteDialog(deleteRecord, hasPassword);
+				}
+			}
+			
+			private function deleteRecord():void
+			{
+				var obj:Object = new Object();
+				
+				
+				obj.ed_object_id = this.ed_object_id.text;
+				
+				if (ed_target_code.selectedIndex>=0)
+				{
+					obj.ed_target_code = this.expiryDateTargetList[ed_target_code.selectedIndex].edta_target_code;
+				}
+				else
+				{
+					obj.ed_target_code = this.currentExpiryTargetCode;
+				}
+				
+				if (ed_cmpy_code.selectedIndex>=0)
+				{
+					obj.ed_cmpy_code = this.targetCompanyList[ed_cmpy_code.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.ed_cmpy_code = this.currentExpiryCompanyCode;
+				}
+
+				deleteAction.service( obj );
+			}
+			
+			protected function deleteData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.deleteAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+				}
+				
+				var target_code:String="";
+				var cmpy_code:String="";
+				var object_id:String="";
+				
+				object_id = this.ed_object_id.text;
+				if (ed_target_code.selectedIndex>=0)
+				{
+					target_code = this.expiryDateTargetList[ed_target_code.selectedIndex].edta_target_code;
+				}
+				if (ed_cmpy_code.selectedIndex>=0)
+				{
+					cmpy_code = this.targetCompanyList[ed_cmpy_code.selectedIndex].cmpy_code;
+				}
+				
+				currentState="detail";
+				findByPrimaryKey( target_code, cmpy_code, object_id );
+			}
+			
+			private function checkExpiryDateDetailKey():void
+			{
+				var target_code:String="";
+				var cmpy_code:String="";
+				var object_id:String="";
+				
+				object_id = this.ed_object_id.text;
+				if (ed_target_code.selectedIndex>=0)
+				{
+					target_code = this.expiryDateTargetList[ed_target_code.selectedIndex].edta_target_code;
+				}
+				if (ed_cmpy_code.selectedIndex>=0)
+				{
+					cmpy_code = this.targetCompanyList[ed_cmpy_code.selectedIndex].cmpy_code;
+				}
+				
+				expiryDateDetailKeyChecker.service( target_code, cmpy_code, object_id );
+			}
+			
+			protected function expiryDateDetailKeyChecker_resultHandler( ):void
+			{
+				if ( expiryDateDetailKeyChecker.dataInteger > 0 )
+				{
+					global.msgWarning( resourceManager.getString('default','ALERT__EXPIRY_DATE_DETAIL_EXIST') );
+					this.btn_save.enabled = this.canCreate;
+				}
+				else
+				{
+					if ( this._saveButtonClicked == true )
+					{
+						this.createRecord();
+					}
+				}
+				
+				this._saveButtonClicked = false;
+				
+			}
+			
+			protected function expiryDateDetailLineKeyChecker_resultHandler( ):void
+			{
+				if ( expiryDateDetailLineKeyChecker.dataInteger > 0 )
+				{
+					//global.msgWarning( resourceManager.getString('default','ALERT__TANKGROUP_ITEM_EXIST') );
+				}
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				// TODO.....
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return index;
+			}
+			
+			private function createRecord():void
+			{
+				var prod_num:int;
+				
+				prod_num = expiryDateDetailKeyChecker.dataInteger;
+				if ( prod_num > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__EXPIRY_DATE_DETAIL_EXIST') );
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				if ( this.checkItemFields() == false )
+				{
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.ed_object_id = this.ed_object_id.text;
+				
+				if (ed_target_code.selectedIndex>=0)
+				{
+					obj.ed_target_code = this.expiryDateTargetList[ed_target_code.selectedIndex].edta_target_code;
+				}
+				else
+				{
+					obj.ed_target_code = this.currentExpiryTargetCode;
+				}
+				
+				if (ed_cmpy_code.selectedIndex>=0)
+				{
+					obj.ed_cmpy_code = this.targetCompanyList[ed_cmpy_code.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.ed_cmpy_code = this.currentExpiryCompanyCode;
+				}
+				
+				
+				obj.has_items = 0;
+				var items:ArrayCollection=new ArrayCollection();
+				var x:Object;
+				for each ( x in this.expiryDateDetailLineGrid.dataProvider)
+				{
+					trace( "********X", x.ed_target_code, x.ed_cmpy_code, x.ed_object_id);
+					
+					//if ( x.ed_action == '+' )
+					{
+						x.ed_target_code = obj.ed_target_code;
+						x.ed_cmpy_code = obj.ed_cmpy_code;
+						x.ed_object_id = obj.ed_object_id;
+						
+						items.addItem(x);
+						obj.has_items = 1;
+					}
+				}
+				obj.edd_items = items.source;
+				
+				createAction.service( obj );
+			}
+			
+			protected function createData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.createAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				}
+				
+				var target_code:String="";
+				var cmpy_code:String="";
+				var object_id:String="";
+				
+				object_id = this.ed_object_id.text;
+				if (ed_target_code.selectedIndex>=0)
+				{
+					target_code = this.expiryDateTargetList[ed_target_code.selectedIndex].edta_target_code;
+				}
+				if (ed_cmpy_code.selectedIndex>=0)
+				{
+					cmpy_code = this.targetCompanyList[ed_cmpy_code.selectedIndex].cmpy_code;
+				}
+				
+				currentState="detail";
+				findByPrimaryKey( target_code, cmpy_code, object_id );
+			}
+			
+			public function getArrayCollection(obj:Object):ArrayCollection
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				temp.addItem( obj );
+				return temp;
+			}
+			
+			public function convertDateToLocaleString(dt:String):String
+			{
+				var dt_string:String;
+				var dt_date:Date = new Date();
+				
+				dt_string = ""; 
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+					dt_string = dateFormatter.format( dt_date);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_string;
+			}
+			
+			public function convertDateToLocale(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_date;
+			}
+			
+			public function convertDateToLocaleLong(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					//dt_date = DateField.stringToDate(dt,"YYYY-MM-DD HH:NN:SS");
+					dt_date = DateTimeFunc.createDate(
+						int(dt.substr(0, 4))
+						, int(dt.substr(5, 2))
+						, int(dt.substr(8, 2))
+						, int(dt.substr(11, 2))
+						, int(dt.substr(14, 2))
+						, int(dt.substr(17, 2))
+					);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_date;
+			}
+			
+			public function getDefaultDate():Date
+			{
+				var now_date:Date;
+				var def_date:Date;
+				
+				now_date = new Date();
+				def_date = DateTimeFunc.dateAdd( "yyyy", 1, now_date );
+				
+				//trace ("getDefaultDate", now_date, def_date);
+				
+				return def_date;
+			}
+			
+			protected function view_detailsHandler(event:FlexEvent):void
+			{
+			}
+			
+			
+			protected function dateLabelFunction(item:Object, column:GridColumn):String
+			{
+				var ret:String = "";
+				
+				ret = item [column.dataField];
+				return ret;
+			}
+			
+			protected function save_clickHandler():void
+			{
+				this.btn_save.enabled = false;
+				doSave();
+				//this.confirmSave = new ActionDialog( doSave, doNothing, resourceManager.getString('default','CONFIRM_SAVE_RATIOS') );
+				
+				//this.startLoadingPages();
+			}
+			
+			protected function doSave():void
+			{
+				if (currentState == "create")
+				{
+					//createRecord();
+					this._saveButtonClicked = true;
+					checkExpiryDateDetailKey();
+				}
+				if (currentState == "edit")
+				{
+					editRecord();
+				}
+				if (currentState == "detail")
+				{
+					editRecord();
+				}
+			}
+			
+			public function closeDialogHandler():void
+			{
+			}
+			
+			
+			public function checkItemFields():Boolean
+			{
+				var x:Object;
+				var obj:Object;
+				var errGrid:ArrayCollection=new ArrayCollection();
+				
+				if ( errGrid.length > 0 )
+				{
+					errorDialog = new ErrorDialog( closeErrorDialog, resourceManager.getString('default','VALIDATION__PROMPT'), errGrid, resourceManager.getString('default','VALIDATION__TITLE'));
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+			
+			public function closeErrorDialog():void
+			{
+				PopUpManager.removePopUp(this.errorDialog.dialog );	
+			}
+			
+			
+			
+			protected function expirydatedetail_line_updHandler():void
+			{
+				this.btn_createLine.enabled = false;
+				this.btn_updateLine.enabled = false;
+				this.btn_deleteLine.enabled = false;
+				
+				if ( this.expiryDateDetailLineGrid.selectionMode == "multipleRows" )
+				{
+					this.updateMultipleExpiryDateDetailLines();
+				}
+				else
+				{
+					this.updateSingleExpiryDateDetailLine();
+				}
+				
+				this.adjustAvailableTypes();
+				this.adjustCreateLineButton();
+			}
+			
+			protected function updateMultipleExpiryDateDetailLines():void
+			{
+				if ( expiryDateDetailLineGrid.selectedItems==null || expiryDateDetailLineGrid.selectedItems.length == 0 )
+				{
+					return;
+				}
+				
+				var x:Object;
+				var y:Object;
+				var updateInGrid:Boolean=false;
+				var len:int;
+				var i;
+				
+				len = expiryDateDetailLineGrid.dataProvider.length;
+				for ( i=len-1; i>=0; i-=1 )
+				{
+					x = expiryDateDetailLineGrid.dataProvider.getItemAt( i );
+					for each(y in expiryDateDetailLineGrid.selectedItems)
+					{
+						if ( x.ed_target_code == y.ed_target_code 
+							&& x.ed_cmpy_code == y.ed_cmpy_code
+							&& x.ed_type_code == y.ed_type_code
+							&& x.ed_object_id == y.ed_object_id )
+						{
+							if ( y.ed_action == '+' )
+							{
+								;
+							}
+							else if ( y.ed_action == '-' )
+							{
+								;
+							}
+							else if ( y.ed_action == '*' )
+							{
+								;
+							}
+							else
+							{
+								x.ed_action = '*';
+								y.ed_action = '*';
+								updateInGrid = true;
+							}
+						}
+					}
+				}
+				
+				var temp:* = expiryDateDetailLineGrid.dataProvider;
+				expiryDateDetailLineGrid.dataProvider = null;
+				expiryDateDetailLineGrid.dataProvider = temp;
+				
+				if ( updateInGrid == true )
+				{
+					this.adjustExpiryDateDetailLineList();	//???? may not need 
+				}
+				
+			}
+			
+			protected function updateSingleExpiryDateDetailLine():void
+			{
+				if ( expiryDateDetailLineGrid.selectedIndex < 0 )
+				{
+					return;
+				}
+				
+				var x:Object;
+				var updateInGrid:Boolean=false;
+				
+				for each(x in expiryDateDetailLineGrid.dataProvider)
+				{
+					if ( x.ed_target_code == expiryDateDetailLineGrid.selectedItem.ed_target_code 
+						&& x.ed_cmpy_code == expiryDateDetailLineGrid.selectedItem.ed_cmpy_code 
+						&& x.ed_type_code == expiryDateDetailLineGrid.selectedItem.ed_type_code 
+						&& x.ed_object_id == expiryDateDetailLineGrid.selectedItem.ed_object_id )
+					{
+						if ( expiryDateDetailLineGrid.selectedItem.ed_action == '+' )
+						{
+							;
+						}
+						else if ( expiryDateDetailLineGrid.selectedItem.ed_action == '-' )
+						{
+							;
+						}
+						else if ( expiryDateDetailLineGrid.selectedItem.ed_action == '*' )
+						{
+							;
+						}
+						else
+						{
+							x.ed_action = '-';
+							expiryDateDetailLineGrid.selectedItem.ed_action = '-';
+							updateInGrid = true;
+						}
+						break;
+					}
+				}
+				
+				var temp:* = expiryDateDetailLineGrid.dataProvider;
+				expiryDateDetailLineGrid.dataProvider = null;
+				expiryDateDetailLineGrid.dataProvider = temp;
+				
+				if ( updateInGrid == true )
+				{
+					this.adjustExpiryDateDetailLineList();
+				}
+				
+			}
+			
+			protected function expirydatedetail_line_delHandler():void
+			{
+				this.btn_createLine.enabled = false;
+				this.btn_deleteLine.enabled = false;
+				this.btn_updateLine.enabled = false;
+				
+				if ( this.expiryDateDetailLineGrid.selectionMode == "multipleRows" )
+				{
+					this.deleteMultipleExpiryDateDetailLines();
+				}
+				else
+				{
+					this.deleteSingleExpiryDateDetailLine();
+				}
+				
+				this.adjustAvailableTypes();
+				this.adjustCreateLineButton();
+			}
+			
+			protected function deleteMultipleExpiryDateDetailLines():void
+			{
+				if ( expiryDateDetailLineGrid.selectedItems==null || expiryDateDetailLineGrid.selectedItems.length == 0 )
+				{
+					return;
+				}
+				
+				var x:Object;
+				var y:Object;
+				var removedFromGrid:Boolean=false;
+				var len:int;
+				var i;
+				
+				len = expiryDateDetailLineGrid.dataProvider.length;
+				for ( i=len-1; i>=0; i-=1 )
+				{
+					x = expiryDateDetailLineGrid.dataProvider.getItemAt( i );
+					for each(y in expiryDateDetailLineGrid.selectedItems)
+					{
+						if ( x.ed_target_code == y.ed_target_code 
+							&& x.ed_cmpy_code == y.ed_cmpy_code 
+							&& x.ed_type_code == y.ed_type_code 
+							&& x.ed_object_id == y.ed_object_id )
+						{
+							if ( y.ed_action == '+' )
+							{
+								this.expiryDateDetailLineGrid.dataProvider.removeItemAt( i );
+								removedFromGrid = true;
+							}
+							else if ( y.ed_action == '-' )
+							{
+								x.ed_action = '';
+								y.ed_action = '';
+							}
+							else if ( y.ed_action == '*' )
+							{
+								x.ed_action = '';
+								y.ed_action = '';
+							}
+							else
+							{
+								x.ed_action = '-';
+								y.ed_action = '-';
+							}
+						}
+					}
+				}
+				
+				var temp:* = expiryDateDetailLineGrid.dataProvider;
+				expiryDateDetailLineGrid.dataProvider = null;
+				expiryDateDetailLineGrid.dataProvider = temp;
+				
+				if ( removedFromGrid == true )
+				{
+					this.adjustExpiryDateDetailLineList();	//???? may not need 
+				}
+				
+			}
+			
+			protected function deleteSingleExpiryDateDetailLine():void
+			{
+				if ( expiryDateDetailLineGrid.selectedIndex < 0 )
+				{
+					return;
+				}
+				
+				var x:Object;
+				var removedFromGrid:Boolean=false;
+				
+				for each(x in expiryDateDetailLineGrid.dataProvider)
+				{
+					if ( x.ed_target_code == expiryDateDetailLineGrid.selectedItem.ed_target_code 
+						&& x.ed_cmpy_code == expiryDateDetailLineGrid.selectedItem.ed_cmpy_code 
+						&& x.ed_type_code == expiryDateDetailLineGrid.selectedItem.ed_type_code 
+						&& x.ed_object_id == expiryDateDetailLineGrid.selectedItem.ed_object_id )
+					{
+						if ( expiryDateDetailLineGrid.selectedItem.ed_action == '+' )
+						{
+							this.expiryDateDetailLineGrid.dataProvider.removeItemAt(expiryDateDetailLineGrid.selectedIndex);
+							removedFromGrid = true;
+						}
+						else if ( expiryDateDetailLineGrid.selectedItem.ed_action == '-' )
+						{
+							x.ed_action = '';
+							expiryDateDetailLineGrid.selectedItem.ed_action = '';
+						}
+						else if ( expiryDateDetailLineGrid.selectedItem.ed_action == '*' )
+						{
+							x.ed_action = '';
+							expiryDateDetailLineGrid.selectedItem.ed_action = '';
+						}
+						else
+						{
+							x.ed_action = '-';
+							expiryDateDetailLineGrid.selectedItem.ed_action = '-';
+						}
+						break;
+					}
+				}
+				
+				var temp:* = expiryDateDetailLineGrid.dataProvider;
+				expiryDateDetailLineGrid.dataProvider = null;
+				expiryDateDetailLineGrid.dataProvider = temp;
+				
+				if ( removedFromGrid == true )
+				{
+					this.adjustExpiryDateDetailLineList();
+				}
+				
+			}
+			
+			protected function expirydatedetail_line_addHandler():void
+			{
+				this.btn_createLine.enabled = false;
+				this.btn_updateLine.enabled = false;
+				this.btn_deleteLine.enabled = false;
+				
+				if ( currentState == "create" )
+				{
+					this.addMultipleExpiryDateDetailLines();
+					//this.addDefaultExpiryDateDetailLines();
+				}
+				else
+				{
+					this.addMultipleExpiryDateDetailLines();
+					//this.addDefaultExpiryDateDetailLines();
+					//this.addSingleExpiryDateDetailLine();
+				}
+				
+				this.adjustAvailableTypes();
+				this.adjustCreateLineButton();
+			}
+			
+			protected function addMultipleExpiryDateDetailLines():void
+			{
+				var x:Object;
+				var y:Object;
+				var next_id:int;
+				var i:int;
+				
+				if ( this.expiryDateDetailLineGrid.dataProvider == null )
+				{
+					this.expiryDateDetailLineGrid.dataProvider = new ArrayCollection();
+				}
+				
+				if ( this.expiryDateTypeLineGrid.selectedItems!=null && this.expiryDateTypeLineGrid.selectedItems.length > 0 )
+				{
+					next_id = this.expiryDateDetailLineGrid.dataProvider.length;
+					
+					var obj:Object = new Object();
+					
+					
+					obj.ed_object_id = this.ed_object_id.text;
+					
+					if (ed_target_code.selectedIndex>=0)
+					{
+						obj.ed_target_code = this.expiryDateTargetList[ed_target_code.selectedIndex].edta_target_code;
+					}
+					else
+					{
+						obj.ed_target_code = this.currentExpiryTargetCode;
+					}
+					
+					if (ed_cmpy_code.selectedIndex>=0)
+					{
+						obj.ed_cmpy_code = this.targetCompanyList[ed_cmpy_code.selectedIndex].cmpy_code;
+					}
+					else
+					{
+						obj.ed_cmpy_code = this.currentExpiryCompanyCode;
+					}
+					
+					for each ( y in this.expiryDateTypeLineGrid.selectedItems )
+					{
+						x = new Object();
+						
+						x.ed_action 			= '+';
+						x.ed_target_code		= obj.ed_target_code;
+						x.ed_cmpy_code			= obj.ed_cmpy_code;
+						x.ed_object_id			= obj.ed_object_id;
+						
+						x.ed_type_code 			= y.edt_type_code;
+						x.ed_type_desc 			= y.edt_type_desc;
+						x.ed_exp_date  			= "";
+						x.ed_status    			= y.edt_status;
+						
+						x.ed_type_defvalue 		= y.edt_def_exp_date;
+						x.ed_type_format 		= y.edt_date_fmt;
+						x.ed_type_timeflag 		= y.edt_time_enabled;
+						x.ed_type_reject 		= y.edt_reject;
+						
+						if ( y.edt_def_exp_date != null && y.edt_def_exp_date != "" )
+						{
+							//x.ed_exp_date  			= y.edt_def_exp_date;
+							x.ed_exp_date  			= global.convertDateTimeToIsoString( convertDateToLocaleLong(y.edt_def_exp_date), y.edt_time_enabled, deftime );
+						}
+						
+						this.expiryDateDetailLineGrid.dataProvider.addItem(x);
+						
+						//next_id += 1;
+						
+					}
+					
+					this.adjustExpiryDateDetailLineList();
+				}
+				else
+				{
+					this.addSingleExpiryDateDetailLine();
+				}
+			}
+			
+			protected function addSingleExpiryDateDetailLine():void
+			{
+				var x:Object;
+				var y:Object;
+				var next_id:int=0;
+				
+				// find the next id
+				if ( this.expiryDateDetailLineGrid.dataProvider == null )
+				{
+					this.expiryDateDetailLineGrid.dataProvider = new ArrayCollection();
+				}
+				next_id = this.expiryDateDetailLineGrid.dataProviderLength;
+				if ( next_id >= this.expiryDateTypeList.length )
+				{
+					return;
+				}
+				
+				x = new Object();
+				
+				x.ed_action 			= '+';
+				
+				x.ed_object_id = this.ed_object_id.text;
+				
+				if (ed_target_code.selectedIndex>=0)
+				{
+					x.ed_target_code = this.expiryDateTargetList[ed_target_code.selectedIndex].edta_target_code;
+				}
+				else
+				{
+					x.ed_target_code = this.currentExpiryTargetCode;
+				}
+				
+				if (ed_cmpy_code.selectedIndex>=0)
+				{
+					x.ed_cmpy_code = this.targetCompanyList[ed_cmpy_code.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					x.ed_cmpy_code = this.currentExpiryCompanyCode;
+				}
+				
+				y = this.getNextExpiryDateType();
+				x.ed_type_code 		= y.edt_type_code;
+				x.ed_type_desc 		= y.edt_type_desc;
+				x.ed_exp_date  		= "";
+				x.ed_status    		= y.edt_status;
+				
+				x.ed_type_defvalue 	= y.edt_def_exp_date;
+				x.ed_type_format 	= y.edt_date_fmt;
+				x.ed_type_timeflag 	= y.edt_time_enabled;
+				x.ed_type_reject 	= y.edt_reject;
+				
+				if ( y.edt_def_exp_date != null && y.edt_def_exp_date != "" )
+				{
+					//x.ed_exp_date  		= y.edt_def_exp_date;
+					x.ed_exp_date  		= global.convertDateTimeToIsoString( convertDateToLocaleLong(y.edt_def_exp_date), y.edt_time_enabled, deftime );
+				}
+
+				this.expiryDateDetailLineGrid.dataProvider.addItem(x);
+				
+				this.adjustExpiryDateDetailLineList();
+			}
+			
+			protected function addDefaultExpiryDateDetailLines():void
+			{
+				var x:Object;
+				var y:Object;
+				var next_id:int;
+				var i:int;
+				
+				if ( this.expiryDateDetailLineGrid.dataProvider == null )
+				{
+					this.expiryDateDetailLineGrid.dataProvider = new ArrayCollection();
+				}
+				
+				if ( this.expiryDateDetailLineGrid.dataProvider.length < this.expiryDateTypeList.length && this.expiryDateTypeList.length > 0 )
+				{
+					next_id = this.expiryDateDetailLineGrid.dataProvider.length;
+					
+					var obj:Object = new Object();
+					
+					
+					obj.ed_object_id = this.ed_object_id.text;
+					
+					if (ed_target_code.selectedIndex>=0)
+					{
+						obj.ed_target_code = this.expiryDateTargetList[ed_target_code.selectedIndex].edta_target_code;
+					}
+					else
+					{
+						obj.ed_target_code = this.currentExpiryTargetCode;
+					}
+					
+					if (ed_cmpy_code.selectedIndex>=0)
+					{
+						obj.ed_cmpy_code = this.targetCompanyList[ed_cmpy_code.selectedIndex].cmpy_code;
+					}
+					else
+					{
+						obj.ed_cmpy_code = this.currentExpiryCompanyCode;
+					}
+					
+					for ( i=next_id; i<this.expiryDateTypeList.length; i++ )
+					{
+						//y = this.expiryDateTypeList.getItemAt(i);
+						y = this.getNextExpiryDateType();
+						x = new Object();
+						
+						x.ed_action 			= '+';
+						x.ed_target_code		= obj.ed_target_code;
+						x.ed_cmpy_code			= obj.ed_cmpy_code;
+						x.ed_object_id			= obj.ed_object_id;
+						
+						x.ed_type_code 			= y.edt_type_code;
+						x.ed_type_desc 			= y.edt_type_desc;
+						x.ed_exp_date  			= "";
+						x.ed_status    			= y.edt_status;
+						
+						x.ed_type_defvalue 		= y.edt_def_exp_date;
+						x.ed_type_format 		= y.edt_date_fmt;
+						x.ed_type_timeflag 		= y.edt_time_enabled;
+						x.ed_type_reject 		= y.edt_reject;
+						
+						if ( y.edt_def_exp_date != null && y.edt_def_exp_date != "" )
+						{
+							//x.ed_exp_date  			= y.edt_def_exp_date;
+							x.ed_exp_date  			= global.convertDateTimeToIsoString( convertDateToLocaleLong(y.edt_def_exp_date), y.edt_time_enabled, deftime );
+						}
+						
+						this.expiryDateDetailLineGrid.dataProvider.addItem(x);
+						
+						//next_id += 1;
+						
+					}
+					
+					this.adjustExpiryDateDetailLineList();
+				}
+				else
+				{
+					this.addSingleExpiryDateDetailLine();
+				}
+				
+			}
+			
+			
+			protected function adjustExpiryDateDetailLineList():void
+			{
+			}
+			
+			protected function getNextExpiryDateType():Object
+			{
+				var rtnObj:Object=null;
+				var used:Boolean=false;
+				
+				for each ( var typ:Object in this.expiryDateTypeList.source )
+				{
+					trace( '...................getNextExpiryDateType.........................', typ.edt_type_code);
+					used = false;
+					for each ( var o:Object in this.expiryDateDetailLineGrid.dataProvider )
+					{
+						if ( typ.edt_type_code == o.ed_type_code )
+						{
+							used = true;
+							break;
+						}
+					}
+					if ( used == false )
+					{
+						rtnObj = typ;	
+						break;
+					}
+				}
+				
+				return rtnObj;
+			}
+			
+			
+			
+			public function toggleCellEditability(event:GridEvent):void
+			{
+				var i:int;
+				var cln:GridColumn;
+				var obj:Object;
+				var msg:String;
+				
+				//this.toggleDeleteButton();
+				
+				if ( event.rowIndex < 0 || event.columnIndex < 0 || event.rowIndex > this.expiryDateDetailLineGrid.dataProviderLength-1)
+				{
+					trace ("***********current cell, out of range:", event.columnIndex, event.rowIndex);
+					return;	
+				}
+				
+				obj = this.expiryDateDetailLineGrid.dataProvider[event.rowIndex];
+				if ( obj == null )
+				{
+					return;
+				}
+				
+				trace ("***********current cell, in the range:", event.columnIndex, event.rowIndex);
+				
+				for ( i=0; i<this.expiryDateDetailLineGrid.columns.length; i++ )
+				{
+					cln = (this.expiryDateDetailLineGrid.columns.getItemAt(i) as GridColumn);
+					
+					//trace ("***********current row action:", event.rowIndex, ">>"+view.itemList.dataProvider[event.rowIndex].action+"<<");
+					
+					// if  no action is initialized, not editable
+					if ( obj.hasOwnProperty( "ed_action" ) )
+					{
+						if ( obj.ed_action == "" || obj.ed_action == " " || obj.ed_action == "-" )
+						{
+							cln.editable = false;
+							continue;
+						}
+					}
+					else
+					{
+						cln.editable = false;
+						continue;
+					}
+					
+					
+					if ( i != event.columnIndex )
+					{
+						cln.editable = false;
+					}
+					else
+					{
+						if ( cln.dataField == "ed_exp_date" || cln.dataField == "ed_status" )
+						{
+							if ( obj.ed_action == "+" || obj.ed_action == "*" )
+							{
+								cln.editable = true;
+							}
+							else
+							{
+								cln.editable = false;
+							}
+						}
+						else
+						{
+							cln.editable = false;
+						}
+					}
+				}
+				
+				
+			}
+			
+			protected function expiryDateDetailLineGrid_gridClickHandler(event:GridEvent):void
+			{
+				// TODO Auto-generated method stub
+				this.toggleCellEditability(event);
+			}
+			
+			protected function cleanInvalidCharsFromText( txt:String, charset:String, maxlen:int ):String
+			{
+				var new_txt:String="";
+				var i:int;
+				var len:int;
+				var invalid:Boolean = false;
+				var errors:String="";
+				var index:int=0;
+				
+				len = txt.length;
+				for( i=0; i<len; i++ )
+				{
+					var c:String = txt.charAt(i);
+					if ( charset.indexOf(c) >= 0 || charset.length==0 )
+					{
+						new_txt += c;
+					}
+					else
+					{
+						invalid = true;
+					}
+				}
+				
+				if ( invalid == true )
+				{
+					index += 1;
+					errors += String(index) + ". " + "Expecting A-Z,a-z,0-9, _-, and the invalid characters in value [" + txt + "] has been cleaned. \n";
+				}
+				
+				if ( new_txt.length > maxlen )
+				{
+					index += 1;
+					errors += String(index) + ". " + "Maximum length is " + maxlen + ", and the value [" + new_txt + "] has been truncated to [";
+					new_txt = new_txt.substr(0, maxlen);
+					errors += new_txt + "]. \n";
+				}
+				
+				/* if ( errors.length>0 )
+				{
+				global.msgWarning( errors );
+				} */
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return new_txt;
+			}
+			
+			protected function expiryDateDetailLineGrid_gridItemEditorSessionSaveHandler(event:GridItemEditorEvent):void
+			{
+				// do nothing
+				return;
+				
+				var alphanumeric_charset:String="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 _-";
+				if (event.column.dataField == 'ed_exp_date')
+				{
+					var new_txt:String;
+					new_txt = this.cleanInvalidCharsFromText( this.expiryDateDetailLineGrid.dataProvider[expiryDateDetailLineGrid.selectedIndex].ed_exp_date, alphanumeric_charset, 120 );
+					//new_txt = this.cleanInvalidCharsFromText( this.expiryDateDetailLineGrid.dataProvider[expiryDateDetailLineGrid.selectedIndex].ed_exp_date, "", 120 );
+					this.expiryDateDetailLineGrid.dataProvider[expiryDateDetailLineGrid.selectedIndex].ed_exp_date = new_txt;
+				}
+			}
+			
+			public function setFilters( params:*=false ): void
+			{
+				if ( params == false )
+				{
+					return;
+				}
+				
+				this.parentParams = params;
+				
+				currentState = "detail";
+				
+				trace ("...............................in setFilters");
+				tools.pr( params);
+				
+				var po:Object=new Object();
+				
+				po["ed_target_code"] = tools.getObjAttribute( params, "ed_target_code", "" );
+				po["ed_cmpy_code"] = tools.getObjAttribute( params, "ed_cmpy_code", "" );
+				po["ed_object_id"] = tools.getObjAttribute( params, "ed_object_id", "" );
+				
+				this.currentExpiryTargetCode = po["ed_target_code"];
+				this.currentExpiryCompanyCode = po["ed_cmpy_code"];
+				this.currentExpiryObjectId = po["ed_object_id"];
+				
+				this.expiryDateTypeList.service( this.currentExpiryTargetCode );
+				
+				this.expiryDateDetailLineList.service( this.currentExpiryTargetCode, this.currentExpiryCompanyCode, this.currentExpiryObjectId );
+				
+				this.btn_createLine.enabled = false;
+				this.btn_deleteLine.enabled = false;
+				this.btn_updateLine.enabled = false;
+				
+				var idInFormCreate:int;
+				if (this.currentExpiryTargetCode!="")
+				{
+					idInFormCreate=-1;
+					idInFormCreate = tools.getItemIndexFromCode( this.currentExpiryTargetCode, this.expiryDateTargetList, "edta_target_code");
+					this.ed_target_code.selectedIndex = idInFormCreate;
+				}
+				if (this.currentExpiryCompanyCode!="")
+				{
+					idInFormCreate=-1;
+					idInFormCreate = tools.getItemIndexFromCode( this.currentExpiryCompanyCode, this.targetCompanyList, "cmpy_code");
+					this.ed_cmpy_code.selectedIndex = idInFormCreate;
+				}
+				if (this.currentExpiryObjectId!="")
+				{
+					this.ed_object_id.text = this.currentExpiryObjectId;
+				}
+			}
+			
+			
+			protected function expiryDateTargetDescLabelFunction(item:Object, column:GridColumn):String
+			{
+				var ret:String = "";
+				var txt:String = String(item [column.dataField]);
+				
+				ret = global.getCurrentLanguageContent( txt, global.LanguageCode );
+				//item [column.dataField] = ret;
+				
+				return ret;
+			}
+			
+			protected function companyTypeLabelFunction(item:Object, column:GridColumn):String
+			{
+				var ret:String = "";
+				for each(var obj:Object in this.companyTypeList)
+				{
+					var bitval:int = Math.pow(2, obj["cmpy_type_id"]);
+					if ( (item [column.dataField] & bitval ) > 0 )
+					{
+						if ( ret.length > 0 )
+						{
+							ret += ",";
+						}
+						ret += obj["cmpy_type_name"]
+					}
+				}
+				return ret;
+			}
+			
+			public function get isAddLineButtonEnabled():Boolean
+			{
+				var enabled:Boolean=false;
+				if ( this.expiryDateDetailLineGrid.dataProvider==null || this.expiryDateTypeList.length > this.expiryDateDetailLineGrid.dataProvider.length )
+				{
+					enabled = true;
+				}
+				
+				return enabled; 
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateFormatter" locale="{LocaleID.DEFAULT}" dateStyle="short" timeStyle="none"/>
+		<s:DateTimeFormatter id="dateConvert" dateTimePattern="yyyy-MM-dd"/>
+		<s:DateTimeFormatter id="dateConvertLong" dateTimePattern="yyyy-MM-dd HH:mm:ss"/>
+		<components:ValidationGroup id="vg" action="{save_clickHandler}" defaultButton="{btn_save}" parentScreen="{this}" isProtected="{hasPassword}"/>
+	</fx:Declarations>
+	
+	<s:Panel id="details" includeIn="edit,create,detail" width="100%" height="460"
+			 itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+			<!--s:TileLayout/-->
+		</s:layout>
+		
+		<s:Spacer height="5"/>
+		<s:VGroup width="100%">
+			<s:HGroup width="100%">
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','ED_TARGET')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="ed_target_code" 
+													  dataProvider="{expiryDateTargetList}" 
+													  labelField="edta_target_desc" 
+													  selectedItem="" enabled="false" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ED_TARGET')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','ED_TARGET')}" 
+													  />
+				</s:HGroup>
+				
+				<s:Spacer width="{spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','ED_COMPANY')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="ed_cmpy_code" 
+													  dataProvider="{targetCompanyList}" 
+													  labelField="cmpy_desc" 
+													  selectedItem="" enabled="false"  
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ED_COMPANY')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','ED_COMPANY')}" 
+													  />
+				</s:HGroup>
+				
+				<s:Spacer width="{spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','ED_OBJECT_ID')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="ed_object_id" maxChars="40" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="" editable="false" enabled="false" 
+												   required="true" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','ED_OBJECT_ID')}" 
+												   />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			
+			<s:Spacer height="5" />
+			
+			<mx:HRule width="100%"/>
+			
+
+			<s:HGroup width="100%" verticalAlign="middle">
+				
+				<s:VGroup>
+					<s:Label width="100%" height="{labelHeight}" text="{resourceManager.getString('default','ED_AVAILABLE_TYPES')}" verticalAlign="middle"/>
+					<!--components:DKI_List id="lone_tank" width="{fieldWidth}" height="240"  enabled="true" visible="true" allowMultipleSelection="true"
+										 labelField="tank_desc" change="lone_tank_changeHandler(event)" 
+										 dataProvider="{availableTanks}"/-->
+					<s:DataGrid id="expiryDateTypeLineGrid" width="100%" height="290" requestedRowCount="10"
+								selectionChange="expiryDateTypeLineGrid_selectionChangeHandler(event)"
+								skinClass="skins.DKI_DataGrid_Skin" visible="true" enabled="{this.expiryDateTypeLineGrid.dataProvider.length>0}" selectionMode="multipleRows"
+								editable="false" 
+								>
+						<s:columns>
+							<s:ArrayList>
+								<s:source>
+									<s:GridColumn dataField="edt_target_code" headerText="{resourceManager.getString('default','EXPIRY_DATE_TARGET_CODE')}" visible="false" width="120"></s:GridColumn>
+									<s:GridColumn dataField="edt_type_code" headerText="{resourceManager.getString('default','EXPIRY_DATE_TYPE_CODE')}" visible="false" width="160"></s:GridColumn>
+									<s:GridColumn dataField="edt_type_desc" headerText="{resourceManager.getString('default','EXPIRY_DATE_TYPE_DESC')}" visible="true" width="200"></s:GridColumn>
+									<s:GridColumn dataField="edt_default" headerText="{resourceManager.getString('default','EXPIRY_DATE_TYPE_DEFAULT')}" visible="false" width="100" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+									<s:GridColumn dataField="edt_def_exp_date" headerText="{resourceManager.getString('default','EXPIRY_DATE_TYPE_DEFVALUE')}" visible="true" width="130" itemRenderer="renderers.DateTimeRenderer"></s:GridColumn>
+									<s:GridColumn dataField="edt_date_fmt" headerText="{resourceManager.getString('default','EXPIRY_DATE_TYPE_FORMAT')}" visible="false" width="150"></s:GridColumn>
+									<s:GridColumn dataField="edt_time_enabled" headerText="{resourceManager.getString('default','EXPIRY_DATE_TYPE_TIMEFLAG')}" visible="true" width="100" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+									<s:GridColumn dataField="edt_status" headerText="{resourceManager.getString('default','EXPIRY_DATE_TYPE_STATUS')}" visible="true" width="70" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+									<s:GridColumn dataField="edt_reject" headerText="{resourceManager.getString('default','EXPIRY_DATE_TYPE_REJECT')}" visible="true" width="140" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+								</s:source>
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+				</s:VGroup>
+				
+				<s:VGroup>
+<!--					<components:DKI_Button id="btn_createLink" cornerRadius="0" label="{resourceManager.getString('default','BUTTON__ADD_MEMBER')}" toolTip="{resourceManager.getString('default','TOOLTIP__ICON_CROSS')}" width="32" height="100%" click="lone_tank_addHandler()" enabled="{lone_tank.selectedIndex>=0}" type="create"/>
+					<components:DKI_Button id="btn_deleteLink" cornerRadius="0" label="{resourceManager.getString('default','BUTTON__REMOVE_MEMBER')}" toolTip="{resourceManager.getString('default','TOOLTIP__ICON_TRASH')}" width="32" height="100%" click="lone_tank_delHandler()" enabled="false" type="delete"/>
+-->					<components:DKI_Button id="btn_createLine" cornerRadius="0" label="{resourceManager.getString('default','BUTTON__ADD_LINE_EDD')}" toolTip="{resourceManager.getString('default','TOOLTIP__ICON_CROSS_EDDLINE')}" width="32" height="100%" click="expirydatedetail_line_addHandler()" enabled="{isAddLineButtonEnabled}" type="create"/>
+					<components:DKI_Button id="btn_deleteLine" cornerRadius="0" label="{resourceManager.getString('default','BUTTON__REMOVE_LINE_EDD')}" toolTip="{resourceManager.getString('default','TOOLTIP__ICON_TRASH_EDDLINE')}" width="32" height="100%" click="expirydatedetail_line_delHandler()" enabled="false" type="delete"/>
+					<components:DKI_Button id="btn_updateLine" cornerRadius="0" label="{resourceManager.getString('default','BUTTON__EDIT_LINE_EDD')}" toolTip="{resourceManager.getString('default','TOOLTIP__ICON_PEN_EDDLINE')}" width="32" height="100%" click="expirydatedetail_line_updHandler()" enabled="false" type="edit"/>
+				</s:VGroup>
+				
+				<s:VGroup width="100%">
+					<s:Label width="100%" height="{labelHeight}" text="{resourceManager.getString('default','ED_DEFINED_TYPES')}" verticalAlign="middle"/>
+					<s:DataGrid id="expiryDateDetailLineGrid" width="100%" height="290" requestedRowCount="10"
+								selectionChange="expiryDateDetailLineGrid_selectionChangeHandler(event)"
+								skinClass="skins.DKI_DataGrid_Skin" visible="true" enabled="{this.expiryDateDetailLineGrid.dataProvider.length>0}" selectionMode="multipleRows"
+								editable="true" editable.detail="false" gridClick="expiryDateDetailLineGrid_gridClickHandler(event)"
+								gridItemEditorSessionSave="expiryDateDetailLineGrid_gridItemEditorSessionSaveHandler(event)"
+								>
+						<s:columns>
+							<s:ArrayList>
+								<s:source>
+									<s:GridColumn dataField="ed_action" headerText=" " visible="true" editable="false" width="32" itemRenderer="renderers.GridMarkRenderer"></s:GridColumn>
+									
+									<s:GridColumn dataField="ed_target_code" headerText="{resourceManager.getString('default','ED_TARGET_CODE')}" visible="false" editable="false" width="120"></s:GridColumn>
+									<s:GridColumn dataField="ed_cmpy_code" headerText="{resourceManager.getString('default','ED_CMPY_CODE')}" visible="false" editable="false" width="100"></s:GridColumn>
+									<s:GridColumn dataField="ed_object_id" headerText="{resourceManager.getString('default','ED_OBJECT_ID')}" visible="false" editable="false" width="100"></s:GridColumn>
+									
+									<s:GridColumn dataField="ed_type_code" headerText="{resourceManager.getString('default','ED_TYPE_CODE')}" visible="false" editable="false" width="160"></s:GridColumn>
+									<s:GridColumn dataField="ed_type_desc" headerText="{resourceManager.getString('default','ED_TYPE_DESC')}" visible="true" editable="false"></s:GridColumn>
+									
+									<s:GridColumn dataField="ed_type_defvalue" headerText="{resourceManager.getString('default','ED_TYPE_DEFVALUE')}" visible="false" editable="false" width="100"></s:GridColumn>
+									<s:GridColumn dataField="ed_type_format" headerText="{resourceManager.getString('default','ED_TYPE_FORMAT')}" visible="false" editable="false" width="100"></s:GridColumn>
+									<s:GridColumn dataField="ed_type_timeflag" headerText="{resourceManager.getString('default','ED_TYPE_TIMEFLAG')}" visible="false" editable="false" width="100"></s:GridColumn>
+									
+									<s:GridColumn dataField="ed_exp_date" headerText="{resourceManager.getString('default','ED_EXP_DATE')}" visible="true" editable="false" width="180" itemEditor="itemeditors.GridDateTimeEditor" itemRenderer="renderers.GridDateTimeRenderer"></s:GridColumn>
+									<s:GridColumn dataField="ed_status" headerText="{resourceManager.getString('default','ED_STATUS')}" visible="true" width="70" itemEditor="itemeditors.GridCheckEditor" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+									<s:GridColumn dataField="ed_type_reject" headerText="{resourceManager.getString('default','EXPIRY_DATE_TYPE_REJECT')}" visible="true" width="140" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+								</s:source>
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+				</s:VGroup>
+				
+			</s:HGroup>
+			
+		</s:VGroup>
+		
+		<s:Spacer height="20" />
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_delete" label="{resourceManager.getString('default','button.lbl.DELETE_ALL')}" height="100%" click="doDelete()" includeIn="edit" enabled="{this.canDelete}" type="delete"/>
+			<components:DKI_Button id="btn_save" label.create="{resourceManager.getString('default','SAVE')}" label="{resourceManager.getString('default','UPDATE')}" height="100%" 
+								   includeIn="edit,create,detail" enabled.create="{this.canCreate}" enabled="{this.canUpdate}" type.create="create" type="edit" focusEnabled="true" focusEnabled.create="false"/>
+			<components:DKI_Button id="btn_cancel" label="{resourceManager.getString('default','CLOSE')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel" focusEnabled="true" focusEnabled.create="false"/>
+		</s:HGroup>
+	</s:Panel>
+	
+</s:VGroup>

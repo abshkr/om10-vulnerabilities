@@ -1,0 +1,97 @@
+
+
+1. Bayview
+
+The details about Bayview is written in the following article "Omega 5000 Bayview (HTML5-based)":
+
+https://doc.diamondkey.com/pages/viewpage.action?pageId=43715253
+
+
+2. Omega 5000 Transportation Doc Branch
+
+http://titan/svn/projects/flex_ui/branches/Omega-9-06-01-13-BRANCH-TRNSPRT_DOC
+
+
+3. Omega 5000 UTF8 Branch
+
+http://titan/svn/projects/flex_ui/branches/Omega-9-08-08-02-BRANCH-UTF8
+
+The UTF8 branch now should include all features in TRNSPRT_DOC branch.
+
+The available features are listed as follows:
+
+1. BOL/DN templates, 
+2. Base product density ranges
+3. DCS
+4. Hot Products Bitumen
+5. API
+6. GB2312, THAI and UTF8
+7. Alarm Sound
+8. Tank Strapping
+9. Dangerous Goods
+10. Company Relations
+11. Auditing
+12. Custom Expiry Dates (10 Expiry Dates)
+13. Partnership
+14. Configurable Date Range Filter 
+15. Configurable auto filtering when screen opens
+16. Tank Level Alarms
+17. DOR: Additional Host Data
+18. Delivery Details
+19. Stock Recon
+20. Bayview
+21. Colour management for base products and drawer products
+22. Product Images
+23. Features Management
+24. Sulphur rate and Flash Point
+25. Ullage
+
+
+4. SVN Tree for Omega
+
+    BAYVIEW/				- Bayview
+    TIDE/					- Flash based TIDE
+    omlite/					- Scada based Omega Lite
+    flex_ui/				- Omega 5000
+		branches/
+			5000_R2_2_HTTPS/	- from trunk/5000_R2_2, HTTPS
+			Omega-9-05-01-46-BRANCH/	- not sure, HTTP
+			Omega-9-05-01-46-BRANCH-Leo/	- branch for Leo, HTTP
+			Omega-9-05-01-46-Coogee/	- branch for Coogee, HTTP
+			Omega-9-06-01-09-BRANCH-TRNSPRT_DOC/	- 1st TRNSPRT_DOC, HTTPS
+			Omega-9-06-01-12_STAG_BRH_TRNSPRT_DOC+3KTO5K-01/ 	- 2nd TRNSPRT_DOC, HTTPS
+			Omega-9-06-01-13-BRANCH-THAI_CHARS/		- from 5000_R2_2_HTTPS/, LLK and THAI, API, covered by UTF8 branch now
+			Omega-9-06-01-13-BRANCH-TRNSPRT_DOC/	- from 5000_R2_2_HTTPS/, main TRNSPRT_DOC branch
+			Omega-9-08-08-02-BRANCH-UTF8/	- from tags/Omega-9-08-08-02-BRANCH-DCS-13, could be from branches/Omega-9-06-01-13-BRANCH-THAI_CHARS/
+			Omega-9-08-08-02-BRANCH-UTF8_GSAP/		- from Omega-9-08-08-02-BRANCH-UTF8/
+			RioTinto/		- from /branches/branch-r2_1.3_npt_emhk/ from /trunk/5000_R2_NEWPORT/ from /flex_ui/trunk
+			branch-1.0/		- from /tags/release-1.0 from /flex_ui/trunk [216]
+			branch-1.1/		- from /tags/release-1.1 from /flex_ui/trunk [234]
+			branch-1.1.1/	- from /tags/release-1.1 from /flex_ui/trunk [234]
+			branch-r2_1.3/	- from /tags/release-r2_1.3 from /flex_ui/trunk/June (missing)
+			branch-r2_1.3_npt_emhk/	- branch for EMHK and ASSET REFRESH, could be from /trunk/5000-r2_1.3/, first multilingual version.
+			wuhan_1.3/	- for wuhan china
+		tags/
+		trunk/
+			5000-R2-Desktop/
+			5000-R2-Mobile/
+			5000-r2_1.3/	- David wants tocreate this structure For Coogee BRANCH
+			5000_R2/		- initial HTTP version
+			5000_R2_2/		- main HTTP version
+			5000_R2_NEWPORT/	- HTTP version for Newport fixes
+			amf-rest-server/
+			amfservices/
+			html-template/
+			index/
+			libs/
+			om5000/
+			services/
+			src/
+			testsched/
+
+
+	
+
+
+
+

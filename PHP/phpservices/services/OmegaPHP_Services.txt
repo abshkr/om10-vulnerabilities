@@ -1,0 +1,65 @@
+Data Services - OM5000 R2.1
+
+BaseProductsService
+
+	- getAll()
+	- getPaged($filter,$order,$offset,$tot)
+	- getRecord($code)
+    - create($data)
+    - update($code,$data)
+    - delete($code)
+	- getProductGroups()
+    - getBaseClasses()
+	- lookup() 
+
+CompaniesService
+
+
+DomainService
+
+
+EquipmentListService
+
+
+EquipmentTypesService
+
+
+FolioService
+
+
+JournalService
+
+
+LoadSchedulesService
+
+
+MenuService
+
+
+OwnershipTransService
+
+
+PersonnelService
+
+
+ProductOwnershipService
+
+
+RoleBasedAccessControlService
+
+
+TankerService
+
+
+TankService
+
+
+
+
+
+
+
+
+
+
+

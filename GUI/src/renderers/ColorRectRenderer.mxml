@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:components="components.*" clipAndEnableScrolling="true">
+	
+	<fx:Script>
+		<![CDATA[
+			[Bindable] protected var strColor:String="#ffffff";
+			[Bindable] protected var intColor:int=0xffffff;
+			[Bindable] protected var colorAvail:Boolean=false;
+			
+			override public function prepare(hasBeenRecycled:Boolean):void {
+				if (data != null)
+				{
+					strColor = data[column.dataField];
+				}
+				if ( strColor != "" && strColor != null )
+				{
+					colorAvail = true;
+				}
+				else
+				{
+					colorAvail = false;
+				}
+				
+				intColor = stringToUint(strColor);
+				
+			}
+			
+			private function stringToUint(hexString:String):uint {
+				var hex:String;
+				if ( hexString == "" || hexString == null )
+				{
+					hexString = "#FFFFFF";
+				}
+				hex = "0x" + hexString.substr(1);
+				
+				return uint(hex);
+			}
+		]]>
+	</fx:Script>
+	
+	<s:HGroup height="100%" verticalAlign="middle">
+		<!--<s:Label id="lblData" text="{strColor}" width="100" color="{0xffffff-intColor}" backgroundColor="{intColor}" verticalAlign="bottom" />-->
+		<s:Label id="lblData" text="{strColor}" width="100" verticalAlign="bottom" paddingLeft="10" />
+		<s:Rect width="80" height="20" visible="{colorAvail}" includeInLayout="{colorAvail}">
+			<s:fill>
+				<s:SolidColor color="{intColor}"/>
+			</s:fill>
+		</s:Rect>
+		
+	</s:HGroup>
+	
+</s:GridItemRenderer>

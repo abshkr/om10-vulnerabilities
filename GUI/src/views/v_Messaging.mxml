@@ -1,0 +1,317 @@
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  xmlns:skins="skins.*"
+		  xmlns:controllers="controllers.*"
+		  currentState="normal"
+		  width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			import dm.DM;
+			import dm.collections.dmMessagingHost;
+			
+			import mx.controls.dataGridClasses.DataGridColumn;
+			
+			import views.v_OfflineMessaging;
+			import components.ViewPopupDlg;
+			
+			
+			public var offlineMessagingPopup:ViewPopupDlg = new ViewPopupDlg( "Offline Messaging", new v_OfflineMessaging(), null );
+			
+			
+			protected function btn_offline_message_clickHandler(event:MouseEvent):void
+			{
+				this.offlineMessagingPopup.popupTitle = resourceManager.getString('default','BUTTON__DELIVERY_DETAILS');
+				//this.offlineMessagingPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+				this.offlineMessagingPopup.setSecurity( this.controller.readOnly, false, false, false, false );
+				
+				this.offlineMessagingPopup.parentWidth = this.width;
+				this.offlineMessagingPopup.parentHeight = this.height;
+				
+				trace ( "*******************Pop up a screen to manage offline messagings!");
+				offlineMessagingPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				
+				params["dd_supp_code"] = "";//dataGrid.selectedItem.order_supp_code;
+				params["dd_tripord_no"] = "";//dataGrid.selectedItem.order_cust_no;
+				params["dd_ld_type"] = 3;
+				params["dd_number"] = "";
+				
+				offlineMessagingPopup.setFilters( params ); 
+			}
+			
+			protected function get hostMsgLabel():String
+			{
+				var lbl:String="";
+				if ( controller.hostMsgs.length == 0 )
+				{
+					lbl = resourceManager.getString('default','SEARCH__NO_RESULTS') + "!   "; 
+				}
+				
+				return lbl;
+			}
+			
+			protected function get omegaMsgLabel():String
+			{
+				var lbl:String="";
+				if ( controller.omegaMsgs.length == 0 )
+				{
+					lbl = resourceManager.getString('default','SEARCH__NO_RESULTS') + "!   "; 
+				}
+				
+				return lbl;
+			}
+		]]>
+	</fx:Script>
+	<s:states>
+		<s:State name="widget"/>
+		<s:State name="normal"/>
+	</s:states>
+	<fx:Declarations>
+		<controllers:C_Messaging id="controller" view="{this}"/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%" skinClass="skins.WidgetPanelSkin"
+			 title="Live Messaging"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<mx:TabNavigator id="detailNavigator" width="100%" height="100%" backgroundAlpha="0"
+						 backgroundColor="0x000000">
+			<s:NavigatorContent width="100%" height="100%" label="Incoming Messages" fontSize="12">
+				<s:layout>
+					<s:VerticalLayout gap="2"/>					
+				</s:layout>
+				<s:HGroup id="tb1" width="100%">
+					<s:Label height="100%" width="75" fontWeight="bold" text="Date Range" verticalAlign="middle"/>
+					<components:DKI_DateRange id="sd" width="275" dateChange="{controller.onHostDateChange}"/>
+					<components:DKI_DropDownList id="ddplant"  
+												 height="22"
+												 width="100"
+												 change="controller.refreshFilterHost();"
+												 cornerRadius="10"
+												 dataProvider="{controller.hostMsgs.plantCodes}"
+												 labelField="PlantCode" prompt="Plant Code"
+												 tabFocusEnabled="true"
+												 includeInLayout.widget="false"
+												 visible.widget="false"/>
+					<components:DKI_DropDownList id="ddstatus" 
+												 height="22"
+												 width="120"
+												 change="controller.refreshFilterHost();"
+												 cornerRadius="10"
+												 dataProvider="{controller.hostMsgs.omegaStatus}"
+												 labelField="Status" prompt="Status"
+												 tabFocusEnabled="true"
+												 includeInLayout.widget="false"
+												 visible.widget="false"/>
+					<components:DKI_DropDownList id="ddTypeIncoming" 
+												 width="130"
+												 height="22"
+												 change="controller.refreshFilterHost();"
+												 cornerRadius="10"
+												 dataProvider="{controller.hostMsgs.incomingTypes}"
+												 labelField="Message Type" prompt="Message Type"
+												 includeInLayout.widget="false"
+												 visible.widget="false"/>
+					
+					
+					<components:DKI_ValidatorInput id="searchId" excludeFrom="widget" maxWidth="200" minWidth="160"
+												   height="22"
+												   change="controller.refreshFilterHost()"
+												   prompt="MsgID1/MsgID2/ACKMsgID" toolTip="search by Message ID 1, Message ID 2, or ACK Record ID" validationType="search" />
+					
+					<s:CheckBox maxWidth="70" height="22" id="statusCBV" excludeFrom="widget" label="Valid"
+								change="controller.refreshFilterHost()" 
+								enabled="{!statusCB.selected }" fontWeight="bold"/>
+					<s:CheckBox  maxWidth="70" height="22" id="statusCB" excludeFrom="widget" label="Invalid"
+								 change="controller.refreshFilterHost()" 
+								 enabled="{!statusCBV.selected}" fontWeight="bold"/>
+					<s:CheckBox maxWidth="70"  height="22" id="IgnoredCB" excludeFrom="widget" label="Ignored"
+								change="controller.refreshFilterHost()"  fontWeight="bold"/>
+					
+					<s:Spacer width="100%"/>
+					<components:DKI_Button height="22" width="40"
+										   click="controller.refreshHost(true);" type="refresh"  visible.widget="true"/>
+					<components:DKI_Button minWidth="70" height="22" 
+										   id="submit" excludeFrom="widget"
+										   visible="{detailNavigator.selectedIndex==0}"
+										   label="Resubmit" click="controller.resubmitMsg()"
+										   enabled="{controller.disableBtn}" type="forward" />
+					
+					<components:DKI_Button minWidth="70" width="80" height="22" maxWidth="80" 
+										   id="btnExport" includeIn="normal" label="Export"
+										   click="controller.btnExportHost_clickHandler(event)"
+										   toolTip="Export Current View to CSV"/>
+				</s:HGroup>
+				
+				<s:HGroup id="tb2" width="100%">
+				
+						
+					<s:Spacer width="100%"/>
+				</s:HGroup>
+				<s:HGroup id="tb3" width="100%">
+					<s:Spacer width="100%"/>
+				</s:HGroup>
+				
+				<s:DataGrid id="dg1" width="100%" height="100%" dataProvider="{controller.hostMsgs}"
+							fontSize="12" horizontalScrollPolicy="on"
+							selectionChange="{controller.disablereSubmit()}" showDataTips="false"> 
+					<s:columns>
+						<s:ArrayList>
+							<s:source >
+								<s:GridColumn width="90" dataField="payload.REC_ID"
+											  headerText="Record ID"
+											  sortCompareFunction="{controller.sortNumeric}"/>
+								<s:GridColumn width="135" dataField="HST_MSG_ID"
+											  headerText="Message ID 1" labelFunction="{DM.trimLeadingZeros}"/>
+								<s:GridColumn width="100" dataField="HST_MSG_ID2"
+											  headerText="Message ID 2" labelFunction="{DM.trimLeadingZeros}"/>
+								<s:GridColumn width="100" dataField="payload.ACK_RECID"
+											  headerText="Ack Record ID"/>
+								<s:GridColumn width="110" dataField="payload.HST_MSG_TYPE"
+											  headerText="File Type"/>
+								<s:GridColumn width="90" dataField="payload.HST_SITE_CODE"
+											  headerText="Site ID"/>
+								<s:GridColumn width="90" dataField="payload.HST_PLANT_CODE"
+											  headerText="Plant Code"/>
+								<s:GridColumn width="130" dataField="payload.OM_RECV_DTIME"
+											  headerText="File Receipt Time"
+											  labelFunction="controller.dateTrim"/>
+								<s:GridColumn width="70" dataField="OM_VALID" headerText="Valid"
+											  itemRenderer="renderers.DGCB"/>
+								<s:GridColumn width="70" dataField="payload.IGNORE_FLAG"
+											  headerText="Ignored" itemRenderer="renderers.DGCI"/>
+								<s:GridColumn width="120" dataField="payload.OM_STATUS"
+											  headerText="Status" />
+								<s:GridColumn width="200" dataField="payload.HST_FILE_TYPE"
+											  headerText="File Name" showDataTips="true" />
+								<s:GridColumn width="90" dataField="payload.HST_FILE_TYPE"
+											  headerText="Contents" itemRenderer="renderers.HostInMsgRender"/>
+								<s:GridColumn width="200" dataField="payload.DESCRIPTION"
+											  headerText="Description" showDataTips="true" />
+								<s:GridColumn width="150" dataField="payload.LAST_UPD_DTIME"
+											  headerText="Time Last Resubmitted"/>
+								<s:GridColumn width="150" dataField="payload.LAST_MOD_BYID"
+											  headerText="Resubmitted By ID"/>
+							</s:source>
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+				<s:HGroup id="tb22" width="100%" excludeFrom="widget" height="28" verticalAlign="middle">
+					<components:DKI_Button id="btn_offline_message_incoming" label="Offline Messaging" height="22" 
+										   enabled="{this.controller.canUpdate}" type="edit" click="btn_offline_message_clickHandler(event)"/>
+					<s:Spacer width="100%"/>
+					<s:Label width="100" text="{resourceManager.getString('default','SEARCH__NO_RESULTS')}!   " visible="{controller.hostMsgs.length == 0}" verticalAlign="bottom" color="#CC0000"  fontStyle="normal" fontWeight="bold"/>
+					<s:Label color="#610B0B" fontStyle="normal" fontWeight="bold" 
+							 text="Total Records:{controller.hostMsgs.length}" textAlign="right"/>	
+				</s:HGroup>
+			</s:NavigatorContent>
+			<s:NavigatorContent width="100%" height="100%" label="Outgoing Messages">
+				<s:layout>
+					<s:VerticalLayout gap="2"/>
+				</s:layout>
+				<s:HGroup id="tb12" width="100%" fontSize="12">
+					<s:Label height="100%" width="75" fontWeight="bold" text="Date Range" verticalAlign="middle"/>
+					<components:DKI_DateRange id="sd2" width="275" dateChange="{controller.onOmegaDateChange}"/>
+					<components:DKI_DropDownList id="ddplant1"  width="100"
+												 height="22"
+												 change="controller.refreshFilterOmega();"
+												 cornerRadius="10"
+												 dataProvider="{controller.omegaMsgs.plantCodes}"
+												 labelField="PlantCode" prompt="Plant Code"
+												 tabFocusEnabled="true"
+												 includeInLayout.widget="false"
+												 visible.widget="false"/>
+					
+					<components:DKI_DropDownList id="ddTypeOutgoing"  width="130" height="22"
+												 change="controller.refreshFilterOmega();"
+												 cornerRadius="10"
+												 dataProvider="{controller.omegaMsgs.outgoingTypes}"
+												 labelField="TypeOutgoing"
+												 prompt="Message Type" tabFocusEnabled="true"
+												 includeInLayout.widget="false"
+												 visible.widget="false"/>
+					<components:DKI_ValidatorInput id="searchId2" excludeFrom="widget" width="180" height="22"
+												   change="controller.refreshFilterOmega()"
+												   prompt="#RecID/MsgID/InMsgID/NOMKey/BOL#" validationType="search"
+												   toolTip="search by Record ID, Message ID, Incoming Record ID, Ticket Nom Key or Ticket BOL No"
+												   width.widget="180"/>
+					
+					
+				
+					<s:Spacer width="100%"/>
+					<components:DKI_Button width="40" height="22" click="controller.refreshOmega()"
+										   type="refresh" visible.widget="true"/>
+					<components:DKI_Button id="btnExportOmega" width="80" height="22" includeIn="normal" label="Export"
+										   click="controller.btnExportOmega_clickHandler(event)"
+										   toolTip="Export Current View to CSV"/>
+					
+				</s:HGroup>
+				
+				<s:HGroup id="tb13" width="100%" fontSize="12">
+					
+				</s:HGroup>
+				
+				<s:HGroup id="tb14" width="100%">
+					<s:Spacer width="100%"/>
+				</s:HGroup>
+				
+				<s:DataGrid id="dg2" width="100%" height="100%" dataProvider="{controller.omegaMsgs}"
+							fontSize="12" horizontalScrollPolicy="on">
+					<s:columns>
+						<s:ArrayList>
+							<s:source>
+								<s:GridColumn width="90" dataField="payload.REC_ID"
+											  headerText="Record ID"
+											  sortCompareFunction="{controller.sortNumeric}"/>
+								<s:GridColumn width="120" dataField="OM_MSGS_ID"
+											  headerText="Message ID" labelFunction="{DM.trimLeadingZeros}"/>
+								<s:GridColumn width="125" dataField="payload.OM_MSG_TYPE"
+											  headerText="Message Type"/>
+								<s:GridColumn width="100" dataField="payload.ACK_STATUS"
+											  headerText="Ack Status"/>
+								<s:GridColumn width="100" dataField="payload.HST_COMP_CODE"
+											  headerText="Plant Code"/>
+								<s:GridColumn width="140" dataField="payload.OM_PROCS_DTIME"
+											  headerText="Date Created"
+											  labelFunction="controller.dateTrim"/>
+								<s:GridColumn width="300" dataField="payload.HST_FILE_TYPE"
+											  headerText="File Name"/>
+								<s:GridColumn width="90" dataField="payload.HST_FILE_TYPE"
+											  headerText="Contents"
+											  itemRenderer="renderers.HostOutMsgRender"/>
+								<s:GridColumn width="140" dataField="payload.SFTP_STATUS"
+											  headerText="SFTP Transfer Status"
+											  labelFunction="controller.dateTrim"/>
+								<s:GridColumn width="140" dataField="payload.FILE_SENT_DTIME"
+											  headerText="Transfer Date/Time"
+											  labelFunction="controller.dateTrim"/>
+								<s:GridColumn width="150" dataField="payload.OM_IN_RECID"
+											  headerText="Incoming Record ID"/>
+								<s:GridColumn width="120" dataField="NOM_TECH_KEY"
+											  headerText="Ticket Nom Key" labelFunction="{DM.trimLeadingZeros}" showDataTips="true"/>
+								<s:GridColumn width="120" dataField="EXT_BOL_NO"
+											  headerText="Ticket BOL No" labelFunction="{DM.trimLeadingZeros}" showDataTips="true" />
+							</s:source>
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+				
+				<s:HGroup  width="100%" excludeFrom="widget" height="28" verticalAlign="middle">
+					<components:DKI_Button id="btn_offline_message_outgoing" label="Offline Messaging" height="22" 
+										   enabled="{this.controller.canUpdate}" type="edit" click="btn_offline_message_clickHandler(event)"/>
+					<s:Spacer width="100%"/>
+					<s:Label width="100" text="{resourceManager.getString('default','SEARCH__NO_RESULTS')}!   " visible="{controller.omegaMsgs.length == 0}" verticalAlign="bottom" color="#CC0000"  fontStyle="normal" fontWeight="bold"/>
+					<s:Label color="#610B0B"  fontStyle="normal" fontWeight="bold"
+							 text="Total Records:{controller.omegaMsgs.length}" textAlign="right"/>	
+				</s:HGroup>
+				
+			</s:NavigatorContent>
+		</mx:TabNavigator>	
+	</s:Panel>
+	
+</s:VGroup>

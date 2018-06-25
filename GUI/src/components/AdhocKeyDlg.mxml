@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:components="components.*"
+		 xmlns:loadschedulesservice="services.loadschedulesservice.*"
+		 width="520" skinClass="skins.WidgetPanelSkin" title="Card Reader Dialog">
+	<s:layout>
+		<s:VerticalLayout paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+	</s:layout>
+	<fx:Script>
+		<![CDATA[
+			import flash.utils.getQualifiedClassName;
+			
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			
+			import spark.components.VScrollBar;
+			import spark.events.IndexChangeEvent;
+			import spark.events.TextOperationEvent;
+			
+			import org.alivepdf.data.GridColumn;
+			
+			[Bindable] private var isValid:Boolean=false;
+			
+			public var tanker:String;
+			private var tmp_txt:String;
+			private var obj:Object = new Object();
+			
+			[Bindable] public var key_trip_no:String="";
+			[Bindable] public var key_supp_code:String="";
+			[Bindable] public var key_supp_name:String="";
+			[Bindable] public var key_carr_code:String="";
+			[Bindable] public var key_carr_name:String="";
+			[Bindable] public var key_tanker:String="";
+			
+			public var callback:Function;
+			
+			
+			protected function dKI_List_creationCompleteHandler(event:FlexEvent):void
+			{
+				adhocKeyLookupResult.token = loadSchedulesService.adhocKeyLookup();
+			}
+			
+			public function clear_button_clickHandler(event:MouseEvent):void
+			{
+				isValid=false;
+				//card_txt.text='';
+				tagList.textInput.text = "";
+				tagList.selectedIndex=-1;
+				tagList.textInput.setFocus();
+			}
+			
+			protected function cancel_button_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp(this);				
+			}
+			
+			protected function update_button_clickHandler(event:MouseEvent):void
+			{
+				obj.kya_txt = tmp_txt;
+				
+				
+				
+				obj.kya_tanker = tanker;
+				updateKey.token = loadSchedulesService.updateAdhocKey(obj);
+			}
+			
+			protected function card_txt_changeHandler(event:TextOperationEvent):void
+			{
+				// figure out if the change is from selection or from list
+				if(getQualifiedClassName(tagList.selectedItem)=="String"){
+					var theString         = tagList.textInput.text;
+					// remoive selection
+					tagList.selectedIndex = -1;
+					// look trough selection
+					for (var i:int=0; i < adhocKeyLookupResult.lastResult.length; i++){
+						if (theString.slice(0,12) == adhocKeyLookupResult.lastResult[i].KYA_TXT||
+							theString.slice(1,13) == adhocKeyLookupResult.lastResult[i].KYA_TXT||
+							theString.slice(2,14) == adhocKeyLookupResult.lastResult[i].KYA_TXT) {
+							tmp_txt = adhocKeyLookupResult.lastResult[i].KYA_TXT;
+							tagList.selectedIndex=i;
+							isValid = true;
+							break;
+						}else{
+							isValid = false;
+						}
+					}
+				}else{
+					if(tagList.selectedIndex>-1){
+						isValid = true;
+						tmp_txt = adhocKeyLookupResult.lastResult[tagList.selectedIndex].KYA_TXT;
+					}
+				}
+				
+			}
+			
+			private function moveScroller(i:int):void
+			{
+				if ( this.tagList.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.tagList.scroller.verticalScrollBar;
+					
+					if ( vs != null )
+					{
+						vs.value = i*vs.maximum / tagList.dataProvider.length;
+					}
+				}
+
+			}
+			
+			private function resetScroller():void
+			{
+				if ( this.tagList.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.tagList.scroller.verticalScrollBar;
+					
+					if ( vs != null )
+					{
+						vs.value = 0;
+					}
+				}
+
+			}
+			
+			protected function updateKey_resultHandler(event:ResultEvent):void
+			{
+				if (event.result == 'OK')
+				{
+					global.msgSuccess('ID Assigned to Tanker');
+					PopUpManager.removePopUp(this);	
+					callback();
+				}
+				else
+				{
+					global.msgFail('Assignment of Key unsuccessful');
+					isValid=false;
+					//card_txt.text='';
+					tagList.textInput.text = "";
+					tagList.selectedIndex=-1;
+				}
+			}
+			
+			protected function tagLabelFunction(item:Object):String
+			{
+				if(item==null)return "";
+				var label:String = item.hasOwnProperty("KYA_KEY_NO")?item.KYA_KEY_NO+"-":'';
+				label += item.hasOwnProperty("KYA_TXT")?item.KYA_TXT:'';
+				return label;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:CallResponder id="adhocKeyLookupResult"/>
+		<s:CallResponder id="updateKey" result="updateKey_resultHandler(event)"/>
+		<loadschedulesservice:LoadSchedulesService id="loadSchedulesService"  channelSet="{global.channelSet}"
+												   fault="global.msgFail(global.DisasterError)"
+												   showBusyCursor="true"/>
+	</fx:Declarations>
+	<s:VGroup>
+		<s:HGroup width="100%" paddingTop="2" paddingLeft="5" paddingBottom="2">
+			<s:Label text="Tanker Key Association" fontWeight="bold"/>
+		</s:HGroup>
+		<s:HGroup>
+			<s:Label width="100" fontFamily="Arial" fontSize="13" text="Trip No:"/>
+			<s:Label id="lbl_key_trip_no" width="400" fontFamily="Arial" fontSize="13" text="{key_trip_no}"/>
+		</s:HGroup>
+		<s:Spacer height="2"/>
+		<s:HGroup>
+			<s:Label width="100" fontFamily="Arial" fontSize="13" text="Supplier:"/>
+			<s:Label id="lbl_key_supp_code" width="100" fontFamily="Arial" fontSize="13" text="{key_supp_code}"/>
+			<s:Label id="lbl_key_supp_name" width="300" fontFamily="Arial" fontSize="13" text="{key_supp_name}"/>
+		</s:HGroup>
+		<s:Spacer height="2"/>
+		<s:HGroup>
+			<s:Label width="100" fontFamily="Arial" fontSize="13" text="Carrier:"/>
+			<s:Label id="lbl_key_carr_code" width="100" fontFamily="Arial" fontSize="13" text="{key_carr_code}"/>
+			<s:Label id="lbl_key_carr_name" width="300" fontFamily="Arial" fontSize="13" text="{key_carr_name}"/>
+		</s:HGroup>
+		<s:Spacer height="2"/>
+		<s:HGroup>
+			<s:Label width="100" fontFamily="Arial" fontSize="13" text="Tanker:"/>
+			<s:Label id="lbl_key_tanker" width="400" fontFamily="Arial" fontSize="13" text="{key_tanker}"/>
+		</s:HGroup>
+	</s:VGroup>
+	<s:HGroup width="100%">
+		<s:Image source="assets/cgi/m_IDAssignment.png" width="100" height="100"/>
+		<s:VGroup width="100%" height="100%" paddingTop="15">
+			<s:Label width="100%" fontFamily="Arial" fontSize="13" fontWeight="bold"
+					 lineBreak="toFit" text="{resourceManager.getString('default','HELP__ADHOC_KEY_TEXT_BY_CARD_READER')}" textAlign="left"/>
+			<!--
+			<s:TextInput id="card_txt" width="100%" fontFamily="Arial" fontSize="13" fontWeight="bold" keyUp="card_txt_keyUpHandler(event)" change="card_txt_changeHandler(event)" maxChars="256"/>
+			-->
+			<s:Label text="Adhoc tanker cards list" fontWeight="bold" width="395"/>
+			<components:DKI_ComboBox id="tagList" width="395" labelField="KYA_TXT" labelFunction="tagLabelFunction"
+									 creationComplete="dKI_List_creationCompleteHandler(event)" 
+									 dataProvider="{adhocKeyLookupResult.lastResult}" 
+									 change="card_txt_changeHandler(null)" />
+			<s:HGroup width="100%">
+				<s:Spacer width="100%"/>
+				<components:DKI_Button label="{resourceManager.getString('default','UPDATE')}" type="save" click="update_button_clickHandler(event)" enabled="{isValid}"/>
+				<components:DKI_Button label="{resourceManager.getString('default','CANCEL')}" type="cancel" click="cancel_button_clickHandler(event)"/>
+				<components:DKI_Button type="clear" label="{resourceManager.getString('default','CLEAR')}" click="clear_button_clickHandler(event)"/>
+			</s:HGroup>
+		</s:VGroup>
+	</s:HGroup>
+</s:Panel>

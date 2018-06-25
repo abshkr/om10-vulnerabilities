@@ -1,0 +1,1358 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  creationComplete="creationCompleteHandler(event)"
+		  gap="2" width="100%" height="100%">
+	
+	<s:states>
+		<s:State name="normal" enterState="this.toolbar.enabled=true"/>
+		<s:State name="widget" enterState="this.toolbar.enabled=true"/>
+		<s:State name="edit" enterState="callLater(function():void{dataGrid.ensureCellIsVisible(idx);});this.toolbar.enabled=false"/>
+		<s:State name="create" enterState="this.toolbar.enabled=false"/>
+		<s:State name="detail" enterState="view_detailsHandler(event);this.toolbar.enabled=false"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.fiber.runtime.lib.DateTimeFunc;
+			
+			import components.ActionDialog;
+			import components.ConfirmDialog;
+			import components.DeleteDialog;
+			import components.ErrorDialog;
+			import components.ExportData;
+			import components.MessageDialog;
+			import components.TransactionsDlg;
+			import components.ViewPopupDlg;
+			
+			import dm.remoteBulkListService;
+			import dm.remoteDataService;
+			import dm.remoteListService;
+			import dm.utils.tools;
+			
+			import flash.events.KeyboardEvent;
+			import flash.globalization.LocaleID;
+			
+			import flashx.textLayout.container.ScrollPolicy;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			
+			
+			public static const MAIN_WINDOW_WIDTH:int = 1500;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable] public var labelWidth:uint = 160;
+			[Bindable] public var labelHeight:uint = 26;
+			[Bindable] public var fieldWidth:uint = 300;
+			[Bindable] public var fieldHeight:uint = 26;
+			[Bindable] public var spaceWidth:uint = 15;
+			[Bindable] public var spaceHeight:uint = 2;
+			[Bindable] public var DropBtnWidth:uint = 20;
+			
+			
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='report_jasper_file';
+			private var currentDirection:String="ASC";
+			
+			private var currentOffset:int=0;
+			private var currentPageSize:int=1000;
+			[Bindable] private var totalLength:int=0;
+			[Bindable] private var currentLength:int=0;
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			//private var currentSorts:Object=new Object();
+			//private var currentOrders:Object=new Object();
+			private var currentSorts:Object={report_jasper_file:'ASC'};
+			private var currentOrders:Object={report_jasper_file:1};
+			private var currentSortSeq:int=0;
+			
+			private var  originalItems:ArrayCollection;
+			
+			
+			private var confirmReport:ActionDialog;
+			private var confirmSave:ActionDialog;
+			private var errorDialog:ErrorDialog;
+			
+			//private var exportContents:String="";
+			private var f:FileReference = new FileReference();
+			
+			
+			//private var getData:Responder = new Responder(getData_resultHandler);
+			
+			//private var pagedRecords:ArrayCollection=new ArrayCollection();
+			//private var pagedRecords:remoteDataService = new remoteDataService( "ReportProfileService.getPaged", getData, null );
+			[Bindable] private var pagedRecords:remoteListService;
+			
+			private var deleteAction:remoteDataService = new remoteDataService( "ReportProfileService.delete", null, deleteData_resultHandler, 1 );
+			private var createAction:remoteDataService = new remoteDataService( "ReportProfileService.create", null, createData_resultHandler, 1 );
+			private var updateAction:remoteDataService = new remoteDataService( "ReportProfileService.update", null, updateData_resultHandler, 1 );
+			
+			private var gridColumnSequenceMaker:remoteDataService = new remoteDataService( "ScreenGridColumnService.lookupGridColumnSequence", null, gridColumnSequenceMaker_resultHandler, 1 );
+			private var _gridColumnSequenceString:String="";
+			private var formColumnSettingsMaker:remoteDataService = new remoteDataService( "ScreenFormColumnService.lookupFormColumnSettings", null, formColumnSettingsMaker_resultHandler, 1 );
+			private var _formColumnSettingsString:String="";
+			
+			private var reportProfileKeyChecker:remoteDataService = new remoteDataService( "ReportProfileService.isReportFileDefined", null, reportProfileKeyChecker_resultHandler, 2 );
+			private var reportJasperKeyChecker:remoteDataService = new remoteDataService( "ReportProfileService.isReportJasperFileUsed", null, reportJasperKeyChecker_resultHandler, 2 );
+			private var reportProfileUsageChecker:remoteDataService = new remoteDataService( "ReportProfileService.isReportFileUsedByCompany", null, reportProfileUsageChecker_resultHandler, 2 );
+			
+			
+			[Bindable] private var reportProfileTypeList:remoteDataService = new remoteDataService( "ListLibraryService.lookupReportProfileType", null, null );
+			[Bindable] private var reportProfileFileListFromFolder:remoteDataService = new remoteDataService( "ListLibraryService.lookupReportFileFromFolder", null, null );
+			[Bindable] private var reportProfileFileListFromDatabase:remoteDataService = new remoteDataService( "ListLibraryService.lookupReportFileFromDatabase", null, null );
+			[Bindable] private var reportProfileFileList:remoteDataService = new remoteDataService( "ListLibraryService.lookupReportFileAvailable", null, reportProfileFileList_resultHandler );
+			[Bindable] private var jasperFileList:ArrayCollection=new ArrayCollection();
+			
+			[Bindable] private var closeoutRangeList:ArrayCollection=new ArrayCollection([{id:0, text:'Date Range [Start/End Date]'},{id:1, text:'Folio Range [Start/End Folio Number]'}]);
+			
+			
+			public var mainListSelection:int = -1;
+
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				this.formColumnSettingsMaker.service( "REPORTPROFILE" );
+
+				trace ("-------------start creationCompleteHandler");
+				pagedRecords = new remoteListService( this.dataGrid, "ReportProfileService.getPaged", null, getPageData_resultHandler );
+				//resourceManager.localeChain = ['zh_CN'];
+				//global.LanguageCode="CHN";
+				this.gridColumnSequenceMaker.service( "REPORTPROFILE" );
+				
+				
+				var value:String = global.getValueFromSiteConfigSettings( "SITE_AUTO_FILTER_WHEN_OPEN_SCREEN" );
+				if ( value == 'Y' )
+				{
+					this.startFiltering();
+				}
+				else
+				{
+					;
+				}
+				
+				this.reportProfileTypeList.service( );
+				this.reportProfileFileList.service( );
+				this.reportProfileFileListFromFolder.service( );
+				this.reportProfileFileListFromDatabase.service( );
+				
+				closeoutRangeList = new ArrayCollection([{id:0, text:resourceManager.getString('default','REPORT_CLOSEOUT_BY__DATERANGE')},{id:1, text:resourceManager.getString('default','REPORT_CLOSEOUT_BY__FOLIORANGE')}]);
+				trace ("------------End creationCompleteHandler");
+						
+				//trace("this.grid.scroller1111", this.dataGrid.scroller);
+				//trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+				this.dataGrid.scroller.verticalScrollBar.addEventListener(Event.CHANGE, verticalScrollBarChanged);
+				this.dataGrid.addEventListener(KeyboardEvent.KEY_UP, reportKeyUp);
+				this.dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+					
+			}
+			
+			protected function formColumnSettingsMaker_resultHandler():void
+			{
+				this._formColumnSettingsString =  formColumnSettingsMaker.dataString;
+				
+				//this.deliveryLineSettings = global.adjustFormGridSettings( this._formColumnSettingsString );
+			}
+			
+			
+			
+			protected function startLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				//this.panel.enabled = false;
+				
+				currentLength=0;
+				currentOffset = 0;
+				
+				//this.exportContents = this.genData.prepExportHeader( dataGrid );
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				this.pb.values(0, 0);
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			protected function endLoadingPages():void
+			{
+				this.btn_create.enabled = this.canCreate;
+				this.btn_export.enabled = true;
+				this.dataGrid.enabled = true;
+				this.toolbar.enabled = true;
+				//this.panel.enabled = true;
+				//this.pb.values(totalCount, totalCount);
+				this.pb.values(pagedRecords.totalCount, pagedRecords.totalCount, true);
+				
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = false;
+				
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				//if ( totalLength > totalCount )
+				if ( pagedRecords.totalLength > pagedRecords.totalCount )
+				{
+					this.resumeBtn.enabled = true;
+				}
+				else
+				{
+					this.resumeBtn.enabled = false;
+				}
+			}
+			
+			protected function exportCsvHandler(event:MouseEvent):void
+			{
+				this.confirmReport = new ActionDialog( doExport, cancelExport, resourceManager.getString('default','CONFIRM_REPORT_CSV') );
+				
+				//this.startLoadingPages();
+			}
+			
+			private function getPageData_resultHandler():void
+			{
+				// if not finished
+				if(pagedRecords.length < pagedRecords.totalCount)
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+				}
+				else
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+					
+					this.endLoadingPages();
+					
+					this.dataGrid.selectedIndex = this.mainListSelection;
+					if ( this.mainListSelection >= 0)
+					{
+						this.dataGrid_selectionChangeHandler(null);
+					}
+					this.mainListSelection = -1;
+					
+				}
+				
+			}
+			
+			
+			public function doExport():void
+			{
+				//genData.prepOther(dataGrid,'drawerProductlist.csv', this.pagedRecords);
+				
+				//f.save( this.exportContents, "drawerProductlist.csv" );
+				f.save( pagedRecords.exportContents, "reportProfilelist.csv" );
+				
+				this.endLoadingPages();
+			}
+			
+			
+			public function cancelExport():void
+			{
+				this.endLoadingPages();
+				
+				//trace( this.exportContents );
+			}
+			
+			public function doNothing():void
+			{
+			}
+			
+			
+			private function verticalScrollBarChanged(event:Event):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function reportKeyUp(event:KeyboardEvent):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				if(event.column.dataField!='prod_items')
+				{
+					var currentRenderer:IGridItemRenderer;
+					var dir:String;
+					
+					if ( global.sortingBySingleColumn == true )
+					{	// sorted by single column only
+						for (var i:int=0; i < dataGrid.columns.length; i++)
+						{
+							currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+							if ( currentRenderer != null)
+							{
+								(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+							}
+							//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+						}
+					}
+					else
+					{	// sorted by multiple columns
+						;
+					}
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if( currentSorts.hasOwnProperty(event.column.dataField ) )
+					{
+						dir = currentSorts[event.column.dataField];
+						if( dir=="ASC" )
+						{
+							dir = "DESC";
+						}
+						else if ( dir == "DESC" )
+						{
+							dir = "";
+						}
+						else if ( dir == "" )
+						{
+							dir = "ASC";
+						}
+						else 
+						{
+							dir = "ASC";
+						}
+						
+						if ( dir != "" )
+						{
+							currentSorts[event.column.dataField] = dir;	
+						}
+						else
+						{
+							delete currentSorts[event.column.dataField];
+							delete currentOrders[event.column.dataField];
+						}
+					}
+					else
+					{
+						if ( global.sortingBySingleColumn == true )
+						{	// sorted by single column only
+							currentSorts = new Object();
+							currentOrders = new Object();
+							currentSortSeq = 0;
+						}
+						else
+						{	// sorted by multiple columns
+							;
+						}
+						currentSorts[event.column.dataField] = "ASC";	
+						dir = currentSorts[event.column.dataField];
+						currentSortSeq += 1;
+						currentOrders[event.column.dataField] = currentSortSeq;	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+					this.startFiltering();
+				}
+			}
+			
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				if(currentState != 'widget')
+				{
+					if ( dataGrid.selectedIndex >= 0 )
+					{
+						this.prepareJasperFileList( dataGrid.selectedItem.report_jasper_file );
+					}
+					
+					idx=dataGrid.selectedIndex;
+					//dataGrid.ensureCellIsVisible(idx+11);
+					dataGrid.ensureCellIsVisible(idx);
+					
+					currentState = "edit";					
+					this.btn_save.enabled = this.canUpdate;
+					
+					if ( _formColumnSettingsString.length > 0 )
+					{
+						global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+					}
+					
+					// TODO
+				}
+			}
+			
+			protected function cancel_clickHandler():void
+			{
+				clearDetail();
+				if ( currentState== "create" )
+				{
+					dataGrid.enabled=true;
+				}
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+			}			
+			
+			protected function gridColumnSequenceMaker_resultHandler():void
+			{
+				this._gridColumnSequenceString =  gridColumnSequenceMaker.dataString;
+				
+				if ( _gridColumnSequenceString.length > 0 )
+				{
+					global.adjustGridColumnSequence( _gridColumnSequenceString.substr(1), dataGrid );
+				}
+				
+			}
+			
+			protected function reportProfileFileList_resultHandler():void
+			{
+				
+				/* this._gridColumnSequenceString =  gridColumnSequenceMaker.dataString;
+				
+				if ( _gridColumnSequenceString.length > 0 )
+				{
+					global.adjustGridColumnSequence( _gridColumnSequenceString.substr(1), dataGrid );
+				} */
+				
+			}
+			
+			
+			protected function fltr_report_keyUpHandler(event:KeyboardEvent):void
+			{
+				var keyCode:uint = 0;
+				if (event == null)
+				{
+					keyCode=0;
+				}
+				else
+				{
+					keyCode=event.keyCode;
+				}
+				
+				if ( keyCode == 13 )
+				{
+					clearDetail();
+					startFiltering();
+				}
+			}
+			
+			protected function fltr_rpttype_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			private function startFiltering():void
+			{
+				var reportFilter:String = '';  
+				var typeFilter:String = '';  
+				var fields:Object;
+				var types:Object;
+				
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				fields = new Object();
+				types = new Object();
+				
+				
+				if(fltr_report.text!='')
+				{					
+					reportFilter = "((UPPER(report_file) LIKE UPPER('%"+(fltr_report.text)+"%') ) or "
+						+ "((UPPER(report_name) LIKE UPPER('%"+(fltr_report.text)+"%') ) or "
+						+ "((UPPER(report_jasper_file) LIKE UPPER('%"+(fltr_report.text)+"%') ) or "
+						+ "(UPPER(report_ondemand_title) LIKE UPPER('%"+(fltr_report.text)+"%') )) ";
+					fields["report_file||report_name||report_jasper_file||report_ondemand_title"] = fltr_report.text+"||"+fltr_report.text+"||"+fltr_report.text+"||"+fltr_report.text;
+				}
+				else
+				{
+					reportFilter = '';
+					fields["report_file||report_name||report_jasper_file||report_ondemand_title"] = "";
+				}
+				types["report_file||report_name||report_jasper_file||report_ondemand_title"] = "STRING||STRING||STRING||STRING";
+				
+				
+				if (fltr_rpttype.selectedIndex > -1) 
+				{
+					typeFilter = "report_type='"+reportProfileTypeList[fltr_rpttype.selectedIndex].report_type_code+"' ";
+					fields["report_type"] = reportProfileTypeList[fltr_rpttype.selectedIndex].report_type_code;
+				}
+				else
+				{
+					typeFilter = '';
+					fields["report_type"] = "";
+				}
+				types["report_type"] = "EXACT_STRING";
+				
+				
+				currentFilter = "WHERE 1=1 ";
+				if ( reportFilter.length > 0 )
+				{
+					currentFilter += "AND " + reportFilter;
+				}
+				if ( typeFilter.length > 0 )
+				{
+					currentFilter += "AND " + typeFilter;
+				}
+				
+				currentFields = fields;
+				currentTypes = types;
+				
+				this.startLoadingPages();
+				
+				trace("this.grid.scroller3333", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			private function findByPrimaryKey(file:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["report_file"] = file;
+				types["report_file"] = "EXACT_STRING";
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				//this.pagedRecords.service( fields, types, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( fields, types, currentSorts, currentOrders );
+			}
+			
+			protected function filterRecords(event:MouseEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				this.startFiltering();
+			}
+			
+			protected function refreshRecords(event:MouseEvent):void
+			{
+				if ( currentState != "widget" )
+				{
+					currentState = 'normal';
+					dataGrid.enabled=true;
+				}
+				clearDetail();
+				fltr_report.text = "";
+				fltr_rpttype.selectedIndex = -1;
+				
+				dataGrid.selectedIndex = -1;
+				currentFilter = null;
+				currentOrder = null;
+				currentFields = new Object();
+				currentTypes = new Object();
+				
+				currentSorts = new Object();
+				currentOrders = new Object();
+				var currentRenderer:IGridItemRenderer;
+				for (var i:int=0; i < dataGrid.columns.length; i++)
+				{
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					if ( currentRenderer != null)
+					{
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+					}
+					//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+				}
+				this.startFiltering();
+				//this.startLoadingPages();
+				trace("this.grid.scroller2222", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			protected function clearDetail(): void
+			{
+				if (currentState != 'widget')
+				{
+				}
+			}			
+			
+			private function editRecord():void
+			{
+				var prod_num:int;
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.report_file = report_file.text;
+				obj.report_name = report_name.text;
+				
+				if (report_type.selectedIndex>=0)
+				{
+					obj.report_type = reportProfileTypeList[report_type.selectedIndex].report_type_code;
+					obj.report_type_name = reportProfileTypeList[report_type.selectedIndex].report_type_name;
+				}
+				else
+				{
+					obj.report_type = dataGrid.selectedItem.report_type;
+					obj.report_type_name = dataGrid.selectedItem.report_type_name;
+				}
+				
+				if (report_closeoutby.selectedIndex>=0)
+				{
+					obj.report_closeoutby = closeoutRangeList[report_closeoutby.selectedIndex].id;
+					obj.report_closeoutby_name =closeoutRangeList[report_closeoutby.selectedIndex].text;
+				}
+				else
+				{
+					obj.report_closeoutby = "";
+					obj.report_closeoutby_name = "";
+				}
+				
+				obj.report_jasper_file = report_jasper_file.text;
+				/*
+				if (report_jasper_file.selectedIndex>=0)
+				{
+					obj.report_jasper_file = this.reportProfileFileListFromFolder[report_jasper_file.selectedIndex].report_jasper_file;
+				}
+				else
+				{
+					obj.report_jasper_file = dataGrid.selectedItem.report_jasper_file;
+				}
+				*/
+				prod_num = reportJasperKeyChecker.dataInteger;
+				if ( prod_num > 0 && obj.report_type!=dataGrid.selectedItem.report_type )
+				{
+					var errorBox:MessageDialog = new MessageDialog( '[' + obj.report_jasper_file + ', ' + obj.report_type_name + '] ' + resourceManager.getString('default','ALERT__REPORT_JASPER_TYPE_USED') );
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				
+				obj.report_desc = report_desc.text;
+				obj.report_ondemand_title = report_ondemand_title.text;
+				
+				obj.report_closeout_flag = (report_closeout_flag.selected==true?"yes":"");
+				obj.report_ondemand_flag = (report_ondemand_flag.selected==true?"yes":"");
+				
+				updateAction.service( obj );
+			}
+			
+			protected function updateData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.updateAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+					this.reportProfileFileList.service( );
+					this.reportProfileFileListFromFolder.service( );
+					this.reportProfileFileListFromDatabase.service( );
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var file:String;
+				file = report_file.text;
+				
+				currentState="normal";
+				findByPrimaryKey( file );
+
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			private function doDelete(): void
+			{
+				// check if the report linked to any companies;
+				reportProfileUsageChecker.service( report_file.text );
+				
+			}
+			
+			protected function reportProfileUsageChecker_resultHandler( ):void
+			{
+				if ( reportProfileUsageChecker.dataInteger > 0 )
+				{
+					global.msgWarning( resourceManager.getString('default','ALERT__REPORT_PROFILE_USED') );
+					return;
+				}
+				
+				var errors:String="";
+				var index:int=0;
+				
+				/*
+				TODO - is this product used by other records?
+				*/
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				else
+				{
+					var canDelete:DeleteDialog = new DeleteDialog(deleteRecord, hasPassword);
+				}
+			}
+			
+			private function deleteRecord():void
+			{
+				var obj:Object = new Object();
+				
+				
+				obj.report_file = report_file.text;
+				obj.report_name = report_name.text;
+				
+				if (report_type.selectedIndex>=0)
+				{
+					obj.report_type = reportProfileTypeList[report_type.selectedIndex].report_type_code;
+				}
+				else
+				{
+					obj.report_type = dataGrid.selectedItem.report_type;
+				}
+				
+				obj.report_jasper_file = report_jasper_file.text;
+				/*
+				if (report_jasper_file.selectedIndex>=0)
+				{
+					obj.report_jasper_file = this.reportProfileFileListFromFolder[report_jasper_file.selectedIndex].report_jasper_file;
+				}
+				else
+				{
+					obj.report_jasper_file = dataGrid.selectedItem.report_jasper_file;
+				}
+				*/
+				obj.report_desc = report_desc.text;
+				obj.report_ondemand_title = report_ondemand_title.text;
+				
+				obj.report_closeout_flag = (report_closeout_flag.selected==true?"yes":"");
+				obj.report_ondemand_flag = (report_ondemand_flag.selected==true?"yes":"");
+				
+				deleteAction.service( obj );
+			}
+			
+			protected function deleteData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.deleteAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+					this.reportProfileFileList.service( );
+					this.reportProfileFileListFromFolder.service( );
+					this.reportProfileFileListFromDatabase.service( );
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+				}
+				
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+			}
+			
+			private function checkReportProfileKey():void
+			{
+				reportProfileKeyChecker.service( this.report_file.text );
+			}
+			
+			protected function reportProfileKeyChecker_resultHandler( ):void
+			{
+				if ( reportProfileKeyChecker.dataInteger > 0 )
+				{
+					global.msgWarning( resourceManager.getString('default','ALERT__REPORT_PROFILE_EXIST') );
+					//global.msgWarning( "Report file has been defined already!" );
+					this.btn_save.enabled = this.canCreate;
+				}
+			}
+			
+			private function onReportNameChanged():void
+			{
+				this.report_ondemand_title.text = this.report_name.text;
+			}
+			
+			private function checkReportJasperKey():void
+			{
+				var file:String="";
+				var freq:String="";
+				
+				
+				if (report_type.selectedIndex>=0)
+				{
+					freq = reportProfileTypeList[report_type.selectedIndex].report_type_code;
+				}
+				else
+				{
+					freq = "";
+				}
+				
+				file = report_jasper_file.text;
+				/*
+				if (report_jasper_file.selectedIndex>=0)
+				{
+					file = this.reportProfileFileListFromFolder[report_jasper_file.selectedIndex].report_jasper_file;
+				}
+				else
+				{
+					file = "";
+				}
+				*/
+				if ( this.currentState == "create" )
+				{
+					var file_str:String = freq + '__' + file;
+					var file_arr:Array = file_str.split('.');
+					this.report_file.text = file_arr[0]+'.jrxml';
+				}
+				//this.report_file.text = freq + '__' + file;
+					
+				reportJasperKeyChecker.service( file, freq );
+			}
+			
+			protected function reportJasperKeyChecker_resultHandler( ):void
+			{
+				if ( reportJasperKeyChecker.dataInteger > 0 )
+				{
+					var file:String="";
+					var freq:String="";
+					
+					
+					if (report_type.selectedIndex>=0)
+					{
+						freq = reportProfileTypeList[report_type.selectedIndex].report_type_name;
+					}
+					else
+					{
+						freq = "";
+					}
+					
+					file = report_jasper_file.text;
+					/*
+					if (report_jasper_file.selectedIndex>=0)
+					{
+						file = this.reportProfileFileListFromFolder[report_jasper_file.selectedIndex].report_jasper_file;
+					}
+					else
+					{
+						file = "";
+					}
+					*/
+					if ( currentState!='edit' || ( currentState=='edit' && freq!=dataGrid.selectedItem.report_type_name ) ) 
+					{
+						global.msgWarning( '[' + file + ', ' + freq + '] ' + resourceManager.getString('default','ALERT__REPORT_JASPER_TYPE_USED') );
+					}
+					this.btn_save.enabled = this.canCreate;
+				}
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return index;
+			}
+			
+			private function createRecord():void
+			{
+				var prod_num:int;
+				
+				prod_num = reportProfileKeyChecker.dataInteger;
+				if ( prod_num > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__REPORT_PROFILE_EXIST') );
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.report_file = report_file.text;
+				obj.report_name = report_name.text;
+				
+				if (report_type.selectedIndex>=0)
+				{
+					obj.report_type = reportProfileTypeList[report_type.selectedIndex].report_type_code;
+					obj.report_type_name = reportProfileTypeList[report_type.selectedIndex].report_type_name;
+				}
+				else
+				{
+					obj.report_type = 'N';
+					obj.report_type_name = '';
+				}
+				
+				if (report_closeoutby.selectedIndex>=0)
+				{
+					obj.report_closeoutby = closeoutRangeList[report_closeoutby.selectedIndex].id;
+					obj.report_closeoutby_name =closeoutRangeList[report_closeoutby.selectedIndex].text;
+				}
+				else
+				{
+					obj.report_closeoutby = "";
+					obj.report_closeoutby_name = "";
+				}
+				
+				obj.report_jasper_file = report_jasper_file.text;
+				/*
+				if (report_jasper_file.selectedIndex>=0)
+				{
+					obj.report_jasper_file = this.reportProfileFileListFromFolder[report_jasper_file.selectedIndex].report_jasper_file;
+				}
+				else
+				{
+					obj.report_jasper_file = "";
+				}
+				*/
+				prod_num = reportJasperKeyChecker.dataInteger;
+				if ( prod_num > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( '[' + obj.report_jasper_file + ', ' + obj.report_type_name + '] ' + resourceManager.getString('default','ALERT__REPORT_JASPER_TYPE_USED') );
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				obj.report_desc = report_desc.text;
+				obj.report_ondemand_title = report_ondemand_title.text;
+				
+				obj.report_closeout_flag = (report_closeout_flag.selected==true?"yes":"");
+				obj.report_ondemand_flag = (report_ondemand_flag.selected==true?"yes":"");
+
+				createAction.service( obj );
+			}
+			
+			protected function createData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.createAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+					this.reportProfileFileList.service( );
+					this.reportProfileFileListFromFolder.service( );
+					this.reportProfileFileListFromDatabase.service( );
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				}
+				
+				var file:String;
+				file = report_file.text;
+				
+				currentState="normal";
+				findByPrimaryKey( file );
+				
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			protected function createNewRecord(event:MouseEvent):void
+			{	
+				this.prepareJasperFileList("");
+				
+				idx=dataGrid.selectedIndex;
+				dataGrid.ensureCellIsVisible(idx);
+				currentState="create";
+				this.btn_save.enabled = this.canCreate;
+				dataGrid.enabled=false;
+				//this.equipCmptsList.visible = false;
+				
+				if ( _formColumnSettingsString.length > 0 )
+				{
+					global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+				}
+			}
+			
+			
+			
+			protected function view_detailsHandler(event:FlexEvent):void
+			{
+			}
+			
+			
+			protected function save_clickHandler():void
+			{
+				this.btn_save.enabled = false;
+				if (currentState == "create")
+				{
+					createRecord();
+				}
+				if (currentState == "edit")
+				{
+					editRecord();
+				}
+				if (currentState == "detail")
+				{
+					editRecord();
+				}
+			}
+			
+			protected function killBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=true;
+				pagedRecords.interruptor=true;
+				trace("WTF >>>>>>>>>>");
+			}
+			
+			protected function resumeBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				this.resumeLoadingPages();
+				trace("RESUME >>>>>>>>>>");
+			}
+			
+			protected function resumeLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				
+				//pb.values(pagedRecords.length,totalLength);
+				pb.values(pagedRecords.length,pagedRecords.totalLength);
+				//currentPage = int(this.pagedRecords.length/currentPageSize) + 1;
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			protected function prepareJasperFileList( curr_file:String="" ):void
+			{
+				this.jasperFileList.removeAll();
+				
+				var obj:Object = new Object();
+				if ( curr_file.length > 0 )
+				{
+					obj['report_jasper_file'] = curr_file;
+					this.jasperFileList.addItem( obj );
+				}
+				
+				for each ( var o:Object in this.reportProfileFileList.source )
+				{
+					obj = new Object();
+					obj['report_jasper_file'] = o['report_jasper_file'];
+					this.jasperFileList.addItem( obj );
+				}
+				
+			}
+			
+			protected function setReportJasperFileText():void
+			{
+				if ( this.report_jasper_file2.selectedIndex >=0 )
+				{
+					this.report_jasper_file.text = this.report_jasper_file2.selectedItem.report_jasper_file;
+				}
+				else
+				{
+					this.report_jasper_file.text = "";
+				}
+				/*
+				if ( this.report_jasper_file.selectedIndex >=0 )
+				{
+					this.report_jasper_file2.text = this.report_jasper_file.selectedItem.report_jasper_file;
+				}
+				else
+				{
+					this.report_jasper_file2.text = "";
+				}
+				*/
+			}
+			
+			protected function closeoutRangeLabelFunction(item:Object, column:GridColumn):String
+			{
+				var ret:String = "";
+				for each(var obj:Object in this.closeoutRangeList)
+				{
+					if(obj.id == item [column.dataField]) ret=obj.text;
+				}
+				return ret;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<components:ValidationGroup id="vg" action="{save_clickHandler}" defaultButton="{btn_save}" isProtected="{hasPassword}"/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:VGroup width="100%" id="toolbar"  >
+			<s:HGroup gap="5" paddingBottom="2" paddingTop="2" width="100%">
+				<components:DKI_ValidatorInput id="fltr_report" validationType="search" minWidth="200" height="{labelHeight}" width="100%"
+											   keyUp="fltr_report_keyUpHandler(event)"  restrict="A-Za-z0-9 \-"
+											   excludeFrom="widget" width.widget="140" 
+											   prompt="{resourceManager.getString('default','REPORT_NAME')+resourceManager.getString('default','FILTER')}"/>
+				<components:DKI_DropDownList id="fltr_rpttype" width="180" height="100%"
+											 change="fltr_rpttype_changeHandler(event)" cornerRadius="10"
+											 labelField="report_type_name" prompt="{resourceManager.getString('default','REPORT_TYPE')+resourceManager.getString('default','FILTER')}"
+											 visible.widget="false" excludeFrom="widget" dataProvider="{reportProfileTypeList}"/>
+				
+			<!--/s:HGroup>
+			<s:HGroup gap="5" paddingBottom="2" paddingTop="2" width="100%"-->
+				<s:Spacer width="100%"/>
+				<components:DKI_Button id="filterBtn" height="24" noLabel="false" click="filterRecords(event)"
+									   type="filteron"/>
+				<components:DKI_Button id="resetBtn" height="24" noLabel="false" click="refreshRecords(event)"
+									   type="filteroff"/>
+				<components:DKI_Button id="btn_export" label="{resourceManager.getString('default','EXPORTDATA')}" type="report" click="exportCsvHandler(event)" includeIn="normal"/>
+				<components:DKI_Button id="btn_create" label="{resourceManager.getString('default','CREATE')}" height="24" click="createNewRecord(event)" includeIn="normal" enabled="{this.canCreate}" type="create"/>	
+			</s:HGroup>
+		</s:VGroup>
+			
+		
+		<s:DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="4"
+					selectionChange="dataGrid_selectionChangeHandler(event)"
+					skinClass="skins.DKI_DataGrid_Skin"
+					height.widget="100%">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="report_jasper_file_exist" headerText="{resourceManager.getString('default','REPORT_JASPER_FILE_EXIST')}" visible="true" itemRenderer="renderers.GridCheckRender" width="100"></s:GridColumn>
+						<s:GridColumn dataField="report_file" headerText="{resourceManager.getString('default','REPORT_FILE')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="report_jasper_file" headerText="{resourceManager.getString('default','REPORT_JASPER_FILE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="report_type" headerText="{resourceManager.getString('default','REPORT_TYPE')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="report_type_name" headerText="{resourceManager.getString('default','REPORT_TYPE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="report_name" headerText="{resourceManager.getString('default','REPORT_NAME')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="report_desc" headerText="{resourceManager.getString('default','REPORT_DESC')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="report_lang" headerText="{resourceManager.getString('default','REPORT_LANG')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="report_additive_flag" headerText="{resourceManager.getString('default','REPORT_ADDITIVE_FLAG')}" visible="false" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+						<s:GridColumn dataField="report_ondemand_title" headerText="{resourceManager.getString('default','REPORT_ONDEMAND_TITLE')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="report_ondemand_flag" headerText="{resourceManager.getString('default','REPORT_ONDEMAND_FLAG')}" visible="true" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+						<s:GridColumn dataField="report_closeout_flag" headerText="{resourceManager.getString('default','REPORT_CLOSEOUT_FLAG')}" visible="true" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+						<s:GridColumn dataField="report_accumulative_flag" headerText="{resourceManager.getString('default','REPORT_ACCUMULATIVE_FLAG')}" visible="false" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+						<s:GridColumn dataField="report_frontend_flag" headerText="{resourceManager.getString('default','REPORT_FRONTEND_FLAG')}" visible="false" itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+						<s:GridColumn dataField="report_closeoutby" headerText="{resourceManager.getString('default','REPORT_CLOSEOUT_BY')}" visible="true" labelFunction="closeoutRangeLabelFunction"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			<s:dataProvider>
+				<!--s:AsyncListView id="pgList" list="{getPagedResult.lastResult}"/-->
+				<s:AsyncListView id="pgList" list="{pagedRecords}"/>
+			</s:dataProvider>
+		</s:DataGrid>
+		<s:HGroup width="100%">
+			<components:Downloader id="pb" width="100%" height="18"/>
+			<!--mx:ProgressBar id="pb" width="100%" height="22" visible="false" includeInLayout="false"  mode="manual" source="{this.pgList}" label="{this.currentLength} records shown from {this.currentLength} loaded out of {this.totalLength} found." labelPlacement="center"/-->
+			<s:Button id="killBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="killBtn_clickHandler(event)"/>
+			<s:Button id="resumeBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="resumeBtn_clickHandler(event)"/>
+		</s:HGroup>
+	</s:Panel>
+	
+	<s:Panel id="details" includeIn="edit,create,detail" width="100%" height="240"
+			 itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+			<!--s:TileLayout/-->
+		</s:layout>
+		
+		<s:Spacer height="5"/>
+		<s:VGroup width="100%">
+			<s:HGroup width="100%">
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','REPORT_JASPER_FILE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="report_jasper_file" maxChars="40" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.report_jasper_file}" editable="false" enabled="false" 
+												   text.create="" editable.create="false" enabled.create="true" valueCommit="checkReportJasperKey()" 
+												   required="true" validationType="alphanumericdot" validationGroup="{vg}" automationName="{resourceManager.getString('default','REPORT_JASPER_FILE')}" 
+												   />
+					<components:DKI_DropDownButton id="report_jasper_file2"
+												 dataProvider="{reportProfileFileListFromFolder}" 
+												 labelField="report_jasper_file"
+												 selectedItem="{dataGrid.selectedItem.report_jasper_file}" enabled="false" visible="false"
+												 selectedItem.create="" selectedIndex.create="-1" enabled.create="true" visible.create="true"
+												 width="{DropBtnWidth}" height="{fieldHeight}" change="setReportJasperFileText()" 
+												 prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','REPORT_JASPER_FILE')}"
+												 />
+					<!--<components:DKI_ValidatorComboBox id="report_jasper_file" 
+													  dataProvider="{reportProfileFileListFromFolder}" 
+													  labelField="report_jasper_file"
+													  selectedItem="{dataGrid.selectedItem.report_jasper_file}" enabled="false" 
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+													  width="30" height="{fieldHeight}" change="checkReportJasperKey()" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','REPORT_JASPER_FILE')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','REPORT_JASPER_FILE')}" 
+													  />-->
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','REPORT_NAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="report_name" maxChars="40" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.report_name}" editable="true" enabled="true" 
+												   text.create="" editable.create="true" enabled.create="true" change="onReportNameChanged()" 
+												   required="true" validationType="alphanumericslashbrackets" validationGroup="{vg}" automationName="{resourceManager.getString('default','REPORT_NAME')}" 
+												   />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','REPORT_TYPE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="report_type" 
+													  dataProvider="{reportProfileTypeList}" 
+													  labelField="report_type_name" 
+													  selectedItem="{dataGrid.selectedItem.report_type_name}" enabled="false" 
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+													  width="{fieldWidth}" height="{fieldHeight}" change="checkReportJasperKey()" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','REPORT_TYPE')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','REPORT_TYPE')}" 
+													  />
+					<s:Label width="{DropBtnWidth}" height="{labelHeight}" text="" verticalAlign="middle"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','REPORT_DESC')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="report_desc" maxChars="50" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.report_desc}" editable="true" enabled="true" 
+												   text.create="" editable.create="true" enabled.create="true" 
+												   required="false" validationType="alphanumericslashbrackets" validationGroup="{vg}" automationName="{resourceManager.getString('default','REPORT_DESC')}" 
+												   />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight-10}" text="  "/>
+					<s:CheckBox id="report_ondemand_flag" width="{fieldWidth}" label="{resourceManager.getString('default','REPORT_ONDEMAND_FLAG')}" fontWeight="bold" 
+								selected.edit="{dataGrid.selectedItem.report_ondemand_flag>0?true:false}" enabled.edit="true" selected.create="false" enabled.create="true"/>
+					<s:Label width="{DropBtnWidth}" height="{labelHeight}" text="" verticalAlign="middle"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight-10}" text="  "/>
+					<s:CheckBox id="report_closeout_flag" width="{fieldWidth}" label="{resourceManager.getString('default','REPORT_CLOSEOUT_FLAG')}" fontWeight="bold" 
+								selected.edit="{dataGrid.selectedItem.report_closeout_flag>0?true:false}" enabled.edit="true" selected.create="false" enabled.create="true"/>
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','REPORT_CLOSEOUT_BY')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="report_closeoutby" 
+													  dataProvider="{this.closeoutRangeList}" 
+													  labelField="text" 
+													  selectedIndex="{dataGrid.selectedItem.report_closeoutby}" enabled="true" 
+													  selectedIndex.create="-1" enabled.create="true" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','REPORT_CLOSEOUT_BY')}"
+													  required="false" validationGroup="{vg}" automationName="{resourceManager.getString('default','REPORT_CLOSEOUT_BY')}" 
+													  />
+					<s:Label width="{DropBtnWidth}" height="{labelHeight}" text="" verticalAlign="middle"/>
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:HGroup width="100%" visible="false" includeInLayout="false">
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','REPORT_FILE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="report_file" maxChars="25" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.report_file}" editable="false" enabled="false" 
+												   text.create="" editable.create="true" enabled.create="true" change="checkReportProfileKey()" 
+												   required="false" validationType="alphanumericdot" validationGroup="{vg}" automationName="{resourceManager.getString('default','REPORT_FILE')}" 
+												   />
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','REPORT_ONDEMAND_TITLE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="report_ondemand_title" maxChars="40" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.report_ondemand_title}" editable="true" enabled="true" 
+												   text.create="" editable.create="true" enabled.create="true" 
+												   required="false" validationType="alphanumericslashbrackets" validationGroup="{vg}" automationName="{resourceManager.getString('default','REPORT_ONDEMAND_TITLE')}" 
+												   />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:Spacer height="5" />
+			
+		</s:VGroup>
+		
+		<s:Spacer height="0" />
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_delete" label="{resourceManager.getString('default','DELETE')}" height="100%" click="doDelete()" includeIn="edit" enabled="{this.canDelete}" type="delete"/>
+			<components:DKI_Button id="btn_save" label.create="{resourceManager.getString('default','SAVE')}" label="{resourceManager.getString('default','UPDATE')}" height="100%" includeIn="edit,create,detail" enabled.create="{this.canCreate}" enabled="{this.canUpdate}" type.create="create" type="edit"/>
+			<components:DKI_Button id="btn_cancel" label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel"/>
+		</s:HGroup>
+	</s:Panel>
+	
+</s:VGroup>

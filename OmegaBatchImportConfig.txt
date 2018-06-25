@@ -1,0 +1,91 @@
+
+1. GUI Configuration for Batch Import
+
+	The Batch Import functions for Tankers, Equipment, and Personnel are embedded in the screen of "Personnel Currently On Site". 
+
+	There are three invisible buttons in this screen: 'Add Personnel in Batch', 'Add Equipment in Batch', and 'Add Tanker in Batch'.
+
+	In normal situations, these buttons are turned off but can become visible by changing the configuration in the file ..\amfservices\core\services\ScreenFormButtonService.php
+
+	In this file, you will find:
+
+			if ( $screen == "ONSITE_REPORT" )
+			{
+				// need tutn on when batch import of personnel is enabled
+				$str .= "|batchPsnl,0";
+				
+				// need tutn on when batch import of equipment is enabled
+				$str .= "|batchEqpt,0";
+				
+				// need tutn on when batch import of tankers is enabled
+				$str .= "|batchTnkr,0";
+			}
+			
+	Change them as:
+			if ( $screen == "ONSITE_REPORT" )
+			{
+				// need tutn on when batch import of personnel is enabled
+				$str .= "|batchPsnl,1";
+				
+				// need tutn on when batch import of equipment is enabled
+				$str .= "|batchEqpt,1";
+				
+				// need tutn on when batch import of tankers is enabled
+				$str .= "|batchTnkr,1";
+			}
+
+	Then re-enter the screen 'Personnel Currently On Site', you will see three buttons beside 'Generate Report'.
+
+	Don't forget to change the configurations back.
+
+
+2. Data Format for Batch Import
+
+	Please note: the data of companies and equipment types must exist already before doing batch import of tankers, equipment, and personnel.
+
+	The file that does the Bacth Import is ..\amfservices\core\services\BatchService.php, in which there are three functions:
+		public function createBatchPersonnel()
+		public function createBatchEquipment()
+		public function createBatchTanker()
+		
+	The function createBatchPersonnel will read the personnel records from the file 'List_Personnel.csv' and add them one by one into database.
+
+	The function createBatchEquipment will read the equipment records from the file 'List_Equipment.csv' and add them one by one into database.
+			
+	The function createBatchTanker will read the tanker records from the file 'List_Tanker.csv' and add them one by one into database.
+
+	The user need to put the records into these CSV files in certain formats.
+
+	The file List_Personnel.csv must have the following format:
+	pers,persNm,role,dept,timeCd,persLck,persLcnc,area,cmpy,persExp1,persExp2,persExp3
+	12345,John Smith,8,,AL,N,,9999,0002,15/12/2019,,
+
+	The file List_Equipment.csv must have the following format:
+	Owner,Code,Equipment Code,Equipment Type Name,Actual Safefill Cmpt 1,Actual Safefill Cmpt 2,Actual Safefill Cmpt 3,Actual Safefill Cmpt 4,Actual Safefill Cmpt 5,Actual Safefill Cmpt 6,Actual Safefill Cmpt 7,Actual Safefill Cmpt 8,Area,load type,Equipment Type ID,Expiry Date 1,Expiry Date 2,Expiry Date 3,Actual Capacity Cmpt 1,Actual Capacity Cmpt 2,Actual Capacity Cmpt 3,Actual Capacity Cmpt 4,Actual Capacity Cmpt 5,Actual Capacity Cmpt 6,Actual Capacity Cmpt 7,Actual Capacity Cmpt 8
+	BP,0002,TSTBATCH02,3CMPT TRAILER,12000,11000,9000,,,,,,9999,Bottom,,,,,13000,,9500,,,,,
+	Emerald Carrying - EMMO,98888,ECCPM 130131,BP BDOUBLE,8350,8250,8300,,,,,,9999,Bottom,,,,,,,,,,,,
+
+	The file List_Tanker.csv must have the following format:
+	Base DEPOT,Equipment Type,OWNER ,CARRIER,Carrier Code,Tanker Code,Code,Equipment A,Equipment B,Equipment C,Equipment D,Equipment E,Equipment F,Equipment G,Equipment H,Base Depot Code,Expiry Date,Expiry Date 2,Expiry Date 3
+	BP MACKAY,TANKER 6 COMP,BP Australia,BP Australia,0002,BP/MASTER 1,0002,MASTER 1,,,,,,,,4010,15/01/2020,,
+
+	Please Note: The first line of Column Title is not optional, you must have it; When using Excel to edit data, use Paste as Value always excpet the Date Time values.
+
+
+3. When Omega version does not have the above feature
+
+	Sometimes the Omega version is a bit old and does not have the features of Batch Import. We can do the following:
+	
+	a. In /var/www/htdocs/om5000, 
+		cp index.swf index.swf.ori
+		then replace index.swf with the latest version
+	b. In /var/www/htdocs/om5000/modules,
+		cp M_ONSITEREPORT.swf M_ONSITEREPORT.swf.ori
+		then replace M_ONSITEREPORT.swf with the latest version
+	c. Copy the file BatchService.php and ScreenFormButtonService.php to the folder /var/www/htdocs/amfservices/core/services if those two files are not found.
+	d. Clean cache and restart Omega GUI
+	
+
+
+
+

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  left="3" right="1" top="3" bottom="1" creationComplete="creationCompleteHandler(event)"
+		  width.normal="600" height.normal="480"
+		  width.widget="100%" height.widget="100%" 
+		  paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+	
+	<s:states>
+		<s:State name="widget"/>
+		<s:State name="normal"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable] public var readonly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+
+			[Bindable] private var myXML:XML = new XML();
+			[Bindable] private var myArr:ArrayCollection = new ArrayCollection();
+
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				//getTotalsResult.token = sumRptServices.getTotals();
+			}
+			
+			protected function getTotalsResult_resultHandler(event:ResultEvent):void
+			{
+				myXML= new XML(event.result);
+				myArr.removeAll();
+				myArr.addItem({id:"Companies",qty:int(myXML.COMPANY)});
+				myArr.addItem({id:"Schedules",qty:int(myXML.SCHEDULE)});
+				myArr.addItem({id:"Personnel",qty:int(myXML.ID_ASSIGN)});
+				myArr.addItem({id:"Orders",qty:int(myXML.ORDER)});
+				trace("hello");
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateformat" dateTimePattern="dd-MMM-yyyy"/>
+		<!--<s:CallResponder id="getTotalsResult" result="getTotalsResult_resultHandler(event)"/>
+		<sumrptservices:SumRptServices id="sumRptServices"
+									   fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+									   showBusyCursor="true"/>-->
+	</fx:Declarations>
+	<s:HGroup>
+		<s:Label width="140" height="100%" text="Total Companies" textAlign="right"
+				 verticalAlign="middle"/>
+		<s:TextInput editable="false" text="{myXML.COMPANY}"/>
+	</s:HGroup>
+	<s:HGroup>
+		<s:Label width="140" height="100%" text="Total Schedules" textAlign="right"
+				 verticalAlign="middle"/>
+		<s:TextInput editable="false" text="{myXML.SCHEDULE}"/>
+	</s:HGroup>
+	<s:HGroup>
+		<s:Label width="140" height="100%" text="Total ID Assignments" textAlign="right"
+				 verticalAlign="middle"/>
+		<s:TextInput editable="false" text="{myXML.ID_ASSIGN}"/>
+	</s:HGroup>
+	<s:HGroup>
+		<s:Label width="140" height="100%" text="Total Customer Orders" textAlign="right"
+				 verticalAlign="middle"/>
+		<s:TextInput editable="false" text="{myXML.ORDER}"/>
+	</s:HGroup>
+</s:VGroup>

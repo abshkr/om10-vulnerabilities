@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:views="views.*"
+		 xmlns:components="components.*"
+		 skinClass="skins.WidgetPanelSkin" width="100%" height="100%"
+		 creationComplete="creationCompleteHandler(event)">
+	
+	<s:layout>
+		<s:VerticalLayout gap="5"/>
+	</s:layout>	
+	
+	<fx:Script>
+		<![CDATA[			
+			import dm.remoteDataService;
+			import dm.utils.tools;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.messaging.channels.StreamingAMFChannel;
+			import mx.rpc.AsyncToken;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.states.State;
+			import mx.utils.ObjectUtil;
+			
+			import spark.components.VGroup;
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			private var expiryDateMode:int=1;
+			private var includeLegacyExpiryDate:Boolean = true;
+			private var includeGenericExpiryDate:Boolean = false;
+			
+			[Bindable] private var expiryDateTargetList:remoteDataService = new remoteDataService( "GenericExpiryDateService.getExpiryDateTargets", null, getExpiryDateTargets_resultHandler );
+			
+			[Bindable] private var headArr:ArrayCollection;
+			[Bindable] private var vgrpArr:ArrayCollection;
+			
+
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				expiryDateMode = int(global.getValueFromSiteConfigSettings( "SITE_EXPIRY_DATE_MANAGE_MODE" ));
+				if ( expiryDateMode <= 0 )
+				{
+					expiryDateMode = 1;
+				}
+				if ( (expiryDateMode & 0x01) > 0 )
+				{
+					includeLegacyExpiryDate = true;
+				}
+				else
+				{
+					includeLegacyExpiryDate = false;
+				}
+				if ( (expiryDateMode & 0x02) > 0 )
+				{
+					includeGenericExpiryDate = true;
+				}
+				else
+				{
+					includeGenericExpiryDate = false;
+				}
+					
+				this.expiryDateTargetList.service();
+				
+			}
+			
+			protected function getLegacyExpiryDateTabGroup(code:String):VGroup
+			{
+				var vgrp:VGroup = new VGroup();
+				
+				vgrp.id = "grp__" + code;
+				vgrp.includeInLayout = false;
+				vgrp.visible = false;
+				vgrp.verticalAlign = "middle";
+				vgrp.percentHeight = 100;
+				vgrp.percentWidth = 100;
+				vgrp.top = 40;
+				vgrp.left = 10;
+				
+				var tabView:v_LegacyExpiryDates = new v_LegacyExpiryDates();
+				tabView.id = "view__" +  code;
+				tabView.readOnly = this.readOnly;
+				tabView.canCreate = this.canCreate;
+				tabView.canUpdate = this.canUpdate;
+				tabView.canDelete = this.canDelete;
+				tabView.hasPassword = this.hasPassword;
+				tabView.percentHeight = 100;
+				tabView.percentWidth = 100;
+				//tabView.isPopupWindow = true;
+				
+				vgrp.addElement( tabView );
+				
+				return vgrp;
+			}
+			
+			protected function getGenericExpiryDateTabGroup(code:String, maxnum:int=10):VGroup
+			{
+				var vgrp:VGroup = new VGroup();
+				
+				vgrp.id = "grp__" + code;
+				vgrp.includeInLayout = false;
+				vgrp.visible = false;
+				vgrp.verticalAlign = "middle";
+				vgrp.percentHeight = 100;
+				vgrp.percentWidth = 100;
+				vgrp.top = 40;
+				vgrp.left = 10;
+				
+				var tabView:v_GenericExpiryDates = new v_GenericExpiryDates();
+				tabView.id = "view__" +  code;
+				tabView.readOnly = this.readOnly;
+				tabView.canCreate = this.canCreate;
+				tabView.canUpdate = this.canUpdate;
+				tabView.canDelete = this.canDelete;
+				tabView.hasPassword = this.hasPassword;
+				tabView.percentHeight = 100;
+				tabView.percentWidth = 100;
+				tabView.isTargetEditable = false;
+				tabView.currentExpiryTargetCode = code;
+				tabView.maxTargetTypes = maxnum;
+				//tabView.isPopupWindow = includeLegacyExpiryDate;
+				
+				vgrp.addElement( tabView );
+				
+				return vgrp;
+			}
+			
+			protected function getExpiryDateTargets_resultHandler():void
+			{
+				headArr = new ArrayCollection();
+				vgrpArr = new ArrayCollection();
+				
+				var vgrp:VGroup;
+				var item:Object;
+				
+				if ( this.includeLegacyExpiryDate )
+				{
+					item = new Object();
+					item['id'] = "LEGACY";
+					item['name'] = resourceManager.getString('default','m_expirydates');
+					headArr.addItem( item );
+					
+					vgrp = this.getLegacyExpiryDateTabGroup( "LEGACY" );
+					vgrpArr.addItem( vgrp );						
+					
+					this.tabContainer.addElement( vgrp );
+				}
+				
+				if ( this.includeGenericExpiryDate )
+				{
+					for each ( var obj:Object in this.expiryDateTargetList.source )
+					{
+						if ( int(obj['edta_status']) == 0 )
+						{
+							continue;
+						}
+						
+						var txt:String = obj['edta_target_desc'];
+						var item:Object = new Object();
+						
+						item['id'] = obj['edta_target_code'];
+						item['name'] = global.getCurrentLanguageContent( txt, global.LanguageCode );
+						headArr.addItem( item );
+						
+						vgrp = this.getGenericExpiryDateTabGroup( obj['edta_target_code'], obj['edta_max_exp'] );
+						vgrpArr.addItem( vgrp );						
+						
+						this.tabContainer.addElement( vgrp );
+					}
+				}
+								
+				// activate 1st tab
+				this.activateTabGroup( 0, false );
+			}
+			
+			
+			protected function activateTabGroup(index:int, flag:Boolean=false):void
+			{
+				var code:String = this.headArr.getItemAt(index).id;
+				var id:String = "grp__"+code;
+				
+				for each ( var vgrp:VGroup in this.vgrpArr )
+				{
+					if ( vgrp.id == id )
+					{
+						vgrp.includeInLayout = true;
+						vgrp.visible = true;
+						if ( flag )
+						{
+							if ( id != "grp__LEGACY" )
+							{
+								var loaded:Boolean = (vgrp.getElementAt(0) as v_GenericExpiryDates).pagedRecords.loaded;
+								if (loaded == true)
+								{
+									(vgrp.getElementAt(0) as v_GenericExpiryDates).setFilters( {expiry_date_target_code: code} );
+								}
+							}
+							else
+							{
+								var loaded2:Boolean = (vgrp.getElementAt(0) as v_LegacyExpiryDates).pagedRecords.loaded;
+								if (loaded2 == true)
+								{
+									(vgrp.getElementAt(0) as v_LegacyExpiryDates).refreshRecords(null);
+								}
+							}
+						}
+						
+					}
+					else
+					{
+						vgrp.includeInLayout = false;
+						vgrp.visible = false;
+					}
+				}
+			}
+			
+			
+			protected function tabbar1_changeHandler(event:IndexChangeEvent):void
+			{
+				this.activateTabGroup( event.newIndex, true );
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateformat" dateTimePattern="dd-MMM-yyyy"/>
+	</fx:Declarations>
+	<s:BorderContainer id="tabContainer" borderColor="0x000000" backgroundAlpha="0" cornerRadius="8" width="100%" height="100%">
+		<s:TabBar dataProvider="{headArr}" labelField="name" width="100%" top="-1" left="-1" right="-1" selectedIndex="0" 
+				  change="tabbar1_changeHandler(event)" alpha="0.70"/>	
+		
+		
+	</s:BorderContainer>
+</s:Panel>

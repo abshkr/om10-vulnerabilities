@@ -1,0 +1,1364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  xmlns:equipmenttypesservice="services.equipmenttypesservice.*"
+		  currentState="normal"
+		  width="100%" height="100%" 
+		  creationComplete="creationCompleteHandler(event)" gap="2">
+
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="widget"/>
+		<s:State name="edit" enterState="
+				 callLater(function():void{dataGrid.ensureCellIsVisible(dataGrid.selectedIndex);});"/>
+		<s:State name="createComplex" enterState="setComplex()"/>
+		<s:State name="createRigid" enterState="setNonCombo()"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import assets.Assets;
+			
+			import components.BusyIndicator;
+			import components.DKI_AlertBox;
+			import components.DeleteDialog;
+			import components.ModalEquipmentCreate;
+			import components.ModalEquipmentDetails;
+			import components.ModalEquipmentType;
+			
+			import dm.remoteDataService;
+			
+			import events.ObjEvent;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.FlexGlobals;
+			import mx.events.DragEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.object_proxy;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.Group;
+			import spark.components.ToggleButton;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			import spark.events.TextOperationEvent;
+						
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String="ORDER BY nlssort (etyp_title, 'NLS_SORT=BINARY_CI') " + currentDirection;
+			private var currentDirection:String="ASC";
+			
+			private var pmv_present:Boolean     = false;
+			private var trailer_present:Boolean = false;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable]private var compartments1:ArrayCollection=new ArrayCollection();
+			[Bindable]private var compartments2:ArrayCollection=new ArrayCollection();
+			[Bindable]private var compartments4:ArrayCollection=new ArrayCollection();
+			[Bindable]private var compartments5:ArrayCollection=new ArrayCollection();
+						
+			[Bindable] private var margins:int=0;
+			[Bindable] private var fieldWidth:int=240;
+			
+			[Bindable] private var canSave:Boolean = false;
+			[Bindable] private var canHaveRigidShip:Boolean = true;
+			[Bindable] private var canHaveRailTank:Boolean = true;
+			
+			[Bindable] private var PMVArr:ArrayCollection=new ArrayCollection();
+			[Bindable] private var TrailerArr:ArrayCollection=new ArrayCollection();
+			
+			[Bindable] private var typeCategoryList:ArrayCollection=new ArrayCollection([{code:'P', name:'PRIME MOVER'}]);
+			[Bindable] private var typeCategoryEditable:Boolean=false;
+			
+			private var processingAnimation:BusyIndicator = new BusyIndicator();
+			
+			private var saveType:int=-1;
+
+			private var formColumnSettingsMaker:remoteDataService = new remoteDataService( "ScreenFormColumnService.lookupFormColumnSettings", null, formColumnSettingsMaker_resultHandler, 1 );
+			private var _formColumnSettingsString:String="";
+			
+			private var updateAction:remoteDataService = new remoteDataService( "EquipmentTypeService.updateEqptTypeCategory", null, updateData_resultHandler, 1 );
+			public var mainListSelection:int = -1;
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{				
+				this.formColumnSettingsMaker.service( "EQUIPMENT_TYPES" );
+				
+				if ( global.getValueFromSiteConfigSettings("SITE_RIGID_SHIP_AVAILABLE") == 'Y' )
+				{
+					this.canHaveRigidShip = true;
+				}
+				else
+				{
+					this.canHaveRigidShip = false;
+				}
+				
+				if ( global.getValueFromSiteConfigSettings("SITE_RAIL_TANK_AVAILABLE") == 'Y' )
+				{
+					this.canHaveRailTank = true;
+				}
+				else
+				{
+					this.canHaveRailTank = false;
+				}
+				
+				typeCategoryList.removeAll();
+				typeCategoryList.addItem({code:'P', name:resourceManager.getString('default','ETYP_CATEGORY.PRIME_MOVER')});
+				typeCategoryList.addItem({code:'F', name:resourceManager.getString('default','ETYP_CATEGORY.FLATBED')});
+				typeCategoryList.addItem({code:'T', name:resourceManager.getString('default','ETYP_CATEGORY.TRAILER')});
+				typeCategoryList.addItem({code:'R', name:resourceManager.getString('default','ETYP_CATEGORY.RIGID')});
+				typeCategoryList.addItem({code:'S', name:resourceManager.getString('default','ETYP_CATEGORY.RIGID_SHIP')});
+				typeCategoryList.addItem({code:'E', name:resourceManager.getString('default','ETYP_CATEGORY.RAIL_TANK')});
+				
+				
+				getPagedResult.token = equipmentTypesService.getAll(currentFilter,currentOrder,currentDirection);
+				dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+				canUpdate=false;
+			}
+			
+			protected function getPagedResult_resultHandler(event:ResultEvent):void
+			{
+				// TODO Auto-generated method stub
+				dataGrid.validateNow();
+				this.dataGrid.selectedIndex = this.mainListSelection;
+				//dataGrid.setSelectedIndex(this.mainListSelection);
+				if ( this.mainListSelection >= 0)
+				{
+					dataGrid.setSelectedIndex(this.mainListSelection);
+					this.dataGrid_selectionChangeHandler(null);
+				}
+				this.mainListSelection = -1;
+			}
+			
+			protected function formColumnSettingsMaker_resultHandler():void
+			{
+				this._formColumnSettingsString =  formColumnSettingsMaker.dataString;
+			}
+			
+			protected function updateData_resultHandler( ):void
+			{
+				//var idx:int = dataGrid.selectedIndex;
+				this.mainListSelection = dataGrid.selectedIndex;
+				this.currentState="normal";
+				getPagedResult.token = equipmentTypesService.getAll(currentFilter,currentOrder,currentDirection);
+				//dataGrid.ensureCellIsVisible(idx);
+
+				return;
+			}
+			
+			
+			protected function setComplex():void
+			{
+				PMVArr.removeAll();
+				PMVArr.refresh();
+				TrailerArr.removeAll();
+				TrailerArr.refresh();
+				pmvArea.dataProvider=PMVArr;
+				toList.dataProvider=TrailerArr;
+				pmv_present=false;
+				canSave=false;
+				getList.token = equipmentTypesService.getAll(null,currentOrder,currentDirection);
+			}
+			
+			protected function setNonCombo(): void
+			{
+				canSave=false;
+				shape.selectedValue=0;
+			}
+			
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				
+				var currentRenderer:IGridItemRenderer;
+				if(event.columnIndex <=2)
+				{
+					for (var i:int=0; i<dataGrid.columns.length; i++){
+						currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+					}
+					
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if(currentOrder.indexOf(event.column.dataField, 0) != -1){
+						if(currentDirection=="ASC") currentDirection="DESC";
+						else currentDirection="ASC";
+					}else{
+						currentDirection="ASC";	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(currentDirection);
+					currentOrder = "ORDER BY nlssort (" + event.column.dataField + ", 'NLS_SORT=BINARY_CI') " + currentDirection;
+					if ( event.column.dataField == "etyp_id" )
+					{
+						currentOrder = "ORDER BY etyp_id " + currentDirection;
+					}
+					if ( event.column.dataField == "cmptnu" )
+					{
+						currentOrder = "ORDER BY TO_NUMBER(cmptnu) " + currentDirection;
+					}
+					startFiltering();
+				}
+			}
+			
+			protected function searchText_keyUpHandler(event:KeyboardEvent):void
+			{
+				if (event.keyCode == 13)
+				{
+					idx = -1;
+					startFiltering();
+				}
+			}
+			
+			protected function selectByHandler(event:MouseEvent):void
+			{
+				if ((event.target as ToggleButton).selected)
+					(event.target as ToggleButton).label = "Name" 
+				else
+					(event.target as ToggleButton).label = "Code"; 
+			}
+			
+			public function isValueInteger( val:String ):Boolean
+			{
+				if ( !isNaN(Number(val)) ) 
+				{
+					if ( Math.floor(Number(val)) == Math.ceil(Number(val)) ) 
+					{
+						return true;
+					}
+				}
+				
+				return false;
+			}		
+			
+			// make filter as object then encode as String with JSON.
+			private function startFiltering():void
+			{				
+				var arr:Object = new Object();
+				var nameFilter:String = '';
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+
+				if(searchText.text!='')
+				{					
+					nameFilter = "((UPPER(etyp_id) LIKE UPPER('%"+(searchText.text)+"%') ) or "
+						+ "(UPPER(etyp_title) LIKE UPPER('%"+(searchText.text)+"%') )) ";
+					if ( isValueInteger(searchText.text) )
+					{
+						fields["etyp_id||etyp_title"] = searchText.text+"||"+searchText.text;
+					}
+					else
+					{
+						fields["etyp_id||etyp_title"] = "-1||"+searchText.text;
+					}
+				}
+				else
+				{
+					nameFilter = '';
+					fields["etyp_id||etyp_title"] = "";
+				}
+				types["etyp_id||etyp_title"] = "STRING||STRING";
+				
+				arr["fields"] = fields;
+				arr["types"] = types;
+				
+				currentFilter = JSON.stringify( arr );
+				trace(currentFilter);
+				
+				getPagedResult.token = equipmentTypesService.getAll(currentFilter,currentOrder,currentDirection);
+			}
+			
+			protected function refreshRecords(event:MouseEvent):void
+			{
+				var currentRenderer:IGridItemRenderer;
+				for (var i:int=0; i<dataGrid.columns.length; i++)
+				{
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+				}
+				searchText.text = '';
+				if ( currentState != "edit" )
+				{
+					dataGrid.selectedIndex = -1;
+				}
+				currentFilter = null;
+				currentOrder="ORDER BY nlssort (etyp_title, 'NLS_SORT=BINARY_CI') ";
+				currentDirection="ASC";
+				getPagedResult.token = equipmentTypesService.getAll(currentFilter,currentOrder,currentDirection);
+			}
+			
+			protected function clearDetail():void
+			{
+				if(currentState=='createComplex')
+				{
+					equipment_name1.text='';
+					pmvArea.width=0;
+					toList.left=0;					
+					fromListFilter.text='';
+				}
+				else
+				if(currentState=='createRigid')
+				{
+					if (equipment_name1 != null) equipment_name1.text='tmp';
+					compartments1 = new ArrayCollection();
+					compartments2 = new ArrayCollection();
+					compartments4 = new ArrayCollection();
+					compartments5 = new ArrayCollection();
+					equipment_name2.text='';
+					val0.selected=true;
+				}
+			}
+			
+			protected function eqTypeCreated(event:Event):void
+			{
+				clearDetail();
+				currentState = 'normal';
+			}				
+			
+			protected function eqTypeUpdated(event:Event):void
+			{
+				getPagedResult.token = equipmentTypesService.getAll(currentFilter,currentOrder,currentDirection);
+			}
+			
+			protected function eqTypeDeleted(event:Event):void
+			{
+				currentState = 'normal';
+				getPagedResult.token = equipmentTypesService.getAll(currentFilter,currentOrder,currentDirection);
+			}
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				if(currentState != 'widget')
+				{
+					currentState="edit";
+					idx=dataGrid.selectedIndex;
+					//dataGrid.ensureCellIsVisible(idx);
+					
+					if ( dataGrid.selectedIndex >= 0 )
+					{
+						typeCategoryList.removeAll();
+						
+						if ( dataGrid.selectedItem.etyp_class == 1 )
+						{
+							this.typeCategoryEditable = false;
+						}
+						else
+						{
+							this.typeCategoryEditable = true;
+							if ( dataGrid.selectedItem.etyp_n_items > 0 )
+							{
+								typeCategoryList.addItem({code:'T', name:resourceManager.getString('default','ETYP_CATEGORY.TRAILER')});
+								typeCategoryList.addItem({code:'R', name:resourceManager.getString('default','ETYP_CATEGORY.RIGID')});
+								typeCategoryList.addItem({code:'S', name:resourceManager.getString('default','ETYP_CATEGORY.RIGID_SHIP')});
+								typeCategoryList.addItem({code:'E', name:resourceManager.getString('default','ETYP_CATEGORY.RAIL_TANK')});
+							}
+							else
+							{
+								typeCategoryList.addItem({code:'P', name:resourceManager.getString('default','ETYP_CATEGORY.PRIME_MOVER')});
+								typeCategoryList.addItem({code:'F', name:resourceManager.getString('default','ETYP_CATEGORY.FLATBED')});
+							}
+							
+							this.etyp_category.selectedIndex = -1;
+							for ( var i:int=0; i<this.typeCategoryList.length; i++ )
+							{
+								var o:Object = this.typeCategoryList.getItemAt( i );
+								if (o.code == this.dataGrid.selectedItem.etyp_category)
+								{
+									this.etyp_category.selectedIndex = i;
+									break;
+								}
+							}
+							
+						}
+					}
+				}
+			}
+			
+			protected function cancel_clickHandler():void
+			{
+				currentState="normal";
+				clearDetail();
+				dataGrid.selectedIndex = -1;
+			}			
+			
+			
+			private function deleteRecord():void
+			{
+				var dd:DeleteDialog = new DeleteDialog(doDelete,hasPassword);
+			}
+			
+			public function doDelete():void
+			{
+				var ob:Object = new Object();
+				ob.eqpCd = dataGrid.selectedItem.etyp_id;
+				ob.canBreak = dataGrid.selectedItem.etyp_class;
+				ob.noOfcompts = dataGrid.selectedItem.cmptnu;
+				delete_methodResult.token = equipmentTypesService.delete_method(ob);
+			}
+			
+			protected function createNewRecord(event:MouseEvent):void
+			{				
+				compartments1 = new ArrayCollection();
+				compartments2 = new ArrayCollection();
+				compartments4 = new ArrayCollection();
+				compartments5 = new ArrayCollection();
+				var eq:ModalEquipmentType = new ModalEquipmentType();
+				eq.title = resourceManager.getString('default','global.titles.is_it_combination');
+				PopUpManager.addPopUp(eq,this,true);
+				PopUpManager.centerPopUp(eq);
+				eq.callback=setCreationType;
+			}
+			
+			private function setCreationType(value:String): void
+			{
+				currentState = value; 
+				
+				if ( _formColumnSettingsString.length > 0 )
+				{
+					var cln_settings:Array = _formColumnSettingsString.substr(1).split("|");
+					
+					var i:int;
+					for (i=0; i<cln_settings.length; i++)
+					{
+						if ( cln_settings[i] == "" )
+						{
+							continue;
+						}
+						var pairs:Array = String(cln_settings[i]).split(",");
+						var code:String = String(pairs[0]);
+						
+						if ( code == "etyp_title" )
+						{
+							if ( currentState == "createComplex" )
+							{
+								this.equipment_name1.validationType = String( pairs[1]);
+								this.equipment_name1.maxChars = int( pairs[2] );
+							}
+							if ( currentState == "createRigid" )
+							{
+								this.equipment_name2.validationType = String( pairs[1]);
+								this.equipment_name2.maxChars = int( pairs[2] );
+							}
+						}
+					}
+					
+				}
+			}
+			
+			public function fromList_dragCompleteHandler(event:DragEvent):void
+			{
+				if(event.relatedObject == toList)
+				{
+					if((fromList.selectedItem.etyp_n_items=='0')&&((fromList.selectedItem.etyp_schedul=='n')||(fromList.selectedItem.etyp_schedul=='N')))
+					{
+						if(!pmv_present)
+						{
+							var obj:Object = toList.selectedItem;
+							pmvArea.width=220;
+							toList.left=130;
+							pmv_present=true;
+							pmvArea.dataProvider.addItem(obj);
+							toList.dataProvider.removeItemAt(toList.selectedIndex);
+						}					
+					}
+					else
+					{
+						pmvArea.selectedIndex=-1;
+						
+						var ob:Object = fromList.selectedItem;
+						for each(var objx:Object in ob.composition)
+						{
+							if(((objx.sub_item_sched_type=='n')||(objx.sub_item_sched_type=='N'))&&((objx.sub_item_etyp_isrigid=='n')||(objx.sub_item_etyp_isrigid=='N')))
+							{
+								var provider:ArrayCollection = toList.dataProvider as ArrayCollection;							
+								var obj = fromList.selectedItem;
+								provider.addItemAt(obj,0);
+								provider.removeItemAt(provider.length-1);
+								provider.refresh();
+								toList.dataProvider = null;
+								toList.dataProvider = provider;
+								pmv_present = true;
+							}
+						}
+					}		
+				}
+				equipment_name1_keyUpHandler(null);
+			}
+			
+			protected function toList_dragEnterHandler(event:DragEvent):void
+			{
+				var ob:Object = fromList.selectedItem;
+				if(ob==null) ob = toList.selectedItem;
+				
+				
+				//trace(ObjectUtil.toString());
+			
+				
+				if((pmv_present)&&
+				   !((ob.etyp_category=='F') || (ob.etyp_category=='f')) &&
+				   (ob.etyp_n_items=='0')&&
+				   ((ob.etyp_schedul=='n')|| (ob.etyp_schedul=='N'))
+				  ){
+					event.stopImmediatePropagation();
+				}
+				return;
+				
+				for each(var obj:Object in ob.composition){
+					if((pmv_present)&&
+						((obj.sub_item_sched_type=='n')||(obj.sub_item_sched_type=='N'))&&
+						((obj.sub_item_etyp_isrigid=='n')||(obj.sub_item_etyp_isrigid=='N'))){
+						event.stopImmediatePropagation();
+					}
+				}
+			}
+			
+			protected function pmvArea_dragEnterHandler(event:DragEvent):void
+			{
+				if((fromList.selectedItem.etyp_n_items!='0')&&((fromList.selectedItem.etyp_schedul!='n')||(fromList.selectedItem.etyp_schedul!='N'))){
+					event.stopImmediatePropagation();
+				}else{
+					if(pmv_present)event.stopImmediatePropagation();
+				}
+			}
+			
+			protected function toList_clickHandler(event:MouseEvent):void
+			{			
+				pmvArea.selectedIndex=-1;
+				if (pmvArea.dataProvider.length+toList.dataProvider.length < 2) 
+				{
+					canSave=false;
+				}
+				else
+				{
+					equipment_name1_keyUpHandler(null);
+				}
+			}
+			
+			protected function pmvArea_clickHandler(event:MouseEvent):void
+			{
+				toList.selectedIndex=-1;
+			}
+			
+			
+			protected function deleteItem(event:Event):void
+			{
+				var provider:ArrayCollection = fromList.dataProvider as ArrayCollection;
+				provider.addItem(toList.selectedItem);
+				provider.refresh();
+				fromList.dataProvider = null;
+				fromList.dataProvider = provider;
+				
+				var ob:Object = toList.selectedItem;
+				for each(var obj:Object in ob.composition)
+				{
+					if(((obj.sub_item_sched_type=='n')||(obj.sub_item_sched_type=='N'))&&((obj.sub_item_etyp_isrigid=='n')||(obj.sub_item_etyp_isrigid=='N')))
+					{
+						pmv_present = false;
+					}
+				}				
+				
+				toList.dataProvider.removeItemAt(toList.selectedIndex);	
+				if (toList.dataProvider.length < 2) canSave=false;
+			}
+			
+			protected function deletePmv(event:Event):void
+			{
+				var provider:ArrayCollection = fromList.dataProvider as ArrayCollection;
+				provider.addItem(pmvArea.dataProvider.getItemAt(0));
+				provider.refresh();
+				fromList.dataProvider = null;
+				fromList.dataProvider = provider;				
+				
+				pmvArea.dataProvider.removeItemAt(0);
+				pmv_present=false;
+				pmvArea.width=0;
+				toList.left=0;
+			}
+			
+			public function deletePmvList():void
+			{
+				var provider:ArrayCollection = fromList.dataProvider as ArrayCollection;
+				provider.addItem(pmvArea.dataProvider.getItemAt(0));
+				provider.refresh();
+				fromList.dataProvider = null;
+				fromList.dataProvider = provider;				
+				
+				pmvArea.dataProvider.removeItemAt(0);
+				pmv_present=false;
+				pmvArea.width=0;
+				toList.left=0;
+				equipment_name1_keyUpHandler(null);
+			}
+			
+			public function deleteToList()
+			{
+				var provider:ArrayCollection = fromList.dataProvider as ArrayCollection;
+				provider.addItem(toList.selectedItem);
+				provider.refresh();
+				fromList.dataProvider = null;
+				fromList.dataProvider = provider;
+				
+				var ob:Object = toList.selectedItem;
+				for each(var obj:Object in ob.composition){
+					if(((obj.sub_item_sched_type=='n')||(obj.sub_item_sched_type=='N'))&&((obj.sub_item_etyp_isrigid=='n')||(obj.sub_item_etyp_isrigid=='N'))){
+						pmv_present = false;
+					}
+				}				
+				
+				toList.dataProvider.removeItemAt(toList.selectedIndex);	
+				equipment_name1_keyUpHandler(null);
+			}
+			
+			private function setCompartments(arr:ArrayCollection):void
+			{
+				if (arr == null)
+				{
+					//canSave=false;
+					if (equipment_name2.text.length > 0 ) 
+					{
+						//this.valid_eq2.validate();
+						if ( equipment_name2.isValid == true )
+						{
+							canSave=true;
+						}
+						else
+						{
+							canSave=false;
+						} 
+					}
+					else
+					{
+						canSave=false;
+					}
+				}
+				else
+				{	
+					switch(shape.selectedValue)
+					{
+						case 1:
+							compartments1 = arr;
+							if (compartments1.length > 0 && this.equipment_name2.text.length > 1)  
+							{
+								//canSave=true;
+								if ( equipment_name2.isValid == true )
+								{
+									canSave=true;
+								}
+								else
+								{
+									canSave=false;
+								} 
+							}
+							break;
+						case 2:
+							compartments2 = arr;
+							if (compartments2.length > 0 && this.equipment_name2.text.length > 1) 
+							{
+								//canSave=true;
+								if ( equipment_name2.isValid == true )
+								{
+									canSave=true;
+								}
+								else
+								{
+									canSave=false;
+								} 
+							}
+							break;
+						case 4:
+							compartments4 = arr;
+							if (compartments4.length > 0 && this.equipment_name2.text.length > 1) 
+							{
+								//canSave=true;
+								if ( equipment_name2.isValid == true )
+								{
+									canSave=true;
+								}
+								else
+								{
+									canSave=false;
+								} 
+							}
+							break;
+						case 5:
+							compartments5 = arr;
+							if (compartments5.length > 0 && this.equipment_name2.text.length > 1) 
+							{
+								//canSave=true;
+								if ( equipment_name2.isValid == true )
+								{
+									canSave=true;
+								}
+								else
+								{
+									canSave=false;
+								} 
+							}
+					}
+				}
+			}
+			
+			protected function showEquipmentComposition(type:int):void
+			{
+				var eq:ModalEquipmentCreate = new ModalEquipmentCreate();
+				eq.title = resourceManager.getString('default','global.titles.new_eqpt_details');
+				eq._callback = setCompartments;
+				switch(type)
+				{
+					case 1:
+						eq.arr = compartments1;
+						eq.nComp = compartments1.length.toString();
+						break;
+					case 2:
+						eq.arr = compartments2;
+						eq.nComp = compartments2.length.toString();
+						break;
+					case 4:
+						eq.arr = compartments4;
+						eq.nComp = compartments4.length.toString();
+						break;
+					case 5:
+						eq.arr = compartments5;
+						eq.nComp = compartments5.length.toString();
+						break;
+				}
+				PopUpManager.addPopUp(eq,this,true);
+				PopUpManager.centerPopUp(eq);
+			}
+			
+			
+			private function createRecordCombination():void
+			{
+				var ob:Object = new Object();
+				ob.canBreak = "1";
+				ob.eqpNm = equipment_name1.text;
+				ob.sched = "y";	
+				ob.rigid = '';
+				ob.etyp_category = "C";
+				
+				var arr:ArrayCollection = new ArrayCollection();
+				if(pmvArea.dataProvider.length>0) arr.addItem(pmvArea.dataProvider.getItemAt(0));
+				for each(var obj:Object in toList.dataProvider) arr.addItem(obj);
+				for each(obj in arr){
+					if(obj.etyp_category == null){
+						if(obj.etyp_isrigid == 'Y'||obj.etyp_isrigid == 'y'){
+							obj.etyp_category = 'R';	
+						}else if(obj.etyp_schedul == 'Y'||obj.etyp_schedul == 'y'){
+							obj.etyp_category = 'T';
+						}else{
+							obj.etyp_category = 'P';
+						}	
+					} 
+				}
+				
+				ob.objects = arr;
+				if((equipment_name1.text!='')&&(arr.length>1)) createResult.token = equipmentTypesService.create(ob, null);
+			}
+			
+			private function checkCombo(): void
+			{
+				saveType=0;
+				checkEquipType.token = this.equipmentTypesService.isEqptTypeExisted(equipment_name1.text);			
+			}
+			
+			
+			
+			private function checkNonCombo(): void
+			{
+				trace("Check Non Combo");
+				saveType=1;
+				checkEquipType.token = this.equipmentTypesService.isEqptTypeExisted(equipment_name2.text);			
+			}
+			
+			private function createRecordNonCombination():void
+			{
+				trace("Create Record");
+				var ob:Object = new Object();
+				var canCreate:Boolean=false;
+				var comp:ArrayCollection = new ArrayCollection();
+				ob.canBreak = "0";
+				ob.eqpNm = equipment_name2.text;
+				ob.rigid = "n";
+				
+				switch(shape.selectedValue)
+				{
+					case 0: ob.sched = "n";
+							ob.etyp_category = "P";
+							comp=null;
+							canCreate=true;
+							break;
+					case 1: ob.sched = "y";
+							ob.etyp_category = "T";
+							comp=compartments1;
+							if (comp.length > 0) canCreate=true;
+							break;
+					case 2: ob.rigid = "y";
+							ob.sched = "y";
+							ob.etyp_category = "R";
+							comp=compartments2;
+							if (comp.length > 0) canCreate=true;
+							break;
+					case 3: ob.rigid = "n";
+							ob.sched = "n";
+							ob.etyp_category = "F";
+							comp=null;
+							canCreate=true;
+							break;
+					case 4: ob.rigid = "y";
+							ob.sched = "y";
+							ob.etyp_category = "S";
+							comp=compartments4;
+							if (comp.length > 0) canCreate=true;
+							break;
+					case 5: ob.rigid = "n";
+							ob.sched = "y";
+							ob.etyp_category = "E";
+							comp=compartments5;
+							if (comp.length > 0) canCreate=true;
+							break;
+					default: canCreate=false;
+				};
+				if(canCreate) createResult.token = equipmentTypesService.create(ob, comp);
+			}
+			
+			protected function create_resultHandler(event:ResultEvent):void
+			{
+				//global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+				if (event.result == "OK")
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+					
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				}
+				
+				var etyp_code:String="";
+				if ( currentState == "createComplex" )
+				{
+					etyp_code = equipment_name1.text;
+				}
+				if ( currentState == "createRigid" )
+				{
+					etyp_code = equipment_name2.text;
+				}
+					
+				clearDetail();
+				//currentFilter=null;
+				//currentOrder='etyp_title';
+				
+				var arr:Object = new Object();
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["etyp_title"] = etyp_code;
+				types["etyp_title"] = "STRING";
+				
+				arr["fields"] = fields;
+				arr["types"] = types;
+				
+				currentFilter = JSON.stringify( arr );
+				
+				//currentFilter = null;
+				currentOrder="ORDER BY nlssort (etyp_title, 'NLS_SORT=BINARY_CI') ";
+				currentDirection="ASC";
+				getPagedResult.token = equipmentTypesService.getAll(currentFilter,currentOrder,currentDirection);
+				//this.startFiltering();
+				currentState = 'normal';
+				dataGrid.selectedIndex = -1;
+			}
+
+			public function isSelected(val:String):Boolean
+			{
+				if((val=='y')||(val=='Y')) return true;
+				else return false;
+			}
+			
+			public function canBeRigid(compNo:int):Boolean
+			{
+				if(compNo>0)return true;
+				else return false;
+			}
+			
+			public function updateRecord(selected:Boolean, valueToKeep:String, type:String):void
+			{	
+				var ob:Object = new Object();
+				ob.eqpCd = dataGrid.selectedItem.etyp_id;
+				if(type=='schedulable'){
+					ob.rigid = valueToKeep;
+					if(selected) ob.sched = 'y';
+					else ob.sched = 'n';
+				}else{
+					ob.sched = valueToKeep;
+					if(selected) ob.rigid = 'y';
+					else ob.rigid = 'n';					
+				}
+				updateResult.token = equipmentTypesService.update(ob);
+			}				
+			
+			protected function fromListFilter_keyUpHandler(event:KeyboardEvent):void
+			{
+				if (event.keyCode != 13)
+				{
+					return;
+				}
+				
+				var listFilter:String;
+				/*
+				if(fromListFilter.text!='')
+				{
+					listFilter = "where (UPPER(etyp_title) LIKE UPPER('%"+(fromListFilter.text)+"%') ) ";
+				}
+				//getPagedResult.token = equipmentTypesService.getAll(listFilter,currentOrder,null);
+				*/
+				var arr:Object = new Object();
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				if(fromListFilter.text!='')
+				{					
+					fields["etyp_title"] = fromListFilter.text;
+				}
+				else
+				{
+					fields["etyp_title"] = "";
+				}
+				types["etyp_title"] = "STRING";
+				
+				arr["fields"] = fields;
+				arr["types"] = types;
+				
+				listFilter = JSON.stringify( arr );
+				trace(listFilter);
+				
+				getList.token = equipmentTypesService.getAll(listFilter,currentOrder,currentDirection);
+			}
+			
+			
+			protected function setPadding(event:FlexEvent):void
+			{
+				(event.currentTarget as VGroup).paddingTop=margins;
+				(event.currentTarget as VGroup).paddingLeft=margins;
+				(event.currentTarget as VGroup).paddingBottom=margins;
+				(event.currentTarget as VGroup).paddingRight=margins;
+			}
+			
+			protected function equipmentTypesService_faultHandler(event:FaultEvent):void
+			{
+				var msgAlert:DKI_AlertBox = new DKI_AlertBox();
+				msgAlert.msg = event.fault.faultString + '\n' + event.fault.faultDetail;
+			}
+			
+			protected function delete_methodResult_resultHandler(event:ResultEvent):void
+			{
+				if (event.result == "OK")
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+					//dataGrid.dataProvider.removeAll();
+					currentState="normal";
+					clearDetail();
+					currentFilter=null;
+					startFiltering();
+					
+				}
+				else if(event.result == "DEPENDENCIES")
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__DEPENDENCY'));
+				else
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+			}
+			
+			protected function equipment_name2_keyUpHandler(event:KeyboardEvent):void
+			{
+				//if (equipment_name2.text.length > 0 && shape.selectedValue > -1) canSave=true else canSave=false;
+				if (equipment_name2.text.length > 0 && shape.selectedValue > -1) 
+				{
+					//this.valid_eq2.validate();
+					if ( equipment_name2.isValid == true )
+					{
+						canSave=true;
+					}
+					else
+					{
+						canSave=false;
+					} 
+				}
+				else
+				{
+					canSave=false;
+				}
+				
+			}
+			
+			protected function equipment_name1_keyUpHandler(event:KeyboardEvent):void
+			{
+				var eqpCount:int=toList.dataProvider.length+pmvArea.dataProvider.length;
+				if (equipment_name1.text.length > 0 && eqpCount > 1) 
+				{
+					//this.valid_eq1.validate();
+					if ( equipment_name1.isValid == true )
+					{
+						canSave=true;
+					}
+					else
+					{
+						canSave=false;
+					} 
+				}
+				else
+				{
+					canSave=false;
+				}
+			}
+			
+			protected function createResult_faultHandler(event:FaultEvent):void
+			{
+				clearDetail();
+				global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+			}
+			
+			protected function valid_eq1_validHandler(event:ValidationResultEvent):void
+			{
+				this.equipment_name1_keyUpHandler(null);
+			}
+			
+			protected function valid_eq2_validHandler(event:ValidationResultEvent):void
+			{
+				switch(shape.selectedValue)
+				{
+					case 0: 
+						canSave=true;
+						break;
+					case 1: 
+						if (compartments1.length > 0) canSave=true;
+						break;
+					case 2: 
+						if (compartments2.length > 0) canSave=true;
+						break;
+					case 3:
+						canSave=true;
+						break;
+					case 4: 
+						if (compartments4.length > 0) canSave=true;
+						break;
+					case 5: 
+						if (compartments5.length > 0) canSave=true;
+						break;
+					default: canSave=false;	
+				}
+			}
+			
+			protected function checkType_resultHandler(event:ResultEvent):void
+			{
+				if (event.result==0)
+				{
+					switch(saveType)
+					{
+						case 0: createRecordCombination();
+							break;
+						case 1: createRecordNonCombination();
+							break;
+					}
+				}
+				else
+					global.msgFail(resourceManager.getString('default','global.msg.eqpt_type_existed'));
+
+			}
+			
+			protected function updateResult_resultHandler(event:ResultEvent):void
+			{
+				global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));				
+				getPagedResult.token = equipmentTypesService.getAll(currentFilter,currentOrder,currentDirection);
+			}
+			
+			protected function getList_resultHandler(event:ResultEvent):void
+			{
+				var i:int=0;
+				var len:int = fromList.dataProvider.length;
+				
+				for ( i=len-1; i>=0; i-- )
+				{
+					var o:Object = (fromList.dataProvider as ArrayCollection).getItemAt( i );
+					if ( o.hasOwnProperty( "etyp_category" ) && o["etyp_category"]=="S" )
+					{
+						(fromList.dataProvider as ArrayCollection).removeItemAt( i );
+					}
+				}
+				
+				(fromList.dataProvider as ArrayCollection).refresh();
+			}
+			
+			protected function etyp_category_valueCommitHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				this.etyp_category.ensureIndexIsVisible( this.etyp_category.selectedIndex );
+				//callLater(function():void{this.prod_image.ensureIndexIsVisible( this.prod_image.selectedIndex );});
+			}
+			
+			protected function etyp_category_changeHandler(event:IndexChangeEvent):void
+			{
+				// TODO Auto-generated method stub
+				var catg:String='';
+				if ( this.etyp_category.selectedIndex>=0 )
+				{
+					catg = this.etyp_category.selectedItem.code;
+				}
+				this.updateAction.service(dataGrid.selectedItem.etyp_id, catg);
+				
+			}
+			
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<s:CallResponder id="getPagedResult" result="getPagedResult_resultHandler(event)"/>
+		<s:CallResponder id="getList" result="getList_resultHandler(event)"/>
+		<equipmenttypesservice:EquipmentTypesService id="equipmentTypesService"  channelSet="{global.channelSet}"
+													 fault="equipmentTypesService_faultHandler(event)"
+													 showBusyCursor="true"/>
+		<!--<mx:StringValidator id="valid_eq1" source="{equipment_name1}" property="text" minLength="2" maxLength="15" required="true" valid="valid_eq1_validHandler(event)" invalid="canSave=false"/>
+		<mx:StringValidator id="valid_eq2" source="{equipment_name2}" property="text" minLength="2" maxLength="15" required="true" valid="valid_eq2_validHandler(event)" invalid="canSave=false"/>-->
+
+		<s:RadioButtonGroup id="shape" enabled="true" selectedValue="0"/>
+		<s:CallResponder id="getCompositionResult"/>
+		<s:CallResponder id="checkEquipType" result="checkType_resultHandler(event)"/>
+		<s:CallResponder id="createResult" result="create_resultHandler(event)" fault="createResult_faultHandler(event)"/>
+		<s:CallResponder id="delete_methodResult" result="delete_methodResult_resultHandler(event)" fault="global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'))"/>
+		<s:CallResponder id="updateResult" result="updateResult_resultHandler(event)" fault="global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'))"/>
+	</fx:Declarations>
+	
+	<s:Panel id="search" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout gap="5"/>
+		</s:layout>
+		<s:HGroup id="toolbar" width="100%" gap="5">
+			<s:HGroup gap="-20">
+				<components:DKI_ValidatorInput id="searchText" prompt="{resourceManager.getString('default','global.prompts.findeqpttype')}" validationType="search"  width="{fieldWidth}" height="26" keyUp="searchText_keyUpHandler(event)"/>
+			</s:HGroup>			
+			<components:DKI_Button height="100%" label="{resourceManager.getString('default','CLEAR')}" click="refreshRecords(event)" type="refresh"/>
+			<s:Spacer width="100%" excludeFrom="widget"/>
+			<components:DKI_Button label="{resourceManager.getString('default','CREATE')}" height="100%" click="createNewRecord(event)" includeIn="normal,edit" enabled="{canCreate}"  type="create"/>			
+		</s:HGroup>
+		<s:DataGrid id="dataGrid" width="100%" height="100%"
+					selectionChange="dataGrid_selectionChangeHandler(event)"
+					skinClass="skins.DKI_DataGrid_Skin">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="etyp_id" headerText="{resourceManager.getString('default','ETYP_ID')}" width="70"/>
+						<s:GridColumn dataField="etyp_title" headerText="{resourceManager.getString('default','ETYP_TITLE')}" width="160"/>
+						<s:GridColumn dataField="cmptnu" headerText="{resourceManager.getString('default','COMPARTMENTS')}" width="100"/>
+						<s:GridColumn dataField="composition" headerText="{resourceManager.getString('default','ETYP_PREVIEW')}" itemRenderer="renderers.CompositionRender"/>
+						<s:GridColumn dataField="etyp_schedul" headerText="{resourceManager.getString('default','ETYP_SCHEDULABLE')}" width="90" itemRenderer="renderers.GridCheckRender"/>
+						<s:GridColumn dataField="etyp_isrigid" headerText="{resourceManager.getString('default','ETYP_ISRIGID')}" width="70" itemRenderer="renderers.GridCheckRender"/>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			<s:dataProvider>
+				<s:AsyncListView list="{getPagedResult.lastResult}"/>
+			</s:dataProvider>
+		</s:DataGrid>
+	</s:Panel>
+	
+	<s:Panel id="edit_panel" width="100%" height="450" skinClass="skins.WidgetPanelSkin" skinClass.widget="skins.NullSkin" includeIn="edit">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:Spacer height="5"/>
+		<s:HGroup>
+			<s:Spacer width="2"/>			
+			<s:Label width="110" height="100%" text="{resourceManager.getString('default','ETYP_TITLE')}" verticalAlign="middle"/>
+			<components:DKI_ValidatorInput width="{fieldWidth}" text="{dataGrid.selectedItem.etyp_title}" validationType="document" editable="false"/>
+		</s:HGroup>		
+		<s:HGroup width="100%" height="100%" gap="14" paddingBottom="4" paddingLeft="5" paddingRight="8" paddingTop="8" requestedColumnCount="4">
+			<components:DKI_List id="detailsList" contentBackgroundAlpha="0" left="10" height="100%" width="100%" itemRenderer="renderers.equipmentRenderer" borderVisible="false" dataProvider="{dataGrid.selectedItem.composition}" mouseOver="{detailsList.selectedIndex=-1}">
+				<components:layout>
+					<s:HorizontalLayout gap="0"/>
+				</components:layout>
+			</components:DKI_List>			
+			<s:VGroup visible="{typeCategoryEditable}" includeInLayout="{typeCategoryEditable}">
+				<s:Label width="100%" height="30" text="{resourceManager.getString('default','ETYP_CATEGORY.ACTION')}:" verticalAlign="middle"/>
+				<components:DKI_List id="etyp_category" width="500" height="80" labelField="code" enabled="true"
+									 dataProvider="{this.typeCategoryList}" cacheAsBitmap="true" useVirtualLayout="false"
+									 itemRenderer="renderers.EqptTypeCategoryRenderer"
+									 valueCommit="etyp_category_valueCommitHandler(event)" change="etyp_category_changeHandler(event)" 
+									 >
+					<components:layout>
+						<s:HorizontalLayout gap="10"/>
+					</components:layout>
+				</components:DKI_List>	
+			</s:VGroup>
+		</s:HGroup>
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button label="{resourceManager.getString('default','DELETE')}" height="100%" click="deleteRecord()" enabled="{canDelete}" type="delete"/>
+			<components:DKI_Button label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel"/>
+		</s:HGroup>
+	</s:Panel>	
+	<s:Panel id="creation1" width="100%" height="450" includeIn="createComplex" itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin" skinClass.widget="skins.NullSkin" itemDestructionPolicy="auto">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:Spacer height="5" />
+		<s:HGroup width="100%">
+			<!--components:DKI_ValidatorInput id="fromListFilter" width="{fieldWidth}" validationType="alphanumeric" restrict="A-Za-z0-9 _\-" prompt="{resourceManager.getString('default','global.prompts.findeqpttypecode')}" keyUp="fromListFilter_keyUpHandler(event)"/-->
+			<components:DKI_ValidatorInput id="fromListFilter" width="{fieldWidth}" validationType="search" prompt="{resourceManager.getString('default','global.prompts.findeqpttypecode')}" keyUp="fromListFilter_keyUpHandler(event)"/>
+		</s:HGroup> 
+		<components:DKI_List id="fromList" width="100%" height="115" dataProvider="{getList.lastResult}" cacheAsBitmap="true" useVirtualLayout="false" 
+							  dragEnabled="true" dragComplete="fromList_dragCompleteHandler(event)">
+			<components:layout>
+				<s:HorizontalLayout gap="10"/>
+			</components:layout>
+			<components:itemRenderer>
+				<fx:Component>
+					<s:ItemRenderer>
+						<s:VGroup width="100%" paddingTop="4">
+							<components:DKI_List width="100%" contentBackgroundAlpha="0" dataProvider="{data.composition}" itemRenderer="renderers.equipmentListRenderer" borderVisible="false" toolTip="Drag this item to the design area to build your Equipment Type">
+								<components:layout>
+									<s:HorizontalLayout gap="0"/>
+								</components:layout>
+							</components:DKI_List>
+							<s:Label text="{data.etyp_title}" width="100%" textAlign="center" height="20"/>
+						</s:VGroup>
+					</s:ItemRenderer>
+				</fx:Component>
+			</components:itemRenderer>
+		</components:DKI_List>	
+		<s:Spacer height="5" />
+		<s:HGroup>
+			<s:Spacer width="2" />
+			<s:Label width="130" height="100%" text="{resourceManager.getString('default','ETYP_TITLE_NEW')}" verticalAlign="middle"/>
+			<!--components:DKI_ValidatorInput id="equipment_name1" width="{fieldWidth}" keyUp="equipment_name1_keyUpHandler(event)" validationType="alphanumeric" restrict="A-Za-z0-9 _\-"/-->
+			<components:DKI_ValidatorInput id="equipment_name1" width="{fieldWidth}" keyUp="equipment_name1_keyUpHandler(event)" validationType="document" maxChars="40" />
+		</s:HGroup>
+		<s:BorderContainer left="10" right="10" bottom="10" width="100%" height="160" backgroundImage="@Embed(source='/assets/graph.gif')" backgroundImageFillMode="repeat" >
+			<components:DKI_List id="pmvArea" width="0" height="100%" borderVisible="false" dropEnabled="true" dragEnter="pmvArea_dragEnterHandler(event)" itemRenderer="renderers.equipmentPmvRenderer" contentBackgroundAlpha="0"
+								 click="pmvArea_clickHandler(event)" dataProvider="{PMVArr}">
+				<components:layout>
+					<s:HorizontalLayout gap="0"/>
+				</components:layout>
+			</components:DKI_List>
+			
+			<components:DKI_List id="toList" left="0" height="100%" width="100%" dragEnabled="true" dropEnabled="true" dragMoveEnabled="true" contentBackgroundAlpha="0" click="toList_clickHandler(event)"
+								 itemRenderer="renderers.equipmentEditRenderer" dragEnter="toList_dragEnterHandler(event)" borderVisible="false">
+				<components:layout>
+					<s:HorizontalLayout gap="0"/>
+				</components:layout>
+			</components:DKI_List>
+		</s:BorderContainer>
+		<s:Spacer height="100%"/>
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="saveCombo" label="{resourceManager.getString('default','SAVE')}" height="100%" click="checkCombo()" enabled="{canSave}" type="save"/>
+			<components:DKI_Button label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel"/>
+		</s:HGroup>
+	</s:Panel>	
+	
+	
+	<s:Panel id="creation2" width="100%" height="350" includeIn="createRigid" itemCreationPolicy="immediate"
+					   skinClass="skins.WidgetPanelSkin" skinClass.widget="skins.NullSkin" itemDestructionPolicy="auto">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		<s:Spacer height="10" />
+		<s:HGroup>
+			<s:Spacer width="10" />
+			<s:Label width="100" height="100%" text="{resourceManager.getString('default','ETYP_TITLE')}" verticalAlign="middle"/>
+			<!--components:DKI_ValidatorInput id="equipment_name2" width="{fieldWidth}" validationType="alphanumeric" restrict="A-Za-z0-9 _\-" keyUp="equipment_name2_keyUpHandler(event)"/-->
+			<components:DKI_ValidatorInput id="equipment_name2" width="{fieldWidth}" validationType="document" maxChars="40" keyUp="equipment_name2_keyUpHandler(event)"/>
+		</s:HGroup>
+		<s:Spacer height="20" />
+		
+		<s:Scroller width="100%" horizontalScrollPolicy="auto" skinClass="skins.DKI_Scroller_Skin">
+			<s:HGroup fontWeight="bold">
+				
+				<s:VGroup horizontalAlign="center">
+					<s:Image x="-35" width="{222*100/120}" height="100" source="{Assets.PRIME_MOVER}" click="val0.selected=true" useHandCursor="true" buttonMode="true"/>
+					<s:RadioButton label="{resourceManager.getString('default','ETYP_CATEGORY.PRIME_MOVER')}" groupName="shape" id="val0" value="0"/>				
+				</s:VGroup>
+				
+				<s:VGroup horizontalAlign="center">
+					<s:Image x="-19" width="{284*100/120}" height="100" source="{Assets.FLATBED}" click="val3.selected=true;" useHandCursor="true" buttonMode="true"/>
+					<s:RadioButton label="{resourceManager.getString('default','ETYP_CATEGORY.FLATBED')}" groupName="shape" id="val3" value="3"/>
+				</s:VGroup>
+				
+				<s:VGroup horizontalAlign="center">
+					<s:Image x="7" width="{375*100/120}" height="100" source="{Assets.TRAILER}" click="val1.selected=true;showEquipmentComposition(1)" useHandCursor="true" buttonMode="true"/>
+					<s:RadioButton label="{resourceManager.getString('default','ETYP_CATEGORY.TRAILER')}" groupName="shape" value="1" id="val1" click="showEquipmentComposition(1)"/>
+					<s:HGroup>
+						<s:Label text="{'('+compartments1.length+' '+resourceManager.getString('default','COMPARTMENTS')+')'}" id="comp1" height="18" verticalAlign="middle"/>
+						<s:Image source="@Embed('/assets/icons/edit.png')" enabled="{val1.selected}" click="showEquipmentComposition(1)" useHandCursor="true" buttonMode="true"/>					
+					</s:HGroup>
+				</s:VGroup>
+				
+				<s:VGroup horizontalAlign="center">
+					<s:Image x="-19" width="{515*100/120}" height="100" source="{Assets.RIGID}" click="val2.selected=true;showEquipmentComposition(2)" useHandCursor="true" buttonMode="true"/>
+					<s:RadioButton label="{resourceManager.getString('default','ETYP_CATEGORY.RIGID')}" groupName="shape" id="val2" value="2" click="showEquipmentComposition(2)"/>
+					<s:HGroup>
+						<s:Label text="{'('+compartments2.length+' '+resourceManager.getString('default','COMPARTMENTS')+')'}" id="comp2" height="18" verticalAlign="middle"/>
+						<s:Image source="@Embed('/assets/icons/edit.png')" enabled="{val2.selected}" click="showEquipmentComposition(2)" useHandCursor="true" buttonMode="true"/>					
+					</s:HGroup>
+				</s:VGroup>
+				
+				<s:VGroup horizontalAlign="center" visible="{canHaveRigidShip}" includeInLayout="{canHaveRigidShip}">
+					<s:Image x="-19" width="{515*100/120}" height="100" source="{Assets.SHIP}" click="val4.selected=true;showEquipmentComposition(4)" useHandCursor="true" buttonMode="true"/>
+					<s:RadioButton label="{resourceManager.getString('default','ETYP_CATEGORY.RIGID_SHIP')}" groupName="shape" id="val4" value="4" click="showEquipmentComposition(4)"/>
+					<s:HGroup>
+						<s:Label text="{'('+compartments4.length+' '+resourceManager.getString('default','COMPARTMENTS')+')'}" id="comp4" height="18" verticalAlign="middle"/>
+						<s:Image source="@Embed('/assets/icons/edit.png')" enabled="{val4.selected}" click="showEquipmentComposition(4)" useHandCursor="true" buttonMode="true"/>					
+					</s:HGroup>
+				</s:VGroup>
+				
+				<s:VGroup horizontalAlign="center" visible="{canHaveRailTank}" includeInLayout="{canHaveRailTank}">
+					<s:Image x="-19" width="{386*100/120}" height="100" source="{Assets.RAILTANK}" click="val5.selected=true;showEquipmentComposition(5)" useHandCursor="true" buttonMode="true"/>
+					<s:RadioButton label="{resourceManager.getString('default','ETYP_CATEGORY.RAIL_TANK')}" groupName="shape" id="val5" value="5" click="showEquipmentComposition(5)"/>
+					<s:HGroup>
+						<s:Label text="{'('+compartments5.length+' '+resourceManager.getString('default','COMPARTMENTS')+')'}" id="comp5" height="18" verticalAlign="middle"/>
+						<s:Image source="@Embed('/assets/icons/edit.png')" enabled="{val5.selected}" click="showEquipmentComposition(5)" useHandCursor="true" buttonMode="true"/>					
+					</s:HGroup>
+				</s:VGroup>
+			
+			
+			</s:HGroup>
+				
+		</s:Scroller>
+		
+		
+		<s:Spacer height="100%" />
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button label="{resourceManager.getString('default','SAVE')}"   height="100%" click="checkNonCombo()" enabled="{canSave}" type="save"/>
+			<components:DKI_Button label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel"/>
+		</s:HGroup>
+	</s:Panel>
+</s:VGroup>

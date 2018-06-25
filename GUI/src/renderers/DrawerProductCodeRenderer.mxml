@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:s="library://ns.adobe.com/flex/spark"
+					xmlns:mx="library://ns.adobe.com/flex/mx" clipAndEnableScrolling="true"
+					xmlns:components="components.*"
+					xmlns:dm="dm.*"
+					>
+	
+	<fx:Script>
+		<![CDATA[
+			import dm.collections.dmManualTransactions;
+			import dm.utils.tools;
+			import mx.collections.ArrayCollection;
+			import mx.controls.DataGrid;
+			import mx.utils.ObjectUtil;
+			import spark.events.IndexChangeEvent;
+			
+			public var ScheByCmpt:Boolean = false;
+			
+			[Bindable] public var drawerProdCodes:ArrayCollection;
+			[Bindable] public var drawerProdCodes2:ArrayCollection;  // Prods filtered by pipenode
+			
+			override public function prepare(hasBeenRecycled:Boolean):void
+			{
+				//trace(owner);
+				if (data)
+				{
+					trace(" ");
+					trace("DrawerProdCodeRender ====> prepare");
+					trace("ROW_INDEX        ->"+rowIndex);
+					trace("Compartment No   ->"+data.trsf_cmpt_no);
+					trace("Drawer Code      ->"+data.trsf_drwr_cd);
+					drawerProdCodes = new ArrayCollection();
+					drawerProdCodes2 = new ArrayCollection();
+					if (DM.ManualTransactions.schedule_type == 'BY_COMPARTMENT')
+					{
+						ScheByCmpt = true;
+						listLabel.includeInLayout = true;
+						listLabel.visible = true;
+						listData.includeInLayout = false;
+						listData.visible = false;
+						
+						//for each (var obj:Object in DM.ManualTransactions.products)
+						for each (var obj:Object in DM.ManualTransactions.productscontainer)
+						{
+							if (obj.PROD_CMPY == data.trsf_drwr_cd)
+								drawerProdCodes.addItem(obj);
+						}
+						
+						for each (var obj:Object in DM.ManualTransactions.products)
+						{
+							if (obj.PROD_CMPY == data.trsf_drwr_cd)
+								drawerProdCodes2.addItem(obj);
+						}
+					}
+					else
+					{
+						ScheByCmpt = false;
+						listLabel.includeInLayout = false;
+						listLabel.visible = false;
+						listData.includeInLayout = true;
+						listData.visible = true;
+						
+						//for each (var obj:Object in DM.ManualTransactions.products)
+						for each (var obj:Object in DM.ManualTransactions.productscontainer)
+						{
+							if (obj.PROD_CMPY == data.trsf_drwr_cd){
+								for each (var obj2:Object in DM.ManualTransactions.schdbyprodlist){
+									if (obj.PROD_CODE == obj2.PROD_CODE)
+									{
+										var found:int = 0;
+										for each(var o:Object in drawerProdCodes)
+										{
+											if (obj.PROD_CODE == o.PROD_CODE)
+											{
+												found = 1;
+												break;
+											}
+										}
+										if (!found)
+										{
+											drawerProdCodes.addItem(obj2);
+										}
+									}
+								}
+							}
+						}
+						
+						for each (var obj:Object in DM.ManualTransactions.products)
+						{
+							if (obj.PROD_CMPY == data.trsf_drwr_cd){
+								for each (var obj2:Object in DM.ManualTransactions.schdbyprodlist){
+									if (obj.PROD_CODE == obj2.PROD_CODE)
+									{
+										//
+										var found:int = 0;
+										for each(var o:Object in drawerProdCodes)
+										{
+											if (obj.PROD_CODE == o.PROD_CODE)
+											{
+												found = 1;
+												break;
+											}
+										}
+										if (!found)
+										{
+											drawerProdCodes2.addItem(obj2);
+										}
+									}
+								}
+							}
+						}
+					}
+					
+					trace("Drawer Prod ->"+data[column.dataField]);
+					var tmp:String = String(data[column.dataField]);
+					var idx:int = -1;
+					var idx2:int = -1;
+					idx = tools.getItemIndexFromCode(tmp, drawerProdCodes, "PROD_CODE");
+					idx2 = tools.getItemIndexFromCode(tmp, drawerProdCodes2, "PROD_CODE");
+					trace("selected Index ->"+idx);
+					
+					if (ScheByCmpt && idx == -1)
+					{
+						// Which means can't find the drawer prod in the list. 
+						// Need to display a error message.
+						idx = idx; //drawerProdCodes.length-1; 
+					}
+					
+					listData.selectedIndex = idx;
+					
+					try
+					{
+						listLabel.text = drawerProdCodes[idx].CODE_NAME;
+						if (idx != -1 && idx2 == -1) // Prod doesnt exist in pipenode selection.
+						{
+							listLabel.setStyle("color", DM.ManualTransactions.TEXT_COLOR_RED);
+						}
+						else
+						{
+							listLabel.setStyle("color", DM.ManualTransactions.TEXT_COLOR_BLACK);
+						}
+					}
+					catch(e:Error)
+					{
+						listLabel.text = "No drawer prod in any arms";
+						listLabel.setStyle("color", DM.ManualTransactions.TEXT_COLOR_RED);
+					}
+					
+					validateDrawerProd();
+				}
+			}
+			
+			protected function validateDrawerProd():void
+			{
+				if (listData.selectedIndex != -1)
+				{
+					// If one drawer product selected, set the drawer product code value.
+					data[column.dataField] = drawerProdCodes.getItemAt(listData.selectedIndex).PROD_CODE;
+				}
+				else
+				{
+					// If no drawer product selected, clear the drawer product code value.
+					data[column.dataField] = null;
+				}
+
+				// Update transfer data reference for Meter grid.
+				trace("validateDrawerProd =====> drawer prod code changed -------> refresh transfer data reference");
+				
+				///if (DM.ManualTransactions.meterDataArr || DM.ManualTransactions.baseprodDataArr)
+				{
+					// Update current selected drawer product code.
+					DM.ManualTransactions.setTransferDataRef(rowIndex, 2, data[column.dataField]);
+				}
+			}
+			
+			protected function droplist_changeHandler(event:IndexChangeEvent):void
+			{
+				var dmMT:Object = DM.ManualTransactions;
+				
+				trace("Drawer prod code renderer ==> droplist_changeHandler");
+				trace("clicked row:" + rowIndex);
+				trace("effectiveRowIndex:" + DM.ManualTransactions.effectiveRowIndex);
+				
+				// Check if the clicked row is current effective row. Ver3.0 added.
+				if (DM.ManualTransactions.isCurrentEffectiveTransferRow(rowIndex) != true)
+				{
+					global.msgWarning("Processing data...\r\n" + "Sorry, you can't change this item at the moment.");
+					DM.ManualTransactions.refreshTransferGrid();
+					return;
+				}
+				
+				if (dmMT.isAutoPopBMLocked())
+				{
+					trace("Lock_AutoPopBM = TRUE  ====> return directly");
+					return;
+				}
+				
+				// Set current transfer row index, which will be used in autoPopulateBaseMeter().
+				// To prevent from user click somewhere esle.
+				DM.ManualTransactions.setTransferRowIndex(rowIndex);
+				
+				// If loaded qty in this compartment is not zero, check currently selected prod with previous loaded prod in this compartment.
+				if (0/*temporariy comment out. detailed spec needed. data.trsf_drwr_prod_loaded_qty > 0*/)
+				{
+					if (data.trsf_prev_prod_cd != null && listData.selectedItem.PROD_CODE != data.trsf_prev_prod_cd)
+					{
+						global.msgWarning("Sorry, you can't select this product in this compartment.\r\n" + "As previous loaded product is " + data.trsf_prev_prod_cd + '-' + data.trsf_prev_prod + '.');
+						return;
+					}
+				}
+				
+				////if (listData.selectedItem==undefined) return;
+				data[column.dataField] = listData.selectedItem.PROD_CODE;
+				
+				// The code below are similar to ArmCodeRenderer's.
+				// As product changed, clear selected arm code if multipule arms available. User need to re-select the arm.
+				// Update the data in transfer arraycollection.
+				// Update the transfer in transaction arraycollection.
+				dmMT.transferDataArr[rowIndex].trsf_arm_cd = dmMT.getValidSingleArm(data['trsf_drwr_cd'], listData.selectedItem.PROD_CODE);
+				dmMT.transferDataArr[rowIndex].trsf_drwr_prod_cd = listData.selectedItem.PROD_CODE;
+				dmMT.transactionDataArr[rowIndex].transfer = dmMT.transferDataArr[rowIndex];
+				
+				// Clear all Base & Meter.
+				if (DM.ManualTransactions.transactionDataArr.getItemAt(rowIndex).baseprod.length > 0)
+					DM.ManualTransactions.clearBaseProd(rowIndex);
+				if (DM.ManualTransactions.transactionDataArr.getItemAt(rowIndex).meter.length > 0)
+					DM.ManualTransactions.clearMeter(rowIndex);
+				
+				trace("after DM.ManualTransactions.clearBaseProd & clearMeter("+rowIndex+")");
+				trace("transactionDataArr ==>");
+				trace(tools.pr(DM.ManualTransactions.transactionDataArr, 2));
+				trace("baseprodDataArr ==>");
+				trace(tools.pr(DM.ManualTransactions.baseprodDataArr, 1));
+				
+				// Clear Base total.
+				if (DM.ManualTransactions.baseprodTotalDataArr.length > 0)
+					DM.ManualTransactions.clearBaseProdTotal();
+				
+				// Clear Meter total. Ver2.1
+				// Do the some thing as Arm Code changed.
+				if (DM.ManualTransactions.meterTotalDataArr.length > 0)
+					DM.ManualTransactions.clearMeterTotal();
+				
+				trace("Drawer Prod selection changed --------> baseprodDataArr/meterDataArr refresh");
+				trace("ROW_INDEX        ->"+rowIndex);
+				// Update current selected drawer product code.
+				DM.ManualTransactions.setTransferDataRef(rowIndex, 2, listData.selectedItem.PROD_CODE);
+				// Update transfer data reference (arm code changed).
+				DM.ManualTransactions.setTransferDataRef(rowIndex, 3, null);
+				
+				// Clear TEMP and OBS/STD/MASS.
+				DM.ManualTransactions.prodarmChanged(rowIndex);
+				
+				// Ivalidate Base prod total arraycollection.(need to recalculate)
+				DM.ManualTransactions.invalidateBaseprodTotalArr();
+				
+				// Refresh relevant grids.
+				////DM.ManualTransactions.refreshTransferGrid();
+				DM.ManualTransactions.refreshChildGrid();
+				
+				// As the 'dmMT.transferDataArr' has been changed,
+				// but somehow the listener callback - transferChanged won't be envoked.?!
+				// So have to call it DIRECTLY.
+				// Another solution is to call dmMT.transferDataArr.refresh(),
+				// but after refresh() called, droplist_changeHandler() will be envoked again with listData.selectedItem equals null.
+				// May use if(listData.selectedItem==undefined) return; but not sure whether it is safe to do so.
+				DM.ManualTransactions.transferChanged(null);
+				
+				//var parnt:DataGrid = owner as DataGrid;
+				//(parnt.dataProvider as ArrayCollection).refresh();
+			}
+
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<dm:DM/>
+	</fx:Declarations>
+	
+	<!--selectedItem="{getCodeName(data[column.dataField])}"-->
+	<s:DropDownList id="listData" top="0" left="0" bottom="0" right="0" includeInLayout="{!ScheByCmpt}" visible="{!ScheByCmpt}"
+					dataProvider="{drawerProdCodes}"
+					labelField="CODE_NAME" prompt="Select Drawer Product" change="droplist_changeHandler(event)" useVirtualLayout="false"/>
+	
+	<s:Label id="listLabel" top="2" left="2" bottom="2" right="2" backgroundColor="#EAEAEA" verticalAlign="middle" includeInLayout="{ScheByCmpt}" visible="{ScheByCmpt}" backgroundAlpha="1"/>
+	
+</s:GridItemRenderer>

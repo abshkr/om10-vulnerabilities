@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="true">
+	
+	<fx:Script>
+		<![CDATA[
+			
+			[Bindable] private var dispColor:uint = 0xFFFFFF;
+			[Bindable] private var timeStamp:String;
+			
+			override public function set data(value:Object):void 
+			{      
+				dispColor = 0xFFFFFF;
+				if(value != null)
+				{
+					super.data=value;
+					timeStamp = data.GEN_DATE;
+					timeStamp = timeStamp.substr(0,19);
+					if (itemIndex%2 == 0) dispColor = 0xEEEEEE;
+				}
+				/* dispColor = 0xFFFFFF;
+				if(value != null)
+				{
+					super.data=value;
+					var date:Date=new Date();
+					timeStamp = data.GEN_DATE;
+					timeStamp = timeStamp.substr(0,19);
+					if (itemIndex%2 == 0) dispColor = 0xEEEEEE;
+					if (global.srchText.length > 0)
+					{	
+						var tmpStr: String = (data.MESSAGE as String).toLowerCase();
+						if (tmpStr.indexOf(global.srchText) > -1)
+						{	
+							dispColor = 0xEEBBBB;	
+						}
+					}
+				} */	
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Rect width="100%" height="100%">
+		<s:fill>
+			<s:SolidColor color="{dispColor}" alpha="0.8"/>
+		</s:fill>
+	</s:Rect>
+	
+	<s:HGroup width="100%" paddingTop="5" paddingBottom="3" paddingLeft="5">
+		<s:Label width="142" height="100%" text="{timeStamp}" verticalAlign="middle"/>
+		<s:Label width="68" height="100%" text="{data.MSG_EVENT}" verticalAlign="middle"/>
+		<s:Label height="100%" fontSize="13" text="{data.MESSAGE}" verticalAlign="middle"/>
+	</s:HGroup>
+	<s:Line top="-1" bottom="-1" left="142">
+		<s:stroke>
+			<s:SolidColorStroke color="0xC8C8C8" weight="1"/>
+		</s:stroke>
+	</s:Line>
+	<s:Line top="-1" bottom="-1" left="210">
+		<s:stroke>
+			<s:SolidColorStroke color="0xC8C8C8" weight="1"/>
+		</s:stroke>
+	</s:Line>
+</s:ItemRenderer>
+

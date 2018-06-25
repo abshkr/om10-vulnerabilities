@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		xmlns:mx="library://ns.adobe.com/flex/mx">
+	<!-- host component -->
+	<fx:Metadata>
+		[HostComponent("spark.components.BorderContainer")]
+	</fx:Metadata>
+	
+	<!-- states -->
+	<s:states>
+		<s:State name="disabled" />
+		<s:State name="normal" />
+	</s:states>
+	
+	<fx:Declarations>
+		<s:GlowFilter id="glow" inner="true" color="0x000044" strength="1.4" blurX="15" blurY="15"/>
+	</fx:Declarations>
+	
+	<s:Rect left="0" top="0" right="0" bottom="0" filters="{glow}"				
+			topLeftRadiusX="8" topLeftRadiusY="8" topRightRadiusX="8" topRightRadiusY="8" 
+			bottomLeftRadiusX="8" bottomLeftRadiusY="8" bottomRightRadiusX="8" bottomRightRadiusY="8">
+		<s:fill>
+			<s:LinearGradient rotation="125">
+				<s:GradientEntry color="0x5555FF"/>
+				<s:GradientEntry color="0xCCCCFF"/>
+				<s:GradientEntry color="0x5555FF"/>
+				<s:GradientEntry color="0xCCCCFF"/>
+			</s:LinearGradient>				
+		</s:fill>
+	</s:Rect>
+	<s:Group id="contentGroup" left="5" top="5" bottom="5" right="5"/>
+</s:Skin>

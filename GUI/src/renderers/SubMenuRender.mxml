@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				xmlns:components="components.*" 
+				width="100%" height="100%" autoDrawBackground="false">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			[Bindable] private var _Caption:String;
+			[Bindable] private var _Module:String;
+			[Bindable] private var _URL:String;
+			[Bindable] private var _ico:Class;
+			
+			override public function set data(value:Object):void 
+			{      
+				super.data=value;
+				if (value != null)
+				{	
+					_Module = value.module;
+					_ico = glyph[data.title];
+					
+				_Caption = resourceManager.getString('default',data.title);
+				if (value.SWF == 'true') _URL = "swf" else _URL=value.URL;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<components:WidgetPanel id="wp" top="0" left="0" bottom="4" right="4" menu_ico="{_ico}" title="{_Caption}" module="{_Module}" cgiURL="{_URL}" info="{data}"/>
+</s:ItemRenderer>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemEditor xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				  xmlns:s="library://ns.adobe.com/flex/spark" 
+				  xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Script>
+		<![CDATA[
+			
+			override public function set value(newValue:Object):void 
+			{
+				ddl.selectedIndex = -1;
+				for(var i:int=0;i <global.ruleTypes.length;i++)
+				{
+					var code:String = String(global.ruleTypes[i].permission_class_code);
+					if ( String(newValue)!="" && code.indexOf(String(newValue)) >= 0 )
+					//if ( code == String(newValue) )
+					{
+						ddl.selectedIndex = i;
+					}
+				}
+				
+				/* if ( String(newValue) == "DEFAULT_PERSONNEL" || String(newValue) == "PRM_PRSSNL" )
+				{
+					ddl.selectedIndex = 0;
+				}
+				if ( String(newValue) == "DEFAULT_EQUIP" || String(newValue) == "PRM_EQPT" )
+				{
+					ddl.selectedIndex = 1;
+				} */
+			}
+			
+			override public function get value():Object 
+			{
+				if ( ddl.selectedIndex > -1 )
+				{
+					return global.ruleTypes[ddl.selectedIndex].permission_class_code;
+				}
+				else
+				{
+					return null;
+				}
+			}
+			
+			override public function setFocus():void 
+			{
+				ddl.setFocus();
+			}
+		]]>
+	</fx:Script>
+	<s:ComboBox dataProvider="{global.ruleTypes}" labelField="permission_class_name" id="ddl" top="2" left="2" bottom="2" right="2" requireSelection="false" selectedIndex="-1"/>
+</s:GridItemEditor>

@@ -1,0 +1,706 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  xmlns:roleservice="services.roleservice.*"
+		  xmlns:domainservice="services.domainservice.*"
+		  creationComplete="creationCompleteHandler(event)"
+		  width="100%" height="100%" gap="2">
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="widget"/>
+		<s:State name="edit"/>
+		<s:State name="create"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import components.DKI_CreateRoleDlg;
+			import components.DKI_FeatureDlg;
+			import components.DeleteDialog;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.AdvancedDataGridEvent;
+			import mx.events.CloseEvent;
+			import mx.events.CollectionEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.xml.SimpleXMLDecoder;
+			import mx.rpc.xml.SimpleXMLEncoder;
+			
+			import spark.events.GridSelectionEvent;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable] private var rolesArr:ArrayCollection = new ArrayCollection();
+			[Bindable] private var secureArr:ArrayCollection = new ArrayCollection();
+			[Bindable] private var moduleArr:ArrayCollection = new ArrayCollection();
+			[Bindable] private var widgetArr:ArrayCollection = new ArrayCollection();
+
+			private var selectedRole:ArrayCollection = new ArrayCollection();
+			private var domain:String="";
+			private var module:String="";
+			private var si:int=-1;
+			private var objectID:String;
+			private var tmpRole:String;
+			private var isCopyRole:Boolean=false;
+			private var tmpPriv:Object = new Object();
+
+			private var createDlg:DKI_CreateRoleDlg = new DKI_CreateRoleDlg();
+			private var featureDlg:DKI_FeatureDlg = new DKI_FeatureDlg();
+			private var emptyArr:ArrayCollection = new ArrayCollection();
+			
+			private var passedRoleCode:String="";
+			private var tmpStr:String;
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				moduleArr.filterFunction = module_filterFunc;
+				widgetArr.filterFunction = widget_filterFunc;
+				rolesArr.filterFunction = rolesFilter;
+				secureArr.addEventListener(CollectionEvent.COLLECTION_CHANGE,secureArr_Changed);
+				getMenuMainResult.token = domainService.getMenuMain();
+				addEventListener('privilegeChanged',changePrivileges);
+				getAllResult.token = roleService.getRoles();
+				
+				if ( global.user == "9999" )
+				{
+					btnFeatures.visible = true;
+				}
+				else
+				{
+					btnFeatures.visible = false;
+				}
+			}
+			
+			protected function searchText_keyUpHandler(event:KeyboardEvent):void
+			{
+				rolesArr.refresh();
+				
+			}
+			
+			protected function getMenuMainResult_resultHandler(event:ResultEvent):void
+			{
+				for (var i:int=0; i < getMenuMainResult.lastResult.length; i++)
+				{
+					tmpStr = (getMenuMainResult.lastResult[i].object_text as String).toLowerCase();
+					var obj:Object = 
+						{
+							object_id: getMenuMainResult.lastResult[i].object_id,
+								domain_id:getMenuMainResult.lastResult[i].domain_id,
+								object_text:resourceManager.getString('default',tmpStr),
+								object_parent_id:getMenuMainResult.lastResult[i].object_parent_id,
+								modules:Object,
+								priv_create:false,
+								priv_read:false,
+								priv_update:false,
+								priv_delete:false,
+								priv_protect:false,
+								needsCGI:false
+						}
+					secureArr.addItem(obj);
+				}
+				getMenuItemsResult.token = domainService.getMenuItems();
+			}
+			
+			protected function getMenuItemsResult_resultHandler(event:ResultEvent):void
+			{
+				var tmpBool:Boolean=false;
+				moduleArr.source = getMenuItemsResult.lastResult.source;
+				widgetArr.source = getMenuItemsResult.lastResult.source;
+				for(var i:int=0; i < secureArr.length; i++)
+				{
+					domain=secureArr[i].domain_id;
+					moduleArr.refresh();
+					secureArr[i].modules=new ArrayCollection();
+					for(var j:int=0;j < moduleArr.length;j++)
+					{
+						tmpStr = (moduleArr[j].object_text as String).toLowerCase();
+						if (moduleArr[j].object_cgi_name == null || moduleArr[j].object_cgi_name == 'null')
+							tmpBool=false else tmpBool=true;
+						var objModule:Object = 
+							{
+								domain_id:domain,
+								object_id:moduleArr[j].object_id,
+									object_text:resourceManager.getString('default',tmpStr),
+									modules:new ArrayCollection(),
+									priv_create:false,
+									priv_read:false,
+									priv_update:false,
+									priv_delete:false,
+									priv_protect:false,
+									needsCGI:tmpBool
+							}
+						
+						module = moduleArr[j].object_id;
+						widgetArr.refresh();
+						for(var k:int=0;k < widgetArr.length; k++)
+						{
+							if (widgetArr[k].object_cgi_name == null || widgetArr[k].object_cgi_name == 'null')
+								tmpBool=false else tmpBool=true;
+							tmpStr = (widgetArr[k].object_text as String).toLowerCase();
+							var objWidget:Object =
+								{
+									domain_id:domain,
+									object_id:widgetArr[k].object_id,
+										object_text:resourceManager.getString('default',tmpStr),
+										priv_create:false,
+										priv_read:false,
+										priv_update:false,
+										priv_delete:false,
+										priv_protect:false,
+										needsCGI:tmpBool
+								}
+							objModule.modules.addItem(objWidget);
+						}
+						secureArr[i].modules.addItem(objModule);
+					}
+				}
+				
+				secureArr.refresh();
+				emptyArr.source = secureArr.source;
+			}
+			
+			protected function role_filterFunc(item:Object):Boolean
+			{
+				if (item.object_id == objectID)                
+				{ 
+					return true     
+				}
+				else
+					return false;
+			}
+			protected function rolesFilter(item:Object):Boolean
+			{
+				var srchValue:String = "";
+				var srchLoc:int = -1;
+				
+				srchValue = searchText.text.toLowerCase();
+				if(item.ROLE_CODE != null)
+				{
+					if (searchSwitch.selected)
+					{
+						srchLoc = String(item.ROLE_TEXT).toLowerCase().indexOf(srchValue);
+					}
+					else
+					{
+						srchLoc = String(item.ROLE_CODE).toLowerCase().indexOf(srchValue);
+					}
+				}
+				return (srchLoc==-1?false:true);
+			}
+			
+			protected function rolesFilter2(item:Object):Boolean
+			{
+				var srchValue:String="";
+				if(item.ROLE_CODE != null)
+				{
+					if (searchSwitch.selected)
+						srchValue = (item.ROLE_TEXT as String).substr(0,searchText.text.length)
+					else
+						srchValue = (item.ROLE_CODE as String).substr(0,searchText.text.length);
+				}
+				return (srchValue.toLowerCase() == searchText.text.toLowerCase());
+			}
+			
+			protected function module_filterFunc(item:Object):Boolean
+			{
+				if (item.domain_id == domain && item.object_parent_id == 0)                
+				{ 
+					return true     
+				}
+				else
+					return false;
+			}
+			
+			protected function widget_filterFunc(item:Object):Boolean
+			{
+				if (item.object_parent_id == module)                
+				{ 
+					return true     
+				}
+				else
+					return false;
+			}
+			
+			private function objectToXML():void
+			{
+				var qName:QName = new QName("root");
+				var xmlDocument:XMLDocument = new XMLDocument();
+				var simpleXMLEncoder:SimpleXMLEncoder = new SimpleXMLEncoder(xmlDocument);
+				var xmlNode:XMLNode = simpleXMLEncoder.encodeValue(secureArr.source, qName, xmlDocument);
+				var xml:XML = new XML(xmlDocument.toString());
+			}
+			
+			protected function getAllResult_resultHandler(event:ResultEvent):void
+			{
+				rolesArr.source = (event.result as ArrayCollection).source;
+			}
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				if (dataGrid.selectedIndex != -1 && currentState !='widget')
+				{
+					currentState="edit";
+					getRoleData.token = roleService.getRoleData(dataGrid.selectedItem.ROLE_CODE);
+				}
+				
+			}
+			
+			protected function adg1_sortHandler(event:AdvancedDataGridEvent):void
+			{
+				event.stopImmediatePropagation();
+				var privCondition:Boolean = false;
+				if (si != -1)
+				{	
+					var fieldName:String = "null";
+					switch(event.columnIndex)
+					{
+						case 1: fieldName = 'priv_create';
+							break;
+						case 2: fieldName = 'priv_view';
+							break;
+						case 3: fieldName = 'priv_update';
+							break;
+						case 4: fieldName = 'priv_delete';
+							break;
+						case 5: fieldName = 'priv_protect';
+							break;
+						case 6: fieldName = 'needs_CGI';
+							break;
+					}
+					
+					if (fieldName != 'null')
+					{	
+						hd.source = null;
+						privCondition = secureArr[si][fieldName];
+						secureArr[si][fieldName] = !privCondition;
+						for (var j:int=0; j < secureArr[si].modules.length; j++)
+						{
+							secureArr[si].modules[j][fieldName] = !privCondition;
+							for (var k:int=0; k < secureArr[si].modules[j].modules.length; k++)
+								secureArr[si].modules[j].modules[k][fieldName] = !privCondition;
+						}
+						hd.source = secureArr;
+					}
+				}
+			}
+			
+			protected function changePrivileges(event:TextEvent):void
+			{
+				secureArr.refresh();
+				adg1.invalidateList();
+			}
+			
+			protected function secureArr_Changed(event:CollectionEvent):void
+			{
+				if (adg1)
+				var obj:Object = adg1.selectedItem;
+			}
+			
+			//protected function save_clickHandler(event:MouseEvent):void
+			protected function save_clickHandler():void
+			{
+				savePrivileges();
+			}
+			
+			protected function delete_clickHandler(event:MouseEvent):void
+			{
+				tmpRole = dataGrid.selectedItem.ROLE_CODE;
+				new DeleteDialog(deleteRecord,hasPassword);
+			}
+			
+			protected function cancel_clickHandler(event:MouseEvent):void
+			{
+				currentState="normal";
+			}
+			
+			
+			protected function features_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.addPopUp(featureDlg,this,true);
+				PopUpManager.centerPopUp(featureDlg);
+				featureDlg.currentState='create';
+				//featureDlg.saveFunction = createRole;
+				featureDlg.featureData.service();
+				featureDlg.addEventListener(CloseEvent.CLOSE, feature_close);
+			}
+			
+			protected function feature_close(event:Event):void
+			{
+				PopUpManager.removePopUp(featureDlg);
+				featureDlg.removeEventListener(CloseEvent.CLOSE, feature_close);
+			}
+			
+			
+			protected function create_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.addPopUp(createDlg,this,true);
+				PopUpManager.centerPopUp(createDlg);
+				createDlg.currentState='create';
+				createDlg.inpName.text = "";
+				createDlg.inpNote.text = "";
+				createDlg.getRoleData.token = createDlg.roleService.getRoles(); 
+				createDlg.saveFunction = createRole;
+				createDlg.addEventListener(CloseEvent.CLOSE, create_close);
+			}
+						
+			protected function create_close(event:Event):void
+			{
+				PopUpManager.removePopUp(createDlg);
+				createDlg.removeEventListener(CloseEvent.CLOSE, create_close);
+			}
+			
+			protected function createRole(value:Boolean): void
+			{
+				isCopyRole=value;
+				//tmpRole = createDlg.inpName.text;
+				if (isCopyRole==true)
+				{
+					tmpRole = createDlg.roleList.selectedItem.ROLE_TEXT;
+					updateRole.token = roleService.updateRole(createDlg.roleList.selectedItem.ROLE_CODE, '', createDlg.roleList.selectedItem.ROLE_TEXT, 
+						createDlg.roleList.selectedItem.ROLE_NOTE, tmpPriv);
+				}
+				else
+				{
+					tmpRole = createDlg.inpName.text;
+					createNewRole.token = roleService.createRole("",createDlg.inpName.text, createDlg.inpNote.text, emptyArr);
+				}
+			}
+			
+			protected function createNewRole_resultHandler(event:ResultEvent):void
+			{
+				dataGrid.selectedIndex=-1;
+				getAllResult.token = roleService.getRoles();
+				passedRoleCode = event.result as String;
+				if (passedRoleCode.length > 2)
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'))
+				else		
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				PopUpManager.removePopUp(createDlg);
+				for (var i:int = 0; i < rolesArr.length; i++)
+				{
+					if (rolesArr[i].ROLE_CODE==passedRoleCode) dataGrid.selectedIndex=i; 
+					trace(passedRoleCode+":"+dataGrid.selectedIndex);
+				}
+				dataGrid.ensureCellIsVisible(dataGrid.selectedIndex);
+			}
+			
+			protected function createNewRole_faultHandler(event:FaultEvent):void
+			{
+				PopUpManager.removePopUp(createDlg);
+				global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+			}
+			
+			protected function copy_clickHandler(event:MouseEvent):void
+			{
+				copyPrivileges();
+				PopUpManager.addPopUp(createDlg,this,true);
+				PopUpManager.centerPopUp(createDlg);
+				createDlg.currentState='copy';
+				createDlg.inpName.text = "";
+				createDlg.inpNote.text = "";
+				createDlg.saveFunction = createRole;
+				createDlg.addEventListener(CloseEvent.CLOSE, copy_close);
+			}
+			
+			protected function copy_close(event:Event):void
+			{
+				PopUpManager.removePopUp(createDlg);
+				createDlg.removeEventListener(CloseEvent.CLOSE, copy_close);
+			}
+			
+			
+			
+			protected function savePrivileges(): void
+			{
+				var role_code:String = dataGrid.selectedItem.ROLE_CODE;
+				tmpRole = dataGrid.selectedItem.ROLE_CODE;
+				var role_name:String = role_text.text;
+				var role_info:String = role_note.text;
+				var privileges:Object = Object({domainprivileges:new ArrayCollection()});
+				
+				for (var i:int=0; i < secureArr.length; i++)
+				{
+					var privArr: Object = getPrivArr(secureArr[i]);
+					privArr.domain_id =	secureArr[i].domain_id;
+					privArr.object_id =	secureArr[i].object_id;
+					privileges.domainprivileges.addItem(privArr);
+					
+					for (var j:int=0; j < secureArr[i].modules.length; j++)
+					{
+						var privArr1: Object = getPrivArr(secureArr[i].modules[j]);
+						privArr1.domain_id =	secureArr[i].modules[j].domain_id;
+						privArr1.object_id =	secureArr[i].modules[j].object_id;
+						privileges.domainprivileges.addItem(privArr1);
+						for (var k:int=0; k < secureArr[i].modules[j].modules.length; k++)
+						{
+							var privArr2: Object = getPrivArr(secureArr[i].modules[j].modules[k]);
+							privArr2.domain_id =	secureArr[i].modules[j].modules[k].domain_id;
+							privArr2.object_id =	secureArr[i].modules[j].modules[k].object_id;
+							privileges.domainprivileges.addItem(privArr2);
+						}
+					}
+				}
+				updateRole.token = roleService.updateRole(dataGrid.selectedItem.ROLE_CODE,'',role_text.text,role_note.text,privileges);
+				//createNewRole.token = roleService.createRole(role_code,role_name, role_info, privileges);
+			}
+			
+			protected function copyPrivileges(): void
+			{
+
+				tmpPriv = Object({domainprivileges:new ArrayCollection()});
+				
+				for (var i:int=0; i < secureArr.length; i++)
+				{
+					var privArr: Object = getPrivArr(secureArr[i]);
+					privArr.domain_id =	secureArr[i].domain_id;
+					privArr.object_id =	secureArr[i].object_id;
+					tmpPriv.domainprivileges.addItem(privArr);
+					
+					for (var j:int=0; j < secureArr[i].modules.length; j++)
+					{
+						var privArr1: Object = getPrivArr(secureArr[i].modules[j]);
+						privArr1.domain_id =	secureArr[i].modules[j].domain_id;
+						privArr1.object_id =	secureArr[i].modules[j].object_id;
+						tmpPriv.domainprivileges.addItem(privArr1);
+						for (var k:int=0; k < secureArr[i].modules[j].modules.length; k++)
+						{
+							var privArr2: Object = getPrivArr(secureArr[i].modules[j].modules[k]);
+							privArr2.domain_id =	secureArr[i].modules[j].modules[k].domain_id;
+							privArr2.object_id =	secureArr[i].modules[j].modules[k].object_id;
+							tmpPriv.domainprivileges.addItem(privArr2);
+						}
+					}
+				}
+			}
+			private function getPrivArr(param:Object):Object
+			{
+				var obj:Object =
+					{
+						priv_protect: (param.priv_protect == true)?1:0,
+							priv_view: (param.priv_view == true)?1:0,
+							priv_update: (param.priv_update == true)?1:0,
+							priv_create: (param.priv_create == true)?1:0,
+							priv_delete: (param.priv_delete == true)?1:0,
+							domain_id:'',
+							object_id:''
+					}
+				return obj;
+			}
+			
+			protected function getRoleData_resultHandler(event:ResultEvent):void
+			{
+				var roleArr:ArrayCollection = new ArrayCollection();
+				roleArr = event.result.domainprivilege as ArrayCollection;
+				roleArr.filterFunction = role_filterFunc;
+				for(var i:int=0; i < secureArr.length; i++)
+				{
+					objectID=secureArr[i].object_id;
+					roleArr.refresh();
+					if (roleArr.length != 0)
+					{
+						secureArr[i].priv_create = roleArr[0].priv_create == 1 ? true : false;
+						secureArr[i].priv_view = roleArr[0].priv_view == 1 ? true : false;
+						secureArr[i].priv_delete = roleArr[0].priv_delete == 1 ? true : false;
+						secureArr[i].priv_update = roleArr[0].priv_update == 1 ? true : false;
+						secureArr[i].priv_protect = roleArr[0].priv_protect == 1 ? true : false;
+						secureArr[i].needsCGI = emptyArr[i].needsCGI == 1 ? true : false;
+					}
+					else
+					{
+						secureArr[i].priv_create = false;
+						secureArr[i].priv_view = false;
+						secureArr[i].priv_delete = false;
+						secureArr[i].priv_update = false;
+						secureArr[i].priv_protect = false;
+						secureArr[i].needsCGI =  emptyArr[i].needsCGI;
+					}
+					for(var j:int=0;j < secureArr[i].modules.length;j++)
+					{
+						objectID=secureArr[i].modules[j].object_id;
+						roleArr.refresh();
+						if (roleArr.length != 0)
+						{
+							secureArr[i].modules[j].priv_create = roleArr[0].priv_create == 1 ? true : false;
+							secureArr[i].modules[j].priv_view = roleArr[0].priv_view == 1 ? true : false;
+							secureArr[i].modules[j].priv_delete = roleArr[0].priv_delete == 1 ? true : false;
+							secureArr[i].modules[j].priv_update = roleArr[0].priv_update == 1 ? true : false;
+							secureArr[i].modules[j].priv_protect = roleArr[0].priv_protect == 1 ? true : false;
+							secureArr[i].modules[j].needsCGI = emptyArr[i].modules[j].needsCGI;
+						}
+						else
+						{
+							secureArr[i].modules[j].priv_create = false;
+							secureArr[i].modules[j].priv_view = false;
+							secureArr[i].modules[j].priv_delete = false;
+							secureArr[i].modules[j].priv_update = false;
+							secureArr[i].modules[j].priv_protect = false;
+							secureArr[i].modules[j].needsCGI = emptyArr[i].modules[j].needsCGI;
+						}
+						for(var k:int=0;k < secureArr[i].modules[j].modules.length; k++)
+						{
+							objectID=secureArr[i].modules[j].modules[k].object_id;
+							roleArr.refresh();
+							if (roleArr.length != 0)
+							{
+								secureArr[i].modules[j].modules[k].priv_create = roleArr[0].priv_create == 1 ? true : false;
+								secureArr[i].modules[j].modules[k].priv_view = roleArr[0].priv_view == 1 ? true : false;
+								secureArr[i].modules[j].modules[k].priv_delete = roleArr[0].priv_delete == 1 ? true : false;
+								secureArr[i].modules[j].modules[k].priv_update = roleArr[0].priv_update == 1 ? true : false;
+								secureArr[i].modules[j].modules[k].priv_protect = roleArr[0].priv_protect == 1 ? true : false;
+								secureArr[i].modules[j].modules[k].needsCGI = emptyArr[i].modules[j].modules[k].needsCGI;
+							}
+							else
+							{
+								secureArr[i].modules[j].modules[k].priv_create = false;
+								secureArr[i].modules[j].modules[k].priv_view = false;
+								secureArr[i].modules[j].modules[k].priv_delete = false;
+								secureArr[i].modules[j].modules[k].priv_update = false;
+								secureArr[i].modules[j].modules[k].priv_protect = false;
+								secureArr[i].modules[j].modules[k].needsCGI = emptyArr[i].modules[j].modules[k].needsCGI;
+							}
+						}
+					}
+				}
+				adg1.collapseAll();
+			}
+			
+			protected function deleteRole_resultHandler(event:ResultEvent):void
+			{
+				if (event.result == "0")
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+					getAllResult.token = roleService.getRoles();
+					currentState="normal";
+					dataGrid.selectedIndex = -1;
+				}
+				else		 
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+			}
+			
+			private function deleteRecord():void
+			{
+				if (dataGrid.selectedIndex != -1)
+				deleteRole.token=roleService.deleteRole(dataGrid.selectedItem.ROLE_CODE);
+			}
+			
+			protected function updateRole_resultHandler(event:ResultEvent):void
+			{
+				PopUpManager.removePopUp(createDlg);
+				if (event.result == "0")
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+					getAllResult.token = roleService.getRoles();
+					currentState="normal";
+					dataGrid.selectedIndex = -1;
+				}
+				else		 
+					global.msgSuccess(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+			}
+			
+			protected function validateRoleNoteField():void
+			{
+				if ( this.role_note.isValid == false && this.role_note.errorString.length>0 )
+				{
+					this.btn_save.enabled = false;
+				}
+				else
+				{
+					this.btn_save.enabled = canUpdate;
+				}
+				
+				this.role_note.errorString="";
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateformat" dateTimePattern="dd-MMM-yyyy"/>
+		<domainservice:DomainService id="domainService" showBusyCursor="true" fault="global.msgFail(resourceManager.getString('default','global.msg.unknownserverissue'))"  channelSet="{global.channelSet}"/>
+			<s:CallResponder id="getMenuMainResult" result="getMenuMainResult_resultHandler(event)"/>
+			<s:CallResponder id="getMenuItemsResult" result="getMenuItemsResult_resultHandler(event)"/>
+		<roleservice:RoleService id="roleService" fault="global.msgFail(resourceManager.getString('default','global.msg.unknownserverissue'))" showBusyCursor="true"  channelSet="{global.channelSet}"/>
+			<s:CallResponder id="getAllResult" result="getAllResult_resultHandler(event)"/>
+			<s:CallResponder id="createNewRole" result="createNewRole_resultHandler(event)" fault="createNewRole_faultHandler(event)"/>
+			<s:CallResponder id="getRoleData" result="getRoleData_resultHandler(event)" fault="global.msgFail(resourceManager.getString('default','global.msg.unknowndatabaseerror'))"/>
+			<s:CallResponder id="deleteRole" result="deleteRole_resultHandler(event)" fault="global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'))"/> 
+			<s:CallResponder id="updateRole" result="updateRole_resultHandler(event)" fault="global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'))"/> 
+		<components:ValidationGroup id="vg" parentScreen="{this}" defaultButton="{btn_save}" action="{save_clickHandler}"/>
+	</fx:Declarations>
+
+	<s:Panel width="100%" height="100%" skinClass="skins.WidgetPanelSkin" title="Search" skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:HGroup id="toolbar" width="100%" gap="5" paddingBottom="2" paddingTop="2" includeIn="widget,normal">
+			<s:HGroup gap="2">
+				<s:Label height="100%" text="{resourceManager.getString('default','global.lbl.searchrole')}" verticalAlign="middle"/> 
+				<components:DKI_ValidatorInput id="searchText" validationType="search" width="170" height="100%" keyUp="searchText_keyUpHandler(event)" prompt="{resourceManager.getString('default','global.prompts.codenametoggle')}"/>				
+				<s:Label height="100%" text="{resourceManager.getString('default','global.lbl.filterby')}" verticalAlign="middle"/> 
+				<components:DKI_ToggleSwitch id="searchSwitch" selectedLabel="{resourceManager.getString('default','global.lbl.name')}" deselectedLabel="{resourceManager.getString('default','global.lbl.code')}" selected="true" toolTip="Toggle search condition"/>
+			</s:HGroup>
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btnFeatures" label="Features" height="100%" type="edit" visible.widget="false" visible="false" click="features_clickHandler(event)"/>
+			<components:DKI_Button label="{resourceManager.getString('default','global.lbl.createrole')}" height="100%" type="create" visible.widget="false" enabled="{canCreate}" click="create_clickHandler(event)"/>
+		</s:HGroup>
+
+		<components:DKI_DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="4" sortableColumns="true" dataProvider="{rolesArr}" selectionChange="dataGrid_selectionChangeHandler(event)">
+			<components:columns>
+				<s:ArrayList>
+					<s:GridColumn dataField="ROLE_CODE" headerText="{resourceManager.getString('default','global.prompts.rolecode')}"></s:GridColumn>
+					<s:GridColumn dataField="ROLE_TEXT" headerText="{resourceManager.getString('default','global.prompts.rolename')}"></s:GridColumn>
+					<s:GridColumn dataField="ROLE_NOTE" headerText="{resourceManager.getString('default','global.lbl.comments')}"></s:GridColumn>
+				</s:ArrayList>
+			</components:columns>
+		</components:DKI_DataGrid>		
+	</s:Panel>
+	
+	<s:Panel width="100%" height="400" skinClass="skins.WidgetPanelSkin" excludeFrom="widget,normal">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:HGroup id="editPanel" width="100%" paddingTop="8" paddingLeft="5" paddingRight="5" paddingBottom="5">
+			<s:Label height="100%" text="{resourceManager.getString('default','global.prompts.rolename')}" verticalAlign="middle"/>
+			<components:DKI_ValidatorInput id="role_text" width="150" text="{dataGrid.selectedItem.ROLE_TEXT}" enabled="false"/>
+			<s:Spacer width="20"/>
+			<s:Label height="100%" text="{resourceManager.getString('default','global.lbl.comments')}" verticalAlign="middle"/>
+			<components:DKI_ValidatorInput id="role_note" width="250" text="{dataGrid.selectedItem.ROLE_NOTE}" 
+										   required="true" validationGroup="{vg}" validationType="document"  automationName="Role Description"/>
+		</s:HGroup>
+		<s:Label text="{resourceManager.getString('default','global.lbl.rolesaccess')}" verticalAlign="middle" fontWeight="bold"/> 
+		<mx:AdvancedDataGrid id="adg1" width="100%" height="100%"
+							 change="si=adg1.selectedIndex" sort="adg1_sortHandler(event)"
+							 sortableColumns="true" sortExpertMode="true">
+			<mx:dataProvider>
+				<mx:HierarchicalData id="hd" source="{secureArr}" childrenField="modules"/>
+			</mx:dataProvider>        
+			<mx:columns>
+				<mx:AdvancedDataGridColumn dataField="object_text" headerText="{resourceManager.getString('default','datagrid.headercaption.menuitems')}"/>
+				<mx:AdvancedDataGridColumn width="70" headerText="{resourceManager.getString('default','datagrid.headercaption.view')}" dataField="priv_view" itemRenderer="renderers.RoleAccessCheck"/>
+				<mx:AdvancedDataGridColumn width="70" headerText="{resourceManager.getString('default','datagrid.headercaption.update')}" dataField="priv_update" itemRenderer="renderers.RoleAccessCheck"/>
+				<mx:AdvancedDataGridColumn width="70" headerText="{resourceManager.getString('default','datagrid.headercaption.create')}" dataField="priv_create" itemRenderer="renderers.RoleAccessCheck"/>
+				<mx:AdvancedDataGridColumn width="70" headerText="{resourceManager.getString('default','datagrid.headercaption.delete')}" dataField="priv_delete" itemRenderer="renderers.RoleAccessCheck"/>
+				<mx:AdvancedDataGridColumn width="70" headerText="{resourceManager.getString('default','datagrid.headercaption.password')}" dataField="priv_protect" itemRenderer="renderers.RoleAccessCheck"/>
+				<!--<mx:AdvancedDataGridColumn width="40" headerText="" dataField="needsCGI"/>-->
+			</mx:columns>
+		</mx:AdvancedDataGrid>
+		<s:HGroup id="actionBar" width="100%">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button label="{resourceManager.getString('default','DELETE')}" type="delete" click="delete_clickHandler(event)" enabled="{dataGrid.selectedItem.ROLE_CODE > 'R000009'}"/>
+			<components:DKI_Button id="btn_copy" label="{resourceManager.getString('default','COPYROLE')}" type="report" click="copy_clickHandler(event)" enabled="{canUpdate}"/>
+			<!-- components:DKI_Button id="btn_save" label="{resourceManager.getString('default','SAVE')}" type="save" click="save_clickHandler()" enabled="{canUpdate}"/-->
+			<components:DKI_Button id="btn_save" label="{resourceManager.getString('default','SAVE')}" type="save" enabled="{canUpdate}"/>
+			<components:DKI_Button label="{resourceManager.getString('default','CANCEL')}" type="cancel" click="cancel_clickHandler(event)"/>
+		</s:HGroup>
+	</s:Panel>
+</s:VGroup>

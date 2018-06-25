@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:components="components.*" width="100%" height="100%" creationComplete="init()">
+	<fx:Script>
+		<![CDATA[
+
+			//----------------------------------------------------------
+			//START of Part 1: Initialization and declarations stage
+			//----------------------------------------------------------
+			
+			import mx.controls.Alert;
+			
+			//If relative doesn't work, try absolute path. Might differ between localhost home setup and production server.
+			private const UPLOAD_URL:String='uploadFile.php';
+			private var fileReference:FileReference;
+			
+			//Handler for the application or component (etc) initialize event.
+			private function init():void
+			{
+				initializeFileReference();
+			}
+			//Instantiates fileReference variable and adds listeners.
+			private function initializeFileReference():void
+			{
+				fileReference=new FileReference();
+				fileReference.addEventListener(Event.SELECT,fileSelectHandler);//Dispatched when user selects a file from Dialog Box.
+				fileReference.addEventListener(Event.CANCEL,fileCancelHandler);//Dispatched when user dismisses the Dialog Box.
+				fileReference.addEventListener(HTTPStatusEvent.HTTP_STATUS,fileErrorHandler);//HTTP Error
+				fileReference.addEventListener(IOErrorEvent.IO_ERROR,fileErrorHandler);//IO Error
+				fileReference.addEventListener(SecurityErrorEvent.SECURITY_ERROR,fileErrorHandler);//Security Sandbox Error
+				fileReference.addEventListener(ProgressEvent.PROGRESS,fileProgressHandler);//Upload Progress
+				fileReference.addEventListener(Event.COMPLETE,fileCompleteHandler);//Dispatches when the file upload operation completes successfully 
+				fileReference.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA,fileDataCompleteHandler);//Dispatched when data has been received from the server after a successful upload.
+			}
+			//Set fileReference to NULL and removes listeners.
+			private function killFileReference():void
+			{
+				fileReference.removeEventListener(Event.SELECT,fileSelectHandler);
+				fileReference.removeEventListener(Event.CANCEL,fileCancelHandler);
+				fileReference.removeEventListener(HTTPStatusEvent.HTTP_STATUS,fileErrorHandler);
+				fileReference.removeEventListener(IOErrorEvent.IO_ERROR,fileErrorHandler);
+				fileReference.removeEventListener(SecurityErrorEvent.SECURITY_ERROR,fileErrorHandler);
+				fileReference.removeEventListener(ProgressEvent.PROGRESS,fileProgressHandler);
+				fileReference.removeEventListener(Event.COMPLETE,fileCompleteHandler); 
+				fileReference.removeEventListener(DataEvent.UPLOAD_COMPLETE_DATA,fileDataCompleteHandler);
+				fileReference=null;
+			}
+			
+			//----------------------------------------------------------
+			//END of Part 1: Initialization and declarations stage
+			//----------------------------------------------------------
+			
+			
+			//----------------------------------------------------------
+			//START of Part 2: File Selection
+			//----------------------------------------------------------
+			
+			//Called upon pressing the select file button (bttSelectFile click handler).
+			private function selectFile():void
+			{
+				//Try to open the browse window.
+				//try
+				{
+					//I disable the browse button after it's been clicked, I will enable it later. [OPTIONAL]
+					bttSelectFile.enabled=false;
+					//Limit the files the user can select.
+					fileReference.browse(getTypes());
+					//fileReference.browse();
+				}
+				//catch(e:Error){trace(e);bttSelectFile.enabled=true;Alert.show("Cannot browse for files.","Error");}
+			}
+			private function getTypes():Array
+			{
+				//Return an array of selectable file extensions (not MIME Types).
+				var allTypes:Array=new Array(getImageTypeFilter());
+				return allTypes;
+			}
+			private function getImageTypeFilter():FileFilter
+			{
+				//Limit selection to files with the jpg or jpeg extensions.
+				return new FileFilter("Images(*.jpg, *.png, *.gif)","*.jpg;*.png;*.gif");
+			}
+			//Called after file was selected.
+			private function fileSelectHandler(event:Event):void
+			{
+				//Re-enable the bttSelectFile button in case the user wants to select a different file. [OPTIONAL]
+				bttSelectFile.enabled=true;
+				//Change the label of the button to match the select file name. [OPTIONAL]
+				bttSelectFile.label=fileReference.name;
+			}
+			//Called if user dismisses the browse window (Cancel button, ESC key or Close option)
+			private function fileCancelHandler(event:Event):void
+			{
+				//Enable the button so he is able to re-open the browse window. [OPTIONAL]
+				bttSelectFile.enabled=true;
+			}
+			//----------------------------------------------------------
+			//END of Part 2: File Selection
+			//----------------------------------------------------------
+			
+			
+			//----------------------------------------------------------
+			//START of Part 3: File Upload
+			//----------------------------------------------------------
+			
+			//Function to validate that a file was selected and eventually other fields in the form as well.
+			private function valid():Boolean
+			{
+				var result:Boolean=true;
+				if(fileReference==null)
+				{
+					result=false;
+					//I set the errorString for the button. You can give user feedback anyway you want though.
+					bttSelectFile.errorString='You have not selected a file.';
+				}
+				//Other validation criteria
+				return result;
+			}
+			//Called after the upload button (bttUpload) is pressed.
+			private function upload():void
+			{
+				if(valid())
+				{
+					//Disable the submit button to avoid multi-submit.
+					bttUpload.enabled=false;
+					//Call the upload funcion.
+					startUpload();
+				}
+			}
+			//Starts the upload process.
+			private function startUpload():void
+			{
+				try
+				{
+					//Try to upload. myPicture will be the name of the FILE variable in PHP, e.g. $_FILE['myPicture'].
+					fileReference.upload(new URLRequest(UPLOAD_URL),"upfile");
+				}
+				catch(e:Error)
+				{
+					//Zero-byte file error.
+					Alert.show("Zero-byte file selected.","Error");
+				}
+			}
+			//I hadle errors in this example with a single function.
+			//It's better to have a different function to handle each of the 3 possible errors.
+			//Security Sandbox, IOError or HTTPStatus
+			private function fileErrorHandler(event:Event):void
+			{
+				Alert.show("File upload failed.","Error");
+				//For debugging you should see the entire error dump.
+				Alert.show(event.toString());
+			}
+			//Set ProgressBar progress to match upload progress
+			private function fileProgressHandler(event:ProgressEvent):void
+			{
+				//Calculate percentage uploaded.
+				var percentage:uint= Math.round(event.bytesLoaded*100/event.bytesTotal);
+				//Set progressBar progress.
+				progressBar.setProgress(percentage,100);
+				//Update progressBar label.
+				progressBar.label=percentage+'%';
+				
+				this.progressIndicator.values(event.bytesLoaded, event.bytesTotal);
+				
+			}
+			//Called when file was sucessfully copied to the server.
+			//Upload not over yet though, PHP still has to confirm it did its part.
+			private function fileCompleteHandler(event:Event):void
+			{
+				//Enable bttSelectFile. [OPTIONAL]
+				bttSelectFile.enabled=true;
+			}
+			//Called when the PHP upload file specified in the UPLOAD_URL constant provides an "answer".
+			private function fileDataCompleteHandler(event:DataEvent):void
+			{
+				bttUpload.enabled = true;
+				//I print (or echo) a number in PHP based on what happened
+				//3 = file is not JPG MIME Type check
+				//0 = move_uploaded_file function failed
+				//else = return the filename. I set PHP to rename the file and if all is good, it will return the name of the newly uploaded file.
+				var response:String=event.data;
+				var arr:Array = response.split(":::");
+				
+				if ( arr[0] == '0' )
+				{
+					Alert.show(arr[1], "Success");
+				}
+				else
+				{
+					Alert.show(arr[1], "Error");
+				}
+				/*
+				if(response=='3'){Alert.show("Selected file is not a JPG.","Error");}
+				else if(response=='0'){Alert.show("File upload failed.","Error");}
+				else
+				{
+					//Do whatever you want, upload process completed successfully.
+					//Maybe insert into database?
+				}*/
+			}
+			//----------------------------------------------------------
+			//END of Part 3: File Upload
+			//----------------------------------------------------------			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:HGroup>
+		<!-- Will open the browse window. -->
+		<components:DKI_Button id="bttSelectFile" label="Select File" type="report" height="100%" click="selectFile()"/>
+		<!-- Will validate and start the upload process. -->
+		<components:DKI_Button id="bttUpload" label="Upload File" type="save" height="100%" click="upload()"/>
+		<!-- Shows upload progress after it starts. -->
+		<mx:ProgressBar id="progressBar" labelPlacement="center" label="0%" width="300" height="100%"
+						horizontalCenter="0" verticalCenter="0" alpha="1" visible="false" includeInLayout="false"
+						minimum="0" maximum="100" indeterminate="false" mode="manual"/>
+		<components:Downloader id="progressIndicator" width="300" height="100%"/>
+		
+	</s:HGroup>
+</s:Group>

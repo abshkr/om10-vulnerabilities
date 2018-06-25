@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:fb="http://ns.adobe.com/flashbuilder/2009" alpha.disabled="0.5" xmlns:mx="library://ns.adobe.com/flex/mx">
+
+    <fx:Metadata>
+    <![CDATA[ 
+        [HostComponent("components.WidgetPanel")]
+    ]]>
+    </fx:Metadata> 
+	
+	<fx:Declarations>
+		<s:DropShadowFilter id="drop" blurX="6" blurY="6" distance="4" strength="1.8" color="0x222222" alpha="0.6"/>
+	</fx:Declarations>
+    
+    <fx:Script>
+        <![CDATA[ 
+			import events.ArrEvent;
+			[Bindable] private var corner:int = 8;
+			
+             override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number) : void
+            {
+                super.updateDisplayList(unscaledWidth, unscaledHeight);
+            }
+
+			protected function header_clickHandler(event:MouseEvent):void
+			{
+				// Do not need to call this function, because it will be triggered by 'click' event in its hostComponent. Otherwise this function will be run twice.
+				//hostComponent.showWindow();
+			}
+
+        ]]>        
+    </fx:Script>
+    
+    <s:states>
+        <s:State name="normal" />
+        <s:State name="disabled" />
+		<s:State name="disabledWithControlBar"/>
+		<s:State name="normalWithControlBar"/>
+    </s:states>
+
+	<s:Group id="background" left="0" right="0" top="0" bottom="0" buttonMode="true" 
+			 mouseEnabledWhereTransparent="true" click="header_clickHandler(event)">
+		<s:Rect left="0" right="0" top="0" bottom="0" filters="{drop}" alpha="{global.OMLITE?0.7:1}" 
+				topLeftRadiusX="{corner}" topLeftRadiusY="{corner}" topRightRadiusX="{corner}" topRightRadiusY="{corner}"
+				bottomLeftRadiusX="{corner}" bottomLeftRadiusY="{corner}" bottomRightRadiusX="{corner}" bottomRightRadiusY="{corner}">
+			<s:fill>
+				<s:LinearGradient rotation="60">
+					<s:GradientEntry color="0xFFFFFF"/>
+					<s:GradientEntry color="0xCCCCCC"/>
+					<s:GradientEntry color="0xFFFFFF"/>
+					<s:GradientEntry color="0xCCCCCC"/>
+				</s:LinearGradient>				
+			</s:fill>
+		</s:Rect>		
+	</s:Group>
+
+	<s:Rect id="border" left="0" top="0" right="0" bottom="0"
+			topLeftRadiusX="{corner}" topLeftRadiusY="{corner}" topRightRadiusX="{corner}" topRightRadiusY="{corner}"
+			bottomLeftRadiusX="{corner}" bottomLeftRadiusY="{corner}" bottomRightRadiusX="{corner}" bottomRightRadiusY="{corner}">
+		<s:stroke>
+			<s:SolidColorStroke weight="1" color="0xAAAAAA" alpha="0.75"/>
+		</s:stroke>
+	</s:Rect>	
+
+	<mx:HRule top="25" left="1" right="1" alpha="0.6"/>
+	
+	<s:HGroup id="header" left="10" right="5" top="2" height="24" gap="5">
+		<s:Label id="titleDisplay" maxDisplayedLines="1" height="100%" verticalAlign="middle" fontWeight="bold" useHandCursor="true" buttonMode="true"/>
+	</s:HGroup>
+ 
+	<s:Group id="contentGroup" left="5" right="5" top="25" bottom="5" minWidth="0" minHeight="0">
+        <s:layout>
+            <s:BasicLayout/>
+        </s:layout>
+    </s:Group>
+</s:Skin>

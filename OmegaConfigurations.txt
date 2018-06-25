@@ -1,0 +1,508 @@
+
+1. Grid Columns Configuration
+
+
+1.1 The Core Function in GUI
+	
+	In GUI\src folder, there is a file global.as, in which the following function is defined:
+		
+		public static function adjustGridColumnSequence( settings:String, grid:DataGrid ):void
+		
+	What this function does is to adjust the visibility and sequence of columns according to the settings defined in a PHP file PHP\amfservices\core\services\ScreenGridColumnService.php
+
+	
+1.2 The Core File in Back End
+
+	In the file PHP\amfservices\core\services\ScreenGridColumnService.php, the configuration looks like this:
+	
+		if ( $screen == "OPEN_ORDER" )
+		{
+			...
+			$str .= "|0,order_ttyp_id";
+			$str .= "|0,order_ttyp_name";
+			$str .= "|0,order_stat_id";
+			$str .= "|1,order_stat_name";
+			$str .= "|1,order_ord_time,DateTimeRenderer";
+			$str .= "|1,order_exp_time,DateTimeRenderer";
+			$str .= "|1,order_last_change";
+			$str .= "|0,order_styp_id";
+			...
+		}
+		
+	The format is: 
+		if ( $screen == "{Screen code}" )
+		{
+			...
+			$str .= "|{flag of visibility, 0:hidden; 1:show},{the code of 1st column},{the renderer of 1st column if there is}";
+			$str .= "|{flag of visibility, 0:hidden; 1:show},{the code of 2nd column},{the renderer of 1st column if there is}";
+			...
+			$str .= "|{flag of visibility, 0:hidden; 1:show},{the code of Nth column},{the renderer of Nth column if there is}";
+			...
+		}
+	
+	Note: The screen code, column code and renderer name must match with what is defined in GUI mxml files
+
+	
+1.3 How it works
+
+	When a screen opens, after every component is constructed, system will call the data service to get the grid column settings for this screen. If cannot find the settings by this screen code, do not need to adjust; if found, adjust the visibilty and the sequence of columns
+	
+	If there are following lines in mxml file, it means this screen has this capability already, you just need to create or update the settings in above PHP file under a particular screen code.
+	
+			private var gridColumnSequenceMaker:remoteDataService = new remoteDataService( "ScreenGridColumnService.lookupGridColumnSequence", null, gridColumnSequenceMaker_resultHandler, 1 );
+			private var _gridColumnSequenceString:String="";
+			...
+							this.gridColumnSequenceMaker.service( "ADDRESSES" );
+			...
+			protected function gridColumnSequenceMaker_resultHandler():void
+			{
+				this._gridColumnSequenceString =  gridColumnSequenceMaker.dataString;
+				
+				if ( _gridColumnSequenceString.length > 0 )
+				{
+					global.adjustGridColumnSequence( _gridColumnSequenceString.substr(1), dataGrid );
+				}
+			}
+	
+	The following is the list of screens having this capability:
+		v_Addresses.mxml
+			164: this.gridColumnSequenceMaker.service( "ADDRESSES" );  
+		v_Allocations.mxml
+			165: this.gridColumnSequenceMaker.service( "ALLOCATION" );  
+		v_Auditing.mxml
+			136: this.gridColumnSequenceMaker.service( "AUDITING" );  
+		v_BaseProducts.mxml
+			171: this.gridColumnSequenceMaker.service( "BASE_PRODUCTS" );  
+		v_CompanyRelation.mxml
+			140: this.gridColumnSequenceMaker.service( "COMPANY_RELATION" );  
+		v_ComplianceMessageGroups.mxml
+			138: this.gridColumnSequenceMaker.service( "PARTNERSHIP" );  
+		v_ComplianceMessages.mxml
+			138: this.gridColumnSequenceMaker.service( "COMPLIANCE_MESSAGES" );  
+		v_CustomerCategories.mxml
+			141: this.gridColumnSequenceMaker.service( "CUSTOMER_CATEGORIES" );  
+		v_Customers.mxml
+			161: this.gridColumnSequenceMaker.service( "CUSTOMERS" );  
+		v_DangerousGoods.mxml
+			135: this.gridColumnSequenceMaker.service( "DANGEROUSGOODS" );  
+		v_DddAdditionalInfo.mxml
+			133: this.gridColumnSequenceMaker.service( "DDD_ADDITIONAL_INFO" );  
+		v_DdiAdditionalInfo.mxml
+			133: this.gridColumnSequenceMaker.service( "DDI_ADDITIONAL_INFO" );  
+		v_DeliveryDetails.mxml
+			182: this.gridColumnSequenceMaker.service( "DELIVERYDETAILS" );  
+		v_DeliveryLocations.mxml
+			157: this.gridColumnSequenceMaker.service( "DELIVERY_LOCATIONS" );  
+		v_DorHistory.mxml
+			136: this.gridColumnSequenceMaker.service( "DOR_HISTORY" );  
+		v_DrawerProducts.mxml
+			181: this.gridColumnSequenceMaker.service( "DRAWER_PRODUCTS" );  
+		v_EquipmentList.mxml
+			115: this.gridColumnSequenceMaker.service( "EQUIPMENT_LIST" );  
+		v_ExpiryDateDetails.mxml
+			152: this.gridColumnSequenceMaker.service( "EXPIRY_DATE_DETAILS" );  
+		v_GatePermissions.mxml
+			173: this.gridColumnSequenceMaker.service( "GATEPERMISSIONS" );  
+		v_GenericExpiryDates.mxml
+			144: this.gridColumnSequenceMaker.service( "GENERIC_EXPIRY_DATE" );  
+		v_GenericProducts.mxml
+			113: this.gridColumnSequenceMaker.service( "GENERICPRODUCT" );  
+		v_HazChem.mxml
+			135: this.gridColumnSequenceMaker.service( "HAZCHEM" );  
+		v_IdentificationAssignment.mxml
+			127: this.gridColumnSequenceMaker.service( "ID_ASSIGNMENT" );  
+		v_LegacyExpiryDates.mxml
+			133: this.gridColumnSequenceMaker.service( "LEGACY_EXPIRY_DATE" );  
+		v_LoadMeters.mxml
+			147: this.gridColumnSequenceMaker.service( "LOAD_METERS" );  
+		v_OrderListing.mxml (2 matches)
+			224: this.gridColumnSequenceMaker.service( "OPEN_ORDER" );  
+		v_Partners.mxml
+			147: this.gridColumnSequenceMaker.service( "PARTNERS" );  
+		v_Partnership.mxml
+			138: this.gridColumnSequenceMaker.service( "PARTNERSHIP" );  
+		v_Personnel.mxml
+			292: this.gridColumnSequenceMaker.service( "PERSONNEL" );  
+		v_ProductGroups.mxml
+			139: this.gridColumnSequenceMaker.service( "PRODUCT_GROUPS" );  
+		v_ReportConfig.mxml
+			137: this.gridColumnSequenceMaker.service( "REPORTCOMPANY" );  
+		v_ReportProfile.mxml
+			146: this.gridColumnSequenceMaker.service( "REPORTPROFILE" );  
+		v_SiteAccessDevices.mxml
+			132: this.gridColumnSequenceMaker.service( "SITEACCESSDEVICES" );  
+		v_TankConfiguration.mxml
+			174: this.gridColumnSequenceMaker.service( "TANKCONFIGURATION" );  
+		v_Tankers.mxml
+			107: this.gridColumnSequenceMaker.service( "TANKER_LIST" );  
+		v_TankGroup.mxml
+			156: this.gridColumnSequenceMaker.service( "TANK_GROUP" );  
+		v_TankStatus.mxml
+			249: this.gridColumnSequenceMaker.service( "TANK_STATUS" );  
+		v_TankStraps.mxml
+			151: this.gridColumnSequenceMaker.service( "TANK_STRAPS" );  
+		v_TransactionList.mxml
+			132: this.gridColumnSequenceMaker.service( "TRANSACTION_LIST" );  	
+	
+	In above list, screen Report Profile 'REPORTPROFILE' does not have settings yet in PHP, so you can define:
+		if ( $screen == "REPORTPROFILE" )
+		{
+			$str .= "|1,coloum1";
+			$str .= "|1,column2";
+			...
+		}
+	You can find the column code from 'GridColumn' component under 'dataGrid' section in v_ReportProfile.mxml
+
+	Note: If you define the settings for a screen, make sure all of grid columns in mxml are listed, because the column not listed will not appear in GUI.
+	
+
+	
+2. Form Columns Configuration
+
+
+2.1 The Core Function in GUI
+	
+	In GUI\src folder, there is a file global.as, in which the following function is defined:
+		
+		public static function adjustFormFieldSettings(settings:String, form:*):void
+		
+	What this function does is to adjust the validation type, maximum length allowed, data time style, visibility and required flag of form fields according to the settings defined in a PHP file PHP\amfservices\core\services\ScreenFormColumnService.php
+
+	
+2.2 The Core File in Back End
+
+	In the file PHP\amfservices\core\services\ScreenFormColumnService.php, the configuration looks like this:
+	
+		if ( $screen == "TANKER_LIST" )
+		{
+			$str .= "|tnkr_code,document,40";
+			$str .= "|tnkr_name,document,40";
+			$str .= "|remarks,document,800";
+			$str .= "|tnkr_lic_exp,TBD,0,1";
+			$str .= "|tnkr_dglic_exp,TBD,0,1";
+			$str .= "|tnkr_ins_exp,TBD,0,1";
+		}
+		
+	The format is: 
+		if ( $screen == "{Screen code}" )
+		{
+			...
+			$str .= "|{the code of NON-DATETIME field},{validaion type},{maximum length allowed},{visibility&requied flag}";
+			$str .= "|{the code of DATETIME field},TBD,{time enabled?},{NULL enabled?}";
+			...
+		}
+	
+	There are two different fields, one is Date Time field, another is not.
+	
+	For a Date Time field, we can control if its time section visible and editble or if its clear button shows to Null the date time value.
+	
+	For a non-DateTime field, validation types can be selected from:
+			alpha,alphanumeric,alphanumericsinglequotation,alphanumericslash,alphanumericslashbrackets,alphanumericmost,alphanumericspecial,alphanumericspecial_nosq,alphanumericdot,alphanumeric_multilingual,baycode,color_value,currency,document,email,integer,integer_nonzero,integer_negative,integer_non_negative,integer_positive,integer_non_positive,numeric,numeric_negative,numeric_positive,numeric_non_negative,numeric_non_positive,password_low,password_medium,password_high,search
+	However, you still to make sure the validation type you chose match with its variable type in DB definition, so is its max length.
+	
+	Note: The screen code, field code must match with what is defined in GUI mxml files.
+	
+	In some screens, there might be further configurations for a grid component in the form, such as:
+		if ( $screen == "ADDRESSES" )
+		{
+			$str .= "|address_code,document,40";
+			/*
+			1	STREET
+			2	CITY1
+			3	CITY2
+			4	DISTRICT
+			5	POSTAL_CODE
+			6	STATE
+			7	COUNTRY
+			8	TEL
+			9	NAME
+			10	EMAIL
+			11	FAX
+			12	TEMPL_ID
+			*/
+//grid id#target column code#condition column code:condition value, validation type, max length
+			$str .= "|addressLineGrid#db_addr_line#db_addr_line_type:1,document,210";
+			$str .= "|addressLineGrid#db_addr_line#db_addr_line_type:2,document,210";
+			$str .= "|addressLineGrid#db_addr_line#db_addr_line_type:3,document,210";
+			$str .= "|addressLineGrid#db_addr_line#db_addr_line_type:4,document,210";
+			$str .= "|addressLineGrid#db_addr_line#db_addr_line_type:5,numeric,9";
+			$str .= "|addressLineGrid#db_addr_line#db_addr_line_type:6,document,210";
+			$str .= "|addressLineGrid#db_addr_line#db_addr_line_type:7,document,210";
+			$str .= "|addressLineGrid#db_addr_line#db_addr_line_type:8,document,25";
+			$str .= "|addressLineGrid#db_addr_line#db_addr_line_type:9,document,210";
+			$str .= "|addressLineGrid#db_addr_line#db_addr_line_type:10,email,50";
+			$str .= "|addressLineGrid#db_addr_line#db_addr_line_type:11,document,25";
+			$str .= "|addressLineGrid#db_addr_line#db_addr_line_type:12,document,210";
+		}
+	
+	The format is:
+			$str .= "|{grid id}#{target column code}#{condition column code}:{condition value[TBD=no condition]},{validation type},{max length},{flags [1:optional and editable; 2:not optional and not editable; 3:not optional and editable]}";
+	
+	
+2.3 How it works
+
+	When a screen opens, after every component is constructed, system will call the data service to get the form field settings, including its sub-grid-component settings. When user opens a form to create or edit a record, system will adjust the form fields according to the settings if there is any.
+	
+	If there are following lines in mxml file, it means this screen has this capability already, you just need to create or update the settings in above PHP file under a particular screen code.
+	
+			private var formColumnSettingsMaker:remoteDataService = new remoteDataService( "ScreenFormColumnService.lookupFormColumnSettings", null, formColumnSettingsMaker_resultHandler, 1 );
+			private var _formColumnSettingsString:String="";
+			...
+				this.formColumnSettingsMaker.service( "ADDRESSES" );
+			...
+			protected function formColumnSettingsMaker_resultHandler():void
+			{
+				this._formColumnSettingsString =  formColumnSettingsMaker.dataString;
+				// this is optional, available when there is a grid component in a form
+				this.addressLineSettings = global.adjustFormGridSettings( this._formColumnSettingsString );
+			}
+			...
+					if ( _formColumnSettingsString.length > 0 )
+					{
+						global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+					}
+	
+	The following is the list of screens having this capability:
+		v_Addresses.mxml
+			158: this.formColumnSettingsMaker.service( "ADDRESSES" );  
+		v_Auditing.mxml
+			132: this.formColumnSettingsMaker.service( "AUDITING" );  
+		v_BaseProducts.mxml
+			164: this.formColumnSettingsMaker.service( "BASE_PRODUCTS" );  
+		v_Companies.mxml
+			95: this.formColumnSettingsMaker.service( "COMPANIES" );  
+		v_ComplianceMessages.mxml
+			133: this.formColumnSettingsMaker.service( "COMPLIANCE_MESSAGES" );  
+		v_CustomerCategories.mxml
+			135: this.formColumnSettingsMaker.service( "CUSTOMER_CATEGORIES" );  
+		v_Customers.mxml
+			155: this.formColumnSettingsMaker.service( "CUSTOMERS" );  
+		v_DangerousGoods.mxml
+			129: this.formColumnSettingsMaker.service( "DANGEROUSGOODS" );  
+		v_DeliveryDetails.mxml
+			176: this.formColumnSettingsMaker.service( "DELIVERYDETAILS" );  
+		v_DeliveryLocations.mxml
+			151: this.formColumnSettingsMaker.service( "DELIVERY_LOCATIONS" );  
+		v_DrawerProducts.mxml
+			174: this.formColumnSettingsMaker.service( "DRAWER_PRODUCTS" );  
+		v_EquipmentList.mxml
+			108: this.formColumnSettingsMaker.service( "EQUIPMENT_LIST" );  
+		v_EquipmentTypes.mxml
+			102: this.formColumnSettingsMaker.service( "EQUIPMENT_TYPES" );  
+		v_ExpiryDateDetails.mxml
+			146: this.formColumnSettingsMaker.service( "EXPIRY_DATE_DETAILS" );  
+		v_HazChem.mxml
+			129: this.formColumnSettingsMaker.service( "HAZCHEM" );  
+		v_LoadMeters.mxml
+			141: this.formColumnSettingsMaker.service( "LOAD_METERS" );  
+		v_OrderListing.mxml
+			219: this.formColumnSettingsMaker.service( "OPEN_ORDER" );  
+		v_Partners.mxml
+			143: this.formColumnSettingsMaker.service( "PARTNERS" );  
+		v_Personnel.mxml
+			290: this.formColumnSettingsMaker.service( "PERSONNEL" );  
+		v_ProductGroups.mxml
+			134: this.formColumnSettingsMaker.service( "PRODUCT_GROUPS" );  
+		v_ReportConfig.mxml
+			131: this.formColumnSettingsMaker.service( "REPORTCOMPANY" );  
+		v_ReportProfile.mxml
+			140: this.formColumnSettingsMaker.service( "REPORTPROFILE" );  
+		v_TankConfiguration.mxml
+			167: this.formColumnSettingsMaker.service( "TANK_CONFIGURATION" );  
+		v_Tankers.mxml
+			105: this.formColumnSettingsMaker.service( "TANKER_LIST" );  
+		v_TankGroup.mxml
+			149: this.formColumnSettingsMaker.service( "TANK_GROUP" );  
+		v_TankStatus.mxml
+			240: this.formColumnSettingsMaker.service( "TANK_STATUS" );  
+		v_TankStraps.mxml
+			146: this.formColumnSettingsMaker.service( "TANK_STRAPS" );  
+	
+	Note: The fields not in the settings will behave as default define in mxml files. 
+	
+
+	
+3. Form Buttons Configuration
+
+
+3.1 The Core Function in GUI
+	
+	In GUI\src folder, there is a file global.as, in which the following function is defined:
+		
+		public static function adjustFormButtonSettings(settings:String, form:*):void
+		
+	What this function does is to adjust the visibility of form buttons and related fields according to the settings defined in a PHP file PHP\amfservices\core\services\ScreenFormButtonService.php
+
+	
+3.2 The Core File in Back End
+
+	In the file PHP\amfservices\core\services\ScreenFormButtonService.php, the configuration looks like this:
+	
+		
+		if ( $screen == "TANK_STATUS" )
+		{
+			// need tutn on when strapping data management is enabled
+			$str .= "|btn_tankstrap,1";
+			$str .= "|btn_recalcLevel,1";
+			
+			// need tutn on when API/std density management is enabled
+			$str .= "|btn_recalcDensity,1";
+			$str .= "|fld__tank_15_density,1";
+			$str .= "|fld__tank_api,1";
+			...
+		}
+		
+	The format is: 
+		if ( $screen == "{Screen code}" )
+		{
+			...
+			$str .= "|{the code of button},{visibility}";
+			$str .= "|{the code of field},{visibility}";
+			...
+		}
+	
+	The field usally includes a label and an editable component.
+	
+	Note: The screen code, field code and button code must match with what is defined in GUI mxml files.
+	
+	
+3.3 How it works
+
+	When a screen opens, after every component is constructed, system will call the data service to get the form button settings, including its related field settings. When user opens a form to create or edit a record, system will adjust the form buttons according to the settings if there is any.
+	
+	If there are following lines in mxml file, it means this screen has this capability already, you just need to create or update the settings in above PHP file under a particular screen code.
+	
+			private var formButtonSettingsMaker:remoteDataService = new remoteDataService( "ScreenFormButtonService.lookupFormButtonSettings", null, formButtonSettingsMaker_resultHandler, 1 );
+			private var _formButtonSettingsString:String="";
+			...
+				this.formButtonSettingsMaker.service( "TANK_CONFIGURATION" );
+			...
+			
+			protected function formButtonSettingsMaker_resultHandler():void
+			{
+				this._formButtonSettingsString =  formButtonSettingsMaker.dataString;
+			}
+			...
+					if ( _formButtonSettingsString.length > 0 )
+					{
+						global.adjustFormButtonSettings( _formButtonSettingsString.substr(1), this );
+					}
+	
+	The following is the list of screens having this capability:
+		v_BaseProducts.mxml
+			165: this.formButtonSettingsMaker.service( "BASE_PRODUCTS" );  
+		v_ComplianceMessages.mxml
+			134: this.formButtonSettingsMaker.service( "COMPLIANCE_MESSAGES" );  
+		v_DrawerProducts.mxml
+			175: this.formButtonSettingsMaker.service( "DRAWER_PRODUCTS" );  
+		v_LoadSchedules.mxml
+			334: this.formButtonSettingsMaker.service( "LOAD_SCHEDULE" );  
+		v_OnsiteReport.mxml
+			58: this.formButtonSettingsMaker.service( "ONSITE_REPORT" );  
+		v_OrderListing.mxml
+			220: this.formButtonSettingsMaker.service( "OPEN_ORDER" );  
+		v_ProductGroups.mxml
+			135: this.formButtonSettingsMaker.service( "PRODUCT_GROUPS" );  
+		v_TankConfiguration.mxml
+			168: this.formButtonSettingsMaker.service( "TANK_CONFIGURATION" );  
+		v_TankGroup.mxml
+			150: this.formButtonSettingsMaker.service( "TANK_GROUP" );  
+		v_TankStatus.mxml
+			241: this.formButtonSettingsMaker.service( "TANK_STATUS" );  
+		v_TankStraps.mxml
+			147: this.formButtonSettingsMaker.service( "TANK_STRAPS" );  
+	
+	Note: The buttons not in the settings will behave as default define in mxml files. 
+			
+
+
+4. How to batch import the data of tankers, equipment and personnel
+
+
+4.1 GUI Configuration for Batch Import
+
+	The Batch Import functions for Tankers, Equipment, and Personnel are embedded in the screen of "Personnel Currently On Site". 
+
+	There are three invisible buttons in this screen: 'Add Personnel in Batch', 'Add Equipment in Batch', and 'Add Tanker in Batch'.
+
+	In normal situations, these buttons are turned off but can become visible by changing the configuration in the file ..\amfservices\core\services\ScreenFormButtonService.php
+
+	In this file, you will find:
+
+			if ( $screen == "ONSITE_REPORT" )
+			{
+				// need tutn on when batch import of personnel is enabled
+				$str .= "|batchPsnl,0";
+				
+				// need tutn on when batch import of equipment is enabled
+				$str .= "|batchEqpt,0";
+				
+				// need tutn on when batch import of tankers is enabled
+				$str .= "|batchTnkr,0";
+			}
+			
+	Change them as:
+			if ( $screen == "ONSITE_REPORT" )
+			{
+				// need tutn on when batch import of personnel is enabled
+				$str .= "|batchPsnl,1";
+				
+				// need tutn on when batch import of equipment is enabled
+				$str .= "|batchEqpt,1";
+				
+				// need tutn on when batch import of tankers is enabled
+				$str .= "|batchTnkr,1";
+			}
+
+	Then re-enter the screen 'Personnel Currently On Site', you will see three buttons beside 'Generate Report'.
+
+	Don't forget to change the configurations back.
+
+
+4.2 Data Format for Batch Import
+
+	Please note: the data of companies and equipment types must exist already before doing batch import of tankers, equipment, and personnel.
+
+	The file that does the Bacth Import is ..\amfservices\core\services\BatchService.php, in which there are three functions:
+		public function createBatchPersonnel()
+		public function createBatchEquipment()
+		public function createBatchTanker()
+		
+	The function createBatchPersonnel will read the personnel records from the file 'List_Personnel.csv' and add them one by one into database.
+
+	The function createBatchEquipment will read the equipment records from the file 'List_Equipment.csv' and add them one by one into database.
+			
+	The function createBatchTanker will read the tanker records from the file 'List_Tanker.csv' and add them one by one into database.
+
+	The user need to put the records into these CSV files in certain formats.
+
+	The file List_Personnel.csv must have the following format:
+	pers,persNm,role,dept,timeCd,persLck,persLcnc,area,cmpy,persExp1,persExp2,persExp3
+	12345,John Smith,8,,AL,N,,9999,0002,15/12/2019,,
+
+	The file List_Equipment.csv must have the following format:
+	Owner,Code,Equipment Code,Equipment Type Name,Actual Safefill Cmpt 1,Actual Safefill Cmpt 2,Actual Safefill Cmpt 3,Actual Safefill Cmpt 4,Actual Safefill Cmpt 5,Actual Safefill Cmpt 6,Actual Safefill Cmpt 7,Actual Safefill Cmpt 8,Area,load type,Equipment Type ID,Expiry Date 1,Expiry Date 2,Expiry Date 3,Actual Capacity Cmpt 1,Actual Capacity Cmpt 2,Actual Capacity Cmpt 3,Actual Capacity Cmpt 4,Actual Capacity Cmpt 5,Actual Capacity Cmpt 6,Actual Capacity Cmpt 7,Actual Capacity Cmpt 8
+	BP,0002,TSTBATCH02,3CMPT TRAILER,12000,11000,9000,,,,,,9999,Bottom,,,,,13000,,9500,,,,,
+	Emerald Carrying - EMMO,98888,ECCPM 130131,BP BDOUBLE,8350,8250,8300,,,,,,9999,Bottom,,,,,,,,,,,,
+
+	The file List_Tanker.csv must have the following format:
+	Base DEPOT,Equipment Type,OWNER ,CARRIER,Carrier Code,Tanker Code,Code,Equipment A,Equipment B,Equipment C,Equipment D,Equipment E,Equipment F,Equipment G,Equipment H,Base Depot Code,Expiry Date,Expiry Date 2,Expiry Date 3
+	BP MACKAY,TANKER 6 COMP,BP Australia,BP Australia,0002,BP/MASTER 1,0002,MASTER 1,,,,,,,,4010,15/01/2020,,
+
+	Please Note: The first line of Column Title is not optional, you must have it; When using Excel to edit data, use Paste as Value always excpet the Date Time values.
+
+
+4.3 When Omega version does not have the above feature
+
+	Sometimes the Omega version is a bit old and does not have the features of Batch Import. We can do the following:
+	
+	a. In /var/www/htdocs/om5000, 
+		cp index.swf index.swf.ori
+		then replace index.swf with the latest version
+	b. In /var/www/htdocs/om5000/modules,
+		cp M_ONSITEREPORT.swf M_ONSITEREPORT.swf.ori
+		then replace M_ONSITEREPORT.swf with the latest version
+	c. Copy the file BatchService.php and ScreenFormButtonService.php to the folder /var/www/htdocs/amfservices/core/services if those two files are not found.
+	d. Clean cache and restart Omega GUI
+	
+

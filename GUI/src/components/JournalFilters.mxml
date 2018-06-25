@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" minHeight="100"
+		 skinClass="skins.WidgetPanelSkin" title="Journal Event Filters" backgroundAlpha="1.0" xmlns:components="components.*" show="onShow(event)">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.FlexEvent;
+
+
+			import mx.managers.PopUpManager;
+			
+			[Bindable] public var filterArr:ArrayCollection = new ArrayCollection();
+			
+			protected function btn_commit_clickHandler(event:MouseEvent):void
+			{
+				dispatchEvent(new CloseEvent(CloseEvent.CLOSE,true, false));
+			}
+			
+			protected function btn_cancel_clickHandler(event:MouseEvent):void{
+				for (var i:int = 0; i < filterArr.length; i++) {
+					filterArr.getItemAt(i).checked = historyEntry[i];
+				}
+				filterArr.refresh();
+				PopUpManager.removePopUp(this);				
+			}
+			
+			
+			var historyEntry:Array = new Array;
+			protected function onShow(event:FlexEvent):void{
+				for (var i:int = 0; i < filterArr.length; i++) {
+					historyEntry[i] = filterArr.getItemAt(i).checked;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<s:VGroup paddingTop="5" paddingLeft="5" paddingBottom="5" paddingRight="5">
+	<s:List id="jnlEventsList" dataProvider="{filterArr}" itemRenderer="renderers.EventSelector" 
+			contentBackgroundAlpha="0" borderVisible="false" useVirtualLayout="false">
+		<s:layout>
+			<s:TileLayout requestedColumnCount="3" horizontalGap="50"/>
+		</s:layout>
+	</s:List>
+	<s:HGroup width="100%">
+		<s:Spacer width="100%"/>
+		<components:DKI_Button id="btn_cancel" label="{resourceManager.getString('default','CANCEL')}" click="btn_cancel_clickHandler(event)" />		
+
+		<components:DKI_Button id="btn_commit" label="{resourceManager.getString('default','OK')}" click="btn_commit_clickHandler(event)"/>
+	</s:HGroup>	
+	</s:VGroup>
+
+</s:Panel>

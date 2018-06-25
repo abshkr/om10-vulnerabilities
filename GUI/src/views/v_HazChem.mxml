@@ -1,0 +1,1018 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  creationComplete="creationCompleteHandler(event)"
+		  gap="2" width="100%" height="100%">
+	
+	<s:states>
+		<s:State name="normal" enterState="this.toolbar.enabled=true"/>
+		<s:State name="widget" enterState="this.toolbar.enabled=true"/>
+		<s:State name="edit" enterState="callLater(function():void{dataGrid.ensureCellIsVisible(idx);});this.toolbar.enabled=false"/>
+		<s:State name="create" enterState="this.toolbar.enabled=false"/>
+		<s:State name="detail" enterState="view_detailsHandler(event);this.toolbar.enabled=false"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.fiber.runtime.lib.DateTimeFunc;
+			
+			import components.ActionDialog;
+			import components.ConfirmDialog;
+			import components.DeleteDialog;
+			import components.ErrorDialog;
+			import components.ExportData;
+			import components.MessageDialog;
+			import components.TransactionsDlg;
+			import components.ViewPopupDlg;
+			
+			import dm.remoteBulkListService;
+			import dm.remoteDataService;
+			import dm.remoteListService;
+			import dm.utils.tools;
+			
+			import flash.events.KeyboardEvent;
+			import flash.globalization.LocaleID;
+			
+			import flashx.textLayout.container.ScrollPolicy;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			
+			
+			public static const MAIN_WINDOW_WIDTH:int = 1500;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable] public var labelWidth:uint = 150;
+			[Bindable] public var labelHeight:uint = 26;
+			[Bindable] public var fieldWidth:uint = 250;
+			[Bindable] public var fieldHeight:uint = 26;
+			[Bindable] public var spaceWidth:uint = 15;
+			[Bindable] public var spaceHeight:uint = 5;
+			
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='hzcf_id';
+			private var currentDirection:String="ASC";
+			
+			private var currentOffset:int=0;
+			private var currentPageSize:int=1000;
+			[Bindable] private var totalLength:int=0;
+			[Bindable] private var currentLength:int=0;
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			//private var currentSorts:Object=new Object();
+			//private var currentOrders:Object=new Object();
+			private var currentSorts:Object={hzcf_id:'ASC'};
+			private var currentOrders:Object={hzcf_id:1};
+			private var currentSortSeq:int=0;
+			
+			
+			private var confirmReport:ActionDialog;
+			private var confirmSave:ActionDialog;
+			private var errorDialog:ErrorDialog;
+			
+			//private var exportContents:String="";
+			private var f:FileReference = new FileReference();
+			
+			
+			//private var getData:Responder = new Responder(getData_resultHandler);
+			
+			//private var pagedRecords:ArrayCollection=new ArrayCollection();
+			//private var pagedRecords:remoteDataService = new remoteDataService( "HazChemService.getPaged", getData, null );
+			[Bindable] private var pagedRecords:remoteListService;
+			
+			private var deleteAction:remoteDataService = new remoteDataService( "HazChemService.delete", null, deleteData_resultHandler, 1 );
+			private var createAction:remoteDataService = new remoteDataService( "HazChemService.create", null, createData_resultHandler, 1 );
+			private var updateAction:remoteDataService = new remoteDataService( "HazChemService.update", null, updateData_resultHandler, 1 );
+			
+			private var hazChemKeyChecker:remoteDataService = new remoteDataService( "HazChemService.isHazChemKeyUsed", null, hazChemKeyChecker_resultHandler, 2 );
+			
+			private var gridColumnSequenceMaker:remoteDataService = new remoteDataService( "ScreenGridColumnService.lookupGridColumnSequence", null, gridColumnSequenceMaker_resultHandler, 1 );
+			private var _gridColumnSequenceString:String="";
+			private var formColumnSettingsMaker:remoteDataService = new remoteDataService( "ScreenFormColumnService.lookupFormColumnSettings", null, formColumnSettingsMaker_resultHandler, 1 );
+			private var _formColumnSettingsString:String="";
+			
+			
+			
+			//private var genData:ExportData = new ExportData();
+			
+			public var mainListSelection:int = -1;
+			private var _saveButtonClicked:Boolean=false;
+
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				this.formColumnSettingsMaker.service( "HAZCHEM" );
+				
+				trace ("-------------start creationCompleteHandler");
+				pagedRecords = new remoteListService( this.dataGrid, "HazChemService.getPaged", null, getPageData_resultHandler );
+				//resourceManager.localeChain = ['zh_CN'];
+				//global.LanguageCode="CHN";
+				this.gridColumnSequenceMaker.service( "HAZCHEM" );
+				
+				
+				var value:String = global.getValueFromSiteConfigSettings( "SITE_AUTO_FILTER_WHEN_OPEN_SCREEN" );
+				if ( value == 'Y' )
+				{
+					this.startFiltering();
+				}
+				else
+				{
+					;
+				}
+				
+				
+				trace ("------------End creationCompleteHandler");
+				
+				
+				//trace("this.grid.scroller1111", this.dataGrid.scroller);
+				//trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+				this.dataGrid.scroller.verticalScrollBar.addEventListener(Event.CHANGE, verticalScrollBarChanged);
+				this.dataGrid.addEventListener(KeyboardEvent.KEY_UP, reportKeyUp);
+				this.dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+					
+			}
+			
+			
+			
+			protected function formColumnSettingsMaker_resultHandler():void
+			{
+				this._formColumnSettingsString =  formColumnSettingsMaker.dataString;
+			}
+			
+			
+			protected function startLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				//this.panel.enabled = false;
+				
+				currentLength=0;
+				currentOffset = 0;
+				
+				//this.exportContents = this.genData.prepExportHeader( dataGrid );
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				this.pb.values(0, 0);
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			protected function endLoadingPages():void
+			{
+				this.btn_create.enabled = this.canCreate;
+				this.btn_export.enabled = true;
+				this.dataGrid.enabled = true;
+				this.toolbar.enabled = true;
+				//this.panel.enabled = true;
+				//this.pb.values(totalCount, totalCount);
+				this.pb.values(pagedRecords.totalCount, pagedRecords.totalCount, true);
+				
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = false;
+				
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				//if ( totalLength > totalCount )
+				if ( pagedRecords.totalLength > pagedRecords.totalCount )
+				{
+					this.resumeBtn.enabled = true;
+				}
+				else
+				{
+					this.resumeBtn.enabled = false;
+				}
+				
+				//this.fltr_hazchem.setFocus();
+				var len:int = this.fltr_hazchem.text.length;
+				this.fltr_hazchem.selectRange(len, len);
+			}
+			
+			protected function exportCsvHandler(event:MouseEvent):void
+			{
+				this.confirmReport = new ActionDialog( doExport, cancelExport, resourceManager.getString('default','CONFIRM_REPORT_CSV') );
+				
+				//this.startLoadingPages();
+			}
+			
+			private function getPageData_resultHandler():void
+			{
+				// if not finished
+				if(pagedRecords.length < pagedRecords.totalCount)
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+				}
+				else
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+					
+					this.endLoadingPages();
+					
+					this.dataGrid.selectedIndex = this.mainListSelection;
+					if ( this.mainListSelection >= 0)
+					{
+						this.dataGrid_selectionChangeHandler(null);
+					}
+					this.mainListSelection = -1;
+					
+				}
+				
+			}
+			
+			
+			public function doExport():void
+			{
+				//genData.prepOther(dataGrid,'hazChemlist.csv', this.pagedRecords);
+				
+				//f.save( this.exportContents, "hazChemlist.csv" );
+				f.save( pagedRecords.exportContents, "hazChemlist.csv" );
+				
+				this.endLoadingPages();
+			}
+			
+			
+			public function cancelExport():void
+			{
+				this.endLoadingPages();
+				
+				//trace( this.exportContents );
+			}
+			
+			public function doNothing():void
+			{
+			}
+			
+			
+			private function verticalScrollBarChanged(event:Event):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function reportKeyUp(event:KeyboardEvent):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				if(event.column.dataField!='prod_items')
+				{
+					var currentRenderer:IGridItemRenderer;
+					var dir:String;
+					
+					if ( global.sortingBySingleColumn == true )
+					{	// sorted by single column only
+						for (var i:int=0; i < dataGrid.columns.length; i++)
+						{
+							currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+							if ( currentRenderer != null)
+							{
+								(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+							}
+							//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+						}
+					}
+					else
+					{	// sorted by multiple columns
+						;
+					}
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if( currentSorts.hasOwnProperty(event.column.dataField ) )
+					{
+						dir = currentSorts[event.column.dataField];
+						if( dir=="ASC" )
+						{
+							dir = "DESC";
+						}
+						else if ( dir == "DESC" )
+						{
+							dir = "";
+						}
+						else if ( dir == "" )
+						{
+							dir = "ASC";
+						}
+						else 
+						{
+							dir = "ASC";
+						}
+						
+						if ( dir != "" )
+						{
+							currentSorts[event.column.dataField] = dir;	
+						}
+						else
+						{
+							delete currentSorts[event.column.dataField];
+							delete currentOrders[event.column.dataField];
+						}
+					}
+					else
+					{
+						if ( global.sortingBySingleColumn == true )
+						{	// sorted by single column only
+							currentSorts = new Object();
+							currentOrders = new Object();
+							currentSortSeq = 0;
+						}
+						else
+						{	// sorted by multiple columns
+							;
+						}
+						currentSorts[event.column.dataField] = "ASC";	
+						dir = currentSorts[event.column.dataField];
+						currentSortSeq += 1;
+						currentOrders[event.column.dataField] = currentSortSeq;	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+					this.startFiltering();
+				}
+			}
+			
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				if(currentState != 'widget')
+				{
+					idx=dataGrid.selectedIndex;
+					//dataGrid.ensureCellIsVisible(idx+11);
+					dataGrid.ensureCellIsVisible(idx);
+					
+					currentState = "edit";					
+					this.btn_save.enabled = this.canUpdate;
+					
+					if ( _formColumnSettingsString.length > 0 )
+					{
+						global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+					}
+				}
+			}
+			
+			protected function cancel_clickHandler():void
+			{
+				clearDetail();
+				if ( currentState== "create" )
+				{
+					dataGrid.enabled=true;
+				}
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+			}			
+			
+			protected function gridColumnSequenceMaker_resultHandler():void
+			{
+				this._gridColumnSequenceString =  gridColumnSequenceMaker.dataString;
+				
+				if ( _gridColumnSequenceString.length > 0 )
+				{
+					global.adjustGridColumnSequence( _gridColumnSequenceString.substr(1), dataGrid );
+				}
+				
+			}
+
+			
+			protected function fltr_hazchem_keyUpHandler(event:KeyboardEvent):void
+			{
+				if ( event.keyCode != 13 )
+				{
+					return;
+				}
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			private function startFiltering():void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				fields = new Object();
+				types = new Object();
+				
+				
+				if(fltr_hazchem.text!='')
+				{					
+					fields["hzcf_id||hzcf_name"] = fltr_hazchem.text+"||"+fltr_hazchem.text;
+				}
+				else
+				{
+					fields["hzcf_id||hzcf_name"] = "";
+				}
+				types["hzcf_id||hzcf_name"] = "STRING||STRING";
+				
+				
+				currentFields = fields;
+				currentTypes = types;
+				
+				this.startLoadingPages();
+				
+				trace("this.grid.scroller3333", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			private function findByPrimaryKey(id:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["hzcf_id"] = id;
+				types["hzcf_id"] = "EXACT_STRING";
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				//this.pagedRecords.service( fields, types, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( fields, types, currentSorts, currentOrders );
+			}
+			
+			protected function filterRecords(event:MouseEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				this.startFiltering();
+			}
+			
+			protected function refreshRecords(event:MouseEvent):void
+			{
+				if ( currentState != "widget" )
+				{
+					currentState = 'normal';
+					dataGrid.enabled=true;
+				}
+				clearDetail();
+				fltr_hazchem.text = "";
+				
+				dataGrid.selectedIndex = -1;
+				currentFilter = null;
+				currentOrder = null;
+				currentFields = new Object();
+				currentTypes = new Object();
+				
+				currentSorts = new Object();
+				currentOrders = new Object();
+				var currentRenderer:IGridItemRenderer;
+				for (var i:int=0; i < dataGrid.columns.length; i++)
+				{
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					if ( currentRenderer != null)
+					{
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+					}
+					//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+				}
+				this.startFiltering();
+				//this.startLoadingPages();
+				trace("this.grid.scroller2222", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			protected function clearDetail(): void
+			{
+				if (currentState != 'widget')
+				{
+				}
+			}			
+			
+			private function editRecord():void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.hzcf_id 			= hzcf_id.text;
+				obj.hzcf_name 			= hzcf_name.text;
+				obj.hzcf_un_num 		= hzcf_un_num.text;
+				obj.hzcf_sub_risk 		= hzcf_sub_risk.text;
+				obj.hzcf_class 			= hzcf_class.text;
+				obj.hzcf_hz_code 		= hzcf_hz_code.text;
+				obj.hzcf_emrg 			= hzcf_emrg.text;
+				obj.hzcf_pack_group 	= hzcf_pack_group.text;
+				obj.hzcf_pack_method 	= hzcf_pack_method.text;
+				
+				
+				updateAction.service( obj );
+			}
+			
+			protected function updateData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.updateAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var id:String;
+				id = hzcf_id.text;
+				
+				currentState="normal";
+				findByPrimaryKey( id );
+
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			private function doDelete(): void
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				
+				/*
+				TODO - is this hazchem used by other records?
+				*/
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				else
+				{
+					var canDelete:DeleteDialog = new DeleteDialog(deleteRecord, hasPassword);
+				}
+			}
+			
+			private function deleteRecord():void
+			{
+				var obj:Object = new Object();
+				
+				obj.hzcf_id 			= hzcf_id.text;
+				obj.hzcf_name 			= hzcf_name.text;
+				obj.hzcf_un_num 		= hzcf_un_num.text;
+				obj.hzcf_sub_risk 		= hzcf_sub_risk.text;
+				obj.hzcf_class 			= hzcf_class.text;
+				obj.hzcf_hz_code 		= hzcf_hz_code.text;
+				obj.hzcf_emrg 			= hzcf_emrg.text;
+				obj.hzcf_pack_group 	= hzcf_pack_group.text;
+				obj.hzcf_pack_method 	= hzcf_pack_method.text;
+				
+				deleteAction.service( obj );
+			}
+			
+			protected function deleteData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.deleteAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+				}
+				
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+			}
+			
+			private function checkHazChemKey():void
+			{
+				var obj:Object=new Object();
+				
+				obj.hzcf_id = this.hzcf_id.text;
+				
+				hazChemKeyChecker.service( obj.hzcf_id );
+			}
+			
+			protected function hazChemKeyChecker_resultHandler( ):void
+			{
+				if ( hazChemKeyChecker.dataInteger > 0 )
+				{
+					global.msgWarning( resourceManager.getString('default','ALERT__HAZCHEM_EXIST') );
+					this.btn_save.enabled = this.canCreate;
+				}
+				else
+				{
+					if ( this._saveButtonClicked == true )
+					{
+						this.createRecord();
+					}
+				}
+				
+				this._saveButtonClicked = false;
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return index;
+			}
+
+			private function createRecord():void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				obj.hzcf_id 			= hzcf_id.text;
+				obj.hzcf_name 			= hzcf_name.text;
+				obj.hzcf_un_num 		= hzcf_un_num.text;
+				obj.hzcf_sub_risk 		= hzcf_sub_risk.text;
+				obj.hzcf_class 			= hzcf_class.text;
+				obj.hzcf_hz_code 		= hzcf_hz_code.text;
+				obj.hzcf_emrg 			= hzcf_emrg.text;
+				obj.hzcf_pack_group 	= hzcf_pack_group.text;
+				obj.hzcf_pack_method 	= hzcf_pack_method.text;
+				
+				createAction.service( obj );
+			}
+			
+			protected function createData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.createAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				}
+				
+				var id:String;
+				id = hzcf_id.text;
+				
+				currentState="normal";
+				findByPrimaryKey( id );
+				
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			protected function createNewRecord(event:MouseEvent):void
+			{	
+				idx=dataGrid.selectedIndex;
+				dataGrid.ensureCellIsVisible(idx);
+				currentState="create";
+				this.btn_save.enabled = this.canCreate;
+				dataGrid.enabled=false;
+				
+				if ( _formColumnSettingsString.length > 0 )
+				{
+					global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+				}
+			}
+			
+			
+			
+			protected function view_detailsHandler(event:FlexEvent):void
+			{
+			}
+			
+			protected function save_clickHandler():void
+			{
+				this.btn_save.enabled = false;
+				doSave();
+			}
+			
+			protected function doSave():void
+			{
+				if (currentState == "create")
+				{
+					//createRecord();
+					this._saveButtonClicked = true;
+					checkHazChemKey();
+					//checkHazChemKeyBeforeCreate();
+				}
+				if (currentState == "edit")
+				{
+					editRecord();
+				}
+				if (currentState == "detail")
+				{
+					editRecord();
+				}
+			}
+			
+			protected function killBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=true;
+				pagedRecords.interruptor=true;
+				trace("WTF >>>>>>>>>>");
+			}
+			
+			protected function resumeBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				this.resumeLoadingPages();
+				trace("RESUME >>>>>>>>>>");
+			}
+			
+			protected function resumeLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				
+				//pb.values(pagedRecords.length,totalLength);
+				pb.values(pagedRecords.length,pagedRecords.totalLength);
+				//currentPage = int(this.pagedRecords.length/currentPageSize) + 1;
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<components:ValidationGroup id="vg" action="{save_clickHandler}" defaultButton="{btn_save}" parentScreen="{this}" isProtected="{hasPassword}"/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:VGroup width="100%" id="toolbar"  >
+			<s:HGroup gap="5" paddingBottom="2" paddingTop="2" width="100%">
+				<components:DKI_ValidatorInput id="fltr_hazchem" validationType="search" minWidth="160" height="{labelHeight}" width="100%"
+											   keyUp="fltr_hazchem_keyUpHandler(event)"  
+											   prompt="{resourceManager.getString('default','HAZCHEM.LABEL.TAB')+resourceManager.getString('default','FILTER')}"/>
+				
+				<s:Spacer width="100%"/>
+				<components:DKI_Button id="filterBtn" height="24" noLabel="false" click="filterRecords(event)"
+									   type="filteron"/>
+				<components:DKI_Button id="resetBtn" height="24" noLabel="false" click="refreshRecords(event)"
+									   type="filteroff"/>
+				<components:DKI_Button id="btn_export" label="{resourceManager.getString('default','EXPORTDATA')}" type="report" click="exportCsvHandler(event)" includeIn="normal"/>
+				<components:DKI_Button id="btn_create" label="{resourceManager.getString('default','CREATE')}" height="24" click="createNewRecord(event)" includeIn="normal" enabled="{this.canCreate}" type="create"/>	
+			</s:HGroup>
+		</s:VGroup>
+			
+		
+		<s:DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="4"
+					selectionChange="dataGrid_selectionChangeHandler(event)"
+					skinClass="skins.DKI_DataGrid_Skin"
+					height.widget="100%">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="hzcf_id" headerText="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_ID')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="hzcf_un_num" headerText="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_UN_NUM')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="hzcf_name" headerText="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_NAME')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="hzcf_sub_risk" headerText="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_SUB_RISK')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="hzcf_class" headerText="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_CLASS')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="hzcf_hz_code" headerText="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_HZ_CODE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="hzcf_emrg" headerText="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_EMRG')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="hzcf_pack_group" headerText="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_PACK_GROUP')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="hzcf_pack_method" headerText="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_PACK_METHOD')}" visible="true"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			<s:dataProvider>
+				<!--s:AsyncListView id="pgList" list="{getPagedResult.lastResult}"/-->
+				<s:AsyncListView id="pgList" list="{pagedRecords}"/>
+			</s:dataProvider>
+		</s:DataGrid>
+		<s:HGroup width="100%">
+			<components:Downloader id="pb" width="100%" height="18"/>
+			<!--mx:ProgressBar id="pb" width="100%" height="22" visible="false" includeInLayout="false"  mode="manual" source="{this.pgList}" label="{this.currentLength} records shown from {this.currentLength} loaded out of {this.totalLength} found." labelPlacement="center"/-->
+			<s:Button id="killBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="killBtn_clickHandler(event)"/>
+			<s:Button id="resumeBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="resumeBtn_clickHandler(event)"/>
+		</s:HGroup>
+	</s:Panel>
+	
+	<s:Panel id="details" includeIn="edit,create,detail" width="100%" height="200"
+			 itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+			<!--s:TileLayout/-->
+		</s:layout>
+		
+		<s:Spacer height="5"/>
+		<s:VGroup width="100%">
+			<s:HGroup width="100%">
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_ID')}" verticalAlign="middle" toolTip="{resourceManager.getString('default','HAZCHEM.TIP.HZCF_ID')}"/>
+					<components:DKI_ValidatorInput id="hzcf_id" maxChars="20"  
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.hzcf_id}" editable="false" enabled="false" 
+												   text.create="" editable.create="true" enabled.create="true" focusOut="checkHazChemKey()" 
+												   required="true" validationType="alphanumeric" validationGroup="{vg}" automationName="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_ID')}" 
+												   />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_UN_NUM')}" verticalAlign="middle" toolTip="{resourceManager.getString('default','HAZCHEM.TIP.HZCF_UN_NUM')}"/>
+					<components:DKI_ValidatorInput id="hzcf_un_num" maxChars="20" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.hzcf_un_num}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="" editable.create="true" enabled.create="true" 
+												   required="true" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_UN_NUM')}" 
+												   />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_NAME')}" verticalAlign="middle" toolTip="{resourceManager.getString('default','HAZCHEM.TIP.HZCF_NAME')}"/>
+					<components:DKI_ValidatorInput id="hzcf_name" maxChars="80" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.hzcf_name}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="" editable.create="true" enabled.create="true" 
+												   required="true" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_NAME')}" 
+												   />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:Spacer height="{this.spaceHeight}" />
+			
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_SUB_RISK')}" verticalAlign="middle" toolTip="{resourceManager.getString('default','HAZCHEM.TIP.HZCF_SUB_RISK')}"/>
+					<components:DKI_ValidatorInput id="hzcf_sub_risk" maxChars="20" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.hzcf_sub_risk}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="" editable.create="true" enabled.create="true" 
+												   required="true" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_SUB_RISK')}" 
+												   />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_CLASS')}" verticalAlign="middle" toolTip="{resourceManager.getString('default','HAZCHEM.TIP.HZCF_CLASS')}"/>
+					<components:DKI_ValidatorInput id="hzcf_class" maxChars="20" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.hzcf_class}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="" editable.create="true" enabled.create="true" 
+												   required="true" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_CLASS')}" 
+												   />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_HZ_CODE')}" verticalAlign="middle" toolTip="{resourceManager.getString('default','HAZCHEM.TIP.HZCF_HZ_CODE')}"/>
+					<components:DKI_ValidatorInput id="hzcf_hz_code" maxChars="20" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.hzcf_hz_code}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="" editable.create="true" enabled.create="true" 
+												   required="true" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_HZ_CODE')}" 
+												   />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:Spacer height="{this.spaceHeight}" />
+			
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_EMRG')}" verticalAlign="middle" toolTip="{resourceManager.getString('default','HAZCHEM.TIP.HZCF_EMRG')}"/>
+					<components:DKI_ValidatorInput id="hzcf_emrg" maxChars="20" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.hzcf_emrg}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="" editable.create="true" enabled.create="true" 
+												   required="true" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_EMRG')}" 
+												   />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_PACK_GROUP')}" verticalAlign="middle" toolTip="{resourceManager.getString('default','HAZCHEM.TIP.HZCF_PACK_GROUP')}"/>
+					<components:DKI_ValidatorInput id="hzcf_pack_group" maxChars="20" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.hzcf_pack_group}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="" editable.create="true" enabled.create="true" 
+												   required="true" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_PACK_GROUP')}" 
+												   />
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_PACK_METHOD')}" verticalAlign="middle" toolTip="{resourceManager.getString('default','HAZCHEM.TIP.HZCF_PACK_METHOD')}"/>
+					<components:DKI_ValidatorInput id="hzcf_pack_method" maxChars="20" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.hzcf_pack_method}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="" editable.create="true" enabled.create="true" 
+												   required="true" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','HAZCHEM.LABEL.HZCF_PACK_METHOD')}" 
+												   />
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			
+			<s:Spacer height="5" />
+			
+		</s:VGroup>
+		
+		<s:Spacer height="0" />
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+<!--			<components:DKI_Button id="btnGenericProduct" label="{resourceManager.getString('default','m_genericproducts')}" height="100%" includeIn="create,edit,detail" type="default" visible="true" enabled="{this.canUpdate}" includeInLayout="true" click="goToGenericProducts();"/>
+-->			
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_delete" label="{resourceManager.getString('default','DELETE')}" height="100%" click="doDelete()" includeIn="edit" enabled="{this.canDelete}" type="delete"/>
+			<components:DKI_Button id="btn_save" label.create="{resourceManager.getString('default','SAVE')}" label="{resourceManager.getString('default','UPDATE')}" height="100%" includeIn="edit,create,detail" 
+								   enabled.create="{this.canCreate}" enabled="{this.canUpdate}" type.create="create" type="edit" focusEnabled="true" focusEnabled.create="false"/>
+			<components:DKI_Button id="btn_cancel" label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel" focusEnabled="true" focusEnabled.create="false"/>
+		</s:HGroup>
+	</s:Panel>
+	
+</s:VGroup>
