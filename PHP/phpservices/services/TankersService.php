@@ -80,7 +80,19 @@ class TankersService {
 	
         $et = new TankersClass();
         $rows = $et->getTankers($filter,$sort);
-        return $rows;
+
+        $object = json_decode(json_encode($rows), FALSE);
+        
+        $a = array();
+
+        foreach ($object as $key) {
+            
+            array_push($a, $key);
+ 
+        }
+
+        return $a;
+
 	}
 	
     public function getPaged($values, $dtypes, $sorts, $orders, $offset, $tot)

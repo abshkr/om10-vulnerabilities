@@ -24,7 +24,9 @@ class Gui_Equipment_List
 	public $eqpt_load_type_name;
 	public $etyp_category;
 	public $rn;
-    public $composition;
+	public $composition;
+	public $eqpt_last_modified;
+	public $eqpt_last_used;
 }
 
 class EquipmentComposition

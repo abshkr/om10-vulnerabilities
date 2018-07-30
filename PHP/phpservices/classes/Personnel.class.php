@@ -309,6 +309,17 @@ class PersonnelClass{
         logMe("-----------------------------",PERSONCLASS);
         logMe("Adding personnel succeeded!!!",PERSONCLASS);
         logMe("-----------------------------",PERSONCLASS);
+
+        $code = $perData->per_code;
+				
+		$sql['sql_text'] = " UPDATE PERSONNEL SET PER_LAST_MODIFIED=current_date WHERE PER_CODE=:code";
+
+		$sql['sql_data'] = array( $code );
+
+		$mydb = DB::getInstance();
+
+        $data = $mydb->update($sql);
+
         return $rows;
     }
     
@@ -804,6 +815,16 @@ class PersonnelClass{
 		$upd_journal->log();
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        $code = $perData->per_code;
+				
+		$sql['sql_text'] = " UPDATE PERSONNEL SET PER_LAST_MODIFIED=current_date WHERE PER_CODE=:code";
+
+		$sql['sql_data'] = array( $code );
+
+		$mydb = DB::getInstance();
+
+        $data = $mydb->update($sql);
+        
         return RETURN_0;
     }
 

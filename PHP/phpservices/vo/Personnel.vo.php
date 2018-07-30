@@ -29,7 +29,8 @@ class Gui_Personnel
 	public $password_validate; /* 0:ignore, 1:validate */
 	public $session_id; /* */
 	public $user_status_flag; /*user lock status 0-inactive, 1-active, 2-locked, 3-deleted */
-	public $per_accesslocks; /*array of lockout areas */
+    public $per_accesslocks; /*array of lockout areas */
+
 }
 
 class AccessPermissions_vo

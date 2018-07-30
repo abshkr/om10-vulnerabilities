@@ -40,7 +40,7 @@ class EquipmentListClass
              )";
 		*/	 
 		$sql = array();
-        $sql['sql_text'] = "SELECT EQPT_ID, EQPT_CODE, EQPT_TITLE, EQPT_TANKER, EQPT_OWNER, EQPT_OWNER_NAME, EQPT_ETP, EQPT_ETP_TITLE, DECODE(EQPT_EXP_D1_DMY, NULL, '', TO_CHAR(EQPT_EXP_D1_DMY, 'YYYY-MM-DD')) as EQPT_EXP_D1_DMY, DECODE(EQPT_EXP_D2_DMY, NULL, '', TO_CHAR(EQPT_EXP_D2_DMY, 'YYYY-MM-DD')) as EQPT_EXP_D2_DMY, DECODE(EQPT_EXP_D3_DMY, NULL, '', TO_CHAR(EQPT_EXP_D3_DMY, 'YYYY-MM-DD')) as EQPT_EXP_D3_DMY, EQPT_LOCK, EQPT_EMPTY_KG, EQP_MUST_TARE_IN, EQPT_MAX_GROSS, EQPT_COMMENTS, EQPT_AREA, EQPT_AREA_NAME, EQPT_LOAD_TYPE, EQPT_LOAD_TYPE_NAME, ETYP_CATEGORY, RN  FROM(
+        $sql['sql_text'] = "SELECT EQPT_ID, EQPT_CODE, EQPT_TITLE, EQPT_TANKER, EQPT_OWNER, EQPT_OWNER_NAME, EQPT_ETP, EQPT_ETP_TITLE, DECODE(EQPT_EXP_D1_DMY, NULL, '', TO_CHAR(EQPT_EXP_D1_DMY, 'YYYY-MM-DD')) as EQPT_EXP_D1_DMY, DECODE(EQPT_EXP_D2_DMY, NULL, '', TO_CHAR(EQPT_EXP_D2_DMY, 'YYYY-MM-DD')) as EQPT_EXP_D2_DMY, DECODE(EQPT_EXP_D3_DMY, NULL, '', TO_CHAR(EQPT_EXP_D3_DMY, 'YYYY-MM-DD')) as EQPT_EXP_D3_DMY, EQPT_LOCK, EQPT_EMPTY_KG, EQP_MUST_TARE_IN, EQPT_MAX_GROSS, EQPT_COMMENTS, EQPT_AREA, EQPT_AREA_NAME, EQPT_LOAD_TYPE, EQPT_LOAD_TYPE_NAME, ETYP_CATEGORY, RN, EQPT_LAST_MODIFIED, EQPT_LAST_USED  FROM(
                 SELECT res.*, ROW_NUMBER() over ($sort) RN
                 FROM(SELECT * FROM GUI_EQUIPMENT_LIST " . $filter['sql_text'] . ") res
              )";
@@ -74,7 +74,7 @@ class EquipmentListClass
              where RN between ".($offset+1)." and ".($offset+$tot); //." $sort";
 		*/
 		$sql = array();
-        $sql['sql_text'] = "SELECT EQPT_ID, EQPT_CODE, EQPT_TITLE, EQPT_TANKER, EQPT_OWNER, EQPT_OWNER_NAME, EQPT_ETP, EQPT_ETP_TITLE, DECODE(EQPT_EXP_D1_DMY, NULL, '', TO_CHAR(EQPT_EXP_D1_DMY, 'YYYY-MM-DD')) as EQPT_EXP_D1_DMY, DECODE(EQPT_EXP_D2_DMY, NULL, '', TO_CHAR(EQPT_EXP_D2_DMY, 'YYYY-MM-DD')) as EQPT_EXP_D2_DMY, DECODE(EQPT_EXP_D3_DMY, NULL, '', TO_CHAR(EQPT_EXP_D3_DMY, 'YYYY-MM-DD')) as EQPT_EXP_D3_DMY, EQPT_LOCK, EQPT_EMPTY_KG, EQP_MUST_TARE_IN, EQPT_MAX_GROSS, EQPT_COMMENTS, EQPT_AREA, EQPT_AREA_NAME, EQPT_LOAD_TYPE, EQPT_LOAD_TYPE_NAME, ETYP_CATEGORY, RN  FROM(
+        $sql['sql_text'] = "SELECT EQPT_ID, EQPT_CODE, EQPT_TITLE, EQPT_TANKER, EQPT_OWNER, EQPT_OWNER_NAME, EQPT_ETP, EQPT_ETP_TITLE, DECODE(EQPT_EXP_D1_DMY, NULL, '', TO_CHAR(EQPT_EXP_D1_DMY, 'YYYY-MM-DD')) as EQPT_EXP_D1_DMY, DECODE(EQPT_EXP_D2_DMY, NULL, '', TO_CHAR(EQPT_EXP_D2_DMY, 'YYYY-MM-DD')) as EQPT_EXP_D2_DMY, DECODE(EQPT_EXP_D3_DMY, NULL, '', TO_CHAR(EQPT_EXP_D3_DMY, 'YYYY-MM-DD')) as EQPT_EXP_D3_DMY, EQPT_LOCK, EQPT_EMPTY_KG, EQP_MUST_TARE_IN, EQPT_MAX_GROSS, EQPT_COMMENTS, EQPT_AREA, EQPT_AREA_NAME, EQPT_LOAD_TYPE, EQPT_LOAD_TYPE_NAME, ETYP_CATEGORY, RN, EQPT_LAST_MODIFIED, EQPT_LAST_USED  FROM(
                 SELECT res.*, ROW_NUMBER() over ($sort) RN
                 FROM(SELECT * FROM GUI_EQUIPMENT_LIST " . $filter['sql_text'] . ") res
              )
@@ -452,6 +452,17 @@ REQUEST: cmptcap1=10000&cmptsfl1=9000&sflcap1=11000&cmptcap2=10000&cmptsfl2=1000
 		$this->updateEquipmentComments( $new_id, $data->eqpt_comments );
 
 //        return "OK";
+
+		$code = $data->eqpt_code;
+						
+		$sql['sql_text'] = " UPDATE TRANSP_EQUIP SET EQPT_LAST_MODIFIED=current_date WHERE EQPT_CODE=:code";
+
+		$sql['sql_data'] = array( $code );
+
+		$mydb = DB::getInstance();
+
+		$data = $mydb->update($sql);
+
         return "OK__".$new_id;
     }  
 	
@@ -640,6 +651,16 @@ REQUEST: cmptcap1=10000&cmptsfl1=9000&sflcap1=11000&cmptcap2=10000&cmptsfl2=1000
 			$this->nullEquipmentDate( $data->eqpt_id, "EQPT_EXP_D3_DMY" );
 		}
 		
+		$code = $data->eqpt_code;
+				
+		$sql['sql_text'] = " UPDATE TRANSP_EQUIP SET EQPT_LAST_MODIFIED=current_date WHERE EQPT_CODE=:code";
+
+		$sql['sql_data'] = array( $code );
+
+		$mydb = DB::getInstance();
+
+		$data = $mydb->update($sql);
+
         return "OK";
     }   
 	

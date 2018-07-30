@@ -134,6 +134,8 @@ class ScreenGridColumnService
 			$str .= "|1,tnkr_lic_exp";
 			$str .= "|1,tnkr_dglic_exp"; 
 			$str .= "|1,tnkr_ins_exp";
+			$str .= "|1,tnkr_last_modified";
+			$str .= "|1,tnkr_last_used";
 		}
 		
 		if ( $screen == "EQUIPMENT_LIST" )
@@ -157,6 +159,8 @@ class ScreenGridColumnService
 			$str .= "|0,eqpt_area_name";
 			$str .= "|0,eqpt_max_gross";
 			$str .= "|0,eqpt_empty_kg";
+			$str .= "|1,eqpt_last_modified";
+			$str .= "|1,eqpt_last_used";
 		}
 		
 		if ( $screen == "TRANSACTION_LIST" )
@@ -220,7 +224,8 @@ class ScreenGridColumnService
 			$str .= "|1,per_lock";
 			$str .= "|1,user_status_flag";
 			$str .= "|1,per_department";
-			$str .= "|0,per_last_dmy";
+			$str .= "|1,user_last_reason";
+			$str .= "|1,per_last_dmy";
 			$str .= "|0,per_terminal";
 			$str .= "|0,user_login_count";
 		}

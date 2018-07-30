@@ -34,6 +34,8 @@ class GUI_Tankers
 	public $rn;
 	public $remarks;
     public $composition;
+    public $tnkr_last_modified;
+    public $tnkr_last_used;
 }
 
 class TankerComposition

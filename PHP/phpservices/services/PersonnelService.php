@@ -102,7 +102,20 @@ class PersonnelService {
 
         $p = new PersonnelClass();
         $rows = $p->getPaged($filter, $order, $startIndex, $numItems);
-        return $rows;
+        
+        $object = json_decode(json_encode($rows), FALSE);
+        $a = array();
+
+        foreach ($object as $key) {
+            
+            $key->user_last_reason = $key->per_last_modified;
+            $key->valid_time = $key->per_last_dmy;
+            array_push($a, $key);
+ 
+        }
+
+        return $a;
+
     }    
     
     public function getRecord($code){

@@ -109,6 +109,8 @@ class TankersClass{
 				, RN
 				, REMARKS
 				, ETYP_CATEGORY
+				, TNKR_LAST_MODIFIED
+				, TNKR_LAST_USED
 			from
 				(
                 SELECT res.*, ROW_NUMBER() over ($sort) RN
@@ -204,6 +206,8 @@ class TankersClass{
 				, TNKR_MAX_KG
 				, RN
 				, REMARKS
+				, TNKR_LAST_MODIFIED
+				, TNKR_LAST_USED
 			from
 				(
                 SELECT res.*, ROW_NUMBER() over ($sort) RN
@@ -766,8 +770,21 @@ tnkr_max_kg=max_kg
 
 		// update tanker comment
 		$this->updateTankerComment( $data->tnkr_code, $data->remarks );
+		
+		$sql = array();
+		
+		$code = $data->tnkr_code;
+		
+        $sql['sql_text'] = " UPDATE TANKERS SET TNKR_LAST_MODIFIED=current_date WHERE TNKR_CODE=:code";
+		
+		$sql['sql_data'] = array( $code );
+		
+		$mydb = DB::getInstance();
+		
+		$data = $mydb->update($sql);
 
-        return "OK";
+        	return "OK";
+
     }  
     
     public function update($data)
@@ -931,7 +948,19 @@ tnkr_max_kg=max_kg
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////
 		}
 
-        return "OK";
+		$sql = array();
+		
+		$code = $data->tnkr_code;
+		
+        $sql['sql_text'] = " UPDATE TANKERS SET TNKR_LAST_MODIFIED=current_date WHERE TNKR_CODE=:code";
+		
+		$sql['sql_data'] = array( $code );
+		
+		$mydb = DB::getInstance();
+		
+		$data = $mydb->update($sql);
+
+        	return "OK";
     }  
 
 
