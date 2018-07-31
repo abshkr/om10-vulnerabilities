@@ -335,6 +335,32 @@ class ExpiryDateDetailService
 		$main_msg = $data->ed_target_code . ", " . $data->ed_cmpy_code . ", " . $data->ed_object_id . ", " . $data->ed_type_code . ", " . $data->ed_exp_date;
 		$ins_journal->logOneLine("created a line of expiry date detail [" . $main_msg . "] successfully");
 		
+		if ($data->ed_target_code == "PERSONNEL")
+		{
+			$sql['sql_text'] = "
+				UPDATE PERSONNEL SET PER_LAST_MODIFIED=current_date 
+				WHERE PER_CODE=:code";
+			$sql['sql_data'] = array($data->ed_object_id);
+		}
+		else if ($data->ed_target_code == "TANKERS")
+		{
+			$sql['sql_text'] = "
+				UPDATE TANKERS SET TNKR_LAST_MODIFIED=current_date 
+				WHERE TNKR_CODE=:code";
+			$sql['sql_data'] = array($data->ed_object_id);
+		}
+		else if ($data->ed_target_code == "TRANSP_EQUIP")
+		{
+			$sql['sql_text'] = "
+				UPDATE TRANSP_EQUIP SET EQPT_LAST_MODIFIED=current_date 
+				WHERE EQPT_ID=:code";
+			$sql['sql_data'] = array($data->ed_object_id);
+		}
+		$comment_res = $mydb->update($sql);
+		if ( $comment_res != RETURN_OK )
+		{
+			return "ERROR";
+		}
 		return "OK";
 	}
     
@@ -368,7 +394,34 @@ class ExpiryDateDetailService
 		$upd_journal = new UpdateJournalClass( "Expiry Date Details", "EXPIRY_DATE_DETAILS", $keys, $excludes );
 		$main_msg = $data->ed_target_code . ", " . $data->ed_cmpy_code . ", " . $data->ed_object_id . ", " . $data->ed_type_code . ", " . $data->ed_exp_date;
 		$upd_journal->logOneLine("updated a line of expiry date detail [" . $main_msg . "] successfully");
-		
+
+		if ($data->ed_target_code == "PERSONNEL")
+		{
+			$sql['sql_text'] = "
+				UPDATE PERSONNEL SET PER_LAST_MODIFIED=current_date 
+				WHERE PER_CODE=:code";
+			$sql['sql_data'] = array($data->ed_object_id);
+		}
+		else if ($data->ed_target_code == "TANKERS")
+		{
+			$sql['sql_text'] = "
+				UPDATE TANKERS SET TNKR_LAST_MODIFIED=current_date 
+				WHERE TNKR_CODE=:code";
+			$sql['sql_data'] = array($data->ed_object_id);
+		}
+		else if ($data->ed_target_code == "TRANSP_EQUIP")
+		{
+			$sql['sql_text'] = "
+				UPDATE TRANSP_EQUIP SET EQPT_LAST_MODIFIED=current_date 
+				WHERE EQPT_ID=:code";
+			$sql['sql_data'] = array($data->ed_object_id);
+		}
+		logMe($sql['sql_text'], EXPIRYDATEDETAILSERVICE);
+		$comment_res = $mydb->update($sql);
+		if ($comment_res != RETURN_OK)
+		{
+			return "ERROR";
+		}
 		return "OK";
 	}
     
@@ -400,7 +453,33 @@ class ExpiryDateDetailService
 		$del_journal = new UpdateJournalClass( "Expiry Date Details", "EXPIRY_DATE_DETAILS", $keys, $excludes );
 		$main_msg = $data->ed_target_code . ", " . $data->ed_cmpy_code . ", " . $data->ed_object_id . ", " . $data->ed_type_code . ", " . $data->ed_exp_date;
 		$del_journal->logOneLine("deleted a line of expiry date detail [" . $main_msg . "] successfully");
-		
+
+		if ($data->ed_target_code == "PERSONNEL")
+		{
+			$sql['sql_text'] = "
+				UPDATE PERSONNEL SET PER_LAST_MODIFIED=current_date 
+				WHERE PER_CODE=:code";
+			$sql['sql_data'] = array($data->ed_object_id);
+		}
+		else if ($data->ed_target_code == "TANKERS")
+		{
+			$sql['sql_text'] = "
+				UPDATE TANKERS SET TNKR_LAST_MODIFIED=current_date 
+				WHERE TNKR_CODE=:code";
+			$sql['sql_data'] = array($data->ed_object_id);
+		}
+		else if ($data->ed_target_code == "TRANSP_EQUIP")
+		{
+			$sql['sql_text'] = "
+				UPDATE TRANSP_EQUIP SET EQPT_LAST_MODIFIED=current_date 
+				WHERE EQPT_ID=:code";
+			$sql['sql_data'] = array($data->ed_object_id);
+		}
+		$comment_res = $mydb->update($sql);
+		if ( $comment_res != RETURN_OK )
+		{
+			return "ERROR";
+		}
 		return "OK";
 	}
 
