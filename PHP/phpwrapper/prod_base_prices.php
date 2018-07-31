@@ -12,6 +12,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
         "prod_base_prices_phpwrapper.js", 
         $html);
 }
-
+else if ($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+    $html = http_post_cgi('cgi-bin/en/cust_ord/prod_base_prices.cgi');
+    echo str_replace(
+        "prod_base_prices.js",
+        "prod_base_prices_phpwrapper.js", 
+        $html);
+}
 ?>
 

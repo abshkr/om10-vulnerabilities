@@ -12,6 +12,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
         "category_phpwrapper.js", 
         $html);
 }
-
+else if ($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+    $html = http_post_cgi('cgi-bin/en/cust_ord/category.cgi');
+    echo str_replace(
+        "category.js",
+        "category_phpwrapper.js", 
+        $html);
+}
 ?>
 

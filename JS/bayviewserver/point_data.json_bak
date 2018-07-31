@@ -1,0 +1,121 @@
+{
+	"string": {
+		"minAddr": 3712,
+		"maxAddr": 3813,
+		"point": [
+			{
+				"addr": 3712,
+				"regCnt": 6,
+				"value": "BAY01       "
+			},
+			{
+				"addr": 3733,
+				"regCnt": 3,
+				"value": "      "
+			},
+			{
+				"addr": 3736,
+				"regCnt": 25,
+				"value": "                                                  "
+			},
+			{
+				"addr": 3775,
+				"regCnt": 10,
+				"value": "                    "
+			},
+			{
+				"addr": 3785,
+				"regCnt": 3,
+				"value": "      "
+			},
+			{
+				"addr": 3798,
+				"regCnt": 5,
+				"value": "          "
+			},
+			{
+				"addr": 3813,
+				"regCnt": 5,
+				"value": "          "
+			}
+		]
+	},
+	"bit": {
+		"minAddr": 10,
+		"maxAddr": 127,
+		"point": [
+			{
+				"addr": 10,
+				"regCnt": 1,
+				"value": true
+			},
+			{
+				"addr": 116,
+				"regCnt": 1,
+				"value": false
+			},
+			{
+				"addr": 127,
+				"regCnt": 1,
+				"value": false
+			}
+		]
+	},
+	"float4Byte": {
+		"minAddr": 148,
+		"maxAddr": 3364,
+		"point": [
+			{
+				"addr": 148,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 3288,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 3298,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 3342,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 3352,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 3358,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 3364,
+				"regCnt": 2,
+				"value": 0
+			}
+		]
+	},
+	"int4Byte": {
+		"minAddr": 64,
+		"maxAddr": 66,
+		"point": [
+			{
+				"addr": 64,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 66,
+				"regCnt": 2,
+				"value": 0
+			}
+		]
+	}
+}

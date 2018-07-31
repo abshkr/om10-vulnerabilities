@@ -1,0 +1,66 @@
+<?php
+function getBayviewServerConfiguration()
+{
+	// shellWPI
+	$bayviewBayServers=array(
+		'BAY001'=>array(
+			'bay_code'=>'BAY001', 
+			'cfg_file'=>'data_config4bay1.json', 
+			'server_url'=>'http://localhost:3000/point_data/', 
+			'bay_unit'=>5,
+			'action'=>1,
+			'active'=>true
+		),
+		'BAY002'=>array(
+			'bay_code'=>'BAY002', 
+			'cfg_file'=>'data_config4bay2.json', 
+			'server_url'=>'http://localhost:4000/point_data/', 
+			'bay_unit'=>5,
+			'action'=>1,
+			'active'=>false
+		),
+		'BAY003'=>array(
+			'bay_code'=>'BAY003', 
+			'cfg_file'=>'data_config4bay2.json', 
+			'server_url'=>'http://localhost:4000/point_data/', 
+			'bay_unit'=>5,
+			'action'=>1,
+			'active'=>false
+		),
+		'BAY004'=>array(
+			'bay_code'=>'BAY004', 
+			'cfg_file'=>'data_config4bay2.json', 
+			'server_url'=>'http://localhost:4000/point_data/', 
+			'bay_unit'=>5,
+			'action'=>1,
+			'active'=>false
+		),
+		'BAY05L'=>array(
+			'bay_code'=>'BAY05L', 
+			'cfg_file'=>'data_config4bay2.json', 
+			'server_url'=>'http://localhost:4000/point_data/', 
+			'bay_unit'=>5,
+			'action'=>1,
+			'active'=>false
+		),
+		'BAY05R'=>array(
+			'bay_code'=>'BAY05R', 
+			'cfg_file'=>'data_config4bay2.json', 
+			'server_url'=>'http://localhost:4000/point_data/', 
+			'bay_unit'=>5,
+			'action'=>1,
+			'active'=>false
+		),
+		'BAY006'=>array(
+			'bay_code'=>'BAY006', 
+			'cfg_file'=>'data_config4bay2.json', 
+			'server_url'=>'http://localhost:4000/point_data/', 
+			'bay_unit'=>5,
+			'action'=>1,
+			'active'=>false
+		)
+	);
+	
+	return $bayviewBayServers;
+}
+?>

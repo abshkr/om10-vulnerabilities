@@ -1,0 +1,25 @@
+[{
+	"tank_status_id": "0",
+	"tank_status_code": "N",
+	"tank_status_name": "In Service - Not used"
+}, {
+	"tank_status_id": "1",
+	"tank_status_code": "R",
+	"tank_status_name": "In Service - Receiving"
+}, {
+	"tank_status_id": "2",
+	"tank_status_code": "S",
+	"tank_status_name": "In Service - Settling"
+}, {
+	"tank_status_id": "3",
+	"tank_status_code": "L",
+	"tank_status_name": "In Service - Loading"
+}, {
+	"tank_status_id": "4",
+	"tank_status_code": "W",
+	"tank_status_name": "In Service - Working"
+}, {
+	"tank_status_id": "5",
+	"tank_status_code": "O",
+	"tank_status_name": "Out Of Service - Offline"
+}]

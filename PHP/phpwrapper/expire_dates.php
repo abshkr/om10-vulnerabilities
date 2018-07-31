@@ -28,4 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
         echo http_get_cgi('cgi-bin/en/access_ctrl/expire_dates.cgi');
     }
 }
+else if ($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+    $orig_html = http_post_cgi('cgi-bin/en/access_ctrl/expire_dates.cgi');
+        echo str_replace(
+                "expire_dates.js",
+                "expire_dates_phpwrapper.js", 
+                $orig_html);
+}
 ?>

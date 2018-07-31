@@ -12,6 +12,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
         "cust_phpwrapper.js", 
         $html);
 }
-
+else if ($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+    $html = http_post_cgi('cgi-bin/en/cust_ord/cust.cgi');
+    echo str_replace(
+        "cust.js",
+        "cust_phpwrapper.js", 
+        $html);
+}
 ?>
 

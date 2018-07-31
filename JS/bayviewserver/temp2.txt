@@ -1,0 +1,417 @@
+Example app listening on port 3000!
+2017-09-22T06:23:05.348Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:true
+2017-09-22T06:23:05.349Z (bayviewserver.js,56): 
+	get_data_cfg - scada data object ...... start
+2017-09-22T06:23:05.353Z (bayviewserver.js,58): 
+	get_data_cfg - scada data object ...... end
+2017-09-22T06:23:05.357Z (bayviewserver.js,63): 
+	transpose - scada data object ...... start
+2017-09-22T06:23:05.378Z (bayviewserver.js,66): 
+	transpose - scada data object ...... end
+2017-09-22T06:23:05.379Z (bayviewserver.js,67): 
+	retrieve_point_data done ..... start
+2017-09-22T06:23:05.832Z (transpose.js,1084): 
+	retrieve_point_data done
+2017-09-22T06:23:06.385Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:true
+2017-09-22T06:23:06.385Z (bayviewserver.js,56): 
+	get_data_cfg - scada data object ...... start
+2017-09-22T06:23:06.387Z (bayviewserver.js,58): 
+	get_data_cfg - scada data object ...... end
+2017-09-22T06:23:06.387Z (bayviewserver.js,63): 
+	transpose - scada data object ...... start
+2017-09-22T06:23:06.400Z (bayviewserver.js,66): 
+	transpose - scada data object ...... end
+2017-09-22T06:23:06.401Z (bayviewserver.js,67): 
+	retrieve_point_data done ..... start
+2017-09-22T06:23:06.779Z (transpose.js,1084): 
+	retrieve_point_data done
+2017-09-22T06:23:07.403Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:true
+2017-09-22T06:23:07.403Z (bayviewserver.js,56): 
+	get_data_cfg - scada data object ...... start
+2017-09-22T06:23:07.404Z (bayviewserver.js,58): 
+	get_data_cfg - scada data object ...... end
+2017-09-22T06:23:07.405Z (bayviewserver.js,63): 
+	transpose - scada data object ...... start
+2017-09-22T06:23:07.413Z (bayviewserver.js,66): 
+	transpose - scada data object ...... end
+2017-09-22T06:23:07.413Z (bayviewserver.js,67): 
+	retrieve_point_data done ..... start
+2017-09-22T06:23:07.786Z (transpose.js,1084): 
+	retrieve_point_data done
+2017-09-22T06:23:08.415Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:true
+2017-09-22T06:23:08.415Z (bayviewserver.js,56): 
+	get_data_cfg - scada data object ...... start
+2017-09-22T06:23:08.417Z (bayviewserver.js,58): 
+	get_data_cfg - scada data object ...... end
+2017-09-22T06:23:08.417Z (bayviewserver.js,63): 
+	transpose - scada data object ...... start
+2017-09-22T06:23:08.424Z (bayviewserver.js,66): 
+	transpose - scada data object ...... end
+2017-09-22T06:23:08.424Z (bayviewserver.js,67): 
+	retrieve_point_data done ..... start
+2017-09-22T06:23:08.784Z (transpose.js,1084): 
+	retrieve_point_data done
+2017-09-22T06:23:09.424Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:true
+2017-09-22T06:23:09.424Z (bayviewserver.js,56): 
+	get_data_cfg - scada data object ...... start
+2017-09-22T06:23:09.426Z (bayviewserver.js,58): 
+	get_data_cfg - scada data object ...... end
+2017-09-22T06:23:09.426Z (bayviewserver.js,63): 
+	transpose - scada data object ...... start
+2017-09-22T06:23:09.435Z (bayviewserver.js,66): 
+	transpose - scada data object ...... end
+2017-09-22T06:23:09.435Z (bayviewserver.js,67): 
+	retrieve_point_data done ..... start
+2017-09-22T06:23:09.803Z (transpose.js,1084): 
+	retrieve_point_data done
+2017-09-22T06:23:10.436Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:true
+2017-09-22T06:23:10.436Z (bayviewserver.js,56): 
+	get_data_cfg - scada data object ...... start
+2017-09-22T06:23:10.438Z (bayviewserver.js,58): 
+	get_data_cfg - scada data object ...... end
+2017-09-22T06:23:10.438Z (bayviewserver.js,63): 
+	transpose - scada data object ...... start
+2017-09-22T06:23:10.444Z (bayviewserver.js,66): 
+	transpose - scada data object ...... end
+2017-09-22T06:23:10.446Z (bayviewserver.js,67): 
+	retrieve_point_data done ..... start
+2017-09-22T06:23:10.813Z (transpose.js,1084): 
+	retrieve_point_data done
+2017-09-22T06:23:11.448Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:true
+2017-09-22T06:23:11.448Z (bayviewserver.js,56): 
+	get_data_cfg - scada data object ...... start
+2017-09-22T06:23:11.450Z (bayviewserver.js,58): 
+	get_data_cfg - scada data object ...... end
+2017-09-22T06:23:11.450Z (bayviewserver.js,63): 
+	transpose - scada data object ...... start
+2017-09-22T06:23:11.456Z (bayviewserver.js,66): 
+	transpose - scada data object ...... end
+2017-09-22T06:23:11.456Z (bayviewserver.js,67): 
+	retrieve_point_data done ..... start
+2017-09-22T06:23:11.817Z (transpose.js,1084): 
+	retrieve_point_data done
+2017-09-22T06:23:12.457Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:true
+2017-09-22T06:23:12.457Z (bayviewserver.js,56): 
+	get_data_cfg - scada data object ...... start
+2017-09-22T06:23:12.458Z (bayviewserver.js,58): 
+	get_data_cfg - scada data object ...... end
+2017-09-22T06:23:12.458Z (bayviewserver.js,63): 
+	transpose - scada data object ...... start
+2017-09-22T06:23:12.464Z (bayviewserver.js,66): 
+	transpose - scada data object ...... end
+2017-09-22T06:23:12.465Z (bayviewserver.js,67): 
+	retrieve_point_data done ..... start
+2017-09-22T06:23:12.815Z (transpose.js,1084): 
+	retrieve_point_data done
+2017-09-22T06:23:13.367Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:13.465Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:true
+2017-09-22T06:23:13.466Z (bayviewserver.js,56): 
+	get_data_cfg - scada data object ...... start
+2017-09-22T06:23:13.467Z (bayviewserver.js,58): 
+	get_data_cfg - scada data object ...... end
+2017-09-22T06:23:14.469Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:15.469Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:15.511Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:16.470Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:17.470Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:17.635Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:18.471Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:19.471Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:19.773Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:20.472Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:21.472Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:21.925Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:22.473Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:23.474Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:24.069Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:24.476Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:25.477Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:26.208Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:26.477Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:27.477Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:28.345Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:28.478Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:29.478Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:30.476Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:30.479Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:31.479Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:32.480Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:32.616Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:33.481Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:34.482Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:34.776Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:35.482Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:36.482Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:36.943Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:37.483Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:38.484Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:39.095Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:39.486Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:40.486Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:41.230Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:41.487Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:42.488Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:43.368Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:43.489Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:44.490Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:45.492Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:45.516Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:46.493Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:47.494Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:47.672Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:48.495Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:49.497Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:49.805Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:50.497Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:51.499Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:51.958Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:52.500Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:53.501Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:54.090Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:54.502Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:55.503Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:56.232Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:56.505Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:57.505Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:58.388Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:23:58.507Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:23:59.507Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:00.509Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:00.527Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:01.510Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:02.511Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:02.667Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:03.515Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:04.516Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:04.812Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:05.517Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:06.517Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:07.518Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:07.803Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:08.520Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:09.520Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:09.978Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:10.522Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:11.523Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:12.297Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:12.525Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:13.524Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:14.526Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:14.636Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:15.526Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:16.527Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:16.948Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:17.529Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:18.530Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:19.268Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:19.530Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:20.532Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:21.533Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:21.595Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:22.535Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:23.536Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:23.922Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:24.537Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:25.538Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:26.241Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:26.539Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:27.539Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:28.540Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:28.585Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:29.540Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:30.541Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:31.542Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:31.590Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:32.543Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:33.544Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:33.733Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:34.545Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:35.546Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:35.914Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:36.548Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:37.549Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:38.063Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:38.549Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:39.550Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:40.238Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:40.551Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:41.552Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:42.386Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:42.552Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:43.553Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:44.554Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:44.576Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:45.555Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:46.556Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:46.723Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:47.556Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:48.556Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:48.863Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:49.557Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:50.558Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:51.003Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:51.559Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:52.559Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:53.202Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:53.561Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:54.561Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false
+2017-09-22T06:24:55.332Z (bayviewserver.js,187): 
+	===============request.params.valueBAY001
+2017-09-22T06:24:55.561Z (bayviewserver.js,53): 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get_data_from_scadaman - done_flag:false

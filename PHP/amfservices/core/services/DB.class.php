@@ -1,6 +1,7 @@
 <?php
 require_once('Global.class.php');
 require_once('SetSessionService.php');
+require_once('SecureAuth.php');
 require_once(dirname(__FILE__) . '/../plugs/libs/PHP-SQL-Parser/src/PHPSQLParser.php');
 
 if(!defined('DBCLASS')) define('DBCLASS','[AMF]-DB.class');
@@ -215,8 +216,16 @@ class DB{
     public static function getInstance(){ 
         if (!self::$dbInstance){ 
             self::$dbInstance = new DB(); 
-        } 
-        return self::$dbInstance; 
+        }
+        
+        $secAu = new SecureAuth();
+        if (!($secAu->getSessionStatus()))
+        {
+            logMe("Session ID not valid any more", DBCLASS);
+            return null;
+        }
+        
+        return self::$dbInstance;
     }
 
     /* getInstance with 4 parameters */
@@ -365,8 +374,8 @@ class DB{
 
         // Find the tokens in the query.
         $token_arr = $this->findToken($parsed);
-        logMe("token_arr count=" . count($token_arr), DBCLASS); $it = 0; foreach ($token_arr as $t) {logMe("token_arr[" . $it ."]=" . $token_arr[$it++], DBCLASS);}
-        logMe("param_arr count=" . count($param_arr), DBCLASS); $it = 0; foreach ($param_arr as $t) {logMe("param_arr[" . $it ."]=" . $param_arr[$it++], DBCLASS);}
+        // logMe("token_arr count=" . count($token_arr), DBCLASS); $it = 0; foreach ($token_arr as $t) {logMe("token_arr[" . $it ."]=" . $token_arr[$it++], DBCLASS);}
+        // logMe("param_arr count=" . count($param_arr), DBCLASS); $it = 0; foreach ($param_arr as $t) {logMe("param_arr[" . $it ."]=" . $param_arr[$it++], DBCLASS);}
 
         $stid = oci_parse($this->connect, $query);
 

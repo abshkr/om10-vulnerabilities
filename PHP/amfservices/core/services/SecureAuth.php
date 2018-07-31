@@ -165,6 +165,7 @@ class SecureAuth
                         $array["EXPIRY_DATE_TITLES"] = $this->expiryDateTitles();
                         //$array["SITE_CONFIG"]          = $this->siteConfig();
                         $_SESSION['SESSION_OBJECT']  = $array;
+                        session_regenerate_id(true);
                     }else{
                         $_SESSION = array();
                     }
@@ -175,6 +176,7 @@ class SecureAuth
         // never should reach this line
         return "THE WORLD OF PROGRAMMING HAS BEEN DESTROYED";
     }
+
     // write a function to handle logout
     public function logout(){
         if(isset($_SESSION['SESSION']) && isset($_SESSION['PERCODE'])){

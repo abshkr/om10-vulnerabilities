@@ -1,0 +1,1332 @@
+{
+	"string": {
+		"minAddr": 3712,
+		"maxAddr": 4143,
+		"point": [
+			{
+				"addr": 3712,
+				"regCnt": 6,
+				"value": "            "
+			},
+			{
+				"addr": 3733,
+				"regCnt": 3,
+				"value": "      "
+			},
+			{
+				"addr": 3736,
+				"regCnt": 25,
+				"value": "                                                  "
+			},
+			{
+				"addr": 3761,
+				"regCnt": 4,
+				"value": "        "
+			},
+			{
+				"addr": 3765,
+				"regCnt": 10,
+				"value": "                "
+			},
+			{
+				"addr": 3775,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3788,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3798,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 3803,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3813,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 3818,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3828,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 3833,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3843,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 3848,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3858,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 3863,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3873,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 3878,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3888,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 3893,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3903,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 3908,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3918,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 3923,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3933,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 3938,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3948,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 3953,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3963,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 3968,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3978,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 3983,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 3993,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 3998,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 4008,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 4013,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 4023,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 4028,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 4038,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 4043,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 4053,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 4058,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 4068,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 4073,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 4083,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 4088,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 4098,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 4103,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 4113,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 4118,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 4128,
+				"regCnt": 5,
+				"value": ""
+			},
+			{
+				"addr": 4133,
+				"regCnt": 10,
+				"value": ""
+			},
+			{
+				"addr": 4143,
+				"regCnt": 5,
+				"value": ""
+			}
+		]
+	},
+	"int2Byte": {
+		"minAddr": 0,
+		"maxAddr": 2,
+		"point": [
+			{
+				"addr": 0,
+				"regCnt": 1,
+				"value": 1
+			},
+			{
+				"addr": 1,
+				"regCnt": 1,
+				"value": 0
+			},
+			{
+				"addr": 2,
+				"regCnt": 1,
+				"value": 0
+			}
+		]
+	},
+	"float4Byte": {
+		"minAddr": 130,
+		"maxAddr": 520,
+		"point": [
+			{
+				"addr": 130,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 132,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 134,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 136,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 138,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 140,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 142,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 144,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 146,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 148,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 150,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 152,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 154,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 156,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 158,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 160,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 162,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 164,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 166,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 168,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 170,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 172,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 174,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 176,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 178,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 180,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 182,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 184,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 186,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 188,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 190,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 192,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 194,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 196,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 198,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 200,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 202,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 204,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 206,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 208,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 210,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 212,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 214,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 216,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 218,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 220,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 222,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 224,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 226,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 228,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 230,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 232,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 234,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 236,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 238,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 240,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 242,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 244,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 246,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 248,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 250,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 252,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 254,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 256,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 258,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 260,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 262,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 264,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 266,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 268,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 270,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 272,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 274,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 276,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 278,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 280,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 282,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 284,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 286,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 288,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 290,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 292,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 294,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 296,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 298,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 300,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 302,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 304,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 306,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 308,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 310,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 312,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 314,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 316,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 318,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 320,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 322,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 324,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 326,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 328,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 330,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 332,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 334,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 336,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 338,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 340,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 342,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 344,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 346,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 348,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 350,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 352,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 354,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 356,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 358,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 360,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 362,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 364,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 366,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 368,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 370,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 372,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 374,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 376,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 378,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 380,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 382,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 384,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 386,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 388,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 390,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 392,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 394,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 396,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 398,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 400,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 402,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 404,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 406,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 408,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 410,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 412,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 414,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 416,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 418,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 420,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 422,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 424,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 426,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 428,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 430,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 432,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 434,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 436,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 438,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 440,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 442,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 444,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 446,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 448,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 450,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 452,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 454,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 456,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 458,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 460,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 462,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 464,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 466,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 468,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 470,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 472,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 474,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 476,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 478,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 480,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 482,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 484,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 486,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 488,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 490,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 492,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 494,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 496,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 498,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 500,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 502,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 504,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 506,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 508,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 510,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 512,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 514,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 516,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 518,
+				"regCnt": 2,
+				"value": -999.9000244140625
+			},
+			{
+				"addr": 520,
+				"regCnt": 2,
+				"value": 0
+			}
+		]
+	},
+	"bit": {
+		"minAddr": 0,
+		"maxAddr": 10,
+		"point": [
+			{
+				"addr": 0,
+				"regCnt": 1,
+				"value": false
+			},
+			{
+				"addr": 1,
+				"regCnt": 1,
+				"value": false
+			},
+			{
+				"addr": 6,
+				"regCnt": 1,
+				"value": true
+			},
+			{
+				"addr": 8,
+				"regCnt": 1,
+				"value": false
+			},
+			{
+				"addr": 10,
+				"regCnt": 1,
+				"value": true
+			}
+		]
+	},
+	"int4Byte": {
+		"minAddr": 64,
+		"maxAddr": 66,
+		"point": [
+			{
+				"addr": 64,
+				"regCnt": 2,
+				"value": 0
+			},
+			{
+				"addr": 66,
+				"regCnt": 2,
+				"value": 0
+			}
+		]
+	}
+}
