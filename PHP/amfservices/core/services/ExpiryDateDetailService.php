@@ -353,7 +353,7 @@ class ExpiryDateDetailService
 		{
 			$sql['sql_text'] = "
 				UPDATE TRANSP_EQUIP SET EQPT_LAST_MODIFIED=current_date 
-				WHERE EQPT_CODE=:code";
+				WHERE EQPT_ID=:code";
 			$sql['sql_data'] = array($data->ed_object_id);
 		}
 		$comment_res = $mydb->update($sql);
@@ -413,12 +413,12 @@ class ExpiryDateDetailService
 		{
 			$sql['sql_text'] = "
 				UPDATE TRANSP_EQUIP SET EQPT_LAST_MODIFIED=current_date 
-				WHERE EQPT_CODE=:code";
+				WHERE EQPT_ID=:code";
 			$sql['sql_data'] = array($data->ed_object_id);
 		}
-		// logMe($sql['sql_text'], EXPIRYDATEDETAILSERVICE);
+		logMe($sql['sql_text'], EXPIRYDATEDETAILSERVICE);
 		$comment_res = $mydb->update($sql);
-		if ( $comment_res != RETURN_OK )
+		if ($comment_res != RETURN_OK)
 		{
 			return "ERROR";
 		}
@@ -472,7 +472,7 @@ class ExpiryDateDetailService
 		{
 			$sql['sql_text'] = "
 				UPDATE TRANSP_EQUIP SET EQPT_LAST_MODIFIED=current_date 
-				WHERE EQPT_CODE=:code";
+				WHERE EQPT_ID=:code";
 			$sql['sql_data'] = array($data->ed_object_id);
 		}
 		$comment_res = $mydb->update($sql);
