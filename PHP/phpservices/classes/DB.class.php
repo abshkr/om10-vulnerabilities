@@ -204,10 +204,70 @@ class DB{
         }
     }
     
+    private function oracle_escape_string($str){
+        $str = str_replace("'", "\'", $str);
+        $str = str_replace(";", "", $str);
+        return str_replace("\"", "\\\"", $str);
+    }
+
+    // write a function to get CUrrent Session
+    private function getSessionStatus(){
+        if(isset($_SESSION['SESSION']) && isset($_SESSION['PERCODE'])){
+            // get the session varible and sanitize it in case somebody hijacked our session
+            $curr_session_id = $this->oracle_escape_string($_SESSION['SESSION']);
+            $user              = $this->oracle_escape_string($_SESSION['PERCODE']);
+            $lang              = $this->oracle_escape_string($_SESSION['LANGUAGE']);
+            // initialize the result Object
+            $result          = array();
+            // insert the Server Time
+            $result['NLS_CHARACTERSET'] = strtoupper($_SERVER['NLS_LANG']);
+            $result['LANGUAGE'] = $lang;
+            $result['SERVER_TIME'] = date('Y-m-d H:i');
+            // build the SQL for retrieving a valid session variable then insert it to the result object
+            $sql              = "SELECT sess_id SESSION_ID FROM HTTP_SESSION_TRACE WHERE per_code='$user' and sess_id='$curr_session_id'";
+            $stid              = oci_parse($this->connect, $sql);
+            $valid_session      = array();
+            oci_execute($stid);
+            while ($row = oci_fetch_object($stid))$valid_session[] = $row;
+            $result['VALID_SESSION'] = (sizeof($valid_session)>=1);
+            // get last Sequence Number for Alarm
+            $sql              ="SELECT MAX(SEQ) AS LAST FROM GUI_SITE_JOURNAL WHERE GEN_DATE > SYSDATE-1";
+             $stid              = oci_parse($this->connect, $sql);
+             $res             = array();
+             oci_execute($stid);
+            while ($row = oci_fetch_object($stid))$res[] = $row;
+            $lastSequence      = $res[0]->LAST;
+            if(!isset($_SESSION["ALARM_LAST_SEQUENCE"])){
+                $_SESSION["ALARM_LAST_SEQUENCE"] = $lastSequence;
+            }
+            $sesLastSequence = $_SESSION["ALARM_LAST_SEQUENCE"];
+            $result['ALARM_LAST_SEQUENCE']        = $lastSequence;
+            $result['ALARM_PREVIOUS_SEQUENCE'] = $sesLastSequence;
+            if($sesLastSequence != $lastSequence){
+                // get Alarm Data
+                $sql = "SELECT * FROM GUI_SITE_JOURNAL WHERE SEQ > $sesLastSequence AND MSG_EVENT = 'ALARM' AND REGION_CODE = '".$lang."' ORDER BY GEN_DATE ASC";
+                $stid  = oci_parse($this->connect, $sql);
+                $data  = array();
+                oci_execute($stid);
+                while (($row = oci_fetch_object($stid))){$data[] = $row;}
+                $result["ALARM_DATA"] = $data;
+            }
+            $_SESSION["ALARM_LAST_SEQUENCE"] = $lastSequence;
+            return $result;
+        }
+        return false;
+    }
+
     public static function getInstance(){ 
         if (!self::$dbInstance){ 
             self::$dbInstance = new DB(); 
         } 
+
+        if (!(self::$dbInstance->getSessionStatus()))
+        {
+            logMe("Session ID not valid any more", PERSONCLASS);
+            return null;
+        }
         return self::$dbInstance; 
     }
 

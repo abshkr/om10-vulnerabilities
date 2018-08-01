@@ -15,7 +15,7 @@ function http_get_cgi($cgi)
  
     foreach ($_GET as $key => $value)
     {
-        $url .= $key . "=". rawurlencode($value) . "&";
+        $url .= $key . "=". rawurlencode(strip_tags($value)) . "&";
     }
     //$url = substr($url, 0, -1);
     $url .= "sess_id=" . $_SESSION["SESSION"];
@@ -30,7 +30,7 @@ function http_post_cgi($cgi)
     $url = $PROTOCOL . $HOST . "/" . $cgi . "?";
     foreach ($_POST as $key => $value)
     {
-        $url .= $key . "=". rawurlencode($value) . "&";
+        $url .= $key . "=". rawurlencode(strip_tags($value)) . "&";
     }
     //$url = substr($url, 0, -1);
     $url .= "sess_id=" . $_SESSION["SESSION"];
