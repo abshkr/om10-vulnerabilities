@@ -1628,8 +1628,8 @@
 						<s:GridColumn dataField="tnkr_lic_exp" headerText="{global.exp7}" itemRenderer="renderers.DateRenderer" visible="true" visible.widget="false"></s:GridColumn>
 						<s:GridColumn dataField="tnkr_dglic_exp" headerText="{global.exp8}" itemRenderer="renderers.DateRenderer" visible="true" visible.widget="false"></s:GridColumn>
 						<s:GridColumn dataField="tnkr_ins_exp" headerText="{global.exp9}" itemRenderer="renderers.DateRenderer" visible="true" visible.widget="false"></s:GridColumn>
-						<s:GridColumn dataField="tnkr_last_modified" headerText="{resourceManager.getString('default','LAST_MODIFIED')}" itemRenderer="renderers.TimeStampRenderer" width="140" ></s:GridColumn>
-						<s:GridColumn dataField="tnkr_last_used" headerText="{resourceManager.getString('default','LAST_USED')}" itemRenderer="renderers.TimeStampRenderer" width="140"></s:GridColumn>
+						<s:GridColumn dataField="tnkr_last_modified" headerText="{resourceManager.getString('default','LAST_MODIFIED')}" width="140" ></s:GridColumn>
+						<s:GridColumn dataField="tnkr_last_used" headerText="{resourceManager.getString('default','LAST_USED')}" width="140"></s:GridColumn>
 					</s:source>
 				</s:ArrayList>
 			</s:columns>

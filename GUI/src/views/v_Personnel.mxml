@@ -1412,6 +1412,7 @@
 					<s:source>
 						<s:GridColumn dataField="per_code" headerText="{resourceManager.getString('default','global.lbl.code')}" width="80"/>
 						<s:GridColumn dataField="per_name" headerText="{resourceManager.getString('default','global.lbl.name')}" width="200"/>
+						<s:GridColumn dataField="per_email" headerText="Email" width="200"/>
 						<s:GridColumn dataField="per_cmpy" headerText="{resourceManager.getString('default','datagrid.headercaption.EmployerCode')}" excludeFrom="widget"  width="110"/>
 						<s:GridColumn dataField="cmpy_name" headerText="{resourceManager.getString('default','datagrid.headercaption.EmployerName')}" excludeFrom="widget" width="200"/>
 						<s:GridColumn dataField="per_auth" labelFunction="roleLabelFunc" headerText="{resourceManager.getString('default','global.lbl.role')}" width="100"/>
@@ -1428,8 +1429,8 @@
 						<s:GridColumn dataField="per_lock" headerText="{resourceManager.getString('default','datagrid.headercaption.areaaccess')}" width="100"  itemRenderer="renderers.GridLockRender"/>
 						<s:GridColumn dataField="user_status_flag" headerText="{resourceManager.getString('default','global.lbl.status')}" width="80" labelFunction="statusFunction"/>
 						<s:GridColumn dataField="per_department" headerText="{resourceManager.getString('default','global.lbl.department')}" width="80"></s:GridColumn>
-						<s:GridColumn dataField="user_last_reason" headerText="{resourceManager.getString('default','LAST_MODIFIED')}"  itemRenderer="renderers.TimeStampRenderer"/>
-						<s:GridColumn dataField="per_last_dmy" headerText="{resourceManager.getString('default','LAST_USED')}" itemRenderer="renderers.TimeStampRenderer" />
+						<s:GridColumn dataField="user_last_reason" headerText="{resourceManager.getString('default','LAST_MODIFIED')}"  itemRenderer="renderers.DateTimeRenderer"/>
+						<s:GridColumn dataField="per_last_dmy" headerText="{resourceManager.getString('default','LAST_USED')}" itemRenderer="renderers.DateTimeRenderer" />
 						<s:GridColumn dataField="per_terminal" headerText="{resourceManager.getString('default','PER_TERMINAL')}" width="80" visible="false"></s:GridColumn>
 						<s:GridColumn dataField="user_login_count" headerText="{resourceManager.getString('default','PER_LOGIN_COUNT')}" width="80" visible="false"></s:GridColumn>
 						<!--s:GridColumn dataField="per_comments" headerText="{resourceManager.getString('default','PER_COMMENTS')}" width="80" visible="false"></s:GridColumn-->
