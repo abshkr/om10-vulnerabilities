@@ -75,6 +75,47 @@ class PersonnelService
 		
 		return "OK";
     }
+
+    //get the personnel comment by personnel code
+    public function getPersonnelEmail($per_code)
+	{
+        $mydb = DB::getInstance();
+		$sql = array();
+        $sql['sql_text'] = "SELECT PER_EMAIL FROM GUI_PERSONNEL WHERE PER_CODE=:per_code";
+		$sql['sql_data'] = array( $per_code );
+		
+        $rows = $mydb->query($sql, "N");
+
+		if ( is_null($rows[0]->PER_EMAIL) == TRUE || $rows[0]->PER_EMAIL=="" )
+		{
+			$comments = "";
+		}
+		else
+		{
+			$comments = $rows[0]->PER_EMAIL;
+		}
+		
+		return($comments);
+    }
+	
+	//set the personnel comment by personnel code
+    public function setPersonnelEmail($per_code, $per_email)
+	{
+        $mydb = DB::getInstance();
+		$sql = array();
+        $sql['sql_text'] = "UPDATE PERSONNEL SET PER_EMAIL=:per_email WHERE PER_CODE=:per_code ";
+		$sql['sql_data'] = array( $per_email, $per_code );
+		
+        $comment_res = $mydb->update($sql);
+        logMe("Update the personnel email succeeded!!!",PERSONNELSERVICE);
+		
+		if ( $comment_res != RETURN_OK )
+		{
+			return "ERROR";
+		}
+		
+		return "OK";
+    }
 	
 }
 ?>
