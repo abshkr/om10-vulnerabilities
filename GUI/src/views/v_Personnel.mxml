@@ -1465,6 +1465,11 @@
 					<components:DKI_ValidatorInput id="per_nameTextInput" width="{fieldWidth}" text="{personnel_vo.per_name}" maxChars="49" required="true" 
 												   automationName="{resourceManager.getString('default','global.lbl.name')}" validationGroup="{vg}" validationType="document"/>
 				</s:HGroup>
+				<!--<s:HGroup>
+					<s:Label width="{labelWidth}" height="100%" text="Email" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="per_emailTextInput" width="{fieldWidth}" text="{personnel_vo.per_email}" maxChars="49" required="true" 
+												   automationName="Email" validationGroup="{vg}" validationType="document"/>
+				</s:HGroup>-->
 				<!--<s:HGroup includeIn="create">
 					<s:Label width="{labelWidth}" height="100%" text="{resourceManager.getString('default','PER_PASSWD')}" verticalAlign="middle"/>
 					<components:DKI_ValidatorInput id="per_password" width="{fieldWidth}" text="" displayAsPassword="true"/>
