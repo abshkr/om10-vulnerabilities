@@ -1412,7 +1412,7 @@
 					<s:source>
 						<s:GridColumn dataField="per_code" headerText="{resourceManager.getString('default','global.lbl.code')}" width="80"/>
 						<s:GridColumn dataField="per_name" headerText="{resourceManager.getString('default','global.lbl.name')}" width="200"/>
-						<s:GridColumn dataField="per_email" headerText="Email" width="200"/>
+						<s:GridColumn dataField="per_email" headerText="Email" width="200" visible="false"/>
 						<s:GridColumn dataField="per_cmpy" headerText="{resourceManager.getString('default','datagrid.headercaption.EmployerCode')}" excludeFrom="widget"  width="110"/>
 						<s:GridColumn dataField="cmpy_name" headerText="{resourceManager.getString('default','datagrid.headercaption.EmployerName')}" excludeFrom="widget" width="200"/>
 						<s:GridColumn dataField="per_auth" labelFunction="roleLabelFunc" headerText="{resourceManager.getString('default','global.lbl.role')}" width="100"/>
@@ -1469,10 +1469,6 @@
 					<s:Label width="{labelWidth}" height="100%" text="Email" verticalAlign="middle"/>
 					<components:DKI_ValidatorInput id="per_emailTextInput" width="{fieldWidth}" text="{personnel_vo.per_email}" maxChars="49" required="true" 
 												   automationName="Email" validationGroup="{vg}" validationType="document"/>
-				</s:HGroup>-->
-				<!--<s:HGroup includeIn="create">
-					<s:Label width="{labelWidth}" height="100%" text="{resourceManager.getString('default','PER_PASSWD')}" verticalAlign="middle"/>
-					<components:DKI_ValidatorInput id="per_password" width="{fieldWidth}" text="" displayAsPassword="true"/>
 				</s:HGroup>-->
 				<s:HGroup>
 					<s:Label width="{labelWidth}" height="100%" text="{resourceManager.getString('default','global.lbl.department')}" verticalAlign="middle"/>
