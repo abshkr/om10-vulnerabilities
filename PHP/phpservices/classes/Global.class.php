@@ -219,6 +219,14 @@ class GlobalClass {
         //XarrayEncodingConversion($rows);
         return (prepareForAMF($rows, array(0 => $tbl_name)));
     }
+
+    public function getAllwithoutLogin($tbl_name){
+        $mydb = DB::getInstanceWithoutAuth();
+        $sql="SELECT * FROM $tbl_name";
+        $rows = $mydb->query($sql);
+        //XarrayEncodingConversion($rows);
+        return (prepareForAMF($rows, array(0 => $tbl_name)));
+    }
    
     public function getPaged($tbl_name,$offset,$tot,$filter='',$sort='')
     {

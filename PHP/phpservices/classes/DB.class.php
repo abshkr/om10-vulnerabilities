@@ -271,6 +271,14 @@ class DB{
         return self::$dbInstance; 
     }
 
+    public static function getInstanceWithoutAuth(){ 
+        if (!self::$dbInstance){ 
+            self::$dbInstance = new DB(); 
+        } 
+
+        return self::$dbInstance; 
+    }
+
     /* getInstance with 4 parameters */
     public static function getInstance4p($username, $password, $server, $sessionid) {
         if (!self::$dbInstance) { 

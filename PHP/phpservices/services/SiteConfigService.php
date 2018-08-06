@@ -11,7 +11,7 @@ class SiteConfigService
 
 		$g = new GlobalClass();
         
-		$rows = $g->getAll($this->tbl_name);
+		$rows = $g->getAllwithoutLogin($this->tbl_name);
         return $rows;
     }
 	
