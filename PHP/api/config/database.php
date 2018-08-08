@@ -1,7 +1,7 @@
 <?php
 class Database 
 {
-	// specify your own database credentials
+    // specify your own database credentials
     private $host = "localhost";
     private $db_name = "localhost/OML5K";
     private $username = "test_coogee2";
@@ -9,8 +9,8 @@ class Database
     public $conn;
  
     // get the database connection
-    public function getConnection(){
- 
+    public function getConnection()
+    {
         $this->conn = oci_connect($this->username, $this->password, $this->db_name, 'AL32UTF8');
         
         if (!($this->conn))

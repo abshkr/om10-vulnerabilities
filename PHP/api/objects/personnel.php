@@ -163,6 +163,14 @@ class Personnel
         }
     }
 
+    //Calls CGI. This is because there is some logic inside CGI
+    //Do not want to reimplement this funciton in PHP
+    // function create()
+    // {
+
+    // }
+
+    // pure php function
     function create()
     {
         // query to insert record
@@ -284,5 +292,241 @@ class Personnel
         oci_commit();
         oci_free_statement($stmt);
         return true;
+    }
+
+    public function readOne()
+    {
+        $query = "
+            SELECT PER_CODE,
+                PER_NAME,
+                PER_CMPY,
+                PER_AUTH,
+                PER_LOCK,
+                PER_LAST_DMY,
+                PER_DEPARTMENT,
+                PER_LICENCE_NO,
+                PER_NEXT_MSG,
+                PER_LEVEL_NUM,
+                PER_TERMINAL,
+                PER_COMMENTS,
+                CMPY_CODE,
+                CMPY_NAME,
+                CMPY_TYPE,
+                CMPY_COMPRESS_BL,
+                CMPY_CHECK_LICEN,
+                CMPY_LDGO_DELTA,
+                CMPY_MSG,
+                CMPY_VET,
+                CMPY_TKR_CFG,
+                CMPY_ENABLE_EXPD,
+                CMPY_SEAL_NUMBER,
+                CMPY_EXP_CODE,
+                CMPY_ISSU,
+                CMPY_HOST,
+                CMPY_AOI,
+                CMPY_AUTO_LD,
+                CMPY_RTN_PROMPT,
+                CMPY_ADD_PROMPT,
+                CMPY_LOG_LD_DEL,
+                CMPY_HOST_DOCS,
+                CMPY_COMMS_OK,
+                CMPY_TKR_ACTIVAT,
+                CMPY_BOL_VP_NAME,
+                CMPY_LD_REP_VP,
+                CMPY_DRV_INST_VP,
+                CMPY_WGH_COMPLET,
+                CMPY_WGH_AUTO_FL,
+                CMPY_ORD_CARRIER,
+                CMPY_WIPE_ORDETS,
+                CMPY_RPT_T_UNIT,
+                CMPY_RPT_TEMP,
+                CMPY_AUTO_RECONC,
+                CMPY_BAY_LOOP_CH,
+                CMPY_MOD_DRAWER,
+                CMPY_MUST_SEALNO,
+                CMPY_BLTOL_FLAG,
+                CMPY_LDTOL_FLAG,
+                CMPY_REQ_PIN_FLAG,
+                PT_PSNCODE,
+                PT_TIMECD,
+                PERL_PSN,
+                PERL_ARA,
+                PERL_ENTER_TIME,
+                USER_ID,
+                USER_CODE,
+                USER_USERNAME,
+                USER_TYPE,
+                USER_STATUS_FLAG,
+                USER_LOGIN_COUNT,
+                USER_LAST_REASON,
+                VALID_TIME,
+                EXPIRE_TIME,
+                RECORD_SWITCH,
+                RECORD_ORDER                    
+            FROM
+                " . $this->table_name . " 
+            WHERE PER_CODE = :per_code
+            ORDER BY PER_CODE";
+                
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        
+        if (oci_execute($stmt)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            // extract(array_change_key_case($row);
+            $this->per_code = $row['PER_CODE'];
+            $this->per_name = $row['PER_NAME'];
+            $this->per_cmpy = $row['PER_CMPY'];
+            $this->per_auth = $row['PER_AUTH'];
+            $this->per_lock = $row['PER_LOCK'];
+            $this->per_last_dmy = $row['PER_LAST_DMY'];
+            $this->per_department = $row['PER_DEPARTMENT'];
+            $this->per_licence_no = $row['PER_LICENCE_NO'];
+            $this->per_next_msg = $row['PER_NEXT_MSG'];
+            $this->per_level_num = $row['PER_LEVEL_NUM'];
+            $this->per_terminal = $row['PER_TERMINAL'];
+            $this->per_comments = html_entity_decode($row['PER_COMMENTS']);
+            $this->cmpy_code = $row['CMPY_CODE'];
+            $this->cmpy_name = $row['CMPY_NAME'];
+            $this->cmpy_type = $row['CMPY_TYPE'];
+            $this->cmpy_compress_bl = $row['CMPY_COMPRESS_BL'];
+            $this->cmpy_check_licen = $row['CMPY_CHECK_LICEN'];
+            $this->cmpy_ldgo_delta = $row['CMPY_LDGO_DELTA'];
+            $this->cmpy_msg = $row['CMPY_MSG'];
+            $this->cmpy_vet = $row['CMPY_VET'];
+            $this->cmpy_tkr_cfg = $row['CMPY_TKR_CFG'];
+            $this->cmpy_enable_expd = $row['CMPY_ENABLE_EXPD'];
+            $this->cmpy_seal_number = $row['CMPY_SEAL_NUMBER'];
+            $this->cmpy_exp_code = $row['CMPY_EXP_CODE'];
+            $this->cmpy_issu = $row['CMPY_ISSU'];
+            $this->cmpy_host = $row['CMPY_HOST'];
+            $this->cmpy_aoi = $row['CMPY_AOI'];
+            $this->cmpy_auto_ld = $row['CMPY_AUTO_LD'];
+            $this->cmpy_rtn_prompt = $row['CMPY_RTN_PROMPT'];
+            $this->cmpy_add_prompt = $row['CMPY_ADD_PROMPT'];
+            $this->cmpy_log_ld_del = $row['CMPY_LOG_LD_DEL'];
+            $this->cmpy_host_docs = $row['CMPY_HOST_DOCS'];
+            $this->cmpy_comms_ok = $row['CMPY_COMMS_OK'];
+            $this->cmpy_tkr_activat = $row['CMPY_TKR_ACTIVAT'];
+            $this->cmpy_bol_vp_name = $row['CMPY_BOL_VP_NAME'];
+            $this->cmpy_ld_rep_vp = $row['CMPY_LD_REP_VP'];
+            $this->cmpy_drv_inst_vp = $row['CMPY_DRV_INST_VP'];
+            $this->cmpy_wgh_complet = $row['CMPY_WGH_COMPLET'];
+            $this->cmpy_wgh_auto_fl = $row['CMPY_WGH_AUTO_FL'];
+            $this->cmpy_ord_carrier = $row['CMPY_ORD_CARRIER'];
+            $this->cmpy_wipe_ordets = $row['CMPY_WIPE_ORDETS'];
+            $this->cmpy_rpt_t_unit = $row['CMPY_RPT_T_UNIT'];
+            $this->cmpy_rpt_temp = $row['CMPY_RPT_TEMP'];
+            $this->cmpy_auto_reconc = $row['CMPY_AUTO_RECONC'];
+            $this->cmpy_bay_loop_ch = $row['CMPY_BAY_LOOP_CH'];
+            $this->cmpy_mod_drawer = $row['CMPY_MOD_DRAWER'];
+            $this->cmpy_must_sealno = $row['CMPY_MUST_SEALNO'];
+            $this->cmpy_bltol_flag = $row['CMPY_BLTOL_FLAG'];
+            $this->cmpy_ldtol_flag = $row['CMPY_LDTOL_FLAG'];
+            $this->cmpy_req_pin_flag = $row['CMPY_REQ_PIN_FLAG'];
+            $this->pt_psncode = $row['PT_PSNCODE'];
+            $this->pt_timecd = $row['PT_TIMECD'];
+            $this->perl_psn = $row['PERL_PSN'];
+            $this->perl_ara = $row['PERL_ARA'];
+            $this->perl_enter_time = $row['PERL_ENTER_TIME'];
+            $this->user_id = $row['USER_ID'];
+            $this->user_code = $row['USER_CODE'];
+            $this->user_username = $row['USER_USERNAME'];
+            $this->user_type = $row['USER_TYPE'];
+            $this->user_status_flag = $row['USER_STATUS_FLAG'];
+            $this->user_login_count = $row['USER_LOGIN_COUNT'];
+            $this->user_last_reason = $row['USER_LAST_REASON'];
+            $this->valid_time = $row['VALID_TIME'];
+            $this->expire_time = $row['EXPIRE_TIME'];
+            $this->record_switch = $row['RECORD_SWITCH'];
+            $this->record_order = $row['RECORD_ORDER'];
+        }
+    }
+
+    public function search($keyword)
+    {
+        $query = "
+            SELECT PER_CODE,
+                PER_NAME,
+                PER_CMPY,
+                PER_AUTH,
+                PER_LOCK,
+                PER_LAST_DMY,
+                PER_DEPARTMENT,
+                PER_LICENCE_NO,
+                PER_NEXT_MSG,
+                PER_LEVEL_NUM,
+                PER_TERMINAL,
+                PER_COMMENTS,
+                CMPY_CODE,
+                CMPY_NAME,
+                CMPY_TYPE,
+                CMPY_COMPRESS_BL,
+                CMPY_CHECK_LICEN,
+                CMPY_LDGO_DELTA,
+                CMPY_MSG,
+                CMPY_VET,
+                CMPY_TKR_CFG,
+                CMPY_ENABLE_EXPD,
+                CMPY_SEAL_NUMBER,
+                CMPY_EXP_CODE,
+                CMPY_ISSU,
+                CMPY_HOST,
+                CMPY_AOI,
+                CMPY_AUTO_LD,
+                CMPY_RTN_PROMPT,
+                CMPY_ADD_PROMPT,
+                CMPY_LOG_LD_DEL,
+                CMPY_HOST_DOCS,
+                CMPY_COMMS_OK,
+                CMPY_TKR_ACTIVAT,
+                CMPY_BOL_VP_NAME,
+                CMPY_LD_REP_VP,
+                CMPY_DRV_INST_VP,
+                CMPY_WGH_COMPLET,
+                CMPY_WGH_AUTO_FL,
+                CMPY_ORD_CARRIER,
+                CMPY_WIPE_ORDETS,
+                CMPY_RPT_T_UNIT,
+                CMPY_RPT_TEMP,
+                CMPY_AUTO_RECONC,
+                CMPY_BAY_LOOP_CH,
+                CMPY_MOD_DRAWER,
+                CMPY_MUST_SEALNO,
+                CMPY_BLTOL_FLAG,
+                CMPY_LDTOL_FLAG,
+                CMPY_REQ_PIN_FLAG,
+                PT_PSNCODE,
+                PT_TIMECD,
+                PERL_PSN,
+                PERL_ARA,
+                PERL_ENTER_TIME,
+                USER_ID,
+                USER_CODE,
+                USER_USERNAME,
+                USER_TYPE,
+                USER_STATUS_FLAG,
+                USER_LOGIN_COUNT,
+                USER_LAST_REASON,
+                VALID_TIME,
+                EXPIRE_TIME,
+                RECORD_SWITCH,
+                RECORD_ORDER                    
+            FROM
+                " . $this->table_name . " 
+            WHERE PER_CODE LIKE :per_code 
+                OR PER_NAME LIKE :per_name
+            ORDER BY PER_CODE";
+        
+        $stmt = oci_parse($this->conn, $query);
+        $keyword = htmlspecialchars(strip_tags($keyword));
+        $keyword = "%{$keyword}%";
+        oci_bind_by_name($stmt, ':per_code', $keyword);
+        oci_bind_by_name($stmt, ':per_name', $keyword);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            return null;
+        }
     }
 }
