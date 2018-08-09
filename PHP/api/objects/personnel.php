@@ -529,4 +529,106 @@ class Personnel
             return null;
         }
     }
+
+    // read products with pagination
+    public function readPaging($from_record_num, $to_record_num)
+    {
+        // select query
+        $query = "
+            SELECT * FROM (
+            SELECT RES.*, ROW_NUMBER() OVER (ORDER BY PER_CODE) RN 
+            FROM
+            (
+            SELECT PER_CODE,
+                PER_NAME,
+                PER_CMPY,
+                PER_AUTH,
+                PER_LOCK,
+                PER_LAST_DMY,
+                PER_DEPARTMENT,
+                PER_LICENCE_NO,
+                PER_NEXT_MSG,
+                PER_LEVEL_NUM,
+                PER_TERMINAL,
+                PER_COMMENTS,
+                CMPY_CODE,
+                CMPY_NAME,
+                CMPY_TYPE,
+                CMPY_COMPRESS_BL,
+                CMPY_CHECK_LICEN,
+                CMPY_LDGO_DELTA,
+                CMPY_MSG,
+                CMPY_VET,
+                CMPY_TKR_CFG,
+                CMPY_ENABLE_EXPD,
+                CMPY_SEAL_NUMBER,
+                CMPY_EXP_CODE,
+                CMPY_ISSU,
+                CMPY_HOST,
+                CMPY_AOI,
+                CMPY_AUTO_LD,
+                CMPY_RTN_PROMPT,
+                CMPY_ADD_PROMPT,
+                CMPY_LOG_LD_DEL,
+                CMPY_HOST_DOCS,
+                CMPY_COMMS_OK,
+                CMPY_TKR_ACTIVAT,
+                CMPY_BOL_VP_NAME,
+                CMPY_LD_REP_VP,
+                CMPY_DRV_INST_VP,
+                CMPY_WGH_COMPLET,
+                CMPY_WGH_AUTO_FL,
+                CMPY_ORD_CARRIER,
+                CMPY_WIPE_ORDETS,
+                CMPY_RPT_T_UNIT,
+                CMPY_RPT_TEMP,
+                CMPY_AUTO_RECONC,
+                CMPY_BAY_LOOP_CH,
+                CMPY_MOD_DRAWER,
+                CMPY_MUST_SEALNO,
+                CMPY_BLTOL_FLAG,
+                CMPY_LDTOL_FLAG,
+                CMPY_REQ_PIN_FLAG,
+                PT_PSNCODE,
+                PT_TIMECD,
+                PERL_PSN,
+                PERL_ARA,
+                PERL_ENTER_TIME,
+                USER_ID,
+                USER_CODE,
+                USER_USERNAME,
+                USER_TYPE,
+                USER_STATUS_FLAG,
+                USER_LOGIN_COUNT,
+                USER_LAST_REASON,
+                VALID_TIME,
+                EXPIRE_TIME,
+                RECORD_SWITCH,
+                RECORD_ORDER                    
+            FROM
+                " . $this->table_name . " 
+            ORDER BY PER_CODE) RES
+            )
+            WHERE RN BETWEEN :start_index AND :end_index";
+        
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':start_index', $from_record_num, -1, SQLT_INT);
+        oci_bind_by_name($stmt, ':end_index', $to_record_num, -1, SQLT_INT);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            return null;
+        }
+    }
+
+    // used for paging products
+    public function count(){
+        $query = "SELECT COUNT(*) TOTAL_ROWS FROM " . $this->table_name . "";
+     
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            return $row['TOTAL_ROWS'];
+        }
+    }
 }

@@ -18,8 +18,8 @@ $personnel = new Personnel($db);
 $stmt = $personnel->read();
  
 // products array
-$personnel_arr = array();
-$personnel_arr["records"] = array();
+$personnels_arr = array();
+$personnels_arr["records"] = array();
 $num = 0;
 
 // retrieve our table contents
@@ -100,11 +100,11 @@ while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
             "record_order" => $record_order
     );
 
-    array_push($personnel_arr["records"], $personnel_item);
+    array_push($personnels_arr["records"], $personnel_item);
 }
 
 if ($num > 0) {
-    echo json_encode($personnel_arr, JSON_PRETTY_PRINT);
+    echo json_encode($personnels_arr, JSON_PRETTY_PRINT);
 
     // switch (json_last_error()) {
     //     case JSON_ERROR_NONE:
