@@ -1,7 +1,9 @@
 <?php
+
+include_once '../config/journal.php';
+
 class Personnel 
 {
-    
     // database connection and table name
     private $conn;
     private $table_name = "GUI_PERSONNEL";
@@ -221,7 +223,7 @@ class Personnel
         oci_bind_by_name($stmt, ':per_comments', $this->per_comments);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            oci_free_statement($stmt);
+            oci_rollback($stmt);
             return false;
         }
 
@@ -240,7 +242,7 @@ class Personnel
         oci_bind_by_name($stmt, ':user_password', $this->default_pwd);
         
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            oci_free_statement($stmt);
+            oci_rollback($stmt);
             return false;
         }
 
@@ -255,7 +257,7 @@ class Personnel
         oci_bind_by_name($stmt, ':pt_timecd', $this->pt_timecd);
         
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            oci_free_statement($stmt);
+            oci_rollback($stmt);
             return false;
         }
 
@@ -270,7 +272,7 @@ class Personnel
         oci_bind_by_name($stmt, ':perl_ara', $this->perl_ara);
         
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            oci_free_statement($stmt);
+            oci_rollback($stmt);
             return false;
         }
 
@@ -285,12 +287,23 @@ class Personnel
         oci_bind_by_name($stmt, ':pwdtrace_pwd', $this->default_pwd);
         
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            oci_free_statement($stmt);
+            oci_rollback($stmt);
+            return false;
+        }
+
+        $journal = new Journal($this->conn);
+        $data[0] = "TEST";  //TODO USER
+        $data[1] = "PERSONNEL";
+        $data[2] = $this->per_code;
+
+        if (!$journal->jnlLogEvent(
+            Lookup::RECORD_ADD, $data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+        {
+            oci_rollback($stmt);
             return false;
         }
 
         oci_commit();
-        oci_free_statement($stmt);
         return true;
     }
 

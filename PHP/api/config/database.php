@@ -7,6 +7,17 @@ class Database
     private $username = "test_coogee2";
     private $password = "abcd1234";
     public $conn;
+
+    public function __construct()
+    {
+        $this->username = (isset($_SERVER['OMEGA_USER']) ? $_SERVER['OMEGA_USER'] : 'test_coogee2');
+        $this->password = (isset($_SERVER['OMEGA_PWD']) ? $_SERVER['OMEGA_PWD'] : 'abcd1234');
+        $this->db_name = 'localhost' . (isset($_SERVER['DB_PORT']) ? ':' . $_SERVER['DB_PORT'] : '') .
+            (isset($_SERVER['DB_DBASE']) ? '/' . $_SERVER['DB_DBASE'] : '/OML5K');
+        // echo $this->username;
+        // echo $this->password;
+        // echo $this->db_name;
+    }
  
     // get the database connection
     public function getConnection()

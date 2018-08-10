@@ -1,6 +1,6 @@
 <?php
-class Utilities{
- 
+class Utilities
+{ 
     public function getPaging($page, $total_rows, $records_per_page, $page_url)
     {
         // paging array
