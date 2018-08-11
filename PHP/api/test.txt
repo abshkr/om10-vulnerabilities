@@ -2,3 +2,6 @@ http://10.2.20.53/api/personnel/read.php
 http://10.2.20.53/api/personnel/read_one.php?per_code=cw2
 http://10.2.20.53/api/personnel/search.php?s=cw
 http://10.2.20.53/api/personnel/read_page.php?page=2
+
+http://10.2.20.53/api/personnel/create.php
+http://10.2.20.53/api/personnel/update.php

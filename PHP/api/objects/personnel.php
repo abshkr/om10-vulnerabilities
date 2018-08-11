@@ -177,7 +177,7 @@ class Personnel
     function create()
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-        
+
         // query to insert record
         //'a1qhH6yu9Tjg.', // encryption of default pw '12345'
         $query = "INSERT INTO PERSONNEL 
@@ -295,19 +295,87 @@ class Personnel
             return false;
         }
 
-        $journal = new Journal($this->conn);
-        $data[0] = "TEST";  //TODO USER
-        $data[1] = "PERSONNEL";
-        $data[2] = $this->per_code;
+        $journal = new Journal($this->conn, false);
+        $jnl_data[0] = "DKI_SUPER_USER";  //TODO USER
+        $jnl_data[1] = "PERSONNEL";
+        $jnl_data[2] = $this->per_code;
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ADD, $data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+            Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
         {
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        oci_commit($this->conn);
+        return true;
+    }
+
+    public function update()
+    {
+        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
+        $query = "
+            UPDATE PERSONNEL
+            SET PER_LOCK = :per_lock,
+                PER_NAME = :per_name,
+                PER_DEPARTMENT= DECODE(:per_department, '-1', NULL, :per_department),
+                PER_LICENCE_NO = DECODE(:per_licence_no, '-1', NULL, :per_licence_no),
+                PER_AUTH = :per_auth,
+                PER_CMPY = :per_cmpy,
+                PER_COMMENTS = :per_comments,
+                PER_LEVEL_NUM = :per_level_num
+            WHERE TRIM(PER_CODE) = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        oci_bind_by_name($stmt, ':per_name', $this->per_name);
+        oci_bind_by_name($stmt, ':per_cmpy', $this->per_cmpy);
+        oci_bind_by_name($stmt, ':per_auth', $this->per_auth);
+        oci_bind_by_name($stmt, ':per_lock', $this->per_lock);
+        oci_bind_by_name($stmt, ':per_department', $this->per_department);
+        oci_bind_by_name($stmt, ':per_licence_no', $this->per_licence_no);
+        oci_bind_by_name($stmt, ':per_level_num', $this->per_level_num);
+        oci_bind_by_name($stmt, ':per_comments', $this->per_comments);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            // $err_str = oci_error($stmt)['message'];
             oci_rollback($this->conn);;
             return false;
         }
 
-        oci_commit();
+        $query = "
+            UPDATE PER_TIMECODE   
+            SET PT_TIMECD = :pt_timecd  
+            WHERE TRIM(PT_PSNCODE) = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pt_timecd', $this->pt_timecd);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            oci_rollback($this->conn);;
+            return false;
+        }
+
+        $query = "UPDATE PERS_IN_AREA SET PERL_ARA = :perl_ara
+            WHERE TRIM(PERL_PSN) = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':perl_ara', $this->perl_ara);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            oci_rollback($this->conn);;
+            return false;
+        }
+
+        $journal = new Journal($this->conn, false);
+        $jnl_data[0] = "DKI_SUPER_USER";  //TODO USER
+        $jnl_data[1] = "PERSONNEL";
+        $jnl_data[2] = $this->per_code;
+
+        if (!$journal->jnlLogEvent(
+            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+        {
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        oci_commit($this->conn);
         return true;
     }
 

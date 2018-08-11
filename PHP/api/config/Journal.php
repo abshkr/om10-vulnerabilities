@@ -1,6 +1,7 @@
 <?php
 
 include_once 'lookup.php';
+include_once 'log.php';
 
 //Also called JNL_TYPE in jnl.h
 class JnlEvent
@@ -27,19 +28,19 @@ class JnlEvent
 //Also called JNL_CATEGORY in jnl.h
 class JnlClass
 {
-    const JNLC_DEBUG = 1;
-    const JNLC_EVENT = 2;
-    const JNLC_ERROR = 3;
-    const JNLC_ALRM_CRITICAL = 4;
-    const JNLC_ALRM_MAJOR = 5;
-    const JNLC_ALRM_MINOR = 6;
-    const JNLC_ALRM_WARNING = 7; 
-    const JNLC_ALRM_INCIDENT = 8;
-    const JNLC_ALRM_OBS_CRITICAL = 9;
-    const JNLC_ALRM_OBS_MAJOR = 10;
-    const JNLC_ALRM_OBS_MINOR = 11;
-    const JNLC_ALRM_OBS_WARNING = 12;
-    const JNLC_ALRM_OBS_INCIDENT = 13;
+    const JNLC_DEBUG = 0;
+    const JNLC_EVENT = 1;
+    const JNLC_ERROR = 2;
+    const JNLC_ALRM_CRITICAL = 3;
+    const JNLC_ALRM_MAJOR = 4;
+    const JNLC_ALRM_MINOR = 5;
+    const JNLC_ALRM_WARNING = 6; 
+    const JNLC_ALRM_INCIDENT = 7;
+    const JNLC_ALRM_OBS_CRITICAL = 8;
+    const JNLC_ALRM_OBS_MAJOR = 9;
+    const JNLC_ALRM_OBS_MINOR = 10;
+    const JNLC_ALRM_OBS_WARNING = 11;
+    const JNLC_ALRM_OBS_INCIDENT = 12;
 }
 
 class Journal 
@@ -103,6 +104,7 @@ class Journal
         $template = $row['MESSAGE'];
 
         $hit = 0;
+        $message = "";
         for ($i = 0; $i < strlen($template); $i++) {
             if ($template[$i] === '%') {
                 $message = $message . $data[$hit];
@@ -111,7 +113,7 @@ class Journal
                 $message = $message . $template[$i];
             }
         }
-
+        write_log("Write journal: " . $message, __FILE__, __LINE__);
         $query = "INSERT INTO SITE_JOURNAL 
                 (GEN_DATE,
                 REGION_CODE,
@@ -141,6 +143,7 @@ class Journal
         else
             $mode = OCI_NO_AUTO_COMMIT;
         if (!oci_execute($stmt, $mode)) {
+            write_log("Failed to write journal", __FILE__, __LINE__);
             oci_free_statement($stmt);
             return false;
         }
