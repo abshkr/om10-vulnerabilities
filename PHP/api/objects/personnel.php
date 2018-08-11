@@ -1,6 +1,7 @@
 <?php
 
 include_once '../config/journal.php';
+include_once '../config/log.php';
 
 class Personnel 
 {
@@ -175,6 +176,8 @@ class Personnel
     // pure php function
     function create()
     {
+        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
+        
         // query to insert record
         //'a1qhH6yu9Tjg.', // encryption of default pw '12345'
         $query = "INSERT INTO PERSONNEL 
@@ -223,7 +226,8 @@ class Personnel
         oci_bind_by_name($stmt, ':per_comments', $this->per_comments);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            oci_rollback($stmt);
+            // $err_str = oci_error($stmt)['message'];
+            oci_rollback($this->conn);;
             return false;
         }
 
@@ -242,7 +246,7 @@ class Personnel
         oci_bind_by_name($stmt, ':user_password', $this->default_pwd);
         
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            oci_rollback($stmt);
+            oci_rollback($this->conn);
             return false;
         }
 
@@ -257,7 +261,7 @@ class Personnel
         oci_bind_by_name($stmt, ':pt_timecd', $this->pt_timecd);
         
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            oci_rollback($stmt);
+            oci_rollback($this->conn);;
             return false;
         }
 
@@ -272,7 +276,7 @@ class Personnel
         oci_bind_by_name($stmt, ':perl_ara', $this->perl_ara);
         
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            oci_rollback($stmt);
+            oci_rollback($this->conn);;
             return false;
         }
 
@@ -287,7 +291,7 @@ class Personnel
         oci_bind_by_name($stmt, ':pwdtrace_pwd', $this->default_pwd);
         
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            oci_rollback($stmt);
+            oci_rollback($this->conn);;
             return false;
         }
 
@@ -299,7 +303,7 @@ class Personnel
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ADD, $data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
         {
-            oci_rollback($stmt);
+            oci_rollback($this->conn);;
             return false;
         }
 
