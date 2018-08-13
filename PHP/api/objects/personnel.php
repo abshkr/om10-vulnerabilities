@@ -379,6 +379,38 @@ class Personnel
         return true;
     }
 
+    public function delete()
+    {
+        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
+        $query = "
+            BEGIN DELETE_PERSONNEL(:per_code, :exec_result); END;";
+        $stmt = oci_parse($this->conn, $query);
+        $exec_result = NULL;
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        oci_bind_by_name($stmt, ':exec_result', $exec_result, -1, SQLT_INT);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT) || !($exec_result === 0)) {
+            write_log("Failed to execute DELETE_PERSONNEL:" . 
+                oci_error($stmt)['message'], __FILE__, __LINE__);
+            oci_rollback($this->conn);;
+            return false;
+        }
+        
+        $journal = new Journal($this->conn, false);
+        $jnl_data[0] = "DKI_SUPER_USER";  //TODO USER
+        $jnl_data[1] = "PERSONNEL";
+        $jnl_data[2] = $this->per_code;
+
+        if (!$journal->jnlLogEvent(
+            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+        {
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        oci_commit($this->conn);
+        return true;
+    }
+
     public function readOne()
     {
         $query = "
