@@ -18,6 +18,9 @@
 $log_file = (isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omega') . 
         '/logs/php_rest_' . date('Ymd') . '.log';
 
+// ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+
 function write_log($message, $file = __FILE__, $line = __LINE__)
 {
     global $log_file;
