@@ -5,3 +5,4 @@ http://10.2.20.53/api/personnel/read_page.php?page=2
 
 http://10.2.20.53/api/personnel/create.php
 http://10.2.20.53/api/personnel/update.php
+http://10.2.20.53/api/personnel/delete.php
