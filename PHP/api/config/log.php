@@ -1,5 +1,7 @@
 <?php
 
+include_once 'setups.php';
+
 // class Log 
 // {
 //     public static function writeLog($message, $file = __FILE__, $line == __LINE__)
@@ -23,6 +25,9 @@ $log_file = (isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omeg
 
 function write_log($message, $file = __FILE__, $line = __LINE__)
 {
+	if (!ENABLE_DEBUG_LOG)
+		return;
+
     global $log_file;
     $formatted = date("Y-m-d H:i:s") . " | " 
         . basename($file) . ":" 

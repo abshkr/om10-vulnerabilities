@@ -1,7 +1,6 @@
 <?php
-session_start();
-
-include_once '../config/log.php';
+include_once 'log.php';
+include_once 'setups.php';
 
 class Database 
 {
@@ -35,7 +34,7 @@ class Database
             echo("Connect DB failed:" . $e['message']);
         }
 
-        if (!$this->getSessionStatus())
+        if (SESSION_CHECK && !$this->getSessionStatus())
         {
             write_log("Session check failed, cannot continue", __FILE__, __LINE__);
             return null;
@@ -46,7 +45,9 @@ class Database
 
     private function getSessionStatus()
     {
+        session_start();
         if (isset($_SESSION['SESSION'])) {
+            write_log("session", __FILE__, __LINE__);
             $sess_id = strip_tags($_SESSION['SESSION']);
             $per_code = strip_tags($_SESSION['PERCODE']);
 
@@ -66,7 +67,7 @@ class Database
                 return false;
             }
         }
-
+        
         return false;
     }
 }
