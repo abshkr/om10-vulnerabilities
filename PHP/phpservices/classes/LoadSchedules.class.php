@@ -569,6 +569,7 @@ class LoadSchedulesClass
         }
         
         $this->updateSchedule($data->tripNo,$data->supp,$data->soldto,$data->shipto, '');
+        $this->insertSpecialIns($data->tripNo, $data->supp, $data->specInstruction);
         
         if($data->type_of_schedule=='COMPARTMENTS'){
             foreach($data->compartments as $x){
@@ -935,6 +936,20 @@ class LoadSchedulesClass
         }
 
         return "OK";
+    }
+
+    private function insertSpecialIns($trip, $supp, $special_ins) {
+        // logMe($special_ins, LOADSCHEDCLASS);
+        $mydb = DB::getInstance();
+        $sql = array();
+        $sql['sql_text'] = 
+            "INSERT INTO SPECVARS (SCHVSPID_SHLSTRIP, SCHVSPID_SHLSSUPP, SCHV_TEXT, SCHV_VAR_ID) 
+            VALUES (:trip, :supp, :special_ins, 1)";
+        $sql['sql_data'] = array($trip, $supp, $special_ins);
+        $result = $mydb->insert($sql);
+        //$result = $mydb->aXuto_binding_update($sql, $param_arr);
+        logMe("insertSpecialIns() done", LOADSCHEDCLASS);
+        return $result;
     }
 
     private function updateSpecialIns($trip, $supp, $special_ins) {
