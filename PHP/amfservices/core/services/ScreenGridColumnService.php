@@ -2,7 +2,7 @@
 
 class ScreenGridColumnService
 {
-	
+
 	public function __construct()
 	{
 	}
@@ -48,7 +48,7 @@ class ScreenGridColumnService
 			$str .= "|0,order_price_printed";
 			$str .= "|0,order_strm_code";
 			$str .= "|0,order_strm_name";
-			$str .= "|0,order_pay_note"; 
+			$str .= "|0,order_pay_note";
 			$str .= "|0,order_psnl_code";
 			$str .= "|1,order_psnl_name";
 			$str .= "|1,order_sold_to_num";
@@ -57,7 +57,7 @@ class ScreenGridColumnService
 			$str .= "|0,order_src_name";
 			$str .= "|0,order_items";
 		}
-		
+
 		if ( $screen == "ID_ASSIGNMENT" )
 		{
 			$str .= "|1,kya_key_no";
@@ -67,7 +67,7 @@ class ScreenGridColumnService
 			$str .= "|1,kya_type_name";
 			$str .= "|0,kya_phys_type";
 			$str .= "|1,kya_phys_name";
-			$str .= "|1,kya_timecode"; 
+			$str .= "|1,kya_timecode";
 			$str .= "|1,kya_lock";
 			$str .= "|1,kya_adhoc";
 			$str .= "|1,kya_txt";
@@ -106,9 +106,9 @@ class ScreenGridColumnService
 			$str .= "|0,kya_order_no";
 			$str .= "|0,kya_order_desc";
 			$str .= "|0,kya_cust_ordno";
-			$str .= "|0,kya_cust_name"; 
+			$str .= "|0,kya_cust_name";
 		}
-		
+
 		if ( $screen == "TANKER_LIST" )
 		{
 			$str .= "|1,tnkr_code";
@@ -132,12 +132,12 @@ class ScreenGridColumnService
 			$str .= "|1,tnkr_bay_loop_ch";
 			$str .= "|1,tnkr_archive";
 			$str .= "|1,tnkr_lic_exp";
-			$str .= "|1,tnkr_dglic_exp"; 
+			$str .= "|1,tnkr_dglic_exp";
 			$str .= "|1,tnkr_ins_exp";
 			$str .= "|1,tnkr_last_modified";
 			$str .= "|1,tnkr_last_used";
 		}
-		
+
 		if ( $screen == "EQUIPMENT_LIST" )
 		{
 			$str .= "|1,eqpt_id";
@@ -162,7 +162,7 @@ class ScreenGridColumnService
 			$str .= "|1,eqpt_last_modified";
 			$str .= "|1,eqpt_last_used";
 		}
-		
+
 		if ( $screen == "TRANSACTION_LIST" )
 		{
 			$str .= "|1,trsa_bay_cd";
@@ -209,11 +209,12 @@ class ScreenGridColumnService
 			$str .= "|1,TRSB_API";
 			$str .= "|1,TRSB_TMP_F";
 		}
-		
+
 		if ( $screen == "PERSONNEL" )
 		{
 			$str .= "|1,per_code";
 			$str .= "|1,per_name";
+			$str .= "|1,per_email";
 			$str .= "|1,per_cmpy";
 			$str .= "|1,cmpy_name";
 			$str .= "|1,per_auth";
@@ -229,7 +230,7 @@ class ScreenGridColumnService
 			$str .= "|0,per_terminal";
 			$str .= "|0,user_login_count";
 		}
-		
+
 		if ( $screen == "LOAD_SCHEDULE" )	// not used yet
 		{
 			$str .= "|1,shls_srctype";
@@ -258,8 +259,9 @@ class ScreenGridColumnService
 			$str .= "|1,last_chg_time";
 			$str .= "|1,shls_sold_to_num";
 			$str .= "|1,shls_ship_to_num";
+			$str .= "|0,shl_rss_infdel";
 		}
-		
+
 		if ( $screen == "ALLOCATION" )
 		{
 			$str .= "|1,alloc_type";
@@ -274,7 +276,7 @@ class ScreenGridColumnService
 			$str .= "|1,alloc_periodname";
 			$str .= "|1,alloc_datetime";
 		}
-		
+
 		if ( $screen == "AUDITING" )
 		{
 			$str .= "|1,audit_datetime";
@@ -302,7 +304,7 @@ class ScreenGridColumnService
 			$str .= "|1,audit_table";
 			$str .= "|1,audit_pkeys";
 		}
-		
+
 		if ( $screen == "TANK_STATUS" )
 		{
 			$str .= "|1,tank_atg_status";
@@ -374,11 +376,11 @@ class ScreenGridColumnService
 			$str .= "|0,tank_prod_c_of_e";
 			$str .= "|0,tank_60_86_vcf";
 			$str .= "|1,tank_density";
-			
+
 			// need tutn on when API/std density management is enabled
 			$str .= "|1,tank_15_density";
 			$str .= "|1,tank_api";
-			
+
 			$str .= "|1,tank_temp";
 			$str .= "|0,tank_rptvcf";
 			$str .= "|0,tank_amb_density";
@@ -396,11 +398,11 @@ class ScreenGridColumnService
 			$str .= "|0,tank_base_corr_mthd";
 			$str .= "|0,tank_base_ref_temp_spec";
 			$str .= "|0,tank_base_limit_preset_ht";
-			
+
 			// need tutn on when sulphur/flashpoint management is enabled
 			$str .= "|1,tank_sulphur";
 			$str .= "|1,tank_flashpoint";
-			
+
 			// need tutn on when status and level alarms management is enabled
 			$str .= "|1,tank_status";
 			$str .= "|1,tank_status_name";
@@ -415,28 +417,28 @@ class ScreenGridColumnService
 			$str .= "|1,tank_l_state";
 			$str .= "|1,tank_ll_state";
 			$str .= "|1,tank_uh_state";
-			$str .= "|1,tank_ul_state";			
+			$str .= "|1,tank_ul_state";
 		}
-		
+
 		if ( $screen == "BASE_PRODUCTS" )
 		{
 			$str .= "|1,base_code";
 			$str .= "|1,base_name";
-			
+
 			// need turn on when color is enabled
 			$str .= "|1,base_color";
-			
+
 			$str .= "|1,base_cat";
 			$str .= "|1,base_class_desc";
 			$str .= "|1,base_prod_group";
 			$str .= "|1,base_group_name";
 			$str .= "|0,base_rpt_tunt";
 			$str .= "|0,base_rpt_temp";
-			
+
 			// need turn on when density range is enabled
 			$str .= "|1,base_dens_lo";
 			$str .= "|1,base_dens_hi";
-			
+
 			$str .= "|1,base_adtv";
 			$str .= "|0,base_text";
 			$str .= "|0,base_desc";
@@ -447,7 +449,7 @@ class ScreenGridColumnService
 			$str .= "|0,base_class_vcf_alg";
 			$str .= "|1,base_class_temp_lo";
 			$str .= "|1,base_class_temp_hi";
-			
+
 			// need turn on when bitumen related features are enabled
 			$str .= "|0,base_ref_temp";
 			$str .= "|0,base_ref_tunt";
@@ -461,7 +463,7 @@ class ScreenGridColumnService
 
         return $str;
     }
-	
-	
+
+
 }
 ?>
