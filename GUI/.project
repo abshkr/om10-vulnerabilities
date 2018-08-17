@@ -32,11 +32,6 @@
 			<location>Z:/om5000</location>
 		</link>
 		<link>
-			<name>bin-release2</name>
-			<type>2</type>
-			<location>C:/Users/uw/Documents/om5000</location>
-		</link>
-		<link>
 			<name>services/BAMetersService.php</name>
 			<type>1</type>
 			<location>Z:/phpservices/services/BAMetersService.php</location>

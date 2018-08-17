@@ -1631,7 +1631,7 @@
 						<s:GridColumn dataField="cust_addr_text" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ADDRESS')}" visible="false"></s:GridColumn>
 						<s:GridColumn dataField="cust_addr_desc" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ADDRESS')}" visible="true"></s:GridColumn>
 						<s:GridColumn dataField="cust_alloc_lockid" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ALLOC_LOCKID')}" visible="false"></s:GridColumn>
-						<s:GridColumn dataField="cust_alloc_lockname" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ALLOC_LOCK')}" visible="true" width="130"></s:GridColumn>
+						<s:GridColumn dataField="cust_alloc_lockname" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ALLOC_LOCK')}" visible="true" width="160"></s:GridColumn>
 						<s:GridColumn dataField="cust_order_count" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_ORDER_COUNT')}" visible="true" width="100"></s:GridColumn>
 						<s:GridColumn dataField="cust_dloc_count" headerText="{resourceManager.getString('default','CUSTOMER.LABEL.CUST_DLOC_COUNT')}" visible="true" width="100"></s:GridColumn>
 						

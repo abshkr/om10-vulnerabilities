@@ -1178,6 +1178,7 @@
 						<s:GridColumn dataField="composition" headerText="{resourceManager.getString('default','ETYP_PREVIEW')}" itemRenderer="renderers.CompositionRender"/>
 						<s:GridColumn dataField="etyp_schedul" headerText="{resourceManager.getString('default','ETYP_SCHEDULABLE')}" width="90" itemRenderer="renderers.GridCheckRender"/>
 						<s:GridColumn dataField="etyp_isrigid" headerText="{resourceManager.getString('default','ETYP_ISRIGID')}" width="70" itemRenderer="renderers.GridCheckRender"/>
+						
 					</s:source>
 				</s:ArrayList>
 			</s:columns>
