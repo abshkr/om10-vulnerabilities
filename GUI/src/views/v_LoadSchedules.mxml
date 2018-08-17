@@ -184,7 +184,6 @@
 			private var isChange:Boolean = true;
 			
 			private var isReturned:Boolean = false;
-			[Bindable] private var _special_instructions:String="";
 			
 			
 			private var pageCount:int=1;
@@ -884,7 +883,6 @@
 				new_carrier.selectedIndex=-1;
 				new_carrier.enabled=false;
 				new_shift.text='';
-				spec_ins.text='';
 				new_priority.text='';
 				if (new_shipto != null)
 				{	
@@ -1026,7 +1024,6 @@
 					obj.soldto = this.new_soldto.text;
 					obj.shipto = this.new_shipto.text;
 					obj.container = this.new_container.text;
-					obj.specInstruction = spec_ins.text;
 					
 					var products:ArrayCollection = new ArrayCollection();
 					for each(var z:Object in prodGrid.dataProvider)
@@ -1051,14 +1048,13 @@
 					obj.carr = new_carrier.selectedItem.cmpy_code;
 					obj.tanker = new_tanker.selectedItem.tnkr_code;
 					obj.date = new_date.isoDate;
-					obj.shift = new_shift.text;
+					obj.shift = new_shift.text; 
 					obj.priority = new_priority.text;
 					obj.container = this.new_container.text;
 					obj.tankTerm = dataGrid.selectedItem.shls_terminal;
 					obj.tripExpirDteTime = ''; 
 					if (global.hasExpiry)obj.tripExpirDteTime = this.dateConvert.format(exp_date.selectedDate);
 					obj.supp = dataGrid.selectedItem.supplier_code;					
-					obj.specInstruction = spec_ins.text;
 					
 					var comp:ArrayCollection = new ArrayCollection();
 					
@@ -3114,8 +3110,6 @@
 								  headerText="{resourceManager.getString('default','global.lbl.priority')}"/>
 					<s:GridColumn width="45" dataField="shls_shift" visible="false"
 								  headerText="{resourceManager.getString('default','global.lbl.shift')}"/>
-					<s:GridColumn width="45" dataField="shl_rss_infdel" visible="false"
-								  headerText="{resourceManager.getString('default','global.lbl.shift')}"/>
 					<s:GridColumn width="80" dataField="shl_fleet_data" headerText="{resourceManager.getString('default','DH_DOR_ORIGIN')}" visible="{this.canViewDorNumber}"/>
 					<s:GridColumn width="60" dataField="order_cust_ordno" sortCompareFunction="{global.sortNumeric}"
 								  headerText="{resourceManager.getString('default','datagrid.headercaption.order')}"/>
@@ -3332,16 +3326,6 @@
 									 requireSelection="false" prompt="{resourceManager.getString('default','global.prompts.driver')}"/>			
 		</s:HGroup>
 		
-		<s:Spacer width="10"/>
-		<s:Label height="28" fontWeight="bold"
-				 text="Special Instructions"
-				 verticalAlign="middle"/>
-		<components:DKI_ValidatorInput id="spec_ins" width="800" height="20" enabled.scheduleDetails="false"
-									   automationName="spec_ins" maxChars="800"
-									   text="{dataGrid.selectedItem.shl_rss_infdel}"/>
-		<s:Spacer width="10"/>
-		
-	
 		
 		<!--
 		<s:HGroup>
