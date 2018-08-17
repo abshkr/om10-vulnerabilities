@@ -1,10 +1,9 @@
 <?php
 
 class GuiSchedules
-{
+{    
 	public $shls_trip_no;
 	public $last_chg_time;
-	public $shl_rss_infdel;
 }
 
 class ScheduleTankersLookup
@@ -129,9 +128,9 @@ class ScheduledCompartments
     public $shlsload_load_id;
     public $arm_name;
     public $armcode;
-		public $schd_deliv_num;
-		public $schd_sold_to_num;
-		public $schd_ship_to_num;
+	public $schd_deliv_num;
+	public $schd_sold_to_num;
+	public $schd_ship_to_num;
 }
 
 class Seal
