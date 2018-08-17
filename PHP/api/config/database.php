@@ -69,7 +69,10 @@ class Database
         } catch (UnexpectedValueException $e) {
             write_log('Caught exception: ' . $e->getMessage(), __FILE__, __LINE__);
             return false;
-        }
+        } catch (ExpiredException $e) {
+            write_log('Caught exception: ' . $e->getMessage(), __FILE__, __LINE__);
+            return false;
+        } 
         
 
         return true;

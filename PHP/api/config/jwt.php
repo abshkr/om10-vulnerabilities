@@ -1,5 +1,10 @@
 <?php
 
+class ExpiredException extends UnexpectedValueException
+{
+
+}
+
 /**
  * JSON Web Token implementation, based on this spec:
  * https://tools.ietf.org/html/rfc7519
@@ -82,9 +87,9 @@ class JWT
         if (empty(static::$supported_algs[$header->alg])) {
             throw new UnexpectedValueException('Algorithm not supported');
         }
-        if (!in_array($header->alg, $allowed_algs)) {
-            throw new UnexpectedValueException('Algorithm not allowed');
-        }
+        // if (!in_array($header->alg, $allowed_algs)) {
+        //     throw new UnexpectedValueException('Algorithm not allowed');
+        // }
         if (is_array($key) || $key instanceof \ArrayAccess) {
             if (isset($header->kid)) {
                 if (!isset($key[$header->kid])) {
