@@ -1,6 +1,7 @@
 <?php
 include_once 'log.php';
 include_once 'setups.php';
+include_once 'jwt.php';
 
 class Database 
 {
@@ -34,13 +35,44 @@ class Database
             echo("Connect DB failed:" . $e['message']);
         }
 
-        if (SESSION_CHECK && !$this->getSessionStatus())
-        {
-            write_log("Session check failed, cannot continue", __FILE__, __LINE__);
-            return null;
-        }
+        if (AUTH_CHECK) {
+            if (JWT_AUTH) {
+                if (!$this->checkToken())
+                {
+                    write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
+                    return null;
+                }
+            } else {
+                if (!$this->getSessionStatus()) {
+                    write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
+                    return null;
+                }
+            }
+        } 
  
         return $this->conn;
+    }
+
+    private function checkToken()
+    {
+        if (!isset($_GET["token"]))
+            return false;
+
+        $token = $_GET["token"];
+        try {
+            if (!JWT::decode($token, 'dki_jwt'))
+            {
+                // $output['status'] = false;
+                // $output['errors'] = '{"type": "unathenticated"}';
+                return false;
+            }
+        } catch (UnexpectedValueException $e) {
+            write_log('Caught exception: ' . $e->getMessage(), __FILE__, __LINE__);
+            return false;
+        }
+        
+
+        return true;
     }
 
     private function getSessionStatus()
