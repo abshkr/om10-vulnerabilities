@@ -46,6 +46,7 @@
 			import mx.rpc.http.HTTPService;
 			import mx.rpc.events.ResultEvent;
 			import mx.rpc.events.FaultEvent;
+			import mx.events.CloseEvent;
 			import mx.utils.ObjectUtil;
 			import mx.utils.StringUtil;
 			
@@ -69,6 +70,7 @@
 			[Bindable] public var canCreate:Boolean = false;
 			[Bindable] public var canDelete:Boolean = false;
 			[Bindable] public var hasPassword:Boolean = false;
+			[Bindable] public var resetClose:Boolean = false;
 			
 			[Bindable] private var canManageOrderPeriod:Boolean = false;
 			[Bindable] private var isPartnershipEnabled:Boolean = false;
@@ -210,7 +212,6 @@
 			
 			
 			public var defaultColumnForDateFilter:String = "order_ord_time";
-			
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
 				dateFilterTypes.removeAll();
@@ -324,11 +325,10 @@
 				}
 				*/
 				this.canManageOrderPeriod = true;
-				
+				this.loadConfigFromUrl();
 				this.orderItemInitList.service( "-1" );
 				
 				this.defaultTimeMaker.service();
-				
 				this.customerList.service( "-1" );
 				this.customerFilterList.service( "-1" );
 				this.supplierList.service( 1 );
@@ -1914,6 +1914,9 @@
 				}
 			}
 			
+			private function doResetOrder(): void {
+				
+			}
 			private function deleteRecord():void
 			{
 				var obj:Object = new Object();
@@ -2422,7 +2425,6 @@
 				supp = supplierList[order_supp_code.selectedIndex].cmpy_code;
 				id = this.order_cust_no.text;
 				
-				
 				currentState="normal";
 				this.findByOrderCustNo( supp, id );
 				dataGrid.selectedIndex = -1;
@@ -2691,54 +2693,6 @@
 				
 				viewSchedulePopup.initFilters( params );
 			}
-			public function resetOrder():void {
-				
-				var orderNumber = dataGrid.selectedItem.order_cust_no;
-				var quantityNumber = dataGrid.selectedItem.oprd_prod_qty;
-				var path:String = "/phpwrapper/cust_reset.php?cust_order="+orderNumber+"&quantity="+quantityNumber;
-				
-				var viewService:HTTPService = new HTTPService();
-				viewService.url = path;
-				viewService.resultFormat="text";
-				viewService.method="POST";
-				viewService.addEventListener(FaultEvent.FAULT,onFault);
-				viewService.addEventListener(ResultEvent.RESULT,onResult);
-				viewService.send();
-				
-				clearDetail();
-				currentState="normal";
-			}
-			
-			public function cancelAllLoads():void {
-				var orderNumber = dataGrid.selectedItem.order_cust_no;
-				var path:String = "/phpwrapper/cust_close_loads.php?cust_order="+orderNumber;
-				
-				var viewService:HTTPService = new HTTPService();
-				viewService.url = path;
-				viewService.resultFormat="text";
-				viewService.method="POST";
-				viewService.addEventListener(FaultEvent.FAULT,onFault);
-				viewService.addEventListener(ResultEvent.RESULT,onResult);
-				viewService.send();
-				
-				clearDetail();
-				currentState="normal";
-				
-			}
-			
-			protected function onFault(event:FaultEvent):void
-			{
-				global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.FAIL_PRINT_BOL'));
-
-
-			}
-			
-			protected function onResult(event:FaultEvent):void
-			{
-				global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.FAIL_PRINT_BOL'));
-
-
-			}
 			
 			public function goToOrderPeriod():void
 			{
@@ -3000,6 +2954,103 @@
 				
 				
 				pb.values(pagedRecords.length,pagedRecords.length)
+			}
+			
+			
+			protected function alertEventHandler(event:CloseEvent):void {
+				if(event.detail == Alert.YES) {
+					var orderNumber = dataGrid.selectedItem.order_cust_no;
+					var quantityNumber = dataGrid.selectedItem.oprd_prod_qty;
+					var path:String = "/phpwrapper/cust_reset.php?cust_order="+orderNumber+"&quantity="+quantityNumber;
+					
+					var viewService:HTTPService = new HTTPService();
+					viewService.url = path;
+					viewService.resultFormat="text";
+					viewService.method="POST";
+					viewService.addEventListener(FaultEvent.FAULT,onFault);
+					viewService.addEventListener(ResultEvent.RESULT,onResult);
+					viewService.send();
+					
+					clearDetail();
+					currentState="normal";
+				}
+				if(event.detail == Alert.NO) {
+					currentState="normal";
+				}
+			}
+			
+			protected function cancelAllLoads(event:CloseEvent):void {
+				
+				if(event.detail == Alert.YES) {
+					var orderNumber = dataGrid.selectedItem.order_cust_no;
+					var path:String = "/phpwrapper/cust_close_loads.php?cust_order="+orderNumber;
+					
+					var viewService:HTTPService = new HTTPService();
+					viewService.url = path;
+					viewService.resultFormat="text";
+					viewService.method="POST";
+					viewService.addEventListener(FaultEvent.FAULT,onFault);
+					viewService.addEventListener(ResultEvent.RESULT,onResult);
+					viewService.send();
+					
+					clearDetail();
+					currentState="normal";
+				}
+				
+				if(event.detail == Alert.NO) {
+					currentState="normal";
+				}
+				
+			}
+			
+			protected function loadConfigFromUrl():void
+			{
+				var urlRequest:URLRequest  = new URLRequest("views/config.json");
+				
+				var urlLoader:URLLoader = new URLLoader();
+				urlLoader.addEventListener(Event.COMPLETE, completeHandler);
+				
+				try{
+					urlLoader.load(urlRequest);
+				} catch (error:Error) {
+					trace("Cannot load : " + error.message);
+				}
+			}
+			
+			protected function completeHandler(event:Event):void {
+				var loader:URLLoader = URLLoader(event.target);
+				trace("completeHandler: " + loader.data);
+				
+				var data:Object = JSON.parse(loader.data);
+				var reseter = data.close_reset;
+				resetClose = reseter;
+				
+			}
+			
+			public function resetOrder():void {
+				Alert.show("Are you sure you want to Reset your Order?", "Reset Order",
+					mx.controls.Alert.YES | mx.controls.Alert.NO, this, alertEventHandler);
+				
+			}
+			
+			public function closeAllLoads():void {
+				Alert.show("Are you sure you want to Close All Loads?", "Close All Loads",
+					mx.controls.Alert.YES | mx.controls.Alert.NO, this, cancelAllLoads);
+				
+			}
+			
+			
+			
+			protected function onFault(event:FaultEvent):void
+			{
+				global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.FAIL_PRINT_BOL'));
+				
+				
+			}
+			
+			protected function onResult(event:FaultEvent):void
+			{
+				global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.FAIL_PRINT_BOL'));
 			}
 			
 		]]>
@@ -3660,8 +3711,8 @@
 								   click="showDeliveryDetails(event)" type="report"
 								   visible="true" enabled="true" />
 			<s:Spacer width="100%"/>
-			<components:DKI_Button id="btnCloseAllLoads" label="{resourceManager.getString('default','button.lbl.CLOSE_ALL_LOADS')}" height="100%" includeIn="edit,detail" type="default" enabled="{this.canUpdate}" visible="{this.canManageOrderPeriod}" includeInLayout="{this.canManageOrderPeriod}" click="cancelAllLoads();"/>
-			<components:DKI_Button id="btnResetOrder" label="{resourceManager.getString('default','button.lbl.RESET_ORDER')}" height="100%" includeIn="edit,detail" type="default" enabled="{this.canUpdate}" visible="{this.canManageOrderPeriod}" includeInLayout="{this.canManageOrderPeriod}" click="resetOrder();"/>
+			<components:DKI_Button id="btnCloseAllLoads" label="{resourceManager.getString('default','button.lbl.CLOSE_ALL_LOADS')}" height="100%" includeIn="edit,detail" type="default" enabled="{this.canUpdate}" visible="{this.resetClose}" includeInLayout="{this.canManageOrderPeriod}" click="closeAllLoads();"/>
+			<components:DKI_Button id="btnResetOrder" label="{resourceManager.getString('default','button.lbl.RESET_ORDER')}" height="100%" includeIn="edit,detail" type="default" enabled="{this.canUpdate}" visible="{this.resetClose}" includeInLayout="{this.canManageOrderPeriod}" click="resetOrder();"/>
 			<components:DKI_Button id="btnOrderPeriod" label="{resourceManager.getString('default','BUTTON__OO_PERIODS')}" height="100%" includeIn="edit,detail" type="default" enabled="{this.canUpdate}" visible="{this.canManageOrderPeriod}" includeInLayout="{this.canManageOrderPeriod}" click="goToOrderPeriod();"/>
 			<components:DKI_Button id="btnSchedule" label="{resourceManager.getString('default','BUTTON__OO_VIEW_SCHEDULES')}" height="100%" includeIn="edit,detail" type="default" visible="true" includeInLayout="true" click="goToViewSchedule();"/>
 			<components:DKI_Button id="btnMakeTransaction" label="{resourceManager.getString('default','BUTTON__OO_MAKE_TRANSACTIONS')}" height="100%" includeIn="edit,detail" type="default" visible="true" enabled="{this.canCreate}" click="goToMakeTransaction();"/>

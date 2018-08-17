@@ -1420,9 +1420,8 @@
 						<s:GridColumn dataField="eqpt_area_name" headerText="{resourceManager.getString('default','EQPT_AREA_NAME')}" visible="false"></s:GridColumn>
 						<s:GridColumn dataField="eqpt_max_gross" headerText="{resourceManager.getString('default','EQPT_MAX_GROSS')}" visible="false"></s:GridColumn>
 						<s:GridColumn dataField="eqpt_empty_kg" headerText="{resourceManager.getString('default','EQPT_EMPTY_KG')}" visible="false"></s:GridColumn>
-						<s:GridColumn dataField="eqpt_last_modified" headerText="{resourceManager.getString('default','EQPT_LAST_MODIFIED')}" itemRenderer="renderers.DateRenderer"></s:GridColumn>
-						<s:GridColumn dataField="eqpt_last_used" headerText="{resourceManager.getString('default','EQPT_LAST_USED')}" itemRenderer="renderers.DateRenderer"></s:GridColumn>
-
+						<s:GridColumn dataField="eqpt_last_modified" headerText="{resourceManager.getString('default','LAST_MODIFIED')}" visible="true" visible.widget="false"></s:GridColumn>
+						<s:GridColumn dataField="eqpt_last_used" headerText="{resourceManager.getString('default','LAST_USED')}" visible="true" visible.widget="false"></s:GridColumn>
 					</s:source>
 				</s:ArrayList>
 			</s:columns>

@@ -66,6 +66,7 @@
 			[Bindable] public var canCreate:Boolean = false;
 			[Bindable] public var canDelete:Boolean = false;
 			[Bindable] public var hasPassword:Boolean = false;
+			[Bindable] public var resetClose:Boolean = true;
 			
 			[Bindable] private var isHotVolumeCheckEnabled:Boolean = false;
 			
@@ -323,6 +324,28 @@
 				this.confirmReport = new ActionDialog( doExport, cancelExport, resourceManager.getString('default','CONFIRM_REPORT_CSV') );
 				
 				//this.startLoadingPages();
+			}
+			
+			protected function loadConfigFromUrl():void
+			{
+				var urlRequest:URLRequest  = new URLRequest("config.json");
+				
+				var urlLoader:URLLoader = new URLLoader();
+				urlLoader.addEventListener(Event.COMPLETE, completeHandler);
+				
+				try{
+					urlLoader.load(urlRequest);
+				} catch (error:Error) {
+					trace("Cannot load : " + error.message);
+				}
+			}
+			
+			private function completeHandler(event:Event):void {
+				var loader:URLLoader = URLLoader(event.target);
+				trace("completeHandler: " + loader.data);
+				
+				var data:Object = JSON.parse(loader.data);
+				this.resetClose = data.close_reset;
 			}
 			
 			private function getPageData_resultHandler():void
@@ -1024,6 +1047,7 @@
 				
 				obj.base_color = base_color.text;
 				
+				
 				createAction.service( obj );
 			}
 			
@@ -1516,7 +1540,7 @@
 			<s:HGroup>
 				<s:HGroup id="fld__base_name">
 					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','BASEPROD_NAME')}" verticalAlign="middle"/>
-					<components:DKI_ValidatorInput id="base_name" maxChars="40" 
+					<components:DKI_ValidatorInput id="base_name" maxChars="{20}" 
 												   width="{fieldWidth}" height="{fieldHeight}" 
 												   text="{dataGrid.selectedItem.base_name}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
 												   text.create="" editable.create="true" enabled.create="true" 
