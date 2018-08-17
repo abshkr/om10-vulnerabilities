@@ -1412,7 +1412,10 @@
 					<s:source>
 						<s:GridColumn dataField="per_code" headerText="{resourceManager.getString('default','global.lbl.code')}" width="80"/>
 						<s:GridColumn dataField="per_name" headerText="{resourceManager.getString('default','global.lbl.name')}" width="200"/>
+<<<<<<< HEAD
 						<s:GridColumn dataField="per_email" headerText="Email" width="200" visible="false"/>
+=======
+>>>>>>> parent of c2ab65f... Added Personnel Email Field
 						<s:GridColumn dataField="per_cmpy" headerText="{resourceManager.getString('default','datagrid.headercaption.EmployerCode')}" excludeFrom="widget"  width="110"/>
 						<s:GridColumn dataField="cmpy_name" headerText="{resourceManager.getString('default','datagrid.headercaption.EmployerName')}" excludeFrom="widget" width="200"/>
 						<s:GridColumn dataField="per_auth" labelFunction="roleLabelFunc" headerText="{resourceManager.getString('default','global.lbl.role')}" width="100"/>
