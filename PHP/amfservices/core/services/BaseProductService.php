@@ -397,9 +397,9 @@ http-equiv="refresh" content="0;URL=baseprods.cgi?op=25&pg=0&statusBar=Operation
 	{
         if (!$data) return "ERROR";
 
-				$baseNameLength = $data->base_name;
+		$baseNameLength = $data->base_name;
 
-				if (strlen($baseNameLength)>20) return "ERROR";
+		if (strlen($baseNameLength)>20) return "ERROR";
 
 		unset( $data->base_class_desc );
 

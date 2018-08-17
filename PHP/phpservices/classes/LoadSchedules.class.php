@@ -569,6 +569,7 @@ class LoadSchedulesClass
         }
         
         $this->updateSchedule($data->tripNo,$data->supp,$data->soldto,$data->shipto, '');
+        $this->insertSpecialIns($data->tripNo, $data->supp, $data->specInstruction);
         
         if($data->type_of_schedule=='COMPARTMENTS'){
             foreach($data->compartments as $x){
@@ -759,7 +760,9 @@ class LoadSchedulesClass
             }
             logMe("CGI Update load schedule succeeded!!!",LOADSCHEDCLASS);
         }
-        $this->updateSchedule($data->tripNo,$data->supp,$data->soldto,$data->shipto, $data->driver);
+
+        $this->updateSchedule($data->tripNo, $data->supp, $data->soldto, $data->shipto, $data->driver);
+        $this->updateSpecialIns($data->tripNo, $data->supp, $data->specInstruction);
 
         if($data->type_of_schedule=='COMPARTMENTS'){        
             foreach($data->compartments as $x){
@@ -933,6 +936,34 @@ class LoadSchedulesClass
         }
 
         return "OK";
+    }
+
+    private function insertSpecialIns($trip, $supp, $special_ins) {
+        // logMe($special_ins, LOADSCHEDCLASS);
+        $mydb = DB::getInstance();
+        $sql = array();
+        $sql['sql_text'] = 
+            "INSERT INTO SPECVARS (SCHVSPID_SHLSTRIP, SCHVSPID_SHLSSUPP, SCHV_TEXT, SCHV_VAR_ID) 
+            VALUES (:trip, :supp, :special_ins, 1)";
+        $sql['sql_data'] = array($trip, $supp, $special_ins);
+        $result = $mydb->insert($sql);
+        //$result = $mydb->aXuto_binding_update($sql, $param_arr);
+        logMe("insertSpecialIns() done", LOADSCHEDCLASS);
+        return $result;
+    }
+
+    private function updateSpecialIns($trip, $supp, $special_ins) {
+        // logMe($special_ins, LOADSCHEDCLASS);
+        $mydb = DB::getInstance();
+        $sql = array();
+        $sql['sql_text'] = 
+            "UPDATE SPECVARS SET SCHV_TEXT = :special_ins
+            WHERE SCHVSPID_SHLSTRIP = :trip AND SCHVSPID_SHLSSUPP= :supp";
+        $sql['sql_data'] = array($special_ins, $trip, $supp);
+        $result = $mydb->update($sql);
+        //$result = $mydb->aXuto_binding_update($sql, $param_arr);
+        logMe("updateSpecialIns() done", LOADSCHEDCLASS);
+        return $result;
     }
 
     /**

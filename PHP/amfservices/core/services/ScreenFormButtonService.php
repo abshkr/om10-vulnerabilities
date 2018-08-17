@@ -44,8 +44,8 @@ class ScreenFormButtonService
 		if ( $screen == "DRAWER_PRODUCTS" )
 		{
 			// need tutn on when dangerous goods management is enabled
-			$str .= "|btnProdDGLink,0";
-			$str .= "|prod_dglink,0";
+			$str .= "|btnProdDGLink,1";
+			$str .= "|prod_dglink,1";
 		}
 		
 		if ( $screen == "TANK_STATUS" )

@@ -883,6 +883,7 @@
 				new_carrier.selectedIndex=-1;
 				new_carrier.enabled=false;
 				new_shift.text='';
+				spec_ins.text='';
 				new_priority.text='';
 				if (new_shipto != null)
 				{	
@@ -1015,7 +1016,8 @@
 					obj.carr = new_carrier.selectedItem.cmpy_code;
 					obj.tanker = new_tanker.selectedItem.tnkr_code;
 					obj.date = new_date.isoDate;
-					obj.shift = new_shift.text; 
+					obj.shift = new_shift.text;
+					obj.specInstruction = spec_ins.text;
 					obj.priority = new_priority.text;
 					obj.tankTerm = dataGrid.selectedItem.shls_terminal;
 					obj.tripExpirDteTime = '';
@@ -1048,7 +1050,8 @@
 					obj.carr = new_carrier.selectedItem.cmpy_code;
 					obj.tanker = new_tanker.selectedItem.tnkr_code;
 					obj.date = new_date.isoDate;
-					obj.shift = new_shift.text; 
+					obj.shift = new_shift.text;
+					obj.specInstruction = spec_ins.text;
 					obj.priority = new_priority.text;
 					obj.container = this.new_container.text;
 					obj.tankTerm = dataGrid.selectedItem.shls_terminal;
@@ -1114,7 +1117,8 @@
 					obx.tanker = new_tanker.selectedItem.tnkr_code;
 					//obx.date = loadDateConvert.format(curDate);
 					obx.date = new_date.isoDate;
-					obx.shift = new_shift.text; 
+					obx.shift = new_shift.text;
+					obx.specInstruction = spec_ins.text;
 					obx.priority = new_priority.text;
 					obx.tankTerm = new_depot.selectedItem.term_code;
 					obx.tripExpirDteTime = ''; 
@@ -1153,7 +1157,8 @@
 					obj.tanker = new_tanker.selectedItem.tnkr_code;
 					//obj.date = loadDateConvert.format(curDate);
 					obj.date = new_date.isoDate;
-					obj.shift = new_shift.text; 
+					obj.shift = new_shift.text;
+					obj.specInstruction = spec_ins.text;
 					obj.priority = new_priority.text;
 					obj.tankTerm = new_depot.selectedItem.term_code;
 					obj.tripExpirDteTime = ''; 
@@ -3110,6 +3115,8 @@
 								  headerText="{resourceManager.getString('default','global.lbl.priority')}"/>
 					<s:GridColumn width="45" dataField="shls_shift" visible="false"
 								  headerText="{resourceManager.getString('default','global.lbl.shift')}"/>
+					<s:GridColumn width="45" dataField="shl_rss_infdel" visible="false"
+								  headerText="{resourceManager.getString('default','global.lbl.shift')}"/>
 					<s:GridColumn width="80" dataField="shl_fleet_data" headerText="{resourceManager.getString('default','DH_DOR_ORIGIN')}" visible="{this.canViewDorNumber}"/>
 					<s:GridColumn width="60" dataField="order_cust_ordno" sortCompareFunction="{global.sortNumeric}"
 								  headerText="{resourceManager.getString('default','datagrid.headercaption.order')}"/>
@@ -3272,11 +3279,22 @@
 			<s:Label height="28" fontWeight="bold"
 					 text="{resourceManager.getString('default','global.lbl.priority')}"
 					 verticalAlign="middle"/>
+			
+			<s:Spacer width="10"/>
 			<components:DKI_ValidatorInput id="new_priority" width="60" enabled.scheduleDetails="false"
 										   automationName="{resourceManager.getString('default','global.lbl.priority')}" maxChars="1" restrict="0-9"
 										   text="{dataGrid.selectedItem.shls_priority}"
 										   validationType="integer"/>
 			<s:Spacer width="10"/>
+			<s:Label height="28" fontWeight="bold" width="60" text="Special Instructions"/>
+			<s:Spacer width="10"/>
+				<s:TextArea id="spec_ins" width="800" height="60" enabled.scheduleDetails="false" text="{dataGrid.selectedItem.shl_rss_infdel}" maxChars="800"/>	
+	
+			
+
+			
+			<s:Spacer width="10"/>
+			
 			<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','global.lbl.isotainerid')}"
 					 visible="{global.isContainer}"
 					 verticalAlign="middle"/>

@@ -1540,7 +1540,7 @@
 			<s:HGroup>
 				<s:HGroup id="fld__base_name">
 					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','BASEPROD_NAME')}" verticalAlign="middle"/>
-					<components:DKI_ValidatorInput id="base_name" maxChars="{20}" 
+					<components:DKI_ValidatorInput id="base_name" maxChars="20" 
 												   width="{fieldWidth}" height="{fieldHeight}" 
 												   text="{dataGrid.selectedItem.base_name}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
 												   text.create="" editable.create="true" enabled.create="true" 

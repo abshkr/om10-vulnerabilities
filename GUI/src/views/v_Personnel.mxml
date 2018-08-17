@@ -1411,20 +1411,20 @@
 				<s:ArrayList>
 					<s:source>
 						<s:GridColumn dataField="per_code" headerText="{resourceManager.getString('default','global.lbl.code')}" width="80"/>
-						<s:GridColumn dataField="per_name" headerText="{resourceManager.getString('default','global.lbl.name')}" width="200"/>
-						<s:GridColumn dataField="per_email" headerText="Email" width="200" visible="false"/>
+						<s:GridColumn dataField="per_email" headerText="Email" width="200"/>
+						<s:GridColumn dataField="per_name" headerText="{resourceManager.getString('default','global.lbl.name')}" width="180"/>
 						<s:GridColumn dataField="per_cmpy" headerText="{resourceManager.getString('default','datagrid.headercaption.EmployerCode')}" excludeFrom="widget"  width="110"/>
 						<s:GridColumn dataField="cmpy_name" headerText="{resourceManager.getString('default','datagrid.headercaption.EmployerName')}" excludeFrom="widget" width="200"/>
 						<s:GridColumn dataField="per_auth" labelFunction="roleLabelFunc" headerText="{resourceManager.getString('default','global.lbl.role')}" width="100"/>
-						<s:GridColumn dataField="per_licence_no" headerText="{resourceManager.getString('default','PER_LICENCE_NO')}" excludeFrom="widget" width="130"/>
+						<s:GridColumn dataField="per_licence_no" headerText="{resourceManager.getString('default','PER_LICENCE_NO')}" excludeFrom="widget" width="100"/>
 						
 						<!--s:GridColumn dataField="per_exp_d1_dmy" headerText="{global.exp4}" width="150" excludeFrom="widget" labelFunction="{function(i:Object, c:GridColumn):String{return dateFormatter.format(convertDateToLocale(i[c.dataField]))}}"/>
 						<s:GridColumn dataField="per_exp_d2_dmy" headerText="{global.exp5}" width="150" excludeFrom="widget" labelFunction="{function(i:Object, c:GridColumn):String{return dateFormatter.format(convertDateToLocale(i[c.dataField]))}}"/>
 						<s:GridColumn dataField="per_exp_d3_dmy" headerText="{global.exp6}" width="150" excludeFrom="widget" labelFunction="{function(i:Object, c:GridColumn):String{return dateFormatter.format(convertDateToLocale(i[c.dataField]))}}"/-->
 						
-						<s:GridColumn dataField="per_exp_d1_dmy" headerText="{global.exp4}" width="140" excludeFrom="widget" itemRenderer="renderers.DateRenderer"/>
-						<s:GridColumn dataField="per_exp_d2_dmy" headerText="{global.exp5}" width="170" excludeFrom="widget" itemRenderer="renderers.DateRenderer"/>
-						<s:GridColumn dataField="per_exp_d3_dmy" headerText="{global.exp6}" width="150" excludeFrom="widget" itemRenderer="renderers.DateRenderer"/>
+						<s:GridColumn dataField="per_exp_d1_dmy" headerText="{global.exp4}" width="130" excludeFrom="widget" itemRenderer="renderers.DateRenderer"/>
+						<s:GridColumn dataField="per_exp_d2_dmy" headerText="{global.exp5}" width="130" excludeFrom="widget" itemRenderer="renderers.DateRenderer"/>
+						<s:GridColumn dataField="per_exp_d3_dmy" headerText="{global.exp6}" width="130" excludeFrom="widget" itemRenderer="renderers.DateRenderer"/>
 						
 						<s:GridColumn dataField="per_lock" headerText="{resourceManager.getString('default','datagrid.headercaption.areaaccess')}" width="100"  itemRenderer="renderers.GridLockRender"/>
 						<s:GridColumn dataField="user_status_flag" headerText="{resourceManager.getString('default','global.lbl.status')}" width="80" labelFunction="statusFunction"/>
