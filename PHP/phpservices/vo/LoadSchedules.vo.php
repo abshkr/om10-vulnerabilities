@@ -3,7 +3,8 @@
 class GuiSchedules
 {    
 	public $shls_trip_no;
-	public $last_chg_time;
+    public $last_chg_time;
+    public $shl_rss_infdel;
 }
 
 class ScheduleTankersLookup

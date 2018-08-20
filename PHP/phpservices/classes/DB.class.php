@@ -56,7 +56,7 @@ class DB{
             else
             {
                 $clist = explode( ".", $_SERVER['NLS_LANG'] );
-                if ( count( $clist ) >= 2 )
+                if (count( $clist ) >= 2 )
                 {
                     $charset = $clist[1];
                 }

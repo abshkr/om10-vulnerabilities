@@ -213,6 +213,7 @@ class ScreenGridColumnService
 		if ( $screen == "PERSONNEL" )
 		{
 			$str .= "|1,per_code";
+			$str .= "|1,per_email";
 			$str .= "|1,per_name";
 			$str .= "|1,per_cmpy";
 			$str .= "|1,cmpy_name";
@@ -258,6 +259,7 @@ class ScreenGridColumnService
 			$str .= "|1,last_chg_time";
 			$str .= "|1,shls_sold_to_num";
 			$str .= "|1,shls_ship_to_num";
+			$str .= "|0,shl_rss_infdel";
 		}
 		
 		if ( $screen == "ALLOCATION" )
