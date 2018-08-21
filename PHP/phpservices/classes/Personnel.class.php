@@ -20,8 +20,8 @@ define ("RETURN_ERR_EXCEPTION", "-1");    /* Exception */
 class PersonnelClass{
     
     public function PersonnelClass(){
-		session_start();
-		
+        session_start();
+        
         if(defined('HOST')) {
             $this->host = HOST;
         }
@@ -39,10 +39,10 @@ class PersonnelClass{
     
     public function getPaged($filter,$order, $startIndex, $numItems){
         if($order==null) $order='PER_NAME';
-		//if($filter == null) $filter='';
-		//logMe("Filter is " . $filter, PERSONCLASS);
+        //if($filter == null) $filter='';
+        //logMe("Filter is " . $filter, PERSONCLASS);
         $mydb = DB::getInstance();
-		/*
+        /*
         $sql = "SELECT * FROM(
             SELECT res.*, ROW_NUMBER() over (order by $order) RN
                 FROM(
@@ -51,8 +51,8 @@ class PersonnelClass{
             )
             where RN between ".($startIndex+1)." and ".($numItems+$startIndex);
         */
-		
-		$sql = array();
+        
+        $sql = array();
         $sql['sql_text'] = "SELECT * FROM(
             SELECT res.*, ROW_NUMBER() over (order by $order) RN
                 FROM(
@@ -60,8 +60,8 @@ class PersonnelClass{
                 ) res
             )
             where RN between ".($startIndex+1)." and ".($numItems+$startIndex);
-		$sql['sql_data'] = $filter['sql_data'];
-		
+        $sql['sql_data'] = $filter['sql_data'];
+        
         $rows = $mydb->query($sql);
         
         // foreach($rows as $x){
@@ -93,15 +93,15 @@ class PersonnelClass{
     }
     
     public function create($perData,$perArray){
-		if( isset($_SESSION['SESSION']) )
-		{
-			$perData->session_id = oracle_escape_string($_SESSION['SESSION']);
-		}
-		else
-		{
-			$perData->session_id = "";
-		}
-		
+        if( isset($_SESSION['SESSION']) )
+        {
+            $perData->session_id = oracle_escape_string($_SESSION['SESSION']);
+        }
+        else
+        {
+            $perData->session_id = "";
+        }
+        
         logMe("Info: ++++++Running into addPersonnel()++++++",PERSONCLASS);
 
         /* Validate parameters */
@@ -156,8 +156,8 @@ class PersonnelClass{
         );
         $thunkObj = new Thunk($this->host, $this->cgi, $perFields);
         $thunkObj->writeToClient($this->cgi);
-		$res = $thunkObj->read();
-		logMe("************************************************GETTING THAT RESPONSE*******************************************",PERSONCLASS);
+        $res = $thunkObj->read();
+        logMe("************************************************GETTING THAT RESPONSE*******************************************",PERSONCLASS);
         logMe($res,PERSONCLASS);
         //$patternSuccess = ">Insert successful</span>";
         $patternSuccess = "var opStatus =180;";
@@ -207,7 +207,7 @@ class PersonnelClass{
 
         logMe($thunkObj->read(),PERSONCLASS);
         /*$patternSuccess = "no return string???";*/
-		$patternSuccess = "var opStatus =0;";
+        $patternSuccess = "var opStatus =0;";
         $isFound = strstr($thunkObj->read(), $patternSuccess);
         if ($isFound == false) {
                 logMe("Add access number failed!!!");
@@ -250,19 +250,19 @@ class PersonnelClass{
         */
         $mydb = DB::getInstance();
         //$sql = "DELETE FROM PERM_OF_AREA WHERE PERM_PSN='" . $perData->per_code . "'";
-		$sql = array();
+        $sql = array();
         $sql['sql_text'] = "DELETE FROM PERM_OF_AREA WHERE PERM_PSN=:per_code ";
-		$sql['sql_data'] = array( $perData->per_code );
+        $sql['sql_data'] = array( $perData->per_code );
         $rows = $mydb->delete($sql);
 
         $arrCnt = count($perArray);
         logMe("accesslocks array count = ". $arrCnt,PERSONCLASS);
         for($loop =0; $loop < $arrCnt; $loop++) {
             //$sql = "INSERT INTO PERM_OF_AREA (PERM_AREA, PERM_PSN) VALUES (" . $perArray[$loop]->perm_area .",'" . $perData->per_code ."')";
-			$sql = array();
-			$sql['sql_text'] = "INSERT INTO PERM_OF_AREA (PERM_AREA, PERM_PSN) VALUES ( :perm_area, :per_code ) ";
-			$sql['sql_data'] = array( $perArray[$loop]->perm_area, $perData->per_code );
-			$res = $mydb->insert($sql);
+            $sql = array();
+            $sql['sql_text'] = "INSERT INTO PERM_OF_AREA (PERM_AREA, PERM_PSN) VALUES ( :perm_area, :per_code ) ";
+            $sql['sql_data'] = array( $perArray[$loop]->perm_area, $perData->per_code );
+            $res = $mydb->insert($sql);
         }
 
         /*$patternSuccess = "no return string???";
@@ -272,37 +272,39 @@ class PersonnelClass{
                 return RETURN_ERR_8;
         }*/
         logMe("CGI Add access area succeeded!!!",PERSONCLASS);
-		/*
-		// update comments
+        /*
+        // update comments
         //$comment_sql = "UPDATE PERSONNEL SET PER_COMMENTS='" . $perData->per_comments . "' WHERE PER_CODE='" . $perData->per_code ."' ";
-		$comment_sql = array();
+        $comment_sql = array();
         $comment_sql['sql_text'] = "UPDATE PERSONNEL SET PER_COMMENTS=:per_comments WHERE PER_CODE=:per_code ";
-		$comment_sql['sql_data'] = array( $perData->per_comments, $perData->per_code );
+        $comment_sql['sql_data'] = array( $perData->per_comments, $perData->per_code );
         $comment_res = $mydb->update($comment_sql);
         logMe("Update the personnel comments succeeded!!!",PERSONCLASS);
-		*/
-		$this->updatePersonnelName( $perData->per_code, $perData->per_name );
+        */
+        $this->updatePersonnelName( $perData->per_code, $perData->per_name );
         logMe("Update the personnel name succeeded!!!",PERSONCLASS);
-		$this->updatePersonnelDepartment( $perData->per_code, $perData->per_department );
+        $this->updatePersonnelDepartment( $perData->per_code, $perData->per_department );
         logMe("Update the personnel department succeeded!!!",PERSONCLASS);
-		$this->updatePersonnelComments( $perData->per_code, $perData->per_comments );
+        $this->updatePersonnelComments( $perData->per_code, $perData->per_comments );
         logMe("Update the personnel comments succeeded!!!",PERSONCLASS);
+        $this->updatePersonnelEmail( $perData->per_code, $perData->user_login_count);
+        logMe("Update the personnel email succeeded!!!",PERSONCLASS);
         
         /* Link a role to a user */
         logMe("Info: Linking role to the user...",PERSONCLASS);
         //$sql = "SELECT USER_ID FROM URBAC_USERS WHERE USER_CODE='" . $perData->per_code . "'";
-		$sql = array();
+        $sql = array();
         $sql['sql_text'] = "SELECT USER_ID FROM URBAC_USERS WHERE USER_CODE=:per_code ";
-		$sql['sql_data'] = array( $perData->per_code );
+        $sql['sql_data'] = array( $perData->per_code );
         $rows = $mydb->query($sql);
         $user_id = $rows[0]->USER_ID;
         $role_id = $perData->per_auth;
         logMe("Info: user_id = ".$user_id,PERSONCLASS);
         logMe("Info: role_id = ".$role_id,PERSONCLASS);
         //$sql = "INSERT INTO URBAC_USER_ROLES (USER_ID,ROLE_ID,USER_ROLE_ACTIVE) VALUES(" . $user_id . "," . $role_id . ",1)";
-		$sql = array();
+        $sql = array();
         $sql['sql_text'] = "INSERT INTO URBAC_USER_ROLES (USER_ID,ROLE_ID,USER_ROLE_ACTIVE) VALUES( :user_id, :role_id, 1 ) ";
-		$sql['sql_data'] = array( $user_id, $role_id );
+        $sql['sql_data'] = array( $user_id, $role_id );
         $rows = $mydb->insert($sql);
         logMe("Link a role to a user succeeded!!!",PERSONCLASS);
 
@@ -311,309 +313,322 @@ class PersonnelClass{
         logMe("-----------------------------",PERSONCLASS);
 
         $code = $perData->per_code;
-				
-		$sql['sql_text'] = " UPDATE PERSONNEL SET PER_LAST_MODIFIED=current_date WHERE PER_CODE=:code";
+                
+        $sql['sql_text'] = " UPDATE PERSONNEL SET PER_LAST_MODIFIED=current_date WHERE PER_CODE=:code";
 
-		$sql['sql_data'] = array( $code );
+        $sql['sql_data'] = array( $code );
 
-		$mydb = DB::getInstance();
+        $mydb = DB::getInstance();
 
         $data = $mydb->update($sql);
 
         return $rows;
     }
     
-	
-	// use this PHP function to update personnel name again so the UTF-8 text will not get corrupted
+    // use this PHP function to update personnel name again so the UTF-8 text will not get corrupted
+    public function updatePersonnelEmail($psnl_code, $psnl_email)
+    {
+       $mydb = DB::getInstance();
+
+        $sql = array();
+        $sql['sql_text'] = "UPDATE PERSONNEL SET PER_EMAIL=:psnl_email WHERE PER_CODE=:psnl_code ";
+        $sql['sql_data'] = array( $psnl_email, $psnl_code );
+        
+        $result = $mydb->update($sql);
+        
+        return $result;
+    }
+    
+    // use this PHP function to update personnel name again so the UTF-8 text will not get corrupted
     public function updatePersonnelName($psnl_code, $psnl_name)
-	{
+    {
        $mydb = DB::getInstance();
 
-		$sql = array();
+        $sql = array();
         $sql['sql_text'] = "UPDATE PERSONNEL SET PER_NAME=:psnl_name WHERE PER_CODE=:psnl_code ";
-		$sql['sql_data'] = array( $psnl_name, $psnl_code );
-		
+        $sql['sql_data'] = array( $psnl_name, $psnl_code );
+        
         $result = $mydb->update($sql);
-		
+        
         return $result;
     }
-	
-	// use this PHP function to update personnel department again so the UTF-8 text will not get corrupted
+    
+    // use this PHP function to update personnel department again so the UTF-8 text will not get corrupted
     public function updatePersonnelDepartment($psnl_code, $psnl_dept)
-	{
+    {
        $mydb = DB::getInstance();
 
-		$sql = array();
+        $sql = array();
         $sql['sql_text'] = "UPDATE PERSONNEL SET PER_DEPARTMENT=:psnl_dept WHERE PER_CODE=:psnl_code ";
-		$sql['sql_data'] = array( $psnl_dept, $psnl_code );
-		
+        $sql['sql_data'] = array( $psnl_dept, $psnl_code );
+        
         $result = $mydb->update($sql);
-		
+        
         return $result;
     }
-	
-	// use this PHP function to update personnel comments again so the UTF-8 text will not get corrupted
+    
+    // use this PHP function to update personnel comments again so the UTF-8 text will not get corrupted
     public function updatePersonnelComments($psnl_code, $psnl_note)
-	{
+    {
        $mydb = DB::getInstance();
 
-		$sql = array();
+        $sql = array();
         $sql['sql_text'] = "UPDATE PERSONNEL SET PER_COMMENTS=:psnl_note WHERE PER_CODE=:psnl_code ";
-		$sql['sql_data'] = array( $psnl_note, $psnl_code );
-		
+        $sql['sql_data'] = array( $psnl_note, $psnl_code );
+        
         $result = $mydb->update($sql);
-		
+        
         return $result;
     }
-	
+    
     public function getUserStatusFlag($user_id)
-	{
-		$sql = array();
+    {
+        $sql = array();
         $sql['sql_text'] = "select USER_STATUS_FLAG from URBAC_USERS where USER_ID=:user_id ";
-		$sql['sql_data'] = array( $user_id );
-		
+        $sql['sql_data'] = array( $user_id );
+        
         $mydb = DB::getInstance();
         $rows = $mydb->query($sql);
 
         return ($rows[0]->USER_STATUS_FLAG);
     }
-	
-	// this function is called when user locks the personnel
+    
+    // this function is called when user locks the personnel
     public function updateUserStatusFlag($user_id, $user_flag, $user_code)
-	{
-		$old_flag = $this->getUserStatusFlag($user_id);
-		
+    {
+        $old_flag = $this->getUserStatusFlag($user_id);
+        
         $mydb = DB::getInstance();
 
-		$sql = array();
+        $sql = array();
         $sql['sql_text'] = "
-			UPDATE URBAC_USERS
-				SET
-				USER_STATUS_FLAG = :user_flag
-				WHERE USER_ID=:user_id";
-		$sql['sql_data'] = array( $user_flag, $user_id );
-		
+            UPDATE URBAC_USERS
+                SET
+                USER_STATUS_FLAG = :user_flag
+                WHERE USER_ID=:user_id";
+        $sql['sql_data'] = array( $user_flag, $user_id );
+        
         //logMe("1----------------------------->".$user_flag."<---->".$user_id,PERSONCLASS);
         //logMe("2-----------------------------".$sql['sql_text'],PERSONCLASS);
         $result = $mydb->update($sql);
         //logMe("3-----------------------------".$result,PERSONCLASS);
-		
-		if ( $old_flag != $user_flag )
-		{
-			$keys = array ("USER_ID"=>($user_id), "USER_CODE"=>($user_code));
-			$excludes = array ();
-			$upd_journal = new UpdateJournalClass( "Personnel", "URBAC_USERS", $keys, $excludes );
-			$msg = "";
-			if ( $user_flag == 0 )
-			{
-				$msg .= "deactivated";
-			}
-			else
-			if ( $user_flag == 1 )
-			{
-				$msg .= "activated";
-			}
-			else
-			{
-				$msg .= "locked";
-			}
-			$msg .= " user [" . $user_code . "] successfully";
-			$upd_journal->logOneLine( $msg );
-		}
-		
+        
+        if ( $old_flag != $user_flag )
+        {
+            $keys = array ("USER_ID"=>($user_id), "USER_CODE"=>($user_code));
+            $excludes = array ();
+            $upd_journal = new UpdateJournalClass( "Personnel", "URBAC_USERS", $keys, $excludes );
+            $msg = "";
+            if ( $user_flag == 0 )
+            {
+                $msg .= "deactivated";
+            }
+            else
+            if ( $user_flag == 1 )
+            {
+                $msg .= "activated";
+            }
+            else
+            {
+                $msg .= "locked";
+            }
+            $msg .= " user [" . $user_code . "] successfully";
+            $upd_journal->logOneLine( $msg );
+        }
+        
         return $result;
     }
-	
+    
     public function updateUserStatusFlag2($user_id, $user_flag, $user_code)
-	{
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////
-		////////////////////// new module to log any changes of any fields on any screen ////////////////////////
-		////////////////////// Before the updates                                        ////////////////////////
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		$keys = array ("USER_ID"=>($user_id), "USER_CODE"=>($user_code));
-		$excludes = array ("USER_CODE"=>0, "USER_USERNAME"=>0, "USER_PASSWORD"=>0, "USER_TYPE"=>0, "USER_LOGIN_COUNT"=>0, "USER_LAST_REASON"=>0, "VALID_TIME"=>0, "EXPIRE_TIME"=>0, "RECORD_SWITCH"=>0, "RECORD_ORDER"=>0, "LOGIN_ATTEMPTS"=>0, "LAST_ATTEMPT"=>0);
-		$upd_journal = new UpdateJournalClass( "Personnel", "URBAC_USERS", $keys, $excludes );
-		$upd_journal->setOldValues( $upd_journal->getRecordValues() );
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////
+    {
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////// new module to log any changes of any fields on any screen ////////////////////////
+        ////////////////////// Before the updates                                        ////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////
+        $keys = array ("USER_ID"=>($user_id), "USER_CODE"=>($user_code));
+        $excludes = array ("USER_CODE"=>0, "USER_USERNAME"=>0, "USER_PASSWORD"=>0, "USER_TYPE"=>0, "USER_LOGIN_COUNT"=>0, "USER_LAST_REASON"=>0, "VALID_TIME"=>0, "EXPIRE_TIME"=>0, "RECORD_SWITCH"=>0, "RECORD_ORDER"=>0, "LOGIN_ATTEMPTS"=>0, "LAST_ATTEMPT"=>0);
+        $upd_journal = new UpdateJournalClass( "Personnel", "URBAC_USERS", $keys, $excludes );
+        $upd_journal->setOldValues( $upd_journal->getRecordValues() );
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         $mydb = DB::getInstance();
 
-		$sql = array();
+        $sql = array();
         $sql['sql_text'] = "
-			UPDATE URBAC_USERS
-				SET
-				USER_STATUS_FLAG = :user_flag
-				WHERE USER_ID=:user_id";
-		$sql['sql_data'] = array( $user_flag, $user_id );
-		
+            UPDATE URBAC_USERS
+                SET
+                USER_STATUS_FLAG = :user_flag
+                WHERE USER_ID=:user_id";
+        $sql['sql_data'] = array( $user_flag, $user_id );
+        
         //logMe("1----------------------------->".$user_flag."<---->".$user_id,PERSONCLASS);
         //logMe("2-----------------------------".$sql['sql_text'],PERSONCLASS);
         $result = $mydb->update($sql);
         //logMe("3-----------------------------".$result,PERSONCLASS);
-		
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////
-		////////////////////// new module to log any changes of any fields on any screen ////////////////////////
-		////////////////////// After the updates                                         ////////////////////////
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		$upd_journal->setNewValues( $upd_journal->getRecordValues() );
-		$upd_journal->log();
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////// new module to log any changes of any fields on any screen ////////////////////////
+        ////////////////////// After the updates                                         ////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////
+        $upd_journal->setNewValues( $upd_journal->getRecordValues() );
+        $upd_journal->log();
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
         return $result;
     }
-	
-	public function readAreaAccess($per_code)
-	{
+    
+    public function readAreaAccess($per_code)
+    {
         $mydb = DB::getInstance();
-		/*
-		$sql = "
-			select 
-				pa1.PERM_PSN
-				, pa2.PER_CODE
-				, pa2.PER_NAME
-				, pa1.PERM_AREA
-				, pa2.AREA_K
-				, pa2.AREA_NAME
-				, decode( pa1.PERM_AREA, null, 0, 1 )  as PER_ACCESS
-			from
-				PERM_OF_AREA  pa1
-				, (
-					select 
-						pl.PER_CODE
-						, pl.PER_NAME
-						, ar.AREA_K
-						, ar.AREA_NAME
-					from 
-						PERSONNEL pl
-						, AREA_RC ar
-					where 
-						1=1
-				) pa2
-			where 
-				pa2.PER_CODE = pa1.PERM_PSN(+)
-				and pa2.AREA_K = pa1.PERM_AREA(+)
-			  and pa2.PER_CODE='$per_code'
-		";
-		*/
-		$sql = array();
+        /*
+        $sql = "
+            select 
+                pa1.PERM_PSN
+                , pa2.PER_CODE
+                , pa2.PER_NAME
+                , pa1.PERM_AREA
+                , pa2.AREA_K
+                , pa2.AREA_NAME
+                , decode( pa1.PERM_AREA, null, 0, 1 )  as PER_ACCESS
+            from
+                PERM_OF_AREA  pa1
+                , (
+                    select 
+                        pl.PER_CODE
+                        , pl.PER_NAME
+                        , ar.AREA_K
+                        , ar.AREA_NAME
+                    from 
+                        PERSONNEL pl
+                        , AREA_RC ar
+                    where 
+                        1=1
+                ) pa2
+            where 
+                pa2.PER_CODE = pa1.PERM_PSN(+)
+                and pa2.AREA_K = pa1.PERM_AREA(+)
+              and pa2.PER_CODE='$per_code'
+        ";
+        */
+        $sql = array();
         $sql['sql_text'] = "
-			select 
-				pa1.PERM_PSN
-				, pa2.PER_CODE
-				, pa2.PER_NAME
-				, pa1.PERM_AREA
-				, pa2.AREA_K
-				, pa2.AREA_NAME
-				, decode( pa1.PERM_AREA, null, 0, 1 )  as PER_ACCESS
-			from
-				PERM_OF_AREA  pa1
-				, (
-					select 
-						pl.PER_CODE
-						, pl.PER_NAME
-						, ar.AREA_K
-						, ar.AREA_NAME
-					from 
-						PERSONNEL pl
-						, AREA_RC ar
-					where 
-						1=1
-				) pa2
-			where 
-				pa2.PER_CODE = pa1.PERM_PSN(+)
-				and pa2.AREA_K = pa1.PERM_AREA(+)
-			  and pa2.PER_CODE=:per_code
-		";
-		$sql['sql_data'] = array( $per_code );
-		
+            select 
+                pa1.PERM_PSN
+                , pa2.PER_CODE
+                , pa2.PER_NAME
+                , pa1.PERM_AREA
+                , pa2.AREA_K
+                , pa2.AREA_NAME
+                , decode( pa1.PERM_AREA, null, 0, 1 )  as PER_ACCESS
+            from
+                PERM_OF_AREA  pa1
+                , (
+                    select 
+                        pl.PER_CODE
+                        , pl.PER_NAME
+                        , ar.AREA_K
+                        , ar.AREA_NAME
+                    from 
+                        PERSONNEL pl
+                        , AREA_RC ar
+                    where 
+                        1=1
+                ) pa2
+            where 
+                pa2.PER_CODE = pa1.PERM_PSN(+)
+                and pa2.AREA_K = pa1.PERM_AREA(+)
+              and pa2.PER_CODE=:per_code
+        ";
+        $sql['sql_data'] = array( $per_code );
+        
         $rows = $mydb->query($sql);
-		
-		return $rows;
-	}	
-	
-	public function logAreaAccess( $per_code, $old_data, $new_data )
-	{
-		$keys = array ("PER_CODE"=>($per_code));
-		$excludes = array ("PER_LAST_DMY"=>0, "PER_COMMENTS"=>0);
-		$upd_journal = new UpdateJournalClass( "Personnel", "PERSONNEL", $keys, $excludes );
-				
-		foreach($old_data as $old_key => $old_row)
-		{
-			$old_value = (array)$old_row;
-			foreach($new_data as $new_key => $new_row)
-			{
-				$new_value = (array)$new_row;
-				if ( $old_value['AREA_K'] == $new_value['AREA_K'] && $old_value['PER_ACCESS'] != $new_value['PER_ACCESS'] )
-				{
-					// area access permission has been changed and log the change
-					if ( $new_value['PER_ACCESS'] == 1 )
-					{
-						$msg = "has granted [". $new_value['PER_NAME'] ."] the permission to the area [". $new_value['AREA_NAME'] ."] " ;
-					}
-					else
-					{
-						$msg = "has cancelled [". $new_value['PER_NAME'] ."] the permission to the area [". $new_value['AREA_NAME'] ."] " ;
-					}
-					$upd_journal->logOneLine( $msg );
-				}
-			}
-		}
-		
-	}
-	
-	public function updateAreaAccess( $per_code, $per_area )
-	{
-		$paOld = $this->readAreaAccess( $per_code );
-		
+        
+        return $rows;
+    }   
+    
+    public function logAreaAccess( $per_code, $old_data, $new_data )
+    {
+        $keys = array ("PER_CODE"=>($per_code));
+        $excludes = array ("PER_LAST_DMY"=>0, "PER_COMMENTS"=>0);
+        $upd_journal = new UpdateJournalClass( "Personnel", "PERSONNEL", $keys, $excludes );
+                
+        foreach($old_data as $old_key => $old_row)
+        {
+            $old_value = (array)$old_row;
+            foreach($new_data as $new_key => $new_row)
+            {
+                $new_value = (array)$new_row;
+                if ( $old_value['AREA_K'] == $new_value['AREA_K'] && $old_value['PER_ACCESS'] != $new_value['PER_ACCESS'] )
+                {
+                    // area access permission has been changed and log the change
+                    if ( $new_value['PER_ACCESS'] == 1 )
+                    {
+                        $msg = "has granted [". $new_value['PER_NAME'] ."] the permission to the area [". $new_value['AREA_NAME'] ."] " ;
+                    }
+                    else
+                    {
+                        $msg = "has cancelled [". $new_value['PER_NAME'] ."] the permission to the area [". $new_value['AREA_NAME'] ."] " ;
+                    }
+                    $upd_journal->logOneLine( $msg );
+                }
+            }
+        }
+        
+    }
+    
+    public function updateAreaAccess( $per_code, $per_area )
+    {
+        $paOld = $this->readAreaAccess( $per_code );
+        
         /* Use PHP to update personnel access area */
         $mydb = DB::getInstance();
         //$sql="DELETE FROM PERM_OF_AREA WHERE PERM_PSN='".$per_code."'";
-		$sql = array();
+        $sql = array();
         $sql['sql_text'] = "DELETE FROM PERM_OF_AREA WHERE PERM_PSN=:per_code ";
-		$sql['sql_data'] = array( $per_code );
+        $sql['sql_data'] = array( $per_code );
         $res = $mydb->delete($sql);
-		
-		//$arr = explode($per_area);
+        
+        //$arr = explode($per_area);
         $arrCnt = count($per_area);
-		logMe("Is array set: " . isset($per_area), PERSONCLASS);
+        logMe("Is array set: " . isset($per_area), PERSONCLASS);
         logMe("array count = ". $arrCnt,PERSONCLASS);
         for($loop =0; $loop < $arrCnt; $loop++) {
             //$sql = "INSERT INTO PERM_OF_AREA (PERM_AREA, PERM_PSN) VALUES (" . $per_area[$loop]->perm_area .",'" . $per_code ."')";
-			$sql = array();
-			$sql['sql_text'] = "INSERT INTO PERM_OF_AREA (PERM_AREA, PERM_PSN) VALUES ( :perm_area, :per_code ) ";
-			$sql['sql_data'] = array( $per_area[$loop]->perm_area, $per_code );
-		
-			$res = $mydb->insert($sql);
+            $sql = array();
+            $sql['sql_text'] = "INSERT INTO PERM_OF_AREA (PERM_AREA, PERM_PSN) VALUES ( :perm_area, :per_code ) ";
+            $sql['sql_data'] = array( $per_area[$loop]->perm_area, $per_code );
+        
+            $res = $mydb->insert($sql);
         }
 
-		$paNew = $this->readAreaAccess( $per_code );
-		$this->logAreaAccess( $per_code, $paOld, $paNew );
-		
+        $paNew = $this->readAreaAccess( $per_code );
+        $this->logAreaAccess( $per_code, $paOld, $paNew );
+        
         logMe("CGI Update access area succeeded!!!",PERSONCLASS);        
-	}
-	
+    }
+    
     
     public function update($perData, $perArray)
-	{ 
-		if( isset($_SESSION['SESSION']) )
-		{
-			$perData->session_id = oracle_escape_string($_SESSION['SESSION']);
-		}
-		else
-		{
-			$perData->session_id = "";
-		}
-		
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////
-		////////////////////// new module to log any changes of any fields on any screen ////////////////////////
-		////////////////////// Before the updates                                        ////////////////////////
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		$keys = array ("PER_CODE"=>($perData->per_code));
-		$excludes = array ("PER_LAST_DMY"=>0, "PER_COMMENTS"=>0);
-		$upd_journal = new UpdateJournalClass( "Personnel", "PERSONNEL", $keys, $excludes );
-		$upd_journal->setOldValues( $upd_journal->getRecordValues() );
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		
+    { 
+        if( isset($_SESSION['SESSION']) )
+        {
+            $perData->session_id = oracle_escape_string($_SESSION['SESSION']);
+        }
+        else
+        {
+            $perData->session_id = "";
+        }
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////// new module to log any changes of any fields on any screen ////////////////////////
+        ////////////////////// Before the updates                                        ////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////
+        $keys = array ("PER_CODE"=>($perData->per_code));
+        $excludes = array ("PER_LAST_DMY"=>0, "PER_COMMENTS"=>0);
+        $upd_journal = new UpdateJournalClass( "Personnel", "PERSONNEL", $keys, $excludes );
+        $upd_journal->setOldValues( $upd_journal->getRecordValues() );
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
         logMe("Info: ++++++Running into updatePersonnel()++++++",PERSONCLASS);
 
         /* Validate parameters */
@@ -746,56 +761,58 @@ class PersonnelClass{
         logMe("CGI Update expiry date succeeded!!!",PERSONCLASS);
 
         /* Call CGI to update access area */
-		$this->updateAreaAccess( $perData->per_code, $perArray );
+        $this->updateAreaAccess( $perData->per_code, $perArray );
         $mydb = DB::getInstance();
-		/*
+        /*
         $sql="DELETE FROM PERM_OF_AREA WHERE PERM_PSN='".$perData->per_code."'";
         $res = $mydb->delete($sql);
-		//$arr = explode($perArray);
+        //$arr = explode($perArray);
         $arrCnt = count($perArray);
-		logMe("Is array set: " . isset($perArray), PERSONCLASS);
+        logMe("Is array set: " . isset($perArray), PERSONCLASS);
         logMe("array count = ". $arrCnt,PERSONCLASS);
         for($loop =0; $loop < $arrCnt; $loop++) {
             $sql = "INSERT INTO PERM_OF_AREA (PERM_AREA, PERM_PSN) VALUES (" . $perArray[$loop]->perm_area .",'" . $perData->per_code ."')";
-			$res = $mydb->insert($sql);
+            $res = $mydb->insert($sql);
             //$thunkObj = new Thunk($this->host, $this->cgi, $perFields);
             //$thunkObj->writeToClient($this->cgi);
-			//logMe($thunkObj->read(),PERSONCLASS);
+            //logMe($thunkObj->read(),PERSONCLASS);
         }
 
         logMe("CGI Update access area succeeded!!!",PERSONCLASS);        
-		*/
-		/*
-		// update comments
+        */
+        /*
+        // update comments
         //$comment_sql = "UPDATE PERSONNEL SET PER_COMMENTS='" . $perData->per_comments . "' WHERE PER_CODE='" . $perData->per_code ."' ";
-		$comment_sql = array();
+        $comment_sql = array();
         $comment_sql['sql_text'] = "UPDATE PERSONNEL SET PER_COMMENTS=:per_comments WHERE PER_CODE=:per_code ";
-		$comment_sql['sql_data'] = array( $perData->per_comments, $perData->per_code );
+        $comment_sql['sql_data'] = array( $perData->per_comments, $perData->per_code );
         $comment_res = $mydb->update($comment_sql);
         logMe("Update the personnel comments succeeded!!!",PERSONCLASS);
-		*/
-		$this->updatePersonnelName( $perData->per_code, $perData->per_name );
+        */
+        $this->updatePersonnelName( $perData->per_code, $perData->per_name );
         logMe("Update the personnel name succeeded!!!",PERSONCLASS);
-		$this->updatePersonnelDepartment( $perData->per_code, $perData->per_department );
+        $this->updatePersonnelDepartment( $perData->per_code, $perData->per_department );
         logMe("Update the personnel department succeeded!!!",PERSONCLASS);
-		$this->updatePersonnelComments( $perData->per_code, $perData->per_comments );
+        $this->updatePersonnelComments( $perData->per_code, $perData->per_comments );
         logMe("Update the personnel comments succeeded!!!",PERSONCLASS);
-
+        $this->updatePersonnelEmail( $perData->per_code, $perData->user_login_count);
+        logMe("Update the personnel email succeeded!!!",PERSONCLASS);
+        
         /* Update the role linked to the user */
         logMe("Info: Update the role linked to the user...",PERSONCLASS);
         //$sql = "SELECT USER_ID FROM URBAC_USERS WHERE USER_CODE='" . $perData->per_code . "'";
-		$sql = array();
+        $sql = array();
         $sql['sql_text'] = "SELECT USER_ID FROM URBAC_USERS WHERE USER_CODE=:per_code ";
-		$sql['sql_data'] = array( $perData->per_code );
+        $sql['sql_data'] = array( $perData->per_code );
         $rows = $mydb->query($sql);
         $user_id = $rows[0]->USER_ID;
         $role_id = $perData->per_auth;
         logMe("Info: user_id = ".$user_id,PERSONCLASS);
         logMe("Info: role_id = ".$role_id,PERSONCLASS);
         //$sql = "UPDATE URBAC_USER_ROLES SET ROLE_ID=" . $role_id . " WHERE USER_ID=" . $user_id;
-		$sql = array();
+        $sql = array();
         $sql['sql_text'] = "UPDATE URBAC_USER_ROLES SET ROLE_ID=:role_id WHERE USER_ID=:user_id ";
-		$sql['sql_data'] = array( $role_id, $user_id );
+        $sql['sql_data'] = array( $role_id, $user_id );
         $rows = $mydb->update($sql);
         logMe("Update the role linked to the user succeeded!!!",PERSONCLASS);
 
@@ -803,25 +820,25 @@ class PersonnelClass{
         logMe("Updating personnel succeeded!!!",PERSONCLASS);
         logMe("-------------------------------",PERSONCLASS);
 
-		// now update the URBAC_USERS.USER_STATUS_FLAG
-		$this->updateUserStatusFlag( $user_id, $perData->user_status_flag, $perData->per_code );
-		
-		
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////
-		////////////////////// new module to log any changes of any fields on any screen ////////////////////////
-		////////////////////// After the updates                                         ////////////////////////
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		$upd_journal->setNewValues( $upd_journal->getRecordValues() );
-		$upd_journal->log();
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // now update the URBAC_USERS.USER_STATUS_FLAG
+        $this->updateUserStatusFlag( $user_id, $perData->user_status_flag, $perData->per_code );
+        
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////// new module to log any changes of any fields on any screen ////////////////////////
+        ////////////////////// After the updates                                         ////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////
+        $upd_journal->setNewValues( $upd_journal->getRecordValues() );
+        $upd_journal->log();
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         $code = $perData->per_code;
-				
-		$sql['sql_text'] = " UPDATE PERSONNEL SET PER_LAST_MODIFIED=current_date WHERE PER_CODE=:code";
+                
+        $sql['sql_text'] = " UPDATE PERSONNEL SET PER_LAST_MODIFIED=current_date WHERE PER_CODE=:code";
 
-		$sql['sql_data'] = array( $code );
+        $sql['sql_data'] = array( $code );
 
-		$mydb = DB::getInstance();
+        $mydb = DB::getInstance();
 
         $data = $mydb->update($sql);
         
@@ -829,28 +846,28 @@ class PersonnelClass{
     }
 
     public function delete($perData){ 
-		if( isset($_SESSION['SESSION']) )
-		{
-			$perData->session_id = oracle_escape_string($_SESSION['SESSION']);
-		}
-		else
-		{
-			$perData->session_id = "";
-		}
-		
+        if( isset($_SESSION['SESSION']) )
+        {
+            $perData->session_id = oracle_escape_string($_SESSION['SESSION']);
+        }
+        else
+        {
+            $perData->session_id = "";
+        }
+        
         logMe("Info: ++++++Running into deletePersonnel()++++++",PERSONCLASS);
 
         /* Validate parameters */
-		/*
+        /*
         $errMsg = '';
         if (!integrityCheck($perData, $errMsg, 'Personnel_GUI'))
         {
             logMe("Invalid parameter. Error message: " . $errMsg,PERSONCLASS);
             return RETURN_ERR_1;
         }
-		*/
+        */
         /* Check the logon user's privilege */
-		/*
+        /*
         $service = new ValidateUser($perData->session_id);
         $retArray = $service->getMyScreenPrivs("personnel");
         logMe("Info: PRIV Array [ROLE_ID] " . $retArray[0]['ROLE_ID'],PERSONCLASS);
@@ -863,7 +880,7 @@ class PersonnelClass{
 
         logMe("host = " . $this->host,PERSONCLASS);
         logMe("cgi = " . $this->cgi,PERSONCLASS);
-		*/
+        */
         /* Call CGI to delete personnel */
         $perFields = array(
                 'sess_id'=>urlencode($perData->session_id),
@@ -881,10 +898,10 @@ class PersonnelClass{
         $isFound = strstr($response, $patternSuccess);
         if ($isFound == false) {
             logMe("Delete personnel failed!!!",PERSONCLASS);
-			return "ERROR";
+            return "ERROR";
             //return RETURN_ERR_8;
         }
-		/*
+        /*
         logMe($thunkObj->read(),PERSONCLASS);
         $patternSuccess = ">Delete successful</span>";
         $isFound = strstr($thunkObj->read(), $patternSuccess);
@@ -892,7 +909,7 @@ class PersonnelClass{
             logMe("Delete personnel failed!!!",PERSONCLASS);
             return RETURN_ERR_8;
         }
-		*/
+        */
         logMe("CGI Delete personnel succeeded!!!",PERSONCLASS);
 
         //return RETURN_0;
@@ -903,24 +920,24 @@ class PersonnelClass{
         $mydb = DB::getInstance();
         //$sql="SELECT CMPY_CODE,CMPY_NAME FROM GUI_COMPANYS WHERE CMPY_CODE <> 'ANY' and bitand(CMPY_TYPE,64)<>0 ORDER BY CMPY_NAME ASC";
         $sql="
-			SELECT distinct 
-				gc.CMPY_CODE
-				, gc.CMPY_NAME 
-			FROM 
-				GUI_COMPANYS gc
-			WHERE 
-				gc.CMPY_CODE <> 'ANY' 
-				and bitand(gc.CMPY_TYPE,64)<>0 
-				and ( 
-					( SYS_CONTEXT ('CONN_CONTEXT', 'ISMANAGER') = 'N'
-						and ( gc.CMPY_CODE = SYS_CONTEXT ('CONN_CONTEXT', 'CMPYCODE')
-						or ( gc.CMPY_CODE in (select child_cmpy_code from company_relation where parent_cmpy_code=SYS_CONTEXT('CONN_CONTEXT', 'CMPYCODE') and parent_cmpy_role=1 and child_cmpy_role=6 and status=1) ) ) 
-					)
-					or SYS_CONTEXT ('CONN_CONTEXT', 'CMPYCODE') IS NULL
-					or SYS_CONTEXT ('CONN_CONTEXT', 'ISMANAGER') = 'Y'
-					or SYS_CONTEXT ('CONN_CONTEXT', 'ISMANAGER') IS NULL)
-			ORDER BY gc.CMPY_NAME ASC
-		";
+            SELECT distinct 
+                gc.CMPY_CODE
+                , gc.CMPY_NAME 
+            FROM 
+                GUI_COMPANYS gc
+            WHERE 
+                gc.CMPY_CODE <> 'ANY' 
+                and bitand(gc.CMPY_TYPE,64)<>0 
+                and ( 
+                    ( SYS_CONTEXT ('CONN_CONTEXT', 'ISMANAGER') = 'N'
+                        and ( gc.CMPY_CODE = SYS_CONTEXT ('CONN_CONTEXT', 'CMPYCODE')
+                        or ( gc.CMPY_CODE in (select child_cmpy_code from company_relation where parent_cmpy_code=SYS_CONTEXT('CONN_CONTEXT', 'CMPYCODE') and parent_cmpy_role=1 and child_cmpy_role=6 and status=1) ) ) 
+                    )
+                    or SYS_CONTEXT ('CONN_CONTEXT', 'CMPYCODE') IS NULL
+                    or SYS_CONTEXT ('CONN_CONTEXT', 'ISMANAGER') = 'Y'
+                    or SYS_CONTEXT ('CONN_CONTEXT', 'ISMANAGER') IS NULL)
+            ORDER BY gc.CMPY_NAME ASC
+        ";
         $rows = $mydb->query($sql);
         //XarrayEncodingConversion($rows);
         return (prepareForAMF($rows, array(0 => 'PersonnelLookup')));
@@ -970,41 +987,41 @@ class PersonnelClass{
     public function getAreaAccess($code){
         $mydb = DB::getInstance();
         //$sql="SELECT * FROM PERM_OF_AREA WHERE PERM_PSN='$code'";
-		$sql = array();
+        $sql = array();
         $sql['sql_text'] = "SELECT * FROM PERM_OF_AREA WHERE PERM_PSN=:psnl_code ";
-		$sql['sql_data'] = array( $code );
-		
+        $sql['sql_data'] = array( $code );
+        
         $rows = $mydb->query($sql);      
         //XarrayEncodingConversion($rows);
         return (prepareForAMF($rows, array(0 => 'AccessPermissions_vo')));
     }    
-	
-	
-	// search for employer company by driver code
+    
+    
+    // search for employer company by driver code
     public function lookupCmpyByDriver($drivercode){
         $mydb = DB::getInstance();
         //$sql="SELECT CMPY_CODE,CMPY_NAME FROM GUI_PERSONNEL WHERE PER_CODE = '$drivercode'";
-		$sql = array();
+        $sql = array();
         $sql['sql_text'] = "SELECT CMPY_CODE,CMPY_NAME FROM GUI_PERSONNEL WHERE PER_CODE = :driver_code ";
-		$sql['sql_data'] = array( $drivercode );
-		
+        $sql['sql_data'] = array( $drivercode );
+        
         $rows = $mydb->query($sql);
         //XarrayEncodingConversion($rows);
         return (prepareForAMF($rows, array(0 => 'PersonnelLookup')));
     }
-	
-	//search for personnel list by company code
+    
+    //search for personnel list by company code
     public function lookupPSNListByCmpy($cmpycode){
         $mydb = DB::getInstance();
         //$sql="SELECT PER_CODE,PER_NAME FROM GUI_PERSONNEL WHERE CMPY_CODE = '$cmpycode' AND PER_AUTH IN (7,8,9)";
-		$sql = array();
+        $sql = array();
         $sql['sql_text'] = "SELECT PER_CODE,PER_NAME FROM GUI_PERSONNEL WHERE CMPY_CODE = :cmpy_code AND PER_AUTH IN (7,8,9)";
-		$sql['sql_data'] = array( $cmpycode );
-		
+        $sql['sql_data'] = array( $cmpycode );
+        
         $rows = $mydb->query($sql);
         //XarrayEncodingConversion($rows);
         return (prepareForAMF($rows, array(0 => 'PersonnelByCmpyLookup')));
     }
-	
+    
 }
 ?>
