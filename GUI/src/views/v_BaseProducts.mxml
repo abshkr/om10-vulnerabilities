@@ -723,6 +723,12 @@
 					return;
 				}
 				
+				if (base_name.text.length > 20) {
+					var errorBox2:MessageDialog = new MessageDialog( "Base Product Name must be less than 20 characters." );
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
 				var obj:Object = new Object();
 				
 				
@@ -981,6 +987,12 @@
 				
 				if ( this.checkFields() > 0 )
 				{
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				if (base_name.text.length > 20) {
+					var errorBox2:MessageDialog = new MessageDialog( "Base Product Name must be less than 20 characters." );
 					this.btn_save.enabled = this.canCreate;
 					return;
 				}

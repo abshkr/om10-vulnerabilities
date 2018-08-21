@@ -1056,6 +1056,12 @@
 					return;
 				}
 				
+				if (prod_name.text.length > 20) {
+					var errorBox2:MessageDialog = new MessageDialog( "Product Name must be less than 20 characters." );
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
 				var obj:Object = new Object();
 				
 				
@@ -1611,6 +1617,11 @@
 				
 				var obj:Object = new Object();
 				
+				if (prod_name.text.length > 20) {
+					var errorBox2:MessageDialog = new MessageDialog( "Product Name must be less than 20 characters." );
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
 				
 				obj.prod_code = prod_code.text;
 				obj.prod_name = prod_name.text;
@@ -2688,7 +2699,7 @@
 						<s:Spacer width="{spaceWidth}" />
 						<s:HGroup>
 							<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','PROD_NAME')}" verticalAlign="middle"/>
-							<components:DKI_ValidatorInput id="prod_name" maxChars="40" 
+							<components:DKI_ValidatorInput id="prod_name" maxChars="20" 
 														   width="{fieldWidth}" height="{fieldHeight}" 
 														   text="{dataGrid.selectedItem.prod_name}" editable="true" enabled="true" 
 														   text.create="" editable.create="true" enabled.create="true" 

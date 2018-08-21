@@ -390,6 +390,7 @@
 					personnel_vo.cmpy_code = "";
 					personnel_vo.per_code = "";
 					personnel_vo.per_name = "";
+					personnel_vo.user_login_count = "";
 					personnel_vo.per_cmpy = "";
 					personnel_vo.perl_ara = "";
 					personnel_vo.per_auth = "";
@@ -451,6 +452,7 @@
 				personnel_vo.per_code = per_codeTextInput.text;
 				//personnel_vo.per_name = this.encodeTextHavingSingleQuotation( per_nameTextInput.text );
 				personnel_vo.per_name = per_nameTextInput.text;
+				personnel_vo.user_login_count = per_emailTextInput.text;
 				personnel_vo.per_department = per_departmentTextInput.text;
 				personnel_vo.per_licence_no = per_licenseTextInput.text;
 				if ( personnel_vo.hasOwnProperty( 'per_comments' ) )
@@ -648,6 +650,7 @@
 						personnel_vo.cmpy_name = dataGrid.selectedItem.cmpy_name;
 						personnel_vo.per_code = dataGrid.selectedItem.per_code;
 						personnel_vo.per_name = dataGrid.selectedItem.per_name;
+						personnel_vo.user_login_count = dataGrid.selectedItem.user_login_count;
 						personnel_vo.per_cmpy = dataGrid.selectedItem.per_cmpy;
 						personnel_vo.perl_ara = dataGrid.selectedItem.perl_ara;
 						personnel_vo.per_auth = dataGrid.selectedItem.per_auth;
@@ -1411,7 +1414,6 @@
 				<s:ArrayList>
 					<s:source>
 						<s:GridColumn dataField="per_code" headerText="{resourceManager.getString('default','global.lbl.code')}" width="80"/>
-						<s:GridColumn dataField="per_email" headerText="Email" width="200"/>
 						<s:GridColumn dataField="per_name" headerText="{resourceManager.getString('default','global.lbl.name')}" width="180"/>
 						<s:GridColumn dataField="per_cmpy" headerText="{resourceManager.getString('default','datagrid.headercaption.EmployerCode')}" excludeFrom="widget"  width="110"/>
 						<s:GridColumn dataField="cmpy_name" headerText="{resourceManager.getString('default','datagrid.headercaption.EmployerName')}" excludeFrom="widget" width="200"/>
@@ -1429,10 +1431,10 @@
 						<s:GridColumn dataField="per_lock" headerText="{resourceManager.getString('default','datagrid.headercaption.areaaccess')}" width="100"  itemRenderer="renderers.GridLockRender"/>
 						<s:GridColumn dataField="user_status_flag" headerText="{resourceManager.getString('default','global.lbl.status')}" width="80" labelFunction="statusFunction"/>
 						<s:GridColumn dataField="per_department" headerText="{resourceManager.getString('default','global.lbl.department')}" width="80"></s:GridColumn>
+						<s:GridColumn dataField="user_login_count" headerText="Email" width="200"/>
 						<s:GridColumn dataField="user_last_reason" headerText="{resourceManager.getString('default','LAST_MODIFIED')}"  itemRenderer="renderers.DateTimeRenderer"/>
 						<s:GridColumn dataField="per_last_dmy" headerText="{resourceManager.getString('default','LAST_USED')}" itemRenderer="renderers.DateTimeRenderer" />
 						<s:GridColumn dataField="per_terminal" headerText="{resourceManager.getString('default','PER_TERMINAL')}" width="80" visible="false"></s:GridColumn>
-						<s:GridColumn dataField="user_login_count" headerText="{resourceManager.getString('default','PER_LOGIN_COUNT')}" width="80" visible="false"></s:GridColumn>
 						<!--s:GridColumn dataField="per_comments" headerText="{resourceManager.getString('default','PER_COMMENTS')}" width="80" visible="false"></s:GridColumn-->
 					</s:source>
 				</s:ArrayList>
@@ -1460,6 +1462,13 @@
 												   focusOut.create="checkPsnlCode()"
 								 text="{personnel_vo.per_code}" maxChars="6" required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','global.lbl.code')}"/>
 				</s:HGroup>
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="100%" text="Email" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="per_emailTextInput" width="{fieldWidth}" text="{personnel_vo.user_login_count}" maxChars="49" required="false" 
+												   automationName="Email" validationGroup="{vg}" validationType="email"/>
+				</s:HGroup>
+				
 				<s:HGroup>
 					<s:Label width="{labelWidth}" height="100%" text="{resourceManager.getString('default','global.lbl.name')}" verticalAlign="middle"/>
 					<components:DKI_ValidatorInput id="per_nameTextInput" width="{fieldWidth}" text="{personnel_vo.per_name}" maxChars="49" required="true" 
