@@ -17,6 +17,7 @@ include_once 'setups.php';
 //     }
 // }
 
+date_default_timezone_set('UTC');
 $log_file = (isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omega') . 
         '/logs/php_rest_' . date('Ymd') . '.log';
 

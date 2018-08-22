@@ -10,7 +10,7 @@ class Database
     private $db_name = "localhost/OML5K";
     private $username = "test_coogee2";
     private $password = "abcd1234";
-    public $conn;
+    private $conn;
 
     public function __construct()
     {
@@ -22,9 +22,8 @@ class Database
         // echo $this->password;
         // echo $this->db_name;
     }
- 
-    // get the database connection
-    public function getConnection()
+
+    private function getConn()
     {
         $this->conn = oci_connect($this->username, $this->password, $this->db_name, 'AL32UTF8');
         
@@ -34,6 +33,21 @@ class Database
             // $this->logError($e);
             echo("Connect DB failed:" . $e['message']);
         }
+
+        return $this->conn;
+    }
+
+    //This connection does not require any auth
+    public function getConnection2()
+    {
+        $this->getConn();
+        return $this->conn;
+    }
+ 
+    // get the database connection; if auth fails, return null
+    public function getConnection()
+    {
+        $this->getConn();
 
         if (AUTH_CHECK) {
             if (JWT_AUTH) {
@@ -74,7 +88,6 @@ class Database
             return false;
         } 
         
-
         return true;
     }
 
