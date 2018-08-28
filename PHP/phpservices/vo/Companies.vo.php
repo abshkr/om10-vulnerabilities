@@ -14,7 +14,8 @@ class Companys
 	public $drawer;
 	public $issuer;
 	public $employer;
-	public $host;
+    public $host;
+    public $cmpy_permit_no;
 	
 	
     public $cmpy_compress_bl;     

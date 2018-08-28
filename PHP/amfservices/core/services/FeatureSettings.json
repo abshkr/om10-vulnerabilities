@@ -1,1 +1,114 @@
-[{"feature_gui":"Y","feature_code":"BASE_PROD__DENS_RANGE","feature_flag":"Y","feature_func":"ManageBaseProductDensityRange","feature_name":"Base Product: Density Range"},{"feature_gui":"Y","feature_code":"DCS","feature_flag":"Y","feature_func":"ManageDCS","feature_name":"DCS (2nd Drawer)"},{"feature_gui":"Y","feature_code":"HOT_PRODUCT_BITUMEN","feature_flag":"Y","feature_func":"ManageHotProduct","feature_name":"Hot Product (Bitumen)"},{"feature_gui":"Y","feature_code":"API","feature_flag":"Y","feature_func":"ManageAPI","feature_name":"API"},{"feature_gui":"Y","feature_code":"TANK_STRAPPING","feature_flag":"Y","feature_func":"ManageTankStrapping","feature_name":"Tank Strapping"},{"feature_gui":"Y","feature_code":"DANGEROUS_GOODS","feature_flag":"Y","feature_func":"ManageDangerousGoods","feature_name":"Dangerous Goods"},{"feature_gui":"Y","feature_code":"COMPANY_RELATIONS","feature_flag":"N","feature_func":"ManageCompanyRelations","feature_name":"Company Relations"},{"feature_gui":"Y","feature_code":"AUDITING","feature_flag":"Y","feature_func":"ManageAuditing","feature_name":"Auditing (effective after re-login)"},{"feature_gui":"Y","feature_code":"CUSTOM_EXPIRY_DATES","feature_flag":"Y","feature_func":"ManageCustomizedExpiryDates","feature_name":"Customized Expiry Dates"},{"feature_gui":"Y","feature_code":"PARTNERSHIP","feature_flag":"Y","feature_func":"ManagePartnersAndPartnership","feature_name":"Partners and Partnership (effective after re-login)"},{"feature_gui":"Y","feature_code":"DATE_RANGE_FILTER","feature_flag":"Y","feature_func":"ManageDateRangeFilter","feature_name":"Preset Data Range to Filter"},{"feature_gui":"Y","feature_code":"AUTO_FILTER_WHEN_OPEN_SCREEN","feature_flag":"Y","feature_func":"ManageAutoFilter","feature_name":"Start filtering automatically when screen opens"},{"feature_gui":"Y","feature_code":"TANK_LEVEL_ALARMS","feature_flag":"Y","feature_func":"ManageTankLevelAlarms","feature_name":"Tank Level Alarms"},{"feature_gui":"Y","feature_code":"DOR","feature_flag":"Y","feature_func":"ManageAdditionalHostData","feature_name":"Additional Host Data"},{"feature_gui":"Y","feature_code":"MAKE_MANUAL_TRANSACTION","feature_flag":"Y","feature_func":"ManageMakeManualTransaction","feature_name":"Make Manual Transaction"},{"feature_gui":"Y","feature_code":"VIEW_DELIVERY_DETAILS","feature_flag":"Y","feature_func":"ManageViewDeliveryDetails","feature_name":"View Delivery Details"}]
+[
+  {
+    "feature_gui": "Y",
+    "feature_code": "BASE_PROD__DENS_RANGE",
+    "feature_flag": "N",
+    "feature_func": "ManageBaseProductDensityRange",
+    "feature_name": "Base Product: Density Range"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "DCS",
+    "feature_flag": "N",
+    "feature_func": "ManageDCS",
+    "feature_name": "DCS (2nd Drawer)"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "HOT_PRODUCT_BITUMEN",
+    "feature_flag": "N",
+    "feature_func": "ManageHotProduct",
+    "feature_name": "Hot Product (Bitumen)"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "API",
+    "feature_flag": "N",
+    "feature_func": "ManageAPI",
+    "feature_name": "API"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "TANK_STRAPPING",
+    "feature_flag": "N",
+    "feature_func": "ManageTankStrapping",
+    "feature_name": "Tank Strapping"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "DANGEROUS_GOODS",
+    "feature_flag": "Y",
+    "feature_func": "ManageDangerousGoods",
+    "feature_name": "Dangerous Goods"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "COMPANY_RELATIONS",
+    "feature_flag": "Y",
+    "feature_func": "ManageCompanyRelations",
+    "feature_name": "Company Relations"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "AUDITING",
+    "feature_flag": "N",
+    "feature_func": "ManageAuditing",
+    "feature_name": "Auditing (effective after re-login)"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "CUSTOM_EXPIRY_DATES",
+    "feature_flag": "Y",
+    "feature_func": "ManageCustomizedExpiryDates",
+    "feature_name": "Customized Expiry Dates"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "PARTNERSHIP",
+    "feature_flag": "Y",
+    "feature_func": "ManagePartnersAndPartnership",
+    "feature_name": "Partners and Partnership (effective after re-login)"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "DATE_RANGE_FILTER",
+    "feature_flag": "Y",
+    "feature_func": "ManageDateRangeFilter",
+    "feature_name": "Preset Data Range to Filter"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "AUTO_FILTER_WHEN_OPEN_SCREEN",
+    "feature_flag": "Y",
+    "feature_func": "ManageAutoFilter",
+    "feature_name": "Start filtering automatically when screen opens"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "TANK_LEVEL_ALARMS",
+    "feature_flag": "N",
+    "feature_func": "ManageTankLevelAlarms",
+    "feature_name": "Tank Level Alarms"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "DOR",
+    "feature_flag": "N",
+    "feature_func": "ManageAdditionalHostData",
+    "feature_name": "Additional Host Data"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "MAKE_MANUAL_TRANSACTION",
+    "feature_flag": "N",
+    "feature_func": "ManageMakeManualTransaction",
+    "feature_name": "Make Manual Transaction"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "VIEW_DELIVERY_DETAILS",
+    "feature_flag": "N",
+    "feature_func": "ManageViewDeliveryDetails",
+    "feature_name": "View Delivery Details"
+  }
+]

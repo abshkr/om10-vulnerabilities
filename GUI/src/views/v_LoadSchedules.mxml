@@ -3288,11 +3288,8 @@
 			<s:Spacer width="10"/>
 			<s:Label height="28" fontWeight="bold" width="60" text="Special Instructions"/>
 			<s:Spacer width="10"/>
-				<s:TextArea id="spec_ins" width="800" height="60" enabled.scheduleDetails="false" text="{dataGrid.selectedItem.shl_rss_infdel}" maxChars="800"/>	
+				<s:TextArea id="spec_ins" width="800" height="60" enabled.scheduleDetails="false" text="{dataGrid.selectedItem.shl_rss_infdel}" maxChars="80"/>	
 	
-			
-
-			
 			<s:Spacer width="10"/>
 			
 			<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','global.lbl.isotainerid')}"
