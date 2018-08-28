@@ -213,7 +213,6 @@ class ScreenGridColumnService
 		if ( $screen == "PERSONNEL" )
 		{
 			$str .= "|1,per_code";
-			$str .= "|1,per_email";
 			$str .= "|1,per_name";
 			$str .= "|1,per_cmpy";
 			$str .= "|1,cmpy_name";
@@ -225,10 +224,10 @@ class ScreenGridColumnService
 			$str .= "|1,per_lock";
 			$str .= "|1,user_status_flag";
 			$str .= "|1,per_department";
+			$str .= "|1,user_login_count";
 			$str .= "|1,user_last_reason";
 			$str .= "|1,per_last_dmy";
 			$str .= "|0,per_terminal";
-			$str .= "|0,user_login_count";
 		}
 		
 		if ( $screen == "LOAD_SCHEDULE" )	// not used yet

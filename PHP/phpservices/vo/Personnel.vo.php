@@ -6,10 +6,9 @@ class Gui_Personnel
     public $per_exp_d2_dmy;
     public $per_exp_d3_dmy;
     public $per_code;
-    public $per_email;
+    public $user_login_count;
     public $per_name;
     public $per_cmpy;
-    public $per_area;     
     public $per_auth;
     public $per_lock;
     public $per_last_dmy;

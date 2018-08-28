@@ -1463,12 +1463,7 @@
 								 text="{personnel_vo.per_code}" maxChars="6" required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','global.lbl.code')}"/>
 				</s:HGroup>
 				
-				<s:HGroup>
-					<s:Label width="{labelWidth}" height="100%" text="Email" verticalAlign="middle"/>
-					<components:DKI_ValidatorInput id="per_emailTextInput" width="{fieldWidth}" text="{personnel_vo.user_login_count}" maxChars="49" required="false" 
-												   automationName="Email" validationGroup="{vg}" validationType="email"/>
-				</s:HGroup>
-				
+			
 				<s:HGroup>
 					<s:Label width="{labelWidth}" height="100%" text="{resourceManager.getString('default','global.lbl.name')}" verticalAlign="middle"/>
 					<components:DKI_ValidatorInput id="per_nameTextInput" width="{fieldWidth}" text="{personnel_vo.per_name}" maxChars="49" required="true" 
@@ -1485,6 +1480,13 @@
 								 text="{personnel_vo.per_department}" maxChars="16" required="false" 
 								 automationName="{resourceManager.getString('default','global.lbl.department')}" validationGroup="{vg}" validationType="document"/>
 				</s:HGroup>
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="100%" text="Email" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="per_emailTextInput" width="{fieldWidth}" text="{personnel_vo.user_login_count}" maxChars="49" required="false" 
+												   automationName="Email" validationGroup="{vg}" validationType="email"/>
+				</s:HGroup>
+				
 				<s:HGroup>
 					<s:Label width="{labelWidth}" height="100%" text="{resourceManager.getString('default','global.lbl.role')}" verticalAlign="middle"/>
 					<components:DKI_ValidatorDropDown id="dd_role" width="{fieldWidth}" labelField="ROLE_TEXT" useVirtualLayout="false" required="true" 
