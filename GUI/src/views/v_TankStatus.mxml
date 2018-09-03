@@ -3141,7 +3141,7 @@
 					<!--s:Spacer height="{containerSpaceHeight}" /-->
 					
 					<s:HGroup width="100%">
-						<s:HGroup id="fld__tank_15_density" visible="{this.refTempText != '15ºC/59ºF'}">
+						<s:HGroup id="fld__tank_15_density" visible="true">
 							<s:Label width="{labelWidth}" height="{labelHeight}" visible="{this.refTempText != '15ºC/59ºF'}" text="{resourceManager.getString('default','TANK_15_DENSITY')}" verticalAlign="middle"/>
 							<components:DKI_ValidatorInput id="tank_15_density" 
 														   width="{fieldWidth}" height="{fieldHeight}" 
@@ -3149,7 +3149,7 @@
 														   change="density_changeHandler(event)" 
 														   required="true" validationType="numeric_positive" validationGroup="{vg}" automationName="{resourceManager.getString('default','TANK_15_DENSITY')}" 
 														   />
-							<s:Label visible="{this.refTempText != '15ºC/59ºF'}" width="{labelWidthPostfix}" height="{labelHeight+4}" lineBreak="explicit" 
+							<s:Label visible="true" width="{labelWidthPostfix}" height="{labelHeight+4}" lineBreak="explicit" 
 									 text="{'['+dataGrid.selectedItem.tank_bclass_dens_lo+' - '+dataGrid.selectedItem.tank_bclass_dens_hi+']'+resourceManager.getString('default','UNIT__DENSITY') + '\n@15ºC/59ºF'}" verticalAlign="middle"/>
 							<s:Spacer width="{spaceWidth}" />
 						</s:HGroup>

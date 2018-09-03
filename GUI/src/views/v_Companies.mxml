@@ -183,6 +183,7 @@
 					cmpy_nameTextInput.text = dataGrid.selectedItem.cmpy_name;
 					cmpy_aoiTextInput.text = dataGrid.selectedItem.cmpy_aoi;
 					companyTypes.companyType = dataGrid.selectedItem.cmpy_type;
+					cmpy_permitNoInput.text = dataGrid.selectedItem.cmpy_permit_no;
 					cmpy_codeTextInput.enabled = false;
 					companyTypes.manager.enabled = false;
 					this.toggleValidationRequired();
@@ -279,6 +280,7 @@
 				new_vo.cmpy_plant = plant_code.text;
 				new_vo.cmpy_aoi = cmpy_aoiTextInput.text;
 				new_vo.cmpy_type = String(companyTypes.companyType);
+				new_vo.cmpy_permit_no = cmpy_permitNoInput.text;
 				if(editRecord=='create') new_vo.cmpy_code = cmpy_codeTextInput.text;
 				switch(editRecord)
 				{
@@ -799,7 +801,7 @@
 					<s:GridColumn dataField="cmpy_name" headerText="{resourceManager.getString('default','COMPANY_NAME')}" width="200" width.widget="250"></s:GridColumn>
 					<s:GridColumn dataField="cmpy_plant" headerText="{resourceManager.getString('default','PLANT_CODE')}" width="100"></s:GridColumn>
 					<s:GridColumn dataField="cmpy_aoi" headerText="{resourceManager.getString('default','AOI_NO')}" width="60" excludeFrom="widget"></s:GridColumn>
-					<s:GridColumn dataField="cmpy_permit_no" visible="false" headerText="Permit Number" width="100" excludeFrom="widget"></s:GridColumn>
+					<s:GridColumn dataField="cmpy_permit_no" headerText="Permit Number" width="100" ></s:GridColumn>
 					<s:GridColumn dataField="site_manager" headerText="{resourceManager.getString('default','SITE_MANAGER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
 					<s:GridColumn dataField="supplier" headerText="{resourceManager.getString('default','SUPPLIER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
 					<s:GridColumn dataField="carrier" headerText="{resourceManager.getString('default','CARRIER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
@@ -848,11 +850,11 @@
 												   automationName="{resourceManager.getString('default','AOI_NO')}" required="false" change="toggleValidationRequired()"/>					
 				</s:HGroup>
 				
-			<!--	<s:HGroup>
+				<s:HGroup>
 					<s:Label height="28" fontWeight="bold" text="Permit Number" verticalAlign="middle" width="105"/>
 					<components:DKI_ValidatorInput id="cmpy_permitNoInput" text="{dataGrid.selectedItem.cmpy_permit_no}" width="400" validationType="alphanumeric" validationGroup="{vg}" automationName="Permit Number" maxChars="60" required="false"/>
 				</s:HGroup>
-				-->
+				
 			</s:VGroup>
 			<s:Spacer width="10" height="10"/>		
 			<s:VGroup>
