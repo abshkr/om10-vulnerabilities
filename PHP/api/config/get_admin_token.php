@@ -3,8 +3,8 @@
 * Get a token:
 * http://10.2.20.53/api/config/get_token.php
 * 
-* Get a new token by existing token using curl:
-* curl -i "http://10.2.20.53/api/config/get_token.php" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6Ijk5OTkiLCJleHAiOjE1MzcwMjM4MzMsInNlc3NfaWQiOm51bGx9.35Gy9asUBLA3uBbwV9W4QUpaFGS4FHebcA-jTvCeQ5A"
+* Get a new token by refresh token:
+* http://10.2.20.53/api/config/get_token.php?grant_type=refresh_token&&refresh_token=5b7cf3720b163
 */
 
 include_once "jwt.php";
@@ -12,26 +12,9 @@ include_once '../objects/refresh_tokens.php';
 include_once 'database.php';
 include_once 'log.php';
 
-$payload = check_token(get_http_token());
-if (!$payload) {
-    write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
-    echo json_encode(
-        array("message" => "Invalid token."),
-        JSON_PRETTY_PRINT
-    );
-    return;
-} else {
-    if (isset($payload->per_code)) {
-        write_log("Get new token for user " . $payload->per_code, __FILE__, __LINE__);
-    } else {
-        write_log("No per code in token payload, cannot continue", __FILE__, __LINE__, LogLevel::ERROR);
-        return;
-    }
-}
-
 echo json_encode(
     array("token_type" => "bearer",
-        "access_token" => get_token($payload->per_code)),
+        "access_token" => get_token('9999')),
     JSON_PRETTY_PRINT
 );
 

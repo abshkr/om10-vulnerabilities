@@ -2,6 +2,7 @@
 include_once 'log.php';
 include_once 'setups.php';
 include_once 'jwt.php';
+include_once 'jwt_utilities.php';
 
 class Database 
 {
@@ -21,6 +22,8 @@ class Database
         // echo $this->username;
         // echo $this->password;
         // echo $this->db_name;
+        write_log("Database::__construct. username:" . $this->username . 
+            " password:" . $this->password . " db_name:" . $this->db_name, __FILE__, __LINE__);
     }
 
     private function getConn()
@@ -32,6 +35,7 @@ class Database
             $e = oci_error();
             // $this->logError($e);
             echo("Connect DB failed:" . $e['message']);
+            write_log("Connect DB failed:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
         return $this->conn;
@@ -50,8 +54,9 @@ class Database
         $this->getConn();
 
         if (AUTH_CHECK) {
+            write_log("getConnection 1", __FILE__, __LINE__);
             if (JWT_AUTH) {
-                if (!$this->checkToken())
+                if (!check_token(get_http_token()))
                 {
                     write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
                     return null;
@@ -63,32 +68,8 @@ class Database
                 }
             }
         } 
- 
+        write_log("getConnection done", __FILE__, __LINE__);
         return $this->conn;
-    }
-
-    private function checkToken()
-    {
-        if (!isset($_GET["token"]))
-            return false;
-
-        $token = $_GET["token"];
-        try {
-            if (!JWT::decode($token, 'dki_jwt'))
-            {
-                // $output['status'] = false;
-                // $output['errors'] = '{"type": "unathenticated"}';
-                return false;
-            }
-        } catch (UnexpectedValueException $e) {
-            write_log('Caught exception: ' . $e->getMessage(), __FILE__, __LINE__);
-            return false;
-        } catch (ExpiredException $e) {
-            write_log('Caught exception: ' . $e->getMessage(), __FILE__, __LINE__);
-            return false;
-        } 
-        
-        return true;
     }
 
     private function getSessionStatus()

@@ -8,10 +8,24 @@ define('ENABLE_DEBUG_LOG', true);
 define('AUTH_CHECK', true);
 
 //Set it to true to call ini_set('display_errors', 1) and error_reporting(E_ALL)
-define('DISPLAY_ALL_ERROS', false);
+define('DISPLAY_ALL_ERROS', true);
 
 //Set it to true to use Token-based authentication. false uses table HTTP_SESSION_TRACE
 define ('JWT_AUTH', true);
+
+//If it is true, client uses sth like
+//Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6ImN3X3Rlc3QiLCJleHAiOjE1MzY3NTk2NTF9.oGCzF22FiauRys6Ekq5HL3rxcRQIXr5qWiEMNJBPA7U
+//in HTTP REQUEST HEADER
+//C:\Users\bluet>curl -i "http://10.2.20.53/api/personnel/search.php?s=cw" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6ImN3X3Rlc3QiLCJleHAiOjE1MzY3NTk2NTF9.oGCzF22FiauRys6Ekq5HL3rxcRQIXr5qWiEMNJBPA7U"
+define('AUTH_IN_HEADER', true);
+
+//
+// define('JWT_SECRET', 'dki_jwt');
+
+//It can be http:// or https://
+define('URL_PROTOCOL', 'http://');
+
+define('JWT_SECRET', 'dki_jwt');
 
 if (DISPLAY_ALL_ERROS) {
 	ini_set('display_errors', 1);

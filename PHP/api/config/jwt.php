@@ -5,6 +5,11 @@ class ExpiredException extends UnexpectedValueException
 
 }
 
+class SignatureInvalidException extends UnexpectedValueException
+{
+
+}
+
 /**
  * JSON Web Token implementation, based on this spec:
  * https://tools.ietf.org/html/rfc7519
