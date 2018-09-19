@@ -263,11 +263,11 @@ class DB{
             self::$dbInstance = new DB(); 
         } 
 
-        if (!(self::$dbInstance->getSessionStatus()))
-        {
-            logMe("Session ID not valid any more", PERSONCLASS);
-            return null;
-        }
+        // if (!(self::$dbInstance->getSessionStatus()))
+        // {
+        //     logMe("Session ID not valid any more", PERSONCLASS);
+        //     return null;
+        // }
         return self::$dbInstance; 
     }
 

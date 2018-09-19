@@ -97,6 +97,7 @@ ddi_tank_code			VARCHAR2(20 BYTE)
 			//$str .= "|cmpy_codeTextInput,document,16";
 			$str .= "|cmpy_nameTextInput,document,300";
 			$str .= "|plant_code,alphanumeric,4";
+			$str .= "|cmpy_permitNoInput,alphanumeric,60";
 		}
 		
 		if ( $screen == "DRAWER_PRODUCTS" )

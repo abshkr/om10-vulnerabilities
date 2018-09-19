@@ -1,3 +1,4 @@
 {
-  "close_reset": false
+  "close_reset": false,
+  "special_instructions": false
 }

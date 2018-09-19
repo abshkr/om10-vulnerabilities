@@ -569,7 +569,7 @@ class LoadSchedulesClass
         }
         
         $this->updateSchedule($data->tripNo,$data->supp,$data->soldto,$data->shipto, '');
-        $this->handleSpecialIns($data->tripNo, $data->supp, $data->specInstruction);
+        $this->insertSpecialIns($data->tripNo, $data->supp, $data->specInstruction);
         
         if($data->type_of_schedule=='COMPARTMENTS'){
             foreach($data->compartments as $x){
@@ -762,7 +762,7 @@ class LoadSchedulesClass
         }
 
         $this->updateSchedule($data->tripNo, $data->supp, $data->soldto, $data->shipto, $data->driver);
-        $this->handleSpecialIns($data->tripNo, $data->supp, $data->specInstruction);
+        $this->updateSpecialIns($data->tripNo, $data->supp, $data->specInstruction);
 
         if($data->type_of_schedule=='COMPARTMENTS'){        
             foreach($data->compartments as $x){
@@ -938,21 +938,6 @@ class LoadSchedulesClass
         return "OK";
     }
 
-    private function handleSpecialIns($trip, $supp, $special_ins) {
-        $mydb = DB::getInstance();
-
-        $sql = array();
-        $sql['sql_text'] =  "SELECT COUNT(*) INS_ROWS FROM SPECVARS 
-            WHERE SCHVSPID_SHLSTRIP = :trip AND SCHVSPID_SHLSSUPP= :supp";
-        $sql['sql_data'] = array($trip, $supp);
-        $rows = $mydb->query($sql);
-        //XarrayEncodingConversion($rows);
-        if ($rows[0]->INS_ROWS > 0)
-            return $this->updateSpecialIns($trip, $supp, $special_ins);
-        else
-            return $this->insertSpecialIns($trip, $supp, $special_ins);
-    }
-    
     private function insertSpecialIns($trip, $supp, $special_ins) {
         // logMe($special_ins, LOADSCHEDCLASS);
         $mydb = DB::getInstance();

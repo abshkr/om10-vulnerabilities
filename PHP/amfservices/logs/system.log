@@ -17613,4 +17613,2752 @@ SITE_CONFIG
 where
      CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
         
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query select CONFIG_VALUE from SITE_CONFIG where CONFIG_KEY='CLOSEOUT_AUTO_CLOSE'
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM CLOSEOUT_DATE_SETTINGS
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query  SELECT SITE_LD_RETN_NEWLDS, SITE_LD_RETNPRD, SITE_EXP_MONTHS, NEXT_MANUAL_FREEZE_DATETIME, NEXT_MANUAL_CLOSE, SITE_LD_RETNPRD_NEW_MOV, SITE_LD_RETNPRD_USED_MOV  FROM SITE
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
+---Message---  PLUG [dmpDataMUX] bound.
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+!!!ERROR---  An Error occured from dmError::__construct - on line 62
+getInstance in dmManualTransactions 
+
+---Message---  \n\nHERE IT IS in dmCollections.construct:stdClass Object
+(
+)
+
+---Message---  PLUG [dmpSession] bound.
+---Message---  Primary source set, OML5KU
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+SELECT gui_tnkr2.TNKR_CODE as TNKR_CODE, gui_tnkr2.TNKR_EQPT_NAME as TNKR_EQPT_NAME, gui_tnkr2.TNKR_CARRIER_NAME as TNKR_CARRIER_NAME
+FROM 
+    (
+    SELECT tnkr.TNKR_CODE               AS TNKR_CODE ,
+        tnkr.TNKR_NAME                  AS TNKR_NAME ,
+        tnkr.TNKR_CARRIER               AS TNKR_CARRIER ,
+        carr.CMPY_NAME                  AS TNKR_CARRIER_NAME ,
+        tnkr.TNKR_OWNER                 AS TNKR_OWNER ,
+        mngr.CMPY_NAME                  AS TNKR_OWNER_NAME ,
+        tnkr.TNKR_ETP                   AS TNKR_ETP ,
+        etyp.ETYP_TITLE                 AS TNKR_EQPT_NAME ,
+        tnkr.TNKR_BASE_SITE             AS TNKR_BASE_SITE ,
+        base.TERM_NAME                  AS TNKR_BASE_SITE_NAME ,
+        tnkr.TNKR_DEST_DEPOT            AS TNKR_DEST_DEPOT ,
+        dest.TERM_NAME                  AS TNKR_DEST_DEPOT_NAME ,
+        tnkr.TNKR_LAST_DEPOT            AS TNKR_LAST_DEPOT ,
+        prev.TERM_NAME                  AS TNKR_LAST_DEPOT_NAME ,
+        tnkr.TNKR_CUR_DEPOT             AS TNKR_CUR_DEPOT ,
+        curr.TERM_NAME                  AS TNKR_CUR_DEPOT_NAME ,
+        tnkr.TNKR_PIN                   AS TNKR_PIN ,
+        NVL(tnkr.TNKR_LOCK, 'N')        AS TNKR_LOCK ,
+        NVL(tnkr.TNKR_ACTIVE, 'N')      AS TNKR_ACTIVE ,
+        NVL(tnkr.TNKR_BAY_LOOP_CH, 'N') AS TNKR_BAY_LOOP_CH ,
+        NVL(tnkr.TNKR_ARCHIVE, 'N')     AS TNKR_ARCHIVE ,
+        tnkr.TNKR_NTRIPS                AS TNKR_NTRIPS ,
+        tnkr.TNKR_OWN_TXT               AS TNKR_OWN_TXT ,
+        tnkr.TNKR_LIC_EXP               AS TNKR_LIC_EXP ,
+        tnkr.TNKR_DGLIC_EXP             AS TNKR_DGLIC_EXP ,
+        tnkr.TNKR_INS_EXP               AS TNKR_INS_EXP ,
+        tnkr.STATS                      AS TNKR_STATS ,
+        tnkr.LAST_TRIP                  AS TNKR_LAST_TRIP ,
+        tnkr.TNKR_MAX_KG                AS TNKR_MAX_KG
+      FROM TANKERS tnkr ,
+        EQUIP_TYPES etyp ,
+        COMPANYS carr ,
+        COMPANYS mngr ,
+        TERMINAL base ,
+        TERMINAL dest ,
+        TERMINAL prev ,
+        TERMINAL curr
+      WHERE tnkr.TNKR_ETP                                = etyp.ETYP_ID(+)
+      AND tnkr.TNKR_CARRIER                              = carr.CMPY_CODE(+)
+      AND tnkr.TNKR_OWNER                                = mngr.CMPY_CODE(+)
+      AND tnkr.TNKR_BASE_SITE                            = base.TERM_CODE(+)
+      AND tnkr.TNKR_DEST_DEPOT                           = dest.TERM_CODE(+)
+      AND tnkr.TNKR_LAST_DEPOT                           = prev.TERM_CODE(+)
+      AND tnkr.TNKR_CUR_DEPOT                            = curr.TERM_CODE(+) 
+    ) gui_tnkr2 
+WHERE 
+    ( '-1'='-1' or 'ANY'='-1' or gui_tnkr2.tnkr_carrier='-1' )
+order by gui_tnkr2.tnkr_code
+            
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,2)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select distinct R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_BAYCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN, B.STREAM_BCLASS_CODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT * FROM GUI_COMPANYS WHERE BITAND(CMPY_TYPE,16)<>0 ORDER BY CMPY_NAME ASC
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query SELECT PROD_CODE,PROD_NAME,PROD_CMPY FROM PRODUCTS ORDER BY PROD_CODE
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select PROD_CODE, PROD_NAME, PROD_CMPY from PRODUCTS
+where  PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+order by PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select P.PROD_CODE, P.PROD_NAME, P.PROD_CMPY, R.RATIO_BASE from PRODUCTS P, RATIOS R
+where  P.PROD_CODE in
+(select distinct R.RAT_PROD_PRODCODE
+from 
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+))
+and P.PROD_CODE = R.RAT_PROD_PRODCODE
+and P.PROD_CMPY = R.RAT_PROD_PRODCMPY
+order by P.PROD_CODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE,B.STREAM_MTRCODE
+
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE,
+decode(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, decode(B.STREAM_BCLASS_CODE, 6, 'Inject', 11,'Inject','Meter') METER_TYPE_DESC,  B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_MTRCODE, B.STREAM_INJCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_TANKCODE, B.STREAM_TANKDEN,
+(CASE WHEN (TK.TANK_GAUGINGMTHD<>1) THEN 15
+ ELSE STREAM_TANKTEMP
+ END) as  BASE_RPT_TEMP,
+BP.BASE_RPT_TEMP as BASE_RPT_TEMP2, TK.TANK_GAUGINGMTHD, BP.BASE_CAT
+from
+RATIOS R,
+GUI_PIPENODE B,
+BASE_PRODS BP,
+TANKS TK
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+ and B.STREAM_BASECODE = BP.BASE_CODE(+)
+ and B.STREAM_TANKCODE = TK.TANK_CODE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_BASENAME, B.STREAM_BCLASS_CODE, B.STREAM_BCLASS_NMAE, B.STREAM_TANKCODE
+from
+RATIOS R,
+GUI_PIPENODE B
+where
+     B.STREAM_BASECODE = R.RATIO_BASE(+)
+order by R.RAT_PROD_PRODCMPY, R.RAT_PROD_PRODCODE, B.STREAM_ARMCODE, B.STREAM_BASECODE, B.STREAM_TANKCODE
+        
+---Message---  Controller bound to [OML5KU][localhost]
+---Message---  Executed with query in dmpOracle.query 
+select CONFIG_VALUE as AIR_BOUYANCY
+from
+SITE_CONFIG
+where
+     CONFIG_KEY = 'AIR_BUOYANCY_FACTOR'
+        
 
