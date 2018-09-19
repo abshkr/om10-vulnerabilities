@@ -101,8 +101,18 @@ if ($array['MSG_DESC'] === 'SUCCESS') {
     write_log("User Login. user:" . $post_data->user, __FILE__, __LINE__, LogLevel::INFO);
 }
 
-$jwt_token = get_token($post_data->user, $array['USER_DETAIL']['USER_SESSION']);
-$array['token_type'] = 'bearer';
-$array['access_token'] = $jwt_token;
+$login_result = array(
+    'msg_code' => $array['MSG_CODE'],
+    'msg_desc' => $array['MSG_DESC'],
+    'user_status_flag' => $array['USER_DETAIL']['USER_STATUS_FLAG']);
+    
+if ($array['MSG_CODE'] === "0") {
+    $login_result['user_session'] = $array['USER_DETAIL']['USER_SESSION'];
+    $login_result['site_code'] = $array['USER_DETAIL']['SITE_CODE'];
+    $login_result['user_passwd_exp'] = $array['USER_DETAIL']['USER_PASSWD_EXP'];
+    $login_result['token_type']= 'bearer';
+    $login_result['access_token'] = get_token($post_data->user, $array['USER_DETAIL']['USER_SESSION']);
+; 
+} 
 
-echo json_encode($array, JSON_PRETTY_PRINT);
+echo json_encode($login_result, JSON_PRETTY_PRINT);

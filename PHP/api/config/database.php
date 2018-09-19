@@ -54,12 +54,18 @@ class Database
         $this->getConn();
 
         if (AUTH_CHECK) {
-            write_log("getConnection 1", __FILE__, __LINE__);
             if (JWT_AUTH) {
-                if (!check_token(get_http_token()))
-                {
+                $token = check_token(get_http_token());
+                if (!$token) {
                     write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
                     return null;
+                } else {
+                    if (INVALIDATE_TOKEN_ENABLED && 
+                        !$this->checkSessionStatus($token->per_code, $token->sess_id)) {
+                        write_log("Token already invalidated, cannot continue", 
+                            __FILE__, __LINE__, LogLevel::ERROR);
+                        return null;
+                    }
                 }
             } else {
                 if (!$this->getSessionStatus()) {
@@ -70,6 +76,24 @@ class Database
         } 
         write_log("getConnection done", __FILE__, __LINE__);
         return $this->conn;
+    }
+
+    private function checkSessionStatus($per_code, $sess_id)
+    {
+        $query = "
+            SELECT COUNT(*) CNT FROM HTTP_SESSION_TRACE 
+            WHERE PER_CODE = :per_code AND SESS_ID = :sess_id";
+        
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $per_code);
+        oci_bind_by_name($stmt, ':sess_id', $sess_id);
+        if (oci_execute($stmt)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            return $row['CNT'];
+        } else {
+            write_log(oci_error($stmt)['message'], __FILE__, __LINE__);
+            return false;
+        }
     }
 
     private function getSessionStatus()

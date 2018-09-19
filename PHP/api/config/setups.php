@@ -27,6 +27,11 @@ define('URL_PROTOCOL', 'http://');
 
 define('JWT_SECRET', 'dki_jwt');
 
+//if it is trun, store $token['sess_id'] in db, and when check token
+//also check if $token['sess_id'] is in db. Because when logout, $token['sess_id'] 
+//will be delete from db, so it invalidate this token 
+define('INVALIDATE_TOKEN_ENABLED', true);
+
 if (DISPLAY_ALL_ERROS) {
 	ini_set('display_errors', 1);
 	error_reporting(E_ALL);

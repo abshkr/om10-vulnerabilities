@@ -1,4 +1,8 @@
 <?php
+
+/**
+* curl -i "http://10.2.20.53/api/personnel/search.php?s=cw" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6Ijk5OTkiLCJleHAiOjE1MzczMzczMDcsInNlc3NfaWQiOiJaVXpJVlZ4Z1B6UW8ifQ.dGzWmDksxyWDe9Me0WAhnfBK9KZmoEhR9lXOyl8-D6A"
+*/
 // required headers
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
@@ -10,7 +14,14 @@ include_once '../objects/personnel.php';
 // instantiate database and product object
 $database = new Database();
 $db = $database->getConnection();
- 
+
+if (!$db) {
+    echo json_encode(
+        array("message" => "No personnel found.")
+    );
+    return;
+}
+
 // initialize object
 $personnel = new Personnel($db);
  

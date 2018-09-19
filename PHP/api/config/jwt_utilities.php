@@ -74,6 +74,5 @@ function check_token($token)
         return false;
     } 
 
-    write_log('true', __FILE__, __LINE__);
     return $payload;
 }
