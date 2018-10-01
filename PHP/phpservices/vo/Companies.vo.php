@@ -15,9 +15,6 @@ class Companys
 	public $issuer;
 	public $employer;
     public $host;
-    public $cmpy_permit_no;
-	
-	
     public $cmpy_compress_bl;     
     public $cmpy_check_licen;     
     public $cmpy_ldgo_delta; 
@@ -64,7 +61,8 @@ class Companys
 	public $cmpy_schd_rev_repost;
 	public $cmpy_schd_archive;
 	public $cmpy_movements_rev;
-	public $cmpy_report_receivers;
+    public $cmpy_report_receivers;
+    public $cmpy_permit_no;
 }
 
 class CompanyLookup

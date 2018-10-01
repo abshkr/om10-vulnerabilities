@@ -33,7 +33,8 @@ class CompaniesClass {
         //logMe("Final SQL: " .$sql, COMPCLASS);
         
         $sql = array();
-        $sql['sql_text'] = "SELECT CMPY_CODE,
+        $sql['sql_text'] = "select 
+            CMPY_CODE,
             CMPY_NAME,
             CMPY_TYPE,
             SITE_MANAGER,
@@ -93,12 +94,13 @@ class CompaniesClass {
             CMPY_SCHD_ARCHIVE,
             CMPY_MOVEMENTS_REV,
             CMPY_REPORT_RECEIVERS,
-            CMPY_PERMIT_NO FROM(
-                SELECT res.*, ROW_NUMBER() over ($sort) RN
-                FROM(SELECT * FROM GUI_COMPANYS " . $filter['sql_text'] . ") res
+            CMPY_PERMIT_NO 
+        from 
+            (
+            SELECT res.*, ROW_NUMBER() over ($sort) RN
+            FROM(SELECT * FROM GUI_COMPANYS " . $filter['sql_text'] . ") res
              )";
-        // $sql['sql_text'] = "SELECT * FROM gui_companys " . $filter['sql_text'] . " $sort";
-        // echo $sql['sql_text'];
+             
         $sql['sql_data'] = $filter['sql_data'];
         
         $rows = $mydb->query($sql);

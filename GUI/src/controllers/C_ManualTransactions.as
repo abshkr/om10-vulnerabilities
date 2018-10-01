@@ -173,6 +173,7 @@ package controllers
 		private var mt_mtr_repost                  : String  = "";
 		private var mt_bp_tol_repost               : String  = "";
 		private var mt_mtr_tol_repost              : String  = "";
+		private var seal_range                     : String  = "";
 		
 		private var _trsfIdx_ext                   : int     = 0;         // for maximizing population of bases & meters info.
 		
@@ -203,7 +204,7 @@ package controllers
 		private var CLNID__TRSF_TEMP               : int     = 11;
 		private var CLNID__TRSF_QTY_AMB            : int     = 12;
 		private var CLNID__TRSF_QTY_COR            : int     = 13;
-		private var CLNID__TRSF_LOAD_KG            : int     = 14;
+		private var CLNID__TRSF_LOAD_KG            : int     = 14;                       
 		
 		
 		public function C_ManualTransactions()
@@ -278,6 +279,7 @@ package controllers
 			view.new_delv_num.text            = "";
 			view.new_tas_ref.text             = "";
 			view.new_user_comments.text       = "";
+			view.seal_range.text              = "";
 			
 			updateStatus();
 			
@@ -323,6 +325,7 @@ package controllers
 			view.new_delv_num.text            = "";
 			view.new_tas_ref.text             = "";
 			view.new_user_comments.text       = "";
+			view.seal_range.text              = "";
 			
 			// ACC_BASE_ADJ
 //			DM.ManualTransactions.base_std_total  = 0;
@@ -3222,6 +3225,7 @@ package controllers
 				'<CUSTOMER_CODE>' 				+ view.new_customer_cd.text 							+ '</CUSTOMER_CODE>' +
 				'<TAS_REF>' 					+ view.new_tas_ref.text 								+ '</TAS_REF>' +
 				'<USER_COMMENTS>' 				+ view.new_user_comments.text 							+ '</USER_COMMENTS>' +
+				'<SEAL_RANGE>' 				    + view.seal_range.text 							        + '</SEAL_RANGE>' +
 				'<SCHD_SUB_TYPE>' 				+ temp_schd_sub_type									+ '</SCHD_SUB_TYPE>' +		          // Not displayed, internal use only.
 				'<TRANSACTION_REPOST>' 			+ isRepost												+ '</TRANSACTION_REPOST>' +           // Not displayed, internal use only.
 				'<CM_BASE_OBS_TOTAL>' 			+ dmMT.base_obs_total									+ '</CM_BASE_OBS_TOTAL>' +            // Control member.
@@ -6518,6 +6522,7 @@ package controllers
 			trans.TAS_Ref = view.new_tas_ref.text;
 			trans.User_Comments = view.new_user_comments.text;
 			trans.Customer_Code = view.new_customer_cd.text;
+			trans.Seal_Range = view.seal_range.text;
 			
 			/* Transfers Info */
 			var trf_no:int = 0;

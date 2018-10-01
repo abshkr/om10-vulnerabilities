@@ -7,7 +7,7 @@
 		  currentState="normal"
 		  width="100%" height="100%"
 		  gap="2" creationComplete="creationCompleteHandler(event)">
-
+	
 	<s:states>
 		<s:State name="widget"/>
 		<s:State name="normal"/>
@@ -60,7 +60,7 @@
 			[Bindable] public var canCreate:Boolean = false;
 			[Bindable] public var canDelete:Boolean = false;
 			[Bindable] public var hasPassword:Boolean = false;
-
+			
 			[Bindable] private var company_vo:Companys = new Companys();
 			[Bindable] private var hasSiteManager:Boolean = false;
 			private var editRecord:String ="edit";
@@ -89,12 +89,21 @@
 			public var addressesPopup:ViewPopupDlg = new ViewPopupDlg( "Addresses", new v_Addresses(), closeDialogHandler );
 			public var companyRelationsPopup:ViewPopupDlg = new ViewPopupDlg( "Company Relations", new v_CompanyRelation(), closeCompanyRelationDialogHandler );
 			
+			// the data service to get the list of [cmpy_code, cmpy_permit_no]
+			private var permitNoList:remoteDataService = new remoteDataService( "CompanyService.lookupCompanyPermitNoList", null, lookupPermitNo_resultHandler );
+			// the object store {cmpy_code1:cmpy_permit_no1, cmpy_code2:cmpy_permit_no2,...}. this is the fastest way to get permit No by code, but may have issues if code is more than just alphanumeric
+			private var permitNoObject:Object;
+			// the data service to update the value of cmpy_permit_no
+			private var setCompanyPermitNo:remoteDataService = new remoteDataService( "CompanyService.setCompanyPermitNo", null, setCompanyPermitNo_resultHandler, 1 );
+			
 			
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
 				this.formColumnSettingsMaker.service( "COMPANIES" );
 				
 				this.addressList.service();
+				// call the data service to get the list of [cmpy_code, cmpy_permit_no]
+				this.permitNoList.service();
 				
 				companyTypesResult.token = companiesService.getTypes();
 				dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
@@ -145,6 +154,21 @@
 				
 			}
 			
+			// result handler to handle the resposne of setting cmpy_permit_no
+			protected function setCompanyPermitNo_resultHandler():void
+			{
+				if ( this.setCompanyPermitNo.dataString == "OK" )
+				{
+					//global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+					
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+			}
+			
 			private function headerClickListener(event:GridEvent):void
 			{
 				var currentRenderer:IGridItemRenderer;
@@ -182,8 +206,14 @@
 					cmpy_codeTextInput.text = dataGrid.selectedItem.cmpy_code;
 					cmpy_nameTextInput.text = dataGrid.selectedItem.cmpy_name;
 					cmpy_aoiTextInput.text = dataGrid.selectedItem.cmpy_aoi;
+					// populate the text field of cmpy_permit_no separately
+					cmpy_permitNoInput.text = "";
+					var obj:Object= tools.getItemObjectFromCode(dataGrid.selectedItem.cmpy_code, this.permitNoList, 'cmpy_code'); 
+					if ( obj != null )
+					{
+						cmpy_permitNoInput.text = obj.cmpy_permit_no;
+					}
 					companyTypes.companyType = dataGrid.selectedItem.cmpy_type;
-					cmpy_permitNoInput.text = dataGrid.selectedItem.cmpy_permit_no;
 					cmpy_codeTextInput.enabled = false;
 					companyTypes.manager.enabled = false;
 					this.toggleValidationRequired();
@@ -196,7 +226,7 @@
 					if ( global.getValueFromSiteConfigSettings("SITE_COMPANY_RELATION_ALLOWED") == 'Y' )
 					{
 						if ( this.isRoleFound( dataGrid.selectedItem.cmpy_type ) == true )
-						//if ( (dataGrid.selectedItem.cmpy_type & 0x02) > 0 )
+							//if ( (dataGrid.selectedItem.cmpy_type & 0x02) > 0 )
 						{
 							this.btn_company_relations.enabled = this.canUpdate;
 							this.btn_company_relations.visible = true;
@@ -271,7 +301,7 @@
 					company_vo.cmpy_name = cmpy_nameTextInput.text;
 					company_vo.cmpy_plant = plant_code.text;
 					company_vo.cmpy_aoi = cmpy_aoiTextInput.text;
-					company_vo.cmpy_type = String(companyTypes.companyType);
+					company_vo.cmpy_type = String(companyTypes.companyType); 
 				}
 				
 				var new_vo:Object = new Object();
@@ -280,19 +310,18 @@
 				new_vo.cmpy_plant = plant_code.text;
 				new_vo.cmpy_aoi = cmpy_aoiTextInput.text;
 				new_vo.cmpy_type = String(companyTypes.companyType);
-				new_vo.cmpy_permit_no = cmpy_permitNoInput.text;
 				if(editRecord=='create') new_vo.cmpy_code = cmpy_codeTextInput.text;
 				switch(editRecord)
 				{
 					case 'edit':  updateCompany.token = companiesService.update(new_vo.cmpy_code, new_vo);
-					break;
+						break;
 					case 'create': 	createCompany.token = companiesService.create(new_vo);
-					break;
+						break;
 				}
 			}
 			
 			
-						
+			
 			protected function searchText_keyUpHandler(event:KeyboardEvent):void
 			{		
 				idx = -1;
@@ -457,6 +486,8 @@
 				if (event.result == "Success")
 				{
 					this.writeCompanyAddress();
+					// set cmpy_permit_no
+					this.writeCompanyPermitNo();
 					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
 				}
 				else if(event.result == "MSG_OMCS: 0")
@@ -481,6 +512,8 @@
 				if (event.result == "Success")
 				{
 					this.writeCompanyAddress();
+					// set cmpy_permit_no
+					this.writeCompanyPermitNo();
 					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
 				}
 				else if(event.result == "MSG_OMCS: 1")
@@ -664,6 +697,18 @@
 				return types.substring( 2 );
 			}
 			
+			// set cmpy_permit_no with AMF php service
+			public function writeCompanyPermitNo():void
+			{
+				var cmpy_code:String; 
+				var cmpy_permit:String;
+				
+				cmpy_code = cmpy_codeTextInput.text;
+				cmpy_permit = this.cmpy_permitNoInput.text;
+				
+				this.setCompanyPermitNo.service( cmpy_code, cmpy_permit );
+				
+			}
 			
 			public function writeCompanyAddress():void
 			{
@@ -745,7 +790,7 @@
 				{
 					_company_address = "";
 				}
-
+				
 				this.addressList.service();
 				
 			}
@@ -753,6 +798,37 @@
 			public function closeCompanyRelationDialogHandler():void
 			{
 				this.searchText_keyUpHandler( null );
+			}
+			
+			
+			protected function lookupPermitNo_resultHandler():void
+			{
+				// convert the list of [cmpy_code, cmpy_permit_no] into 
+				// the object {cmpy_code1:cmpy_permit_no1, cmpy_code2:cmpy_permit_no2,...}. 
+				// this is the fastest way to get permit No by code, but may have issues if code is more than just alphanumeric
+				this.permitNoObject = new Object();
+				for each(var o:Object in this.permitNoList.source)
+				{
+					permitNoObject[o.cmpy_code] = o.cmpy_permit_no;
+				}
+			}
+			
+			// label function to display cmpy_permit_no in grid
+			protected function permitNoFunction(item:Object, column:GridColumn):String
+			{
+				var code:String = item['cmpy_code'];
+				return this.permitNoObject[code];
+				
+				/*
+				// if above block does not work, use this one
+				var ret:String = '';
+				var obj:Object= tools.getItemObjectFromCode(item ['cmpy_code'], this.permitNoList, 'cmpy_code'); 
+				if ( obj != null )
+				{
+				ret = obj.cmpy_permit_no;
+				}
+				return ret;
+				*/
 			}
 			
 		]]>
@@ -793,15 +869,15 @@
 		</s:HGroup>
 		
 		<components:DKI_DataGrid id="dataGrid" width="100%" height="100%" minWidth="0"
-					creationComplete="dataGrid_creationCompleteHandler(event)" requestedRowCount="2"
-					selectionChange="dataGrid_selectionChangeHandler(event)" sortableColumns="true">
+								 creationComplete="dataGrid_creationCompleteHandler(event)" requestedRowCount="2"
+								 selectionChange="dataGrid_selectionChangeHandler(event)" sortableColumns="true">
 			<components:columns>
 				<s:ArrayList>
 					<s:GridColumn dataField="cmpy_code" headerText="{resourceManager.getString('default','COMPANY_CODE')}" width="100"></s:GridColumn>
 					<s:GridColumn dataField="cmpy_name" headerText="{resourceManager.getString('default','COMPANY_NAME')}" width="200" width.widget="250"></s:GridColumn>
 					<s:GridColumn dataField="cmpy_plant" headerText="{resourceManager.getString('default','PLANT_CODE')}" width="100"></s:GridColumn>
 					<s:GridColumn dataField="cmpy_aoi" headerText="{resourceManager.getString('default','AOI_NO')}" width="60" excludeFrom="widget"></s:GridColumn>
-					<s:GridColumn dataField="cmpy_permit_no" headerText="Permit Number" width="100" ></s:GridColumn>
+					<s:GridColumn dataField="cmpy_permit_no" headerText="Permit Number" labelFunction="permitNoFunction" width="100" ></s:GridColumn>
 					<s:GridColumn dataField="site_manager" headerText="{resourceManager.getString('default','SITE_MANAGER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
 					<s:GridColumn dataField="supplier" headerText="{resourceManager.getString('default','SUPPLIER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
 					<s:GridColumn dataField="carrier" headerText="{resourceManager.getString('default','CARRIER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
@@ -815,8 +891,8 @@
 			<s:AsyncListView list="{getCompanyResult.lastResult}"/>
 		</components:DKI_DataGrid>
 	</s:Panel>	
-		
-	<s:Panel id="details" title="Company Details" width="100%" height="180" skinClass="skins.WidgetPanelSkin" includeIn="edit,create" itemCreationPolicy="immediate">
+	
+	<s:Panel id="details" title="Company Details" width="100%" height="210" skinClass="skins.WidgetPanelSkin" includeIn="edit,create" itemCreationPolicy="immediate">
 		<s:layout>
 			<s:VerticalLayout/>
 		</s:layout>
@@ -848,11 +924,11 @@
 					<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','AOI_NO')}" verticalAlign="middle" width="105"/>			
 					<components:DKI_ValidatorInput id="cmpy_aoiTextInput" validationType="integer" width="200" text="{company_vo.cmpy_aoi}" maxChars="1" validationGroup="{vg}" 
 												   automationName="{resourceManager.getString('default','AOI_NO')}" required="false" change="toggleValidationRequired()"/>					
-				</s:HGroup>
+				</s:HGroup>			
 				
 				<s:HGroup>
 					<s:Label height="28" fontWeight="bold" text="Permit Number" verticalAlign="middle" width="105"/>
-					<components:DKI_ValidatorInput id="cmpy_permitNoInput" text="{dataGrid.selectedItem.cmpy_permit_no}" width="400" validationType="alphanumeric" validationGroup="{vg}" automationName="Permit Number" maxChars="60" required="false"/>
+					<components:DKI_ValidatorInput id="cmpy_permitNoInput" text="" width="400" validationType="alphanumeric" validationGroup="{vg}" automationName="Permit Number" maxChars="60" required="false"/>
 				</s:HGroup>
 				
 			</s:VGroup>
