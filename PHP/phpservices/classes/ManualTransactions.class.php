@@ -2217,6 +2217,7 @@ class ManualTransactions
             {   
                 //Once it's created, the stored file can be deleted (if do_save() has once been called)
                 // commented out for testing $this->unlink_serialized($para_trans->Transaction_Number);
+                logMe("populate_transa_det returns OK", MANUAL_TRANSACTION);
                 $result_detail->result_code = 0;
                 $result_detail->result_string = "Manual Transaction successfully submitted";
                 
@@ -2227,12 +2228,29 @@ class ManualTransactions
                     {
                         $sql = "UPDATE TRANSACTIONS SET TRSA_PSN = '" . $para_trans->Login_User . "' WHERE TRSA_ID = " . $trans_id;
                         if ($this->db_conn->update($sql) == RETURN_OK)
-                            $this->db_conn->commit();
+                        {
+                            $sql = "UPDATE LOADS SET LD_SEAL_NO = '" . $para_trans->Seal_Range .
+                                "' WHERE LOAD_ID = (SELECT TRSALDID_LOAD_ID FROM
+                                 TRANSACTIONS WHERE TRSA_ID = " . $trans_id . ")";
+                            if ($this->db_conn->update($sql) == RETURN_OK)
+                                $this->db_conn->commit();
+                            else
+                            {
+                                logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
+                                $this->db_conn->rollback();
+                            }
+                        }
                         else
+                        {
+                            logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
                             $this->db_conn->rollback();
+                        }
                     }
                     else
+                    {
+                        logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
                         $this->db_conn->rollback();
+                    }
                 }
             }
             else
@@ -2309,10 +2327,31 @@ class ManualTransactions
                             $para_trans->Login_User . 
                             "' WHERE TRSA_ID = " . $trans_id;
                         if ($this->db_conn->update($sql) != RETURN_OK)
+                        {
+                            $sql = "UPDATE LOADS SET LD_SEAL_NO = '" . $para_trans->Seal_Range .
+                                "' WHERE LOAD_ID = (SELECT TRSALDID_LOAD_ID FROM
+                                 TRANSACTIONS WHERE TRSA_ID = " . $trans_id . ")";
+                            if ($this->db_conn->update($sql) != RETURN_OK)
+                            {     
+                                $php_commit = false;
+                            }
+                            else
+                            {
+                                logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
+                                $php_commit = false;
+                            }
+                        }
+                        else
+                        {
+                            logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
                             $php_commit = false;
+                        }
                     }   
                     else
+                    {
+                        logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
                         $php_commit = false;
+                    }
                 }
             }
             else
