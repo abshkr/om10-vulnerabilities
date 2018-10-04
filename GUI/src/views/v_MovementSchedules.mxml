@@ -247,6 +247,7 @@
 				<s:ArrayList>
 					<s:source>
 						<s:GridColumn dataField="clnTripNumber" headerText="{resourceManager.getString('default','datagrid.headercaption.tripno')}" ></s:GridColumn>
+						<s:GridColumn dataField="SHLSLOAD_LOAD_ID" width="120" headerText="Load ID" ></s:GridColumn>
 						<s:GridColumn dataField="clnTripDate" itemRenderer="renderers.DateRenderer" headerText="{resourceManager.getString('default','datagrid.headercaption.Date')}" width="70"></s:GridColumn>
 						<s:GridColumn dataField="clnTripStatus" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.TRIPSTAT')}" ></s:GridColumn>
 						<s:GridColumn dataField="clnTripCarrier" headerText="{resourceManager.getString('default','MOVSCHD.LABEL.CARRIER')}" visible.widget="false" ></s:GridColumn>

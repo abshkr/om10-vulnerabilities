@@ -1044,6 +1044,20 @@ class ManualTransaction
         return $msg->to_string();
     }
 
+    private function update_seal_range($seal_range)
+    {
+        logMe("update_seal_range START", Manual_TRANSACTION);
+        $sql = array();
+        $sql['sql_text'] = "
+            UPDATE LOADS SET LD_SEAL_NO = :seal_range WHERE LOAD_ID = 
+            (SELECT TRSALDID_LOAD_ID FROM TRANSACTIONS WHERE TRSA_ID = :trsa_id)";
+        $sql['sql_data'] = array($seal_range, $this->trns_id);
+
+        $result = $mydb->update($sql);
+
+        return $result;
+    }
+
     private function unlink_serialized($trns_id)
     {
         unlink($trns_id);
@@ -1090,8 +1104,12 @@ class ManualTransaction
             
             $reply = new TRSAN_REPLY();
             $reply->Result_Code = substr($response, 75, 10);
-            if (substr_compare($reply->Result_Code, "OK", 0, 2) == 0)   //Once it's created, the stored file can be deleted (if do_save() has once been called)
+            if (substr_compare($reply->Result_Code, "OK", 0, 2) == 0)
+            {
+                //Once it's created, the stored file can be deleted (if do_save() has once been called)
                 $this->unlink_serialized($para_trans->Transaction_Number);
+                $this->update_seal_range($para_trans->seal_range);
+            }   
             return $reply->Result_Code;
         }
     }

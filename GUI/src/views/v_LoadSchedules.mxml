@@ -3313,7 +3313,7 @@
 			<s:Spacer width="10"/>
 			<s:Label height="28" fontWeight="bold" width="60" text="Special Instructions" visible="{this.specialInstructions}"/>
 			<s:Spacer width="10"/>
-				<s:TextArea id="spec_ins" width="520" height="60" enabled.scheduleDetails="false" visible="{this.specialInstructions}" text="{dataGrid.selectedItem.shl_rss_infdel}" maxChars="120"/>	
+				<s:TextArea id="spec_ins" width="520" height="60" enabled.scheduleDetails="false" visible="{this.specialInstructions}" text="{dataGrid.selectedItem.shl_rss_infdel}" maxChars="3500"/>	
 	
 			<s:Spacer width="10"/>
 			
