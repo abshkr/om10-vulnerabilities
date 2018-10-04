@@ -479,8 +479,8 @@
 										labelField="rpt_cmpy_name" 
 										prompt="{resourceManager.getString('default','SELECT')+' '+resourceManager.getString('default','JRPT_COMPANY')}"/>
 					</s:HGroup>
-					<s:Spacer height="{spaceHeight}" />
-					<!--<s:HGroup>
+					<!--<s:Spacer height="{spaceHeight}" />
+					<s:HGroup>
 						<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','JRPT_CUSTOMER')}" verticalAlign="middle"/>
 						<components:DKI_DropDownList id="jrpt_cust" contentBackgroundAlpha="0.85" 
 													 width="{fieldWidth}" height="{fieldHeight}" 
@@ -498,8 +498,8 @@
 													 dataProvider="{lookupCompanysByReports.lastResult}"
 													 labelField="rpt_cmpy_name" 
 													 prompt="{resourceManager.getString('default','SELECT')+' '+resourceManager.getString('default','JRPT_CARRIER')}"/>
-					</s:HGroup>-->
-					<s:Spacer height="{spaceHeight}" />
+					</s:HGroup>
+					<s:Spacer height="{spaceHeight}" />-->
 					<s:HGroup>
 						<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','JRPT_REPORT')}" verticalAlign="middle"/>
 						<components:DKI_DropDownList id="jrpt_type" contentBackgroundAlpha="0.85" 
