@@ -2327,10 +2327,31 @@ class ManualTransactions
                             $para_trans->Login_User . 
                             "' WHERE TRSA_ID = " . $trans_id;
                         if ($this->db_conn->update($sql) != RETURN_OK)
+                        {
+                            $sql = "UPDATE LOADS SET LD_SEAL_NO = '" . $para_trans->Seal_Range .
+                                "' WHERE LOAD_ID = (SELECT TRSALDID_LOAD_ID FROM
+                                 TRANSACTIONS WHERE TRSA_ID = " . $trans_id . ")";
+                            if ($this->db_conn->update($sql) != RETURN_OK)
+                            {     
+                                $php_commit = false;
+                            }
+                            else
+                            {
+                                logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
+                                $php_commit = false;
+                            }
+                        }
+                        else
+                        {
+                            logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
                             $php_commit = false;
+                        }
                     }   
                     else
+                    {
+                        logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
                         $php_commit = false;
+                    }
                 }
             }
             else
