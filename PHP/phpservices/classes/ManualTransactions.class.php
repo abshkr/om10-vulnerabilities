@@ -2232,7 +2232,7 @@ class ManualTransactions
                             $sql = "UPDATE LOADS SET LD_SEAL_NO = '" . $para_trans->Seal_Range .
                                 "' WHERE LOAD_ID = (SELECT TRSALDID_LOAD_ID FROM
                                  TRANSACTIONS WHERE TRSA_ID = " . $trans_id . ")";
-                            if ($this->db_conn->update($sql) ！= RETURN_OK)
+                            if ($this->db_conn->update($sql) != RETURN_OK)
                             {
                                 logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
                             }
@@ -2329,7 +2329,7 @@ class ManualTransactions
                             $sql = "UPDATE LOADS SET LD_SEAL_NO = '" . $para_trans->Seal_Range .
                                 "' WHERE LOAD_ID = (SELECT TRSALDID_LOAD_ID FROM
                                  TRANSACTIONS WHERE TRSA_ID = " . $trans_id . ")";
-                            if ($this->db_conn->update($sql) ！= RETURN_OK)
+                            if ($this->db_conn->update($sql) != RETURN_OK)
                             {     
                                 logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
                             }
