@@ -877,7 +877,7 @@
 					<s:GridColumn dataField="cmpy_name" headerText="{resourceManager.getString('default','COMPANY_NAME')}" width="200" width.widget="250"></s:GridColumn>
 					<s:GridColumn dataField="cmpy_plant" headerText="{resourceManager.getString('default','PLANT_CODE')}" width="100"></s:GridColumn>
 					<s:GridColumn dataField="cmpy_aoi" headerText="{resourceManager.getString('default','AOI_NO')}" width="60" excludeFrom="widget"></s:GridColumn>
-					<s:GridColumn dataField="cmpy_permit_no" headerText="Permit Number" labelFunction="permitNoFunction" width="100" ></s:GridColumn>
+					<s:GridColumn dataField="cmpy_permit_no" headerText="Permit Number" labelFunction="permitNoFunction" width="100" visible="{false}"></s:GridColumn>
 					<s:GridColumn dataField="site_manager" headerText="{resourceManager.getString('default','SITE_MANAGER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
 					<s:GridColumn dataField="supplier" headerText="{resourceManager.getString('default','SUPPLIER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
 					<s:GridColumn dataField="carrier" headerText="{resourceManager.getString('default','CARRIER')}" itemRenderer="renderers.GridCheckNullRenderer" excludeFrom="widget"/>
@@ -927,8 +927,8 @@
 				</s:HGroup>			
 				
 				<s:HGroup>
-					<s:Label height="28" fontWeight="bold" text="Permit Number" verticalAlign="middle" width="105"/>
-					<components:DKI_ValidatorInput id="cmpy_permitNoInput" text="" width="400" validationType="alphanumeric" validationGroup="{vg}" automationName="Permit Number" maxChars="60" required="false"/>
+					<s:Label visible="{false}" height="28" fontWeight="bold" text="Permit Number" verticalAlign="middle" width="105"/>
+					<components:DKI_ValidatorInput visible="{false}" id="cmpy_permitNoInput" text="{dataGrid.selectedItem.cmpy_permit_no}" width="400" validationType="alphanumeric" validationGroup="{vg}" automationName="Permit Number" maxChars="60" required="false"/>
 				</s:HGroup>
 				
 			</s:VGroup>

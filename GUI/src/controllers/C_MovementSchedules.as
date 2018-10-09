@@ -67,7 +67,7 @@ package controllers
 		[Bindable] public var view:v_MovementSchedules;
 		
 //		public var mapObj:Object = { "clnTripNumber":"SHLS_TRIP_NO", "clnTripDate":"SHLS_CALDATE", "clnTripStatus":"SHLS_STATUS", "clnTripCarrier":"CARRIER_CODE", "clnTripVehicle":"TNKR_CODE", "clnTripSupplier":"SUPPLIER_CODE", "clnTripMovement":"MV_NUMBER", "clnTripStart":"SHLS_LD_START", "clnTripEnd":"SHLS_LD_END", "clnTripType":"LD_TYPE", "clnTripReversed":"LOAD_REVERSE_FLAG", "clnTripUnload":"LD_TYPE", "clnTripOperator":"OPERATOR" }; 
-		public var mapObj:Object = { "clnTripNumber":"SHLS_TRIP_NO", "clnTripDate":"SHLS_CALDATE", "clnTripStatus":"SHLS_STATUS", "clnTripCarrier":"CARRIER_CODE", "clnTripVehicle":"TNKR_CODE", "clnTripSupplier":"SUPPLIER_CODE", "clnTripMovement":"MV_NUMBER", "clnTripStart":"SHLS_LD_START", "clnTripEnd":"SHLS_LD_END", "TRSF_PRODUCT":"TRSF_PRODUCT", "TRSF_QTY_AMB":"TRSF_QTY_AMB", "TRSF_QTY_COR":"TRSF_QTY_COR", "TRSF_LOAD_KG":"TRSF_LOAD_KG", "DT_POSTED":"DT_POSTED", "TRSA_ALT_QTY":"TRSA_ALT_QTY", "TRSA_ALT_UNT":"TRSA_ALT_UNT", "clnTripType":"LD_TYPE", "clnTripReversed":"LOAD_REVERSE_FLAG", "clnTripUnload":"LD_TYPE", "clnTripOperator":"OPERATOR" }; 
+		public var mapObj:Object = { "clnTripNumber":"SHLS_TRIP_NO", "clnTripDate":"SHLS_CALDATE", "clnTripStatus":"SHLS_STATUS", "clnTripCarrier":"CARRIER_CODE", "clnTripVehicle":"TNKR_CODE", "clnTripSupplier":"SUPPLIER_CODE", "clnTripMovement":"MV_NUMBER", "clnTripStart":"SHLS_LD_START", "clnTripEnd":"SHLS_LD_END", "TRSF_PRODUCT":"TRSF_PRODUCT", "TRSF_QTY_AMB":"TRSF_QTY_AMB", "TRSF_QTY_COR":"TRSF_QTY_COR", "TRSF_LOAD_KG":"TRSF_LOAD_KG", "DT_POSTED":"DT_POSTED", "TRSA_ALT_QTY":"TRSA_ALT_QTY", "TRSA_ALT_UNT":"TRSA_ALT_UNT", "clnTripType":"LD_TYPE", "clnTripReversed":"LOAD_REVERSE_FLAG", "clnTripUnload":"LD_TYPE", "clnTripOperator":"OPERATOR", "SHLSLOAD_LOAD_ID":"SHLSLOAD_LOAD_ID" }; 
 		public var orderObj:Object = { field:'SHLS_TRIP_NO', order:'DESC' };
 		public var orderCollection:ArrayCollection = new ArrayCollection( new Array({ field:'SHLS_TRIP_NO', order:'DESC' }));
 
@@ -97,6 +97,7 @@ package controllers
 		public var makeTransactionPopup:ViewPopupDlg = new ViewPopupDlg( "Manual transactions for nomination schedules", new v_ManualTransactions(), closeDialogHandler );
 		public var mlTypicalItems:Object = {
 					clnTripNumber  :"123456789"              ,
+					clnLoadId      :"123456789"              ,
 					clnTripDate    :"NN/NN/NNNN NN:NN:NN"    ,
 					clnTripStatus  :"ABCDEFGHIJKLMN"         ,
 					clnTripCarrier :"Trip Carrier"           ,
