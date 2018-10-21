@@ -6,3 +6,9 @@ http://10.2.20.53/api/personnel/read_page.php?page=2
 http://10.2.20.53/api/personnel/create.php
 http://10.2.20.53/api/personnel/update.php
 http://10.2.20.53/api/personnel/delete.php
+
+http://10.1.10.66/api/on_demand/suppliers.php
+https://10.1.10.66/api/on_demand/carriers.php
+https://10.1.10.66/api/on_demand/suppliers.php
+https://10.1.10.66/api/on_demand/customers.php
+https://10.1.10.66/api/on_demand/reports.php?cmpy_code=ANY
