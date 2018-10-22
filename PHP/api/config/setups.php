@@ -23,7 +23,7 @@ define('AUTH_IN_HEADER', true);
 // define('JWT_SECRET', 'dki_jwt');
 
 //It can be http:// or https://
-define('URL_PROTOCOL', 'http://');
+define('URL_PROTOCOL', 'https://');
 
 define('JWT_SECRET', 'dki_jwt');
 
@@ -31,6 +31,8 @@ define('JWT_SECRET', 'dki_jwt');
 //also check if $token['sess_id'] is in db. Because when logout, $token['sess_id'] 
 //will be delete from db, so it invalidate this token 
 define('INVALIDATE_TOKEN_ENABLED', true);
+
+define('JASPERREPORT_DIR', 'reports/');
 
 if (DISPLAY_ALL_ERROS) {
 	ini_set('display_errors', 1);

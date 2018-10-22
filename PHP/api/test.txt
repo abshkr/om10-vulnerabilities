@@ -7,8 +7,13 @@ http://10.2.20.53/api/personnel/create.php
 http://10.2.20.53/api/personnel/update.php
 http://10.2.20.53/api/personnel/delete.php
 
-http://10.1.10.66/api/on_demand/suppliers.php
+https://10.1.10.66/api/on_demand/suppliers.php
 https://10.1.10.66/api/on_demand/carriers.php
 https://10.1.10.66/api/on_demand/suppliers.php
 https://10.1.10.66/api/on_demand/customers.php
 https://10.1.10.66/api/on_demand/reports.php?cmpy_code=ANY
+https://10.1.10.66/api/on_demand/filters.php?jasper_file=Alarms.jasper
+https://10.1.10.66/api/on_demand/filters.php?jasper_file=ProdtotByCustomer_Master.jasper
+https://10.1.10.66/api/on_demand/create.php?output=pdf&company=ANY&report=Drawer_Product.jrxml&startdate=2018-10-17%2021:41:35&enddate=2018-10-18%2021:41:35
+https://10.1.10.66/api/on_demand/closeout_nrs.php
+https://10.1.10.66/api/on_demand/closeout_nrs.php?start_date=2018-10-17%2021:41:35&end_date=2018-10-28%2021:41:35
