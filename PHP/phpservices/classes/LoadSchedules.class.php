@@ -962,28 +962,17 @@ class LoadSchedulesClass
     }
 
     private function updateSpecialIns($trip, $supp, $special_ins) {
-        // logMe($special_ins, LOADSCHEDCLASS);
-        // logMe($special_ins, 'cw');
-        $lines = explode("\n", $special_ins);  
         $mydb = DB::getInstance();
         $sql = array();
 
-        foreach ($lines as $index=>$line)
-        {
-            // logMe($index, $line);
-            $var_id = $index + 1;
-            $sql['sql_text'] = 
-                "UPDATE SPECVARS SET SCHV_TEXT = :special_ins
-                WHERE SCHVSPID_SHLSTRIP = :trip AND SCHVSPID_SHLSSUPP= :supp
-                    AND SCHV_VAR_ID = :var_id";
+        $sql['sql_text'] = 
+                "DELETE FROM SPECVARS 
+                WHERE SCHVSPID_SHLSTRIP = :trip AND SCHVSPID_SHLSSUPP= :supp";
             // logMe($sql['sql_text'], 'cw');
-            $sql['sql_data'] = array($line, $trip, $supp, $var_id);
-            $result = $mydb->update($sql);
-        }
+        $sql['sql_data'] = array($trip, $supp);
+        $result = $mydb->update($sql);
         
-        //$result = $mydb->aXuto_binding_update($sql, $param_arr);
-        logMe("updateSpecialIns() done", LOADSCHEDCLASS);
-        return $result;
+        return $this->insertSpecialIns($trip, $supp, $special_ins);
     }
 
     /**
