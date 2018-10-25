@@ -40,12 +40,12 @@ while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
     // just $name only
     extract(array_change_key_case($row));
     
-    $personnel_item = array(
-        "argument_name" => $argument_name,
-        "argument_seq" => $argument_seq
-    );
+    // $personnel_item = array(
+    //     $argument_name => $argument_name,
+    //     "argument_seq" => $argument_seq
+    // );
 
-    array_push($personnels_arr["records"], $personnel_item);
+    array_push($personnels_arr["records"], $argument_name);
 }
 
 if ($num > 0) {

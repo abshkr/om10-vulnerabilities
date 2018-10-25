@@ -47,7 +47,7 @@ while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
     extract(array_change_key_case($row));
     
     $personnel_item = array(
-            "closeout_nr" => $closeout_nr,
+            "closeout_nr" => (int)$closeout_nr,
             "start_date" => $closeout_date,
             "end_date" => $prev_closeout_date,
             "status" => $status
