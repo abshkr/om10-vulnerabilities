@@ -14,7 +14,9 @@ function http_get_cgi($cgi)
     if (!JWT_AUTH)
     {
         session_start();
-        $url .= "sess_id=" . $_SESSION["SESSION"];
+        if (isset($_SESSION["SESSION"])) {
+            $url .= "sess_id=" . $_SESSION["SESSION"];
+        }
     }
     //echo file_get_contents($url);
     return file_get_contents($url);

@@ -51,6 +51,8 @@ class Database
     // get the database connection; if auth fails, return null
     public function getConnection()
     {
+        // write_log(__METHOD__ . " START", __FILE__, __LINE__);
+
         $this->getConn();
 
         if (AUTH_CHECK) {
@@ -62,7 +64,10 @@ class Database
                 } else {
                     if (INVALIDATE_TOKEN_ENABLED && 
                         !$this->checkSessionStatus($token->per_code, $token->sess_id)) {
-                        write_log("Token already invalidated, cannot continue", 
+                        write_log(
+                            sprintf(
+                                "Token already invalidated, cannot continue. per_code:%s, sess_id:%s",
+                                $token->per_code, $token->sess_id), 
                             __FILE__, __LINE__, LogLevel::ERROR);
                         return null;
                     }
@@ -74,7 +79,7 @@ class Database
                 }
             }
         } 
-        write_log("getConnection done", __FILE__, __LINE__);
+        // write_log("getConnection done", __FILE__, __LINE__);
         return $this->conn;
     }
 
@@ -96,14 +101,22 @@ class Database
         }
     }
 
+    /* The reason $_SESSION['SESSION'] and $_SESSION['PERCODE'] can be used here is because
+    the old AMF php code is still using. In SecureAuth.php, the function login() sets all the
+    _SESSION variables. */
     private function getSessionStatus()
     {
         session_start();
         if (isset($_SESSION['SESSION'])) {
-            write_log("session", __FILE__, __LINE__);
             $sess_id = strip_tags($_SESSION['SESSION']);
             $per_code = strip_tags($_SESSION['PERCODE']);
 
+            write_log("sess_id:" . $_SESSION['SESSION'] . ", per_code:" . $_SESSION['PERCODE'],
+                __FILE__, __LINE__);
+        
+            // write_log("get session. sess_id:" . $sess_id . " per_code:" . $per_code,
+            //     __FILE__, __LINE__);
+            
             // $lang = strip_tags($_SESSION['LANGUAGE']);
             $query = "
                 SELECT COUNT(*) CNT FROM HTTP_SESSION_TRACE 
@@ -119,6 +132,8 @@ class Database
                 write_log(oci_error($stmt)['message'], __FILE__, __LINE__);
                 return false;
             }
+        } else {
+            write_log(__METHOD__ . " failed: no session found", __FILE__, __LINE__);
         }
         
         return false;

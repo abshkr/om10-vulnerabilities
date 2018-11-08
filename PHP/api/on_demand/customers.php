@@ -2,6 +2,8 @@
 // required headers
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
+
+header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization");
  
 // include database and object files
 include_once '../config/database.php';
@@ -20,7 +22,8 @@ $stmt = $on_demand->customers();
 // products array
 $personnels_arr = array();
 $personnels_arr["records"] = array();
-$num = 0;
+array_push($personnels_arr["records"], array("cmpy_code" => 'ANY', "cmpy_name" =>'ALL'));
+$num = 1;
 
 // retrieve our table contents
 while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {

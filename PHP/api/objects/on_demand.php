@@ -2,32 +2,93 @@
 
 include_once __DIR__  . '/../config/journal.php';
 include_once __DIR__  . '/../config/log.php';
+include_once __DIR__  . '/../config/setups.php';
 
 class OndemandReport 
 {
     // database connection and table name
     private $conn;
     // private $table_name = "GUI_PERSONNEL";
+    private $curr_cmpy = null;
+    private $is_manager = true;
     
  
     // constructor with $db as database connection
     public function __construct($db)
     {
         $this->conn = $db;
+        $this->initilize();
+    }
+
+    private function initilize()
+    {
+        if (AUTH_CHECK) {
+            if (JWT_AUTH) {
+                $token = check_token(get_http_token());
+                if (!$token) {
+                    write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
+                } else {
+                    $token->per_code;
+
+                    $query = "
+                        SELECT PER_CMPY, SITE_MNGR, DECODE(SITE_MNGR, PER_CMPY, 'Y', 'F') IS_MANAGER
+                        FROM PERSONNEL, SITE
+                        WHERE PER_CODE = :curr_per";
+                    
+                    $stmt = oci_parse($this->conn, $query);
+                    oci_bind_by_name($stmt, ':curr_per', $token->per_code);
+                    if (oci_execute($stmt)) {
+                        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+                        $this->curr_cmpy = $row['PER_CMPY'];
+                        $this->is_manager = $row['IS_MANAGER'];
+
+                        write_log("curr_cmpy:" . $this->curr_cmpy . 
+                            ", is_manager:" . $this->is_manager,
+                            __FILE__, __LINE__);
+                    } else {
+                        write_log(oci_error($stmt)['message'], __FILE__, __LINE__);
+                    }
+                }                                
+            } else {
+                if (isset($_SESSION['SESSION'])) {
+                    $this->curr_cmpy = strip_tags($_SESSION['COMPANY']);
+                    $this->is_manager = (strip_tags($_SESSION['MANAGER']) === 'T' ||
+                        strip_tags($_SESSION['MANAGER']) === 'Y');
+                    write_log("sess_id:" . $_SESSION['SESSION'] . ", curr_cmpy:" . 
+                        $this->curr_cmpy . ", is_manager:" . $this->is_manager,
+                        __FILE__, __LINE__);
+                }
+            }
+        }
     }
 
     // get all suppliers
-    function suppliers()
+    public function suppliers()
     {
-        $query = "
-            SELECT DISTINCT CMPY_CODE, 
-                CMPY_NAME
-            FROM
-                COMPANYS, REPORT_CMPY
-            WHERE REPORT_CMPY.RPT_CMPY = COMPANYS.CMPY_CODE
-            ORDER BY CMPY_CODE";
+        write_log(__METHOD__ . " START. is_manager:" . $this->is_manager, __FILE__, __LINE__);
         
-        $stmt = oci_parse($this->conn, $query);
+        if ($this->is_manager) {
+            $query = "
+                SELECT DISTINCT CMPY_CODE, 
+                    CMPY_NAME
+                FROM
+                    COMPANYS, REPORT_CMPY
+                WHERE REPORT_CMPY.RPT_CMPY = COMPANYS.CMPY_CODE
+                ORDER BY CMPY_CODE";
+            
+            $stmt = oci_parse($this->conn, $query);
+        } else {
+            $query = "
+                SELECT CMPY_CODE, CMPY_NAME
+                FROM
+                    COMPANYS
+                WHERE COMPANYS.CMPY_CODE = :curr_cmpy
+                ORDER BY CMPY_CODE";
+            
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':curr_cmpy', $this->curr_cmpy);
+        }
+
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
@@ -57,15 +118,32 @@ class OndemandReport
     // get all carriers
     function carriers()
     {
-        $query = "
-            SELECT CMPY_CODE, 
-                CMPY_NAME                    
-            FROM
-                COMPANYS
-            WHERE BITAND(CMPY_TYPE, POWER(2, 2)) <> 0
-            ORDER BY CMPY_CODE";
+        write_log(__METHOD__ . " START. is_manager:" . $this->is_manager, __FILE__, __LINE__);
         
-        $stmt = oci_parse($this->conn, $query);
+        if ($this->is_manager) {
+            $query = "
+                SELECT CMPY_CODE, 
+                    CMPY_NAME                    
+                FROM
+                    COMPANYS
+                WHERE BITAND(CMPY_TYPE, POWER(2, 2)) <> 0
+                ORDER BY CMPY_CODE";
+            
+            $stmt = oci_parse($this->conn, $query);
+        } else {
+            // CHILD_CMPY_ROLE == 2 means carrier
+            $query = "
+                SELECT CMPY_CODE, 
+                    CMPY_NAME
+                FROM COMPANY_RELATION, COMPANYS
+                WHERE PARENT_CMPY_CODE = :curr_cmpy
+                    AND CHILD_CMPY_ROLE = 2
+                    AND CHILD_CMPY_CODE = COMPANYS.CMPY_CODE
+            ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':curr_cmpy', $this->curr_cmpy);
+        }
+        
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
