@@ -88,6 +88,13 @@
 						<s:Label includeIn="normal" width="{controller.labelWidth}" height="{controller.labelHeight}" fontWeight="bold" text="{resourceManager.getString('default','MTRAN.LABEL.DRIVER')}" textAlign="right" verticalAlign="middle"/>
 						<components:DKI_ValidatorDropDown id="new_user" width="100%" enabled="{controller.isDriverEnabled}" dataProvider="{DM.ManualTransactions.operators}" labelField="PER_NAME" prompt="{resourceManager.getString('default','MTRAN.PROMPT.DRIVER')}" change="controller.new_user_changeHandler(event)" required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','MTRAN.LABEL.DRIVER')}"/>
 					</s:HGroup>
+					<s:HGroup width="100%" verticalAlign="middle" includeInLayout="{global.siteUseSeal}" visible="{global.siteUseSeal}">
+						<s:Label includeIn="normal"  width="{controller.labelWidth}" height="{controller.labelHeight}" fontWeight="bold" text="Seal Range" textAlign="right" verticalAlign="middle"/>
+						<components:DKI_ValidatorInput id="seal_range" width="100%" enabled="{controller.isOrderNoEnabled}" text=""/>
+						<components:DKI_Button id="viewSeals" height="100%" click="controller.viewSealWindow(event)" enabled="{controller.isTripNoEnabled}"
+											   label="{resourceManager.getString('default','button.lbl.VIEW')}"
+											   type="report"/>
+					</s:HGroup>
 				</s:VGroup>
 
 				<s:VGroup width="100%" gap="3" paddingLeft="40" paddingRight="0">
