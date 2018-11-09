@@ -74,7 +74,7 @@
 			private function allowView():void
 			{
 				// special popup for BayView and TankView
-				if ( info.title == "m_bayview" || info.title == "m_tankview" )
+				if ( info.title == "m_bayview" || info.title == "m_tankview" || info.title == "m_jasperreports")
 				{
 					var file_url:String;
 					
@@ -88,6 +88,13 @@
 						//file_url = "/bootstrap/TankView.php";
 						file_url = "/scadaviews/tankview/index.html";
 					}
+					
+					if ( info.title == "m_jasperreports" )
+					{
+			
+						file_url = "/signin";
+					}
+					
 					trace ( file_url );
 					navigateToURL( new URLRequest( file_url ), '_blank' );
 					return;

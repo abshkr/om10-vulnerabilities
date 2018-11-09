@@ -15,6 +15,7 @@ package controllers
 	import dm.collections.dmManualTransactions;
 	import dm.models.dmManualTransaction;
 	import dm.models.dmModel;
+	import dm.remoteDataService;
 	import dm.utils.tools;
 	
 	import flash.display.DisplayObject;
@@ -60,6 +61,7 @@ package controllers
 	
 	import views.v_ManualTransactions;
 	import views.v_ManualTransactionsData;
+	import views.v_Seal_MT;
 
 	public class C_ManualTransactions extends EventDispatcher
 	{
@@ -206,10 +208,95 @@ package controllers
 		private var CLNID__TRSF_QTY_COR            : int     = 13;
 		private var CLNID__TRSF_LOAD_KG            : int     = 14;                       
 		
+		public var nextSealLoader:remoteDataService = new remoteDataService( "LoadScheduleService.getNextSeal", null, nextSealLoader_resultHandler, 1 );
+		public var tripSealLoader:remoteDataService = new remoteDataService( "LoadScheduleService.getTripSeal", null, tripSealLoader_resultHandler, 1 );
+		public var nextSealString:String = "";
+		public var tripSealString:String = "";
+		private var sealPopup:v_Seal_MT=new v_Seal_MT();
+		
+		public var sealsPopup:ViewPopupDlg = new ViewPopupDlg( "Seal Numbers", sealPopup, afterCloseSealWindow );
+		
 		
 		public function C_ManualTransactions()
 		{
 
+		}
+		
+		
+		public function nextSealLoader_resultHandler():void
+		{
+			this.nextSealString =  nextSealLoader.dataString;
+			//if ( this.isOrderNoEnabled ) 
+			{
+				view.seal_range.text = nextSealString + '=??';
+			}
+		}
+		
+		public function tripSealLoader_resultHandler():void
+		{
+			this.tripSealString =  tripSealLoader.dataString;
+			//if ( this.isTripNoEnabled ) 
+			{
+				view.seal_range.text = tripSealString;
+			}
+		}
+		/*
+		public function viewSealWindow2(event:MouseEvent):void
+		{
+			sealPopup = PopUpManager.createPopUp(view,v_Seal, true) as v_Seal;
+			PopUpManager.centerPopUp(sealPopup);
+			var trip:String="";
+			var supp:String="";
+			if ( view.new_supplier.selectedIndex >= 0 ) {
+				supp = view.new_supplier.selectedItem.CMPY_CODE;
+			}
+			if ( view.new_trip.selectedIndex >= 0 ) {
+				trip = view.new_trip.selectedItem.SHLS_TRIP_NO;
+			}
+			sealPopup.setParams(supp, trip);
+			sealPopup.loadStatus = 'F';
+			
+		}
+		*/
+		
+		public function viewSealWindow(event:MouseEvent)
+		{
+			this.sealsPopup.popupTitle = mx.resources.ResourceManager.getInstance().getString('default','m_seals');
+			//this.sealsPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+			
+			this.sealsPopup.parentWidth = 600;
+			this.sealsPopup.parentHeight = 600;
+			
+			trace ( "*******************Pop up a screen to manage partnership!");
+			sealsPopup.openDialog();
+			
+			var trip:String="";
+			var supp:String="";
+			if ( view.new_supplier.selectedIndex >= 0 ) {
+				supp = view.new_supplier.selectedItem.CMPY_CODE;
+			}
+			if ( view.new_trip.selectedIndex >= 0 ) {
+				trip = view.new_trip.selectedItem.SHLS_TRIP_NO;
+			}
+			
+			sealPopup.loadStatus = 'F';
+			sealPopup.setParams(supp, trip);
+		}
+		
+		public function afterCloseSealWindow():void
+		{
+			var trip:String="";
+			var supp:String="";
+			if ( view.new_supplier.selectedIndex >= 0 ) {
+				supp = view.new_supplier.selectedItem.CMPY_CODE;
+			}
+			if ( view.new_trip.selectedIndex >= 0 ) {
+				trip = view.new_trip.selectedItem.SHLS_TRIP_NO;
+			}
+			
+			if ( view.new_trans_type.selectedIndex == 0 ) {
+				this.tripSealLoader.service(trip, supp);
+			}
 		}
 		
 		/*
@@ -7040,6 +7127,13 @@ package controllers
 					view.trans_ed_dmy.selectedDate = new Date((tmp != "") ? tmp : getDefaultDate());
 				
 				}); // end of preCheck_StartupMT
+				
+				if ( view.new_trans_type.selectedIndex == 0 ) {
+					view.controller.tripSealLoader.service(trip_number, supp);
+				}
+				if ( view.new_trans_type.selectedIndex == 1 ) {
+					view.controller.nextSealLoader.service();
+				}
 			} // end of DM.ManualTransactions.resultHandler = function setFilters_callback()
 			
 			/* NOTE: HERE IS NOT THE LAST PROCESS OF THIS FUNCTION */
