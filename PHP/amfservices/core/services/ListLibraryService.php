@@ -1397,6 +1397,16 @@ class ListLibraryService
 
 		return($data);
     } 
+	
+	public function lookupReportFilter($caseType='L')
+	{
+		$sql = "SELECT * FROM REPORT_FILTER order by JASPER_FILE, ARGUMENT_SEQ";
+			
+        $mydb = DB::getInstance();
+		$data = $mydb->retrieve($sql, $caseType);
+
+		return($data);
+	}
 
 	
 	public function lookupTankBaseProduct($category=-1, $caseType='L')
