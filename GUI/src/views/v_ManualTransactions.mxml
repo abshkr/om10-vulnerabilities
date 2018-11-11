@@ -90,8 +90,11 @@
 					</s:HGroup>
 					<s:HGroup width="100%" verticalAlign="middle" includeInLayout="{global.siteUseSeal}" visible="{global.siteUseSeal}">
 						<s:Label includeIn="normal"  width="{controller.labelWidth}" height="{controller.labelHeight}" fontWeight="bold" text="Seal Range" textAlign="right" verticalAlign="middle"/>
-						<components:DKI_ValidatorInput id="seal_range" width="100%" enabled="{controller.isOrderNoEnabled}" text=""/>
-						<components:DKI_Button id="viewSeals" height="100%" click="controller.viewSealWindow(event)" enabled="{controller.isTripNoEnabled}"
+						<components:DKI_ValidatorInput id="seal_range" width="100%" enabled="false" text=""/>
+						<components:DKI_Button id="viewSeals" height="100%" click="controller.viewSealWindow(event)" visible="{controller.isTripNoEnabled}" includeInLayout="{controller.isTripNoEnabled}"
+											   label="{resourceManager.getString('default','button.lbl.VIEW')}"
+											   type="report"/>
+						<components:DKI_Button id="viewOrderSeals" height="100%" click="controller.viewSealWindowOO(event)" visible="{controller.isOrderNoEnabled}" includeInLayout="{controller.isOrderNoEnabled}"
 											   label="{resourceManager.getString('default','button.lbl.VIEW')}"
 											   type="report"/>
 					</s:HGroup>
