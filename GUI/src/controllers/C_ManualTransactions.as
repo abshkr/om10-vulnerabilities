@@ -15,6 +15,7 @@ package controllers
 	import dm.collections.dmManualTransactions;
 	import dm.models.dmManualTransaction;
 	import dm.models.dmModel;
+	import dm.remoteDataService;
 	import dm.utils.tools;
 	
 	import flash.display.DisplayObject;
@@ -60,6 +61,8 @@ package controllers
 	
 	import views.v_ManualTransactions;
 	import views.v_ManualTransactionsData;
+	import views.v_Seal_MT;
+	import views.v_Seal_OO;
 
 	public class C_ManualTransactions extends EventDispatcher
 	{
@@ -204,12 +207,140 @@ package controllers
 		private var CLNID__TRSF_TEMP               : int     = 11;
 		private var CLNID__TRSF_QTY_AMB            : int     = 12;
 		private var CLNID__TRSF_QTY_COR            : int     = 13;
-		private var CLNID__TRSF_LOAD_KG            : int     = 14;                       
+		private var CLNID__TRSF_LOAD_KG            : int     = 14;
+		
+		public var nextSealLoader:remoteDataService = new remoteDataService( "LoadScheduleService.getNextSeal", null, nextSealLoader_resultHandler, 1 );
+		public var tripSealLoader:remoteDataService = new remoteDataService( "LoadScheduleService.getTripSeal", null, tripSealLoader_resultHandler, 1 );
+		public var nextSealString:String = "";
+		public var tripSealString:String = "";
+		public var sealList:ArrayCollection = new ArrayCollection();
+		private var sealPopup:v_Seal_MT=new v_Seal_MT();
+		public var sealsPopup:ViewPopupDlg = new ViewPopupDlg( "Seal Numbers", sealPopup, afterCloseSealWindow );
+		private var sealPopupOO:v_Seal_OO=new v_Seal_OO();
+		public var sealsPopupOO:ViewPopupDlg = new ViewPopupDlg( "Seal Numbers", sealPopupOO, afterCloseSealWindowOO );
 		
 		
 		public function C_ManualTransactions()
 		{
 
+		}
+		
+		
+		public function nextSealLoader_resultHandler():void
+		{
+			this.nextSealString =  nextSealLoader.dataString;
+			//if ( this.isOrderNoEnabled ) 
+			//{
+			//	view.seal_range.text = nextSealString + '=??';
+			//}
+		}
+		
+		public function tripSealLoader_resultHandler():void
+		{
+			this.tripSealString =  tripSealLoader.dataString;
+			//if ( this.isTripNoEnabled ) 
+			{
+				view.seal_range.text = tripSealString;
+			}
+		}
+		/*
+		public function viewSealWindow2(event:MouseEvent):void
+		{
+			sealPopup = PopUpManager.createPopUp(view,v_Seal, true) as v_Seal;
+			PopUpManager.centerPopUp(sealPopup);
+			var trip:String="";
+			var supp:String="";
+			if ( view.new_supplier.selectedIndex >= 0 ) {
+				supp = view.new_supplier.selectedItem.CMPY_CODE;
+			}
+			if ( view.new_trip.selectedIndex >= 0 ) {
+				trip = view.new_trip.selectedItem.SHLS_TRIP_NO;
+			}
+			sealPopup.setParams(supp, trip);
+			sealPopup.loadStatus = 'F';
+			
+		}
+		*/
+		
+		public function viewSealWindow(event:MouseEvent)
+		{
+			this.sealsPopup.popupTitle = mx.resources.ResourceManager.getInstance().getString('default','m_seals');
+			//this.sealsPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+			
+			this.sealsPopup.parentWidth = 620;
+			this.sealsPopup.parentHeight = 640;
+			
+			trace ( "*******************Pop up a screen to manage partnership!");
+			sealsPopup.openDialog();
+			
+			var trip:String="";
+			var supp:String="";
+			if ( view.new_supplier.selectedIndex >= 0 ) {
+				supp = view.new_supplier.selectedItem.CMPY_CODE;
+			}
+			if ( view.new_trip.selectedIndex >= 0 ) {
+				trip = view.new_trip.selectedItem.SHLS_TRIP_NO;
+			}
+			
+			sealPopup.loadStatus = 'F';
+			sealPopup.setParams(supp, trip);
+		}
+		
+		public function afterCloseSealWindow():void
+		{
+			var trip:String="";
+			var supp:String="";
+			if ( view.new_supplier.selectedIndex >= 0 ) {
+				supp = view.new_supplier.selectedItem.CMPY_CODE;
+			}
+			if ( view.new_trip.selectedIndex >= 0 ) {
+				trip = view.new_trip.selectedItem.SHLS_TRIP_NO;
+			}
+			
+			if ( view.new_trans_type.selectedIndex == 0 ) {
+				this.tripSealLoader.service(trip, supp);
+			}
+		}
+		
+		public function viewSealWindowOO(event:MouseEvent)
+		{
+			this.sealsPopupOO.popupTitle = mx.resources.ResourceManager.getInstance().getString('default','m_seals');
+			//this.sealsPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+			
+			this.sealsPopupOO.parentWidth = 620;
+			this.sealsPopupOO.parentHeight = 640;
+			
+			trace ( "*******************Pop up a screen to manage partnership!");
+			sealsPopupOO.openDialog();
+			
+			var ord:String="";
+			var supp:String="";
+			if ( view.new_supplier.selectedIndex >= 0 ) {
+				supp = view.new_supplier.selectedItem.CMPY_CODE;
+			}
+			if ( view.new_order.selectedIndex >= 0 ) {
+				ord = view.new_order.selectedItem.ORDER_CUST_ORDNO;
+			}
+			
+			sealPopupOO.loadStatus = 'F';
+			sealPopupOO.setParams(supp, ord);
+		}
+		
+		public function afterCloseSealWindowOO():void
+		{
+			var ord:String="";
+			var supp:String="";
+			if ( view.new_supplier.selectedIndex >= 0 ) {
+				supp = view.new_supplier.selectedItem.CMPY_CODE;
+			}
+			if ( view.new_order.selectedIndex >= 0 ) {
+				ord = view.new_order.selectedItem.ORDER_CUST_ORDNO;
+			}
+			
+			if ( view.new_trans_type.selectedIndex == 1 ) {
+				view.seal_range.text = sealPopupOO.sealRange;
+				this.sealList.source = sealPopupOO.origData.source;
+			}
 		}
 		
 		/*
@@ -6523,6 +6654,7 @@ package controllers
 			trans.User_Comments = view.new_user_comments.text;
 			trans.Customer_Code = view.new_customer_cd.text;
 			trans.Seal_Range = view.seal_range.text;
+			trans.Seal_List = this.sealList.source;
 			
 			/* Transfers Info */
 			var trf_no:int = 0;
@@ -6748,6 +6880,7 @@ package controllers
 					params["customercode"]  = String(xmlHead.CUSTOMER_CODE);
 					params["tasref"]        = String(xmlHead.TAS_REF);
 					params["usercomment"]   = String(xmlHead.USER_COMMENTS);
+					params["sealrange"]     = String(xmlHead.SEAL_RANGE);
 					params["schdsubtype"]   = String(xmlHead.SCHD_SUB_TYPE);	  // Not displayed, internal use only.
 					params["repost"]        = String(xmlHead.TRANSACTION_REPOST); // Not displayed, internal use only.
 					
@@ -7033,6 +7166,7 @@ package controllers
 					// Set other items.
 					view.new_tas_ref.text = tools.getObjAttribute(params, "tasref", "");
 					view.new_user_comments.text = tools.getObjAttribute(params, "usercomment", "");
+					view.seal_range.text = tools.getObjAttribute(params, "sealrange", "");
 					var tmp:String;
 					tmp = tools.getObjAttribute(params, "starttime", "");
 					view.trans_st_dmy.selectedDate = new Date((tmp != "") ? tmp : getDefaultDate());
@@ -7040,6 +7174,13 @@ package controllers
 					view.trans_ed_dmy.selectedDate = new Date((tmp != "") ? tmp : getDefaultDate());
 				
 				}); // end of preCheck_StartupMT
+				
+				if ( view.new_trans_type.selectedIndex == 0 ) {
+					view.controller.tripSealLoader.service(trip_number, supp);
+				}
+				if ( view.new_trans_type.selectedIndex == 1 ) {
+					view.controller.nextSealLoader.service();
+				}
 			} // end of DM.ManualTransactions.resultHandler = function setFilters_callback()
 			
 			/* NOTE: HERE IS NOT THE LAST PROCESS OF THIS FUNCTION */

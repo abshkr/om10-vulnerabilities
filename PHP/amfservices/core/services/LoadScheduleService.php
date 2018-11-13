@@ -196,6 +196,46 @@ class LoadScheduleService
         }
         return $arr;
     }
+    
+    public function getNextSeal()
+    {
+        $sql = "SELECT SITE_NEXT_SEAL FROM SITE";
+		
+        $mydb = DB::getInstance();
+        $rows = $mydb->query($sql, "N");
+
+		if ( is_null($rows[0]->SITE_NEXT_SEAL) == TRUE || $rows[0]->SITE_NEXT_SEAL=="" )
+		{
+			$nextseal = '0000001';
+		}
+		else
+		{
+			$nextseal = $rows[0]->SITE_NEXT_SEAL;
+		}
+		
+		return($nextseal);
+    }
+    
+    public function getTripSeal($trip, $supp)
+    {
+        $mydb = DB::getInstance();
+		$sql = array();
+        $sql['sql_text'] = "SELECT s.SHLS_SEAL_NO FROM SCHEDULE s WHERE s.SHLS_TRIP_NO=:trip_no and s.SHLS_SUPP=:supp_code ";
+		$sql['sql_data'] = array( $trip, $supp );
+		
+        $rows = $mydb->query($sql, "N");
+
+		if ( is_null($rows[0]->SHLS_SEAL_NO) == TRUE || $rows[0]->SHLS_SEAL_NO=="" )
+		{
+			$tripseal = '';
+		}
+		else
+		{
+			$tripseal = $rows[0]->SHLS_SEAL_NO;
+		}
+		
+		return($tripseal);
+    }
 
 }
 ?>

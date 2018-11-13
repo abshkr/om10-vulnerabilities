@@ -23,6 +23,8 @@
 			import components.BusyIndicator;
 			import components.MessageDialog;
 			
+			import dm.remoteDataService;
+			
 			import flash.globalization.LocaleID;
 			
 			import mx.controls.Alert;
@@ -58,8 +60,19 @@
 			
 			private var busy:BusyIndicator = new BusyIndicator();
 			
+			[Bindable] private var isCustomerInFilter:Boolean = false;
+			[Bindable] private var isCarrierInFilter:Boolean = false;
+			[Bindable] private var reportFilterList:remoteDataService = new remoteDataService( "ListLibraryService.lookupReportFilter", null, null );
+			[Bindable] private var customerList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCustomer", null, null );
+			[Bindable] private var carrierList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCompany", null, null );
+			
+			
 			protected function widget_creationCompleteHandler(event:FlexEvent):void
 			{
+				this.reportFilterList.service();
+				this.customerList.service( "-1" );
+				this.carrierList.service( 2 );
+				
 				this.jrpt_range_end.selectedDate = new Date();
 				if (this.currentState == "normal")
 				{
@@ -105,7 +118,23 @@
 				}
 				
 				var rptString:String = getAllRptsByCompanyResult.lastResult[jrpt_type.selectedIndex].jasp_file;
-				getReportFiltersResult.token = rptsService.getReportFilters(rptString);
+				//getReportFiltersResult.token = rptsService.getReportFilters(rptString);
+				
+				this.jrpt_carrier.selectedIndex = -1;
+				this.jrpt_cust.selectedIndex = -1;
+				this.isCarrierInFilter = false;
+				this.isCustomerInFilter = false;
+				for each ( var o:Object in this.reportFilterList.source )
+				{
+					if ( o.jasper_file == rptString && o.argument_name == "CARR_CODE" )
+					{
+						this.isCarrierInFilter = true;
+					}
+					if ( o.jasper_file == rptString && o.argument_name == "CUST_CODE" )
+					{
+						this.isCustomerInFilter = true;
+					}
+				}
 				
 				/* if (getAllRptsByCompanyResult.lastResult[jrpt_type.selectedIndex].rpt_is_closeout == '1')
 				{
@@ -256,6 +285,28 @@
 				}
 				param_string += "&startdate=" + param.startdate;
 				param_string += "&enddate=" + param.enddate;
+				
+				//REQUEST: output=csv&company=ANY&report=Carrier_Liftings_By_Customer.jrxml&carrier=ANY&customer=ANY&startdate=2018-11-08%2015%3A20%3A21&enddate=2018-11-09%2015%3A20%3A21&
+				var carr_code:String='ANY';
+				if( this.isCarrierInFilter == true )
+				{
+					if ( this.jrpt_carrier.selectedIndex >= 0 )
+					{
+						carr_code = carrierList[jrpt_carrier.selectedIndex].cmpy_code;
+					}
+				}
+				param_string += "&carrier=" + carr_code;
+				
+				var cust_code:String='ANY';
+				if( this.isCustomerInFilter == true )
+				{
+					if ( this.jrpt_cust.selectedIndex >= 0 )
+					{
+						cust_code = customerList[jrpt_cust.selectedIndex].cust_cmpy_code;
+					}
+				}
+				param_string += "&customer=" + cust_code;
+				
 				
 				_url = "/phpwrapper/jasper_reports.php";	
 				_url += "?output=" + _output_type;
@@ -479,27 +530,7 @@
 										labelField="rpt_cmpy_name" 
 										prompt="{resourceManager.getString('default','SELECT')+' '+resourceManager.getString('default','JRPT_COMPANY')}"/>
 					</s:HGroup>
-					<!--<s:Spacer height="{spaceHeight}" />
-					<s:HGroup>
-						<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','JRPT_CUSTOMER')}" verticalAlign="middle"/>
-						<components:DKI_DropDownList id="jrpt_cust" contentBackgroundAlpha="0.85" 
-													 width="{fieldWidth}" height="{fieldHeight}" 
-													 change="cmpy_changeHandler(event)"
-													 dataProvider="{lookupCompanysByReports.lastResult}"
-													 labelField="rpt_cmpy_name" 
-													 prompt="{resourceManager.getString('default','SELECT')+' '+resourceManager.getString('default','JRPT_CUSTOMER')}"/>
-					</s:HGroup>
 					<s:Spacer height="{spaceHeight}" />
-					<s:HGroup>
-						<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','JRPT_CARRIER')}" verticalAlign="middle"/>
-						<components:DKI_DropDownList id="jrpt_carrier" contentBackgroundAlpha="0.85" 
-													 width="{fieldWidth}" height="{fieldHeight}" 
-													 change="cmpy_changeHandler(event)"
-													 dataProvider="{lookupCompanysByReports.lastResult}"
-													 labelField="rpt_cmpy_name" 
-													 prompt="{resourceManager.getString('default','SELECT')+' '+resourceManager.getString('default','JRPT_CARRIER')}"/>
-					</s:HGroup>
-					<s:Spacer height="{spaceHeight}" />-->
 					<s:HGroup>
 						<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','JRPT_REPORT')}" verticalAlign="middle"/>
 						<components:DKI_DropDownList id="jrpt_type" contentBackgroundAlpha="0.85" 
@@ -510,6 +541,24 @@
 										labelField="rpt_name" 
 										prompt="{resourceManager.getString('default','SELECT')+' '+resourceManager.getString('default','JRPT_REPORT')}"/>
 					</s:HGroup>
+					
+					<s:HGroup visible="{isCustomerInFilter}" includeInLayout="{isCustomerInFilter}">
+						<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','JRPT_CUSTOMER')}" verticalAlign="middle"/>
+						<components:DKI_DropDownList id="jrpt_cust" contentBackgroundAlpha="0.85" 
+													 width="{fieldWidth}" height="{fieldHeight}" 
+													 dataProvider="{customerList}"
+													 labelField="cust_desc" 
+													 prompt="{resourceManager.getString('default','SELECT')+' '+resourceManager.getString('default','JRPT_CUSTOMER')}"/>
+					</s:HGroup>
+					<s:HGroup visible="{isCarrierInFilter}" includeInLayout="{isCarrierInFilter}">
+						<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','JRPT_CARRIER')}" verticalAlign="middle"/>
+						<components:DKI_DropDownList id="jrpt_carrier" contentBackgroundAlpha="0.85" 
+													 width="{fieldWidth}" height="{fieldHeight}" 
+													 dataProvider="{carrierList}"
+													 labelField="cmpy_desc" 
+													 prompt="{resourceManager.getString('default','SELECT')+' '+resourceManager.getString('default','JRPT_CARRIER')}"/>
+					</s:HGroup>
+					
 					<s:Spacer height="{spaceHeight}" />
 					<s:HGroup includeIn="widget, normal" depth="2">
 						<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','JRPT_RANGE')}" verticalAlign="middle"/>
@@ -611,7 +660,7 @@
 					
 					<s:HGroup includeIn="widget, normal">
 						<s:Label id="tmpLbl" width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','global.lbl.reportoutput')}" verticalAlign="middle"/>
-						<s:BorderContainer width="{bc.width}" height="{labelHeight*2.5}" backgroundAlpha="0.0"
+						<s:BorderContainer width="{bc.width}" height="{labelHeight*2}" backgroundAlpha="0.0"
 										   borderColor="#8F8F8F" borderVisible="true" cornerRadius="8">
 							<s:layout>
 								<s:HorizontalLayout gap="20" paddingBottom="5" paddingLeft="6" paddingRight="6" paddingTop="5"/>
