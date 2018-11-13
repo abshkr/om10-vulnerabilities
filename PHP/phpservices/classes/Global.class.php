@@ -35,7 +35,7 @@ define ('RETURN_FAIL', 'Fail');
 define ('DB_RETURN_FAIL', 'Fail_DB');
 
 /* GlogbalCfg.php defines DEBUG as well but GlogbalCfg.php is rarely included (require_once()) in other files */
-define ('DEBUG', 'YES'); /* YES or NO */
+define ('DEBUG', 'NO'); /* YES or NO */
 /*============================================================================*/
 /* define the OS for new line character                                       */
 if(!defined('OS')) define('OS','linux'); /* windows or linux */
