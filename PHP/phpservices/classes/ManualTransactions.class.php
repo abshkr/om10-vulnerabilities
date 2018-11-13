@@ -2268,6 +2268,17 @@ class ManualTransactions
 
                             for ($i = 0; $i < count($para_trans->Seal_List); ++ $i)
                             {
+                                $sql = "SELECT COUNT(*) CNT FROM SEAL WHERE SEAL_NR = '" .
+                                    $para_trans->Seal_List[$i]->seal_nr . "'";
+                                $rows = $this->db_conn->query($sql);
+                                $cnt = $rows[0]->COUNT;
+                                if ($cnt > 0)
+                                {
+                                    logMe("Seal number already exist:" .
+                                        $para_trans->Seal_List[$i]->seal_nr);
+                                    continue;
+                                }
+
                                 $sql = "INSERT INTO SEAL " .
                                     "(SEAL_NR, SEALSPEC_SHLSTRIP, SEALSPEC_SHLSSUPP, " .
                                     "SEAL_CMPT_NR, SEAL_PREFIX, SEAL_SUFFIX) " .
