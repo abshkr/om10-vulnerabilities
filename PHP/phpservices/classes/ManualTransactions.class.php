@@ -2196,10 +2196,12 @@ class ManualTransactions
             $client->send($auth_req);
             $response = $client->get_repond();
             
-            if (substr_compare($response, "OBP_AUTH_SPEC", 48, 13) != 0)
+            if ($response == "" || 
+                strpos($response, "AUTH FAILED") !== false ||
+                substr_compare($response, "OBP_AUTH_SPEC", 48, 13) != 0)
             {
                 $result_detail->result_code = -1;
-                $result_detail->result_string = substr($response, 82, 22);
+                $result_detail->result_string = $response;
                 return $result_detail;
             }    
             /* 2. Trasaction dets*/
@@ -2232,10 +2234,56 @@ class ManualTransactions
                             $sql = "UPDATE LOADS SET LD_SEAL_NO = '" . $para_trans->Seal_Range .
                                 "' WHERE LOAD_ID = (SELECT TRSALDID_LOAD_ID FROM
                                  TRANSACTIONS WHERE TRSA_ID = " . $trans_id . ")";
+
                             if ($this->db_conn->update($sql) != RETURN_OK)
                             {
                                 logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
                             }
+
+                            $sql = "SELECT SHLS_TRIP_NO, SHLS_SUPP " .  
+                                "FROM  TRANSACTIONS, SCHEDULE " .
+                                "WHERE SHLSLOAD_LOAD_ID = TRSALDID_LOAD_ID AND TRSA_ID = $trans_id";
+                            // logMe($sql, MANUAL_TRANSACTION);
+                            $rows = $this->db_conn->query($sql);
+                            
+                            $trip = $rows[0]->SHLS_TRIP_NO;
+                            $supplier = $rows[0]->SHLS_SUPP;
+
+                            $sql = "UPDATE SCHEDULE SET SHLS_SEAL_NO = '" .
+                                $para_trans->Seal_Range . "' WHERE SHLS_TRIP_NO = " .
+                                $trip . " AND SHLS_SUPP = '" . $supplier . "'";
+                            if ($this->db_conn->update($sql) != RETURN_OK)
+                            {
+                                logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
+                            }
+
+                            $sql = "DELETE FROM SEAL " . 
+                                "WHERE SEALSPEC_SHLSTRIP = $trip " .
+                                "AND SEALSPEC_SHLSSUPP = '$supplier'";
+                            logMe($sql, MANUAL_TRANSACTION);
+                            if ($this->db_conn->delete($sql) != RETURN_OK)
+                            {
+                                logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
+                            }
+
+                            for ($i = 0; $i < count($para_trans->Seal_List); ++ $i)
+                            {
+                                $sql = "INSERT INTO SEAL " .
+                                    "(SEAL_NR, SEALSPEC_SHLSTRIP, SEALSPEC_SHLSSUPP, " .
+                                    "SEAL_CMPT_NR, SEAL_PREFIX, SEAL_SUFFIX) " .
+                                    "VALUES ('" .
+                                    $para_trans->Seal_List[$i]->seal_nr . "', " .
+                                    $trip . ", '" . $supplier . "', " . 
+                                    $para_trans->Seal_List[$i]->seal_cmpt_nr . ", '" .
+                                    $para_trans->Seal_List[$i]->seal_prefix . "', '" .
+                                    $para_trans->Seal_List[$i]->seal_suffix . "')";
+                                logMe($sql, MANUAL_TRANSACTION);
+                                if ($this->db_conn->insert($sql) != RETURN_OK)
+                                {
+                                    logMe("SQL fails:" . $sql, MANUAL_TRANSACTION);
+                                }
+                            }
+
                             $this->db_conn->commit();                            
                         }
                         else
