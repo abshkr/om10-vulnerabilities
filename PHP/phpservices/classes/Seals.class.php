@@ -48,9 +48,32 @@ class SealsClass
     {
         $mydb = DB::getInstance();
         
+        $sql = "SELECT SEALSPEC_SHLSTRIP, SEALSPEC_SHLSSUPP FROM SEAL WHERE SEAL_NR = '$seal'";
+        $rows = $mydb->query($sql);
+        $trip = $rows[0]->SEALSPEC_SHLSTRIP;
+        $supplier = $rows[0]->SEALSPEC_SHLSSUPP;
+
         $sql = "DELETE FROM SEAL WHERE SEAL_NR = '$seal'";
         $rows = $mydb->delete($sql);
-        return "OK";
+
+        //return "OK";                                
+        $fields = array(
+            'trip'=>urlencode($trip),
+            'supplier'=>urlencode($supplier),
+            'cmd'=>'reassemble'
+        );
+        $thunkObj = new Thunk($this->host, $this->cgi, $fields);
+        $thunkObj->writeToClient($this->cgi);
+
+        $response = $thunkObj->read();
+        $patternSuccess = "OK";
+        $isFound = strstr($response, $patternSuccess);
+        if ($isFound == false) {
+                logMe("reassemble seal failed!!!",EQUIPLISTCLASS);
+                return "ERROR";
+        }
+        logMe("reassemble seal succeeded!!!",EQUIPLISTCLASS);
+        return "OK";   
     }
 
     public function deallocateAllSeal($trip, $supplier)
