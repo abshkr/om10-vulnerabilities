@@ -223,12 +223,12 @@ class ListLibraryService
         $sql = array();
         $sql['sql_text'] = "
             select 
-                cust.CUST_ACCT as CUST_ACNT 
+                cust.CUST_CODE as CUST_ACNT 
                 , cust.CUST_SUPP as CUST_SUPP_CODE
                 , scmp.CMPY_NAME as CUST_SUPP_NAME
                 , cust.CUST_CODE as CUST_CMPY_CODE
                 , ccmp.CMPY_NAME as CUST_CMPY_NAME
-                , cust.CUST_ACCT||' - '||ccmp.CMPY_NAME as CUST_DESC
+                , cust.CUST_CODE||' - '||ccmp.CMPY_NAME as CUST_DESC
                 , 2 ROWTMP
             from 
                 CUSTOMER cust
