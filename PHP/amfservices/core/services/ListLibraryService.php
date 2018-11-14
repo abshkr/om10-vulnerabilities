@@ -229,6 +229,7 @@ class ListLibraryService
                 , cust.CUST_CODE as CUST_CMPY_CODE
                 , ccmp.CMPY_NAME as CUST_CMPY_NAME
                 , cust.CUST_ACCT||' - '||ccmp.CMPY_NAME as CUST_DESC
+                , 2 ROWTMP
             from 
                 CUSTOMER cust
                 , COMPANYS scmp
@@ -237,7 +238,15 @@ class ListLibraryService
                 cust.CUST_SUPP = scmp.CMPY_CODE 
                 and cust.CUST_CODE = ccmp.CMPY_CODE
                 and ('-1'=:supplier or CUST_SUPP=:supplier) 
-            order by CUST_CMPY_NAME         
+            UNION
+            SELECT 'ANY' CUST_ACNT
+                , 'ANY' CUST_SUPP_CODE
+                , 'ALL' CUST_SUPP_NAME
+                , 'ANY' CUST_CMPY_CODE
+                , 'ALL' CUST_CMPY_NAME
+                , 'ANY - ALL' CUST_DESC, 1 ROWTMP
+            FROM DUAL
+            ORDER BY ROWTMP, CUST_CMPY_NAME ASC
             ";
         $sql['sql_data'] = array( $supplier );
             
