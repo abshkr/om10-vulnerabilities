@@ -63,9 +63,40 @@
 			[Bindable] private var isCustomerInFilter:Boolean = false;
 			[Bindable] private var isCarrierInFilter:Boolean = false;
 			[Bindable] private var reportFilterList:remoteDataService = new remoteDataService( "ListLibraryService.lookupReportFilter", null, null );
-			[Bindable] private var customerList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCustomer", null, null );
-			[Bindable] private var carrierList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCompany", null, null );
+			[Bindable] private var customerList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCustomer", null, lookupCustomer_resultHandler );
+			[Bindable] private var carrierList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCompany", null, lookupCarrier_resultHandler );
 			
+			
+			protected function lookupCarrier_resultHandler():void
+			{
+				// CMPY_CODE, CMPY_NAME, CMPY_TYPE, (CMPY_CODE||' - '||CMPY_NAME) as CMPY_DESC
+				var o:Object=new Object();
+				o.cmpy_code = 'ANY';
+				o.cmpy_name = resourceManager.getString('default','global.lbl.ALL');
+				o.cmpy_type = 0;
+				o.cmpy_desc = resourceManager.getString('default','global.lbl.ALL');
+				this.carrierList.addItemAt(o, 0);
+			}
+			
+			protected function lookupCustomer_resultHandler():void
+			{
+				/*
+				cust.CUST_ACCT as CUST_ACNT 
+					, cust.CUST_SUPP as CUST_SUPP_CODE
+					, scmp.CMPY_NAME as CUST_SUPP_NAME
+					, cust.CUST_CODE as CUST_CMPY_CODE
+					, ccmp.CMPY_NAME as CUST_CMPY_NAME
+					, cust.CUST_ACCT||' - '||ccmp.CMPY_NAME as CUST_DESC
+				*/
+				var o:Object=new Object();
+				o.cust_acnt = 'ANY';
+				o.cust_supp_code = 'ANY';
+				o.cust_supp_name = resourceManager.getString('default','global.lbl.ALL');
+				o.cust_cmpy_code = 'ANY';
+				o.cust_cmpy_name = resourceManager.getString('default','global.lbl.ALL');
+				o.cust_desc = resourceManager.getString('default','global.lbl.ALL');
+				this.customerList.addItemAt(o, 0);
+			}
 			
 			protected function widget_creationCompleteHandler(event:FlexEvent):void
 			{
@@ -129,10 +160,12 @@
 					if ( o.jasper_file == rptString && o.argument_name == "CARR_CODE" )
 					{
 						this.isCarrierInFilter = true;
+						this.jrpt_carrier.selectedIndex = 0;
 					}
 					if ( o.jasper_file == rptString && o.argument_name == "CUST_CODE" )
 					{
 						this.isCustomerInFilter = true;
+						this.jrpt_cust.selectedIndex = 0;
 					}
 				}
 				
