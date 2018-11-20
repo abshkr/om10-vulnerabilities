@@ -48,6 +48,8 @@
 					case "SEAL_NUMBER":
 					case "HOT_LITRE_SFL_FACTOR":
 					case "SITE_MAX_TAGS":
+					case "SAFEFILL_TOLERANCE_QTY":
+					case "SAFEFILL_TOLERANCE_PERCENT":
 						return false;
 						break;
 					default:
@@ -106,6 +108,8 @@
 					case "SITE_AUTO_COMPLETE_TRANSACTOIN":
 					case "HOT_LITRE_SFL_FACTOR":
 					case "SITE_MAX_TAGS":
+					case "SAFEFILL_TOLERANCE_QTY":
+					case "SAFEFILL_TOLERANCE_PERCENT":
 						return false;
 						break;
 					default:
@@ -270,6 +274,8 @@
 					data.config_key == "SEAL_PREFIX"||
 					data.config_key == "HOT_LITRE_SFL_FACTOR"||
 					data.config_key == "SITE_MAX_TAGS"||
+					data.config_key == "SAFEFILL_TOLERANCE_QTY"||
+					data.config_key == "SAFEFILL_TOLERANCE_PERCENT"||
 					data.config_key == "SEAL_NUMBER";
 			}
 			[Bindable (event="mcDataUpdate")]
@@ -283,6 +289,8 @@
 				return 	data.config_key == "SEAL_POSTFIX" ? "a-zA-Z0-9" :
 						data.config_key == "SEAL_PREFIX"  ? "a-zA-Z0-9" :
 						data.config_key == "HOT_LITRE_SFL_FACTOR"  ? "0-9." :
+						data.config_key == "SAFEFILL_TOLERANCE_PERCENT"  ? "0-9." :
+						data.config_key == "SAFEFILL_TOLERANCE_QTY"  ? "0-9" :
 						data.config_key == "SITE_MAX_TAGS"  ? "0-9" :
 						data.config_key == "SEAL_NUMBER"  ? "0-9" : "";
 				

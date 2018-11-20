@@ -54,5 +54,5 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:ModuleLoader id="ldr" minWidth="650" minHeight="500" ready="moduleReadyHandler(event)"  preinitialize="ldr.applicationDomain=ApplicationDomain.currentDomain"/>
+	<s:ModuleLoader id="ldr" minWidth="650" minHeight="540" ready="moduleReadyHandler(event)"  preinitialize="ldr.applicationDomain=ApplicationDomain.currentDomain"/>
 </s:Panel>

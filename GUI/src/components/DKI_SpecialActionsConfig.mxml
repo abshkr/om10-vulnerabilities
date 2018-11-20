@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="1200" height="540"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="1200" height="580"
 		 xmlns:components="components.*" xmlns:companiesservice="services.companiesservice.*"
 		 initialize="panel1_initializeHandler(event)"
 		 skinClass="skins.UserProfileSkin" title="Special Actions">
@@ -57,6 +57,9 @@
 			[Bindable] private var canValidateSchedule:Boolean = false;
 			[Bindable] private var canValidateScheduleMaxWeight:Boolean = false;
 			[Bindable] private var canDrawerAuthAtGate:Boolean = false;
+			
+			[Bindable] private var canCheckSafefillTolerance:Boolean = false;
+			[Bindable] private var canAutoCompleteNPS:Boolean = false;
 			
 			[Bindable] private var linkToSecondDrawerFlag:Boolean = false;
 			[Bindable] private var linkedSecondDrawer:String = "";
@@ -130,6 +133,15 @@
 							{
 								this.linkedSecondDrawer = "";
 							}
+						}
+						
+						if ( o['config_key'] == 'SAFEFILL_TOLERANCE_CHECK' )
+						{
+							canCheckSafefillTolerance = o['config_value']=='Y'?true:false;
+						}
+						if ( o['config_key'] == 'AUTO_COMPLETE_NON_PRESCHD_LOADS' )
+						{
+							canAutoCompleteNPS = o['config_value']=='Y'?true:false;
 						}
 					}
 				}
@@ -448,6 +460,16 @@
 					obj['config_comment'] = 'Linked Drawer Company';
 					replaceCompanyConfigAction.service( obj );
 				}
+				
+				obj['config_key'] = 'SAFEFILL_TOLERANCE_CHECK';
+				obj['config_value'] = this.canCheckSafefillTolerance?'Y':'N';
+				obj['config_comment'] = 'Do safefill tolerance check for this company (Y/N)';
+				replaceCompanyConfigAction.service( obj );
+				
+				obj['config_key'] = 'AUTO_COMPLETE_NON_PRESCHD_LOADS';
+				obj['config_value'] = this.canAutoCompleteNPS?'Y':'N';
+				obj['config_comment'] = 'Auto-complete non prescheduled loads (Y/N)';
+				replaceCompanyConfigAction.service( obj );
 				
 			}
 			
@@ -1340,6 +1362,10 @@
 					<components:DKI_ToggleSwitch id="autoComplete"/>
 				</s:HGroup>
 				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.autocompleteloadsnps')}"  width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="autoCompleteNPS" selected="@{canAutoCompleteNPS}"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
 					<s:Label text="{resourceManager.getString('default','specialactions.lbl.ignorecarrier')}"  width="{labelWidth}" paddingRight="5"/>
 					<components:DKI_ToggleSwitch id="ignoreOrderLoads"/>
 				</s:HGroup>
@@ -1380,6 +1406,10 @@
 				<s:HGroup width="100%" height="25" visible="{!global.OMLITE}" includeInLayout="{!global.OMLITE}">
 					<s:Label text="{resourceManager.getString('default','specialactions.lbl.blendtolerancecheck')}" width="{labelWidth}" paddingRight="5"/>
 					<components:DKI_ToggleSwitch id="doBlendTolleranceCheck"/>
+				</s:HGroup>
+				<s:HGroup width="100%" height="25">
+					<s:Label text="{resourceManager.getString('default','specialactions.lbl.safefilltolerancecheck')}"  width="{labelWidth}" paddingRight="5"/>
+					<components:DKI_ToggleSwitch id="doSafefillTolleranceCheck" selected="@{canCheckSafefillTolerance}"/>
 				</s:HGroup>
 				<s:HGroup width="100%" height="25">
 					<s:Label text="{resourceManager.getString('default','specialactions.lbl.loadsstarted')}" width="{labelWidth}" paddingRight="5"/>

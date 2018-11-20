@@ -392,6 +392,8 @@
 				var o:Object = new Object();
 				var tempToken:AsyncToken;
 				var newArray:Array = new Array();
+				var errMsg:String = "";
+				var errIndex:int = 0;
 				for(var i:int = 0; i < dataGroup.numElements; i++)
 				{
 					var renderer:SecurityConfigRenderer = dataGroup.getElementAt(i) as SecurityConfigRenderer;
@@ -488,12 +490,54 @@
 						var sflFactor:Number = Number(o.config_value);
 						if ( sflFactor < 0 || sflFactor > 1 )
 						{
-							var errorBox:MessageDialog = new MessageDialog( o.config_comment );
-							return;
+							if ( errMsg.length > 0 ) {
+								errMsg += '\n';
+							}
+							errIndex += 1;
+							errMsg += String(errIndex) + '. ' + o.config_comment;
 						}
 					}
 					
+					if ( o.config_key=="SAFEFILL_TOLERANCE_QTY" || o.config_key=="SAFEFILL_TOLERANCE_PERCENT")
+					{
+						o.config_comment = renderer.siteConfigComment.text;
+						o.config_value = renderer.siteConfigText.text;
+					}
+					
+					if(o.config_key == "SAFEFILL_TOLERANCE_QTY" )
+					{
+						var sflTolQty:Number = Number(o.config_value);
+						if ( sflTolQty < 0 || sflTolQty > 10000 )
+						{
+							if ( errMsg.length > 0 ) {
+								errMsg += '\n';
+							}
+							errIndex += 1;
+							errMsg += String(errIndex) + '. ' + o.config_comment;
+						}
+					}
+					
+					if(o.config_key == "SAFEFILL_TOLERANCE_PERCENT" )
+					{
+						var sflTolPer:Number = Number(o.config_value);
+						if ( sflTolPer < 0 || sflTolPer > 100 )
+						{
+							if ( errMsg.length > 0 ) {
+								errMsg += '\n';
+							}
+							errIndex += 1;
+							errMsg += String(errIndex) + '. ' + o.config_comment;
+						}
+					}
+					
+					if ( errMsg.length > 0 ) {
+						continue;
+					}
 					updateSiteConfigService.token = siteConfigService.update(o);
+				}
+				if ( errMsg.length > 0 ) {
+					var errorBox:MessageDialog = new MessageDialog( errMsg, 500 );
+					return;
 				}
 			}
 			
