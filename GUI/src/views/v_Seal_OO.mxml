@@ -45,13 +45,14 @@
 			
 			public var sealRange:String="";
 			protected var showMessage:Boolean=false;
-			
+			public var sealPrefix:String="";
+			public var sealSuffix:String="";
 
 			
 			public function setParams(supplier:String, orderNumber:String):void{
 				
-				_supplier = supplier;
-				_orderNumber = orderNumber;
+				sealPrefix = global.getValueFromSiteConfigSettings("SEAL_PREFIX");
+				sealSuffix = global.getValueFromSiteConfigSettings("SEAL_POSTFIX");
 				
 				refresh();
 				
@@ -201,8 +202,8 @@
 				for (var i:int=0; i<len; i++ )
 				{
 					var o:Object = new Object();
-					o.seal_prefix = "";
-					o.seal_suffix = "";
+					o.seal_prefix = this.sealPrefix;
+					o.seal_suffix =this.sealSuffix;
 					o.seal_cmpt_nr = i+1;
 					o.seal_nr = this._nextSeal;
 					this._nextSeal = tools.increaseString(this._nextSeal);
@@ -262,6 +263,9 @@
 		
 			
 			protected function onCreate(event:FlexEvent):void{
+				sealPrefix = global.getValueFromSiteConfigSettings("SEAL_PREFIX");
+				sealSuffix = global.getValueFromSiteConfigSettings("SEAL_POSTFIX");
+				
 				//this.title = resourceManager.getString('default','m_seals');
 				addEventListener(CloseEvent.CLOSE,function(e:Event):void{closeHandler(null);});
 			}
