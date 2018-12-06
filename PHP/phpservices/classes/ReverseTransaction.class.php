@@ -1136,6 +1136,20 @@ class ReverseTransactionClass
     {
         logMe("do_reverse START", REVERSE_TRANSACTION);
 
+        $sql = "SELECT LOAD_REVERSE_FLAG FROM LOADS, SCHEDULE
+            WHERE  SHLSLOAD_LOAD_ID = LOAD_ID
+                AND SHLS_SUPP = '" . $supplier . "' AND SHLS_TRIP_NO = " . $trip_id;
+                    
+        $result = $this->db_conn->query($sql);
+        
+        $result_detail = new stdClass();
+        if ($result[0]->LOAD_REVERSE_FLAG == 1)
+        {
+            $result_detail->result_code = -1;
+            $result_detail->result_string = "Trip already reversed, cannot do it again";            
+            return $result_detail;
+        }
+
         $tran_det = $this->populate_reverse_det($trip_id, $supplier);
         
         $client = new socket_client($this->bay_code);
@@ -1143,7 +1157,6 @@ class ReverseTransactionClass
         $response = $client->get_repond();
 
         logMe("Reverse response:" . $response, REVERSE_TRANSACTION);
-        $result_detail = new stdClass();
             
         if (substr_compare($response, "OK", 12, 2) == 0)
         {
