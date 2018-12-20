@@ -172,6 +172,9 @@
 			[Bindable] private var refTempC:Number;
 			[Bindable] private var refTempF:Number;
 			[Bindable] private var refTempTextC:String;
+			[Bindable] private var apiRange:String;
+			[Bindable] private var apiLow:Number;
+			[Bindable] private var apiHigh:Number;
 			[Bindable] private var refTempTextF:String;
 			[Bindable] private var refTempText:String;
 			[Bindable] private var stdTempC60F:Number=15.5556;
@@ -560,7 +563,8 @@
 						this.adjustRefTemperature( defaultRefTempC, 0 );	
 					}
 					*/
-					this.adjustRefTemperature( defaultRefTempC, 0 );	
+					this.adjustRefTemperature( defaultRefTempC, 0 );
+					this.getAPIRange(dataGrid.selectedItem.tank_bclass_dens_lo, dataGrid.selectedItem.tank_bclass_dens_hi)
 					
 					// set validation required flags
 					this.tank_location.required = false;
@@ -1657,7 +1661,7 @@
 				{
 					var api:Number = Number(this.tank_api.text);
 					
-					if ( !( int(api) >= 0 && api <= 85 ) )
+					if ( !( int(api) >= this.apiHigh && api <= this.apiLow ) )
 					{
 						index += 1;
 						errors += String(index) + ". " + resourceManager.getString('default','ALERT__TANK_API_OUTLIMIT') + "\n";
@@ -2714,6 +2718,40 @@
 				
 				return src;
 			}
+			
+			protected function getAPIRange(low, high) {
+				
+	
+					
+				if (low <= 653) {
+					var lowAPI = (141.5 / (653 / 999.012)) - 131.5
+					if (lowAPI >= 85) {
+						lowAPI = 85
+					}
+						
+				} else {
+					var lowSG = low / 999.012
+					var lowAPI = (141.5 / lowSG) - 131.5 
+				}
+				
+				if (high > 1075) {
+					var highAPI = (141.5 / (1074 / 999.012)) - 131.5 
+					if (highAPI <= 1) {
+						highAPI = 1
+					}
+					
+				} else {
+					var highSG = high / 999.012
+					var highAPI = (141.5 / highSG) - 131.5
+				}
+				
+				this.apiLow = Math.round(lowAPI)
+				this.apiHigh = Math.round(highAPI)
+				this.apiRange = '['+highAPI.toFixed(2)+"°"+' - '+lowAPI.toFixed(2)+"°"+']'
+				
+				
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -3174,8 +3212,8 @@
 														   change="density_changeHandler(event)" 
 														   required="true" validationType="numeric_non_negative" validationGroup="{vg}" automationName="{resourceManager.getString('default','TANK_API')}" 
 														   />
-							<s:Label width="{labelWidthPostfix}" height="{labelHeight+4}" 
-									 text="@60ºF" verticalAlign="middle"/>
+							<s:Label width="{labelWidthPostfix}" height="{labelHeight+4}" lineBreak="explicit" 
+									 text="{this.apiRange + '\n@60ºF'}" verticalAlign="middle"/>
 						</s:HGroup>
 						
 					</s:HGroup>
