@@ -1,0 +1,20 @@
+@font-face {
+  font-family: "Economica";
+  src: url("../fonts/economica.woff2") format("woff2");
+}
+
+body {
+  font-family: "Economica", sans-serif !important;
+  background-color: #fff;
+  margin: 0px;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  transition: all 0.3s;
+  background-color: #538aef5b;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #538aef;
+}

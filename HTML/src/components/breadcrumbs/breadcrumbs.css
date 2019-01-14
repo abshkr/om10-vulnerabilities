@@ -1,0 +1,14 @@
+.breadcrumbs {
+  padding-top: 95px;
+  padding-left: 30px;
+  color: #538aef;
+  font-size: 30px;
+  font-weight: bold;
+  user-select: none;
+  transition: all 0.3s;
+}
+
+.breadcrumbs span {
+  color: #c9cccc;
+  transition: all 0.3s;
+}
