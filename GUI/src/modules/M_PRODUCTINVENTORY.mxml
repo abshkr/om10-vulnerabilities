@@ -16,7 +16,7 @@
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
 			
-			[Bindable] private var _url:String = "/phpwrapper/prod_inv.php";
+			[Bindable] private var _url:String = "/html/product-inventory";
 			
 			private var callback:Function;
 			

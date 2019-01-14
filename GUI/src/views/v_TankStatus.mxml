@@ -173,8 +173,8 @@
 			[Bindable] private var refTempF:Number;
 			[Bindable] private var refTempTextC:String;
 			[Bindable] private var apiRange:String;
-			[Bindable] private var apiLow:Number;
-			[Bindable] private var apiHigh:Number;
+			[Bindable] private var apiLow:String;
+			[Bindable] private var apiHigh:String;
 			[Bindable] private var refTempTextF:String;
 			[Bindable] private var refTempText:String;
 			[Bindable] private var stdTempC60F:Number=15.5556;
