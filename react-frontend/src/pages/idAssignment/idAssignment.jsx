@@ -29,6 +29,11 @@ class IdAssignment extends Component {
     this.setState({ filtered, value });
   };
 
+  instantSearch = e => {
+    const filtered = Search(e, this.state.data);
+    this.setState({ filtered, value: e });
+  };
+
   componentDidMount() {
     this.fetch();
   }
@@ -39,7 +44,7 @@ class IdAssignment extends Component {
     return (
       <Page page={"Access Control"} name={"ID Assignment"} isLoading={isLoading} block={true}>
         <Filter value={value} search={this.searchObjects} />
-        <Table data={!!filtered ? filtered : data} update={this.fetch} />
+        <Table data={!!filtered ? filtered : data} update={this.fetch} search={this.instantSearch} />
       </Page>
     );
   }

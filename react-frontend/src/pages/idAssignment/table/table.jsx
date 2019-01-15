@@ -3,15 +3,16 @@ import { Icon, Drawer, Button } from "antd";
 import { Check, Lock } from "../../../constants/colors";
 import Generate from "../../../utils/generateOptions";
 import DataTable from "../../../components/table";
+import IButton from "../../../components/ibutton";
 import DrawerFrom from "../drawerForm";
 
 export default class Table extends Component {
   state = {
-    filteredInfo: null,
-    sortedInfo: null,
     visible: false,
     record: null,
-    edit: false
+    edit: false,
+    iButton: "",
+    iVisible: false
   };
 
   handleChange = (pagination, filters, sorter) => {
@@ -19,6 +20,10 @@ export default class Table extends Component {
       filteredInfo: filters,
       sortedInfo: sorter
     });
+  };
+
+  handleCancel = () => {
+    this.setState({ iVisible: false });
   };
 
   closeDrawer = () => {
@@ -36,20 +41,21 @@ export default class Table extends Component {
     });
   };
 
-  render() {
-    let { sortedInfo, record, visible, edit } = this.state;
-    const { data } = this.props;
+  setIButton = value => {
+    this.props.search(value);
+    this.setState({ iButton: value, iVisible: false });
+  };
 
-    sortedInfo = sortedInfo || {};
+  render() {
+    const { record, visible, edit, iVisible } = this.state;
+    const { data } = this.props;
 
     const columns = [
       {
         title: "No.",
         dataIndex: "kya_key_no",
         key: "kya_key_no",
-        width: 100,
-        sorter: (a, b) => parseInt(a.kya_key_no) - parseInt(b.kya_key_no),
-        sortOrder: sortedInfo.columnKey === "kya_key_no" && sortedInfo.order
+        width: 100
       },
       {
         title: "Issuer",
@@ -137,9 +143,7 @@ export default class Table extends Component {
         title: "Personnel",
         dataIndex: "kya_psnl_name",
         key: "kya_psnl_name",
-        width: 160,
-        sorter: (a, b) => a.kya_psnl_name.localeCompare(b.kya_psnl_name),
-        sortOrder: sortedInfo.columnKey === "kya_psnl_name" && sortedInfo.order
+        width: 160
       },
       {
         title: "Role",
@@ -166,12 +170,20 @@ export default class Table extends Component {
 
     return (
       <div>
+        <IButton submit={this.setIButton} visible={iVisible} close={this.handleCancel} />
         <Button
           type="default"
           icon="plus"
           shape="circle"
           style={{ position: "absolute", right: 60, top: 40 }}
           onClick={() => this.setState({ record: null, visible: true })}
+        />
+        <Button
+          type="default"
+          icon="barcode"
+          shape="circle"
+          style={{ position: "absolute", right: 140, top: 40 }}
+          onClick={() => this.setState({ iVisible: true })}
         />
         <Drawer
           title={!!record ? `${record.kya_txt}` : "Create ID Assignment"}
