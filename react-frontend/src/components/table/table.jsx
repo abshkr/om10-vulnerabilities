@@ -67,7 +67,7 @@ class DataTable extends React.Component {
           dataSource={data}
           onChange={change}
           pagination={PaginationConfig}
-          scroll={{ y: 500 }}
+          scroll={{ x: 2000 }}
           onRow={record => {
             return {
               onClick: () => {

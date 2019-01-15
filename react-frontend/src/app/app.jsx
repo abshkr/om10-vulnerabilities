@@ -47,7 +47,6 @@ const App = () => (
             })}
             <Redirect from={ROUTES.ENTRY} to={ROUTES.DASHBOARD} />
           </Switch>
-          <Footer config={configuration} />
         </div>
       </BrowserRouter>
     </LocaleProvider>

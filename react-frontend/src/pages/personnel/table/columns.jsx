@@ -5,13 +5,14 @@ const columns = data => [
     title: "Code",
     dataIndex: "per_code",
     key: "per_code",
-    width: 100
+    width: 100,
+    fixed: "left"
   },
   {
     title: "Name",
     dataIndex: "per_name",
     key: "per_name",
-    width: 330,
+    width: 200,
     filters: Generate(data, "per_name"),
     onFilter: (value, record) => record.per_name.indexOf(value) === 0
   },
@@ -19,7 +20,6 @@ const columns = data => [
     title: "Employer Code",
     dataIndex: "cmpy_code",
     key: "cmpy_code",
-    width: 180,
     filters: Generate(data, "cmpy_code"),
     onFilter: (value, record) => record.cmpy_code.indexOf(value) === 0
   },
@@ -27,7 +27,6 @@ const columns = data => [
     title: "Employer",
     dataIndex: "cmpy_name",
     key: "cmpy_name",
-    width: 150,
     filters: Generate(data, "cmpy_name"),
     onFilter: (value, record) => record.cmpy_name.indexOf(value) === 0
   },
@@ -35,33 +34,28 @@ const columns = data => [
     title: "Role",
     dataIndex: "per_auth",
     key: "per_auth",
-    width: 150,
     filters: Generate(data, "per_auth"),
     onFilter: (value, record) => record.per_auth.indexOf(value) === 0
   },
   {
     title: "Licence No.",
     dataIndex: "per_licence_no",
-    key: "per_licence_no",
-    width: 130
+    key: "per_licence_no"
   },
   {
     title: "DET Expiry",
     dataIndex: "expire_time",
-    key: "expire_time",
-    width: 130
+    key: "expire_time"
   },
   {
     title: "Driving Licence",
     dataIndex: "per_last_dmy",
-    key: "per_last_dmy",
-    width: 150
+    key: "per_last_dmy"
   },
   {
     title: "Medical",
     dataIndex: "kya_psnl_name",
-    key: "kya_psnl_name",
-    width: 160
+    key: "kya_psnl_name"
   },
   {
     title: "Area Access",
