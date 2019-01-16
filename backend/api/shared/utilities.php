@@ -1,6 +1,22 @@
 <?php
 class Utilities
 { 
+    public static function sanitize($cls)
+    {
+        foreach ($cls as $key => $value) {
+            if (!is_string($value))
+                continue;
+
+            // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
+            $cls->{$key} = htmlspecialchars(strip_tags($value));
+        }
+    }
+
+    public static function getCurrPsn()
+    {
+        return "DKI_SUPER_USER";
+    }
+
     public function getPaging($page, $total_rows, $records_per_page, $page_url)
     {
         // paging array

@@ -65,7 +65,7 @@ class Journal
                 AND LANG_ID = 'ENG'";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':enum_no', $jnl_event);
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             return null;
         }
 
@@ -83,7 +83,7 @@ class Journal
                 AND LANG_ID = 'ENG'";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':enum_no', $jnl_class);
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             return null;
         }
 
@@ -97,7 +97,7 @@ class Journal
         $query = "SELECT MESSAGE FROM MSG_LOOKUP WHERE MSG_ID = :msg_id AND LANG_ID = 'ENG'";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':msg_id', $template);
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             return null;
         }
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
@@ -143,8 +143,47 @@ class Journal
         else
             $mode = OCI_NO_AUTO_COMMIT;
         if (!oci_execute($stmt, $mode)) {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             write_log("Failed to write journal", __FILE__, __LINE__);
             oci_free_statement($stmt);
+            return false;
+        }
+
+        return true;
+    }
+
+    public function tryMe()
+    {
+        return;
+    }
+
+    /* Use RECORD_CHANGED to write a journal indicating value changes
+    % changed % of record % with % % to %
+    Sample: [DKI_SUPER_USER] changed [Terminal] of record [1] with [URBAC_PWD_LEN_MAX] [19] to [20] 
+    Parameters
+        module: CGI module, indicates in which the change happens
+        record: mainly table primary key and a string identifying the table record
+        term: which item (field) of this record has been changed
+        orig_value:
+        new_value:
+    */
+    public function valueChange($module, $record, $term, $orig_value, $new_value)
+    {
+        if ($orig_value === $new_value) {
+            return;
+        }
+
+        $jnl_data[0] = Utilities::getCurrPsn(); 
+        $jnl_data[1] = $module;
+        $jnl_data[2] = $record;
+        $jnl_data[3] = $term;
+        $jnl_data[4] = $orig_value;
+        $jnl_data[5] = $new_value;
+
+        if (!$this->jnlLogEvent(
+            Lookup::RECORD_CHANGED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+        {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
 

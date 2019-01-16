@@ -4479,7 +4479,7 @@ class Lookup
     const  TMM_TKR_INSURANCE_LICENSE_EXP = 1577;
     /*Tanker(%) Rejected because insurance license is expired*/
 
-    const  Tmm_RESET_GAUG_COMM =  1578;
+    const  TMM_RESET_GAUG_COMM =  1578;
     /*Resetting all Tank gauging device comms for config update*/
 
     const  TMM_NO_PRINTER =   1579;

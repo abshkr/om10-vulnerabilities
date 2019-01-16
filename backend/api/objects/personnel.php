@@ -2,6 +2,7 @@
 
 include_once __DIR__  . '/../config/journal.php';
 include_once __DIR__  . '/../config/log.php';
+include_once __DIR__  . '/../shared/utilities.php';
 
 class Personnel 
 {
@@ -178,6 +179,8 @@ class Personnel
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
 
+        Utilities::sanitize($this);
+
         // query to insert record
         //'a1qhH6yu9Tjg.', // encryption of default pw '12345'
         $query = "INSERT INTO PERSONNEL 
@@ -227,6 +230,7 @@ class Personnel
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             // $err_str = oci_error($stmt)['message'];
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);;
             return false;
         }
@@ -246,6 +250,7 @@ class Personnel
         oci_bind_by_name($stmt, ':user_password', $this->default_pwd);
         
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -261,6 +266,7 @@ class Personnel
         oci_bind_by_name($stmt, ':pt_timecd', $this->pt_timecd);
         
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);;
             return false;
         }
@@ -291,6 +297,7 @@ class Personnel
         oci_bind_by_name($stmt, ':pwdtrace_pwd', $this->default_pwd);
         
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);;
             return false;
         }
@@ -303,6 +310,7 @@ class Personnel
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
         {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -314,6 +322,9 @@ class Personnel
     public function update()
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
+
+        Utilities::sanitize($this);
+
         $query = "
             UPDATE PERSONNEL
             SET PER_LOCK = :per_lock,
@@ -337,6 +348,7 @@ class Personnel
         oci_bind_by_name($stmt, ':per_comments', $this->per_comments);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             // $err_str = oci_error($stmt)['message'];
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);;
             return false;
         }
@@ -359,6 +371,7 @@ class Personnel
         oci_bind_by_name($stmt, ':perl_ara', $this->perl_ara);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);;
             return false;
         }
@@ -371,6 +384,7 @@ class Personnel
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
         {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -382,6 +396,9 @@ class Personnel
     public function delete()
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
+
+        Utilities::sanitize($this);
+
         $query = "
             BEGIN DELETE_PERSONNEL(:per_code, :exec_result); END;";
         $stmt = oci_parse($this->conn, $query);
@@ -403,6 +420,7 @@ class Personnel
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
         {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -413,6 +431,8 @@ class Personnel
 
     public function readOne()
     {
+        Utilities::sanitize($this);
+
         $query = "
             SELECT PER_CODE,
                 PER_NAME,
@@ -562,6 +582,8 @@ class Personnel
 
     public function search($keyword)
     {
+        Utilities::sanitize($this);
+
         $query = "
             SELECT PER_CODE,
                 PER_NAME,
@@ -650,6 +672,8 @@ class Personnel
     // read products with pagination
     public function readPaging($from_record_num, $to_record_num)
     {
+        Utilities::sanitize($this);
+        
         // select query
         $query = "
             SELECT * FROM (

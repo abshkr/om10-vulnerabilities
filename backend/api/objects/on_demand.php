@@ -3,6 +3,7 @@
 include_once __DIR__  . '/../config/journal.php';
 include_once __DIR__  . '/../config/log.php';
 include_once __DIR__  . '/../config/setups.php';
+include_once __DIR__  . '/../shared/utilities.php';
 
 class OndemandReport 
 {
@@ -66,6 +67,7 @@ class OndemandReport
     public function suppliers()
     {
         write_log(__METHOD__ . " START. is_manager:" . $this->is_manager, __FILE__, __LINE__);
+        Utilities::sanitize($this);
         
         if ($this->is_manager) {
             $query = "
@@ -120,6 +122,8 @@ class OndemandReport
     {
         write_log(__METHOD__ . " START. is_manager:" . $this->is_manager, __FILE__, __LINE__);
         
+        Utilities::sanitize($this);
+
         if ($this->is_manager) {
             $query = "
                 SELECT CMPY_CODE, 
@@ -173,6 +177,8 @@ class OndemandReport
     // get all reports of supplier
     function reports($cmpy_code)
     {
+        Utilities::sanitize($this);
+
         $query = "
             SELECT ONDEMAND_TITLE, 
                 REPORT_FILES.RPT_FILE,
@@ -218,6 +224,8 @@ class OndemandReport
     // get all reports of supplier
     function closeout_nrs($start_date = null, $end_date = null)
     {
+        Utilities::sanitize($this);
+
         if (isset($start_date) && isset($end_date)) {
             $query = "
             SELECT CLOSEOUT_NR,

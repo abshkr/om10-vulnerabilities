@@ -112,6 +112,9 @@ while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
             "record_order" => $record_order
     );
 
+    $personnel_item = array_map(function($v){
+        return (is_null($v)) ? "" : $v;
+    }, $personnel_item);
     array_push($personnel_arr["records"], $personnel_item);
 }
 

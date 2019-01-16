@@ -5,13 +5,13 @@
 define('ENABLE_DEBUG_LOG', true);
 
 //Set it to true means user need to stay logged in before perform all the db-related actions 
-define('AUTH_CHECK', true);
+define('AUTH_CHECK', false);
 
 //Set it to true to use Token-based authentication. false uses table HTTP_SESSION_TRACE
-define ('JWT_AUTH', true);
+define ('JWT_AUTH', false);
 
 //Set it to true to call ini_set('display_errors', 1) and error_reporting(E_ALL)
-define('DISPLAY_ALL_ERROS', false);
+define('DISPLAY_ALL_ERROS', true);
 
 //If it is true, client uses sth like
 //Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6ImN3X3Rlc3QiLCJleHAiOjE1MzY3NTk2NTF9.oGCzF22FiauRys6Ekq5HL3rxcRQIXr5qWiEMNJBPA7U

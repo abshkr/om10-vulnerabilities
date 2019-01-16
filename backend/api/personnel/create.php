@@ -30,21 +30,21 @@ if (property_exists($data, 'per_cmpy'))
 if (property_exists($data, 'per_auth')) 
     $personnel->per_auth = $data->per_auth;
 if (property_exists($data, 'per_lock')) 
-    $personnel->per_lock = $data->per_auth;
+    $personnel->per_lock = $data->per_lock;
 if (property_exists($data, 'per_last_dmy')) 
-    $personnel->per_last_dmy = $data->per_auth;
+    $personnel->per_last_dmy = $data->per_last_dmy;
 if (property_exists($data, 'per_department')) 
-    $personnel->per_department = $data->per_auth;
+    $personnel->per_department = $data->per_department;
 if (property_exists($data, 'per_licence_no')) 
-    $personnel->per_licence_no = $data->per_auth;
+    $personnel->per_licence_no = $data->per_licence_no;
 if (property_exists($data, 'per_next_msg')) 
-    $personnel->per_next_msg = $data->per_auth;
+    $personnel->per_next_msg = $data->per_next_msg;
 if (property_exists($data, 'per_level_num')) 
-    $personnel->per_level_num = $data->per_auth;
+    $personnel->per_level_num = $data->per_level_num;
 if (property_exists($data, 'per_terminal')) 
-    $personnel->per_terminal = $data->per_auth;
+    $personnel->per_terminal = $data->per_terminal;
 if (property_exists($data, 'per_comments')) 
-    $personnel->per_comments = $data->per_auth;
+    $personnel->per_comments = $data->per_comments;
 if (property_exists($data, 'pt_psncode')) 
     $personnel->pt_psncode = $data->pt_psncode;
 if (property_exists($data, 'pt_timecd')) 
