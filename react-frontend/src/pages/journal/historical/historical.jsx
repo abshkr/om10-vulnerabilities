@@ -66,12 +66,14 @@ export default class HistoricalJournal extends Component {
       {
         title: "Date/Time",
         dataIndex: "gen_date",
-        key: "gen_date"
+        key: "gen_date",
+        width: 200
       },
       {
         title: "Event",
         dataIndex: "msg_event",
         key: "msg_event",
+        width: 200,
         filters: Generate(this.state.data, "msg_event"),
         onFilter: (value, record) => record.msg_event.indexOf(value) === 0
       },
@@ -79,6 +81,7 @@ export default class HistoricalJournal extends Component {
         title: "Details",
         dataIndex: "message",
         key: "message",
+        width: 200,
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
           <div className="custom-filter-dropdown">
             <Input
@@ -128,7 +131,13 @@ export default class HistoricalJournal extends Component {
       <div>
         <Calendar start={start} end={end} change={this.onChange} />
         <Filter value={value} search={this.searchText} />
-        <DataTable rowKey="seq" columns={columns} data={!!filtered ? filtered : data} />
+        <DataTable
+          rowKey="seq"
+          columns={columns}
+          data={!!filtered ? filtered : data}
+          loading={!!data}
+          offset={0}
+        />
       </div>
     );
   }

@@ -64,16 +64,25 @@ class FormComponent extends Component {
   create = values => {
     const { update, close, form, edit } = this.props;
 
-    update();
-    close();
-    form.resetFields();
-
-    notification.success({
-      message: "Success!",
-      description: `${edit ? "Updating" : "Creating"} the record was successful.`
-    });
-
-    console.log("Received values of form: ", values);
+    axios
+      .post(`https://10.1.10.66/api/idassignment/create.php`, {
+        values
+      })
+      .then(function(response) {
+        update();
+        close();
+        form.resetFields();
+        notification.success({
+          message: "Success!",
+          description: `${edit ? "Updating" : "Creating"} the record was successful.`
+        });
+      })
+      .catch(function(error) {
+        notification.error({
+          message: "Error!",
+          description: `${edit ? "Updating" : "Creating"} the record has failed.`
+        });
+      });
   };
 
   request = form => {
@@ -99,11 +108,6 @@ class FormComponent extends Component {
       .then(
         axios.spread(
           (id, issuer, assignment, physicalType, employer, role, personnel, drawer, supplier, tanker) => {
-            form.setFieldsValue({
-              kya_key_no: id.data.records[0].count + 1,
-              kya_key_created: moment().format("YYYY-MM-DD"),
-              owner_carrier: "Owner"
-            });
             this.setState({
               id: id.data.records[0].count + 1,
               issuer: issuer.data.records,

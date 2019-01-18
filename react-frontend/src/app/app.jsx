@@ -6,7 +6,6 @@ import { LocaleProvider } from "antd";
 import reduxThunk from "redux-thunk";
 import reducers from "../reducers";
 import Navigation from "../components/navigation";
-import Footer from "../components/footer";
 import paths from "./paths";
 import configuration from "../configuration";
 import * as ROUTES from "../constants/routes";

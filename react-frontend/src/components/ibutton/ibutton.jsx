@@ -11,23 +11,27 @@ const IButtonForm = Form.create({ name: "form_in_modal" })(
     }
 
     normalizeTagText = (value, prevValue = []) => {
+      this.setState({ isValid: "validating" });
       if (!!value) {
-        const length = value.length;
-
-        if (length === 0) {
-          this.setState({ isValid: "error" });
-        } else {
-          if (length === 16) {
-            const sliced = value.slice(2, 14);
+        if (value.length === 16) {
+          const sliced = value.slice(2, 14);
+          const iButtonRegex = new RegExp(/^[0-9]{5}[A-Z0-9]{7}$/);
+          const val = iButtonRegex.test(sliced);
+          if (val) {
+            this.props.search(sliced);
             this.setState({ isValid: "success" });
             return sliced;
           } else {
-            this.setState({ isValid: "validating" });
+            this.setState({ isValid: "error" });
             return value;
           }
         }
-      } else {
-        this.setState({ isValid: "warning" });
+        if (value.length > 16) {
+          this.setState({ isValid: "error" });
+          return value;
+        } else {
+          return value;
+        }
       }
     };
 
@@ -36,7 +40,14 @@ const IButtonForm = Form.create({ name: "form_in_modal" })(
       const { visible, onCancel, onCreate, form } = this.props;
       const { getFieldDecorator } = form;
       return (
-        <Modal visible={visible} title="Scan I-Button" okText="Ok" onCancel={onCancel} onOk={onCreate}>
+        <Modal
+          visible={visible}
+          title="Scan I-Button"
+          okText="Ok"
+          onCancel={onCancel}
+          onOk={onCreate}
+          centered
+        >
           <Form layout="vertical">
             <Form.Item label="Tag Text" validateStatus={isValid} hasFeedback>
               {getFieldDecorator(
@@ -62,6 +73,10 @@ const IButtonForm = Form.create({ name: "form_in_modal" })(
 );
 
 export default class IButton extends React.Component {
+  autoSearch = value => {
+    this.props.submit(value);
+  };
+
   handleCreate = () => {
     const form = this.formRef.props.form;
     form.validateFields((err, values) => {
@@ -87,6 +102,7 @@ export default class IButton extends React.Component {
           visible={visible}
           onCancel={close}
           onCreate={this.handleCreate}
+          search={this.autoSearch}
         />
       </div>
     );

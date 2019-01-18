@@ -17,25 +17,29 @@ class IdAssignment extends Component {
     };
   }
 
-  fetch = () => {
-    axios.get(`https://10.1.10.66/api/idassignment/read.php`).then(res => {
-      this.setState({ data: res.data.records, isLoading: false });
+  fetchIdAssignments = () => {
+    axios.get(`https://10.1.10.66/api/idassignment/read.php`).then(response => {
+      const data = response.data.records;
+      this.setState({
+        data: data,
+        isLoading: false
+      });
     });
   };
 
-  searchObjects = e => {
-    const { value } = e.target;
+  searchObjects = query => {
+    const { value } = query.target;
     const filtered = Search(value, this.state.data);
     this.setState({ filtered, value });
   };
 
-  instantSearch = e => {
-    const filtered = Search(e, this.state.data);
-    this.setState({ filtered, value: e });
+  searchTrigger = value => {
+    const filtered = Search(value, this.state.data);
+    this.setState({ filtered, value });
   };
 
   componentDidMount() {
-    this.fetch();
+    this.fetchIdAssignments();
   }
 
   render() {
@@ -44,7 +48,12 @@ class IdAssignment extends Component {
     return (
       <Page page={"Access Control"} name={"ID Assignment"} isLoading={isLoading} block={true}>
         <Filter value={value} search={this.searchObjects} />
-        <Table data={!!filtered ? filtered : data} update={this.fetch} search={this.instantSearch} />
+        <Table
+          data={!!filtered ? filtered : data}
+          update={this.fetchIdAssignments}
+          search={this.searchTrigger}
+          type="personnel"
+        />
       </Page>
     );
   }

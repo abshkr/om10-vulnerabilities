@@ -4,9 +4,9 @@ import { CSVLink } from "react-csv";
 
 export default class Download extends Component {
   render() {
-    const { data } = this.props;
+    const { data, type } = this.props;
     return (
-      <CSVLink data={!!data ? data : []}>
+      <CSVLink data={!!data ? data : []} ilename={`omega5000-${type}.csv`}>
         <Button
           type="default"
           shape="circle"

@@ -57,7 +57,7 @@ class DataTable extends React.Component {
 
     return (
       <div>
-        <Download data={data} />
+        <Download data={data} type={!!this.props.type ? this.props.type : ""} />
         <Table
           bordered
           size="small"

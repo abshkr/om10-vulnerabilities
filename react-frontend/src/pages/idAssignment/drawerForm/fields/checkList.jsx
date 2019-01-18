@@ -5,10 +5,10 @@ const CheckboxGroup = Checkbox.Group;
 const editOptions = ["Locked?", "Adhoc?", "Remove Pin", "Reset Pin"];
 
 const createOptions = [
-  { label: "Locked?", value: "Locked?", disabled: false },
-  { label: "Adhoc?", value: "Adhoc?", disabled: false },
-  { label: "Remove Pin", value: "Remove Pin", disabled: true },
-  { label: "Reset Pin", value: "Reset Pin", disabled: true }
+  { label: "Locked?", value: "locked", disabled: false },
+  { label: "Adhoc?", value: "adhoc", disabled: false },
+  { label: "Remove Pin", value: "remove_pin", disabled: true },
+  { label: "Reset Pin", value: "reset_pin", disabled: true }
 ];
 
 export default class CheckList extends Component {
@@ -17,7 +17,7 @@ export default class CheckList extends Component {
 
     return (
       <Col span={24}>
-        <Form.Item label="Checklist">
+        <Form.Item label="checklist">
           {decorator("checklist")(<CheckboxGroup options={edit ? editOptions : createOptions} />)}
         </Form.Item>
       </Col>

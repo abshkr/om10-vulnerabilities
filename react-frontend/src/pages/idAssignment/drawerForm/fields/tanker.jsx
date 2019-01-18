@@ -42,14 +42,18 @@ export default class Tanker extends Component {
       <Col span={6}>
         <Form.Item
           label="Tanker"
-          hasFeedback={values.kya_supp_name !== undefined}
-          validateStatus={values.kya_supp_name !== undefined && tanker.length === 0 ? "warning" : "success"}
-          help={
-            values.kya_supp_name !== undefined && tanker.length === 0 ? "There are no available Tankers" : ""
-          }
+          hasFeedback={!!values.kya_supp_name}
+          validateStatus={!!values.kya_supp_name && tanker.length === 0 ? "warning" : "success"}
+          help={!!values.kya_supp_name && tanker.length === 0 ? "There are no available Tankers" : ""}
         >
           {decorator("kya_tanker")(
-            <Select disabled={values.kya_tanker === "" || !enabled.includes(values.kya_type_name)}>
+            <Select
+              disabled={
+                values.kya_tanker === "" ||
+                values.kya_tanker === undefined ||
+                !enabled.includes(values.kya_type_name)
+              }
+            >
               {tanker.map((item, index) => (
                 <Select.Option key={index} value={item.tnkr_code}>
                   {item.tnkr_code}

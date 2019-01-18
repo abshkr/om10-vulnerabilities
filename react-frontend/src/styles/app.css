@@ -10,11 +10,11 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 12px;
+  height: 13px;
   transition: all 0.3s;
-  background-color: #538aef5b;
+  background-color: #538aef1e;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #538aef;
+  background-color: #a1bef3;
 }
