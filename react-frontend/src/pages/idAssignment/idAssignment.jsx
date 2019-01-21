@@ -10,10 +10,10 @@ class IdAssignment extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: null,
-      isLoading: true,
       value: "",
-      filtered: null
+      data: null,
+      filtered: null,
+      isLoading: true
     };
   }
 

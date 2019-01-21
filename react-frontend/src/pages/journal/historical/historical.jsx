@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import axios from "axios";
 import * as API from "../../../constants/api";
-import { Button, Input, Icon } from "antd";
 import moment from "moment";
 import Generate from "../../../utils/generateOptions";
 import Calendar from "../../../components/calendar";
 import DataTable from "../../../components/table";
+import Download from "../../../components/download";
 import Search from "../../../utils/search";
 import Filter from "../../../components/filter";
 
@@ -67,63 +67,20 @@ export default class HistoricalJournal extends Component {
         title: "Date/Time",
         dataIndex: "gen_date",
         key: "gen_date",
-        width: 200
+        width: 200,
+        fixed: "left"
       },
       {
         title: "Event",
         dataIndex: "msg_event",
         key: "msg_event",
-        width: 200,
-        filters: Generate(this.state.data, "msg_event"),
+        filters: Generate(data, "msg_event"),
         onFilter: (value, record) => record.msg_event.indexOf(value) === 0
       },
       {
         title: "Details",
         dataIndex: "message",
-        key: "message",
-        width: 200,
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-          <div className="custom-filter-dropdown">
-            <Input
-              ref={ele => (this.searchInput = ele)}
-              placeholder="Search Nessage"
-              value={selectedKeys[0]}
-              onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-              onPressEnter={this.handleSearch(selectedKeys, confirm)}
-            />
-            <Button type="primary" onClick={this.handleSearch(selectedKeys, confirm)}>
-              Search
-            </Button>
-            <Button onClick={this.handleReset(clearFilters)}>Reset</Button>
-          </div>
-        ),
-        filterIcon: filtered => <Icon type="search" style={{ color: filtered ? "#108ee9" : "#aaa" }} />,
-        onFilter: (value, record) => record.message.toLowerCase().includes(value.toLowerCase()),
-        onFilterDropdownVisibleChange: visible => {
-          if (visible) {
-            setTimeout(() => {
-              this.searchInput.focus();
-            });
-          }
-        },
-        render: text => {
-          const { searchText } = this.state;
-          return searchText ? (
-            <span>
-              {text.split(new RegExp(`(${searchText})`, "gi")).map((fragment, i) =>
-                fragment.toLowerCase() === searchText.toLowerCase() ? (
-                  <span key={i} className="highlight">
-                    {fragment}
-                  </span>
-                ) : (
-                  fragment
-                )
-              )}
-            </span>
-          ) : (
-            text
-          );
-        }
+        key: "message"
       }
     ];
 
@@ -131,6 +88,7 @@ export default class HistoricalJournal extends Component {
       <div>
         <Calendar start={start} end={end} change={this.onChange} />
         <Filter value={value} search={this.searchText} />
+        <Download data={data} type={`journal_${start}-${end}`} style={{ float: "right" }} />
         <DataTable
           rowKey="seq"
           columns={columns}

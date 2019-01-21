@@ -8,12 +8,9 @@ export default class Table extends Component {
     const { data } = this.props;
     return (
       <div>
-        <Button
-          type="default"
-          icon="plus"
-          shape="circle"
-          style={{ position: "absolute", right: 60, top: 40 }}
-        />
+        <Button type="primary" style={{ position: "absolute", right: 60, top: 40 }}>
+          Create Personnel
+        </Button>
         <DataTable rowKey="kya_key_no" columns={columns(data)} data={data} loading={!!data} />
       </div>
     );

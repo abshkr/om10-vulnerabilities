@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Drawer, Button } from "antd";
 import DataTable from "../../../components/table";
 import IButton from "../../../components/ibutton";
+import Download from "../../../components/download";
 import DrawerFrom from "../drawerForm";
 import columns from "./columns";
 
@@ -45,22 +46,20 @@ export default class Table extends Component {
     return (
       <div>
         <IButton submit={this.setIButton} visible={iVisible} close={this.handleCancel} />
+        <Download data={data} type={"id_assignment"} style={{ position: "absolute", right: 250, top: 40 }} />
         <Button
-          type="default"
-          icon="plus"
-          shape="circle"
+          type="primary"
           style={{ position: "absolute", right: 60, top: 40 }}
           onClick={() => this.setState({ record: null, visible: true })}
-        />
-
+        >
+          Create Record
+        </Button>
         <Button
-          type="default"
-          icon="barcode"
-          shape="circle"
-          style={{ position: "absolute", right: 140, top: 40 }}
+          style={{ position: "absolute", right: 155, top: 40 }}
           onClick={() => this.setState({ iVisible: true })}
-        />
-
+        >
+          Scan I-Button
+        </Button>
         <Drawer
           title={!!record ? `${record.kya_txt}` : "Create ID Assignment"}
           width={720}

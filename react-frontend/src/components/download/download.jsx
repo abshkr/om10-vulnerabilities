@@ -1,19 +1,21 @@
-import React, { Component } from "react";
-import { Button } from "antd";
+import React from "react";
+import { Button, notification } from "antd";
 import { CSVLink } from "react-csv";
 
-export default class Download extends Component {
-  render() {
-    const { data, type } = this.props;
-    return (
-      <CSVLink data={!!data ? data : []} ilename={`omega5000-${type}.csv`}>
-        <Button
-          type="default"
-          shape="circle"
-          icon="download"
-          style={{ position: "absolute", right: 100, top: 40 }}
-        />
-      </CSVLink>
-    );
-  }
-}
+const withDownload = () => {
+  notification.success({
+    message: "Generated Succesfully."
+  });
+};
+
+const Download = ({ data, type, style }) => {
+  return (
+    <CSVLink data={!!data ? data : []} filename={`om5k_${type}.csv`}>
+      <Button type="default" style={style} onClick={withDownload}>
+        Export CSV
+      </Button>
+    </CSVLink>
+  );
+};
+
+export default Download;

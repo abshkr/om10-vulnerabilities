@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { DatePicker } from "antd";
 import moment from "moment";
 const { RangePicker } = DatePicker;
@@ -15,19 +15,18 @@ const disabled = current => {
   return current && current > moment().endOf("day");
 };
 
-export default class Calendar extends Component {
-  render() {
-    const { change, start, end } = this.props;
-    return (
-      <RangePicker
-        disabledDate={disabled}
-        style={{ marginBottom: 10, marginRight: 10 }}
-        ranges={ranges}
-        showTime={{ format: "HH:mm" }}
-        format="DD-MM-YYYY HH:mm"
-        placeholder={[start, end]}
-        onOk={change}
-      />
-    );
-  }
-}
+const Calendar = ({ change, start, end }) => {
+  return (
+    <RangePicker
+      disabledDate={disabled}
+      style={{ marginBottom: 10, marginRight: 10 }}
+      ranges={ranges}
+      showTime={{ format: "HH:mm" }}
+      format="DD-MM-YYYY HH:mm"
+      placeholder={[start, end]}
+      onOk={change}
+    />
+  );
+};
+
+export default Calendar;

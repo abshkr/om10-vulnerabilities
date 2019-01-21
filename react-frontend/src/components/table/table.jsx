@@ -1,7 +1,6 @@
 import React from "react";
 import { Table } from "antd";
 import { Resizable } from "react-resizable";
-import Download from "../download";
 
 const ResizeableTitle = props => {
   const { onResize, width, ...restProps } = props;
@@ -56,29 +55,26 @@ class DataTable extends React.Component {
     }));
 
     return (
-      <div>
-        <Download data={data} type={!!this.props.type ? this.props.type : ""} />
-        <Table
-          bordered
-          size="small"
-          loading={!loading}
-          rowKey={rowKey}
-          columns={resize ? columns : this.props.columns}
-          dataSource={data}
-          onChange={change}
-          pagination={PaginationConfig}
-          scroll={{ x: 2000 }}
-          onRow={record => {
-            return {
-              onClick: () => {
-                if (click !== undefined) {
-                  click(record);
-                }
+      <Table
+        bordered
+        size="small"
+        loading={!loading}
+        rowKey={rowKey}
+        columns={resize ? columns : this.props.columns}
+        dataSource={data}
+        onChange={change}
+        pagination={PaginationConfig}
+        scroll={{ x: 2000 }}
+        onRow={record => {
+          return {
+            onClick: () => {
+              if (click !== undefined) {
+                click(record);
               }
-            };
-          }}
-        />
-      </div>
+            }
+          };
+        }}
+      />
     );
   }
 }

@@ -1,18 +1,16 @@
-import React, { Component } from "react";
+import React from "react";
 import { Input } from "antd";
 
-const SearchInput = Input.Search;
+const Filter = ({ value, search }) => {
+  const { Search } = Input;
+  return (
+    <Search
+      placeholder="Filter..."
+      value={value}
+      onChange={search}
+      style={{ marginBottom: 10, width: 360 }}
+    />
+  );
+};
 
-export default class Filter extends Component {
-  render() {
-    const { value, search } = this.props;
-    return (
-      <SearchInput
-        placeholder="Filter..."
-        value={value}
-        onChange={search}
-        style={{ marginBottom: 10, width: 360 }}
-      />
-    );
-  }
-}
+export default Filter;
