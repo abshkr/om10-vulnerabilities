@@ -2721,18 +2721,10 @@
 			
 			protected function getAPIRange(low, high) {
 				
-	
-					
-				if (low <= 653) {
-					var lowAPI = (141.5 / (653 / 999.012)) - 131.5
-					if (lowAPI >= 85) {
-						lowAPI = 85
-					}
-						
-				} else {
-					var lowSG = low / 999.012
-					var lowAPI = (141.5 / lowSG) - 131.5 
-				}
+
+				var lowSG = low / 999.012
+				var lowAPI = (141.5 / lowSG) - 131.5 
+			
 				
 				if (high > 1075) {
 					var highAPI = (141.5 / (1074 / 999.012)) - 131.5 

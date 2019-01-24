@@ -49,7 +49,7 @@ package components
 				{
 					K0 = 2680.3206;					K1 = 0;							K2 = -0.00336312;
 				}
-				else if ( DEN > 653 )
+				else if ( DEN > 350 )
 				{
 					K0 = 346.4228;					K1 = 0.4388;					K2 = 0;
 				}
@@ -435,7 +435,7 @@ package components
 				{
 					K0 = 2680.3206;					K1 = 0;							K2 = -0.00336312;
 				}
-				else if ( DEN > 653 )
+				else if ( DEN > 350 )
 				{
 					K0 = 346.4228;					K1 = 0.4388;					K2 = 0;
 				}
