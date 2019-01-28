@@ -36,7 +36,7 @@
 
 /* Color/shape of burger icon bars */
 .bm-burger-bars {
-  background: rgb(255, 255, 255);
+  background: #ffffff;
   transition: all 0.3s;
 }
 
