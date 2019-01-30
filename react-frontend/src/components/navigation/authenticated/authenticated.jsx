@@ -76,7 +76,7 @@ class Authenticated extends Component {
               <Menu.Item key={ROUTES.TRANSACTION_LIST}>Transaction List</Menu.Item>
               <Menu.Item key={ROUTES.SELF_FUEL_TRANSACTION_LIST}>Self Fuel Transaction List</Menu.Item>
             </SubMenu> */}
-            {/* <SubMenu
+            <SubMenu
               key="sub2"
               title={
                 <span>
@@ -85,17 +85,18 @@ class Authenticated extends Component {
                 </span>
               }
             >
-              <Menu.Item key={ROUTES.LOAD_BAYS}>Load Bays</Menu.Item>
+              {/* <Menu.Item key={ROUTES.LOAD_BAYS}>Load Bays</Menu.Item>
               <Menu.Item key={ROUTES.COMPANIES}>Companies</Menu.Item>
               <Menu.Item key={ROUTES.TANK_GROUPS}>Tank Groups</Menu.Item>
-              <Menu.Item key={ROUTES.BASE_PRODUCTS}>Base Products</Menu.Item>
+              
               <Menu.Item key={ROUTES.DRAWER_PRODUCTS}>Drawer Products</Menu.Item>
               <Menu.Item key={ROUTES.TANK_CONFIGURATIONS}>Tank Configuration</Menu.Item>
               <Menu.Item key={ROUTES.PRODUCT_GROUPS}>Product Groups</Menu.Item>
               <Menu.Item key={ROUTES.ALLOCATIONS}>Allocations</Menu.Item>
               <Menu.Item key={ROUTES.HAZCHEM_CODES}>Hazchem Codes</Menu.Item>
-              <Menu.Item key={ROUTES.LOAD_METERS}>Load Meters</Menu.Item>
-            </SubMenu> */}
+              <Menu.Item key={ROUTES.LOAD_METERS}>Load Meters</Menu.Item> */}
+              <Menu.Item key={ROUTES.BASE_PRODUCTS}>Base Products</Menu.Item>
+            </SubMenu>
             <SubMenu
               key="sub4"
               title={

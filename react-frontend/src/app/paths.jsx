@@ -114,6 +114,13 @@ const paths = [
       loader: () => import("../pages/personnel"),
       loading: Loading
     })
+  },
+  {
+    path: ROUTES.BASE_PRODUCTS,
+    component: Loadable({
+      loader: () => import("../pages/baseProducts"),
+      loading: Loading
+    })
   }
 ];
 
