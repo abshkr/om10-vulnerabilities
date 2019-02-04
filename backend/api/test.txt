@@ -124,3 +124,12 @@ https://10.1.10.66/api/equipment/etyp_compartments.php?etyp_id=1300
 https://10.1.10.66/api/equipment/create.php?eqpt_code=TT3&eqpt_title=TT3&eqpt_owner=68002470&eqpt_etp=1300&eqpt_area=1&eqpt_load_type=B&eqpt_empty_kg=234&pull_limit=344&eqpt_comments=comments&eqpt_lock=Y&eqp_must_tare_in=Y&EQPT_EXPIRY_DATE_1=2028-10-28%2021:41:35
 https://10.1.10.66/api/equipment/create.php?eqpt_code=TT6&eqpt_title=TT6&eqpt_owner=68002470&eqpt_etp=1300&eqpt_area=1&eqpt_load_type=B&eqpt_empty_kg=234&pull_limit=344&eqpt_comments=comments&eqpt_lock=Y&eqp_must_tare_in=Y&cmpt_count=3&sched_limit1=5501&sfl1=150001&sched_limit2=5502&sfl2=150002&sched_limit3=5503&sfl3=150001
 https://10.1.10.66/api/equipment/delete.php?eqpt_id=992816750
+
+https://10.1.10.66/api/base_prod/read.php
+https://10.1.10.66/api/base_prod/prod_groups.php
+https://10.1.10.66/api/base_prod/base_classes.php
+https://10.1.10.66/api/base_prod/ref_temp_specs.php
+https://10.1.10.66/api/base_prod/corr_mthds.php
+https://10.1.10.66/api/base_prod/create.php?base_color=#038465&base_name=TEST3&base_prod_group=COMPLIES&base_corr_mthd=1&base_ref_temp=15&base_dens_hi=837.3126&base_dens_lo=788.5196&base_cat=1&base_ref_tunt=0&base_limit_preset_ht=0&base_ref_temp_spec=1&base_code=TEST3
+https://10.1.10.66/api/base_prod/update.php?base_color=#038465&base_name=TEST31&base_prod_group=COMPLIES&base_corr_mthd=1&base_ref_temp=15&base_dens_hi=831.3126&base_dens_lo=798.5196&base_cat=1&base_ref_tunt=0&base_limit_preset_ht=0&base_ref_temp_spec=1&base_code=TEST3
+https://10.1.10.66/api/base_prod/delete.php?base_code=TEST3
