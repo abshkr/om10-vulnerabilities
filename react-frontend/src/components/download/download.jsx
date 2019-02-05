@@ -11,7 +11,7 @@ const withDownload = () => {
 const Download = ({ data, type, style }) => {
   return (
     <CSVLink data={!!data ? data : []} filename={`om5k_${type}.csv`}>
-      <Button type="default" style={style} onClick={withDownload}>
+      <Button type="primary" style={style} onClick={withDownload}>
         Export CSV
       </Button>
     </CSVLink>

@@ -1,123 +1,128 @@
 import React from "react";
-import { Icon } from "antd";
-import { Check, Lock } from "../../constants/colors";
-import Generate from "../../utils/generateOptions";
+import { Tag } from "antd";
+import generate from "../../utils/generateOptions";
 
 const columns = data => [
   {
-    title: "No.",
-    dataIndex: "kya_key_no",
-    key: "kya_key_no",
-    width: 100
+    title: "Base Product Code",
+    dataIndex: "base_code",
+    key: "base_code",
+    width: 220,
+    fixed: "left"
   },
   {
-    title: "Issuer",
-    dataIndex: "kya_issuer_name",
-    key: "kya_issuer_name",
-    width: 330,
-    filters: Generate(data, "kya_issuer_name"),
-    onFilter: (value, record) => record.kya_issuer_name.indexOf(value) === 0
+    title: "Base Product Name",
+    dataIndex: "base_name",
+    key: "base_name",
+    filters: generate(data, "base_name"),
+    onFilter: (value, record) => record.base_name.indexOf(value) === 0
   },
   {
-    title: "Assignment Type",
-    dataIndex: "kya_type_name",
-    key: "kya_type_name",
+    title: "Base Product Color",
+    dataIndex: "base_color",
+    key: "base_color",
     width: 180,
-    filters: Generate(data, "kya_type_name"),
-    onFilter: (value, record) => record.kya_type_name.indexOf(value) === 0
+    render: data => <Tag color={data}>{data === "" ? "N/A" : data}</Tag>
   },
   {
-    title: "Physical Type",
-    dataIndex: "kya_phys_name",
-    key: "kya_phys_name",
-    width: 150,
-    filters: Generate(data, "kya_phys_name"),
-    onFilter: (value, record) => record.kya_phys_name.indexOf(value) === 0
+    title: "Base Product Class Id",
+    dataIndex: "base_cat",
+    key: "base_cat",
+    width: 200,
+    filters: generate(data, "base_cat"),
+    onFilter: (value, record) => record.base_cat.indexOf(value) === 0
   },
   {
-    title: "Time Code",
-    dataIndex: "kya_timecode",
-    key: "kya_timecode",
-    width: 150,
-    filters: Generate(data, "kya_timecode"),
-    onFilter: (value, record) => record.kya_timecode.indexOf(value) === 0
+    title: "Base Product Classification",
+    dataIndex: "base_class_desc",
+    key: "base_class_desc",
+    width: 200,
+    filters: generate(data, "base_class_desc"),
+    onFilter: (value, record) => record.base_class_desc.indexOf(value) === 0
   },
   {
-    title: "Locked?",
-    dataIndex: "kya_lock",
-    key: "kya_lock",
-    width: 130,
-    filters: [
-      {
-        text: "Locked",
-        value: "Y"
-      },
-      {
-        text: "Unlocked",
-        value: "N"
-      }
-    ],
-    onFilter: (value, record) => record.kya_lock.indexOf(value) === 0,
-    render: text => (
-      <span>
-        <Icon style={{ color: Lock[text], fontSize: 16 }} type={text === "N" ? "unlock" : "lock"} />
-      </span>
-    )
+    title: "Base Product Group Code",
+    dataIndex: "base_prod_group",
+    key: "base_prod_group",
+    width: 200
   },
   {
-    title: "Adhoc?",
-    dataIndex: "kya_adhoc",
-    key: "kya_adhoc",
-    width: 130,
-    filters: [
-      {
-        text: "Yes",
-        value: "Y"
-      },
-      {
-        text: "No",
-        value: "N"
-      }
-    ],
-    onFilter: (value, record) => record.kya_adhoc.indexOf(value) === 0,
-    render: text => (
-      <span>
-        <Icon style={{ color: Check[text], fontSize: 16 }} type={text === "N" ? "close" : "check"} />
-      </span>
-    )
+    title: "Base Product Group",
+    dataIndex: "base_group_name",
+    key: "base_group_name",
+    width: 200
   },
   {
-    title: "Tag Text",
-    dataIndex: "kya_txt",
-    key: "kya_txt",
+    title: "Base Prod Min Density [kg/m3]",
+    dataIndex: "base_dens_lo",
+    key: "base_dens_lo",
+    width: 200
+  },
+  {
+    title: "Base Prod Max Density [kg/m3]",
+    dataIndex: "base_dens_hi",
+    key: "base_dens_hi",
+    width: 200
+  },
+  {
+    title: "Is Additive?",
+    dataIndex: "base_adtv",
+    key: "base_adtv",
     width: 150
   },
   {
-    title: "Personnel",
-    dataIndex: "kya_psnl_name",
-    key: "kya_psnl_name",
-    width: 160
+    title: "Number Of Tanks",
+    dataIndex: "base_tank_count",
+    key: "base_tank_count",
+    width: 150
   },
   {
-    title: "Role",
-    dataIndex: "kya_role_name",
-    key: "kya_role_name",
-    filters: Generate(data, "kya_role_name"),
-    onFilter: (value, record) => String(record.kya_role_name).indexOf(value) === 0
+    title: "List of Tanks",
+    dataIndex: "base_tank_list",
+    key: "base_tank_list",
+    width: 150
   },
   {
-    title: "Drawer",
-    dataIndex: "kya_draw_name",
-    key: "kya_draw_name",
-    filters: Generate(data, "kya_draw_name"),
-    onFilter: (value, record) => String(record.kya_draw_name).indexOf(value) === 0
+    title: "Base Class Min Density [kg/m3]",
+    dataIndex: "base_class_dens_lo",
+    key: "base_class_dens_lo",
+    width: 180
   },
   {
-    title: "Supplier",
-    dataIndex: "kya_supp_name",
-    key: "kya_supp_name",
-    filters: Generate(data, "kya_supp_name"),
-    onFilter: (value, record) => String(record.kya_supp_name).indexOf(value) === 0
+    title: "Base Class Min Density [kg/m3]",
+    dataIndex: "base_class_dens_hi",
+    key: "base_class_dens_hi",
+    width: 180
+  },
+  {
+    title: "Base Class Min Temperature [°C]",
+    dataIndex: "base_class_temp_lo",
+    key: "base_class_temp_lo",
+    width: 180
+  },
+  {
+    title: "Base Class Max Temperature [°C]",
+    dataIndex: "base_class_temp_hi",
+    key: "base_class_temp_hi",
+    width: 180
+  },
+  {
+    title: "Correction Method",
+    dataIndex: "base_corr_mthd_name",
+    key: "base_corr_mthd_name",
+    width: 150
+  },
+  {
+    title: "Ref Temp Spec",
+    dataIndex: "base_ref_temp_spec_name",
+    key: "base_ref_temp_spec_name",
+    width: 150
+  },
+  {
+    title: "Hot Temp Flag",
+    dataIndex: "base_limit_preset_ht",
+    key: "base_limit_preset_ht",
+    width: 150
   }
 ];
 

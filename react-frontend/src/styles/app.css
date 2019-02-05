@@ -1,10 +1,10 @@
 @font-face {
-  font-family: "Economica";
-  src: url("../fonts/economica.woff2") format("woff2");
+  font-family: "Oxygen";
+  src: url("../fonts/oxygen.woff2") format("woff2");
 }
 
 body {
-  font-family: "Economica", sans-serif !important;
+  font-family: "Oxygen", sans-serif !important;
   background-color: #fff;
   margin: 0px;
 }

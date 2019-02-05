@@ -44,7 +44,7 @@ class DataTable extends React.Component {
   };
 
   render() {
-    const { data, rowKey, change, resize, click, loading } = this.props;
+    const { data, rowKey, change, resize, click, loading, scroll } = this.props;
 
     const columns = this.state.columns.map((col, index) => ({
       ...col,
@@ -57,14 +57,14 @@ class DataTable extends React.Component {
     return (
       <Table
         bordered
-        size="small"
+        size="middle"
         loading={!loading}
         rowKey={rowKey}
         columns={resize ? columns : this.props.columns}
         dataSource={data}
         onChange={change}
         pagination={PaginationConfig}
-        scroll={{ x: 2000 }}
+        scroll={{ x: !!scroll ? scroll : 2400 }}
         onRow={record => {
           return {
             onClick: () => {
