@@ -6,9 +6,7 @@ header("Content-Type: application/json; charset=UTF-8");
 // include database and object files
 include_once '../config/database.php';
 include_once '../objects/base_product.php';
-include_once '../objects/expiry_date.php';
-include_once '../objects/expiry_type.php';
- 
+
 // instantiate database and product object
 $database = new Database();
 $db = $database->getConnection();

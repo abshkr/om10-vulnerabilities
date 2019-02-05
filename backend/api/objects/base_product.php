@@ -15,6 +15,31 @@ class Base
         $this->conn = $db;
     }
 
+    //Give a simple list of base product
+    function simple_list()
+    {
+        // if (!isset($this->end_num)) {
+        //     $this->start_num = 1;
+        //     $this->end_num = $this->count();
+        // }
+
+        Utilities::sanitize($this);
+
+        $query = "
+            SELECT BASE_CODE,
+                BASE_NAME
+            FROM BASE_PRODS
+            ORDER BY BASE_CODE";        
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+
     //Because base cannot be too many, do not do limit
     //Old sample from amf BaseProductService.php::getPaged():
     // "base_code":"TEST","base_name":"TESTNAME","base_prod_group":"COMPLIES","base_group_name":"Subject to Fuel Standard with Compliance","base_cat":"1","base_class_desc":"Jet Fuels\/Kerosines","base_rpt_tunt":null,"base_rpt_temp":null,"base_dens_lo":"789.5195","base_dens_hi":"811.3127","base_color":"#40FE76","base_adtv":"0","base_text":"TEST - TESTNAME","base_desc":"TEST - TESTNAME (Jet Fuels\/Kerosines) ","base_class_dens_lo":"787.5195","base_class_dens_hi":"838.3127","base_class_vcf_alg":"2","base_class_temp_lo":"-50","base_class_temp_hi":"150","base_tank_count":null,"base_tank_list":null,"base_ref_temp":"15","base_ref_tunt":"0","base_limit_preset_ht":"0","base_corr_mthd":"0","base_ref_temp_spec":"1","base_ref_tunt_name":"C","base_corr_mthd_name":"UNSPECIFIED","base_ref_temp_spec_name":"COMPENSTN_PT","rn":"32"

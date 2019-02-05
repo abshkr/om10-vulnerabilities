@@ -133,3 +133,10 @@ https://10.1.10.66/api/base_prod/corr_mthds.php
 https://10.1.10.66/api/base_prod/create.php?base_color=#038465&base_name=TEST3&base_prod_group=COMPLIES&base_corr_mthd=1&base_ref_temp=15&base_dens_hi=837.3126&base_dens_lo=788.5196&base_cat=1&base_ref_tunt=0&base_limit_preset_ht=0&base_ref_temp_spec=1&base_code=TEST3
 https://10.1.10.66/api/base_prod/update.php?base_color=#038465&base_name=TEST31&base_prod_group=COMPLIES&base_corr_mthd=1&base_ref_temp=15&base_dens_hi=831.3126&base_dens_lo=798.5196&base_cat=1&base_ref_tunt=0&base_limit_preset_ht=0&base_ref_temp_spec=1&base_code=TEST3
 https://10.1.10.66/api/base_prod/delete.php?base_code=TEST3
+
+https://10.1.10.66/api/tank/read.php
+https://10.1.10.66/api/tank/base_list.php
+https://10.1.10.66/api/tank/create.php?tank_bclass_dens_hi=1163.5&tank_name=TEST2&tank_mtol_volume=9988&tank_bclass_dens_lo=838.3127&tank_15_density=777&tank_mtol_percent=12&tank_dtol_volume=9900&tank_code=TEST2&tank_density=998&tank_dtol_percent=11&tank_terminal=TGI&tank_api=27.72&tank_base=2001001
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"tank_code\": \"TEST3\", \"tank_name\": \"NAME3\", \"tank_terminal\": \"TGI\" }" https://10.1.10.66/api/tank/create.php
+https://10.1.10.66/api/tank/update.php?tank_bclass_dens_hi=1163.5&tank_name=TEST23&tank_mtol_volume=9988&tank_bclass_dens_lo=838.3127&tank_15_density=778&tank_mtol_percent=11&tank_dtol_volume=9901&tank_code=TEST2&tank_density=998&tank_dtol_percent=11&tank_terminal=TGI&tank_api=27.72&tank_base=2001001
+https://10.1.10.66/api/tank/delete.php?tank_code=TEST2

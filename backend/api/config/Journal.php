@@ -113,7 +113,7 @@ class Journal
                 $message = $message . $template[$i];
             }
         }
-        write_log("Write journal: " . $message, __FILE__, __LINE__);
+        write_log("Write journal: " . $message, __FILE__, __LINE__, LogLevel::INFO);
         $query = "INSERT INTO SITE_JOURNAL 
                 (GEN_DATE,
                 REGION_CODE,
