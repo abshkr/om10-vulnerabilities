@@ -1,2 +1,3 @@
 import Create from "./create";
-export { Create };
+import Edit from "./edit";
+export { Create, Edit };

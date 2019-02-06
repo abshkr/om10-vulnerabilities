@@ -14,7 +14,7 @@ import { CreateButton } from "../../components/buttons";
 import axios from "axios";
 import search from "../../utils/search";
 import columns from "./columns";
-import { Create } from "./forms/create";
+import { Create, Edit } from "./forms";
 
 class BaseProducts extends Component {
   constructor(props) {
@@ -23,7 +23,7 @@ class BaseProducts extends Component {
       value: "",
       data: [],
       create: false,
-      edit: false
+      edit: null
     };
   }
 
@@ -53,12 +53,20 @@ class BaseProducts extends Component {
     this.setState({ create: false });
   };
 
+  showEdit = record => {
+    this.setState({ edit: record });
+  };
+
+  hideEdit = () => {
+    this.setState({ edit: null });
+  };
+
   componentDidMount() {
     this.fetchBaseProducts();
   }
 
   render() {
-    const { data, isLoading, filtered, value, create } = this.state;
+    const { data, isLoading, filtered, value, create, edit } = this.state;
     const results = !!filtered ? filtered : data;
     const name = "Base Products";
     return (
@@ -67,12 +75,15 @@ class BaseProducts extends Component {
         <Download data={data} type={name} style={{ float: "right" }} />
         <CreateButton type={name} style={{ float: "right", marginRight: 5 }} action={this.showCreate} />
         <Create visible={create} cancel={this.hideCreate} />
+        <Edit visible={!!edit} cancel={this.hideEdit} value={edit} />
+
         <DataTable
           rowKey="base_code"
           columns={columns(results)}
           data={results}
           loading={true}
           scroll={3600}
+          click={this.showEdit}
         />
       </Page>
     );

@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import { Modal, Form, Button } from "antd";
 import BaseProductCode from "./fields/baseProductCode";
 import BaseProductName from "./fields/baseProductName";
@@ -10,7 +11,7 @@ import DensityRangeLow from "./fields/densityRangeLow";
 import DensityRangeHigh from "./fields/densityRangeHigh";
 import CorrectionMethod from "./fields/correctionMethod";
 
-export const Create = Form.create()(
+const Create = Form.create()(
   class extends React.Component {
     state = {
       color: "#fff"
@@ -18,6 +19,41 @@ export const Create = Form.create()(
 
     changeColor = color => {
       this.setState({ color });
+    };
+
+    post = values => {
+      axios({
+        method: "post",
+        url: "https://10.1.10.66/api/base_prod/create.php",
+        data: values
+      }).then(function(response) {
+        console.log(response);
+      });
+    };
+
+    createConfirm = values => {
+      Modal.confirm({
+        centered: true,
+        title: "Confirm Creation",
+        content: "Are you sure you want to Create this Base Product?",
+        okText: "Create",
+        cancelText: "Cancel",
+        onOk: this.post(values),
+        cancelButtonProps: {
+          className: "primary"
+        }
+      });
+    };
+
+    handleSubmit = e => {
+      e.preventDefault();
+      const { color } = this.state;
+      this.props.form.validateFields((err, values) => {
+        if (!err) {
+          values["base_color"] = color;
+          this.createConfirm(values);
+        }
+      });
     };
 
     render() {
@@ -42,7 +78,7 @@ export const Create = Form.create()(
             <Button key="cancel" onClick={cancel}>
               Cancel
             </Button>,
-            <Button key="update" onClick={this.confirmCreate}>
+            <Button key="update" onClick={this.handleSubmit}>
               Create
             </Button>
           ]}
@@ -64,3 +100,5 @@ export const Create = Form.create()(
     }
   }
 );
+
+export default Create;
