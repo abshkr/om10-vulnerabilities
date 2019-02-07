@@ -140,3 +140,16 @@ https://10.1.10.66/api/tank/create.php?tank_bclass_dens_hi=1163.5&tank_name=TEST
 curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"tank_code\": \"TEST3\", \"tank_name\": \"NAME3\", \"tank_terminal\": \"TGI\" }" https://10.1.10.66/api/tank/create.php
 https://10.1.10.66/api/tank/update.php?tank_bclass_dens_hi=1163.5&tank_name=TEST23&tank_mtol_volume=9988&tank_bclass_dens_lo=838.3127&tank_15_density=778&tank_mtol_percent=11&tank_dtol_volume=9901&tank_code=TEST2&tank_density=998&tank_dtol_percent=11&tank_terminal=TGI&tank_api=27.72&tank_base=2001001
 https://10.1.10.66/api/tank/delete.php?tank_code=TEST2
+
+https://10.1.10.66/api/tank_status/read.php?tank_code=ST1
+https://10.1.10.66/api/tank_status/areas.php
+https://10.1.10.66/api/tank_status/status_types.php
+https://10.1.10.66/api/tank_status/gauge_methods.php 
+https://10.1.10.66/api/tank_status/calc_tank_qty.php?tank_base=400003030&tank_qty_type=LT&tank_qty_amount=3400&tank_temp=31.3&tank_density=748
+https://10.1.10.66/api/tank_status/calc_tank_qty.php?tank_base=400003030&tank_qty_type=KG&tank_qty_amount=19000&tank_temp=31.3&tank_density=748
+
+https://10.1.10.66/api/tank_strap/read.php
+https://10.1.10.66/api/tank_strap/read.php?strap_tankcode=T1&start_height=700		//search
+https://10.1.10.66/api/tank_strap/create.php?strap_height=900&strap_volume=990&strap_tankcode=T1&strap_sitecode=TGI
+https://10.1.10.66/api/tank_strap/update.php?strap_height=900&strap_volume=991&strap_tankcode=T1
+https://10.1.10.66/api/tank_strap/delete.php?strap_height=900&strap_tankcode=T1
