@@ -73,5 +73,6 @@ export const SPECIAL_MOVEMENTS = "/html/special-movements";
 export const BAY_VIEW = "/html/bay-view";
 export const DRAWER_PRODUCT_ASSETS = "/html/drawer-product-assets";
 export const DRIVER_MESSAGING = "/html/driver-messaging";
+export const TANK_VIEW = "/html/tank-view";
 
 export const UNAUTHORIZED = "/html/unauthorized";
