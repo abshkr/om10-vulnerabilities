@@ -51,7 +51,7 @@ class TankStatus
     COOKIE:
     REQUEST: sess_id=igiVvGkQPtkp&frm_baseCd=400003030&frm_which_type=LT&frm_real_amount=3500&frm_real_temp=31.30&frm_real_dens=747.200&frm_tank_trm=TGI&frm_tank_cd=T1&frm_strap_height_mm=8807
     */
-    function calc_tank_qty()
+    function calc_tank_qty_by_level()
     {
         $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'].'/cgi-bin/en/calcvcf.cgi';
         
@@ -66,7 +66,10 @@ class TankStatus
             'frm_which_type' => $this->tank_qty_type, 
             'frm_real_amount' => $this->tank_qty_amount, 
             'frm_real_temp' => $this->tank_temp, 
-            'frm_real_dens' => $ref_density);
+            'frm_real_dens' => $ref_density,
+            'frm_tank_trm' => $this->tank_terminal,
+            'frm_tank_cd' => $this->tank_code,
+            'frm_strap_height_mm' => $this->tank_prod_lvl);
 
         $options = array
             (
@@ -90,7 +93,7 @@ class TankStatus
     COOKIE:
     REQUEST: sess_id=igiVvGkQPtkp&frm_baseCd=400003030&frm_which_type=LT&frm_real_amount=2666065&frm_real_temp=31.30&frm_real_dens=747.200
     */
-    function calc_tank_vol()
+    function calc_tank_qty()
     {
         $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'].'/cgi-bin/en/calcvcf.cgi';
         
@@ -316,13 +319,14 @@ class TankStatus
         return true;
     }
 
-    public function update()
+    public function update_status()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__), 
             __FILE__, __LINE__);
 
         Utilities::sanitize($this);
 
+        //Old data
         $query = "
             SELECT * FROM GUI_TANKS 
             WHERE TANK_CODE = :tank_code";
@@ -334,31 +338,93 @@ class TankStatus
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
+        //CGI sample: sess_id=vhNZdvHKEiQZ&tankTerm=TGI&tk=T1&prod=400003030&origin=&prodNm=U95+BASE&lvlAlrm=0&leakDtct=N&fcfld=&loDens=610.6&hiDens=770.352&tk_location=ON_SITE&Dnst=747.2&prodCE=0&lqdKG=521655&prodLvl=9800&obsTC=31.30&obsVol=2666065&stdVol=2661799&gaugMthd=1&tkGpNm=MOGAS&op=25
+        $session_id = Utilities::getCurrentSession($this);
+
+        $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'].'/cgi-bin/en/stck_mgmt/tank_stat.cgi';
+        
+        $ref_density = 0;
+        if (isset($this->tank_15_density) && $this->tank_15_density > 0)
+            $ref_density = $this->tank_15_density;
+        else
+            $ref_density = $this->tank_density;
+        
+        $data = array(
+            'tankTerm' => $this->tank_terminal,
+            'tk' => $this->tank_code,
+            'prod' => $this->tank_base,
+            'origin' => "",
+            // 'prodNm' => $this->tank_base_name,
+            'lvlAlrm' => $this->tank_lvl_alarm,
+            'leakDtct' => $this->tank_leakdtct_on,
+            'fcfld' => "",
+            'loDens' => $this->tank_bclass_dens_lo,
+            'hiDens' => $this->tank_bclass_dens_hi,
+            'tk_location' => $this->tank_location,
+            'Dnst' => $this->tank_density,
+            'prodCE' => $this->tank_prod_c_of_e,
+            'lqdKG' => $this->tank_liquid_kg,
+            'prodLvl' => $this->tank_prod_lvl,
+            'obsTC' => $this->tank_temp,
+            'obsVol' => $this->tank_amb_vol,
+            'stdVol' => $this->tank_cor_vol,
+            'gaugMthd' => $this->tank_gaugingmthd,
+            'tkGpNm' => $this->tank_group,
+            "sess_id" => $session_id,
+            'op' => "25");
+
+        $options = array
+            (
+                'http' => array
+                    (
+                    'header'  => "Content-type: text/xml\r\n",
+                    'method'  => 'POST',
+                    'content' => http_build_query($data)
+                    )
+            );
+        $context = stream_context_create($options);
+        $result = file_get_contents($url, false, $context);
+
+        $pattern = "var saveSt=\"1\";";
+        if (!strstr($result, $pattern)) {
+            write_log("CGI returns error:" . $url, 
+                __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+        
+        //Some data not update in CGI
         $query = "
             UPDATE TANKS
-            SET TANK_BASE = :tank_base,
-                TANK_DENSITY = :tank_density,
-                TANK_TERMINAL = :tank_terminal,
-                TANK_API = :tank_api,
-                TANK_NAME = :tank_name,
-                TANK_DAILY_TOL_PERCENT = :tank_dtol_percent,
-                TANK_DAILY_TOL_VOL = :tank_dtol_volume,
-                TANK_MONTHLY_TOL_VOL = :tank_mtol_volume,
-                TANK_MONTHLY_TOL_PERCENT = :tank_mtol_percent,
-                TANK_15_DENSITY = :tank_15_density
+            SET TANK_API = :tank_api,
+                TANK_15_DENSITY = :tank_15_density,
+                TANK_PROD_C_OF_E = :tank_prod_c_of_e,
+                TANK_ULLAGE = :tank_ullage,
+                TANK_SULPHUR = :tank_sulphur,
+                TANK_FLASHPOINT = :tank_flashpoint,
+                TANK_STATUS = :tank_status, 
+                TANK_HH_LEVEL = :tank_hh_level,
+                TANK_H_LEVEL = :tank_h_level, 
+                TANK_L_LEVEL = :tank_l_level,
+                TANK_LL_LEVEL = :tank_ll_level,
+                TANK_UH_LEVEL = :tank_uh_level,
+                TANK_UL_LEVEL = :tank_ul_level,
+                TANK_ATG_MANCHG = SYSDATE                
             WHERE TANK_CODE = :tank_code";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':tank_name', $this->tank_name);
-        oci_bind_by_name($stmt, ':tank_density', $this->tank_density);
-        oci_bind_by_name($stmt, ':tank_terminal', $this->tank_terminal);
-        oci_bind_by_name($stmt, ':tank_base', $this->tank_base);
-        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
-        oci_bind_by_name($stmt, ':tank_dtol_percent', $this->tank_dtol_percent);
-        oci_bind_by_name($stmt, ':tank_dtol_volume', $this->tank_dtol_volume);
-        oci_bind_by_name($stmt, ':tank_mtol_volume', $this->tank_mtol_volume);
-        oci_bind_by_name($stmt, ':tank_mtol_percent', $this->tank_mtol_percent);
         oci_bind_by_name($stmt, ':tank_api', $this->tank_api);
-        oci_bind_by_name($stmt, ':tank_15_density', $this->tank_15_density);       
+        oci_bind_by_name($stmt, ':tank_15_density', $this->tank_15_density);
+        oci_bind_by_name($stmt, ':tank_prod_c_of_e', $this->tank_prod_c_of_e);
+        oci_bind_by_name($stmt, ':tank_ullage', $this->tank_ullage);
+        oci_bind_by_name($stmt, ':tank_sulphur', $this->tank_sulphur);
+        oci_bind_by_name($stmt, ':tank_flashpoint', $this->tank_flashpoint);
+        oci_bind_by_name($stmt, ':tank_status', $this->tank_status);
+        oci_bind_by_name($stmt, ':tank_hh_level', $this->tank_hh_level);
+        oci_bind_by_name($stmt, ':tank_h_level', $this->tank_h_level);
+        oci_bind_by_name($stmt, ':tank_l_level', $this->tank_l_level);
+        oci_bind_by_name($stmt, ':tank_ll_level', $this->tank_ll_level); 
+        oci_bind_by_name($stmt, ':tank_uh_level', $this->tank_uh_level); 
+        oci_bind_by_name($stmt, ':tank_ul_level', $this->tank_ul_level); 
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);       
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -368,7 +434,7 @@ class TankStatus
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn; 
-        $jnl_data[1] = "Tank";
+        $jnl_data[1] = "Tank status";
         $jnl_data[2] = $this->tank_code;
 
         if (!$journal->jnlLogEvent(
@@ -379,9 +445,33 @@ class TankStatus
             return false;
         }
 
-        $module = "Tank";
+        //New data
+        $query = "
+            SELECT * FROM GUI_TANKS 
+            WHERE TANK_CODE = :tank_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);            
+        } else {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        $module = "GUI_TANKS";
         $record = sprintf("code:%s", $this->tank_code);
-        foreach ($this as $key => $value) {
+        foreach ($row2 as $key => $value) {
+            if ($key === "TANK_ATG_MANCHG" ||
+                $key === "TANK_GAUGINGMTHD" ||
+                $key === "TANK_DATE" ||
+                $key === "TANK_STATUS" ||
+                $key === "TANK_HH_STATE" ||
+                $key === "TANK_H_STATE" ||
+                $key === "TANK_L_STATE" ||
+                $key === "TANK_LL_STATE" ||
+                $key === "TANK_UH_STATE" ||
+                $key === "TANK_UL_STATE") 
+                continue;
+
             if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] && 
                 !$journal->valueChange(
                     $module, $record, $key, $row[strtoupper($key)], $value)) {

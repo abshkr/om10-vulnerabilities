@@ -141,12 +141,14 @@ curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"tank_code
 https://10.1.10.66/api/tank/update.php?tank_bclass_dens_hi=1163.5&tank_name=TEST23&tank_mtol_volume=9988&tank_bclass_dens_lo=838.3127&tank_15_density=778&tank_mtol_percent=11&tank_dtol_volume=9901&tank_code=TEST2&tank_density=998&tank_dtol_percent=11&tank_terminal=TGI&tank_api=27.72&tank_base=2001001
 https://10.1.10.66/api/tank/delete.php?tank_code=TEST2
 
-https://10.1.10.66/api/tank_status/read.php?tank_code=ST1
+https://10.1.10.66/api/tank_status/read.php?tank_code=T1
 https://10.1.10.66/api/tank_status/areas.php
 https://10.1.10.66/api/tank_status/status_types.php
 https://10.1.10.66/api/tank_status/gauge_methods.php 
-https://10.1.10.66/api/tank_status/calc_tank_qty.php?tank_base=400003030&tank_qty_type=LT&tank_qty_amount=3400&tank_temp=31.3&tank_density=748
+https://10.1.10.66/api/tank_status/calc_tank_qty.php?tank_base=400003030&tank_qty_type=LT&tank_qty_amount=3400&tank_temp=31.3&tank_density=748		//"Calculate Quantity" button
 https://10.1.10.66/api/tank_status/calc_tank_qty.php?tank_base=400003030&tank_qty_type=KG&tank_qty_amount=19000&tank_temp=31.3&tank_density=748
+https://10.1.10.66/api/tank_status/calc_tank_qty_bylevel.php?tank_base=400003030&tank_qty_type=LT&tank_qty_amount=19000&tank_temp=31.3&tank_density=748&tank_prod_lvl=700&tank_code=T1&tank_terminal=TGI    //"Calculate Quantity by Level" button
+https://10.1.10.66/api/tank_status/update_status.php?tank_terminal=TGI&tank_code=T1&tank_base=400003030&tank_lvl_alarm=0&tank_leakdtct_on=N&tank_bclass_dens_lo=620.6&tank_bclass_dens_hi=760.352&tank_location=&tank_density=746.2&tank_prod_c_of_e=0&tank_liquid_kg=556&tank_prod_lvl=700&tank_temp=31.3&tank_amb_vol=760&tank_cor_vol=745&tank_gaugingmthd=1&tank_group=MOGAS&tank_hh_level=43&tank_ullage=122&tank_l_level=32&tank_flashpoint=29.02&tank_api=56.81&tank_sulphur=9&tank_leakdtct_on=N&tank_uh_level=54&tank_15_density=746.2&tank_ll_level=31&tank_h_level=42&tank_status=1&tank_ul_level=43
 
 https://10.1.10.66/api/tank_strap/read.php
 https://10.1.10.66/api/tank_strap/read.php?strap_tankcode=T1&start_height=700		//search

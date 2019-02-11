@@ -86,7 +86,7 @@ class TankStrap
         }
 
         $query = $query . " ORDER BY STRAP_TANKCODE, STRAP_SITECODE, STRAP_HEIGHT"; 
-        write_log($query, __FILE__, __LINE__); 
+        // write_log($query, __FILE__, __LINE__); 
         $stmt = oci_parse($this->conn, $query);
         if (isset($this->strap_tankcode)) {
             oci_bind_by_name($stmt, ':strap_tankcode', $this->strap_tankcode);

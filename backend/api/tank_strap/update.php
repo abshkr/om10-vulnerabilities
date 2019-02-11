@@ -40,7 +40,7 @@ if (!isset($eqpt->strap_tankcode) ||
 // update the eqpt
 if ($eqpt->update()){
     echo '{';
-        echo '"message": "Tank strap created."';
+        echo '"message": "Tank strap updated."';
     echo '}';
 } else{
     echo '{';
