@@ -17,6 +17,16 @@ class Utilities
         return "DKI_SUPER_USER";
     }
 
+    public static function getCurrentSession() 
+    {
+        session_start();
+        if (isset($_SESSION['SESSION'])) {
+            return strip_tags($_SESSION['SESSION']);
+        }
+
+        return "-1";
+    }
+
     public function getPaging($page, $total_rows, $records_per_page, $page_url)
     {
         // paging array

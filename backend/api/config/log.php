@@ -36,8 +36,8 @@ $log_file = (isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omeg
 function write_log($message, $file = __FILE__, $line = __LINE__, $level = LogLevel::DEBUG)
 // function write_log($message, $file = __FILE__, $line = __LINE__, $level = 'DEBUG')
 {
-	if (!ENABLE_DEBUG_LOG)
-		return;
+    if (!ENABLE_DEBUG_LOG)
+        return;
 
     global $log_file;
     $formatted = date("Y-m-d H:i:s") . " | " 

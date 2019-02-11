@@ -48,6 +48,46 @@ class Journal
     private $conn;
     private $autoCommit;
 
+    //Mainly table name
+    private $modules = array(
+        "GUI_TANKS" => "tank"
+    );
+
+    //Mainly fields in table
+    private $keys = array(
+        "GUI_TANKS" => array(
+            "TANK_GAUGINGMTHD_DESC" => "gauging method",
+            "TANK_ULLAGE" => "ullage",
+            "TANK_API" => "API",
+            "TANK_15_DENSITY" => "density",
+            "TANK_SULPHUR" => "sulphur(wt%)",
+            "TANK_FLASHPOINT" => "flash point",
+            "TANK_STATUS_NAME" => "tank status",
+            "TANK_HH_LEVEL" => "HH",
+            "TANK_H_LEVEL" => "H",
+            "TANK_L_LEVEL" => "L",
+            "TANK_LL_LEVEL" => "LL",
+            "TANK_UH_LEVEL" => "user H",
+            "TANK_UL_LEVEL" => "user L",
+            "TANK_AMB_VOL" => "AMB volume",
+            "TANK_PROD_C_OF_E" => "Exp.Coeff",
+            "TANK_PROD_LVL" => "product level",
+            "TANK_COR_VOL" => "std volume",
+            "TANK_LEAKDTCT_ON" => "leak detection",
+            "TANK_BASE" => "product code",
+            "TANK_TEMP" => "observed temperature",
+            "TANK_LIQUID_KG" => "liquid mass",
+            "TANK_DENSITY" => "density",
+            "TANK_INSTANCE" => "instance",
+            "TANK_DRV_TYPE" => "interface type",
+            "TANK_CHANNEL" => "channel",
+            "TANK_ADDRESS" => "register offset",
+            "TANK_DRV_AUX" => "auxiliary",
+            "TANK_POLL_GAP" => "poll interval",
+            "TANK_IDENTIFIER" => "identifer for gauge"
+        )
+    );
+
     // constructor with $db as database connection
     public function __construct($db, $autocommit = true)
     {
@@ -113,7 +153,7 @@ class Journal
                 $message = $message . $template[$i];
             }
         }
-        write_log("Write journal: " . $message, __FILE__, __LINE__);
+        write_log("Write journal: " . $message, __FILE__, __LINE__, LogLevel::INFO);
         $query = "INSERT INTO SITE_JOURNAL 
                 (GEN_DATE,
                 REGION_CODE,
@@ -157,15 +197,22 @@ class Journal
         return;
     }
 
+
+
     /* Use RECORD_CHANGED to write a journal indicating value changes
     % changed % of record % with % % to %
     Sample: [DKI_SUPER_USER] changed [Terminal] of record [1] with [URBAC_PWD_LEN_MAX] [19] to [20] 
     Parameters
-        module: CGI module, indicates in which the change happens
+        module: CGI module, indicates in which the change happens, or TABLE name
         record: mainly table primary key and a string identifying the table record
-        term: which item (field) of this record has been changed
+        term: which item (field) of this record has been changed, or KEY name
         orig_value:
         new_value:
+    For example:
+        [DKI_SUPER_USER] changed [Tank status] of record [code:T1] with [gauging method]  [MANUAL] to [AUTOMATIC]
+        $module == Tank status
+        $record == code:T1
+        $term == "gauging method"
     */
     public function valueChange($module, $record, $term, $orig_value, $new_value)
     {
@@ -174,9 +221,24 @@ class Journal
         }
 
         $jnl_data[0] = Utilities::getCurrPsn(); 
-        $jnl_data[1] = $module;
+        if (isset($this->modules[$module]))
+            $jnl_data[1] = $this->modules[$module];
+        else
+            $jnl_data[1] = $module;
+
         $jnl_data[2] = $record;
-        $jnl_data[3] = $term;
+
+        if (isset($this->keys[$module][$term]))
+        {
+            $jnl_data[3] = $this->keys[$module][$term];
+        }
+        else
+        {
+            $jnl_data[3] = $term;
+            write_log(sprintf("[%s:%s] not defined in journal::keys, use term instead", $module, $term),
+                __FILE__, __LINE__, LogLevel::WARNING);
+        }
+
         $jnl_data[4] = $orig_value;
         $jnl_data[5] = $new_value;
 
