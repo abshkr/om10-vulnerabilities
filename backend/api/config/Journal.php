@@ -77,7 +77,14 @@ class Journal
             "TANK_BASE" => "product code",
             "TANK_TEMP" => "observed temperature",
             "TANK_LIQUID_KG" => "liquid mass",
-            "TANK_DENSITY" => "density"
+            "TANK_DENSITY" => "density",
+            "TANK_INSTANCE" => "instance",
+            "TANK_DRV_TYPE" => "interface type",
+            "TANK_CHANNEL" => "channel",
+            "TANK_ADDRESS" => "register offset",
+            "TANK_DRV_AUX" => "auxiliary",
+            "TANK_POLL_GAP" => "poll interval",
+            "TANK_IDENTIFIER" => "identifer for gauge"
         )
     );
 
@@ -229,7 +236,7 @@ class Journal
         {
             $jnl_data[3] = $term;
             write_log(sprintf("[%s:%s] not defined in journal::keys, use term instead", $module, $term),
-                __FILE__, __LINE__);
+                __FILE__, __LINE__, LogLevel::WARNING);
         }
 
         $jnl_data[4] = $orig_value;

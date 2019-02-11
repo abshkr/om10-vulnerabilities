@@ -319,7 +319,7 @@ class TankStatus
         return true;
     }
 
-    public function update_status()
+    public function updateStatus()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__), 
             __FILE__, __LINE__);
@@ -435,6 +435,116 @@ class TankStatus
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn; 
         $jnl_data[1] = "Tank status";
+        $jnl_data[2] = $this->tank_code;
+
+        if (!$journal->jnlLogEvent(
+            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+        {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        //New data
+        $query = "
+            SELECT * FROM GUI_TANKS 
+            WHERE TANK_CODE = :tank_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);            
+        } else {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        $module = "GUI_TANKS";
+        $record = sprintf("code:%s", $this->tank_code);
+        foreach ($row2 as $key => $value) {
+            if ($key === "TANK_ATG_MANCHG" ||
+                $key === "TANK_GAUGINGMTHD" ||
+                $key === "TANK_DATE" ||
+                $key === "TANK_STATUS" ||
+                $key === "TANK_HH_STATE" ||
+                $key === "TANK_H_STATE" ||
+                $key === "TANK_L_STATE" ||
+                $key === "TANK_LL_STATE" ||
+                $key === "TANK_UH_STATE" ||
+                $key === "TANK_UL_STATE") 
+                continue;
+
+            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] && 
+                !$journal->valueChange(
+                    $module, $record, $key, $row[strtoupper($key)], $value)) {
+                oci_rollback($this->conn);
+                return false;
+            }
+        }
+
+        oci_commit($this->conn);
+        return true;
+    }
+
+    public function updateGauge()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__), 
+            __FILE__, __LINE__);
+
+        Utilities::sanitize($this);
+
+        //Old data
+        $query = "
+            SELECT * FROM GUI_TANKS 
+            WHERE TANK_CODE = :tank_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);            
+        } else {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        //CGI sample: sess_id=vhNZdvHKEiQZ&tankTerm=TGI&tk=T1&tkgId=11&tkgType=22&tkgAux=33&tkgChannel=44&tkgInst=55&tkgPollInt=120&tkAddress=66&op=20
+        $session_id = Utilities::getCurrentSession($this);
+
+        $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'].'/cgi-bin/en/stck_mgmt/tank_stat.cgi';
+        
+        $data = array(
+            'tankTerm' => $this->tank_terminal,
+            'tk' => $this->tank_code,
+            'tkgId' => $this->tank_identifier,
+            'tkgType' => $this->tank_drv_type,
+            'tkgAux' => $this->tank_drv_aux,
+            'tkgChannel' => $this->tank_channel,
+            'tkgInst' => $this->tank_instance,
+            'tkgPollInt' => $this->tank_poll_gap,
+            'tkAddress' => $this->tank_address,
+            "sess_id" => $session_id,
+            'op'=> "20"
+            );
+
+        $options = array
+            (
+                'http' => array
+                    (
+                    'header'  => "Content-type: text/xml\r\n",
+                    'method'  => 'POST',
+                    'content' => http_build_query($data)
+                    )
+            );
+        $context = stream_context_create($options);
+        $result = file_get_contents($url, false, $context);
+
+        $pattern = "var op=\"30\";";
+        if (!strstr($result, $pattern)) {
+            write_log("CGI returns error:" . $url, 
+                __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+        
+        $journal = new Journal($this->conn, false);
+        $curr_psn = Utilities::getCurrPsn();
+        $jnl_data[0] = $curr_psn; 
+        $jnl_data[1] = "Tank gauge";
         $jnl_data[2] = $this->tank_code;
 
         if (!$journal->jnlLogEvent(

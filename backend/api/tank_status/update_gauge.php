@@ -31,16 +31,16 @@ write_log(json_encode($tank), __FILE__, __LINE__);
 
 if (!isset($tank->tank_code)) {
     http_response_code(400);
-    echo json_encode(array("message" => "Unable to read tank. Data is incomplete."));
+    echo json_encode(array("message" => "Unable to update tank gauge. Data is incomplete."));
     return;
 }
 
-if ($tank->updateStatus()){
+if ($tank->updateGauge()){
     echo '{';
-        echo '"message": "Tank status updated."';
+        echo '"message": "Tank gauge updated."';
     echo '}';
 } else{
     echo '{';
-        echo '"message": "Unable to update tank status."';
+        echo '"message": "Unable to update tank gauge."';
     echo '}';
 }
