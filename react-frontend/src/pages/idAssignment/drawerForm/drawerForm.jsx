@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Form, Row, Modal, notification } from "antd";
 import moment from "moment";
-import Buttons from "../../../components/buttons";
+import { Buttons } from "../../../components/buttons";
 import * as REQUEST from "./request";
 
 import Id from "./fields/id";

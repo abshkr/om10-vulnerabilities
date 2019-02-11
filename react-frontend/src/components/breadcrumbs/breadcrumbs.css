@@ -1,14 +1,18 @@
 .breadcrumbs {
-  padding-top: 95px;
-  padding-left: 30px;
-  color: #538aef;
-  font-size: 30px;
-  font-weight: bold;
+  padding-top: 70px;
+  padding-left: 60px;
+  color: #36393f;
+  font-size: 25px;
   user-select: none;
   transition: all 0.3s;
+  display: flex;
 }
 
 .breadcrumbs span {
   color: #c9cccc;
   transition: all 0.3s;
+}
+
+.bc-page {
+  color: #68a4ec;
 }

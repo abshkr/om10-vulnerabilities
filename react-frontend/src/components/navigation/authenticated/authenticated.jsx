@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import { stack as BurgerMenu } from "react-burger-menu";
 import { Menu, Icon } from "antd";
-import Animate from "react-smooth";
-import User from "./user";
+
 import * as ROUTES from "../../../constants/routes";
 
 import { withRouter } from "react-router-dom";
@@ -44,15 +43,6 @@ class Authenticated extends Component {
   render() {
     return (
       <div>
-        <Animate steps={smooth} attributeName="opacity">
-          <div className="nav-bar">
-            <span>
-              <span>
-                <User />
-              </span>
-            </span>
-          </div>
-        </Animate>
         <BurgerMenu width={320} isOpen={false}>
           <Menu onClick={this.changePath} mode="inline">
             <Menu.Item key={ROUTES.DASHBOARD}>

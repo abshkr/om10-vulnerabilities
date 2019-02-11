@@ -9,21 +9,26 @@ import auth from "../../utils/auth";
 import Page from "../../components/page";
 import Filter from "../../components/filter";
 import DataTable from "../../components/table";
+import Download from "../../components/download";
+import { CreateButton } from "../../components/buttons";
 import axios from "axios";
 import search from "../../utils/search";
 import columns from "./columns";
+import { Create, Edit } from "./forms";
 
 class BaseProducts extends Component {
   constructor(props) {
     super(props);
     this.state = {
       value: "",
-      data: []
+      data: [],
+      create: false,
+      edit: null
     };
   }
 
   fetchBaseProducts = () => {
-    axios.get(`https://10.1.10.66/api/idassignment/read.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/base_prod/read.php`).then(response => {
       const data = response.data.records;
       this.setState({
         data: data,
@@ -40,18 +45,46 @@ class BaseProducts extends Component {
     });
   };
 
+  showCreate = () => {
+    this.setState({ create: true });
+  };
+
+  hideCreate = () => {
+    this.setState({ create: false });
+  };
+
+  showEdit = record => {
+    this.setState({ edit: record });
+  };
+
+  hideEdit = () => {
+    this.setState({ edit: null });
+  };
+
   componentDidMount() {
     this.fetchBaseProducts();
   }
 
   render() {
-    const { data, isLoading, filtered, value } = this.state;
+    const { data, isLoading, filtered, value, create, edit } = this.state;
     const results = !!filtered ? filtered : data;
-
+    const name = "Base Products";
     return (
-      <Page page={"Gantry"} name={"Base Products"} isLoading={isLoading} block={true}>
+      <Page page={"Gantry"} name={name} isLoading={isLoading} block={true}>
         <Filter value={value} search={this.searchObjects} />
-        <DataTable rowKey="kya_key_no" columns={columns(results)} data={results} loading={true} />
+        <Download data={data} type={name} style={{ float: "right" }} />
+        <CreateButton type={name} style={{ float: "right", marginRight: 5 }} action={this.showCreate} />
+        <Create visible={create} cancel={this.hideCreate} />
+        <Edit visible={!!edit} cancel={this.hideEdit} value={edit} />
+
+        <DataTable
+          rowKey="base_code"
+          columns={columns(results)}
+          data={results}
+          loading={true}
+          scroll={3600}
+          click={this.showEdit}
+        />
       </Page>
     );
   }
