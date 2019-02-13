@@ -121,6 +121,13 @@ const paths = [
       loader: () => import("../pages/baseProducts"),
       loading: Loading
     })
+  },
+  {
+    path: ROUTES.TANK_VIEW,
+    component: Loadable({
+      loader: () => import("../pages/tankView"),
+      loading: Loading
+    })
   }
 ];
 
