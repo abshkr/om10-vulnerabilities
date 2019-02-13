@@ -29,7 +29,8 @@ class TimeCode
     {
         Utilities::sanitize($this);
         
-        $query = "
+        if (isset($this->tcd_title)) {
+            $query = "
             SELECT TCD_TITLE,
                 TCD_MON,
                 TCD_TUE,
@@ -39,9 +40,26 @@ class TimeCode
                 TCD_SAT,
                 TCD_SUN
             FROM TIMECODE
-            WHERE TCD_TITLE = :tcd_title";        
+            WHERE TCD_TITLE = :tcd_title
+            ORDER BY TCD_TITLE";    
+        } else {
+            $query = "
+            SELECT TCD_TITLE,
+                TCD_MON,
+                TCD_TUE,
+                TCD_WED,
+                TCD_THU,
+                TCD_FRI,
+                TCD_SAT,
+                TCD_SUN
+            FROM TIMECODE
+            ORDER BY TCD_TITLE";    
+        }
+            
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':tcd_title', $this->tcd_title);
+        if (isset($this->tcd_title)) {
+            oci_bind_by_name($stmt, ':tcd_title', $this->tcd_title);
+        }
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
