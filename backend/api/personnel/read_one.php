@@ -8,7 +8,9 @@ header('Content-Type: application/json');
 // include database and object files
 include_once '../config/database.php';
 include_once '../objects/personnel.php';
- 
+include_once '../objects/expiry_date.php';
+include_once '../objects/expiry_type.php';
+
 // get database connection
 $database = new Database();
 $db = $database->getConnection();
@@ -117,6 +119,32 @@ while ($row = oci_fetch_array($stmt2, OCI_ASSOC + OCI_RETURN_NULLS)) {
 
     if (count($base_item2) > 0) {
         array_push($personnel_arr["area_accesses"], $base_item2);
+    }
+}
+
+$personnel_arr["expiry_dates"] = array();
+$expiry_date = new ExpiryDate($db);
+$expiry_date->ed_target_code = ExpiryTarget::PERSONNEL;
+$expiry_date->ed_object_id = $personnel->per_code;
+$stmt2 = $expiry_date->read();
+ 
+// retrieve our table contents
+while ($row = oci_fetch_array($stmt2, OCI_ASSOC + OCI_RETURN_NULLS)) {
+    $base_item2 = array();
+    foreach ($row as $key => $value) {
+        $base_item2[strtolower($key)] = $value;
+    }
+
+    // if ($personnel->per_code === "cw3") {
+    //     write_log(json_encode($base_item2), __FILE__, __LINE__);
+    // }
+
+    $base_item2 = array_map(function($v){
+            return (is_null($v)) ? "" : $v;
+        }, $base_item2);
+
+    if (count($base_item2) > 0) {
+        array_push($personnel_arr["expiry_dates"], $base_item2);
     }
 }
 

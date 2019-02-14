@@ -3,6 +3,8 @@
 include_once __DIR__  . '/../config/journal.php';
 include_once __DIR__  . '/../config/log.php';
 include_once __DIR__  . '/../shared/utilities.php';
+include_once __DIR__  . '/../objects/expiry_date.php';
+include_once __DIR__  . '/../objects/expiry_type.php';
 
 class Personnel 
 {
@@ -254,7 +256,7 @@ class Personnel
         }
 
         $journal = new Journal($this->conn, false);
-        $jnl_data[0] = "DKI_SUPER_USER";  //TODO USER
+        $jnl_data[0] = Utilities::getCurrPsn();
         $jnl_data[1] = "PERSONNEL";
         $jnl_data[2] = $this->per_code;
 
@@ -284,6 +286,33 @@ class Personnel
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);            
+        } else {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        //Old data: area access control 
+        $perm_array = array();
+        $query = "
+            SELECT PERM_OF_AREA.*, AREA_NAME 
+            FROM PERM_OF_AREA, AREA_RC 
+            WHERE PERM_AREA = AREA_K AND PERM_PSN = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            while ($perm_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS))
+            {
+                $base_item = array();
+                foreach ($perm_row as $key => $value) {
+                    $base_item[strtolower($key)] = $value;
+                }
+
+                $base_item = array_map(function($v){
+                    return (is_null($v)) ? "" : $v;
+                }, $base_item);
+                // write_log(json_encode($perm_row), __FILE__, __LINE__);
+                $perm_array[strtolower($perm_row['PERM_AREA'])] = $base_item;
+                // array_push($perm_array, $base_item);
+            }          
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
@@ -355,8 +384,47 @@ class Personnel
             return false;
         }
 
-        $journal = new Journal($this->conn, false);
-        $jnl_data[0] = "DKI_SUPER_USER";  //TODO USER
+        $query = "DELETE FROM PERM_OF_AREA WHERE PERM_PSN = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);;
+            return false;
+        }
+
+        foreach ($this->area_accesses as $key => $value) {
+            // write_log($key, __FILE__, __LINE__);
+            // write_log(json_encode($value), __FILE__, __LINE__);
+            $query = "INSERT INTO PERM_OF_AREA (PERM_AREA, PERM_PSN) 
+                VALUES (:perm_area, :per_code)";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':per_code', $this->per_code);
+            oci_bind_by_name($stmt, ':perm_area', $value->perm_area);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);;
+                return false;
+            }
+        }
+
+        //Update expiry dates
+        $expiry_dates = array();
+        $expiry_date = new ExpiryDate($this->conn);
+        // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
+        foreach ($this->expiry_dates as $key => $value) {
+            $expiry_dates[$value->edt_type_code] = $value;
+        }
+        // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+        if (!$expiry_date->update($expiry_dates)) {
+            write_log("Failed to update expiry dates", 
+                __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $journal = new Journal($this->conn, $autocommit = false);
+        $jnl_data[0] = Utilities::getCurrPsn();
         $jnl_data[1] = "PERSONNEL";
         $jnl_data[2] = $this->per_code;
 
@@ -369,7 +437,6 @@ class Personnel
         }
 
         //New data
-        write_log($this->per_code, __FILE__, __LINE__);
         $query = "
             SELECT * FROM GUI_PERSONNEL 
             WHERE PER_CODE = :per_code";
@@ -398,6 +465,70 @@ class Personnel
             }
         }
 
+        $perm_array2 = array();
+        $query = "
+            SELECT PERM_OF_AREA.*, AREA_NAME 
+            FROM PERM_OF_AREA, AREA_RC 
+            WHERE PERM_AREA = AREA_K AND PERM_PSN = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            while ($perm_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS))
+            {
+                $base_item = array();
+                foreach ($perm_row as $key => $value) {
+                    $base_item[strtolower($key)] = $value;
+                }
+
+                $base_item = array_map(function($v){
+                    return (is_null($v)) ? "" : $v;
+                }, $base_item);
+
+                // array_push($perm_array2, $base_item);
+                $perm_array2[strtolower($perm_row['PERM_AREA'])] = $base_item;
+            }          
+        } else {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        foreach ($perm_array as $key => $value) {
+            if (!in_array($key, array_keys($perm_array2))) {
+                //In old, but not in new
+                $jnl_data[0] = Utilities::getCurrPsn();
+                $jnl_data[1] = "area access control";
+                $jnl_data[2] = sprintf("personnel code:%s", $this->per_code);
+                $jnl_data[3] = sprintf("area name:%s", $value['area_name']);
+
+                if (!$journal->jnlLogEvent(
+                    Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+                {
+                    write_log("DB error:" . oci_error($stmt)['message'], 
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+
+        foreach ($perm_array2 as $key => $value) {
+            if (!in_array($key, array_keys($perm_array))) {
+                //In new, but not in old
+                $jnl_data[0] = Utilities::getCurrPsn();
+                $jnl_data[1] = "area access control";
+                $jnl_data[2] = sprintf("personnel code:%s", $this->per_code);
+                $jnl_data[3] = sprintf("area name:%s", $value['area_name']);
+
+                if (!$journal->jnlLogEvent(
+                    Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+                {
+                    write_log("DB error:" . oci_error($stmt)['message'], 
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+
         oci_commit($this->conn);
         return true;
     }
@@ -422,7 +553,7 @@ class Personnel
         }
         
         $journal = new Journal($this->conn, false);
-        $jnl_data[0] = "DKI_SUPER_USER";  //TODO USER
+        $jnl_data[0] = Utilities::getCurrPsn();
         $jnl_data[1] = "PERSONNEL";
         $jnl_data[2] = $this->per_code;
 
@@ -443,76 +574,10 @@ class Personnel
         Utilities::sanitize($this);
 
         $query = "
-            SELECT PER_CODE,
-                PER_NAME,
-                PER_CMPY,
-                PER_AUTH,
-                PER_LOCK,
-                PER_LAST_DMY,
-                PER_DEPARTMENT,
-                PER_LICENCE_NO,
-                PER_NEXT_MSG,
-                PER_LEVEL_NUM,
-                PER_TERMINAL,
-                PER_COMMENTS,
-                CMPY_CODE,
-                CMPY_NAME,
-                CMPY_TYPE,
-                CMPY_COMPRESS_BL,
-                CMPY_CHECK_LICEN,
-                CMPY_LDGO_DELTA,
-                CMPY_MSG,
-                CMPY_VET,
-                CMPY_TKR_CFG,
-                CMPY_ENABLE_EXPD,
-                CMPY_SEAL_NUMBER,
-                CMPY_EXP_CODE,
-                CMPY_ISSU,
-                CMPY_HOST,
-                CMPY_AOI,
-                CMPY_AUTO_LD,
-                CMPY_RTN_PROMPT,
-                CMPY_ADD_PROMPT,
-                CMPY_LOG_LD_DEL,
-                CMPY_HOST_DOCS,
-                CMPY_COMMS_OK,
-                CMPY_TKR_ACTIVAT,
-                CMPY_BOL_VP_NAME,
-                CMPY_LD_REP_VP,
-                CMPY_DRV_INST_VP,
-                CMPY_WGH_COMPLET,
-                CMPY_WGH_AUTO_FL,
-                CMPY_ORD_CARRIER,
-                CMPY_WIPE_ORDETS,
-                CMPY_RPT_T_UNIT,
-                CMPY_RPT_TEMP,
-                CMPY_AUTO_RECONC,
-                CMPY_BAY_LOOP_CH,
-                CMPY_MOD_DRAWER,
-                CMPY_MUST_SEALNO,
-                CMPY_BLTOL_FLAG,
-                CMPY_LDTOL_FLAG,
-                CMPY_REQ_PIN_FLAG,
-                PT_PSNCODE,
-                PT_TIMECD,
-                PERL_PSN,
-                PERL_ARA,
-                PERL_ENTER_TIME,
-                USER_ID,
-                USER_CODE,
-                USER_USERNAME,
-                USER_TYPE,
-                USER_STATUS_FLAG,
-                USER_LOGIN_COUNT,
-                USER_LAST_REASON,
-                VALID_TIME,
-                EXPIRE_TIME,
-                RECORD_SWITCH,
-                RECORD_ORDER                    
+            SELECT *                   
             FROM
                 " . $this->table_name . " 
-            WHERE PER_CODE = :per_code
-            ORDER BY PER_CODE";
+            WHERE PER_CODE = :per_code";
                 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
@@ -594,72 +659,7 @@ class Personnel
         Utilities::sanitize($this);
 
         $query = "
-            SELECT PER_CODE,
-                PER_NAME,
-                PER_CMPY,
-                PER_AUTH,
-                PER_LOCK,
-                PER_LAST_DMY,
-                PER_DEPARTMENT,
-                PER_LICENCE_NO,
-                PER_NEXT_MSG,
-                PER_LEVEL_NUM,
-                PER_TERMINAL,
-                PER_COMMENTS,
-                CMPY_CODE,
-                CMPY_NAME,
-                CMPY_TYPE,
-                CMPY_COMPRESS_BL,
-                CMPY_CHECK_LICEN,
-                CMPY_LDGO_DELTA,
-                CMPY_MSG,
-                CMPY_VET,
-                CMPY_TKR_CFG,
-                CMPY_ENABLE_EXPD,
-                CMPY_SEAL_NUMBER,
-                CMPY_EXP_CODE,
-                CMPY_ISSU,
-                CMPY_HOST,
-                CMPY_AOI,
-                CMPY_AUTO_LD,
-                CMPY_RTN_PROMPT,
-                CMPY_ADD_PROMPT,
-                CMPY_LOG_LD_DEL,
-                CMPY_HOST_DOCS,
-                CMPY_COMMS_OK,
-                CMPY_TKR_ACTIVAT,
-                CMPY_BOL_VP_NAME,
-                CMPY_LD_REP_VP,
-                CMPY_DRV_INST_VP,
-                CMPY_WGH_COMPLET,
-                CMPY_WGH_AUTO_FL,
-                CMPY_ORD_CARRIER,
-                CMPY_WIPE_ORDETS,
-                CMPY_RPT_T_UNIT,
-                CMPY_RPT_TEMP,
-                CMPY_AUTO_RECONC,
-                CMPY_BAY_LOOP_CH,
-                CMPY_MOD_DRAWER,
-                CMPY_MUST_SEALNO,
-                CMPY_BLTOL_FLAG,
-                CMPY_LDTOL_FLAG,
-                CMPY_REQ_PIN_FLAG,
-                PT_PSNCODE,
-                PT_TIMECD,
-                PERL_PSN,
-                PERL_ARA,
-                PERL_ENTER_TIME,
-                USER_ID,
-                USER_CODE,
-                USER_USERNAME,
-                USER_TYPE,
-                USER_STATUS_FLAG,
-                USER_LOGIN_COUNT,
-                USER_LAST_REASON,
-                VALID_TIME,
-                EXPIRE_TIME,
-                RECORD_SWITCH,
-                RECORD_ORDER                    
+            SELECT *                   
             FROM
                 " . $this->table_name . " 
             WHERE PER_CODE LIKE :per_code 

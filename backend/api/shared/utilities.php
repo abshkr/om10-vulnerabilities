@@ -4,6 +4,15 @@ include_once __DIR__  . '/../config/log.php';
 
 class Utilities
 { 
+    // private static $COMPULSORY_FIELDS = array(
+    //     "GUI_TANKS" => array("TANK_API",
+    //         "TANK_IDENTIFIER"
+    //     ),
+    //     "GUI_PERSONNEL" => array(
+    //         "PER_CDOE",
+    //     )
+    // );
+
     public static function sanitize($cls)
     {
         foreach ($cls as $key => $value) {
@@ -67,6 +76,34 @@ class Utilities
         } else{
             echo '{';
                 echo '"message": "Unable to update ' . $desc . '."';
+            echo '}';
+        }
+    }
+
+    public static function delete($object, $desc) 
+    {
+        // get posted data
+        $data = json_decode(file_get_contents("php://input"));
+        if ($data) {
+            foreach ($data as $key => $value) {
+                $object->$key = $value;
+            }
+        } else {
+            // write_log(json_encode($_GET), __FILE__, __LINE__);
+            foreach ($_GET as $key => $value) {
+                $object->$key = $value;
+            }
+        }
+
+        // write_log(json_encode($object), __FILE__, __LINE__);
+
+        if ($object->delete()){
+            echo '{';
+                echo '"message": "' . $desc . ' deleted."';
+            echo '}';
+        } else{
+            echo '{';
+                echo '"message": "Unable to delete ' . $desc . '."';
             echo '}';
         }
     }
