@@ -255,6 +255,37 @@ class Personnel
             return false;
         }
 
+        foreach ($this->area_accesses as $key => $value) {
+            // write_log($key, __FILE__, __LINE__);
+            // write_log(json_encode($value), __FILE__, __LINE__);
+            $query = "INSERT INTO PERM_OF_AREA (PERM_AREA, PERM_PSN) 
+                VALUES (:perm_area, :per_code)";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':per_code', $this->per_code);
+            oci_bind_by_name($stmt, ':perm_area', $value->perm_area);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);;
+                return false;
+            }
+        }
+
+        $expiry_dates = array();
+        $expiry_date = new ExpiryDate($this->conn);
+        $expiry_date->edt_target_code = ExpiryTarget::PERSONNEL;
+        $expiry_date->ed_object_id = $this->per_code;
+        // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
+        foreach ($this->expiry_dates as $key => $value) {
+            $expiry_dates[$value->edt_type_code] = $value;
+        }
+        // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+        if (!$expiry_date->create($expiry_dates)) {
+            write_log("Failed to update expiry dates", 
+                __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
         $journal = new Journal($this->conn, false);
         $jnl_data[0] = Utilities::getCurrPsn();
         $jnl_data[1] = "PERSONNEL";
@@ -539,6 +570,8 @@ class Personnel
 
         Utilities::sanitize($this);
 
+        //store procedure DELETE_PERSONNEL also checks if this personnel has been
+        //used by trip. If so, it will not physically delete it.
         $query = "
             BEGIN DELETE_PERSONNEL(:per_code, :exec_result); END;";
         $stmt = oci_parse($this->conn, $query);
@@ -551,7 +584,18 @@ class Personnel
             oci_rollback($this->conn);;
             return false;
         }
-        
+
+        //delete expiry dates
+        $expiry_dates = array();
+        $expiry_date = new ExpiryDate($this->conn);
+        $expiry_date->edt_target_code = ExpiryTarget::PERSONNEL;
+        $expiry_date->ed_object_id = $this->per_code;
+        if (!$expiry_date->delete()) {
+            write_log("Failed to delete expiry dates", __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
         $journal = new Journal($this->conn, false);
         $jnl_data[0] = Utilities::getCurrPsn();
         $jnl_data[1] = "PERSONNEL";
