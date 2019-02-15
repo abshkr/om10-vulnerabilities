@@ -1,11 +1,18 @@
-http://10.1.10.66/api/personnel/read.php
-http://10.2.20.53/api/personnel/read_one.php?per_code=cw2
-http://10.2.20.53/api/personnel/search.php?s=cw
-http://10.2.20.53/api/personnel/read_page.php?page=2
-
-http://10.2.20.53/api/personnel/create.php
-http://10.2.20.53/api/personnel/update.php
-http://10.2.20.53/api/personnel/delete.php
+https://10.1.10.66/api/personnel/read.php
+https://10.1.10.66/api/personnel/read_one.php?per_code=cw3
+https://10.1.10.66/api/personnel/search.php?s=cw
+https://10.1.10.66/api/personnel/read_page.php?page=2
+https://10.1.10.66/api/personnel/roles.php
+https://10.1.10.66/api/personnel/employers.php
+https://10.1.10.66/api/personnel/time_codes.php
+https://10.1.10.66/api/personnel/area_accesses.php?per_code=cw3
+https://10.1.10.66/api/personnel/areas.php
+https://10.1.10.66/api/personnel/create.php
+https://10.1.10.66/api/personnel/update.php?per_email=wei@gmail.com&pt_timecd=AL&perl_ara=9999&per_lock=N&per_auth=3&per_code=cw3&per_level_num=0&user_status_flag=1&per_licence_no=licen&per_name=name2&per_department=dep2&role=3&per_cmpy=68006884&cmpy_code=CAROTINO&per_comments=comment2
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"per_code\": \"cw3\", \"per_name\": \"name3\", \"user_status_flag\": \"2\", \"area_accesses\": [{\"perm_psn\": \"cw3\", \"perm_area\": \"1\", \"area_name\": \"ON_SITE\"},{\"perm_psn\": \"cw3\", \"perm_area\": \"3\", \"area_name\": \"test\"}] }" https://10.1.10.66/api/personnel/update.php
+//Update personnel, area access control, and expiry dates
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"per_code\": \"cw3\", \"per_name\": \"name3\", \"user_status_flag\": \"2\", \"area_accesses\": [{\"perm_psn\": \"cw3\", \"perm_area\": \"1\", \"area_name\": \"ON_SITE\"},{\"perm_psn\": \"cw3\", \"perm_area\": \"3\", \"area_name\": \"test\"}], \"expiry_dates\": [ { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_1\", \"edt_type_desc\": \"DET Expiry1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw3\", \"ed_exp_date\": \"\", \"ed_status\": \"\" }, { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_2\", \"edt_type_desc\": \"Driving Licence\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw3\", \"ed_exp_date\": \"2019-02-28 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_3\", \"edt_type_desc\": \"Medical1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw3\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" } ] }" https://10.1.10.66/api/personnel/update.php
+https://10.1.10.66/api/personnel/delete.php?per_code=cw2
 
 https://10.1.10.66/api/on_demand/suppliers.php
 https://10.1.10.66/api/on_demand/carriers.php

@@ -50,7 +50,9 @@ class Journal
 
     //Mainly table name
     private $modules = array(
-        "GUI_TANKS" => "tank"
+        "GUI_TANKS" => "tank",
+        "GUI_PERSONNEL" => "personnel",
+        "EXPIRY_DATE_PERSONNEL" => "personnel expiry date"
     );
 
     //Mainly fields in table
@@ -85,6 +87,21 @@ class Journal
             "TANK_DRV_AUX" => "auxiliary",
             "TANK_POLL_GAP" => "poll interval",
             "TANK_IDENTIFIER" => "identifer for gauge"
+        ),
+        "GUI_PERSONNEL" => array(
+            "PER_NAME" => "name",
+            "PER_LOCK" => "lock out",
+            "PER_DEPARTMENT" => "department",
+            "PER_LICENCE_NO" => "driver license no.",
+            "PER_COMMENTS" => "comments",
+            "PT_TIMECD" => "time code",
+            "USER_STATUS_FLAG" => "status",
+            "PER_CMPY" => "employer",
+            "CMPY_NAME" => "employer",
+            "PER_EMAIL" => "personnel email"
+        ),
+        "EXPIRY_DATE_DETAILS" => array (
+
         )
     );
 
@@ -197,7 +214,26 @@ class Journal
         return;
     }
 
+    /*
+    use RECORD_ADDED % added % record with %: %
+    Example [DKI_SUPER_USER] added [personnel area access control] record with [personnel code: cw3]: [area name:test]
+    */
+    // public function valueAdd($term, $record, $value)
+    // {
+    //     $jnl_data[0] = Utilities::getCurrPsn();
+    //     $jnl_data[1] = $term;
+    //     $jnl_data[2] = $record;
+    //     $jnl_data[3] = $value;
 
+    //     if (!$this->jnlLogEvent(
+    //         Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+    //     {
+    //         write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         return false;
+    //     }
+
+    //     return true;
+    // }
 
     /* Use RECORD_CHANGED to write a journal indicating value changes
     % changed % of record % with % % to %

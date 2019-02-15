@@ -1,6 +1,18 @@
 <?php
+
+include_once __DIR__  . '/../config/log.php';
+
 class Utilities
 { 
+    // private static $COMPULSORY_FIELDS = array(
+    //     "GUI_TANKS" => array("TANK_API",
+    //         "TANK_IDENTIFIER"
+    //     ),
+    //     "GUI_PERSONNEL" => array(
+    //         "PER_CDOE",
+    //     )
+    // );
+
     public static function sanitize($cls)
     {
         foreach ($cls as $key => $value) {
@@ -9,6 +21,103 @@ class Utilities
 
             // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
             $cls->{$key} = htmlspecialchars(strip_tags($value));
+        }
+    }
+
+    public static function retrieve(&$result_array, $stmt)
+    {
+        $num = 0;
+        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $num += 1;
+            
+            $base_item = array();
+            foreach ($row as $key => $value) {
+                $base_item[strtolower($key)] = $value;
+            }
+
+            $base_item = array_map(function($v){
+                return (is_null($v)) ? "" : $v;
+            }, $base_item);
+
+            array_push($result_array, $base_item);
+        }
+        // write_log(json_encode($result, JSON_PRETTY_PRINT), __FILE__, __LINE__);
+            
+        return $num;
+    }
+
+    public static function update($object, $desc) 
+    {
+        // get posted data
+        $data = json_decode(file_get_contents("php://input"));
+        if ($data) {
+            foreach ($data as $key => $value) {
+                $object->$key = $value;
+            }
+        } else {
+            // write_log(json_encode($_GET), __FILE__, __LINE__);
+            foreach ($_GET as $key => $value) {
+                $object->$key = $value;
+            }
+        }
+
+        write_log(json_encode($object), __FILE__, __LINE__);
+
+        // if (!isset($tank->per_code)) {
+        //     http_response_code(400);
+        //     echo json_encode(array("message" => "Unable to update personnel. Data is incomplete."));
+        //     return;
+        // }
+
+        if ($object->update()){
+            echo '{';
+                echo '"message": "' . $desc . ' updated."';
+            echo '}';
+        } else{
+            echo '{';
+                echo '"message": "Unable to update ' . $desc . '."';
+            echo '}';
+        }
+    }
+
+    public static function delete($object, $desc) 
+    {
+        // get posted data
+        $data = json_decode(file_get_contents("php://input"));
+        if ($data) {
+            foreach ($data as $key => $value) {
+                $object->$key = $value;
+            }
+        } else {
+            // write_log(json_encode($_GET), __FILE__, __LINE__);
+            foreach ($_GET as $key => $value) {
+                $object->$key = $value;
+            }
+        }
+
+        // write_log(json_encode($object), __FILE__, __LINE__);
+
+        if ($object->delete()){
+            echo '{';
+                echo '"message": "' . $desc . ' deleted."';
+            echo '}';
+        } else{
+            echo '{';
+                echo '"message": "Unable to delete ' . $desc . '."';
+            echo '}';
+        }
+    }
+
+    public static function echoRead($retrieve_count, $result, $desc = "")
+    {
+        if ($retrieve_count > 0) {
+            http_response_code(200);
+            echo json_encode($result, JSON_PRETTY_PRINT);
+        } else {
+            http_response_code(404);
+            echo json_encode(
+                array("message" => "No " . $desc . " record found.")
+            );
         }
     }
 

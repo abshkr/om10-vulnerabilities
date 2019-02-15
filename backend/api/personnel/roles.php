@@ -5,17 +5,17 @@ header("Content-Type: application/json; charset=UTF-8");
  
 // include database and object files
 include_once '../config/database.php';
-include_once '../objects/company.php';
+include_once '../objects/idassignment.php';
  
 // instantiate database and product object
 $database = new Database();
 $db = $database->getConnection();
 
 // initialize object
-$idassign = new Company($db);
+$idassign = new IDAssignment($db);
 
 // query products
-$stmt = $idassign->employers();
+$stmt = $idassign->roles();
  
 // products array
 $personnels_arr = array();
@@ -40,10 +40,9 @@ while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
     // this will make $row['name'] to
     // just $name only
     // extract(array_change_key_case($row));
-
     // $personnel_item = array(
-    //     "cmpy_code" => $cmpy_code,
-    //     "cmpy_name" => $cmpy_name
+    //     "role_id" => $auth_level_id,
+    //     "role_name" => $auth_level_name
     // );
 
     // $personnel_item = array_map(function($v){
@@ -58,6 +57,6 @@ if ($num > 0) {
 } else {
     http_response_code(404);
     echo json_encode(
-        array("message" => "No carrier record found.")
+        array("message" => "No role record found.")
     );
 }
