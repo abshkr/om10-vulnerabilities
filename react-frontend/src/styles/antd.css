@@ -95,3 +95,7 @@
 .ant-notification-notice-message {
   color: #36393f;
 }
+
+.ant-btn {
+  border-radius: 30px;
+}

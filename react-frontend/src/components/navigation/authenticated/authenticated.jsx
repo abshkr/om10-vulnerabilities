@@ -80,11 +80,12 @@ class Authenticated extends Component {
               <Menu.Item key={ROUTES.TANK_GROUPS}>Tank Groups</Menu.Item>
               
               <Menu.Item key={ROUTES.DRAWER_PRODUCTS}>Drawer Products</Menu.Item>
-              <Menu.Item key={ROUTES.TANK_CONFIGURATIONS}>Tank Configuration</Menu.Item>
+              
               <Menu.Item key={ROUTES.PRODUCT_GROUPS}>Product Groups</Menu.Item>
               <Menu.Item key={ROUTES.ALLOCATIONS}>Allocations</Menu.Item>
               <Menu.Item key={ROUTES.HAZCHEM_CODES}>Hazchem Codes</Menu.Item>
               <Menu.Item key={ROUTES.LOAD_METERS}>Load Meters</Menu.Item> */}
+              <Menu.Item key={ROUTES.TANK_CONFIGURATIONS}>Tank Configuration</Menu.Item>
               <Menu.Item key={ROUTES.BASE_PRODUCTS}>Base Products</Menu.Item>
             </SubMenu>
             <SubMenu
@@ -201,6 +202,7 @@ class Authenticated extends Component {
               {/* <Menu.Item key={ROUTES.BAY_VIEW}>Bay View</Menu.Item>
               <Menu.Item key={ROUTES.DRAWER_PRODUCT_ASSETS}>Drawer Product Assets</Menu.Item> */}
               <Menu.Item key={ROUTES.DRIVER_MESSAGING}>Driver Messaging</Menu.Item>
+              <Menu.Item key={ROUTES.TANK_VIEW}>Tank View</Menu.Item>
             </SubMenu>
           </Menu>
         </BurgerMenu>
