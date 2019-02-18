@@ -157,8 +157,8 @@ class Authenticated extends Component {
               <Menu.Item key={ROUTES.TANK_INVENTORY}>Tank Inventory</Menu.Item>
               <Menu.Item key={ROUTES.SITE_BALANCE}>Site Balance</Menu.Item>
               <Menu.Item key={ROUTES.PRODUCT_INVENTORY}>Product Inventory</Menu.Item>
-              {/* <Menu.Item key={ROUTES.TANK_STATUS}>Tank Status</Menu.Item>
-              <Menu.Item key={ROUTES.PRODUCT_MOVEMENT}>Product Movement</Menu.Item>
+              <Menu.Item key={ROUTES.TANK_STATUS}>Tank Status</Menu.Item>
+              {/* <Menu.Item key={ROUTES.PRODUCT_MOVEMENT}>Product Movement</Menu.Item>
               <Menu.Item key={ROUTES.INVENTORY_REQUESTS}>Inventory Requests</Menu.Item> */}
             </SubMenu>
 

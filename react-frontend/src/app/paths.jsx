@@ -135,6 +135,13 @@ const paths = [
       loader: () => import("../pages/tankConfiguration"),
       loading: Loading
     })
+  },
+  {
+    path: ROUTES.TANK_STATUS,
+    component: Loadable({
+      loader: () => import("../pages/tankStatus"),
+      loading: Loading
+    })
   }
 ];
 
