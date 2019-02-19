@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { Form, InputNumber } from "antd";
 
-export default class ObservedTemperature extends Component {
+export default class LiquidMass extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        tank_temp: value.tank_temp
+        tank_liquid_kg: value.tank_liquid_kg
       });
     }
   }
@@ -15,8 +15,8 @@ export default class ObservedTemperature extends Component {
     const { decorator } = this.props;
 
     return (
-      <Form.Item label="Obsvd Temp">
-        {decorator("tank_temp", {
+      <Form.Item label="Liquid Mass">
+        {decorator("tank_liquid_kg", {
           rules: [{ required: true, message: "please enter user name" }]
         })(<InputNumber />)}
       </Form.Item>

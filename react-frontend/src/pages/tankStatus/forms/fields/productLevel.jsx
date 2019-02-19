@@ -6,7 +6,7 @@ export default class ProductLevel extends Component {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        tank_api: value.tank_api
+        tank_prod_lvl: value.tank_prod_lvl
       });
     }
   }
@@ -15,8 +15,8 @@ export default class ProductLevel extends Component {
     const { decorator } = this.props;
 
     return (
-      <Form.Item label="API">
-        {decorator("tank_api", {
+      <Form.Item label="Product Level">
+        {decorator("tank_prod_lvl", {
           rules: [{ required: true, message: "please enter user name" }]
         })(<InputNumber />)}
       </Form.Item>

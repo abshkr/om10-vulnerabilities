@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Form, Button, Tabs, Row, Col, Divider } from "antd";
+
 import Terminal from "./fields/terminal";
 import Tank from "./fields/tank";
 import ProductCode from "./fields/productCode";
@@ -15,9 +16,18 @@ import H from "./fields/h";
 import HH from "./fields/hh";
 import L from "./fields/l";
 import LL from "./fields/ll";
-
 import UserH from "./fields/userH";
 import UserL from "./fields/userL";
+
+import StandardDensity from "./fields/standardDensity";
+import Density from "./fields/density";
+import API from "./fields/api";
+import ProductLevel from "./fields/productLevel";
+import ExpCoeff from "./fields/expCoeff";
+import ObservedTemperature from "./fields/obsvdTemp";
+import AmbientVolume from "./fields/ambVolume";
+import StandardVolume from "./fields/standardVolume";
+import LiquidMass from "./fields/liquidMass";
 
 class EditForm extends React.Component {
   handleSubmit = e => {
@@ -62,12 +72,11 @@ class EditForm extends React.Component {
               <Tank decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <ProductCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <ProductName decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <Area decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <TankStatus decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
 
             <TabPane tab="Status" key="2">
-              <Area decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <TankStatus decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Divider />
               <Row type="flex" justify="space-between">
                 <Col span={4}>
                   <Ullage decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
@@ -105,6 +114,54 @@ class EditForm extends React.Component {
               </Row>
 
               <Divider />
+
+              <Row type="flex" justify="space-between">
+                <Col span={4}>
+                  <StandardDensity decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+                </Col>
+                <Col span={4}>
+                  <Density decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+                </Col>
+                <Col span={4}>
+                  <API decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+                </Col>
+                <Col span={4}>
+                  <ProductLevel decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+                </Col>
+              </Row>
+              <Row type="flex" justify="space-between">
+                <Col span={4}>
+                  <ExpCoeff decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+                </Col>
+                <Col span={4}>
+                  <ObservedTemperature
+                    decorator={getFieldDecorator}
+                    value={value}
+                    setValue={setFieldsValue}
+                  />
+                </Col>
+                <Col span={4}>
+                  <AmbientVolume decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+                </Col>
+                <Col span={4}>
+                  <StandardVolume decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+                </Col>
+                <Col span={4}>
+                  <LiquidMass decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+                </Col>
+              </Row>
+
+              <Row type="flex" justify="space-around">
+                <Col>
+                  <Button type="primary">Calculate Density</Button>
+                </Col>
+                <Col>
+                  <Button type="primary">Calculate Quantity by Level</Button>
+                </Col>
+                <Col>
+                  <Button type="primary">Calculate Quantity</Button>
+                </Col>
+              </Row>
             </TabPane>
 
             <TabPane tab="Gauging" key="3">
