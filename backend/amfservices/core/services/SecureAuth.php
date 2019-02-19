@@ -485,7 +485,7 @@ class SecureAuth
         
 		if ( $EXP_DATE_MODE <= 1 )
 		{
-			$sql = "SELECT * FROM EXPIRY_DATE";
+			$sql = "SELECT * FROM EXPIRY_DATE ORDER BY EXPIRY_DATE_NO";
 			$stid  = oci_parse($this->connect, $sql);
 			oci_execute($stid);
 			$data = array();
