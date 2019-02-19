@@ -16,27 +16,28 @@ $database = new Database();
 $db = $database->getConnection();
  
 $cust_cat = new CustomerCategory($db);
+Utilities::create($cust_cat, "customer category");
  
 // get posted data or get data
-$data = json_decode(file_get_contents("php://input"));
-$cust_cat->category_code = (isset($_GET["category_code"]) ? 
-    $_GET["category_code"] : $data->category_code);
-$cust_cat->category_name = (isset($_GET["category_name"]) ? 
-    $_GET["category_name"] : $data->category_name);
+// $data = json_decode(file_get_contents("php://input"));
+// $cust_cat->category_code = (isset($_GET["category_code"]) ? 
+//     $_GET["category_code"] : $data->category_code);
+// $cust_cat->category_name = (isset($_GET["category_name"]) ? 
+//     $_GET["category_name"] : $data->category_name);
 
-if (!isset($cust_cat->category_name) || !isset($cust_cat->category_code)) {
-    http_response_code(400);
-    echo json_encode(array("message" => "Unable to create customer category. Data is incomplete."));
-}
+// if (!isset($cust_cat->category_name) || !isset($cust_cat->category_code)) {
+//     http_response_code(400);
+//     echo json_encode(array("message" => "Unable to create customer category. Data is incomplete."));
+// }
 
-$cust_cat->category_code = htmlspecialchars(strip_tags($cust_cat->category_code));
-$cust_cat->category_name = htmlspecialchars(strip_tags($cust_cat->category_name));
+// $cust_cat->category_code = htmlspecialchars(strip_tags($cust_cat->category_code));
+// $cust_cat->category_name = htmlspecialchars(strip_tags($cust_cat->category_name));
 
-// create the personnel
-if ($cust_cat->create()){
-    http_response_code(201);
-    echo json_encode(array("message" => "Customer category was created."));
-} else{
-    http_response_code(503);
-    echo json_encode(array("message" => "Unable to create customer category."));
-}
+// // create the personnel
+// if ($cust_cat->create()){
+//     http_response_code(201);
+//     echo json_encode(array("message" => "Customer category was created."));
+// } else{
+//     http_response_code(503);
+//     echo json_encode(array("message" => "Unable to create customer category."));
+// }

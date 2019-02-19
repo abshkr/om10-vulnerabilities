@@ -84,6 +84,28 @@ class ExpiryDate
         return true;
     }
 
+    public function delete()
+    {
+        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
+
+        Utilities::sanitize($this);
+
+        $query = "
+            DELETE FROM EXPIRY_DATE_DETAILS 
+            WHERE ED_TARGET_CODE = :ed_target_code
+                AND ED_OBJECT_ID = :ed_object_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':ed_target_code', $this->edt_target_code);
+        oci_bind_by_name($stmt, ':ed_object_id', $this->ed_object_id);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        return true;
+    }
+
     //Do not commit
     public function create($expiry_dates)
     {
@@ -111,8 +133,8 @@ class ExpiryDate
             FROM EXPIRY_DATE_TYPES
             WHERE EDT_TARGET_CODE = :ed_target_code";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':ed_target_code', $this->target_code);
-        oci_bind_by_name($stmt, ':ed_object_id', $this->obj_code);
+        oci_bind_by_name($stmt, ':ed_target_code', $this->edt_target_code);
+        oci_bind_by_name($stmt, ':ed_object_id', $this->ed_object_id);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -127,10 +149,10 @@ class ExpiryDate
                     AND ED_OBJECT_ID = :ed_object_id
                     AND ED_TYPE_CODE = :ed_type_code";
             $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':ed_target_code', $this->target_code);
-            oci_bind_by_name($stmt, ':ed_object_id', $this->obj_code);
+            oci_bind_by_name($stmt, ':ed_target_code', $value->edt_target_code);
+            oci_bind_by_name($stmt, ':ed_object_id', $value->ed_object_id);
             oci_bind_by_name($stmt, ':ed_type_code', $key);
-            oci_bind_by_name($stmt, ':ed_exp_date', $value);
+            oci_bind_by_name($stmt, ':ed_exp_date', $value->ed_exp_date);
             // write_log(sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", 
             //     $this->eqpt_title, $this->eqpt_code, $this->eqpt_owner,
             //     $this->eqpt_lock, $this->eqpt_empty_kg, $this->eqp_must_tare_in,

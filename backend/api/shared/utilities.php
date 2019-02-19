@@ -46,6 +46,40 @@ class Utilities
         return $num;
     }
 
+    public static function create($object, $desc) 
+    {
+        // get posted data
+        $data = json_decode(file_get_contents("php://input"));
+        if ($data) {
+            foreach ($data as $key => $value) {
+                $object->$key = $value;
+            }
+        } else {
+            // write_log(json_encode($_GET), __FILE__, __LINE__);
+            foreach ($_GET as $key => $value) {
+                $object->$key = $value;
+            }
+        }
+
+        write_log(json_encode($object), __FILE__, __LINE__);
+
+        // if (!isset($tank->per_code)) {
+        //     http_response_code(400);
+        //     echo json_encode(array("message" => "Unable to update personnel. Data is incomplete."));
+        //     return;
+        // }
+
+        if ($object->create()){
+            echo '{';
+                echo '"message": "' . $desc . ' created."';
+            echo '}';
+        } else{
+            echo '{';
+                echo '"message": "Unable to create ' . $desc . '."';
+            echo '}';
+        }
+    }
+
     public static function update($object, $desc) 
     {
         // get posted data
