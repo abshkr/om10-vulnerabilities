@@ -52,7 +52,8 @@ class Journal
     private $modules = array(
         "GUI_TANKS" => "tank",
         "GUI_PERSONNEL" => "personnel",
-        "EXPIRY_DATE_PERSONNEL" => "personnel expiry date"
+        "EXPIRY_DATE_PERSONNEL" => "personnel expiry date",
+        "TIMECODE" => "time code"
     );
 
     //Mainly fields in table
@@ -102,6 +103,15 @@ class Journal
         ),
         "EXPIRY_DATE_DETAILS" => array (
 
+        ),
+        "TIMECODE" => array (
+            "TCD_MON" => "Monday", 
+            "TCD_TUE" => "Thuesday", 
+            "TCD_WED" => "Wednesday", 
+            "TCD_THU" => "Thursday", 
+            "TCD_FRI" => "Friday", 
+            "TCD_SAT" => "Saturday", 
+            "TCD_SUN" => "Sunday"
         )
     );
 
@@ -252,6 +262,10 @@ class Journal
     */
     public function valueChange($module, $record, $term, $orig_value, $new_value)
     {
+        write_log(sprintf("%s::%s START. module:%s, record:%s, term:%s, orig:%s, new:%s", 
+            __CLASS__, __FUNCTION__, $module, $record, $term, $orig_value, $new_value),
+            __FILE__, __LINE__);
+
         if ($orig_value === $new_value) {
             return;
         }
@@ -264,9 +278,9 @@ class Journal
 
         $jnl_data[2] = $record;
 
-        if (isset($this->keys[$module][$term]))
+        if (isset($this->keys[$module][strtoupper($term)]))
         {
-            $jnl_data[3] = $this->keys[$module][$term];
+            $jnl_data[3] = $this->keys[$module][strtoupper($term)];
         }
         else
         {

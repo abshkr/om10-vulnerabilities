@@ -38,9 +38,9 @@ class CustomerCategory
         
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return $stmt;
         } else {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
     }
@@ -61,10 +61,25 @@ class CustomerCategory
         oci_bind_by_name($stmt, ':categ_code', $this->category_code);
         oci_bind_by_name($stmt, ':categ_descript', $this->category_name);
 
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
+
+        $journal = new Journal($this->conn, false);
+        $jnl_data[0] = Utilities::getCurrPsn();
+        $jnl_data[1] = "customer catetory";
+        $jnl_data[2] = $this->category_code;
+
+        if (!$journal->jnlLogEvent(
+            Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+        {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        oci_commit($this->conn);
         return true;
     }
 
@@ -74,6 +89,20 @@ class CustomerCategory
 
         Utilities::sanitize($this);
 
+        $query = "
+            SELECT CATEG_CODE CATEGORY_CODE, 
+                CATEG_DESCRIPT CATEGORY_NAME
+            FROM CST_PRCE_CATEGOR 
+            WHERE CATEG_CODE = :categ_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':categ_code', $this->category_code);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);   
+            // write_log(json_encode($row), __FILE__, __LINE__);         
+        } else {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
         $query = "UPDATE CST_PRCE_CATEGOR
                 SET CATEG_DESCRIPT = :categ_descript
                 WHERE CATEG_CODE = :categ_code";
@@ -81,10 +110,35 @@ class CustomerCategory
         oci_bind_by_name($stmt, ':categ_code', $this->category_code);
         oci_bind_by_name($stmt, ':categ_descript', $this->category_name);
 
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
+
+        $journal = new Journal($this->conn, $autocommit = false);
+        $jnl_data[0] = Utilities::getCurrPsn();
+        $jnl_data[1] = "customer category";
+        $jnl_data[2] = $this->category_code;
+
+        if (!$journal->jnlLogEvent(
+            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+        {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $module = "customer category";
+        $record = sprintf("code:%s", $this->category_code);
+        foreach ($this as $key => $value) {
+            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] && 
+                !$journal->valueChange(
+                    $module, $record, $key, $row[strtoupper($key)], $value)) {
+                return false;
+            }
+        }
+
+        oci_commit($this->conn);
         return true;
     }
 
@@ -101,10 +155,25 @@ class CustomerCategory
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':categ_code', $this->category_code);
         
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
+
+        $journal = new Journal($this->conn, $autocommit = false);
+        $jnl_data[0] = Utilities::getCurrPsn();
+        $jnl_data[1] = "customer category";
+        $jnl_data[2] = $this->category_code;
+
+        if (!$journal->jnlLogEvent(
+            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+        {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        oci_commit($this->conn);
         return true;
     }
 }
