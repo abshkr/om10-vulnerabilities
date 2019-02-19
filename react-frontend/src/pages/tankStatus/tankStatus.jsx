@@ -10,11 +10,10 @@ import Page from "../../components/page";
 import Filter from "../../components/filter";
 import DataTable from "../../components/table";
 import Download from "../../components/download";
-import { CreateButton } from "../../components/buttons";
 import axios from "axios";
 import search from "../../utils/search";
 import columns from "./columns";
-import { Create, Edit } from "./forms";
+import { Edit } from "./forms";
 
 class TankStatus extends Component {
   constructor(props) {
@@ -45,14 +44,6 @@ class TankStatus extends Component {
     });
   };
 
-  showCreate = () => {
-    this.setState({ create: true });
-  };
-
-  hideCreate = () => {
-    this.setState({ create: false });
-  };
-
   showEdit = record => {
     this.setState({ edit: record });
   };
@@ -66,23 +57,21 @@ class TankStatus extends Component {
   }
 
   render() {
-    const { data, isLoading, filtered, value, create, edit } = this.state;
+    const { data, isLoading, filtered, value, edit } = this.state;
     const results = !!filtered ? filtered : data;
     const name = "Tank Status";
     return (
       <Page page={"Gantry"} name={name} isLoading={isLoading} block={true}>
         <Filter value={value} search={this.searchObjects} />
         <Download data={data} type={name} style={{ float: "right" }} />
-        <CreateButton type={name} style={{ float: "right", marginRight: 5 }} action={this.showCreate} />
-        <Create visible={create} cancel={this.hideCreate} />
         <Edit visible={!!edit} cancel={this.hideEdit} value={edit} />
-
         <DataTable
+          resize={true}
           rowKey="tank_code"
           columns={columns(results)}
           data={results}
           loading={true}
-          scroll={3600}
+          scroll={5000}
           click={this.showEdit}
         />
       </Page>

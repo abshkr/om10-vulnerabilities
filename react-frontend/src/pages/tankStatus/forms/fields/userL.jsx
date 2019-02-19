@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import { Form, Input } from "antd";
+import { Form, InputNumber } from "antd";
 
-export default class ProductCode extends Component {
+export default class UserL extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        tank_base: value.tank_base
+        tank_ul_level: value.tank_ul_level
       });
     }
   }
@@ -15,10 +15,10 @@ export default class ProductCode extends Component {
     const { decorator } = this.props;
 
     return (
-      <Form.Item label="Product Code">
-        {decorator("tank_base", {
+      <Form.Item label="User L">
+        {decorator("tank_ul_level", {
           rules: [{ required: true, message: "please enter user name" }]
-        })(<Input disabled />)}
+        })(<InputNumber />)}
       </Form.Item>
     );
   }
