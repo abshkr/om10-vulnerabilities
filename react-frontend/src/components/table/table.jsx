@@ -1,6 +1,7 @@
 import React from "react";
 import { Table } from "antd";
 import { Resizable } from "react-resizable";
+import "./table.css";
 
 const ResizeableTitle = props => {
   const { onResize, width, ...restProps } = props;
@@ -53,13 +54,13 @@ class DataTable extends React.Component {
         onResize: this.handleResize(index)
       })
     }));
-
     return (
       <Table
         bordered
         size="middle"
         loading={!loading}
         rowKey={rowKey}
+        components={this.components}
         columns={resize ? columns : this.props.columns}
         dataSource={data}
         onChange={change}

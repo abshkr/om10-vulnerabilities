@@ -1,6 +1,5 @@
 import React from "react";
-import { Tag, Icon } from "antd";
-import generate from "../../utils/generateOptions";
+import { Icon } from "antd";
 import { Check } from "../../constants/colors";
 
 const columns = data => [
@@ -8,12 +7,14 @@ const columns = data => [
     title: "Tank Code",
     dataIndex: "tank_code",
     key: "tank_code",
+    width: 150,
     fixed: "left"
   },
   {
     title: "In Use?",
     dataIndex: "tank_active",
     key: "tank_active",
+    width: 80,
     render: payload => (
       <Icon
         style={{ color: Check[payload === "1" ? "Y" : "N"], fontSize: 16 }}
