@@ -46,16 +46,17 @@ export default class Table extends Component {
     return (
       <div>
         <IButton submit={this.setIButton} visible={iVisible} close={this.handleCancel} />
-        <Download data={data} type={"id_assignment"} style={{ position: "absolute", right: 250, top: 40 }} />
+        <Download data={data} type={"id_assignment"} style={{ position: "absolute", right: 70, top: 36 }} />
         <Button
           type="primary"
-          style={{ position: "absolute", right: 60, top: 40 }}
+          style={{ position: "absolute", right: 295, top: 36 }}
           onClick={() => this.setState({ record: null, visible: true })}
         >
           Create Record
         </Button>
         <Button
-          style={{ position: "absolute", right: 155, top: 40 }}
+          type="primary"
+          style={{ position: "absolute", right: 175, top: 36 }}
           onClick={() => this.setState({ iVisible: true })}
         >
           Scan I-Button

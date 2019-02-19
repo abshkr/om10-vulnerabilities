@@ -128,6 +128,20 @@ const paths = [
       loader: () => import("../pages/tankView"),
       loading: Loading
     })
+  },
+  {
+    path: ROUTES.TANK_CONFIGURATIONS,
+    component: Loadable({
+      loader: () => import("../pages/tankConfiguration"),
+      loading: Loading
+    })
+  },
+  {
+    path: ROUTES.TANK_STATUS,
+    component: Loadable({
+      loader: () => import("../pages/tankStatus"),
+      loading: Loading
+    })
   }
 ];
 
