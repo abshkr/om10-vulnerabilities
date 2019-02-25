@@ -53,7 +53,8 @@ class Journal
         "GUI_TANKS" => "tank",
         "GUI_PERSONNEL" => "personnel",
         "EXPIRY_DATE_PERSONNEL" => "personnel expiry date",
-        "TIMECODE" => "time code"
+        "TIMECODE" => "time code",
+        "PRINTER" => "physical printer"
     );
 
     //Mainly fields in table
@@ -112,6 +113,11 @@ class Journal
             "TCD_FRI" => "Friday", 
             "TCD_SAT" => "Saturday", 
             "TCD_SUN" => "Sunday"
+        ),
+        "PRINTER" => array(
+            "SYS_PRNTR" => "system/physical printer",
+            "AREA_NAME" => "area location",
+            "PRNTR_LOCK" => "lock"
         )
     );
 

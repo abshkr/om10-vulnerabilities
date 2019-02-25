@@ -44,42 +44,7 @@ class Tanker
         Utilities::sanitize($this);
 
         $query = "
-            SELECT TNKR_CODE,
-                TNKR_NAME,
-                TNKR_CARRIER,
-                TNKR_CARRIER_NAME,
-                TNKR_OWNER,
-                TNKR_OWNER_NAME,
-                TNKR_ETP,
-                TNKR_EQPT_NAME,
-                TNKR_BASE_SITE,
-                TNKR_BASE_SITE_NAME,
-                TNKR_DEST_DEPOT,
-                TNKR_DEST_DEPOT_NAME,
-                TNKR_LAST_DEPOT,
-                TNKR_LAST_DEPOT_NAME,
-                TNKR_CUR_DEPOT,
-                TNKR_CUR_DEPOT_NAME,
-                TNKR_PIN,
-                TNKR_LOCK,
-                TNKR_ACTIVE,
-                TNKR_BAY_LOOP_CH,
-                TNKR_ARCHIVE,
-                TNKR_NTRIPS,
-                TNKR_OWN_TXT,
-                DECODE(TNKR_LIC_EXP, NULL, '', 
-                    TO_CHAR(TNKR_LIC_EXP, 'YYYY-MM-DD')) AS TNKR_LIC_EXP,
-                DECODE(TNKR_DGLIC_EXP, NULL, '', 
-                    TO_CHAR(TNKR_DGLIC_EXP, 'YYYY-MM-DD')) AS TNKR_DGLIC_EXP,
-                DECODE(TNKR_INS_EXP, NULL, '', 
-                    TO_CHAR(TNKR_INS_EXP, 'YYYY-MM-DD')) AS TNKR_INS_EXP,
-                TNKR_STATS,
-                TNKR_LAST_TRIP,
-                TNKR_MAX_KG,
-                REMARKS,
-                ETYP_CATEGORY,
-                TNKR_LAST_MODIFIED,
-                TNKR_LAST_USED
+            SELECT *
             FROM 
             (
                 SELECT RES.*, ROWNUM RN

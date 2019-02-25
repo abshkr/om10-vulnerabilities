@@ -1,3 +1,5 @@
+https://10.1.10.66/api/config/getenv.php
+
 https://10.1.10.66/api/personnel/read.php
 https://10.1.10.66/api/personnel/read_one.php?per_code=cw3
 https://10.1.10.66/api/personnel/search.php?s=cw
@@ -55,9 +57,10 @@ https://10.1.10.66/api/logical_printer/update.php?prt_cmpy=ANY&prt_usage=25&prt_
 
 https://10.1.10.66/api/physical_printer/read.php
 https://10.1.10.66/api/physical_printer/read.php?prntr=P01&sys_prntr=printer2_rpt&prntr_area=1
+https://10.1.10.66/api/physical_printer/areas.php
 https://10.1.10.66/api/physical_printer/create.php?prntr=P01&sys_prntr=printer2_rpt&prntr_area=2&prntr_lock=Y
 https://10.1.10.66/api/physical_printer/delete.php?prntr=P01&sys_prntr=printer2_rpt&prntr_area=2&prntr_lock=Y
-https://10.1.10.66/api/physical_printer/update.php?prntr=P99&sys_prntr=print99&prntr_area=3&prntr_lock=N
+https://10.1.10.66/api/physical_printer/update.php?prntr=P99&sys_prntr=print99&prntr_area=3&prntr_lock=N&area_name=ON_SITE
 
 https://10.1.10.66/api/journal/read.php
 https://10.1.10.66/api/journal/read.php?start_num=769504&end_num=769506&region_code=ENG
@@ -109,6 +112,8 @@ tnkr_bay_loop_ch: Bay Check
 tnkr_ntrips: total trips
 tnkr_own_txt: Tanker prompt
 https://10.1.10.66/api/tanker/update.php?tnkr_code=TEMP_JJF9077&tnkr_lock=N&tnkr_active=N&tnkr_max_kg=5000&tnkr_bay_loop_ch=N&tnkr_ntrips=4&tnkr_lic_exp=2016-11-01&tnkr_dglic_exp=&tnkr_ins_exp&stats=&last_trip=223&tnkr_name=TNAME&tnkr_pin=1221&tnkr_archive=N&remarks=NONE&tnkr_owner=68002470&tnkr_own_txt=promp
+
+
 eqpt_1: eqpt id. eqpt_count: how many equipment this tanker has
 https://10.1.10.66/api/tanker/update.php?tnkr_code=TEMP_JJF9077&tnkr_lock=N&tnkr_active=N&tnkr_max_kg=5000&tnkr_bay_loop_ch=N&tnkr_ntrips=4&tnkr_lic_exp=2016-11-01&tnkr_dglic_exp=&tnkr_ins_exp&stats=&last_trip=223&tnkr_name=TNAME&tnkr_pin=1221&tnkr_archive=N&remarks=NONE&tnkr_owner=68002470&eqpt_count=2&eqpt_1=141577113
 https://10.1.10.66/api/tanker/etyp_composition.php?etyp_id=2714
