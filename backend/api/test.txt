@@ -113,9 +113,9 @@ tnkr_ntrips: total trips
 tnkr_own_txt: Tanker prompt
 https://10.1.10.66/api/tanker/update.php?tnkr_code=TEMP_JJF9077&tnkr_lock=N&tnkr_active=N&tnkr_max_kg=5000&tnkr_bay_loop_ch=N&tnkr_ntrips=4&tnkr_lic_exp=2016-11-01&tnkr_dglic_exp=&tnkr_ins_exp&stats=&last_trip=223&tnkr_name=TNAME&tnkr_pin=1221&tnkr_archive=N&remarks=NONE&tnkr_owner=68002470&tnkr_own_txt=promp
 
-
 eqpt_1: eqpt id. eqpt_count: how many equipment this tanker has
 https://10.1.10.66/api/tanker/update.php?tnkr_code=TEMP_JJF9077&tnkr_lock=N&tnkr_active=N&tnkr_max_kg=5000&tnkr_bay_loop_ch=N&tnkr_ntrips=4&tnkr_lic_exp=2016-11-01&tnkr_dglic_exp=&tnkr_ins_exp&stats=&last_trip=223&tnkr_name=TNAME&tnkr_pin=1221&tnkr_archive=N&remarks=NONE&tnkr_owner=68002470&eqpt_count=2&eqpt_1=141577113
+
 https://10.1.10.66/api/tanker/etyp_composition.php?etyp_id=2714
 https://10.1.10.66/api/tanker/eqpt_compartments.php?eqpt_id=111323347
 https://10.1.10.66/api/tanker/delete.php?tnkr_code=TEST

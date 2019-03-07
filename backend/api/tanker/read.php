@@ -41,17 +41,15 @@ while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
     //Expiry dates from EXPIRY_DATE_DETAILS
     $base_item["expiry_dates"] = array();
     $expiry_date = new ExpiryDate($db);
-    $expiry_date->ed_target_code = ExpiryTarget::PERSONNEL;
+    $expiry_date->ed_target_code = ExpiryTarget::TANKER;
     $expiry_date->ed_object_id = $row["TNKR_CODE"];
     $stmt3 = $expiry_date->read();
-     
-    while ($row = oci_fetch_array($stmt3, OCI_ASSOC + OCI_RETURN_NULLS)) {
+    
+    while ($row2 = oci_fetch_array($stmt3, OCI_ASSOC + OCI_RETURN_NULLS)) {
         $base_item2 = array();
-        foreach ($row as $key => $value) {
+        foreach ($row2 as $key => $value) {
             $base_item2[strtolower($key)] = $value;
         }
-
-        // write_log(json_encode($base_item2), __FILE__, __LINE__);
 
         $base_item2 = array_map(function($v){
                 return (is_null($v)) ? "" : $v;

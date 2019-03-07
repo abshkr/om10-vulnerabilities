@@ -95,7 +95,7 @@ class Utilities
             }
         }
 
-        write_log(json_encode($object), __FILE__, __LINE__);
+        // write_log(json_encode($object), __FILE__, __LINE__);
 
         // if (!isset($tank->per_code)) {
         //     http_response_code(400);

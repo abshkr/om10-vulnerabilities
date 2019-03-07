@@ -6,7 +6,7 @@ include_once __DIR__  . '/../shared/utilities.php';
 
 class ExpiryTarget
 {
-    const TANKER = "TANKER";
+    const TANKER = "TANKERS";
     const TRANSP_EQUIP = "TRANSP_EQUIP";
     const PERSONNEL = "PERSONNEL";
     const ALL = "%";

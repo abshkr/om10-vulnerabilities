@@ -39,40 +39,34 @@ while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
     // just $name only
     extract(array_change_key_case($row));
 
-    // $eqpt_item = array(
-    //     "eqpt_id" => $eqpt_id,
-    //     "eqpt_code" => $eqpt_code,
-    //     "eqpt_title" => $eqpt_title,
-    //     "eqpt_tanker" => $eqpt_tanker,
-    //     "eqpt_owner" => $eqpt_owner,
-    //     "eqpt_owner_name" => $eqpt_owner_name,
-    //     "eqpt_etp" => $eqpt_etp,
-    //     "eqpt_etp_title" => $eqpt_etp_title,
-    //     "expiry_dates" => array(),
-    //     // "eqpt_exp_d1_dmy" => $eqpt_exp_d1_dmy,
-    //     // "eqpt_exp_d2_dmy" => $eqpt_exp_d2_dmy, 
-    //     // "eqpt_exp_d3_dmy" => $eqpt_exp_d3_dmy,
-    //     "eqpt_lock" => $eqpt_lock,
-    //     "eqpt_empty_kg" => $eqpt_empty_kg,
-    //     "eqp_must_tare_in" => $eqp_must_tare_in,
-    //     "eqpt_max_gross" => $eqpt_max_gross,
-    //     "eqpt_comments" => $eqpt_comments,
-    //     "eqpt_area" => $eqpt_area,
-    //     "eqpt_area_name" => $eqpt_area_name,
-    //     "eqpt_load_type" => $eqpt_load_type,
-    //     "eqpt_load_type_name" => $eqpt_load_type_name,
-    //     "etyp_category" => $etyp_category,
-    //     "rn" => $rn,
-    //     "eqpt_last_modified" => $eqpt_last_modified,
-    //     "eqpt_last_used" => $eqpt_last_used
-    // );
+    $eqpt_item = array(
+        "eqpt_id" => $eqpt_id,
+        "eqpt_code" => $eqpt_code,
+        "eqpt_title" => $eqpt_title,
+        "eqpt_tanker" => $eqpt_tanker,
+        "eqpt_owner" => $eqpt_owner,
+        "eqpt_owner_name" => $eqpt_owner_name,
+        "eqpt_etp" => $eqpt_etp,
+        "eqpt_etp_title" => $eqpt_etp_title,
+        "expiry_dates" => array(),
+        // "eqpt_exp_d1_dmy" => $eqpt_exp_d1_dmy,
+        // "eqpt_exp_d2_dmy" => $eqpt_exp_d2_dmy, 
+        // "eqpt_exp_d3_dmy" => $eqpt_exp_d3_dmy,
+        "eqpt_lock" => $eqpt_lock,
+        "eqpt_empty_kg" => $eqpt_empty_kg,
+        "eqp_must_tare_in" => $eqp_must_tare_in,
+        "eqpt_max_gross" => $eqpt_max_gross,
+        "eqpt_comments" => $eqpt_comments,
+        "eqpt_area" => $eqpt_area,
+        "eqpt_area_name" => $eqpt_area_name,
+        "eqpt_load_type" => $eqpt_load_type,
+        "eqpt_load_type_name" => $eqpt_load_type_name,
+        "etyp_category" => $etyp_category,
+        "rn" => $rn,
+        "eqpt_last_modified" => $eqpt_last_modified,
+        "eqpt_last_used" => $eqpt_last_used
+    );
 
-    $eqpt_item = array();
-    foreach ($row as $key => $value) {
-        $eqpt_item[strtolower($key)] = $value;
-    }
-
-    $eqpt_item["expiry_dates"] = array();
     $expiry_date = new ExpiryDate($db);
     $expiry_date->target_code = ExpiryTarget::TRANSP_EQUIP;
     $expiry_date->obj_code = $eqpt_id;
@@ -81,10 +75,14 @@ while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
     // retrieve our table contents
     while ($row = oci_fetch_array($stmt2, OCI_ASSOC + OCI_RETURN_NULLS)) {
         extract(array_change_key_case($row));
-        $dates_item = array();
-        foreach ($row as $key => $value) {
-            $dates_item[strtolower($key)] = $value;
-        }
+        $dates_item = array(
+            "ed_type_code" => $ed_type_code, 
+            "edt_type_desc" => $edt_type_desc, 
+            "ed_exp_date" => $ed_exp_date
+        );
+
+        if (!isset($dates_item))
+            $dates_item = array();
 
         $dates_item = array_map(function($v){
                 return (is_null($v)) ? "" : $v;

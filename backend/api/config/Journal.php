@@ -54,7 +54,9 @@ class Journal
         "GUI_PERSONNEL" => "personnel",
         "EXPIRY_DATE_PERSONNEL" => "personnel expiry date",
         "TIMECODE" => "time code",
-        "PRINTER" => "physical printer"
+        "PRINTER" => "physical printer",
+        "GUI_TANKERS" => "tanker",
+        "EXPIRY_DATE_TANKERS" => "tanker expiry date"
     );
 
     //Mainly fields in table
@@ -118,6 +120,21 @@ class Journal
             "SYS_PRNTR" => "system/physical printer",
             "AREA_NAME" => "area location",
             "PRNTR_LOCK" => "lock"
+        ),
+        "GUI_TANKERS" => array (
+            "ADJ_CMPT_LOCK" => "compartment lock status",
+            "TNKR_LOCK" => "lock status",
+            "TNKR_ACTIVE" => "active status",
+            "TNKR_MAX_KG" => "max kg",
+            "TNKR_BAY_LOOP_CH" => "bay check status",
+            "TNKR_NTRIPS" => "total trips",
+            "STATS" => "status",
+            "LAST_TRIP" => "last trip",
+            "TNKR_NAME" => "name",
+            "TNKR_PIN" => "pin",
+            "TNKR_ARCHIVE" => "archive status",
+            "REMARKS" => "comments",
+            "TNKR_OWN_TXT" => "tanker prompt"
         )
     );
 

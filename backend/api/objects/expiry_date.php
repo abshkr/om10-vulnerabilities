@@ -175,7 +175,8 @@ class ExpiryDate
     public function read()
     {
         Utilities::sanitize($this);
-        
+        // write_log($this->ed_target_code, __FILE__, __LINE__, LogLevel::ERROR);
+        // write_log($this->ed_object_id, __FILE__, __LINE__, LogLevel::ERROR);
         $query = "
             SELECT EDT_TARGET_CODE,
                 EDT_TYPE_CODE,
@@ -197,7 +198,7 @@ class ExpiryDate
                 (
                 SELECT EDT_TARGET_CODE, EDT_TYPE_CODE, EDT_TYPE_DESC
                 FROM EXPIRY_DATE_TYPES 
-                WHERE EDT_TARGET_CODE = 'PERSONNEL'
+                WHERE EDT_TARGET_CODE = :ed_target_code
                 ) EXPIRY_DATE_PERSONNEL_TYPES,
                 (SELECT MAX(ED_CMPY_CODE) DEFAULT_CMPY, MAX(ED_OBJECT_ID) DEFAULT_OBJ 
                 FROM EXPIRY_DATE_DETAILS 

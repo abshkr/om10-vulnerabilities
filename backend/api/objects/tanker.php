@@ -3,6 +3,8 @@
 include_once __DIR__  . '/../config/journal.php';
 include_once __DIR__  . '/../config/log.php';
 include_once __DIR__  . '/../shared/utilities.php';
+include_once __DIR__  . '/../objects/expiry_date.php';
+include_once __DIR__  . '/../objects/expiry_type.php';
 
 class Tanker
 {   
@@ -582,46 +584,13 @@ class Tanker
         $remarks = null;
 
         $query = "
-            SELECT TNKR_LOCK,
-                TNKR_CARRIER,
-                TNKR_ETP,
-                TNKR_OWNER,
-                TNKR_ACTIVE,
-                TNKR_MAX_KG,
-                TNKR_BAY_LOOP_CH,
-                TNKR_NTRIPS,
-                TNKR_OWN_TXT,
-                TNKR_LIC_EXP,
-                TNKR_DGLIC_EXP,
-                TNKR_INS_EXP,
-                LAST_TRIP,
-                TNKR_NAME,
-                TNKR_PIN,
-                TNKR_ARCHIVE,
-                REMARKS         
-            FROM TANKERS
+            SELECT *       
+            FROM GUI_TANKERS
             WHERE TNKR_CODE = :tnkr_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
         if (oci_execute($stmt)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-            $tnkr_lock= $row['TNKR_LOCK'];
-            $tnkr_carrier= $row['TNKR_CARRIER'];
-            $tnkr_etp= $row['TNKR_ETP'];
-            $tnkr_owner= $row['TNKR_OWNER'];
-            $tnkr_active= $row['TNKR_ACTIVE'];
-            $tnkr_max_kg= $row['TNKR_MAX_KG'];
-            $tnkr_bay_loop_ch= $row['TNKR_BAY_LOOP_CH'];
-            $tnkr_ntrips= $row['TNKR_NTRIPS'];
-            $tnkr_own_txt= $row['TNKR_OWN_TXT'];
-            $tnkr_lic_exp= $row['TNKR_LIC_EXP'];
-            $tnkr_dglic_exp= $row['TNKR_DGLIC_EXP'];
-            $tnkr_ins_exp= $row['TNKR_INS_EXP'];
-            $last_trip= $row['LAST_TRIP'];
-            $tnkr_name= $row['TNKR_NAME'];
-            $tnkr_pin= $row['TNKR_PIN'];
-            $tnkr_archive= $row['TNKR_ARCHIVE'];
-            $remarks= $row['REMARKS'];
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
@@ -668,6 +637,21 @@ class Tanker
             return false;
         }
 
+        //Update expiry dates
+        $expiry_dates = array();
+        $expiry_date = new ExpiryDate($this->conn);
+        // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
+        foreach ($this->expiry_dates as $key => $value) {
+            $expiry_dates[$value->edt_type_code] = $value;
+        }
+        // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+        if (!$expiry_date->update($expiry_dates)) {
+            write_log("Failed to update expiry dates", 
+                __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn; 
@@ -680,106 +664,132 @@ class Tanker
             return false;
         }
 
-        $module = "Tanker";
+        //New data
+        $query = "
+            SELECT * FROM GUI_TANKERS 
+            WHERE TNKR_CODE = :tnkr_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);            
+        } else {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        $module = "GUI_TANKERS";
         $record = sprintf("tanker:%s, owner:%s", $this->tnkr_code, $this->tnkr_owner);
-        if ($tnkr_lock != $this->tnkr_lock && 
-            !$journal->valueChange(
-                $module, $record, "lock status", $tnkr_lock, $this->tnkr_lock)) {
-            oci_rollback($this->conn);
-            return false;
-        }
+        foreach ($row2 as $key => $value) {
+            if ($key === "PER_CMPY" ||
+                $key === "USER_LOGIN_COUNT"
+                ) 
+                continue;
 
-        if ($tnkr_active != $this->tnkr_active && 
-            !$journal->valueChange(
-                $module, $record, "active status", $tnkr_active, $this->tnkr_active)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($tnkr_max_kg != $this->tnkr_max_kg && 
-            !$journal->valueChange(
-                $module, $record, "max kg", $tnkr_max_kg, $this->tnkr_max_kg)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($tnkr_bay_loop_ch != $this->tnkr_bay_loop_ch && 
-            !$journal->valueChange(
-                $module, $record, "bay check", $tnkr_bay_loop_ch, $this->tnkr_bay_loop_ch)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($tnkr_ntrips != $this->tnkr_ntrips && 
-            !$journal->valueChange(
-                $module, $record, "total trips", $tnkr_ntrips, $this->tnkr_ntrips)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($tnkr_lic_exp != $this->tnkr_lic_exp && 
-            !$journal->valueChange(
-                $module, $record, "expiry date 1", $tnkr_lic_exp, $this->tnkr_lic_exp)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($tnkr_dglic_exp != $this->tnkr_dglic_exp && 
-            !$journal->valueChange(
-                $module, $record, "expiry date 2", $tnkr_dglic_exp, $this->tnkr_dglic_exp)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($tnkr_ins_exp != $this->tnkr_ins_exp && 
-            !$journal->valueChange(
-                $module, $record, "expiry date 3", $tnkr_ins_exp, $this->tnkr_ins_exp)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($last_trip != $this->last_trip && 
-            !$journal->valueChange(
-                $module, $record, "last trip", $last_trip, $this->last_trip)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($tnkr_name != $this->tnkr_name && 
-            !$journal->valueChange(
-                $module, $record, "tanker name", $tnkr_name, $this->tnkr_name)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($tnkr_pin != $this->tnkr_pin && 
-            !$journal->valueChange(
-                $module, $record, "tanker pin", $tnkr_pin, $this->tnkr_pin)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($tnkr_archive != $this->tnkr_archive && 
-            !$journal->valueChange(
-                $module, $record, "archived status", $tnkr_archive, $this->tnkr_archive)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($remarks != $this->remarks && 
-            !$journal->valueChange(
-                $module, $record, "remarks", $remarks, $this->remarks)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if (isset($eqpts))
-            if (!$this->updateEqpts($this->tnkr_code, $eqpts)) {
-                write_log("Failed to update tanker equipments", 
-                    __FILE__, __LINE__, LogLevel::ERROR);
+            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] && 
+                !$journal->valueChange(
+                    $module, $record, $key, $row[strtoupper($key)], $value)) {
                 oci_rollback($this->conn);
                 return false;
             }
+        }
+
+        // if ($tnkr_lock != $this->tnkr_lock && 
+        //     !$journal->valueChange(
+        //         $module, $record, "lock status", $tnkr_lock, $this->tnkr_lock)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($tnkr_active != $this->tnkr_active && 
+        //     !$journal->valueChange(
+        //         $module, $record, "active status", $tnkr_active, $this->tnkr_active)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($tnkr_max_kg != $this->tnkr_max_kg && 
+        //     !$journal->valueChange(
+        //         $module, $record, "max kg", $tnkr_max_kg, $this->tnkr_max_kg)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($tnkr_bay_loop_ch != $this->tnkr_bay_loop_ch && 
+        //     !$journal->valueChange(
+        //         $module, $record, "bay check", $tnkr_bay_loop_ch, $this->tnkr_bay_loop_ch)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($tnkr_ntrips != $this->tnkr_ntrips && 
+        //     !$journal->valueChange(
+        //         $module, $record, "total trips", $tnkr_ntrips, $this->tnkr_ntrips)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($tnkr_lic_exp != $this->tnkr_lic_exp && 
+        //     !$journal->valueChange(
+        //         $module, $record, "expiry date 1", $tnkr_lic_exp, $this->tnkr_lic_exp)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($tnkr_dglic_exp != $this->tnkr_dglic_exp && 
+        //     !$journal->valueChange(
+        //         $module, $record, "expiry date 2", $tnkr_dglic_exp, $this->tnkr_dglic_exp)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($tnkr_ins_exp != $this->tnkr_ins_exp && 
+        //     !$journal->valueChange(
+        //         $module, $record, "expiry date 3", $tnkr_ins_exp, $this->tnkr_ins_exp)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($last_trip != $this->last_trip && 
+        //     !$journal->valueChange(
+        //         $module, $record, "last trip", $last_trip, $this->last_trip)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($tnkr_name != $this->tnkr_name && 
+        //     !$journal->valueChange(
+        //         $module, $record, "tanker name", $tnkr_name, $this->tnkr_name)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($tnkr_pin != $this->tnkr_pin && 
+        //     !$journal->valueChange(
+        //         $module, $record, "tanker pin", $tnkr_pin, $this->tnkr_pin)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($tnkr_archive != $this->tnkr_archive && 
+        //     !$journal->valueChange(
+        //         $module, $record, "archived status", $tnkr_archive, $this->tnkr_archive)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($remarks != $this->remarks && 
+        //     !$journal->valueChange(
+        //         $module, $record, "remarks", $remarks, $this->remarks)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if (isset($eqpts))
+        //     if (!$this->updateEqpts($this->tnkr_code, $eqpts)) {
+        //         write_log("Failed to update tanker equipments", 
+        //             __FILE__, __LINE__, LogLevel::ERROR);
+        //         oci_rollback($this->conn);
+        //         return false;
+        //     }
 
         oci_commit($this->conn);
         return true;
