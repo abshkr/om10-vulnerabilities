@@ -344,8 +344,8 @@ class Equipment
                 return false;
             }
 
-            $adj_amnt = (int)$cmpts[$i - 1]['sched_limit'] - $base_cap;
-            $adj_capacity = (int)$cmpts[$i - 1]['sfl'];
+            $adj_amnt = (int)$cmpts[$i - 1]->safefill - $base_cap;
+            $adj_capacity = (int)$cmpts[$i - 1]->sfl;
                        
             /* Old data*/            
             $query = "
@@ -390,10 +390,10 @@ class Equipment
             $journal = new Journal($this->conn, false);
             $module = "Equipment";
             $record = sprintf("equipment id:%s, cmpt num:%d", $this->eqpt_id, $i);
-            if ($old_limit != (int)$cmpts[$i - 1]['sched_limit'] && 
+            if ($old_limit != (int)$cmpts[$i - 1]->safefill && 
                 !$journal->valueChange(
                     $module, $record, "scheduled limit", 
-                    $old_limit, $cmpts[$i - 1]['sched_limit'])) {
+                    $old_limit, $cmpts[$i - 1]->safefill)) {
                 oci_rollback($this->conn);
                 return false;
             }
@@ -416,38 +416,14 @@ class Equipment
 
         Utilities::sanitize($this);
 
-        $eqpt_title = null;
-        $eqpt_lock = null;
-        $eqpt_empty_kg = null;
-        $eqp_must_tare_in = null;
-        $eqpt_max_gross = null;
-        $eqpt_comments = null;
-        $eqpt_area = null;
-        $eqpt_load_type = null;
-
         $query = "
-            SELECT EQPT_TITLE,
-                EQPT_LOCK,
-                EQPT_EMPTY_KG,
-                EQP_MUST_TARE_IN,
-                EQPT_MAX_GROSS,
-                EQPT_COMMENTS,
-                EQPT_AREA,
-                EQPT_LOAD_TYPE      
-            FROM GUI_EQUIPMENT_LIST
+            SELECT *     
+            FROM TRANSP_EQUIP
             WHERE EQPT_ID = :eqpt_id";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-            $eqpt_title = $row['EQPT_TITLE'];
-            $eqpt_lock = $row['EQPT_LOCK'];
-            $eqpt_empty_kg = $row['EQPT_EMPTY_KG'];
-            $eqp_must_tare_in = $row['EQP_MUST_TARE_IN'];
-            $eqpt_max_gross = $row['EQPT_MAX_GROSS'];
-            $eqpt_comments = $row['EQPT_COMMENTS'];
-            $eqpt_area = $row['EQPT_AREA'];
-            $eqpt_load_type = $row['EQPT_LOAD_TYPE'];
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
@@ -480,11 +456,34 @@ class Equipment
             return false;
         }
 
+        //Update expiry dates
+        $expiry_dates = array();
+        $expiry_date = new ExpiryDate($this->conn);
+        // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
+        foreach ($this->expiry_dates as $key => $value) {
+            $expiry_dates[$value->edt_type_code] = $value;
+        }
+        write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+        if (!$expiry_date->update($expiry_dates)) {
+            write_log("Failed to update expiry dates", 
+                __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        //Compartments
+        if (!$this->updateCmpts($this->compartments)) {
+            write_log("Failed to update equipment equipments", 
+                __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn; 
         $jnl_data[1] = "Equpment";
-        $jnl_data[2] = $this->eqpt_id;
+        $jnl_data[2] = $this->eqpt_code;
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
@@ -494,83 +493,104 @@ class Equipment
             return false;
         }
 
-        $module = "Equipment";
-        $record = sprintf("equipment id:%s", $this->eqpt_id);
-        if ($eqpt_title != $this->eqpt_title && 
-            !$journal->valueChange(
-                $module, $record, "equipment title", $eqpt_title, $this->eqpt_title)) {
-            oci_rollback($this->conn);
-            return false;
+        //New data
+        $query = "
+            SELECT *     
+            FROM TRANSP_EQUIP
+            WHERE EQPT_ID = :eqpt_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        } else {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
-
-        if ($eqpt_lock != $this->eqpt_lock && 
-            !$journal->valueChange(
-                $module, $record, "lock status", $eqpt_lock, $this->eqpt_lock)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($eqpt_empty_kg != $this->eqpt_empty_kg && 
-            !$journal->valueChange(
-                $module, $record, "empty weight", $eqpt_empty_kg, $this->eqpt_empty_kg)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($eqp_must_tare_in != $this->eqp_must_tare_in && 
-            !$journal->valueChange(
-                $module, $record, "tare_in status", $eqp_must_tare_in, $this->eqp_must_tare_in)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($eqpt_max_gross != $this->eqpt_max_gross && 
-            !$journal->valueChange(
-                $module, $record, "pulling limit", $eqpt_max_gross, $this->eqpt_max_gross)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($eqpt_comments != $this->eqpt_comments && 
-            !$journal->valueChange(
-                $module, $record, "comment", $eqpt_comments, $this->eqpt_comments)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($eqpt_area != $this->eqpt_area && 
-            !$journal->valueChange(
-                $module, $record, "area", $eqpt_area, $this->eqpt_area)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($eqpt_load_type != $this->eqpt_load_type && 
-            !$journal->valueChange(
-                $module, $record, "load type", $eqpt_load_type, $this->eqpt_load_type)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if (isset($cmpts))
-        {
-            if (!$this->updateCmpts($cmpts)) {
-                write_log("Failed to update equipment equipments", 
-                    __FILE__, __LINE__, LogLevel::ERROR);
+        // write_log(json_encode($row2), __FILE__, __LINE__);
+        $module = "TRANSP_EQUIP";
+        $record = sprintf("equipment code:%s", $this->eqpt_code);
+        foreach ($row2 as $key => $value) {
+            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] && 
+                !$journal->valueChange(
+                    $module, $record, $key, $row[strtoupper($key)], $value)) {
                 oci_rollback($this->conn);
                 return false;
             }
         }
+        // if ($eqpt_title != $this->eqpt_title && 
+        //     !$journal->valueChange(
+        //         $module, $record, "equipment title", $eqpt_title, $this->eqpt_title)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
-        $expiry_date = new ExpiryDate($this->conn);
-        $expiry_date->obj_code = $this->eqpt_id;
-        $expiry_date->target_code = ExpiryTarget::TRANSP_EQUIP;
-        if (!$expiry_date->update($expiry_dates)) {
-            write_log("Failed to update equipment expiry dates", 
-                __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
+        // if ($eqpt_lock != $this->eqpt_lock && 
+        //     !$journal->valueChange(
+        //         $module, $record, "lock status", $eqpt_lock, $this->eqpt_lock)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($eqpt_empty_kg != $this->eqpt_empty_kg && 
+        //     !$journal->valueChange(
+        //         $module, $record, "empty weight", $eqpt_empty_kg, $this->eqpt_empty_kg)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($eqp_must_tare_in != $this->eqp_must_tare_in && 
+        //     !$journal->valueChange(
+        //         $module, $record, "tare_in status", $eqp_must_tare_in, $this->eqp_must_tare_in)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($eqpt_max_gross != $this->eqpt_max_gross && 
+        //     !$journal->valueChange(
+        //         $module, $record, "pulling limit", $eqpt_max_gross, $this->eqpt_max_gross)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($eqpt_comments != $this->eqpt_comments && 
+        //     !$journal->valueChange(
+        //         $module, $record, "comment", $eqpt_comments, $this->eqpt_comments)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($eqpt_area != $this->eqpt_area && 
+        //     !$journal->valueChange(
+        //         $module, $record, "area", $eqpt_area, $this->eqpt_area)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($eqpt_load_type != $this->eqpt_load_type && 
+        //     !$journal->valueChange(
+        //         $module, $record, "load type", $eqpt_load_type, $this->eqpt_load_type)) {
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if (isset($cmpts))
+        // {
+        //     if (!$this->updateCmpts($cmpts)) {
+        //         write_log("Failed to update equipment equipments", 
+        //             __FILE__, __LINE__, LogLevel::ERROR);
+        //         oci_rollback($this->conn);
+        //         return false;
+        //     }
+        // }
+
+        // $expiry_date = new ExpiryDate($this->conn);
+        // $expiry_date->obj_code = $this->eqpt_id;
+        // $expiry_date->target_code = ExpiryTarget::TRANSP_EQUIP;
+        // if (!$expiry_date->update($expiry_dates)) {
+        //     write_log("Failed to update equipment expiry dates", 
+        //         __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
         oci_commit($this->conn);
         return true;
@@ -681,6 +701,22 @@ class Equipment
         //     __FILE__, __LINE__);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $expiry_dates = array();
+        $expiry_date = new ExpiryDate($this->conn);
+        $expiry_date->edt_target_code = ExpiryTarget::TRANSP_EQUIP;
+        $expiry_date->ed_object_id = $this->eqpt_id;
+        // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
+        foreach ($this->expiry_dates as $key => $value) {
+            $expiry_dates[$value->edt_type_code] = $value;
+        }
+        // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+        if (!$expiry_date->create($expiry_dates)) {
+            write_log("Failed to update expiry dates", 
+                __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }

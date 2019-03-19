@@ -14,7 +14,7 @@ $database = new Database();
 $db = $database->getConnection();
  
 $tanker = new Tanker($db);
-Utilities::update($tanker, "personnel");
+Utilities::update($tanker, "tanker");
  
 // get posted data
 // $data = json_decode(file_get_contents("php://input"));

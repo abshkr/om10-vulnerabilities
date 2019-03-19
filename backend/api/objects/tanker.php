@@ -444,27 +444,57 @@ class Tanker
             return false;
         }
 
-        for ($i = 0; $i < count($eqpts); $i++) {
-            $query = "
-                INSERT INTO TNKR_EQUIP (
-                    TC_TANKER,
-                    TC_EQPT,
-                    TC_SEQNO)
-                VALUES (
-                    :tnkr_code,
-                    :eqpt_id,
-                    :tc_seqno)";
+        foreach ($this->tnkr_equips as $key => $value) {
+            $query = "INSERT INTO TNKR_EQUIP (TC_TANKER, TC_EQPT, TC_SEQNO) 
+                VALUES (:tnkr_code, :tc_eqpt, :tc_seqno)";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
-            oci_bind_by_name($stmt, ':eqpt_id', $eqpts[$i]);
-            $tc_seqno = $i + 1;
-            oci_bind_by_name($stmt, ':tc_seqno', $tc_seqno);
+            oci_bind_by_name($stmt, ':tc_eqpt', $value->tc_eqpt);
+            oci_bind_by_name($stmt, ':tc_seqno', $value->tc_seqno);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                 write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                oci_rollback($this->conn);
+                oci_rollback($this->conn);;
                 return false;
             }
         }
+
+        $expiry_dates = array();
+        $expiry_date = new ExpiryDate($this->conn);
+        $expiry_date->edt_target_code = ExpiryTarget::TANKER;
+        $expiry_date->ed_object_id = $this->tnkr_code;
+        // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
+        foreach ($this->expiry_dates as $key => $value) {
+            $expiry_dates[$value->edt_type_code] = $value;
+        }
+        // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+        if (!$expiry_date->create($expiry_dates)) {
+            write_log("Failed to update expiry dates", 
+                __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        // for ($i = 0; $i < count($eqpts); $i++) {
+        //     $query = "
+        //         INSERT INTO TNKR_EQUIP (
+        //             TC_TANKER,
+        //             TC_EQPT,
+        //             TC_SEQNO)
+        //         VALUES (
+        //             :tnkr_code,
+        //             :eqpt_id,
+        //             :tc_seqno)";
+        //     $stmt = oci_parse($this->conn, $query);
+        //     oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+        //     oci_bind_by_name($stmt, ':eqpt_id', $eqpts[$i]);
+        //     $tc_seqno = $i + 1;
+        //     oci_bind_by_name($stmt, ':tc_seqno', $tc_seqno);
+        //     if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+        //         write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //         oci_rollback($this->conn);
+        //         return false;
+        //     }
+        // }
 
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
@@ -541,6 +571,16 @@ class Tanker
             return false;
         }
 
+        $expiry_dates = array();
+        $expiry_date = new ExpiryDate($this->conn);
+        $expiry_date->edt_target_code = ExpiryTarget::TANKER;
+        $expiry_date->ed_object_id = $this->tnkr_code;
+        if (!$expiry_date->delete()) {
+            write_log("Failed to delete expiry dates", __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn; 
@@ -561,7 +601,7 @@ class Tanker
     {
         write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code), 
             __FILE__, __LINE__);
-
+        
         Utilities::sanitize($this);
 
         $tnkr_lock = null;
@@ -591,6 +631,21 @@ class Tanker
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
         if (oci_execute($stmt)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        } else {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        //Tanker composition
+        $query = "
+            SELECT LISTAGG(EQPT_CODE, ', ') WITHIN GROUP (ORDER BY TC_SEQNO) TNKR_EQUIPS
+            FROM TNKR_EQUIP, TRANSP_EQUIP
+            WHERE TC_TANKER = :tnkr_code
+                AND TC_EQPT = EQPT_ID
+            ORDER BY TC_SEQNO";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+        if (oci_execute($stmt)) {
+            $tnkr_equips_rows = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
@@ -635,6 +690,30 @@ class Tanker
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
+        }
+
+        //TNKR_EQUIP
+        $query = "DELETE FROM TNKR_EQUIP WHERE TC_TANKER = :tnkr_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);;
+            return false;
+        }
+
+        foreach ($this->tnkr_equips as $key => $value) {
+            $query = "INSERT INTO TNKR_EQUIP (TC_TANKER, TC_EQPT, TC_SEQNO) 
+                VALUES (:tnkr_code, :tc_eqpt, :tc_seqno)";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+            oci_bind_by_name($stmt, ':tc_eqpt', $value->tc_eqpt);
+            oci_bind_by_name($stmt, ':tc_seqno', $value->tc_seqno);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);;
+                return false;
+            }
         }
 
         //Update expiry dates
@@ -690,6 +769,29 @@ class Tanker
                 oci_rollback($this->conn);
                 return false;
             }
+        }
+
+        //Tanker composition journal
+        $query = "
+            SELECT LISTAGG(EQPT_CODE, ', ') WITHIN GROUP (ORDER BY TC_SEQNO) TNKR_EQUIPS
+            FROM TNKR_EQUIP, TRANSP_EQUIP
+            WHERE TC_TANKER = :tnkr_code
+                AND TC_EQPT = EQPT_ID
+            ORDER BY TC_SEQNO";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+        if (oci_execute($stmt)) {
+            $tnkr_equips_rows2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        } else {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        if ($tnkr_equips_rows['TNKR_EQUIPS'] != $tnkr_equips_rows2['TNKR_EQUIPS'] && 
+            !$journal->valueChange(
+                $module, $record, "tanker equips", 
+                $tnkr_equips_rows['TNKR_EQUIPS'], $tnkr_equips_rows2['TNKR_EQUIPS'])) {
+            oci_rollback($this->conn);
+            return false;
         }
 
         // if ($tnkr_lock != $this->tnkr_lock && 
