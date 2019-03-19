@@ -8,7 +8,6 @@ include_once '../config/database.php';
 include_once '../objects/personnel.php';
 include_once '../config/log.php';
 include_once '../objects/expiry_date.php';
-include_once '../objects/expiry_type.php';
 
 // instantiate database and product object
 $database = new Database();

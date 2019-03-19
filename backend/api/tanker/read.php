@@ -6,7 +6,8 @@ header("Content-Type: application/json; charset=UTF-8");
 // include database and object files
 include_once '../config/database.php';
 include_once '../objects/tanker.php';
- 
+include_once '../objects/expiry_date.php';
+
 // instantiate database and product object
 $database = new Database();
 $db = $database->getConnection();
@@ -27,57 +28,43 @@ $personnels_arr['result_count'] = $tanker->count();
 $personnels_arr['start_num'] = $tanker->start_num;
 $personnels_arr['end_num'] = $tanker->end_num;
 $personnels_arr["records"] = array();
-$num = 0;
 
-// retrieve our table contents
+$num = 0;
 while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
     $num += 1;
     
-    // extract row
-    // this will make $row['name'] to
-    // just $name only
-    extract(array_change_key_case($row));
+    $base_item = array();
+    foreach ($row as $key => $value) {
+        $base_item[strtolower($key)] = $value;
+    }
 
-    $personnel_item = array(
-        "tnkr_code" => $tnkr_code,
-        "tnkr_name" => $tnkr_name,
-        "tnkr_carrier" => $tnkr_carrier,
-        "tnkr_carrier_name" => $tnkr_carrier_name,
-        "tnkr_owner" => $tnkr_owner,
-        "tnkr_owner_name" => $tnkr_owner_name,
-        "tnkr_etp" => $tnkr_etp,
-        "tnkr_eqpt_name" => $tnkr_eqpt_name,
-        "tnkr_base_site" => $tnkr_base_site,
-        "tnkr_base_site_name" => $tnkr_base_site_name,
-        "tnkr_dest_depot" => $tnkr_dest_depot,
-        "tnkr_dest_depot_name" => $tnkr_dest_depot_name,
-        "tnkr_last_depot" => $tnkr_last_depot,
-        "tnkr_last_depot_name" => $tnkr_last_depot_name,
-        "tnkr_cur_depot" => $tnkr_cur_depot,
-        "tnkr_cur_depot_name" => $tnkr_cur_depot_name,
-        "tnkr_pin" => $tnkr_pin,
-        "tnkr_lock" => $tnkr_lock,
-        "tnkr_active" => $tnkr_active,
-        "tnkr_bay_loop_ch" => $tnkr_bay_loop_ch,
-        "tnkr_archive" => $tnkr_archive,
-        "tnkr_ntrips" => $tnkr_ntrips,
-        "tnkr_own_txt" => $tnkr_own_txt,
-        "tnkr_lic_exp" => $tnkr_lic_exp,
-        "tnkr_dglic_exp" => $tnkr_dglic_exp,
-        "tnkr_ins_exp" => $tnkr_ins_exp,
-        "tnkr_stats" => $tnkr_stats,
-        "tnkr_last_trip" => $tnkr_last_trip,
-        "tnkr_max_kg" => $tnkr_max_kg,
-        "remarks" => $remarks,
-        "etyp_category" => $etyp_category,
-        "tnkr_last_modified" => $tnkr_last_modified,
-        "tnkr_last_used" => $tnkr_last_used
-    );
+    //Expiry dates from EXPIRY_DATE_DETAILS
+    $base_item["expiry_dates"] = array();
+    $expiry_date = new ExpiryDate($db);
+    $expiry_date->ed_target_code = ExpiryTarget::TANKER;
+    $expiry_date->ed_object_id = $row["TNKR_CODE"];
+    $stmt3 = $expiry_date->read();
+    
+    while ($row2 = oci_fetch_array($stmt3, OCI_ASSOC + OCI_RETURN_NULLS)) {
+        $base_item2 = array();
+        foreach ($row2 as $key => $value) {
+            $base_item2[strtolower($key)] = $value;
+        }
 
-    $personnel_item = array_map(function($v){
+        $base_item2 = array_map(function($v){
+                return (is_null($v)) ? "" : $v;
+            }, $base_item2);
+
+        if (count($base_item2) > 0) {
+            array_push($base_item["expiry_dates"], $base_item2);
+        }
+    }
+
+    $base_item = array_map(function($v){
         return (is_null($v)) ? "" : $v;
-    }, $personnel_item);
-    array_push($personnels_arr["records"], $personnel_item);
+    }, $base_item);
+
+    array_push($personnels_arr["records"], $base_item);
 }
 
 if ($num > 0) {

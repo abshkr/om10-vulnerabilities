@@ -100,11 +100,11 @@ class Equipment
         }
 
         $journal = new Journal($this->conn);
-        $module = "Tanker";
+        $module = "GUI_TANKERS";
         $record = sprintf("Equip ID:%s, Compartment No:%s", $eqpt, $cmpt);
 
         if (!$journal->valueChange(
-                $module, $record, "lock_status", $old_value, 1 - $old_value)) {
+                $module, $record, "ADJ_CMPT_LOCK", $old_value, 1 - $old_value)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
