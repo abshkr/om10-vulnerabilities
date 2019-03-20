@@ -1,20 +1,28 @@
 import React from "react";
-import { Icon } from "antd";
+import { PageHeader } from "antd";
 import "./breadcrumbs.css";
 
-const Breadcrumbs = ({ page, path }) => {
-  if (path !== undefined) {
-    return (
-      <div className="breadcrumbs">
-        <div className="bc-title">{page}</div>
-        <span>
-          <Icon type="right" style={{ fontSize: 22 }} />
-        </span>
-        <div className="bc-page">{path}</div>
-      </div>
-    );
-  }
-  return <div className="breadcrumbs">{page}</div>;
+const Breadcrumbs = ({ page, path, sub }) => {
+  const routes = [
+    {
+      path: "/",
+      breadcrumbName: "OMEGA 5000"
+    },
+    {
+      path: "first",
+      breadcrumbName: page
+    },
+    {
+      path: "second",
+      breadcrumbName: path
+    }
+  ];
+  const filter = ["Listings", "Management"];
+  return (
+    <div className="breadcrumbs">
+      <PageHeader title={filter.includes(page) ? path : page} breadcrumb={{ routes }} subTitle={sub} />
+    </div>
+  );
 };
 
 export default Breadcrumbs;

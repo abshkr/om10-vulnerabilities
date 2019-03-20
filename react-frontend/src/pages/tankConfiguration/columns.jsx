@@ -1,3 +1,6 @@
+import React from "react";
+import { Tag } from "antd";
+
 import generate from "../../utils/generateOptions";
 
 const columns = data => [
@@ -6,7 +9,8 @@ const columns = data => [
     dataIndex: "tank_code",
     key: "tank_code",
     width: 220,
-    fixed: "left"
+    fixed: "left",
+    render: text => <Tag className="tag">{text}</Tag>
   },
   {
     title: "Tank Name",

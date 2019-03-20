@@ -57,7 +57,7 @@ class DataTable extends React.Component {
     return (
       <Table
         bordered
-        size="middle"
+        size="small"
         loading={!loading}
         rowKey={rowKey}
         components={this.components}

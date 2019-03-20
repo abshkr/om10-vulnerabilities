@@ -9,11 +9,15 @@ import auth from "../../utils/auth";
 import axios from "axios";
 import Page from "../../components/page";
 import DataTable from "../../components/table";
-import { Progress, Badge, Button, Tabs } from "antd";
+import { Badge, Button, Tabs, Modal } from "antd";
+import { WaterWave } from "ant-design-pro/lib/Charts";
+
 import columns from "./columns";
 import _ from "lodash";
 
 import "./tankView.css";
+
+const Panel = Tabs.TabPane;
 
 const status = {
   "In Service - Not used": "#c1c1c1",
@@ -29,37 +33,36 @@ class TankView extends Component {
     super(props);
     this.state = {
       tanks: null,
-      data: null,
-      visible: false,
-      selected: null
+      data: null
     };
   }
 
-  openDetailed = code => {
-    this.setState({
-      visible: true,
-      selected: code
+  openModal = tank => {
+    Modal.info({
+      title: tank.tank_name,
+      centered: true,
+      width: 640,
+      maskClosable: true,
+      content: (
+        <div>
+          <p>some messages...some messages...</p>
+          <p>some messages...some messages...</p>
+        </div>
+      )
     });
   };
 
-  closeDetailed = () => {
-    this.setState({
-      visible: false,
-      selected: null
-    });
-  };
-
-  fetchTanks = () => {
+  getTanks = () => {
     axios.get(`https://10.1.10.66/api/tank/read.php`).then(response => {
       const data = response.data.records;
       this.setState({
         tanks: data,
-        data: this.transformTanks(data)
+        data: this.modelTanks(data)
       });
     });
   };
 
-  transformTanks = data => {
+  modelTanks = data => {
     let values = [];
 
     _(data)
@@ -82,18 +85,16 @@ class TankView extends Component {
   };
 
   componentDidMount() {
-    this.fetchTanks();
+    this.getTanks();
   }
 
   render() {
-    const name = "Tank View";
     const { tanks, data } = this.state;
-    const TabPane = Tabs.TabPane;
 
     return (
-      <Page page={"Operations"} name={name} isLoading={false}>
+      <Page page="Operations" name="Tank View" isLoading={false}>
         <Tabs defaultActiveKey="1" style={{ marginLeft: 55, marginRight: 55 }}>
-          <TabPane tab="Tank View" key="1">
+          <Panel tab="Tank View" key="1">
             <div className="tank-filter">
               <div style={{ float: "right" }}>
                 <Button type="primary" style={{ marginRight: 5 }}>
@@ -106,28 +107,21 @@ class TankView extends Component {
               {!!tanks &&
                 tanks.map((item, index) => {
                   return (
-                    <div
-                      key={index}
-                      style={{ border: "1px solid " + status[item.tank_status_name] }}
-                      className="tank"
-                      disabled
-                      onClick={() => this.openDetailed(item.tank_code)}
-                    >
+                    <div key={index} className="tank" disabled onClick={() => this.openModal(item)}>
                       <div className="titles">
-                        <span> Name: {item.tank_name} </span>
-                        <span> Base Product: {item.tank_base_name} </span>
+                        <span> {item.tank_name} </span>
                       </div>
 
                       <div className="tank-body">
-                        <Progress
-                          type="dashboard"
+                        <WaterWave
+                          color={status[item.tank_status_name]}
+                          height={180}
+                          title={item.tank_base_name}
                           percent={
                             Math.round((item.tank_cor_vol / item.tank_ullage) * 100, 2) < 100
                               ? Math.round((item.tank_cor_vol / item.tank_ullage) * 100, 2)
                               : 100
                           }
-                          strokeColor="#fff"
-                          width={180}
                         />
 
                         <div className="tank-status">
@@ -141,8 +135,8 @@ class TankView extends Component {
                   );
                 })}
             </div>
-          </TabPane>
-          <TabPane tab="Table View" key="2">
+          </Panel>
+          <Panel tab="Table View" key="2">
             <div className="tank-filter" style={{ marginBottom: 20 }}>
               <div style={{ float: "right" }}>
                 <Button type="primary" style={{ marginRight: 5 }}>
@@ -159,7 +153,7 @@ class TankView extends Component {
               scroll={900}
               click={this.showEdit}
             />
-          </TabPane>
+          </Panel>
         </Tabs>
       </Page>
     );
