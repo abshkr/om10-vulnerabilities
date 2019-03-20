@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import auth from "../../utils/auth";
 import Page from "../../components/page";
 import axios from "axios";
-import { Table } from "antd";
+import Filter from "../../components/filter";
+import DataTable from "../../components/table";
+import Download from "../../components/download";
+import search from "../../utils/search";
 import columns from "./columns";
 import "./tankInventory.css";
 
@@ -11,40 +14,45 @@ class TankInventory extends Component {
     super(props);
     this.state = {
       data: null,
-      filteredInfo: null,
-      sortedInfo: null,
-      isLoading: true
+      isLoading: true,
+      value: ""
     };
   }
 
-  fetchData = () => {
+  fetchTankInventory = () => {
     this.setState({ isLoading: true });
     axios.get(`https://10.1.10.66/api/tank_inv/read.php`).then(res => {
       this.setState({ data: res.data.records, isLoading: false });
     });
   };
 
-  handleChange = (pagination, filters, sorter) => {
+  searchObjects = query => {
+    const { value } = query.target;
     this.setState({
-      filteredInfo: filters,
-      sortedInfo: sorter
+      filtered: search(value, this.state.data),
+      value
     });
   };
 
   componentDidMount() {
-    this.fetchData();
+    this.fetchTankInventory();
   }
 
   render() {
-    const { isLoading, data, sortedInfo, filteredInfo } = this.state;
+    const { isLoading, data, filtered, value } = this.state;
+    const name = "Tank Inventory";
+    const results = !!filtered ? filtered : data;
     return (
-      <Page page={"Stock Management"} name={"Tank Inventory"} isLoading={isLoading} block={true}>
-        <Table
-          rowKey="metercode"
-          dataSource={data}
-          columns={columns(sortedInfo || {}, filteredInfo || {}, data)}
-          onChange={this.handleChange}
-          size="small"
+      <Page page={"Stock Management"} name={name} isLoading={isLoading} block={true}>
+        <Filter value={value} search={this.searchObjects} />
+        <Download data={data} type={name} style={{ float: "right" }} />
+        <DataTable
+          resize={true}
+          rowKey="base_code"
+          columns={columns(results)}
+          data={results}
+          loading={true}
+          scroll={100}
         />
       </Page>
     );

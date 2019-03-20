@@ -1,77 +1,79 @@
-import Generate from "../../utils/generateOptions";
+import generate from "../../utils/generateOptions";
 
-const columns = (sortedInfo, filteredInfo, data) => [
+const columns = data => [
   {
     title: "Tank",
     dataIndex: "tank_code",
-    key: "tank_code"
+    key: "tank_code",
+    width: 150,
+    filters: generate(data, "tank_code"),
+    onFilter: (value, record) => record.tank_code.includes(value)
   },
   {
     title: "Location",
     dataIndex: "tank_location",
     key: "tank_location",
-    filters: Generate(data, "tank_location"),
-    filteredValue: filteredInfo.tank_location || null,
-    onFilter: (value, record) => record.tank_location.includes(value),
-    sortOrder: sortedInfo.columnKey === "tank_location" && sortedInfo.order
+    width: 150,
+    filters: generate(data, "tank_location"),
+    onFilter: (value, record) => record.tank_location.includes(value)
   },
   {
     title: "Product Name",
     dataIndex: "base_name",
     key: "base_name",
-    filters: Generate(data, "base_name"),
-    filteredValue: filteredInfo.base_name || null,
-    onFilter: (value, record) => record.base_name.includes(value),
-    sortOrder: sortedInfo.columnKey === "base_name" && sortedInfo.order
+    width: 130,
+    filters: generate(data, "base_name"),
+    onFilter: (value, record) => record.base_name.includes(value)
   },
   {
     title: "Level (mm)",
     dataIndex: "tank_prod_lvl",
     key: "tank_prod_lvl",
-    sorter: (a, b) => a.tank_prod_lvl - b.tank_prod_lvl,
-    sortOrder: sortedInfo.columnKey === "tank_prod_lvl" && sortedInfo.order
+    width: 130,
+    sorter: (a, b) => a.tank_prod_lvl - b.tank_prod_lvl
   },
   {
-    title: "Temp (DegC)",
+    title: "Temp",
     dataIndex: "tank_temp",
     key: "tank_temp",
+    width: 160,
     sorter: (a, b) => a.tank_temp - b.tank_temp,
-    sortOrder: sortedInfo.columnKey === "tank_temp" && sortedInfo.order
+    render: text => text + "°C"
   },
   {
     title: "Standard Volume (CorL)",
     dataIndex: "netvol",
     key: "netvol",
-    sorter: (a, b) => a.netvol - b.netvol,
-    sortOrder: sortedInfo.columnKey === "netvol" && sortedInfo.order
+    width: 160,
+    sorter: (a, b) => a.netvol - b.netvol
   },
   {
     title: "Observed Volume (ObsL)",
     dataIndex: "grossvol",
     key: "grossvol",
-    sorter: (a, b) => a.grossvol - b.grossvol,
-    sortOrder: sortedInfo.columnKey === "grossvol" && sortedInfo.order
+    width: 160,
+    sorter: (a, b) => a.grossvol - b.grossvol
   },
   {
     title: "Pumpable Volume (ObsL)",
     dataIndex: "pumpablevol",
     key: "pumpablevol",
-    sorter: (a, b) => a.pumpablevol - b.pumpablevol,
-    sortOrder: sortedInfo.columnKey === "pumpablevol" && sortedInfo.order
+    width: 160,
+    sorter: (a, b) => a.pumpablevol - b.pumpablevol
   },
   {
     title: "Opening Stock (CorL)",
     dataIndex: "usablevol",
     key: "usablevol",
-    sorter: (a, b) => a.usablevol - b.usablevol,
-    sortOrder: sortedInfo.columnKey === "usablevol" && sortedInfo.order
+    width: 160,
+    sorter: (a, b) => a.usablevol - b.usablevol
   },
   {
     title: "Book Balance (CorL)",
     dataIndex: "bookbalance",
     key: "bookbalance",
-    sorter: (a, b) => a.bookbalance - b.bookbalance,
-    sortOrder: sortedInfo.columnKey === "bookbalance" && sortedInfo.order
+    width: 160,
+    sorter: (a, b) => a.bookbalance - b.bookbalance
   }
 ];
 

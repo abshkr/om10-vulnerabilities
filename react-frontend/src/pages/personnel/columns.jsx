@@ -1,4 +1,4 @@
-import Generate from "../../../utils/generateOptions";
+import Generate from "../../utils/generateOptions";
 
 const columns = data => [
   {

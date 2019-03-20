@@ -1,44 +1,90 @@
+/**
+ * @description
+ * Base Products Screen
+ * Lets the user perform simple CRUD operations to manipulate the Base Products Data.
+ */
+
 import React, { Component } from "react";
 import auth from "../../utils/auth";
 import Page from "../../components/page";
-import Search from "../../utils/search";
 import Filter from "../../components/filter";
-import Table from "./table";
+import DataTable from "../../components/table";
+import Download from "../../components/download";
+import { CreateButton } from "../../components/buttons";
 import axios from "axios";
+import search from "../../utils/search";
+import columns from "./columns";
+import { Create, Edit } from "./forms";
 
 class Personnel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: null,
-      isLoading: true,
       value: "",
-      filtered: null
+      data: [],
+      create: false,
+      edit: null
     };
   }
 
-  fetch = () => {
-    axios.get(`https://10.1.10.66/api/personnel/read.php`).then(res => {
-      this.setState({ data: res.data.records, isLoading: false });
+  fetchBaseProducts = () => {
+    axios.get(`https://10.1.10.66/api/personnel/read.php`).then(response => {
+      const data = response.data.records;
+      this.setState({
+        data: data,
+        isLoading: false
+      });
     });
   };
 
-  searchObjects = e => {
-    const { value } = e.target;
-    const filtered = Search(value, this.state.data);
-    this.setState({ filtered, value });
+  searchObjects = query => {
+    const { value } = query.target;
+    this.setState({
+      filtered: search(value, this.state.data),
+      value
+    });
+  };
+
+  showCreate = () => {
+    this.setState({ create: true });
+  };
+
+  hideCreate = () => {
+    this.setState({ create: false });
+  };
+
+  showEdit = record => {
+    this.setState({ edit: record });
+  };
+
+  hideEdit = () => {
+    this.setState({ edit: null });
   };
 
   componentDidMount() {
-    this.fetch();
+    this.fetchBaseProducts();
   }
 
   render() {
-    const { data, filtered, value } = this.state;
+    const { data, isLoading, filtered, value, create, edit } = this.state;
+    const results = !!filtered ? filtered : data;
+    const name = "Personnel";
     return (
-      <Page page={"Access Control"} name={"Personnel"} isLoading={false} block={true}>
+      <Page page={"Access Control"} name={name} isLoading={isLoading} block={true}>
         <Filter value={value} search={this.searchObjects} />
-        <Table data={!!filtered ? filtered : data} update={this.fetch} />
+        <Download data={data} type={name} style={{ float: "right" }} />
+        <CreateButton type={name} style={{ float: "right", marginRight: 5 }} action={this.showCreate} />
+        <Create visible={create} cancel={this.hideCreate} />
+        <Edit visible={!!edit} cancel={this.hideEdit} value={edit} />
+
+        <DataTable
+          rowKey="base_code"
+          columns={columns(results)}
+          data={results}
+          loading={true}
+          scroll={3600}
+          click={this.showEdit}
+        />
       </Page>
     );
   }
