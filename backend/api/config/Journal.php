@@ -60,7 +60,9 @@ class Journal
         "TRANSP_EQUIP" => "equipment",
         "EXPIRY_DATE_TRANSP_EQUIP" => "equipment expiry",
         "EXPIRY_DATE_TANKERS" => "tanker expiry",
-        "EXPIRY_DATE_PERSONNEL" => "personnel expiry"
+        "EXPIRY_DATE_PERSONNEL" => "personnel expiry",
+        "GUI_ACCESS_KEYS" => "id assignment",
+        "BASE_PRODS" => "base product"
     );
 
     //Mainly fields in table
@@ -150,7 +152,37 @@ class Journal
             "EQPT_COMMENTS" => "comments",
             "EQPT_AREA" => "area",
             "EQPT_LOAD_TYPE" => "load type"
+        ),
+        "GUI_ACCESS_KEYS" => array (
+            "KYA_LOCK" => "lock status",
+            "KYA_TIMECD" => "time code",
+            "KYA_TXT" => "tag",
+            "KYA_ADHOC" => "adhoc",
+            "KYA_PSN" => "personnel",
+            "KYA_ROLE" => "role",
+            "KYA_DRAWER" => "drawer",
+            "KYA_TANKER" => "tanker",
+            "KYA_EQUIPMENT" => "equipment",
+            "KYA_SP_SUPPLIER" => "supplier",
+            "KYA_PHYS_NAME" => "physical type"
+        ),
+        "BASE_PRODS" => array (
+            "BASE_NAME" => "base name",
+            "BASE_PROD_GROUP" => "product group",
+            "BASE_CORR_MTHD" => "correction method",
+            "BASE_REF_TEMP" => "reference temperature",
+            "BASE_DENS_HI" => "density high",
+            "BASE_DENS_LO" => "density low",
+            "BASE_CAT" => "classification",
+            "BASE_REF_TUNT" => "base ref tunt",
+            "BASE_LIMIT_PRESET_HT" => "limit_preset_ht",
+            "BASE_REF_TEMP_SPEC" => "ref temp spec"
         )
+    );
+
+    //Fields that do not count in valueChange.
+    private $fields_excluded = array(
+        "GUI_ACCESS_KEYS" => array("KYA_ROLE", "KYA_TYPE", "KYA_KEY_CREATED", "KYA_PHYS_TYPE")
     );
 
     // constructor with $db as database connection
@@ -282,6 +314,23 @@ class Journal
 
     //     return true;
     // }
+
+    //Call valueChange() to journal all the value changes. Normally in an update. 
+    public function updateChanges($set_old, $set_new, $module, $record)
+    {
+        foreach ($set_new as $key => $value) {
+            if (in_array($key, $this->fields_excluded['GUI_ACCESS_KEYS']))
+                continue;
+
+            if (isset($set_old[strtoupper($key)]) && $value != $set_old[strtoupper($key)] && 
+                !$this->valueChange(
+                    $module, $record, $key, $set_old[strtoupper($key)], $value)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /* Use RECORD_CHANGED to write a journal indicating value changes
     % changed % of record % with % % to %

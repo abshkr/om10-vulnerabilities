@@ -195,7 +195,7 @@ class IDAssignment
         }
     }
 
-    function tankers($tnkr_owner)
+    function tankers()
     {
         Utilities::sanitize($this);
 
@@ -214,7 +214,11 @@ class IDAssignment
             ORDER BY TNKR_CODE ASC";
             
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':tnkr_owner', $tnkr_owner);
+        if (isset($this->tnkr_owner))
+            $this->tnkr_owner = '%' . $this->tnkr_owner . '%';
+        else
+            $this->tnkr_owner = '%';
+        oci_bind_by_name($stmt, ':tnkr_owner', $this->tnkr_owner);
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
@@ -253,7 +257,7 @@ class IDAssignment
         }
     }
 
-    function schedulables($owner)
+    function schedulables()
     {
         Utilities::sanitize($this);
 
@@ -270,7 +274,7 @@ class IDAssignment
             FROM 
                 GUI_EQUIPMENT_LIST EL, EQUIP_TYPES ET
             WHERE ";
-        if (isset($owner)) {
+        if (isset($this->owner)) {
             $query = $query . " EL.EQPT_OWNER = :owner AND ";
         } 
 
@@ -279,8 +283,8 @@ class IDAssignment
             ORDER BY EQPT_CODE";
             
         $stmt = oci_parse($this->conn, $query);
-        if (isset($owner)) {
-            oci_bind_by_name($stmt, ':owner', $owner);
+        if (isset($this->owner)) {
+            oci_bind_by_name($stmt, ':owner', $this->owner);
         }
         if (oci_execute($stmt)) {
             return $stmt;
@@ -320,7 +324,7 @@ class IDAssignment
         }
     }
 
-    function non_schedulables($owner)
+    function non_schedulables()
     {
         Utilities::sanitize($this);
 
@@ -337,7 +341,7 @@ class IDAssignment
             FROM 
                 GUI_EQUIPMENT_LIST EL, EQUIP_TYPES ET
             WHERE ";
-        if (isset($owner)) {
+        if (isset($this->owner)) {
             $query = $query . " EL.EQPT_OWNER = :owner AND ";
         } 
 
@@ -346,8 +350,8 @@ class IDAssignment
             ORDER BY EQPT_CODE";
             
         $stmt = oci_parse($this->conn, $query);
-        if (isset($owner)) {
-            oci_bind_by_name($stmt, ':owner', $owner);
+        if (isset($this->owner)) {
+            oci_bind_by_name($stmt, ':owner', $this->owner);
         }
         if (oci_execute($stmt)) {
             return $stmt;
@@ -400,8 +404,8 @@ class IDAssignment
     function roles()
     {
         $query = "
-            SELECT AUTH_LEVEL_ID,
-                AUTH_LEVEL_NAME
+            SELECT AUTH_LEVEL_ID ROLE_ID,
+                AUTH_LEVEL_NAME ROLE_NAME
             FROM AUTH_LEVEL_TYP 
             ORDER BY AUTH_LEVEL_ID";            
         $stmt = oci_parse($this->conn, $query);
@@ -459,7 +463,7 @@ class IDAssignment
         }
     }
 
-    function lookupPersonnel($employer, $role)
+    function lookupPersonnel()
     {
         Utilities::sanitize($this);
 
@@ -473,19 +477,25 @@ class IDAssignment
                 PER_DEPARTMENT
             FROM GUI_PERSONNEL, AUTH_LEVEL_TYP
             WHERE ";
-        if (isset($employer)) {
+        if (isset($this->employer)) {
             $query = $query . " PER_CMPY LIKE :employer AND ";
         } 
-
-        $query = $query . "PER_AUTH LIKE :role
-            AND PER_AUTH = AUTH_LEVEL_ID(+)
+        if (isset($this->role)) {
+            $query = $query . " PER_AUTH LIKE :role AND ";
+        } 
+        $query = $query . "PER_AUTH = AUTH_LEVEL_ID(+)
             ORDER BY PER_CODE ASC
             ";        
         $stmt = oci_parse($this->conn, $query);
-        if (isset($employer)) {
-            oci_bind_by_name($stmt, ':employer', $employer);
+        if (isset($this->employer)) {
+            $this->employer = '%' . $this->employer . '%';
+            oci_bind_by_name($stmt, ':employer', $this->employer);
         }
-        oci_bind_by_name($stmt, ':role', $role);
+        if (isset($this->role)) {
+            $this->role = '%' . $this->role . '%';
+            oci_bind_by_name($stmt, ':role', $this->role);
+        }
+        
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
@@ -769,48 +779,15 @@ class IDAssignment
         $curr_psn = Utilities::getCurrPsn();
         $this->key_history("MODIFIED", "BEFORE");
 
-        $kya_lock = null; 
-        $kya_timecd = null;
-        $kya_phys_type = null;
-        $kya_txt = null;
-        $kya_adhoc = null;
-        $kya_psn = null;
-        $kya_role = null;
-        $kya_drawer = null;
-        $kya_tanker = null;
-        $kya_equipment = null;
-        $kya_sp_supplier = null;
-
         $query = "
-            SELECT KYA_LOCK, 
-                KYA_TIMECD,
-                KYA_PHYS_TYPE,
-                KYA_TXT,
-                KYA_ADHOC,
-                KYA_PSN,
-                KYA_ROLE,
-                KYA_DRAWER,
-                KYA_TANKER,
-                KYA_EQUIPMENT,
-                KYA_SP_SUPPLIER
-            FROM ACCESS_KEYS
+            SELECT *
+            FROM GUI_ACCESS_KEYS
             WHERE KYA_KEY_ISSUER = :kya_key_issuer AND KYA_KEY_NO = :kya_key_no";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':kya_key_no', $this->kya_key_no);
         oci_bind_by_name($stmt, ':kya_key_issuer', $this->kya_key_issuer);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-            $kya_lock = $row['KYA_LOCK']; 
-            $kya_timecd = $row['KYA_TIMECD']; 
-            $kya_phys_type = $row['KYA_PHYS_TYPE']; 
-            $kya_txt = $row['KYA_TXT']; 
-            $kya_adhoc = $row['KYA_ADHOC']; 
-            $kya_psn = $row['KYA_PSN']; 
-            $kya_role = $row['KYA_ROLE']; 
-            $kya_drawer = $row['KYA_DRAWER']; 
-            $kya_tanker = $row['KYA_TANKER']; 
-            $kya_equipment = $row['KYA_EQUIPMENT']; 
-            $kya_sp_supplier = $row['KYA_SP_SUPPLIER']; 
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
@@ -927,93 +904,113 @@ class IDAssignment
             return false;
         }
 
-        if ($kya_lock != $this->kya_lock && 
-            !$journal->valueChange(
-                $module, $record, "lock_status", $kya_lock, $this->kya_lock)) {
+        $query = "
+            SELECT *
+            FROM GUI_ACCESS_KEYS
+            WHERE KYA_KEY_ISSUER = :kya_key_issuer AND KYA_KEY_NO = :kya_key_no";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':kya_key_no', $this->kya_key_no);
+        oci_bind_by_name($stmt, ':kya_key_issuer', $this->kya_key_issuer);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
         }
 
-        if ($kya_timecd != $this->kya_timecd && 
-            !$journal->valueChange(
-                $module, $record, "time_code", $kya_timecd, $this->kya_timecd)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        $module = "GUI_ACCESS_KEYS";
+        $record = sprintf("id:%s", $this->kya_key_no);
+        if (!$journal->updateChanges($row, $row2, $module, $record)) {
             oci_rollback($this->conn);
             return false;
         }
+        
+        // if ($kya_lock != $this->kya_lock && 
+        //     !$journal->valueChange(
+        //         $module, $record, "lock_status", $kya_lock, $this->kya_lock)) {
+        //     write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
-        if ($kya_phys_type != $this->kya_phys_type && 
-            !$journal->valueChange(
-                $module, $record, "physical type", $kya_phys_type, $this->kya_phys_type)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
+        // if ($kya_timecd != $this->kya_timecd && 
+        //     !$journal->valueChange(
+        //         $module, $record, "time_code", $kya_timecd, $this->kya_timecd)) {
+        //     write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
-        if ($kya_txt != $this->kya_txt && 
-            !$journal->valueChange(
-                $module, $record, "tag", $kya_txt, $this->kya_txt)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
+        // if ($kya_phys_type != $this->kya_phys_type && 
+        //     !$journal->valueChange(
+        //         $module, $record, "physical type", $kya_phys_type, $this->kya_phys_type)) {
+        //     write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
-        if ($kya_adhoc != $this->kya_adhoc && 
-            !$journal->valueChange(
-                $module, $record, "adhoc", $kya_adhoc, $this->kya_adhoc)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
+        // if ($kya_txt != $this->kya_txt && 
+        //     !$journal->valueChange(
+        //         $module, $record, "tag", $kya_txt, $this->kya_txt)) {
+        //     write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
-        if ($kya_psn != $this->kya_psn && 
-            !$journal->valueChange(
-                $module, $record, "personnel", $kya_psn, $this->kya_psn)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
+        // if ($kya_adhoc != $this->kya_adhoc && 
+        //     !$journal->valueChange(
+        //         $module, $record, "adhoc", $kya_adhoc, $this->kya_adhoc)) {
+        //     write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
-        if ($kya_role != $this->kya_role && 
-            !$journal->valueChange(
-                $module, $record, "role", $kya_role, $this->kya_role)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
+        // if ($kya_psn != $this->kya_psn && 
+        //     !$journal->valueChange(
+        //         $module, $record, "personnel", $kya_psn, $this->kya_psn)) {
+        //     write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
-        if ($kya_drawer != $this->kya_drawer && 
-            !$journal->valueChange(
-                $module, $record, "drawer", $kya_drawer, $this->kya_drawer)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
+        // if ($kya_role != $this->kya_role && 
+        //     !$journal->valueChange(
+        //         $module, $record, "role", $kya_role, $this->kya_role)) {
+        //     write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
-        if ($kya_tanker != $this->kya_tanker && 
-            !$journal->valueChange(
-                $module, $record, "tanker", $kya_tanker, $this->kya_tanker)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
+        // if ($kya_drawer != $this->kya_drawer && 
+        //     !$journal->valueChange(
+        //         $module, $record, "drawer", $kya_drawer, $this->kya_drawer)) {
+        //     write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
-        if ($kya_equipment != $this->kya_equipment && 
-            !$journal->valueChange(
-                $module, $record, "equipment", $kya_equipment, $this->kya_equipment)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
+        // if ($kya_tanker != $this->kya_tanker && 
+        //     !$journal->valueChange(
+        //         $module, $record, "tanker", $kya_tanker, $this->kya_tanker)) {
+        //     write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
-        if ($kya_sp_supplier != $this->kya_sp_supplier && 
-            !$journal->valueChange(
-                $module, $record, "supplier", $kya_sp_supplier, $this->kya_sp_supplier)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
+        // if ($kya_equipment != $this->kya_equipment && 
+        //     !$journal->valueChange(
+        //         $module, $record, "equipment", $kya_equipment, $this->kya_equipment)) {
+        //     write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
+
+        // if ($kya_sp_supplier != $this->kya_sp_supplier && 
+        //     !$journal->valueChange(
+        //         $module, $record, "supplier", $kya_sp_supplier, $this->kya_sp_supplier)) {
+        //     write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
         oci_commit($this->conn);
         return true;

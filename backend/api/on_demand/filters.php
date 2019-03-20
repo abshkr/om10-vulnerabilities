@@ -6,7 +6,7 @@ include_once '../shared/header.php';
 include_once '../config/database.php';
 include_once '../objects/on_demand.php';
 
-Utilities::read('OndemandReport', "parameters", $filter = true);
+Utilities::simpliedRead('OndemandReport', "parameters", $filter = true);
 
 
 // <?php

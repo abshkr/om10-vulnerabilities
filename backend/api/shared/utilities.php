@@ -51,10 +51,6 @@ class Utilities
         // query products
         $stmt = $object->$method();
          
-        // products array
-        $result = array();
-        $result["records"] = array();
-
         $result = array();
         $result["records"] = array();
         $num = 0;
@@ -72,6 +68,109 @@ class Utilities
 
             array_push($result["records"], $base_item);
         }
+        // $result["result_count"] = $num;
+
+        if ($num > 0) {
+            http_response_code(200);
+            echo json_encode($result, JSON_PRETTY_PRINT);
+        } else {
+            http_response_code(404);
+            echo json_encode(
+                array("message" => "No record found.")
+            );
+        }
+    }
+
+    public static function count($class, $method = 'count', $filter = false)
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+         
+        // initialize object
+        $object = new $class($db);
+         
+        if ($filter) {
+            $data = json_decode(file_get_contents("php://input"));
+            if ($data) {
+                foreach ($data as $key => $value) {
+                    $object->$key = $value;
+                }
+            } else {
+                // write_log(json_encode($_GET), __FILE__, __LINE__);
+                foreach ($_GET as $key => $value) {
+                    $object->$key = $value;
+                }
+            }
+        }
+
+        // query products
+        $count = $object->$method();
+         
+        $result = array();
+        $result["records"] = array();
+        $item = array(
+            "count" => $count
+        );
+
+        array_push($result["records"], $item);
+
+        http_response_code(200);
+        echo json_encode($result, JSON_PRETTY_PRINT);
+    }
+    //Example:
+    /*
+    "records": [
+        "000004C521F3",
+        "00000126FD7B",
+        "000001270A16",
+        "000001096EDE",
+        "0000011B0BB9"
+    ] */
+    public static function simpliedRead($class, $method = 'read', $filter = false)
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+         
+        // initialize object
+        $object = new $class($db);
+         
+        if ($filter) {
+            $data = json_decode(file_get_contents("php://input"));
+            if ($data) {
+                foreach ($data as $key => $value) {
+                    $object->$key = $value;
+                }
+            } else {
+                // write_log(json_encode($_GET), __FILE__, __LINE__);
+                foreach ($_GET as $key => $value) {
+                    $object->$key = $value;
+                }
+            }
+        }
+
+        // query products
+        $stmt = $object->$method();
+         
+        $result = array();
+        $result["records"] = array();
+        $num = 0;
+        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $num += 1;
+            
+            //There should be only 1 field in $row
+            $base_item = array();
+            foreach ($row as $key => $value) {
+                // $base_item[strtolower($key)] = $value;
+                array_push($result["records"], is_null($value) ? "" : $value);
+            }
+
+            // $base_item = array_map(function($v){
+            //     return (is_null($v)) ? "" : $v;
+            // }, $base_item);
+
+            // array_push($result["records"], $base_item);
+        }
+        // $result["result_count"] = $num;
 
         if ($num > 0) {
             http_response_code(200);

@@ -88,30 +88,31 @@ class Tanker
         }
     }
 
-    public function searchCount($tnkr_code, $tnkr_owner = null, $tnkr_etp = null)
+    public function searchCount()
     {
+        // write_log(json_encode($this), __FILE__, __LINE__, LogLevel::ERROR);
         Utilities::sanitize($this);
-
+        
         $query = "
             SELECT COUNT(*) CN
                     FROM GUI_TANKERS
                     WHERE TNKR_CODE LIKE :tnkr_code ";
 
-        if (isset($tnkr_owner)) {
+        if (isset($this->tnkr_owner)) {
             $query = $query . " AND TNKR_OWNER = :tnkr_owner ";
         } 
 
-        if (isset($tnkr_etp)) {
+        if (isset($this->tnkr_etp)) {
             $query = $query . " AND TNKR_ETP = :tnkr_etp ";
         }
                         
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
-        if (isset($tnkr_owner)) {
-            oci_bind_by_name($stmt, ':tnkr_owner', $tnkr_owner);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+        if (isset($this->tnkr_owner)) {
+            oci_bind_by_name($stmt, ':tnkr_owner', $this->tnkr_owner);
         }
-        if (isset($tnkr_etp)) {
-            oci_bind_by_name($stmt, ':tnkr_etp', $tnkr_etp);
+        if (isset($this->tnkr_etp)) {
+            oci_bind_by_name($stmt, ':tnkr_etp', $this->tnkr_etp);
         }
         if (oci_execute($stmt)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
@@ -122,11 +123,13 @@ class Tanker
         }
     } 
 
-    public function search($tnkr_code, $tnkr_owner = null, $tnkr_etp = null)
+    public function search()
     {
+        $this->tnkr_code = isset($this->tnkr_code) ? '%' . $this->tnkr_code . '%' : '%';
+        
         if (!isset($this->end_num)) {
             $this->start_num = 1;
-            $this->end_num = $this->searchCount($tnkr_code, $tnkr_owner, $tnkr_etp);
+            $this->end_num = $this->searchCount();
         }
 
         Utilities::sanitize($this);
@@ -177,11 +180,11 @@ class Tanker
                     FROM GUI_TANKERS
                     WHERE TNKR_CODE LIKE :tnkr_code ";
 
-        if (isset($tnkr_owner)) {
+        if (isset($this->tnkr_owner)) {
             $query = $query . " AND TNKR_OWNER = :tnkr_owner ";
         } 
 
-        if (isset($tnkr_etp)) {
+        if (isset($this->tnkr_etp)) {
             $query = $query . " AND TNKR_ETP = :tnkr_etp ";
         }
                         
@@ -192,12 +195,13 @@ class Tanker
             WHERE RN >= :start_num
                 AND RN <= :end_num";        
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
-        if (isset($tnkr_owner)) {
-            oci_bind_by_name($stmt, ':tnkr_owner', $tnkr_owner);
+
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+        if (isset($this->tnkr_owner)) {
+            oci_bind_by_name($stmt, ':tnkr_owner', $this->tnkr_owner);
         }
-        if (isset($tnkr_etp)) {
-            oci_bind_by_name($stmt, ':tnkr_etp', $tnkr_etp);
+        if (isset($this->tnkr_etp)) {
+            oci_bind_by_name($stmt, ':tnkr_etp', $this->tnkr_etp);
         }
         oci_bind_by_name($stmt, ':start_num', $this->start_num);
         oci_bind_by_name($stmt, ':end_num', $this->end_num);
@@ -757,20 +761,12 @@ class Tanker
 
         $module = "GUI_TANKERS";
         $record = sprintf("tanker:%s, owner:%s", $this->tnkr_code, $this->tnkr_owner);
-        foreach ($row2 as $key => $value) {
-            if ($key === "PER_CMPY" ||
-                $key === "USER_LOGIN_COUNT"
-                ) 
-                continue;
-
-            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] && 
-                !$journal->valueChange(
-                    $module, $record, $key, $row[strtoupper($key)], $value)) {
-                oci_rollback($this->conn);
-                return false;
-            }
+        if (!$journal->updateChanges($row, $row2, $module, $record))
+        {
+            oci_rollback($this->conn);
+            return false;
         }
-
+        
         //Tanker composition journal
         $query = "
             SELECT LISTAGG(EQPT_CODE, ', ') WITHIN GROUP (ORDER BY TC_SEQNO) TNKR_EQUIPS
@@ -793,105 +789,6 @@ class Tanker
             oci_rollback($this->conn);
             return false;
         }
-
-        // if ($tnkr_lock != $this->tnkr_lock && 
-        //     !$journal->valueChange(
-        //         $module, $record, "lock status", $tnkr_lock, $this->tnkr_lock)) {
-        //     oci_rollback($this->conn);
-        //     return false;
-        // }
-
-        // if ($tnkr_active != $this->tnkr_active && 
-        //     !$journal->valueChange(
-        //         $module, $record, "active status", $tnkr_active, $this->tnkr_active)) {
-        //     oci_rollback($this->conn);
-        //     return false;
-        // }
-
-        // if ($tnkr_max_kg != $this->tnkr_max_kg && 
-        //     !$journal->valueChange(
-        //         $module, $record, "max kg", $tnkr_max_kg, $this->tnkr_max_kg)) {
-        //     oci_rollback($this->conn);
-        //     return false;
-        // }
-
-        // if ($tnkr_bay_loop_ch != $this->tnkr_bay_loop_ch && 
-        //     !$journal->valueChange(
-        //         $module, $record, "bay check", $tnkr_bay_loop_ch, $this->tnkr_bay_loop_ch)) {
-        //     oci_rollback($this->conn);
-        //     return false;
-        // }
-
-        // if ($tnkr_ntrips != $this->tnkr_ntrips && 
-        //     !$journal->valueChange(
-        //         $module, $record, "total trips", $tnkr_ntrips, $this->tnkr_ntrips)) {
-        //     oci_rollback($this->conn);
-        //     return false;
-        // }
-
-        // if ($tnkr_lic_exp != $this->tnkr_lic_exp && 
-        //     !$journal->valueChange(
-        //         $module, $record, "expiry date 1", $tnkr_lic_exp, $this->tnkr_lic_exp)) {
-        //     oci_rollback($this->conn);
-        //     return false;
-        // }
-
-        // if ($tnkr_dglic_exp != $this->tnkr_dglic_exp && 
-        //     !$journal->valueChange(
-        //         $module, $record, "expiry date 2", $tnkr_dglic_exp, $this->tnkr_dglic_exp)) {
-        //     oci_rollback($this->conn);
-        //     return false;
-        // }
-
-        // if ($tnkr_ins_exp != $this->tnkr_ins_exp && 
-        //     !$journal->valueChange(
-        //         $module, $record, "expiry date 3", $tnkr_ins_exp, $this->tnkr_ins_exp)) {
-        //     oci_rollback($this->conn);
-        //     return false;
-        // }
-
-        // if ($last_trip != $this->last_trip && 
-        //     !$journal->valueChange(
-        //         $module, $record, "last trip", $last_trip, $this->last_trip)) {
-        //     oci_rollback($this->conn);
-        //     return false;
-        // }
-
-        // if ($tnkr_name != $this->tnkr_name && 
-        //     !$journal->valueChange(
-        //         $module, $record, "tanker name", $tnkr_name, $this->tnkr_name)) {
-        //     oci_rollback($this->conn);
-        //     return false;
-        // }
-
-        // if ($tnkr_pin != $this->tnkr_pin && 
-        //     !$journal->valueChange(
-        //         $module, $record, "tanker pin", $tnkr_pin, $this->tnkr_pin)) {
-        //     oci_rollback($this->conn);
-        //     return false;
-        // }
-
-        // if ($tnkr_archive != $this->tnkr_archive && 
-        //     !$journal->valueChange(
-        //         $module, $record, "archived status", $tnkr_archive, $this->tnkr_archive)) {
-        //     oci_rollback($this->conn);
-        //     return false;
-        // }
-
-        // if ($remarks != $this->remarks && 
-        //     !$journal->valueChange(
-        //         $module, $record, "remarks", $remarks, $this->remarks)) {
-        //     oci_rollback($this->conn);
-        //     return false;
-        // }
-
-        // if (isset($eqpts))
-        //     if (!$this->updateEqpts($this->tnkr_code, $eqpts)) {
-        //         write_log("Failed to update tanker equipments", 
-        //             __FILE__, __LINE__, LogLevel::ERROR);
-        //         oci_rollback($this->conn);
-        //         return false;
-        //     }
 
         oci_commit($this->conn);
         return true;

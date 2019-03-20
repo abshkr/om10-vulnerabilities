@@ -174,28 +174,29 @@ class EquipmentType
 
     /* Only display non-combine equpment type. because for equipment, the type can
     only be non-combine, but for tanker, the type can be non-combine or combine */
-    function search2($etyp_title, $cmptnu)
+    function search2()
     {
-        if (!isset($this->end_num)) {
-            $this->start_num = 1;
-            $this->end_num = 50;
-        }
+        // if (!isset($this->end_num)) {
+        //     $this->start_num = 1;
+        //     $this->end_num = 50;
+        // }
 
         Utilities::sanitize($this);
+        $this->etyp_title = isset($this->etyp_title) ? '%' . $this->etyp_title . '%' : '%';
 
         $query = "
             SELECT ETYP_ID, ETYP_TITLE 
             FROM EQUIP_TYPES_VW 
             WHERE ETYP_CLASS = 0 AND ETYP_TITLE like :etyp_title ";
-        if (isset($cmptnu)) {
+        if (isset($this->cmptnu)) {
             $query = $query . " AND CMPTNU = :cmptnu ";
         }
 
         $query = $query . " ORDER BY ETYP_TITLE ASC";        
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':etyp_title', $etyp_title);
-        if (isset($cmptnu)) {
-            oci_bind_by_name($stmt, ':cmptnu', $cmptnu);
+        oci_bind_by_name($stmt, ':etyp_title', $this->etyp_title);
+        if (isset($this->cmptnu)) {
+            oci_bind_by_name($stmt, ':cmptnu', $this->cmptnu);
         }
         if (oci_execute($stmt)) {
             return $stmt;
@@ -205,7 +206,7 @@ class EquipmentType
         }
     }
 
-    function search($etyp_title, $cmptnu)
+    function search()
     {
         if (!isset($this->end_num)) {
             $this->start_num = 1;
@@ -218,16 +219,24 @@ class EquipmentType
             SELECT ETYP_ID, ETYP_TITLE 
             FROM EQUIP_TYPES_VW 
             WHERE ETYP_TITLE like :etyp_title ";
-        if (isset($cmptnu)) {
+        if (isset($this->cmptnu)) {
             $query = $query . " AND CMPTNU = :cmptnu ";
         }
 
         $query = $query . " ORDER BY ETYP_TITLE ASC";        
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':etyp_title', $etyp_title);
-        if (isset($cmptnu)) {
-            oci_bind_by_name($stmt, ':cmptnu', $cmptnu);
+
+        if (isset($this->etyp_title)) {
+            $this->etyp_title = '%' . $this->etyp_title . '%';
+        } else {
+            $this->etyp_title = '%';
         }
+        oci_bind_by_name($stmt, ':etyp_title', $this->etyp_title);
+        
+        if (isset($this->cmptnu)) {
+            oci_bind_by_name($stmt, ':cmptnu', $this->cmptnu);
+        }
+        
         if (oci_execute($stmt)) {
             return $stmt;
         } else {

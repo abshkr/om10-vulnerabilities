@@ -206,8 +206,7 @@ class OndemandReport
             SELECT DECODE(ARGUMENT_NAME, 
                 'CMPY_CODE', 'SUPP_CODE',
                 'SUPPLIER_CODE', 'SUPP_CODE',
-                ARGUMENT_NAME) ARGUMENT_NAME,
-                ARGUMENT_SEQ
+                ARGUMENT_NAME) ARGUMENT_NAME
             FROM REPORT_FILTER 
             WHERE JASPER_FILE = :jasper_file
             ORDER BY ARGUMENT_SEQ";
