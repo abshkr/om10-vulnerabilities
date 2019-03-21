@@ -841,6 +841,117 @@ class PersonnelClass{
         $mydb = DB::getInstance();
 
         $data = $mydb->update($sql);
+
+        $sql = "SELECT MAX(NVL(CONFIG_VALUE, 1)) DATE_MODE FROM SITE_CONFIG
+            WHERE CONFIG_KEY = 'SITE_EXPIRY_DATE_MANAGE_MODE'";
+        $rows = $mydb->query($sql);
+        if ($rows[0]->DATE_MODE == 1) {
+            $sql = array();
+            $sql['sql_text'] = "SELECT COUNT(*) CN FROM EXPIRY_DATE_DETAILS
+                WHERE ED_TARGET_CODE = 'PERSONNEL' AND ED_TYPE_CODE = 'PSNL_EXPIRY_DATE_1' 
+                    AND ED_OBJECT_ID = :code";
+            $sql['sql_data'] = array($code);
+            $rows = $mydb->query($sql);
+            if ($rows[0]->CN >= 1) {
+                $sql['sql_text'] = "
+                    UPDATE EXPIRY_DATE_DETAILS 
+                    SET ED_EXP_DATE = (SELECT PER_EXP_D1_DMY FROM PERSONNEL WHERE PER_CODE = ED_OBJECT_ID)
+                    WHERE ED_TARGET_CODE = 'PERSONNEL' AND ED_TYPE_CODE = 'PSNL_EXPIRY_DATE_1' 
+                        AND ED_OBJECT_ID = :code";
+            } else {
+                $sql['sql_text'] = "
+                    INSERT INTO EXPIRY_DATE_DETAILS
+                    (ED_TARGET_CODE, 
+                        ED_CMPY_CODE, 
+                        ED_OBJECT_ID, 
+                        ED_TYPE_CODE, 
+                        ED_EXP_DATE, 
+                        ED_STATUS
+                    )
+                    SELECT EDTP.EDT_TARGET_CODE, 
+                        PSNL.PER_CMPY, 
+                        PSNL.PER_CODE, 
+                        EDTP.EDT_TYPE_CODE, 
+                        PSNL.PER_EXP_D1_DMY, 
+                        EDTP.EDT_STATUS
+                    FROM PERSONNEL PSNL, EXPIRY_DATE_TYPES EDTP
+                    WHERE EDTP.EDT_TARGET_CODE = 'PERSONNEL'
+                        AND EDTP.EDT_TYPE_CODE = 'PSNL_EXPIRY_DATE_1'
+                        AND PER_CODE = :code";
+            }
+            $sql['sql_data'] = array( $code );
+            $data = $mydb->update($sql);
+
+            $sql['sql_text'] = "SELECT COUNT(*) CN FROM EXPIRY_DATE_DETAILS
+                WHERE ED_TARGET_CODE = 'PERSONNEL' AND ED_TYPE_CODE = 'PSNL_EXPIRY_DATE_2' 
+                    AND ED_OBJECT_ID = :code";
+            $sql['sql_data'] = array($code);
+            $rows = $mydb->query($sql);
+            if ($rows[0]->CN >= 1) {
+                $sql['sql_text'] = "
+                    UPDATE EXPIRY_DATE_DETAILS 
+                    SET ED_EXP_DATE = (SELECT PER_EXP_D2_DMY FROM PERSONNEL WHERE PER_CODE = ED_OBJECT_ID)
+                    WHERE ED_TARGET_CODE = 'PERSONNEL' AND ED_TYPE_CODE = 'PSNL_EXPIRY_DATE_2' 
+                        AND ED_OBJECT_ID = :code";
+            } else {
+                $sql['sql_text'] = "
+                    INSERT INTO EXPIRY_DATE_DETAILS
+                    (ED_TARGET_CODE, 
+                        ED_CMPY_CODE, 
+                        ED_OBJECT_ID, 
+                        ED_TYPE_CODE, 
+                        ED_EXP_DATE, 
+                        ED_STATUS
+                    )
+                    SELECT EDTP.EDT_TARGET_CODE, 
+                        PSNL.PER_CMPY, 
+                        PSNL.PER_CODE, 
+                        EDTP.EDT_TYPE_CODE, 
+                        PSNL.PER_EXP_D2_DMY, 
+                        EDTP.EDT_STATUS
+                    FROM PERSONNEL PSNL, EXPIRY_DATE_TYPES EDTP
+                    WHERE EDTP.EDT_TARGET_CODE = 'PERSONNEL'
+                        AND EDTP.EDT_TYPE_CODE = 'PSNL_EXPIRY_DATE_2'
+                        AND PER_CODE = :code";
+            }
+            $sql['sql_data'] = array( $code );
+            $data = $mydb->update($sql);
+
+            $sql['sql_text'] = "SELECT COUNT(*) CN FROM EXPIRY_DATE_DETAILS
+                WHERE ED_TARGET_CODE = 'PERSONNEL' AND ED_TYPE_CODE = 'PSNL_EXPIRY_DATE_3' 
+                    AND ED_OBJECT_ID = :code";
+            $sql['sql_data'] = array($code);
+            $rows = $mydb->query($sql);
+            if ($rows[0]->CN >= 1) {
+                $sql['sql_text'] = "
+                    UPDATE EXPIRY_DATE_DETAILS 
+                    SET ED_EXP_DATE = (SELECT PER_EXP_D3_DMY FROM PERSONNEL WHERE PER_CODE = ED_OBJECT_ID)
+                    WHERE ED_TARGET_CODE = 'PERSONNEL' AND ED_TYPE_CODE = 'PSNL_EXPIRY_DATE_3' 
+                        AND ED_OBJECT_ID = :code";
+            } else {
+                $sql['sql_text'] = "
+                    INSERT INTO EXPIRY_DATE_DETAILS
+                    (ED_TARGET_CODE, 
+                        ED_CMPY_CODE, 
+                        ED_OBJECT_ID, 
+                        ED_TYPE_CODE, 
+                        ED_EXP_DATE, 
+                        ED_STATUS
+                    )
+                    SELECT EDTP.EDT_TARGET_CODE, 
+                        PSNL.PER_CMPY, 
+                        PSNL.PER_CODE, 
+                        EDTP.EDT_TYPE_CODE, 
+                        PSNL.PER_EXP_D1_DMY, 
+                        EDTP.EDT_STATUS
+                    FROM PERSONNEL PSNL, EXPIRY_DATE_TYPES EDTP
+                    WHERE EDTP.EDT_TARGET_CODE = 'PERSONNEL'
+                        AND EDTP.EDT_TYPE_CODE = 'PSNL_EXPIRY_DATE_3'
+                        AND PER_CODE = :code";
+            }
+            $sql['sql_data'] = array( $code );
+            $data = $mydb->update($sql);
+        }
         
         return RETURN_0;
     }

@@ -654,12 +654,134 @@ REQUEST: cmptcap1=10000&cmptsfl1=9000&sflcap1=11000&cmptcap2=10000&cmptsfl2=1000
 		$code = $data->eqpt_code;
 				
 		$sql['sql_text'] = " UPDATE TRANSP_EQUIP SET EQPT_LAST_MODIFIED=current_date WHERE EQPT_CODE=:code";
-
 		$sql['sql_data'] = array( $code );
-
 		$mydb = DB::getInstance();
-
 		$data = $mydb->update($sql);
+
+        $sql = "SELECT MAX(NVL(CONFIG_VALUE, 1)) DATE_MODE FROM SITE_CONFIG
+            WHERE CONFIG_KEY = 'SITE_EXPIRY_DATE_MANAGE_MODE'";
+        $rows = $mydb->query($sql);
+        if ($rows[0]->DATE_MODE == 1) {
+            $sql = array();
+            $sql['sql_text'] = "SELECT COUNT(*) CN FROM EXPIRY_DATE_DETAILS
+                WHERE ED_TARGET_CODE = 'TRANSP_EQUIP' AND ED_TYPE_CODE = 'EQPT_EXPIRY_DATE_1' 
+                    AND ED_OBJECT_ID = 
+                    (SELECT TO_CHAR(EQPT_ID) FROM TRANSP_EQUIP WHERE EQPT_CODE = :code)";
+            $sql['sql_data'] = array($code);
+            $rows = $mydb->query($sql);
+            if ($rows[0]->CN >= 1) {
+                $sql['sql_text'] = "
+                    UPDATE EXPIRY_DATE_DETAILS 
+                    SET ED_EXP_DATE = (SELECT EQPT_EXP_D1_DMY 
+                        FROM TRANSP_EQUIP WHERE TO_CHAR(EQPT_ID) = ED_OBJECT_ID)
+                    WHERE ED_TARGET_CODE = 'TRANSP_EQUIP' AND ED_TYPE_CODE = 'EQPT_EXPIRY_DATE_1' 
+                        AND ED_OBJECT_ID = 
+                        (SELECT TO_CHAR(EQPT_ID) FROM TRANSP_EQUIP WHERE EQPT_CODE = :code)";
+            } else {
+                $sql['sql_text'] = "
+                    INSERT INTO EXPIRY_DATE_DETAILS
+                    (ED_TARGET_CODE, 
+                        ED_CMPY_CODE, 
+                        ED_OBJECT_ID, 
+                        ED_TYPE_CODE, 
+                        ED_EXP_DATE, 
+                        ED_STATUS
+                    )
+                    SELECT EDTP.EDT_TARGET_CODE, 
+                        EQPT.EQPT_OWNER, 
+                        EQPT.EQPT_ID, 
+                        EDTP.EDT_TYPE_CODE, 
+                        EQPT.EQPT_EXP_D1_DMY, 
+                        EDTP.EDT_STATUS
+                    FROM TRANSP_EQUIP EQPT, 
+                        EXPIRY_DATE_TYPES EDTP
+                    WHERE EDTP.EDT_TARGET_CODE = 'TRANSP_EQUIP'
+                        AND EDTP.EDT_TYPE_CODE = 'EQPT_EXPIRY_DATE_1'
+                        AND EQPT_CODE = :code";
+            }
+            $sql['sql_data'] = array( $code );
+            $data = $mydb->update($sql);
+
+            $sql['sql_text'] = "SELECT COUNT(*) CN FROM EXPIRY_DATE_DETAILS
+                WHERE ED_TARGET_CODE = 'TRANSP_EQUIP' AND ED_TYPE_CODE = 'EQPT_EXPIRY_DATE_2' 
+                    AND ED_OBJECT_ID = 
+                    (SELECT TO_CHAR(EQPT_ID) FROM TRANSP_EQUIP WHERE EQPT_CODE = :code)";
+            $sql['sql_data'] = array($code);
+            $rows = $mydb->query($sql);
+            if ($rows[0]->CN >= 1) {
+                $sql['sql_text'] = "
+                    UPDATE EXPIRY_DATE_DETAILS 
+                    SET ED_EXP_DATE = (SELECT EQPT_EXP_D2_DMY 
+                        FROM TRANSP_EQUIP WHERE TO_CHAR(EQPT_ID) = ED_OBJECT_ID)
+                    WHERE ED_TARGET_CODE = 'TRANSP_EQUIP' AND ED_TYPE_CODE = 'EQPT_EXPIRY_DATE_2' 
+                        AND ED_OBJECT_ID = 
+                        (SELECT TO_CHAR(EQPT_ID) FROM TRANSP_EQUIP WHERE EQPT_CODE = :code)";
+            } else {
+                $sql['sql_text'] = "
+                    INSERT INTO EXPIRY_DATE_DETAILS
+                    (ED_TARGET_CODE, 
+                        ED_CMPY_CODE, 
+                        ED_OBJECT_ID, 
+                        ED_TYPE_CODE, 
+                        ED_EXP_DATE, 
+                        ED_STATUS
+                    )
+                    SELECT EDTP.EDT_TARGET_CODE, 
+                        EQPT.EQPT_OWNER, 
+                        EQPT.EQPT_ID, 
+                        EDTP.EDT_TYPE_CODE, 
+                        EQPT.EQPT_EXP_D2_DMY, 
+                        EDTP.EDT_STATUS
+                    FROM TRANSP_EQUIP EQPT, 
+                        EXPIRY_DATE_TYPES EDTP
+                    WHERE EDTP.EDT_TARGET_CODE = 'TRANSP_EQUIP'
+                        AND EDTP.EDT_TYPE_CODE = 'EQPT_EXPIRY_DATE_2'
+                        AND EQPT_CODE = :code";
+            }
+
+            $sql['sql_data'] = array( $code );
+            $data = $mydb->update($sql);
+            
+            $sql['sql_text'] = "SELECT COUNT(*) CN FROM EXPIRY_DATE_DETAILS
+                WHERE ED_TARGET_CODE = 'TRANSP_EQUIP' AND ED_TYPE_CODE = 'EQPT_EXPIRY_DATE_3' 
+                    AND ED_OBJECT_ID = 
+                    (SELECT TO_CHAR(EQPT_ID) FROM TRANSP_EQUIP WHERE EQPT_CODE = :code)";
+            $sql['sql_data'] = array($code);
+            $rows = $mydb->query($sql);
+            if ($rows[0]->CN >= 1) {
+                $sql['sql_text'] = "
+                    UPDATE EXPIRY_DATE_DETAILS 
+                    SET ED_EXP_DATE = (SELECT EQPT_EXP_D3_DMY 
+                        FROM TRANSP_EQUIP WHERE TO_CHAR(EQPT_ID) = ED_OBJECT_ID)
+                    WHERE ED_TARGET_CODE = 'TRANSP_EQUIP' AND ED_TYPE_CODE = 'EQPT_EXPIRY_DATE_3' 
+                        AND ED_OBJECT_ID = 
+                        (SELECT TO_CHAR(EQPT_ID) FROM TRANSP_EQUIP WHERE EQPT_CODE = :code)";
+            } else {
+                $sql['sql_text'] = "
+                    INSERT INTO EXPIRY_DATE_DETAILS
+                    (ED_TARGET_CODE, 
+                        ED_CMPY_CODE, 
+                        ED_OBJECT_ID, 
+                        ED_TYPE_CODE, 
+                        ED_EXP_DATE, 
+                        ED_STATUS
+                    )
+                    SELECT EDTP.EDT_TARGET_CODE, 
+                        EQPT.EQPT_OWNER, 
+                        EQPT.EQPT_ID, 
+                        EDTP.EDT_TYPE_CODE, 
+                        EQPT.EQPT_EXP_D3_DMY, 
+                        EDTP.EDT_STATUS
+                    FROM TRANSP_EQUIP EQPT, 
+                        EXPIRY_DATE_TYPES EDTP
+                    WHERE EDTP.EDT_TARGET_CODE = 'TRANSP_EQUIP'
+                        AND EDTP.EDT_TYPE_CODE = 'EQPT_EXPIRY_DATE_3'
+                        AND EQPT_CODE = :code";
+            }
+
+            $sql['sql_data'] = array( $code );
+            $data = $mydb->update($sql);
+        }
 
         return "OK";
     }   

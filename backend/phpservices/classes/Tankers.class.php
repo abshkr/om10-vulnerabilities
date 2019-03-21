@@ -953,14 +953,124 @@ tnkr_max_kg=max_kg
 		$code = $data->tnkr_code;
 		
         $sql['sql_text'] = " UPDATE TANKERS SET TNKR_LAST_MODIFIED=current_date WHERE TNKR_CODE=:code";
-		
 		$sql['sql_data'] = array( $code );
-		
 		$mydb = DB::getInstance();
-		
 		$data = $mydb->update($sql);
 
-        	return "OK";
+		$sql = "SELECT MAX(NVL(CONFIG_VALUE, 1)) DATE_MODE FROM SITE_CONFIG
+			WHERE CONFIG_KEY = 'SITE_EXPIRY_DATE_MANAGE_MODE'";
+        $rows = $mydb->query($sql);
+        if ($rows[0]->DATE_MODE == 1) {
+        	$sql = array();
+			$sql['sql_text'] = "SELECT COUNT(*) CN FROM EXPIRY_DATE_DETAILS
+				WHERE ED_TARGET_CODE = 'TANKERS' AND ED_TYPE_CODE = 'TNKR_EXPIRY_DATE_1' 
+        			AND ED_OBJECT_ID = :code";
+        	$sql['sql_data'] = array($code);
+	        $rows = $mydb->query($sql);
+	        if ($rows[0]->CN >= 1) {
+	        	$sql['sql_text'] = "
+	        		UPDATE EXPIRY_DATE_DETAILS 
+	        		SET ED_EXP_DATE = (SELECT TNKR_LIC_EXP FROM TANKERS WHERE TNKR_CODE = ED_OBJECT_ID)
+	        		WHERE ED_TARGET_CODE = 'TANKERS' AND ED_TYPE_CODE = 'TNKR_EXPIRY_DATE_1' 
+	        			AND ED_OBJECT_ID = :code";
+	        } else {
+	        	$sql['sql_text'] = "
+	        		INSERT INTO EXPIRY_DATE_DETAILS
+	        		(ED_TARGET_CODE, 
+		        		ED_CMPY_CODE, 
+		        		ED_OBJECT_ID, 
+		        		ED_TYPE_CODE, 
+		        		ED_EXP_DATE, 
+		        		ED_STATUS
+	        		)
+	        		SELECT EDTP.EDT_TARGET_CODE, 
+	        			TNKR.TNKR_OWNER, 
+	        			TNKR.TNKR_CODE, 
+	        			EDTP.EDT_TYPE_CODE, 
+	        			TNKR.TNKR_LIC_EXP, 
+	        			EDTP.EDT_STATUS
+	        		FROM TANKERS TNKR, EXPIRY_DATE_TYPES EDTP
+	        		WHERE EDTP.EDT_TARGET_CODE = 'TANKERS'
+						AND EDTP.EDT_TYPE_CODE = 'TNKR_EXPIRY_DATE_1'
+						AND TNKR = :code";
+	        }
+        	$sql['sql_data'] = array( $code );
+        	$data = $mydb->update($sql);
+
+        	$sql['sql_text'] = "SELECT COUNT(*) CN FROM EXPIRY_DATE_DETAILS
+				WHERE ED_TARGET_CODE = 'TANKERS' AND ED_TYPE_CODE = 'TNKR_EXPIRY_DATE_2' 
+        			AND ED_OBJECT_ID = :code";
+        	$sql['sql_data'] = array($code);
+	        $rows = $mydb->query($sql);
+	        if ($rows[0]->CN >= 1) {
+	        	$sql['sql_text'] = "
+	        		UPDATE EXPIRY_DATE_DETAILS 
+	        		SET ED_EXP_DATE = (SELECT TNKR_DGLIC_EXP FROM TANKERS WHERE TNKR_CODE = ED_OBJECT_ID)
+	        		WHERE ED_TARGET_CODE = 'TANKERS' AND ED_TYPE_CODE = 'TNKR_EXPIRY_DATE_2' 
+	        			AND ED_OBJECT_ID = :code";
+	        } else {
+	        	$sql['sql_text'] = "
+	        		INSERT INTO EXPIRY_DATE_DETAILS
+	        		(ED_TARGET_CODE, 
+		        		ED_CMPY_CODE, 
+		        		ED_OBJECT_ID, 
+		        		ED_TYPE_CODE, 
+		        		ED_EXP_DATE, 
+		        		ED_STATUS
+	        		)
+	        		SELECT EDTP.EDT_TARGET_CODE, 
+	        			TNKR.TNKR_OWNER, 
+	        			TNKR.TNKR_CODE, 
+	        			EDTP.EDT_TYPE_CODE, 
+	        			TNKR.TNKR_DGLIC_EXP, 
+	        			EDTP.EDT_STATUS
+	        		FROM TANKERS TNKR, EXPIRY_DATE_TYPES EDTP
+	        		WHERE EDTP.EDT_TARGET_CODE = 'TANKERS'
+						AND EDTP.EDT_TYPE_CODE = 'TNKR_EXPIRY_DATE_2'
+						AND TNKR = :code";
+	        }
+
+        	$sql['sql_data'] = array( $code );
+        	$data = $mydb->update($sql);
+        	
+        	$sql['sql_text'] = "SELECT COUNT(*) CN FROM EXPIRY_DATE_DETAILS
+				WHERE ED_TARGET_CODE = 'TANKERS' AND ED_TYPE_CODE = 'TNKR_EXPIRY_DATE_3' 
+        			AND ED_OBJECT_ID = :code";
+        	$sql['sql_data'] = array($code);
+	        $rows = $mydb->query($sql);
+	        if ($rows[0]->CN >= 1) {
+	        	$sql['sql_text'] = "
+	        		UPDATE EXPIRY_DATE_DETAILS 
+	        		SET ED_EXP_DATE = (SELECT TNKR_INS_EXP FROM TANKERS WHERE TNKR_CODE = ED_OBJECT_ID)
+	        		WHERE ED_TARGET_CODE = 'TANKERS' AND ED_TYPE_CODE = 'TNKR_EXPIRY_DATE_3' 
+	        			AND ED_OBJECT_ID = :code";
+	        } else {
+	        	$sql['sql_text'] = "
+	        		INSERT INTO EXPIRY_DATE_DETAILS
+	        		(ED_TARGET_CODE, 
+		        		ED_CMPY_CODE, 
+		        		ED_OBJECT_ID, 
+		        		ED_TYPE_CODE, 
+		        		ED_EXP_DATE, 
+		        		ED_STATUS
+	        		)
+	        		SELECT EDTP.EDT_TARGET_CODE, 
+	        			TNKR.TNKR_OWNER, 
+	        			TNKR.TNKR_CODE, 
+	        			EDTP.EDT_TYPE_CODE, 
+	        			TNKR.TNKR_INS_EXP, 
+	        			EDTP.EDT_STATUS
+	        		FROM TANKERS TNKR, EXPIRY_DATE_TYPES EDTP
+	        		WHERE EDTP.EDT_TARGET_CODE = 'TANKERS'
+						AND EDTP.EDT_TYPE_CODE = 'TNKR_EXPIRY_DATE_3'
+						AND TNKR = :code";
+	        }
+
+        	$sql['sql_data'] = array( $code );
+        	$data = $mydb->update($sql);
+        }
+
+        return "OK";
     }  
 
 
