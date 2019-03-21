@@ -4,6 +4,7 @@ import Page from "../../components/page";
 import Filter from "../../components/filter";
 import Table from "./table";
 import axios from "axios";
+import Container from "../../components/container";
 import Search from "../../utils/search";
 
 class IdAssignment extends Component {
@@ -47,13 +48,15 @@ class IdAssignment extends Component {
 
     return (
       <Page page={"Access Control"} name={"ID Assignment"} isLoading={isLoading} block={true}>
-        <Filter value={value} search={this.searchObjects} />
-        <Table
-          data={!!filtered ? filtered : data}
-          update={this.fetchIdAssignments}
-          search={this.searchTrigger}
-          type="personnel"
-        />
+        <Container>
+          <Filter value={value} search={this.searchObjects} />
+          <Table
+            data={!!filtered ? filtered : data}
+            update={this.fetchIdAssignments}
+            search={this.searchTrigger}
+            type="personnel"
+          />
+        </Container>
       </Page>
     );
   }
