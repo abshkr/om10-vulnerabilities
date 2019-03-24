@@ -273,12 +273,12 @@ class Tank
             return false;
         }
 
-        $module = "Tank";
+        $module = "GUI_TANKS";
         $record = sprintf("code:%s", $this->tank_code);
         foreach ($this as $key => $value) {
             if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] && 
                 !$journal->valueChange(
-                    $module, $record, $key, $row[strtoupper($key)], $value)) {
+                    $module, $record, strtoupper($key), $row[strtoupper($key)], $value)) {
                 oci_rollback($this->conn);
                 return false;
             }

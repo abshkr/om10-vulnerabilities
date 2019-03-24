@@ -11,6 +11,8 @@ class CustomerCategory
 
     public $category_code;
     public $category_name;
+
+    public $desc = "customer category";
     
     // constructor with $db as database connection
     public function __construct($db)

@@ -1,6 +1,7 @@
 <?php
 
-include_once __DIR__  . '/../config/log.php';
+include_once '../config/log.php';
+include_once '../config/database.php';
 
 class Utilities
 { 
@@ -24,7 +25,165 @@ class Utilities
         }
     }
 
-    public static function retrieve(&$result_array, $stmt)
+    //
+    public static function read($class, $method = 'read', $filter = false)
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+         
+        // initialize object
+        $object = new $class($db);
+         
+        if ($filter) {
+            $data = json_decode(file_get_contents("php://input"));
+            if ($data) {
+                foreach ($data as $key => $value) {
+                    $object->$key = $value;
+                }
+            } else {
+                // write_log(json_encode($_GET), __FILE__, __LINE__);
+                foreach ($_GET as $key => $value) {
+                    $object->$key = $value;
+                }
+            }
+        }
+
+        // query products
+        $stmt = $object->$method();
+         
+        $result = array();
+        $result["records"] = array();
+        $num = 0;
+        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $num += 1;
+            
+            $base_item = array();
+            foreach ($row as $key => $value) {
+                $base_item[strtolower($key)] = $value;
+            }
+
+            $base_item = array_map(function($v){
+                return (is_null($v)) ? "" : $v;
+            }, $base_item);
+
+            array_push($result["records"], $base_item);
+        }
+        // $result["result_count"] = $num;
+
+        if ($num > 0) {
+            http_response_code(200);
+            echo json_encode($result, JSON_PRETTY_PRINT);
+        } else {
+            http_response_code(404);
+            echo json_encode(
+                array("message" => "No record found.")
+            );
+        }
+    }
+
+    public static function count($class, $method = 'count', $filter = false)
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+         
+        // initialize object
+        $object = new $class($db);
+         
+        if ($filter) {
+            $data = json_decode(file_get_contents("php://input"));
+            if ($data) {
+                foreach ($data as $key => $value) {
+                    $object->$key = $value;
+                }
+            } else {
+                // write_log(json_encode($_GET), __FILE__, __LINE__);
+                foreach ($_GET as $key => $value) {
+                    $object->$key = $value;
+                }
+            }
+        }
+
+        // query products
+        $count = $object->$method();
+         
+        $result = array();
+        $result["records"] = array();
+        $item = array(
+            "count" => $count
+        );
+
+        array_push($result["records"], $item);
+
+        http_response_code(200);
+        echo json_encode($result, JSON_PRETTY_PRINT);
+    }
+    //Example:
+    /*
+    "records": [
+        "000004C521F3",
+        "00000126FD7B",
+        "000001270A16",
+        "000001096EDE",
+        "0000011B0BB9"
+    ] */
+    public static function simpliedRead($class, $method = 'read', $filter = false)
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+         
+        // initialize object
+        $object = new $class($db);
+         
+        if ($filter) {
+            $data = json_decode(file_get_contents("php://input"));
+            if ($data) {
+                foreach ($data as $key => $value) {
+                    $object->$key = $value;
+                }
+            } else {
+                // write_log(json_encode($_GET), __FILE__, __LINE__);
+                foreach ($_GET as $key => $value) {
+                    $object->$key = $value;
+                }
+            }
+        }
+
+        // query products
+        $stmt = $object->$method();
+         
+        $result = array();
+        $result["records"] = array();
+        $num = 0;
+        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $num += 1;
+            
+            //There should be only 1 field in $row
+            $base_item = array();
+            foreach ($row as $key => $value) {
+                // $base_item[strtolower($key)] = $value;
+                array_push($result["records"], is_null($value) ? "" : $value);
+            }
+
+            // $base_item = array_map(function($v){
+            //     return (is_null($v)) ? "" : $v;
+            // }, $base_item);
+
+            // array_push($result["records"], $base_item);
+        }
+        // $result["result_count"] = $num;
+
+        if ($num > 0) {
+            http_response_code(200);
+            echo json_encode($result, JSON_PRETTY_PRINT);
+        } else {
+            http_response_code(404);
+            echo json_encode(
+                array("message" => "No record found.")
+            );
+        }
+    }
+
+    private static function retrieve(&$result_array, $stmt)
     {
         $num = 0;
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
@@ -46,8 +205,14 @@ class Utilities
         return $num;
     }
 
-    public static function create($object, $desc) 
+    public static function create($class, $method = 'create') 
     {
+        $database = new Database();
+        $db = $database->getConnection();
+         
+        $object = new $class($db);
+        $desc = (isset($object->desc) ? $object->desc : $class);
+
         // get posted data
         $data = json_decode(file_get_contents("php://input"));
         if ($data) {
@@ -63,25 +228,27 @@ class Utilities
 
         write_log(json_encode($object), __FILE__, __LINE__);
 
-        // if (!isset($tank->per_code)) {
-        //     http_response_code(400);
-        //     echo json_encode(array("message" => "Unable to update personnel. Data is incomplete."));
-        //     return;
-        // }
-
-        if ($object->create()){
+        if ($object->$method()){
             echo '{';
                 echo '"message": "' . $desc . ' created."';
             echo '}';
         } else{
             echo '{';
-                echo '"message": "Unable to create ' . $desc . '."';
+                echo '"message": "Unable to create ' . 
+                    $desc . 
+                    '. Check logs/php_rest_*.log file for details."';
             echo '}';
         }
     }
 
-    public static function update($object, $desc) 
+    public static function update($class, $method = 'update') 
     {
+        $database = new Database();
+        $db = $database->getConnection();
+         
+        $object = new $class($db);
+        $desc = (isset($object->desc) ? $object->desc : $class);
+
         // get posted data
         $data = json_decode(file_get_contents("php://input"));
         if ($data) {
@@ -97,25 +264,27 @@ class Utilities
 
         // write_log(json_encode($object), __FILE__, __LINE__);
 
-        // if (!isset($tank->per_code)) {
-        //     http_response_code(400);
-        //     echo json_encode(array("message" => "Unable to update personnel. Data is incomplete."));
-        //     return;
-        // }
-
-        if ($object->update()){
+        if ($object->$method()){
             echo '{';
                 echo '"message": "' . $desc . ' updated."';
             echo '}';
         } else{
             echo '{';
-                echo '"message": "Unable to update ' . $desc . '."';
+                echo '"message": "Unable to update ' . 
+                    $desc . 
+                    '. Check logs/php_rest_*.log file for details."';
             echo '}';
         }
     }
 
-    public static function delete($object, $desc) 
+    public static function delete($class, $method = 'delete') 
     {
+        $database = new Database();
+        $db = $database->getConnection();
+         
+        $object = new $class($db);
+        $desc = (isset($object->desc) ? $object->desc : $class);
+
         // get posted data
         $data = json_decode(file_get_contents("php://input"));
         if ($data) {
@@ -131,18 +300,20 @@ class Utilities
 
         // write_log(json_encode($object), __FILE__, __LINE__);
 
-        if ($object->delete()){
+        if ($object->$method()){
             echo '{';
                 echo '"message": "' . $desc . ' deleted."';
             echo '}';
         } else{
             echo '{';
-                echo '"message": "Unable to delete ' . $desc . '."';
+                echo '"message": "Unable to delete ' . 
+                    $desc . 
+                    '. Check logs/php_rest_*.log file for details."';
             echo '}';
         }
     }
 
-    public static function echoRead($retrieve_count, $result, $desc = "")
+    private static function echoRead($retrieve_count, $result, $desc = "")
     {
         if ($retrieve_count > 0) {
             http_response_code(200);

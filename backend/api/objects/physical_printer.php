@@ -14,6 +14,8 @@ class PhysicalPrinter
     public $prntr_lock;
     public $prntr_area;
     public $area_name;
+
+    public $desc = "physical printer";
     
     // constructor with $db as database connection
     public function __construct($db)
@@ -80,10 +82,24 @@ class PhysicalPrinter
         oci_bind_by_name($stmt, ':prntr_lock', $this->prntr_lock);
         oci_bind_by_name($stmt, ':prntr_area', $this->prntr_area);
         
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
+
+        $journal = new Journal($this->conn, false);
+        $jnl_data[0] = Utilities::getCurrPsn();
+        $jnl_data[1] = "physical printer";
+        $jnl_data[2] = $this->prntr;
+
+        if (!$journal->jnlLogEvent(
+            Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+        {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
         return true;
     }
 
@@ -104,10 +120,26 @@ class PhysicalPrinter
         oci_bind_by_name($stmt, ':prntr_lock', $this->prntr_lock);
         oci_bind_by_name($stmt, ':prntr_area', $this->prntr_area);
         
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
+        
+        $journal = new Journal($this->conn, $autocommit = false);
+        $jnl_data[0] = Utilities::getCurrPsn();
+        $jnl_data[1] = "physical printer";
+        $jnl_data[2] = $this->prntr;
+
+        if (!$journal->jnlLogEvent(
+            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+        {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        oci_commit($this->conn);
+        
         return true;
     }
 
@@ -171,6 +203,9 @@ class PhysicalPrinter
         $module = "PRINTER";
         $record = sprintf("logical printer:%s", $this->prntr);
         foreach ($this as $key => $value) {
+            if ($key === 'prntr_area')
+                continue;
+
             // write_log($key, __FILE__, __LINE__);  
             // write_log($value, __FILE__, __LINE__);  
             if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] && 

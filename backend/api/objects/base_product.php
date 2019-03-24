@@ -273,47 +273,14 @@ class Base
 
         Utilities::sanitize($this);
 
-        $base_color = null;
-        $base_name = null;
-        $base_prod_group = null;
-        $base_corr_mthd = null;
-        $base_ref_temp = null;
-        $base_dens_hi = null;
-        $base_dens_lo = null;
-        $base_cat = null;
-        $base_ref_tunt = null;
-        $base_limit_preset_ht = null;
-        $base_ref_temp_spec = null;
-
         $query = "
-            SELECT BASE_COLOR,
-                BASE_NAME,
-                BASE_PROD_GROUP,
-                BASE_CORR_MTHD,
-                BASE_REF_TEMP,
-                BASE_DENS_HI,
-                BASE_DENS_LO,
-                BASE_CAT,
-                BASE_REF_TUNT,
-                BASE_LIMIT_PRESET_HT,
-                BASE_REF_TEMP_SPEC     
+            SELECT *    
             FROM BASE_PRODS
             WHERE BASE_CODE = :base_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-            $base_color = $row['BASE_COLOR'];
-            $base_name = $row['BASE_NAME'];
-            $base_prod_group = $row['BASE_PROD_GROUP'];
-            $base_corr_mthd = $row['BASE_CORR_MTHD'];
-            $base_ref_temp = $row['BASE_REF_TEMP'];
-            $base_dens_hi = $row['BASE_DENS_HI'];
-            $base_dens_lo = $row['BASE_DENS_LO'];
-            $base_cat = $row['BASE_CAT'];
-            $base_ref_tunt = $row['BASE_REF_TUNT'];
-            $base_limit_preset_ht = $row['BASE_LIMIT_PRESET_HT'];
-            $base_ref_temp_spec = $row['BASE_REF_TEMP_SPEC'];
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
@@ -387,81 +354,22 @@ class Base
             return false;
         }
 
-        $module = "Base product";
+        $query = "
+            SELECT *    
+            FROM BASE_PRODS
+            WHERE BASE_CODE = :base_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        } else {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        $module = "BASE_PRODS";
         $record = sprintf("code:%s", $this->base_code);
-        if ($base_color != $this->base_color && 
-            !$journal->valueChange(
-                $module, $record, "product color", $base_color, $this->base_color)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($base_name != $this->base_name && 
-            !$journal->valueChange(
-                $module, $record, "base name", $base_name, $this->base_name)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($base_prod_group != $this->base_prod_group && 
-            !$journal->valueChange(
-                $module, $record, "product group", $base_prod_group, $this->base_prod_group)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($base_corr_mthd != $this->base_corr_mthd && 
-            !$journal->valueChange(
-                $module, $record, "correction method", $base_corr_mthd, $this->base_corr_mthd)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($base_ref_temp != $this->base_ref_temp && 
-            !$journal->valueChange(
-                $module, $record, "reference temperature", $base_ref_temp, $this->base_ref_temp)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($base_dens_hi != $this->base_dens_hi && 
-            !$journal->valueChange(
-                $module, $record, "density high", $base_dens_hi, $this->base_dens_hi)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($base_dens_lo != $this->base_dens_lo && 
-            !$journal->valueChange(
-                $module, $record, "density low", $base_dens_lo, $this->base_dens_lo)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($base_cat != $this->base_cat && 
-            !$journal->valueChange(
-                $module, $record, "classification", $base_cat, $this->base_cat)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($base_ref_tunt != $this->base_ref_tunt && 
-            !$journal->valueChange(
-                $module, $record, "base ref tunt", $base_ref_tunt, $this->base_ref_tunt)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($base_limit_preset_ht != $this->base_limit_preset_ht && 
-            !$journal->valueChange(
-                $module, $record, "limit_preset_ht", $base_limit_preset_ht, $this->base_limit_preset_ht)) {
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        if ($base_ref_temp_spec != $this->base_ref_temp_spec && 
-            !$journal->valueChange(
-                $module, $record, "ref temp spec", $base_ref_temp_spec, $this->base_ref_temp_spec)) {
+        
+        if (!$journal->updateChanges($row, $row2, $module, $record)) {
             oci_rollback($this->conn);
             return false;
         }
@@ -533,10 +441,9 @@ class Base
         $jnl_data[0] = $curr_psn; 
         $jnl_data[1] = "Base product";
         $jnl_data[2] = $this->base_code;
-        $jnl_data[3] = "";
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
+            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
         {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);

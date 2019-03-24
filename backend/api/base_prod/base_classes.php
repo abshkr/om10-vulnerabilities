@@ -1,59 +1,10 @@
 <?php
 // required headers
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
- 
+include_once '../shared/header.php';
+
 // include database and object files
 include_once '../config/database.php';
 include_once '../objects/base_class.php';
-include_once '../objects/expiry_date.php';
-include_once '../objects/expiry_type.php';
- 
-// instantiate database and product object
-$database = new Database();
-$db = $database->getConnection();
 
-// initialize object
-$base = new BaseClass($db);
+Utilities::read('BaseClass');
 
-// query products
-$stmt = $base->read();
-
-$personnels_arr = array();
-$personnels_arr["records"] = array();
-$num = 0;
-
-// retrieve our table contents
-while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
-    $num += 1;
-    
-    // extract row
-    // this will make $row['name'] to
-    // just $name only
-    extract(array_change_key_case($row));
-
-    $base_item = array(
-        "bclass_no" => $bclass_no,
-        "bclass_desc" => $bclass_desc,
-        "bclass_dens_lo" => $bclass_dens_lo,
-        "bclass_dens_hi" => $bclass_dens_hi,
-        "bclass_vcf_alg" => $bclass_vcf_alg,
-        "bclass_temp_lo" => $bclass_temp_lo,
-        "bclass_temp_hi" => $bclass_temp_hi
-    );
-
-    $base_item = array_map(function($v){
-        return (is_null($v)) ? "" : $v;
-    }, $base_item);
-    array_push($personnels_arr["records"], $base_item);
-}
-
-if ($num > 0) {
-    http_response_code(200);
-    echo json_encode($personnels_arr, JSON_PRETTY_PRINT);
-} else {
-    http_response_code(404);
-    echo json_encode(
-        array("message" => "No base class record found.")
-    );
-}

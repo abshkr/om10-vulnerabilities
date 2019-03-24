@@ -110,8 +110,7 @@ class ExpiryDate
     public function create($expiry_dates)
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+        // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
         
         Utilities::sanitize($this);
 
@@ -142,6 +141,8 @@ class ExpiryDate
         }
 
         foreach ($expiry_dates as $key => $value) {
+            // write_log($key, __FILE__, __LINE__);
+            // write_log(json_encode($value), __FILE__, __LINE__);
             $query = "
                 UPDATE EXPIRY_DATE_DETAILS 
                 SET ED_EXP_DATE = :ed_exp_date
@@ -150,7 +151,11 @@ class ExpiryDate
                     AND ED_TYPE_CODE = :ed_type_code";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':ed_target_code', $value->edt_target_code);
-            oci_bind_by_name($stmt, ':ed_object_id', $value->ed_object_id);
+            if ($this->ed_object_id !== "")
+                oci_bind_by_name($stmt, ':ed_object_id', $this->ed_object_id); 
+            else
+                oci_bind_by_name($stmt, ':ed_object_id', $value->ed_object_id);    
+            
             oci_bind_by_name($stmt, ':ed_type_code', $key);
             oci_bind_by_name($stmt, ':ed_exp_date', $value->ed_exp_date);
             // write_log(sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", 
