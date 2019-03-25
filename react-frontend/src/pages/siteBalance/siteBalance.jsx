@@ -1,10 +1,8 @@
 import React, { Component } from "react";
 import auth from "../../utils/auth";
-import Page from "../../components/page";
+import { Page, Download, Container, DataTable, Filter } from "../../components";
 import axios from "axios";
-import Filters from "./filters";
-
-import { Table } from "antd";
+import search from "../../utils/search";
 import columns from "./columns";
 import "./siteBalance.css";
 
@@ -13,49 +11,47 @@ class SiteBalance extends Component {
     super(props);
     this.state = {
       data: null,
-      filteredInfo: null,
-      sortedInfo: null,
-      isLoading: true
+      isLoading: true,
+      value: ""
     };
   }
 
-  fetchData = () => {
+  getSiteBalance = () => {
     this.setState({ isLoading: true });
     axios.get(`https://10.1.10.66/api/site_bal/read.php?unit=US.GAL`).then(res => {
       this.setState({ data: res.data.records, isLoading: false });
     });
   };
 
-  setVolume = volume => {
-    this.setState({ isLoading: true });
-    axios.get(`https://10.1.10.66/api/site_bal/read.php?unit=${volume}`).then(res => {
-      this.setState({ data: res.data.records, isLoading: false });
-    });
-  };
-
-  handleChange = (pagination, filters, sorter) => {
+  searchObjects = query => {
+    const { value } = query.target;
     this.setState({
-      filteredInfo: filters,
-      sortedInfo: sorter
+      filtered: search(value, this.state.data),
+      value
     });
   };
 
   componentDidMount() {
-    this.fetchData();
+    this.getSiteBalance();
   }
 
   render() {
-    const { isLoading, data, sortedInfo, filteredInfo } = this.state;
+    const { isLoading, data, value, filtered } = this.state;
+    const results = !!filtered ? filtered : data;
     return (
       <Page page={"Stock Management"} name={"Site Balance"} isLoading={isLoading} block={true}>
-        <Filters setVolume={this.setVolume} />
-        <Table
-          rowKey="tankcode"
-          dataSource={data}
-          columns={columns(sortedInfo || {}, filteredInfo || {})}
-          onChange={this.handleChange}
-          size="small"
-        />
+        <Container>
+          <Filter value={value} search={this.searchObjects} />
+          <Download data={data} type={"Site Balance"} style={{ float: "right" }} />
+          <DataTable
+            resize={true}
+            rowKey="tankcode"
+            columns={columns(results)}
+            data={results}
+            loading={true}
+            scroll={100}
+          />
+        </Container>
       </Page>
     );
   }

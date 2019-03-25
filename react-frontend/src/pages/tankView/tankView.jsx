@@ -7,8 +7,7 @@
 import React, { Component } from "react";
 import auth from "../../utils/auth";
 import axios from "axios";
-import Page from "../../components/page";
-import DataTable from "../../components/table";
+import { Page, DataTable, Container } from "../../components";
 import { Badge, Button, Tabs, Modal } from "antd";
 import { WaterWave } from "ant-design-pro/lib/Charts";
 
@@ -92,69 +91,71 @@ class TankView extends Component {
     const { tanks, data } = this.state;
 
     return (
-      <Page page="Operations" name="Tank View" isLoading={false}>
-        <Tabs defaultActiveKey="1" style={{ marginLeft: 55, marginRight: 55 }}>
-          <Panel tab="Tank View" key="1">
-            <div className="tank-filter">
-              <div style={{ float: "right" }}>
-                <Button type="primary" style={{ marginRight: 5 }}>
-                  Add Tank
-                </Button>
-                <Button type="primary">Export Data</Button>
+      <Page page="Operations" name="Tank View" isLoading={false} block>
+        <Container>
+          <Tabs defaultActiveKey="1" style={{ marginLeft: 55, marginRight: 55 }}>
+            <Panel tab="Tank View" key="1">
+              <div className="tank-filter">
+                <div style={{ float: "right" }}>
+                  <Button type="primary" style={{ marginRight: 5 }}>
+                    Add Tank
+                  </Button>
+                  <Button type="primary">Export Data</Button>
+                </div>
               </div>
-            </div>
-            <div className="tank-view">
-              {!!tanks &&
-                tanks.map((item, index) => {
-                  return (
-                    <div key={index} className="tank" disabled onClick={() => this.openModal(item)}>
-                      <div className="titles">
-                        <span> {item.tank_name} </span>
-                      </div>
+              <div className="tank-view">
+                {!!tanks &&
+                  tanks.map((item, index) => {
+                    return (
+                      <div key={index} className="tank" disabled onClick={() => this.openModal(item)}>
+                        <div className="titles">
+                          <span> {item.tank_name} </span>
+                        </div>
 
-                      <div className="tank-body">
-                        <WaterWave
-                          color={status[item.tank_status_name]}
-                          height={180}
-                          title={item.tank_base_name}
-                          percent={
-                            Math.round((item.tank_cor_vol / item.tank_ullage) * 100, 2) < 100
-                              ? Math.round((item.tank_cor_vol / item.tank_ullage) * 100, 2)
-                              : 100
-                          }
-                        />
+                        <div className="tank-body">
+                          <WaterWave
+                            color={status[item.tank_status_name]}
+                            height={180}
+                            title={item.tank_base_name}
+                            percent={
+                              Math.round((item.tank_cor_vol / item.tank_ullage) * 100, 2) < 100
+                                ? Math.round((item.tank_cor_vol / item.tank_ullage) * 100, 2)
+                                : 100
+                            }
+                          />
 
-                        <div className="tank-status">
-                          <Badge status="default" text="HH" />
-                          <Badge status="processing" text="H" />
-                          <Badge status="default" text="L" />
-                          <Badge status="default" text="LL" />
+                          <div className="tank-status">
+                            <Badge status="default" text="HH" />
+                            <Badge status="processing" text="H" />
+                            <Badge status="default" text="L" />
+                            <Badge status="default" text="LL" />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-            </div>
-          </Panel>
-          <Panel tab="Table View" key="2">
-            <div className="tank-filter" style={{ marginBottom: 20 }}>
-              <div style={{ float: "right" }}>
-                <Button type="primary" style={{ marginRight: 5 }}>
-                  Add Tank
-                </Button>
-                <Button type="primary">Export Data</Button>
+                    );
+                  })}
               </div>
-            </div>
-            <DataTable
-              rowKey="base_name"
-              columns={columns}
-              data={data}
-              loading={true}
-              scroll={900}
-              click={this.showEdit}
-            />
-          </Panel>
-        </Tabs>
+            </Panel>
+            <Panel tab="Table View" key="2">
+              <div className="tank-filter" style={{ marginBottom: 20 }}>
+                <div style={{ float: "right" }}>
+                  <Button type="primary" style={{ marginRight: 5 }}>
+                    Add Tank
+                  </Button>
+                  <Button type="primary">Export Data</Button>
+                </div>
+              </div>
+              <DataTable
+                rowKey="base_name"
+                columns={columns}
+                data={data}
+                loading={true}
+                scroll={900}
+                click={this.showEdit}
+              />
+            </Panel>
+          </Tabs>
+        </Container>
       </Page>
     );
   }

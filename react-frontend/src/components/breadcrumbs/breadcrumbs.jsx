@@ -17,10 +17,10 @@ const Breadcrumbs = ({ page, path, sub }) => {
       breadcrumbName: path
     }
   ];
-  const filter = ["Listings", "Management"];
+  const filter = ["Dashboard", "Management"];
   return (
     <div className="breadcrumbs">
-      <PageHeader title={filter.includes(page) ? path : page} breadcrumb={{ routes }} subTitle={sub} />
+      <PageHeader title={filter.includes(page) ? page : path} breadcrumb={{ routes }} subTitle={sub} />
     </div>
   );
 };
