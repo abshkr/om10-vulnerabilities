@@ -3,9 +3,10 @@ import auth from "../../utils/auth";
 import Page from "../../components/page";
 import Filters from "./filters";
 import axios from "axios";
-import { Table } from "antd";
+import DataTable from "../../components/table";
 import columns from "./columns";
-
+import Container from "../../components/container";
+import Download from "../../components/download";
 import "./metering.css";
 
 class Metering extends Component {
@@ -16,7 +17,6 @@ class Metering extends Component {
       mass: "kg",
       volume: "litre",
       filteredInfo: null,
-      sortedInfo: null,
       isLoading: true
     };
   }
@@ -26,7 +26,11 @@ class Metering extends Component {
     axios
       .get(`https://10.1.10.66/api/metering/read.php?mass_unit=${this.state.mass}&vol_unit=${volume}`)
       .then(res => {
-        this.setState({ data: res.data.records, volume, isLoading: false });
+        this.setState({
+          data: res.data.records,
+          volume,
+          isLoading: false
+        });
       });
   };
 
@@ -35,7 +39,11 @@ class Metering extends Component {
     axios
       .get(`https://10.1.10.66/api/metering/read.php?mass_unit=${mass}&vol_unit=${this.state.volume}`)
       .then(res => {
-        this.setState({ data: res.data.records, mass, isLoading: false });
+        this.setState({
+          data: res.data.records,
+          mass,
+          isLoading: false
+        });
       });
   };
 
@@ -46,30 +54,29 @@ class Metering extends Component {
     });
   };
 
-  handleChange = (pagination, filters, sorter) => {
-    this.setState({
-      filteredInfo: filters,
-      sortedInfo: sorter
-    });
-  };
-
   componentDidMount() {
     this.fetchData();
   }
 
   render() {
-    const { isLoading, data, sortedInfo, filteredInfo } = this.state;
+    const { isLoading, data } = this.state;
 
     return (
       <Page page={"Stock Management"} name={"Metering"} isLoading={isLoading} block={true}>
-        <Filters setVolume={this.setVolume} setMass={this.setMass} />
-        <Table
-          rowKey="metercode"
-          dataSource={data}
-          columns={columns(sortedInfo || {}, filteredInfo || {}, data)}
-          onChange={this.handleChange}
-          size="small"
-        />
+        <Container>
+          <div style={{ display: "flex", width: "100%", justifyContent: "space-between" }}>
+            <Filters setVolume={this.setVolume} setMass={this.setMass} />
+            <Download data={data} type={"Metering"} />
+          </div>
+          <DataTable
+            rowKey="metercode"
+            columns={columns(data)}
+            data={data}
+            loading={true}
+            scroll={300}
+            click={this.showEdit}
+          />
+        </Container>
       </Page>
     );
   }

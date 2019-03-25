@@ -1,51 +1,43 @@
-import Generate from "../../utils/generateOptions";
+import generate from "../../utils/generateOptions";
 
-const columns = (sortedInfo, filteredInfo, data) => [
+const columns = data => [
   {
     title: "Meter Code",
     dataIndex: "metercode",
     key: "metercode",
-    sorter: (a, b) => a.metercode - b.metercode,
-    sortOrder: sortedInfo.columnKey === "metercode" && sortedInfo.order
+    sorter: (a, b) => a.metercode - b.metercode
   },
   {
     title: "Meter Type",
     dataIndex: "metertype",
     key: "metertype",
-    filters: Generate(data, "metertype"),
-    filteredValue: filteredInfo.metertype || null,
-    onFilter: (value, record) => record.metertype.includes(value),
-    sortOrder: sortedInfo.columnKey === "metertype" && sortedInfo.order
+    filters: generate(data, "metertype"),
+    onFilter: (value, record) => record.metertype.includes(value)
   },
   {
     title: "Meter Type Name",
     dataIndex: "metertypename",
     key: "metertypename",
-    filters: Generate(data, "metertypename"),
-    filteredValue: filteredInfo.metertypename || null,
-    onFilter: (value, record) => record.metertypename.includes(value),
-    sortOrder: sortedInfo.columnKey === "metertypename" && sortedInfo.order
+    filters: generate(data, "metertypename"),
+    onFilter: (value, record) => record.metertypename.includes(value)
   },
   {
     title: "Observed Volume",
     dataIndex: "observedvolume",
     key: "observedvolume",
-    sorter: (a, b) => a.observedvolume - b.observedvolume,
-    sortOrder: sortedInfo.columnKey === "observedvolume" && sortedInfo.order
+    sorter: (a, b) => a.observedvolume - b.observedvolume
   },
   {
     title: "Standard Volume",
     dataIndex: "standardvolume",
     key: "standardvolume",
-    sorter: (a, b) => a.standardvolume - b.standardvolume,
-    sortOrder: sortedInfo.columnKey === "standardvolume" && sortedInfo.order
+    sorter: (a, b) => a.standardvolume - b.standardvolume
   },
   {
     title: "Mass",
     dataIndex: "mass",
     key: "mass",
-    sorter: (a, b) => a.mass - b.mass,
-    sortOrder: sortedInfo.columnKey === "mass" && sortedInfo.order
+    sorter: (a, b) => a.mass - b.mass
   }
 ];
 
