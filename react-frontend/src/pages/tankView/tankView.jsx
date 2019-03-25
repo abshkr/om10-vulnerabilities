@@ -7,9 +7,10 @@
 import React, { Component } from "react";
 import auth from "../../utils/auth";
 import axios from "axios";
-import { Page, DataTable, Container } from "../../components";
+import { Page, DataTable, Container, Filter } from "../../components";
 import { Badge, Button, Tabs, Modal } from "antd";
 import { WaterWave } from "ant-design-pro/lib/Charts";
+import search from "../../utils/search";
 
 import columns from "./columns";
 import _ from "lodash";
@@ -19,7 +20,7 @@ import "./tankView.css";
 const Panel = Tabs.TabPane;
 
 const status = {
-  "In Service - Not used": "#c1c1c1",
+  "In Service Not used": "#67a4ec",
   "In Service – Receiving": "#6e68ec",
   "In Service - Settling": "#ecb068",
   "In Service – Loading": "#a4ec68",
@@ -32,7 +33,8 @@ class TankView extends Component {
     super(props);
     this.state = {
       tanks: null,
-      data: null
+      data: null,
+      value: ""
     };
   }
 
@@ -48,6 +50,14 @@ class TankView extends Component {
           <p>some messages...some messages...</p>
         </div>
       )
+    });
+  };
+
+  searchObjects = query => {
+    const { value } = query.target;
+    this.setState({
+      filtered: search(value, this.state.tanks),
+      value
     });
   };
 
@@ -88,13 +98,13 @@ class TankView extends Component {
   }
 
   render() {
-    const { tanks, data } = this.state;
-
+    const { tanks, data, filtered, value } = this.state;
+    const results = !!filtered ? filtered : tanks;
     return (
       <Page page="Operations" name="Tank View" isLoading={false} block>
         <Container>
           <Tabs defaultActiveKey="1" style={{ marginLeft: 55, marginRight: 55 }}>
-            <Panel tab="Tank View" key="1">
+            <Panel tab="Tank View" key="1" style={{ padding: 5 }}>
               <div className="tank-filter">
                 <div style={{ float: "right" }}>
                   <Button type="primary" style={{ marginRight: 5 }}>
@@ -104,8 +114,8 @@ class TankView extends Component {
                 </div>
               </div>
               <div className="tank-view">
-                {!!tanks &&
-                  tanks.map((item, index) => {
+                {!!results &&
+                  results.map((item, index) => {
                     return (
                       <div key={index} className="tank" disabled onClick={() => this.openModal(item)}>
                         <div className="titles">
