@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Timeline, Icon } from "antd";
 import Create from "../create";
-import Edit from "../edit";
+import search from "../../../utils/search";
+import { Filter } from "../../../components";
 import _ from "lodash";
 
 let raw = [
@@ -72,29 +73,10 @@ export default class Feed extends Component {
         show: false,
         payload: null
       },
-      create: false
+      create: false,
+      value: ""
     };
   }
-
-  edit = (status, payload) => {
-    if (status) {
-      this.setState({
-        edit: {
-          show: true,
-          payload: _.find(raw, function(o) {
-            return o.id === payload;
-          })
-        }
-      });
-    } else {
-      this.setState({
-        edit: {
-          show: false,
-          payload: null
-        }
-      });
-    }
-  };
 
   create = create => {
     this.setState({ create });
@@ -123,19 +105,29 @@ export default class Feed extends Component {
     this.setState({ data: events });
   };
 
+  searchObjects = query => {
+    const { value } = query.target;
+    this.setState({
+      filtered: search(value, this.state.data),
+      value
+    });
+  };
+
   componentDidMount() {
     this.generateEvents(raw);
   }
 
   render() {
-    const { create, data, id, edit } = this.state;
-
+    const { create, data, id, filtered, value } = this.state;
+    const results = !!filtered ? filtered : data;
     return (
       <div className="timeline">
-        {<Create status={create} update={this.create} id={id} post={this.postEvent} />}
-        {edit && <Edit status={edit} update={this.edit} remove={this.delete} resend={this.resend} />}
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <Filter value={value} search={this.searchObjects} />
+          <Create status={create} update={this.create} id={id} post={this.postEvent} />
+        </div>
         <Timeline className="timeline-container" style={{ marginTop: 20, marginLeft: 5 }}>
-          {data.map((item, index) => (
+          {results.map((item, index) => (
             <Timeline.Item
               key={index}
               dot={<Icon type={item.icon} style={{ fontSize: "20px", color: item.color }} />}
