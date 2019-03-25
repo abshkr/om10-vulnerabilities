@@ -17,6 +17,7 @@ class Journal extends Component {
         <Container>
           <Tabs defaultActiveKey="1">
             <TabPane
+              style={{ marginBottom: 30 }}
               tab={
                 <span>
                   <Icon type="sync" />

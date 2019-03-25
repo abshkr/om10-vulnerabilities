@@ -67,8 +67,9 @@ export default class HistoricalJournal extends Component {
         title: "Date/Time",
         dataIndex: "gen_date",
         key: "gen_date",
-        width: 200,
-        fixed: "left"
+        width: 400,
+        fixed: "left",
+        render: text => moment(text.slice(0, -6)).format("DD/MM/YYYY h:mm:ss A")
       },
       {
         title: "Event",
@@ -95,6 +96,7 @@ export default class HistoricalJournal extends Component {
           data={!!filtered ? filtered : data}
           loading={!!data}
           offset={0}
+          scroll={300}
         />
       </div>
     );
