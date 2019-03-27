@@ -12,13 +12,19 @@ export default class API extends Component {
   }
 
   render() {
-    const { decorator } = this.props;
+    const { decorator, setContext, context } = this.props;
 
     return (
       <Form.Item label="API">
         {decorator("tank_api", {
           rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber />)}
+        })(
+          <InputNumber
+            disabled={!!context && context !== "tank_api"}
+            onMouseEnter={() => setContext("tank_api")}
+            onMouseLeave={() => setContext(null)}
+          />
+        )}
       </Form.Item>
     );
   }

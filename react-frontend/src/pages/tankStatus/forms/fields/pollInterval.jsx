@@ -1,16 +1,12 @@
 import React, { Component } from "react";
-import { Form, InputNumber } from "antd";
+import { Form, Input } from "antd";
 
-export default class RefTemp extends Component {
-  state = {
-    temp: "15c"
-  };
-
+export default class PollInterval extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        ref_temp: this.state.temp
+        tank_poll_gap: value.tank_poll_gap
       });
     }
   }
@@ -19,10 +15,10 @@ export default class RefTemp extends Component {
     const { decorator } = this.props;
 
     return (
-      <Form.Item label="Ref Temp">
-        {decorator("ref_temp", {
+      <Form.Item label="Poll Interval">
+        {decorator("tank_poll_gap", {
           rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber disabled />)}
+        })(<Input />)}
       </Form.Item>
     );
   }

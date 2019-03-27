@@ -1,16 +1,12 @@
 import React, { Component } from "react";
-import { Form, InputNumber } from "antd";
+import { Form, Input } from "antd";
 
-export default class RefTemp extends Component {
-  state = {
-    temp: "15c"
-  };
-
+export default class LeakDetection extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        ref_temp: this.state.temp
+        tank_leakdtct_on: value.tank_leakdtct_on
       });
     }
   }
@@ -19,10 +15,10 @@ export default class RefTemp extends Component {
     const { decorator } = this.props;
 
     return (
-      <Form.Item label="Ref Temp">
-        {decorator("ref_temp", {
+      <Form.Item label="Leak Detection">
+        {decorator("tank_leakdtct_on", {
           rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber disabled />)}
+        })(<Input disabled />)}
       </Form.Item>
     );
   }

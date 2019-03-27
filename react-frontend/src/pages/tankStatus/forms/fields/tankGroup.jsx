@@ -1,16 +1,12 @@
 import React, { Component } from "react";
-import { Form, InputNumber } from "antd";
+import { Form, Input } from "antd";
 
-export default class RefTemp extends Component {
-  state = {
-    temp: "15c"
-  };
-
+export default class TankGroup extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        ref_temp: this.state.temp
+        tank_group: value.tank_group
       });
     }
   }
@@ -19,10 +15,10 @@ export default class RefTemp extends Component {
     const { decorator } = this.props;
 
     return (
-      <Form.Item label="Ref Temp">
-        {decorator("ref_temp", {
+      <Form.Item label="Tank Group">
+        {decorator("tank_group", {
           rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber disabled />)}
+        })(<Input disabled />)}
       </Form.Item>
     );
   }

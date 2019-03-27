@@ -99,3 +99,7 @@
 .ant-btn {
   border-radius: 30px;
 }
+
+.ant-form-item {
+  margin-bottom: 0px !important;
+}

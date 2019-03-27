@@ -12,13 +12,19 @@ export default class Density extends Component {
   }
 
   render() {
-    const { decorator } = this.props;
+    const { decorator, setContext, context } = this.props;
 
     return (
       <Form.Item label="Density">
         {decorator("tank_density", {
           rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber />)}
+        })(
+          <InputNumber
+            disabled={!!context && context !== "tank_density"}
+            onMouseEnter={() => setContext("tank_density")}
+            onMouseLeave={() => setContext(null)}
+          />
+        )}
       </Form.Item>
     );
   }
