@@ -1437,7 +1437,7 @@ package controllers
 			
 			if ( int(view.mainList.selectedItem.payload.MV_STATUS) > 0 )
 			{
-				view.currentState = "detail";
+				view.currentState = "edit";
 			}
 			else
 			{

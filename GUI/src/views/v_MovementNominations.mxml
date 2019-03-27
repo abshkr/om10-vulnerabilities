@@ -510,7 +510,7 @@
 				-->
 				<s:columns>
 					<s:ArrayList>
-						<s:GridColumn dataField="clnItemAction" width="50" headerText="  " editable="true" visible="true" itemRenderer="renderers.GridMarkRenderer" itemEditor="itemeditors.GridMarkEditor" itemEditor.detail="itemeditors.GridUpdMarkEditor" sortable="false" headerRenderer.create="renderers.GridHeaderButtonRenderer" headerRenderer.edit="renderers.GridHeaderButtonRenderer"></s:GridColumn>
+						<s:GridColumn dataField="clnItemAction" width="50" headerText="  " editable="true" visible="true" itemRenderer="renderers.GridMarkRenderer" itemEditor="itemeditors.GridMarkEditor" itemEditor.detail="itemeditors.GridUpdMarkEditor" sortable="false" headerRenderer.create="renderers.GridHeaderButtonRenderer" headerRenderer.edit="renderers.GridHeaderButtonRenderer" headerRenderer.detail="renderers.GridHeaderButtonRenderer"></s:GridColumn>
 						<!--s:GridColumn dataField="clnItemAction" width="50" headerText="Mode" editable="false" visible="true" itemRenderer="renderers.GridMarkRenderer" itemEditor="itemeditors.GridMarkEditor" sortable="false"></s:GridColumn-->
 						<s:GridColumn dataField="clnItemLine" headerText="{resourceManager.getString('default','MOVNOM.LABEL.MVITM_LINE_ID')}" visible="true" editable="true" editable.detail="false"></s:GridColumn>
 						<s:GridColumn dataField="clnItemId" headerText="{resourceManager.getString('default','MOVNOM.LABEL.MVITM_ITEM_ID')}" visible="true" editable="false"></s:GridColumn>
