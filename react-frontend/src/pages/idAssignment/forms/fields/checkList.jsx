@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Checkbox, Form, Col } from "antd";
+import { Checkbox, Form } from "antd";
 const CheckboxGroup = Checkbox.Group;
 
 const editOptions = ["Locked?", "Adhoc?", "Remove Pin", "Reset Pin"];
@@ -16,11 +16,9 @@ export default class CheckList extends Component {
     const { decorator, edit } = this.props;
 
     return (
-      <Col span={24}>
-        <Form.Item label="checklist">
-          {decorator("checklist")(<CheckboxGroup options={edit ? editOptions : createOptions} />)}
-        </Form.Item>
-      </Col>
+      <Form.Item label="checklist">
+        {decorator("checklist")(<CheckboxGroup options={edit ? editOptions : createOptions} />)}
+      </Form.Item>
     );
   }
 }

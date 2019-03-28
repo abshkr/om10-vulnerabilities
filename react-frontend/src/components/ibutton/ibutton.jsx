@@ -47,6 +47,7 @@ const IButtonForm = Form.create({ name: "form_in_modal" })(
           onCancel={onCancel}
           onOk={onCreate}
           centered
+          destroyOnClose
         >
           <Form layout="vertical">
             <Form.Item label="Tag Text" validateStatus={isValid} hasFeedback>

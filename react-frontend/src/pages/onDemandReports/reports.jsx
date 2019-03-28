@@ -7,9 +7,8 @@ import "./reports.css";
 
 const Reports = ({ auth }) => {
   return (
-    <Page page={"Reports"} name={"On Demand Reports"} isLoading={false} block={true}>
+    <Page page={"Reports"} name={"On Demand Reports"} block={true}>
       <Container>
-        {" "}
         <Form auth={auth} />
       </Container>
     </Page>

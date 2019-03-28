@@ -1,7 +1,7 @@
 import React from "react";
 import { Icon } from "antd";
-import { Check, Lock } from "../../../constants/colors";
-import Generate from "../../../utils/generateOptions";
+import { Check, Lock } from "../../constants/colors";
+import generate from "../../utils/generateOptions";
 
 const columns = data => [
   {
@@ -15,7 +15,7 @@ const columns = data => [
     dataIndex: "kya_issuer_name",
     key: "kya_issuer_name",
     width: 330,
-    filters: Generate(data, "kya_issuer_name"),
+    filters: generate(data, "kya_issuer_name"),
     onFilter: (value, record) => record.kya_issuer_name.indexOf(value) === 0
   },
   {
@@ -23,7 +23,7 @@ const columns = data => [
     dataIndex: "kya_type_name",
     key: "kya_type_name",
     width: 180,
-    filters: Generate(data, "kya_type_name"),
+    filters: generate(data, "kya_type_name"),
     onFilter: (value, record) => record.kya_type_name.indexOf(value) === 0
   },
   {
@@ -31,7 +31,7 @@ const columns = data => [
     dataIndex: "kya_phys_name",
     key: "kya_phys_name",
     width: 150,
-    filters: Generate(data, "kya_phys_name"),
+    filters: generate(data, "kya_phys_name"),
     onFilter: (value, record) => record.kya_phys_name.indexOf(value) === 0
   },
   {
@@ -39,7 +39,7 @@ const columns = data => [
     dataIndex: "kya_timecode",
     key: "kya_timecode",
     width: 150,
-    filters: Generate(data, "kya_timecode"),
+    filters: generate(data, "kya_timecode"),
     onFilter: (value, record) => record.kya_timecode.indexOf(value) === 0
   },
   {
@@ -102,21 +102,21 @@ const columns = data => [
     title: "Role",
     dataIndex: "kya_role_name",
     key: "kya_role_name",
-    filters: Generate(data, "kya_role_name"),
+    filters: generate(data, "kya_role_name"),
     onFilter: (value, record) => String(record.kya_role_name).indexOf(value) === 0
   },
   {
     title: "Drawer",
     dataIndex: "kya_draw_name",
     key: "kya_draw_name",
-    filters: Generate(data, "kya_draw_name"),
+    filters: generate(data, "kya_draw_name"),
     onFilter: (value, record) => String(record.kya_draw_name).indexOf(value) === 0
   },
   {
     title: "Supplier",
     dataIndex: "kya_supp_name",
     key: "kya_supp_name",
-    filters: Generate(data, "kya_supp_name"),
+    filters: generate(data, "kya_supp_name"),
     onFilter: (value, record) => String(record.kya_supp_name).indexOf(value) === 0
   }
 ];

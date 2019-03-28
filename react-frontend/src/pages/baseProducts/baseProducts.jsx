@@ -71,7 +71,7 @@ class BaseProducts extends Component {
     const results = !!filtered ? filtered : data;
     const name = "Base Products";
     return (
-      <Page page={"Gantry"} name={name} isLoading={isLoading} block={true}>
+      <Page page={"Gantry"} name={name} block={true}>
         <Container>
           <Filter value={value} search={this.searchObjects} />
           <Download data={data} type={name} style={{ float: "right" }} />
@@ -80,10 +80,10 @@ class BaseProducts extends Component {
           <Edit visible={!!edit} cancel={this.hideEdit} value={edit} />
 
           <DataTable
+            isLoading={isLoading}
             rowKey="base_code"
             columns={columns(results)}
             data={results}
-            loading={true}
             scroll={3600}
             click={this.showEdit}
           />

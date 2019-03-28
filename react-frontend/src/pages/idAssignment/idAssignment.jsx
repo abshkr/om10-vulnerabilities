@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import auth from "../../utils/auth";
-import Page from "../../components/page";
-import Filter from "../../components/filter";
-import Table from "./table";
+import { Page, Filter, DataTable, Container, Download, IButton } from "../../components";
+import { Button, Modal } from "antd";
+import columns from "./columns";
 import axios from "axios";
-import Container from "../../components/container";
-import Search from "../../utils/search";
+import search from "../../utils/search";
+import Forms from "./forms";
 
 class IdAssignment extends Component {
   constructor(props) {
@@ -14,47 +14,88 @@ class IdAssignment extends Component {
       value: "",
       data: null,
       filtered: null,
-      isLoading: true
+      isLoading: true,
+      iButtonPayload: null,
+      iButtonVisibility: false
     };
   }
 
-  fetchIdAssignments = () => {
-    axios.get(`https://10.1.10.66/api/idassignment/read.php`).then(response => {
-      const data = response.data.records;
-      this.setState({
-        data: data,
-        isLoading: false
-      });
+  handleClick = object => {
+    Modal.info({
+      title: !!object ? "Edit" : "Create",
+      centered: true,
+      width: 720,
+      maskClosable: true,
+      content: <Forms value={object} />
     });
   };
 
   searchObjects = query => {
     const { value } = query.target;
-    const filtered = Search(value, this.state.data);
-    this.setState({ filtered, value });
+    this.setState({
+      filtered: search(value, this.state.data),
+      value
+    });
   };
 
   searchTrigger = value => {
-    const filtered = Search(value, this.state.data);
-    this.setState({ filtered, value });
+    this.setState({
+      filtered: search(value, this.state.data),
+      iButtonVisibility: false,
+      iButtonPayload: value,
+      value
+    });
   };
 
   componentDidMount() {
-    this.fetchIdAssignments();
+    axios.get(`https://10.1.10.66/api/idassignment/read.php`).then(response => {
+      this.setState({
+        data: response.data.records,
+        isLoading: false
+      });
+    });
   }
 
   render() {
-    const { data, isLoading, filtered, value } = this.state;
-
+    const { data, isLoading, filtered, value, iButtonVisibility } = this.state;
+    const results = !!filtered ? filtered : data;
     return (
-      <Page page={"Access Control"} name={"ID Assignment"} isLoading={isLoading} block={true}>
+      <Page page={"Access Control"} name={"ID Assignment"} block={true}>
         <Container>
           <Filter value={value} search={this.searchObjects} />
-          <Table
-            data={!!filtered ? filtered : data}
-            update={this.fetchIdAssignments}
-            search={this.searchTrigger}
-            type="personnel"
+          <Download data={results} type={"ID Assignment"} style={{ float: "right" }} />
+
+          <Button
+            type="primary"
+            style={{ float: "right", marginRight: 5 }}
+            onClick={() => this.handleClick(null)}
+          >
+            Create Assignment
+          </Button>
+
+          <Button
+            type="primary"
+            style={{ float: "right", marginRight: 5 }}
+            onClick={() => this.setState({ iButtonVisibility: true })}
+          >
+            Scan I-Button
+          </Button>
+
+          <IButton
+            submit={this.searchTrigger}
+            visible={iButtonVisibility}
+            close={() =>
+              this.setState({
+                iButtonVisibility: false
+              })
+            }
+          />
+          <DataTable
+            data={results}
+            rowKey="kya_key_no"
+            isLoading={isLoading}
+            click={this.handleClick}
+            columns={columns(results)}
           />
         </Container>
       </Page>
