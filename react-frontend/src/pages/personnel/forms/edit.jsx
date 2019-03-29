@@ -25,8 +25,7 @@ class EditForm extends React.Component {
   };
 
   render() {
-    const { visible, cancel, form, value } = this.props;
-    const { getFieldDecorator, setFieldsValue } = form;
+    const { visible, cancel } = this.props;
 
     return (
       <Modal

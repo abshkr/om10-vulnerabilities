@@ -48,9 +48,7 @@ const Create = Form.create()(
     };
 
     render() {
-      const { visible, cancel, form } = this.props;
-      const { color } = this.state;
-      const { getFieldDecorator } = form;
+      const { visible, cancel } = this.props;
 
       return (
         <Modal
