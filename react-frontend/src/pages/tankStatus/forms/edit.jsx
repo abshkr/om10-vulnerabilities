@@ -69,7 +69,7 @@ class EditForm extends Component {
     return (
       <Modal
         visible={visible}
-        title={!!value ? `Edit > ${value.tank_code} ─  ${value.tank_base} ─ ${value.tank_base_name}` : "Edit"}
+        title={!!value ? `Edit → ${value.tank_code} - ${value.tank_base} - ${value.tank_base_name}` : "Edit"}
         onCancel={cancel}
         onOk={this.handleCreate}
         width={800}

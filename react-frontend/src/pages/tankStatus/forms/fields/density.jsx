@@ -11,8 +11,19 @@ export default class Density extends Component {
     }
   }
 
+  handleEventChange = changedValue => {
+    const { value, setContext } = this.props;
+    if (!!value) {
+      if (value.tank_density !== String(changedValue)) {
+        setContext("tank_density");
+      } else {
+        setContext(null);
+      }
+    }
+  };
+
   render() {
-    const { decorator, setContext, context } = this.props;
+    const { decorator, context } = this.props;
 
     return (
       <Form.Item label="Density">
@@ -21,8 +32,7 @@ export default class Density extends Component {
         })(
           <InputNumber
             disabled={!!context && context !== "tank_density"}
-            onMouseEnter={() => setContext("tank_density")}
-            onMouseLeave={() => setContext(null)}
+            onChange={value => this.handleEventChange(value)}
           />
         )}
       </Form.Item>

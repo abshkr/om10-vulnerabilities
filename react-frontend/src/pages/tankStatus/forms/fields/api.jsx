@@ -11,8 +11,20 @@ export default class API extends Component {
     }
   }
 
+  handleEventChange = changedValue => {
+    const { value, setContext } = this.props;
+    if (!!value) {
+      console.log(value.tank_api, changedValue);
+      if (value.tank_api !== String(changedValue)) {
+        setContext("tank_api");
+      } else {
+        setContext(null);
+      }
+    }
+  };
+
   render() {
-    const { decorator, setContext, context } = this.props;
+    const { decorator, context } = this.props;
 
     return (
       <Form.Item label="API">
@@ -21,8 +33,7 @@ export default class API extends Component {
         })(
           <InputNumber
             disabled={!!context && context !== "tank_api"}
-            onMouseEnter={() => setContext("tank_api")}
-            onMouseLeave={() => setContext(null)}
+            onChange={value => this.handleEventChange(value)}
           />
         )}
       </Form.Item>

@@ -58,7 +58,7 @@ class TankStatus extends Component {
     const results = !!filtered ? filtered : data;
     const name = "Tank Status";
     return (
-      <Page page={"Gantry"} name={name} isLoading={isLoading} block={true}>
+      <Page page={"Gantry"} name={name} block={true}>
         <Container>
           <Filter value={value} search={this.searchObjects} />
           <Download data={data} type={name} style={{ float: "right" }} />
@@ -68,7 +68,7 @@ class TankStatus extends Component {
             rowKey="tank_code"
             columns={columns(results)}
             data={results}
-            loading={true}
+            isLoading={isLoading}
             scroll={5000}
             click={this.showEdit}
           />
