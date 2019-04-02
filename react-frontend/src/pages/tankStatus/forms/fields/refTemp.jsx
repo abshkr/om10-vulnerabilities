@@ -19,7 +19,7 @@ export default class RefTemp extends Component {
     const { decorator } = this.props;
 
     return (
-      <Form.Item label="Reference Temperature">
+      <Form.Item label="Ref Temp">
         {decorator("ref_temp", {
           rules: [{ required: true, message: "please enter user name" }]
         })(<InputNumber disabled />)}

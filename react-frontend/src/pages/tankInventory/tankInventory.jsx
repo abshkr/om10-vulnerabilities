@@ -1,10 +1,7 @@
 import React, { Component } from "react";
 import auth from "../../utils/auth";
-import Page from "../../components/page";
 import axios from "axios";
-import Filter from "../../components/filter";
-import DataTable from "../../components/table";
-import Download from "../../components/download";
+import { Page, Download, Container, DataTable, Filter } from "../../components";
 import search from "../../utils/search";
 import columns from "./columns";
 import "./tankInventory.css";
@@ -44,16 +41,18 @@ class TankInventory extends Component {
     const results = !!filtered ? filtered : data;
     return (
       <Page page={"Stock Management"} name={name} isLoading={isLoading} block={true}>
-        <Filter value={value} search={this.searchObjects} />
-        <Download data={data} type={name} style={{ float: "right" }} />
-        <DataTable
-          resize={true}
-          rowKey="base_code"
-          columns={columns(results)}
-          data={results}
-          loading={true}
-          scroll={100}
-        />
+        <Container>
+          <Filter value={value} search={this.searchObjects} />
+          <Download data={data} type={name} style={{ float: "right" }} />
+          <DataTable
+            resize={true}
+            rowKey="base_code"
+            columns={columns(results)}
+            data={results}
+            loading={true}
+            scroll={100}
+          />
+        </Container>
       </Page>
     );
   }

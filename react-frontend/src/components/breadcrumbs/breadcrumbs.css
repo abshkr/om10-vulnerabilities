@@ -1,18 +1,18 @@
 .breadcrumbs {
-  padding-top: 70px;
-  padding-left: 60px;
+  padding-top: 55px;
+  padding-left: 25px;
   color: #36393f;
   font-size: 25px;
-  user-select: none;
+  user-select: none !important;
   transition: all 0.3s;
   display: flex;
+  pointer-events: none;
 }
 
-.breadcrumbs span {
-  color: #c9cccc;
-  transition: all 0.3s;
+.ant-page-header {
+  background-color: #fafafa00;
 }
 
-.bc-page {
+.ant-page-header-title-view-title {
   color: #68a4ec;
 }

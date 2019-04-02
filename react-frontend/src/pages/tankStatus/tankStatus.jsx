@@ -6,10 +6,7 @@
 
 import React, { Component } from "react";
 import auth from "../../utils/auth";
-import Page from "../../components/page";
-import Filter from "../../components/filter";
-import DataTable from "../../components/table";
-import Download from "../../components/download";
+import { Page, Download, Container, DataTable, Filter } from "../../components";
 import axios from "axios";
 import search from "../../utils/search";
 import columns from "./columns";
@@ -26,7 +23,7 @@ class TankStatus extends Component {
     };
   }
 
-  fetchTanks = () => {
+  getTanks = () => {
     axios.get(`https://10.1.10.66/api/tank/read.php`).then(response => {
       const data = response.data.records;
       this.setState({
@@ -53,7 +50,7 @@ class TankStatus extends Component {
   };
 
   componentDidMount() {
-    this.fetchTanks();
+    this.getTanks();
   }
 
   render() {
@@ -61,19 +58,21 @@ class TankStatus extends Component {
     const results = !!filtered ? filtered : data;
     const name = "Tank Status";
     return (
-      <Page page={"Gantry"} name={name} isLoading={isLoading} block={true}>
-        <Filter value={value} search={this.searchObjects} />
-        <Download data={data} type={name} style={{ float: "right" }} />
-        <Edit visible={!!edit} cancel={this.hideEdit} value={edit} />
-        <DataTable
-          resize={true}
-          rowKey="tank_code"
-          columns={columns(results)}
-          data={results}
-          loading={true}
-          scroll={5000}
-          click={this.showEdit}
-        />
+      <Page page={"Gantry"} name={name} block={true}>
+        <Container>
+          <Filter value={value} search={this.searchObjects} />
+          <Download data={data} type={name} style={{ float: "right" }} />
+          <Edit visible={!!edit} cancel={this.hideEdit} value={edit} />
+          <DataTable
+            resize={true}
+            rowKey="tank_code"
+            columns={columns(results)}
+            data={results}
+            isLoading={isLoading}
+            scroll={5000}
+            click={this.showEdit}
+          />
+        </Container>
       </Page>
     );
   }

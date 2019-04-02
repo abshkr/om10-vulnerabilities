@@ -14,7 +14,7 @@ export default class DailyVariancePercent extends Component {
   render() {
     const { decorator } = this.props;
     return (
-      <Form.Item label="Daily Variance Limit (%)">
+      <Form.Item label="Daily Limit (%)">
         {decorator("tank_dtol_percent", {
           rules: [{ required: true, message: "please enter user name" }]
         })(<Input />)}

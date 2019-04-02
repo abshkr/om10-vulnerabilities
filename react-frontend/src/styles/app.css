@@ -5,16 +5,6 @@
 
 body {
   font-family: "Oxygen", sans-serif !important;
-  background-color: #fff;
+  background-color: #fafafa;
   margin: 0px;
-}
-
-::-webkit-scrollbar {
-  height: 11px;
-  transition: all 0.3s;
-  background-color: #538aef1e;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #a1bef3;
 }

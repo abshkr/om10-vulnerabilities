@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { stack as BurgerMenu } from "react-burger-menu";
 import { Menu, Icon } from "antd";
-
+import Bar from "./bar";
 import * as ROUTES from "../../../constants/routes";
 
 import { withRouter } from "react-router-dom";
@@ -43,6 +43,7 @@ class Authenticated extends Component {
   render() {
     return (
       <div>
+        <Bar />
         <BurgerMenu width={320} isOpen={false}>
           <Menu onClick={this.changePath} mode="inline">
             <Menu.Item key={ROUTES.DASHBOARD}>

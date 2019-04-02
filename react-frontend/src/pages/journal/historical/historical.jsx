@@ -20,14 +20,19 @@ export default class HistoricalJournal extends Component {
       end: moment().format("YYYY-MM-DD h:mm"),
       searchText: "",
       value: "",
-      filtered: null
+      filtered: null,
+      isLoading: true
     };
   }
 
   fetchHistoricalJournal(start, end) {
+    this.setState({
+      isLoading: true
+    });
     axios.get(`https://${API.URL}/api/journal/search.php?start_date=${start}&end_date=${end}`).then(res => {
       this.setState({
-        data: res.data.records
+        data: res.data.records,
+        isLoading: false
       });
     });
   }
@@ -60,15 +65,16 @@ export default class HistoricalJournal extends Component {
   }
 
   render() {
-    const { start, end, value, data, filtered } = this.state;
+    const { start, end, value, data, filtered, isLoading } = this.state;
 
     const columns = [
       {
         title: "Date/Time",
         dataIndex: "gen_date",
         key: "gen_date",
-        width: 200,
-        fixed: "left"
+        width: 400,
+        fixed: "left",
+        render: text => moment(text.slice(0, -6)).format("DD/MM/YYYY h:mm:ss A")
       },
       {
         title: "Event",
@@ -93,8 +99,9 @@ export default class HistoricalJournal extends Component {
           rowKey="seq"
           columns={columns}
           data={!!filtered ? filtered : data}
-          loading={!!data}
+          isLoading={isLoading}
           offset={0}
+          scroll={300}
         />
       </div>
     );

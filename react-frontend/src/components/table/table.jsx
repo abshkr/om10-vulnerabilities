@@ -1,7 +1,9 @@
 import React from "react";
-import { Table } from "antd";
+import { Table, Icon } from "antd";
 import { Resizable } from "react-resizable";
 import "./table.css";
+
+const loader = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 
 const ResizeableTitle = props => {
   const { onResize, width, ...restProps } = props;
@@ -45,7 +47,7 @@ class DataTable extends React.Component {
   };
 
   render() {
-    const { data, rowKey, change, resize, click, loading, scroll } = this.props;
+    const { data, rowKey, change, resize, click, isLoading, scroll } = this.props;
 
     const columns = this.state.columns.map((col, index) => ({
       ...col,
@@ -57,15 +59,19 @@ class DataTable extends React.Component {
     return (
       <Table
         bordered
-        size="middle"
-        loading={!loading}
+        size="small"
+        loading={{
+          indicator: loader,
+          spinning: isLoading
+        }}
         rowKey={rowKey}
         components={this.components}
         columns={resize ? columns : this.props.columns}
         dataSource={data}
         onChange={change}
         pagination={PaginationConfig}
-        scroll={{ x: !!scroll ? scroll : 2400 }}
+        scroll={{ x: !!scroll ? scroll : 2400, y: 540 }}
+        style={{ maxHeight: "68vh" }}
         onRow={record => {
           return {
             onClick: () => {

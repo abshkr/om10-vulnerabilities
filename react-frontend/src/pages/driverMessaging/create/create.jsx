@@ -11,7 +11,14 @@ const CreateForm = Form.create()(
       const { visible, onCancel, onCreate, form } = this.props;
       const { getFieldDecorator } = form;
       return (
-        <Modal visible={visible} title="Create new message" okText="Send" onCancel={onCancel} onOk={onCreate}>
+        <Modal
+          visible={visible}
+          title="Create new message"
+          okText="Send"
+          onCancel={onCancel}
+          onOk={onCreate}
+          centered
+        >
           <Form layout="vertical">
             <FormItem label="Recipient">
               {getFieldDecorator("recipient", {

@@ -10,6 +10,7 @@ import Page from "../../components/page";
 import Filter from "../../components/filter";
 import DataTable from "../../components/table";
 import Download from "../../components/download";
+import Container from "../../components/container";
 import { CreateButton } from "../../components/buttons";
 import axios from "axios";
 import search from "../../utils/search";
@@ -70,21 +71,23 @@ class BaseProducts extends Component {
     const results = !!filtered ? filtered : data;
     const name = "Base Products";
     return (
-      <Page page={"Gantry"} name={name} isLoading={isLoading} block={true}>
-        <Filter value={value} search={this.searchObjects} />
-        <Download data={data} type={name} style={{ float: "right" }} />
-        <CreateButton type={name} style={{ float: "right", marginRight: 5 }} action={this.showCreate} />
-        <Create visible={create} cancel={this.hideCreate} />
-        <Edit visible={!!edit} cancel={this.hideEdit} value={edit} />
+      <Page page={"Gantry"} name={name} block={true}>
+        <Container>
+          <Filter value={value} search={this.searchObjects} />
+          <Download data={data} type={name} style={{ float: "right" }} />
+          <CreateButton type={name} style={{ float: "right", marginRight: 5 }} action={this.showCreate} />
+          <Create visible={create} cancel={this.hideCreate} />
+          <Edit visible={!!edit} cancel={this.hideEdit} value={edit} />
 
-        <DataTable
-          rowKey="base_code"
-          columns={columns(results)}
-          data={results}
-          loading={true}
-          scroll={3600}
-          click={this.showEdit}
-        />
+          <DataTable
+            isLoading={isLoading}
+            rowKey="base_code"
+            columns={columns(results)}
+            data={results}
+            scroll={3600}
+            click={this.showEdit}
+          />
+        </Container>
       </Page>
     );
   }

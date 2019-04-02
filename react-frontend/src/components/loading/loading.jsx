@@ -3,7 +3,7 @@ import { Spin, Icon } from "antd";
 
 import "./loaders.css";
 
-const antIcon = <Icon type="loading" style={{ fontSize: 60 }} spin />;
+const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 
 const Loading = () => (
   <div className="loading">

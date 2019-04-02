@@ -14,7 +14,7 @@ export default class MonthlyVarianceVol extends Component {
   render() {
     const { decorator } = this.props;
     return (
-      <Form.Item label="Monthly Variance Limit (Vol)">
+      <Form.Item label="Monthly Limit (Vol)">
         {decorator("tank_mtol_volume", {
           rules: [{ required: true, message: "please enter user name" }]
         })(<Input />)}

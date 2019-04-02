@@ -1,4 +1,4 @@
-const columns = (sortedInfo, filteredInfo) => [
+const columns = data => [
   {
     title: "Product Code",
     dataIndex: "base_code",
@@ -13,29 +13,25 @@ const columns = (sortedInfo, filteredInfo) => [
     title: "Net Volume",
     dataIndex: "netvol",
     key: "netvol",
-    sorter: (a, b) => a.netvol - b.netvol,
-    sortOrder: sortedInfo.columnKey === "netvol" && sortedInfo.order
+    sorter: (a, b) => a.netvol - b.netvol
   },
   {
     title: "Gross Volume",
     dataIndex: "grossvol",
     key: "grossvol",
-    sorter: (a, b) => a.grossvol - b.grossvol,
-    sortOrder: sortedInfo.columnKey === "grossvol" && sortedInfo.order
+    sorter: (a, b) => a.grossvol - b.grossvol
   },
   {
     title: "Usable Volume",
     dataIndex: "usablevol",
     key: "usablevol",
-    sorter: (a, b) => a.usablevol - b.usablevol,
-    sortOrder: sortedInfo.columnKey === "usablevol" && sortedInfo.order
+    sorter: (a, b) => a.usablevol - b.usablevol
   },
   {
     title: "Book Balance",
     dataIndex: "bookbalance",
     key: "bookbalance",
-    sorter: (a, b) => a.bookbalance - b.bookbalance,
-    sortOrder: sortedInfo.columnKey === "bookbalance" && sortedInfo.order
+    sorter: (a, b) => a.bookbalance - b.bookbalance
   }
 ];
 

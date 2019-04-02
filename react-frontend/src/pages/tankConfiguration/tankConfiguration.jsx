@@ -6,34 +6,34 @@
 
 import React, { Component } from "react";
 import auth from "../../utils/auth";
-import Page from "../../components/page";
-import Filter from "../../components/filter";
-import DataTable from "../../components/table";
-import Download from "../../components/download";
-import { CreateButton } from "../../components/buttons";
+import { Page, Filter, DataTable, Download, Container } from "../../components";
+
 import axios from "axios";
 import search from "../../utils/search";
 import columns from "./columns";
-import { Create, Edit } from "./forms";
+import { Button, Modal } from "antd";
+import Forms from "./forms";
 
 class TankConfiguration extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: "",
       data: [],
-      create: false,
-      edit: null
+      value: "",
+      resize: false
     };
   }
 
-  fetchTanks = () => {
-    axios.get(`https://10.1.10.66/api/tank/read.php`).then(response => {
-      const data = response.data.records;
-      this.setState({
-        data: data,
-        isLoading: false
-      });
+  handleClick = object => {
+    Modal.info({
+      title: !!object ? `Editing ${object.tank_code}` : "Create",
+      centered: true,
+      width: 720,
+      maskClosable: true,
+      content: <Forms value={object} />,
+      okButtonProps: {
+        style: { display: "none" }
+      }
     });
   };
 
@@ -45,46 +45,60 @@ class TankConfiguration extends Component {
     });
   };
 
-  showCreate = () => {
-    this.setState({ create: true });
+  handleResize = () => {
+    const { resize } = this.state;
+    this.setState({
+      resize: !resize
+    });
   };
 
-  hideCreate = () => {
-    this.setState({ create: false });
-  };
-
-  showEdit = record => {
-    this.setState({ edit: record });
-  };
-
-  hideEdit = () => {
-    this.setState({ edit: null });
+  getTanks = () => {
+    axios.get(`https://10.1.10.66/api/tank/read.php`).then(response => {
+      const data = response.data.records;
+      this.setState({
+        data: data,
+        isLoading: false
+      });
+    });
   };
 
   componentDidMount() {
-    this.fetchTanks();
+    this.getTanks();
   }
 
   render() {
-    const { data, isLoading, filtered, value, create, edit } = this.state;
+    const { data, isLoading, filtered, value, resize } = this.state;
     const results = !!filtered ? filtered : data;
-    const name = "Tank Configuration";
-    return (
-      <Page page={"Gantry"} name={name} isLoading={isLoading} block={true}>
-        <Filter value={value} search={this.searchObjects} />
-        <Download data={data} type={name} style={{ float: "right" }} />
-        <CreateButton type={name} style={{ float: "right", marginRight: 5 }} action={this.showCreate} />
-        <Create visible={create} cancel={this.hideCreate} />
-        <Edit visible={!!edit} cancel={this.hideEdit} value={edit} />
 
-        <DataTable
-          rowKey="base_code"
-          columns={columns(results)}
-          data={results}
-          loading={true}
-          scroll={2000}
-          click={this.showEdit}
-        />
+    return (
+      <Page page={"Gantry"} name={"Tank Configuration"} block={true}>
+        <Container>
+          <Filter value={value} search={this.searchObjects} />
+          <Button
+            type="primary"
+            icon={resize ? "shrink" : "arrows-alt"}
+            style={{ float: "right" }}
+            onClick={this.handleResize}
+          />
+          <Download data={data} type={"Tank Configuration"} style={{ float: "right", marginRight: 5 }} />
+          <Button
+            type="primary"
+            style={{ float: "right", marginRight: 5 }}
+            onClick={() => this.handleClick(null)}
+          >
+            Create Tank Configuration
+          </Button>
+
+          <DataTable
+            scroll={2000}
+            data={results}
+            resize={resize}
+            rowKey="base_code"
+            isLoading={isLoading}
+            click={this.handleClick}
+            columns={columns(results)}
+          />
+        </Container>
       </Page>
     );
   }

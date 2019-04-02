@@ -1,10 +1,8 @@
 import React, { Component } from "react";
 import auth from "../../utils/auth";
-import Page from "../../components/page";
+import { Page, Download, Container, DataTable, Filter } from "../../components";
+import search from "../../utils/search";
 import axios from "axios";
-import Filters from "./filters";
-
-import { Table } from "antd";
 import columns from "./columns";
 
 import "./productInventory.css";
@@ -14,50 +12,53 @@ class ProductInventory extends Component {
     super(props);
     this.state = {
       data: null,
-      filteredInfo: null,
-      sortedInfo: null,
-      isLoading: true
+      isLoading: true,
+      value: ""
     };
   }
 
-  fetchData = () => {
+  getProductInventory = () => {
     this.setState({ isLoading: true });
     axios.get(`https://10.1.10.66/api/prod_inv/read.php?unit=US.GAL`).then(res => {
       this.setState({ data: res.data.records, isLoading: false });
     });
   };
 
-  setVolume = volume => {
-    this.setState({ isLoading: true });
-    axios.get(`https://10.1.10.66/api/prod_inv/read.php?unit=${volume}`).then(res => {
-      this.setState({ data: res.data.records, isLoading: false });
-    });
-  };
-
-  handleChange = (pagination, filters, sorter) => {
+  searchObjects = query => {
+    const { value } = query.target;
     this.setState({
-      filteredInfo: filters,
-      sortedInfo: sorter
+      filtered: search(value, this.state.data),
+      value
     });
   };
 
   componentDidMount() {
-    this.fetchData();
+    this.getProductInventory();
   }
 
   render() {
-    const { isLoading, data, sortedInfo, filteredInfo } = this.state;
+    const { isLoading, data, value, filtered } = this.state;
+    const results = !!filtered ? filtered : data;
     return (
       <div>
         <Page page={"Stock Management"} name={"Product Inventory"} isLoading={isLoading} block={true}>
-          <Filters setVolume={this.setVolume} />
-          <Table
-            rowKey="base_code"
-            dataSource={data}
-            columns={columns(sortedInfo || {}, filteredInfo || {})}
-            onChange={this.handleChange}
-            size="small"
-          />
+          <Container>
+            <div style={{ display: "flex", width: "100%" }}>
+              <div style={{ display: "flex", width: "100%", justifyContent: "space-between" }}>
+                <Filter value={value} search={this.searchObjects} />
+                <Download data={data} type={"Metering"} />
+              </div>
+            </div>
+
+            <DataTable
+              rowKey="base_code"
+              columns={columns(results)}
+              data={results}
+              loading={true}
+              scroll={300}
+              click={this.showEdit}
+            />
+          </Container>
         </Page>
       </div>
     );

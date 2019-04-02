@@ -29,9 +29,9 @@
   position: fixed;
   width: 36px;
   height: 30px;
-  left: 20px;
-  top: 20px;
-  transform: scale(0.7);
+  left: 45px;
+  top: 10px;
+  transform: scale(0.5);
 }
 
 /* Color/shape of burger icon bars */
@@ -115,4 +115,20 @@
 
 .un-auth {
   background: #538aef;
+}
+
+.nav {
+  position: fixed;
+  height: 50px;
+  background-color: white;
+  width: 100%;
+  box-shadow: 0 2px 8px #f0f1f2;
+  z-index: 100;
+}
+
+.logo {
+  transform: scale(0.1);
+  position: absolute;
+  top: -120px;
+  left: -125px;
 }

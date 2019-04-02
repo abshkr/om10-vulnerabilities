@@ -12,3 +12,7 @@
   cursor: col-resize;
   color: black;
 }
+
+.col-hide {
+  display: none;
+}
