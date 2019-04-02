@@ -26,7 +26,7 @@ class IdAssignment extends Component {
       centered: true,
       width: 720,
       maskClosable: true,
-      content: <Forms value={object} />
+      content: <Forms value={object} edit={!!object} />
     });
   };
 
