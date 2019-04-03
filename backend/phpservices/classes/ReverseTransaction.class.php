@@ -1113,7 +1113,13 @@ class ReverseTransactionClass
             {
                 $result_detail = $this->do_reverse($result[$i]->MSITM_SHLSTRIP, $result[$i]->MSITM_SHLSSUPP, null);
                 if ($result_detail->result_code != 0)
-                    return $result_detail;
+                {
+                    //Because the pair schedule will be reversed inside baiman
+                    if ($result_detail->result_code == -2)
+                        continue;
+                    else
+                        return $result_detail;
+                }
             }
             $result_detail->result_code = 0;
             $result_detail->result_string = "Schedule(s) linked to this special movment reversed successfully";
@@ -1132,6 +1138,7 @@ class ReverseTransactionClass
         return $result_detail;
     }
     
+    //$result_detail->result_code == -2 means already reversed
     function do_reverse($trip_id, $supplier, $login_user)
     {
         logMe("do_reverse START", REVERSE_TRANSACTION);
@@ -1145,7 +1152,7 @@ class ReverseTransactionClass
         $result_detail = new stdClass();
         if ($result[0]->LOAD_REVERSE_FLAG == 1)
         {
-            $result_detail->result_code = -1;
+            $result_detail->result_code = -2;
             $result_detail->result_string = "Trip already reversed, cannot do it again";            
             return $result_detail;
         }
