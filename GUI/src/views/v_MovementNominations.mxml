@@ -245,7 +245,7 @@
 						 />
 			<s:Spacer width="20"/>
 			<s:Label id="frmNumberLabel" text="{resourceManager.getString('default','MOVNOM.LABEL.MV_NUMBER')}" width="{labelWidth}"/>
-			<components:DKI_ValidatorInput id="frmNumber" width="{fieldWidth}" prompt="{resourceManager.getString('default','MOVNOM.LABEL.MV_NUMBER')}" restrict="A-Za-z0-9 \-"
+			<components:DKI_ValidatorInput id="frmNumber" width="{fieldWidth}" prompt="{resourceManager.getString('default','MOVNOM.LABEL.MV_NUMBER')}" 
 										   enabled="false" enabled.create="true" maxChars="40"
 										   required="false" validationType="alphanumericspecial_nosq" validationGroup="{vg}" automationName="{resourceManager.getString('default','MOVNOM.LABEL.MV_NUMBER')}" 
 										   />
