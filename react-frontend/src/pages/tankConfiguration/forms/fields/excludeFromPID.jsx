@@ -6,7 +6,7 @@ export default class ExcludeFromPID extends Component {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        tank_dtol_volume: value.tank_dtol_volume
+        excl_from_pid: value.excl_from_pid
       });
     }
   }
@@ -14,10 +14,10 @@ export default class ExcludeFromPID extends Component {
   render() {
     const { decorator } = this.props;
     return (
-      <Form.Item label="Exclude from PID">
-        {decorator("tank_dtol_volume", {
+      <Form.Item>
+        {decorator("excl_from_pid", {
           rules: [{ required: true, message: "please enter user name" }]
-        })(<Checkbox />)}
+        })(<Checkbox>Exclude from PID</Checkbox>)}
       </Form.Item>
     );
   }

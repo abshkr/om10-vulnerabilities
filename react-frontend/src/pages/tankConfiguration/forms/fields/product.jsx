@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Form, Select } from "antd";
+import { tanks } from "../../../../api";
 import axios from "axios";
 
 export default class Product extends Component {
@@ -10,11 +11,13 @@ export default class Product extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/tank/base_list.php`).then(response => {
-      this.setState({
-        classifications: response.data.records
-      });
-    });
+    axios.all([tanks.readBaseList()]).then(
+      axios.spread(response => {
+        this.setState({
+          classifications: response.data.records
+        });
+      })
+    );
 
     if (!!value) {
       setValue({
@@ -31,7 +34,7 @@ export default class Product extends Component {
     return (
       <Form.Item label="Product">
         {decorator("tank_base", {
-          rules: [{ required: true, message: "please enter a product" }]
+          rules: [{ required: true, message: "Please choose a Product." }]
         })(
           <Select>
             {!!classifications &&

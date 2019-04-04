@@ -17,7 +17,7 @@ export default class TankCode extends Component {
     return (
       <Form.Item label="Tank Code">
         {decorator("tank_code", {
-          rules: [{ required: true, message: "please enter a tank code" }]
+          rules: [{ required: true, message: "Please enter a Tank Code." }]
         })(<Input disabled={disabled} />)}
       </Form.Item>
     );

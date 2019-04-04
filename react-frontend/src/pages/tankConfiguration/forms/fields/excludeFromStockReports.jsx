@@ -6,7 +6,7 @@ export default class ExcludeFromStockReports extends Component {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        tank_dtol_volume: value.tank_dtol_volume
+        excl_from_stock_rep: value.excl_from_stock_rep
       });
     }
   }
@@ -14,10 +14,10 @@ export default class ExcludeFromStockReports extends Component {
   render() {
     const { decorator } = this.props;
     return (
-      <Form.Item label="Exclude from Stock Reports">
-        {decorator("tank_dtol_volume", {
+      <Form.Item>
+        {decorator("excl_from_stock_rep", {
           rules: [{ required: true, message: "please enter user name" }]
-        })(<Checkbox />)}
+        })(<Checkbox>Exclude from Stock Reports</Checkbox>)}
       </Form.Item>
     );
   }

@@ -5,14 +5,16 @@
  */
 
 import React, { Component } from "react";
-import auth from "../../utils/auth";
-import { Page, Filter, DataTable, Download, Container } from "../../components";
 
 import axios from "axios";
-import search from "../../utils/search";
-import columns from "./columns";
-import { Button, Modal } from "antd";
 import Forms from "./forms";
+import columns from "./columns";
+
+import { tanks, baseProducts } from "../../api";
+import auth from "../../utils/auth";
+import search from "../../utils/search";
+import { Button, Modal, notification } from "antd";
+import { Page, Filter, DataTable, Download, Container } from "../../components";
 
 class TankConfiguration extends Component {
   constructor(props) {
@@ -20,7 +22,9 @@ class TankConfiguration extends Component {
     this.state = {
       data: [],
       value: "",
-      resize: false
+      resize: false,
+      isLoading: true,
+      baseProducts: []
     };
   }
 
@@ -30,7 +34,7 @@ class TankConfiguration extends Component {
       centered: true,
       width: 720,
       maskClosable: true,
-      content: <Forms value={object} />,
+      content: <Forms value={object} refresh={this.getTanks} baseProducts={this.state.baseProducts} />,
       okButtonProps: {
         style: { display: "none" }
       }
@@ -53,13 +57,23 @@ class TankConfiguration extends Component {
   };
 
   getTanks = () => {
-    axios.get(`https://10.1.10.66/api/tank/read.php`).then(response => {
-      const data = response.data.records;
-      this.setState({
-        data: data,
-        isLoading: false
+    axios
+      .all([tanks.readTanks(), baseProducts.readBaseProduct()])
+      .then(
+        axios.spread((tanks, baseProducts) => {
+          this.setState({
+            isLoading: false,
+            data: tanks.data.records,
+            baseProducts: baseProducts.data.records
+          });
+        })
+      )
+      .catch(function(error) {
+        notification.error({
+          message: error.message,
+          description: "Failed to make the request."
+        });
       });
-    });
   };
 
   componentDidMount() {
@@ -69,22 +83,28 @@ class TankConfiguration extends Component {
   render() {
     const { data, isLoading, filtered, value, resize } = this.state;
     const results = !!filtered ? filtered : data;
-
     return (
       <Page page={"Gantry"} name={"Tank Configuration"} block={true}>
         <Container>
-          <Filter value={value} search={this.searchObjects} />
+          <Filter value={value} search={this.searchObjects} loading={isLoading} />
           <Button
             type="primary"
             icon={resize ? "shrink" : "arrows-alt"}
             style={{ float: "right" }}
             onClick={this.handleResize}
+            disabled={isLoading}
           />
-          <Download data={data} type={"Tank Configuration"} style={{ float: "right", marginRight: 5 }} />
+          <Download
+            data={data}
+            type={"Tank Configuration"}
+            style={{ float: "right", marginRight: 5 }}
+            loading={isLoading}
+          />
           <Button
             type="primary"
             style={{ float: "right", marginRight: 5 }}
             onClick={() => this.handleClick(null)}
+            disabled={isLoading}
           >
             Create Tank Configuration
           </Button>

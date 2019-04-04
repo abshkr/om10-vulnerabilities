@@ -16,7 +16,7 @@ export default class DailyVariancePercent extends Component {
     return (
       <Form.Item label="Daily Limit (%)">
         {decorator("tank_dtol_percent", {
-          rules: [{ required: true, message: "please enter user name" }]
+          initialValue: 0
         })(<Input />)}
       </Form.Item>
     );

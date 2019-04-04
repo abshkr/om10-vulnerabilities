@@ -16,7 +16,7 @@ export default class MonthlyVarianceVol extends Component {
     return (
       <Form.Item label="Monthly Limit (Vol)">
         {decorator("tank_mtol_volume", {
-          rules: [{ required: true, message: "please enter user name" }]
+          initialValue: 0
         })(<Input />)}
       </Form.Item>
     );

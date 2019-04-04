@@ -6,7 +6,7 @@ export default class ExcludeFromPOS extends Component {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        tank_dtol_volume: value.tank_dtol_volume
+        excl_from_pds: value.excl_from_pds
       });
     }
   }
@@ -14,10 +14,10 @@ export default class ExcludeFromPOS extends Component {
   render() {
     const { decorator } = this.props;
     return (
-      <Form.Item label="Exclude from POS">
-        {decorator("tank_dtol_volume", {
+      <Form.Item>
+        {decorator("excl_from_pds", {
           rules: [{ required: true, message: "please enter user name" }]
-        })(<Checkbox />)}
+        })(<Checkbox>Exclude from POS</Checkbox>)}
       </Form.Item>
     );
   }

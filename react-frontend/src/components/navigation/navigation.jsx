@@ -7,7 +7,7 @@ import "./navigation.css";
 class Navigation extends Component {
   render() {
     const { authenticated, config } = this.props;
-    if (!config.EMBEDDED) {
+    if (!config.embedded) {
       return authenticated ? <Authenticated /> : null;
     } else {
       return <div />;
