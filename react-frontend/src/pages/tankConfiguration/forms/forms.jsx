@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Form, Button, Tabs, notification } from "antd";
+import { Form, Button, Tabs, notification, Modal } from "antd";
 import { tanks } from "../../../api";
 import axios from "axios";
+
 import Terminal from "./fields/terminal";
 import TankCode from "./fields/tankCode";
 import Product from "./fields/product";
@@ -131,12 +132,27 @@ class TankConfigurationForm extends Component {
             </TabPane>
           </Tabs>
         </Form>
-        <Button type="primary" style={{ float: "right" }} onClick={this.handleSubmit}>
+
+        <Button icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
+          Cancel
+        </Button>
+
+        <Button
+          type="primary"
+          icon={!!value ? "edit" : "plus"}
+          style={{ float: "right", marginRight: 5 }}
+          onClick={this.handleSubmit}
+        >
           {!!value ? "Update" : "Create"}
         </Button>
 
         {!!value && (
-          <Button type="danger" style={{ float: "right", marginRight: 5 }} onClick={this.handleSubmit}>
+          <Button
+            type="danger"
+            icon="delete"
+            style={{ float: "right", marginRight: 5 }}
+            onClick={this.handleSubmit}
+          >
             Delete
           </Button>
         )}
