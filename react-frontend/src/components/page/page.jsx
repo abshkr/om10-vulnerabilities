@@ -8,9 +8,9 @@ const Page = ({ name, page, block, children }) => {
   return (
     <div>
       <Title page={!!name ? name : page} />
-      {!configuration.EMBEDDED && <Breadcrumbs page={page} path={name} />}
-
-      <div className={block ? "page" : "non-block"}>{children}</div>
+      {!configuration.embedded && <Breadcrumbs page={page} path={name} />}
+      {!configuration.embedded && <div className={block ? "page" : "non-block"}>{children}</div>}
+      {configuration.embedded && <div className={block ? "" : "non-block"}>{children}</div>}
     </div>
   );
 };

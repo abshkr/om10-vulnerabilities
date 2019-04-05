@@ -36,7 +36,7 @@ const store = createStore(
 
 const App = () => (
   <Provider store={store}>
-    <LocaleProvider locale={configuration.LANGUAGE === "CN" ? zhCN : enUS}>
+    <LocaleProvider locale={configuration.language === "CN" ? zhCN : enUS}>
       <BrowserRouter>
         <div>
           <Navigation config={configuration} />

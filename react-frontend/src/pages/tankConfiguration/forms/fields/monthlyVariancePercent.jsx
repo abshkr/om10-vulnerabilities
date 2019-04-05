@@ -16,7 +16,7 @@ export default class MonthlyVariancePercent extends Component {
     return (
       <Form.Item label="Monthly Limit (%)">
         {decorator("tank_mtol_percent", {
-          rules: [{ required: true, message: "please enter user name" }]
+          initialValue: 0
         })(<Input />)}
       </Form.Item>
     );

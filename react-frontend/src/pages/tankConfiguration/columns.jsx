@@ -15,7 +15,9 @@ const columns = data => [
     title: "Tank Name",
     dataIndex: "tank_name",
     key: "tank_name",
-    width: 300
+    width: 300,
+    filters: generate(data, "tank_name"),
+    onFilter: (value, record) => record.tank_name.indexOf(value) === 0
   },
   {
     title: "Terminal",
@@ -29,6 +31,8 @@ const columns = data => [
     title: "Product Code",
     dataIndex: "tank_base",
     key: "tank_base",
+    filters: generate(data, "tank_base"),
+    onFilter: (value, record) => record.tank_base.indexOf(value) === 0,
     width: 300
   },
   {
@@ -51,31 +55,41 @@ const columns = data => [
     title: "Density [kg/m3]",
     dataIndex: "tank_density",
     key: "tank_density",
+    sorter: (a, b) => a.tank_density - b.tank_density,
+    sortDirections: ["descend", "ascend"],
     width: 300
   },
   {
     title: "Daily Variance Limit (Vol)",
     dataIndex: "tank_dtol_volume",
     key: "tank_dtol_volume",
-    width: 300
+    sorter: (a, b) => a.tank_dtol_volume - b.tank_dtol_volume,
+    sortDirections: ["descend", "ascend"],
+    width: 350
   },
   {
     title: "Daily Variance Limit (%)",
     dataIndex: "tank_dtol_percent",
     key: "tank_dtol_percent",
-    width: 300
+    sorter: (a, b) => a.tank_dtol_percent - b.tank_dtol_percent,
+    sortDirections: ["descend", "ascend"],
+    width: 350
   },
   {
     title: "Monthly Variance Limit (Vol)",
     dataIndex: "tank_mtol_volume",
     key: "tank_mtol_volume",
-    width: 300
+    sorter: (a, b) => a.tank_mtol_volume - b.tank_mtol_volume,
+    sortDirections: ["descend", "ascend"],
+    width: 350
   },
   {
     title: "Monthly Variance Limit (%)",
     dataIndex: "tank_mtol_percent",
     key: "tank_mtol_percent",
-    width: 300
+    sorter: (a, b) => a.tank_mtol_percent - b.tank_mtol_percent,
+    sortDirections: ["descend", "ascend"],
+    width: 350
   }
 ];
 

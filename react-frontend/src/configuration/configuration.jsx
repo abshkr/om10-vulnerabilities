@@ -1,4 +1,4 @@
-export const VERSION = "";
-export const TERMINAL = "";
-export const EMBEDDED = false;
-export const LANGUAGE = "EN";
+export const version = "";
+export const terminal = "";
+export const embedded = true;
+export const language = "EN";

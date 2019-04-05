@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { Form, Button, Tabs } from "antd";
+import { Form, Button, Tabs, notification, Modal } from "antd";
+import { tanks } from "../../../api";
+import axios from "axios";
 
 import Terminal from "./fields/terminal";
 import TankCode from "./fields/tankCode";
@@ -18,6 +20,10 @@ import ExcludeFromSMG from "./fields/excludeFromSMG";
 import ExcludeFromStockReports from "./fields/excludeFromStockReports";
 
 class TankConfigurationForm extends Component {
+  state = {
+    base: null
+  };
+
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
@@ -27,9 +33,57 @@ class TankConfigurationForm extends Component {
     });
   };
 
+  handleCreate = values => {
+    axios
+      .all([tanks.createTank(values)])
+      .then(
+        axios.spread(response => {
+          this.props.refresh();
+        })
+      )
+      .catch(function(error) {
+        notification.error({
+          message: error.message,
+          description: "Failed to create the Tank."
+        });
+      });
+  };
+
+  handleUpdate = values => {
+    axios
+      .all([tanks.updateTank(values)])
+      .then(
+        axios.spread(response => {
+          this.props.refresh();
+        })
+      )
+      .catch(function(error) {
+        notification.error({
+          message: error.message,
+          description: "Failed to update the Tank."
+        });
+      });
+  };
+
+  handleDelete = value => {
+    axios
+      .all([tanks.deleteTank(value)])
+      .then(
+        axios.spread(response => {
+          this.props.refresh();
+        })
+      )
+      .catch(function(error) {
+        notification.error({
+          message: error.message,
+          description: "Failed to delete the Tank."
+        });
+      });
+  };
+
   render() {
-    const { form, value } = this.props;
-    const { getFieldDecorator, setFieldsValue } = form;
+    const { form, value, baseProducts } = this.props;
+    const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
     const TabPane = Tabs.TabPane;
     return (
       <div>
@@ -50,7 +104,13 @@ class TankConfigurationForm extends Component {
               />
               <Product decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <TankName decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Density decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <Density
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                baseProducts={baseProducts}
+                selectedBase={getFieldValue("tank_base")}
+              />
             </TabPane>
 
             <TabPane tab="Variance" key="2">
@@ -72,9 +132,30 @@ class TankConfigurationForm extends Component {
             </TabPane>
           </Tabs>
         </Form>
-        <Button type="primary" style={{ float: "right" }} onClick={this.handleSubmit}>
-          {!!value ? "Edit" : "Create"}
+
+        <Button icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
+          Cancel
         </Button>
+
+        <Button
+          type="primary"
+          icon={!!value ? "edit" : "plus"}
+          style={{ float: "right", marginRight: 5 }}
+          onClick={this.handleSubmit}
+        >
+          {!!value ? "Update" : "Create"}
+        </Button>
+
+        {!!value && (
+          <Button
+            type="danger"
+            icon="delete"
+            style={{ float: "right", marginRight: 5 }}
+            onClick={this.handleSubmit}
+          >
+            Delete
+          </Button>
+        )}
       </div>
     );
   }

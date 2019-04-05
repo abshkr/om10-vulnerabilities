@@ -6,7 +6,7 @@ export default class ExcludeFromSMG extends Component {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        tank_dtol_volume: value.tank_dtol_volume
+        excl_from_special_mv: value.excl_from_special_mv
       });
     }
   }
@@ -14,10 +14,10 @@ export default class ExcludeFromSMG extends Component {
   render() {
     const { decorator } = this.props;
     return (
-      <Form.Item label="Exclude from Special Movement Gain/Loss">
-        {decorator("tank_dtol_volume", {
+      <Form.Item>
+        {decorator("excl_from_special_mv", {
           rules: [{ required: true, message: "please enter user name" }]
-        })(<Checkbox />)}
+        })(<Checkbox>Exclude from Special Movement Gain/Loss</Checkbox>)}
       </Form.Item>
     );
   }
