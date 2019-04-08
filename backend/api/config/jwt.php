@@ -111,7 +111,7 @@ class JWT
         }
         // Check if the nbf if it is defined. This is the time that the
         // token can actually be used. If it's not yet that time, abort.
-        if (isset($payload->nbf) && $payload->nbf > ($timestamp + static::$leeway)) {
+        if (isset($payload->nbf) && $payload->nbf > ($timestamp+static::$leeway)) {
             throw new BeforeValidException(
                 'Cannot handle token prior to ' . date(DateTime::ISO8601, $payload->nbf)
             );
@@ -119,13 +119,13 @@ class JWT
         // Check that this token has been created before 'now'. This prevents
         // using tokens that have been created for later use (and haven't
         // correctly used the nbf claim).
-        if (isset($payload->iat) && $payload->iat > ($timestamp + static::$leeway)) {
+        if (isset($payload->iat) && $payload->iat > ($timestamp+static::$leeway)) {
             throw new BeforeValidException(
                 'Cannot handle token prior to ' . date(DateTime::ISO8601, $payload->iat)
             );
         }
         // Check if this token has expired.
-        if (isset($payload->exp) && ($timestamp - static::$leeway) >= $payload->exp) {
+        if (isset($payload->exp) && ($timestamp-static::$leeway) >= $payload->exp) {
             throw new ExpiredException('Expired token');
         }
         return $payload;
@@ -152,7 +152,7 @@ class JWT
         if ($keyId !== null) {
             $header['kid'] = $keyId;
         }
-        if ( isset($head) && is_array($head) ) {
+        if (isset($head) && is_array($head)) {
             $header = array_merge($head, $header);
         }
         $segments = array();
@@ -181,7 +181,7 @@ class JWT
             throw new DomainException('Algorithm not supported');
         }
         list($function, $algorithm) = static::$supported_algs[$alg];
-        switch($function) {
+        switch ($function) {
             case 'hash_hmac':
                 return hash_hmac($algorithm, $msg, $key, true);
             case 'openssl':
@@ -213,7 +213,7 @@ class JWT
             throw new DomainException('Algorithm not supported');
         }
         list($function, $algorithm) = static::$supported_algs[$alg];
-        switch($function) {
+        switch ($function) {
             case 'openssl':
                 $success = openssl_verify($msg, $signature, $key, $algorithm);
                 if ($success === 1) {
@@ -263,7 +263,7 @@ class JWT
              *them to strings) before decoding, hence the preg_replace() call.
              */
             $max_int_length = strlen((string) PHP_INT_MAX) - 1;
-            $json_without_bigints = preg_replace('/:\s*(-?\d{'.$max_int_length.',})/', ': "$1"', $input);
+            $json_without_bigints = preg_replace('/:\s*(-?\d{' . $max_int_length . ',})/', ': "$1"', $input);
             $obj = json_decode($json_without_bigints);
         }
         if (function_exists('json_last_error') && $errno = json_last_error()) {
@@ -333,7 +333,7 @@ class JWT
             JSON_ERROR_STATE_MISMATCH => 'Invalid or malformed JSON',
             JSON_ERROR_CTRL_CHAR => 'Unexpected control character found',
             JSON_ERROR_SYNTAX => 'Syntax error, malformed JSON',
-            JSON_ERROR_UTF8 => 'Malformed UTF-8 characters' //PHP >= 5.3.3
+            JSON_ERROR_UTF8 => 'Malformed UTF-8 characters', //PHP >= 5.3.3
         );
         throw new DomainException(
             isset($messages[$errno])

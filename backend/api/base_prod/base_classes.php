@@ -7,4 +7,3 @@ include_once '../config/database.php';
 include_once '../objects/base_class.php';
 
 Utilities::read('BaseClass');
-

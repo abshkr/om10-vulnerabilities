@@ -4,11 +4,11 @@
 //false means doing nothing
 define('ENABLE_DEBUG_LOG', true);
 
-//Set it to true means user need to stay logged in before perform all the db-related actions 
+//Set it to true means user need to stay logged in before perform all the db-related actions
 define('AUTH_CHECK', false);
 
 //Set it to true to use Token-based authentication. false uses table HTTP_SESSION_TRACE
-define ('JWT_AUTH', false);
+define('JWT_AUTH', false);
 
 //Set it to true to call ini_set('display_errors', 1) and error_reporting(E_ALL)
 define('DISPLAY_ALL_ERROS', true);
@@ -20,7 +20,7 @@ define('DISPLAY_ALL_ERROS', true);
 /*Put this header below if AUTH_IN_HEADER is used:
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization");
 otherwise there will be a "Request header field Authorization is not allowed by Access-Control-Allow-Headers in preflight response" error
-*/
+ */
 define('AUTH_IN_HEADER', true);
 
 //
@@ -32,13 +32,13 @@ define('URL_PROTOCOL', 'https://');
 define('JWT_SECRET', 'dki_jwt');
 
 //if it is trun, store $token['sess_id'] in db, and when check token
-//also check if $token['sess_id'] is in db. Because when logout, $token['sess_id'] 
-//will be delete from db, so it invalidate this token 
+//also check if $token['sess_id'] is in db. Because when logout, $token['sess_id']
+//will be delete from db, so it invalidate this token
 define('INVALIDATE_TOKEN_ENABLED', false);
 
 define('JASPERREPORT_DIR', 'reports/');
 
 if (DISPLAY_ALL_ERROS) {
-	ini_set('display_errors', 1);
-	error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
 }
