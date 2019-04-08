@@ -17,7 +17,7 @@ export default class Terminal extends Component {
     return (
       <Form.Item label="Terminal">
         {decorator("tank_sitename", {
-          rules: [{ required: true, message: "please enter a terminal" }]
+          rules: [{ required: true, message: "" }]
         })(<Input disabled={disabled} />)}
       </Form.Item>
     );

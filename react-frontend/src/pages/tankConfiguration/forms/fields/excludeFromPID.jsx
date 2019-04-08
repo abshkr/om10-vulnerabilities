@@ -16,7 +16,7 @@ export default class ExcludeFromPID extends Component {
     return (
       <Form.Item>
         {decorator("excl_from_pid", {
-          rules: [{ required: true, message: "please enter user name" }]
+          initialValue: false
         })(<Checkbox>Exclude from PID</Checkbox>)}
       </Form.Item>
     );

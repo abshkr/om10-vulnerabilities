@@ -16,7 +16,7 @@ export default class ExcludeFromSMG extends Component {
     return (
       <Form.Item>
         {decorator("excl_from_special_mv", {
-          rules: [{ required: true, message: "please enter user name" }]
+          initialValue: false
         })(<Checkbox>Exclude from Special Movement Gain/Loss</Checkbox>)}
       </Form.Item>
     );

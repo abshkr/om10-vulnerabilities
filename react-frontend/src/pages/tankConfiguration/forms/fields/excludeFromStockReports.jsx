@@ -16,7 +16,7 @@ export default class ExcludeFromStockReports extends Component {
     return (
       <Form.Item>
         {decorator("excl_from_stock_rep", {
-          rules: [{ required: true, message: "please enter user name" }]
+          initialValue: false
         })(<Checkbox>Exclude from Stock Reports</Checkbox>)}
       </Form.Item>
     );

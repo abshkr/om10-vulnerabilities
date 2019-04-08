@@ -64,7 +64,9 @@ class TankConfiguration extends Component {
           this.setState({
             isLoading: false,
             data: tanks.data.records,
-            baseProducts: baseProducts.data.records
+            baseProducts: baseProducts.data.records,
+            filtered: null,
+            value: ""
           });
         })
       )
