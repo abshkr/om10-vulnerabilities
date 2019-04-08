@@ -3,7 +3,6 @@ import { Form, Button, Tabs, notification, Modal } from "antd";
 import { tanks } from "../../../api";
 import axios from "axios";
 
-import Terminal from "./fields/terminal";
 import TankCode from "./fields/tankCode";
 import Product from "./fields/product";
 import TankName from "./fields/tankName";
@@ -24,53 +23,68 @@ class TankConfigurationForm extends Component {
     base: null
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleCreate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log("Received values of form: ", values);
+        axios
+          .all([tanks.createTank(values)])
+          .then(
+            axios.spread(response => {
+              this.props.refresh();
+              Modal.destroyAll();
+              notification.success({
+                message: "Successfully Created.",
+                description: `You have Created the Tank ${values.tank_code}`
+              });
+            })
+          )
+          .catch(function(error) {
+            notification.error({
+              message: error.message,
+              description: "Failed to create the Tank."
+            });
+          });
       }
     });
   };
 
-  handleCreate = values => {
-    axios
-      .all([tanks.createTank(values)])
-      .then(
-        axios.spread(response => {
-          this.props.refresh();
-        })
-      )
-      .catch(function(error) {
-        notification.error({
-          message: error.message,
-          description: "Failed to create the Tank."
-        });
-      });
+  handleUpdate = () => {
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        axios
+          .all([tanks.updateTank(values)])
+          .then(
+            axios.spread(response => {
+              this.props.refresh();
+              Modal.destroyAll();
+              notification.success({
+                message: "Successfully Updated.",
+                description: `You have updated the Tank ${values.tank_code}`
+              });
+            })
+          )
+          .catch(function(error) {
+            notification.error({
+              message: error.message,
+              description: "Failed to update the Tank."
+            });
+          });
+      }
+    });
   };
 
-  handleUpdate = values => {
+  handleDelete = () => {
+    const { value } = this.props;
     axios
-      .all([tanks.updateTank(values)])
+      .all([tanks.deleteTank(value.tank_code)])
       .then(
         axios.spread(response => {
           this.props.refresh();
-        })
-      )
-      .catch(function(error) {
-        notification.error({
-          message: error.message,
-          description: "Failed to update the Tank."
-        });
-      });
-  };
-
-  handleDelete = value => {
-    axios
-      .all([tanks.deleteTank(value)])
-      .then(
-        axios.spread(response => {
-          this.props.refresh();
+          Modal.destroyAll();
+          notification.success({
+            message: "Successfully Deleted.",
+            description: `You have deleted the Tank ${value.tank_code}`
+          });
         })
       )
       .catch(function(error) {
@@ -79,6 +93,39 @@ class TankConfigurationForm extends Component {
           description: "Failed to delete the Tank."
         });
       });
+  };
+
+  showDeleteConfirm = () => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this tank?",
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      centered: true,
+      onOk: this.handleDelete
+    });
+  };
+
+  showUpdateConfirm = () => {
+    Modal.confirm({
+      title: "Are you sure you want to update this tank?",
+      okText: "Yes",
+      okType: "primary",
+      cancelText: "No",
+      centered: true,
+      onOk: this.handleUpdate
+    });
+  };
+
+  showCreateConfirm = () => {
+    Modal.confirm({
+      title: "Are you sure you want to update this tank?",
+      okText: "Yes",
+      okType: "primary",
+      cancelText: "No",
+      centered: true,
+      onOk: this.handleCreate
+    });
   };
 
   render() {
@@ -90,12 +137,6 @@ class TankConfigurationForm extends Component {
         <Form style={{ height: 640 }}>
           <Tabs defaultActiveKey="1">
             <TabPane tab="General" key="1">
-              <Terminal
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                disabled={!!value ? true : false}
-              />
               <TankCode
                 decorator={getFieldDecorator}
                 value={value}
@@ -141,7 +182,7 @@ class TankConfigurationForm extends Component {
           type="primary"
           icon={!!value ? "edit" : "plus"}
           style={{ float: "right", marginRight: 5 }}
-          onClick={this.handleSubmit}
+          onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}
         >
           {!!value ? "Update" : "Create"}
         </Button>
@@ -151,7 +192,7 @@ class TankConfigurationForm extends Component {
             type="danger"
             icon="delete"
             style={{ float: "right", marginRight: 5 }}
-            onClick={this.handleSubmit}
+            onClick={this.showDeleteConfirm}
           >
             Delete
           </Button>

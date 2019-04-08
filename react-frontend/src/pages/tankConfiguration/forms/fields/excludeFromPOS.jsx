@@ -16,7 +16,7 @@ export default class ExcludeFromPOS extends Component {
     return (
       <Form.Item>
         {decorator("excl_from_pds", {
-          rules: [{ required: true, message: "please enter user name" }]
+          initialValue: false
         })(<Checkbox>Exclude from POS</Checkbox>)}
       </Form.Item>
     );

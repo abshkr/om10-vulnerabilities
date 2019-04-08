@@ -14,15 +14,11 @@ export function readBaseList() {
 }
 
 export function createTank(payload) {
-  return axios.post(`https://${api}/api/tank/create.php`, {
-    payload
-  });
+  return axios.post(`https://${api}/api/tank/create.php`, payload);
 }
 
 export function updateTank(payload) {
-  return axios.post(`https://${api}/api/tank/update.php`, {
-    payload
-  });
+  return axios.post(`https://${api}/api/tank/update.php`, payload);
 }
 
 export function deleteTank(tank) {
