@@ -57,6 +57,11 @@ class Tank
             $this->tank_terminal = $row['TERM_CODE'];
         }
 
+        $this->tank_excl_from_pid = (isset($this->tank_excl_from_pid) && $this->tank_excl_from_pid ? 1 : 0);
+        $this->tank_excl_from_pds = (isset($this->tank_excl_from_pds) && $this->tank_excl_from_pds ? 1 : 0);
+        $this->tank_excl_from_special_mv = (isset($this->tank_excl_from_special_mv) && $this->tank_excl_from_special_mv ? 1 : 0);
+        $this->tank_excl_from_stock_rep = (isset($this->tank_excl_from_stock_rep) && $this->tank_excl_from_stock_rep ? 1 : 0);
+
         $query = "
             INSERT INTO TANKS (
                 TANK_CODE,
@@ -237,6 +242,7 @@ class Tank
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
 
         Utilities::sanitize($this);
 
@@ -250,6 +256,23 @@ class Tank
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
+
+        if (!isset($this->tank_terminal)) {
+            $query = "
+                SELECT TERM_CODE FROM TERMINAL";
+            $stmt = oci_parse($this->conn, $query);
+            if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            } else {
+                write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            }
+            $this->tank_terminal = $row['TERM_CODE'];
+        }
+
+        $this->tank_excl_from_pid = (isset($this->tank_excl_from_pid) && $this->tank_excl_from_pid ? 1 : 0);
+        $this->tank_excl_from_pds = (isset($this->tank_excl_from_pds) && $this->tank_excl_from_pds ? 1 : 0);
+        $this->tank_excl_from_special_mv = (isset($this->tank_excl_from_special_mv) && $this->tank_excl_from_special_mv ? 1 : 0);
+        $this->tank_excl_from_stock_rep = (isset($this->tank_excl_from_stock_rep) && $this->tank_excl_from_stock_rep ? 1 : 0);
 
         $query = "
             UPDATE TANKS

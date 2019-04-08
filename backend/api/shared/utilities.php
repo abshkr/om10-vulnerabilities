@@ -4,7 +4,7 @@ include_once '../config/log.php';
 include_once '../config/database.php';
 
 class Utilities
-{ 
+{
     // private static $COMPULSORY_FIELDS = array(
     //     "GUI_TANKS" => array("TANK_API",
     //         "TANK_IDENTIFIER"
@@ -14,11 +14,21 @@ class Utilities
     //     )
     // );
 
+    private static $BOOLEAN_FIELDS = array(
+        "TANK" => array(
+            "tank_excl_from_pid",
+            "tank_excl_from_pds",
+            "tank_excl_from_special_mv",
+            "tank_excl_from_stock_rep",
+        ),
+    );
+
     public static function sanitize($cls)
     {
         foreach ($cls as $key => $value) {
-            if (!is_string($value))
+            if (!is_string($value)) {
                 continue;
+            }
 
             // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
             $cls->{$key} = htmlspecialchars(strip_tags($value));
@@ -30,10 +40,10 @@ class Utilities
     {
         $database = new Database();
         $db = $database->getConnection();
-         
+
         // initialize object
         $object = new $class($db);
-         
+
         if ($filter) {
             $data = json_decode(file_get_contents("php://input"));
             if ($data) {
@@ -50,19 +60,29 @@ class Utilities
 
         // query products
         $stmt = $object->$method();
-         
+
         $result = array();
         $result["records"] = array();
         $num = 0;
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
             $num += 1;
-            
+
             $base_item = array();
             foreach ($row as $key => $value) {
-                $base_item[strtolower($key)] = $value;
+                $lower_key = strtolower($key);
+                if (in_array($lower_key, self::$BOOLEAN_FIELDS[strtoupper($class)])) {
+                    if ($value == 1 || $value == 'T') {
+                        $base_item[$lower_key] = "true";
+                    } else {
+                        $base_item[$lower_key] = "false";
+                    }
+
+                } else {
+                    $base_item[$lower_key] = $value;
+                }
             }
 
-            $base_item = array_map(function($v){
+            $base_item = array_map(function ($v) {
                 return (is_null($v)) ? "" : $v;
             }, $base_item);
 
@@ -85,10 +105,10 @@ class Utilities
     {
         $database = new Database();
         $db = $database->getConnection();
-         
+
         // initialize object
         $object = new $class($db);
-         
+
         if ($filter) {
             $data = json_decode(file_get_contents("php://input"));
             if ($data) {
@@ -105,11 +125,11 @@ class Utilities
 
         // query products
         $count = $object->$method();
-         
+
         $result = array();
         $result["records"] = array();
         $item = array(
-            "count" => $count
+            "count" => $count,
         );
 
         array_push($result["records"], $item);
@@ -120,20 +140,20 @@ class Utilities
     //Example:
     /*
     "records": [
-        "000004C521F3",
-        "00000126FD7B",
-        "000001270A16",
-        "000001096EDE",
-        "0000011B0BB9"
+    "000004C521F3",
+    "00000126FD7B",
+    "000001270A16",
+    "000001096EDE",
+    "0000011B0BB9"
     ] */
     public static function simpliedRead($class, $method = 'read', $filter = false)
     {
         $database = new Database();
         $db = $database->getConnection();
-         
+
         // initialize object
         $object = new $class($db);
-         
+
         if ($filter) {
             $data = json_decode(file_get_contents("php://input"));
             if ($data) {
@@ -150,13 +170,13 @@ class Utilities
 
         // query products
         $stmt = $object->$method();
-         
+
         $result = array();
         $result["records"] = array();
         $num = 0;
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
             $num += 1;
-            
+
             //There should be only 1 field in $row
             $base_item = array();
             foreach ($row as $key => $value) {
@@ -188,28 +208,28 @@ class Utilities
         $num = 0;
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
             $num += 1;
-            
+
             $base_item = array();
             foreach ($row as $key => $value) {
                 $base_item[strtolower($key)] = $value;
             }
 
-            $base_item = array_map(function($v){
+            $base_item = array_map(function ($v) {
                 return (is_null($v)) ? "" : $v;
             }, $base_item);
 
             array_push($result_array, $base_item);
         }
         // write_log(json_encode($result, JSON_PRETTY_PRINT), __FILE__, __LINE__);
-            
+
         return $num;
     }
 
-    public static function create($class, $method = 'create') 
+    public static function create($class, $method = 'create')
     {
         $database = new Database();
         $db = $database->getConnection();
-         
+
         $object = new $class($db);
         $desc = (isset($object->desc) ? $object->desc : $class);
 
@@ -228,24 +248,62 @@ class Utilities
 
         write_log(json_encode($object), __FILE__, __LINE__);
 
-        if ($object->$method()){
+        if ($object->$method()) {
             echo '{';
-                echo '"message": "' . $desc . ' created."';
+            echo '"message": "' . $desc . ' created."';
             echo '}';
-        } else{
+        } else {
             echo '{';
-                echo '"message": "Unable to create ' . 
-                    $desc . 
-                    '. Check logs/php_rest_*.log file for details."';
+            echo '"message": "Unable to create ' .
+                $desc .
+                '. Check logs/php_rest_*.log file for details."';
             echo '}';
         }
     }
 
-    public static function update($class, $method = 'update') 
+    public static function update($class, $method = 'update')
     {
         $database = new Database();
         $db = $database->getConnection();
-         
+
+        $object = new $class($db);
+        $desc = (isset($object->desc) ? $object->desc : $class);
+
+        // get posted data
+        $data = json_decode(file_get_contents("php://input"));
+        write_log(json_encode($data), __FILE__, __LINE__);
+        if ($data) {
+            foreach ($data as $key => $value) {
+                $object->$key = $value;
+            }
+        } else {
+            // write_log(json_encode($_GET), __FILE__, __LINE__);
+            foreach ($_GET as $key => $value) {
+                $object->$key = $value;
+            }
+        }
+        write_log(json_encode($object), __FILE__, __LINE__);
+
+        // write_log(json_encode($object), __FILE__, __LINE__);
+
+        if ($object->$method()) {
+            echo '{';
+            echo '"message": "' . $desc . ' updated."';
+            echo '}';
+        } else {
+            echo '{';
+            echo '"message": "Unable to update ' .
+                $desc .
+                '. Check logs/php_rest_*.log file for details."';
+            echo '}';
+        }
+    }
+
+    public static function delete($class, $method = 'delete')
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
         $object = new $class($db);
         $desc = (isset($object->desc) ? $object->desc : $class);
 
@@ -264,51 +322,15 @@ class Utilities
 
         // write_log(json_encode($object), __FILE__, __LINE__);
 
-        if ($object->$method()){
+        if ($object->$method()) {
             echo '{';
-                echo '"message": "' . $desc . ' updated."';
+            echo '"message": "' . $desc . ' deleted."';
             echo '}';
-        } else{
-            echo '{';
-                echo '"message": "Unable to update ' . 
-                    $desc . 
-                    '. Check logs/php_rest_*.log file for details."';
-            echo '}';
-        }
-    }
-
-    public static function delete($class, $method = 'delete') 
-    {
-        $database = new Database();
-        $db = $database->getConnection();
-         
-        $object = new $class($db);
-        $desc = (isset($object->desc) ? $object->desc : $class);
-
-        // get posted data
-        $data = json_decode(file_get_contents("php://input"));
-        if ($data) {
-            foreach ($data as $key => $value) {
-                $object->$key = $value;
-            }
         } else {
-            // write_log(json_encode($_GET), __FILE__, __LINE__);
-            foreach ($_GET as $key => $value) {
-                $object->$key = $value;
-            }
-        }
-
-        // write_log(json_encode($object), __FILE__, __LINE__);
-
-        if ($object->$method()){
             echo '{';
-                echo '"message": "' . $desc . ' deleted."';
-            echo '}';
-        } else{
-            echo '{';
-                echo '"message": "Unable to delete ' . 
-                    $desc . 
-                    '. Check logs/php_rest_*.log file for details."';
+            echo '"message": "Unable to delete ' .
+                $desc .
+                '. Check logs/php_rest_*.log file for details."';
             echo '}';
         }
     }
@@ -331,7 +353,7 @@ class Utilities
         return "DKI_SUPER_USER";
     }
 
-    public static function getCurrentSession() 
+    public static function getCurrentSession()
     {
         session_start();
         if (isset($_SESSION['SESSION'])) {
@@ -345,39 +367,39 @@ class Utilities
     {
         // paging array
         $paging_arr = array();
- 
+
         // button for first page
         $paging_arr["first"] = $page > 1 ? "{$page_url}page=1" : "";
- 
+
         // count all products in the database to calculate total pages
         $total_pages = ceil($total_rows / $records_per_page);
- 
+
         // range of links to show
         $range = 3;
- 
+
         // display links to 'range of pages' around 'current page'
         $initial_num = $page - $range;
-        $condition_limit_num = ($page + $range)  + 1;
- 
+        $condition_limit_num = ($page + $range) + 1;
+
         $paging_arr['pages'] = array();
         $page_count = 0;
-         
+
         for ($x = $initial_num; $x < $condition_limit_num; $x++) {
             // be sure '$x is greater than 0' AND 'less than or equal to the $total_pages'
             if (($x > 0) && ($x <= $total_pages)) {
                 $paging_arr['pages'][$page_count]["page"] = $x;
                 $paging_arr['pages'][$page_count]["url"] = "{$page_url}page={$x}";
                 $paging_arr['pages'][$page_count]["current_page"] = ($x == $page ? "yes" : "no");
- 
+
                 $page_count++;
             }
         }
- 
+
         // button for last page
         $paging_arr["last"] = $page < $total_pages ? "{$page_url}page={$total_pages}" : "";
- 
+
         // json format
         return $paging_arr;
     }
- 
+
 }
