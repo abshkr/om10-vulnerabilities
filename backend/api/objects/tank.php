@@ -45,6 +45,18 @@ class Tank
 
         Utilities::sanitize($this);
 
+        if (!isset($this->tank_terminal)) {
+            $query = "
+                SELECT TERM_CODE FROM TERMINAL";
+            $stmt = oci_parse($this->conn, $query);
+            if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            } else {
+                write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            }
+            $this->tank_terminal = $row['TERM_CODE'];
+        }
+
         $query = "
             INSERT INTO TANKS (
                 TANK_CODE,
