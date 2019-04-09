@@ -19,7 +19,11 @@ const ResizeableTitle = props => {
   );
 };
 
-const PaginationConfig = { showSizeChanger: true, pageSizeOptions: ["10", "30", "50", "100"] };
+const paginationConfig = {
+  showSizeChanger: true,
+  pageSizeOptions: ["10", "30", "50", "100"],
+  defaultPageSize: 100
+};
 
 class DataTable extends React.Component {
   constructor(props) {
@@ -56,6 +60,7 @@ class DataTable extends React.Component {
         onResize: this.handleResize(index)
       })
     }));
+
     return (
       <Table
         bordered
@@ -69,9 +74,8 @@ class DataTable extends React.Component {
         columns={resize ? columns : this.props.columns}
         dataSource={data}
         onChange={change}
-        pagination={PaginationConfig}
-        scroll={{ x: !!scroll ? scroll : 2400, y: 540 }}
-        style={{ maxHeight: "68vh" }}
+        pagination={paginationConfig}
+        scroll={{ x: !!scroll ? scroll : 2400, y: "80vh" }}
         onRow={record => {
           return {
             onClick: () => {
