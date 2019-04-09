@@ -18,19 +18,4 @@ $db = $database->getConnection();
 // prepare personnel object
 $personnel = new Personnel($db);
  
-// get personnel id
-$data = json_decode(file_get_contents("php://input"));
- 
-// set personnel id to be deleted
-$personnel->per_code = $data->per_code;
- 
-// delete the personnel
-if ($personnel->delete()) {
-    echo '{';
-        echo '"message": "personnel was deleted."';
-    echo '}';
-} else{
-    echo '{';
-        echo '"message": "Unable to delete object."';
-    echo '}';
-}
+Utilities::delete($personnel, "personnel");

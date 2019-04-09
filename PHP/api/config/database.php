@@ -3,6 +3,7 @@ include_once 'log.php';
 include_once 'setups.php';
 include_once 'jwt.php';
 include_once 'jwt_utilities.php';
+include_once '../shared/utilities.php';
 
 class Database 
 {

@@ -5,7 +5,7 @@ include_once 'log.php';
 
 function get_token($per_code, $sess_id = null, $exp_seconds = 1800)
 {
-    write_log('get_token START. per_code:' . $per_code . ' sess_id:' . $sess_id, 
+    write_log('get_token START. per_code:' . $per_code . ' sess_id:' . $sess_id,
         __FILE__, __LINE__);
     $token = array();
     $token['per_code'] = $per_code;
@@ -20,16 +20,15 @@ function get_http_token()
 {
     if (AUTH_IN_HEADER) {
         $headers = apache_request_headers();
-        
-        if (!isset($headers['Authorization']))
-        {
-            write_log('JWT auth error: Authorization not set in http header', 
+
+        if (!isset($headers['Authorization'])) {
+            write_log('JWT auth error: Authorization not set in http header',
                 __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
-        
+
         $strs = explode(" ", $headers['Authorization']);
-        
+
         if (!($strs[0] === "Bearer")) {
             write_log('JWT auth error: Authorization type is not Bearer', __FILE__, __LINE__);
             return false;
@@ -38,7 +37,7 @@ function get_http_token()
         // write_log($token, __FILE__, __LINE__);
     } else {
         if (!isset($_GET["token"])) {
-            write_log('JWT auth error: Authorization not set in http request', 
+            write_log('JWT auth error: Authorization not set in http request',
                 __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
@@ -56,8 +55,7 @@ function check_token($token)
 
     try {
         $payload = JWT::decode($token, JWT_SECRET);
-        if (!$payload)
-        {
+        if (!$payload) {
             write_log('JWT::decode failed', __FILE__, __LINE__, LogLevel::ERROR);
             // $output['status'] = false;
             // $output['errors'] = '{"type": "unathenticated"}';
@@ -72,7 +70,7 @@ function check_token($token)
     } catch (SignatureInvalidException $e) {
         write_log('Caught exception: ' . $e->getMessage(), __FILE__, __LINE__, LogLevel::ERROR);
         return false;
-    } 
+    }
 
     return $payload;
 }
