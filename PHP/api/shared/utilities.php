@@ -70,7 +70,8 @@ class Utilities
             $base_item = array();
             foreach ($row as $key => $value) {
                 $lower_key = strtolower($key);
-                if (in_array($lower_key, self::$BOOLEAN_FIELDS[strtoupper($class)])) {
+                if (isset(self::$BOOLEAN_FIELDS[strtoupper($class)]) &&
+                    in_array($lower_key, self::$BOOLEAN_FIELDS[strtoupper($class)])) {
                     if ($value == 1 || $value == 'T') {
                         $base_item[$lower_key] = "true";
                     } else {
