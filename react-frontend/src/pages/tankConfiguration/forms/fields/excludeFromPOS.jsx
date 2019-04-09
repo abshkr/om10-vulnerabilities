@@ -6,18 +6,17 @@ export default class ExcludeFromPOS extends Component {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        excl_from_pds: value.excl_from_pds
+        tank_excl_from_pds: value.tank_excl_from_pds
       });
     }
   }
 
   render() {
-    const { decorator } = this.props;
+    const { decorator, value } = this.props;
+    const checked = !!value && value.tank_excl_from_pds === "true" ? "checked" : "unchecked";
     return (
       <Form.Item>
-        {decorator("excl_from_pds", {
-          initialValue: false
-        })(<Checkbox>Exclude from POS</Checkbox>)}
+        {decorator("tank_excl_from_pds", { valuePropName: checked })(<Checkbox>Exclude from POS</Checkbox>)}
       </Form.Item>
     );
   }

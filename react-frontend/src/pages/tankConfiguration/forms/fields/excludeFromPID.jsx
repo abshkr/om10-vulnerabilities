@@ -6,18 +6,17 @@ export default class ExcludeFromPID extends Component {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        excl_from_pid: value.excl_from_pid
+        tank_excl_from_pid: value.tank_excl_from_pid
       });
     }
   }
 
   render() {
-    const { decorator } = this.props;
+    const { decorator, value } = this.props;
+    const checked = !!value && value.tank_excl_from_pid === "true" ? "checked" : "unchecked";
     return (
       <Form.Item>
-        {decorator("excl_from_pid", {
-          initialValue: false
-        })(<Checkbox>Exclude from PID</Checkbox>)}
+        {decorator("tank_excl_from_pid", { valuePropName: checked })(<Checkbox>Exclude from PID</Checkbox>)}
       </Form.Item>
     );
   }

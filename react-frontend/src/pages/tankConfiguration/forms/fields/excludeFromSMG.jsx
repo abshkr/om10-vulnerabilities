@@ -6,18 +6,19 @@ export default class ExcludeFromSMG extends Component {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        excl_from_special_mv: value.excl_from_special_mv
+        tank_excl_from_special_mv: value.tank_excl_from_special_mv
       });
     }
   }
 
   render() {
-    const { decorator } = this.props;
+    const { decorator, value } = this.props;
+    const checked = !!value && value.tank_excl_from_special_mv === "true" ? "checked" : "unchecked";
     return (
       <Form.Item>
-        {decorator("excl_from_special_mv", {
-          initialValue: false
-        })(<Checkbox>Exclude from Special Movement Gain/Loss</Checkbox>)}
+        {decorator("tank_excl_from_special_mv", { valuePropName: checked })(
+          <Checkbox>Exclude from Special Movement Gain/Loss</Checkbox>
+        )}
       </Form.Item>
     );
   }

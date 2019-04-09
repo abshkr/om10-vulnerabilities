@@ -6,18 +6,20 @@ export default class ExcludeFromStockReports extends Component {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        excl_from_stock_rep: value.excl_from_stock_rep
+        tank_excl_from_stock_rep: value.tank_excl_from_stock_rep
       });
     }
   }
 
   render() {
-    const { decorator } = this.props;
+    const { decorator, value } = this.props;
+    const checked = !!value && value.tank_excl_from_stock_rep === "true" ? "checked" : "unchecked";
+
     return (
       <Form.Item>
-        {decorator("excl_from_stock_rep", {
-          initialValue: false
-        })(<Checkbox>Exclude from Stock Reports</Checkbox>)}
+        {decorator("tank_excl_from_stock_rep", { valuePropName: checked })(
+          <Checkbox>Exclude from Stock Reports</Checkbox>
+        )}
       </Form.Item>
     );
   }
