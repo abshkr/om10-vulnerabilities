@@ -163,10 +163,10 @@ https://10.1.10.66/api/base_prod/delete.php?base_code=TEST3
 
 https://10.1.10.66/api/tank/read.php
 https://10.1.10.66/api/tank/base_list.php
-https://10.1.10.66/api/tank/create.php?tank_bclass_dens_hi=1163.5&tank_name=TEST2&tank_mtol_volume=9988&tank_bclass_dens_lo=838.3127&tank_15_density=777&tank_mtol_percent=12&tank_dtol_volume=9900&tank_code=TEST2&tank_density=998&tank_dtol_percent=11&tank_terminal=TGI&tank_api=27.72&tank_base=2001001&tank_excl_from_stock_rep=1
+https://10.1.10.66/api/tank/create.php?tank_bclass_dens_hi=1163.5&tank_name=TEST2&tank_mtol_volume=9988&tank_bclass_dens_lo=838.3127&tank_15_density=777&tank_mtol_percent=12&tank_dtol_volume=9900&tank_code=TEST2&tank_density=998&tank_dtol_percent=11&tank_terminal=TGI&tank_api=27.72&tank_base=2001001
 
 curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"tank_code\": \"TEST3\", \"tank_name\": \"NAME3\", \"tank_terminal\": \"TGI\" }" https://10.1.10.66/api/tank/create.php
-https://10.1.10.66/api/tank/update.php?tank_bclass_dens_hi=1163.5&tank_name=TEST23&tank_mtol_volume=9988&tank_bclass_dens_lo=838.3127&tank_15_density=778&tank_mtol_percent=11&tank_dtol_volume=9901&tank_code=TEST2&tank_density=998&tank_dtol_percent=11&tank_terminal=TGI&tank_api=27.72&tank_base=2001001&tank_excl_from_stock_rep=1
+https://10.1.10.66/api/tank/update.php?tank_bclass_dens_hi=1163.5&tank_name=TEST23&tank_mtol_volume=9988&tank_bclass_dens_lo=838.3127&tank_15_density=778&tank_mtol_percent=11&tank_dtol_volume=9901&tank_code=TEST2&tank_density=998&tank_dtol_percent=11&tank_terminal=TGI&tank_api=27.72&tank_base=220000130&tank_exc_stckrpt=false
 https://10.1.10.66/api/tank/delete.php?tank_code=TEST2
 
 https://10.1.10.66/api/tank_status/read.php?tank_code=T1
