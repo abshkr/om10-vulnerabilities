@@ -1,7 +1,7 @@
 <?php
 
-include_once '../config/journal.php';
-include_once '../config/log.php';
+include_once '../../config/journal.php';
+include_once '../../config/log.php';
 
 class RefreshTokens 
 {

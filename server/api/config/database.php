@@ -3,9 +3,9 @@ include_once 'log.php';
 include_once 'setups.php';
 include_once 'jwt.php';
 include_once 'jwt_utilities.php';
-include_once '../shared/utilities.php';
+include_once __DIR__ . '/../shared/utilities.php';
 
-class Database 
+class Database
 {
     // specify your own database credentials
     private $host = "localhost";
@@ -23,19 +23,18 @@ class Database
         // echo $this->username;
         // echo $this->password;
         // echo $this->db_name;
-        write_log("Database::__construct. username:" . $this->username . 
+        write_log("Database::__construct. username:" . $this->username .
             " password:" . $this->password . " db_name:" . $this->db_name, __FILE__, __LINE__);
     }
 
     private function getConn()
     {
         $this->conn = oci_connect($this->username, $this->password, $this->db_name, 'AL32UTF8');
-        
-        if (!($this->conn))
-        {
+
+        if (!($this->conn)) {
             $e = oci_error();
             // $this->logError($e);
-            echo("Connect DB failed:" . $e['message']);
+            echo ("Connect DB failed:" . $e['message']);
             write_log("Connect DB failed:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
@@ -48,7 +47,7 @@ class Database
         $this->getConn();
         return $this->conn;
     }
- 
+
     // get the database connection; if auth fails, return null
     public function getConnection()
     {
@@ -63,12 +62,12 @@ class Database
                     write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
                     return null;
                 } else {
-                    if (INVALIDATE_TOKEN_ENABLED && 
+                    if (INVALIDATE_TOKEN_ENABLED &&
                         !$this->checkSessionStatus($token->per_code, $token->sess_id)) {
                         write_log(
                             sprintf(
                                 "Token already invalidated, cannot continue. per_code:%s, sess_id:%s",
-                                $token->per_code, $token->sess_id), 
+                                $token->per_code, $token->sess_id),
                             __FILE__, __LINE__, LogLevel::ERROR);
                         return null;
                     }
@@ -79,7 +78,7 @@ class Database
                     return null;
                 }
             }
-        } 
+        }
         // write_log("getConnection done", __FILE__, __LINE__);
         return $this->conn;
     }
@@ -87,9 +86,9 @@ class Database
     private function checkSessionStatus($per_code, $sess_id)
     {
         $query = "
-            SELECT COUNT(*) CNT FROM HTTP_SESSION_TRACE 
+            SELECT COUNT(*) CNT FROM HTTP_SESSION_TRACE
             WHERE PER_CODE = :per_code AND SESS_ID = :sess_id";
-        
+
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $per_code);
         oci_bind_by_name($stmt, ':sess_id', $sess_id);
@@ -114,15 +113,15 @@ class Database
 
             write_log("sess_id:" . $_SESSION['SESSION'] . ", per_code:" . $_SESSION['PERCODE'],
                 __FILE__, __LINE__);
-        
+
             // write_log("get session. sess_id:" . $sess_id . " per_code:" . $per_code,
             //     __FILE__, __LINE__);
-            
+
             // $lang = strip_tags($_SESSION['LANGUAGE']);
             $query = "
-                SELECT COUNT(*) CNT FROM HTTP_SESSION_TRACE 
+                SELECT COUNT(*) CNT FROM HTTP_SESSION_TRACE
                 WHERE PER_CODE = :per_code AND SESS_ID = :sess_id";
-            
+
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':per_code', $per_code);
             oci_bind_by_name($stmt, ':sess_id', $sess_id);
@@ -136,7 +135,7 @@ class Database
         } else {
             write_log(__METHOD__ . " failed: no session found", __FILE__, __LINE__);
         }
-        
+
         return false;
     }
 }

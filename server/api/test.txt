@@ -1,186 +1,186 @@
-https://10.1.10.66/api/config/getenv.php
+https://10.1.10.66/api/pages/config/getenv.php
 
 //This is the sample of all the php code
-https://10.1.10.66/api/cust_cat/read.php
-https://10.1.10.66/api/cust_cat/create.php?category_code=cat1&category_name=testname
-https://10.1.10.66/api/cust_cat/update.php?category_code=cat1&category_name=testname3
-https://10.1.10.66/api/cust_cat/delete.php?category_code=cat1&category_name=testname3
+https://10.1.10.66/api/pages/cust_cat/read.php
+https://10.1.10.66/api/pages/cust_cat/create.php?category_code=cat1&category_name=testname
+https://10.1.10.66/api/pages/cust_cat/update.php?category_code=cat1&category_name=testname3
+https://10.1.10.66/api/pages/cust_cat/delete.php?category_code=cat1&category_name=testname3
 
-https://10.1.10.66/api/personnel/read.php
-https://10.1.10.66/api/personnel/read_one.php?per_code=cw3
-https://10.1.10.66/api/personnel/search.php?s=cw
-https://10.1.10.66/api/personnel/read_page.php?page=2
-https://10.1.10.66/api/personnel/roles.php
-https://10.1.10.66/api/personnel/employers.php
-https://10.1.10.66/api/personnel/time_codes.php
-https://10.1.10.66/api/personnel/area_accesses.php?per_code=cw3
-https://10.1.10.66/api/personnel/expiry_types.php
-https://10.1.10.66/api/personnel/areas.php
-curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"per_code\": \"cw4\", \"per_name\": \"name3\", \"user_status_flag\": \"2\", \"area_accesses\": [{\"perm_psn\": \"cw4\", \"perm_area\": \"1\", \"area_name\": \"ON_SITE\"},{\"perm_psn\": \"cw4\", \"perm_area\": \"3\", \"area_name\": \"test\"}] }" https://10.1.10.66/api/personnel/create.php
+https://10.1.10.66/api/pages/personnel/read.php
+https://10.1.10.66/api/pages/personnel/read_one.php?per_code=cw3
+https://10.1.10.66/api/pages/personnel/search.php?s=cw
+https://10.1.10.66/api/pages/personnel/read_page.php?page=2
+https://10.1.10.66/api/pages/personnel/roles.php
+https://10.1.10.66/api/pages/personnel/employers.php
+https://10.1.10.66/api/pages/personnel/time_codes.php
+https://10.1.10.66/api/pages/personnel/area_accesses.php?per_code=cw3
+https://10.1.10.66/api/pages/personnel/expiry_types.php
+https://10.1.10.66/api/pages/personnel/areas.php
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"per_code\": \"cw4\", \"per_name\": \"name3\", \"user_status_flag\": \"2\", \"area_accesses\": [{\"perm_psn\": \"cw4\", \"perm_area\": \"1\", \"area_name\": \"ON_SITE\"},{\"perm_psn\": \"cw4\", \"perm_area\": \"3\", \"area_name\": \"test\"}] }" https://10.1.10.66/api/pages/personnel/create.php
 //jason create.php. with expiry dates
-curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"per_code\": \"cw4\", \"per_name\": \"name3\", \"user_status_flag\": \"2\", \"area_accesses\": [{\"perm_psn\": \"cw4\", \"perm_area\": \"1\", \"area_name\": \"ON_SITE\"},{\"perm_psn\": \"cw4\", \"perm_area\": \"3\", \"area_name\": \"test\"}], \"expiry_dates\": [ { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_1\", \"edt_type_desc\": \"DET Expiry1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw4\", \"ed_exp_date\": \"\", \"ed_status\": \"\" }, { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_2\", \"edt_type_desc\": \"Driving Licence\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw4\", \"ed_exp_date\": \"2019-02-28 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_3\", \"edt_type_desc\": \"Medical1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw4\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" } ] }" https://10.1.10.66/api/personnel/create.php
-https://10.1.10.66/api/personnel/update.php?per_email=wei@gmail.com&pt_timecd=AL&perl_ara=9999&per_lock=N&per_auth=3&per_code=cw3&per_level_num=0&user_status_flag=1&per_licence_no=licen&per_name=name2&per_department=dep2&role=3&per_cmpy=68006884&cmpy_code=CAROTINO&per_comments=comment2
-curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"per_code\": \"cw3\", \"per_name\": \"name3\", \"user_status_flag\": \"2\", \"area_accesses\": [{\"perm_psn\": \"cw3\", \"perm_area\": \"1\", \"area_name\": \"ON_SITE\"},{\"perm_psn\": \"cw3\", \"perm_area\": \"3\", \"area_name\": \"test\"}] }" https://10.1.10.66/api/personnel/update.php
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"per_code\": \"cw4\", \"per_name\": \"name3\", \"user_status_flag\": \"2\", \"area_accesses\": [{\"perm_psn\": \"cw4\", \"perm_area\": \"1\", \"area_name\": \"ON_SITE\"},{\"perm_psn\": \"cw4\", \"perm_area\": \"3\", \"area_name\": \"test\"}], \"expiry_dates\": [ { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_1\", \"edt_type_desc\": \"DET Expiry1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw4\", \"ed_exp_date\": \"\", \"ed_status\": \"\" }, { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_2\", \"edt_type_desc\": \"Driving Licence\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw4\", \"ed_exp_date\": \"2019-02-28 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_3\", \"edt_type_desc\": \"Medical1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw4\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" } ] }" https://10.1.10.66/api/pages/personnel/create.php
+https://10.1.10.66/api/pages/personnel/update.php?per_email=wei@gmail.com&pt_timecd=AL&perl_ara=9999&per_lock=N&per_auth=3&per_code=cw3&per_level_num=0&user_status_flag=1&per_licence_no=licen&per_name=name2&per_department=dep2&role=3&per_cmpy=68006884&cmpy_code=CAROTINO&per_comments=comment2
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"per_code\": \"cw3\", \"per_name\": \"name3\", \"user_status_flag\": \"2\", \"area_accesses\": [{\"perm_psn\": \"cw3\", \"perm_area\": \"1\", \"area_name\": \"ON_SITE\"},{\"perm_psn\": \"cw3\", \"perm_area\": \"3\", \"area_name\": \"test\"}] }" https://10.1.10.66/api/pages/personnel/update.php
 //Update personnel, area access control, and expiry dates
-curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"per_code\": \"cw3\", \"per_name\": \"name3\", \"user_status_flag\": \"2\", \"area_accesses\": [{\"perm_psn\": \"cw3\", \"perm_area\": \"1\", \"area_name\": \"ON_SITE\"},{\"perm_psn\": \"cw3\", \"perm_area\": \"3\", \"area_name\": \"test\"}], \"expiry_dates\": [ { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_1\", \"edt_type_desc\": \"DET Expiry1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw3\", \"ed_exp_date\": \"\", \"ed_status\": \"\" }, { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_2\", \"edt_type_desc\": \"Driving Licence\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw3\", \"ed_exp_date\": \"2019-02-28 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_3\", \"edt_type_desc\": \"Medical1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw3\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" } ] }" https://10.1.10.66/api/personnel/update.php
-https://10.1.10.66/api/personnel/delete.php?per_code=cw2
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"per_code\": \"cw3\", \"per_name\": \"name3\", \"user_status_flag\": \"2\", \"area_accesses\": [{\"perm_psn\": \"cw3\", \"perm_area\": \"1\", \"area_name\": \"ON_SITE\"},{\"perm_psn\": \"cw3\", \"perm_area\": \"3\", \"area_name\": \"test\"}], \"expiry_dates\": [ { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_1\", \"edt_type_desc\": \"DET Expiry1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw3\", \"ed_exp_date\": \"\", \"ed_status\": \"\" }, { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_2\", \"edt_type_desc\": \"Driving Licence\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw3\", \"ed_exp_date\": \"2019-02-28 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"PERSONNEL\", \"edt_type_code\": \"PSNL_EXPIRY_DATE_3\", \"edt_type_desc\": \"Medical1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"cw3\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" } ] }" https://10.1.10.66/api/pages/personnel/update.php
+https://10.1.10.66/api/pages/personnel/delete.php?per_code=cw2
 
-https://10.1.10.66/api/on_demand/suppliers.php
-https://10.1.10.66/api/on_demand/carriers.php
-https://10.1.10.66/api/on_demand/customers.php
-https://10.1.10.66/api/on_demand/reports.php?cmpy_code=ANY
-https://10.1.10.66/api/on_demand/filters.php?jasper_file=Alarms.jasper
-https://10.1.10.66/api/on_demand/create.php?output=pdf&company=ANY&report=Drawer_Product.jrxml&startdate=2018-10-17%2021:41:35&enddate=2018-10-18%2021:41:35
-https://10.1.10.66/api/on_demand/closeout_nrs.php
-https://10.1.10.66/api/on_demand/closeout_nrs.php?start_date=2018-10-17%2021:41:35&end_date=2018-10-28%2021:41:35
+https://10.1.10.66/api/pages/on_demand/suppliers.php
+https://10.1.10.66/api/pages/on_demand/carriers.php
+https://10.1.10.66/api/pages/on_demand/customers.php
+https://10.1.10.66/api/pages/on_demand/reports.php?cmpy_code=ANY
+https://10.1.10.66/api/pages/on_demand/filters.php?jasper_file=Alarms.jasper
+https://10.1.10.66/api/pages/on_demand/create.php?output=pdf&company=ANY&report=Drawer_Product.jrxml&startdate=2018-10-17%2021:41:35&enddate=2018-10-18%2021:41:35
+https://10.1.10.66/api/pages/on_demand/closeout_nrs.php
+https://10.1.10.66/api/pages/on_demand/closeout_nrs.php?start_date=2018-10-17%2021:41:35&end_date=2018-10-28%2021:41:35
 
 
-https://10.1.10.66/api/tank_inv/read.php
-https://10.1.10.66/api/prod_inv/read.php
-https://10.1.10.66/api/prod_inv/read.php?unit=US.GAL  can be IMP.GAL/CUBIC/US.GAL/LITRE
+https://10.1.10.66/api/pages/tank_inv/read.php
+https://10.1.10.66/api/pages/prod_inv/read.php
+https://10.1.10.66/api/pages/prod_inv/read.php?unit=US.GAL  can be IMP.GAL/CUBIC/US.GAL/LITRE
 
-https://10.1.10.66/api/site_bal/read.php?unit=US.GAL  can be IMP.GAL/CUBIC/US.GAL/LITRE
+https://10.1.10.66/api/pages/site_bal/read.php?unit=US.GAL  can be IMP.GAL/CUBIC/US.GAL/LITRE
 
-https://10.1.10.66/api/metering/read.php
-https://10.1.10.66/api/metering/read.php?mass_unit=lb&vol_unit=gal.imp
+https://10.1.10.66/api/pages/metering/read.php
+https://10.1.10.66/api/pages/metering/read.php?mass_unit=lb&vol_unit=gal.imp
 //Mass unit could be kg, lb, IMP, ton
 //Vol unit could be litre, m3, gal.imp, gal.us, bbl.imp, bbl.us
 
-https://10.1.10.66/api/time_code/read.php?tcd_title=AL
-https://10.1.10.66/api/time_code/update.php?tcd_title=AL&tcd_mon=16777215&tcd_tue=16777215&tcd_wed=16777215&tcd_thu=16777215&tcd_fri=16777215&tcd_sat=16777215&tcd_sun=16777215
+https://10.1.10.66/api/pages/time_code/read.php?tcd_title=AL
+https://10.1.10.66/api/pages/time_code/update.php?tcd_title=AL&tcd_mon=16777215&tcd_tue=16777215&tcd_wed=16777215&tcd_thu=16777215&tcd_fri=16777215&tcd_sat=16777215&tcd_sun=16777215
 
-https://10.1.10.66/api/logical_printer/read.php
-https://10.1.10.66/api/logical_printer/read.php?prt_cmpy=ANY&prt_usage=0&prt_printer=P01&prt_area=1
-https://10.1.10.66/api/logical_printer/create.php?prt_cmpy=ANY&prt_usage=25&prt_printer=P01
-https://10.1.10.66/api/logical_printer/update.php?prt_cmpy=ANY&prt_usage=25&prt_printer=P02
-https://10.1.10.66/api/logical_printer/delete.php?prt_cmpy=ANY&prt_usage=25&prt_printer=P01
+https://10.1.10.66/api/pages/logical_printer/read.php
+https://10.1.10.66/api/pages/logical_printer/read.php?prt_cmpy=ANY&prt_usage=0&prt_printer=P01&prt_area=1
+https://10.1.10.66/api/pages/logical_printer/create.php?prt_cmpy=ANY&prt_usage=25&prt_printer=P01
+https://10.1.10.66/api/pages/logical_printer/update.php?prt_cmpy=ANY&prt_usage=25&prt_printer=P02
+https://10.1.10.66/api/pages/logical_printer/delete.php?prt_cmpy=ANY&prt_usage=25&prt_printer=P01
 
-https://10.1.10.66/api/physical_printer/read.php
-https://10.1.10.66/api/physical_printer/read.php?prntr=P01&sys_prntr=printer2_rpt&prntr_area=1
-https://10.1.10.66/api/physical_printer/areas.php
-https://10.1.10.66/api/physical_printer/create.php?prntr=P01&sys_prntr=printer2_rpt&prntr_area=2&prntr_lock=Y
-https://10.1.10.66/api/physical_printer/update.php?prntr=P01&sys_prntr=print99&prntr_area=3&prntr_lock=N&area_name=ON_SITE
-https://10.1.10.66/api/physical_printer/delete.php?prntr=P01&sys_prntr=printer2_rpt&prntr_area=2&prntr_lock=Y
+https://10.1.10.66/api/pages/physical_printer/read.php
+https://10.1.10.66/api/pages/physical_printer/read.php?prntr=P01&sys_prntr=printer2_rpt&prntr_area=1
+https://10.1.10.66/api/pages/physical_printer/areas.php
+https://10.1.10.66/api/pages/physical_printer/create.php?prntr=P01&sys_prntr=printer2_rpt&prntr_area=2&prntr_lock=Y
+https://10.1.10.66/api/pages/physical_printer/update.php?prntr=P01&sys_prntr=print99&prntr_area=3&prntr_lock=N&area_name=ON_SITE
+https://10.1.10.66/api/pages/physical_printer/delete.php?prntr=P01&sys_prntr=printer2_rpt&prntr_area=2&prntr_lock=Y
 
-https://10.1.10.66/api/journal/read.php
-https://10.1.10.66/api/journal/read.php?start_num=769504&end_num=769506&region_code=ENG
-https://10.1.10.66/api/journal/current_seq.php
-https://10.1.10.66/api/journal/types.php
-https://10.1.10.66/api/journal/search.php?start_date=2018-11-25%2014:11&end_date=2018-11-26%2014:11&target_str=Log&types=SYSTEM:CONF&start_num=1&end_num=10
+https://10.1.10.66/api/pages/journal/read.php
+https://10.1.10.66/api/pages/journal/read.php?start_num=769504&end_num=769506&region_code=ENG
+https://10.1.10.66/api/pages/journal/current_seq.php
+https://10.1.10.66/api/pages/journal/types.php
+https://10.1.10.66/api/pages/journal/search.php?start_date=2018-11-25%2014:11&end_date=2018-11-26%2014:11&target_str=Log&types=SYSTEM:CONF&start_num=1&end_num=10
 
-https://10.1.10.66/api/idassignment/count.php
-https://10.1.10.66/api/idassignment/read.php
-https://10.1.10.66/api/idassignment/read.php?start_num=5&end_num=10
-https://10.1.10.66/api/idassignment/issuers.php
-https://10.1.10.66/api/idassignment/assignment_types.php
-https://10.1.10.66/api/idassignment/physical_types.php
-https://10.1.10.66/api/idassignment/search.php?tag=EF75
-https://10.1.10.66/api/idassignment/search.php?tanker=BMA85&personnel=988&tag=EF&start_num=1&end_num=10
-https://10.1.10.66/api/idassignment/roles.php
-https://10.1.10.66/api/idassignment/lookup_psn.php
-https://10.1.10.66/api/idassignment/lookup_psn.php?employer=VANCE&role=7
-https://10.1.10.66/api/idassignment/employers.php
-https://10.1.10.66/api/idassignment/kyatxt_list.php
-https://10.1.10.66/api/idassignment/drawers.php
-https://10.1.10.66/api/idassignment/suppliers.php
-https://10.1.10.66/api/idassignment/carriers.php
-https://10.1.10.66/api/idassignment/tankers.php
-https://10.1.10.66/api/idassignment/tankers.php?tnkr_owner=69012483
-https://10.1.10.66/api/idassignment/schedulables.php
-https://10.1.10.66/api/idassignment/schedulables.php?owner=C09852
-https://10.1.10.66/api/idassignment/non_schedulables.php
-https://10.1.10.66/api/idassignment/non_schedulables.php?owner=C09852
-https://10.1.10.66/api/idassignment/create.php?kya_key_no=12346&kya_key_issuer=0005&kya_txt=TTT&kya_phys_type=7&kya_type=8&kya_timecd=AL&kya_lock=N&kya_adhoc=&kya_psn=&kya_role=5&kya_drawer=&kya_tanker=&kya_equipment=109881388&kya_sp_supplier=0005
-https://10.1.10.66/api/idassignment/update.php?kya_key_no=12346&kya_key_issuer=0005&kya_txt=TTD&kya_phys_type=7&kya_type=8&kya_timecd=AL&kya_lock=N&kya_adhoc=&kya_psn=&kya_role=6&kya_drawer=&kya_tanker=&kya_equipment=109881388&kya_sp_supplier=0005&resetpin=off&resetpin=off
-https://10.1.10.66/api/idassignment/delete.php?kya_key_no=12346&kya_key_issuer=0005
+https://10.1.10.66/api/pages/idassignment/count.php
+https://10.1.10.66/api/pages/idassignment/read.php
+https://10.1.10.66/api/pages/idassignment/read.php?start_num=5&end_num=10
+https://10.1.10.66/api/pages/idassignment/issuers.php
+https://10.1.10.66/api/pages/idassignment/assignment_types.php
+https://10.1.10.66/api/pages/idassignment/physical_types.php
+https://10.1.10.66/api/pages/idassignment/search.php?tag=EF75
+https://10.1.10.66/api/pages/idassignment/search.php?tanker=BMA85&personnel=988&tag=EF&start_num=1&end_num=10
+https://10.1.10.66/api/pages/idassignment/roles.php
+https://10.1.10.66/api/pages/idassignment/lookup_psn.php
+https://10.1.10.66/api/pages/idassignment/lookup_psn.php?employer=VANCE&role=7
+https://10.1.10.66/api/pages/idassignment/employers.php
+https://10.1.10.66/api/pages/idassignment/kyatxt_list.php
+https://10.1.10.66/api/pages/idassignment/drawers.php
+https://10.1.10.66/api/pages/idassignment/suppliers.php
+https://10.1.10.66/api/pages/idassignment/carriers.php
+https://10.1.10.66/api/pages/idassignment/tankers.php
+https://10.1.10.66/api/pages/idassignment/tankers.php?tnkr_owner=69012483
+https://10.1.10.66/api/pages/idassignment/schedulables.php
+https://10.1.10.66/api/pages/idassignment/schedulables.php?owner=C09852
+https://10.1.10.66/api/pages/idassignment/non_schedulables.php
+https://10.1.10.66/api/pages/idassignment/non_schedulables.php?owner=C09852
+https://10.1.10.66/api/pages/idassignment/create.php?kya_key_no=12346&kya_key_issuer=0005&kya_txt=TTT&kya_phys_type=7&kya_type=8&kya_timecd=AL&kya_lock=N&kya_adhoc=&kya_psn=&kya_role=5&kya_drawer=&kya_tanker=&kya_equipment=109881388&kya_sp_supplier=0005
+https://10.1.10.66/api/pages/idassignment/update.php?kya_key_no=12346&kya_key_issuer=0005&kya_txt=TTD&kya_phys_type=7&kya_type=8&kya_timecd=AL&kya_lock=N&kya_adhoc=&kya_psn=&kya_role=6&kya_drawer=&kya_tanker=&kya_equipment=109881388&kya_sp_supplier=0005&resetpin=off&resetpin=off
+https://10.1.10.66/api/pages/idassignment/delete.php?kya_key_no=12346&kya_key_issuer=0005
 
-https://10.1.10.66/api/tanker/count.php
-https://10.1.10.66/api/tanker/read.php
-https://10.1.10.66/api/tanker/read.php?start_num=5&end_num=10
-https://10.1.10.66/api/tanker/owners.php
-https://10.1.10.66/api/tanker/carriers.php
-https://10.1.10.66/api/tanker/eqpt_types.php
-https://10.1.10.66/api/tanker/eqpt_types.php?etyp_title=E&cmptnu=8
-https://10.1.10.66/api/tanker/terminal.php
-https://10.1.10.66/api/tanker/search.php?tnkr_code=6689
-https://10.1.10.66/api/tanker/search.php?tnkr_code=6689&tnkr_owner=69002511&tnkr_etp=2400&start_num=1&end_num=10
-https://10.1.10.66/api/tanker/tnkr_composition.php?tnkr_code=TEMP_JJF9077
-https://10.1.10.66/api/tanker/tnkr_compartments.php?tnkr_code=TEMP_JJF9077
-https://10.1.10.66/api/tanker/toggle_lock.php?eqpt_id=111323347&cmptnu=2
-https://10.1.10.66/api/tanker/unlock_all.php?tnkr_code=TEMP_JJF9077
+https://10.1.10.66/api/pages/tanker/count.php
+https://10.1.10.66/api/pages/tanker/read.php
+https://10.1.10.66/api/pages/tanker/read.php?start_num=5&end_num=10
+https://10.1.10.66/api/pages/tanker/owners.php
+https://10.1.10.66/api/pages/tanker/carriers.php
+https://10.1.10.66/api/pages/tanker/eqpt_types.php
+https://10.1.10.66/api/pages/tanker/eqpt_types.php?etyp_title=E&cmptnu=8
+https://10.1.10.66/api/pages/tanker/terminal.php
+https://10.1.10.66/api/pages/tanker/search.php?tnkr_code=6689
+https://10.1.10.66/api/pages/tanker/search.php?tnkr_code=6689&tnkr_owner=69002511&tnkr_etp=2400&start_num=1&end_num=10
+https://10.1.10.66/api/pages/tanker/tnkr_composition.php?tnkr_code=TEMP_JJF9077
+https://10.1.10.66/api/pages/tanker/tnkr_compartments.php?tnkr_code=TEMP_JJF9077
+https://10.1.10.66/api/pages/tanker/toggle_lock.php?eqpt_id=111323347&cmptnu=2
+https://10.1.10.66/api/pages/tanker/unlock_all.php?tnkr_code=TEMP_JJF9077
 tnkr_bay_loop_ch: Bay Check
 tnkr_ntrips: total trips
 tnkr_own_txt: Tanker prompt
-https://10.1.10.66/api/tanker/update.php?tnkr_code=TEMP_JJF9077&tnkr_lock=N&tnkr_active=N&tnkr_max_kg=5000&tnkr_bay_loop_ch=N&tnkr_ntrips=4&tnkr_lic_exp=2016-11-01&tnkr_dglic_exp=&tnkr_ins_exp&stats=&last_trip=223&tnkr_name=TNAME&tnkr_pin=1221&tnkr_archive=N&remarks=NONE&tnkr_owner=68002470&tnkr_own_txt=promp
+https://10.1.10.66/api/pages/tanker/update.php?tnkr_code=TEMP_JJF9077&tnkr_lock=N&tnkr_active=N&tnkr_max_kg=5000&tnkr_bay_loop_ch=N&tnkr_ntrips=4&tnkr_lic_exp=2016-11-01&tnkr_dglic_exp=&tnkr_ins_exp&stats=&last_trip=223&tnkr_name=TNAME&tnkr_pin=1221&tnkr_archive=N&remarks=NONE&tnkr_owner=68002470&tnkr_own_txt=promp
 
 //Update with expiry dates
-curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"tnkr_code\": \"TEMP_JJF9077\", \"tnkr_owner\": \"68002470\", \"tnkr_name\": \"name4\", \"expiry_dates\": [ { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_1\", \"edt_type_desc\": \"Licence Expiry\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"TEMP_JJF9077\", \"ed_exp_date\": \"\", \"ed_status\": \"\" }, { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_2\", \"edt_type_desc\": \"Driving Licence\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"TEMP_JJF9077\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_3\", \"edt_type_desc\": \"Medical1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"TEMP_JJF9077\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" } ] }" https://10.1.10.66/api/tanker/update.php
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"tnkr_code\": \"TEMP_JJF9077\", \"tnkr_owner\": \"68002470\", \"tnkr_name\": \"name4\", \"expiry_dates\": [ { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_1\", \"edt_type_desc\": \"Licence Expiry\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"TEMP_JJF9077\", \"ed_exp_date\": \"\", \"ed_status\": \"\" }, { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_2\", \"edt_type_desc\": \"Driving Licence\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"TEMP_JJF9077\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_3\", \"edt_type_desc\": \"Medical1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"TEMP_JJF9077\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" } ] }" https://10.1.10.66/api/pages/tanker/update.php
 
 eqpt_1: eqpt id. eqpt_count: how many equipment this tanker has
-https://10.1.10.66/api/tanker/update.php?tnkr_code=TEMP_JJF9077&tnkr_lock=N&tnkr_active=N&tnkr_max_kg=5000&tnkr_bay_loop_ch=N&tnkr_ntrips=4&tnkr_lic_exp=2016-11-01&tnkr_dglic_exp=&tnkr_ins_exp&stats=&last_trip=223&tnkr_name=TNAME&tnkr_pin=1221&tnkr_archive=N&remarks=NONE&tnkr_owner=68002470&eqpt_count=2&eqpt_1=141577113
+https://10.1.10.66/api/pages/tanker/update.php?tnkr_code=TEMP_JJF9077&tnkr_lock=N&tnkr_active=N&tnkr_max_kg=5000&tnkr_bay_loop_ch=N&tnkr_ntrips=4&tnkr_lic_exp=2016-11-01&tnkr_dglic_exp=&tnkr_ins_exp&stats=&last_trip=223&tnkr_name=TNAME&tnkr_pin=1221&tnkr_archive=N&remarks=NONE&tnkr_owner=68002470&eqpt_count=2&eqpt_1=141577113
 //Update with tanker composition (tnkr_equips)
-curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"tnkr_code\": \"TEMP_JJF9077\", \"tnkr_owner\": \"68002470\", \"tnkr_name\": \"name4\", \"expiry_dates\": [ { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_1\", \"edt_type_desc\": \"Licence Expiry\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"TEMP_JJF9077\", \"ed_exp_date\": \"\", \"ed_status\": \"\" }, { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_2\", \"edt_type_desc\": \"Driving Licence\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"TEMP_JJF9077\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_3\", \"edt_type_desc\": \"Medical1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"TEMP_JJF9077\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" } ], \"tnkr_equips\": [{\"tc_eqpt\":\"130432982\", \"tc_seqno\":\"1\", \"eqpt_code\": \"0001\"}, {\"tc_eqpt\":\"746850590\", \"tc_seqno\":\"2\", \"eqpt_code\": \"1107\"}] }" https://10.1.10.66/api/tanker/update.php
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"tnkr_code\": \"TEMP_JJF9077\", \"tnkr_owner\": \"68002470\", \"tnkr_name\": \"name4\", \"expiry_dates\": [ { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_1\", \"edt_type_desc\": \"Licence Expiry\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"TEMP_JJF9077\", \"ed_exp_date\": \"\", \"ed_status\": \"\" }, { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_2\", \"edt_type_desc\": \"Driving Licence\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"TEMP_JJF9077\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_3\", \"edt_type_desc\": \"Medical1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"TEMP_JJF9077\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" } ], \"tnkr_equips\": [{\"tc_eqpt\":\"130432982\", \"tc_seqno\":\"1\", \"eqpt_code\": \"0001\"}, {\"tc_eqpt\":\"746850590\", \"tc_seqno\":\"2\", \"eqpt_code\": \"1107\"}] }" https://10.1.10.66/api/pages/tanker/update.php
 
-https://10.1.10.66/api/tanker/etyp_composition.php?etyp_id=2714
-https://10.1.10.66/api/tanker/eqpt_compartments.php?eqpt_id=111323347
-https://10.1.10.66/api/tanker/create.php?tnkr_code=TEST_CW1&tnkr_lock=N&tnkr_own_txt=promp&tnkr_active=N&tnkr_max_kg=5000&tnkr_bay_loop_ch=N&tnkr_ntrips=4&tnkr_lic_exp=2016-11-01&tnkr_dglic_exp=&tnkr_ins_exp&tnkr_etp=8&tnkr_carrier=68006884&stats=&last_trip=223&tnkr_name=TNAME&tnkr_pin=1221&tnkr_archive=N&remarks=NONE&tnkr_owner=68006884&eqpt_count=1&eqpt_1=170787925
-curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"tnkr_code\": \"CW3\", \"tnkr_owner\": \"68002470\", \"tnkr_name\": \"name4\", \"expiry_dates\": [ { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_1\", \"edt_type_desc\": \"Licence Expiry\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"CW3\", \"ed_exp_date\": \"\", \"ed_status\": \"\" }, { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_2\", \"edt_type_desc\": \"Driving Licence\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"CW3\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_3\", \"edt_type_desc\": \"Medical1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"CW3\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" } ], \"tnkr_equips\": [{\"tc_eqpt\":\"130432982\", \"tc_seqno\":\"1\", \"eqpt_code\": \"0001\"}, {\"tc_eqpt\":\"746850590\", \"tc_seqno\":\"2\", \"eqpt_code\": \"1107\"}] }" https://10.1.10.66/api/tanker/create.php
-https://10.1.10.66/api/tanker/delete.php?tnkr_code=TEST
+https://10.1.10.66/api/pages/tanker/etyp_composition.php?etyp_id=2714
+https://10.1.10.66/api/pages/tanker/eqpt_compartments.php?eqpt_id=111323347
+https://10.1.10.66/api/pages/tanker/create.php?tnkr_code=TEST_CW1&tnkr_lock=N&tnkr_own_txt=promp&tnkr_active=N&tnkr_max_kg=5000&tnkr_bay_loop_ch=N&tnkr_ntrips=4&tnkr_lic_exp=2016-11-01&tnkr_dglic_exp=&tnkr_ins_exp&tnkr_etp=8&tnkr_carrier=68006884&stats=&last_trip=223&tnkr_name=TNAME&tnkr_pin=1221&tnkr_archive=N&remarks=NONE&tnkr_owner=68006884&eqpt_count=1&eqpt_1=170787925
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"tnkr_code\": \"CW3\", \"tnkr_owner\": \"68002470\", \"tnkr_name\": \"name4\", \"expiry_dates\": [ { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_1\", \"edt_type_desc\": \"Licence Expiry\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"CW3\", \"ed_exp_date\": \"\", \"ed_status\": \"\" }, { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_2\", \"edt_type_desc\": \"Driving Licence\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"CW3\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"TANKERS\", \"edt_type_code\": \"TNKR_EXPIRY_DATE_3\", \"edt_type_desc\": \"Medical1\", \"ed_cmpy_code\": \"69012483\", \"ed_object_id\": \"CW3\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" } ], \"tnkr_equips\": [{\"tc_eqpt\":\"130432982\", \"tc_seqno\":\"1\", \"eqpt_code\": \"0001\"}, {\"tc_eqpt\":\"746850590\", \"tc_seqno\":\"2\", \"eqpt_code\": \"1107\"}] }" https://10.1.10.66/api/pages/tanker/create.php
+https://10.1.10.66/api/pages/tanker/delete.php?tnkr_code=TEST
 
 
-https://10.1.10.66/api/equipment/count.php
-https://10.1.10.66/api/equipment/read.php
-https://10.1.10.66/api/equipment/areas.php
-https://10.1.10.66/api/equipment/expiry_types.php
-https://10.1.10.66/api/equipment/owners.php
-https://10.1.10.66/api/equipment/eqpt_types.php
-https://10.1.10.66/api/equipment/eqpt_types.php?etyp_title=E&cmptnu=8
-https://10.1.10.66/api/equipment/search.php?eqpt_code=NDE
-https://10.1.10.66/api/equipment/search.php?eqpt_code=NDE&eqpt_owner=69002511&eqpt_etp=2400&start_num=1&end_num=10
-https://10.1.10.66/api/equipment/load_types.php
-https://10.1.10.66/api/equipment/compartments.php?eqpt_id=486357
-https://10.1.10.66/api/equipment/toggle_lock.php?eqpt_id=486357&cmptnu=1
-https://10.1.10.66/api/equipment/update.php?eqpt_id=992816774&eqpt_title=TAH7768&eqpt_area=1&eqpt_load_type=B&eqpt_empty_kg=233&pull_limit=344&eqpt_comments=comments&eqpt_lock=Y&eqp_must_tare_in=Y&EQPT_EXPIRY_DATE_1=2028-10-28%2021:41:36
+https://10.1.10.66/api/pages/equipment/count.php
+https://10.1.10.66/api/pages/equipment/read.php
+https://10.1.10.66/api/pages/equipment/areas.php
+https://10.1.10.66/api/pages/equipment/expiry_types.php
+https://10.1.10.66/api/pages/equipment/owners.php
+https://10.1.10.66/api/pages/equipment/eqpt_types.php
+https://10.1.10.66/api/pages/equipment/eqpt_types.php?etyp_title=E&cmptnu=8
+https://10.1.10.66/api/pages/equipment/search.php?eqpt_code=NDE
+https://10.1.10.66/api/pages/equipment/search.php?eqpt_code=NDE&eqpt_owner=69002511&eqpt_etp=2400&start_num=1&end_num=10
+https://10.1.10.66/api/pages/equipment/load_types.php
+https://10.1.10.66/api/pages/equipment/compartments.php?eqpt_id=486357
+https://10.1.10.66/api/pages/equipment/toggle_lock.php?eqpt_id=486357&cmptnu=1
+https://10.1.10.66/api/pages/equipment/update.php?eqpt_id=992816774&eqpt_title=TAH7768&eqpt_area=1&eqpt_load_type=B&eqpt_empty_kg=233&pull_limit=344&eqpt_comments=comments&eqpt_lock=Y&eqp_must_tare_in=Y&EQPT_EXPIRY_DATE_1=2028-10-28%2021:41:36
 
-https://10.1.10.66/api/equipment/update.php?eqpt_id=845044&eqpt_title=TAH7768&eqpt_area=1&eqpt_load_type=B&eqpt_empty_kg=233&pull_limit=344&eqpt_comments=comments&eqpt_lock=Y&eqp_must_tare_in=Y&cmpt_count=6&sched_limit1=5501&sfl1=150001&sched_limit2=5502&sfl2=150002&sched_limit3=5503&sfl3=150001&sched_limit4=5504&sfl4=150004&sched_limit5=5505&sfl5=150001&sched_limit6=5506&sfl6=150001
-curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"eqpt_id\": \"992816775\", \"eqpt_code\": \"CW3\", \"eqpt_title\": \"CW33\", \"eqpt_area\":\"9999\", \"eqpt_owner\":\"0010\", \"eqpt_etp\":\"2500\", \"expiry_dates\": [ { \"edt_target_code\": \"TRANSP_EQUIP\", \"edt_type_code\": \"EQPT_EXPIRY_DATE_1\", \"edt_type_desc\": \"Road Tax Expiry\", \"ed_cmpy_code\": \"VANCE\", \"ed_object_id\": \"992816774\", \"ed_exp_date\": \"2017-06-07 00:00:00:00000\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"TRANSP_EQUIP\", \"edt_type_code\": \"EQPT_EXPIRY_DATE_2\", \"edt_type_desc\": \"Puspakom Expiry\", \"ed_cmpy_code\": \"VANCE\", \"ed_object_id\": \"992816774\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"TRANSP_EQUIP\", \"edt_type_code\": \"EQPT_EXPIRY_DATE_3\", \"edt_type_desc\": \"SPAD\", \"ed_cmpy_code\": \"VANCE\", \"ed_object_id\": \"992816774\", \"ed_exp_date\": \"2019-02-25 23:59:59:86399\", \"ed_status\": \"1\" } ], \"compartments\" : [{\"cmpt_no\": \"1\", \"safefill\": \"15000\", \"safefill_unit\": \"l (amb)\", \"sfl\": \"15000\",\"sfl_unit\": \"(L)\", \"adj_cmpt_lock\": \"0\"},{\"cmpt_no\": \"2\",\"safefill\": \"15000\",\"safefill_unit\": \"l (amb)\",\"sfl\": \"15000\",\"sfl_unit\": \"(L)\",\"adj_cmpt_lock\": \"0\"},{\"cmpt_no\": \"3\",\"safefill\": \"15000\",\"safefill_unit\": \"l (amb)\",\"sfl\": \"15000\",\"sfl_unit\": \"(L)\",\"adj_cmpt_lock\": \"0\"},{\"cmpt_no\": \"4\",\"safefill\": \"15000\",\"safefill_unit\": \"l (amb)\",\"sfl\": \"15000\",\"sfl_unit\": \"(L)\",\"adj_cmpt_lock\": \"0\"},{\"cmpt_no\": \"5\",\"safefill\": \"15000\",\"safefill_unit\": \"l (amb)\",\"sfl\": \"15000\",\"sfl_unit\": \"(L)\",\"adj_cmpt_lock\": \"0\"}] }" https://10.1.10.66/api/equipment/update.php
+https://10.1.10.66/api/pages/equipment/update.php?eqpt_id=845044&eqpt_title=TAH7768&eqpt_area=1&eqpt_load_type=B&eqpt_empty_kg=233&pull_limit=344&eqpt_comments=comments&eqpt_lock=Y&eqp_must_tare_in=Y&cmpt_count=6&sched_limit1=5501&sfl1=150001&sched_limit2=5502&sfl2=150002&sched_limit3=5503&sfl3=150001&sched_limit4=5504&sfl4=150004&sched_limit5=5505&sfl5=150001&sched_limit6=5506&sfl6=150001
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"eqpt_id\": \"992816775\", \"eqpt_code\": \"CW3\", \"eqpt_title\": \"CW33\", \"eqpt_area\":\"9999\", \"eqpt_owner\":\"0010\", \"eqpt_etp\":\"2500\", \"expiry_dates\": [ { \"edt_target_code\": \"TRANSP_EQUIP\", \"edt_type_code\": \"EQPT_EXPIRY_DATE_1\", \"edt_type_desc\": \"Road Tax Expiry\", \"ed_cmpy_code\": \"VANCE\", \"ed_object_id\": \"992816774\", \"ed_exp_date\": \"2017-06-07 00:00:00:00000\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"TRANSP_EQUIP\", \"edt_type_code\": \"EQPT_EXPIRY_DATE_2\", \"edt_type_desc\": \"Puspakom Expiry\", \"ed_cmpy_code\": \"VANCE\", \"ed_object_id\": \"992816774\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"TRANSP_EQUIP\", \"edt_type_code\": \"EQPT_EXPIRY_DATE_3\", \"edt_type_desc\": \"SPAD\", \"ed_cmpy_code\": \"VANCE\", \"ed_object_id\": \"992816774\", \"ed_exp_date\": \"2019-02-25 23:59:59:86399\", \"ed_status\": \"1\" } ], \"compartments\" : [{\"cmpt_no\": \"1\", \"safefill\": \"15000\", \"safefill_unit\": \"l (amb)\", \"sfl\": \"15000\",\"sfl_unit\": \"(L)\", \"adj_cmpt_lock\": \"0\"},{\"cmpt_no\": \"2\",\"safefill\": \"15000\",\"safefill_unit\": \"l (amb)\",\"sfl\": \"15000\",\"sfl_unit\": \"(L)\",\"adj_cmpt_lock\": \"0\"},{\"cmpt_no\": \"3\",\"safefill\": \"15000\",\"safefill_unit\": \"l (amb)\",\"sfl\": \"15000\",\"sfl_unit\": \"(L)\",\"adj_cmpt_lock\": \"0\"},{\"cmpt_no\": \"4\",\"safefill\": \"15000\",\"safefill_unit\": \"l (amb)\",\"sfl\": \"15000\",\"sfl_unit\": \"(L)\",\"adj_cmpt_lock\": \"0\"},{\"cmpt_no\": \"5\",\"safefill\": \"15000\",\"safefill_unit\": \"l (amb)\",\"sfl\": \"15000\",\"sfl_unit\": \"(L)\",\"adj_cmpt_lock\": \"0\"}] }" https://10.1.10.66/api/pages/equipment/update.php
 
-https://10.1.10.66/api/equipment/etyp_compartments.php?etyp_id=1300
-//https://10.1.10.66/api/equipment/create.php?eqpt_code=TT3&eqpt_title=TT3&eqpt_owner=68002470&eqpt_etp=1300&eqpt_area=1&eqpt_load_type=B&eqpt_empty_kg=234&pull_limit=344&eqpt_comments=comments&eqpt_lock=Y&eqp_must_tare_in=Y&EQPT_EXPIRY_DATE_1=2028-10-28%2021:41:35
-curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"eqpt_code\": \"CW3\", \"eqpt_title\": \"CW3\", \"eqpt_area\":\"9999\", \"eqpt_owner\":\"0010\", \"eqpt_etp\":\"2500\", \"expiry_dates\": [ { \"edt_target_code\": \"TRANSP_EQUIP\", \"edt_type_code\": \"EQPT_EXPIRY_DATE_1\", \"edt_type_desc\": \"Road Tax Expiry\", \"ed_cmpy_code\": \"VANCE\", \"ed_object_id\": \"\", \"ed_exp_date\": \"2017-06-07 00:00:00:00000\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"TRANSP_EQUIP\", \"edt_type_code\": \"EQPT_EXPIRY_DATE_2\", \"edt_type_desc\": \"Puspakom Expiry\", \"ed_cmpy_code\": \"VANCE\", \"ed_object_id\": \"\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"TRANSP_EQUIP\", \"edt_type_code\": \"EQPT_EXPIRY_DATE_3\", \"edt_type_desc\": \"SPAD\", \"ed_cmpy_code\": \"VANCE\", \"ed_object_id\": \"\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" } ] }" https://10.1.10.66/api/equipment/create.php
+https://10.1.10.66/api/pages/equipment/etyp_compartments.php?etyp_id=1300
+//https://10.1.10.66/api/pages/equipment/create.php?eqpt_code=TT3&eqpt_title=TT3&eqpt_owner=68002470&eqpt_etp=1300&eqpt_area=1&eqpt_load_type=B&eqpt_empty_kg=234&pull_limit=344&eqpt_comments=comments&eqpt_lock=Y&eqp_must_tare_in=Y&EQPT_EXPIRY_DATE_1=2028-10-28%2021:41:35
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"eqpt_code\": \"CW3\", \"eqpt_title\": \"CW3\", \"eqpt_area\":\"9999\", \"eqpt_owner\":\"0010\", \"eqpt_etp\":\"2500\", \"expiry_dates\": [ { \"edt_target_code\": \"TRANSP_EQUIP\", \"edt_type_code\": \"EQPT_EXPIRY_DATE_1\", \"edt_type_desc\": \"Road Tax Expiry\", \"ed_cmpy_code\": \"VANCE\", \"ed_object_id\": \"\", \"ed_exp_date\": \"2017-06-07 00:00:00:00000\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"TRANSP_EQUIP\", \"edt_type_code\": \"EQPT_EXPIRY_DATE_2\", \"edt_type_desc\": \"Puspakom Expiry\", \"ed_cmpy_code\": \"VANCE\", \"ed_object_id\": \"\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" }, { \"edt_target_code\": \"TRANSP_EQUIP\", \"edt_type_code\": \"EQPT_EXPIRY_DATE_3\", \"edt_type_desc\": \"SPAD\", \"ed_cmpy_code\": \"VANCE\", \"ed_object_id\": \"\", \"ed_exp_date\": \"2019-02-24 23:59:59:86399\", \"ed_status\": \"1\" } ] }" https://10.1.10.66/api/pages/equipment/create.php
 
-//https://10.1.10.66/api/equipment/create.php?eqpt_code=TT6&eqpt_title=TT6&eqpt_owner=68002470&eqpt_etp=1300&eqpt_area=1&eqpt_load_type=B&eqpt_empty_kg=234&pull_limit=344&eqpt_comments=comments&eqpt_lock=Y&eqp_must_tare_in=Y&cmpt_count=3&sched_limit1=5501&sfl1=150001&sched_limit2=5502&sfl2=150002&sched_limit3=5503&sfl3=150001
-https://10.1.10.66/api/equipment/delete.php?eqpt_id=992816750
+//https://10.1.10.66/api/pages/equipment/create.php?eqpt_code=TT6&eqpt_title=TT6&eqpt_owner=68002470&eqpt_etp=1300&eqpt_area=1&eqpt_load_type=B&eqpt_empty_kg=234&pull_limit=344&eqpt_comments=comments&eqpt_lock=Y&eqp_must_tare_in=Y&cmpt_count=3&sched_limit1=5501&sfl1=150001&sched_limit2=5502&sfl2=150002&sched_limit3=5503&sfl3=150001
+https://10.1.10.66/api/pages/equipment/delete.php?eqpt_id=992816750
 
-https://10.1.10.66/api/base_prod/read.php
-https://10.1.10.66/api/base_prod/prod_groups.php
-https://10.1.10.66/api/base_prod/base_classes.php
-https://10.1.10.66/api/base_prod/ref_temp_specs.php
-https://10.1.10.66/api/base_prod/corr_mthds.php
-https://10.1.10.66/api/base_prod/create.php?base_color=#038465&base_name=TEST3&base_prod_group=COMPLIES&base_corr_mthd=1&base_ref_temp=15&base_dens_hi=837.3126&base_dens_lo=788.5196&base_cat=1&base_ref_tunt=0&base_limit_preset_ht=0&base_ref_temp_spec=1&base_code=TEST3
-https://10.1.10.66/api/base_prod/update.php?base_color=#038465&base_name=TEST31&base_prod_group=COMPLIES&base_corr_mthd=1&base_ref_temp=15&base_dens_hi=831.3126&base_dens_lo=798.5196&base_cat=1&base_ref_tunt=0&base_limit_preset_ht=0&base_ref_temp_spec=1&base_code=TEST3
-https://10.1.10.66/api/base_prod/delete.php?base_code=TEST3
+https://10.1.10.66/api/pages/base_prod/read.php
+https://10.1.10.66/api/pages/base_prod/prod_groups.php
+https://10.1.10.66/api/pages/base_prod/base_classes.php
+https://10.1.10.66/api/pages/base_prod/ref_temp_specs.php
+https://10.1.10.66/api/pages/base_prod/corr_mthds.php
+https://10.1.10.66/api/pages/base_prod/create.php?base_color=#038465&base_name=TEST3&base_prod_group=COMPLIES&base_corr_mthd=1&base_ref_temp=15&base_dens_hi=837.3126&base_dens_lo=788.5196&base_cat=1&base_ref_tunt=0&base_limit_preset_ht=0&base_ref_temp_spec=1&base_code=TEST3
+https://10.1.10.66/api/pages/base_prod/update.php?base_color=#038465&base_name=TEST31&base_prod_group=COMPLIES&base_corr_mthd=1&base_ref_temp=15&base_dens_hi=831.3126&base_dens_lo=798.5196&base_cat=1&base_ref_tunt=0&base_limit_preset_ht=0&base_ref_temp_spec=1&base_code=TEST3
+https://10.1.10.66/api/pages/base_prod/delete.php?base_code=TEST3
 
-https://10.1.10.66/api/tank/read.php
-https://10.1.10.66/api/tank/base_list.php
-https://10.1.10.66/api/tank/create.php?tank_bclass_dens_hi=1163.5&tank_name=TEST2&tank_mtol_volume=9988&tank_bclass_dens_lo=838.3127&tank_15_density=777&tank_mtol_percent=12&tank_dtol_volume=9900&tank_code=TEST2&tank_density=998&tank_dtol_percent=11&tank_terminal=TGI&tank_api=27.72&tank_base=2001001
+https://10.1.10.66/api/pages/tank/read.php
+https://10.1.10.66/api/pages/tank/base_list.php
+https://10.1.10.66/api/pages/tank/create.php?tank_bclass_dens_hi=1163.5&tank_name=TEST2&tank_mtol_volume=9988&tank_bclass_dens_lo=838.3127&tank_15_density=777&tank_mtol_percent=12&tank_dtol_volume=9900&tank_code=TEST2&tank_density=998&tank_dtol_percent=11&tank_terminal=TGI&tank_api=27.72&tank_base=2001001
 
-curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"tank_code\": \"TEST3\", \"tank_name\": \"NAME3\", \"tank_terminal\": \"TGI\" }" https://10.1.10.66/api/tank/create.php
-https://10.1.10.66/api/tank/update.php?tank_bclass_dens_hi=1163.5&tank_name=TEST23&tank_mtol_volume=9988&tank_bclass_dens_lo=838.3127&tank_15_density=778&tank_mtol_percent=11&tank_dtol_volume=9901&tank_code=TEST2&tank_density=998&tank_dtol_percent=11&tank_terminal=TGI&tank_api=27.72&tank_base=220000130&tank_exc_stckrpt=false
-https://10.1.10.66/api/tank/delete.php?tank_code=TEST2
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"tank_code\": \"TEST3\", \"tank_name\": \"NAME3\", \"tank_terminal\": \"TGI\" }" https://10.1.10.66/api/pages/tank/create.php
+https://10.1.10.66/api/pages/tank/update.php?tank_bclass_dens_hi=1163.5&tank_name=TEST23&tank_mtol_volume=9988&tank_bclass_dens_lo=838.3127&tank_15_density=778&tank_mtol_percent=11&tank_dtol_volume=9901&tank_code=TEST2&tank_density=998&tank_dtol_percent=11&tank_terminal=TGI&tank_api=27.72&tank_base=220000130&tank_exc_stckrpt=false
+https://10.1.10.66/api/pages/tank/delete.php?tank_code=TEST2
 
-https://10.1.10.66/api/tank_status/read.php?tank_code=T1
-https://10.1.10.66/api/tank_status/areas.php
-https://10.1.10.66/api/tank_status/status_types.php
-https://10.1.10.66/api/tank_status/gauge_methods.php 
-https://10.1.10.66/api/tank_status/calc_tank_qty.php?tank_base=400003030&tank_qty_type=LT&tank_qty_amount=3400&tank_temp=31.3&tank_density=748		//"Calculate Quantity" button
-https://10.1.10.66/api/tank_status/calc_tank_qty.php?tank_base=400003030&tank_qty_type=KG&tank_qty_amount=19000&tank_temp=31.3&tank_density=748
-https://10.1.10.66/api/tank_status/calc_tank_qty_bylevel.php?tank_base=400003030&tank_qty_type=LT&tank_qty_amount=19000&tank_temp=31.3&tank_density=748&tank_prod_lvl=700&tank_code=T1&tank_terminal=TGI    //"Calculate Quantity by Level" button
-https://10.1.10.66/api/tank_status/update_status.php?tank_terminal=TGI&tank_code=T1&tank_base=400003030&tank_lvl_alarm=0&tank_leakdtct_on=N&tank_bclass_dens_lo=620.6&tank_bclass_dens_hi=760.352&tank_location=&tank_density=746.2&tank_prod_c_of_e=0&tank_liquid_kg=556&tank_prod_lvl=700&tank_temp=31.3&tank_amb_vol=760&tank_cor_vol=745&tank_gaugingmthd=1&tank_group=MOGAS&tank_hh_level=43&tank_ullage=122&tank_l_level=32&tank_flashpoint=29.02&tank_api=56.81&tank_sulphur=9&tank_leakdtct_on=N&tank_uh_level=54&tank_15_density=746.2&tank_ll_level=31&tank_h_level=42&tank_status=2&tank_ul_level=43
-https://10.1.10.66/api/tank_status/update_gauge.php?tank_instance=56&tank_drv_type=23&tank_channel=43&tank_address=65&tank_drv_aux=32&tank_code=T1&tank_identifier=T1&tank_terminal=TGI&tank_poll_gap=119&tank_identifier=10
+https://10.1.10.66/api/pages/tank_status/read.php?tank_code=T1
+https://10.1.10.66/api/pages/tank_status/areas.php
+https://10.1.10.66/api/pages/tank_status/status_types.php
+https://10.1.10.66/api/pages/tank_status/gauge_methods.php 
+https://10.1.10.66/api/pages/tank_status/calc_tank_qty.php?tank_base=400003030&tank_qty_type=LT&tank_qty_amount=3400&tank_temp=31.3&tank_density=748		//"Calculate Quantity" button
+https://10.1.10.66/api/pages/tank_status/calc_tank_qty.php?tank_base=400003030&tank_qty_type=KG&tank_qty_amount=19000&tank_temp=31.3&tank_density=748
+https://10.1.10.66/api/pages/tank_status/calc_tank_qty_bylevel.php?tank_base=400003030&tank_qty_type=LT&tank_qty_amount=19000&tank_temp=31.3&tank_density=748&tank_prod_lvl=700&tank_code=T1&tank_terminal=TGI    //"Calculate Quantity by Level" button
+https://10.1.10.66/api/pages/tank_status/update_status.php?tank_terminal=TGI&tank_code=T1&tank_base=400003030&tank_lvl_alarm=0&tank_leakdtct_on=N&tank_bclass_dens_lo=620.6&tank_bclass_dens_hi=760.352&tank_location=&tank_density=746.2&tank_prod_c_of_e=0&tank_liquid_kg=556&tank_prod_lvl=700&tank_temp=31.3&tank_amb_vol=760&tank_cor_vol=745&tank_gaugingmthd=1&tank_group=MOGAS&tank_hh_level=43&tank_ullage=122&tank_l_level=32&tank_flashpoint=29.02&tank_api=56.81&tank_sulphur=9&tank_leakdtct_on=N&tank_uh_level=54&tank_15_density=746.2&tank_ll_level=31&tank_h_level=42&tank_status=2&tank_ul_level=43
+https://10.1.10.66/api/pages/tank_status/update_gauge.php?tank_instance=56&tank_drv_type=23&tank_channel=43&tank_address=65&tank_drv_aux=32&tank_code=T1&tank_identifier=T1&tank_terminal=TGI&tank_poll_gap=119&tank_identifier=10
 
-https://10.1.10.66/api/tank_strap/read.php
-https://10.1.10.66/api/tank_strap/read.php?strap_tankcode=T1&start_height=700		//search
-https://10.1.10.66/api/tank_strap/create.php?strap_height=900&strap_volume=990&strap_tankcode=T1&strap_sitecode=TGI
-https://10.1.10.66/api/tank_strap/update.php?strap_height=900&strap_volume=991&strap_tankcode=T1
-https://10.1.10.66/api/tank_strap/delete.php?strap_height=900&strap_tankcode=T1
+https://10.1.10.66/api/pages/tank_strap/read.php
+https://10.1.10.66/api/pages/tank_strap/read.php?strap_tankcode=T1&start_height=700		//search
+https://10.1.10.66/api/pages/tank_strap/create.php?strap_height=900&strap_volume=990&strap_tankcode=T1&strap_sitecode=TGI
+https://10.1.10.66/api/pages/tank_strap/update.php?strap_height=900&strap_volume=991&strap_tankcode=T1
+https://10.1.10.66/api/pages/tank_strap/delete.php?strap_height=900&strap_tankcode=T1

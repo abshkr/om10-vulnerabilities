@@ -1,7 +1,7 @@
 <?php
 
-include_once '../config/log.php';
-include_once '../config/database.php';
+include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../config/database.php';
 
 class Utilities
 {
@@ -16,13 +16,13 @@ class Utilities
 
     //"Y" means VARCHAR in db, Y/N.
     //"T" means VARCHAR in db, T/F
-    //"1" means NUMBER in DB, 1/0  
+    //"1" means NUMBER in DB, 1/0
     private static $BOOLEAN_FIELDS = array(
         "TANK" => array(
             "tank_exc_pid" => "Y",
-            "tank_exc_pds" =>  "Y",
-            "tank_exc_spmv" =>  "Y",
-            "tank_exc_stckrpt" =>  "Y",
+            "tank_exc_pds" => "Y",
+            "tank_exc_spmv" => "Y",
+            "tank_exc_stckrpt" => "Y",
         ),
     );
 
@@ -277,21 +277,27 @@ class Utilities
         if (isset(self::$BOOLEAN_FIELDS[strtoupper($class)]) &&
             array_key_exists($lower_key, self::$BOOLEAN_FIELDS[strtoupper($class)])) {
             if (self::$BOOLEAN_FIELDS[strtoupper($class)][$lower_key] === 'Y') {
-                if ($value)
+                if ($value) {
                     $object->{$key} = 'Y';
-                else 
+                } else {
                     $object->{$key} = 'N';
+                }
+
             } else if (self::$BOOLEAN_FIELDS[strtoupper($class)][$lower_key] === 'T') {
-                if ($value)
+                if ($value) {
                     $object->{$key} = 'T';
-                else 
+                } else {
                     $object->{$key} = 'F';
+                }
+
             } else if (self::$BOOLEAN_FIELDS[strtoupper($class)][$lower_key] === '1') {
-                if ($value)
+                if ($value) {
                     $object->{$key} = 1;
-                else 
+                } else {
                     $object->{$key} = 0;
-            } 
+                }
+
+            }
         }
     }
 
