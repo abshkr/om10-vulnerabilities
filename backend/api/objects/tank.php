@@ -192,10 +192,10 @@ class Tank
                 :tank_mtol_volume,
                 :tank_mtol_percent,
                 :tank_15_density,
-                :tank_excl_from_pid,
-                :tank_excl_from_pds,
-                :tank_excl_from_special_mv,
-                :tank_excl_from_stock_rep
+                :tank_exc_pid,
+                :tank_exc_pds,
+                :tank_exc_spmv,
+                :tank_exc_stckrpt
                 )";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tank_name', $this->tank_name);
@@ -209,10 +209,10 @@ class Tank
         oci_bind_by_name($stmt, ':tank_mtol_percent', $this->tank_mtol_percent);
         oci_bind_by_name($stmt, ':tank_api', $this->tank_api);
         oci_bind_by_name($stmt, ':tank_15_density', $this->tank_15_density);
-        oci_bind_by_name($stmt, ':tank_excl_from_pid', $this->tank_excl_from_pid);
-        oci_bind_by_name($stmt, ':tank_excl_from_pds', $this->tank_excl_from_pds);
-        oci_bind_by_name($stmt, ':tank_excl_from_special_mv', $this->tank_excl_from_special_mv);
-        oci_bind_by_name($stmt, ':tank_excl_from_stock_rep', $this->tank_excl_from_stock_rep);
+        oci_bind_by_name($stmt, ':tank_exc_pid', $this->tank_exc_pid);
+        oci_bind_by_name($stmt, ':tank_exc_pds', $this->tank_exc_pds);
+        oci_bind_by_name($stmt, ':tank_exc_spmv', $this->tank_exc_spmv);
+        oci_bind_by_name($stmt, ':tank_exc_stckrpt', $this->tank_exc_stckrpt);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -269,10 +269,10 @@ class Tank
             $this->tank_terminal = $row['TERM_CODE'];
         }
 
-        $this->tank_excl_from_pid = (isset($this->tank_excl_from_pid) && $this->tank_excl_from_pid ? 1 : 0);
-        $this->tank_excl_from_pds = (isset($this->tank_excl_from_pds) && $this->tank_excl_from_pds ? 1 : 0);
-        $this->tank_excl_from_special_mv = (isset($this->tank_excl_from_special_mv) && $this->tank_excl_from_special_mv ? 1 : 0);
-        $this->tank_excl_from_stock_rep = (isset($this->tank_excl_from_stock_rep) && $this->tank_excl_from_stock_rep ? 1 : 0);
+        // $this->tank_excl_from_pid = (isset($this->tank_excl_from_pid) && $this->tank_excl_from_pid ? 'Y' : 'N');
+        // $this->tank_excl_from_pds = (isset($this->tank_excl_from_pds) && $this->tank_excl_from_pds ? 'Y' : 'N');
+        // $this->tank_excl_from_special_mv = (isset($this->tank_excl_from_special_mv) && $this->tank_excl_from_special_mv ? 'Y' : 'N');
+        // $this->tank_excl_from_stock_rep = (isset($this->tank_excl_from_stock_rep) && $this->tank_excl_from_stock_rep ? 'Y' : 'N');
 
         $query = "
             UPDATE TANKS
@@ -286,10 +286,10 @@ class Tank
                 TANK_MONTHLY_TOL_VOL = :tank_mtol_volume,
                 TANK_MONTHLY_TOL_PERCENT = :tank_mtol_percent,
                 TANK_15_DENSITY = :tank_15_density,
-                TANK_EXCL_FROM_PID = :tank_excl_from_pid,
-                TANK_EXCL_FROM_PDS = :tank_excl_from_pds,
-                TANK_EXCL_FROM_SPECIAL_MV = :tank_excl_from_special_mv,
-                TANK_EXCL_FROM_STOCK_REP = :tank_excl_from_stock_rep
+                TANK_EXC_PID = :tank_exc_pid,
+                TANK_EXC_PDS = :tank_exc_pds,
+                TANK_EXC_SPMV = :tank_exc_spmv,
+                TANK_EXC_STCKRPT = :tank_exc_stckrpt
             WHERE TANK_CODE = :tank_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tank_name', $this->tank_name);
@@ -303,10 +303,10 @@ class Tank
         oci_bind_by_name($stmt, ':tank_mtol_percent', $this->tank_mtol_percent);
         oci_bind_by_name($stmt, ':tank_api', $this->tank_api);
         oci_bind_by_name($stmt, ':tank_15_density', $this->tank_15_density);
-        oci_bind_by_name($stmt, ':tank_excl_from_pid', $this->tank_excl_from_pid);
-        oci_bind_by_name($stmt, ':tank_excl_from_pds', $this->tank_excl_from_pds);
-        oci_bind_by_name($stmt, ':tank_excl_from_special_mv', $this->tank_excl_from_special_mv);
-        oci_bind_by_name($stmt, ':tank_excl_from_stock_rep', $this->tank_excl_from_stock_rep);
+        oci_bind_by_name($stmt, ':tank_exc_pid', $this->tank_exc_pid);
+        oci_bind_by_name($stmt, ':tank_exc_pds', $this->tank_exc_pds);
+        oci_bind_by_name($stmt, ':tank_exc_spmv', $this->tank_exc_spmv);
+        oci_bind_by_name($stmt, ':tank_exc_stckrpt', $this->tank_exc_stckrpt);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
