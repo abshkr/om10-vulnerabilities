@@ -4,10 +4,10 @@ import { Form, Checkbox } from "antd";
 export default class ExcludeFromPID extends Component {
   render() {
     const { decorator, value } = this.props;
-    const state = !!value && value.tank_excl_from_pid === "true" ? true : false;
+    const state = !!value && value.tank_exc_pid;
     return (
       <Form.Item>
-        {decorator("tank_excl_from_pid", { valuePropName: "checked", initialValue: state })(
+        {decorator("tank_exc_pid", { valuePropName: "checked", initialValue: state })(
           <Checkbox>Exclude from PID</Checkbox>
         )}
       </Form.Item>

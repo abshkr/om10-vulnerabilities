@@ -57,6 +57,10 @@ class TankConfiguration extends Component {
   };
 
   getTanks = () => {
+    this.setState({
+      isLoading: true
+    });
+
     axios
       .all([tanks.readTanks(), baseProducts.readBaseProduct()])
       .then(

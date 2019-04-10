@@ -44,6 +44,11 @@ class TankConfigurationForm extends Component {
               description: "Failed to create the Tank."
             });
           });
+      } else {
+        notification.error({
+          message: "Validation Failed.",
+          description: "Make sure all the fields meet the requirements."
+        });
       }
     });
   };
@@ -69,6 +74,11 @@ class TankConfigurationForm extends Component {
               description: "Failed to update the Tank."
             });
           });
+      } else {
+        notification.error({
+          message: "Validation Failed.",
+          description: "Make sure all the fields meet the requirements."
+        });
       }
     });
   };
