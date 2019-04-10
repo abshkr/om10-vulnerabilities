@@ -1,12 +1,12 @@
 <?php
 
-include_once __DIR__  . '/../config/journal.php';
-include_once __DIR__  . '/../config/log.php';
-include_once __DIR__  . '/../shared/utilities.php';
+include_once __DIR__ . '/../config/journal.php';
+include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../shared/utilities.php';
 
 class Base
 {
-	// database connection and table name
+    // database connection and table name
     private $conn;
 
     // constructor with $db as database connection
@@ -16,7 +16,7 @@ class Base
     }
 
     //Give a simple list of base product
-    function simple_list()
+    public function simple_list()
     {
         // if (!isset($this->end_num)) {
         //     $this->start_num = 1;
@@ -29,7 +29,7 @@ class Base
             SELECT BASE_CODE,
                 BASE_NAME
             FROM BASE_PRODS
-            ORDER BY BASE_CODE";        
+            ORDER BY BASE_CODE";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             return $stmt;
@@ -39,11 +39,10 @@ class Base
         }
     }
 
-
     //Because base cannot be too many, do not do limit
     //Old sample from amf BaseProductService.php::getPaged():
     // "base_code":"TEST","base_name":"TESTNAME","base_prod_group":"COMPLIES","base_group_name":"Subject to Fuel Standard with Compliance","base_cat":"1","base_class_desc":"Jet Fuels\/Kerosines","base_rpt_tunt":null,"base_rpt_temp":null,"base_dens_lo":"789.5195","base_dens_hi":"811.3127","base_color":"#40FE76","base_adtv":"0","base_text":"TEST - TESTNAME","base_desc":"TEST - TESTNAME (Jet Fuels\/Kerosines) ","base_class_dens_lo":"787.5195","base_class_dens_hi":"838.3127","base_class_vcf_alg":"2","base_class_temp_lo":"-50","base_class_temp_hi":"150","base_tank_count":null,"base_tank_list":null,"base_ref_temp":"15","base_ref_tunt":"0","base_limit_preset_ht":"0","base_corr_mthd":"0","base_ref_temp_spec":"1","base_ref_tunt_name":"C","base_corr_mthd_name":"UNSPECIFIED","base_ref_temp_spec_name":"COMPENSTN_PT","rn":"32"
-    function read()
+    public function read()
     {
         // if (!isset($this->end_num)) {
         //     $this->start_num = 1;
@@ -113,14 +112,14 @@ class Base
             WHERE
                 ((SYS_CONTEXT('CONN_CONTEXT', 'CMPYCODE') IS NULL)
                     OR (SYS_CONTEXT('CONN_CONTEXT', 'ISMANAGER') = 'Y')
-                    OR (SYS_CONTEXT('CONN_CONTEXT', 'ISMANAGER') IS NULL) 
+                    OR (SYS_CONTEXT('CONN_CONTEXT', 'ISMANAGER') IS NULL)
                 )
                 AND BP.BASE_CAT = BC.BCLASS_NO
                 AND BP.BASE_PROD_GROUP = BG.PGR_CODE(+)
                 AND BP.BASE_CODE = BT.TANK_BASE(+)
                 AND BP.BASE_REF_TUNT = UV.UNIT_ID(+)
                 AND BP.BASE_CORR_MTHD = CM.COMPENSATION_ID(+)
-                AND BP.BASE_REF_TEMP_SPEC = RTS.REF_TEMP_SPEC_ID(+)";        
+                AND BP.BASE_REF_TEMP_SPEC = RTS.REF_TEMP_SPEC_ID(+)";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             return $stmt;
@@ -132,7 +131,7 @@ class Base
 
     public function create()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__), 
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
         Utilities::sanitize($this);
@@ -178,7 +177,7 @@ class Base
         oci_bind_by_name($stmt, ':base_limit_preset_ht', $this->base_limit_preset_ht);
         oci_bind_by_name($stmt, ':base_ref_temp_spec', $this->base_ref_temp_spec);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
-        
+
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -186,11 +185,11 @@ class Base
         }
 
         $query = "
-            INSERT INTO GENERIC_PROD (GEN_PROD_CODE) 
+            INSERT INTO GENERIC_PROD (GEN_PROD_CODE)
             VALUES (:base_code)";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
-        
+
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -202,16 +201,16 @@ class Base
                 PROD_CODE,
                 PROD_NAME,
                 PROD_CMPY,
-                PROD_CLASS) 
-            VALUES( 
-                :base_code, 
-                :base_name, 
-                'BaSePrOd', 
+                PROD_CLASS)
+            VALUES(
+                :base_code,
+                :base_name,
+                'BaSePrOd',
                 :base_code
             )";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
-        oci_bind_by_name($stmt, ':base_name', $this->base_name);        
+        oci_bind_by_name($stmt, ':base_name', $this->base_name);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -223,11 +222,11 @@ class Base
                 RATIO_BASE,
                 RATIO_VALUE,
                 RAT_PROD_PRODCMPY,
-                RAT_PROD_PRODCODE) 
-            VALUES( 
-                :base_code, 
-                '1', 
-                'BaSePrOd', 
+                RAT_PROD_PRODCODE)
+            VALUES(
+                :base_code,
+                '1',
+                'BaSePrOd',
                 :base_code)";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
@@ -248,15 +247,14 @@ class Base
 
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
-        $jnl_data[0] = $curr_psn; 
+        $jnl_data[0] = $curr_psn;
         $jnl_data[1] = "Base product";
         $jnl_data[2] = $this->base_code;
         $jnl_data[3] = sprintf(
             "name:%s, group:%s", $this->base_name, $this->base_prod_group);
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -268,13 +266,13 @@ class Base
 
     public function update()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__), 
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
         Utilities::sanitize($this);
 
         $query = "
-            SELECT *    
+            SELECT *
             FROM BASE_PRODS
             WHERE BASE_CODE = :base_code";
         $stmt = oci_parse($this->conn, $query);
@@ -311,7 +309,7 @@ class Base
         oci_bind_by_name($stmt, ':base_ref_tunt', $this->base_ref_tunt);
         oci_bind_by_name($stmt, ':base_limit_preset_ht', $this->base_limit_preset_ht);
         oci_bind_by_name($stmt, ':base_ref_temp_spec', $this->base_ref_temp_spec);
-        oci_bind_by_name($stmt, ':base_code', $this->base_code);        
+        oci_bind_by_name($stmt, ':base_code', $this->base_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -319,12 +317,12 @@ class Base
         }
 
         $query = "
-            UPDATE PRODUCTS 
-            SET PROD_NAME = :base_name 
+            UPDATE PRODUCTS
+            SET PROD_NAME = :base_name
             WHERE PROD_CODE = :base_code AND PROD_CMPY = 'BaSePrOd'";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base_name', $this->base_name);
-        oci_bind_by_name($stmt, ':base_code', $this->base_code);        
+        oci_bind_by_name($stmt, ':base_code', $this->base_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -342,20 +340,19 @@ class Base
 
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
-        $jnl_data[0] = $curr_psn; 
+        $jnl_data[0] = $curr_psn;
         $jnl_data[1] = "Base product";
         $jnl_data[2] = $this->base_code;
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
 
         $query = "
-            SELECT *    
+            SELECT *
             FROM BASE_PRODS
             WHERE BASE_CODE = :base_code";
         $stmt = oci_parse($this->conn, $query);
@@ -368,7 +365,7 @@ class Base
 
         $module = "BASE_PRODS";
         $record = sprintf("code:%s", $this->base_code);
-        
+
         if (!$journal->updateChanges($row, $row2, $module, $record)) {
             oci_rollback($this->conn);
             return false;
@@ -380,24 +377,24 @@ class Base
 
     public function delete()
     {
-        write_log(sprintf("%s::%s() START. base_code:%s", __CLASS__, __FUNCTION__, $this->base_code), 
+        write_log(sprintf("%s::%s() START. base_code:%s", __CLASS__, __FUNCTION__, $this->base_code),
             __FILE__, __LINE__);
 
         Utilities::sanitize($this);
 
         $query = "
-            DELETE FROM RATIOS 
-            WHERE RATIO_BASE = :base_code 
+            DELETE FROM RATIOS
+            WHERE RATIO_BASE = :base_code
                 AND RAT_PROD_PRODCMPY = 'BaSePrOd'";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {            
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
 
         $query = "
-            DELETE FROM PRODUCTS 
+            DELETE FROM PRODUCTS
             WHERE PROD_CODE = :base_code AND PROD_CMPY='BaSePrOd'";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
@@ -438,13 +435,12 @@ class Base
 
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
-        $jnl_data[0] = $curr_psn; 
+        $jnl_data[0] = $curr_psn;
         $jnl_data[1] = "Base product";
         $jnl_data[2] = $this->base_code;
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;

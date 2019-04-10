@@ -1,14 +1,14 @@
 <?php
 
 /**
-* Windows CURL:
-* C:\Users\bluet>curl -i "http://10.2.20.53/api/logout.php" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6Ijk5OTkiLCJleHAiOjE1MzcwMjQ1NTUsInNlc3NfaWQiOiJOZFdnamFMUkVvZ1cifQ.R2L6Q4KzlAOU2JoLxoXV5_3NNCpPGvqGCpLkdxzbk2Q"
-*/
+ * Windows CURL:
+ * C:\Users\bluet>curl -i "http://10.2.20.53/api/logout.php" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6Ijk5OTkiLCJleHAiOjE1MzcwMjQ1NTUsInNlc3NfaWQiOiJOZFdnamFMUkVvZ1cifQ.R2L6Q4KzlAOU2JoLxoXV5_3NNCpPGvqGCpLkdxzbk2Q"
+ */
 
 // required headers
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
- 
+
 // include database and object files
 include_once './config/database.php';
 include_once './config/log.php';
@@ -38,8 +38,7 @@ if (!$payload) {
     }
 }
 
-
-$url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'].'/cgi-bin/en/logout.cgi';
+$url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/logout.cgi';
 $clientip = $_SERVER['REMOTE_ADDR'];
 $langcode = isset($data->lang) ? isset($data->lang) : 'ENG';
 
@@ -47,10 +46,10 @@ $langcode = isset($data->lang) ? isset($data->lang) : 'ENG';
 $data = array('sess_id' => $payload->sess_id, 'usr' => $payload->per_code);
 $options = array(
     'http' => array(
-    'header'  => "Content-type: text/xml\r\n",
-    'method'  => 'POST',
-    'content' => http_build_query($data)
-    )
+        'header' => "Content-type: text/xml\r\n",
+        'method' => 'POST',
+        'content' => http_build_query($data),
+    ),
 );
 $context = stream_context_create($options);
 // create request to CGI

@@ -1,13 +1,13 @@
 <?php
 
-include_once __DIR__  . '/../config/journal.php';
-include_once __DIR__  . '/../config/log.php';
-include_once __DIR__  . '/../shared/utilities.php';
-include_once __DIR__  . '/../config/setups.php';
+include_once __DIR__ . '/../config/journal.php';
+include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../config/setups.php';
 
 class TankStrap
 {
-	// database connection and table name
+    // database connection and table name
     private $conn;
 
     // constructor with $db as database connection
@@ -19,7 +19,7 @@ class TankStrap
     //[{"strap_height":"500","strap_volume":"550","strap_tankcode":"T1","strap_tankname":"T1","strap_sitecode":"TGI","strap_sitename":"Shell TanjungGelang","strap_basecode":"400003030","strap_basename":"U95 BASE","strap_baseclass":"2","strap_bsclsname":"Gasolines","strap_tanklevel":"8807"}]
     // function read()
     // {
-    //     write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__), 
+    //     write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__),
     //         __FILE__, __LINE__);
 
     //     Utilities::sanitize($this);
@@ -37,10 +37,10 @@ class TankStrap
     //             TANK_BCLASS_NAME AS STRAP_BSCLSNAME,
     //             TANK_PROD_LVL AS STRAP_TANKLEVEL
     //         FROM STRAPS, GUI_TANKS
-    //         WHERE 
+    //         WHERE
     //             STR_TK_TANKCODE = TANK_CODE
     //             AND STR_TK_TANKDEPO = TANK_TERMINAL
-    //         ORDER BY STRAP_TANKCODE, STRAP_SITECODE, STRAP_HEIGHT";        
+    //         ORDER BY STRAP_TANKCODE, STRAP_SITECODE, STRAP_HEIGHT";
     //     $stmt = oci_parse($this->conn, $query);
     //     if (oci_execute($stmt)) {
     //         return $stmt;
@@ -51,9 +51,9 @@ class TankStrap
     // }
 
     //[{"strap_height":"500","strap_volume":"550","strap_tankcode":"T1","strap_tankname":"T1","strap_sitecode":"TGI","strap_sitename":"Shell TanjungGelang","strap_basecode":"400003030","strap_basename":"U95 BASE","strap_baseclass":"2","strap_bsclsname":"Gasolines","strap_tanklevel":"8807"}]
-    function read()
+    public function read()
     {
-        write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__), 
+        write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
         Utilities::sanitize($this);
@@ -71,7 +71,7 @@ class TankStrap
                 TANK_BCLASS_NAME AS STRAP_BSCLSNAME,
                 TANK_PROD_LVL AS STRAP_TANKLEVEL
             FROM STRAPS, GUI_TANKS
-            WHERE 
+            WHERE
                 STR_TK_TANKCODE = TANK_CODE
                 AND STR_TK_TANKDEPO = TANK_TERMINAL";
 
@@ -85,8 +85,8 @@ class TankStrap
             $query = $query . " AND STRAP_HEIGHT >= :end_height ";
         }
 
-        $query = $query . " ORDER BY STRAP_TANKCODE, STRAP_SITECODE, STRAP_HEIGHT"; 
-        // write_log($query, __FILE__, __LINE__); 
+        $query = $query . " ORDER BY STRAP_TANKCODE, STRAP_SITECODE, STRAP_HEIGHT";
+        // write_log($query, __FILE__, __LINE__);
         $stmt = oci_parse($this->conn, $query);
         if (isset($this->strap_tankcode)) {
             oci_bind_by_name($stmt, ':strap_tankcode', $this->strap_tankcode);
@@ -107,28 +107,28 @@ class TankStrap
 
     public function create()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__), 
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
         Utilities::sanitize($this);
 
         $query = "
-            INSERT INTO STRAPS ( 
-                STRAP_HEIGHT, 
-                STRAP_VOL, 
-                STR_TK_TANKCODE, 
-                STR_TK_TANKDEPO ) 
-            VALUES ( 
-                :strap_height, 
-                :strap_volume, 
-                :strap_tankcode, 
+            INSERT INTO STRAPS (
+                STRAP_HEIGHT,
+                STRAP_VOL,
+                STR_TK_TANKCODE,
+                STR_TK_TANKDEPO )
+            VALUES (
+                :strap_height,
+                :strap_volume,
+                :strap_tankcode,
                 :strap_sitecode
             )";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':strap_height', $this->strap_height);
         oci_bind_by_name($stmt, ':strap_volume', $this->strap_volume);
         oci_bind_by_name($stmt, ':strap_tankcode', $this->strap_tankcode);
-        oci_bind_by_name($stmt, ':strap_sitecode', $this->strap_sitecode);        
+        oci_bind_by_name($stmt, ':strap_sitecode', $this->strap_sitecode);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -137,14 +137,13 @@ class TankStrap
 
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
-        $jnl_data[0] = $curr_psn; 
+        $jnl_data[0] = $curr_psn;
         $jnl_data[1] = "Tank strap";
         $jnl_data[2] = $this->strap_tankcode;
         $jnl_data[3] = sprintf("height:%d", $this->strap_height);
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -156,19 +155,19 @@ class TankStrap
 
     public function update()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__), 
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
         Utilities::sanitize($this);
 
         $query = "
-            SELECT STRAP_VOL AS STRAP_VOLUME FROM STRAPS 
+            SELECT STRAP_VOL AS STRAP_VOLUME FROM STRAPS
             WHERE STR_TK_TANKCODE = :strap_tankcode AND STRAP_HEIGHT = :strap_height";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':strap_height', $this->strap_height);
-        oci_bind_by_name($stmt, ':strap_tankcode', $this->strap_tankcode);        
+        oci_bind_by_name($stmt, ':strap_tankcode', $this->strap_tankcode);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);            
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
@@ -189,13 +188,12 @@ class TankStrap
 
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
-        $jnl_data[0] = $curr_psn; 
+        $jnl_data[0] = $curr_psn;
         $jnl_data[1] = "Tank strap";
         $jnl_data[2] = $this->strap_tankcode;
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -204,7 +202,7 @@ class TankStrap
         $module = "Tank strap";
         $record = sprintf("tank code:%s, height:%d", $this->strap_tankcode, $this->strap_height);
         foreach ($this as $key => $value) {
-            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] && 
+            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
                 !$journal->valueChange(
                     $module, $record, $key, $row[strtoupper($key)], $value)) {
                 oci_rollback($this->conn);
@@ -221,27 +219,26 @@ class TankStrap
         Utilities::sanitize($this);
 
         $query = "
-            DELETE FROM STRAPS 
-            WHERE STR_TK_TANKCODE = :strap_tankcode 
+            DELETE FROM STRAPS
+            WHERE STR_TK_TANKCODE = :strap_tankcode
                AND STRAP_HEIGHT = :strap_height ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':strap_height', $this->strap_height);
         oci_bind_by_name($stmt, ':strap_tankcode', $this->strap_tankcode);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {            
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
-        }        
+        }
 
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
-        $jnl_data[0] = $curr_psn; 
+        $jnl_data[0] = $curr_psn;
         $jnl_data[1] = "Tank strap";
         $jnl_data[2] = sprintf("tank code:%s, height:%d", $this->strap_tankcode, $this->strap_height);
         $jnl_data[3] = "";
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;

@@ -1,13 +1,13 @@
 <?php
 
-include_once __DIR__  . '/../config/journal.php';
-include_once __DIR__  . '/../config/log.php';
-include_once __DIR__  . '/../shared/utilities.php';
-include_once __DIR__  . '/../objects/expiry_date.php';
-include_once __DIR__  . '/../objects/expiry_type.php';
+include_once __DIR__ . '/../config/journal.php';
+include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../objects/expiry_date.php';
+include_once __DIR__ . '/../objects/expiry_type.php';
 
 class Tanker
-{   
+{
     // database connection and table name
     private $conn;
 
@@ -21,22 +21,22 @@ class Tanker
         $this->conn = $db;
     }
 
-    function count()
+    public function count()
     {
         $query = "
             SELECT COUNT(*) CN
-            FROM GUI_TANKERS";        
+            FROM GUI_TANKERS";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-            return (int)$row['CN'];
+            return (int) $row['CN'];
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return 0;
         }
     }
 
-    function read()
+    public function read()
     {
         if (!isset($this->end_num)) {
             $this->start_num = 1;
@@ -47,7 +47,7 @@ class Tanker
 
         $query = "
             SELECT *
-            FROM 
+            FROM
             (
                 SELECT RES.*, ROWNUM RN
                 FROM
@@ -58,7 +58,7 @@ class Tanker
                 ) RES
             )
             WHERE RN >= :start_num
-                AND RN <= :end_num";        
+                AND RN <= :end_num";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':start_num', $this->start_num);
         oci_bind_by_name($stmt, ':end_num', $this->end_num);
@@ -71,14 +71,14 @@ class Tanker
     }
 
     //Actually it is carriers
-    function owners()
+    public function owners()
     {
         $query = "
             SELECT CMPY_CODE, CMPY_NAME
-            FROM GUI_COMPANYS 
+            FROM GUI_COMPANYS
             WHERE BITAND(CMPY_TYPE, POWER(2, 2)) != 0
             ORDER BY CMPY_NAME ASC";
-            
+
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             return $stmt;
@@ -92,7 +92,7 @@ class Tanker
     {
         // write_log(json_encode($this), __FILE__, __LINE__, LogLevel::ERROR);
         Utilities::sanitize($this);
-        
+
         $query = "
             SELECT COUNT(*) CN
                     FROM GUI_TANKERS
@@ -100,12 +100,12 @@ class Tanker
 
         if (isset($this->tnkr_owner)) {
             $query = $query . " AND TNKR_OWNER = :tnkr_owner ";
-        } 
+        }
 
         if (isset($this->tnkr_etp)) {
             $query = $query . " AND TNKR_ETP = :tnkr_etp ";
         }
-                        
+
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
         if (isset($this->tnkr_owner)) {
@@ -116,17 +116,17 @@ class Tanker
         }
         if (oci_execute($stmt)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-            return (int)$row['CN'];
+            return (int) $row['CN'];
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return 0;
         }
-    } 
+    }
 
     public function search()
     {
         $this->tnkr_code = isset($this->tnkr_code) ? '%' . $this->tnkr_code . '%' : '%';
-        
+
         if (!isset($this->end_num)) {
             $this->start_num = 1;
             $this->end_num = $this->searchCount();
@@ -158,11 +158,11 @@ class Tanker
                 TNKR_ARCHIVE,
                 TNKR_NTRIPS,
                 TNKR_OWN_TXT,
-                DECODE(TNKR_LIC_EXP, NULL, '', 
+                DECODE(TNKR_LIC_EXP, NULL, '',
                     TO_CHAR(TNKR_LIC_EXP, 'YYYY-MM-DD')) AS TNKR_LIC_EXP,
-                DECODE(TNKR_DGLIC_EXP, NULL, '', 
+                DECODE(TNKR_DGLIC_EXP, NULL, '',
                     TO_CHAR(TNKR_DGLIC_EXP, 'YYYY-MM-DD')) AS TNKR_DGLIC_EXP,
-                DECODE(TNKR_INS_EXP, NULL, '', 
+                DECODE(TNKR_INS_EXP, NULL, '',
                     TO_CHAR(TNKR_INS_EXP, 'YYYY-MM-DD')) AS TNKR_INS_EXP,
                 TNKR_STATS,
                 TNKR_LAST_TRIP,
@@ -171,7 +171,7 @@ class Tanker
                 ETYP_CATEGORY,
                 TNKR_LAST_MODIFIED,
                 TNKR_LAST_USED
-            FROM 
+            FROM
             (
                 SELECT RES.*, ROWNUM RN
                 FROM
@@ -182,18 +182,18 @@ class Tanker
 
         if (isset($this->tnkr_owner)) {
             $query = $query . " AND TNKR_OWNER = :tnkr_owner ";
-        } 
+        }
 
         if (isset($this->tnkr_etp)) {
             $query = $query . " AND TNKR_ETP = :tnkr_etp ";
         }
-                        
-        $query = $query . "                
+
+        $query = $query . "
                     ORDER BY TNKR_CODE
                 ) RES
             )
             WHERE RN >= :start_num
-                AND RN <= :end_num";        
+                AND RN <= :end_num";
         $stmt = oci_parse($this->conn, $query);
 
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
@@ -216,16 +216,16 @@ class Tanker
     public function eqptCount($tnkr_code)
     {
         Utilities::sanitize($this);
-        
+
         $query = "
             SELECT COUNT(*) CN
             FROM TNKR_EQUIP
-            WHERE TC_TANKER = :tnkr_code";            
+            WHERE TC_TANKER = :tnkr_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
         if (oci_execute($stmt)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-            return (int)$row['CN'];
+            return (int) $row['CN'];
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return 0;
@@ -235,8 +235,8 @@ class Tanker
     public function composition($tnkr_code)
     {
         $query = "
-            SELECT TC_EQPT, 
-                TC_SEQNO, 
+            SELECT TC_EQPT,
+                TC_SEQNO,
                 EQPT_CODE,
                 EQPT_TITLE,
                 EQPT_OWNER,
@@ -254,14 +254,14 @@ class Tanker
                 EQPT_COMMENTS,
                 NVL(CMPT_COUNT, 0) CMPT_COUNT
             FROM TNKR_EQUIP, TRANSP_EQUIP, EQUIP_TYPES,
-                (SELECT COUNT(*) CMPT_COUNT, CMPT_ETYP 
+                (SELECT COUNT(*) CMPT_COUNT, CMPT_ETYP
                 FROM COMPARTMENT GROUP BY CMPT_ETYP)
-            WHERE TC_TANKER = :tnkr_code 
+            WHERE TC_TANKER = :tnkr_code
                 AND TC_EQPT = EQPT_ID
                 AND EQPT_ETP = ETYP_ID
                 AND EQPT_ETP = CMPT_ETYP(+)
             ORDER BY TC_SEQNO";
-            
+
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
         if (oci_execute($stmt)) {
@@ -275,16 +275,16 @@ class Tanker
     public function compartmentCount($tnkr_code)
     {
         $query = "
-              SELECT COUNT(*) CN 
+              SELECT COUNT(*) CN
               FROM COMPARTMENT, TNKR_EQUIP, TRANSP_EQUIP
-              WHERE COMPARTMENT.CMPT_ETYP = TRANSP_EQUIP.EQPT_ETP 
+              WHERE COMPARTMENT.CMPT_ETYP = TRANSP_EQUIP.EQPT_ETP
                   AND TC_EQPT = TRANSP_EQUIP.EQPT_ID
-                  AND TC_TANKER = :tnkr_code";            
+                  AND TC_TANKER = :tnkr_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
         if (oci_execute($stmt)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-            return (int)$row['CN'];
+            return (int) $row['CN'];
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return 0;
@@ -294,22 +294,22 @@ class Tanker
     public function unlockCompartments($tnkr_code)
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__), __FILE__, __LINE__);
-        
+
         $query = "
-            UPDATE SFILL_ADJUST SET ADJ_CMPT_LOCK = 0 
-            WHERE ADJ_EQP IN 
+            UPDATE SFILL_ADJUST SET ADJ_CMPT_LOCK = 0
+            WHERE ADJ_EQP IN
             (SELECT TC_EQPT FROM TNKR_EQUIP WHERE TC_TANKER = :tnkr_code)";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
-        
+
         if (!oci_execute($stmt)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
 
         $journal = new Journal($this->conn, true);
-        $jnl_data[0] = sprintf("%s unlocked all compartments in tanker [%s]", 
-            Utilities::getCurrPsn(), $tnkr_code); 
+        $jnl_data[0] = sprintf("%s unlocked all compartments in tanker [%s]",
+            Utilities::getCurrPsn(), $tnkr_code);
         if (!$journal->jnlLogEvent(
             Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -327,9 +327,9 @@ class Tanker
                 DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS
             FROM
                 (
-                SELECT TC_TANKER, TC_SEQNO, EQPT_ID, EQPT_CODE, EQPT_ETP, CMPT_NO, 
+                SELECT TC_TANKER, TC_SEQNO, EQPT_ID, EQPT_CODE, EQPT_ETP, CMPT_NO,
                     CMPT_UNITS,
-                    ROW_NUMBER() OVER 
+                    ROW_NUMBER() OVER
                     (PARTITION BY TC_TANKER ORDER BY TC_TANKER, TC_SEQNO, CMPT_NO) AS TNKR_CMPT_NO,
                     CMPT_CAPACIT
                 FROM TNKR_EQUIP, TRANSP_EQUIP, COMPARTMENT
@@ -338,7 +338,7 @@ class Tanker
                 ) TNKR_CMPT_INFO, SFILL_ADJUST
             WHERE TNKR_CMPT_INFO.EQPT_ID = SFILL_ADJUST.ADJ_EQP(+)
             AND TNKR_CMPT_INFO.CMPT_NO = SFILL_ADJUST.ADJ_CMPT(+)
-            ORDER BY TNKR_CMPT_NO";            
+            ORDER BY TNKR_CMPT_NO";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
         if (oci_execute($stmt)) {
@@ -351,11 +351,11 @@ class Tanker
 
     public function create($eqpts = null)
     {
-        write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code), 
+        write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code),
             __FILE__, __LINE__);
 
         Utilities::sanitize($this);
-        
+
         $term_code = null;
         $query = "
             SELECT TERM_CODE
@@ -363,7 +363,7 @@ class Tanker
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-            $term_code = $row['TERM_CODE'];                    
+            $term_code = $row['TERM_CODE'];
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
@@ -395,7 +395,7 @@ class Tanker
                 TNKR_MAX_KG,
                 REMARKS
             )
-            VALUES 
+            VALUES
             (
                 :tnkr_code,
                 :tnkr_name,
@@ -449,7 +449,7 @@ class Tanker
         }
 
         foreach ($this->tnkr_equips as $key => $value) {
-            $query = "INSERT INTO TNKR_EQUIP (TC_TANKER, TC_EQPT, TC_SEQNO) 
+            $query = "INSERT INTO TNKR_EQUIP (TC_TANKER, TC_EQPT, TC_SEQNO)
                 VALUES (:tnkr_code, :tc_eqpt, :tc_seqno)";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
@@ -457,7 +457,7 @@ class Tanker
             oci_bind_by_name($stmt, ':tc_seqno', $value->tc_seqno);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                 write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                oci_rollback($this->conn);;
+                oci_rollback($this->conn);
                 return false;
             }
         }
@@ -472,7 +472,7 @@ class Tanker
         }
         // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
         if (!$expiry_date->create($expiry_dates)) {
-            write_log("Failed to update expiry dates", 
+            write_log("Failed to update expiry dates",
                 __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -502,12 +502,11 @@ class Tanker
 
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
-        $jnl_data[0] = $curr_psn; 
+        $jnl_data[0] = $curr_psn;
         $jnl_data[1] = $this->tnkr_code;
         $jnl_data[2] = $this->tnkr_owner;
         if (!$journal->jnlLogEvent(
-            Lookup::TMM_TANKER_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::TMM_TANKER_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             oci_rollback($this->conn);
             return false;
         }
@@ -516,9 +515,9 @@ class Tanker
         return true;
     }
 
-    public function delete() 
+    public function delete()
     {
-        write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code), 
+        write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code),
             __FILE__, __LINE__);
 
         $tnkr_owner = null;
@@ -531,12 +530,11 @@ class Tanker
         if (oci_execute($stmt)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             $tnkr_owner = $row['TNKR_OWNER'];
-            if (strtoupper($row['TNKR_ACTIVE']) == 'Y')
-            {
-                write_log("Tanker is active, cannot delete it.", 
+            if (strtoupper($row['TNKR_ACTIVE']) == 'Y') {
+                write_log("Tanker is active, cannot delete it.",
                     __FILE__, __LINE__, LogLevel::ERROR);
                 $this->err_msg = "Tanker is active, cannot delete it.";
-            }         
+            }
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
@@ -587,12 +585,11 @@ class Tanker
 
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
-        $jnl_data[0] = $curr_psn; 
+        $jnl_data[0] = $curr_psn;
         $jnl_data[1] = $this->tnkr_code;
         $jnl_data[2] = $tnkr_owner;
         if (!$journal->jnlLogEvent(
-            Lookup::TMM_TANKER_DEL, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::TMM_TANKER_DEL, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             oci_rollback($this->conn);
             return false;
         }
@@ -603,9 +600,9 @@ class Tanker
 
     public function update($eqpts = null)
     {
-        write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code), 
+        write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code),
             __FILE__, __LINE__);
-        
+
         Utilities::sanitize($this);
 
         $tnkr_lock = null;
@@ -616,8 +613,8 @@ class Tanker
         $tnkr_max_kg = null;
         $tnkr_bay_loop_ch = null;
         $tnkr_ntrips = null;
-        $tnkr_own_txt = null; 
-        $tnkr_lic_exp = null; 
+        $tnkr_own_txt = null;
+        $tnkr_lic_exp = null;
         $tnkr_dglic_exp = null;
         $tnkr_ins_exp = null;
         $stats = null;
@@ -628,7 +625,7 @@ class Tanker
         $remarks = null;
 
         $query = "
-            SELECT *       
+            SELECT *
             FROM GUI_TANKERS
             WHERE TNKR_CODE = :tnkr_code";
         $stmt = oci_parse($this->conn, $query);
@@ -670,7 +667,7 @@ class Tanker
                 TNKR_NAME = :tnkr_name,
                 TNKR_PIN = :tnkr_pin,
                 TNKR_ARCHIVE = :tnkr_archive,
-                REMARKS = :remarks 
+                REMARKS = :remarks
             WHERE TNKR_CODE = :tnkr_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
@@ -689,7 +686,7 @@ class Tanker
         oci_bind_by_name($stmt, ':tnkr_pin', $this->tnkr_pin);
         oci_bind_by_name($stmt, ':tnkr_archive', $this->tnkr_archive);
         oci_bind_by_name($stmt, ':remarks', $this->remarks);
-        
+
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -702,12 +699,12 @@ class Tanker
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);;
+            oci_rollback($this->conn);
             return false;
         }
 
         foreach ($this->tnkr_equips as $key => $value) {
-            $query = "INSERT INTO TNKR_EQUIP (TC_TANKER, TC_EQPT, TC_SEQNO) 
+            $query = "INSERT INTO TNKR_EQUIP (TC_TANKER, TC_EQPT, TC_SEQNO)
                 VALUES (:tnkr_code, :tc_eqpt, :tc_seqno)";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
@@ -715,7 +712,7 @@ class Tanker
             oci_bind_by_name($stmt, ':tc_seqno', $value->tc_seqno);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                 write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                oci_rollback($this->conn);;
+                oci_rollback($this->conn);
                 return false;
             }
         }
@@ -729,7 +726,7 @@ class Tanker
         }
         // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
         if (!$expiry_date->update($expiry_dates)) {
-            write_log("Failed to update expiry dates", 
+            write_log("Failed to update expiry dates",
                 __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -737,36 +734,34 @@ class Tanker
 
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
-        $jnl_data[0] = $curr_psn; 
+        $jnl_data[0] = $curr_psn;
         $jnl_data[1] = $this->tnkr_code;
         $jnl_data[2] = $this->tnkr_owner;
         if (!$journal->jnlLogEvent(
-            Lookup::TMM_TANKER_MOD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::TMM_TANKER_MOD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             oci_rollback($this->conn);
             return false;
         }
 
         //New data
         $query = "
-            SELECT * FROM GUI_TANKERS 
+            SELECT * FROM GUI_TANKERS
             WHERE TNKR_CODE = :tnkr_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);            
+            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
         $module = "GUI_TANKERS";
         $record = sprintf("tanker:%s, owner:%s", $this->tnkr_code, $this->tnkr_owner);
-        if (!$journal->updateChanges($row, $row2, $module, $record))
-        {
+        if (!$journal->updateChanges($row, $row2, $module, $record)) {
             oci_rollback($this->conn);
             return false;
         }
-        
+
         //Tanker composition journal
         $query = "
             SELECT LISTAGG(EQPT_CODE, ', ') WITHIN GROUP (ORDER BY TC_SEQNO) TNKR_EQUIPS
@@ -782,9 +777,9 @@ class Tanker
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
-        if ($tnkr_equips_rows['TNKR_EQUIPS'] != $tnkr_equips_rows2['TNKR_EQUIPS'] && 
+        if ($tnkr_equips_rows['TNKR_EQUIPS'] != $tnkr_equips_rows2['TNKR_EQUIPS'] &&
             !$journal->valueChange(
-                $module, $record, "tanker equips", 
+                $module, $record, "tanker equips",
                 $tnkr_equips_rows['TNKR_EQUIPS'], $tnkr_equips_rows2['TNKR_EQUIPS'])) {
             oci_rollback($this->conn);
             return false;
@@ -797,18 +792,19 @@ class Tanker
     //This function does not auto-commit
     private function updateEqpts($tnkr_code, $eqpts)
     {
-        write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code), 
+        write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code),
             __FILE__, __LINE__);
 
         $eqpt_count = $this->eqptCount($tnkr_code);
-        for ($i = 1; $i <= $eqpt_count; $i ++) {
-            if (!isset($eqpts[$i - 1]))
+        for ($i = 1; $i <= $eqpt_count; $i++) {
+            if (!isset($eqpts[$i - 1])) {
                 continue;
+            }
 
             $query = "
                 SELECT TC_EQPT
                 FROM TNKR_EQUIP
-                WHERE TC_TANKER = :tnkr_code AND TC_SEQNO = :tc_seqno";            
+                WHERE TC_TANKER = :tnkr_code AND TC_SEQNO = :tc_seqno";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
             oci_bind_by_name($stmt, ':tc_seqno', $i);
@@ -825,24 +821,24 @@ class Tanker
                     oci_bind_by_name($stmt, ':tc_seqno', $i);
                     oci_bind_by_name($stmt, ':tc_eqpt', $eqpts[$i - 1]);
                     if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                        write_log("DB error:" . oci_error($stmt)['message'], 
+                        write_log("DB error:" . oci_error($stmt)['message'],
                             __FILE__, __LINE__, LogLevel::ERROR);
                         oci_rollback($this->conn);
                         return false;
                     }
 
                     $journal = new Journal($this->conn, false);
-                    $jnl_data[0] = sprintf("%s changed tanker [%s] equipment [%d] from [%s] to [%s]", 
-                        Utilities::getCurrPsn(), $tnkr_code, $i, $row['TC_EQPT'], $eqpts[$i - 1]); 
-                    if (!$journal->jnlLogEvent(Lookup::TMM_TEXT_ONLY, $jnl_data, 
+                    $jnl_data[0] = sprintf("%s changed tanker [%s] equipment [%d] from [%s] to [%s]",
+                        Utilities::getCurrPsn(), $tnkr_code, $i, $row['TC_EQPT'], $eqpts[$i - 1]);
+                    if (!$journal->jnlLogEvent(Lookup::TMM_TEXT_ONLY, $jnl_data,
                         JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-                        write_log("DB error:" . oci_error($stmt)['message'], 
+                        write_log("DB error:" . oci_error($stmt)['message'],
                             __FILE__, __LINE__, LogLevel::ERROR);
                         return false;
                     }
                 }
             } else {
-                write_log("DB error:" . oci_error($stmt)['message'], 
+                write_log("DB error:" . oci_error($stmt)['message'],
                     __FILE__, __LINE__, LogLevel::ERROR);
                 return false;
             }
@@ -850,4 +846,4 @@ class Tanker
 
         return true;
     }
-}   
+}

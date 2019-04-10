@@ -1,11 +1,11 @@
 <?php
 
-include_once __DIR__  . '/../config/journal.php';
-include_once __DIR__  . '/../config/log.php';
-include_once __DIR__  . '/../shared/utilities.php';
+include_once __DIR__ . '/../config/journal.php';
+include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../shared/utilities.php';
 
 class Area
-{   
+{
     // database connection and table name
     private $conn;
 
@@ -15,14 +15,14 @@ class Area
         $this->conn = $db;
     }
 
-    function read()
+    public function read()
     {
         $query = "
             SELECT AREA_K,
                 AREA_NAME,
                 AREA_CPCTY,
-                AREA_EQP_SFT_LNK 
-            FROM AREA_RC";        
+                AREA_EQP_SFT_LNK
+            FROM AREA_RC";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             return $stmt;
@@ -31,4 +31,4 @@ class Area
             return null;
         }
     }
-}   
+}

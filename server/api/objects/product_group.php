@@ -1,12 +1,12 @@
 <?php
 
-include_once __DIR__  . '/../config/journal.php';
-include_once __DIR__  . '/../config/log.php';
-include_once __DIR__  . '/../shared/utilities.php';
+include_once __DIR__ . '/../config/journal.php';
+include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../shared/utilities.php';
 
 class ProductGroup
 {
-	// database connection and table name
+    // database connection and table name
     private $conn;
 
     // constructor with $db as database connection
@@ -16,18 +16,18 @@ class ProductGroup
     }
 
     //Because base cannot be too many, do not do limit
-    function read()
+    public function read()
     {
         Utilities::sanitize($this);
 
         $query = "
-            SELECT PGR_CODE, 
-                PGR_DESCRIPTION, 
-                PGR_UNIT, 
+            SELECT PGR_CODE,
+                PGR_DESCRIPTION,
+                PGR_UNIT,
                 PGR_CODE||' - '||PGR_DESCRIPTION AS PGR_TEXT
-            FROM 
+            FROM
                 PRODUCT_GROUP
-            ORDER BY PGR_CODE";        
+            ORDER BY PGR_CODE";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             return $stmt;

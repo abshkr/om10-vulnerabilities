@@ -1,10 +1,10 @@
 <?php
 
-include_once __DIR__  . '/../config/journal.php';
-include_once __DIR__  . '/../config/log.php';
-include_once __DIR__  . '/../shared/utilities.php';
+include_once __DIR__ . '/../config/journal.php';
+include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../shared/utilities.php';
 
-class PhysicalPrinter 
+class PhysicalPrinter
 {
     // database connection and table name
     private $conn;
@@ -16,7 +16,7 @@ class PhysicalPrinter
     public $area_name;
 
     public $desc = "physical printer";
-    
+
     // constructor with $db as database connection
     public function __construct($db)
     {
@@ -27,7 +27,7 @@ class PhysicalPrinter
     }
 
     // read personnel
-    function read()
+    public function read()
     {
         Utilities::sanitize($this);
 
@@ -46,7 +46,7 @@ class PhysicalPrinter
                 AND TO_CHAR(P.PRNTR) LIKE :prntr
                 AND TO_CHAR(P.SYS_PRNTR) LIKE :sys_prntr
                 AND TO_CHAR(P.PRNTR_AREA) LIKE :prntr_area
-            ORDER BY P.PRNTR";        
+            ORDER BY P.PRNTR";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':prntr', $this->prntr);
         oci_bind_by_name($stmt, ':sys_prntr', $this->sys_prntr);
@@ -59,7 +59,7 @@ class PhysicalPrinter
         }
     }
 
-    function create()
+    public function create()
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
 
@@ -81,7 +81,7 @@ class PhysicalPrinter
         oci_bind_by_name($stmt, ':sys_prntr', $this->sys_prntr);
         oci_bind_by_name($stmt, ':prntr_lock', $this->prntr_lock);
         oci_bind_by_name($stmt, ':prntr_area', $this->prntr_area);
-        
+
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
@@ -93,8 +93,7 @@ class PhysicalPrinter
         $jnl_data[2] = $this->prntr;
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -103,13 +102,13 @@ class PhysicalPrinter
         return true;
     }
 
-    function delete()
+    public function delete()
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-        
+
         Utilities::sanitize($this);
 
-        $query = "DELETE FROM PRINTER 
+        $query = "DELETE FROM PRINTER
             WHERE PRNTR = :prntr
                 AND SYS_PRNTR = :sys_prntr
                 AND PRNTR_LOCK = :prntr_lock
@@ -119,31 +118,30 @@ class PhysicalPrinter
         oci_bind_by_name($stmt, ':sys_prntr', $this->sys_prntr);
         oci_bind_by_name($stmt, ':prntr_lock', $this->prntr_lock);
         oci_bind_by_name($stmt, ':prntr_area', $this->prntr_area);
-        
+
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
-        
+
         $journal = new Journal($this->conn, $autocommit = false);
         $jnl_data[0] = Utilities::getCurrPsn();
         $jnl_data[1] = "physical printer";
         $jnl_data[2] = $this->prntr;
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
 
         oci_commit($this->conn);
-        
+
         return true;
     }
 
-    function update()
+    public function update()
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
 
@@ -165,13 +163,13 @@ class PhysicalPrinter
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':prntr', $this->prntr);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);   
-            // write_log(json_encode($row), __FILE__, __LINE__);         
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            // write_log(json_encode($row), __FILE__, __LINE__);
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
-        $query = "UPDATE PRINTER 
+        $query = "UPDATE PRINTER
             SET SYS_PRNTR = :sys_prntr,
                 PRNTR_LOCK = :prntr_lock,
                 PRNTR_AREA = :prntr_area
@@ -193,8 +191,7 @@ class PhysicalPrinter
         $jnl_data[2] = $this->prntr;
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -203,12 +200,13 @@ class PhysicalPrinter
         $module = "PRINTER";
         $record = sprintf("logical printer:%s", $this->prntr);
         foreach ($this as $key => $value) {
-            if ($key === 'prntr_area')
+            if ($key === 'prntr_area') {
                 continue;
+            }
 
-            // write_log($key, __FILE__, __LINE__);  
-            // write_log($value, __FILE__, __LINE__);  
-            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] && 
+            // write_log($key, __FILE__, __LINE__);
+            // write_log($value, __FILE__, __LINE__);
+            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
                 !$journal->valueChange(
                     $module, $record, $key, $row[strtoupper($key)], $value)) {
                 return false;

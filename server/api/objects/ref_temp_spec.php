@@ -1,12 +1,12 @@
 <?php
 
-include_once __DIR__  . '/../config/journal.php';
-include_once __DIR__  . '/../config/log.php';
-include_once __DIR__  . '/../shared/utilities.php';
+include_once __DIR__ . '/../config/journal.php';
+include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../shared/utilities.php';
 
 class RefTempSpec
 {
-	// database connection and table name
+    // database connection and table name
     private $conn;
 
     // constructor with $db as database connection
@@ -16,7 +16,7 @@ class RefTempSpec
     }
 
     //Because base cannot be too many, do not do limit
-    function read()
+    public function read()
     {
         // if (!isset($this->end_num)) {
         //     $this->start_num = 1;
@@ -26,10 +26,10 @@ class RefTempSpec
         Utilities::sanitize($this);
 
         $query = "
-            SELECT REF_TEMP_SPEC_ID, 
-                REF_TEMP_SPEC_NAME 
-            FROM REF_TEMP_SPEC 
-            ORDER BY REF_TEMP_SPEC_ID";        
+            SELECT REF_TEMP_SPEC_ID,
+                REF_TEMP_SPEC_NAME
+            FROM REF_TEMP_SPEC
+            ORDER BY REF_TEMP_SPEC_ID";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             return $stmt;

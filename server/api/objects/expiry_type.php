@@ -1,8 +1,8 @@
 <?php
 
-include_once __DIR__  . '/../config/journal.php';
-include_once __DIR__  . '/../config/log.php';
-include_once __DIR__  . '/../shared/utilities.php';
+include_once __DIR__ . '/../config/journal.php';
+include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../shared/utilities.php';
 
 class ExpiryTarget
 {
@@ -13,7 +13,7 @@ class ExpiryTarget
 }
 
 class ExpiryDateType
-{   
+{
     // database connection and table name
     private $conn;
 
@@ -26,12 +26,12 @@ class ExpiryDateType
     public function readSimple($target_code = ExpiryTarget::ALL)
     {
         Utilities::sanitize($this);
-        
+
         $query = "
             SELECT EDT_TYPE_CODE
             FROM EXPIRY_DATE_TYPES
             WHERE EDT_TARGET_CODE LIKE :target_code
-            ORDER BY EDT_TYPE_CODE";        
+            ORDER BY EDT_TYPE_CODE";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':target_code', $target_code);
         if (oci_execute($stmt)) {
@@ -42,10 +42,10 @@ class ExpiryDateType
         }
     }
 
-    function read($target_code = ExpiryTarget::ALL)
+    public function read($target_code = ExpiryTarget::ALL)
     {
         Utilities::sanitize($this);
-        
+
         $query = "
             SELECT EDT_TARGET_CODE,
                 EDT_TYPE_CODE,
@@ -55,10 +55,10 @@ class ExpiryDateType
                 EDT_TIME_ENABLED,
                 EDT_STATUS,
                 EDT_REJECT,
-                EDT_DEFAULT 
+                EDT_DEFAULT
             FROM EXPIRY_DATE_TYPES
             WHERE EDT_TARGET_CODE LIKE :target_code
-            ORDER BY EDT_TYPE_CODE";        
+            ORDER BY EDT_TYPE_CODE";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':target_code', $target_code);
         if (oci_execute($stmt)) {
@@ -68,4 +68,4 @@ class ExpiryDateType
             return null;
         }
     }
-}   
+}

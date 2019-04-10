@@ -1,9 +1,9 @@
 <?php
 
-include_once __DIR__  . '/../config/journal.php';
-include_once __DIR__  . '/../config/log.php';
+include_once __DIR__ . '/../config/journal.php';
+include_once __DIR__ . '/../config/log.php';
 
-class ProdInv 
+class ProdInv
 {
     // database connection and table name
     private $conn;
@@ -22,7 +22,7 @@ class ProdInv
     }
 
     // read personnel
-    function read()
+    public function read()
     {
         $query = "
             SELECT BASE_PRODS.BASE_CODE BASE_CODE,
@@ -35,7 +35,7 @@ class ProdInv
             WHERE BASE_PRODS.BASE_CODE = TANKS.TANK_BASE
             GROUP BY BASE_CODE, BASE_NAME
             ORDER BY BASE_CODE";
-        
+
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);

@@ -1,23 +1,23 @@
 <?php
 
-include_once __DIR__  . '/../config/journal.php';
-include_once __DIR__  . '/../config/log.php';
-include_once __DIR__  . '/../shared/utilities.php';
+include_once __DIR__ . '/../config/journal.php';
+include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../shared/utilities.php';
 
-class TimeCode 
+class TimeCode
 {
     // database connection and table name
     private $conn;
 
     public $tcd_title;
-    public $tcd_mon; 
-    public $tcd_tue; 
+    public $tcd_mon;
+    public $tcd_tue;
     public $tcd_wed;
     public $tcd_thu;
     public $tcd_fri;
     public $tcd_sat;
     public $tcd_sun;
-    
+
     // constructor with $db as database connection
     public function __construct($db)
     {
@@ -25,10 +25,10 @@ class TimeCode
     }
 
     // read personnel
-    function read()
+    public function read()
     {
         Utilities::sanitize($this);
-        
+
         if (isset($this->tcd_title)) {
             $query = "
             SELECT TCD_TITLE,
@@ -41,7 +41,7 @@ class TimeCode
                 TCD_SUN
             FROM TIMECODE
             WHERE TCD_TITLE = :tcd_title
-            ORDER BY TCD_TITLE";    
+            ORDER BY TCD_TITLE";
         } else {
             $query = "
             SELECT TCD_TITLE,
@@ -53,9 +53,9 @@ class TimeCode
                 TCD_SAT,
                 TCD_SUN
             FROM TIMECODE
-            ORDER BY TCD_TITLE";    
+            ORDER BY TCD_TITLE";
         }
-            
+
         $stmt = oci_parse($this->conn, $query);
         if (isset($this->tcd_title)) {
             oci_bind_by_name($stmt, ':tcd_title', $this->tcd_title);
@@ -68,19 +68,19 @@ class TimeCode
         }
     }
 
-    function update()
+    public function update()
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
 
         $query = "
             SELECT *
-            FROM TIMECODE 
+            FROM TIMECODE
             WHERE TCD_TITLE = :tcd_title";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tcd_title', $this->tcd_title);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);   
-            // write_log(json_encode($row), __FILE__, __LINE__);         
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            // write_log(json_encode($row), __FILE__, __LINE__);
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
@@ -115,8 +115,7 @@ class TimeCode
         $jnl_data[2] = $this->tcd_title;
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -125,7 +124,7 @@ class TimeCode
         $module = "TIMECODE";
         $record = sprintf("title:%s", $this->tcd_title);
         foreach ($this as $key => $value) {
-            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] && 
+            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
                 !$journal->valueChange(
                     $module, $record, $key, $row[strtoupper($key)], $value)) {
                 return false;

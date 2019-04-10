@@ -1,9 +1,9 @@
 <?php
 
-include_once __DIR__  . '/../config/journal.php';
-include_once __DIR__  . '/../config/log.php';
+include_once __DIR__ . '/../config/journal.php';
+include_once __DIR__ . '/../config/log.php';
 
-class TankInv 
+class TankInv
 {
     // database connection and table name
     private $conn;
@@ -18,7 +18,7 @@ class TankInv
     public $pumpablevol;
     public $usablevol;
     public $bookbalance;
-    
+
     // constructor with $db as database connection
     public function __construct($db)
     {
@@ -26,7 +26,7 @@ class TankInv
     }
 
     // read personnel
-    function read()
+    public function read()
     {
         $query = "
             SELECT TANKS.TANK_CODE  TANK_CODE,
@@ -42,7 +42,7 @@ class TankInv
             FROM TANKS, BASE_PRODS
             WHERE BASE_PRODS.BASE_CODE = TANKS.TANK_BASE
             ORDER BY TANK_CODE";
-        
+
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);

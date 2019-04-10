@@ -1,12 +1,12 @@
 <?php
 
-include_once __DIR__  . '/../config/journal.php';
-include_once __DIR__  . '/../config/log.php';
-include_once __DIR__  . '/../shared/utilities.php';
+include_once __DIR__ . '/../config/journal.php';
+include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../shared/utilities.php';
 
 class CorrectionMethod
 {
-	// database connection and table name
+    // database connection and table name
     private $conn;
 
     // constructor with $db as database connection
@@ -16,7 +16,7 @@ class CorrectionMethod
     }
 
     //Because base cannot be too many, do not do limit
-    function read()
+    public function read()
     {
         // if (!isset($this->end_num)) {
         //     $this->start_num = 1;
@@ -26,10 +26,10 @@ class CorrectionMethod
         Utilities::sanitize($this);
 
         $query = "
-            SELECT COMPENSATION_ID, 
-                COMPENSATION_NAME 
-            FROM COMPENSATION_MTHD 
-            ORDER BY COMPENSATION_ID";        
+            SELECT COMPENSATION_ID,
+                COMPENSATION_NAME
+            FROM COMPENSATION_MTHD
+            ORDER BY COMPENSATION_ID";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             return $stmt;

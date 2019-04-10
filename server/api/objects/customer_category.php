@@ -1,10 +1,10 @@
 <?php
 
-include_once __DIR__  . '/../config/journal.php';
-include_once __DIR__  . '/../config/log.php';
-include_once __DIR__  . '/../shared/utilities.php';
+include_once __DIR__ . '/../config/journal.php';
+include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../shared/utilities.php';
 
-class CustomerCategory 
+class CustomerCategory
 {
     // database connection and table name
     private $conn;
@@ -13,7 +13,7 @@ class CustomerCategory
     public $category_name;
 
     public $desc = "customer category";
-    
+
     // constructor with $db as database connection
     public function __construct($db)
     {
@@ -21,23 +21,23 @@ class CustomerCategory
     }
 
     // read personnel
-    function read()
+    public function read()
     {
         $query = "
-            SELECT 
-                CATEG_CODE CATEGORY_CODE, 
+            SELECT
+                CATEG_CODE CATEGORY_CODE,
                 CATEG_DESCRIPT CATEGORY_NAME,
                 NVL(CU.CATEG_COUNT, 0) CATEGORY_COUNT
-            FROM 
-                CST_PRCE_CATEGOR CG, 
+            FROM
+                CST_PRCE_CATEGOR CG,
                 (
                 SELECT CUST_CATEGORY, COUNT(*) CATEG_COUNT
                 FROM CUSTOMER
                 GROUP BY CUST_CATEGORY
                 ) CU
-            WHERE 
+            WHERE
                 CG.CATEG_CODE = CU.CUST_CATEGORY(+)";
-        
+
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             return $stmt;
@@ -48,15 +48,15 @@ class CustomerCategory
     }
 
     // pure php function
-    function create()
+    public function create()
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
 
         Utilities::sanitize($this);
 
-        $query = "INSERT INTO CST_PRCE_CATEGOR 
+        $query = "INSERT INTO CST_PRCE_CATEGOR
                 (CATEG_CODE,
-                CATEG_DESCRIPT) 
+                CATEG_DESCRIPT)
         VALUES (:categ_code,
                 :categ_descript)";
         $stmt = oci_parse($this->conn, $query);
@@ -74,8 +74,7 @@ class CustomerCategory
         $jnl_data[2] = $this->category_code;
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -85,22 +84,22 @@ class CustomerCategory
         return true;
     }
 
-    function update()
+    public function update()
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
 
         Utilities::sanitize($this);
 
         $query = "
-            SELECT CATEG_CODE CATEGORY_CODE, 
+            SELECT CATEG_CODE CATEGORY_CODE,
                 CATEG_DESCRIPT CATEGORY_NAME
-            FROM CST_PRCE_CATEGOR 
+            FROM CST_PRCE_CATEGOR
             WHERE CATEG_CODE = :categ_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':categ_code', $this->category_code);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);   
-            // write_log(json_encode($row), __FILE__, __LINE__);         
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            // write_log(json_encode($row), __FILE__, __LINE__);
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
@@ -123,8 +122,7 @@ class CustomerCategory
         $jnl_data[2] = $this->category_code;
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -133,7 +131,7 @@ class CustomerCategory
         $module = "customer category";
         $record = sprintf("code:%s", $this->category_code);
         foreach ($this as $key => $value) {
-            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] && 
+            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
                 !$journal->valueChange(
                     $module, $record, $key, $row[strtoupper($key)], $value)) {
                 return false;
@@ -144,19 +142,19 @@ class CustomerCategory
         return true;
     }
 
-    function delete()
+    public function delete()
     {
         write_log(
             sprintf("%s::%s START. categ_code:%s", __CLASS__, __FUNCTION__, $this->category_code),
             __FILE__, __LINE__);
 
         Utilities::sanitize($this);
-        
+
         $query = "DELETE FROM CST_PRCE_CATEGOR
                 WHERE CATEG_CODE = :categ_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':categ_code', $this->category_code);
-        
+
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
@@ -168,8 +166,7 @@ class CustomerCategory
         $jnl_data[2] = $this->category_code;
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;

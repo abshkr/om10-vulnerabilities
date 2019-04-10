@@ -11,24 +11,24 @@ abstract class LogLevel
     const CRITICAL = 'CRITICAL';
 }
 
-// class Log 
+// class Log
 // {
 //     public static function writeLog($message, $file = __FILE__, $line == __LINE__)
 //     {
-//         $log_file = (isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omega') . 
+//         $log_file = (isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omega') .
 //             '/logs/php_rest_' . date('Ymd') . '.log';
 
-//         $formatted = "[".date("y-m-d H:i:s")."] | " 
-//             . basename($file) . " | " 
-//             . $line . " | " 
+//         $formatted = "[".date("y-m-d H:i:s")."] | "
+//             . basename($file) . " | "
+//             . $line . " | "
 //             . $message . "\n";
 //         error_log($formatted, 3, $log_file);
 //     }
 // }
 
 date_default_timezone_set('UTC');
-$log_file = (isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omega') . 
-        '/logs/php_rest_' . date('Ymd') . '.log';
+$log_file = (isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omega') .
+'/logs/php_rest_' . date('Ymd') . '.log';
 
 // ini_set('display_errors', 1);
 // error_reporting(E_ALL);
@@ -36,14 +36,15 @@ $log_file = (isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omeg
 function write_log($message, $file = __FILE__, $line = __LINE__, $level = LogLevel::DEBUG)
 // function write_log($message, $file = __FILE__, $line = __LINE__, $level = 'DEBUG')
 {
-    if (!ENABLE_DEBUG_LOG)
+    if (!ENABLE_DEBUG_LOG) {
         return;
+    }
 
     global $log_file;
-    $formatted = date("Y-m-d H:i:s") . " | " 
-        . basename($file) . ":" 
-        . $line . " | " 
-        . $level . " | " 
+    $formatted = date("Y-m-d H:i:s") . " | "
+    . basename($file) . ":"
+        . $line . " | "
+        . $level . " | "
         . $message . "\n";
     error_log($formatted, 3, $log_file);
 }

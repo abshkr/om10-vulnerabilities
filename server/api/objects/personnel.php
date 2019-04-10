@@ -1,86 +1,18 @@
 <?php
 
-include_once __DIR__  . '/../config/journal.php';
-include_once __DIR__  . '/../config/log.php';
-include_once __DIR__  . '/../shared/utilities.php';
-include_once __DIR__  . '/../objects/expiry_date.php';
-include_once __DIR__  . '/../objects/expiry_type.php';
+include_once __DIR__ . '/../config/journal.php';
+include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../objects/expiry_date.php';
+include_once __DIR__ . '/../objects/expiry_type.php';
 
-class Personnel 
+class Personnel
 {
     // database connection and table name
     private $conn;
     private $table_name = "GUI_PERSONNEL";
     private $default_pwd = 'a1qhH6yu9Tjg.';
- 
-    // object properties
-    // public $per_code;
-    // public $per_name;
-    // public $per_cmpy;
-    // public $per_auth;
-    // public $per_lock;
-    // public $per_last_dmy;
-    // public $per_department;
-    // public $per_licence_no;
-    // public $per_next_msg;
-    // public $per_level_num;
-    // public $per_terminal;
-    // public $per_comments;
-    // public $cmpy_code;
-    // public $cmpy_name;
-    // public $cmpy_type;
-    // public $cmpy_compress_bl;
-    // public $cmpy_check_licen;
-    // public $cmpy_ldgo_delta;
-    // public $cmpy_msg;
-    // public $cmpy_vet;
-    // public $cmpy_tkr_cfg;
-    // public $cmpy_enable_expd;
-    // public $cmpy_seal_number;
-    // public $cmpy_exp_code;
-    // public $cmpy_issu;
-    // public $cmpy_host;
-    // public $cmpy_aoi;
-    // public $cmpy_auto_ld;
-    // public $cmpy_rtn_prompt;
-    // public $cmpy_add_prompt;
-    // public $cmpy_log_ld_del;
-    // public $cmpy_host_docs;
-    // public $cmpy_comms_ok;
-    // public $cmpy_tkr_activat;
-    // public $cmpy_bol_vp_name;
-    // public $cmpy_ld_rep_vp;
-    // public $cmpy_drv_inst_vp;
-    // public $cmpy_wgh_complet;
-    // public $cmpy_wgh_auto_fl;
-    // public $cmpy_ord_carrier;
-    // public $cmpy_wipe_ordets;
-    // public $cmpy_rpt_t_unit;
-    // public $cmpy_rpt_temp;
-    // public $cmpy_auto_reconc;
-    // public $cmpy_bay_loop_ch;
-    // public $cmpy_mod_drawer;
-    // public $cmpy_must_sealno;
-    // public $cmpy_bltol_flag;
-    // public $cmpy_ldtol_flag;
-    // public $cmpy_req_pin_flag;
-    // public $pt_psncode;
-    // public $pt_timecd;
-    // public $perl_psn;
-    // public $perl_ara;
-    // public $perl_enter_time;
-    // public $user_id;
-    // public $user_code;
-    // public $user_username;
-    // public $user_type;
-    // public $user_status_flag;
-    // public $user_login_count;
-    // public $user_last_reason;
-    // public $valid_time;
-    // public $expire_time;
-    // public $record_switch;
-    // public $record_order;
- 
+
     // constructor with $db as database connection
     public function __construct($db)
     {
@@ -88,14 +20,14 @@ class Personnel
     }
 
     // read personnel
-    function read()
+    public function read()
     {
         $query = "
-            SELECT *                    
+            SELECT *
             FROM
-                " . $this->table_name . " 
+                " . $this->table_name . "
             ORDER BY PER_CODE";
-        
+
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             return $stmt;
@@ -104,13 +36,13 @@ class Personnel
         }
     }
 
-    function areaAccess()
+    public function areaAccess()
     {
         $query = "
-            SELECT PERM_OF_AREA.*, AREA_NAME 
-            FROM PERM_OF_AREA, AREA_RC 
+            SELECT PERM_OF_AREA.*, AREA_NAME
+            FROM PERM_OF_AREA, AREA_RC
             WHERE PERM_AREA = AREA_K AND PERM_PSN = :perm_psn
-            ORDER BY AREA_K";        
+            ORDER BY AREA_K";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':perm_psn', $this->per_code);
         if (oci_execute($stmt)) {
@@ -128,7 +60,7 @@ class Personnel
     // }
 
     // pure php function
-    function create()
+    public function create()
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
 
@@ -136,7 +68,7 @@ class Personnel
 
         // query to insert record
         //'a1qhH6yu9Tjg.', // encryption of default pw '12345'
-        $query = "INSERT INTO PERSONNEL 
+        $query = "INSERT INTO PERSONNEL
                 (PER_CODE,
                 PER_NAME,
                 PER_CMPY,
@@ -151,7 +83,7 @@ class Personnel
                 PER_LEVEL_NUM,
                 PER_TERMINAL,
                 PER_COMMENTS,
-                PER_LAST_MODIFIED) 
+                PER_LAST_MODIFIED)
         VALUES (:per_code,
                 :per_name,
                 :per_cmpy,
@@ -159,7 +91,7 @@ class Personnel
                 :per_lock,
                 SYSDATE,
                 :per_department,
-                'a1qhH6yu9Tjg.', 
+                'a1qhH6yu9Tjg.',
                 :per_licence_no,
                 :per_next_msg,
                 :per_passwd_2,
@@ -184,15 +116,15 @@ class Personnel
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             // $err_str = oci_error($stmt)['message'];
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);;
+            oci_rollback($this->conn);
             return false;
         }
 
-        $query = "INSERT INTO URBAC_USERS 
-                (USER_CODE, 
-                USER_USERNAME, 
+        $query = "INSERT INTO URBAC_USERS
+                (USER_CODE,
+                USER_USERNAME,
                 USER_PASSWORD
-                ) 
+                )
         VALUES (:per_code,
                 :per_name,
                 :user_password
@@ -201,71 +133,71 @@ class Personnel
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         oci_bind_by_name($stmt, ':per_name', $this->per_name);
         oci_bind_by_name($stmt, ':user_password', $this->default_pwd);
-        
+
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
 
-        $query = "INSERT INTO PER_TIMECODE 
-                (PT_PSNCODE, 
-                PT_TIMECD) 
+        $query = "INSERT INTO PER_TIMECODE
+                (PT_PSNCODE,
+                PT_TIMECD)
         VALUES (:per_code,
                 :pt_timecd
                 )";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         oci_bind_by_name($stmt, ':pt_timecd', $this->pt_timecd);
-        
+
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);;
+            oci_rollback($this->conn);
             return false;
         }
 
-        $query = "INSERT INTO PERS_IN_AREA 
+        $query = "INSERT INTO PERS_IN_AREA
                 (PERL_PSN,
-                PERL_ARA) 
+                PERL_ARA)
         VALUES (:per_code,
                 :perl_ara
                 )";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         oci_bind_by_name($stmt, ':perl_ara', $this->perl_ara);
-        
+
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            oci_rollback($this->conn);;
+            oci_rollback($this->conn);
             return false;
         }
 
-        $query = "INSERT INTO URBAC_PWD_TRACES 
-                (PWDTRACE_USERID, 
-                PWDTRACE_PWD, 
-                PWDTRACE_LAST_CHG) 
+        $query = "INSERT INTO URBAC_PWD_TRACES
+                (PWDTRACE_USERID,
+                PWDTRACE_PWD,
+                PWDTRACE_LAST_CHG)
         VALUES (URBAC_USERS_SEQ.CURRVAL,
                 :pwdtrace_pwd,
                 SYSDATE)";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':pwdtrace_pwd', $this->default_pwd);
-        
+
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);;
+            oci_rollback($this->conn);
             return false;
         }
 
         foreach ($this->area_accesses as $key => $value) {
             // write_log($key, __FILE__, __LINE__);
             // write_log(json_encode($value), __FILE__, __LINE__);
-            $query = "INSERT INTO PERM_OF_AREA (PERM_AREA, PERM_PSN) 
+            $query = "INSERT INTO PERM_OF_AREA (PERM_AREA, PERM_PSN)
                 VALUES (:perm_area, :per_code)";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':per_code', $this->per_code);
             oci_bind_by_name($stmt, ':perm_area', $value->perm_area);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                 write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                oci_rollback($this->conn);;
+                oci_rollback($this->conn);
                 return false;
             }
         }
@@ -280,7 +212,7 @@ class Personnel
         }
         // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
         if (!$expiry_date->create($expiry_dates)) {
-            write_log("Failed to update expiry dates", 
+            write_log("Failed to update expiry dates",
                 __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -292,8 +224,7 @@ class Personnel
         $jnl_data[2] = $this->per_code;
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -311,43 +242,42 @@ class Personnel
 
         //Old data
         $query = "
-            SELECT * FROM GUI_PERSONNEL 
+            SELECT * FROM GUI_PERSONNEL
             WHERE PER_CODE = :per_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);            
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
-        //Old data: area access control 
+        //Old data: area access control
         $perm_array = array();
         $query = "
-            SELECT PERM_OF_AREA.*, AREA_NAME 
-            FROM PERM_OF_AREA, AREA_RC 
+            SELECT PERM_OF_AREA.*, AREA_NAME
+            FROM PERM_OF_AREA, AREA_RC
             WHERE PERM_AREA = AREA_K AND PERM_PSN = :per_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            while ($perm_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS))
-            {
+            while ($perm_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
                 $base_item = array();
                 foreach ($perm_row as $key => $value) {
                     $base_item[strtolower($key)] = $value;
                 }
 
-                $base_item = array_map(function($v){
+                $base_item = array_map(function ($v) {
                     return (is_null($v)) ? "" : $v;
                 }, $base_item);
                 // write_log(json_encode($perm_row), __FILE__, __LINE__);
                 $perm_array[strtolower($perm_row['PERM_AREA'])] = $base_item;
                 // array_push($perm_array, $base_item);
-            }          
+            }
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
-        
+
         $query = "
             UPDATE PERSONNEL
             SET PER_LOCK = :per_lock,
@@ -374,7 +304,7 @@ class Personnel
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             // $err_str = oci_error($stmt)['message'];
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);;
+            oci_rollback($this->conn);
             return false;
         }
 
@@ -388,19 +318,19 @@ class Personnel
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             // $err_str = oci_error($stmt)['message'];
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);;
+            oci_rollback($this->conn);
             return false;
         }
 
         $query = "
-            UPDATE PER_TIMECODE   
-            SET PT_TIMECD = :pt_timecd  
+            UPDATE PER_TIMECODE
+            SET PT_TIMECD = :pt_timecd
             WHERE TRIM(PT_PSNCODE) = :per_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':pt_timecd', $this->pt_timecd);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            oci_rollback($this->conn);;
+            oci_rollback($this->conn);
             return false;
         }
 
@@ -411,7 +341,7 @@ class Personnel
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);;
+            oci_rollback($this->conn);
             return false;
         }
 
@@ -420,21 +350,21 @@ class Personnel
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);;
+            oci_rollback($this->conn);
             return false;
         }
 
         foreach ($this->area_accesses as $key => $value) {
             // write_log($key, __FILE__, __LINE__);
             // write_log(json_encode($value), __FILE__, __LINE__);
-            $query = "INSERT INTO PERM_OF_AREA (PERM_AREA, PERM_PSN) 
+            $query = "INSERT INTO PERM_OF_AREA (PERM_AREA, PERM_PSN)
                 VALUES (:perm_area, :per_code)";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':per_code', $this->per_code);
             oci_bind_by_name($stmt, ':perm_area', $value->perm_area);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                 write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                oci_rollback($this->conn);;
+                oci_rollback($this->conn);
                 return false;
             }
         }
@@ -448,7 +378,7 @@ class Personnel
         }
         // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
         if (!$expiry_date->update($expiry_dates)) {
-            write_log("Failed to update expiry dates", 
+            write_log("Failed to update expiry dates",
                 __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -460,8 +390,7 @@ class Personnel
         $jnl_data[2] = $this->per_code;
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -469,26 +398,27 @@ class Personnel
 
         //New data
         $query = "
-            SELECT * FROM GUI_PERSONNEL 
+            SELECT * FROM GUI_PERSONNEL
             WHERE PER_CODE = :per_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);            
+            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
-        
+
         $module = "GUI_PERSONNEL";
         $record = sprintf("code:%s", $this->per_code);
         foreach ($row2 as $key => $value) {
             if ((strpos($key, "CMPY_") !== false && $key != "CMPY_NAME") ||
                 $key === "PER_CMPY" ||
                 $key === "USER_LOGIN_COUNT"
-                ) 
+            ) {
                 continue;
+            }
 
-            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] && 
+            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
                 !$journal->valueChange(
                     $module, $record, $key, $row[strtoupper($key)], $value)) {
                 oci_rollback($this->conn);
@@ -498,26 +428,25 @@ class Personnel
 
         $perm_array2 = array();
         $query = "
-            SELECT PERM_OF_AREA.*, AREA_NAME 
-            FROM PERM_OF_AREA, AREA_RC 
+            SELECT PERM_OF_AREA.*, AREA_NAME
+            FROM PERM_OF_AREA, AREA_RC
             WHERE PERM_AREA = AREA_K AND PERM_PSN = :per_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            while ($perm_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS))
-            {
+            while ($perm_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
                 $base_item = array();
                 foreach ($perm_row as $key => $value) {
                     $base_item[strtolower($key)] = $value;
                 }
 
-                $base_item = array_map(function($v){
+                $base_item = array_map(function ($v) {
                     return (is_null($v)) ? "" : $v;
                 }, $base_item);
 
                 // array_push($perm_array2, $base_item);
                 $perm_array2[strtolower($perm_row['PERM_AREA'])] = $base_item;
-            }          
+            }
         } else {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
@@ -531,9 +460,8 @@ class Personnel
                 $jnl_data[3] = sprintf("area name:%s", $value['area_name']);
 
                 if (!$journal->jnlLogEvent(
-                    Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-                {
-                    write_log("DB error:" . oci_error($stmt)['message'], 
+                    Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                    write_log("DB error:" . oci_error($stmt)['message'],
                         __FILE__, __LINE__, LogLevel::ERROR);
                     oci_rollback($this->conn);
                     return false;
@@ -550,9 +478,8 @@ class Personnel
                 $jnl_data[3] = sprintf("area name:%s", $value['area_name']);
 
                 if (!$journal->jnlLogEvent(
-                    Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-                {
-                    write_log("DB error:" . oci_error($stmt)['message'], 
+                    Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                    write_log("DB error:" . oci_error($stmt)['message'],
                         __FILE__, __LINE__, LogLevel::ERROR);
                     oci_rollback($this->conn);
                     return false;
@@ -575,13 +502,13 @@ class Personnel
         $query = "
             BEGIN DELETE_PERSONNEL(:per_code, :exec_result); END;";
         $stmt = oci_parse($this->conn, $query);
-        $exec_result = NULL;
+        $exec_result = null;
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         oci_bind_by_name($stmt, ':exec_result', $exec_result, -1, SQLT_INT);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT) || !($exec_result === 0)) {
-            write_log("Failed to execute DELETE_PERSONNEL:" . 
+            write_log("Failed to execute DELETE_PERSONNEL:" .
                 oci_error($stmt)['message'], __FILE__, __LINE__);
-            oci_rollback($this->conn);;
+            oci_rollback($this->conn);
             return false;
         }
 
@@ -602,8 +529,7 @@ class Personnel
         $jnl_data[2] = $this->per_code;
 
         if (!$journal->jnlLogEvent(
-            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -618,14 +544,14 @@ class Personnel
         Utilities::sanitize($this);
 
         $query = "
-            SELECT *                   
+            SELECT *
             FROM
-                " . $this->table_name . " 
+                " . $this->table_name . "
             WHERE PER_CODE = :per_code";
-                
+
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
-        
+
         if (oci_execute($stmt)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             // extract(array_change_key_case($row);
@@ -703,13 +629,13 @@ class Personnel
         Utilities::sanitize($this);
 
         $query = "
-            SELECT *                   
+            SELECT *
             FROM
-                " . $this->table_name . " 
-            WHERE PER_CODE LIKE :per_code 
+                " . $this->table_name . "
+            WHERE PER_CODE LIKE :per_code
                 OR PER_NAME LIKE :per_name
             ORDER BY PER_CODE";
-        
+
         $stmt = oci_parse($this->conn, $query);
         $keyword = htmlspecialchars(strip_tags($keyword));
         $keyword = "%{$keyword}%";
@@ -726,20 +652,20 @@ class Personnel
     public function readPaging($from_record_num, $to_record_num)
     {
         Utilities::sanitize($this);
-        
+
         // select query
         $query = "
             SELECT * FROM (
-            SELECT RES.*, ROW_NUMBER() OVER (ORDER BY PER_CODE) RN 
+            SELECT RES.*, ROW_NUMBER() OVER (ORDER BY PER_CODE) RN
             FROM
             (
-            SELECT * 
+            SELECT *
             FROM
-                " . $this->table_name . " 
+                " . $this->table_name . "
             ORDER BY PER_CODE) RES
             )
             WHERE RN BETWEEN :start_index AND :end_index";
-        
+
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':start_index', $from_record_num, -1, SQLT_INT);
         oci_bind_by_name($stmt, ':end_index', $to_record_num, -1, SQLT_INT);
@@ -751,9 +677,10 @@ class Personnel
     }
 
     // used for paging products
-    public function count(){
+    public function count()
+    {
         $query = "SELECT COUNT(*) TOTAL_ROWS FROM " . $this->table_name . "";
-     
+
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);

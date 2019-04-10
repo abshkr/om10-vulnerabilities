@@ -12,14 +12,14 @@ class JnlEvent
     const JNLT_LOAD = 3;
     const JNLT_BAY = 4;
     const JNLT_DELV = 5;
-    const JNLT_PAY  = 6;
+    const JNLT_PAY = 6;
     const JNLT_MOVE = 7;
     const JNLT_VEHI = 8;
-    const JNLT_DOC  = 9;
+    const JNLT_DOC = 9;
     const JNLT_FAIL = 10;
     const JNLT_CONF = 11;
     const JNLT_COMM = 12;
-    const JNLT_ALRM = 13; /* incorrect procedure or malfunction events */ 
+    const JNLT_ALRM = 13; /* incorrect procedure or malfunction events */
     const JNLT_SYS = 14;
     const JNLT_RSS = 15;
     const JNLT_SCAD = 16;
@@ -34,7 +34,7 @@ class JnlClass
     const JNLC_ALRM_CRITICAL = 3;
     const JNLC_ALRM_MAJOR = 4;
     const JNLC_ALRM_MINOR = 5;
-    const JNLC_ALRM_WARNING = 6; 
+    const JNLC_ALRM_WARNING = 6;
     const JNLC_ALRM_INCIDENT = 7;
     const JNLC_ALRM_OBS_CRITICAL = 8;
     const JNLC_ALRM_OBS_MAJOR = 9;
@@ -43,7 +43,7 @@ class JnlClass
     const JNLC_ALRM_OBS_INCIDENT = 12;
 }
 
-class Journal 
+class Journal
 {
     private $conn;
     private $autoCommit;
@@ -62,7 +62,7 @@ class Journal
         "EXPIRY_DATE_TANKERS" => "tanker expiry",
         "EXPIRY_DATE_PERSONNEL" => "personnel expiry",
         "GUI_ACCESS_KEYS" => "id assignment",
-        "BASE_PRODS" => "base product"
+        "BASE_PRODS" => "base product",
     );
 
     //Mainly fields in table
@@ -96,7 +96,7 @@ class Journal
             "TANK_ADDRESS" => "register offset",
             "TANK_DRV_AUX" => "auxiliary",
             "TANK_POLL_GAP" => "poll interval",
-            "TANK_IDENTIFIER" => "identifer for gauge"
+            "TANK_IDENTIFIER" => "identifer for gauge",
         ),
         "GUI_PERSONNEL" => array(
             "PER_NAME" => "name",
@@ -108,27 +108,27 @@ class Journal
             "USER_STATUS_FLAG" => "status",
             "PER_CMPY" => "employer",
             "CMPY_NAME" => "employer",
-            "PER_EMAIL" => "personnel email"
+            "PER_EMAIL" => "personnel email",
         ),
-        "EXPIRY_DATE_DETAILS" => array (
+        "EXPIRY_DATE_DETAILS" => array(
 
         ),
-        "TIMECODE" => array (
-            "TCD_MON" => "Monday", 
-            "TCD_TUE" => "Thuesday", 
-            "TCD_WED" => "Wednesday", 
-            "TCD_THU" => "Thursday", 
-            "TCD_FRI" => "Friday", 
-            "TCD_SAT" => "Saturday", 
-            "TCD_SUN" => "Sunday"
+        "TIMECODE" => array(
+            "TCD_MON" => "Monday",
+            "TCD_TUE" => "Thuesday",
+            "TCD_WED" => "Wednesday",
+            "TCD_THU" => "Thursday",
+            "TCD_FRI" => "Friday",
+            "TCD_SAT" => "Saturday",
+            "TCD_SUN" => "Sunday",
         ),
         "PRINTER" => array(
             "SYS_PRNTR" => "system/physical printer",
             "AREA_NAME" => "area location",
             "PRNTR_LOCK" => "lock",
-            "PRNTR_AREA" => "printer area"
+            "PRNTR_AREA" => "printer area",
         ),
-        "GUI_TANKERS" => array (
+        "GUI_TANKERS" => array(
             "ADJ_CMPT_LOCK" => "compartment lock status",
             "TNKR_LOCK" => "lock status",
             "TNKR_ACTIVE" => "active status",
@@ -141,9 +141,9 @@ class Journal
             "TNKR_PIN" => "pin",
             "TNKR_ARCHIVE" => "archive status",
             "REMARKS" => "comments",
-            "TNKR_OWN_TXT" => "tanker prompt"
+            "TNKR_OWN_TXT" => "tanker prompt",
         ),
-        "TRANSP_EQUIP" => array (
+        "TRANSP_EQUIP" => array(
             "EQPT_TITLE" => "title",
             "EQPT_LOCK" => "lock",
             "EQPT_EMPTY_KG" => "empty weight",
@@ -151,9 +151,9 @@ class Journal
             "EQPT_MAX_GROSS" => "pulling limit",
             "EQPT_COMMENTS" => "comments",
             "EQPT_AREA" => "area",
-            "EQPT_LOAD_TYPE" => "load type"
+            "EQPT_LOAD_TYPE" => "load type",
         ),
-        "GUI_ACCESS_KEYS" => array (
+        "GUI_ACCESS_KEYS" => array(
             "KYA_LOCK" => "lock status",
             "KYA_TIMECD" => "time code",
             "KYA_TXT" => "tag",
@@ -164,9 +164,9 @@ class Journal
             "KYA_TANKER" => "tanker",
             "KYA_EQUIPMENT" => "equipment",
             "KYA_SP_SUPPLIER" => "supplier",
-            "KYA_PHYS_NAME" => "physical type"
+            "KYA_PHYS_NAME" => "physical type",
         ),
-        "BASE_PRODS" => array (
+        "BASE_PRODS" => array(
             "BASE_NAME" => "base name",
             "BASE_PROD_GROUP" => "product group",
             "BASE_CORR_MTHD" => "correction method",
@@ -176,13 +176,13 @@ class Journal
             "BASE_CAT" => "classification",
             "BASE_REF_TUNT" => "base ref tunt",
             "BASE_LIMIT_PRESET_HT" => "limit_preset_ht",
-            "BASE_REF_TEMP_SPEC" => "ref temp spec"
-        )
+            "BASE_REF_TEMP_SPEC" => "ref temp spec",
+        ),
     );
 
     //Fields that do not count in valueChange.
     private $fields_excluded = array(
-        "GUI_ACCESS_KEYS" => array("KYA_ROLE", "KYA_TYPE", "KYA_KEY_CREATED", "KYA_PHYS_TYPE")
+        "GUI_ACCESS_KEYS" => array("KYA_ROLE", "KYA_TYPE", "KYA_KEY_CREATED", "KYA_PHYS_TYPE"),
     );
 
     // constructor with $db as database connection
@@ -251,14 +251,14 @@ class Journal
             }
         }
         write_log("Write journal: " . $message, __FILE__, __LINE__, LogLevel::INFO);
-        $query = "INSERT INTO SITE_JOURNAL 
+        $query = "INSERT INTO SITE_JOURNAL
                 (GEN_DATE,
                 REGION_CODE,
                 COMPANY_CODE,
                 MSG_EVENT,
                 MSG_CLASS,
                 MESSAGE,
-                SEQ) 
+                SEQ)
         SELECT SYSDATE,
                 'ENG',
                 SITE_MNGR,
@@ -274,11 +274,13 @@ class Journal
         oci_bind_by_name($stmt, ':jnl_event', $jnl_event);
         oci_bind_by_name($stmt, ':jnl_class', $jnl_class);
         oci_bind_by_name($stmt, ':message', $message);
-        
-        if ($this->autoCommit)
+
+        if ($this->autoCommit) {
             $mode = OCI_COMMIT_ON_SUCCESS;
-        else
+        } else {
             $mode = OCI_NO_AUTO_COMMIT;
+        }
+
         if (!oci_execute($stmt, $mode)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             write_log("Failed to write journal", __FILE__, __LINE__);
@@ -297,7 +299,7 @@ class Journal
     /*
     use RECORD_ADDED % added % record with %: %
     Example [DKI_SUPER_USER] added [personnel area access control] record with [personnel code: cw3]: [area name:test]
-    */
+     */
     // public function valueAdd($term, $record, $value)
     // {
     //     $jnl_data[0] = Utilities::getCurrPsn();
@@ -315,14 +317,15 @@ class Journal
     //     return true;
     // }
 
-    //Call valueChange() to journal all the value changes. Normally in an update. 
+    //Call valueChange() to journal all the value changes. Normally in an update.
     public function updateChanges($set_old, $set_new, $module, $record)
     {
         foreach ($set_new as $key => $value) {
-            if (in_array($key, $this->fields_excluded['GUI_ACCESS_KEYS']))
+            if (in_array($key, $this->fields_excluded['GUI_ACCESS_KEYS'])) {
                 continue;
+            }
 
-            if (isset($set_old[strtoupper($key)]) && $value != $set_old[strtoupper($key)] && 
+            if (isset($set_old[strtoupper($key)]) && $value != $set_old[strtoupper($key)] &&
                 !$this->valueChange(
                     $module, $record, $key, $set_old[strtoupper($key)], $value)) {
                 return false;
@@ -334,22 +337,22 @@ class Journal
 
     /* Use RECORD_CHANGED to write a journal indicating value changes
     % changed % of record % with % % to %
-    Sample: [DKI_SUPER_USER] changed [Terminal] of record [1] with [URBAC_PWD_LEN_MAX] [19] to [20] 
+    Sample: [DKI_SUPER_USER] changed [Terminal] of record [1] with [URBAC_PWD_LEN_MAX] [19] to [20]
     Parameters
-        module: CGI module, indicates in which the change happens, or TABLE name
-        record: mainly table primary key and a string identifying the table record
-        term: which item (field) of this record has been changed, or KEY name
-        orig_value:
-        new_value:
+    module: CGI module, indicates in which the change happens, or TABLE name
+    record: mainly table primary key and a string identifying the table record
+    term: which item (field) of this record has been changed, or KEY name
+    orig_value:
+    new_value:
     For example:
-        [DKI_SUPER_USER] changed [Tank status] of record [code:T1] with [gauging method]  [MANUAL] to [AUTOMATIC]
-        $module == Tank status
-        $record == code:T1
-        $term == "gauging method"
-    */
+    [DKI_SUPER_USER] changed [Tank status] of record [code:T1] with [gauging method]  [MANUAL] to [AUTOMATIC]
+    $module == Tank status
+    $record == code:T1
+    $term == "gauging method"
+     */
     public function valueChange($module, $record, $term, $orig_value, $new_value)
     {
-        write_log(sprintf("%s::%s START. module:%s, record:%s, term:%s, orig:%s, new:%s", 
+        write_log(sprintf("%s::%s START. module:%s, record:%s, term:%s, orig:%s, new:%s",
             __CLASS__, __FUNCTION__, $module, $record, $term, $orig_value, $new_value),
             __FILE__, __LINE__);
 
@@ -357,20 +360,18 @@ class Journal
             return;
         }
 
-        $jnl_data[0] = Utilities::getCurrPsn(); 
-        if (isset($this->modules[$module]))
+        $jnl_data[0] = Utilities::getCurrPsn();
+        if (isset($this->modules[$module])) {
             $jnl_data[1] = $this->modules[$module];
-        else
+        } else {
             $jnl_data[1] = $module;
+        }
 
         $jnl_data[2] = $record;
 
-        if (isset($this->keys[$module][strtoupper($term)]))
-        {
+        if (isset($this->keys[$module][strtoupper($term)])) {
             $jnl_data[3] = $this->keys[$module][strtoupper($term)];
-        }
-        else
-        {
+        } else {
             $jnl_data[3] = $term;
             write_log(sprintf("[%s:%s] not defined in journal::keys, use term instead", $module, $term),
                 __FILE__, __LINE__, LogLevel::WARNING);
@@ -380,8 +381,7 @@ class Journal
         $jnl_data[5] = $new_value;
 
         if (!$this->jnlLogEvent(
-            Lookup::RECORD_CHANGED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
-        {
+            Lookup::RECORD_CHANGED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
