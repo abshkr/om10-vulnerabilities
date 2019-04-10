@@ -34,30 +34,7 @@ class Utilities
                 continue;
             }
 
-            $lower_key = strtolower($key);
-            if (isset(self::$BOOLEAN_FIELDS[strtoupper($class)]) &&
-                array_key_exists($lower_key, self::$BOOLEAN_FIELDS[strtoupper($class)])) {
-                // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
-                if (self::$BOOLEAN_FIELDS[strtoupper($class)][$lower_key] === 'Y') {
-                    if ($value)
-                        $obj->{$key} = 'Y';
-                    else 
-                        $obj->{$key} = 'N';
-                } else if (self::$BOOLEAN_FIELDS[strtoupper($class)][$lower_key] === 'T') {
-                    if ($value)
-                        $obj->{$key} = 'T';
-                    else 
-                        $obj->{$key} = 'F';
-                } else if (self::$BOOLEAN_FIELDS[strtoupper($class)][$lower_key] === '1') {
-                    if ($value)
-                        $obj->{$key} = 1;
-                    else 
-                        $obj->{$key} = 0;
-                } 
-            } else {
-                $obj->{$key} = htmlspecialchars(strip_tags($value));
-            }
-            // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
+            $obj->{$key} = htmlspecialchars(strip_tags($value));
         }
     }
 
@@ -267,15 +244,17 @@ class Utilities
         if ($data) {
             foreach ($data as $key => $value) {
                 $object->$key = $value;
+                self::handleBoolean($class, $object, $key, $value);
             }
         } else {
             // write_log(json_encode($_GET), __FILE__, __LINE__);
             foreach ($_GET as $key => $value) {
                 $object->$key = $value;
+                self::handleBoolean($class, $object, $key, $value);
             }
         }
 
-        write_log(json_encode($object), __FILE__, __LINE__);
+        // write_log(json_encode($object), __FILE__, __LINE__);
 
         if ($object->$method()) {
             echo '{';
@@ -290,6 +269,32 @@ class Utilities
         }
     }
 
+    private static function handleBoolean($class, $object, $key, $value)
+    {
+        $lower_key = strtolower($key);
+        // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
+        // write_log(sprintf("%s, %s", strtoupper($class), $lower_key), __FILE__, __LINE__);
+        if (isset(self::$BOOLEAN_FIELDS[strtoupper($class)]) &&
+            array_key_exists($lower_key, self::$BOOLEAN_FIELDS[strtoupper($class)])) {
+            if (self::$BOOLEAN_FIELDS[strtoupper($class)][$lower_key] === 'Y') {
+                if ($value)
+                    $object->{$key} = 'Y';
+                else 
+                    $object->{$key} = 'N';
+            } else if (self::$BOOLEAN_FIELDS[strtoupper($class)][$lower_key] === 'T') {
+                if ($value)
+                    $object->{$key} = 'T';
+                else 
+                    $object->{$key} = 'F';
+            } else if (self::$BOOLEAN_FIELDS[strtoupper($class)][$lower_key] === '1') {
+                if ($value)
+                    $object->{$key} = 1;
+                else 
+                    $object->{$key} = 0;
+            } 
+        }
+    }
+
     public static function update($class, $method = 'update')
     {
         $database = new Database();
@@ -300,19 +305,19 @@ class Utilities
 
         // get posted data
         $data = json_decode(file_get_contents("php://input"));
-        write_log(json_encode($data), __FILE__, __LINE__);
+        // write_log(json_encode($data), __FILE__, __LINE__);
         if ($data) {
             foreach ($data as $key => $value) {
                 $object->$key = $value;
+                self::handleBoolean($class, $object, $key, $value);
             }
         } else {
             // write_log(json_encode($_GET), __FILE__, __LINE__);
             foreach ($_GET as $key => $value) {
                 $object->$key = $value;
+                self::handleBoolean($class, $object, $key, $value);
             }
         }
-        write_log(json_encode($object), __FILE__, __LINE__);
-
         // write_log(json_encode($object), __FILE__, __LINE__);
 
         if ($object->$method()) {

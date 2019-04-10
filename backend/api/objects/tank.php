@@ -125,10 +125,10 @@ class Tank
                 TANK_MONTHLY_TOL_VOL,
                 TANK_MONTHLY_TOL_PERCENT,
                 TANK_15_DENSITY,
-                TANK_EXCL_FROM_PID,
-                TANK_EXCL_FROM_PDS,
-                TANK_EXCL_FROM_SPECIAL_MV,
-                TANK_EXCL_FROM_STOCK_REP
+                TANK_EXC_PID,
+                TANK_EXC_PDS,
+                TANK_EXC_SPMV,
+                TANK_EXC_STCKRPT
                 )
             VALUES (
                 :tank_code,
