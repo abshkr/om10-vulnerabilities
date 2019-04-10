@@ -1,0 +1,58 @@
+.tank-view {
+  align-items: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -6px;
+  max-height: 65vh;
+  overflow-y: scroll;
+  margin-top: 10px;
+  overflow-x: hidden;
+}
+
+.tank-disabled {
+  align-items: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -6px;
+  margin-left: 45px;
+  margin-right: 45px;
+  max-height: 80vh;
+  overflow-y: scroll;
+  margin-top: 10px;
+  overflow-x: hidden;
+}
+
+.tank {
+  flex-grow: 1;
+  margin: 15px;
+  width: 250px;
+  height: 250px;
+  transition: all 0.3s;
+  border: 1px solid #538aef8a;
+}
+
+.tank:hover {
+  border: 1px solid #538aefe5;
+  box-shadow: 0 10px 10px 0 rgba(60, 64, 67, 0.1);
+}
+
+.titles {
+  text-align: center;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.tank-body {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.tank-status {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.tank-filter {
+  height: 30px;
+}
