@@ -18,7 +18,7 @@ class SiteBalance extends Component {
 
   getSiteBalance = () => {
     this.setState({ isLoading: true });
-    axios.get(`https://10.1.10.66/api/site_bal/read.php?unit=US.GAL`).then(res => {
+    axios.get(`https://10.1.10.66/api/pages/site_bal/read.php?unit=US.GAL`).then(res => {
       this.setState({ data: res.data.records, isLoading: false });
     });
   };

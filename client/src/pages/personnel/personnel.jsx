@@ -29,7 +29,7 @@ class Personnel extends Component {
   }
 
   fetchBaseProducts = () => {
-    axios.get(`https://10.1.10.66/api/personnel/read.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/personnel/read.php`).then(response => {
       const data = response.data.records;
       this.setState({
         data: data,

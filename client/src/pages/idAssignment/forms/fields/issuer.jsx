@@ -11,7 +11,7 @@ export default class Issuer extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/idassignment/issuers.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/idassignment/issuers.php`).then(response => {
       this.setState({
         issuer: response.data.records
       });

@@ -12,7 +12,7 @@ export default class PhysicalType extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/idassignment/physical_types.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/idassignment/physical_types.php`).then(response => {
       this.setState({
         physicalType: response.data.records
       });

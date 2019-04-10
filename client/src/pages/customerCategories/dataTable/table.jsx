@@ -20,7 +20,7 @@ export default class DataTable extends Component {
   }
 
   fetchData = () => {
-    axios.get(`https://10.1.10.66/api/cust_cat/read.php`).then(res => {
+    axios.get(`https://10.1.10.66/api/pages/cust_cat/read.php`).then(res => {
       this.setState({ data: res.data.records });
     });
   };

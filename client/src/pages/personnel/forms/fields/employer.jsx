@@ -10,7 +10,7 @@ export default class Employer extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/personnel/employers.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/personnel/employers.php`).then(response => {
       this.setState({
         employers: response.data.records
       });

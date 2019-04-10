@@ -10,7 +10,7 @@ export default class Area extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/tank_status/areas.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/tank_status/areas.php`).then(response => {
       this.setState({
         area: response.data.records
       });

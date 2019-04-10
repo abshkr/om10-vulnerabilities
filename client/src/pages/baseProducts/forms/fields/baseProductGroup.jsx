@@ -10,7 +10,7 @@ export default class BaseProductGroup extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/base_prod/prod_groups.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/base_prod/prod_groups.php`).then(response => {
       this.setState({
         classifications: response.data.records
       });

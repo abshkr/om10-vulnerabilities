@@ -10,7 +10,7 @@ export default class CorrectionMethod extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/base_prod/corr_mthds.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/base_prod/corr_mthds.php`).then(response => {
       this.setState({
         method: response.data.records
       });

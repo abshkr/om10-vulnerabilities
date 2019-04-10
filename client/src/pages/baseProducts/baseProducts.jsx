@@ -29,7 +29,7 @@ class BaseProducts extends Component {
   }
 
   fetchBaseProducts = () => {
-    axios.get(`https://10.1.10.66/api/base_prod/read.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/base_prod/read.php`).then(response => {
       const data = response.data.records;
       this.setState({
         data: data,

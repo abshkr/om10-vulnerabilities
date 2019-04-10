@@ -10,7 +10,7 @@ export default class Drawer extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/idassignment/drawers.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/idassignment/drawers.php`).then(response => {
       this.setState({
         drawer: response.data.records
       });

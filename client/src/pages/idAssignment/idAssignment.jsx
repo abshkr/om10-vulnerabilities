@@ -48,7 +48,7 @@ class IdAssignment extends Component {
   };
 
   componentDidMount() {
-    axios.get(`https://10.1.10.66/api/idassignment/read.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/idassignment/read.php`).then(response => {
       this.setState({
         data: response.data.records,
         isLoading: false

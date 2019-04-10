@@ -18,7 +18,7 @@ class Metering extends Component {
 
   getMetering = () => {
     this.setState({ isLoading: true });
-    axios.get(`https://10.1.10.66/api/metering/read.php?mass_unit=kg&vol_unit=litre`).then(res => {
+    axios.get(`https://10.1.10.66/api/pages/metering/read.php?mass_unit=kg&vol_unit=litre`).then(res => {
       this.setState({ data: res.data.records, isLoading: false });
     });
   };

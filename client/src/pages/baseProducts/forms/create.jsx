@@ -24,7 +24,7 @@ const Create = Form.create()(
     post = values => {
       axios({
         method: "post",
-        url: "https://10.1.10.66/api/base_prod/create.php",
+        url: "https://10.1.10.66/api/pages/base_prod/create.php",
         data: values
       }).then(function(response) {
         console.log(response);

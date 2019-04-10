@@ -10,7 +10,7 @@ export default class RefSpecTemp extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/base_prod/ref_temp_specs.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/base_prod/ref_temp_specs.php`).then(response => {
       this.setState({
         ref: response.data.records
       });

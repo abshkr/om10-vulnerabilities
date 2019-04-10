@@ -10,7 +10,7 @@ export default class Personnel extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/idassignment/personnel.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/idassignment/personnel.php`).then(response => {
       this.setState({
         personnel: response.data.records
       });

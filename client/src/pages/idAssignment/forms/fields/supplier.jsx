@@ -10,7 +10,7 @@ export default class Supplier extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/idassignment/roles.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/idassignment/roles.php`).then(response => {
       this.setState({
         suppliers: response.data.records
       });

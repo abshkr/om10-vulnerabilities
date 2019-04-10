@@ -10,7 +10,7 @@ export default class TankStatus extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/tank_status/status_types.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/tank_status/status_types.php`).then(response => {
       this.setState({
         status: response.data.records
       });

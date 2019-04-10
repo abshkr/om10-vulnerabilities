@@ -19,7 +19,7 @@ class ProductInventory extends Component {
 
   getProductInventory = () => {
     this.setState({ isLoading: true });
-    axios.get(`https://10.1.10.66/api/prod_inv/read.php?unit=US.GAL`).then(res => {
+    axios.get(`https://10.1.10.66/api/pages/prod_inv/read.php?unit=US.GAL`).then(res => {
       this.setState({ data: res.data.records, isLoading: false });
     });
   };

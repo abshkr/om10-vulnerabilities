@@ -18,7 +18,7 @@ class TankInventory extends Component {
 
   fetchTankInventory = () => {
     this.setState({ isLoading: true });
-    axios.get(`https://10.1.10.66/api/tank_inv/read.php`).then(res => {
+    axios.get(`https://10.1.10.66/api/pages/tank_inv/read.php`).then(res => {
       this.setState({ data: res.data.records, isLoading: false });
     });
   };

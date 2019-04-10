@@ -23,7 +23,7 @@ class CustomerCategories extends Component {
   }
 
   getCustomers = () => {
-    axios.get(`https://10.1.10.66/api/cust_cat/read.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/cust_cat/read.php`).then(response => {
       const data = response.data.records;
       this.setState({
         data: data,

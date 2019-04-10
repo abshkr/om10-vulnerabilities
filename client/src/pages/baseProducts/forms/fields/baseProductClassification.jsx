@@ -10,7 +10,7 @@ export default class BaseProductClassification extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/base_prod/base_classes.php`).then(response => {
+    axios.get(`https://10.1.10.66/api/pages/base_prod/base_classes.php`).then(response => {
       this.setState({
         classifications: response.data.records
       });

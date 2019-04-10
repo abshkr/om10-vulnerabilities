@@ -8,7 +8,7 @@ const FormItem = Form.Item;
 const CreateForm = Form.create()(
   class extends React.Component {
     checkValidity = (rule, value, callback) => {
-      axios.get(`https://10.1.10.66/api/cust_cat/read.php`).then(res => {
+      axios.get(`https://10.1.10.66/api/pages/cust_cat/read.php`).then(res => {
         const data = res.data.records;
         console.log(data);
         find(data);
@@ -74,7 +74,7 @@ export default class Create extends Component {
 
       axios
         .get(
-          `https://10.1.10.66/api/cust_cat/create.php?category_code=${values.code}&category_name=${
+          `https://10.1.10.66/api/pages/cust_cat/create.php?category_code=${values.code}&category_name=${
             values.name
           }`
         )
