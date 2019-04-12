@@ -40,6 +40,15 @@ define ('DEBUG', 'NO'); /* YES or NO */
 /* define the OS for new line character                                       */
 if(!defined('OS')) define('OS','linux'); /* windows or linux */
 
+define('DISPLAY_ALL_ERROS', false);
+if (DISPLAY_ALL_ERROS) {
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+} else {
+    ini_set('display_errors', 0);
+    error_reporting(E_ERROR);
+}
+
 /*============================================================================*/
 /* define the LOGDIR                                                          */
 if(defined('OS') && OS =='linux') {
