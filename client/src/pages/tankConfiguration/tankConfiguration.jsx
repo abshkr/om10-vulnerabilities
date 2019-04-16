@@ -33,7 +33,6 @@ class TankConfiguration extends Component {
       title: !!object ? `Editing (${object.tank_code} / ${object.tank_name})` : "Create",
       centered: true,
       width: 720,
-      maskClosable: true,
       content: <Forms value={object} refresh={this.getTanks} baseProducts={this.state.baseProducts} />,
       okButtonProps: {
         style: { display: "none" }
