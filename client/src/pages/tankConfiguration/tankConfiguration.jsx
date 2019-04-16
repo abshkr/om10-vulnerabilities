@@ -30,7 +30,7 @@ class TankConfiguration extends Component {
 
   handleClick = object => {
     Modal.info({
-      title: !!object ? `Editing ${object.tank_code}` : "Create",
+      title: !!object ? `Editing (${object.tank_code} / ${object.tank_name})` : "Create",
       centered: true,
       width: 720,
       maskClosable: true,
@@ -93,37 +93,13 @@ class TankConfiguration extends Component {
       <Page page={"Gantry"} name={"Tank Configuration"} block={true}>
         <Container>
           <Filter value={value} search={this.searchObjects} loading={isLoading} />
-          <Button
-            type="primary"
-            icon={resize ? "shrink" : "arrows-alt"}
-            style={{ float: "right" }}
-            onClick={this.handleResize}
-            disabled={isLoading}
-          />
-          <Download
-            data={data}
-            type={"Tank Configuration"}
-            style={{ float: "right", marginRight: 5 }}
-            loading={isLoading}
-          />
-          <Button
-            type="primary"
-            style={{ float: "right", marginRight: 5 }}
-            onClick={() => this.handleClick(null)}
-            disabled={isLoading}
-          >
+          <Button type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
+          <Download data={data} type={"Tank Configuration"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
+          <Button type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
             Create Tank Configuration
           </Button>
 
-          <DataTable
-            scroll={2000}
-            data={results}
-            resize={resize}
-            rowKey="base_code"
-            isLoading={isLoading}
-            click={this.handleClick}
-            columns={columns(results)}
-          />
+          <DataTable scroll={2000} data={results} resize={resize} rowKey="base_code" isLoading={isLoading} click={this.handleClick} columns={columns(results)} />
         </Container>
       </Page>
     );

@@ -1,0 +1,1 @@
+alter table PRODUCTS add PROD_IS_LOCKED NUMBER(1,0) default 0;

@@ -31,6 +31,7 @@ class DrawerProductService
 				, PROD_RPTUNITNAME
 				, PROD_RPTTEMP
 				, PROD_NUMBER
+				, PROD_IS_LOCKED
 				, (
 					case when bp.BASE_COUNTS>1 then 'Y' else 'N' end 
 				)				 as PROD_IS_BLEND
@@ -541,6 +542,7 @@ op	37
 		// update load tolerance values
 		$this->updateLoadToleranceFields($data->prod_code, $data->prod_cmpycode, $data->prod_ldtol_ptol, $data->prod_ldtol_ntol);
         $this->updateCompliantField($data->prod_code, $data->prod_cmpycode, $data->prod_is_compliant);
+        $this->updateLockedField($data->prod_code, $data->prod_cmpycode, $data->prod_is_locked);
 		
 		// update product dg link
 		$this->updateProductDGLink($data);
@@ -582,6 +584,7 @@ op	37
 						// update load tolerance values
 						$this->updateLoadToleranceFields($data->prod_code, $data->prod_cmpycode, $data->prod_ldtol_ptol, $data->prod_ldtol_ntol);
 						$this->updateCompliantField($data->prod_code, $data->prod_cmpycode, $data->prod_is_compliant);
+						$this->updateLockedField($data->prod_code, $data->prod_cmpycode, $data->prod_is_locked);
 		
 						// update product dg link
 						$this->updateProductDGLink($data);
@@ -693,6 +696,7 @@ cmpy	0002
 		// update load tolerance values
 		$this->updateLoadToleranceFields($data->prod_code, $data->prod_cmpycode, $data->prod_ldtol_ptol, $data->prod_ldtol_ntol);
 		$this->updateCompliantField($data->prod_code, $data->prod_cmpycode, $data->prod_is_compliant);
+		$this->updateLockedField($data->prod_code, $data->prod_cmpycode, $data->prod_is_locked);
 		
 		// update product dg link
 		$this->updateProductDGLink($data);
@@ -1276,6 +1280,28 @@ newgenprd	GEN_TEST2
         $sql['sql_text'] = "
 			update PRODUCTS set 
 				PROD_IS_COMPLIANT=:cmplnt_flag
+			where 
+				PROD_CODE=:prod_code
+				and PROD_CMPY=:cmpy_code
+		";
+		$sql['sql_data'] = array( $flag, $prod, $cmpy );
+		
+        $result = $mydb->update($sql);
+        return $result;
+    }
+	
+    public function updateLockedField($prod, $cmpy, $flag)
+	{
+		if ( trim($flag) == "" )
+		{
+			$flag = 0;
+		}
+
+        $mydb = DB::getInstance();
+		$sql = array();
+        $sql['sql_text'] = "
+			update PRODUCTS set 
+				PROD_IS_LOCKED=:locked_flag
 			where 
 				PROD_CODE=:prod_code
 				and PROD_CMPY=:cmpy_code

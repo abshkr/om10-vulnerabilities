@@ -16,7 +16,7 @@ export default class TankName extends Component {
     return (
       <Form.Item label="Tank Name">
         {decorator("tank_name", {
-          rules: [{ required: true, message: "Please Enter a Tank Name." }]
+          rules: [{ required: false, message: "Please Enter a Tank Name." }]
         })(<Input />)}
       </Form.Item>
     );

@@ -1108,6 +1108,7 @@
 				}
 				
 				obj.prod_is_compliant = (prod_is_compliant.selected==true?1:0);
+				obj.prod_is_locked = (prod_is_locked.selected==true?1:0);
 				
 				obj.prod_ldtol_flag = (prod_ldtol_flag.selected==true?"on":"");
 				
@@ -1670,6 +1671,7 @@
 				}
 				
 				obj.prod_is_compliant = (prod_is_compliant.selected==true?1:0);
+				obj.prod_is_locked = (prod_is_locked.selected==true?1:0);
 				
 				obj.prod_ldtol_flag = (prod_ldtol_flag.selected==true?"on":"");
 				
@@ -2610,6 +2612,7 @@
 						<s:GridColumn dataField="prod_code" headerText="{resourceManager.getString('default','PROD_CODE')}" visible="true" width="100"></s:GridColumn>
 						<s:GridColumn dataField="prod_name" headerText="{resourceManager.getString('default','PROD_NAME')}" visible="true" width="150"></s:GridColumn>
 						<s:GridColumn dataField="prod_is_compliant" headerText="{resourceManager.getString('default','PROD_IS_COMPLIANT')}" visible="true" itemRenderer="renderers.GridCheckRender" width="100"></s:GridColumn>
+						<s:GridColumn dataField="prod_is_locked" headerText="{resourceManager.getString('default','EQPT_LOCK')}" visible="true" itemRenderer="renderers.GridCheckRender" width="100"></s:GridColumn>
 						<s:GridColumn dataField="prod_group" headerText="{resourceManager.getString('default','PROD_GROUP')}" visible="true" width="100"></s:GridColumn>
 						<s:GridColumn dataField="prod_groupname" headerText="{resourceManager.getString('default','PROD_GROUPNAME')}" visible="true" width="150"></s:GridColumn>
 						<s:GridColumn dataField="prod_price" headerText="{resourceManager.getString('default','PROD_PRICE')}" visible="false"></s:GridColumn>
@@ -2857,9 +2860,11 @@
 				<s:VGroup width="100%" id="desc_area">
 					<s:HGroup>
 						<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','PROD_DESC')}" verticalAlign="middle"/>
-						<s:Label width="{labelWidth}" height="{labelHeight}" text="  "/>
+						<!--s:Label width="{labelWidth}" height="{labelHeight}" text="  "/-->
 						<s:CheckBox id="prod_is_compliant" width="{labelWidth+50}" label="{resourceManager.getString('default','PROD_IS_COMPLIANT')}" fontWeight="bold" 
 									selected="{dataGrid.selectedItem.prod_is_compliant>0?true:false}" enabled="false" enabled.edit="true" enabled.create="true"/>
+						<s:CheckBox id="prod_is_locked" width="{labelWidth+50}" label="{resourceManager.getString('default','EQPT_LOCK')}" fontWeight="bold" 
+									selected="{dataGrid.selectedItem.prod_is_locked>0?true:false}" enabled="false" enabled.edit="true" enabled.create="true"/>
 					</s:HGroup>
 					
 					<s:HGroup>

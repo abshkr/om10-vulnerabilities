@@ -36,11 +36,11 @@ export default class Product extends Component {
         {decorator("tank_base", {
           rules: [{ required: true, message: "Please choose a Product." }]
         })(
-          <Select>
+          <Select showSearch optionFilterProp="children" filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
             {!!classifications &&
               classifications.map((item, index) => (
                 <Option key={index} value={item.base_code}>
-                  {item.base_name}
+                  {`${item.base_name} / ${item.base_code}`}
                 </Option>
               ))}
           </Select>
