@@ -1123,7 +1123,6 @@ class socket_client
         if (!$this->fp)
         {
             logMe("Failed to connect to server. errnum:" . $errnum . ", errstr:" . $errstr, MANUAL_TRANSACTION);
-            $this->respond = "Failed to connect to bay999, please check it is running";
         } 
     }
     

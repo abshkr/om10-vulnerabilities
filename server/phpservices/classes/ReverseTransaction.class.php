@@ -1269,7 +1269,7 @@ class ReverseTransactionClass
 		{
 			$sql = "SELECT l.LOAD_REVERSE_FLAG FROM LOADS l, SCHEDULE s
                                         WHERE  s.SHLSLOAD_LOAD_ID = l.LOAD_ID
-                                        AND    LOAD_DMY IS NOT NULL
+                                        AND    LOAD_DMY IS NULL
                                         AND    s.SHLS_SUPP = '" . $supplier . "'" . " AND s.SHLS_TRIP_NO = " . $trip;
 					
 			$result = $this->db_conn->query($sql);

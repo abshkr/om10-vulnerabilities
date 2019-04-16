@@ -235,7 +235,7 @@ class dmFolioSchedule extends dmModel{
 						case "WEDNESDAY": 	case "WED":		$dayNum = 3;	break;
 						case "THURSDAY":	case "THURS":	$dayNum = 4;	break;
 						case "FRIDAY":		case "FRI":		$dayNum = 5;	break;
-						case "SATURDAY":	case "SAT":		$dayNum = 6;	break;
+						case "SATDAY":	case "SAT":		$dayNum = 6;	break;
 						case "SUNDAY":		case "SUN":		$dayNum = 7;	break;
 						default: return new dmError(array("dev" => "A incorrect argument [" . $this->payload->REPEAT_INTERVAL ."] was not accepted for a WEEK_WINDOW Excpetion."));
 		
@@ -414,7 +414,7 @@ class dmFolioSchedule extends dmModel{
 						case "WEDNESDAY": 	case "WED":		$dayNum = 3;	break;
 						case "THURSDAY":	case "THURS":	$dayNum = 4;	break;
 						case "FRIDAY":		case "FRI":		$dayNum = 5;	break;
-						case "SATURDAY":	case "SAT":		$dayNum = 6;	break;
+						case "SATDAY":	case "SAT":		$dayNum = 6;	break;
 						case "SUNDAY":		case "SUN":		$dayNum = 7;	break;
 						default: return new dmError(array("dev" => "A incorrect argument [" . $this->payload->REPEAT_INTERVAL ."] was not accepted for a WEEK_WINDOW Excpetion."));
 		
