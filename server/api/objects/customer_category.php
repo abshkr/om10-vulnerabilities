@@ -1,7 +1,7 @@
 <?php
 
-include_once __DIR__ . '/../config/journal.php';
-include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../shared/journal.php';
+include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 
 class CustomerCategory

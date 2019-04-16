@@ -7,7 +7,7 @@ header("Content-Type: application/json; charset=UTF-8");
 include_once '../../config/database.php';
 include_once '../../objects/company.php';
 include_once '../shared/utilities.php';
-include_once '../../config/log.php';
+include_once '../../shared/log.php';
  
 // instantiate database and product object
 $database = new Database();

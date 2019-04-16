@@ -6,7 +6,7 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization");
 
 include_once '../../config/database.php';
-include_once '../../config/log.php';
+include_once '../../shared/log.php';
 include_once '../../config/setups.php';
 include_once '../../config/http_get_cgi.php';
 

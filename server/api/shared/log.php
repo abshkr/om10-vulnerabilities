@@ -1,6 +1,6 @@
 <?php
 
-include_once 'setups.php';
+include_once __DIR__ . '/../config/setups.php';
 
 abstract class LogLevel
 {

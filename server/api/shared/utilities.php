@@ -1,6 +1,6 @@
 <?php
 
-include_once __DIR__ . '/../config/log.php';
+include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../config/database.php';
 
 class Utilities

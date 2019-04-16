@@ -184,3 +184,5 @@ https://10.1.10.66/api/pages/tank_strap/read.php?strap_tankcode=T1&start_height=
 https://10.1.10.66/api/pages/tank_strap/create.php?strap_height=900&strap_volume=990&strap_tankcode=T1&strap_sitecode=TGI
 https://10.1.10.66/api/pages/tank_strap/update.php?strap_height=900&strap_volume=991&strap_tankcode=T1
 https://10.1.10.66/api/pages/tank_strap/delete.php?strap_height=900&strap_tankcode=T1
+
+https://10.1.10.66/api/pages/tank_group/read.php

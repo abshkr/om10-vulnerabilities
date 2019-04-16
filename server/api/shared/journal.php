@@ -1,6 +1,6 @@
 <?php
 
-include_once 'lookup.php';
+include_once __DIR__ . '/../config/lookup.php';
 include_once 'log.php';
 
 //Also called JNL_TYPE in jnl.h

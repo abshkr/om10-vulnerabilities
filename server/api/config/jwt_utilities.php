@@ -1,7 +1,7 @@
 <?php
 
 include_once "jwt.php";
-include_once 'log.php';
+include_once __DIR__ . '/../shared/log.php';
 
 function get_token($per_code, $sess_id = null, $exp_seconds = 1800)
 {
