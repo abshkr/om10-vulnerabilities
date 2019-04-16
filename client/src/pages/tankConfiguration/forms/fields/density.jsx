@@ -65,7 +65,7 @@ export default class Density extends Component {
               validator: this.validateDensity
             }
           ]
-        })(<Input />)}
+        })(<Input disabled={low === 0 && high === 0} />)}
       </Form.Item>
     );
   }
