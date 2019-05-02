@@ -96,14 +96,12 @@ class Utilities
         }
         // $result["result_count"] = $num;
 
+        http_response_code(200);
         if ($num > 0) {
-            http_response_code(200);
             echo json_encode($result, JSON_PRETTY_PRINT);
         } else {
-            http_response_code(404);
-            echo json_encode(
-                array("message" => "No record found.")
-            );
+            $result["message"] = "No record found.";
+            echo json_encode($result, JSON_PRETTY_PRINT);
         }
     }
 
