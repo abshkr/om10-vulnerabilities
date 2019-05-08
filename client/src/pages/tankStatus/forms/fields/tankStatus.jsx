@@ -28,9 +28,7 @@ export default class TankStatus extends Component {
     const { Option } = Select;
     return (
       <Form.Item label="Tank Status">
-        {decorator("tank_status_name", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(
+        {decorator("tank_status_name")(
           <Select>
             {!!this.state.status &&
               this.state.status.map((item, index) => (

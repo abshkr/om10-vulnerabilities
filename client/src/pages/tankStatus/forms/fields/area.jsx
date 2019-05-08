@@ -28,9 +28,7 @@ export default class Area extends Component {
     const { Option } = Select;
     return (
       <Form.Item label="Area">
-        {decorator("tank_location", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(
+        {decorator("tank_location")(
           <Select>
             {!!this.state.area &&
               this.state.area.map((item, index) => (

@@ -18,12 +18,6 @@ export default class RefTemp extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Ref Temp">
-        {decorator("ref_temp", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber disabled />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Ref Temp">{decorator("ref_temp")(<InputNumber disabled />)}</Form.Item>;
   }
 }

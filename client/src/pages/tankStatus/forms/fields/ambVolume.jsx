@@ -14,12 +14,6 @@ export default class AmbientVolume extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Ambient Volume">
-        {decorator("tank_amb_vol", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Ambient Volume">{decorator("tank_amb_vol")(<InputNumber />)}</Form.Item>;
   }
 }

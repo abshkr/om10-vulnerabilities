@@ -1,2 +1,2 @@
-import Edit from "./edit";
-export { Edit };
+import Forms from "./forms";
+export default Forms;

@@ -14,12 +14,6 @@ export default class TankGroup extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Tank Group">
-        {decorator("tank_group", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<Input disabled />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Tank Group">{decorator("tank_group")(<Input disabled />)}</Form.Item>;
   }
 }

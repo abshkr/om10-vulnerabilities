@@ -14,12 +14,6 @@ export default class H extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="H">
-        {decorator("tank_h_level", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber />)}
-      </Form.Item>
-    );
+    return <Form.Item label="H">{decorator("tank_h_level")(<InputNumber />)}</Form.Item>;
   }
 }

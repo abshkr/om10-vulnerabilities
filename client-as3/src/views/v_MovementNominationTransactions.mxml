@@ -274,7 +274,7 @@
 			
 			<mx:HRule width="100%"/>
 			<s:HGroup width="100%" horizontalAlign="right">
-				<components:DKI_Button label="{resourceManager.getString('default','button.lbl.SUBMIT')}" type="forward" click="controller.doMovement()"/>
+				<components:DKI_Button label="{resourceManager.getString('default','button.lbl.SUBMIT')}" type="forward" click="controller.doMovement()" enabled="{!controller.isUpdating}"/>
 			</s:HGroup>
 			
 		</s:VGroup>

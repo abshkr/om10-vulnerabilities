@@ -14,12 +14,6 @@ export default class LevelAlarmState extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Level Alarm State">
-        {decorator("tank_lvlalarm_desc", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<Input disabled />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Level Alarm State">{decorator("tank_lvlalarm_desc")(<Input disabled />)}</Form.Item>;
   }
 }

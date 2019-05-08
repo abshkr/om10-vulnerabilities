@@ -20,9 +20,7 @@ export default class GaugingMethod extends Component {
     const { Option } = Select;
     return (
       <Form.Item label="Gauging Method">
-        {decorator("tank_gaugingmthd_desc", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(
+        {decorator("tank_gaugingmthd_desc")(
           <Select>
             {this.state.method.map((item, index) => (
               <Option key={index} value={item}>

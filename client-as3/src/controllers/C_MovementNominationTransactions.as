@@ -33,6 +33,7 @@ package controllers
 		[Bindable] public var canCreate:Boolean = false;
 		[Bindable] public var canDelete:Boolean = false;
 		[Bindable] public var hasPassword:Boolean = false;
+		[Bindable] public var isUpdating:Boolean = false;
 		
 		[Bindable] public var _view:v_MovementNominationTransactions;
 		
@@ -161,6 +162,9 @@ package controllers
 		}
 		
 		public function doMovement():void{
+			
+	
+			
 			var params:Object 	= new Object();
 			params.orderNumber 	= ORDER_NUMBER;
 			params.paraTrans 	= new Object();
@@ -441,20 +445,25 @@ package controllers
 			
 			
 			trace("Request>>"+ ObjectUtil.toString(params));
+			isUpdating = true;
 			DM.SpecialMovements.processManualMovement(function(ob:Object):void{
 				if(ob.data.result_code == 0 ){
 					if ( String(ob.data.result_string).length > 0 ) {
 						global.msgSuccess(ob.data.result_string);
+						isUpdating = false;
 					}
 					else {
+						isUpdating = false;
 						global.msgSuccess(mx.resources.ResourceManager.getInstance().getString('default','global.msg.opersuccess'));
 					}
 					parameters.close();	
 				}else{
 					if ( String(ob.data.result_string).length > 0 ) {
 						global.msgFail(ob.data.result_string);
+						isUpdating = false;
 					}
 					else {
+						isUpdating = false;
 						global.msgFail(mx.resources.ResourceManager.getInstance().getString('default','global.msg.operfailure'));
 					}
 				}

@@ -14,12 +14,6 @@ export default class LeakDetection extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Leak Detection">
-        {decorator("tank_leakdtct_on", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<Input disabled />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Leak Detection">{decorator("tank_leakdtct_on")(<Input disabled />)}</Form.Item>;
   }
 }

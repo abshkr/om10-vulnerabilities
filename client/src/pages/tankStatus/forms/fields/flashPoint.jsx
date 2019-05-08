@@ -14,12 +14,6 @@ export default class FlashPoint extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Flash point">
-        {decorator("tank_flashpoint", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Flash point">{decorator("tank_flashpoint")(<InputNumber />)}</Form.Item>;
   }
 }

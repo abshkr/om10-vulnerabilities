@@ -14,12 +14,6 @@ export default class Channel extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Channel">
-        {decorator("tank_channel", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<Input />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Channel">{decorator("tank_channel")(<Input />)}</Form.Item>;
   }
 }

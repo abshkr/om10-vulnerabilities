@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, Form, Button, Tabs, Row, Col, Divider } from "antd";
+import { Form, Button, Tabs, Row, Col, Divider, Modal } from "antd";
 
 import Terminal from "./fields/terminal";
 import Tank from "./fields/tank";
@@ -42,10 +42,6 @@ import PollInterval from "./fields/pollInterval";
 import RegisterOffset from "./fields/registerOffset";
 
 class EditForm extends Component {
-  state = {
-    context: null
-  };
-
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
@@ -55,40 +51,14 @@ class EditForm extends Component {
     });
   };
 
-  setContext = context => {
-    this.setState({
-      context
-    });
-  };
-
   render() {
-    const { visible, cancel, form, value } = this.props;
+    const { form, value } = this.props;
     const { getFieldDecorator, setFieldsValue } = form;
-    const { context } = this.state;
+
     const TabPane = Tabs.TabPane;
     return (
-      <Modal
-        visible={visible}
-        title={!!value ? `Edit → ${value.tank_code} - ${value.tank_base} - ${value.tank_base_name}` : "Edit"}
-        onCancel={cancel}
-        onOk={this.handleCreate}
-        width={800}
-        destroyOnClose={true}
-        bodyStyle={{
-          overflowY: "scroll",
-          height: 640,
-          overflowX: "hidden"
-        }}
-        footer={[
-          <Button key="cancel" onClick={cancel}>
-            Cancel
-          </Button>,
-          <Button key="update" onClick={this.handleSubmit}>
-            Edit
-          </Button>
-        ]}
-      >
-        <Form>
+      <div>
+        <Form style={{ height: 640 }}>
           <Tabs defaultActiveKey="1">
             <TabPane tab="General" key="1">
               <Terminal decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
@@ -151,11 +121,7 @@ class EditForm extends Component {
                   <ExpCoeff decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
                 </Col>
                 <Col span={4}>
-                  <ObservedTemperature
-                    decorator={getFieldDecorator}
-                    value={value}
-                    setValue={setFieldsValue}
-                  />
+                  <ObservedTemperature decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
                 </Col>
                 <Col span={4}>
                   <AmbientVolume decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
@@ -170,31 +136,13 @@ class EditForm extends Component {
 
               <Row type="flex" justify="space-between">
                 <Col span={4}>
-                  <StandardDensity
-                    decorator={getFieldDecorator}
-                    value={value}
-                    setValue={setFieldsValue}
-                    setContext={this.setContext}
-                    context={context}
-                  />
+                  <StandardDensity decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
                 </Col>
                 <Col span={4}>
-                  <Density
-                    decorator={getFieldDecorator}
-                    value={value}
-                    setValue={setFieldsValue}
-                    setContext={this.setContext}
-                    context={context}
-                  />
+                  <Density decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
                 </Col>
                 <Col span={4}>
-                  <API
-                    decorator={getFieldDecorator}
-                    value={value}
-                    setValue={setFieldsValue}
-                    setContext={this.setContext}
-                    context={context}
-                  />
+                  <API decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
                 </Col>
                 <Col span={4}>
                   <ProductLevel decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
@@ -257,10 +205,24 @@ class EditForm extends Component {
             </TabPane>
           </Tabs>
         </Form>
-      </Modal>
+
+        <Button icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
+          Cancel
+        </Button>
+
+        <Button type="primary" icon={!!value ? "edit" : "plus"} style={{ float: "right", marginRight: 5 }} onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}>
+          {!!value ? "Update" : "Create"}
+        </Button>
+
+        {!!value && (
+          <Button type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
+            Delete
+          </Button>
+        )}
+      </div>
     );
   }
 }
 
-const Edit = Form.create()(EditForm);
-export default Edit;
+const Forms = Form.create()(EditForm);
+export default Forms;

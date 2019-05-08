@@ -14,12 +14,6 @@ export default class StandardVolume extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Standard Volume">
-        {decorator("tank_cor_vol", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Standard Volume">{decorator("tank_cor_vol")(<InputNumber />)}</Form.Item>;
   }
 }

@@ -14,12 +14,6 @@ export default class Instance extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Instance">
-        {decorator("tank_instance", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<Input />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Instance">{decorator("tank_instance")(<Input />)}</Form.Item>;
   }
 }

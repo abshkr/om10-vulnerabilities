@@ -14,12 +14,6 @@ export default class Ullage extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Ullage">
-        {decorator("tank_ullage", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Ullage">{decorator("tank_ullage")(<InputNumber />)}</Form.Item>;
   }
 }
