@@ -14,12 +14,6 @@ export default class Sulphur extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Sulphur (wt%)">
-        {decorator("tank_sulphur", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Sulphur (wt%)">{decorator("tank_sulphur")(<InputNumber />)}</Form.Item>;
   }
 }

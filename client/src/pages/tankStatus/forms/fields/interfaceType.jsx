@@ -14,12 +14,6 @@ export default class InterfaceType extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Interface Type">
-        {decorator("tank_drv_type", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<Input />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Interface Type">{decorator("tank_drv_type")(<Input />)}</Form.Item>;
   }
 }

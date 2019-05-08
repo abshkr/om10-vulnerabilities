@@ -11,31 +11,9 @@ export default class Density extends Component {
     }
   }
 
-  handleEventChange = changedValue => {
-    const { value, setContext } = this.props;
-    if (!!value) {
-      if (value.tank_density !== String(changedValue)) {
-        setContext("tank_density");
-      } else {
-        setContext(null);
-      }
-    }
-  };
-
   render() {
-    const { decorator, context } = this.props;
+    const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Density">
-        {decorator("tank_density", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(
-          <InputNumber
-            disabled={!!context && context !== "tank_density"}
-            onChange={value => this.handleEventChange(value)}
-          />
-        )}
-      </Form.Item>
-    );
+    return <Form.Item label="Density">{decorator("tank_density")(<InputNumber onChange={value => this.handleEventChange(value)} />)}</Form.Item>;
   }
 }

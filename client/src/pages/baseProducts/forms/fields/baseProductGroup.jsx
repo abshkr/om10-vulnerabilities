@@ -31,7 +31,7 @@ export default class BaseProductGroup extends Component {
     return (
       <Form.Item label="Base Product Group">
         {decorator("pgr_code", {
-          rules: [{ required: true, message: "please enter user name" }]
+          rules: [{ required: false, message: "please enter user name" }]
         })(
           <Select>
             {!!classifications &&

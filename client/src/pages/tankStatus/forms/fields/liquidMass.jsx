@@ -14,12 +14,6 @@ export default class LiquidMass extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Liquid Mass">
-        {decorator("tank_liquid_kg", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Liquid Mass">{decorator("tank_liquid_kg")(<InputNumber />)}</Form.Item>;
   }
 }

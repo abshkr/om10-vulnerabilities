@@ -5,36 +5,35 @@
  */
 
 import React, { Component } from "react";
-import auth from "../../utils/auth";
-import Page from "../../components/page";
-import Filter from "../../components/filter";
-import DataTable from "../../components/table";
-import Download from "../../components/download";
-import Container from "../../components/container";
-import { CreateButton } from "../../components/buttons";
 import axios from "axios";
-import search from "../../utils/search";
+import Forms from "./forms";
 import columns from "./columns";
-import { Create, Edit } from "./forms";
+import auth from "../../utils/auth";
+import search from "../../utils/search";
+import { baseProducts } from "../../api";
+import { Button, Modal, notification } from "antd";
+import { Page, Filter, DataTable, Download, Container } from "../../components";
 
 class BaseProducts extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: "",
       data: [],
-      create: false,
-      edit: null
+      value: "",
+      resize: false,
+      isLoading: true
     };
   }
 
-  fetchBaseProducts = () => {
-    axios.get(`https://10.1.10.66/api/pages/base_prod/read.php`).then(response => {
-      const data = response.data.records;
-      this.setState({
-        data: data,
-        isLoading: false
-      });
+  handleClick = object => {
+    Modal.info({
+      title: !!object ? `Editing (${object.base_code} / ${object.base_name})` : "Create",
+      centered: true,
+      width: 720,
+      content: <Forms value={object} refresh={this.getTanks} baseProducts={this.state.baseProducts} />,
+      okButtonProps: {
+        style: { display: "none" }
+      }
     });
   };
 
@@ -46,47 +45,57 @@ class BaseProducts extends Component {
     });
   };
 
-  showCreate = () => {
-    this.setState({ create: true });
+  handleResize = () => {
+    const { resize } = this.state;
+    this.setState({
+      resize: !resize
+    });
   };
 
-  hideCreate = () => {
-    this.setState({ create: false });
-  };
+  getBaseProducts = () => {
+    this.setState({
+      isLoading: true
+    });
 
-  showEdit = record => {
-    this.setState({ edit: record });
-  };
-
-  hideEdit = () => {
-    this.setState({ edit: null });
+    axios
+      .all([baseProducts.readBaseProduct()])
+      .then(
+        axios.spread(baseProducts => {
+          this.setState({
+            isLoading: false,
+            data: baseProducts.data.records,
+            filtered: null,
+            value: ""
+          });
+        })
+      )
+      .catch(function(error) {
+        notification.error({
+          message: error.message,
+          description: "Failed to make the request."
+        });
+      });
   };
 
   componentDidMount() {
-    this.fetchBaseProducts();
+    this.getBaseProducts();
   }
 
   render() {
-    const { data, isLoading, filtered, value, create, edit } = this.state;
+    const { data, isLoading, filtered, value, resize } = this.state;
     const results = !!filtered ? filtered : data;
     const name = "Base Products";
     return (
       <Page page={"Gantry"} name={name} block={true}>
         <Container>
           <Filter value={value} search={this.searchObjects} />
-          <Download data={data} type={name} style={{ float: "right" }} />
-          <CreateButton type={name} style={{ float: "right", marginRight: 5 }} action={this.showCreate} />
-          <Create visible={create} cancel={this.hideCreate} />
-          <Edit visible={!!edit} cancel={this.hideEdit} value={edit} />
+          <Button type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
+          <Download data={data} type={"base_products"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
+          <Button type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
+            Create Base Product
+          </Button>
 
-          <DataTable
-            isLoading={isLoading}
-            rowKey="base_code"
-            columns={columns(results)}
-            data={results}
-            scroll={3600}
-            click={this.showEdit}
-          />
+          <DataTable isLoading={isLoading} resize={resize} rowKey="base_code" columns={columns(results)} data={results} scroll={3600} click={this.handleClick} />
         </Container>
       </Page>
     );

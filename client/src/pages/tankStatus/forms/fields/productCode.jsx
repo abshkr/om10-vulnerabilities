@@ -14,12 +14,6 @@ export default class ProductCode extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Product Code">
-        {decorator("tank_base", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<Input disabled />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Product Code">{decorator("tank_base")(<Input disabled />)}</Form.Item>;
   }
 }

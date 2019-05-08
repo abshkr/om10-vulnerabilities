@@ -14,12 +14,6 @@ export default class ObservedTemperature extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Obsvd Temp">
-        {decorator("tank_temp", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Obsvd Temp">{decorator("tank_temp")(<InputNumber />)}</Form.Item>;
   }
 }

@@ -1,16 +1,13 @@
 import React, { Component } from "react";
 import { Form, Select } from "antd";
 
-export default class GaugingMethod extends Component {
-  state = {
-    method: ["AUTOMATIC", "MANUAL"]
-  };
-
+export default class AdaptiveFlowControl extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
+
     if (!!value) {
       setValue({
-        tank_gaugingmthd_desc: value.tank_gaugingmthd_desc
+        flow_control_enabled: value.flow_control_enabled
       });
     }
   }
@@ -18,11 +15,14 @@ export default class GaugingMethod extends Component {
   render() {
     const { decorator } = this.props;
     const { Option } = Select;
+    const control = ["Enabled", "Disabled"];
     return (
-      <Form.Item label="Gauging Method">
-        {decorator("tank_gaugingmthd_desc")(
+      <Form.Item label="Adaptive Flow Control">
+        {decorator("flow_control_enabled", {
+          rules: [{ required: false, message: "please enter user name" }]
+        })(
           <Select>
-            {this.state.method.map((item, index) => (
+            {control.map((item, index) => (
               <Option key={index} value={item}>
                 {item}
               </Option>

@@ -14,12 +14,6 @@ export default class Auxiliary extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Auxiliary">
-        {decorator("tank_drv_aux", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<Input />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Auxiliary">{decorator("tank_drv_aux")(<Input />)}</Form.Item>;
   }
 }

@@ -655,9 +655,9 @@
 						<s:GridColumn dataField="MVITM_SHIPTEXT_TO" headerText="{resourceManager.getString('default','MOVNOM.LABEL.MVITM_SHIPTEXT_TO')}" visible="true" editable="false"></s:GridColumn>
 						<s:GridColumn dataField="MVITM_SHIPTEXT_TO2" headerText="{resourceManager.getString('default','MOVNOM.LABEL.MVITM_SHIPTEXT_TO2')}" visible="true" editable="false"></s:GridColumn>
 						<s:GridColumn dataField="clnItemComments" headerText="{resourceManager.getString('default','MOVNOM.LABEL.MVITM_COMMENTS')}" visible="true" editable="true" editable.detail="false"></s:GridColumn>
-						<s:GridColumn dataField="clnItemQtySchd" headerText="{resourceManager.getString('default','MOVNOM.LABEL.MVITM_QTY_SCHD')}" visible="false" visible.detail="true"></s:GridColumn>
-						<s:GridColumn dataField="ClnItemQtyMove" headerText="{resourceManager.getString('default','MOVNOM.LABEL.MVITM_QTY_MOVE')}" visible="false" visible.detail="true"></s:GridColumn>
-						<s:GridColumn dataField="ClnItemQtyDelv" headerText="{resourceManager.getString('default','MOVNOM.LABEL.MVITM_QTY_DELV')}" visible="false" visible.detail="true"></s:GridColumn>
+						<s:GridColumn dataField="clnItemQtySchd" headerText="{resourceManager.getString('default','MOVNOM.LABEL.MVITM_QTY_SCHD')}" visible="true" visible.detail="true"></s:GridColumn>
+						<s:GridColumn dataField="ClnItemQtyMove" headerText="{resourceManager.getString('default','MOVNOM.LABEL.MVITM_QTY_MOVE')}" visible="true" visible.detail="true"></s:GridColumn>
+						<s:GridColumn dataField="ClnItemQtyDelv" headerText="{resourceManager.getString('default','MOVNOM.LABEL.MVITM_QTY_DELV')}" visible="true" visible.detail="true"></s:GridColumn>
 					</s:ArrayList>
 				</s:columns>
 				

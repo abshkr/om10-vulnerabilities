@@ -14,12 +14,6 @@ export default class ExpCoeff extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Exp.Coeff">
-        {decorator("tank_api", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<InputNumber />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Exp.Coeff">{decorator("tank_api")(<InputNumber />)}</Form.Item>;
   }
 }

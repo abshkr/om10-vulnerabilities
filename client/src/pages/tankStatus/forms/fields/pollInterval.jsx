@@ -14,12 +14,6 @@ export default class PollInterval extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Poll Interval">
-        {decorator("tank_poll_gap", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<Input />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Poll Interval">{decorator("tank_poll_gap")(<Input />)}</Form.Item>;
   }
 }

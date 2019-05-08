@@ -14,12 +14,6 @@ export default class RegisterOffset extends Component {
   render() {
     const { decorator } = this.props;
 
-    return (
-      <Form.Item label="Register Offset">
-        {decorator("tank_address", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<Input />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Register Offset">{decorator("tank_address")(<Input />)}</Form.Item>;
   }
 }
