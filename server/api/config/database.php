@@ -1,9 +1,9 @@
 <?php
-include_once 'log.php';
 include_once 'setups.php';
 include_once 'jwt.php';
 include_once 'jwt_utilities.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../shared/log.php';
 
 class Database
 {
@@ -96,7 +96,8 @@ class Database
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return $row['CNT'];
         } else {
-            write_log(oci_error($stmt)['message'], __FILE__, __LINE__);
+            $e = oci_error($stmt);
+            write_log($e['message'], __FILE__, __LINE__);
             return false;
         }
     }
@@ -129,7 +130,8 @@ class Database
                 $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
                 return $row['CNT'];
             } else {
-                write_log(oci_error($stmt)['message'], __FILE__, __LINE__);
+                $e = oci_error($stmt);
+                write_log($e['message'], __FILE__, __LINE__);
                 return false;
             }
         } else {

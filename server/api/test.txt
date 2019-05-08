@@ -186,3 +186,5 @@ https://10.1.10.66/api/pages/tank_strap/update.php?strap_height=900&strap_volume
 https://10.1.10.66/api/pages/tank_strap/delete.php?strap_height=900&strap_tankcode=T1
 
 https://10.1.10.66/api/pages/tank_group/read.php
+
+https://10.1.10.66/api/pages/flow_rate/read.php

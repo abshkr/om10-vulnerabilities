@@ -2,9 +2,8 @@
 
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
-include_once __DIR__ . '/../shared/utilities.php';
 
-class Area
+class FlowRate
 {
     // database connection and table name
     private $conn;
@@ -15,20 +14,20 @@ class Area
         $this->conn = $db;
     }
 
+    // read personnel
     public function read()
     {
         $query = "
-            SELECT AREA_K,
-                AREA_NAME,
-                AREA_CPCTY,
-                AREA_EQP_SFT_LNK
-            FROM AREA_RC";
+            SELECT *
+            FROM FLOW_RATES
+            ORDER BY TANK_CODE, BAA_CODE, BAM_CODE";
+
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
-            return $stmt;
-        } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return $stmt;
+        } else {
             return null;
         }
     }
