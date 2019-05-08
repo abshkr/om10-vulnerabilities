@@ -64,7 +64,6 @@
 
 .ant-btn-primary {
   background-color: #fff;
-  border-radius: 30px;
   border: 1px solid #43454a1f;
   color: #68a4ec;
   box-shadow: none;
@@ -94,10 +93,6 @@
 
 .ant-notification-notice-message {
   color: #36393f;
-}
-
-.ant-btn {
-  border-radius: 30px;
 }
 
 .ant-form-item {

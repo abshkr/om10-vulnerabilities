@@ -147,21 +147,10 @@ class TankConfigurationForm extends Component {
         <Form style={{ height: 640 }}>
           <Tabs defaultActiveKey="1">
             <TabPane tab="General" key="1">
-              <TankCode
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                disabled={!!value ? true : false}
-              />
+              <TankCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} disabled={!!value ? true : false} />
               <Product decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <TankName decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Density
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                baseProducts={baseProducts}
-                selectedBase={getFieldValue("tank_base")}
-              />
+              <Density decorator={getFieldDecorator} value={value} setValue={setFieldsValue} baseProducts={baseProducts} selectedBase={getFieldValue("tank_base")} />
             </TabPane>
 
             <TabPane tab="Variance" key="2">
@@ -171,15 +160,13 @@ class TankConfigurationForm extends Component {
               <MonthlyVarianceVol decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
 
-            <TabPane tab="Flags" key="3">
+            <TabPane tab="Adaptive Flow" key="3" />
+
+            <TabPane tab="Flags" key="4">
               <ExcludeFromPID decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <ExcludeFromPOS decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <ExcludeFromSMG decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <ExcludeFromStockReports
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-              />
+              <ExcludeFromStockReports decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
           </Tabs>
         </Form>
@@ -188,22 +175,12 @@ class TankConfigurationForm extends Component {
           Cancel
         </Button>
 
-        <Button
-          type="primary"
-          icon={!!value ? "edit" : "plus"}
-          style={{ float: "right", marginRight: 5 }}
-          onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}
-        >
+        <Button type="primary" icon={!!value ? "edit" : "plus"} style={{ float: "right", marginRight: 5 }} onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}>
           {!!value ? "Update" : "Create"}
         </Button>
 
         {!!value && (
-          <Button
-            type="danger"
-            icon="delete"
-            style={{ float: "right", marginRight: 5 }}
-            onClick={this.showDeleteConfirm}
-          >
+          <Button type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
             Delete
           </Button>
         )}
