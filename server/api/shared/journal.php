@@ -310,7 +310,7 @@ class Journal
     //     if (!$this->jnlLogEvent(
     //         Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT))
     //     {
-    //         write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         write_log("DB error:" . (oci_error($stmt))['message'], __FILE__, __LINE__, LogLevel::ERROR);
     //         return false;
     //     }
 
@@ -382,7 +382,8 @@ class Journal
 
         if (!$this->jnlLogEvent(
             Lookup::RECORD_CHANGED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
 

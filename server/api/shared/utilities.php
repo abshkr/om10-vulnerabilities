@@ -373,7 +373,7 @@ class Utilities
         }
     }
 
-    private static function echoRead($retrieve_count, $result, $desc = "")
+    public static function echoRead($retrieve_count, $result, $desc = "")
     {
         if ($retrieve_count > 0) {
             http_response_code(200);
