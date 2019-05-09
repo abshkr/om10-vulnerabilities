@@ -160,8 +160,6 @@ class TankConfigurationForm extends Component {
               <MonthlyVarianceVol decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
 
-            <TabPane tab="Adaptive Flow" key="3" />
-
             <TabPane tab="Flags" key="4">
               <ExcludeFromPID decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <ExcludeFromPOS decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />

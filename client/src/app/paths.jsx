@@ -142,6 +142,13 @@ const paths = [
       loader: () => import("../pages/tankStatus"),
       loading: Loading
     })
+  },
+  {
+    path: ROUTES.ADAPTIVE_FLOW_CONTROL,
+    component: Loadable({
+      loader: () => import("../pages/adaptiveFlowControl"),
+      loading: Loading
+    })
   }
 ];
 

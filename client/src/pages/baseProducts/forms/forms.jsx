@@ -15,8 +15,6 @@ import {
   CorrectionMethod
 } from "./fields";
 
-import axios from "axios";
-
 class BaseProductsForm extends Component {
   state = {
     color: "#fff"

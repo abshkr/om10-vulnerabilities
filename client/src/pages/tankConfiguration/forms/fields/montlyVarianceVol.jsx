@@ -1,7 +1,15 @@
 import React, { Component } from "react";
 import { Form, Input } from "antd";
+import _ from "lodash";
 
 export default class MonthlyVarianceVol extends Component {
+  handleDataValidation = (rule, value, callback) => {
+    if (value && !_.isInteger(parseInt(value))) {
+      callback("This value must be a number.");
+    }
+    callback();
+  };
+
   componentDidMount() {
     const { value, setValue } = this.props;
     if (!!value) {
@@ -16,7 +24,12 @@ export default class MonthlyVarianceVol extends Component {
     return (
       <Form.Item label="Monthly Limit (Vol)">
         {decorator("tank_mtol_volume", {
-          initialValue: 0
+          initialValue: 0,
+          rules: [
+            {
+              validator: this.handleDataValidation
+            }
+          ]
         })(<Input />)}
       </Form.Item>
     );

@@ -64,7 +64,6 @@ class DataTable extends React.Component {
     return (
       <Table
         bordered
-        size="small"
         loading={{
           indicator: loader,
           spinning: isLoading
@@ -75,7 +74,7 @@ class DataTable extends React.Component {
         dataSource={data}
         onChange={change}
         pagination={paginationConfig}
-        scroll={{ x: !!scroll ? scroll : 2400, y: "83vh" }}
+        scroll={{ x: !!scroll ? scroll : 2400, y: "80vh" }}
         onRow={record => {
           return {
             onClick: () => {

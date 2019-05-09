@@ -55,9 +55,9 @@ export default class Density extends Component {
   render() {
     const { decorator } = this.props;
     const { high, low } = this.state;
-
+    const label = low !== 0 && high !== 8 ? `Density (${low} - ${high} kg/m³)` : "Density";
     return (
-      <Form.Item label={`Density (${low} - ${high} kg/m³)`}>
+      <Form.Item label={label}>
         {decorator("tank_density", {
           rules: [
             { required: true, message: "Please enter your density." },

@@ -65,7 +65,7 @@ const columns = data => [
     key: "tank_dtol_volume",
     sorter: (a, b) => a.tank_dtol_volume - b.tank_dtol_volume,
     sortDirections: ["descend", "ascend"],
-    width: 350
+    width: 400
   },
   {
     title: "Daily Variance Limit (%)",
@@ -73,7 +73,7 @@ const columns = data => [
     key: "tank_dtol_percent",
     sorter: (a, b) => a.tank_dtol_percent - b.tank_dtol_percent,
     sortDirections: ["descend", "ascend"],
-    width: 350
+    width: 400
   },
   {
     title: "Monthly Variance Limit (Vol)",
@@ -81,7 +81,7 @@ const columns = data => [
     key: "tank_mtol_volume",
     sorter: (a, b) => a.tank_mtol_volume - b.tank_mtol_volume,
     sortDirections: ["descend", "ascend"],
-    width: 350
+    width: 400
   },
   {
     title: "Monthly Variance Limit (%)",
@@ -89,7 +89,31 @@ const columns = data => [
     key: "tank_mtol_percent",
     sorter: (a, b) => a.tank_mtol_percent - b.tank_mtol_percent,
     sortDirections: ["descend", "ascend"],
+    width: 400
+  },
+  {
+    title: "Maximum Flow Rate",
+    dataIndex: "max_allowable_flow_rate",
+    key: "max_allowable_flow_rate",
+    width: 400
+  },
+  {
+    title: "Adaptive Arm Priority",
+    dataIndex: "arm_priority",
+    key: "arm_priority",
     width: 350
+  },
+  {
+    title: "Level",
+    dataIndex: "level",
+    key: "level",
+    width: 100
+  },
+  {
+    title: "Flow Rate",
+    dataIndex: "flow_rate",
+    key: "flow_rate",
+    width: 100
   }
 ];
 

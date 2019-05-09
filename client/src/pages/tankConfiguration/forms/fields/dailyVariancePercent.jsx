@@ -1,7 +1,15 @@
 import React, { Component } from "react";
 import { Form, Input } from "antd";
+import _ from "lodash";
 
 export default class DailyVariancePercent extends Component {
+  handleDataValidation = (rule, value, callback) => {
+    if (value && !_.isInteger(parseInt(value))) {
+      callback("This value must be a number.");
+    }
+    callback();
+  };
+
   componentDidMount() {
     const { value, setValue } = this.props;
     if (!!value) {
@@ -16,7 +24,12 @@ export default class DailyVariancePercent extends Component {
     return (
       <Form.Item label="Daily Limit (%)">
         {decorator("tank_dtol_percent", {
-          initialValue: 0
+          initialValue: 0,
+          rules: [
+            {
+              validator: this.handleDataValidation
+            }
+          ]
         })(<Input />)}
       </Form.Item>
     );
