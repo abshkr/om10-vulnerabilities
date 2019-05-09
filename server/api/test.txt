@@ -1,4 +1,4 @@
-https://10.1.10.66/api/pages/config/getenv.php
+https://10.1.10.66/api/config/getenv.php
 
 //This is the sample of all the php code
 https://10.1.10.66/api/pages/cust_cat/read.php
