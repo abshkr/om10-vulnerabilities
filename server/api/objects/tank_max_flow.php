@@ -3,11 +3,11 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 
-class FlowRate
+class TankMaxFlow
 {
     // database connection and table name
     private $conn;
-    public $desc = "flow rate";
+    public $desc = "tank max flow";
 
     // constructor with $db as database connection
     public function __construct($db)
@@ -19,19 +19,9 @@ class FlowRate
     public function read()
     {
         $query = "
-            SELECT FLOW_RATES.TANK_CODE,
-                BAD_PHYSCODE,
-                BAA_CODE,
-                BAM_CODE,
-                FLOWING,
-                HIGH_FLOW_STATE,
-                FLOW_CONTRIBUTION,
-                CURRENT_FLOW_RATE,
-                PRESET,
-                LOADED_QTY, BASE_CODE, BASE_NAME
-            FROM FLOW_RATES, TANKS, BASE_PRODS
-            WHERE FLOW_RATES.TANK_CODE = TANKS.TANK_CODE AND TANK_BASE = BASE_CODE
-            ORDER BY FLOW_RATES.TANK_CODE, BAA_CODE, BAM_CODE";
+            SELECT *
+            FROM TANK_MAX_FLOW
+            ORDER BY TANK_CODE, TANK_LEVEL";
 
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
@@ -49,40 +39,36 @@ class FlowRate
 
         Utilities::sanitize($this);
 
-        $query = "INSERT INTO FLOW_RATES (
+        $this->id = 0;
+
+        $query = "
+        SELECT MAX(ID) + 1 ID
+        FROM TANK_MAX_FLOW";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $this->id = $row['ID'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        $query = "INSERT INTO TANK_MAX_FLOW (
+                ID,
                 TANK_CODE,
-                BAD_PHYSCODE,
-                BAA_CODE,
-                BAM_CODE,
-                FLOWING,
-                HIGH_FLOW_STATE,
-                FLOW_CONTRIBUTION,
-                CURRENT_FLOW_RATE,
-                PRESET,
-                LOADED_QTY)
+                TANK_LEVEL,
+                FLOW_RATE)
             VALUES (
+                :id,
                 :tank_code,
-                :bad_physcode,
-                :baa_code,
-                :bam_code,
-                :flowing,
-                :high_flow_state,
-                :flow_contribution,
-                :current_flow_rate,
-                :preset,
-                :loaded_qty
+                :tank_level,
+                :flow_rate
             )";
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':id', $this->id);
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
-        oci_bind_by_name($stmt, ':bad_physcode', $this->bad_physcode);
-        oci_bind_by_name($stmt, ':baa_code', $this->baa_code);
-        oci_bind_by_name($stmt, ':bam_code', $this->bam_code);
-        oci_bind_by_name($stmt, ':flowing', $this->flowing);
-        oci_bind_by_name($stmt, ':high_flow_state', $this->high_flow_state);
-        oci_bind_by_name($stmt, ':flow_contribution', $this->flow_contribution);
-        oci_bind_by_name($stmt, ':current_flow_rate', $this->current_flow_rate);
-        oci_bind_by_name($stmt, ':preset', $this->preset);
-        oci_bind_by_name($stmt, ':loaded_qty', $this->loaded_qty);
+        oci_bind_by_name($stmt, ':tank_level', $this->tank_level);
+        oci_bind_by_name($stmt, ':flow_rate', $this->flow_rate);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -91,8 +77,8 @@ class FlowRate
 
         $journal = new Journal($this->conn, false);
         $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "flow rate";
-        $jnl_data[2] = $this->bam_code;
+        $jnl_data[1] = "tank max flow";
+        $jnl_data[2] = sprintf("id:%d, tank:%s, level:%d", $this->id, $this->tank_code, $this->tank_level);
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -112,10 +98,10 @@ class FlowRate
 
         Utilities::sanitize($this);
 
-        $query = "DELETE FROM FLOW_RATES
-            WHERE BAM_CODE = :bam_code";
+        $query = "DELETE FROM TANK_MAX_FLOW
+            WHERE ID = :id";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':bam_code', $this->bam_code);
+        oci_bind_by_name($stmt, ':id', $this->id);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -124,8 +110,9 @@ class FlowRate
 
         $journal = new Journal($this->conn, $autocommit = false);
         $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "flow rate";
-        $jnl_data[2] = $this->bam_code;
+        $jnl_data[1] = "tank max flow";
+        // $jnl_data[2] = sprintf("id:%d, tank:%s, level:%d", $this->id, $this->tank_code, $this->tank_level);
+        $jnl_data[2] = $this->id;
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -147,10 +134,10 @@ class FlowRate
 
         $query = "
         SELECT *
-        FROM FLOW_RATES
-        WHERE BAM_CODE = :bam_code";
+        FROM TANK_MAX_FLOW
+        WHERE ID = :id";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':bam_code', $this->bam_code);
+        oci_bind_by_name($stmt, ':id', $this->id);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             // write_log(json_encode($row), __FILE__, __LINE__);
@@ -159,28 +146,16 @@ class FlowRate
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
-        $query = "UPDATE FLOW_RATES
+        $query = "UPDATE TANK_MAX_FLOW
             SET TANK_CODE = :tank_code,
-                BAD_PHYSCODE = :bad_physcode,
-                BAA_CODE = :baa_code,
-                FLOWING = :flowing,
-                HIGH_FLOW_STATE = :high_flow_state,
-                FLOW_CONTRIBUTION = :flow_contribution,
-                CURRENT_FLOW_RATE = :current_flow_rate,
-                PRESET = :preset,
-                LOADED_QTY = :loaded_qty
-            WHERE BAM_CODE = :bam_code";
+                TANK_LEVEL = :tank_level,
+                FLOW_RATE = :flow_rate
+            WHERE ID = :id";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
-        oci_bind_by_name($stmt, ':bad_physcode', $this->bad_physcode);
-        oci_bind_by_name($stmt, ':baa_code', $this->baa_code);
-        oci_bind_by_name($stmt, ':bam_code', $this->bam_code);
-        oci_bind_by_name($stmt, ':flowing', $this->flowing);
-        oci_bind_by_name($stmt, ':high_flow_state', $this->high_flow_state);
-        oci_bind_by_name($stmt, ':flow_contribution', $this->flow_contribution);
-        oci_bind_by_name($stmt, ':current_flow_rate', $this->current_flow_rate);
-        oci_bind_by_name($stmt, ':preset', $this->preset);
-        oci_bind_by_name($stmt, ':loaded_qty', $this->loaded_qty);
+        oci_bind_by_name($stmt, ':tank_level', $this->tank_level);
+        oci_bind_by_name($stmt, ':flow_rate', $this->flow_rate);
+        oci_bind_by_name($stmt, ':id', $this->id);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
@@ -190,8 +165,8 @@ class FlowRate
 
         $journal = new Journal($this->conn, $autocommit = false);
         $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "flow rate";
-        $jnl_data[2] = $this->bam_code;
+        $jnl_data[1] = "tank max flow";
+        $jnl_data[2] = $this->id;
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -201,11 +176,9 @@ class FlowRate
             return false;
         }
 
-        $module = "Flow Rate";
-        $record = sprintf("meter code:%s", $this->bam_code);
+        $module = "Tank Max Flow";
+        $record = sprintf("id:%d", $this->id);
         foreach ($this as $key => $value) {
-            // write_log($key, __FILE__, __LINE__);
-            // write_log($value, __FILE__, __LINE__);
             if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
                 !$journal->valueChange(
                     $module, $record, $key, $row[strtoupper($key)], $value)) {
