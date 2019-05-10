@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import axios from "axios";
 import columns from "./columns";
+import FlowRates from "./flowRates";
 import auth from "../../utils/auth";
 import search from "../../utils/search";
-import { baseProducts } from "../../api";
 import { Modal, notification } from "antd";
+import { baseProducts, adaptiveFlow } from "../../api";
 import { Page, Filter, Download, Container, DataTable } from "../../components";
 
 import "./adaptiveFlowControl.css";
@@ -17,7 +18,8 @@ class AdaptiveFlowControl extends Component {
       value: "",
       resize: false,
       isLoading: true,
-      baseProducts: []
+      baseProducts: [],
+      flowRateList: []
     };
   }
 
@@ -25,8 +27,8 @@ class AdaptiveFlowControl extends Component {
     Modal.info({
       title: `Viewing ${object.base_name}`,
       centered: true,
-      width: "98vw",
-      content: <div style={{ height: "80vh" }}>hey</div>
+      width: "50vw",
+      content: <FlowRates base={object} />
     });
   };
 
@@ -51,14 +53,15 @@ class AdaptiveFlowControl extends Component {
     });
 
     axios
-      .all([baseProducts.readBaseProduct()])
+      .all([baseProducts.readBaseProduct(), adaptiveFlow.readFlowRate()])
       .then(
-        axios.spread(baseProducts => {
+        axios.spread((baseProducts, flowRate) => {
           this.setState({
+            value: "",
+            filtered: null,
             isLoading: false,
             data: baseProducts.data.records,
-            filtered: null,
-            value: ""
+            flowRateList: flowRate.data.records
           });
         })
       )
@@ -75,14 +78,14 @@ class AdaptiveFlowControl extends Component {
   }
 
   render() {
-    const { data, isLoading, filtered, value, resize } = this.state;
+    const { data, isLoading, filtered, value, resize, flowRateList } = this.state;
     const results = !!filtered ? filtered : data;
     return (
       <Page page={"Gantry"} name={"Adaptive Flow Control"} block={true}>
         <Container>
           <Filter value={value} search={this.searchObjects} loading={isLoading} />
           <Download data={data} type={"Tank Configuration"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
-          <DataTable isLoading={isLoading} resize={resize} rowKey="base_code" columns={columns(results)} data={results} click={this.handleClick} scroll={500} />
+          <DataTable isLoading={isLoading} resize={resize} rowKey="base_code" columns={columns(results, flowRateList)} data={results} click={this.handleClick} scroll={500} />
         </Container>
       </Page>
     );

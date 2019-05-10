@@ -32,6 +32,7 @@ class TankConfiguration extends Component {
     Modal.info({
       title: !!object ? `Editing (${object.tank_code} / ${object.tank_name})` : "Create",
       centered: true,
+      icon: !!object ? "edit" : "form",
       width: 720,
       content: <Forms value={object} refresh={this.getTanks} baseProducts={this.state.baseProducts} />,
       okButtonProps: {
