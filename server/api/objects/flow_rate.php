@@ -9,6 +9,14 @@ class FlowRate
     private $conn;
     public $desc = "flow rate";
 
+    //All the fields that should be a number in JSON
+    public $NUMBER_FIELDS = array(
+        "FLOW_CONTRIBUTION",
+        "CURRENT_FLOW_RATE",
+        "PRESET",
+        "LOADED_QTY",
+    );
+
     // constructor with $db as database connection
     public function __construct($db)
     {
@@ -25,20 +33,21 @@ class FlowRate
                 BAM_CODE,
                 FLOWING,
                 HIGH_FLOW_STATE,
-                FLOW_CONTRIBUTION,
-                CURRENT_FLOW_RATE,
-                PRESET,
-                LOADED_QTY, BASE_CODE, BASE_NAME
+                NVL(FLOW_CONTRIBUTION, 0) FLOW_CONTRIBUTION,
+                NVL(CURRENT_FLOW_RATE, 0) CURRENT_FLOW_RATE,
+                NVL(PRESET, 0) PRESET,
+                NVL(LOADED_QTY, 0) LOADED_QTY,
+                BASE_CODE, BASE_NAME
             FROM FLOW_RATES, TANKS, BASE_PRODS
             WHERE FLOW_RATES.TANK_CODE = TANKS.TANK_CODE AND TANK_BASE = BASE_CODE
             ORDER BY FLOW_RATES.TANK_CODE, BAA_CODE, BAM_CODE";
 
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return $stmt;
         } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
     }

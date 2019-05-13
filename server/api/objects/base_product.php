@@ -9,6 +9,11 @@ class Base
     // database connection and table name
     private $conn;
 
+    //All the fields that should be treated as BOOLEAN in JSON
+    public $BOOLEAN_FIELDS = array(
+        "AFC_ENABLED" => "Y",
+    );
+
     // constructor with $db as database connection
     public function __construct($db)
     {
