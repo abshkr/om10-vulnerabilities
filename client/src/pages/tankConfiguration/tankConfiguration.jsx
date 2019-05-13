@@ -32,6 +32,7 @@ class TankConfiguration extends Component {
     Modal.info({
       title: !!object ? `Editing (${object.tank_code} / ${object.tank_name})` : "Create",
       centered: true,
+      icon: !!object ? "edit" : "form",
       width: 720,
       content: <Forms value={object} refresh={this.getTanks} baseProducts={this.state.baseProducts} />,
       okButtonProps: {
@@ -98,7 +99,7 @@ class TankConfiguration extends Component {
             Create Tank Configuration
           </Button>
 
-          <DataTable scroll={2000} data={results} resize={resize} rowKey="base_code" isLoading={isLoading} click={this.handleClick} columns={columns(results)} />
+          <DataTable scroll={2500} data={results} resize={resize} rowKey="base_code" isLoading={isLoading} click={this.handleClick} columns={columns(results)} />
         </Container>
       </Page>
     );

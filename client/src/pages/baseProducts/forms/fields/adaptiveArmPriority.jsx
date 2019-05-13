@@ -7,7 +7,7 @@ export default class AdaptiveArmPriority extends Component {
 
     if (!!value) {
       setValue({
-        arm_priority: value.arm_priority
+        afc_priority: value.afc_priority
       });
     }
   }
@@ -18,7 +18,7 @@ export default class AdaptiveArmPriority extends Component {
     const control = ["LILO (Last in / Last out)", "LIFO (Last in / First out)"];
     return (
       <Form.Item label="Adaptive Arm Priority">
-        {decorator("arm_priority", {
+        {decorator("afc_priority", {
           rules: [{ required: false, message: "please enter user name" }]
         })(
           <Select>

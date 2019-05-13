@@ -1,6 +1,4 @@
 import React from "react";
-import { Tag } from "antd";
-
 import generate from "../../utils/generateOptions";
 
 const columns = data => [
@@ -9,7 +7,8 @@ const columns = data => [
     dataIndex: "tank_code",
     key: "tank_code",
     fixed: "left",
-    render: text => <Tag className="tag">{text}</Tag>
+    // eslint-disable-next-line
+    render: text => <a href="#">{text}</a>
   },
   {
     title: "Tank Name",
@@ -25,7 +24,7 @@ const columns = data => [
     key: "tank_terminal",
     filters: generate(data, "tank_terminal"),
     onFilter: (value, record) => record.tank_terminal.indexOf(value) === 0,
-    width: 300
+    width: 350
   },
   {
     title: "Product Code",
@@ -49,47 +48,76 @@ const columns = data => [
     key: "tank_bclass_name",
     filters: generate(data, "tank_bclass_name"),
     onFilter: (value, record) => record.tank_bclass_name.indexOf(value) === 0,
-    width: 300
+    width: 450
   },
   {
-    title: "Density [kg/m3]",
+    title: "Density",
     dataIndex: "tank_density",
     key: "tank_density",
     sorter: (a, b) => a.tank_density - b.tank_density,
     sortDirections: ["descend", "ascend"],
-    width: 300
+    width: 300,
+    render: text => <span>{text === "" ? `${text}` : `${text} kg/m3`}</span>
   },
   {
-    title: "Daily Variance Limit (Vol)",
+    title: "Daily Variance Limit",
     dataIndex: "tank_dtol_volume",
     key: "tank_dtol_volume",
     sorter: (a, b) => a.tank_dtol_volume - b.tank_dtol_volume,
     sortDirections: ["descend", "ascend"],
-    width: 350
+    width: 400,
+    render: text => <span>{text === "" ? `${text}` : `${text} Vol`}</span>
   },
   {
-    title: "Daily Variance Limit (%)",
+    title: "Daily Variance Limit",
     dataIndex: "tank_dtol_percent",
     key: "tank_dtol_percent",
     sorter: (a, b) => a.tank_dtol_percent - b.tank_dtol_percent,
     sortDirections: ["descend", "ascend"],
-    width: 350
+    width: 400,
+    render: text => <span>{text === "" ? `${text}` : `${text} %`}</span>
   },
   {
-    title: "Monthly Variance Limit (Vol)",
+    title: "Monthly Variance Limit",
     dataIndex: "tank_mtol_volume",
     key: "tank_mtol_volume",
     sorter: (a, b) => a.tank_mtol_volume - b.tank_mtol_volume,
     sortDirections: ["descend", "ascend"],
-    width: 350
+    width: 400,
+    render: text => <span>{text === "" ? `${text}` : `${text} Vol`}</span>
   },
   {
-    title: "Monthly Variance Limit (%)",
+    title: "Monthly Variance Limit",
     dataIndex: "tank_mtol_percent",
     key: "tank_mtol_percent",
     sorter: (a, b) => a.tank_mtol_percent - b.tank_mtol_percent,
     sortDirections: ["descend", "ascend"],
+    width: 400,
+    render: text => <span>{text === "" ? `${text}` : `${text} %`}</span>
+  },
+  {
+    title: "Maximum Flow Rate",
+    dataIndex: "max_allowable_flow_rate",
+    key: "max_allowable_flow_rate",
+    width: 400
+  },
+  {
+    title: "Adaptive Arm Priority",
+    dataIndex: "arm_priority",
+    key: "arm_priority",
     width: 350
+  },
+  {
+    title: "Level",
+    dataIndex: "level",
+    key: "level",
+    width: 100
+  },
+  {
+    title: "Flow Rate",
+    dataIndex: "flow_rate",
+    key: "flow_rate",
+    width: 100
   }
 ];
 
