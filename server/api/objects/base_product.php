@@ -80,6 +80,8 @@ class Base
                 BP.BASE_LIMIT_PRESET_HT,
                 BP.BASE_CORR_MTHD,
                 BP.BASE_REF_TEMP_SPEC,
+                BP.AFC_ENABLED,
+                BP.AFC_PRIORITY,
                 UV.DESCRIPTION AS BASE_REF_TUNT_NAME,
                 CM.COMPENSATION_NAME AS BASE_CORR_MTHD_NAME,
                 RTS.REF_TEMP_SPEC_NAME AS BASE_REF_TEMP_SPEC_NAME
@@ -304,7 +306,9 @@ class Base
                 BASE_CAT = :base_cat,
                 BASE_REF_TUNT = :base_ref_tunt,
                 BASE_LIMIT_PRESET_HT = :base_limit_preset_ht,
-                BASE_REF_TEMP_SPEC = :base_ref_temp_spec
+                BASE_REF_TEMP_SPEC = :base_ref_temp_spec,
+                AFC_ENABLED = :afc_enabled,
+                AFC_PRIORITY = :afc_priority
             WHERE BASE_CODE = :base_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base_color', $this->base_color);
@@ -319,6 +323,8 @@ class Base
         oci_bind_by_name($stmt, ':base_limit_preset_ht', $this->base_limit_preset_ht);
         oci_bind_by_name($stmt, ':base_ref_temp_spec', $this->base_ref_temp_spec);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        oci_bind_by_name($stmt, ':afc_enabled', $this->afc_enabled);
+        oci_bind_by_name($stmt, ':afc_priority', $this->afc_priority);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt)['message'];
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);

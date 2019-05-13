@@ -24,6 +24,9 @@ class Utilities
             "tank_exc_spmv" => "Y",
             "tank_exc_stckrpt" => "Y",
         ),
+        "BASE" => array(
+            "afc_enabled" => "Y",
+        ),
     );
 
     public static function sanitize($obj)

@@ -42,8 +42,8 @@ class TankMaxFlow
         $this->id = 0;
 
         $query = "
-        SELECT MAX(ID) + 1 ID
-        FROM TANK_MAX_FLOW";
+        SELECT SEQ_TANK_MAX_FLOW_ID.NEXTVAL ID
+        FROM DUAL";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
