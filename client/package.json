@@ -16,6 +16,7 @@
     "md5": "^2.2.1",
     "moment-timezone": "^0.5.23",
     "node-forge": "^0.7.6",
+    "rc-texty": "^0.2.0",
     "react": "^16.5.2",
     "react-app-polyfill": "^0.2.2",
     "react-burger-menu": "^2.5.2",
@@ -35,6 +36,7 @@
     "react-router-redux": "^4.0.8",
     "react-scripts": "2.0.5",
     "react-smooth": "^1.0.2",
+    "react-text-loop": "^2.0.2",
     "redux": "^4.0.1",
     "redux-form": "^7.4.2",
     "redux-thunk": "^2.3.0"

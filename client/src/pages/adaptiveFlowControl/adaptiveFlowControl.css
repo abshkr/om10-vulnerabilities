@@ -55,3 +55,17 @@
   font-size: 20px;
   top: 40vh;
 }
+
+.flow-rate-summary {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.flow-rate-summary p span {
+  font-weight: bold;
+}
+
+.flow-rate-title span {
+  font-weight: bold;
+}
