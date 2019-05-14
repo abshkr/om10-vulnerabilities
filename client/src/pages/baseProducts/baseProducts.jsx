@@ -89,7 +89,7 @@ class BaseProducts extends Component {
     return (
       <Page page={"Gantry"} name={name} block={true}>
         <Container>
-          <Filter value={value} search={this.searchObjects} />
+          <Filter value={value} search={this.searchObjects} loading={isLoading} />
           <Button type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
           <Download data={data} type={"base_products"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
           <Button type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>

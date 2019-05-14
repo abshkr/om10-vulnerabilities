@@ -158,6 +158,15 @@ class BaseProductsForm extends Component {
     });
   };
 
+  componentDidMount() {
+    const { value } = this.props;
+    if (!!value) {
+      this.setState({
+        color: value.base_color
+      });
+    }
+  }
+
   render() {
     const { form, value } = this.props;
     const { getFieldDecorator, setFieldsValue } = form;
