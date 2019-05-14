@@ -83,7 +83,7 @@ class Utilities
 
                 } else {
                     if (property_exists($class, "NUMBER_FIELDS") && in_array($key, $object->NUMBER_FIELDS)) {
-                        write_log($value, __FILE__, __LINE__);
+                        // write_log($value, __FILE__, __LINE__);
                         $base_item[$lower_key] = (float) $value;
                     } else {
                         $base_item[$lower_key] = $value;
