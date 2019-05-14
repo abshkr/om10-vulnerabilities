@@ -18,6 +18,7 @@
     "node-forge": "^0.7.6",
     "rc-texty": "^0.2.0",
     "react": "^16.5.2",
+    "react-animated-text": "^0.1.4",
     "react-app-polyfill": "^0.2.2",
     "react-burger-menu": "^2.5.2",
     "react-chartjs-2": "^2.7.4",

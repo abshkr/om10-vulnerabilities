@@ -19,7 +19,7 @@ export default class AdaptiveArmPriority extends Component {
     return (
       <Form.Item label="Adaptive Arm Priority">
         {decorator("afc_priority", {
-          rules: [{ required: false, message: "please enter user name" }]
+          rules: [{ required: false, message: "Please Select An Arm Priority." }]
         })(
           <Select>
             {control.map((item, index) => (

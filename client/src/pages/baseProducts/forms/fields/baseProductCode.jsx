@@ -17,7 +17,7 @@ export default class BaseProductCode extends Component {
     return (
       <Form.Item label="Base Product Code">
         {decorator("base_code", {
-          rules: [{ required: true, message: "please enter user name" }]
+          rules: [{ required: true, message: "Please Enter a Base Product Code" }]
         })(<Input />)}
       </Form.Item>
     );

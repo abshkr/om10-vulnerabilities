@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { Form, Button, Tabs, notification, Modal } from "antd";
+import axios from "axios";
+import { baseProducts } from "../../../api";
 
 import {
   AdaptiveArmPriority,
@@ -39,7 +41,25 @@ class BaseProductsForm extends Component {
         if (!!color) {
           values["base_color"] = this.state.color;
         }
-        console.log(values);
+
+        axios
+          .all([baseProducts.createBaseProduct(values)])
+          .then(
+            axios.spread(response => {
+              this.props.refresh();
+              Modal.destroyAll();
+              notification.success({
+                message: "Successfully Created.",
+                description: `You have created the Base Product ${values.base_code}`
+              });
+            })
+          )
+          .catch(function(error) {
+            notification.error({
+              message: error.message,
+              description: "Failed to create the Base Product."
+            });
+          });
       } else {
         notification.error({
           message: "Validation Failed.",
@@ -56,7 +76,24 @@ class BaseProductsForm extends Component {
         if (!!color) {
           values["base_color"] = this.state.color;
         }
-        console.log(values);
+        axios
+          .all([baseProducts.updateBaseProduct(values)])
+          .then(
+            axios.spread(response => {
+              this.props.refresh();
+              Modal.destroyAll();
+              notification.success({
+                message: "Successfully Updated.",
+                description: `You have updated the Base Product ${values.base_code}`
+              });
+            })
+          )
+          .catch(function(error) {
+            notification.error({
+              message: error.message,
+              description: "Failed to update the Base Product."
+            });
+          });
       } else {
         notification.error({
           message: "Validation Failed.",
@@ -66,7 +103,27 @@ class BaseProductsForm extends Component {
     });
   };
 
-  handleDelete = () => {};
+  handleDelete = () => {
+    const { value } = this.props;
+    axios
+      .all([baseProducts.deleteBaseProduct(value.base_code)])
+      .then(
+        axios.spread(response => {
+          this.props.refresh();
+          Modal.destroyAll();
+          notification.success({
+            message: "Successfully Deleted.",
+            description: `You have deleted the Tank ${value.base_code}`
+          });
+        })
+      )
+      .catch(function(error) {
+        notification.error({
+          message: error.message,
+          description: "Failed to delete the Tank."
+        });
+      });
+  };
 
   showDeleteConfirm = () => {
     Modal.confirm({
@@ -100,6 +157,15 @@ class BaseProductsForm extends Component {
       onOk: this.handleCreate
     });
   };
+
+  componentDidMount() {
+    const { value } = this.props;
+    if (!!value) {
+      this.setState({
+        color: value.base_color
+      });
+    }
+  }
 
   render() {
     const { form, value } = this.props;

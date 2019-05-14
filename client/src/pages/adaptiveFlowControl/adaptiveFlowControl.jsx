@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import axios from "axios";
+import { message } from "antd";
 import columns from "./columns";
 import auth from "../../utils/auth";
-import search from "../../utils/search";
 import FlowRates from "./flowRates";
 import generator from "./generator";
-import { message } from "antd";
+import search from "../../utils/search";
 import { baseProducts, adaptiveFlow } from "../../api";
 import { Page, Filter, Download, Container, DataTable } from "../../components";
 import "./adaptiveFlowControl.css";
@@ -18,10 +18,43 @@ class AdaptiveFlowControl extends Component {
       value: "",
       resize: false,
       isLoading: true,
-      baseProducts: [],
-      flowRateList: []
+      baseProducts: []
     };
   }
+
+  getBaseProducts = () => {
+    axios
+      .all([baseProducts.readBaseProduct(), adaptiveFlow.readFlowRate()])
+      .then(
+        axios.spread((baseProducts, flowRate) => {
+          this.setState({
+            value: "",
+            filtered: null,
+            isLoading: false,
+            baseProducts: baseProducts.data.records,
+            data: generator(baseProducts.data.records, flowRate.data.records)
+          });
+        })
+      )
+      .catch(error => {
+        message.warn("Failed to make the request.");
+        console.error(error);
+      });
+  };
+
+  getFlowRate = () => {
+    const { baseProducts } = this.state;
+
+    if (baseProducts.length !== 0) {
+      axios.all([adaptiveFlow.readFlowRate()]).then(
+        axios.spread(flowRate => {
+          this.setState({
+            data: generator(baseProducts, flowRate.data.records)
+          });
+        })
+      );
+    }
+  };
 
   searchObjects = query => {
     const { value } = query.target;
@@ -31,47 +64,25 @@ class AdaptiveFlowControl extends Component {
     });
   };
 
-  handleResize = () => {
-    const { resize } = this.state;
-    this.setState({
-      resize: !resize
-    });
-  };
-
-  getBaseProducts = () => {
-    this.setState({
-      isLoading: true
-    });
-
-    axios
-      .all([baseProducts.readBaseProduct(), adaptiveFlow.readFlowRate()])
-      .then(
-        axios.spread((baseProducts, flowRate) => {
-          this.setState({
-            value: "",
-            filtered: null,
-            isLoading: false,
-            data: generator(baseProducts.data.records, flowRate.data.records)
-          });
-        })
-      )
-      .catch(function(error) {
-        message.warn("Failed to make the request.");
-      });
-  };
-
   componentDidMount() {
     this.getBaseProducts();
+    try {
+      this.periodic = setInterval(async () => {
+        this.getFlowRate();
+      }, 1000);
+    } catch (e) {
+      clearInterval(this.periodic);
+    }
   }
 
   render() {
-    const { data, isLoading, filtered, value, resize } = this.state;
+    const { data, filtered, value, resize, isLoading } = this.state;
     const results = !!filtered ? filtered : data;
     return (
       <Page page={"Gantry"} name={"Adaptive Flow Control"} block={true}>
         <Container>
-          <Filter value={value} search={this.searchObjects} loading={isLoading} />
-          <Download data={data} type={"Tank Configuration"} style={{ float: "right" }} loading={isLoading} />
+          <Filter value={value} search={this.searchObjects} />
+          <Download data={data} type={"Tank Configuration"} style={{ float: "right" }} />
           <DataTable isLoading={isLoading} resize={resize} rowKey="baseCode" columns={columns(results)} data={results} scroll={500} nested={base => FlowRates(base)} />
         </Container>
       </Page>

@@ -16,7 +16,7 @@ export default class BaseProductName extends Component {
     return (
       <Form.Item label="Base Product Name">
         {decorator("base_name", {
-          rules: [{ required: true, message: "please enter user name" }]
+          rules: [{ required: true, message: "Please Enter a Base Name" }]
         })(<Input />)}
       </Form.Item>
     );

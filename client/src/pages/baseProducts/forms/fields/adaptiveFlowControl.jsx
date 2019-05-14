@@ -15,11 +15,11 @@ export default class AdaptiveFlowControl extends Component {
   render() {
     const { decorator } = this.props;
     const { Option } = Select;
-    const control = [{ key: "Y", value: "Enabled" }, { key: "N", value: "Disabled" }];
+    const control = [{ key: true, value: "Enabled" }, { key: false, value: "Disabled" }];
     return (
       <Form.Item label="Adaptive Flow Control">
         {decorator("afc_enabled", {
-          rules: [{ required: false, message: "please enter user name" }]
+          rules: [{ required: false, message: "Please Select A Flow Control Type" }]
         })(
           <Select>
             {control.map((item, index) => (

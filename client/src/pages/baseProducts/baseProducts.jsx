@@ -30,7 +30,8 @@ class BaseProducts extends Component {
       title: !!object ? `Editing (${object.base_code} / ${object.base_name})` : "Create",
       centered: true,
       width: 720,
-      content: <Forms value={object} refresh={this.getTanks} baseProducts={this.state.baseProducts} />,
+      icon: !!object ? "edit" : "form",
+      content: <Forms value={object} refresh={this.getBaseProducts} baseProducts={this.state.baseProducts} />,
       okButtonProps: {
         style: { display: "none" }
       }
@@ -88,7 +89,7 @@ class BaseProducts extends Component {
     return (
       <Page page={"Gantry"} name={name} block={true}>
         <Container>
-          <Filter value={value} search={this.searchObjects} />
+          <Filter value={value} search={this.searchObjects} loading={isLoading} />
           <Button type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
           <Download data={data} type={"base_products"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
           <Button type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>

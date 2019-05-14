@@ -31,7 +31,7 @@ export default class RefSpecTemp extends Component {
     return (
       <Form.Item label="Reference Temperature Specification">
         {decorator("base_ref_temp_spec", {
-          rules: [{ required: true, message: "please enter user name" }]
+          rules: [{ required: false }]
         })(
           <Select>
             {!!ref &&
