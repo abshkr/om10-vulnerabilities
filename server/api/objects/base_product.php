@@ -122,7 +122,7 @@ class Base
                     OR (SYS_CONTEXT('CONN_CONTEXT', 'ISMANAGER') = 'Y')
                     OR (SYS_CONTEXT('CONN_CONTEXT', 'ISMANAGER') IS NULL)
                 )
-                AND BP.BASE_CAT = BC.BCLASS_NO
+                AND BP.BASE_CAT = BC.BCLASS_NO(+)
                 AND BP.BASE_PROD_GROUP = BG.PGR_CODE(+)
                 AND BP.BASE_CODE = BT.TANK_BASE(+)
                 AND BP.BASE_REF_TUNT = UV.UNIT_ID(+)
