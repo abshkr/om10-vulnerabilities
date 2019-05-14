@@ -1,45 +1,34 @@
-import React, { Component } from "react";
+import React from "react";
+import { Table } from "antd";
 import _ from "lodash";
-import axios from "axios";
-import { Progress } from "antd";
-import { adaptiveFlow } from "../../../api";
+import columns from "./columns";
 
-export default class FlowRates extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      flowRate: []
-    };
-  }
+const summary = base => {
+  return (
+    <div className="flow-rate-summary">
+      <p>
+        <span>Tank Flowrate (LPM): </span>
+        {_.sumBy(base, "flow_contribution")} Litres
+      </p>
+      <p>
+        <span>Tank Maximum (LPM): </span>
+        {0} Litres
+      </p>
+    </div>
+  );
+};
 
-  getFlowRates = () => {
-    axios.all([adaptiveFlow.readFlowRate()]).then(
-      axios.spread(flowRate => {
-        this.setState({
-          flowRate: flowRate.data.records
-        });
-      })
-    );
-  };
+const title = base => {
+  return (
+    <div className="flow-rate-title">
+      <span>Base Product: </span>
+      {base[0].base_code}
+    </div>
+  );
+};
 
-  componentDidMount() {
-    this.getFlowRates();
-  }
+const FlowRates = base => {
+  return <Table columns={columns} dataSource={base.tankList} pagination={false} rowKey="tank_code" title={title} footer={summary} />;
+};
 
-  render() {
-    const { flowRate } = this.state;
-    const filtered = _.filter(flowRate, ["base_code", this.props.base.base_code]);
-    return (
-      <div className="tank-block">
-        {filtered.map(tag => (
-          <div className="tank" key={tag.tank_code}>
-            <div>
-              <Progress type="dashboard" percent={75} width={250} />
-            </div>
-            <p>{tag.tank_code}</p>
-          </div>
-        ))}
-      </div>
-    );
-  }
-}
+export default FlowRates;

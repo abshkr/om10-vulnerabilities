@@ -51,7 +51,7 @@ class DataTable extends React.Component {
   };
 
   render() {
-    const { data, rowKey, change, resize, click, isLoading, scroll } = this.props;
+    const { data, rowKey, change, resize, click, isLoading, scroll, nested } = this.props;
 
     const columns = this.state.columns.map((col, index) => ({
       ...col,
@@ -70,6 +70,7 @@ class DataTable extends React.Component {
           spinning: isLoading
         }}
         rowKey={rowKey}
+        expandedRowRender={!!nested ? nested : null}
         components={this.components}
         columns={resize ? columns : this.props.columns}
         dataSource={data}
