@@ -31,7 +31,7 @@ export default class CorrectionMethod extends Component {
     return (
       <Form.Item label="Correction Method">
         {decorator("base_corr_mthd", {
-          rules: [{ required: true, message: "please enter user name" }]
+          rules: [{ required: false }]
         })(
           <Select>
             {!!method &&

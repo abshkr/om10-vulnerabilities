@@ -30,7 +30,8 @@ class BaseProducts extends Component {
       title: !!object ? `Editing (${object.base_code} / ${object.base_name})` : "Create",
       centered: true,
       width: 720,
-      content: <Forms value={object} refresh={this.getTanks} baseProducts={this.state.baseProducts} />,
+      icon: !!object ? "edit" : "form",
+      content: <Forms value={object} refresh={this.getBaseProducts} baseProducts={this.state.baseProducts} />,
       okButtonProps: {
         style: { display: "none" }
       }

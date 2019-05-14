@@ -16,7 +16,7 @@ export default class DensityRangeHigh extends Component {
     return (
       <Form.Item label="Density Range (High)">
         {decorator("base_class_dens_hi", {
-          rules: [{ required: true, message: "please enter user name" }]
+          rules: [{ required: false, message: "Please Enter a Max Density" }]
         })(<InputNumber />)}
       </Form.Item>
     );

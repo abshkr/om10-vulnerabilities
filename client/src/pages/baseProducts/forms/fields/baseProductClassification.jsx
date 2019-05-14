@@ -31,7 +31,7 @@ export default class BaseProductClassification extends Component {
     return (
       <Form.Item label="Base Product Classifications">
         {decorator("base_class_desc", {
-          rules: [{ required: true, message: "please enter user name" }]
+          rules: [{ required: true, message: "Please Select a Classification" }]
         })(
           <Select>
             {!!classifications &&

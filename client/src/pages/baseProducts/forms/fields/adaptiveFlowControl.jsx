@@ -19,7 +19,7 @@ export default class AdaptiveFlowControl extends Component {
     return (
       <Form.Item label="Adaptive Flow Control">
         {decorator("afc_enabled", {
-          rules: [{ required: false, message: "please enter user name" }]
+          rules: [{ required: false, message: "Please Select A Flow Control Type" }]
         })(
           <Select>
             {control.map((item, index) => (
