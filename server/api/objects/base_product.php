@@ -390,7 +390,6 @@ class Base
 
         $module = "BASE_PRODS";
         $record = sprintf("code:%s", $this->base_code);
-
         if (!$journal->updateChanges($row, $row2, $module, $record)) {
             oci_rollback($this->conn);
             return false;

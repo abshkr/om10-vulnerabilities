@@ -320,8 +320,15 @@ class Journal
     //Call valueChange() to journal all the value changes. Normally in an update.
     public function updateChanges($set_old, $set_new, $module, $record)
     {
+        write_log(sprintf("%s::%s START. module:%s, record:%s", __CLASS__, __FUNCTION__, $module, $record),
+            __FILE__, __LINE__);
+
+        // write_log(json_decode($set_new), __FILE__, __LINE__);
+        // write_log(json_decode($set_old), __FILE__, __LINE__);
+
         foreach ($set_new as $key => $value) {
-            if (in_array($key, $this->fields_excluded['GUI_ACCESS_KEYS'])) {
+            if (array_key_exists($module, $this->fields_excluded) &&
+                in_array($key, $this->fields_excluded[$module])) {
                 continue;
             }
 
