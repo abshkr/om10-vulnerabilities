@@ -9,6 +9,14 @@ class Tank
     // database connection and table name
     private $conn;
 
+    //All the fields that should be treated as BOOLEAN in JSON
+    public $BOOLEAN_FIELDS = array(
+        "TANK_EXC_PID" => "Y",
+        "TANK_EXC_PDS" => "Y",
+        "TANK_EXC_SPMV" => "Y",
+        "TANK_EXC_STCKRPT" => "Y",
+    );
+
     // constructor with $db as database connection
     public function __construct($db)
     {

@@ -99,6 +99,8 @@ class PhysicalPrinter
             return false;
         }
 
+        oci_commit($this->conn);
+
         return true;
     }
 

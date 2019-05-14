@@ -17,14 +17,13 @@ class Utilities
     //"Y" means VARCHAR in db, Y/N.
     //"T" means VARCHAR in db, T/F
     //"1" means NUMBER in DB, 1/0
-    private static $BOOLEAN_FIELDS = array(
-        "TANK" => array(
-            "tank_exc_pid" => "Y",
-            "tank_exc_pds" => "Y",
-            "tank_exc_spmv" => "Y",
-            "tank_exc_stckrpt" => "Y",
-        ),
-    );
+    // sample in tank.php:
+    // public $BOOLEAN_FIELDS = array(
+    //     "TANK_EXC_PID" => "Y",
+    //     "TANK_EXC_PDS" => "Y",
+    //     "TANK_EXC_SPMV" => "Y",
+    //     "TANK_EXC_STCKRPT" => "Y",
+    // );
 
     public static function sanitize($obj)
     {
@@ -74,9 +73,8 @@ class Utilities
             foreach ($row as $key => $value) {
                 $lower_key = strtolower($key);
                 // write_log(sprintf("%s, %s", $class, $lower_key), __FILE__, __LINE__);
-                if (isset(self::$BOOLEAN_FIELDS[strtoupper($class)]) &&
-                    array_key_exists($lower_key, self::$BOOLEAN_FIELDS[strtoupper($class)])) {
-                    // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
+                if (property_exists($class, "BOOLEAN_FIELDS") &&
+                    array_key_exists($key, $object->BOOLEAN_FIELDS)) {
                     if ($value === 1 || $value === 'T' || $value === 'Y') {
                         $base_item[$lower_key] = true;
                     } else {
@@ -84,7 +82,12 @@ class Utilities
                     }
 
                 } else {
-                    $base_item[$lower_key] = $value;
+                    if (property_exists($class, "NUMBER_FIELDS") && in_array($key, $object->NUMBER_FIELDS)) {
+                        write_log($value, __FILE__, __LINE__);
+                        $base_item[$lower_key] = (float) $value;
+                    } else {
+                        $base_item[$lower_key] = $value;
+                    }
                 }
             }
 
@@ -272,23 +275,24 @@ class Utilities
         $lower_key = strtolower($key);
         // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
         // write_log(sprintf("%s, %s", strtoupper($class), $lower_key), __FILE__, __LINE__);
-        if (isset(self::$BOOLEAN_FIELDS[strtoupper($class)]) &&
-            array_key_exists($lower_key, self::$BOOLEAN_FIELDS[strtoupper($class)])) {
-            if (self::$BOOLEAN_FIELDS[strtoupper($class)][$lower_key] === 'Y') {
+
+        if (property_exists($class, "BOOLEAN_FIELDS") &&
+            array_key_exists($key, $object->BOOLEAN_FIELDS)) {
+            if ($object->BOOLEAN_FIELDS[toupper($key)] === 'Y') {
                 if ($value) {
                     $object->{$key} = 'Y';
                 } else {
                     $object->{$key} = 'N';
                 }
 
-            } else if (self::$BOOLEAN_FIELDS[strtoupper($class)][$lower_key] === 'T') {
+            } else if ($object->BOOLEAN_FIELDS[toupper($key)] === 'T') {
                 if ($value) {
                     $object->{$key} = 'T';
                 } else {
                     $object->{$key} = 'F';
                 }
 
-            } else if (self::$BOOLEAN_FIELDS[strtoupper($class)][$lower_key] === '1') {
+            } else if ($object->BOOLEAN_FIELDS[toupper($key)] === '1') {
                 if ($value) {
                     $object->{$key} = 1;
                 } else {
@@ -373,7 +377,7 @@ class Utilities
         }
     }
 
-    private static function echoRead($retrieve_count, $result, $desc = "")
+    public static function echoRead($retrieve_count, $result, $desc = "")
     {
         if ($retrieve_count > 0) {
             http_response_code(200);

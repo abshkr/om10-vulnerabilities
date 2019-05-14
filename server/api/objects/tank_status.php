@@ -138,7 +138,11 @@ class TankStatus
         Utilities::sanitize($this);
 
         $query = "
-            SELECT * FROM GUI_TANKS WHERE TANK_CODE = :tank_code";
+            SELECT GUI_TANKS.*, FLOW_RATE
+            FROM GUI_TANKS, TANK_MAX_FLOW
+            WHERE GUI_TANKS.TANK_CODE = :tank_code
+                AND GUI_TANKS.TANK_CODE = TANK_MAX_FLOW.TANK_CODE(+)
+                AND TANK_PROD_LVL = TANK_LEVEL(+)";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
         if (oci_execute($stmt)) {

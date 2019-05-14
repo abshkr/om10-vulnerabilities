@@ -9,6 +9,11 @@ class Base
     // database connection and table name
     private $conn;
 
+    //All the fields that should be treated as BOOLEAN in JSON
+    public $BOOLEAN_FIELDS = array(
+        "AFC_ENABLED" => "Y",
+    );
+
     // constructor with $db as database connection
     public function __construct($db)
     {
@@ -34,7 +39,7 @@ class Base
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
@@ -80,6 +85,8 @@ class Base
                 BP.BASE_LIMIT_PRESET_HT,
                 BP.BASE_CORR_MTHD,
                 BP.BASE_REF_TEMP_SPEC,
+                BP.AFC_ENABLED,
+                BP.AFC_PRIORITY,
                 UV.DESCRIPTION AS BASE_REF_TUNT_NAME,
                 CM.COMPENSATION_NAME AS BASE_CORR_MTHD_NAME,
                 RTS.REF_TEMP_SPEC_NAME AS BASE_REF_TEMP_SPEC_NAME
@@ -115,7 +122,7 @@ class Base
                     OR (SYS_CONTEXT('CONN_CONTEXT', 'ISMANAGER') = 'Y')
                     OR (SYS_CONTEXT('CONN_CONTEXT', 'ISMANAGER') IS NULL)
                 )
-                AND BP.BASE_CAT = BC.BCLASS_NO
+                AND BP.BASE_CAT = BC.BCLASS_NO(+)
                 AND BP.BASE_PROD_GROUP = BG.PGR_CODE(+)
                 AND BP.BASE_CODE = BT.TANK_BASE(+)
                 AND BP.BASE_REF_TUNT = UV.UNIT_ID(+)
@@ -125,7 +132,7 @@ class Base
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
@@ -181,7 +188,7 @@ class Base
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -194,7 +201,7 @@ class Base
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -216,7 +223,7 @@ class Base
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
         oci_bind_by_name($stmt, ':base_name', $this->base_name);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -236,7 +243,7 @@ class Base
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -246,7 +253,7 @@ class Base
             UPDATE SITE SET SITE_BAI_UPDATE = SITE_BAI_UPDATE + 1";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -262,7 +269,7 @@ class Base
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -288,7 +295,7 @@ class Base
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
@@ -304,7 +311,9 @@ class Base
                 BASE_CAT = :base_cat,
                 BASE_REF_TUNT = :base_ref_tunt,
                 BASE_LIMIT_PRESET_HT = :base_limit_preset_ht,
-                BASE_REF_TEMP_SPEC = :base_ref_temp_spec
+                BASE_REF_TEMP_SPEC = :base_ref_temp_spec,
+                AFC_ENABLED = :afc_enabled,
+                AFC_PRIORITY = :afc_priority
             WHERE BASE_CODE = :base_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base_color', $this->base_color);
@@ -319,8 +328,10 @@ class Base
         oci_bind_by_name($stmt, ':base_limit_preset_ht', $this->base_limit_preset_ht);
         oci_bind_by_name($stmt, ':base_ref_temp_spec', $this->base_ref_temp_spec);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        oci_bind_by_name($stmt, ':afc_enabled', $this->afc_enabled);
+        oci_bind_by_name($stmt, ':afc_priority', $this->afc_priority);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -334,7 +345,7 @@ class Base
         oci_bind_by_name($stmt, ':base_name', $this->base_name);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -344,7 +355,7 @@ class Base
             UPDATE SITE SET SITE_BAI_UPDATE = SITE_BAI_UPDATE + 1";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -358,7 +369,7 @@ class Base
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -373,13 +384,12 @@ class Base
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
         $module = "BASE_PRODS";
         $record = sprintf("code:%s", $this->base_code);
-
         if (!$journal->updateChanges($row, $row2, $module, $record)) {
             oci_rollback($this->conn);
             return false;
@@ -403,7 +413,7 @@ class Base
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
@@ -420,23 +430,23 @@ class Base
             return false;
         }
 
-        $query = "
-            DELETE FROM GENERIC_PROD WHERE GEN_PROD_CODE = :base_code";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':base_code', $this->base_code);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt)['message'];
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
+        // $query = "
+        //     DELETE FROM GENERIC_PROD WHERE GEN_PROD_CODE = :base_code";
+        // $stmt = oci_parse($this->conn, $query);
+        // oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        // if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+        //     $e = oci_error($stmt);
+        //     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
         $query = "
             DELETE FROM BASE_PRODS WHERE BASE_CODE = :base_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -446,7 +456,7 @@ class Base
             UPDATE SITE SET SITE_BAI_UPDATE = SITE_BAI_UPDATE + 1";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
@@ -460,7 +470,7 @@ class Base
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;

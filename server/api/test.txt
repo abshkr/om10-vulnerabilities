@@ -1,4 +1,4 @@
-https://10.1.10.66/api/pages/config/getenv.php
+https://10.1.10.66/api/config/getenv.php
 
 //This is the sample of all the php code
 https://10.1.10.66/api/pages/cust_cat/read.php
@@ -188,3 +188,11 @@ https://10.1.10.66/api/pages/tank_strap/delete.php?strap_height=900&strap_tankco
 https://10.1.10.66/api/pages/tank_group/read.php
 
 https://10.1.10.66/api/pages/flow_rate/read.php
+https://10.1.10.66/api/pages/flow_rate/create.php?tank_code=901B&bad_physcode=BAY02&bam_code=54
+https://10.1.10.66/api/pages/flow_rate/delete.php?bam_code=54
+https://10.1.10.66/api/pages/flow_rate/update.php?tank_code=901B&bad_physcode=BAY01&bam_code=54
+
+https://10.1.10.66/api/pages/tank_max_flow/read.php
+https://10.1.10.66/api/pages/tank_max_flow/create.php?tank_code=T333&tank_level=2000&flow_rate=324
+https://10.1.10.66/api/pages/tank_max_flow/delete.php?id=7
+https://10.1.10.66/api/pages/tank_max_flow/update.php?id=5&tank_code=T333&tank_level=2001&flow_rate=326
