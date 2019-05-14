@@ -46,6 +46,7 @@ const columns = data => [
     title: "Tanks",
     dataIndex: "tankList",
     key: "tankList",
+
     render: tanks => (
       <span>
         {tanks.map(tank => (
@@ -56,6 +57,14 @@ const columns = data => [
       </span>
     )
   },
+  {
+    title: "Activity",
+    dataIndex: "activity",
+    key: "activity",
+    width: 150,
+    render: activity => <span>{`${activity.current} / ${activity.total} `}</span>
+  },
+
   {
     title: "Total Flow Contribution",
     dataIndex: "flowRate",

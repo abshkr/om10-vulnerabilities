@@ -1,6 +1,5 @@
 import React from "react";
 import { Badge } from "antd";
-import TextyAnim from "rc-texty";
 
 const columns = [
   {
@@ -40,38 +39,20 @@ const columns = [
     title: "Flow Contribution (LPM)",
     dataIndex: "flow_contribution",
     key: "flow_contribution",
-    render: value => (
-      <span>
-        <TextyAnim type="top" mode="random">
-          {value}
-        </TextyAnim>
-      </span>
-    )
+    render: value => <span>{value}</span>
   },
 
   {
     title: "Actual Flowrate (LPM)",
     key: "current_flow_rate",
     dataIndex: "current_flow_rate",
-    render: value => (
-      <span>
-        <TextyAnim type="top" mode="random">
-          {value}
-        </TextyAnim>
-      </span>
-    )
+    render: value => <span>{value}</span>
   },
   {
     title: "Loaded Quantity",
     dataIndex: "loaded_qty",
     key: "loaded_qty",
-    render: value => (
-      <span>
-        <TextyAnim type="top" mode="random">
-          {value}
-        </TextyAnim>
-      </span>
-    )
+    render: value => <span>{value}</span>
   }
 ];
 

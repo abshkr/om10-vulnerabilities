@@ -6,13 +6,11 @@ const progressCalculation = (flow, code) => {
       return value.base_code === code;
     })
 
-    .groupBy(value => "key")
-    .mapValues(data => (_.sumBy(data, value => _.toInteger(value.flow_contribution)) / _.sumBy(data, value => _.toInteger(value.current_flow_rate))) * 100)
+    .groupBy("base_code")
+    .mapValues(data => (_.sumBy(data, value => value.flow_contribution) / _.sumBy(data, value => value.current_flow_rate)) * 100)
     .value();
 
-  const payload = value.key === Infinity ? 0 : value.key;
-
-  return payload;
+  return value;
 };
 
 const generator = (base, flow) => {
@@ -25,13 +23,23 @@ const generator = (base, flow) => {
   });
 
   _.forEach(filtered, key => {
+    const calculation = progressCalculation(flow, key.base_code);
+    const flowRate = _.isInteger(calculation[key.base_code]) ? calculation[key.base_code] : 0;
     payload.push({
       baseCode: key.base_code,
       baseName: key.base_name,
       armPriority: "High",
       baseColor: key.base_color,
       tankList: _.filter(flow, ["base_code", key.base_code]),
-      flowRate: progressCalculation(flow, key.base_code),
+      activity: {
+        current: _.filter(flow, value => {
+          return value.base_code === key.base_code && value.flowing === "Y";
+        }).length,
+        total: _.filter(flow, value => {
+          return value.base_code === key.base_code;
+        }).length
+      },
+      flowRate,
       state: ""
     });
   });

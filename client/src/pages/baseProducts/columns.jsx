@@ -7,8 +7,10 @@ const columns = data => [
     title: "Base Product Code",
     dataIndex: "base_code",
     key: "base_code",
-    width: 220,
-    fixed: "left"
+    width: 150,
+    fixed: "left",
+    // eslint-disable-next-line
+    render: text => <a>{text}</a>
   },
   {
     title: "Base Product Name",
@@ -21,19 +23,19 @@ const columns = data => [
     title: "Base Product Color",
     dataIndex: "base_color",
     key: "base_color",
-    width: 180,
+    width: 150,
     render: data => <Tag color={data}>{data === "" ? "N/A" : data}</Tag>
   },
   {
-    title: "Base Product Class Id",
+    title: "Class Id",
     dataIndex: "base_cat",
     key: "base_cat",
-    width: 200,
+    width: 150,
     filters: generate(data, "base_cat"),
     onFilter: (value, record) => record.base_cat.indexOf(value) === 0
   },
   {
-    title: "Base Product Classification",
+    title: "Classification",
     dataIndex: "base_class_desc",
     key: "base_class_desc",
     width: 200,
@@ -53,22 +55,24 @@ const columns = data => [
     width: 200
   },
   {
-    title: "Base Prod Min Density [kg/m3]",
+    title: "Base Prod Min Density",
     dataIndex: "base_dens_lo",
     key: "base_dens_lo",
-    width: 200
+    width: 180,
+    render: data => <span> {data}kg/m3 </span>
   },
   {
-    title: "Base Prod Max Density [kg/m3]",
+    title: "Base Prod Max Density",
     dataIndex: "base_dens_hi",
     key: "base_dens_hi",
-    width: 200
+    width: 180,
+    render: data => <span> {data}kg/m3 </span>
   },
   {
     title: "Is Additive?",
     dataIndex: "base_adtv",
     key: "base_adtv",
-    width: 150
+    width: 100
   },
   {
     title: "Number Of Tanks",
@@ -80,31 +84,44 @@ const columns = data => [
     title: "List of Tanks",
     dataIndex: "base_tank_list",
     key: "base_tank_list",
-    width: 150
+    width: 440,
+    render: tanks => (
+      <span>
+        {tanks.split(",").map(tank => (
+          <Tag key={tank} color="green">
+            {tank}
+          </Tag>
+        ))}
+      </span>
+    )
   },
   {
-    title: "Base Class Min Density [kg/m3]",
+    title: "Base Class Min Density",
     dataIndex: "base_class_dens_lo",
     key: "base_class_dens_lo",
-    width: 180
+    width: 180,
+    render: data => <span> {data}kg/m3 </span>
   },
   {
-    title: "Base Class Min Density [kg/m3]",
+    title: "Base Class Min Density",
     dataIndex: "base_class_dens_hi",
     key: "base_class_dens_hi",
-    width: 180
+    width: 180,
+    render: data => <span> {data} kg/m3 </span>
   },
   {
-    title: "Base Class Min Temperature [°C]",
+    title: "Base Class Min Temperature",
     dataIndex: "base_class_temp_lo",
     key: "base_class_temp_lo",
-    width: 180
+    width: 230,
+    render: data => <span> {data}°C</span>
   },
   {
-    title: "Base Class Max Temperature [°C]",
+    title: "Base Class Max Temperature",
     dataIndex: "base_class_temp_hi",
     key: "base_class_temp_hi",
-    width: 180
+    width: 230,
+    render: data => <span> {data}°C</span>
   },
   {
     title: "Correction Method",
