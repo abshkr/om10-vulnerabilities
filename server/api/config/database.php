@@ -4,6 +4,7 @@ include_once 'jwt.php';
 include_once 'jwt_utilities.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/../shared/log.php';
+include_once __DIR__ . '/../shared/exceptions.php';
 
 class Database
 {
@@ -60,7 +61,7 @@ class Database
                 $token = check_token(get_http_token());
                 if (!$token) {
                     write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
-                    return null;
+                    throw new UnauthException('Authentication check failed, cannot continue');
                 } else {
                     if (INVALIDATE_TOKEN_ENABLED &&
                         !$this->checkSessionStatus($token->per_code, $token->sess_id)) {
@@ -69,13 +70,13 @@ class Database
                                 "Token already invalidated, cannot continue. per_code:%s, sess_id:%s",
                                 $token->per_code, $token->sess_id),
                             __FILE__, __LINE__, LogLevel::ERROR);
-                        return null;
+                        throw new UnauthException('Token already invalidated, cannot continue');
                     }
                 }
             } else {
                 if (!$this->getSessionStatus()) {
                     write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
-                    return null;
+                    throw new UnauthException('Authentication check failed, cannot continue');
                 }
             }
         }
