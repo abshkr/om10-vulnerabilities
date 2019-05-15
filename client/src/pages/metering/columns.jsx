@@ -5,7 +5,7 @@ const handleConversion = (value, unit) => {
   value = parseInt(value);
 
   if (unit === "Litres") {
-    return isNaN(value) ? "0" : value;
+    return isNaN(value) ? "0" : value.toFixed(2);
   }
 
   if (unit === "Cubic Metre") {

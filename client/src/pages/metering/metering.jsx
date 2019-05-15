@@ -28,7 +28,6 @@ class Metering extends Component {
   };
 
   handleUnitChange = unit => {
-    console.log(unit);
     this.setState({ unit });
   };
 
@@ -51,21 +50,19 @@ class Metering extends Component {
     return (
       <Page page={"Stock Management"} name={"Metering"} isLoading={isLoading} block={true}>
         <Container>
-          <div style={{ width: "100%" }}>
-            <Filter value={value} search={this.searchObjects} />
-            <Select defaultValue={unit} style={{ width: 300, marginLeft: 5 }} onChange={this.handleUnitChange}>
-              {units.map((item, index) => {
-                return (
-                  <Select.Option key={index} value={item}>
-                    {item}
-                  </Select.Option>
-                );
-              })}
-            </Select>
-            <Download data={data} type={"Metering"} style={{ float: "right" }} />
-          </div>
+          <Filter value={value} search={this.searchObjects} />
+          <Select defaultValue={unit} style={{ width: 300, marginLeft: 5 }} onChange={this.handleUnitChange}>
+            {units.map((item, index) => {
+              return (
+                <Select.Option key={index} value={item}>
+                  {item}
+                </Select.Option>
+              );
+            })}
+          </Select>
+          <Download data={data} type={"Metering"} style={{ float: "right" }} />
 
-          <DataTable rowKey="metercode" columns={columns(results, unit)} data={results} isLoading={isLoading} scroll={300} click={this.showEdit} />
+          <DataTable rowKey="metercode" columns={columns(results, unit)} data={results} isLoading={isLoading} scroll={300} />
         </Container>
       </Page>
     );
