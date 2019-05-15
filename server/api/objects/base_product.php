@@ -14,20 +14,6 @@ class BaseProduct extends CommonClass
         "AFC_ENABLED" => "Y",
     );
 
-    public function desc_table()
-    {
-        $query = "
-            DESC BASE_CODE";
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
-
     //Give a simple list of base product
     public function simple_list()
     {
