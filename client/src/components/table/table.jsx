@@ -3,7 +3,7 @@ import { Table, Icon } from "antd";
 import { Resizable } from "react-resizable";
 import "./table.css";
 
-const loader = <Icon type="loading" style={{ fontSize: 24 }} spin />;
+const loader = <Icon type="loading" style={{ fontSize: 24, position: "fixed" }} spin />;
 
 const ResizeableTitle = props => {
   const { onResize, width, ...restProps } = props;
