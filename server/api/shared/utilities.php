@@ -41,9 +41,17 @@ class Utilities
     public static function read($class, $method = 'read', $filter = false)
     {
         $database = new Database();
-        $db = $database->getConnection();
+        $db = null;
 
         // initialize object
+        try {
+            $db = $database->getConnection();
+        } catch (UnauthException $e) {
+            http_response_code(401);
+            echo 'Caught exception: ', $e->getMessage();
+            return;
+        }
+
         $object = new $class($db);
 
         if ($filter) {
@@ -60,8 +68,12 @@ class Utilities
             }
         }
 
-        // query products
         $stmt = $object->$method();
+        if (!$stmt) {
+            http_response_code(500);
+            echo "Internal error, check logs/php_rest_*.log file for details";
+            return;
+        }
 
         $result = array();
         $result["records"] = array();
@@ -329,10 +341,12 @@ class Utilities
         // write_log(json_encode($object), __FILE__, __LINE__);
 
         if ($object->$method()) {
+            http_response_code(200);
             echo '{';
             echo '"message": "' . $desc . ' updated."';
             echo '}';
         } else {
+            http_response_code(500);
             echo '{';
             echo '"message": "Unable to update ' .
                 $desc .

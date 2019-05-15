@@ -3,21 +3,29 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once 'common_class.php';
 
-class Base
+class BaseProduct extends CommonClass
 {
-    // database connection and table name
-    private $conn;
+    public $TABLE_NAME = 'BASE_PRODS';
 
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = array(
         "AFC_ENABLED" => "Y",
     );
 
-    // constructor with $db as database connection
-    public function __construct($db)
+    public function desc_table()
     {
-        $this->conn = $db;
+        $query = "
+            DESC BASE_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
     }
 
     //Give a simple list of base product
