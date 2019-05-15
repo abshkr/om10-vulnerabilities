@@ -269,6 +269,14 @@ class Utilities
 
         // write_log(json_encode($object), __FILE__, __LINE__);
 
+        try {
+            $object->mandatory_fields_check();
+        } catch (NullableException $e) {
+            http_response_code(422);
+            echo 'Caught exception: ', $e->getMessage();
+            return;
+        }
+
         if ($object->$method()) {
             echo '{';
             echo '"message": "' . $desc . ' created."';
@@ -338,7 +346,29 @@ class Utilities
                 self::handleBoolean($class, $object, $key, $value);
             }
         }
+
+        try {
+            if (method_exists($object, "mandatory_fields_check")) {
+                $object->mandatory_fields_check();
+            }
+
+        } catch (NullableException $e) {
+            http_response_code(422);
+            echo 'Caught exception: ', $e->getMessage();
+            return;
+        }
+
         // write_log(json_encode($object), __FILE__, __LINE__);
+        try {
+            if (method_exists($object, "prior_to_update")) {
+                $object->prior_to_update();
+            }
+
+        } catch (NonexistentException $e) {
+            http_response_code(422);
+            echo 'Caught exception: ', $e->getMessage();
+            return;
+        }
 
         if ($object->$method()) {
             http_response_code(200);
