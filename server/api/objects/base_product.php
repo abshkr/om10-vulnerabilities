@@ -7,7 +7,7 @@ include_once 'common_class.php';
 
 class BaseProduct extends CommonClass
 {
-    public $TABLE_NAME = 'BASE_PRODS';
+    protected $TABLE_NAME = 'BASE_PRODS';
 
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = array(

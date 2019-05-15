@@ -13,7 +13,7 @@ class CommonClass
     protected $mandatory_fields = null;
     protected $primary_keys = null;
 
-    public $TABLE_NAME = null;
+    protected $TABLE_NAME = null;
 
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = null;
@@ -25,7 +25,7 @@ class CommonClass
     }
 
     //Check if the record that is to be updated is in db
-    public function prior_to_update()
+    public function check_existence()
     {
         // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
         //     __FILE__, __LINE__);
@@ -57,6 +57,12 @@ class CommonClass
         $stmt = oci_parse($this->conn, $query);
         foreach ($this->primary_keys as $value) {
             oci_bind_by_name($stmt, ':' . $value, $this->$value);
+
+            if (!isset($this->$value)) {
+                throw new NonexistentException(
+                    "Primary key fields are missing. Please check these fields: " .
+                    json_encode($this->primary_keys));
+            }
         }
         if (oci_execute($stmt)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
@@ -69,6 +75,7 @@ class CommonClass
                     } else {
                         $primey_key_record .= ", " . $value . ":" . $this->$value;
                     }
+                    $and_count += 1;
                 }
                 throw new NonexistentException(
                     sprintf("record (%s) does not exist", $primey_key_record)

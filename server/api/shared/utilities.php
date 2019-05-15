@@ -360,8 +360,8 @@ class Utilities
 
         // write_log(json_encode($object), __FILE__, __LINE__);
         try {
-            if (method_exists($object, "prior_to_update")) {
-                $object->prior_to_update();
+            if (method_exists($object, "check_existence")) {
+                $object->check_existence();
             }
 
         } catch (NonexistentException $e) {
@@ -407,6 +407,16 @@ class Utilities
         }
 
         // write_log(json_encode($object), __FILE__, __LINE__);
+        try {
+            if (method_exists($object, "check_existence")) {
+                $object->check_existence();
+            }
+
+        } catch (NonexistentException $e) {
+            http_response_code(422);
+            echo 'Caught exception: ', $e->getMessage();
+            return;
+        }
 
         if ($object->$method()) {
             echo '{';

@@ -3,11 +3,11 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once 'common_class.php';
 
-class Tank
+class Tank extends CommonClass
 {
-    // database connection and table name
-    private $conn;
+    protected $TABLE_NAME = 'TANKS';
 
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = array(
@@ -16,12 +16,6 @@ class Tank
         "TANK_EXC_SPMV" => "Y",
         "TANK_EXC_STCKRPT" => "Y",
     );
-
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
 
     //Because base cannot be too many, do not do limit
     //Old sample from amf TankService.php::getPaged():
@@ -351,7 +345,7 @@ class Tank
 
     public function delete()
     {
-        write_log(sprintf("%s::%s() START. base_code:%s", __CLASS__, __FUNCTION__, $this->tank_code),
+        write_log(sprintf("%s::%s() START. tank_code:%s", __CLASS__, __FUNCTION__, $this->tank_code),
             __FILE__, __LINE__);
 
         Utilities::sanitize($this);
