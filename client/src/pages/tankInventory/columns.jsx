@@ -1,3 +1,4 @@
+import React from "react";
 import generate from "../../utils/generateOptions";
 
 const columns = data => [
@@ -7,6 +8,8 @@ const columns = data => [
     key: "tank_code",
     width: 150,
     filters: generate(data, "tank_code"),
+    // eslint-disable-next-line
+    render: text => <a>{text}</a>,
     onFilter: (value, record) => record.tank_code.includes(value)
   },
   {
