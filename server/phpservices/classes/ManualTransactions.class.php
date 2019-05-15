@@ -2545,7 +2545,7 @@ class ManualTransactions
 
             $transfer[$i]->dens = $dens * 1000;
 
-            $transfer[$i]->Temperature = $temp  * 100;
+            $transfer[$i]->Temperature = $temp * 100;
             $transfer[$i]->amb_vol = $amb * 1000;
             $transfer[$i]->cor_vol = $cor * 1000;
             $transfer[$i]->liq_kg = $kg * 1000;
