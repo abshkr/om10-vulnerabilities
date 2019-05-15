@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import auth from "../../utils/auth";
 import { Page, Download, Container, DataTable, Filter } from "../../components";
+import { stockManagement } from "../../api";
 import { Select } from "antd";
 import search from "../../utils/search";
 import axios from "axios";
@@ -22,9 +23,16 @@ class Metering extends Component {
 
   getMetering = () => {
     this.setState({ isLoading: true });
-    axios.get(`https://10.1.10.66/api/pages/metering/read.php?mass_unit=kg&vol_unit=litre`).then(res => {
-      this.setState({ data: res.data.records, isLoading: false });
-    });
+    axios.all([stockManagement.readMetering()]).then(
+      axios.spread(metering => {
+        this.setState({
+          isLoading: false,
+          data: metering.data.records,
+          filtered: null,
+          value: ""
+        });
+      })
+    );
   };
 
   handleUnitChange = unit => {

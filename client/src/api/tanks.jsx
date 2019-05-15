@@ -24,3 +24,7 @@ export function updateTank(payload) {
 export function deleteTank(tank) {
   return axios.post(`https://${api}/api/pages/tank/delete.php?tank_code=${tank}`);
 }
+
+export function readTankInventory() {
+  return axios.get(`https://${api}/api/pages/tank_inv/read.php`);
+}
