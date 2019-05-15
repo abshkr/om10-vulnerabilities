@@ -18,7 +18,7 @@ export default class BaseProductClassification extends Component {
 
     if (!!value) {
       setValue({
-        base_class_desc: value.base_class_desc
+        base_cat: value.base_cat
       });
     }
   }
@@ -30,7 +30,7 @@ export default class BaseProductClassification extends Component {
 
     return (
       <Form.Item label="Base Product Classifications">
-        {decorator("base_class_desc", {
+        {decorator("base_cat", {
           rules: [{ required: true, message: "Please Select a Classification" }]
         })(
           <Select>

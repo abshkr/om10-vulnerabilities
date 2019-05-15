@@ -11,6 +11,13 @@ export default class Density extends Component {
   validateDensity = (rule, value, callback) => {
     const { high, low } = this.state;
 
+    const decimalCheck = new RegExp("^[0-9]+(.[0-9]{1,2})?$");
+    const validateDecimals = decimalCheck.exec(value);
+
+    if (validateDecimals === null) {
+      callback(`Density must be corrected to 2 decimal places.`);
+    }
+
     if (parseInt(value) < parseInt(low)) {
       callback(`Density is too low. Lower Limit: ${low}`);
     }
