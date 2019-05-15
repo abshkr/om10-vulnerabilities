@@ -45,7 +45,8 @@
 			import mx.rpc.events.ResultEvent;
 			import mx.rpc.http.HTTPService;
 			import mx.utils.ObjectUtil;
-			
+			import flash.external.ExternalInterface;
+
 			import spark.events.IndexChangeEvent;
 			import spark.events.TextOperationEvent;
 			
@@ -163,7 +164,6 @@
 				var username:String 	= session?'':user.text;
 				var password:String 	= session?'':global.nonsense(user.text, passwd.text);
 				var rev_password:String = session?'':global.anonsense(user.text, passwd.text);
-				
 				global.amfRequest("SecureAuth.login",
 					function(o:Object = null):void{
 						if(o == "NO VALID SESSION"){
@@ -225,6 +225,10 @@
 								global.msgFail(resourceManager.getString('default','global.msg.systemlocked'));
 							}
 						}else{
+							
+						
+			
+							
 							getGlobalContentsOnLangauge();
 							
 							global.isLoadCancel 		= (o.USER_DETAIL.SITE_CANCEL_LOAD_ENABLED		== 'Y');
@@ -258,6 +262,10 @@
 							LoginID.data.lang = global.LanguageCode;
 							LoginID.data.locale = langDD.selectedIndex;
 							LoginID.flush();
+							
+							
+							
+							
 							
 							if (passExpire == 'T') status=4;
 							if (!validSession){
@@ -612,6 +620,19 @@
 				
 			}
 			
+			
+			protected function handleTwoFactor():void {
+				var twoFactor = ExternalInterface.call("prompt", "Enter Your Code:");
+				
+				if (twoFactor == "abc") {
+					global.amfRequest('SecureAuth.logout',function():void{currentState='normal';},null)
+					
+				} else {
+					Alert.show("Invalid Code");
+				
+				}
+			
+			}
 			protected function getGlobalContentsOnLangauge():void
 			{
 				if ( global.gSafefillLabel == null || global.gSafefillLabel == '' || global.gSafefillLabel == ' ' )

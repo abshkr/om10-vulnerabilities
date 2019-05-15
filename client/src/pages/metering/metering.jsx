@@ -1,10 +1,14 @@
 import React, { Component } from "react";
 import auth from "../../utils/auth";
 import { Page, Download, Container, DataTable, Filter } from "../../components";
+import { stockManagement } from "../../api";
+import { Select } from "antd";
 import search from "../../utils/search";
 import axios from "axios";
 import columns from "./columns";
 import "./metering.css";
+
+const units = ["Litres", "Cubic Metre", "Imperial Gallon", "U.S Gallon", "Imperial Barrel", "U.S Barrel"];
 
 class Metering extends Component {
   constructor(props) {
@@ -12,15 +16,27 @@ class Metering extends Component {
     this.state = {
       data: null,
       isLoading: true,
+      unit: "Litres",
       value: ""
     };
   }
 
   getMetering = () => {
     this.setState({ isLoading: true });
-    axios.get(`https://10.1.10.66/api/pages/metering/read.php?mass_unit=kg&vol_unit=litre`).then(res => {
-      this.setState({ data: res.data.records, isLoading: false });
-    });
+    axios.all([stockManagement.readMetering()]).then(
+      axios.spread(metering => {
+        this.setState({
+          isLoading: false,
+          data: metering.data.records,
+          filtered: null,
+          value: ""
+        });
+      })
+    );
+  };
+
+  handleUnitChange = unit => {
+    this.setState({ unit });
   };
 
   searchObjects = query => {
@@ -36,24 +52,25 @@ class Metering extends Component {
   }
 
   render() {
-    const { isLoading, data, filtered, value } = this.state;
+    const { isLoading, data, filtered, value, unit } = this.state;
     const results = !!filtered ? filtered : data;
+
     return (
       <Page page={"Stock Management"} name={"Metering"} isLoading={isLoading} block={true}>
         <Container>
-          <div style={{ display: "flex", width: "100%", justifyContent: "space-between" }}>
-            <Filter value={value} search={this.searchObjects} />
-            <Download data={data} type={"Metering"} />
-          </div>
+          <Filter value={value} search={this.searchObjects} />
+          <Select defaultValue={unit} style={{ width: 300, marginLeft: 5 }} onChange={this.handleUnitChange}>
+            {units.map((item, index) => {
+              return (
+                <Select.Option key={index} value={item}>
+                  {item}
+                </Select.Option>
+              );
+            })}
+          </Select>
+          <Download data={data} type={"Metering"} style={{ float: "right" }} />
 
-          <DataTable
-            rowKey="metercode"
-            columns={columns(results)}
-            data={results}
-            loading={true}
-            scroll={300}
-            click={this.showEdit}
-          />
+          <DataTable rowKey="metercode" columns={columns(results, unit)} data={results} isLoading={isLoading} scroll={300} />
         </Container>
       </Page>
     );

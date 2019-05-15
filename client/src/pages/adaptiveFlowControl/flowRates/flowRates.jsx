@@ -28,7 +28,7 @@ const title = base => {
 };
 
 const FlowRates = base => {
-  return <Table columns={columns} dataSource={base.tankList} pagination={false} rowKey="tank_code" title={title} footer={summary} />;
+  return <Table size="middle" columns={columns} dataSource={base.tankList} pagination={false} rowKey="tank_code" title={title} footer={summary} className="nested-table" />;
 };
 
 export default FlowRates;

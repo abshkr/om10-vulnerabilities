@@ -44,14 +44,7 @@ class TankInventory extends Component {
         <Container>
           <Filter value={value} search={this.searchObjects} />
           <Download data={data} type={name} style={{ float: "right" }} />
-          <DataTable
-            resize={true}
-            rowKey="base_code"
-            columns={columns(results)}
-            data={results}
-            loading={true}
-            scroll={100}
-          />
+          <DataTable rowKey="tank_code" columns={columns(results)} data={results} isLoading={isLoading} scroll={100} />
         </Container>
       </Page>
     );
