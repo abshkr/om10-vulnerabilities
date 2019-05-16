@@ -18,6 +18,7 @@ export function createTank(payload) {
 }
 
 export function updateTank(payload) {
+  console.log(payload);
   return axios.post(`https://${api}/api/pages/tank/update.php`, payload);
 }
 
