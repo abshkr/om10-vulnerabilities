@@ -18,6 +18,16 @@ class CommonClass
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = null;
 
+    /*
+    Table fields that should not be exampt from mandatory fields. For example,
+    TANK_TERMINAL in TANKS table. This is because React JS does not want to keep
+    this extra field.
+    Every desendant class should set its own $PRIMIRAY_KEY_EXCLUSIONS if there
+    is any filed to be excluded. For example, tank.php
+    All fields name should be in upper case
+     */
+    protected $PRIMIRAY_KEY_EXCLUSIONS = null;
+
     // constructor with $db as database connection
     public function __construct($db)
     {
@@ -132,7 +142,9 @@ class CommonClass
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
-                array_push($this->primary_keys, strtolower($row['COLUMN_NAME']));
+                if (!isset($this->PRIMIRAY_KEY_EXCLUSIONS) || !in_array($row['COLUMN_NAME'], $this->PRIMIRAY_KEY_EXCLUSIONS)) {
+                    array_push($this->primary_keys, strtolower($row['COLUMN_NAME']));
+                }
             }
         } else {
             $e = oci_error($stmt);
@@ -154,7 +166,9 @@ class CommonClass
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
-                array_push($this->mandatory_fields, strtolower($row['COLUMN_NAME']));
+                if (!isset($this->PRIMIRAY_KEY_EXCLUSIONS) || !in_array($row['COLUMN_NAME'], $this->PRIMIRAY_KEY_EXCLUSIONS)) {
+                    array_push($this->mandatory_fields, strtolower($row['COLUMN_NAME']));
+                }
             }
         } else {
             $e = oci_error($stmt);
