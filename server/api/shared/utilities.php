@@ -47,7 +47,8 @@ class Utilities
         try {
             $db = $database->getConnection();
         } catch (UnauthException $e) {
-            http_response_code(401);
+            // http_response_code(401);
+            http_response_code(200);
             echo 'Caught exception: ', $e->getMessage();
             return;
         }
@@ -70,7 +71,8 @@ class Utilities
 
         $stmt = $object->$method();
         if (!$stmt) {
-            http_response_code(500);
+            // http_response_code(500);
+            http_response_code(200);
             echo "Internal error, check logs/php_rest_*.log file for details";
             return;
         }
@@ -215,7 +217,8 @@ class Utilities
             http_response_code(200);
             echo json_encode($result, JSON_PRETTY_PRINT);
         } else {
-            http_response_code(404);
+            // http_response_code(404);
+            http_response_code(200);
             echo json_encode(
                 array("message" => "No record found.")
             );
@@ -272,8 +275,11 @@ class Utilities
         try {
             $object->mandatory_fields_check();
         } catch (NullableException $e) {
-            http_response_code(422);
-            echo 'Caught exception: ', $e->getMessage();
+            // http_response_code(422);
+            http_response_code(200);
+            echo '{';
+            echo '"detail": "Caught exception: ', $e->getMessage() . '"';
+            echo '}';
             return;
         }
 
@@ -353,8 +359,11 @@ class Utilities
             }
 
         } catch (NullableException $e) {
-            http_response_code(422);
-            echo 'Caught exception: ', $e->getMessage();
+            // http_response_code(422);
+            http_response_code(200);
+            echo '{';
+            echo '"detail": "Caught exception: ', $e->getMessage() . '"';
+            echo '}';
             return;
         }
 
@@ -365,8 +374,11 @@ class Utilities
             }
 
         } catch (NonexistentException $e) {
-            http_response_code(422);
-            echo 'Caught exception: ', $e->getMessage();
+            // http_response_code(422);
+            http_response_code(200);
+            echo '{';
+            echo '"detail": "Caught exception: ', $e->getMessage() . '"';
+            echo '}';
             return;
         }
 
