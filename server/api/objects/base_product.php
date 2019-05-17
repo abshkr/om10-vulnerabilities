@@ -11,6 +11,8 @@ class BaseProduct extends CommonClass
 
     public $desc = "base product";
 
+    protected $primary_keys = array("base_code");
+
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = array(
         "AFC_ENABLED" => "Y",
@@ -280,8 +282,6 @@ class BaseProduct extends CommonClass
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
-        $this->initial_updatable_fields();
-
         $query = "
             SELECT *
             FROM BASE_PRODS
@@ -295,37 +295,10 @@ class BaseProduct extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
-        if (!isset($this->updatable_fields)) {
-            write_log("Internal error, updatable fields not set", __FILE__, __LINE__, LogLevel::ERROR);
-        }
-
-        $set_query = "";
-        $to_update = array();
-        foreach ($this as $key => $value) {
-            if (in_array($key, $this->updatable_fields)) {
-                $set_query .= strtoupper($key) . " = :" . $key . ", ";
-                $to_update[$key] = $value;
-            }
-        }
-        $set_query = rtrim($set_query, ', ');
-        if (count($set_query) <= 0) {
-            write_log("Nothing to update", __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = $this->prepare_update($stmt);
+        if (!$stmt) {
             return false;
-        }
-
-        $query = "
-            UPDATE BASE_PRODS
-            SET " . $set_query .
-            " WHERE BASE_CODE = :base_code";
-        write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':base_code', $this->base_code);
-        foreach ($to_update as $key => $value) {
-            // write_log(sprintf("%s:%s:%s", $key, $value, $this->$key), __FILE__, __LINE__);
-            oci_bind_by_name($stmt, ':' . $key, $this->$key);
-        }
-
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+        } else if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);

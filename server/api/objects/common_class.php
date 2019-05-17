@@ -11,6 +11,11 @@ class CommonClass
     //before update/insert, if to check manndatory (not nullable) fields
     protected $check_mandatory = true;
     protected $mandatory_fields = null;
+
+    /* descedant can set primary_keys explicitly, or can leave it to //
+    be initialized by retrieve_primary_keys.
+    It is an array, all lower case
+     */
     protected $primary_keys = null;
 
     protected $TABLE_NAME = null;
@@ -35,6 +40,49 @@ class CommonClass
     public function __construct($db)
     {
         $this->conn = $db;
+    }
+
+    public function prepare_update($stmt)
+    {
+        if (!isset($this->updatable_fields)) {
+            $this->initial_updatable_fields();
+        }
+
+        $set_query = "";
+        $to_update = array();
+        foreach ($this as $key => $value) {
+            if (in_array($key, $this->updatable_fields)) {
+                $set_query .= strtoupper($key) . " = :" . $key . ", ";
+                $to_update[$key] = $value;
+            }
+        }
+        $set_query = rtrim($set_query, ', ');
+        if (count($set_query) <= 0) {
+            write_log("Nothing to update", __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        $where_query = " WHERE ";
+        foreach ($this->primary_keys as $value) {
+            $where_query .= strtoupper($value) . " = :" . $value . " AND ";
+        }
+        $where_query = rtrim($where_query, 'AND ');
+
+        $query = "UPDATE " . $this->TABLE_NAME . " SET " . $set_query . $where_query;
+        write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
+        $stmt = oci_parse($this->conn, $query);
+
+        foreach ($this->primary_keys as $value) {
+            // write_log(sprintf("%s:%s", $value, $this->$value), __FILE__, __LINE__, LogLevel::DEBUG);
+            oci_bind_by_name($stmt, ':' . $value, $this->$value);
+        }
+
+        foreach ($to_update as $key => $value) {
+            // write_log(sprintf("%s:%s:%s", $key, $value, $this->$key), __FILE__, __LINE__);
+            oci_bind_by_name($stmt, ':' . $key, $this->$key);
+        }
+
+        return $stmt;
     }
 
     //Fill up $this->updatable_fields so that descendant class
@@ -92,7 +140,10 @@ class CommonClass
             return true;
         }
 
-        $this->retrieve_primary_keys();
+        if (!isset($this->primary_keys)) {
+            $this->retrieve_primary_keys();
+        }
+
         if (count($this->primary_keys) <= 0) {
             write_log($this->TABLE_NAME . " does not have primary key", __FILE__, __LINE__);
             return true;
@@ -144,7 +195,7 @@ class CommonClass
             }
 
             $this->retrieve_mandatory_fields();
-            write_log(json_encode($this->mandatory_fields), __FILE__, __LINE__);
+            // write_log(json_encode($this->mandatory_fields), __FILE__, __LINE__);
 
             foreach ($this->mandatory_fields as $value) {
                 // write_log($value, __FILE__, __LINE__);
