@@ -367,7 +367,7 @@ class Utilities
             return;
         }
 
-        write_log(json_encode($object), __FILE__, __LINE__);
+        write_log(json_encode($object), __FILE__, __LINE__, LogLevel::DEBUG);
         try {
             if (method_exists($object, "check_existence")) {
                 $object->check_existence();
@@ -385,10 +385,16 @@ class Utilities
             return;
         }
 
+        Utilities::sanitize($object);
+
         if ($object->$method()) {
             http_response_code(200);
             echo '{';
-            echo '"message": "' . $desc . ' updated."';
+            if (method_exists($object, 'primiary_key_str')) {
+                echo '"message": "' . $desc . ' (' . $object->primiary_key_str() . ') updated. "';
+            } else {
+                echo '"message": "' . $desc . ' updated. "';
+            }
             echo '}';
         } else {
             http_response_code(500);
