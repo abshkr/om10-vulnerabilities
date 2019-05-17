@@ -367,15 +367,18 @@ class Utilities
             return;
         }
 
-        // write_log(json_encode($object), __FILE__, __LINE__);
+        write_log(json_encode($object), __FILE__, __LINE__);
         try {
             if (method_exists($object, "check_existence")) {
                 $object->check_existence();
             }
 
         } catch (NonexistentException $e) {
-            // http_response_code(422);
-            http_response_code(200);
+            if (HTTP_CODE_ENABLED) {
+                http_response_code(422);
+            } else {
+                http_response_code(200);
+            }
             echo '{';
             echo '"detail": "Caught exception: ', $e->getMessage() . '"';
             echo '}';

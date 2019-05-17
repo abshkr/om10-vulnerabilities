@@ -34,10 +34,21 @@ $log_file = (isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omeg
 // error_reporting(E_ALL);
 
 function write_log($message, $file = __FILE__, $line = __LINE__, $level = LogLevel::DEBUG)
-// function write_log($message, $file = __FILE__, $line = __LINE__, $level = 'DEBUG')
 {
     if (!ENABLE_DEBUG_LOG) {
         return;
+    }
+
+    if (DEBUG_LEVEL === 1) {
+        if ($level === LogLevel::DEBUG) {
+            return;
+        }
+    }
+
+    if (DEBUG_LEVEL === 2) {
+        if ($level === LogLevel::DEBUG || $level === LogLevel::INFO) {
+            return;
+        }
     }
 
     global $log_file;

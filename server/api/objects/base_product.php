@@ -280,6 +280,9 @@ class BaseProduct extends CommonClass
 
         Utilities::sanitize($this);
 
+        // write_log(property_exists($this, 'base_name'), __FILE__, __LINE__);
+        // write_log($this->base_name, __FILE__, __LINE__);
+
         $query = "
             SELECT *
             FROM BASE_PRODS
