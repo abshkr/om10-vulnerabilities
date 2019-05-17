@@ -3,26 +3,15 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once 'common_class.php';
 
-class TimeCode
+class TimeCode extends CommonClass
 {
-    // database connection and table name
-    private $conn;
+    protected $TABLE_NAME = 'TIMECODE';
 
-    public $tcd_title;
-    public $tcd_mon;
-    public $tcd_tue;
-    public $tcd_wed;
-    public $tcd_thu;
-    public $tcd_fri;
-    public $tcd_sat;
-    public $tcd_sun;
+    public $desc = "time code";
 
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
+    protected $primary_keys = array("tcd_title");
 
     // read personnel
     public function read()
@@ -85,27 +74,13 @@ class TimeCode
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
-        $query = "UPDATE TIMECODE
-                SET TCD_MON = :tcd_mon,
-                    TCD_TUE = :tcd_tue,
-                    TCD_WED = :tcd_wed,
-                    TCD_THU = :tcd_thu,
-                    TCD_FRI = :tcd_fri,
-                    TCD_SAT = :tcd_sat,
-                    TCD_SUN = :tcd_sun
-                WHERE TCD_TITLE = :tcd_title";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':tcd_title', $this->tcd_title);
-        oci_bind_by_name($stmt, ':tcd_tue', $this->tcd_tue);
-        oci_bind_by_name($stmt, ':tcd_mon', $this->tcd_mon);
-        oci_bind_by_name($stmt, ':tcd_wed', $this->tcd_wed);
-        oci_bind_by_name($stmt, ':tcd_thu', $this->tcd_thu);
-        oci_bind_by_name($stmt, ':tcd_fri', $this->tcd_fri);
-        oci_bind_by_name($stmt, ':tcd_sat', $this->tcd_sat);
-        oci_bind_by_name($stmt, ':tcd_sun', $this->tcd_sun);
-
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = $this->prepare_update($stmt);
+        if (!$stmt) {
+            return false;
+        } else if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
             return false;
         }
 

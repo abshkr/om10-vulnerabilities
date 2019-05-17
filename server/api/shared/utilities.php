@@ -302,7 +302,7 @@ class Utilities
         // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
         // write_log(sprintf("%s, %s", strtoupper($class), $lower_key), __FILE__, __LINE__);
 
-        if (property_exists($class, "BOOLEAN_FIELDS") &&
+        if (isset($object->BOOLEAN_FIELDS) &&
             array_key_exists($key, $object->BOOLEAN_FIELDS)) {
             if ($object->BOOLEAN_FIELDS[toupper($key)] === 'Y') {
                 if ($value) {
@@ -367,7 +367,7 @@ class Utilities
             return;
         }
 
-        write_log(json_encode($object), __FILE__, __LINE__, LogLevel::DEBUG);
+        // write_log(json_encode($object), __FILE__, __LINE__, LogLevel::DEBUG);
         try {
             if (method_exists($object, "check_existence")) {
                 $object->check_existence();
