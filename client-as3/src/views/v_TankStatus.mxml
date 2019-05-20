@@ -1661,11 +1661,14 @@
 				{
 					var api:Number = Number(this.tank_api.text);
 					
-					if ( !( int(api) >= this.apiHigh && api <= this.apiLow ) )
-					{
-						index += 1;
-						errors += String(index) + ". " + resourceManager.getString('default','ALERT__TANK_API_OUTLIMIT') + "\n";
+					if (this.tank_api.required) {
+						if ( !( int(api) >= this.apiHigh && api <= this.apiLow ) )
+						{
+							index += 1;
+							errors += String(index) + ". " + resourceManager.getString('default','ALERT__TANK_API_OUTLIMIT') + "\n";
+						}
 					}
+					
 				}
 				
 				if ( this.tank_density.text.length>0 )

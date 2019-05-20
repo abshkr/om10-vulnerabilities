@@ -14,7 +14,8 @@ import {
   RefTempSpec,
   DensityRangeLow,
   DensityRangeHigh,
-  CorrectionMethod
+  CorrectionMethod,
+  HotTempFlag
 } from "./fields";
 
 class BaseProductsForm extends Component {
@@ -183,6 +184,7 @@ class BaseProductsForm extends Component {
               <BaseProductColor decorator={getFieldDecorator} value={value} color={this.state.color} setValue={setFieldsValue} change={this.changeColor} reset={this.resetColor} />
             </TabPane>
             <TabPane tab="Correction" key="2">
+              <HotTempFlag decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <CorrectionMethod decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <RefTempSpec decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <DensityRangeLow decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />

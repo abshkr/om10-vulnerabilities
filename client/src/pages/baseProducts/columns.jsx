@@ -1,5 +1,5 @@
 import React from "react";
-import { Tag } from "antd";
+import { Tag, Icon } from "antd";
 import generate from "../../utils/generateOptions";
 
 const columns = data => [
@@ -72,7 +72,12 @@ const columns = data => [
     title: "Is Additive?",
     dataIndex: "base_adtv",
     key: "base_adtv",
-    width: 100
+    width: 100,
+    render: text => (
+      <span>
+        <Icon type={text === "0" ? "close" : "check"} style={{ color: text === "0" ? "#ec6e68" : "#a4ec68" }} />
+      </span>
+    )
   },
   {
     title: "Number Of Tanks",
@@ -139,7 +144,12 @@ const columns = data => [
     title: "Hot Temp Flag",
     dataIndex: "base_limit_preset_ht",
     key: "base_limit_preset_ht",
-    width: 150
+    width: 150,
+    render: text => (
+      <span>
+        <Icon type={text === "0" ? "close" : "check"} style={{ color: text === "0" ? "#ec6e68" : "#a4ec68" }} />
+      </span>
+    )
   }
 ];
 

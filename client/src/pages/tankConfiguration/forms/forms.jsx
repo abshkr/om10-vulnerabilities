@@ -142,6 +142,7 @@ class TankConfigurationForm extends Component {
     const { form, value, baseProducts } = this.props;
     const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
     const TabPane = Tabs.TabPane;
+
     return (
       <div>
         <Form style={{ height: 640 }}>

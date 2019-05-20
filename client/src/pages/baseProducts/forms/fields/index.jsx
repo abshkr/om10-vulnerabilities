@@ -9,6 +9,7 @@ import DensityRangeHigh from "./densityRangeHigh";
 import CorrectionMethod from "./correctionMethod";
 import AdaptiveFlowControl from "./adaptiveFlowControl";
 import AdaptiveArmPriority from "./adaptiveArmPriority";
+import HotTempFlag from "./hotTempFlag";
 
 export {
   AdaptiveFlowControl,
@@ -21,5 +22,6 @@ export {
   RefTempSpec,
   DensityRangeLow,
   DensityRangeHigh,
-  CorrectionMethod
+  CorrectionMethod,
+  HotTempFlag
 };
