@@ -36,6 +36,12 @@ class CommonClass
      */
     protected $PRIMIRAY_KEY_EXCLUSIONS = null;
 
+    //read imp will be called inside read
+    public function read_hook(&$hook_item)
+    {
+
+    }
+
     // constructor with $db as database connection
     public function __construct($db)
     {

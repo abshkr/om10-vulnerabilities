@@ -79,39 +79,7 @@ class Utilities
 
         $result = array();
         $result["records"] = array();
-        $num = 0;
-        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
-            $num += 1;
-
-            $base_item = array();
-            foreach ($row as $key => $value) {
-                $lower_key = strtolower($key);
-                // write_log(sprintf("%s, %s", $class, $lower_key), __FILE__, __LINE__);
-                if (property_exists($class, "BOOLEAN_FIELDS") &&
-                    array_key_exists($key, $object->BOOLEAN_FIELDS)) {
-                    if ($value === 1 || $value === 'T' || $value === 'Y') {
-                        $base_item[$lower_key] = true;
-                    } else {
-                        $base_item[$lower_key] = false;
-                    }
-
-                } else {
-                    if (property_exists($class, "NUMBER_FIELDS") && in_array($key, $object->NUMBER_FIELDS)) {
-                        // write_log($value, __FILE__, __LINE__);
-                        $base_item[$lower_key] = (float) $value;
-                    } else {
-                        $base_item[$lower_key] = $value;
-                    }
-                }
-            }
-
-            $base_item = array_map(function ($v) {
-                return (is_null($v)) ? "" : $v;
-            }, $base_item);
-
-            array_push($result["records"], $base_item);
-        }
-        // $result["result_count"] = $num;
+        $num = self::retrieve($result["records"], $object, $stmt);
 
         http_response_code(200);
         if ($num > 0) {
@@ -158,6 +126,7 @@ class Utilities
         http_response_code(200);
         echo json_encode($result, JSON_PRETTY_PRINT);
     }
+
     //Example:
     /*
     "records": [
@@ -225,7 +194,7 @@ class Utilities
         }
     }
 
-    private static function retrieve(&$result_array, $stmt)
+    public static function retrieve(&$result_array, $object, $stmt)
     {
         $num = 0;
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
@@ -233,16 +202,35 @@ class Utilities
 
             $base_item = array();
             foreach ($row as $key => $value) {
-                $base_item[strtolower($key)] = $value;
+                $lower_key = strtolower($key);
+                // write_log(sprintf("%s, %s", $object, $lower_key), __FILE__, __LINE__);
+                if (property_exists($object, "BOOLEAN_FIELDS") &&
+                    array_key_exists($key, $object->BOOLEAN_FIELDS)) {
+                    if ($value === 1 || $value === 'T' || $value === 'Y') {
+                        $base_item[$lower_key] = true;
+                    } else {
+                        $base_item[$lower_key] = false;
+                    }
+
+                } else {
+                    if (property_exists($object, "NUMBER_FIELDS") && in_array($key, $object->NUMBER_FIELDS)) {
+                        // write_log($value, __FILE__, __LINE__);
+                        $base_item[$lower_key] = (float) $value;
+                    } else {
+                        $base_item[$lower_key] = $value;
+                    }
+                }
             }
 
             $base_item = array_map(function ($v) {
                 return (is_null($v)) ? "" : $v;
             }, $base_item);
 
+            if (method_exists($object, "read_hook")) {
+                $object->read_hook($base_item);
+            }
             array_push($result_array, $base_item);
         }
-        // write_log(json_encode($result, JSON_PRETTY_PRINT), __FILE__, __LINE__);
 
         return $num;
     }
@@ -298,27 +286,27 @@ class Utilities
 
     private static function handleBoolean($class, $object, $key, $value)
     {
-        $lower_key = strtolower($key);
+        $upper_key = strtoupper($key);
         // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
-        // write_log(sprintf("%s, %s", strtoupper($class), $lower_key), __FILE__, __LINE__);
+        // write_log(sprintf("%s, %s", strtoupper($class), $upper_key), __FILE__, __LINE__);
 
         if (isset($object->BOOLEAN_FIELDS) &&
-            array_key_exists($key, $object->BOOLEAN_FIELDS)) {
-            if ($object->BOOLEAN_FIELDS[toupper($key)] === 'Y') {
+            array_key_exists($upper_key, $object->BOOLEAN_FIELDS)) {
+            if ($object->BOOLEAN_FIELDS[$upper_key] === 'Y') {
                 if ($value) {
                     $object->{$key} = 'Y';
                 } else {
                     $object->{$key} = 'N';
                 }
 
-            } else if ($object->BOOLEAN_FIELDS[toupper($key)] === 'T') {
+            } else if ($object->BOOLEAN_FIELDS[$upper_key] === 'T') {
                 if ($value) {
                     $object->{$key} = 'T';
                 } else {
                     $object->{$key} = 'F';
                 }
 
-            } else if ($object->BOOLEAN_FIELDS[toupper($key)] === '1') {
+            } else if ($object->BOOLEAN_FIELDS[$upper_key] === '1') {
                 if ($value) {
                     $object->{$key} = 1;
                 } else {
@@ -339,9 +327,11 @@ class Utilities
 
         // get posted data
         $data = json_decode(file_get_contents("php://input"));
-        // write_log(json_encode($data), __FILE__, __LINE__);
+        write_log(json_encode($data), __FILE__, __LINE__);
         if ($data) {
+            write_log(json_encode($data), __FILE__, __LINE__);
             foreach ($data as $key => $value) {
+                write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
                 $object->$key = $value;
                 self::handleBoolean($class, $object, $key, $value);
             }

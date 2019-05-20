@@ -4,6 +4,7 @@ include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once 'common_class.php';
+include_once 'tank_max_flow.php';
 
 class Tank extends CommonClass
 {
@@ -41,6 +42,20 @@ class Tank extends CommonClass
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function read_hook(&$hook_item)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $tank_flow = new TankMaxFlow($this->conn);
+        $tank_flow->tank_code = $hook_item['tank_code'];
+        $stmt = $tank_flow->read();
+        $result = array();
+        Utilities::retrieve($result, $tank_flow, $stmt);
+        write_log(json_encode($result), __FILE__, __LINE__);
+        $hook_item['max_flow'] = $result;
     }
 
     public function create()

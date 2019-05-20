@@ -20,15 +20,21 @@ class TankMaxFlow
     {
         $query = "
             SELECT *
-            FROM TANK_MAX_FLOW
-            ORDER BY TANK_CODE, TANK_LEVEL";
+            FROM TANK_MAX_FLOW ";
+        if (isset($this->tank_code)) {
+            $query .= "WHERE tank_code = :tank_code ";
+        }
+        $query .= "ORDER BY TANK_CODE, TANK_LEVEL";
 
         $stmt = oci_parse($this->conn, $query);
+        if (isset($this->tank_code)) {
+            oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        }
         if (oci_execute($stmt)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return $stmt;
         } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
     }
