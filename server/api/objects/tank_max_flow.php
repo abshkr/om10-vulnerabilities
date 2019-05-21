@@ -2,20 +2,13 @@
 
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
+include_once 'common_class.php';
 
-class TankMaxFlow
+class TankMaxFlow extends CommonClass
 {
-    // database connection and table name
-    private $conn;
     public $desc = "tank max flow";
 
     public $NUMBER_FIELDS = array('FLOW_RATE');
-
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
 
     // read personnel
     public function read()

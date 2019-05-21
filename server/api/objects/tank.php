@@ -9,7 +9,9 @@ include_once 'tank_max_flow.php';
 class Tank extends CommonClass
 {
     protected $TABLE_NAME = 'TANKS';
-    protected $CHILD_TABLES = array('TANK_MAX_FLOW');
+    protected $VIEW_NAME = 'GUI_TANKS';
+    // protected $CHILD_OBJECTS = array(
+    //     "TankMaxFlow" => 'TANK_MAX_FLOW');
 
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = array(
@@ -63,6 +65,119 @@ class Tank extends CommonClass
         Utilities::retrieve($result, $tank_flow, $stmt);
         // write_log(json_encode($result), __FILE__, __LINE__);
         $hook_item['tank_max_flow'] = $result;
+    }
+
+    protected function retrieve_children_data()
+    {
+        $query = "SELECT * FROM TANK_MAX_FLOW WHERE TANK_CODE = :tank_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        $tank_max_flows = array();
+        while ($flow_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $base_item = array();
+            $base_item['tank_level'] = $flow_row['TANK_LEVEL'];
+            $base_item['flow_rate'] = $flow_row['FLOW_RATE'];
+            $tank_max_flows[$flow_row['TANK_LEVEL']] = $base_item;
+            // array_push($tank_max_flows, $base_item);
+        }
+
+        // write_log(json_encode($tank_max_flows), __FILE__, __LINE__);
+        return $tank_max_flows;
+    }
+
+    protected function journal_children_change($journal, $old, $new)
+    {
+        $module = "tank max flow";
+        foreach ($old as $tank_level => $max_flow_item) {
+            if (isset($new[$tank_level]) && $max_flow_item['flow_rate'] != $new[$tank_level]['flow_rate']) {
+                $record = sprintf("tank code:%s, tank_level:%s", $this->tank_code, $tank_level);
+                $journal->valueChange($module, $record, "flow rate", $max_flow_item['flow_rate'], $new[$tank_level]['flow_rate']);
+            }
+
+            if (!isset($new[$tank_level])) {
+                $jnl_data[0] = Utilities::getCurrPsn();
+                $jnl_data[1] = $module;
+                $jnl_data[2] = sprintf("tank code:%s, level:%s", $this->tank_code, $tank_level);
+                $jnl_data[3] = sprintf("flow rate:%s", $max_flow_item['flow_rate']);
+
+                if (!$journal->jnlLogEvent(
+                    Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                    write_log("DB error:" . oci_error($stmt)['message'],
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+
+        //In new but not in old.
+        foreach ($new as $tank_level => $max_flow_item) {
+            if (!isset($old[$tank_level])) {
+                $jnl_data[0] = Utilities::getCurrPsn();
+                $jnl_data[1] = $module;
+                $jnl_data[2] = sprintf("tank code:%s, level:%s", $this->tank_code, $tank_level);
+                $jnl_data[3] = sprintf("flow rate:%s", $max_flow_item['flow_rate']);
+
+                if (!$journal->jnlLogEvent(
+                    Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                    write_log("DB error:" . oci_error($stmt)['message'],
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+    }
+
+    protected function delete_children()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $query = "DELETE FROM TANK_MAX_FLOW WHERE TANK_CODE = :tank_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+    }
+
+    protected function insert_children()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        foreach ($this->tank_max_flow as $value) {
+            // write_log(json_encode($value), __FILE__, __LINE__);
+            $query = "INSERT INTO TANK_MAX_FLOW (
+                ID,
+                TANK_CODE,
+                TANK_LEVEL,
+                FLOW_RATE)
+            VALUES (
+                SEQ_TANK_MAX_FLOW_ID.NEXTVAL,
+                :tank_code,
+                :tank_level,
+                :flow_rate
+            )";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+            oci_bind_by_name($stmt, ':tank_level', $value->tank_level);
+            oci_bind_by_name($stmt, ':flow_rate', $value->flow_rate);
+
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
     }
 
     public function create()
@@ -259,63 +374,6 @@ class Tank extends CommonClass
             write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
-        }
-
-        oci_commit($this->conn);
-        return true;
-    }
-
-    public function update()
-    {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-        // write_log(json_encode($this), __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
-        $query = "
-            SELECT * FROM GUI_TANKS
-            WHERE TANK_CODE = :tank_code";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
-        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-        } else {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-        }
-
-        $stmt = $this->prepare_update($stmt);
-        if (!$stmt) {
-            return false;
-        } else if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        $journal = new Journal($this->conn, false);
-        $curr_psn = Utilities::getCurrPsn();
-        $jnl_data[0] = $curr_psn;
-        $jnl_data[1] = "Tank";
-        $jnl_data[2] = $this->tank_code;
-
-        if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        $module = "GUI_TANKS";
-        $record = sprintf("code:%s", $this->tank_code);
-        foreach ($this as $key => $value) {
-            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
-                !$journal->valueChange(
-                    $module, $record, strtoupper($key), $row[strtoupper($key)], $value)) {
-                oci_rollback($this->conn);
-                return false;
-            }
         }
 
         oci_commit($this->conn);
