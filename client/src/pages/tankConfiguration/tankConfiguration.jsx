@@ -99,7 +99,7 @@ class TankConfiguration extends Component {
             Create Tank Configuration
           </Button>
 
-          <DataTable scroll={2500} data={results} resize={resize} rowKey="tank_code" isLoading={isLoading} click={this.handleClick} columns={columns(results)} />
+          <DataTable scroll={2600} data={results} resize={resize} rowKey="tank_code" isLoading={isLoading} click={this.handleClick} columns={columns(results)} />
         </Container>
       </Page>
     );
