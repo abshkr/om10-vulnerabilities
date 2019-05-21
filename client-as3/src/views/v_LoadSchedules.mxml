@@ -3546,6 +3546,13 @@
 										  itemRenderer="renderers.ProductRender"/>
 							<s:GridColumn width="75" dataField="schedule"
 										  headerText="{resourceManager.getString('default','datagrid.headercaption.schedule')}"/>
+							
+							<s:GridColumn width="70" dataField="qty_loaded" editable="false"
+										  headerText="Original Quantity Loaded"/>
+							<s:GridColumn width="65" dataField="qty_preload" editable="false"
+										  headerText="Original Quantity Preloaded"/>
+							
+							
 							<s:GridColumn width="70" dataField="qty_loaded" editable="false"
 										  headerText="{resourceManager.getString('default','datagrid.headercaption.loaded')}"/>
 							<s:GridColumn width="65" dataField="qty_preload" editable="false"

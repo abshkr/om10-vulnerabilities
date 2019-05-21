@@ -18,7 +18,7 @@ export default class BaseProductGroup extends Component {
 
     if (!!value) {
       setValue({
-        pgr_code: value.base_prod_group
+        base_prod_group: value.base_prod_group
       });
     }
   }
@@ -30,7 +30,7 @@ export default class BaseProductGroup extends Component {
 
     return (
       <Form.Item label="Base Product Group">
-        {decorator("pgr_code", {
+        {decorator("base_prod_group", {
           rules: [{ required: false }]
         })(
           <Select>
