@@ -18,6 +18,8 @@ import ExcludeFromPOS from "./fields/excludeFromPOS";
 import ExcludeFromSMG from "./fields/excludeFromSMG";
 import ExcludeFromStockReports from "./fields/excludeFromStockReports";
 
+import TankMaxFlow from "./fields/tankMaxFlow";
+
 class TankConfigurationForm extends Component {
   state = {
     base: null
@@ -56,24 +58,25 @@ class TankConfigurationForm extends Component {
   handleUpdate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([tanks.updateTank(values)])
-          .then(
-            axios.spread(response => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: "Successfully Updated.",
-                description: `You have updated the Tank ${values.tank_code}`
-              });
-            })
-          )
-          .catch(function(error) {
-            notification.error({
-              message: error.message,
-              description: "Failed to update the Tank."
-            });
-          });
+        console.log(values);
+        // axios
+        //   .all([tanks.updateTank(values)])
+        //   .then(
+        //     axios.spread(response => {
+        //       this.props.refresh();
+        //       Modal.destroyAll();
+        //       notification.success({
+        //         message: "Successfully Updated.",
+        //         description: `You have updated the Tank ${values.tank_code}`
+        //       });
+        //     })
+        //   )
+        //   .catch(function(error) {
+        //     notification.error({
+        //       message: error.message,
+        //       description: "Failed to update the Tank."
+        //     });
+        //   });
       } else {
         notification.error({
           message: "Validation Failed.",
@@ -166,6 +169,10 @@ class TankConfigurationForm extends Component {
               <ExcludeFromPOS decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <ExcludeFromSMG decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <ExcludeFromStockReports decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+            </TabPane>
+
+            <TabPane tab="Adaptive Flow" key="5">
+              <TankMaxFlow decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
           </Tabs>
         </Form>

@@ -1,5 +1,6 @@
 import React from "react";
 import generate from "../../utils/generateOptions";
+import { Tag } from "antd";
 
 const columns = data => [
   {
@@ -83,7 +84,7 @@ const columns = data => [
     key: "tank_mtol_volume",
     sorter: (a, b) => a.tank_mtol_volume - b.tank_mtol_volume,
     sortDirections: ["descend", "ascend"],
-    width: 400,
+    width: 450,
     render: text => <span>{text === "" ? `${text}` : `${text} Vol`}</span>
   },
   {
@@ -92,32 +93,30 @@ const columns = data => [
     key: "tank_mtol_percent",
     sorter: (a, b) => a.tank_mtol_percent - b.tank_mtol_percent,
     sortDirections: ["descend", "ascend"],
-    width: 400,
+    width: 450,
     render: text => <span>{text === "" ? `${text}` : `${text} %`}</span>
   },
   {
-    title: "Maximum Flow Rate",
-    dataIndex: "max_allowable_flow_rate",
-    key: "max_allowable_flow_rate",
-    width: 400
-  },
-  {
     title: "Adaptive Arm Priority",
-    dataIndex: "arm_priority",
-    key: "arm_priority",
-    width: 350
+    dataIndex: "tank_afc_priority",
+    key: "tank_afc_priority",
+    width: 350,
+    render: text => <span>{text}</span>
   },
   {
-    title: "Level",
-    dataIndex: "level",
-    key: "level",
-    width: 100
-  },
-  {
-    title: "Flow Rate",
-    dataIndex: "flow_rate",
-    key: "flow_rate",
-    width: 100
+    title: "Flow Rates",
+    dataIndex: "tank_max_flow",
+    key: "flow_rates",
+    width: 600,
+    render: levels => (
+      <span>
+        {levels.map(levels => (
+          <Tag key={levels.id} color="green">
+            {levels.flow_rate}
+          </Tag>
+        ))}
+      </span>
+    )
   }
 ];
 
