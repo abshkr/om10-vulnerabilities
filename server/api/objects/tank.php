@@ -9,6 +9,7 @@ include_once 'tank_max_flow.php';
 class Tank extends CommonClass
 {
     protected $TABLE_NAME = 'TANKS';
+    protected $CHILD_TABLES = array('TANK_MAX_FLOW');
 
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = array(
@@ -16,6 +17,12 @@ class Tank extends CommonClass
         "TANK_EXC_PDS" => "Y",
         "TANK_EXC_SPMV" => "Y",
         "TANK_EXC_STCKRPT" => "Y",
+        "TANK_AFC_ENABLED" => "Y",
+    );
+
+    public $NUMBER_FIELDS = array(
+        "TANK_BCLASS_DENS_HI",
+        "TANK_BCLASS_DENS_LO",
     );
 
     protected $primary_keys = array("tank_code");
@@ -46,16 +53,16 @@ class Tank extends CommonClass
 
     public function read_hook(&$hook_item)
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
 
         $tank_flow = new TankMaxFlow($this->conn);
         $tank_flow->tank_code = $hook_item['tank_code'];
         $stmt = $tank_flow->read();
         $result = array();
         Utilities::retrieve($result, $tank_flow, $stmt);
-        write_log(json_encode($result), __FILE__, __LINE__);
-        $hook_item['max_flow'] = $result;
+        // write_log(json_encode($result), __FILE__, __LINE__);
+        $hook_item['tank_max_flow'] = $result;
     }
 
     public function create()

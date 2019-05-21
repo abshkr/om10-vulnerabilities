@@ -26,6 +26,9 @@ class CommonClass
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = null;
 
+    //All the fields that should be treated as number in JSON
+    public $NUMBER_FIELDS = null;
+
     /*
     Table fields that should not be exampt from mandatory fields. For example,
     TANK_TERMINAL in TANKS table. This is because React JS does not want to keep
@@ -48,6 +51,7 @@ class CommonClass
         $this->conn = $db;
     }
 
+    //Only update the fields that are passed in
     public function prepare_update($stmt)
     {
         if (!isset($this->updatable_fields)) {

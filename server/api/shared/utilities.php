@@ -213,7 +213,7 @@ class Utilities
                     }
 
                 } else {
-                    if (property_exists($object, "NUMBER_FIELDS") && in_array($key, $object->NUMBER_FIELDS)) {
+                    if (isset($object->NUMBER_FIELDS) && in_array($key, $object->NUMBER_FIELDS)) {
                         // write_log($value, __FILE__, __LINE__);
                         $base_item[$lower_key] = (float) $value;
                     } else {
@@ -331,7 +331,7 @@ class Utilities
         if ($data) {
             write_log(json_encode($data), __FILE__, __LINE__);
             foreach ($data as $key => $value) {
-                write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
+                // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
                 $object->$key = $value;
                 self::handleBoolean($class, $object, $key, $value);
             }

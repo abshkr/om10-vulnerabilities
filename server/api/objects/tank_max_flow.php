@@ -9,6 +9,8 @@ class TankMaxFlow
     private $conn;
     public $desc = "tank max flow";
 
+    public $NUMBER_FIELDS = array('FLOW_RATE');
+
     // constructor with $db as database connection
     public function __construct($db)
     {
