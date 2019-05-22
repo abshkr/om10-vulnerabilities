@@ -2136,6 +2136,12 @@
 				for each ( x in this.allocationItemGrid.dataProvider)
 				{
 					trace( "********X", x.aitem_prodcode, x.aitem_qtylimit);
+					
+					if ( x.aitem_qtylimit > 999999999) {
+						global.msgFail("Qty Allocated must be bellow 999999999");
+						return false;
+					}
+					
 					if ( tools.isValueNumeric( x.aitem_qtylimit ) == false )
 					{
 						global.msgFail("Please enter the number for 'Prod Qty' of '" + x.aitem_prodcode + " - " + x.aitem_prodname + "'");
