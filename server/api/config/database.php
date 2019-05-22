@@ -13,7 +13,7 @@ class Database
     private $db_name = "localhost/OML5K";
     private $username = "test_coogee2";
     private $password = "abcd1234";
-    private $conn;
+    private $conn = null;
 
     public function __construct()
     {
@@ -26,6 +26,17 @@ class Database
         // echo $this->db_name;
         write_log("Database::__construct. username:" . $this->username .
             " password:" . $this->password . " db_name:" . $this->db_name, __FILE__, __LINE__);
+    }
+
+    public function __destruct()
+    {
+        write_log(sprintf("%s::%s() START, disconnect db", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (isset($this->conn)) {
+            oci_close($this->conn);
+            $this->conn = null;
+        }
     }
 
     private function getConn()

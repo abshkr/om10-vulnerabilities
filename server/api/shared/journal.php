@@ -332,10 +332,12 @@ class Journal
                 continue;
             }
 
-            if (isset($set_old[strtoupper($key)]) && $value != $set_old[strtoupper($key)] &&
-                !$this->valueChange(
+            if ($value != $set_old[strtoupper($key)]) {
+                if (!$this->valueChange(
                     $module, $record, $key, $set_old[strtoupper($key)], $value)) {
-                return false;
+                    oci_rollback($this->conn);
+                    return false;
+                }
             }
         }
 

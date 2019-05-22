@@ -4,6 +4,14 @@
 //false means doing nothing
 define('ENABLE_DEBUG_LOG', true);
 
+//0: All debug; 1: info and above; 2: warning and above
+define('DEBUG_LEVEL', 0);
+
+//Set it to true, php will return different http code.
+//In dev env, set to false, because we use localhost to call 10.1.10.66, and it will be
+//blocked by CORS if we use different http code.
+define("HTTP_CODE_ENABLED", false);
+
 //Set it to true means user need to stay logged in before perform all the db-related actions
 define('AUTH_CHECK', false);
 

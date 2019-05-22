@@ -9,6 +9,10 @@ class BaseProduct extends CommonClass
 {
     protected $TABLE_NAME = 'BASE_PRODS';
 
+    public $desc = "base product";
+
+    protected $primary_keys = array("base_code");
+
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = array(
         "AFC_ENABLED" => "Y",
@@ -278,8 +282,6 @@ class BaseProduct extends CommonClass
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
-        Utilities::sanitize($this);
-
         $query = "
             SELECT *
             FROM BASE_PRODS
@@ -293,38 +295,10 @@ class BaseProduct extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
-        $query = "
-            UPDATE BASE_PRODS
-            SET BASE_COLOR = :base_color,
-                BASE_NAME = :base_name,
-                BASE_PROD_GROUP = :base_prod_group,
-                BASE_CORR_MTHD = :base_corr_mthd,
-                BASE_REF_TEMP = :base_ref_temp,
-                BASE_DENS_HI = :base_dens_hi,
-                BASE_DENS_LO = :base_dens_lo,
-                BASE_CAT = :base_cat,
-                BASE_REF_TUNT = :base_ref_tunt,
-                BASE_LIMIT_PRESET_HT = :base_limit_preset_ht,
-                BASE_REF_TEMP_SPEC = :base_ref_temp_spec,
-                AFC_ENABLED = :afc_enabled,
-                AFC_PRIORITY = :afc_priority
-            WHERE BASE_CODE = :base_code";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':base_color', $this->base_color);
-        oci_bind_by_name($stmt, ':base_name', $this->base_name);
-        oci_bind_by_name($stmt, ':base_prod_group', $this->base_prod_group);
-        oci_bind_by_name($stmt, ':base_corr_mthd', $this->base_corr_mthd);
-        oci_bind_by_name($stmt, ':base_ref_temp', $this->base_ref_temp);
-        oci_bind_by_name($stmt, ':base_dens_hi', $this->base_dens_hi);
-        oci_bind_by_name($stmt, ':base_dens_lo', $this->base_dens_lo);
-        oci_bind_by_name($stmt, ':base_cat', $this->base_cat);
-        oci_bind_by_name($stmt, ':base_ref_tunt', $this->base_ref_tunt);
-        oci_bind_by_name($stmt, ':base_limit_preset_ht', $this->base_limit_preset_ht);
-        oci_bind_by_name($stmt, ':base_ref_temp_spec', $this->base_ref_temp_spec);
-        oci_bind_by_name($stmt, ':base_code', $this->base_code);
-        oci_bind_by_name($stmt, ':afc_enabled', $this->afc_enabled);
-        oci_bind_by_name($stmt, ':afc_priority', $this->afc_priority);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+        $stmt = $this->prepare_update($stmt);
+        if (!$stmt) {
+            return false;
+        } else if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);

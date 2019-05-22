@@ -2,33 +2,34 @@
 
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
+include_once 'common_class.php';
 
-class TankMaxFlow
+class TankMaxFlow extends CommonClass
 {
-    // database connection and table name
-    private $conn;
     public $desc = "tank max flow";
 
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
+    public $NUMBER_FIELDS = array('FLOW_RATE');
 
     // read personnel
     public function read()
     {
         $query = "
             SELECT *
-            FROM TANK_MAX_FLOW
-            ORDER BY TANK_CODE, TANK_LEVEL";
+            FROM TANK_MAX_FLOW ";
+        if (isset($this->tank_code)) {
+            $query .= "WHERE tank_code = :tank_code ";
+        }
+        $query .= "ORDER BY TANK_CODE, TANK_LEVEL";
 
         $stmt = oci_parse($this->conn, $query);
+        if (isset($this->tank_code)) {
+            oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        }
         if (oci_execute($stmt)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return $stmt;
         } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
     }
