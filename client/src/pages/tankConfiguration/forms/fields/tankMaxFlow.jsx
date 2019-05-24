@@ -23,20 +23,20 @@ export default class TankMaxFlow extends Component {
     return (
       <div>
         <Form.Item label="Flow Configuration Stage 1">
-          {decorator("tank_max_flow.0.tank_level")(<Input />)}
-          {decorator("tank_max_flow.0.flow_rate")(<Input />)}
+          {decorator("tank_max_flow.0.tank_level")(<Input addonBefore="Tank Level" />)}
+          {decorator("tank_max_flow.0.flow_rate")(<Input addonBefore="Flow Rate ⁮⁮⁮⁮⁮⁮⁮⁮" />)}
         </Form.Item>
         <Form.Item label="Flow Configuration Stage 2">
-          {decorator("tank_max_flow.1.tank_level")(<Input />)}
-          {decorator("tank_max_flow.1.flow_rate")(<Input />)}
+          {decorator("tank_max_flow.1.tank_level")(<Input addonBefore="Tank Level" />)}
+          {decorator("tank_max_flow.1.flow_rate")(<Input addonBefore="Flow Rate " />)}
         </Form.Item>
         <Form.Item label="Flow Configuration Stage 3">
-          {decorator("tank_max_flow.2.tank_level")(<Input />)}
-          {decorator("tank_max_flow.2.flow_rate")(<Input />)}
+          {decorator("tank_max_flow.2.tank_level")(<Input addonBefore="Tank Level" />)}
+          {decorator("tank_max_flow.2.flow_rate")(<Input addonBefore="Flow Rate " />)}
         </Form.Item>
         <Form.Item label="Flow Configuration Stage 4">
-          {decorator("tank_max_flow.3.tank_level")(<Input />)}
-          {decorator("tank_max_flow.3.flow_rate")(<Input />)}
+          {decorator("tank_max_flow.3.tank_level")(<Input addonBefore="Tank Level" />)}
+          {decorator("tank_max_flow.3.flow_rate")(<Input addonBefore="Flow Rate " />)}
         </Form.Item>
       </div>
     );

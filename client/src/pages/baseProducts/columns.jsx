@@ -1,8 +1,22 @@
 import React from "react";
+import _ from "lodash";
 import { Tag, Icon } from "antd";
 import generate from "../../utils/generateOptions";
 
-const columns = data => [
+const columns = (data, configuration) => {
+  const values = defaults(data);
+
+  if (!configuration.features.adaptiveFlowControl) {
+    const modified = _.reject(values, o => {
+      return o.dataIndex === "tank_max_flow" || o.dataIndex === "tank_afc_priority";
+    });
+    return modified;
+  } else {
+    return values;
+  }
+};
+
+const defaults = data => [
   {
     title: "Base Product Code",
     dataIndex: "base_code",
@@ -55,20 +69,6 @@ const columns = data => [
     width: 200
   },
   {
-    title: "Base Prod Min Density",
-    dataIndex: "base_dens_lo",
-    key: "base_dens_lo",
-    width: 180,
-    render: data => <span> {data}kg/m3 </span>
-  },
-  {
-    title: "Base Prod Max Density",
-    dataIndex: "base_dens_hi",
-    key: "base_dens_hi",
-    width: 180,
-    render: data => <span> {data}kg/m3 </span>
-  },
-  {
     title: "Is Additive?",
     dataIndex: "base_adtv",
     key: "base_adtv",
@@ -108,7 +108,7 @@ const columns = data => [
     render: data => <span> {data}kg/m3 </span>
   },
   {
-    title: "Base Class Min Density",
+    title: "Base Class Max Density",
     dataIndex: "base_class_dens_hi",
     key: "base_class_dens_hi",
     width: 180,

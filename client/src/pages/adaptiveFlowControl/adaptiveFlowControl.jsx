@@ -83,7 +83,7 @@ class AdaptiveFlowControl extends Component {
         <Container>
           <Filter value={value} search={this.searchObjects} />
           <Download data={data} type={"Tank Configuration"} style={{ float: "right" }} />
-          <DataTable isLoading={isLoading} resize={resize} rowKey="baseCode" columns={columns(results)} data={results} scroll={500} nested={base => FlowRates(base)} />
+          <DataTable isLoading={isLoading} resize={resize} rowKey="baseCode" columns={columns(results)} data={results} nested={base => FlowRates(base)} />
         </Container>
       </Page>
     );

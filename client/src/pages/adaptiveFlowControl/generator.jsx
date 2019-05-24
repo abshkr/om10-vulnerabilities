@@ -7,7 +7,7 @@ const progressCalculation = (flow, code) => {
     })
 
     .groupBy("base_code")
-    .mapValues(data => (_.sumBy(data, value => value.flow_contribution) / _.sumBy(data, value => value.current_flow_rate)) * 100)
+    .mapValues(data => _.round((_.sumBy(data, value => value.current_flow_rate) / _.sumBy(data, value => value.flow_contribution)) * 100, 2))
     .value();
 
   return value;
@@ -24,7 +24,7 @@ const generator = (base, flow) => {
 
   _.forEach(filtered, key => {
     const calculation = progressCalculation(flow, key.base_code);
-    const flowRate = _.isInteger(calculation[key.base_code]) ? calculation[key.base_code] : 0;
+    const flowRate = calculation[key.base_code];
     payload.push({
       baseCode: key.base_code,
       baseName: key.base_name,

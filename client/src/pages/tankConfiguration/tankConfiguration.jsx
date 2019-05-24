@@ -9,12 +9,12 @@ import React, { Component } from "react";
 import axios from "axios";
 import Forms from "./forms";
 import columns from "./columns";
-
-import { tanks, baseProducts } from "../../api";
 import auth from "../../utils/auth";
 import search from "../../utils/search";
+import { tanks, baseProducts } from "../../api";
 import { Button, Modal, notification } from "antd";
 import { Page, Filter, DataTable, Download, Container } from "../../components";
+import "./tankConfiguration.css";
 
 class TankConfiguration extends Component {
   constructor(props) {
@@ -34,7 +34,7 @@ class TankConfiguration extends Component {
       centered: true,
       icon: !!object ? "edit" : "form",
       width: 720,
-      content: <Forms value={object} refresh={this.getTanks} baseProducts={this.state.baseProducts} />,
+      content: <Forms value={object} refresh={this.getTanks} baseProducts={this.state.baseProducts} profile={this.props.configuration} />,
       okButtonProps: {
         style: { display: "none" }
       }
@@ -88,6 +88,7 @@ class TankConfiguration extends Component {
 
   render() {
     const { data, isLoading, filtered, value, resize } = this.state;
+    const { configuration } = this.props;
     const results = !!filtered ? filtered : data;
     return (
       <Page page={"Gantry"} name={"Tank Configuration"} block={true}>
@@ -99,7 +100,7 @@ class TankConfiguration extends Component {
             Create Tank Configuration
           </Button>
 
-          <DataTable scroll={2600} data={results} resize={resize} rowKey="tank_code" isLoading={isLoading} click={this.handleClick} columns={columns(results)} />
+          <DataTable scroll={2600} data={results} resize={resize} rowKey="tank_code" isLoading={isLoading} click={this.handleClick} columns={columns(results, configuration)} />
         </Container>
       </Page>
     );

@@ -3182,7 +3182,7 @@
 														   change="density_changeHandler(event)" 
 														   required="true" validationType="numeric_positive" validationGroup="{vg}" automationName="{resourceManager.getString('default','TANK_15_DENSITY')}" 
 														   />
-							<s:Label visible="true" width="{labelWidthPostfix}" height="{labelHeight+4}" lineBreak="explicit" 
+							<s:Label visible="{this.refTempText != '15ºC/59ºF'}" width="{labelWidthPostfix}" height="{labelHeight+4}" lineBreak="explicit" 
 									 text="{'['+dataGrid.selectedItem.tank_bclass_dens_lo+' - '+dataGrid.selectedItem.tank_bclass_dens_hi+']'+resourceManager.getString('default','UNIT__DENSITY') + '\n@15ºC/59ºF'}" verticalAlign="middle"/>
 							<s:Spacer width="{spaceWidth}" />
 						</s:HGroup>
@@ -3195,7 +3195,7 @@
 														   required="true" validationType="numeric_positive" validationGroup="{vg}" automationName="{resourceManager.getString('default','TANK_DENSITY')}" 
 														   />
 							<s:Label width="{labelWidthPostfix}" height="{labelHeight+4}" lineBreak="explicit" 
-									 text="{'['+dataGrid.selectedItem.tank_bclass_dens_lo+' - '+dataGrid.selectedItem.tank_bclass_dens_hi+']'+resourceManager.getString('default','UNIT__DENSITY') + '\n@' + this.refTempText}" verticalAlign="middle"/>
+									 text="{'['+dataGrid.selectedItem.tank_bclass_dens_lo+' - '+dataGrid.selectedItem.tank_bclass_dens_hi+']'+resourceManager.getString('default','UNIT__DENSITY')}" verticalAlign="middle"/>
 							<s:Spacer width="{spaceWidth}" />
 						</s:HGroup>
 						<s:HGroup id="fld__tank_api">

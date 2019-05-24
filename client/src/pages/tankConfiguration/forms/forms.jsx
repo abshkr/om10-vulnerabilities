@@ -141,7 +141,7 @@ class TankConfigurationForm extends Component {
   };
 
   render() {
-    const { form, value, baseProducts } = this.props;
+    const { form, value, baseProducts, profile } = this.props;
     const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
     const TabPane = Tabs.TabPane;
 
@@ -170,9 +170,11 @@ class TankConfigurationForm extends Component {
               <ExcludeFromStockReports decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
 
-            <TabPane tab="Adaptive Flow" key="5">
-              <TankMaxFlow decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-            </TabPane>
+            {profile.features.adaptiveFlowControl && (
+              <TabPane tab="Adaptive Flow" key="5">
+                <TankMaxFlow decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              </TabPane>
+            )}
           </Tabs>
         </Form>
 

@@ -1,8 +1,22 @@
 import React from "react";
-import generate from "../../utils/generateOptions";
+import _ from "lodash";
 import { Tag } from "antd";
+import generate from "../../utils/generateOptions";
 
-const columns = data => [
+const columns = (data, configuration) => {
+  const values = defaults(data);
+
+  if (!configuration.features.adaptiveFlowControl) {
+    const modified = _.reject(values, o => {
+      return o.dataIndex === "tank_max_flow" || o.dataIndex === "tank_afc_priority";
+    });
+    return modified;
+  } else {
+    return values;
+  }
+};
+
+const defaults = data => [
   {
     title: "Tank Code",
     dataIndex: "tank_code",
@@ -103,10 +117,10 @@ const columns = data => [
     width: 350,
     render: text => <span>{text}</span>
   },
+
   {
     title: "Flow Rates",
     dataIndex: "tank_max_flow",
-    key: "flow_rates",
     width: 600,
     render: levels => (
       <span>
@@ -119,5 +133,4 @@ const columns = data => [
     )
   }
 ];
-
 export default columns;
