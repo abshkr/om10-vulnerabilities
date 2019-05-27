@@ -56,7 +56,7 @@ class TankView extends Component {
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <Filter value={value} search={this.searchObjects} />
             <div>
-              <Button type="primary" style={{ marginRight: 5 }}>
+              <Button shape="round" type="primary" style={{ marginRight: 5 }}>
                 Create New Tank
               </Button>
               <Download data={results} type={"Tank View"} />

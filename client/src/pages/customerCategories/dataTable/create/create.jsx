@@ -23,13 +23,7 @@ const CreateForm = Form.create()(
       const { visible, onCancel, onCreate, form } = this.props;
       const { getFieldDecorator } = form;
       return (
-        <Modal
-          visible={visible}
-          title="Create new Customer Category"
-          okText="Create"
-          onCancel={onCancel}
-          onOk={onCreate}
-        >
+        <Modal visible={visible} title="Create new Customer Category" okText="Create" onCancel={onCancel} onOk={onCreate}>
           <Form layout="vertical">
             <FormItem label="Category Code">
               {getFieldDecorator("code", {
@@ -72,27 +66,21 @@ export default class Create extends Component {
         throw err;
       }
 
-      axios
-        .get(
-          `https://10.1.10.66/api/pages/cust_cat/create.php?category_code=${values.code}&category_name=${
-            values.name
-          }`
-        )
-        .then(
-          res => {
-            this.props.update();
-            notification.success({
-              message: "Successfully Created.",
-              description: "The Customer Category has been successfully created."
-            });
-          },
-          error => {
-            notification.error({
-              message: "Creation Failed.",
-              description: "The Customer Category has creation failed."
-            });
-          }
-        );
+      axios.get(`https://10.1.10.66/api/pages/cust_cat/create.php?category_code=${values.code}&category_name=${values.name}`).then(
+        res => {
+          this.props.update();
+          notification.success({
+            message: "Successfully Created.",
+            description: "The Customer Category has been successfully created."
+          });
+        },
+        error => {
+          notification.error({
+            message: "Creation Failed.",
+            description: "The Customer Category has creation failed."
+          });
+        }
+      );
       form.resetFields();
       this.setState({ visible: false });
     });
@@ -105,16 +93,11 @@ export default class Create extends Component {
   render() {
     return (
       <div>
-        <Button type="primary" onClick={this.showModal} style={{ marginBottom: 10, fontSize: 16 }}>
+        <Button shape="round" type="primary" onClick={this.showModal} style={{ marginBottom: 10, fontSize: 16 }}>
           Add New Category
         </Button>
 
-        <CreateForm
-          wrappedComponentRef={this.saveFormRef}
-          visible={this.state.visible}
-          onCancel={this.handleCancel}
-          onCreate={this.handleCreate}
-        />
+        <CreateForm wrappedComponentRef={this.saveFormRef} visible={this.state.visible} onCancel={this.handleCancel} onCreate={this.handleCreate} />
       </div>
     );
   }

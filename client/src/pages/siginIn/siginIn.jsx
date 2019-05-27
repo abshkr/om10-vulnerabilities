@@ -35,27 +35,13 @@ class Signin extends Component {
                   <strong>Terminal Automation System</strong>
                 </p>
                 <fieldset className="redux-field">
-                  <Field
-                    placeholder="Omega Personnel Code"
-                    className="sign-in-form-input"
-                    name="email"
-                    type="text"
-                    component="input"
-                    autoComplete="none"
-                  />
+                  <Field placeholder="Omega Personnel Code" className="sign-in-form-input" name="email" type="text" component="input" autoComplete="none" />
                 </fieldset>
                 <fieldset className="redux-field">
-                  <Field
-                    placeholder="Password"
-                    className="sign-in-form-input"
-                    name="password"
-                    type="password"
-                    component="input"
-                    autoComplete="none"
-                  />
+                  <Field placeholder="Password" className="sign-in-form-input" name="password" type="password" component="input" autoComplete="none" />
                 </fieldset>
                 <div className="buttons">
-                  <button className="sign-in-button">Sign In</button>
+                  <button className="sign-in-button">Sign In </button>
                 </div>
               </form>
             </div>

@@ -40,13 +40,7 @@ class DrawerForm extends Component {
 
     return (
       <div>
-        <Drawer
-          title={`Updating ${selected.category_code}`}
-          width={720}
-          placement="right"
-          onClose={onClose}
-          visible={visible}
-        >
+        <Drawer title={`Updating ${selected.category_code}`} width={720} placement="right" onClose={onClose} visible={visible}>
           <Form layout="vertical" hideRequiredMark>
             <Form.Item label="Category Code">
               {getFieldDecorator("code", {
@@ -99,7 +93,9 @@ class DrawerForm extends Component {
               Delete
             </Button>
 
-            <Button onClick={onClose}>Cancel</Button>
+            <Button shape="round" onClick={onClose}>
+              Cancel
+            </Button>
           </div>
         </Drawer>
       </div>

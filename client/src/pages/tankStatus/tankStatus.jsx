@@ -85,7 +85,7 @@ class TankStatus extends Component {
       <Page page={"Gantry"} name={name} block={true}>
         <Container>
           <Filter value={value} search={this.searchObjects} />
-          <Button type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
+          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
           <Download data={data} type={"Tank Status"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
           <DataTable resize={resize} rowKey="tank_code" columns={columns(results)} data={results} isLoading={isLoading} scroll={5000} click={this.handleClick} />
         </Container>

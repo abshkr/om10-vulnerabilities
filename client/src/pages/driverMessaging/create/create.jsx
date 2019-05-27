@@ -11,14 +11,7 @@ const CreateForm = Form.create()(
       const { visible, onCancel, onCreate, form } = this.props;
       const { getFieldDecorator } = form;
       return (
-        <Modal
-          visible={visible}
-          title="Create new message"
-          okText="Send"
-          onCancel={onCancel}
-          onOk={onCreate}
-          centered
-        >
+        <Modal visible={visible} title="Create new message" okText="Send" onCancel={onCancel} onOk={onCreate} centered>
           <Form layout="vertical">
             <FormItem label="Recipient">
               {getFieldDecorator("recipient", {
@@ -88,16 +81,11 @@ export default class Create extends Component {
   render() {
     return (
       <div>
-        <Button type="primary" onClick={this.showModal} style={{ marginBottom: 10, fontSize: 16 }}>
+        <Button shape="round" type="primary" onClick={this.showModal} style={{ marginBottom: 10, fontSize: 16 }}>
           Create
         </Button>
 
-        <CreateForm
-          wrappedComponentRef={this.saveFormRef}
-          visible={this.state.visible}
-          onCancel={this.handleCancel}
-          onCreate={this.handleCreate}
-        />
+        <CreateForm wrappedComponentRef={this.saveFormRef} visible={this.state.visible} onCancel={this.handleCancel} onCreate={this.handleCreate} />
       </div>
     );
   }
