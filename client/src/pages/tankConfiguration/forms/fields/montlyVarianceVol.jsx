@@ -22,7 +22,7 @@ export default class MonthlyVarianceVol extends Component {
   render() {
     const { decorator } = this.props;
     return (
-      <Form.Item label="Monthly Limit (Vol)">
+      <Form.Item label="Monthly Limit">
         {decorator("tank_mtol_volume", {
           initialValue: 0,
           rules: [
@@ -30,7 +30,7 @@ export default class MonthlyVarianceVol extends Component {
               validator: this.handleDataValidation
             }
           ]
-        })(<Input />)}
+        })(<Input addonAfter="Vol" />)}
       </Form.Item>
     );
   }

@@ -157,10 +157,10 @@ class TankConfigurationForm extends Component {
             </TabPane>
 
             <TabPane tab="Variance" key="2">
-              <DailyVariancePercent decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <DailyVarianceVol decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <MonthlyVariancePercent decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <MonthlyVarianceVol decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <DailyVariancePercent decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <MonthlyVariancePercent decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
 
             <TabPane tab="Flags" key="4">
