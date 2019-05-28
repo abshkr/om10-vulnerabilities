@@ -19,8 +19,16 @@ class Database
     {
         $this->username = (isset($_SERVER['OMEGA_USER']) ? $_SERVER['OMEGA_USER'] : 'test_coogee2');
         $this->password = (isset($_SERVER['OMEGA_PWD']) ? $_SERVER['OMEGA_PWD'] : 'abcd1234');
+
+        //This is to call a function in phpdecryption.so, check backend/decryption_libs/libdecryption_php
+        if (isset($_SERVER['DB_ENCRYPT']) &&
+            ($_SERVER['DB_ENCRYPT'] == 'YES' || $_SERVER['DB_ENCRYPT'] == 'yes')) {
+            $temp = decrypt_user_pwd($this->password);
+            $this->password = $temp;
+        }
+
         $this->db_name = 'localhost' . (isset($_SERVER['DB_PORT']) ? ':' . $_SERVER['DB_PORT'] : '') .
-            (isset($_SERVER['DB_DBASE']) ? '/' . $_SERVER['DB_DBASE'] : '/OML5K');
+            (isset($_SERVER['OMEGA_DBASE']) ? '/' . $_SERVER['OMEGA_DBASE'] : '/OML5K');
         // echo $this->username;
         // echo $this->password;
         // echo $this->db_name;
