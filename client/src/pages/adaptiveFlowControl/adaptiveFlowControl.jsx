@@ -7,7 +7,7 @@ import FlowRates from "./flowRates";
 import generator from "./generator";
 import search from "../../utils/search";
 import { baseProducts, adaptiveFlow } from "../../api";
-import { Page, Filter, Download, Container, DataTable } from "../../components";
+import { Page, Filter, Container, DataTable } from "../../components";
 import "./adaptiveFlowControl.css";
 
 class AdaptiveFlowControl extends Component {
@@ -16,9 +16,7 @@ class AdaptiveFlowControl extends Component {
     this.state = {
       data: [],
       value: "",
-      resize: false,
-      isLoading: true,
-      baseProducts: []
+      isLoading: true
     };
   }
 
@@ -28,32 +26,14 @@ class AdaptiveFlowControl extends Component {
       .then(
         axios.spread((baseProducts, flowRate) => {
           this.setState({
-            value: "",
-            filtered: null,
             isLoading: false,
-            baseProducts: baseProducts.data.records,
             data: generator(baseProducts.data.records, flowRate.data.records)
           });
         })
       )
       .catch(error => {
         message.warn("Failed to make the request.");
-        console.error(error);
       });
-  };
-
-  getFlowRate = () => {
-    const { baseProducts } = this.state;
-
-    if (baseProducts.length !== 0) {
-      axios.all([adaptiveFlow.readFlowRate()]).then(
-        axios.spread(flowRate => {
-          this.setState({
-            data: generator(baseProducts, flowRate.data.records)
-          });
-        })
-      );
-    }
   };
 
   searchObjects = query => {
@@ -65,10 +45,9 @@ class AdaptiveFlowControl extends Component {
   };
 
   componentDidMount() {
-    this.getBaseProducts();
     try {
       this.periodic = setInterval(async () => {
-        this.getFlowRate();
+        this.getBaseProducts();
       }, 1000);
     } catch (e) {
       clearInterval(this.periodic);
@@ -82,7 +61,6 @@ class AdaptiveFlowControl extends Component {
       <Page page={"Gantry"} name={"Adaptive Flow Control"} block={true}>
         <Container>
           <Filter value={value} search={this.searchObjects} />
-          <Download data={data} type={"Tank Configuration"} style={{ float: "right" }} />
           <DataTable isLoading={isLoading} resize={resize} rowKey="baseCode" columns={columns(results)} data={results} nested={base => FlowRates(base)} />
         </Container>
       </Page>

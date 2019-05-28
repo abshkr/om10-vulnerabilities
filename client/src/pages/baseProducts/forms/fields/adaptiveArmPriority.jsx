@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Form, Select } from "antd";
+import { flowControlPriority } from "../../../../constants/definitions";
 
 export default class AdaptiveArmPriority extends Component {
   componentDidMount() {
@@ -15,16 +16,15 @@ export default class AdaptiveArmPriority extends Component {
   render() {
     const { decorator } = this.props;
     const { Option } = Select;
-    const control = ["LILO (Last in / Last out)", "LIFO (Last in / First out)"];
     return (
       <Form.Item label="Adaptive Arm Priority">
         {decorator("afc_priority", {
           rules: [{ required: false, message: "Please Select An Arm Priority." }]
         })(
           <Select>
-            {control.map((item, index) => (
-              <Option key={index} value={item}>
-                {item}
+            {flowControlPriority.map((item, index) => (
+              <Option key={index} value={item.key}>
+                {item.value}
               </Option>
             ))}
           </Select>

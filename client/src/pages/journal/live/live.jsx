@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Timeline } from "antd";
 import axios from "axios";
-import * as API from "../../../constants/api";
+import { api } from "../../../api";
 import moment from "moment";
 
 export default class LiveJournal extends Component {
@@ -14,7 +14,7 @@ export default class LiveJournal extends Component {
   }
 
   fetchLiveJournal() {
-    axios.get(`https://${API.URL}/api/journal/read.php`).then(res => {
+    axios.get(`https://${api}/api/journal/read.php`).then(res => {
       if (this.state.isMounted) {
         this.setState({
           data: res.data.records
@@ -46,8 +46,8 @@ export default class LiveJournal extends Component {
           data.map((item, index) => (
             <Timeline.Item key={index}>
               <p>
-                <span>Date/Time: </span> {moment(item.gen_date.slice(0, -6)).format("DD/MM/YYYY h:mm:ss A")} ─{" "}
-                <span>Event: </span> {item.msg_event} ─ <span>Detail: </span> {item.message}
+                <span>Date/Time: </span> {moment(item.gen_date.slice(0, -6)).format("DD/MM/YYYY h:mm:ss A")} ─ <span>Event: </span> {item.msg_event} ─ <span>Detail: </span>{" "}
+                {item.message}
               </p>
             </Timeline.Item>
           ))}

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import * as API from "../../../constants/api";
+import { api } from "../../../api";
 import moment from "moment";
 import Generate from "../../../utils/generateOptions";
 import Calendar from "../../../components/calendar";
@@ -29,7 +29,7 @@ export default class HistoricalJournal extends Component {
     this.setState({
       isLoading: true
     });
-    axios.get(`https://${API.URL}/api/journal/search.php?start_date=${start}&end_date=${end}`).then(res => {
+    axios.get(`https://${api}/api/journal/search.php?start_date=${start}&end_date=${end}`).then(res => {
       this.setState({
         data: res.data.records,
         isLoading: false
@@ -95,14 +95,7 @@ export default class HistoricalJournal extends Component {
         <Calendar start={start} end={end} change={this.onChange} />
         <Filter value={value} search={this.searchText} />
         <Download data={data} type={`journal_${start}-${end}`} style={{ float: "right" }} />
-        <DataTable
-          rowKey="seq"
-          columns={columns}
-          data={!!filtered ? filtered : data}
-          isLoading={isLoading}
-          offset={0}
-          scroll={300}
-        />
+        <DataTable rowKey="seq" columns={columns} data={!!filtered ? filtered : data} isLoading={isLoading} offset={0} scroll={300} />
       </div>
     );
   }

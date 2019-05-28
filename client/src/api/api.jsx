@@ -1,4 +1,4 @@
-const development = "10.1.10.66";
+const development = "10.1.10.188";
 const production = window.location.hostname;
 const api = production === "localhost" ? development : production;
 
