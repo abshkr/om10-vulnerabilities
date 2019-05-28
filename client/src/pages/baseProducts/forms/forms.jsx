@@ -169,7 +169,7 @@ class BaseProductsForm extends Component {
   }
 
   render() {
-    const { form, value } = this.props;
+    const { form, value, profile } = this.props;
     const { getFieldDecorator, setFieldsValue } = form;
     const TabPane = Tabs.TabPane;
     return (
@@ -191,10 +191,12 @@ class BaseProductsForm extends Component {
               <DensityRangeHigh decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
 
-            <TabPane tab="Adaptive Flow" key="3">
-              <AdaptiveFlowControl decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <AdaptiveArmPriority decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-            </TabPane>
+            {profile.features.adaptiveFlowControl && (
+              <TabPane tab="Adaptive Flow" key="3">
+                <AdaptiveFlowControl decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+                <AdaptiveArmPriority decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              </TabPane>
+            )}
           </Tabs>
         </Form>
 

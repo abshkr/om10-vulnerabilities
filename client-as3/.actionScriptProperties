@@ -152,8 +152,8 @@
     <module application="src/index.mxml" destPath="modules/M_COMPLIANCEMESSAGEGROUPS.swf" optimize="true" sourcePath="src/modules/M_COMPLIANCEMESSAGEGROUPS.mxml"/>
     <module application="src/index.mxml" destPath="modules/M_AUDITREPORT.swf" optimize="true" sourcePath="src/modules/M_AUDITREPORT.mxml"/>
     <module application="src/index.mxml" destPath="modules/M_PRODUCTASSETS.swf" optimize="true" sourcePath="src/modules/M_PRODUCTASSETS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_ADAPTIVEFLOW.swf" optimize="true" sourcePath="src/modules/M_ADAPTIVEFLOW.mxml"/>
   </modules>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
 </actionScriptProperties>
-

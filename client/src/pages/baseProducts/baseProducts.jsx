@@ -31,7 +31,7 @@ class BaseProducts extends Component {
       centered: true,
       width: 720,
       icon: !!object ? "edit" : "form",
-      content: <Forms value={object} refresh={this.getBaseProducts} baseProducts={this.state.baseProducts} />,
+      content: <Forms value={object} refresh={this.getBaseProducts} baseProducts={this.state.baseProducts} profile={this.props.configuration} />,
       okButtonProps: {
         style: { display: "none" }
       }
@@ -84,6 +84,7 @@ class BaseProducts extends Component {
 
   render() {
     const { data, isLoading, filtered, value, resize } = this.state;
+    const { configuration } = this.props;
     const results = !!filtered ? filtered : data;
     const name = "Base Products";
     return (
@@ -96,7 +97,7 @@ class BaseProducts extends Component {
             Create Base Product
           </Button>
 
-          <DataTable isLoading={isLoading} resize={resize} rowKey="base_code" columns={columns(results)} data={results} scroll={3600} click={this.handleClick} />
+          <DataTable isLoading={isLoading} resize={resize} rowKey="base_code" columns={columns(results, configuration)} data={results} scroll={3600} click={this.handleClick} />
         </Container>
       </Page>
     );

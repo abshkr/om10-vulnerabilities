@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
 import { LocaleProvider } from "antd";
@@ -8,7 +8,6 @@ import reducers from "../reducers";
 import Navigation from "../components/navigation";
 import paths from "./paths";
 import configuration from "../configuration";
-import * as ROUTES from "../constants/routes";
 import zhCN from "antd/lib/locale-provider/zh_CN";
 import enUS from "antd/lib/locale-provider/en_US";
 
@@ -44,7 +43,6 @@ const App = () => (
             {paths.map((item, index) => {
               return <Route exact key={index} path={item.path} component={item.component} />;
             })}
-            <Redirect from={ROUTES.ENTRY} to={ROUTES.DASHBOARD} />
           </Switch>
         </div>
       </BrowserRouter>

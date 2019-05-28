@@ -58,25 +58,24 @@ class TankConfigurationForm extends Component {
   handleUpdate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log(values);
-        // axios
-        //   .all([tanks.updateTank(values)])
-        //   .then(
-        //     axios.spread(response => {
-        //       this.props.refresh();
-        //       Modal.destroyAll();
-        //       notification.success({
-        //         message: "Successfully Updated.",
-        //         description: `You have updated the Tank ${values.tank_code}`
-        //       });
-        //     })
-        //   )
-        //   .catch(function(error) {
-        //     notification.error({
-        //       message: error.message,
-        //       description: "Failed to update the Tank."
-        //     });
-        //   });
+        axios
+          .all([tanks.updateTank(values)])
+          .then(
+            axios.spread(response => {
+              this.props.refresh();
+              Modal.destroyAll();
+              notification.success({
+                message: "Successfully Updated.",
+                description: `You have updated the Tank ${values.tank_code}`
+              });
+            })
+          )
+          .catch(function(error) {
+            notification.error({
+              message: error.message,
+              description: "Failed to update the Tank."
+            });
+          });
       } else {
         notification.error({
           message: "Validation Failed.",
@@ -142,7 +141,7 @@ class TankConfigurationForm extends Component {
   };
 
   render() {
-    const { form, value, baseProducts } = this.props;
+    const { form, value, baseProducts, profile } = this.props;
     const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
     const TabPane = Tabs.TabPane;
 
@@ -171,9 +170,11 @@ class TankConfigurationForm extends Component {
               <ExcludeFromStockReports decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
 
-            <TabPane tab="Adaptive Flow" key="5">
-              <TankMaxFlow decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-            </TabPane>
+            {profile.features.adaptiveFlowControl && (
+              <TabPane tab="Adaptive Flow" key="5">
+                <TankMaxFlow decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              </TabPane>
+            )}
           </Tabs>
         </Form>
 

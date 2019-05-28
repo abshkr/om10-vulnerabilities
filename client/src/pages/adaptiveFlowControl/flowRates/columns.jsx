@@ -30,7 +30,7 @@ const columns = [
     render: state => (
       <span>
         <Badge status={state === "0" ? "warning" : "processing"} />
-        {state === "0" ? "Inactive" : state}
+        {state === "0" ? "Inactive" : state === "1" ? "1st High Flow" : "2nd High Flow"}
       </span>
     )
   },
@@ -39,20 +39,26 @@ const columns = [
     title: "Flow Contribution (LPM)",
     dataIndex: "flow_contribution",
     key: "flow_contribution",
-    render: value => <span>{value}</span>
+    render: value => <span>{value.toFixed(2)}</span>
   },
 
   {
     title: "Actual Flowrate (LPM)",
     key: "current_flow_rate",
     dataIndex: "current_flow_rate",
-    render: value => <span>{value}</span>
+    render: value => <span>{value.toFixed(2)}</span>
   },
   {
     title: "Loaded Quantity",
     dataIndex: "loaded_qty",
     key: "loaded_qty",
-    render: value => <span>{value}</span>
+    render: value => <span>{value.toFixed(2)}</span>
+  },
+  {
+    title: "Preset Quantity",
+    dataIndex: "preset",
+    key: "preset",
+    render: value => <span>{value.toFixed(2)}</span>
   }
 ];
 

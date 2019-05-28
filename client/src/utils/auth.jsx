@@ -1,11 +1,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import checkSession from "./checkSession";
-import configuration from "../configuration";
 import * as ROUTES from "../constants/routes";
+import { Loading } from "../components";
+import axios from "axios";
 
 export default Module => {
   class ComposedComponent extends Component {
+    state = {
+      configuration: null
+    };
+
     protectRoute = () => {
       const { auth, history } = this.props;
       if (!auth) {
@@ -27,11 +32,20 @@ export default Module => {
       }
     };
 
+    getConfiguration = () => {
+      axios.get("/html/config.json").then(response => {
+        this.setState({
+          configuration: response.data
+        });
+      });
+    };
+
     componentDidMount() {
       const { history } = this.props;
       setInterval(() => checkSession(history), 1000);
       this.protectRoute();
       this.checkFrame();
+      this.getConfiguration();
     }
 
     componentDidUpdate() {
@@ -40,6 +54,12 @@ export default Module => {
     }
 
     render() {
+      const { configuration } = this.state;
+
+      if (!configuration) {
+        return <Loading />;
+      }
+
       return <Module {...this.props} configuration={configuration} />;
     }
   }
