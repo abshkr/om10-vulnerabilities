@@ -48,7 +48,8 @@ class Tank extends CommonClass
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
     }
@@ -74,7 +75,8 @@ class Tank extends CommonClass
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
 
@@ -108,7 +110,8 @@ class Tank extends CommonClass
 
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-                    write_log("DB error:" . oci_error($stmt)['message'],
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'],
                         __FILE__, __LINE__, LogLevel::ERROR);
                     oci_rollback($this->conn);
                     return false;
@@ -126,7 +129,8 @@ class Tank extends CommonClass
 
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-                    write_log("DB error:" . oci_error($stmt)['message'],
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'],
                         __FILE__, __LINE__, LogLevel::ERROR);
                     oci_rollback($this->conn);
                     return false;
@@ -145,7 +149,8 @@ class Tank extends CommonClass
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
     }
@@ -174,7 +179,8 @@ class Tank extends CommonClass
             oci_bind_by_name($stmt, ':flow_rate', $value->flow_rate);
 
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 return false;
             }
         }
@@ -194,7 +200,8 @@ class Tank extends CommonClass
             if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                 $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             } else {
-                write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             }
             $this->tank_terminal = $row['TERM_CODE'];
         }
@@ -356,7 +363,8 @@ class Tank extends CommonClass
         oci_bind_by_name($stmt, ':tank_exc_spmv', $this->tank_exc_spmv);
         oci_bind_by_name($stmt, ':tank_exc_stckrpt', $this->tank_exc_stckrpt);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -371,7 +379,8 @@ class Tank extends CommonClass
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -393,7 +402,8 @@ class Tank extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
 
@@ -403,7 +413,8 @@ class Tank extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -417,7 +428,8 @@ class Tank extends CommonClass
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
