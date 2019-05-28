@@ -40,7 +40,8 @@ class ExpiryDate
             oci_bind_by_name($stmt, ':ed_object_id', $value->ed_object_id);
             oci_bind_by_name($stmt, ':ed_type_code', $key);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 oci_rollback($this->conn);
                 return false;
             } else {
@@ -66,7 +67,8 @@ class ExpiryDate
             //     $this->eqpt_load_type, $this->eqpt_id),
             //     __FILE__, __LINE__);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 oci_rollback($this->conn);
                 return false;
             }
@@ -98,7 +100,8 @@ class ExpiryDate
         oci_bind_by_name($stmt, ':ed_target_code', $this->edt_target_code);
         oci_bind_by_name($stmt, ':ed_object_id', $this->ed_object_id);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -135,7 +138,8 @@ class ExpiryDate
         oci_bind_by_name($stmt, ':ed_target_code', $this->edt_target_code);
         oci_bind_by_name($stmt, ':ed_object_id', $this->ed_object_id);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -166,7 +170,8 @@ class ExpiryDate
             //     $this->eqpt_load_type, $this->eqpt_id),
             //     __FILE__, __LINE__);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 oci_rollback($this->conn);
                 return false;
             }
@@ -220,7 +225,8 @@ class ExpiryDate
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
     }
@@ -244,7 +250,7 @@ class ExpiryDate
     //     if (oci_execute($stmt)) {
     //         return $stmt;
     //     } else {
-    //         write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
     //         return null;
     //     }
     // }

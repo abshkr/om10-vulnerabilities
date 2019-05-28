@@ -28,7 +28,7 @@ class Company
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
@@ -103,7 +103,7 @@ class Company
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
-            $e = oci_error($stmt)['message'];
+            $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
