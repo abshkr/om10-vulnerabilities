@@ -29,17 +29,14 @@ class Database
 
         $this->db_name = 'localhost' . (isset($_SERVER['DB_PORT']) ? ':' . $_SERVER['DB_PORT'] : '') .
             (isset($_SERVER['OMEGA_DBASE']) ? '/' . $_SERVER['OMEGA_DBASE'] : '/OML5K');
-        // echo $this->username;
-        // echo $this->password;
-        // echo $this->db_name;
-        write_log("Database::__construct. username:" . $this->username .
-            " password:" . $this->password . " db_name:" . $this->db_name, __FILE__, __LINE__);
+        // write_log("Database::__construct. username:" . $this->username .
+        //     " password:" . $this->password . " db_name:" . $this->db_name, __FILE__, __LINE__);
     }
 
     public function __destruct()
     {
-        write_log(sprintf("%s::%s() START, disconnect db", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
+        // write_log(sprintf("%s::%s() START, disconnect db", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
 
         if (isset($this->conn)) {
             oci_close($this->conn);

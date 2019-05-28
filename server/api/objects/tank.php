@@ -30,6 +30,104 @@ class Tank extends CommonClass
     protected $primary_keys = array("tank_code");
     protected $PRIMIRAY_KEY_EXCLUSIONS = array('TANK_TERMINAL');
 
+    private function linear_regression($x, $y)
+    {
+        $n = count($x); // number of items in the array
+        $x_sum = array_sum($x); // sum of all X values
+        $y_sum = array_sum($y); // sum of all Y values
+
+        $xx_sum = 0;
+        $xy_sum = 0;
+
+        for ($i = 0; $i < $n; $i++) {
+            $xy_sum += ($x[$i] * $y[$i]);
+            $xx_sum += ($x[$i] * $x[$i]);
+        }
+
+        // Slope
+        $slope = (($n * $xy_sum) - ($x_sum * $y_sum)) / (($n * $xx_sum) - ($x_sum * $x_sum));
+
+        // calculate intercept
+        $intercept = ($y_sum - ($slope * $x_sum)) / $n;
+
+        return array(
+            'slope' => $slope,
+            'intercept' => $intercept,
+        );
+    }
+
+    public function calc_max_flow()
+    {
+        $query = "
+            SELECT TANK_CODE, TANK_PROD_LVL FROM TANKS ORDER BY TANK_CODE";
+        $stmt = oci_parse($this->conn, $query);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        $tank_max_flows = array();
+        $retrieve_count = 0;
+        while ($tank_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $retrieve_count++;
+
+            $item = array();
+            $item['tank_code'] = $tank_row['TANK_CODE'];
+            $item['tank_level'] = $tank_row['TANK_PROD_LVL'];
+
+            $tank_flow = new TankMaxFlow($this->conn);
+            $tank_flow->tank_code = $tank_row['TANK_CODE'];
+            $stmt2 = $tank_flow->read();
+            $result = array();
+            Utilities::retrieve($result, $tank_flow, $stmt2);
+            if (count($result) <= 0) {
+                $item['flow_rate'] = 0;
+                array_push($tank_max_flows, $item);
+                continue;
+            }
+
+            write_log(json_encode($result), __FILE__, __LINE__);
+            $max_flow_rate = array(); //x
+            $tank_level = array(); //y
+            $lvl_flow = array();
+            foreach ($result as $value) {
+                // write_log(json_encode($value), __FILE__, __LINE__);
+                array_push($max_flow_rate, (float) $value['flow_rate']);
+                array_push($tank_level, (float) $value['tank_level']);
+                $lvl_flow[(string) $value['tank_level']] = (float) $value['flow_rate'];
+            }
+
+            $cur_level = (float) $tank_row['TANK_PROD_LVL'];
+            $cur_max_flow = 0;
+            if ($cur_level < min($tank_level)) {
+                write_log(sprintf("tank %s, cur lvl: %f, is less than min set", $tank_row['TANK_CODE'], $cur_level),
+                    __FILE__, __LINE__, LogLevel::WARNING);
+                $cur_max_flow = $lvl_flow[(string) min($tank_level)];
+            } else if ($cur_level > max($tank_level)) {
+                write_log(sprintf("tank %s, cur lvl: %f, is greater than max set", $tank_row['TANK_CODE'], $cur_level),
+                    __FILE__, __LINE__, LogLevel::WARNING);
+                $cur_max_flow = $lvl_flow[(string) max($tank_level)];
+            } else {
+                // write_log(json_encode($max_flow_rate), __FILE__, __LINE__);
+                // write_log(json_encode($tank_level), __FILE__, __LINE__);
+                $linear_data = $this->linear_regression($max_flow_rate, $tank_level);
+                // write_log(json_encode($linear_data), __FILE__, __LINE__);
+
+                // $cur_max_flow = (500 - $linear_data['intercept']) / $linear_data['slope'];
+                $cur_max_flow = (float) $tank_row['TANK_PROD_LVL'] * $linear_data['slope'] - $linear_data['intercept'];
+                // write_log($cur_max_flow, __FILE__, __LINE__);
+            }
+
+            $item['flow_rate'] = $cur_max_flow;
+            array_push($tank_max_flows, $item);
+        }
+
+        Utilities::echoRead($retrieve_count, $tank_max_flows, $desc = "");
+        return $tank_max_flows;
+    }
+
     //Because base cannot be too many, do not do limit
     //Old sample from amf TankService.php::getPaged():
     // "tank_code":"ST 3","tank_name":"ST 3","tank_terminal":"TGI","tank_sitename":"Shell TanjungGelang","tank_base":"220008581","tank_base_name":"Nemo 2016","tank_base_group":null,"tank_base_class":"6","tank_bclass_name":"Additive","tank_base_tunit":"0","tank_base_rpttemp":"0","tank_bclass_dens_lo":"1","tank_bclass_dens_hi":"2000","tank_bclass_vcf_alg":"3","tank_bclass_temp_lo":"-20","tank_bclass_temp_hi":"200","tank_drv_type":null,"tank_drv_aux":null,"tank_identifier":null,"tank_location":null,"tank_outflow_ope":null,"tank_inflow_open":null,"tank_adhoc_ivrq":null,"tank_inv_needed":null,"tank_dipping_on":"N","tank_leakdtct_on":null,"tank_alarmed":null,"tank_poll_gap":"0","tank_prod_lvl":"0","tank_address":"0","tank_rcpts":"0","tank_trfs":"93526","tank_no_sbt":"0","tank_versno":"0","tank_pakscan_act":"0","tank_alarm_state":null,"tank_lvl_alarm":"0","tank_lvlalarm_desc":"OK - NORMAL","tank_gaugingmthd":"0","tank_gaugingmthd_desc":"MANUAL","tank_instance":"0","tank_channel":"0","tank_sbt_ty":"0","tank_eth_content":"0","tank_ltr_close":"0","tank_kg_close":"0","tank_close_dens":"980","tank_rptvcfclose":"1","tank_inflow_rate":"0","tank_spare_fld1":null,"tank_spare_fld2":null,"tank_rcpt_vol":"0","tank_trf_vol":"0","tank_rcpt_kg":"0","tank_trf_kg":"0","tank_pump_vol":"0","tank_res":"0","tank_amb_vol":"0","tank_cor_vol":"0","tank_vapour_kg":"0","tank_liquid_kg":"0","tank_water":"0","tank_water_lvl":"0","tank_ullage":"0","tank_api":"12.8","tank_prod_c_of_e":"0","tank_60_86_vcf":"0","tank_density":"980","tank_temp":"0","tank_rptvcf":".0001","tank_amb_density":"0","tank_dtol_volume":"0","tank_dtol_percent":"0","tank_mtol_volume":"0","tank_mtol_percent":"0","tank_date":null,"tank_group":null,"tank_15_density":"980","tank_base_ref_temp":null,"tank_base_ref_tunt":null,"tank_base_corr_mthd":"1","tank_base_ref_temp_spec":"1","tank_base_limit_preset_ht":null,"tank_base_dens_lo":"1","tank_base_dens_hi":"2000","tank_base_color":null,"tank_active":"1","tank_atg_manchg":"2018-11-01 17:12:56:61976","tank_atg_status":null,"tank_sulphur":null,"tank_flashpoint":null,"tank_status":"0","tank_status_name":"In Service - Not used","tank_hh_level":null,"tank_h_level":null,"tank_l_level":null,"tank_ll_level":null,"tank_uh_level":null,"tank_ul_level":null,"tank_hh_state":"-1","tank_h_state":"-1","tank_l_state":"-1","tank_ll_state":"-1","tank_uh_state":"-1","tank_ul_state":"-1"
