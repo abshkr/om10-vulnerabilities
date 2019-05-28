@@ -168,6 +168,7 @@ https://10.1.10.66/api/pages/tank/create.php?tank_bclass_dens_hi=1163.5&tank_nam
 curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"tank_code\": \"TEST3\", \"tank_name\": \"NAME3\", \"tank_terminal\": \"TGI\" }" https://10.1.10.66/api/pages/tank/create.php
 https://10.1.10.66/api/pages/tank/update.php?tank_bclass_dens_hi=1163.5&tank_name=TEST23&tank_mtol_volume=9988&tank_bclass_dens_lo=838.3127&tank_15_density=778&tank_mtol_percent=11&tank_dtol_volume=9901&tank_code=TEST2&tank_density=998&tank_dtol_percent=11&tank_terminal=TGI&tank_api=27.72&tank_base=220000130&tank_exc_stckrpt=false
 https://10.1.10.66/api/pages/tank/delete.php?tank_code=TEST2
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"tank_code\": \"1235\", \"tank_exc_stckrpt\": true, \"tank_max_flow\":[{\"tank_level\":\"1000\", \"flow_rate\": 500}] }" https://10.1.10.66/api/pages/tank/update.php
 
 https://10.1.10.66/api/pages/tank_status/read.php?tank_code=T1
 https://10.1.10.66/api/pages/tank_status/areas.php
