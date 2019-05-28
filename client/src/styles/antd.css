@@ -53,6 +53,7 @@
   border: 1px solid #43454a1f;
   color: #68a4ec;
   box-shadow: none;
+  font-size: 14px;
 }
 
 .ant-btn-primary:hover {

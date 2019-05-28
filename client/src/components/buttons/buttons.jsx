@@ -36,7 +36,7 @@ export default class Buttons extends Component {
             Delete
           </Button>
         )}
-        <Button onClick={submit} type="primary" isLoading={isLoading}>
+        <Button shape="round" onClick={submit} type="primary" isLoading={isLoading}>
           {edit ? "Update" : "Create"}
         </Button>
       </div>

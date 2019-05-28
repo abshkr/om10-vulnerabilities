@@ -3314,9 +3314,9 @@
 			<s:Label height="28" fontWeight="bold" width="60" text="Special Instructions" visible="{this.specialInstructions}"/>
 			<s:Spacer width="10"/>
 				<s:TextArea id="spec_ins" width="520" height="60" enabled.scheduleDetails="false" visible="{this.specialInstructions}" text="{dataGrid.selectedItem.shl_rss_infdel}" maxChars="3500"/>	
-	
-			<s:Spacer width="10"/>
-			
+		</s:HGroup>
+		
+		<s:HGroup width="100%" gap="2">
 			<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','global.lbl.isotainerid')}"
 					 visible="{global.isContainer}"
 					 verticalAlign="middle"/>
@@ -3328,7 +3328,7 @@
 										   validationGroup="{vg}"
 										   visible="{global.isContainer}"
 										   validationType="alphanumeric"/>
-			<s:Spacer width="10"/>
+			
 			<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','DD_SOLD_TO_TITLE')}"  visible="{showDelivery}"
 					 verticalAlign="middle"/>
 			<components:DKI_ValidatorInput id="new_soldto" width="120"  visible="{showDelivery}"
@@ -3355,6 +3355,7 @@
 								   enabled="{this.isPartnershipEnabled &amp;&amp; showDelivery}" enabled.scheduleDetails="false" 
 								   visible="{this.isPartnershipEnabled &amp;&amp; showDelivery}" includeInLayout="{this.isPartnershipEnabled &amp;&amp; showDelivery}" click="popupPartnerList(event);"/>
 		</s:HGroup>
+		
 		<s:HGroup  verticalAlign="middle" includeInLayout="{global.siteCanResetDriver}" visible="{global.siteCanResetDriver}" enabled="{dataGrid.selectedItem.status == 'F'}" 
 				   visible.createByCompartment="false" visible.createByProduct="false">
 			<s:Label height="28" fontWeight="bold" verticalAlign="middle" text="{resourceManager.getString('default','datagrid.headercaption.Employer')}"/>

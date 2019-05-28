@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { Tag, Avatar, Progress, Icon } from "antd";
+import { Tag, Avatar, Progress } from "antd";
 import generate from "../../utils/generateOptions";
 
 const columns = data => [
@@ -35,13 +35,7 @@ const columns = data => [
     key: "armPriority",
     filters: generate(data, "armPriority"),
     width: 250,
-    onFilter: (value, record) => record.armPriority.indexOf(value) === 0,
-    render: priority => (
-      <span>
-        <Icon type={priority === "High" ? "caret-up" : "caret-down"} style={{ color: priority === "High" ? "#ec6e68" : "#a4ec68" }} />
-        {` ${priority}`}
-      </span>
-    )
+    onFilter: (value, record) => record.armPriority.indexOf(value) === 0
   },
   {
     title: "Tanks",
@@ -58,14 +52,6 @@ const columns = data => [
       </span>
     )
   },
-  {
-    title: "Activity",
-    dataIndex: "activity",
-    key: "activity",
-    width: 150,
-    render: activity => <span>{`${activity.current} / ${activity.total} `}</span>
-  },
-
   {
     title: "Total Flow Contribution",
     dataIndex: "flowRate",

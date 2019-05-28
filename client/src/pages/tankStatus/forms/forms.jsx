@@ -155,13 +155,19 @@ class EditForm extends Component {
 
               <Row type="flex" justify="space-around" style={{ marginTop: 30 }}>
                 <Col>
-                  <Button type="primary">Calculate Density</Button>
+                  <Button shape="round" type="primary">
+                    Calculate Density
+                  </Button>
                 </Col>
                 <Col>
-                  <Button type="primary">Calculate Quantity by Level</Button>
+                  <Button shape="round" type="primary">
+                    Calculate Quantity by Level
+                  </Button>
                 </Col>
                 <Col>
-                  <Button type="primary">Calculate Quantity</Button>
+                  <Button shape="round" type="primary">
+                    Calculate Quantity
+                  </Button>
                 </Col>
               </Row>
             </TabPane>
@@ -206,16 +212,22 @@ class EditForm extends Component {
           </Tabs>
         </Form>
 
-        <Button icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
+        <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
           Cancel
         </Button>
 
-        <Button type="primary" icon={!!value ? "edit" : "plus"} style={{ float: "right", marginRight: 5 }} onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}>
+        <Button
+          shape="round"
+          type="primary"
+          icon={!!value ? "edit" : "plus"}
+          style={{ float: "right", marginRight: 5 }}
+          onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}
+        >
           {!!value ? "Update" : "Create"}
         </Button>
 
         {!!value && (
-          <Button type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
+          <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
             Delete
           </Button>
         )}

@@ -22,7 +22,7 @@ export default class DailyVarianceVol extends Component {
   render() {
     const { decorator } = this.props;
     return (
-      <Form.Item label="Daily Limit (Vol)">
+      <Form.Item label="Daily Limit">
         {decorator("tank_dtol_volume", {
           initialValue: 0,
           rules: [
@@ -30,7 +30,7 @@ export default class DailyVarianceVol extends Component {
               validator: this.handleDataValidation
             }
           ]
-        })(<Input />)}
+        })(<Input addonAfter="Vol" />)}
       </Form.Item>
     );
   }

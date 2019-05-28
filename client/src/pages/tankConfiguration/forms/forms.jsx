@@ -157,10 +157,10 @@ class TankConfigurationForm extends Component {
             </TabPane>
 
             <TabPane tab="Variance" key="2">
-              <DailyVariancePercent decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <DailyVarianceVol decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <MonthlyVariancePercent decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <MonthlyVarianceVol decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <DailyVariancePercent decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <MonthlyVariancePercent decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
 
             <TabPane tab="Flags" key="4">
@@ -178,16 +178,22 @@ class TankConfigurationForm extends Component {
           </Tabs>
         </Form>
 
-        <Button icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
+        <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
           Cancel
         </Button>
 
-        <Button type="primary" icon={!!value ? "edit" : "plus"} style={{ float: "right", marginRight: 5 }} onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}>
+        <Button
+          shape="round"
+          type="primary"
+          icon={!!value ? "edit" : "plus"}
+          style={{ float: "right", marginRight: 5 }}
+          onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}
+        >
           {!!value ? "Update" : "Create"}
         </Button>
 
         {!!value && (
-          <Button type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
+          <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
             Delete
           </Button>
         )}

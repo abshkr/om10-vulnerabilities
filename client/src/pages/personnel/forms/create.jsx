@@ -64,10 +64,10 @@ const Create = Form.create()(
             overflowX: "hidden"
           }}
           footer={[
-            <Button key="cancel" onClick={cancel}>
+            <Button shape="round" key="cancel" onClick={cancel}>
               Cancel
             </Button>,
-            <Button key="update" onClick={this.handleSubmit}>
+            <Button shape="round" key="update" onClick={this.handleSubmit}>
               Create
             </Button>
           ]}

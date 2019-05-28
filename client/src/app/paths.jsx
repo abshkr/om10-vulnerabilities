@@ -24,41 +24,41 @@ const paths = [
       loading: Loading
     })
   },
-  {
-    path: ROUTES.SITE_CONFIGURATION,
-    component: Loadable({
-      loader: () => import("../pages/siteConfiguration"),
-      loading: Loading
-    })
-  },
-  {
-    path: ROUTES.SIGN_OUT,
-    component: Loadable({
-      loader: () => import("../pages/signOut"),
-      loading: Loading
-    })
-  },
-  {
-    path: ROUTES.SIGN_IN,
-    component: Loadable({
-      loader: () => import("../pages/siginIn"),
-      loading: Loading
-    })
-  },
-  {
-    path: ROUTES.DRIVER_MESSAGING,
-    component: Loadable({
-      loader: () => import("../pages/driverMessaging"),
-      loading: Loading
-    })
-  },
-  {
-    path: ROUTES.ON_DEMAND_REPORTS,
-    component: Loadable({
-      loader: () => import("../pages/onDemandReports"),
-      loading: Loading
-    })
-  },
+  // {
+  //   path: ROUTES.SITE_CONFIGURATION,
+  //   component: Loadable({
+  //     loader: () => import("../pages/siteConfiguration"),
+  //     loading: Loading
+  //   })
+  // },
+  // {
+  //   path: ROUTES.SIGN_OUT,
+  //   component: Loadable({
+  //     loader: () => import("../pages/signOut"),
+  //     loading: Loading
+  //   })
+  // },
+  // {
+  //   path: ROUTES.SIGN_IN,
+  //   component: Loadable({
+  //     loader: () => import("../pages/siginIn"),
+  //     loading: Loading
+  //   })
+  // },
+  // {
+  //   path: ROUTES.DRIVER_MESSAGING,
+  //   component: Loadable({
+  //     loader: () => import("../pages/driverMessaging"),
+  //     loading: Loading
+  //   })
+  // },
+  // {
+  //   path: ROUTES.ON_DEMAND_REPORTS,
+  //   component: Loadable({
+  //     loader: () => import("../pages/onDemandReports"),
+  //     loading: Loading
+  //   })
+  // },
   {
     path: ROUTES.METERING,
     component: Loadable({
