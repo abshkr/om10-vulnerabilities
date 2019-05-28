@@ -111,7 +111,6 @@ class Personnel extends CommonClass
         oci_bind_by_name($stmt, ':per_comments', $this->per_comments);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            // $err_str = oci_error($stmt)['message'];
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -319,7 +318,6 @@ class Personnel extends CommonClass
         // oci_bind_by_name($stmt, ':per_comments', $this->per_comments);
         // oci_bind_by_name($stmt, ':per_email', $this->per_email);
         // if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-        //     // $err_str = oci_error($stmt)['message'];
         //     $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         //     oci_rollback($this->conn);
         //     return false;
@@ -334,7 +332,6 @@ class Personnel extends CommonClass
             oci_bind_by_name($stmt, ':per_code', $this->per_code);
             oci_bind_by_name($stmt, ':user_status_flag', $this->user_status_flag);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                // $err_str = oci_error($stmt)['message'];
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 oci_rollback($this->conn);
@@ -486,8 +483,8 @@ class Personnel extends CommonClass
 
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-                    write_log("DB error:" . oci_error($stmt)['message'],
-                        __FILE__, __LINE__, LogLevel::ERROR);
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                     oci_rollback($this->conn);
                     return false;
                 }
@@ -504,8 +501,8 @@ class Personnel extends CommonClass
 
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-                    write_log("DB error:" . oci_error($stmt)['message'],
-                        __FILE__, __LINE__, LogLevel::ERROR);
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                     oci_rollback($this->conn);
                     return false;
                 }
@@ -531,8 +528,8 @@ class Personnel extends CommonClass
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         oci_bind_by_name($stmt, ':exec_result', $exec_result, -1, SQLT_INT);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT) || !($exec_result === 0)) {
-            write_log("Failed to execute DELETE_PERSONNEL:" .
-                oci_error($stmt)['message'], __FILE__, __LINE__);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }

@@ -26,7 +26,8 @@ class TankStatus
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
     }
@@ -39,7 +40,8 @@ class TankStatus
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
     }
@@ -148,7 +150,8 @@ class TankStatus
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
     }
@@ -300,7 +303,8 @@ class TankStatus
         oci_bind_by_name($stmt, ':tank_api', $this->tank_api);
         oci_bind_by_name($stmt, ':tank_15_density', $this->tank_15_density);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -315,7 +319,8 @@ class TankStatus
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -340,7 +345,8 @@ class TankStatus
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
         //CGI sample: sess_id=vhNZdvHKEiQZ&tankTerm=TGI&tk=T1&prod=400003030&origin=&prodNm=U95+BASE&lvlAlrm=0&leakDtct=N&fcfld=&loDens=610.6&hiDens=770.352&tk_location=ON_SITE&Dnst=747.2&prodCE=0&lqdKG=521655&prodLvl=9800&obsTC=31.30&obsVol=2666065&stdVol=2661799&gaugMthd=1&tkGpNm=MOGAS&op=25
@@ -432,7 +438,8 @@ class TankStatus
         oci_bind_by_name($stmt, ':tank_ul_level', $this->tank_ul_level);
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -445,7 +452,8 @@ class TankStatus
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -459,7 +467,8 @@ class TankStatus
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
         $module = "GUI_TANKS";
@@ -506,7 +515,8 @@ class TankStatus
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
         //CGI sample: sess_id=vhNZdvHKEiQZ&tankTerm=TGI&tk=T1&tkgId=11&tkgType=22&tkgAux=33&tkgChannel=44&tkgInst=55&tkgPollInt=120&tkAddress=66&op=20
@@ -555,7 +565,8 @@ class TankStatus
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -569,7 +580,8 @@ class TankStatus
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
         $module = "GUI_TANKS";
@@ -613,7 +625,8 @@ class TankStatus
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
 
@@ -623,7 +636,8 @@ class TankStatus
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -637,7 +651,8 @@ class TankStatus
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
