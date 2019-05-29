@@ -75,7 +75,7 @@ class Tank extends CommonClass
 
             $item = array();
             $item['tank_code'] = $tank_row['TANK_CODE'];
-            $item['tank_level'] = $tank_row['TANK_PROD_LVL'];
+            $item['tank_level'] = (float) $tank_row['TANK_PROD_LVL'];
 
             $tank_flow = new TankMaxFlow($this->conn);
             $tank_flow->tank_code = $tank_row['TANK_CODE'];
