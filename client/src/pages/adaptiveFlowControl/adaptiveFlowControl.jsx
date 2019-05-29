@@ -22,12 +22,12 @@ class AdaptiveFlowControl extends Component {
 
   getBaseProducts = () => {
     axios
-      .all([baseProducts.readBaseProduct(), adaptiveFlow.readFlowRate()])
+      .all([baseProducts.readBaseProduct(), adaptiveFlow.readFlowRate(), adaptiveFlow.readTankCurrentFlow()])
       .then(
-        axios.spread((baseProducts, flowRate) => {
+        axios.spread((baseProducts, flowRate, currentFlow) => {
           this.setState({
             isLoading: false,
-            data: generator(baseProducts.data.records, flowRate.data.records)
+            data: generator(baseProducts.data.records, flowRate.data.records, currentFlow.data)
           });
         })
       )
@@ -61,7 +61,7 @@ class AdaptiveFlowControl extends Component {
       <Page page={"Gantry"} name={"Adaptive Flow Control"} block={true}>
         <Container>
           <Filter value={value} search={this.searchObjects} />
-          <DataTable isLoading={isLoading} resize={resize} rowKey="baseCode" columns={columns(results)} data={results} nested={base => FlowRates(base)} />
+          <DataTable isLoading={isLoading} resize={resize} rowKey="baseCode" columns={columns(results)} data={results} nested={tank => FlowRates(tank)} />
         </Container>
       </Page>
     );

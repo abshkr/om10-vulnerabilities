@@ -8,3 +8,7 @@ export function readFlowRate() {
 export function readTankMaxFlow() {
   return axios.get(`https://${api}/api/pages/tank_max_flow/read.php`);
 }
+
+export function readTankCurrentFlow() {
+  return axios.get(`https://${api}/api/pages/tank/cur_max_flow.php`);
+}
