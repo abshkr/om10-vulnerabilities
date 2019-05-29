@@ -4,6 +4,7 @@ import { Page, Download, Container, DataTable, Filter } from "../../components";
 import axios from "axios";
 import { Select } from "antd";
 import search from "../../utils/search";
+import { stockManagement } from "../../api";
 import columns from "./columns";
 import "./siteBalance.css";
 
@@ -22,9 +23,14 @@ class SiteBalance extends Component {
 
   getSiteBalance = () => {
     this.setState({ isLoading: true });
-    axios.get(`https://10.1.10.66/api/pages/site_bal/read.php?unit=LITRES`).then(res => {
-      this.setState({ data: res.data.records, isLoading: false });
-    });
+    axios.all([stockManagement.readSiteBalance()]).then(
+      axios.spread(metering => {
+        this.setState({
+          isLoading: false,
+          data: metering.data.records
+        });
+      })
+    );
   };
 
   searchObjects = query => {
