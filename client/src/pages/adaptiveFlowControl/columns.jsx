@@ -1,16 +1,18 @@
 import React from "react";
-import _ from "lodash";
-import { Tag, Avatar, Progress } from "antd";
+import { Tag, Progress } from "antd";
 import generate from "../../utils/generateOptions";
 
 const columns = data => [
   {
-    title: "Profile",
-    dataIndex: "baseName",
-    key: "profile",
-    width: 180,
-    onFilter: (value, record) => record.baseName.indexOf(value) === 0,
-    render: (value, record) => <Avatar style={{ backgroundColor: record.baseColor }}>{value.substring(0, 1)}</Avatar>
+    title: "Tank Code",
+    dataIndex: "tankCode",
+    key: "tankCode",
+    width: 200,
+    render: tank => (
+      <span>
+        <Tag color="green">{tank}</Tag>
+      </span>
+    )
   },
   {
     title: "Base Product Code",
@@ -28,7 +30,6 @@ const columns = data => [
     filters: generate(data, "baseName"),
     onFilter: (value, record) => record.baseName.indexOf(value) === 0
   },
-
   {
     title: "Arm Priority",
     dataIndex: "armPriority",
@@ -38,19 +39,10 @@ const columns = data => [
     onFilter: (value, record) => record.armPriority.indexOf(value) === 0
   },
   {
-    title: "Tanks",
-    dataIndex: "tankList",
-    key: "tankList",
-
-    render: tanks => (
-      <span>
-        {_.uniqBy(tanks, "tank_code").map(tank => (
-          <Tag key={tank.tank_code} color={tank.flowing === "Y" ? "green" : "volcano"}>
-            {tank.tank_code}
-          </Tag>
-        ))}
-      </span>
-    )
+    title: "Tank Level",
+    dataIndex: "level",
+    key: "level",
+    width: 250
   },
   {
     title: "Total Flow Contribution",
@@ -58,7 +50,7 @@ const columns = data => [
     key: "flowRate",
     render: percent => (
       <div style={{ display: "flex", flexDirection: "column", width: "95%" }}>
-        <Progress percent={percent} strokeColor="#68a4ec" strokeWidth={6} status="active" />
+        <Progress percent={percent} strokeColor={percent > 100 ? "#ec6e68" : "#68a4ec"} strokeWidth={6} status={percent > 100 ? "exception" : "active"} />
       </div>
     )
   }

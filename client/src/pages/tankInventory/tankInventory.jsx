@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import auth from "../../utils/auth";
 import axios from "axios";
 import { Page, Download, Container, DataTable, Filter } from "../../components";
+import { stockManagement } from "../../api";
 import search from "../../utils/search";
 import columns from "./columns";
 import "./tankInventory.css";
@@ -18,9 +19,14 @@ class TankInventory extends Component {
 
   fetchTankInventory = () => {
     this.setState({ isLoading: true });
-    axios.get(`https://10.1.10.66/api/pages/tank_inv/read.php`).then(res => {
-      this.setState({ data: res.data.records, isLoading: false });
-    });
+    axios.all([stockManagement.readTankInventory()]).then(
+      axios.spread(metering => {
+        this.setState({
+          isLoading: false,
+          data: metering.data.records
+        });
+      })
+    );
   };
 
   searchObjects = query => {
@@ -37,13 +43,12 @@ class TankInventory extends Component {
 
   render() {
     const { isLoading, data, filtered, value } = this.state;
-    const name = "Tank Inventory";
     const results = !!filtered ? filtered : data;
     return (
-      <Page page={"Stock Management"} name={name} isLoading={isLoading} block={true}>
+      <Page page={"Stock Management"} name={"Tank Inventory"} isLoading={isLoading} block={true}>
         <Container>
           <Filter value={value} search={this.searchObjects} />
-          <Download data={data} type={name} style={{ float: "right" }} />
+          <Download data={data} type={"Tank Inventory"} style={{ float: "right" }} />
           <DataTable rowKey="tank_code" columns={columns(results)} data={results} isLoading={isLoading} scroll={100} />
         </Container>
       </Page>

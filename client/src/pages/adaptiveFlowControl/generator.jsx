@@ -1,41 +1,38 @@
 import _ from "lodash";
 import { flowControlPriority } from "../../constants/definitions";
 
-const progressCalculation = (flow, code) => {
-  const value = _.chain(flow)
-    .filter(value => {
-      return value.base_code === code;
-    })
-
-    .groupBy("base_code")
-    .mapValues(data => _.round((_.sumBy(data, value => value.current_flow_rate) / _.sumBy(data, value => value.flow_contribution)) * 100, 2))
-    .value();
-
-  const payload = isNaN(value[code]) ? 0 : value[code];
-  return payload;
+const findArmPriority = (bases, baseCode) => {
+  const base = _.find(bases, ["base_code", baseCode]);
+  const priority = _.find(flowControlPriority, ["key", base.afc_priority]);
+  return !!priority ? priority.value : "Not Set";
 };
 
-const generator = (base, flow) => {
+const findTankLevel = (current, tankCode) => {
+  const level = _.find(current, ["tank_code", tankCode]);
+  return level;
+};
+
+const findFlowRate = (arms, max) => {
+  const total = _.sumBy(arms, "current_flow_rate");
+  const percent = _.round((total / max) * 100, 2);
+  return percent;
+};
+
+const generator = (base, flow, current) => {
   const payload = [];
-
-  const filtered = _.filter(base, data => {
-    return _.uniq(_.map(flow, "base_code")).includes(data.base_code);
-  });
-
+  const filtered = _.uniqBy(flow, "tank_code");
   _.forEach(filtered, key => {
-    const flowRate = progressCalculation(flow, key.base_code);
-    const armPriority = _.find(flowControlPriority, ["key", key.afc_priority]);
-    const tanks = _.filter(flow, ["base_code", key.base_code]);
-    const uniqueTanks = _.uniq(_.map(tanks, "tank_code"));
-
+    const levels = findTankLevel(current, key.tank_code);
+    const arms = _.filter(flow, ["tank_code", key.tank_code]);
     payload.push({
+      tankCode: key.tank_code,
       baseCode: key.base_code,
       baseName: key.base_name,
-      armPriority: !!armPriority ? armPriority.value : "Not Set",
-      baseColor: key.base_color,
-      tankList: tanks,
-      uniqueTanks: uniqueTanks.toString(),
-      flowRate
+      armPriority: findArmPriority(base, key.base_code),
+      level: levels.tank_level,
+      arms,
+      max: levels.flow_rate,
+      flowRate: findFlowRate(arms, levels.flow_rate)
     });
   });
 

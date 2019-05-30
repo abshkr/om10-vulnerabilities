@@ -3,7 +3,7 @@
   display: flex;
   flex-wrap: wrap;
   margin: 0 -6px;
-  max-height: 65vh;
+  max-height: 85vh;
   overflow-y: scroll;
   margin-top: 10px;
   overflow-x: hidden;
@@ -24,8 +24,8 @@
 
 .tank {
   flex-grow: 1;
-  margin: 15px;
-  width: 250px;
+  margin: 5px;
+  width: 400px;
   height: 250px;
   transition: all 0.3s;
   border: 1px solid #538aef8a;

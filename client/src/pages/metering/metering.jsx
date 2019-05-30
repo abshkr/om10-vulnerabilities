@@ -27,16 +27,16 @@ class Metering extends Component {
       axios.spread(metering => {
         this.setState({
           isLoading: false,
-          data: metering.data.records,
-          filtered: null,
-          value: ""
+          data: metering.data.records
         });
       })
     );
   };
 
   handleUnitChange = unit => {
-    this.setState({ unit });
+    this.setState({
+      unit
+    });
   };
 
   searchObjects = query => {
@@ -69,7 +69,6 @@ class Metering extends Component {
             })}
           </Select>
           <Download data={data} type={"Metering"} style={{ float: "right" }} />
-
           <DataTable rowKey="metercode" columns={columns(results, unit)} data={results} isLoading={isLoading} scroll={300} />
         </Container>
       </Page>
