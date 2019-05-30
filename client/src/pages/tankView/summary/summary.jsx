@@ -27,15 +27,7 @@ const handleModelling = data => {
 };
 
 const Summary = ({ data }) => {
-  return (
-    <DataTable
-      rowKey="base_name"
-      columns={columns}
-      data={handleModelling(data)}
-      loading={true}
-      scroll={900}
-    />
-  );
+  return <DataTable rowKey="base_name" columns={columns} data={handleModelling(data)} isLoading={false} />;
 };
 
 export default Summary;

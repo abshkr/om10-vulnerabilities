@@ -22,7 +22,7 @@ const Tanks = ({ results }) => {
           return (
             <div key={index} className="tank" disabled onClick={() => handleClick(item)}>
               <div className="titles">
-                <span> {item.tank_name} </span>
+                <span> {item.tank_code} </span>
               </div>
 
               <div className="tank-body">
@@ -30,11 +30,7 @@ const Tanks = ({ results }) => {
                   color={status[item.tank_status_name]}
                   height={180}
                   title={item.tank_base_name}
-                  percent={
-                    Math.round((item.tank_cor_vol / item.tank_ullage) * 100, 2) < 100
-                      ? Math.round((item.tank_cor_vol / item.tank_ullage) * 100, 2)
-                      : 100
-                  }
+                  percent={Math.round((item.tank_cor_vol / item.tank_ullage) * 100, 2) < 100 ? Math.round((item.tank_cor_vol / item.tank_ullage) * 100, 2) : 100}
                 />
 
                 <div className="tank-status">

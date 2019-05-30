@@ -25,7 +25,7 @@ const columns = [
     key: "total_ullage"
   },
   {
-    title: "$Full",
+    title: "Full (%)",
     dataIndex: "total_fill",
     key: "total_fill"
   }
