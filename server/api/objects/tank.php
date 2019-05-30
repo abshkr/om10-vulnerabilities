@@ -30,32 +30,6 @@ class Tank extends CommonClass
     protected $primary_keys = array("tank_code");
     protected $PRIMIRAY_KEY_EXCLUSIONS = array('TANK_TERMINAL');
 
-    private function linear_regression($x, $y)
-    {
-        $n = count($x); // number of items in the array
-        $x_sum = array_sum($x); // sum of all X values
-        $y_sum = array_sum($y); // sum of all Y values
-
-        $xx_sum = 0;
-        $xy_sum = 0;
-
-        for ($i = 0; $i < $n; $i++) {
-            $xy_sum += ($x[$i] * $y[$i]);
-            $xx_sum += ($x[$i] * $x[$i]);
-        }
-
-        // Slope
-        $slope = (($n * $xy_sum) - ($x_sum * $y_sum)) / (($n * $xx_sum) - ($x_sum * $x_sum));
-
-        // calculate intercept
-        $intercept = ($y_sum - ($slope * $x_sum)) / $n;
-
-        return array(
-            'slope' => $slope,
-            'intercept' => $intercept,
-        );
-    }
-
     public function calc_max_flow()
     {
         $query = "
@@ -82,42 +56,48 @@ class Tank extends CommonClass
             $stmt2 = $tank_flow->read();
             $result = array();
             Utilities::retrieve($result, $tank_flow, $stmt2);
-            if (count($result) <= 0) {
+
+            $flow_data_count = count($result);
+            if ($flow_data_count <= 0) {
                 $item['flow_rate'] = 0;
                 array_push($tank_max_flows, $item);
                 continue;
             }
 
-            write_log(json_encode($result), __FILE__, __LINE__);
-            $max_flow_rate = array(); //x
-            $tank_level = array(); //y
-            $lvl_flow = array();
-            foreach ($result as $value) {
-                // write_log(json_encode($value), __FILE__, __LINE__);
-                array_push($max_flow_rate, (float) $value['flow_rate']);
-                array_push($tank_level, (float) $value['tank_level']);
-                $lvl_flow[(string) $value['tank_level']] = (float) $value['flow_rate'];
-            }
+            // write_log(json_encode($result), __FILE__, __LINE__);
 
+            //Because inside TankMaxFlow::read(), it is ordered by tank level
             $cur_level = (float) $tank_row['TANK_PROD_LVL'];
-            $cur_max_flow = 0;
-            if ($cur_level < min($tank_level)) {
+            if ($cur_level < (float) $result[0]['tank_level']) {
                 write_log(sprintf("tank %s, cur lvl: %f, is less than min set", $tank_row['TANK_CODE'], $cur_level),
                     __FILE__, __LINE__, LogLevel::WARNING);
-                $cur_max_flow = $lvl_flow[(string) min($tank_level)];
-            } else if ($cur_level > max($tank_level)) {
+                $cur_max_flow = (float) $result[0]['flow_rate'];
+            } else if ($cur_level > (float) $result[$flow_data_count - 1]['tank_level']) {
                 write_log(sprintf("tank %s, cur lvl: %f, is greater than max set", $tank_row['TANK_CODE'], $cur_level),
                     __FILE__, __LINE__, LogLevel::WARNING);
-                $cur_max_flow = $lvl_flow[(string) max($tank_level)];
+                $cur_max_flow = (float) $result[$flow_data_count - 1]['flow_rate'];
             } else {
-                // write_log(json_encode($max_flow_rate), __FILE__, __LINE__);
-                // write_log(json_encode($tank_level), __FILE__, __LINE__);
-                $linear_data = $this->linear_regression($max_flow_rate, $tank_level);
-                // write_log(json_encode($linear_data), __FILE__, __LINE__);
-
-                // $cur_max_flow = (500 - $linear_data['intercept']) / $linear_data['slope'];
-                $cur_max_flow = (float) $tank_row['TANK_PROD_LVL'] * $linear_data['slope'] - $linear_data['intercept'];
-                // write_log($cur_max_flow, __FILE__, __LINE__);
+                $x1 = (float) $result[0]['tank_level'];
+                $y1 = (float) $result[0]['flow_rate'];
+                $x2 = (float) $result[$flow_data_count - 1]['tank_level'];
+                $y2 = (float) $result[$flow_data_count - 1]['flow_rate'];
+                for ($i = 0; $i < $flow_data_count; $i++) {
+                    if ((int) $cur_level == (int) $result[$i]['tank_level']) {
+                        $cur_max_flow = (float) $result[$i]['flow_rate'];
+                        break;
+                    } else if ((int) $cur_level > (int) $result[$i]['tank_level']) {
+                        $x1 = (float) $result[$i]['tank_level'];
+                        $y1 = (float) $result[$i]['flow_rate'];
+                    } else {
+                        $x2 = (float) $result[$i]['tank_level'];
+                        $y2 = (float) $result[$i]['flow_rate'];
+                        $cur_max_flow = (($x2 - $cur_level) / ($x2 - $x1)) * $y1 +
+                            (($x1 - $cur_level) / ($x1 - $x2)) * $y2;
+                        // write_log(sprintf("%f,%f,%f,%f,%f", $x1, $y1, $x2, $y2, $cur_level),
+                        //     __FILE__, __LINE__);
+                        break;
+                    }
+                }
             }
 
             $item['flow_rate'] = $cur_max_flow;
