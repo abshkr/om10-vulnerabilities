@@ -1,9 +1,9 @@
 import _ from "lodash";
-import { flowControlPriority } from "../../constants/definitions";
+import { FLOW_CONTROL_PRIORITY } from "../../constants/";
 
 const findArmPriority = (bases, baseCode) => {
   const base = _.find(bases, ["base_code", baseCode]);
-  const priority = _.find(flowControlPriority, ["key", base.afc_priority]);
+  const priority = _.find(FLOW_CONTROL_PRIORITY, ["key", base.afc_priority]);
   return !!priority ? priority.value : "Not Set";
 };
 

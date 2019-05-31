@@ -54,6 +54,10 @@ class AdaptiveFlowControl extends Component {
     }
   }
 
+  componentWillUnmount() {
+    clearInterval(this.periodic);
+  }
+
   render() {
     const { data, filtered, value, resize, isLoading } = this.state;
     const results = !!filtered ? filtered : data;

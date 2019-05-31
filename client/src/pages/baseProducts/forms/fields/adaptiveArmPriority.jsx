@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Form, Select } from "antd";
-import { flowControlPriority } from "../../../../constants/definitions";
+import { FLOW_CONTROL_PRIORITY } from "../../../../constants";
 
 export default class AdaptiveArmPriority extends Component {
   componentDidMount() {
@@ -22,7 +22,7 @@ export default class AdaptiveArmPriority extends Component {
           rules: [{ required: false, message: "Please Select An Arm Priority." }]
         })(
           <Select>
-            {flowControlPriority.map((item, index) => (
+            {FLOW_CONTROL_PRIORITY.map((item, index) => (
               <Option key={index} value={item.key}>
                 {item.value}
               </Option>

@@ -59,6 +59,34 @@ const paths = [
   //     loading: Loading
   //   })
   // },
+  // {
+  //   path: ROUTES.JOURNAL,
+  //   component: Loadable({
+  //     loader: () => import("../pages/journal"),
+  //     loading: Loading
+  //   })
+  // },
+  // {
+  //   path: ROUTES.ID_ASSIGNMENT,
+  //   component: Loadable({
+  //     loader: () => import("../pages/idAssignment"),
+  //     loading: Loading
+  //   })
+  // },
+  // {
+  //   path: ROUTES.PERSONNEL,
+  //   component: Loadable({
+  //     loader: () => import("../pages/personnel"),
+  //     loading: Loading
+  //   })
+  // },
+  // {
+  //   path: ROUTES.CUSTOMER_CATEGORIES,
+  //   component: Loadable({
+  //     loader: () => import("../pages/customerCategories"),
+  //     loading: Loading
+  //   })
+  // },
   {
     path: ROUTES.METERING,
     component: Loadable({
@@ -84,34 +112,6 @@ const paths = [
     path: ROUTES.PRODUCT_INVENTORY,
     component: Loadable({
       loader: () => import("../pages/productInventory"),
-      loading: Loading
-    })
-  },
-  {
-    path: ROUTES.CUSTOMER_CATEGORIES,
-    component: Loadable({
-      loader: () => import("../pages/customerCategories"),
-      loading: Loading
-    })
-  },
-  {
-    path: ROUTES.JOURNAL,
-    component: Loadable({
-      loader: () => import("../pages/journal"),
-      loading: Loading
-    })
-  },
-  {
-    path: ROUTES.ID_ASSIGNMENT,
-    component: Loadable({
-      loader: () => import("../pages/idAssignment"),
-      loading: Loading
-    })
-  },
-  {
-    path: ROUTES.PERSONNEL,
-    component: Loadable({
-      loader: () => import("../pages/personnel"),
       loading: Loading
     })
   },
