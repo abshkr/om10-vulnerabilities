@@ -1,2 +1,2 @@
-import ProductInventory from "./customerCategories";
-export default ProductInventory;
+import CustomerCategories from "./customerCategories";
+export default CustomerCategories;

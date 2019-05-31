@@ -1,34 +1,35 @@
 import React, { Component } from "react";
-import auth from "../../utils/auth";
-import Page from "../../components/page";
-import Container from "../../components/container";
-import Filter from "../../components/filter";
-import DataTable from "../../components/table";
-import Download from "../../components/download";
-import search from "../../utils/search";
-import axios from "axios";
 
+import axios from "axios";
+import Forms from "./forms";
 import columns from "./columns";
-import "./customerCategories.css";
+import auth from "../../utils/auth";
+import search from "../../utils/search";
+import { customerCategories } from "../../api";
+import { Button, Modal, notification } from "antd";
+import { Page, Filter, DataTable, Download, Container } from "../../components";
 
 class CustomerCategories extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: "",
       data: [],
-      create: false,
-      edit: null
+      value: "",
+      resize: false,
+      isLoading: true
     };
   }
 
-  getCustomers = () => {
-    axios.get(`https://10.1.10.66/api/pages/cust_cat/read.php`).then(response => {
-      const data = response.data.records;
-      this.setState({
-        data: data,
-        isLoading: false
-      });
+  handleClick = object => {
+    Modal.info({
+      title: !!object ? `Editing (${object.category_code})` : "Create",
+      centered: true,
+      icon: !!object ? "edit" : "form",
+      width: 720,
+      content: <Forms refresh={this.getCustomerCategories} category={object} />,
+      okButtonProps: {
+        style: { display: "none" }
+      }
     });
   };
 
@@ -40,45 +41,55 @@ class CustomerCategories extends Component {
     });
   };
 
-  showCreate = () => {
-    this.setState({ create: true });
+  handleResize = () => {
+    const { resize } = this.state;
+    this.setState({
+      resize: !resize
+    });
   };
 
-  hideCreate = () => {
-    this.setState({ create: false });
-  };
+  getCustomerCategories = () => {
+    this.setState({
+      isLoading: true
+    });
 
-  showEdit = record => {
-    this.setState({ edit: record });
-  };
-
-  hideEdit = () => {
-    this.setState({ edit: null });
+    axios
+      .all([customerCategories.readCustomerCategories()])
+      .then(
+        axios.spread(customerCategories => {
+          this.setState({
+            isLoading: false,
+            data: customerCategories.data.records
+          });
+        })
+      )
+      .catch(function(error) {
+        notification.error({
+          message: error.message,
+          description: "Failed to make the request."
+        });
+      });
   };
 
   componentDidMount() {
-    this.getCustomers();
+    this.getCustomerCategories();
   }
 
   render() {
-    const { data, filtered, value } = this.state;
+    const { data, isLoading, filtered, value, resize } = this.state;
+    const { configuration } = this.props;
     const results = !!filtered ? filtered : data;
-    const name = "Customer Categories";
-
     return (
-      <Page page={"Customers"} name={"Customers Categories"} isLoading={false} block={true}>
+      <Page page={"Customers"} name={"Customer Categories"} block={true}>
         <Container>
-          <Filter value={value} search={this.searchObjects} />
-          <Download data={data} type={name} style={{ float: "right" }} />
+          <Filter value={value} search={this.searchObjects} loading={isLoading} />
+          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
+          <Download data={data} type={"Customer Categories"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
+          <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
+            Create Category
+          </Button>
 
-          <DataTable
-            rowKey="base_code"
-            columns={columns(results)}
-            data={results}
-            loading={true}
-            scroll={1000}
-            click={this.showEdit}
-          />
+          <DataTable data={results} resize={resize} rowKey="category_code" isLoading={isLoading} click={this.handleClick} columns={columns(results, configuration)} />
         </Container>
       </Page>
     );
