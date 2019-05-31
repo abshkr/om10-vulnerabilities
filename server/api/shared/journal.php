@@ -282,7 +282,8 @@ class Journal
         }
 
         if (!oci_execute($stmt, $mode)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             write_log("Failed to write journal", __FILE__, __LINE__);
             oci_free_statement($stmt);
             return false;

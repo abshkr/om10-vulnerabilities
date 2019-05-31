@@ -46,7 +46,8 @@ class OndemandReport
                             ", is_manager:" . $this->is_manager,
                             __FILE__, __LINE__);
                     } else {
-                        write_log(oci_error($stmt)['message'], __FILE__, __LINE__);
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                     }
                 }
             } else {

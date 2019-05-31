@@ -111,8 +111,8 @@ class Personnel extends CommonClass
         oci_bind_by_name($stmt, ':per_comments', $this->per_comments);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            // $err_str = oci_error($stmt)['message'];
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -132,7 +132,8 @@ class Personnel extends CommonClass
         oci_bind_by_name($stmt, ':user_password', $this->default_pwd);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -148,7 +149,8 @@ class Personnel extends CommonClass
         oci_bind_by_name($stmt, ':pt_timecd', $this->pt_timecd);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -179,7 +181,8 @@ class Personnel extends CommonClass
         oci_bind_by_name($stmt, ':pwdtrace_pwd', $this->default_pwd);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -194,7 +197,8 @@ class Personnel extends CommonClass
                 oci_bind_by_name($stmt, ':per_code', $this->per_code);
                 oci_bind_by_name($stmt, ':perm_area', $value->perm_area);
                 if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                    write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                     oci_rollback($this->conn);
                     return false;
                 }
@@ -226,7 +230,8 @@ class Personnel extends CommonClass
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -248,7 +253,8 @@ class Personnel extends CommonClass
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
         //Old data: area access control
@@ -274,7 +280,8 @@ class Personnel extends CommonClass
                 // array_push($perm_array, $base_item);
             }
         } else {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
         $stmt = $this->prepare_update($stmt);
@@ -311,8 +318,7 @@ class Personnel extends CommonClass
         // oci_bind_by_name($stmt, ':per_comments', $this->per_comments);
         // oci_bind_by_name($stmt, ':per_email', $this->per_email);
         // if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-        //     // $err_str = oci_error($stmt)['message'];
-        //     write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         //     oci_rollback($this->conn);
         //     return false;
         // }
@@ -326,8 +332,8 @@ class Personnel extends CommonClass
             oci_bind_by_name($stmt, ':per_code', $this->per_code);
             oci_bind_by_name($stmt, ':user_status_flag', $this->user_status_flag);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                // $err_str = oci_error($stmt)['message'];
-                write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 oci_rollback($this->conn);
                 return false;
             }
@@ -353,7 +359,8 @@ class Personnel extends CommonClass
         oci_bind_by_name($stmt, ':perl_ara', $this->perl_ara);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -362,7 +369,8 @@ class Personnel extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -377,7 +385,8 @@ class Personnel extends CommonClass
                 oci_bind_by_name($stmt, ':per_code', $this->per_code);
                 oci_bind_by_name($stmt, ':perm_area', $value->perm_area);
                 if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                    write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                     oci_rollback($this->conn);
                     return false;
                 }
@@ -410,7 +419,8 @@ class Personnel extends CommonClass
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -424,7 +434,8 @@ class Personnel extends CommonClass
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
         $module = "GUI_PERSONNEL";
@@ -458,7 +469,8 @@ class Personnel extends CommonClass
                 $perm_array2[strtolower($perm_row['PERM_AREA'])] = $base_item;
             }
         } else {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
         foreach ($perm_array as $key => $value) {
@@ -471,8 +483,8 @@ class Personnel extends CommonClass
 
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-                    write_log("DB error:" . oci_error($stmt)['message'],
-                        __FILE__, __LINE__, LogLevel::ERROR);
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                     oci_rollback($this->conn);
                     return false;
                 }
@@ -489,8 +501,8 @@ class Personnel extends CommonClass
 
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-                    write_log("DB error:" . oci_error($stmt)['message'],
-                        __FILE__, __LINE__, LogLevel::ERROR);
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                     oci_rollback($this->conn);
                     return false;
                 }
@@ -516,8 +528,8 @@ class Personnel extends CommonClass
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         oci_bind_by_name($stmt, ':exec_result', $exec_result, -1, SQLT_INT);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT) || !($exec_result === 0)) {
-            write_log("Failed to execute DELETE_PERSONNEL:" .
-                oci_error($stmt)['message'], __FILE__, __LINE__);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -540,7 +552,8 @@ class Personnel extends CommonClass
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            write_log("DB error:" . oci_error($stmt)['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }

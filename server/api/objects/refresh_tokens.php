@@ -30,8 +30,8 @@ class RefreshTokens
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':refresh_token', $this->token_str);
         if (!oci_execute($stmt)) {
-            write_log("Delete refresh token failed:" .
-                oci_error($stmt)['message'], __FILE__, __LINE__);
+            $e = oci_error($stmt);
+            write_log("Delete refresh token failed:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
 

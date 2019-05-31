@@ -70,7 +70,10 @@ class Utilities
         }
 
         $stmt = $object->$method();
-        if (!$stmt) {
+        if (is_array($stmt)) {
+            //means it is handled inside $object->$method()
+            return;
+        } else if (!$stmt) {
             // http_response_code(500);
             http_response_code(200);
             echo "Internal error, check logs/php_rest_*.log file for details";
@@ -444,14 +447,12 @@ class Utilities
 
     public static function echoRead($retrieve_count, $result, $desc = "")
     {
+        http_response_code(200);
         if ($retrieve_count > 0) {
-            http_response_code(200);
             echo json_encode($result, JSON_PRETTY_PRINT);
         } else {
-            http_response_code(404);
-            echo json_encode(
-                array("message" => "No " . $desc . " record found.")
-            );
+            $result["message"] = "No record found.";
+            echo json_encode($result, JSON_PRETTY_PRINT);
         }
     }
 
