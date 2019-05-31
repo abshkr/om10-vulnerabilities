@@ -1,6 +1,6 @@
 import Loading from "../components/loading";
 import Loadable from "react-loadable";
-import * as ROUTES from "../constants/routes";
+import { ROUTES } from "../constants";
 
 /**
  * @description

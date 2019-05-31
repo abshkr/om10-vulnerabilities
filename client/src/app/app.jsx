@@ -2,14 +2,9 @@ import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
-import { LocaleProvider } from "antd";
 import reduxThunk from "redux-thunk";
 import reducers from "../reducers";
-import Navigation from "../components/navigation";
 import paths from "./paths";
-import configuration from "../configuration";
-import zhCN from "antd/lib/locale-provider/zh_CN";
-import enUS from "antd/lib/locale-provider/en_US";
 
 /**
  * @description
@@ -35,18 +30,15 @@ const store = createStore(
 
 const App = () => (
   <Provider store={store}>
-    <LocaleProvider locale={configuration.language === "CN" ? zhCN : enUS}>
-      <BrowserRouter>
-        <div>
-          <Navigation config={configuration} />
-          <Switch>
-            {paths.map((item, index) => {
-              return <Route exact key={index} path={item.path} component={item.component} />;
-            })}
-          </Switch>
-        </div>
-      </BrowserRouter>
-    </LocaleProvider>
+    <BrowserRouter>
+      <div>
+        <Switch>
+          {paths.map((item, index) => {
+            return <Route exact key={index} path={item.path} component={item.component} />;
+          })}
+        </Switch>
+      </div>
+    </BrowserRouter>
   </Provider>
 );
 

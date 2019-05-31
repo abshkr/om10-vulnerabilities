@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { CONFIG } from "../../constants";
 import Authenticated from "./authenticated";
-
 import "./navigation.css";
 
 class Navigation extends Component {
   render() {
-    const { authenticated, config } = this.props;
-    if (!config.embedded) {
-      return authenticated ? <Authenticated /> : null;
+    if (!CONFIG.EMBEDDED) {
+      return <Authenticated />;
     } else {
       return <div />;
     }

@@ -1,4 +1,4 @@
-.container {
+.om-container {
   padding: 10px;
   box-shadow: 0 0 30px 6px rgba(31, 51, 73, 0.1);
   background-color: rgb(255, 255, 255);
@@ -6,7 +6,7 @@
   height: 100vh;
 }
 
-.container .tag {
+.om-container .tag {
   border-color: #68a4ec;
   background-color: #fff;
   color: #68a4ec;
