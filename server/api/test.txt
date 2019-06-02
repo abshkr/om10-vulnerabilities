@@ -198,3 +198,9 @@ https://10.1.10.66/api/pages/tank_max_flow/read.php
 https://10.1.10.66/api/pages/tank_max_flow/create.php?tank_code=T333&tank_level=2000&flow_rate=324
 https://10.1.10.66/api/pages/tank_max_flow/delete.php?id=7
 https://10.1.10.66/api/pages/tank_max_flow/update.php?id=5&tank_code=T333&tank_level=2001&flow_rate=326
+
+https://10.1.10.66/api/pages/folio/read.php
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"start_date\": \"2019-04-24 23:59:59:86399\", \"end_date\": \"2019-06-02 23:59:59:86399\"}" https://10.1.10.66/api/pages/folio/read.php
+https://10.1.10.66/api/pages/folio/get_reports.php?closeout_nr=167
+https://10.1.10.66/api/pages/folio/report_gateway.php?report=167/ANY_Drawer_Liftings_Blending.pdf
+
