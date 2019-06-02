@@ -14,6 +14,26 @@ class Folio extends CommonClass
         "CLOSEOUT_NR",
         "STATUS",
         "REPORT_TRIGGER",
+        "OPEN_STD_TOT",
+        "OPEN_MASS_TOT",
+        "CLOSE_STD_TOT",
+        "CLOSE_MASS_TOT",
+        "FREEZE_STD_TOT",
+        "FREEZE_MASS_TOT",
+        "RCPT_VOL",
+        "TRF_VOL",
+        "OPEN_TEMP",
+        "OPEN_DENSITY",
+        "FREEZE_TEMP",
+        "FREEZE_DENSITY",
+        "CLOSE_TEMP",
+        "CLOSE_DENSITY",
+        "CLOSE_AMB_TOT",
+        "OPEN_AMB_TOT",
+        "FREEZE_AMB_TOT",
+        "ADJ_STD_TOT",
+        "ADJ_MASS_TOT",
+        "ADJ_AMB_TOT",
     );
 
     public function read()
@@ -51,6 +71,116 @@ class Folio extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function get_tanks()
+    {
+        Utilities::sanitize($this);
+        // write_log(json_encode($this), __FILE__, __LINE__);
+
+        $query = "
+            SELECT * FROM CLOSEOUT_TANK
+            WHERE CLOSEOUT_NR = :closeout_nr
+            ORDER BY TANK_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
+
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function get_meters()
+    {
+        Utilities::sanitize($this);
+        // write_log(json_encode($this), __FILE__, __LINE__);
+
+        $query = "
+            SELECT * FROM CLOSEOUT_METER
+            WHERE CLOSEOUT_NR = :closeout_nr
+            ORDER BY METER_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
+
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function create_reports()
+    {
+        Utilities::sanitize($this);
+
+        $query = "SELECT SITE_CODE FROM SITE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $site_code = $row['SITE_CODE'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        if (isset($_SERVER['REPORT_DIR'])) {
+            $report_dir = $_SERVER['REPORT_DIR'];
+        } else {
+            $report_dir = "/var/www/htdocs/folio_rpts/";
+        }
+
+        $result = array();
+        $result["records"] = array();
+
+        if (!isset($this->closeout_nr)) {
+            write_log("parameter closeout_nr is not set", __FILE__, __LINE__, LogLevel::ERROR);
+            $result["message"] = "parameter closeout_nr is not set.";
+            echo json_encode($result, JSON_PRETTY_PRINT);
+            return $result;
+        }
+
+        $folder = $report_dir . $site_code . "/" . $this->closeout_nr;
+        if (!file_exists($folder)) {
+            write_log("create folder " . $folder, __FILE__, __LINE__);
+            mkdir($folder, 0755, true);
+        }
+
+        $query = "SELECT STATUS FROM CLOSEOUTS
+            WHERE CLOSEOUT_NR = :closeout_nr";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
+        if (oci_execute($stmt)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $status = intval($row['STATUS']);
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        if (isset($_SERVER["BIN"])) {
+            $bin = $_SERVER["BIN"];
+        } else {
+            $bin = "/usr/omega/bin";
+        }
+
+        if ($status == 0) //OPEN
+        {
+            $closeout = $bin . "/closeout -c FREEZE -o -D -a -d 32767 -f /tmp/clsout" . "  1>/dev/null 2>&1";
+        } else {
+            $closeout = $bin . "/closeout -r -g " . $folder . " -F " . $this->closeout_nr . " -d 32767 -f /tmp/clsout" . "  1>/dev/null 2>&1";
+        }
+
+        write_log(sprintf("to run %s", $closeout), __FILE__, __LINE__, LogLevel::INFO);
+        $output = shell_exec($closeout);
+        return $this->get_reports();
     }
 
     public function get_reports()
