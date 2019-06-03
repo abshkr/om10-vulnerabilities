@@ -1,15 +1,14 @@
 import React, { Component } from "react";
-
 import axios from "axios";
-import Forms from "./forms";
 import columns from "./columns";
 import auth from "../../utils/auth";
+import Forms from "./forms";
 import search from "../../utils/search";
-import { customerCategories } from "../../api";
+import { folioSummary } from "../../api";
 import { Button, Modal, notification } from "antd";
-import { Page, Filter, DataTable, Download, Container } from "../../components";
+import { Page, Filter, DataTable, Container } from "../../components";
 
-class CustomerCategories extends Component {
+class FolioSummary extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -22,11 +21,11 @@ class CustomerCategories extends Component {
 
   handleClick = object => {
     Modal.info({
-      title: !!object ? `Editing (${object.category_code})` : "Create",
+      title: !!object ? `Editing ${object.closeout_nr}` : "Create",
       centered: true,
+      width: "95%",
       icon: !!object ? "edit" : "form",
-      width: 720,
-      content: <Forms refresh={this.getCustomerCategories} category={object} />,
+      content: <Forms payload={object} />,
       okButtonProps: {
         style: { display: "none" }
       }
@@ -48,18 +47,18 @@ class CustomerCategories extends Component {
     });
   };
 
-  getCustomerCategories = () => {
+  getBaseProducts = () => {
     this.setState({
       isLoading: true
     });
 
     axios
-      .all([customerCategories.readCustomerCategories()])
+      .all([folioSummary.readFolioSummary()])
       .then(
-        axios.spread(customerCategories => {
+        axios.spread(folioSummary => {
           this.setState({
             isLoading: false,
-            data: customerCategories.data.records
+            data: folioSummary.data.records
           });
         })
       )
@@ -72,7 +71,7 @@ class CustomerCategories extends Component {
   };
 
   componentDidMount() {
-    this.getCustomerCategories();
+    this.getBaseProducts();
   }
 
   render() {
@@ -80,20 +79,21 @@ class CustomerCategories extends Component {
     const { configuration } = this.props;
     const results = !!filtered ? filtered : data;
     return (
-      <Page page={"Customers"} name={"Customer Categories"} block={true}>
+      <Page page={"Gantry"} name={"Folio Summary"} block={true}>
         <Container>
           <Filter value={value} search={this.searchObjects} loading={isLoading} />
-          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
-          <Download data={data} type={"Customer Categories"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
-          <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
-            Create Category
+          <Button shape="round" type="primary" icon="reload" style={{ float: "right", marginRight: 5 }} onClick={this.getBaseProducts} disabled={isLoading} />
+          <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} disabled={isLoading}>
+            Close First Frozen Folio
           </Button>
-
-          <DataTable data={results} resize={resize} rowKey="category_code" isLoading={isLoading} click={this.handleClick} columns={columns(results, configuration)} />
+          <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} disabled={isLoading}>
+            Create PDS File
+          </Button>
+          <DataTable isLoading={isLoading} resize={resize} rowKey="closeout_nr" columns={columns(results, configuration)} data={results} click={this.handleClick} />
         </Container>
       </Page>
     );
   }
 }
 
-export default auth(CustomerCategories);
+export default auth(FolioSummary);
