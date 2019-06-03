@@ -57,6 +57,7 @@ class Utilities
 
         if ($filter) {
             $data = json_decode(file_get_contents("php://input"));
+            // write_log(json_encode($_dataGET), __FILE__, __LINE__);
             if ($data) {
                 foreach ($data as $key => $value) {
                     $object->$key = $value;
