@@ -37,6 +37,35 @@ class Utilities
         }
     }
 
+    public static function http_cgi_invoke($cgi)
+    {
+        session_start();
+
+        $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/" . $cgi . "?";
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            foreach ($_POST as $key => $value) {
+                $url .= $key . "=" . rawurlencode(strip_tags($value)) . "&";
+            }
+        } else {
+            foreach ($_GET as $key => $value) {
+                $url .= $key . "=" . rawurlencode(strip_tags($value)) . "&";
+            }
+        }
+
+        $url .= "sess_id=" . $_SESSION["SESSION"];
+        write_log(sprintf("%s::%s(), url:%s", __CLASS__, __FUNCTION__, $url),
+            __FILE__, __LINE__);
+
+        $result = @file_get_contents($url);
+        if ($result === false) {
+            // write_log(json_encode(()), __FILE__, __LINE__);
+            $e = error_get_last();
+            return $e['message'];
+        }
+
+        return $result;
+    }
+
     //
     public static function read($class, $method = 'read', $filter = false)
     {
@@ -459,7 +488,9 @@ class Utilities
 
     public static function getCurrPsn()
     {
-        return "DKI_SUPER_USER";
+        session_start();
+        return $_SESSION['PERCODE'];
+        // return "DKI_SUPER_USER";
     }
 
     public static function getCurrentSession()
