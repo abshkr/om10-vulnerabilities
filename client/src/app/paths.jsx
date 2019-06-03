@@ -2,13 +2,6 @@ import Loading from "../components/loading";
 import Loadable from "react-loadable";
 import { ROUTES } from "../constants";
 
-/**
- * @description
- * Code Splitting via React Loodable
- * helps us minimize the bundle size.
- * @TODO This will be replaced with the Lazy, Suspense loading in React 16.6
- */
-
 const paths = [
   {
     path: ROUTES.DASHBOARD,
@@ -24,62 +17,13 @@ const paths = [
       loading: Loading
     })
   },
-  // {
-  //   path: ROUTES.SITE_CONFIGURATION,
-  //   component: Loadable({
-  //     loader: () => import("../pages/siteConfiguration"),
-  //     loading: Loading
-  //   })
-  // },
-  // {
-  //   path: ROUTES.SIGN_OUT,
-  //   component: Loadable({
-  //     loader: () => import("../pages/signOut"),
-  //     loading: Loading
-  //   })
-  // },
-  // {
-  //   path: ROUTES.SIGN_IN,
-  //   component: Loadable({
-  //     loader: () => import("../pages/siginIn"),
-  //     loading: Loading
-  //   })
-  // },
-  // {
-  //   path: ROUTES.DRIVER_MESSAGING,
-  //   component: Loadable({
-  //     loader: () => import("../pages/driverMessaging"),
-  //     loading: Loading
-  //   })
-  // },
-  // {
-  //   path: ROUTES.ON_DEMAND_REPORTS,
-  //   component: Loadable({
-  //     loader: () => import("../pages/onDemandReports"),
-  //     loading: Loading
-  //   })
-  // },
-  // {
-  //   path: ROUTES.JOURNAL,
-  //   component: Loadable({
-  //     loader: () => import("../pages/journal"),
-  //     loading: Loading
-  //   })
-  // },
-  // {
-  //   path: ROUTES.ID_ASSIGNMENT,
-  //   component: Loadable({
-  //     loader: () => import("../pages/idAssignment"),
-  //     loading: Loading
-  //   })
-  // },
-  // {
-  //   path: ROUTES.PERSONNEL,
-  //   component: Loadable({
-  //     loader: () => import("../pages/personnel"),
-  //     loading: Loading
-  //   })
-  // },
+  {
+    path: ROUTES.FOLIO_SUMMARY,
+    component: Loadable({
+      loader: () => import("../pages/folioSummary"),
+      loading: Loading
+    })
+  },
   {
     path: ROUTES.CUSTOMER_CATEGORIES,
     component: Loadable({

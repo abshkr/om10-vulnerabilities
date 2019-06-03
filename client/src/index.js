@@ -12,5 +12,6 @@ import "./styles/antd.css";
 import "./styles/bootstrap.css";
 import "ant-design-pro/dist/ant-design-pro.css";
 import "react-bootstrap-table/dist/react-bootstrap-table-all.min.css";
+import "./styles/reactBootstrapTable.css";
 
 ReactDOM.render(<App />, document.getElementById("root"));

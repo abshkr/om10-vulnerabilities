@@ -1,0 +1,16 @@
+.react-bs-table .table-bordered > tbody > tr > td.default-focus-cell {
+  outline: #68a4ec solid 1px !important;
+}
+
+.react-bs-table table td,
+.react-bs-table table th {
+  text-align: center !important;
+}
+
+.react-bs-table table th {
+  font-weight: 600;
+}
+
+.form-control {
+  text-align: center;
+}
