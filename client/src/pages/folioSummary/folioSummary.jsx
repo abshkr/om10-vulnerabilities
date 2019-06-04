@@ -8,6 +8,8 @@ import { folioSummary } from "../../api";
 import { Button, Modal, notification } from "antd";
 import { Page, Filter, DataTable, Container } from "../../components";
 
+import "./folioSummary.css";
+
 class FolioSummary extends Component {
   constructor(props) {
     super(props);
