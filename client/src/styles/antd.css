@@ -1,3 +1,8 @@
+.ant-form-item label {
+  font-weight: 450;
+  margin-bottom: 0px !important;
+}
+
 .anticon {
   vertical-align: 1px !important;
 }

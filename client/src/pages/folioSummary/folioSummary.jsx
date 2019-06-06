@@ -74,6 +74,23 @@ class FolioSummary extends Component {
 
   componentDidMount() {
     this.getBaseProducts();
+    axios
+      .post("https://api.dki.cloud/slp/vehicle/", [
+        {
+          vin: "1234",
+          registration: "R1234",
+          state: "SA"
+        }
+      ])
+      .then(function(response) {
+        console.log(response);
+      })
+      .catch(function(error) {
+        console.log(error);
+      })
+      .then(function() {
+        // always executed
+      });
   }
 
   render() {

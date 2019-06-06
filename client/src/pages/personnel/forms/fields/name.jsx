@@ -6,7 +6,7 @@ export default class Name extends Component {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        base_name: value.base_name
+        per_name: value.per_name
       });
     }
   }
@@ -15,8 +15,8 @@ export default class Name extends Component {
     const { decorator } = this.props;
     return (
       <Form.Item label="Name">
-        {decorator("base_name", {
-          rules: [{ required: true, message: "please enter user name" }]
+        {decorator("per_name", {
+          rules: [{ required: true, message: "Please Enter A Name." }]
         })(<Input />)}
       </Form.Item>
     );

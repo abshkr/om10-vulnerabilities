@@ -6,19 +6,13 @@ export default class Email extends Component {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        base_name: value.base_name
+        per_email: value.per_email
       });
     }
   }
 
   render() {
     const { decorator } = this.props;
-    return (
-      <Form.Item label="Email">
-        {decorator("base_name", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<Input />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Email">{decorator("per_email")(<Input />)}</Form.Item>;
   }
 }
