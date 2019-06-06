@@ -34,7 +34,93 @@ class Folio extends CommonClass
         "ADJ_STD_TOT",
         "ADJ_MASS_TOT",
         "ADJ_AMB_TOT",
+        "STREAM_TANKTEMP",
+        "STREAM_TANKDEN",
+        "BCLASS_DENS_LO",
+        "BCLASS_DENS_HI",
+        "BCLASS_VCF_ALG",
+        "TANK_DENSITY",
     );
+
+    public function manual_close()
+    {
+        $query = "UPDATE SITE SET NEXT_MANUAL_CLOSE = 'Y', NEXT_CLOSEOUT_REQ_USER = :user_code";
+        $stmt = oci_parse($this->conn, $query);
+        $cur_user = Utilities::getCurrPsn();
+        oci_bind_by_name($stmt, ':user_code', $cur_user);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $journal = new Journal($this->conn, false);
+            $jnl_data[0] = sprintf("user %s triggers to close first frozen folio", $cur_user);
+            if (!$journal->jnlLogEvent(Lookup::TMM_TEXT_ONLY, $jnl_data,
+                JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return null;
+            }
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        oci_commit($this->conn);
+
+        $result = array();
+        $result["records"] = array();
+        $result["result"] = 0;
+        $result["message"] = sprintf("user %s triggers to close first frozen folio", $cur_user);
+        echo json_encode($result, JSON_PRETTY_PRINT);
+        return $result;
+    }
+
+    public function calc_vcf()
+    {
+        Utilities::sanitize($this);
+
+        $cgi_response = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi");
+        write_log(json_encode($cgi_response), __FILE__, __LINE__);
+
+        $result = array();
+        $result["records"] = array();
+
+        http_response_code(200);
+        if (strpos($cgi_response, "<Result>0<")) {
+            $result["result"] = 0;
+            $result["message"] = "PDS message sent";
+        } else {
+            $result["result"] = -1;
+            $result["message"] = $cgi_response;
+        }
+
+        echo json_encode($result, JSON_PRETTY_PRINT);
+
+        return $result;
+    }
+
+    public function pds()
+    {
+        Utilities::sanitize($this);
+
+        $cgi_response = Utilities::http_cgi_invoke("cgi-bin/en/pds.cgi");
+        write_log(json_encode($cgi_response), __FILE__, __LINE__);
+
+        $result = array();
+        $result["records"] = array();
+
+        http_response_code(200);
+        if (strpos($cgi_response, "<Result>0<")) {
+            $result["result"] = 0;
+            $result["message"] = "PDS message sent";
+        } else {
+            $result["result"] = -1;
+            $result["message"] = $cgi_response;
+        }
+
+        echo json_encode($result, JSON_PRETTY_PRINT);
+
+        return $result;
+    }
 
     public function read()
     {
@@ -79,9 +165,21 @@ class Folio extends CommonClass
         // write_log(json_encode($this), __FILE__, __LINE__);
 
         $query = "
-            SELECT * FROM CLOSEOUT_TANK
-            WHERE CLOSEOUT_NR = :closeout_nr
-            ORDER BY TANK_CODE";
+        SELECT CLOSEOUT_TANK.*,
+            TANKS.TANK_BASE,
+            BASE_PRODS.BASE_NAME,
+            BASECLASS.BCLASS_DESC,
+            BASECLASS.BCLASS_NO,
+            BASECLASS.BCLASS_DENS_LO,
+            BASECLASS.BCLASS_DENS_HI,
+            BASECLASS.BCLASS_VCF_ALG,
+            TANKS.TANK_DENSITY
+        FROM CLOSEOUT_TANK, TANKS, BASE_PRODS, BASECLASS
+        WHERE CLOSEOUT_TANK.TANK_CODE = TANKS.TANK_CODE
+            AND TANKS.TANK_BASE = BASE_PRODS.BASE_CODE
+            AND BASE_PRODS.BASE_CAT = BASECLASS.BCLASS_NO
+            AND CLOSEOUT_TANK.CLOSEOUT_NR = :closeout_nr
+        ORDER BY BASECLASS.BCLASS_DESC";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
 
@@ -100,9 +198,20 @@ class Folio extends CommonClass
         // write_log(json_encode($this), __FILE__, __LINE__);
 
         $query = "
-            SELECT * FROM CLOSEOUT_METER
-            WHERE CLOSEOUT_NR = :closeout_nr
-            ORDER BY METER_CODE";
+            SELECT DISTINCT CLOSEOUT_METER.*,
+                BA_METERS.BAM_QTY_TYPE,
+                DECODE(BAM_QTY_TYPE, 1, 'KG', 'VOL') BAM_QTY_TYPE_STR,
+                GUI_PIPENODE.STREAM_BASECODE,
+                GUI_PIPENODE.STREAM_BASENAME,
+                GUI_PIPENODE.STREAM_TANKCODE,
+                GUI_PIPENODE.STREAM_TANKTEMP,
+                GUI_PIPENODE.STREAM_TANKDEN
+            FROM CLOSEOUT_METER, BA_METERS, GUI_PIPENODE
+            WHERE CLOSEOUT_METER.METER_CODE = BA_METERS.BAM_CODE
+                AND CLOSEOUT_METER.METER_CODE = GUI_PIPENODE.STREAM_MTRCODE
+                AND BA_METERS.BAM_CODE = GUI_PIPENODE.STREAM_MTRCODE
+                AND CLOSEOUT_METER.CLOSEOUT_NR = :closeout_nr
+            ORDER BY CLOSEOUT_NR, METER_CODE";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
 
@@ -179,7 +288,12 @@ class Folio extends CommonClass
         }
 
         write_log(sprintf("to run %s", $closeout), __FILE__, __LINE__, LogLevel::INFO);
+        foreach ($_SERVER as $env_key => $env_value) {
+            putenv("$env_key=$env_value");
+        }
+
         $output = shell_exec($closeout);
+        write_log(sprintf("result %s", $output), __FILE__, __LINE__, LogLevel::INFO);
         return $this->get_reports();
     }
 
