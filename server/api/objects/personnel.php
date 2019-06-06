@@ -10,7 +10,7 @@ include_once 'common_class.php';
 class Personnel extends CommonClass
 {
     // database connection and table name
-    private $VIEW_NAME = "GUI_PERSONNEL";
+    protected $VIEW_NAME = "GUI_PERSONNEL";
     private $default_pwd = 'a1qhH6yu9Tjg.';
 
     protected $primary_keys = array("per_code");
