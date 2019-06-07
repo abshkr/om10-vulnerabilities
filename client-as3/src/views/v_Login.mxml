@@ -18,6 +18,7 @@
 	<s:states>
 		<s:State name="normal"/>
 		<s:State enterState="newPass.text=''; conPass.text=''" name="changepass"/>
+		<s:State name="twoFactor"/>
 		<s:State name="support"/>
 		<s:State name="about"/>
 	</s:states>
@@ -54,6 +55,7 @@
 			private var loginType:int=0;
 			
 			[Bindable] private var passOk:Boolean = false;
+			[Bindable] private var checkTwoFactor:Boolean = false;
 			
 			[Bindable][Embed(source="/assets/skinning/dialog.jpg")] private var dialog:Class;
 			[Bindable][Embed(source="/assets/skinning/dialog_lite.jpg")]  private var dialog_lite:Class;
@@ -164,11 +166,31 @@
 				var username:String 	= session?'':user.text;
 				var password:String 	= session?'':global.nonsense(user.text, passwd.text);
 				var rev_password:String = session?'':global.anonsense(user.text, passwd.text);
+				var two_factor_code = twoFactor.text;
+				
 				global.amfRequest("SecureAuth.login",
 					function(o:Object = null):void{
+						
+						if (o == "AUTH 2FA") {
+							currentState = "twoFactor";
+							return;
+						}
+						
 						if(o == "NO VALID SESSION"){
 							return;
 						}
+						
+						if (o == "2FA FAILED") {
+							global.msgWarning("Authentication Code is incorrect.");
+							return;
+						}
+						
+						if (o == "2FA TIMEOUT") {
+							currentState = "normal";
+							global.msgWarning("Authentication Code has expired.");
+							return;
+						}
+						
 						if(o == "VALID SESSION STILL RUNNING"){
 							global.msgWarning(resourceManager.getString('default','global.msg.login.validsessionrunning'));
 							return;
@@ -296,7 +318,8 @@
 					username, 
 					password, 
 					rev_password, 
-					global.LanguageCode
+					global.LanguageCode,
+					two_factor_code
 				);
 			}
 			
@@ -566,6 +589,17 @@
 			}
 			
 			
+			private function handleTwoFactorValidation():void {
+				if ((twoFactor.text.length == 6 ))
+					checkTwoFactor = true
+				else
+					checkTwoFactor = false;
+			}
+			
+			private function handleTwoFactorCancel():void {
+					currentState = "normal";
+			}
+			
 			private function onPassError(event:FaultEvent):void
 			{
 				global.msgWarning(resourceManager.getString('default','global.msg.login.passwordadminerror'));
@@ -620,19 +654,6 @@
 				
 			}
 			
-			
-			protected function handleTwoFactor():void {
-				var twoFactor = ExternalInterface.call("prompt", "Enter Your Code:");
-				
-				if (twoFactor == "abc") {
-					global.amfRequest('SecureAuth.logout',function():void{currentState='normal';},null)
-					
-				} else {
-					Alert.show("Invalid Code");
-				
-				}
-			
-			}
 			protected function getGlobalContentsOnLangauge():void
 			{
 				if ( global.gSafefillLabel == null || global.gSafefillLabel == '' || global.gSafefillLabel == ' ' )
@@ -734,7 +755,8 @@
 			  left.about="5" top.about="5" width.about="85" height.about="52"
 			  horizontalCenter.changepass="0"
 			  horizontalCenter.normal="0"
-			  horizontalCenter.support="0"/>
+			  horizontalCenter.support="0"
+			  horizontalCenter.twoFactor="0"/>
 	
 	<s:VGroup includeIn="normal" left="15" right="15" top="175">
 		<s:Label id="Plant" visible="{sites.length&gt;=2}" includeInLayout="{sites.length&gt;=2}"
@@ -824,6 +846,19 @@
 		<s:Label width="100%" color="#F50808" maxDisplayedLines="2" text="{loginStr}"/>
 		<!--<s:Label color="#FF0000" text="* password change required"/>-->
 	</s:VGroup>
+	
+	<s:VGroup includeIn="twoFactor" left="50" right="50" top="200" itemCreationPolicy="immediate">
+		<s:Label text="Please Enter your 6 Digit Authentication Code."/>
+		<s:HGroup width="100%">
+			<components:DKI_ValidatorInput id="twoFactor" change="handleTwoFactorValidation()" width="100%" text=""/>
+			<s:Label color="#FF0000" fontSize="16" text="*"/> 
+		</s:HGroup>
+	</s:VGroup>
+	
+	<s:HGroup includeIn="twoFactor" bottom="15" horizontalCenter="0">
+		<components:DKI_Button id="twoFactorSubmit"  enabled="{checkTwoFactor}" label="Verify" type="ok" click="secureLogin()"/>
+		<components:DKI_Button id="twoFactorCancel"  label="Cancel" type="cancel" click="handleTwoFactorCancel()"/>
+	</s:HGroup>
 	
 	<s:HGroup includeIn="changepass" bottom="15" horizontalCenter="0">
 		
