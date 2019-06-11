@@ -504,6 +504,12 @@
 						o.config_value = renderer.siteConfigText.text;
 					}
 					
+					if ( o.config_key=="SITE_2FA_DOMAINS")
+					{
+						o.config_comment = renderer.siteConfigComment.text;
+						o.config_value = renderer.siteConfigText.text;
+					}
+					
 					if(o.config_key == "SAFEFILL_TOLERANCE_QTY" )
 					{
 						var sflTolQty:Number = Number(o.config_value);
@@ -878,13 +884,12 @@
 				<s:Label text="{resourceManager.getString('default','global.lbl.value')}" textAlign="center" width="150" paddingLeft="90" fontWeight="bold"/>
 			</s:HGroup>
 			<components:DKI_List id="genConfigList" width="100%" itemRenderer="renderers.SecurityConfigRenderer" horizontalScrollPolicy="off"
-								 dataProvider="{getGenConfigService.lastResult}" borderVisible="false" contentBackgroundAlpha="0">
+								 dataProvider="{getGenConfigService.lastResult}" borderVisible="false" contentBackgroundAlpha="0" verticalScrollPolicy="on">
 				<components:layout>
 					<s:VerticalLayout gap="0"/>
 				</components:layout>
 			</components:DKI_List>
-			<s:Spacer height="20"/>
-			<s:HGroup width="100%" horizontalAlign="left" height="28" verticalAlign.closeout="middle">
+			<s:HGroup width="100%" horizontalAlign="left" height="28" verticalAlign.closeout="middle" >
 				<s:Spacer width="80"/>
 				<s:Label width="360" text="{resourceManager.getString('default','global.lbl.ambAdj')}"/>
 				<components:DKI_NumericStepper id="ambAdj" width="100" maximum="999999999" minimum="10000" value="{this.ambQtyAdjust}" contentBackgroundAlpha="0"/>
