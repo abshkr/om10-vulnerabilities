@@ -72,6 +72,8 @@
 			[Bindable] public var spaceHeight:uint = 2;
 
 			[Bindable] private var filter:String=null;
+			
+			
 			private var currentOrder:String='per_code';
 			private var currentDirection:String=" ASC";	
 			
