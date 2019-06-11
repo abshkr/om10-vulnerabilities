@@ -49,6 +49,7 @@
 					case "HOT_LITRE_SFL_FACTOR":
 					case "SITE_MAX_TAGS":
 					case "SAFEFILL_TOLERANCE_QTY":
+					case "SITE_2FA_DOMAINS":
 					case "SAFEFILL_TOLERANCE_PERCENT":
 						return false;
 						break;
@@ -110,6 +111,7 @@
 					case "SITE_MAX_TAGS":
 					case "SAFEFILL_TOLERANCE_QTY":
 					case "SAFEFILL_TOLERANCE_PERCENT":
+					case "SITE_2FA_DOMAINS":
 						return false;
 						break;
 					default:
@@ -276,6 +278,7 @@
 					data.config_key == "SITE_MAX_TAGS"||
 					data.config_key == "SAFEFILL_TOLERANCE_QTY"||
 					data.config_key == "SAFEFILL_TOLERANCE_PERCENT"||
+					data.config_key == "SITE_2FA_DOMAINS"||
 					data.config_key == "SEAL_NUMBER";
 			}
 			[Bindable (event="mcDataUpdate")]

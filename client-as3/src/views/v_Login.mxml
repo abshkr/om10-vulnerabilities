@@ -56,6 +56,7 @@
 			
 			[Bindable] private var passOk:Boolean = false;
 			[Bindable] private var checkTwoFactor:Boolean = false;
+			[Bindable] public var isVerifying2FA:Boolean = false;
 			
 			[Bindable][Embed(source="/assets/skinning/dialog.jpg")] private var dialog:Class;
 			[Bindable][Embed(source="/assets/skinning/dialog_lite.jpg")]  private var dialog_lite:Class;
@@ -166,11 +167,10 @@
 				var username:String 	= session?'':user.text;
 				var password:String 	= session?'':global.nonsense(user.text, passwd.text);
 				var rev_password:String = session?'':global.anonsense(user.text, passwd.text);
-				var two_factor_code = twoFactor.text;
+				var two_factor_code = session?'':twoFactor.text; 
 				
 				global.amfRequest("SecureAuth.login",
 					function(o:Object = null):void{
-						
 						if (o == "AUTH 2FA") {
 							currentState = "twoFactor";
 							return;
@@ -181,12 +181,36 @@
 						}
 						
 						if (o == "2FA FAILED") {
+							two_factor_code = '';
 							global.msgWarning("Authentication Code is incorrect.");
 							return;
 						}
 						
+						if (o == "2FA NOEMAIL") {
+							currentState = "normal";
+							two_factor_code = '';
+							global.msgWarning("Authentication Failed due to No Email Associated with the User.");
+							return;
+						}
+						
+						if (o == "2FA INVALIDMAIL") {
+							currentState = "normal";
+							two_factor_code = '';
+							global.msgWarning("Email Provided is Invalid.");
+							return;
+						}
+						
+						if (o == "2FA INVALIDDOMAIN") {
+							currentState = "normal";
+							two_factor_code = '';
+							global.msgWarning("Email Provided does not belong to an approved domain group.");
+							return;
+						}
+						
+			
 						if (o == "2FA TIMEOUT") {
 							currentState = "normal";
+							two_factor_code = '';
 							global.msgWarning("Authentication Code has expired.");
 							return;
 						}
@@ -249,8 +273,7 @@
 						}else{
 							
 						
-			
-							
+
 							getGlobalContentsOnLangauge();
 							
 							global.isLoadCancel 		= (o.USER_DETAIL.SITE_CANCEL_LOAD_ENABLED		== 'Y');
@@ -848,7 +871,7 @@
 	</s:VGroup>
 	
 	<s:VGroup includeIn="twoFactor" left="50" right="50" top="200" itemCreationPolicy="immediate">
-		<s:Label text="Please Enter your 6 Digit Authentication Code."/>
+		<s:Label text="Please Enter your 6 Character Authentication Code."/>
 		<s:HGroup width="100%">
 			<components:DKI_ValidatorInput id="twoFactor" change="handleTwoFactorValidation()" width="100%" text=""/>
 			<s:Label color="#FF0000" fontSize="16" text="*"/> 
@@ -856,8 +879,8 @@
 	</s:VGroup>
 	
 	<s:HGroup includeIn="twoFactor" bottom="15" horizontalCenter="0">
-		<components:DKI_Button id="twoFactorSubmit"  enabled="{checkTwoFactor}" label="Verify" type="ok" click="secureLogin()"/>
-		<components:DKI_Button id="twoFactorCancel"  label="Cancel" type="cancel" click="handleTwoFactorCancel()"/>
+		<components:DKI_Button id="twoFactorSubmit"  enabled="{checkTwoFactor}" label="{isVerifying2FA ? 'Verifying' : 'Verify'}" type="ok" click="secureLogin()"/>
+		<components:DKI_Button id="twoFactorCancel"  label="Cancel" type="cancel" click="global.amfRequest('SecureAuth.logout',function():void{currentState='normal';},null)"/>
 	</s:HGroup>
 	
 	<s:HGroup includeIn="changepass" bottom="15" horizontalCenter="0">
