@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Tabs } from "antd";
+import { Tabs, Spin } from "antd";
 import Tanks from "./tanks";
 import Meters from "./meters";
+import Reports from "./reports";
 import axios from "axios";
 import { folioSummary } from "../../../api";
 
@@ -38,17 +39,22 @@ export default class Forms extends Component {
 
   render() {
     const TabPane = Tabs.TabPane;
-    const { tanks, meters } = this.state;
+    const { tanks, meters, isLoading } = this.state;
 
     return (
-      <Tabs defaultActiveKey="1" style={{ height: "670px" }}>
-        <TabPane tab="Meters" key="1">
-          <Meters data={meters} />
-        </TabPane>
-        <TabPane tab="Tanks" key="2">
-          <Tanks data={tanks} />
-        </TabPane>
-      </Tabs>
+      <Spin spinning={isLoading} style={{ minHeight: "720px" }}>
+        <Tabs defaultActiveKey="1" style={{ height: "720px" }}>
+          <TabPane tab="Reports" key="1">
+            <Reports data={meters} />
+          </TabPane>
+          <TabPane tab="Meters" key="2">
+            {!isLoading && <Meters data={meters} update={this.getReadings} />}
+          </TabPane>
+          <TabPane tab="Tanks" key="3">
+            {!isLoading && <Tanks data={tanks} update={this.getReadings} />}
+          </TabPane>
+        </Tabs>
+      </Spin>
     );
   }
 }

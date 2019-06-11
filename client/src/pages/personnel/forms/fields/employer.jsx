@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Form, Select } from "antd";
 import axios from "axios";
+import { personnel } from "../../../../api";
 
 export default class Employer extends Component {
   state = {
@@ -10,15 +11,20 @@ export default class Employer extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/pages/personnel/employers.php`).then(response => {
-      this.setState({
-        employers: response.data.records
-      });
-    });
+    axios.all([personnel.readPersonnelEmployers()]).then(
+      axios.spread(employers => {
+        this.setState({
+          isLoading: false,
+          employers: employers.data.records,
+          filtered: null,
+          value: ""
+        });
+      })
+    );
 
     if (!!value) {
       setValue({
-        base_corr_mthd: value.base_corr_mthd
+        per_cmpy: value.per_cmpy
       });
     }
   }
@@ -29,14 +35,14 @@ export default class Employer extends Component {
     const { Option } = Select;
 
     return (
-      <Form.Item label="Correction Method">
-        {decorator("base_corr_mthd", {
-          rules: [{ required: true, message: "please enter user name" }]
+      <Form.Item label="Employer">
+        {decorator("per_cmpy", {
+          rules: [{ required: true, message: "Please Select An Employer." }]
         })(
-          <Select>
+          <Select loading={employers === null}>
             {!!employers &&
               employers.map((item, index) => (
-                <Option key={index} value={item.cmpy_name}>
+                <Option key={index} value={item.cmpy_code}>
                   {item.cmpy_name}
                 </Option>
               ))}

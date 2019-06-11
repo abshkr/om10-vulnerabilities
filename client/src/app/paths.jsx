@@ -18,6 +18,13 @@ const paths = [
     })
   },
   {
+    path: ROUTES.PERSONNEL,
+    component: Loadable({
+      loader: () => import("../pages/personnel"),
+      loading: Loading
+    })
+  },
+  {
     path: ROUTES.FOLIO_SUMMARY,
     component: Loadable({
       loader: () => import("../pages/folioSummary"),

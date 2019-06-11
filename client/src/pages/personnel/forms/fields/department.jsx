@@ -6,19 +6,13 @@ export default class Department extends Component {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        base_name: value.base_name
+        per_department: value.per_department
       });
     }
   }
 
   render() {
     const { decorator } = this.props;
-    return (
-      <Form.Item label="Department">
-        {decorator("base_name", {
-          rules: [{ required: true, message: "please enter user name" }]
-        })(<Input />)}
-      </Form.Item>
-    );
+    return <Form.Item label="Department">{decorator("per_department")(<Input />)}</Form.Item>;
   }
 }

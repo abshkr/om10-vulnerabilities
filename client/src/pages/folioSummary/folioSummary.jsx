@@ -8,6 +8,8 @@ import { folioSummary } from "../../api";
 import { Button, Modal, notification } from "antd";
 import { Page, Filter, DataTable, Container } from "../../components";
 
+import "./folioSummary.css";
+
 class FolioSummary extends Component {
   constructor(props) {
     super(props);
@@ -72,6 +74,23 @@ class FolioSummary extends Component {
 
   componentDidMount() {
     this.getBaseProducts();
+    axios
+      .post("https://api.dki.cloud/slp/vehicle/", [
+        {
+          vin: "1234",
+          registration: "R1234",
+          state: "SA"
+        }
+      ])
+      .then(function(response) {
+        console.log(response);
+      })
+      .catch(function(error) {
+        console.log(error);
+      })
+      .then(function() {
+        // always executed
+      });
   }
 
   render() {

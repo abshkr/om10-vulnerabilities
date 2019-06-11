@@ -1,3 +1,2 @@
-import Create from "./create";
-import Edit from "./edit";
-export { Create, Edit };
+import Forms from "./forms";
+export default Forms;
