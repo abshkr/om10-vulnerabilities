@@ -117,6 +117,8 @@ class SecureAuth
         return $randstring;
     }
 
+    //Get 2FA mail of the user. return "2FA NOEMAIL" if email not setup. return "2FA INVALIDMAIL" if
+    //invalid email addess, return "2FA INVALIDDOMAIN" if domain not fit
     private function TwoFA_mail($user)
     {
         $sql = "SELECT NVL(PER_EMAIL, '-1') PER_EMAIL FROM PERSONNEL WHERE PER_CODE = '" . $user . "'";
@@ -124,19 +126,52 @@ class SecureAuth
         $res = array();
         oci_execute($stid);
         $row = oci_fetch_object($stid);
-        if ($row->PER_EMAIL === '-1') {
+        $email = $row->PER_EMAIL;
+        if ($email === '-1') {
             logMe(sprintf("Email not set for user %s", $user), sprintf("%s:%d", basename(__FILE__), __LINE__));
-            return "";
+            return "2FA NOEMAIL";
         }
 
-        $to = $row->PER_EMAIL;
+        //email validateion
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return "2FA INVALIDMAIL";
+        }
+
+        /** if email fits domain setup */
+        $sql = "SELECT NVL(MAX(CONFIG_VALUE), '-1') FA2_MAILDOMAIN FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_2FA_DOMAINS'";
+        $stid = oci_parse($this->connect, $sql);
+        $res = array();
+        oci_execute($stid);
+        $row = oci_fetch_object($stid);
+        $domain_str = $row->FA2_MAILDOMAIN;
+        if ($domain_str === '-1') {
+            logMe("Email domain not set", sprintf("%s:%d", basename(__FILE__), __LINE__));
+            return $email;
+        }
+
+        $domain_array = explode(",", $domain_str);
+        foreach ($domain_array as $domain) {
+            $domain = trim($domain);
+            if (strpos($email, $domain) > 0) {
+                return $email;
+            }
+        }
+
+        logMe(sprintf("Email address %s does not fit domain setup %s", $email, $domain_str),
+            sprintf("%s:%d", basename(__FILE__), __LINE__));
+        return "2FA INVALIDDOMAIN";
+    }
+
+    private function TwoFA_mailout($mail)
+    {
+        $to = $mail;
         $subject = "auth code from OMEGA";
         $auth_code = $this->TwoFA_code();
         $headers = "From: webmaster@diamondkey.com";
 
         mail($to, $subject, $auth_code, $headers);
 
-        logMe(sprintf("Send auth code %s to user %s, mail address %s", $auth_code, $user, $row->PER_EMAIL),
+        logMe(sprintf("Send auth code %s mail address %s", $auth_code, $mail),
             sprintf("%s:%d", basename(__FILE__), __LINE__));
         return $auth_code;
     }
@@ -213,10 +248,11 @@ class SecureAuth
                         if ($this->FA2_enabled()) {
                             logMe("2FA enabled, start 2FA auth process", sprintf("%s:%d", basename(__FILE__), __LINE__));
                             if ($two_factor_code == "") {
-                                $auth_code = $this->TwoFA_mail($username);
-                                if ($auth_code === "") {
-                                    return "2FA NOEMAIL";
+                                $mail = $this->TwoFA_mail($username);
+                                if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+                                    return $mail;
                                 }
+                                $auth_code = $this->TwoFA_mailout($mail);
                                 $_SESSION['AUTH_CODE'] = $auth_code;
                                 $_SESSION['AUTH_CODE_CREATE_TIME'] = time();
                                 return "AUTH 2FA";
