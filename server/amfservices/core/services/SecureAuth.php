@@ -257,8 +257,8 @@ Team DKI", $auth_code);
                 if (isset($array['MSG_DESC'])) {
                     if ($array['MSG_DESC'] == "SUCCESS") {
 
-                        // if ($this->FA2_enabled() && $username !== '9999') {
-                        if ($this->FA2_enabled()) {
+                        if ($this->FA2_enabled() && $username !== '9999') {
+                        // if ($this->FA2_enabled()) {
                             logMe("2FA enabled, start 2FA auth process", sprintf("%s:%d", basename(__FILE__), __LINE__));
                             if ($two_factor_code == "") {
                                 $mail = $this->TwoFA_mail($username);
