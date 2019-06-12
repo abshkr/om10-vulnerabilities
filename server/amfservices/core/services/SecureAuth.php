@@ -166,11 +166,22 @@ class SecureAuth
     private function TwoFA_mailout($mail)
     {
         $to = $mail;
-        $subject = "auth code from OMEGA";
+        $subject = "Verification Code";
         $auth_code = $this->TwoFA_code();
+        $msg = sprintf("Please verify that it’s you
+
+We have noticed that you are signing in to a DKI TAS system.
+If this it is you, please use the following verification code to confirm your identity:
+
+%s
+
+If this wasn’t you, please reset your password.
+
+Yours securely,
+Team DKI", $auth_code);
         $from = "-rno-reply@TEST-2FA.shell-manual.sites";
 
-        mail($to, $subject, $auth_code, null, $from);
+        mail($to, $subject, $msg, null, $from);
 
         logMe(sprintf("Send auth code %s mail address %s", $auth_code, $mail),
             sprintf("%s:%d", basename(__FILE__), __LINE__));
@@ -246,8 +257,8 @@ class SecureAuth
                 if (isset($array['MSG_DESC'])) {
                     if ($array['MSG_DESC'] == "SUCCESS") {
 
-                        if ($this->FA2_enabled() && $username !== '9999') {
-                            // if ($this->FA2_enabled()) {
+                        // if ($this->FA2_enabled() && $username !== '9999') {
+                        if ($this->FA2_enabled()) {
                             logMe("2FA enabled, start 2FA auth process", sprintf("%s:%d", basename(__FILE__), __LINE__));
                             if ($two_factor_code == "") {
                                 $mail = $this->TwoFA_mail($username);
