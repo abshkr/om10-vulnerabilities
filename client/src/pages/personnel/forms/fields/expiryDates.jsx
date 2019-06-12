@@ -83,12 +83,7 @@ export default class ExpiryDates extends Component {
       <div>
         {formItems}
         <Form.Item>
-          <Button
-            type="dashed"
-            onClick={this.add}
-            style={{ width: "100%" }}
-            disabled={!!expiryTypes && !!allValues.expiry_dates && allValues.expiry_dates.length === expiryTypes.length}
-          >
+          <Button type="dashed" onClick={this.add} style={{ width: "100%" }}>
             <Icon type="plus" /> Add Date
           </Button>
         </Form.Item>
