@@ -296,7 +296,7 @@
 						data.config_key == "HOT_LITRE_SFL_FACTOR"  ? "0-9." :
 						data.config_key == "SAFEFILL_TOLERANCE_PERCENT"  ? "0-9." :
 						data.config_key == "SAFEFILL_TOLERANCE_QTY"  ? "0-9" :
-						data.config_key == "SITE_2FA_DOMAINS"  ? "A-zA-z0-9!_' '.-@#$%^&*\w" :
+						data.config_key == "SITE_2FA_DOMAINS"  ? "A-zA-z0-9!_' '.-@#$,%^&*\w" :
 						data.config_key == "SITE_MAX_TAGS"  ? "0-9" :
 						data.config_key == "SEAL_NUMBER"  ? "0-9" : "";
 				
