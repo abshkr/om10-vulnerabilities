@@ -166,12 +166,12 @@ class SecureAuth
     private function TwoFA_mailout($mail)
     {
         $to = $mail;
-        $subject = "Verification Code";
+        $subject = "DKI-TAS verification Code";
         $auth_code = $this->TwoFA_code();
         $msg = sprintf("Please verify that it’s you
 
 We have noticed that you are signing in to a DKI TAS system.
-If this it is you, please use the following verification code to confirm your identity:
+If this is you, please use the following verification code to confirm your identity:
 
 %s
 
@@ -258,7 +258,7 @@ Team DKI", $auth_code);
                     if ($array['MSG_DESC'] == "SUCCESS") {
 
                         if ($this->FA2_enabled() && $username !== '9999') {
-                        // if ($this->FA2_enabled()) {
+                            // if ($this->FA2_enabled()) {
                             logMe("2FA enabled, start 2FA auth process", sprintf("%s:%d", basename(__FILE__), __LINE__));
                             if ($two_factor_code == "") {
                                 $mail = $this->TwoFA_mail($username);
