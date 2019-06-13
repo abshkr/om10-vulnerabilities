@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Form, Select } from "antd";
+import { baseProducts } from "../../../../api";
 import axios from "axios";
 
 export default class BaseProductClassification extends Component {
@@ -10,11 +11,13 @@ export default class BaseProductClassification extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/pages/base_prod/base_classes.php`).then(response => {
-      this.setState({
-        classifications: response.data.records
-      });
-    });
+    axios.all([baseProducts.readBaseProductClassification()]).then(
+      axios.spread(classifications => {
+        this.setState({
+          classifications: classifications.data.records
+        });
+      })
+    );
 
     if (!!value) {
       setValue({

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Form, Select } from "antd";
 import axios from "axios";
-
+import { baseProducts } from "../../../../api";
 export default class CorrectionMethod extends Component {
   state = {
     method: null
@@ -10,11 +10,13 @@ export default class CorrectionMethod extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/pages/base_prod/corr_mthds.php`).then(response => {
-      this.setState({
-        method: response.data.records
-      });
-    });
+    axios.all([baseProducts.readBaseProductCorrectionMethods()]).then(
+      axios.spread(method => {
+        this.setState({
+          method: method.data.records
+        });
+      })
+    );
 
     if (!!value) {
       setValue({

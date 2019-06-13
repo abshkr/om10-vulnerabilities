@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Form, Select } from "antd";
 import axios from "axios";
-
+import { baseProducts } from "../../../../api";
 export default class BaseProductGroup extends Component {
   state = {
     classifications: null
@@ -10,11 +10,13 @@ export default class BaseProductGroup extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/pages/base_prod/prod_groups.php`).then(response => {
-      this.setState({
-        classifications: response.data.records
-      });
-    });
+    axios.all([baseProducts.readBaseProductGroups()]).then(
+      axios.spread(classifications => {
+        this.setState({
+          classifications: classifications.data.records
+        });
+      })
+    );
 
     if (!!value) {
       setValue({

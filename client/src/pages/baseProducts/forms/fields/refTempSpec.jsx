@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Form, Select } from "antd";
+import { baseProducts } from "../../../../api";
 import axios from "axios";
 
 export default class RefSpecTemp extends Component {
@@ -10,11 +11,13 @@ export default class RefSpecTemp extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.get(`https://10.1.10.66/api/pages/base_prod/ref_temp_specs.php`).then(response => {
-      this.setState({
-        ref: response.data.records
-      });
-    });
+    axios.all([baseProducts.readBaseProductRefTemp()]).then(
+      axios.spread(ref => {
+        this.setState({
+          ref: ref.data.records
+        });
+      })
+    );
 
     if (!!value) {
       setValue({

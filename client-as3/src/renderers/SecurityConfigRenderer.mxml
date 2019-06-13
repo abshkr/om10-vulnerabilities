@@ -49,8 +49,8 @@
 					case "HOT_LITRE_SFL_FACTOR":
 					case "SITE_MAX_TAGS":
 					case "SAFEFILL_TOLERANCE_QTY":
-					case "SITE_2FA_DOMAINS":
 					case "SAFEFILL_TOLERANCE_PERCENT":
+					case "SITE_2FA_DOMAINS":
 						return false;
 						break;
 					default:
@@ -285,7 +285,9 @@
 			public function get textMaxChar():int{
 				return 	data.config_key == "SEAL_POSTFIX" ? 3 :
 					data.config_key == "SEAL_PREFIX"  ? 5 :
+					data.config_key == "SITE_2FA_DOMAINS"  ? 100 :
 					data.config_key == "SEAL_NUMBER"  ? 7 : 100;
+				
 			}
 			[Bindable (event="mcDataUpdate")]
 			public function get textRestrict():String{
@@ -294,6 +296,7 @@
 						data.config_key == "HOT_LITRE_SFL_FACTOR"  ? "0-9." :
 						data.config_key == "SAFEFILL_TOLERANCE_PERCENT"  ? "0-9." :
 						data.config_key == "SAFEFILL_TOLERANCE_QTY"  ? "0-9" :
+						data.config_key == "SITE_2FA_DOMAINS"  ? "A-zA-z0-9!_' '.-@#$%^&*\w" :
 						data.config_key == "SITE_MAX_TAGS"  ? "0-9" :
 						data.config_key == "SEAL_NUMBER"  ? "0-9" : "";
 				
