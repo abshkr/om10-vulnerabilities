@@ -15,6 +15,8 @@ const findTankLevel = (current, tankCode) => {
 const findFlowRate = (arms, max) => {
   const total = _.sumBy(arms, "current_flow_rate");
   const percent = _.round((total / max) * 100, 2);
+  console.log(arms);
+  console.log(percent);
   return percent;
 };
 
