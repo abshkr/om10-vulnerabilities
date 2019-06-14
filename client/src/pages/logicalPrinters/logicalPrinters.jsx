@@ -5,11 +5,11 @@ import Forms from "./forms";
 import columns from "./columns";
 import auth from "../../utils/auth";
 import search from "../../utils/search";
-import { customerCategories } from "../../api";
+import { logicalPrinters } from "../../api";
 import { Button, Modal, notification } from "antd";
 import { Page, Filter, DataTable, Download, Container } from "../../components";
 
-class CustomerCategories extends Component {
+class LogicalPrinters extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -22,11 +22,11 @@ class CustomerCategories extends Component {
 
   handleClick = object => {
     Modal.info({
-      title: !!object ? `Editing (${object.category_code})` : "Create",
+      title: !!object ? `Editing (${object.prt_printer})` : "Create",
       centered: true,
       icon: !!object ? "edit" : "form",
       width: 720,
-      content: <Forms refresh={this.getCustomerCategories} value={object} />,
+      content: <Forms refresh={this.getLogicalPrinters} value={object} />,
       okButtonProps: {
         style: { display: "none" }
       }
@@ -48,18 +48,18 @@ class CustomerCategories extends Component {
     });
   };
 
-  getCustomerCategories = () => {
+  getLogicalPrinters = () => {
     this.setState({
       isLoading: true
     });
 
     axios
-      .all([customerCategories.readCustomerCategories()])
+      .all([logicalPrinters.readLogicalPrinters()])
       .then(
-        axios.spread(customerCategories => {
+        axios.spread(printers => {
           this.setState({
             isLoading: false,
-            data: customerCategories.data.records
+            data: printers.data.records
           });
         })
       )
@@ -72,7 +72,7 @@ class CustomerCategories extends Component {
   };
 
   componentDidMount() {
-    this.getCustomerCategories();
+    this.getLogicalPrinters();
   }
 
   render() {
@@ -80,13 +80,13 @@ class CustomerCategories extends Component {
     const { configuration } = this.props;
     const results = !!filtered ? filtered : data;
     return (
-      <Page page={"Customers"} name={"Customer Categories"} block={true}>
+      <Page page={"Printer Configuration"} name={"Logical Printers"} block={true}>
         <Container>
           <Filter value={value} search={this.searchObjects} loading={isLoading} />
           <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
-          <Download data={data} type={"customer_categories"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
+          <Download data={data} type={"logical_printers"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
           <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
-            Create Category
+            Create Printer
           </Button>
 
           <DataTable data={results} resize={resize} rowKey="category_code" isLoading={isLoading} click={this.handleClick} columns={columns(results, configuration)} />
@@ -96,4 +96,4 @@ class CustomerCategories extends Component {
   }
 }
 
-export default auth(CustomerCategories);
+export default auth(LogicalPrinters);

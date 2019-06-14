@@ -1,30 +1,29 @@
 import React, { Component } from "react";
 import { Form, Button, Tabs, notification, Modal } from "antd";
 import axios from "axios";
-import { customerCategories } from "../../../api";
+import { Company, Printer, Usage } from "./fields";
+import { logicalPrinters } from "../../../api";
 
-import { CategoryCode, CategoryName } from "./fields";
-
-class CustomerCateogyForm extends Component {
+class LogicalPrinterForm extends Component {
   handleCreate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         axios
-          .all([customerCategories.createCustomerCategories(values)])
+          .all([logicalPrinters.createLogicalPrinters(values)])
           .then(
             axios.spread(response => {
               this.props.refresh();
               Modal.destroyAll();
               notification.success({
                 message: "Successfully Created.",
-                description: `You have created the Category ${values.base_code}`
+                description: `You have created the Printer ${values.base_code}`
               });
             })
           )
           .catch(function(error) {
             notification.error({
               message: error.message,
-              description: "Failed to create the Category."
+              description: "Failed to create the Printer."
             });
           });
       } else {
@@ -40,21 +39,21 @@ class CustomerCateogyForm extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         axios
-          .all([customerCategories.updateCustomerCategories(values)])
+          .all([logicalPrinters.updateLogicalPrinters(values)])
           .then(
             axios.spread(response => {
               this.props.refresh();
               Modal.destroyAll();
               notification.success({
                 message: "Successfully Updated.",
-                description: `You have updated the Category ${values.base_code}`
+                description: `You have updated the Printer ${values.base_code}`
               });
             })
           )
           .catch(function(error) {
             notification.error({
               message: error.message,
-              description: "Failed to update the Category."
+              description: "Failed to update the Printer."
             });
           });
       } else {
@@ -69,7 +68,7 @@ class CustomerCateogyForm extends Component {
   handleDelete = () => {
     const { value } = this.props;
     axios
-      .all([customerCategories.deleteCustomerCategories(value.base_code)])
+      .all([logicalPrinters.deleteLogicalPrinters(value.base_code)])
       .then(
         axios.spread(response => {
           this.props.refresh();
@@ -90,7 +89,7 @@ class CustomerCateogyForm extends Component {
 
   showDeleteConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to delete this Category?",
+      title: "Are you sure you want to delete this Printer?",
       okText: "Yes",
       okType: "danger",
       cancelText: "No",
@@ -101,7 +100,7 @@ class CustomerCateogyForm extends Component {
 
   showUpdateConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to update this Category?",
+      title: "Are you sure you want to update this Printer?",
       okText: "Yes",
       okType: "primary",
       cancelText: "No",
@@ -112,7 +111,7 @@ class CustomerCateogyForm extends Component {
 
   showCreateConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to update this Category?",
+      title: "Are you sure you want to update this Printer?",
       okText: "Yes",
       okType: "primary",
       cancelText: "No",
@@ -130,8 +129,9 @@ class CustomerCateogyForm extends Component {
         <Form style={{ height: 640 }}>
           <Tabs defaultActiveKey="1">
             <TabPane tab="General" key="1">
-              <CategoryCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <CategoryName decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <Company decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <Usage decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <Printer decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
           </Tabs>
         </Form>
@@ -160,6 +160,6 @@ class CustomerCateogyForm extends Component {
   }
 }
 
-const Forms = Form.create()(CustomerCateogyForm);
+const Forms = Form.create()(LogicalPrinterForm);
 
 export default Forms;

@@ -13,6 +13,6 @@ export function updateCustomerCategories(payload) {
   return axios.post(`https://${api}/api/pages/cust_cat/update.php`, payload);
 }
 
-export function deleteCustomerCategories(tank) {
-  return axios.post(`https://${api}/api/pages/cust_cat/delete.php?base_code=${tank}`);
+export function deleteCustomerCategories(payload) {
+  return axios.post(`https://${api}/api/pages/cust_cat/delete.php?base_code=${payload}`);
 }
