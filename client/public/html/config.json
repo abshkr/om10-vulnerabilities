@@ -13,6 +13,13 @@
       "sys_printer": true,
       "prt_area": true,
       "area_name": true
+    },
+    "physicalPrinters": {
+      "prntr": true,
+      "sys_prntr": true,
+      "prntr_lock": true,
+      "prntr_area": true,
+      "area_name": true
     }
   }
 }

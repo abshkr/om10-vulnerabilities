@@ -14,7 +14,7 @@ export function updateLogicalPrinters(payload) {
 }
 
 export function deleteLogicalPrinters(payload) {
-  return axios.post(`https://${api}/api/pages/logical_printer/delete.php?base_code=${payload}`);
+  return axios.post(`https://${api}/api/pages/logical_printer/delete.php`, payload);
 }
 
 export function readPhysicalPrinters() {

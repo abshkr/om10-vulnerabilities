@@ -1,15 +1,15 @@
 import React, { Component } from "react";
 import { Form, Button, Tabs, notification, Modal } from "antd";
 import axios from "axios";
-import { Company, Printer, Usage } from "./fields";
-import { logicalPrinters } from "../../../api";
+import { Area, Lock, Printer, SystemPrinter } from "./fields";
+import { physicalPrinters } from "../../../api";
 
-class LogicalPrinterForm extends Component {
+class PhysicalPrinterForm extends Component {
   handleCreate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         axios
-          .all([logicalPrinters.createLogicalPrinters(values)])
+          .all([physicalPrinters.createPhysicalPrinters(values)])
           .then(
             axios.spread(response => {
               this.props.refresh();
@@ -39,7 +39,7 @@ class LogicalPrinterForm extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         axios
-          .all([logicalPrinters.updateLogicalPrinters(values)])
+          .all([physicalPrinters.updatePhysicalPrinters(values)])
           .then(
             axios.spread(response => {
               this.props.refresh();
@@ -68,7 +68,7 @@ class LogicalPrinterForm extends Component {
   handleDelete = () => {
     const { value } = this.props;
     axios
-      .all([logicalPrinters.deleteLogicalPrinters(value)])
+      .all([physicalPrinters.deletePhysicalPrinters(value)])
       .then(
         axios.spread(response => {
           this.props.refresh();
@@ -129,9 +129,10 @@ class LogicalPrinterForm extends Component {
         <Form style={{ height: 640 }}>
           <Tabs defaultActiveKey="1">
             <TabPane tab="General" key="1">
-              <Company decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Usage decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <Printer decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <SystemPrinter decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <Lock decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <Area decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
           </Tabs>
         </Form>
@@ -160,6 +161,6 @@ class LogicalPrinterForm extends Component {
   }
 }
 
-const Forms = Form.create()(LogicalPrinterForm);
+const Forms = Form.create()(PhysicalPrinterForm);
 
 export default Forms;

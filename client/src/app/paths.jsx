@@ -32,6 +32,13 @@ const paths = [
     })
   },
   {
+    path: ROUTES.PHYSICAL_PRINTERS,
+    component: Loadable({
+      loader: () => import("../pages/physicalPrinters"),
+      loading: Loading
+    })
+  },
+  {
     path: ROUTES.FOLIO_SUMMARY,
     component: Loadable({
       loader: () => import("../pages/folioSummary"),
