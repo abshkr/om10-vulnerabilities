@@ -3145,8 +3145,8 @@ GROUP BY
     {
         $db = DB::getInstance();
 
-        //$sql="SELECT T.TNKR_CODE FROM SCHEDULE S,TANKERS T WHERE S.SHL_TANKER = T.TNKR_CODE AND SHLS_SUPP='$supp' AND SHLS_TRIP_NO='$trip_no'";
-        $sql = "SELECT T.TNKR_CODE FROM SCHEDULE S,TANKERS T WHERE S.SHL_TANKER = T.TNKR_CODE AND SHLS_SUPP='$supp' AND SHLS_TRIP_NO='$trip_no' AND upper(T.TNKR_CODE) not in ('GENERIC TANKER','GENERIC NOM VOL','SPECIAL')";
+        $sql = "SELECT T.TNKR_CODE FROM SCHEDULE S,TANKERS T 
+        WHERE S.SHL_TANKER = T.TNKR_CODE AND SHLS_SUPP='$supp' AND SHLS_TRIP_NO='$trip_no'";
 
         return $db->query($sql);
     }
