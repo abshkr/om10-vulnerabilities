@@ -1,8 +1,19 @@
 import React from "react";
+import _ from "lodash";
 import { Tag, Progress } from "antd";
 import generate from "../../utils/generateOptions";
 
-const columns = data => [
+const columns = (data, configuration) => {
+  const values = defaults(data);
+  const config = configuration.columns.adaptiveFlowControl;
+  const modified = _.reject(values, o => {
+    return !config[o.dataIndex];
+  });
+
+  return modified;
+};
+
+const defaults = data => [
   {
     title: "Tank Code",
     dataIndex: "tankCode",

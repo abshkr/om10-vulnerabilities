@@ -1,43 +1,29 @@
 import React, { Component } from "react";
 import { Form, Button, Tabs, notification, Modal } from "antd";
-import { tanks } from "../../../api";
 import axios from "axios";
-import {
-  TankCode,
-  Product,
-  TankName,
-  Density,
-  DailyVariancePercent,
-  DailyVarianceVol,
-  MonthlyVariancePercent,
-  MonthlyVarianceVol,
-  ExcludeFromPID,
-  ExcludeFromPOS,
-  ExcludeFromSMG,
-  ExcludeFromStockReports,
-  TankMaxFlow
-} from "./fields";
+import { Company, Printer, Usage } from "./fields";
+import { logicalPrinters } from "../../../api";
 
-class TankConfigurationForm extends Component {
+class LogicalPrinterForm extends Component {
   handleCreate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         axios
-          .all([tanks.createTank(values)])
+          .all([logicalPrinters.createLogicalPrinters(values)])
           .then(
-            axios.spread(() => {
+            axios.spread(response => {
               this.props.refresh();
               Modal.destroyAll();
               notification.success({
                 message: "Successfully Created.",
-                description: `You have Created the Tank ${values.tank_code}`
+                description: `You have created the Printer ${values.prt_printer}`
               });
             })
           )
-          .catch(error => {
+          .catch(function(error) {
             notification.error({
               message: error.message,
-              description: "Failed to create the Tank."
+              description: "Failed to create the Printer."
             });
           });
       } else {
@@ -53,21 +39,21 @@ class TankConfigurationForm extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         axios
-          .all([tanks.updateTank(values)])
+          .all([logicalPrinters.updateLogicalPrinters(values)])
           .then(
-            axios.spread(() => {
+            axios.spread(response => {
               this.props.refresh();
               Modal.destroyAll();
               notification.success({
                 message: "Successfully Updated.",
-                description: `You have updated the Tank ${values.tank_code}`
+                description: `You have updated the Printer ${values.prt_printer}`
               });
             })
           )
-          .catch(error => {
+          .catch(function(error) {
             notification.error({
               message: error.message,
-              description: "Failed to update the Tank."
+              description: "Failed to update the Printer."
             });
           });
       } else {
@@ -82,18 +68,18 @@ class TankConfigurationForm extends Component {
   handleDelete = () => {
     const { value } = this.props;
     axios
-      .all([tanks.deleteTank(value.tank_code)])
+      .all([logicalPrinters.deleteLogicalPrinters(value)])
       .then(
-        axios.spread(() => {
+        axios.spread(response => {
           this.props.refresh();
           Modal.destroyAll();
           notification.success({
             message: "Successfully Deleted.",
-            description: `You have deleted the Tank ${value.tank_code}`
+            description: `You have deleted the Tank ${value.prt_printer}`
           });
         })
       )
-      .catch(error => {
+      .catch(function(error) {
         notification.error({
           message: error.message,
           description: "Failed to delete the Tank."
@@ -103,7 +89,7 @@ class TankConfigurationForm extends Component {
 
   showDeleteConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to delete this tank?",
+      title: "Are you sure you want to delete this Printer?",
       okText: "Yes",
       okType: "danger",
       cancelText: "No",
@@ -114,7 +100,7 @@ class TankConfigurationForm extends Component {
 
   showUpdateConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to update this tank?",
+      title: "Are you sure you want to update this Printer?",
       okText: "Yes",
       okType: "primary",
       cancelText: "No",
@@ -125,7 +111,7 @@ class TankConfigurationForm extends Component {
 
   showCreateConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to update this tank?",
+      title: "Are you sure you want to update this Printer?",
       okText: "Yes",
       okType: "primary",
       cancelText: "No",
@@ -135,40 +121,18 @@ class TankConfigurationForm extends Component {
   };
 
   render() {
-    const { form, value, baseProducts, profile } = this.props;
-    const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+    const { form, value } = this.props;
+    const { getFieldDecorator, setFieldsValue } = form;
     const TabPane = Tabs.TabPane;
-
     return (
       <div>
         <Form style={{ height: 640 }}>
           <Tabs defaultActiveKey="1">
             <TabPane tab="General" key="1">
-              <TankCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} disabled={!!value ? true : false} />
-              <Product decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <TankName decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Density decorator={getFieldDecorator} value={value} setValue={setFieldsValue} baseProducts={baseProducts} selectedBase={getFieldValue("tank_base")} />
+              <Company decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <Usage decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <Printer decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
-
-            <TabPane tab="Variance" key="2">
-              <DailyVarianceVol decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <MonthlyVarianceVol decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <DailyVariancePercent decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <MonthlyVariancePercent decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-            </TabPane>
-
-            <TabPane tab="Flags" key="4">
-              <ExcludeFromPID decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <ExcludeFromPOS decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <ExcludeFromSMG decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <ExcludeFromStockReports decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-            </TabPane>
-
-            {profile.features.adaptiveFlowControl && (
-              <TabPane tab="Adaptive Flow" key="5">
-                <TankMaxFlow decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              </TabPane>
-            )}
           </Tabs>
         </Form>
 
@@ -196,6 +160,6 @@ class TankConfigurationForm extends Component {
   }
 }
 
-const Forms = Form.create()(TankConfigurationForm);
+const Forms = Form.create()(LogicalPrinterForm);
 
 export default Forms;

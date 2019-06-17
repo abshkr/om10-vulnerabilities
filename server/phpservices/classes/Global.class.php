@@ -83,8 +83,8 @@ if (!defined('ERRORLOG')) {
 //if(isset($_SERVER['HTTP_HOST'])) {
 //    $GLOBALS['HOST'] = $_SERVER['HTTP_HOST'];
 //}
-if (isset($_SERVER['SERVER_ADDR'])) {
-    $GLOBALS['HOST'] = $_SERVER['SERVER_ADDR'];
+if (isset($_SERVER['SERVER_NAME'])) {
+    $GLOBALS['HOST'] = $_SERVER['SERVER_NAME'];
 } else {
     $GLOBALS['HOST'] = 'localhost';
 }

@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<flexProperties enableServiceManager="false" flexServerFeatures="0" flexServerType="16" fmlDataModelLocation=".model/Fml_5000_R2.fml" serverContextRoot="" serverRoot="Z:/" serverRootURL="https://uw.diamondkey.local/" toolCompile="true" useServerFlexSDK="false" version="2"/>
+<flexProperties enableServiceManager="false" flexServerFeatures="0" flexServerType="16" fmlDataModelLocation=".model/Fml_5000_R2.fml" serverContextRoot="" serverRoot="Z:/" serverRootURL="https://172.60.60.63/" toolCompile="true" useServerFlexSDK="false" version="2"/>

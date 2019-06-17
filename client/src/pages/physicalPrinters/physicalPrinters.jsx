@@ -1,41 +1,32 @@
-/**
- * @description
- * Tank Configurations Screen
- * Lets the user perform simple CRUD operations to manipulate the Tank Configurations Data.
- */
-
 import React, { Component } from "react";
 
 import axios from "axios";
-import Forms from "./forms";
-import auth from "../../auth";
 import columns from "./columns";
-import { search } from "../../utils";
-import { tanks, baseProducts } from "../../api";
+import Forms from "./forms";
+import auth from "../../utils/auth";
+import search from "../../utils/search";
+import { physicalPrinters } from "../../api";
 import { Button, Modal, notification } from "antd";
 import { Page, Filter, DataTable, Download, Container } from "../../components";
 
-import "./tankConfiguration.css";
-
-class TankConfiguration extends Component {
+class PhysicalPrinters extends Component {
   constructor(props) {
     super(props);
     this.state = {
       data: [],
       value: "",
       resize: false,
-      isLoading: true,
-      baseProducts: []
+      isLoading: true
     };
   }
 
   handleClick = object => {
     Modal.info({
-      title: !!object ? `Editing (${object.tank_code} / ${object.tank_name})` : "Create",
+      title: !!object ? `Editing (${object.prntr})` : "Create",
       centered: true,
       icon: !!object ? "edit" : "form",
       width: 720,
-      content: <Forms value={object} refresh={this.handleFetch} baseProducts={this.state.baseProducts} profile={this.props.configuration} />,
+      content: <Forms refresh={this.handleFetch} value={object} />,
       okButtonProps: {
         style: { display: "none" }
       }
@@ -63,15 +54,12 @@ class TankConfiguration extends Component {
     });
 
     axios
-      .all([tanks.readTanks(), baseProducts.readBaseProduct()])
+      .all([physicalPrinters.readPhysicalPrinters()])
       .then(
-        axios.spread((tanks, baseProducts) => {
+        axios.spread(printers => {
           this.setState({
             isLoading: false,
-            data: tanks.data.records,
-            baseProducts: baseProducts.data.records,
-            filtered: null,
-            value: ""
+            data: printers.data.records
           });
         })
       )
@@ -92,20 +80,20 @@ class TankConfiguration extends Component {
     const { configuration } = this.props;
     const results = !!filtered ? filtered : data;
     return (
-      <Page page={"Gantry"} name={"Tank Configuration"} block={true}>
+      <Page page={"Printer Configuration"} name={"Physical Printers"} block={true}>
         <Container>
           <Filter value={value} search={this.handleSearch} loading={isLoading} />
           <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
-          <Download data={data} type={"Tank Configuration"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
+          <Download data={data} type={"physical_printers"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
           <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
-            Create Tank Configuration
+            Create Printer
           </Button>
 
-          <DataTable scroll={2000} data={results} resize={resize} rowKey="tank_code" isLoading={isLoading} click={this.handleClick} columns={columns(results, configuration)} />
+          <DataTable data={results} resize={resize} rowKey="category_code" isLoading={isLoading} click={this.handleClick} columns={columns(results, configuration)} />
         </Container>
       </Page>
     );
   }
 }
 
-export default auth(TankConfiguration);
+export default auth(PhysicalPrinters);

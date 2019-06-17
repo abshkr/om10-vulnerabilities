@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { Form, Input } from "antd";
 
-export default class CategoryCode extends Component {
+export default class SystemPrinter extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
     if (!!value) {
       setValue({
-        category_code: value.category_code
+        sys_prntr: value.sys_prntr
       });
     }
   }
@@ -15,9 +15,9 @@ export default class CategoryCode extends Component {
     const { decorator } = this.props;
 
     return (
-      <Form.Item label="Category Code">
-        {decorator("category_code", {
-          rules: [{ required: true, message: "Please Enter a Category Code" }]
+      <Form.Item label="System / Physical Printer">
+        {decorator("sys_prntr", {
+          rules: [{ required: true, message: "Please Select A Printer" }]
         })(<Input />)}
       </Form.Item>
     );

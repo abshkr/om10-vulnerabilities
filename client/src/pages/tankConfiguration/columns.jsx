@@ -1,19 +1,16 @@
 import React from "react";
 import _ from "lodash";
 import { Tag } from "antd";
-import generate from "../../utils/generateOptions";
+import { generateOptions } from "../../utils";
 
 const columns = (data, configuration) => {
   const values = defaults(data);
+  const config = configuration.columns.tankConfigurations;
+  const modified = _.reject(values, o => {
+    return !config[o.dataIndex];
+  });
 
-  if (!configuration.features.adaptiveFlowControl) {
-    const modified = _.reject(values, o => {
-      return o.dataIndex === "tank_max_flow" || o.dataIndex === "tank_afc_priority";
-    });
-    return modified;
-  } else {
-    return values;
-  }
+  return modified;
 };
 
 const defaults = data => [
@@ -30,22 +27,14 @@ const defaults = data => [
     dataIndex: "tank_name",
     key: "tank_name",
     width: 300,
-    filters: generate(data, "tank_name"),
+    filters: generateOptions(data, "tank_name"),
     onFilter: (value, record) => record.tank_name.indexOf(value) === 0
-  },
-  {
-    title: "Terminal",
-    dataIndex: "tank_terminal",
-    key: "tank_terminal",
-    filters: generate(data, "tank_terminal"),
-    onFilter: (value, record) => record.tank_terminal.indexOf(value) === 0,
-    width: 350
   },
   {
     title: "Product Code",
     dataIndex: "tank_base",
     key: "tank_base",
-    filters: generate(data, "tank_base"),
+    filters: generateOptions(data, "tank_base"),
     onFilter: (value, record) => record.tank_base.indexOf(value) === 0,
     width: 300
   },
@@ -53,7 +42,7 @@ const defaults = data => [
     title: "Product Name",
     dataIndex: "tank_base_name",
     key: "tank_base_name",
-    filters: generate(data, "tank_base_name"),
+    filters: generateOptions(data, "tank_base_name"),
     onFilter: (value, record) => record.tank_base_name.indexOf(value) === 0,
     width: 300
   },
@@ -61,7 +50,7 @@ const defaults = data => [
     title: "Product Category",
     dataIndex: "tank_bclass_name",
     key: "tank_bclass_name",
-    filters: generate(data, "tank_bclass_name"),
+    filters: generateOptions(data, "tank_bclass_name"),
     onFilter: (value, record) => record.tank_bclass_name.indexOf(value) === 0,
     width: 450
   },

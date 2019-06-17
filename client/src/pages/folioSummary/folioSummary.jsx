@@ -3,7 +3,7 @@ import axios from "axios";
 import columns from "./columns";
 import auth from "../../utils/auth";
 import Forms from "./forms";
-import search from "../../utils/search";
+import { search } from "../../utils";
 import { folioSummary } from "../../api";
 import { Button, Modal, notification } from "antd";
 import { Page, Filter, DataTable, Container } from "../../components";
@@ -34,7 +34,7 @@ class FolioSummary extends Component {
     });
   };
 
-  searchObjects = query => {
+  handleSearch = query => {
     const { value } = query.target;
     this.setState({
       filtered: search(value, this.state.data),
@@ -49,7 +49,7 @@ class FolioSummary extends Component {
     });
   };
 
-  getBaseProducts = () => {
+  handleFetch = () => {
     this.setState({
       isLoading: true
     });
@@ -64,7 +64,7 @@ class FolioSummary extends Component {
           });
         })
       )
-      .catch(function(error) {
+      .catch(error => {
         notification.error({
           message: error.message,
           description: "Failed to make the request."
@@ -72,25 +72,44 @@ class FolioSummary extends Component {
       });
   };
 
+  handlePDS = () => {
+    this.setState({
+      isLoading: true
+    });
+
+    axios.all([folioSummary.createPDS()]).then(
+      axios.spread(() => {
+        notification.success({
+          message: "Create PDS File",
+          description: "PDS File Successfully created."
+        });
+        this.setState({
+          isLoading: false
+        });
+      })
+    );
+  };
+
+  handloeFolioClose = () => {
+    this.setState({
+      isLoading: true
+    });
+
+    axios.all([folioSummary.closeFolio()]).then(
+      axios.spread(() => {
+        notification.success({
+          message: "Close First Frozen Folio",
+          description: "Closed First Frozen Folio Successfully."
+        });
+        this.setState({
+          isLoading: false
+        });
+      })
+    );
+  };
+
   componentDidMount() {
-    this.getBaseProducts();
-    axios
-      .post("https://api.dki.cloud/slp/vehicle/", [
-        {
-          vin: "1234",
-          registration: "R1234",
-          state: "SA"
-        }
-      ])
-      .then(function(response) {
-        console.log(response);
-      })
-      .catch(function(error) {
-        console.log(error);
-      })
-      .then(function() {
-        // always executed
-      });
+    this.handleFetch();
   }
 
   render() {
@@ -100,12 +119,12 @@ class FolioSummary extends Component {
     return (
       <Page page={"Gantry"} name={"Folio Summary"} block={true}>
         <Container>
-          <Filter value={value} search={this.searchObjects} loading={isLoading} />
-          <Button shape="round" type="primary" icon="reload" style={{ float: "right", marginRight: 5 }} onClick={this.getBaseProducts} disabled={isLoading} />
-          <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} disabled={isLoading}>
+          <Filter value={value} search={this.handleSearch} loading={isLoading} />
+          <Button shape="round" type="primary" icon="reload" style={{ float: "right", marginRight: 5 }} onClick={this.handleFetch} disabled={isLoading} />
+          <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} disabled={isLoading} onClick={this.handloeFolioClose}>
             Close First Frozen Folio
           </Button>
-          <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} disabled={isLoading}>
+          <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} disabled={isLoading} onClick={this.handlePDS}>
             Create PDS File
           </Button>
           <DataTable isLoading={isLoading} resize={resize} rowKey="closeout_nr" columns={columns(results, configuration)} data={results} click={this.handleClick} />

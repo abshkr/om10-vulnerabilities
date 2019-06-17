@@ -28,7 +28,7 @@ class Thunk
 	public function Thunk($host='localhost',$page_uri="",$fields=null, $method="POST",  $port=80, $secure = true)
 	{
 		//$this->host = $host;
-		$this->host = $_SERVER['SERVER_ADDR'];
+		$this->host = $_SERVER['SERVER_NAME'];
 		$this->port = $port;
 		
 		// force to use the 127.0.0.1 as the IP host

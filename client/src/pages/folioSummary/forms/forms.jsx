@@ -22,12 +22,13 @@ export default class Forms extends Component {
     });
 
     const { payload } = this.props;
-    axios.all([folioSummary.readFolioMeters(payload.closeout_nr), folioSummary.readFolioTanks(payload.closeout_nr)]).then(
-      axios.spread((meters, tanks) => {
+    axios.all([folioSummary.readFolioMeters(payload.closeout_nr), folioSummary.readFolioTanks(payload.closeout_nr), folioSummary.readFolioReports(payload.closeout_nr)]).then(
+      axios.spread((meters, tanks, reports) => {
         this.setState({
           isLoading: false,
           tanks: tanks.data.records,
-          meters: meters.data.records
+          meters: meters.data.records,
+          reports: reports.data.records
         });
       })
     );
@@ -39,13 +40,13 @@ export default class Forms extends Component {
 
   render() {
     const TabPane = Tabs.TabPane;
-    const { tanks, meters, isLoading } = this.state;
+    const { tanks, meters, isLoading, reports } = this.state;
 
     return (
       <Spin spinning={isLoading} style={{ minHeight: "720px" }}>
         <Tabs defaultActiveKey="1" style={{ height: "720px" }}>
           <TabPane tab="Reports" key="1">
-            <Reports data={meters} />
+            <Reports id={this.props.payload.closeout_nr} data={reports} />
           </TabPane>
           <TabPane tab="Meters" key="2">
             {!isLoading && <Meters data={meters} update={this.getReadings} />}

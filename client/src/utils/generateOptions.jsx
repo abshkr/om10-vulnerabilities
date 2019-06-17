@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-const Generated = (data, key) => {
+const generateOptions = (data, key) => {
   const results = [];
   _.map(_.uniqBy(data, key), function(item) {
     results.push({
@@ -12,4 +12,4 @@ const Generated = (data, key) => {
   return results;
 };
 
-export default Generated;
+export default generateOptions;

@@ -24,8 +24,6 @@ export default class Meters extends Component {
     });
   };
 
-  handleUpdate = values => {};
-
   render() {
     const { values } = this.state;
 

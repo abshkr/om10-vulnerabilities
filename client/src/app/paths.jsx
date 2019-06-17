@@ -25,16 +25,23 @@ const paths = [
     })
   },
   {
-    path: ROUTES.FOLIO_SUMMARY,
+    path: ROUTES.LOGICAL_PRINTERS,
     component: Loadable({
-      loader: () => import("../pages/folioSummary"),
+      loader: () => import("../pages/logicalPrinters"),
       loading: Loading
     })
   },
   {
-    path: ROUTES.CUSTOMER_CATEGORIES,
+    path: ROUTES.PHYSICAL_PRINTERS,
     component: Loadable({
-      loader: () => import("../pages/customerCategories"),
+      loader: () => import("../pages/physicalPrinters"),
+      loading: Loading
+    })
+  },
+  {
+    path: ROUTES.FOLIO_SUMMARY,
+    component: Loadable({
+      loader: () => import("../pages/folioSummary"),
       loading: Loading
     })
   },

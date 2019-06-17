@@ -1,7 +1,6 @@
 import React from "react";
 import _ from "lodash";
 import { Tag } from "antd";
-import generate from "../../utils/generateOptions";
 
 const columns = (data, configuration) => {
   const values = defaults(data);

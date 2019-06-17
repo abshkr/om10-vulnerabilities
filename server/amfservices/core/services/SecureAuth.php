@@ -234,7 +234,7 @@ Team DKI", $auth_code);
 
                 // build up the CGI request
                 //$url         = 'https://'.$_SERVER['HTTP_HOST'].'/cgi-bin/en/login.cgi';
-                $url = 'https://' . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/login.cgi';
+                $url = 'https://' . $_SERVER['SERVER_NAME'] . '/cgi-bin/en/login.cgi';
                 $clientip = $_SERVER['REMOTE_ADDR'];
                 //$url         = 'https://127.0.0.1/cgi-bin/en/login.cgi';
                 $data = array('lang' => $langcode, 'oput' => 'XML', 'lock' => 'N', 'usr' => $username, 'pwd' => $password, 'clientip' => $clientip, 'hash' => $rev_pass);
@@ -327,7 +327,7 @@ Team DKI", $auth_code);
             $usr = $this->oracle_escape_string($_SESSION['PERCODE']);
             // build up the CGI request
             //$url = 'https://'.$_SERVER['HTTP_HOST'].'/cgi-bin/en/logout.cgi';
-            $url = 'https://' . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/logout.cgi';
+            $url = 'https://' . $_SERVER['SERVER_NAME'] . '/cgi-bin/en/logout.cgi';
             //$url = 'https://127.0.0.1/cgi-bin/en/logout.cgi';
             $data = array('sess_id' => $sess_id, 'usr' => $usr);
             $options = array(
@@ -391,7 +391,7 @@ Team DKI", $auth_code);
             //$url = 'https://'.$_SERVER['HTTP_HOST'].'/cgi-bin/en/atm/setpass.cgi';
             //$data = array('sess_id' => $sess_id, 'usr' => $usr, 'old_pwd' => $oldPassword, 'pwd' => $newPassword, 'reset' => 'N');
             //$url = 'https://'.$_SERVER['HTTP_HOST'].'/cgi-bin/en/atm/resetpassword.cgi';
-            $url = 'https://' . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/atm/resetpassword.cgi';
+            $url = 'https://' . $_SERVER['SERVER_NAME'] . '/cgi-bin/en/atm/resetpassword.cgi';
             //$url = 'https://127.0.0.1/cgi-bin/en/atm/resetpassword.cgi';
 
             if ($chown) {

@@ -5,15 +5,12 @@ import generate from "../../utils/generateOptions";
 
 const columns = (data, configuration) => {
   const values = defaults(data);
+  const config = configuration.columns.baseProducts;
+  const modified = _.reject(values, o => {
+    return !config[o.dataIndex];
+  });
 
-  if (!configuration.features.adaptiveFlowControl) {
-    const modified = _.reject(values, o => {
-      return o.dataIndex === "tank_max_flow" || o.dataIndex === "tank_afc_priority";
-    });
-    return modified;
-  } else {
-    return values;
-  }
+  return modified;
 };
 
 const defaults = data => [
