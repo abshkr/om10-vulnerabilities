@@ -75,7 +75,7 @@ class TankConfiguration extends Component {
           });
         })
       )
-      .catch(function(error) {
+      .catch(error => {
         notification.error({
           message: error.message,
           description: "Failed to make the request."
@@ -101,7 +101,7 @@ class TankConfiguration extends Component {
             Create Tank Configuration
           </Button>
 
-          <DataTable scroll={2600} data={results} resize={resize} rowKey="tank_code" isLoading={isLoading} click={this.handleClick} columns={columns(results, configuration)} />
+          <DataTable scroll={2000} data={results} resize={resize} rowKey="tank_code" isLoading={isLoading} click={this.handleClick} columns={columns(results, configuration)} />
         </Container>
       </Page>
     );

@@ -106,13 +106,7 @@ class TankConfigurationForm extends Component {
       title: "Are you sure you want to delete this tank?",
       okText: "Yes",
       okType: "danger",
-      okButtonProps: {
-        shape: "round"
-      },
       cancelText: "No",
-      cancelButtonProps: {
-        shape: "round"
-      },
       centered: true,
       onOk: this.handleDelete
     });
@@ -123,13 +117,7 @@ class TankConfigurationForm extends Component {
       title: "Are you sure you want to update this tank?",
       okText: "Yes",
       okType: "primary",
-      okButtonProps: {
-        shape: "round"
-      },
       cancelText: "No",
-      cancelButtonProps: {
-        shape: "round"
-      },
       centered: true,
       onOk: this.handleUpdate
     });
@@ -140,13 +128,7 @@ class TankConfigurationForm extends Component {
       title: "Are you sure you want to update this tank?",
       okText: "Yes",
       okType: "primary",
-      okButtonProps: {
-        shape: "round"
-      },
       cancelText: "No",
-      cancelButtonProps: {
-        shape: "round"
-      },
       centered: true,
       onOk: this.handleCreate
     });

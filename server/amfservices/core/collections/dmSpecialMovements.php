@@ -77,7 +77,7 @@ class dmSpecialMovements extends dmCollection{
 		}
 		if($result->result_code == 0){
 			//file_get_contents($protocol."://".$_SERVER["HTTP_HOST"]."/cgi-bin/en/spcl_mvment.cgi?user_id=".$ucode."&spclmnt_no=".$params);	
-			file_get_contents($protocol."://".$_SERVER["SERVER_ADDR"]."/cgi-bin/en/spcl_mvment.cgi?user_id=".$ucode."&spclmnt_no=".$params);	
+			file_get_contents($protocol."://".$_SERVER["SERVER_NAME"]."/cgi-bin/en/spcl_mvment.cgi?user_id=".$ucode."&spclmnt_no=".$params);	
 		}
 		return new dmMesg(array("data" => $result));
 	}
@@ -99,7 +99,7 @@ class dmSpecialMovements extends dmCollection{
 		}
 		if($result->result_code == 0){
 			//file_get_contents($protocol."://".$_SERVER["HTTP_HOST"]."/cgi-bin/en/spcl_mvment.cgi?user_id=".$ucode."&spclmnt_no=".$params);
-			file_get_contents($protocol."://".$_SERVER["SERVER_ADDR"]."/cgi-bin/en/spcl_mvment.cgi?user_id=".$ucode."&spclmnt_no=".$params);
+			file_get_contents($protocol."://".$_SERVER["SERVER_NAME"]."/cgi-bin/en/spcl_mvment.cgi?user_id=".$ucode."&spclmnt_no=".$params);
 		}
     	return new dmMesg(array("data" => $result));
 	}

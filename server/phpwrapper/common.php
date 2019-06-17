@@ -1,7 +1,7 @@
 <?php
 $PROTOCOL = "https://";
 //$HOST = $_SERVER['HTTP_HOST'];
-$HOST = $_SERVER['SERVER_ADDR'];
+$HOST = $_SERVER['SERVER_NAME'];
 // We want all cgi-bin calls to go via localhost only.
 //$HOST = "127.0.0.1";
 $PORT = $_SERVER['SERVER_PORT'];
