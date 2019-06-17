@@ -35,7 +35,7 @@ class TankConfiguration extends Component {
       centered: true,
       icon: !!object ? "edit" : "form",
       width: 720,
-      content: <Forms value={object} refresh={this.handleReqests} baseProducts={this.state.baseProducts} profile={this.props.configuration} />,
+      content: <Forms value={object} refresh={this.handleFetch} baseProducts={this.state.baseProducts} profile={this.props.configuration} />,
       okButtonProps: {
         style: { display: "none" }
       }
@@ -57,7 +57,7 @@ class TankConfiguration extends Component {
     });
   };
 
-  handleReqests = () => {
+  handleFetch = () => {
     this.setState({
       isLoading: true
     });
@@ -84,7 +84,7 @@ class TankConfiguration extends Component {
   };
 
   componentDidMount() {
-    this.handleReqests();
+    this.handleFetch();
   }
 
   render() {

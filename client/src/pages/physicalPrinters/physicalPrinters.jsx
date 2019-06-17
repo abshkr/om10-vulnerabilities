@@ -22,18 +22,18 @@ class PhysicalPrinters extends Component {
 
   handleClick = object => {
     Modal.info({
-      title: !!object ? `Editing (${object.prt_printer})` : "Create",
+      title: !!object ? `Editing (${object.prntr})` : "Create",
       centered: true,
       icon: !!object ? "edit" : "form",
       width: 720,
-      content: <Forms refresh={this.getPhysicalPrinters} value={object} />,
+      content: <Forms refresh={this.handleFetch} value={object} />,
       okButtonProps: {
         style: { display: "none" }
       }
     });
   };
 
-  searchObjects = query => {
+  handleSearch = query => {
     const { value } = query.target;
     this.setState({
       filtered: search(value, this.state.data),
@@ -48,7 +48,7 @@ class PhysicalPrinters extends Component {
     });
   };
 
-  getPhysicalPrinters = () => {
+  handleFetch = () => {
     this.setState({
       isLoading: true
     });
@@ -63,7 +63,7 @@ class PhysicalPrinters extends Component {
           });
         })
       )
-      .catch(function(error) {
+      .catch(error => {
         notification.error({
           message: error.message,
           description: "Failed to make the request."
@@ -72,7 +72,7 @@ class PhysicalPrinters extends Component {
   };
 
   componentDidMount() {
-    this.getPhysicalPrinters();
+    this.handleFetch();
   }
 
   render() {
@@ -82,7 +82,7 @@ class PhysicalPrinters extends Component {
     return (
       <Page page={"Printer Configuration"} name={"Physical Printers"} block={true}>
         <Container>
-          <Filter value={value} search={this.searchObjects} loading={isLoading} />
+          <Filter value={value} search={this.handleSearch} loading={isLoading} />
           <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
           <Download data={data} type={"physical_printers"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
           <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>

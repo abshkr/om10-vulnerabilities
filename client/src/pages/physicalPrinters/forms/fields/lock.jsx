@@ -4,11 +4,11 @@ import { Form, Select } from "antd";
 const options = [
   {
     value: "Y",
-    key: "Yes"
+    key: "Locked"
   },
   {
     value: "N",
-    key: "No"
+    key: "Unlocked"
   }
 ];
 
@@ -28,10 +28,8 @@ export default class Lock extends Component {
     const { Option } = Select;
 
     return (
-      <Form.Item label="Lock">
-        {decorator("prntr_lock", {
-          rules: [{ required: true, message: "Please Select An Area" }]
-        })(
+      <Form.Item label="Status">
+        {decorator("prntr_lock")(
           <Select>
             {options.map((item, index) => (
               <Option key={index} value={item.value}>

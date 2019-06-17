@@ -33,14 +33,12 @@ export default class Area extends Component {
 
     return (
       <Form.Item label="Area">
-        {decorator("prntr_area", {
-          rules: [{ required: true, message: "Please Select An Area" }]
-        })(
+        {decorator("prntr_area")(
           <Select>
             {!!area &&
               area.map((item, index) => (
-                <Option key={index} value={item.prntr}>
-                  {item.prntr} - {item.sys_prntr}
+                <Option key={index} value={item.area_k}>
+                  {item.area_k} - {item.area_name}
                 </Option>
               ))}
           </Select>
