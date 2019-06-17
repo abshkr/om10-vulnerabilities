@@ -22,8 +22,18 @@ const summary = (arms, tank) => {
   );
 };
 
-const FlowRates = tank => {
-  return <Table size="middle" columns={columns} dataSource={tank.arms} pagination={false} title={arms => summary(arms, tank)} rowKey="baa_code" className="nested-table" />;
+const FlowRates = (tank, configuration) => {
+  return (
+    <Table
+      size="middle"
+      columns={columns(configuration)}
+      dataSource={tank.arms}
+      pagination={false}
+      title={arms => summary(arms, tank)}
+      rowKey="baa_code"
+      className="nested-table"
+    />
+  );
 };
 
 export default FlowRates;

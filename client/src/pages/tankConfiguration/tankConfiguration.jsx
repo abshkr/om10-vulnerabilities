@@ -8,12 +8,13 @@ import React, { Component } from "react";
 
 import axios from "axios";
 import Forms from "./forms";
+import auth from "../../auth";
 import columns from "./columns";
-import auth from "../../utils/auth";
-import search from "../../utils/search";
+import { search } from "../../utils";
 import { tanks, baseProducts } from "../../api";
 import { Button, Modal, notification } from "antd";
 import { Page, Filter, DataTable, Download, Container } from "../../components";
+
 import "./tankConfiguration.css";
 
 class TankConfiguration extends Component {
@@ -34,14 +35,14 @@ class TankConfiguration extends Component {
       centered: true,
       icon: !!object ? "edit" : "form",
       width: 720,
-      content: <Forms value={object} refresh={this.getTanks} baseProducts={this.state.baseProducts} profile={this.props.configuration} />,
+      content: <Forms value={object} refresh={this.handleReqests} baseProducts={this.state.baseProducts} profile={this.props.configuration} />,
       okButtonProps: {
         style: { display: "none" }
       }
     });
   };
 
-  searchObjects = query => {
+  handleSearch = query => {
     const { value } = query.target;
     this.setState({
       filtered: search(value, this.state.data),
@@ -56,7 +57,7 @@ class TankConfiguration extends Component {
     });
   };
 
-  getTanks = () => {
+  handleReqests = () => {
     this.setState({
       isLoading: true
     });
@@ -83,7 +84,7 @@ class TankConfiguration extends Component {
   };
 
   componentDidMount() {
-    this.getTanks();
+    this.handleReqests();
   }
 
   render() {
@@ -93,7 +94,7 @@ class TankConfiguration extends Component {
     return (
       <Page page={"Gantry"} name={"Tank Configuration"} block={true}>
         <Container>
-          <Filter value={value} search={this.searchObjects} loading={isLoading} />
+          <Filter value={value} search={this.handleSearch} loading={isLoading} />
           <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
           <Download data={data} type={"Tank Configuration"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
           <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>

@@ -46,13 +46,6 @@ const paths = [
     })
   },
   {
-    path: ROUTES.CUSTOMER_CATEGORIES,
-    component: Loadable({
-      loader: () => import("../pages/customerCategories"),
-      loading: Loading
-    })
-  },
-  {
     path: ROUTES.METERING,
     component: Loadable({
       loader: () => import("../pages/metering"),

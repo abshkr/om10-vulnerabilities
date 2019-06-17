@@ -1,7 +1,18 @@
 import React from "react";
+import _ from "lodash";
 import { Badge } from "antd";
 
-const columns = [
+const columns = configuration => {
+  const values = defaults;
+  const config = configuration.columns.adaptiveFlowControl;
+  const modified = _.reject(values, o => {
+    return !config[o.dataIndex];
+  });
+
+  return modified;
+};
+
+const defaults = [
   {
     title: "Active Tank",
     dataIndex: "tank_code",

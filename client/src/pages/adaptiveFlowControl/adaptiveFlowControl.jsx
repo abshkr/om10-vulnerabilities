@@ -60,12 +60,20 @@ class AdaptiveFlowControl extends Component {
 
   render() {
     const { data, filtered, value, resize, isLoading } = this.state;
+    const { configuration } = this.props;
     const results = !!filtered ? filtered : data;
     return (
       <Page page={"Gantry"} name={"Adaptive Flow Control"} block={true}>
         <Container>
           <Filter value={value} search={this.searchObjects} />
-          <DataTable isLoading={isLoading} resize={resize} rowKey="baseCode" columns={columns(results)} data={results} nested={tank => FlowRates(tank)} />
+          <DataTable
+            isLoading={isLoading}
+            resize={resize}
+            rowKey="baseCode"
+            columns={columns(results, configuration)}
+            data={results}
+            nested={tank => FlowRates(tank, configuration)}
+          />
         </Container>
       </Page>
     );

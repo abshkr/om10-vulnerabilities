@@ -14,12 +14,65 @@
       "prt_area": true,
       "area_name": true
     },
+
     "physicalPrinters": {
       "prntr": true,
       "sys_prntr": true,
       "prntr_lock": true,
       "prntr_area": true,
       "area_name": true
+    },
+
+    "tankConfigurations": {
+      "tank_code": true,
+      "tank_name": true,
+      "tank_terminal": true,
+      "tank_base": true,
+      "tank_base_name": true,
+      "tank_bclass_name": true,
+      "tank_density": true,
+      "tank_dtol_volume": true,
+      "tank_dtol_percent": true,
+      "tank_mtol_volume": true,
+      "tank_mtol_percent": true,
+      "tank_afc_priority": false,
+      "tank_max_flow": false
+    },
+
+    "baseProducts": {
+      "base_code": true,
+      "base_name": true,
+      "base_color": true,
+      "base_cat": true,
+      "base_class_desc": true,
+      "base_prod_group": true,
+      "base_group_name": true,
+      "base_adtv": true,
+      "base_tank_count": true,
+      "base_tank_list": true,
+      "base_class_dens_lo": true,
+      "base_class_dens_hi": true,
+      "base_class_temp_lo": true,
+      "base_class_temp_hi": true,
+      "base_corr_mthd_name": true,
+      "base_ref_temp_spec_name": true,
+      "base_limit_preset_ht": true
+    },
+
+    "adaptiveFlowControl": {
+      "tankCode": true,
+      "baseCode": true,
+      "baseName": true,
+      "armPriority": true,
+      "level": true,
+      "flowRate": true,
+      "tank_code": true,
+      "flowing": true,
+      "high_flow_state": true,
+      "flow_contribution": true,
+      "current_flow_rate": true,
+      "loaded_qty": true,
+      "preset": true
     }
   }
 }

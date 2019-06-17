@@ -2,36 +2,30 @@ import React, { Component } from "react";
 import { Form, Button, Tabs, notification, Modal } from "antd";
 import { tanks } from "../../../api";
 import axios from "axios";
-
-import TankCode from "./fields/tankCode";
-import Product from "./fields/product";
-import TankName from "./fields/tankName";
-import Density from "./fields/density";
-
-import DailyVariancePercent from "./fields/dailyVariancePercent";
-import DailyVarianceVol from "./fields/dailyVarianceVol";
-import MonthlyVariancePercent from "./fields/monthlyVariancePercent";
-import MonthlyVarianceVol from "./fields/montlyVarianceVol";
-
-import ExcludeFromPID from "./fields/excludeFromPID";
-import ExcludeFromPOS from "./fields/excludeFromPOS";
-import ExcludeFromSMG from "./fields/excludeFromSMG";
-import ExcludeFromStockReports from "./fields/excludeFromStockReports";
-
-import TankMaxFlow from "./fields/tankMaxFlow";
+import {
+  TankCode,
+  Product,
+  TankName,
+  Density,
+  DailyVariancePercent,
+  DailyVarianceVol,
+  MonthlyVariancePercent,
+  MonthlyVarianceVol,
+  ExcludeFromPID,
+  ExcludeFromPOS,
+  ExcludeFromSMG,
+  ExcludeFromStockReports,
+  TankMaxFlow
+} from "./fields";
 
 class TankConfigurationForm extends Component {
-  state = {
-    base: null
-  };
-
   handleCreate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         axios
           .all([tanks.createTank(values)])
           .then(
-            axios.spread(response => {
+            axios.spread(() => {
               this.props.refresh();
               Modal.destroyAll();
               notification.success({
@@ -40,7 +34,7 @@ class TankConfigurationForm extends Component {
               });
             })
           )
-          .catch(function(error) {
+          .catch(error => {
             notification.error({
               message: error.message,
               description: "Failed to create the Tank."
@@ -61,7 +55,7 @@ class TankConfigurationForm extends Component {
         axios
           .all([tanks.updateTank(values)])
           .then(
-            axios.spread(response => {
+            axios.spread(() => {
               this.props.refresh();
               Modal.destroyAll();
               notification.success({
@@ -70,7 +64,7 @@ class TankConfigurationForm extends Component {
               });
             })
           )
-          .catch(function(error) {
+          .catch(error => {
             notification.error({
               message: error.message,
               description: "Failed to update the Tank."
@@ -90,7 +84,7 @@ class TankConfigurationForm extends Component {
     axios
       .all([tanks.deleteTank(value.tank_code)])
       .then(
-        axios.spread(response => {
+        axios.spread(() => {
           this.props.refresh();
           Modal.destroyAll();
           notification.success({
@@ -99,7 +93,7 @@ class TankConfigurationForm extends Component {
           });
         })
       )
-      .catch(function(error) {
+      .catch(error => {
         notification.error({
           message: error.message,
           description: "Failed to delete the Tank."
@@ -112,7 +106,13 @@ class TankConfigurationForm extends Component {
       title: "Are you sure you want to delete this tank?",
       okText: "Yes",
       okType: "danger",
+      okButtonProps: {
+        shape: "round"
+      },
       cancelText: "No",
+      cancelButtonProps: {
+        shape: "round"
+      },
       centered: true,
       onOk: this.handleDelete
     });
@@ -123,7 +123,13 @@ class TankConfigurationForm extends Component {
       title: "Are you sure you want to update this tank?",
       okText: "Yes",
       okType: "primary",
+      okButtonProps: {
+        shape: "round"
+      },
       cancelText: "No",
+      cancelButtonProps: {
+        shape: "round"
+      },
       centered: true,
       onOk: this.handleUpdate
     });
@@ -134,7 +140,13 @@ class TankConfigurationForm extends Component {
       title: "Are you sure you want to update this tank?",
       okText: "Yes",
       okType: "primary",
+      okButtonProps: {
+        shape: "round"
+      },
       cancelText: "No",
+      cancelButtonProps: {
+        shape: "round"
+      },
       centered: true,
       onOk: this.handleCreate
     });
