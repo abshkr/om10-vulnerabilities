@@ -169,7 +169,7 @@ class BaseProductsForm extends Component {
   }
 
   render() {
-    const { form, value, profile } = this.props;
+    const { form, value, profile, data } = this.props;
     const { getFieldDecorator, setFieldsValue } = form;
     const TabPane = Tabs.TabPane;
     return (
@@ -177,7 +177,7 @@ class BaseProductsForm extends Component {
         <Form style={{ height: 640 }}>
           <Tabs defaultActiveKey="1">
             <TabPane tab="General" key="1" st>
-              <BaseProductCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <BaseProductCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
               <BaseProductName decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <BaseProductClassifications decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <BaseProductGroup decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />

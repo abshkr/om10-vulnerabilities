@@ -135,7 +135,7 @@ class TankConfigurationForm extends Component {
   };
 
   render() {
-    const { form, value, baseProducts, profile } = this.props;
+    const { form, value, baseProducts, profile, data } = this.props;
     const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
     const TabPane = Tabs.TabPane;
 
@@ -144,7 +144,7 @@ class TankConfigurationForm extends Component {
         <Form style={{ height: 640 }}>
           <Tabs defaultActiveKey="1">
             <TabPane tab="General" key="1">
-              <TankCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} disabled={!!value ? true : false} />
+              <TankCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
               <Product decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <TankName decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <Density decorator={getFieldDecorator} value={value} setValue={setFieldsValue} baseProducts={baseProducts} selectedBase={getFieldValue("tank_base")} />

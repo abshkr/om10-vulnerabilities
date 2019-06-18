@@ -150,3 +150,7 @@
 .ant-modal-confirm-btns .ant-btn {
   border-radius: 32px !important;
 }
+
+.ant-table-thead > tr > th {
+  background-color: rgb(251, 251, 251);
+}

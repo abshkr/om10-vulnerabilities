@@ -28,3 +28,7 @@ export function closeFolio() {
 export function openFolioReports(id, report) {
   return `https://${api}/api/pages/folio/report_gateway.php?report=${id}/${report}`;
 }
+
+export function regenerateReports(id) {
+  return axios.get(`https://${api}/api/pages/folio/create_reports.php?closeout_nr=${id}`);
+}

@@ -26,19 +26,20 @@ class BaseProducts extends Component {
   }
 
   handleClick = object => {
+    const { data } = this.state;
     Modal.info({
       title: !!object ? `Editing (${object.base_code} / ${object.base_name})` : "Create",
       centered: true,
       width: 720,
       icon: !!object ? "edit" : "form",
-      content: <Forms value={object} refresh={this.getBaseProducts} baseProducts={this.state.baseProducts} profile={this.props.configuration} />,
+      content: <Forms value={object} refresh={this.getBaseProducts} baseProducts={this.state.baseProducts} profile={this.props.configuration} data={data} />,
       okButtonProps: {
         style: { display: "none" }
       }
     });
   };
 
-  searchObjects = query => {
+  handleSearch = query => {
     const { value } = query.target;
     this.setState({
       filtered: search(value, this.state.data),
@@ -90,14 +91,14 @@ class BaseProducts extends Component {
     return (
       <Page page={"Gantry"} name={name} block={true}>
         <Container>
-          <Filter value={value} search={this.searchObjects} loading={isLoading} />
+          <Filter value={value} search={this.handleSearch} loading={isLoading} />
           <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
           <Download data={data} type={"base_products"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
           <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
             Create Base Product
           </Button>
 
-          <DataTable isLoading={isLoading} resize={resize} rowKey="base_code" columns={columns(results, configuration)} data={results} scroll={3600} click={this.handleClick} />
+          <DataTable isLoading={isLoading} resize={resize} rowKey="base_code" columns={columns(results, configuration)} data={results} scroll={2800} click={this.handleClick} />
         </Container>
       </Page>
     );

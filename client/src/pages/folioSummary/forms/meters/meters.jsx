@@ -1,21 +1,32 @@
 import React, { Component } from "react";
 import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
 import { Download } from "../../../../components";
-import { Button } from "antd";
+import { Button, message } from "antd";
+import _ from "lodash";
 
 export default class Meters extends Component {
   constructor(props) {
     super(props);
+    const { data } = this.props;
     this.state = {
-      values: this.props.data
+      values: data
     };
   }
 
   handleRowEdit = object => {
-    let { values } = this.state;
+    const values = this.state.values.map(item => (item.meter_code === object.id ? _.toInteger(object) : item));
     this.setState({
-      values: values.map(item => (item.meter_code === object.id ? object : item))
+      values
     });
+  };
+
+  onBeforeSaveCell = (row, cellName, cellValue) => {
+    if (!isNaN(cellValue)) {
+      return true;
+    } else {
+      message.warn("Value Must be an Integer.");
+      return false;
+    }
   };
 
   handleCaculate = values => {
@@ -29,13 +40,8 @@ export default class Meters extends Component {
 
     const edit = {
       mode: "click",
+      beforeSaveCell: this.onBeforeSaveCell,
       afterSaveCell: this.handleRowEdit
-    };
-
-    const select = {
-      mode: "checkbox",
-      clickToSelect: true,
-      columnWidth: "50px"
     };
 
     return (
@@ -43,12 +49,18 @@ export default class Meters extends Component {
         <Button shape="round" type="primary" icon="edit" style={{ marginBottom: 15, marginRight: 5 }} onClick={() => console.log(values)}>
           Update Meters
         </Button>
-        <Download data={values} type={"folio_msummary_meters"} style={{ marginRight: 5 }} />
+        <Download data={values} type={"folio_summary_meters"} style={{ marginRight: 5 }} />
         <Button shape="round" type="primary" icon="calculator" style={{ marginBottom: 15, marginRight: 5, float: "right" }} onClick={() => this.handleCaculate(values)}>
           Calculate
         </Button>
-        <BootstrapTable data={values} keyBoardNav cellEdit={edit} selectRow={select} maxHeight="600px">
-          <TableHeaderColumn dataField="meter_code" isKey={true} editable={false}>
+        <BootstrapTable data={values} keyBoardNav cellEdit={edit} maxHeight="600px">
+          <TableHeaderColumn
+            dataField="meter_code"
+            isKey={true}
+            editable={{
+              type: ""
+            }}
+          >
             Meter Code
           </TableHeaderColumn>
           <TableHeaderColumn dataField="stream_basecode" editable={false}>

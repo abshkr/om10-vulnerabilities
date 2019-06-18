@@ -9,7 +9,7 @@ import Download from "../../../components/download";
 import Search from "../../../utils/search";
 import Filter from "../../../components/filter";
 
-export default class HistoricalJournal extends Component {
+export default class Historical extends Component {
   constructor(props) {
     super(props);
     this.state = {
