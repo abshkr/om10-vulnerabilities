@@ -37,7 +37,7 @@ class Journal extends Component {
             }
             key="2"
           >
-            <Historical />
+            <Historical config={configuration} />
           </TabPane>
         </Tabs>
       </Page>
