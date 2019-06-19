@@ -22,6 +22,17 @@ class CommonClass
     protected $VIEW_NAME = null; //used in read()
 
     /**
+     * Some VIEW columns do not equal to TABLE names. For example, GUI_TANKS
+     * , tnk.TANK_DAILY_TOL_VOL               as TANK_DTOL_VOLUME
+     * , tnk.TANK_DAILY_TOL_PERCENT           as TANK_DTOL_PERCENT
+     * , tnk.TANK_MONTHLY_TOL_VOL             as TANK_MTOL_VOLUME
+     * , tnk.TANK_MONTHLY_TOL_PERCENT         as TANK_MTOL_PERCENT
+     * Because read use VIEW, update use TABLE, we need to map them
+     * it is from TABLE to VIEW
+     */
+    protected $table_view_map = null;
+
+    /**
      * Child objects in "class name" => "table name" format
      * chidd objects will be embeded in every item
      */
@@ -94,9 +105,19 @@ class CommonClass
 
         $set_query = "";
         $to_update = array();
+        if (isset($this->table_view_map)) {
+            $view_table_map = array_flip($this->table_view_map);
+        }
+
         foreach ($this as $key => $value) {
             if (in_array($key, $this->updatable_fields)) {
-                $set_query .= strtoupper($key) . " = :" . $key . ", ";
+                $set_field = strtoupper($key);
+                if (isset($view_table_map)) {
+                    if (isset($view_table_map[strtoupper($key)])) {
+                        $set_field = $view_table_map[strtoupper($key)];
+                    }
+                }
+                $set_query .= $set_field . " = :" . $key . ", ";
                 $to_update[$key] = $value;
             }
         }
@@ -281,7 +302,11 @@ class CommonClass
         if (oci_execute($stmt)) {
             while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
                 if (!in_array(strtolower($row['COLUMN_NAME']), $this->primary_keys)) {
-                    array_push($this->updatable_fields, strtolower($row['COLUMN_NAME']));
+                    if (isset($this->table_view_map[$row['COLUMN_NAME']])) {
+                        array_push($this->updatable_fields, strtolower($this->table_view_map[$row['COLUMN_NAME']]));
+                    } else {
+                        array_push($this->updatable_fields, strtolower($row['COLUMN_NAME']));
+                    }
                 }
             }
         } else {
@@ -289,7 +314,7 @@ class CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
-
+        write_log(json_encode($this->updatable_fields), __FILE__, __LINE__);
         return true;
     }
 

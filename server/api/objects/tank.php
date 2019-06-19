@@ -10,6 +10,12 @@ class Tank extends CommonClass
 {
     protected $TABLE_NAME = 'TANKS';
     protected $VIEW_NAME = 'GUI_TANKS';
+    protected $table_view_map = array(
+        "TANK_DAILY_TOL_VOL" => "TANK_DTOL_VOLUME",
+        "TANK_DAILY_TOL_PERCENT" => "TANK_DTOL_PERCENT",
+        "TANK_MONTHLY_TOL_VOL" => "TANK_MTOL_VOLUME",
+        "TANK_MONTHLY_TOL_PERCENT" => "TANK_MTOL_PERCENT"
+    );
     // protected $CHILD_OBJECTS = array(
     //     "TankMaxFlow" => 'TANK_MAX_FLOW');
 
@@ -237,6 +243,10 @@ class Tank extends CommonClass
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
+
+        if (!isset($this->tank_max_flow)) {
+            return;
+        }
 
         foreach ($this->tank_max_flow as $value) {
             // write_log(json_encode($value), __FILE__, __LINE__);
