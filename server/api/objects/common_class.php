@@ -314,7 +314,7 @@ class CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
-        write_log(json_encode($this->updatable_fields), __FILE__, __LINE__);
+        // write_log(json_encode($this->updatable_fields), __FILE__, __LINE__);
         return true;
     }
 
