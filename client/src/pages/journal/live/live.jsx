@@ -35,6 +35,9 @@ export default class Live extends Component {
 
   componentDidMount() {
     this.handleFetch();
+    this.interval = setInterval(() => {
+      this.handleFetch();
+    }, 1000);
   }
 
   render() {

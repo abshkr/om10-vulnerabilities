@@ -18,7 +18,7 @@ const defaults = (data, config) => [
     title: "Time",
     dataIndex: "gen_date",
     key: "gen_date",
-    sorter: (a, b) => moment(b.prev_closeout_date, config.defaultTimeFormat).valueOf() - moment(a.prev_closeout_date, config.defaultTimeFormat).valueOf(),
+    sorter: (a, b) => moment(b.gen_date, config.defaultTimeFormat).valueOf() - moment(a.gen_date, config.defaultTimeFormat).valueOf(),
     // eslint-disable-next-line
     render: text => <a>{moment(text, config.defaultTimeFormat).format(config.dateTimeFormat)}</a>
   },

@@ -30,6 +30,7 @@ export default class Meters extends Component {
   };
 
   handleCaculate = values => {
+    console.log(values);
     this.setState({
       values
     });

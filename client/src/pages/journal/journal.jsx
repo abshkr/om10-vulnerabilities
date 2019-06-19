@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import Live from "./live";
 import auth from "../../auth";
-import { Tabs, Icon } from "antd";
+import { Tabs, Icon, Badge } from "antd";
 import Historical from "./historical";
 import { Page } from "../../components";
 
@@ -20,7 +20,7 @@ class Journal extends Component {
             className="live-table"
             tab={
               <span>
-                <Icon type="sync" />
+                <Badge status="processing" />
                 Live
               </span>
             }
@@ -31,7 +31,7 @@ class Journal extends Component {
           <TabPane
             tab={
               <span>
-                <Icon type="read" />
+                <Icon type="calendar" />
                 Historical
               </span>
             }
