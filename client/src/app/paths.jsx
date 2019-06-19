@@ -107,6 +107,13 @@ const paths = [
       loader: () => import("../pages/adaptiveFlowControl"),
       loading: Loading
     })
+  },
+  {
+    path: ROUTES.JOURNAL,
+    component: Loadable({
+      loader: () => import("../pages/journal"),
+      loading: Loading
+    })
   }
 ];
 

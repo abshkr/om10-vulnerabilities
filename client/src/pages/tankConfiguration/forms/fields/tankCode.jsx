@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Form, Input } from "antd";
+import _ from "lodash";
 
 export default class TankCode extends Component {
   componentDidMount() {
@@ -12,6 +13,12 @@ export default class TankCode extends Component {
   }
 
   handleTankCodeValidation = (rule, value, callback) => {
+    const match = _.find(this.props.data, ["tank_code", value]);
+
+    if (value && !!match) {
+      callback("This Tank Code already exists.");
+    }
+
     if (value && value.length > 6) {
       callback("Tank Code must be under 6 characters.");
     }
@@ -19,7 +26,7 @@ export default class TankCode extends Component {
   };
 
   render() {
-    const { decorator, disabled } = this.props;
+    const { decorator, value } = this.props;
 
     return (
       <Form.Item label="Tank Code">
@@ -33,7 +40,7 @@ export default class TankCode extends Component {
               validator: this.handleTankCodeValidation
             }
           ]
-        })(<Input disabled={disabled} />)}
+        })(<Input disabled={!!value} />)}
       </Form.Item>
     );
   }

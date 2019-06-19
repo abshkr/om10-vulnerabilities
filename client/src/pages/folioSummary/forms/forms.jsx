@@ -6,6 +6,8 @@ import Reports from "./reports";
 import axios from "axios";
 import { folioSummary } from "../../../api";
 
+const TabPane = Tabs.TabPane;
+
 export default class Forms extends Component {
   constructor(props) {
     super(props);
@@ -16,12 +18,13 @@ export default class Forms extends Component {
     };
   }
 
-  getReadings = () => {
+  handleFetch = () => {
+    const { payload } = this.props;
+
     this.setState({
       isLoading: true
     });
 
-    const { payload } = this.props;
     axios.all([folioSummary.readFolioMeters(payload.closeout_nr), folioSummary.readFolioTanks(payload.closeout_nr), folioSummary.readFolioReports(payload.closeout_nr)]).then(
       axios.spread((meters, tanks, reports) => {
         this.setState({
@@ -35,18 +38,17 @@ export default class Forms extends Component {
   };
 
   componentDidMount() {
-    this.getReadings();
+    this.handleFetch();
   }
 
   render() {
-    const TabPane = Tabs.TabPane;
     const { tanks, meters, isLoading, reports } = this.state;
-
+    const { payload } = this.props;
     return (
-      <Spin spinning={isLoading} style={{ minHeight: "720px" }}>
-        <Tabs defaultActiveKey="1" style={{ height: "720px" }}>
+      <Spin spinning={isLoading} style={{ minHeight: "700px" }}>
+        <Tabs defaultActiveKey="1" style={{ height: "708px" }}>
           <TabPane tab="Reports" key="1">
-            <Reports id={this.props.payload.closeout_nr} data={reports} />
+            <Reports id={payload.closeout_nr} data={reports} refresh={this.handleFetch} />
           </TabPane>
           <TabPane tab="Meters" key="2">
             {!isLoading && <Meters data={meters} update={this.getReadings} />}

@@ -30,12 +30,13 @@ class TankConfiguration extends Component {
   }
 
   handleClick = object => {
+    const { data } = this.state;
     Modal.info({
       title: !!object ? `Editing (${object.tank_code} / ${object.tank_name})` : "Create",
       centered: true,
       icon: !!object ? "edit" : "form",
       width: 720,
-      content: <Forms value={object} refresh={this.handleFetch} baseProducts={this.state.baseProducts} profile={this.props.configuration} />,
+      content: <Forms value={object} refresh={this.handleFetch} baseProducts={this.state.baseProducts} profile={this.props.configuration} data={data} />,
       okButtonProps: {
         style: { display: "none" }
       }

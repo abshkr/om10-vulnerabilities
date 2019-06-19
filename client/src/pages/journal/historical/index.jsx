@@ -1,2 +1,2 @@
-import HistoricalJournal from "./historical";
-export default HistoricalJournal;
+import Historical from "./historical";
+export default Historical;

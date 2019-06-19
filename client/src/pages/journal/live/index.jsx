@@ -1,2 +1,2 @@
-import LiveJournal from "./live";
-export default LiveJournal;
+import Live from "./live";
+export default Live;

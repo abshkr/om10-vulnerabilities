@@ -1,7 +1,6 @@
 import React from "react";
 import { DatePicker } from "antd";
 import moment from "moment";
-const { RangePicker } = DatePicker;
 
 const ranges = {
   "Last 24 Hours": [moment(), moment().subtract("1", "days")],
@@ -15,16 +14,21 @@ const disabled = current => {
   return current && current > moment().endOf("day");
 };
 
+const handleDateChange = (dates, change) => {
+  change(dates[0].format("YYYY-MM-DD h:mm"), dates[1].format("YYYY-MM-DD h:mm"));
+};
+
 const Calendar = ({ change, start, end }) => {
   return (
-    <RangePicker
+    <DatePicker.RangePicker
+      allowClear={false}
       disabledDate={disabled}
       style={{ marginBottom: 10, marginRight: 10 }}
       ranges={ranges}
-      showTime={{ format: "HH:mm" }}
+      showTime={{ format: "HH:mm:ss" }}
       format="DD-MM-YYYY HH:mm"
-      placeholder={[start, end]}
-      onOk={change}
+      defaultValue={[moment(start, "YYYY-MM-DD HH:mm:ss"), moment(end, "YYYY-MM-DD HH:mm:ss")]}
+      onOk={dates => handleDateChange(dates, change)}
     />
   );
 };

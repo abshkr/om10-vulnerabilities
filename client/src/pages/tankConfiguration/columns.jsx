@@ -26,7 +26,7 @@ const defaults = data => [
     title: "Tank Name",
     dataIndex: "tank_name",
     key: "tank_name",
-    width: 300,
+    width: 200,
     filters: generateOptions(data, "tank_name"),
     onFilter: (value, record) => record.tank_name.indexOf(value) === 0
   },
@@ -36,7 +36,7 @@ const defaults = data => [
     key: "tank_base",
     filters: generateOptions(data, "tank_base"),
     onFilter: (value, record) => record.tank_base.indexOf(value) === 0,
-    width: 300
+    width: 200
   },
   {
     title: "Product Name",
@@ -60,7 +60,7 @@ const defaults = data => [
     key: "tank_density",
     sorter: (a, b) => a.tank_density - b.tank_density,
     sortDirections: ["descend", "ascend"],
-    width: 300,
+    width: 150,
     render: text => <span>{text === "" ? `${text}` : `${text} kg/m3`}</span>
   },
   {
@@ -69,7 +69,7 @@ const defaults = data => [
     key: "tank_dtol_volume",
     sorter: (a, b) => a.tank_dtol_volume - b.tank_dtol_volume,
     sortDirections: ["descend", "ascend"],
-    width: 400,
+    width: 200,
     render: text => <span>{text === "" ? `${text}` : `${text} Vol`}</span>
   },
   {
@@ -78,7 +78,7 @@ const defaults = data => [
     key: "tank_dtol_percent",
     sorter: (a, b) => a.tank_dtol_percent - b.tank_dtol_percent,
     sortDirections: ["descend", "ascend"],
-    width: 400,
+    width: 200,
     render: text => <span>{text === "" ? `${text}` : `${text} %`}</span>
   },
   {
@@ -87,7 +87,7 @@ const defaults = data => [
     key: "tank_mtol_volume",
     sorter: (a, b) => a.tank_mtol_volume - b.tank_mtol_volume,
     sortDirections: ["descend", "ascend"],
-    width: 450,
+    width: 200,
     render: text => <span>{text === "" ? `${text}` : `${text} Vol`}</span>
   },
   {
@@ -96,21 +96,21 @@ const defaults = data => [
     key: "tank_mtol_percent",
     sorter: (a, b) => a.tank_mtol_percent - b.tank_mtol_percent,
     sortDirections: ["descend", "ascend"],
-    width: 450,
+    width: 200,
     render: text => <span>{text === "" ? `${text}` : `${text} %`}</span>
   },
   {
     title: "Adaptive Arm Priority",
     dataIndex: "tank_afc_priority",
     key: "tank_afc_priority",
-    width: 350,
+    width: 250,
     render: text => <span>{text}</span>
   },
 
   {
     title: "Flow Rates",
     dataIndex: "tank_max_flow",
-    width: 600,
+    width: 400,
     render: levels => (
       <span>
         {levels.map(levels => (

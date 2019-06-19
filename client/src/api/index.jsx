@@ -7,6 +7,7 @@ import * as folioSummary from "./folioSummary";
 import * as personnel from "./personnel";
 import * as logicalPrinters from "./logicalPrinters";
 import * as physicalPrinters from "./physicalPrinters";
+import * as journal from "./journal";
 import api from "./api";
 
-export { tanks, baseProducts, adaptiveFlow, stockManagement, customerCategories, api, folioSummary, personnel, logicalPrinters, physicalPrinters };
+export { tanks, journal, baseProducts, adaptiveFlow, stockManagement, customerCategories, api, folioSummary, personnel, logicalPrinters, physicalPrinters };

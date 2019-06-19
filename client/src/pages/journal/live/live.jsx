@@ -1,57 +1,52 @@
 import React, { Component } from "react";
-import { Timeline } from "antd";
 import axios from "axios";
-import { api } from "../../../api";
-import moment from "moment";
+import { search } from "../../../utils";
+import { journal } from "../../../api";
+import { Filter, DataTable, Download } from "../../../components";
+import columns from "./columns";
 
-export default class LiveJournal extends Component {
+export default class Live extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: null,
-      isMounted: false
+      data: [],
+      value: "",
+      isLoading: true
     };
   }
 
-  fetchLiveJournal() {
-    axios.get(`https://${api}/api/journal/read.php`).then(res => {
-      if (this.state.isMounted) {
+  handleFetch = () => {
+    axios.all([journal.readJournal()]).then(
+      axios.spread(journal => {
         this.setState({
-          data: res.data.records
+          data: journal.data.records
         });
-      }
+      })
+    );
+  };
+
+  handleSearch = query => {
+    const { value } = query.target;
+    this.setState({
+      filtered: search(value, this.state.data),
+      value
     });
-  }
+  };
 
   componentDidMount() {
-    this.setState({ isMounted: true });
-
-    this.fetchLiveJournal();
-
-    this.interval = setInterval(() => {
-      this.fetchLiveJournal();
-    }, 1000);
-  }
-
-  componentWillUnmount() {
-    this.setState({ isMounted: false });
-    clearInterval(this.interval);
+    this.handleFetch();
   }
 
   render() {
-    const { data } = this.state;
+    const { data, filtered, value } = this.state;
+    const { config } = this.props;
+    const results = !!filtered ? filtered : data;
     return (
-      <Timeline className="timeline-container" pending={!!data ? "Logging..." : "Fetching..."} reverse>
-        {!!data &&
-          data.map((item, index) => (
-            <Timeline.Item key={index}>
-              <p>
-                <span>Date/Time: </span> {moment(item.gen_date.slice(0, -6)).format("DD/MM/YYYY h:mm:ss A")} ─ <span>Event: </span> {item.msg_event} ─ <span>Detail: </span>{" "}
-                {item.message}
-              </p>
-            </Timeline.Item>
-          ))}
-      </Timeline>
+      <div>
+        <Filter value={value} search={this.handleSearch} loading={false} />
+        <Download data={data} type={"base_products"} style={{ float: "right" }} loading={false} />
+        <DataTable isLoading={false} rowKey="seq" columns={columns(results, config)} data={results} />
+      </div>
     );
   }
 }

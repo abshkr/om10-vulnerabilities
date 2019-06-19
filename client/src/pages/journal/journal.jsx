@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import auth from "../../utils/auth";
-import LiveJournal from "./live";
-import HistoricalJournal from "./historical";
-import Page from "../../components/page";
-import Container from "../../components/container";
+
+import Live from "./live";
+import auth from "../../auth";
 import { Tabs, Icon } from "antd";
+import Historical from "./historical";
+import { Page } from "../../components";
 
 import "./journal.css";
 
@@ -12,35 +12,34 @@ const TabPane = Tabs.TabPane;
 
 class Journal extends Component {
   render() {
+    const { configuration } = this.props;
     return (
       <Page page={"Reports"} name={"Journal"} isLoading={false} block>
-        <Container>
-          <Tabs defaultActiveKey="1">
-            <TabPane
-              style={{ marginBottom: 30 }}
-              tab={
-                <span>
-                  <Icon type="sync" />
-                  Live
-                </span>
-              }
-              key="1"
-            >
-              <LiveJournal />
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <Icon type="read" />
-                  Historical
-                </span>
-              }
-              key="2"
-            >
-              <HistoricalJournal />
-            </TabPane>
-          </Tabs>
-        </Container>
+        <Tabs defaultActiveKey="1" style={{ padding: 10 }} tabPosition="left">
+          <TabPane
+            className="live-table"
+            tab={
+              <span>
+                <Icon type="sync" />
+                Live
+              </span>
+            }
+            key="1"
+          >
+            <Live config={configuration} />
+          </TabPane>
+          <TabPane
+            tab={
+              <span>
+                <Icon type="read" />
+                Historical
+              </span>
+            }
+            key="2"
+          >
+            <Historical config={configuration} />
+          </TabPane>
+        </Tabs>
       </Page>
     );
   }

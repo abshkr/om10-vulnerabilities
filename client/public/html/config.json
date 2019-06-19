@@ -1,5 +1,7 @@
 {
   "version": "8.20.1",
+  "defaultTimeFormat": "YYYY-MM-DD HH:mm:ss:SSSSSSS",
+  "dateTimeFormat": "DD/MM/YYYY h:mm:ss A",
   "features": {
     "adaptiveFlowControl": true
   },
@@ -54,9 +56,9 @@
       "base_class_dens_hi": true,
       "base_class_temp_lo": true,
       "base_class_temp_hi": true,
-      "base_corr_mthd_name": true,
-      "base_ref_temp_spec_name": true,
-      "base_limit_preset_ht": true
+      "base_corr_mthd_name": false,
+      "base_ref_temp_spec_name": false,
+      "base_limit_preset_ht": false
     },
 
     "adaptiveFlowControl": {
@@ -73,6 +75,23 @@
       "current_flow_rate": true,
       "loaded_qty": true,
       "preset": true
+    },
+
+    "folioSummary": {
+      "closeout_nr": true,
+      "closeout_name": true,
+      "prev_closeout_date": true,
+      "closeout_date": true,
+      "status": true,
+      "base_prod_group": true,
+      "user_code": true,
+      "last_chg_time": true
+    },
+
+    "journal": {
+      "gen_date": true,
+      "msg_event": true,
+      "message": true
     }
   }
 }

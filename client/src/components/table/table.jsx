@@ -63,7 +63,7 @@ class DataTable extends React.Component {
 
     return (
       <Table
-        size="middle"
+        size="small"
         bordered
         loading={{
           indicator: loader,
