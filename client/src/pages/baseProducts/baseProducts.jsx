@@ -32,7 +32,7 @@ class BaseProducts extends Component {
       centered: true,
       width: 720,
       icon: !!object ? "edit" : "form",
-      content: <Forms value={object} refresh={this.getBaseProducts} baseProducts={this.state.baseProducts} profile={this.props.configuration} data={data} />,
+      content: <Forms value={object} refresh={this.handleFetch} baseProducts={this.state.baseProducts} profile={this.props.configuration} data={data} />,
       okButtonProps: {
         style: { display: "none" }
       }
@@ -54,7 +54,7 @@ class BaseProducts extends Component {
     });
   };
 
-  getBaseProducts = () => {
+  handleFetch = () => {
     this.setState({
       isLoading: true
     });
@@ -71,7 +71,7 @@ class BaseProducts extends Component {
           });
         })
       )
-      .catch(function(error) {
+      .catch(error => {
         notification.error({
           message: error.message,
           description: "Failed to make the request."
@@ -80,7 +80,7 @@ class BaseProducts extends Component {
   };
 
   componentDidMount() {
-    this.getBaseProducts();
+    this.handleFetch();
   }
 
   render() {
@@ -92,9 +92,11 @@ class BaseProducts extends Component {
       <Page page={"Gantry"} name={name} block={true}>
         <Container>
           <Filter value={value} search={this.handleSearch} loading={isLoading} />
-          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
+          <Button shape="round" type="primary" icon="reload" style={{ float: "right" }} onClick={this.handleFetch} loading={isLoading} />
+          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right", marginRight: 5 }} onClick={this.handleResize} loading={isLoading} />
+
           <Download data={data} type={"base_products"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
-          <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
+          <Button shape="round" type="primary" icon="experiment" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} loading={isLoading}>
             Create Base Product
           </Button>
 

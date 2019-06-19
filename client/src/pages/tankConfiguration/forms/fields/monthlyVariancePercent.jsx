@@ -7,6 +7,15 @@ export default class MonthlyVariancePercent extends Component {
     if (value && !_.isInteger(parseInt(value))) {
       callback("This value must be a number.");
     }
+
+    if (value && parseInt(value) < 0) {
+      callback("Percentage must be above 0.");
+    }
+
+    if (value && parseInt(value) > 100) {
+      callback("Percentage must be below 100.");
+    }
+
     callback();
   };
 
