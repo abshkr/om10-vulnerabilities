@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Breadcrumbs - Init 1`] = `
+<div
+  className="breadcrumbs"
+>
+  <div
+    className="ant-page-header"
+  >
+    <div
+      className="ant-breadcrumb"
+    >
+      <span>
+        <span
+          className="ant-breadcrumb-link"
+        >
+          <a
+            href="#/"
+          >
+            OMEGA 5000
+          </a>
+        </span>
+        <span
+          className="ant-breadcrumb-separator"
+        >
+          /
+        </span>
+      </span>
+      <span>
+        <span
+          className="ant-breadcrumb-link"
+        >
+          <a
+            href="#/first"
+          />
+        </span>
+        <span
+          className="ant-breadcrumb-separator"
+        >
+          /
+        </span>
+      </span>
+      <span>
+        <span
+          className="ant-breadcrumb-link"
+        >
+          <span />
+        </span>
+        <span
+          className="ant-breadcrumb-separator"
+        >
+          /
+        </span>
+      </span>
+    </div>
+  </div>
+</div>
+`;

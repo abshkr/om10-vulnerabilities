@@ -1,3 +1,5 @@
+tank.php is the latest example
+
 https://10.1.10.66/api/config/getenv.php
 
 //This is the sample of all the php code
@@ -62,8 +64,8 @@ https://10.1.10.66/api/pages/physical_printer/create.php?prntr=P01&sys_prntr=pri
 https://10.1.10.66/api/pages/physical_printer/update.php?prntr=P01&sys_prntr=print99&prntr_area=3&prntr_lock=N&area_name=ON_SITE
 https://10.1.10.66/api/pages/physical_printer/delete.php?prntr=P01&sys_prntr=printer2_rpt&prntr_area=2&prntr_lock=Y
 
-https://10.1.10.66/api/pages/journal/read.php
-https://10.1.10.66/api/pages/journal/read.php?start_num=769504&end_num=769506&region_code=ENG
+//https://10.1.10.66/api/pages/journal/read.php
+https://10.1.10.66/api/pages/journal/read.php?start_date=2019-05-25%2014:11&end_date=2019-05-26%2014:11&target_str=Log&types=SYSTEM:CONF
 https://10.1.10.66/api/pages/journal/current_seq.php
 https://10.1.10.66/api/pages/journal/types.php
 https://10.1.10.66/api/pages/journal/search.php?start_date=2018-11-25%2014:11&end_date=2018-11-26%2014:11&target_str=Log&types=SYSTEM:CONF&start_num=1&end_num=10
