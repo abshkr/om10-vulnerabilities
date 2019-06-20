@@ -7,6 +7,15 @@ export default class DailyVariancePercent extends Component {
     if (value && !_.isInteger(parseInt(value))) {
       callback("This value must be a number.");
     }
+
+    if (value && parseInt(value) < -100) {
+      callback("Percentage must be above -100.");
+    }
+
+    if (value && parseInt(value) > 100) {
+      callback("Percentage must be below 100.");
+    }
+
     callback();
   };
 

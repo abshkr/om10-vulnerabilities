@@ -154,3 +154,7 @@
 .ant-table-thead > tr > th {
   background-color: rgb(251, 251, 251);
 }
+
+.ant-calendar-ok-btn {
+  color: white !important;
+}

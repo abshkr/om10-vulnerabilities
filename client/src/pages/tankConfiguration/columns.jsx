@@ -19,6 +19,7 @@ const defaults = data => [
     dataIndex: "tank_code",
     key: "tank_code",
     fixed: "left",
+    sorter: (a, b) => b.tank_code - a.tank_code,
     // eslint-disable-next-line
     render: text => <a href="#">{text}</a>
   },

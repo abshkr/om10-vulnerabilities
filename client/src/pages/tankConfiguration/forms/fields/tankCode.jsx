@@ -15,7 +15,7 @@ export default class TankCode extends Component {
   handleTankCodeValidation = (rule, value, callback) => {
     const match = _.find(this.props.data, ["tank_code", value]);
 
-    if (value && !!match) {
+    if (value && !!match && !this.props.value) {
       callback("This Tank Code already exists.");
     }
 

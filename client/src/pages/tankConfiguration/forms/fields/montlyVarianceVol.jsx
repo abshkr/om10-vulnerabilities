@@ -7,6 +7,11 @@ export default class MonthlyVarianceVol extends Component {
     if (value && !_.isInteger(parseInt(value))) {
       callback("This value must be a number.");
     }
+
+    if (value && value.length > 126) {
+      callback("Value must be under 126 characters.");
+    }
+
     callback();
   };
 

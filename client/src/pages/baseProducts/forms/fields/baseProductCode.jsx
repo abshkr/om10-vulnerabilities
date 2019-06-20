@@ -15,9 +15,10 @@ export default class BaseProductCode extends Component {
   handleCodeValidation = (rule, value, callback) => {
     const match = _.find(this.props.data, ["base_code", value]);
 
-    if (value && !!match) {
+    if (value && !!match && !this.props.value) {
       callback("This Base Code already exists.");
     }
+
     callback();
   };
 

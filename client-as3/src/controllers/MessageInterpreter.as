@@ -175,9 +175,23 @@ package controllers
 				html+= "<b>Rev Load End Date & Time	-2 :</b><font color=\"#FF0000\"> " 	+ xml.IDOC.E1OIJTKTH_I.E1OIJTKTI_I.TIME_ST_LED_OT+"</font>"+ "<br>";
 				html+= "<b>Truck/Vessel/Barge/Rail No:</b><font color=\"#FF0000\"> " 	+ xml.IDOC.E1OIJTKTH_I.E1OIJTKTI_I["_-DS1_-TSW_C_GEXTDEL"].OIC_PTRIP+"</font>"+ "<br>";
 				html+= "<b>External BOL Number:</b><font color=\"#FF0000\"> " 			+ xml.IDOC.E1OIJTKTH_I.E1OIJTKTI_I["_-DS1_-TSW_C_GEXTDEL"].OID_EXTBOL+"</font>"+ "<br>";
-				html+= "<b>Unit of Measurement:</b><font color=\"#FF0000\"> " 			+ xml.IDOC.E1OIJTKTH_I.E1OIJTKTI_I.E1OIJTKTI_O2.MSEHI+"</font>"+ "<br>";
-				html+= "<b>Additional Quantity:</b><font color=\"#FF0000\"> " 			+ xml.IDOC.E1OIJTKTH_I.E1OIJTKTI_I.E1OIJTKTI_O2.ADQNT+"</font>"+ "<br>";
-				html+= "<b>QCI Manual Entry:</b><font color=\"#FF0000\"> " 				+ xml.IDOC.E1OIJTKTH_I.E1OIJTKTI_I.E1OIJTKTI_O2.MANEN+"</font>"+ "<br>";
+
+				html+="  "+"<br>";
+				
+				var categoryList:XMLList = xml.IDOC.E1OIJTKTH_I.E1OIJTKTI_I.E1OIJTKTI_O2
+				
+				for each(var category:XML in categoryList)
+				{	
+			
+					html+= "<b>Unit of Measurement:</b><font color=\"#FF0000\"> " 			+ category.MSEHI+"</font>"+ "<br>";
+					html+= "<b>Additional Quantity:</b><font color=\"#FF0000\"> " 			+ category.ADQNT+"</font>"+ "<br>";
+					html+= "<b>QCI Manual Entry:</b><font color=\"#FF0000\"> " 				+ category.MANEN+"</font>"+ "<br>";
+					html+="  "+"<br>";
+				}
+				
+				html+="  "+"<br>";
+				
+	
 				html+= "<b>QCI Manual Indicator:</b><font color=\"#FF0000\"> " 			+ xml.IDOC.E1OIJTKTH_I.E1OIJTKTI_I.E1OIJTKTI_O1_1.QCI_MAN_IND+"</font>"+ "<br>";
 				html+= "<b>Density at Standard 15 C:</b><font color=\"#FF0000\"> " 		+ xml.IDOC.E1OIJTKTH_I.E1OIJTKTI_I.E1OIJTKTI_O1_1.BDICH+"</font>"+ "<br>";
 				html+= "<b>UOM of Density at 15:</b><font color=\"#FF0000\"> " 			+ xml.IDOC.E1OIJTKTH_I.E1OIJTKTI_I.E1OIJTKTI_O1_1.BDICHEH+"</font>"+ "<br>";
