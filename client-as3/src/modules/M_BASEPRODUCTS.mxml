@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009"
-		  xmlns:s="library://ns.adobe.com/flex/spark"
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  xmlns:views="views.*"
 		  xmlns:flexiframe="com.google.code.flexiframe.*"
-		  width="100%" height="100%" implements="IModuleInterface" >
+		  xmlns:views="views.*"
+		  implements="IModuleInterface"
+		  width="100%" height="100%" >
 	
 	<s:states>
-		<s:State name="normal"/>
 		<s:State name="widget"/>
+		<s:State name="normal"/>
 	</s:states>
 	
 	<fx:Script>
@@ -16,9 +17,11 @@
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
 			
-			[Bindable] private var _url:String = "/html/base-products";
+			[Bindable] private var _url:String;
 			
 			private var callback:Function;
+			
+			public var frme:Object=null;
 			
 			public function setCallback(func:Function): void
 			{
@@ -27,13 +30,7 @@
 			
 			public function setState(value:String): void
 			{
-				currentState = value;
-				if (value == 'normal')
-				{
-					width=FlexGlobals.topLevelApplication.main.widgetList.width-30;
-					height=FlexGlobals.topLevelApplication.main.widgetList.height-30;
-					_url = "/html/tank-configurations";
-				}
+				view.currentState = value;
 			}
 			
 			public function setSize(w:int, h:int): void
@@ -44,27 +41,19 @@
 			
 			public function setSecurity(isRead:Boolean=true, isUpdate:Boolean=false, isCreate:Boolean=false, isDelete:Boolean=false, isPassword:Boolean=false): void
 			{
-				//view.readOnly = isRead;
-				//view.canUpdate = isCreate;
-				//view.canCreate = isCreate;
-				//view.canDelete = isDelete;
-				//view.hasPassword = isPassword;
-			}
-			
-			public function setFramePosition(): void
-			{
-				frme.invalidateDisplayList();
+				view.readOnly = isRead;
+				view.canUpdate = isUpdate;
+				view.canCreate = isCreate;
+				view.canDelete = isDelete;
+				view.hasPassword = isPassword;
 			}
 			
 			protected function view_creationCompleteHandler(event:FlexEvent):void
-			{	
-				//width = view.width;
-				//height = view.height;
+			{
+				if (callback != null) callback();
 			}
 			
 		]]>
 	</fx:Script>
-	<s:Group top="4" left="4" bottom="4" right="4" includeIn="normal">
-		<flexiframe:IFrame id="frme" width="100%" height="100%" contentBackgroundAlpha="0" source="{_url}"/> 	
-	</s:Group>
+	<views:v_BaseProducts id="view" creationComplete="view_creationCompleteHandler(event)"/>
 </s:Module>
