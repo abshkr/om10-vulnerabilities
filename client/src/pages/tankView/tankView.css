@@ -37,9 +37,12 @@
 }
 
 .titles {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 10px;
   text-align: center;
   font-weight: bold;
-  margin-top: 5px;
+  margin-top: 8px;
 }
 
 .tank-body {
@@ -53,6 +56,30 @@
   justify-content: space-around;
 }
 
-.tank-filter {
-  height: 30px;
+.waveText {
+  z-index: 999 !important;
+  top: 250px !important;
+}
+
+.waterWave .text {
+  position: absolute;
+  left: 0;
+  top: 32px;
+  text-align: center;
+  width: 100%;
+}
+
+.waterWave .text span {
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.waterWave .text h4 {
+  line-height: 32px;
+  font-size: 24px;
+}
+
+.waterWave .waterWaveCanvasWrapper {
+  transform: scale(0.5);
+  transform-origin: 0 0;
 }

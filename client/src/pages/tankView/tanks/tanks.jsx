@@ -1,8 +1,16 @@
 import React from "react";
 import { WaterWave } from "ant-design-pro/lib/Charts";
-import { Badge, Modal } from "antd";
-import status from "./status";
+import { Badge, Modal, Tag } from "antd";
 import Tank from "./tank";
+
+const STATUS = {
+  "In Service - Not used": "",
+  "Out of Service": "blue",
+  "In Service – Working": "gold",
+  "In Service – Loading": "green",
+  "In Service – Settling": "orange",
+  "In Service – Receiving": "purple"
+};
 
 const handleClick = tank => {
   Modal.info({
@@ -22,12 +30,12 @@ const Tanks = ({ results }) => {
           return (
             <div key={index} className="tank" disabled onClick={() => handleClick(item)}>
               <div className="titles">
-                <span> {item.tank_code} </span>
+                <span>{item.tank_code}</span>
+                <Tag color={STATUS[item.tank_status_name]}>{item.tank_status_name}</Tag>
               </div>
 
               <div className="tank-body">
                 <WaterWave
-                  color={status[item.tank_status_name]}
                   height={180}
                   title={item.tank_base_name}
                   percent={Math.round((item.tank_cor_vol / item.tank_ullage) * 100, 2) < 100 ? Math.round((item.tank_cor_vol / item.tank_ullage) * 100, 2) : 100}

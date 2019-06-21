@@ -29,6 +29,7 @@ class TankStatus extends Component {
       title: !!object ? `Editing (${object.tank_code} / ${object.tank_name})` : "Create",
       centered: true,
       width: 720,
+      icon: !!object ? "edit" : "form",
       content: <Forms value={object} refresh={this.getTanks} />,
       okButtonProps: {
         style: { display: "none" }
@@ -36,7 +37,7 @@ class TankStatus extends Component {
     });
   };
 
-  getTanks = () => {
+  handleFetch = () => {
     this.setState({
       isLoading: true
     });
@@ -65,7 +66,7 @@ class TankStatus extends Component {
     });
   };
 
-  searchObjects = query => {
+  handleSearch = query => {
     const { value } = query.target;
     this.setState({
       filtered: search(value, this.state.data),
@@ -74,20 +75,20 @@ class TankStatus extends Component {
   };
 
   componentDidMount() {
-    this.getTanks();
+    this.handleFetch();
   }
 
   render() {
     const { data, isLoading, filtered, value, resize } = this.state;
     const results = !!filtered ? filtered : data;
-    const name = "Tank Status";
     return (
-      <Page page={"Gantry"} name={name} block={true}>
+      <Page page={"Gantry"} name={"Tank Status"} block={true}>
         <Container>
-          <Filter value={value} search={this.searchObjects} />
-          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
-          <Download data={data} type={"Tank Status"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
-          <DataTable resize={resize} rowKey="tank_code" columns={columns(results)} data={results} isLoading={isLoading} scroll={5000} click={this.handleClick} />
+          <Filter value={value} search={this.handleSearch} />
+          <Button shape="round" type="primary" icon="reload" style={{ float: "right" }} onClick={this.handleFetch} loading={isLoading} />
+          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right", marginRight: 5 }} onClick={this.handleResize} loading={isLoading} />
+          <Download data={data} type={"tank_status"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
+          <DataTable resize={resize} rowKey="tank_code" columns={columns(results)} data={results} isLoading={isLoading} scroll={4000} click={this.handleClick} />
         </Container>
       </Page>
     );
