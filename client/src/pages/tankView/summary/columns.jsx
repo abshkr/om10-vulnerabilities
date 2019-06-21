@@ -1,3 +1,5 @@
+import React from "react";
+
 const columns = [
   {
     title: "Base Product Name",
@@ -10,24 +12,28 @@ const columns = [
     key: "tank_count"
   },
   {
-    title: "Total Capacity (ML)",
+    title: "Total Capacity",
     dataIndex: "total_capacity",
-    key: "total_capacity"
+    key: "total_capacity",
+    render: text => <span>{text} ML</span>
   },
   {
-    title: "Observed Quantity (ML)",
+    title: "Observed Quantity",
     dataIndex: "observed_quantity",
-    key: "observed_quantity"
+    key: "observed_quantity",
+    render: text => <span>{text} ML</span>
   },
   {
-    title: "Ullage (ML)",
+    title: "Ullage",
     dataIndex: "total_ullage",
-    key: "total_ullage"
+    key: "total_ullage",
+    render: text => <span>{text} ML</span>
   },
   {
-    title: "Full (%)",
+    title: "Full",
     dataIndex: "total_fill",
-    key: "total_fill"
+    key: "total_fill",
+    render: text => <span>{text} %</span>
   }
 ];
 
