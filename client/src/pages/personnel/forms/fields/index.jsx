@@ -9,5 +9,6 @@ import DriverLicence from "./driverLicense";
 import Status from "./status";
 import Comment from "./comment";
 import ExpiryDates from "./expiryDates";
+import Lock from "./lock";
 
-export { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, ExpiryDates };
+export { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, ExpiryDates, Lock };

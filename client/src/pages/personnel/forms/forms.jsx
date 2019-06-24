@@ -1,8 +1,16 @@
 import React, { Component } from "react";
 import { Form, Button, Tabs, Modal } from "antd";
-import { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, ExpiryDates } from "./fields";
+import { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, ExpiryDates, Lock } from "./fields";
 
 class PersonnelForm extends Component {
+  handleUpdate = () => {
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log(values);
+      }
+    });
+  };
+
   showDeleteConfirm = () => {
     Modal.confirm({
       title: "Are you sure you want to delete this Personnel?",
@@ -19,7 +27,8 @@ class PersonnelForm extends Component {
       okText: "Yes",
       okType: "primary",
       cancelText: "No",
-      centered: true
+      centered: true,
+      onOk: this.handleUpdate
     });
   };
 
@@ -56,7 +65,9 @@ class PersonnelForm extends Component {
             <TabPane tab="Expiry Dates" key="2" style={{ height: 550, overflowY: "scroll", paddingRight: 20 }}>
               <ExpiryDates decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} />
             </TabPane>
-            <TabPane tab="Area Access Control" key="3" />
+            <TabPane tab="Area Access Control" key="3">
+              <Lock decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} />
+            </TabPane>
             <TabPane tab="Reset Password" key="4" />
           </Tabs>
         </Form>

@@ -88,6 +88,23 @@
       "last_chg_time": true
     },
 
+    "personnel": {
+      "per_code": true,
+      "per_name": true,
+      "cmpy_code": true,
+      "cmpy_name": true,
+      "per_auth": true,
+      "per_licence_no": true,
+      "per_last_dmy": true,
+      "kya_psnl_name": true,
+      "per_lock": true,
+      "user_status_flag": true,
+      "per_department": true,
+      "per_email": true,
+      "per_last_modified": true,
+      "user_last_reason": true
+    },
+
     "journal": {
       "gen_date": true,
       "msg_event": true,
