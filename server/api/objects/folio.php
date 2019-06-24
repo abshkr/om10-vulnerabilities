@@ -74,6 +74,94 @@ class Folio extends CommonClass
         return $result;
     }
 
+    //calculates an array of vcf
+    public function calc_vcfs()
+    {
+        Utilities::sanitize($this);
+
+        session_start();
+
+        $vcf_response = array();
+        foreach ($this as $key => $value) {
+            // write_log($key, __FILE__, __LINE__);
+            // write_log(json_encode($value), __FILE__, __LINE__);
+            if (!is_numeric($key)) {
+                continue;
+            }
+
+            $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/cgi-bin/en/calcvcf.cgi?";
+            foreach ($value as $cgi_key => $cgi_value) {
+                $url .= $cgi_key . "=" . rawurlencode(strip_tags($cgi_value)) . "&";
+            }
+
+            if (isset($_SESSION["SESSION"])) {
+                $url .= "sess_id=" . $_SESSION["SESSION"];
+            }
+            write_log(sprintf("%s::%s(), url:%s", __CLASS__, __FUNCTION__, $url),
+                __FILE__, __LINE__);
+
+            $result = @file_get_contents($url);
+            if ($result === false) {
+                $e = error_get_last();
+                write_log($e['message'], __FILE__, __LINE__);
+            }
+            // write_log(json_encode($result), __FILE__, __LINE__);
+
+            $pattern = "REAL_VCF>";
+            $pattern_len = strlen($pattern);
+            $pos_1 = strpos($result, $pattern);
+            $pos_2 = strpos($result, "<", $pos_1);
+            $real_cvf = substr($result, $pos_1 + $pattern_len, $pos_2 - $pos_1 - $pattern_len);
+            // write_log($real_cvf, __FILE__, __LINE__);
+
+            $pattern = "REAL_LITRE>";
+            $pattern_len = strlen($pattern);
+            $pos_1 = strpos($result, $pattern);
+            $pos_2 = strpos($result, "<", $pos_1);
+            $real_litre = substr($result, $pos_1 + $pattern_len, $pos_2 - $pos_1 - $pattern_len);
+
+            $pattern = "REAL_LITRE15>";
+            $pattern_len = strlen($pattern);
+            $pos_1 = strpos($result, $pattern);
+            $pos_2 = strpos($result, "<", $pos_1);
+            $real_litre15 = substr($result, $pos_1 + $pattern_len, $pos_2 - $pos_1 - $pattern_len);
+
+            $pattern = "REAL_KG>";
+            $pattern_len = strlen($pattern);
+            $pos_1 = strpos($result, $pattern);
+            $pos_2 = strpos($result, "<", $pos_1);
+            $real_kg = substr($result, $pos_1 + $pattern_len, $pos_2 - $pos_1 - $pattern_len);
+
+            $item = new stdClass();
+            $item->real_cvf = $real_cvf;
+            $item->real_litre = $real_litre;
+            $item->real_litre15 = $real_litre15;
+            $item->real_kg = $real_kg;
+
+            array_push($vcf_response, $item);
+        }
+
+        // $cgi_response = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi");
+        // write_log(json_encode($cgi_response), __FILE__, __LINE__);
+
+        // $result = array();
+        // $result["records"] = array();
+
+        http_response_code(200);
+        // if (strpos($cgi_response, "<Result>0<")) {
+        //     $result["result"] = 0;
+        //     $result["message"] = "PDS message sent";
+        // } else {
+        //     $result["result"] = -1;
+        //     $result["message"] = $cgi_response;
+        // }
+
+        echo json_encode($vcf_response, JSON_PRETTY_PRINT);
+
+        //return an arrary to stop caller to do follow-up work
+        return $vcf_response;
+    }
+
     public function calc_vcf()
     {
         Utilities::sanitize($this);

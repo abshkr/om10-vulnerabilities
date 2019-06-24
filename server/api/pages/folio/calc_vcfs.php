@@ -1,10 +1,9 @@
 <?php
-
 // required headers
 include_once '../../shared/header.php';
 
 // include database and object files
 include_once '../../config/database.php';
-include_once '../../objects/om_journal.php';
+include_once '../../objects/folio.php';
 
-Utilities::read('OMJournal', $method = 'search', $filter = true);
+Utilities::read('Folio', "calc_vcfs", $filter = true);

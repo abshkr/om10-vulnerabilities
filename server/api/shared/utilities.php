@@ -86,7 +86,7 @@ class Utilities
 
         if ($filter) {
             $data = json_decode(file_get_contents("php://input"));
-            // write_log(json_encode($_dataGET), __FILE__, __LINE__);
+            // write_log(json_encode($data), __FILE__, __LINE__);
             if ($data) {
                 foreach ($data as $key => $value) {
                     $object->$key = $value;
@@ -294,7 +294,9 @@ class Utilities
         // write_log(json_encode($object), __FILE__, __LINE__);
 
         try {
-            $object->mandatory_fields_check();
+            if (method_exists($object, "mandatory_fields_check")) {
+                $object->mandatory_fields_check();
+            }
         } catch (NullableException $e) {
             // http_response_code(422);
             http_response_code(200);
