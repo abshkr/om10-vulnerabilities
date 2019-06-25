@@ -1,0 +1,160 @@
+.ant-form-item label {
+  font-weight: 450;
+  margin-bottom: 0px !important;
+}
+
+.anticon {
+  vertical-align: 1px !important;
+}
+
+.ant-table-tbody > tr > td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ant-table-thead > tr > th {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ant-table-thead > tr > th,
+.ant-table-tbody > tr > td {
+  text-align: center;
+  max-width: 100px;
+  min-width: 100px;
+}
+
+.ant-btn-primary.disabled,
+.ant-btn-primary[disabled],
+.ant-btn-primary.disabled:hover,
+.ant-btn-primary[disabled]:hover,
+.ant-btn-primary.disabled:focus,
+.ant-btn-primary[disabled]:focus,
+.ant-btn-primary.disabled:active,
+.ant-btn-primary[disabled]:active,
+.ant-btn-primary.disabled.active,
+.ant-btn-primary[disabled].active {
+  color: #c9c9c9;
+  background-color: rgba(0, 0, 0, 0.021) !important;
+  border: 1px solid transparent !important;
+}
+
+.ant-drawer-close {
+  color: white;
+}
+
+.ant-drawer-close-x {
+  margin-top: 8px;
+}
+
+.ant-input-disabled {
+  background-color: #f5f5f56b;
+}
+
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.ant-btn-round {
+  font-size: 14px !important;
+}
+
+.ant-btn-primary {
+  background-color: #fff;
+  border: 1px solid #43454a1f;
+  color: #68a4ec;
+  box-shadow: none;
+  font-size: 14px !important;
+}
+
+.ant-btn-primary:hover {
+  background-color: #68a4ec;
+}
+
+.ant-btn-primary:active,
+.ant-btn-primary.active {
+  background-color: #68a4ec;
+  border: 1px solid #43454a1f;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background-color: #68a4ec;
+  border: 1px solid #43454a1f;
+}
+
+.ant-notification-notice {
+  margin-right: 32px;
+  box-shadow: 0px 0px 20px 1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #68a3ec28;
+}
+
+.ant-notification-notice-message {
+  color: #36393f;
+}
+
+.ant-form-item {
+  margin-bottom: 0px !important;
+}
+
+.ant-modal-confirm .ant-modal-body {
+  padding: 20px !important;
+  padding-top: 20px !important;
+}
+
+.ant-modal-confirm-body .ant-modal-confirm-content {
+  margin-left: 0px !important;
+}
+
+.ant-tabs-nav .ant-tabs-tab:hover {
+  color: #68a4ec;
+}
+
+.ant-tabs-nav .ant-tabs-tab-active {
+  color: #68a4ec;
+}
+
+.ant-tabs-ink-bar {
+  background-color: #68a4ec;
+}
+
+.ant-checkbox-checked::after {
+  border-color: #68a4ec;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  border-color: #68a4ec;
+  background-color: #68a4ec;
+}
+
+.ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.ant-checkbox:hover .ant-checkbox-inner,
+.ant-checkbox-input:focus + .ant-checkbox-inner {
+  border-color: #68a4ec;
+}
+
+.ant-modal-confirm-info .ant-modal-confirm-body > .anticon {
+  color: #68a4ec;
+}
+
+.ant-pagination-item-active {
+  border-color: #68a4ec;
+}
+
+.ant-table-pagination.ant-pagination {
+  margin: 16px 0px 0px 0px !important;
+}
+
+.ant-modal-confirm-btns .ant-btn {
+  border-radius: 32px !important;
+}
+
+.ant-table-thead > tr > th {
+  background-color: rgb(251, 251, 251);
+}
+
+.ant-calendar-ok-btn {
+  color: white !important;
+}

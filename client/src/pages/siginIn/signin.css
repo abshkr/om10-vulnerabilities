@@ -1,0 +1,104 @@
+.tide {
+  font-weight: bold;
+  font-size: 23px;
+}
+
+.logo {
+  transform: scale(0.8);
+}
+
+.logo-mobile {
+  transform: scale(0.8);
+}
+
+.sign-in {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform: -webkit-translate(-50%, -50%);
+  transform: -moz-translate(-50%, -50%);
+  transform: -ms-translate(-50%, -50%);
+}
+
+.card {
+  font-weight: bold;
+  background-color: #fff;
+  width: 350px;
+  height: 100%;
+  padding: 2px;
+  border-radius: 10px;
+  color: #538aef;
+  text-align: center;
+  box-shadow: 5px 5px 20px 10px rgba(0, 0, 0, 0.06);
+  border: 1px solid #538aef4b;
+}
+
+.forms {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.buttons {
+  margin-top: 10px;
+}
+
+.btn-link {
+  color: rgb(236, 110, 104);
+}
+
+.email-input {
+  margin-bottom: 10px;
+}
+
+::-webkit-input-placeholder {
+  text-align: center;
+  font-weight: bold;
+}
+
+.sign-in-button {
+  background: none;
+  color: #538aef;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  margin-bottom: 20px;
+  height: 30px;
+  width: 70px;
+  border-radius: 5px;
+
+  transition: all 0.3s;
+  border: 1px solid #538aef4b;
+}
+
+.sign-in-button:hover {
+  background-color: rgb(230, 230, 230);
+  border-color: #538aef;
+}
+
+.redux-field {
+  border: none !important;
+}
+
+.sign-in-form-input {
+  height: 33px;
+  width: 250px;
+  color: black;
+  border-radius: 5px !important;
+  background-color: white;
+  font-family: "Economica", sans-serif;
+  border-color: #538aef50;
+  font-weight: bold;
+  text-align: center;
+  transition: all 0.3s;
+  margin: 5px;
+}
+
+.sign-in-form-input:focus {
+  box-shadow: 0 0 5px -1px #538aef;
+  outline: none;
+  border-color: #538aef !important;
+  transition: all 0.3s;
+}

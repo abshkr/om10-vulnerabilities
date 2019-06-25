@@ -1,0 +1,30 @@
+.react-bs-table table td {
+  border-top-width: 0px !important;
+}
+
+.react-bs-table .table-bordered > tbody > tr > td.default-focus-cell {
+  outline: #68a4ec solid 1px !important;
+}
+
+.react-bs-table table td,
+.react-bs-table table th {
+  text-align: center !important;
+}
+
+.react-bs-table table th {
+  font-weight: 600;
+  background-color: #fafafa;
+}
+
+.form-control {
+  text-align: center;
+}
+
+.react-bs-table .table-bordered > thead > tr > td,
+.react-bs-table .table-bordered > thead > tr > th {
+  border-bottom-width: 1px !important;
+}
+
+.react-bs-table-bordered {
+  border-radius: 0px !important;
+}

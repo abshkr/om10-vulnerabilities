@@ -1,0 +1,17 @@
+.footer {
+  height: 30px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid #538aef5b;
+  color: white;
+  text-align: center;
+  padding: 5px;
+}
+
+.footer span {
+  color: #538aef;
+  font-weight: bold;
+  font-size: 13px;
+}
