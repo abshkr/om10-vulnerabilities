@@ -1,0 +1,199 @@
+# are comments
+# rules are defined with a '>' delimited with a '|' for message identifier
+# sub-rules are defined with a '>' without Delimitor
+# message are added to the rule by the '' character, and you can guess the rest.
+################################################################# load spec
+>load_spec_number_of_compartments
+01:Component Number
+03:Number of Drums
+02:Compartment Number
+10:Delivery Number 
+17:Sold to Number 
+17:Ship to Number
+18:Host Product Code
+06:Density
+09:Quantity
+09:Return Quantity
+03:Unit of Measure
+>load_spec|LOAD:SPEC
+16:MESSAGE_TYPE
+08:VERSION_NUMBER
+18:EVENT_DATE_AND_TIME
+06:TERMINAL LOCATION CODE
+02:Filler
+09:Load Number
+10:Scheduled Date
+20:Tanker Code
+20:Equipment Code 1
+20:Equipment Code 2
+20:Equipment Code 3
+20:Equipment Code 4
+20:Equipment Code 5
+08:Supplier Code
+08:Drawer Code
+06:Termination Location Code
+02:Filler
+02:Shift
+20:Seal No
+06:Personal Code
+16:IDOC Number
+18:Expiry Date and Time
+02:Number of Compartments>load_spec_number_of_compartments
+20:Load ID
+################################################################# load order
+>load_order_products
+02:Product Number
+18:Drawer Product code
+03:Unit of Measure
+09:Quantity
+>load_order|LOAD:ORDER
+16:MESSAGE_TYPE
+08:VERSION_NUMBER
+18:EVENT_DATE_AND_TIME
+06:TERMINAL LOCATION CODE
+02:Filler
+09:Load Number
+10:Scheduled Date
+08:Carrier Code
+20:Tanker Code
+20:Equipment Code 1
+20:Equipment Code 2
+20:Equipment Code 3
+20:Equipment Code 4
+20:Equipment Code 5
+08:Supplier Code
+08:Drawer Code
+06:Load location Terminal
+20:Load ID
+16:IDOC Number
+18:Expiry Date and Time 
+17:Sold to Number 
+17:Ship to Number
+02:Number of Products>load_order_products
+################################################################# open order
+>open_order_products
+18:Drawer Product code
+03:Unit of Measure
+09:Quantity
+>open_order|OPEN:ORD
+16:MESSAGE_TYPE
+08:VERSION_NUMBER
+18:EVENT_DATE_AND_TIME
+06:TERMINAL LOCATION CODE
+02:Filler
+08:Supplier Code
+08:Drawer Code
+08:Carrier Code
+09:Order Number
+10:Scheduled Date
+08:Customer Code
+10:Expiry Date 
+08:Customer Delivery Location
+16:IDOC Number
+17:Sold to Number 
+17:Ship to Number
+02:Number of Products>open_order_products
+################################################################# delete order
+>delete_order|LOAD:DELETE
+16:MESSAGE_TYPE
+08:VERSION_NUMBER
+18:EVENT_DATE_AND_TIME
+06:TERMINAL LOCATION CODE
+09:Load Number
+08:Supplier Code
+08:Drawer Code
+16:IDOC Number
+06:Plant Code
+################################################################# LOAD:DETAIL
+>load_detail_compartment_base_product
+10:Base Product Code
+09:Ambient Quantity
+09:Corrected Quantity
+06:Tank Code
+>load_detail_host_product
+18:Product Code
+03:Unit of Measure
+04:Working Temperature
+05:Weighted Av Density
+09:Quantity Loaded
+>load_detail_base_product
+10:Product Code
+03:Unit of Measure
+04:Working Temperature
+05:Weighted Av Density
+09:Quantity Loaded
+>load_detail_compartments
+01:Component number
+03:Number of Drums
+02:Compartment Number
+18:Host Product Code
+09:Ambient Quantity
+09:Correct Quantity
+09:Before Quantity
+08:Exempt No
+10:Delivery Number
+17:Sold to Number
+17:Ship to Number
+02:Number of Base Products>load_detail_compartment_base_product
+>load_detail_meter
+10:Meter Code
+18:Host Product Code
+09:Observed Meter Vol.
+09:Start Meter Reading
+09:End Meter Reading
+10:Base Product Code
+06:Tank Code
+10:Additive Product Code
+06:Additive Tank Code
+08:Additive Quantity
+01:Filler
+>load_detail|LOAD:DETAIL
+16:Message Type
+08:Version Number
+18:Event Date and Time
+08:Site Code
+20:Load ID
+06:Terminal Location Code
+08:Drawer Code
+08:Supplier Code
+08:Carrier Code
+06:Personel Code
+09:Omega Trip Number
+02:Shift Priority
+01:Load Type
+01:Load Completion Method
+08:Delivery Location
+09:Order Number
+09:Load Number
+20:Tanker Code
+20:Equipment Code 1
+20:Equipment Code 2
+20:Equipment Code 3
+20:Equipment Code 4
+20:Equipment Code 5
+12:Load Start Date
+12:Load End Date
+02:Number of Host Products>load_detail_host_product
+02:Number of Base Products>load_detail_base_product
+02:Number of Compartments>load_detail_compartments
+02:Number of Meters>load_detail_meter
+01:Filler
+20:Seal Number
+02:Posting Type
+30:Order Reference Code
+################################################################# ALEAUD:UPLOAD
+>Acknowledgements|ALEAUD:UPLOAD
+16:Message Type
+08:Version Number
+18:Event Date and Time
+06:Site Code
+10:Receiver Port
+02:Receiver Partner Type
+10:Receiving Partner Number
+10:Sender Port
+02:Sender Partner Type
+10:Sender Partner Number
+20:Serialization Key
+16:IDOC Number
+02:IDOC Status
+70:Status Description

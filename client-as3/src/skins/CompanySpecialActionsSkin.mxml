@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+
+    ADOBE SYSTEMS INCORPORATED
+    Copyright 2008 Adobe Systems Incorporated
+    All Rights Reserved.
+
+    NOTICE: Adobe permits you to use, modify, and distribute this file
+    in accordance with the terms of the license agreement accompanying it.
+
+-->
+
+<!--- The default skin class for a Spark SkinnableContainer container.  
+
+     @see spark.components.SkinnableContainer
+        
+      @langversion 3.0
+      @playerversion Flash 10
+      @playerversion AIR 1.5
+      @productversion Flex 4
+-->
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" 
+    xmlns:fb="http://ns.adobe.com/flashbuilder/2009" alpha.disabled="0.5" xmlns:components="components.*" xmlns:companiesservice="services.companiesservice.*">
+	<fx:Metadata>[HostComponent("components.DKI_CompanySpecialActions")]</fx:Metadata>
+	
+	
+	<s:states>
+        <s:State name="normal" />
+        <s:State name="disabled" />
+		<s:State name="reporting" />
+		<s:State name="special" />
+    </s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable] private var headArr:ArrayCollection=new ArrayCollection([{id:'Company Details'},{id:'Reporting Settings'},{id:'Special Actions'}]);
+			
+			protected function tabbar1_changeHandler(event:IndexChangeEvent):void
+			{
+				switch(event.newIndex)
+				{
+					case 0: currentState='normal';
+						break
+					case 1: currentState='reporting';
+						break
+					case 2: currentState='special';
+						break
+				}
+			}
+		]]>
+	</fx:Script>
+    
+    <!--- Defines the appearance of the SkinnableContainer class's background. -->
+    
+    
+    <!--
+        Note: setting the minimum size to 0 here so that changes to the host component's
+        size will not be thwarted by this skin part's minimum size.   This is a compromise,
+        more about it here: http://bugs.adobe.com/jira/browse/SDK-21143
+    -->
+    <!--- @copy spark.components.SkinnableContainer#contentGroup -->
+			
+    <s:Group id="contentGroup" left="50" right="0" top="0" bottom="0" minWidth="0" minHeight="0">
+        <s:Panel id="specialActionsPanel" width="100%" height="600" minHeight="0"
+				 skinClass="skins.WidgetPanelSkin" title="Special Actions" left="100" top="100">
+			<s:layout>
+				<s:VerticalLayout/>
+			</s:layout>
+			<s:BorderContainer borderColor="0x000000" backgroundAlpha="0" cornerRadius="8" width="100%" height="100%">
+				<s:TabBar dataProvider="{headArr}" labelField="id" width="100%" top="-1" left="-1" right="-1" selectedIndex="0" 
+						  change="tabbar1_changeHandler(event)" alpha="0.70"/>
+				<s:HGroup width="100%" paddingTop="15" paddingLeft="30">
+					<s:VGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Load specification vetting flag" width="200" paddingRight="5"/>
+							<components:DKI_DropDownList id="loadeSpecVetting"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Returns entry location for this carrier:"  width="200" paddingRight="5"/>
+							<components:DKI_DropDownList id="carrierLocation"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Host prints documents" width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="hostPrint"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Host communications is up"  width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="hostComs"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Load deletion is logged"  width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="delLogged"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Auto-complete prescheduled loads"  width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="autoComplete"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Ignore carrier for (Pre-)Order loads"  width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="ignoreOrderLoads"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Tankers can be configured automatically"  width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="configAuto"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Tankers can be activated automatically"  width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="activateAuto"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Host Update of Customer Order deletes old details"  width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="hostUpdate"/>
+						</s:HGroup>
+					</s:VGroup>
+					<s:VGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Site handles Product Movement Receipts" width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="siteMovement"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Equipment must be in area of load authorisation" width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="equipmentArea"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Auto tanker configuration for load specs sent from host" width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="autoTankerConfig"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Reconcile previous load when starting new load" width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="reconcilePrevLoad"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Can change drawer of new schedules" width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="canChangeDrawer"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="New loads must have seal number set" width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="newLoadSealSet"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Do load tolerance check for this companay" width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="doLoadTolleranceCheck"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="Do blend tolerance check for this company" width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="doBlendTolleranceCheck"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="All personnel and combo tags must have PIN" width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="comboTagMustHavePin"/>
+						</s:HGroup>
+						<s:HGroup width="100%">
+							<s:Label text="All personnel and combo tags must have PIN" width="200" paddingRight="5"/>
+							<components:DKI_ToggleSwitch id="enablePinExpire"/>
+						</s:HGroup>
+					</s:VGroup>
+				</s:HGroup>
+			</s:BorderContainer>
+			<s:HGroup horizontalAlign="right" verticalAlign="bottom" paddingLeft="5" paddingBottom="5" right="5" width="100%">
+				<s:Spacer width="100%"/>
+				<components:DKI_Button label="{resourceManager.getString('default','OK')}" type="save" click="{hostComponent.isOk()}"/>
+				<components:DKI_Button label="{resourceManager.getString('default','CANCEL')}" type="cancel" click="{hostComponent.isCancel()}"/>
+			</s:HGroup>
+		</s:Panel>
+    </s:Group>
+
+</s:Skin>

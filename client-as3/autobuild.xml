@@ -1,0 +1,1106 @@
+<flex-config>
+   <!-- benchmark: output performance benchmark-->
+   <!-- benchmark usage:
+   <benchmark>boolean</benchmark>
+   -->
+   <compiler>
+      <!-- compiler.accessible: generate an accessible SWF-->
+      <accessible>true</accessible>
+      <!-- compiler.actionscript-file-encoding: specifies actionscript file encoding. If there is no BOM in the AS3 source files, the compiler will use this file encoding.-->
+      <!-- compiler.actionscript-file-encoding usage:
+      <actionscript-file-encoding>string</actionscript-file-encoding>
+      -->
+      <!-- compiler.allow-source-path-overlap: checks if a source-path entry is a subdirectory of another source-path entry. It helps make the package names of MXML components unambiguous.-->
+      <allow-source-path-overlap>true</allow-source-path-overlap>
+      <!-- compiler.as3: use the ActionScript 3 class based object model for greater performance and better error reporting. In the class based object model most built-in functions are implemented as fixed methods of classes.-->
+      <as3>true</as3>
+      <!-- compiler.compress usage:
+      <compress>boolean</compress>
+      -->
+      <!-- compiler.context-root: path to replace {context.root} tokens for service channel endpoints-->
+      <context-root></context-root>
+      <!-- compiler.debug: generates a movie that is suitable for debugging-->
+      <debug>false</debug>
+      <!-- compiler.defaults-css-files usage:
+      <defaults-css-files>
+         <filename>string</filename>
+         <filename>string</filename>
+      </defaults-css-files>
+      -->
+      <!-- compiler.defaults-css-url: defines the location of the default style sheet. Setting this option overrides the implicit use of the defaults.css style sheet in the framework.swc file.-->
+      <!-- compiler.defaults-css-url usage:
+      <defaults-css-url>string</defaults-css-url>
+      -->
+      <!-- compiler.define: define a global AS3 conditional compilation definition, e.g. -define=CONFIG::debugging,true or -define+=CONFIG::debugging,true (to append to existing definitions in flex-config.xml) -->
+      <define>
+         <name>CONFIG::OMLITE</name>
+         <value>true</value>
+      </define>
+      <!-- compiler.enable-runtime-design-layers usage:
+      <enable-runtime-design-layers>boolean</enable-runtime-design-layers>
+      -->
+      <!-- compiler.es: use the ECMAScript edition 3 prototype based object model to allow dynamic overriding of prototype properties. In the prototype based object model built-in functions are implemented as dynamic properties of prototype objects.-->
+      <es>false</es>
+      <extensions>
+         <!-- compiler.extensions.extension usage:
+         <extension>
+            <extension>string</extension>
+            <parameters>string</parameters>
+         </extension>
+         -->
+      </extensions>
+      <!-- compiler.external-library-path: list of SWC files or directories to compile against but to omit from linking-->
+      <external-library-path>
+         <path-element>E:/flex_sdk4.6/frameworks/libs/player/11.1/playerglobal.swc</path-element>
+         <path-element>E:/flex_sdk4.6/frameworks/libs/framework.swc</path-element>
+         <path-element>E:/flex_sdk4.6/frameworks/libs/textLayout.swc</path-element>
+         <path-element>E:/flex_sdk4.6/frameworks/libs/spark.swc</path-element>
+         <path-element>E:/flex_sdk4.6/frameworks/libs/sparkskins.swc</path-element>
+         <path-element>E:/flex_sdk4.6/frameworks/libs/rpc.swc</path-element>
+         <path-element>E:/flex_sdk4.6/frameworks/libs/mx/mx.swc</path-element>
+      </external-library-path>
+      <fonts>
+         <!-- compiler.fonts.advanced-anti-aliasing: enables advanced anti-aliasing for embedded fonts, which provides greater clarity for small fonts.-->
+         <advanced-anti-aliasing>true</advanced-anti-aliasing>
+         <!-- compiler.fonts.flash-type: enables FlashType for embedded fonts, which provides greater clarity for small fonts.-->
+         <!-- compiler.fonts.flash-type usage:
+         <flash-type>boolean</flash-type>
+         -->
+         <languages>
+            <!-- compiler.fonts.languages.language-range: a range to restrict the number of font glyphs embedded into the SWF-->
+            <!-- compiler.fonts.languages.language-range usage:
+            <language-range>
+               <lang>string</lang>
+               <range>string</range>
+               <range>string</range>
+            </language-range>
+            -->
+         </languages>
+         <!-- compiler.fonts.local-font-paths usage:
+         <local-font-paths>
+            <path-element>string</path-element>
+            <path-element>string</path-element>
+         </local-font-paths>
+         -->
+         <!-- compiler.fonts.local-fonts-snapshot: File containing system font data produced by flex2.tools.FontSnapshot.-->
+         <local-fonts-snapshot>${flexlib}/localFonts.ser</local-fonts-snapshot>
+         <!-- compiler.fonts.managers: Compiler font manager classes, in policy resolution order-->
+         <managers>
+            <manager-class>flash.fonts.JREFontManager</manager-class>
+            <manager-class>flash.fonts.BatikFontManager</manager-class>
+            <manager-class>flash.fonts.AFEFontManager</manager-class>
+            <manager-class>flash.fonts.CFFFontManager</manager-class>
+         </managers>
+         <!-- compiler.fonts.max-cached-fonts: sets the maximum number of fonts to keep in the server cache.  The default value is 20.-->
+         <max-cached-fonts>20</max-cached-fonts>
+         <!-- compiler.fonts.max-glyphs-per-face: sets the maximum number of character glyph-outlines to keep in the server cache for each font face. The default value is 1000.-->
+         <max-glyphs-per-face>1000</max-glyphs-per-face>
+      </fonts>
+      <!-- compiler.headless-server: a flag to set when Flex is running on a server without a display-->
+      <!-- compiler.headless-server usage:
+      <headless-server>boolean</headless-server>
+      -->
+      <!-- compiler.include-libraries: a list of libraries (SWCs) to completely include in the SWF-->
+      <!-- compiler.include-libraries usage:
+      <include-libraries>
+         <library>string</library>
+         <library>string</library>
+      </include-libraries>
+      -->
+      <!-- compiler.incremental: enables incremental compilation-->
+      <!-- compiler.incremental usage:
+      <incremental>boolean</incremental>
+      -->
+      <!-- compiler.isolate-styles: enables the compiled application or module to set styles that only affect itself and its children-->
+      <!-- compiler.isolate-styles usage:
+      <isolate-styles>boolean</isolate-styles>
+      -->
+      <!-- compiler.keep-all-type-selectors: disables the pruning of unused CSS type selectors-->
+      <!-- compiler.keep-all-type-selectors usage:
+      <keep-all-type-selectors>boolean</keep-all-type-selectors>
+      -->
+      <!-- compiler.keep-as3-metadata: keep the specified metadata in the SWF-->
+      <!-- compiler.keep-as3-metadata usage:
+      <keep-as3-metadata>
+         <name>string</name>
+         <name>string</name>
+      </keep-as3-metadata>
+      -->
+      <!-- compiler.keep-generated-actionscript: save temporary source files generated during MXML compilation-->
+      <keep-generated-actionscript>false</keep-generated-actionscript>
+      <!-- compiler.library-path: list of SWC files or directories that contain SWC files-->
+      <library-path>
+         <path-element>E:/flex_sdk4.6/frameworks/libs/authoringsupport.swc</path-element>
+         <path-element>E:/flex_sdk4.6/frameworks/libs/flash-integration.swc</path-element>
+         <path-element>E:/flex_sdk4.6/frameworks/locale/{locale}</path-element>
+         <path-element>E:/builds/VERSION/TAG/libs</path-element>
+				 <!-- MC/AKK - Not sure what these are meant for!-->
+         <path-element>E:/flex_sdk4.6/plugins/dcradSwcs/4.5/libs</path-element>
+         <path-element>E:/flex_sdk4.6/plugins/dcradSwcs/4.5/locale/{locale}</path-element>
+         <path-element>E:/flex_sdk4.6/plugins/fiberSwcs/4.5/libs/fiber.swc</path-element>
+         <path-element>E:/flex_sdk4.6/plugins/fiberSwcs/4.5/locale/{locale}/fiber_rb.swc</path-element>
+         <path-element>E:/flex_sdk4.6/plugins/fiberSwcs/4.5/libs/playerfds.swc</path-element>
+         <path-element>E:/flex_sdk4.6/plugins/fiberSwcs/4.5/locale/{locale}</path-element>
+				 <!-- n/c -->
+      </library-path>
+      <!-- compiler.locale: specifies the locale for internationalization-->
+      <locale>
+         <locale-element>en_AU</locale-element>
+         <locale-element>en_US</locale-element>
+         <locale-element>zh_CN</locale-element>
+      </locale>
+      <!-- compiler.minimum-supported-version usage:
+      <minimum-supported-version>string</minimum-supported-version>
+      -->
+      <!-- compiler.mobile: specifies the target runtime is a mobile device-->
+      <mobile>false</mobile>
+      <mxml>
+         <!-- compiler.mxml.compatibility-version: specifies a compatibility version. e.g. -compatibility-version=2.0.1-->
+         <!-- compiler.mxml.compatibility-version usage:
+         <compatibility-version>version</compatibility-version>
+         -->
+         <!-- compiler.mxml.minimum-supported-version usage:
+         <minimum-supported-version>string</minimum-supported-version>
+         -->
+         <!-- compiler.mxml.qualified-type-selectors usage:
+         <qualified-type-selectors>boolean</qualified-type-selectors>
+         -->
+      </mxml>
+      <namespaces>
+         <!-- compiler.namespaces.namespace: Specify a URI to associate with a manifest of components for use as MXML elements-->
+         <namespace>
+            <uri>https://ns.adobe.com/mxml/2009</uri>
+            <manifest>E:/flex_sdk4.6/frameworks/mxml-2009-manifest.xml</manifest>
+         </namespace>
+         <namespace>
+            <uri>library://ns.adobe.com/flex/spark</uri>
+            <manifest>E:/flex_sdk4.6/frameworks/spark-manifest.xml</manifest>
+         </namespace>
+         <namespace>
+            <uri>library://ns.adobe.com/flex/mx</uri>
+            <manifest>E:/flex_sdk4.6/frameworks/mx-manifest.xml</manifest>
+         </namespace>
+         <namespace>
+            <uri>https://www.adobe.com/2006/mxml</uri>
+            <manifest>E:/flex_sdk4.6/frameworks/mxml-manifest.xml</manifest>
+         </namespace>
+      </namespaces>
+      <!-- compiler.omit-trace-statements: toggle whether trace statements are omitted-->
+      <omit-trace-statements>true</omit-trace-statements>
+      <!-- compiler.optimize: Enable post-link SWF optimization-->
+      <optimize>true</optimize>
+      <!-- compiler.preloader: Specifies the default value for the Application's preloader attribute. If not specified, the default preloader value is mx.preloaders.SparkDownloadProgressBar when -compatibility-version >= 4.0 and mx.preloaders.DownloadProgressBar when -compatibility-version < 4.0.-->
+      <!-- compiler.preloader usage:
+      <preloader>string</preloader>
+      -->
+      <!-- compiler.report-invalid-styles-as-warnings: enables reporting of invalid styles as warnings-->
+      <!-- compiler.report-invalid-styles-as-warnings usage:
+      <report-invalid-styles-as-warnings>boolean</report-invalid-styles-as-warnings>
+      -->
+      <!-- compiler.report-missing-required-skin-parts-as-warnings: Use this option to generate a warning instead of an error when a missing required skin part is detected.-->
+      <!-- compiler.report-missing-required-skin-parts-as-warnings usage:
+      <report-missing-required-skin-parts-as-warnings>boolean</report-missing-required-skin-parts-as-warnings>
+      -->
+      <!-- compiler.services: path to Flex Data Services configuration file-->
+      <!-- compiler.services usage:
+      <services>filename</services>
+      -->
+      <!-- compiler.show-actionscript-warnings: runs the AS3 compiler in a mode that detects legal but potentially incorrect code-->
+      <show-actionscript-warnings>false</show-actionscript-warnings>
+      <!-- compiler.show-binding-warnings: toggle whether warnings generated from data binding code are displayed-->
+      <show-binding-warnings>false</show-binding-warnings>
+      <!-- compiler.show-invalid-css-property-warnings: toggle whether invalid css property warnings are reported-->
+      <!-- compiler.show-invalid-css-property-warnings usage:
+      <show-invalid-css-property-warnings>boolean</show-invalid-css-property-warnings>
+      -->
+      <!-- compiler.show-shadowed-device-font-warnings: toggles whether warnings are displayed when an embedded font name shadows a device font name-->
+      <show-shadowed-device-font-warnings>false</show-shadowed-device-font-warnings>
+      <!-- compiler.show-unused-type-selector-warnings: toggle whether warnings generated from unused CSS type selectors are displayed-->
+      <show-unused-type-selector-warnings>false</show-unused-type-selector-warnings>
+      <!-- compiler.source-path: list of path elements that form the roots of ActionScript class hierarchies-->
+      <source-path>
+         <path-element>E:/builds/VERSION/TAG/src</path-element>
+      </source-path>
+      <source-path>
+         <path-element>E:/flex_sdk4.6/frameworks/locale/{locale}</path-element>
+      </source-path>
+      <!-- compiler.strict: runs the AS3 compiler in strict error checking mode.-->
+      <strict>true</strict>
+      <!-- compiler.theme: list of CSS or SWC files to apply as a theme-->
+      <theme>
+         <filename>E:/flex_sdk4.6/frameworks/themes/Spark/spark.css</filename>
+      </theme>
+      <!-- compiler.use-resource-bundle-metadata: determines whether resources bundles are included in the application.-->
+      <use-resource-bundle-metadata>true</use-resource-bundle-metadata>
+      <!-- compiler.verbose-stacktraces: save callstack information to the SWF for debugging-->
+      <verbose-stacktraces>false</verbose-stacktraces>
+      <!-- compiler.warn-array-tostring-changes: Array.toString() format has changed.-->
+      <warn-array-tostring-changes>false</warn-array-tostring-changes>
+      <!-- compiler.warn-assignment-within-conditional: Assignment within conditional.-->
+      <warn-assignment-within-conditional>true</warn-assignment-within-conditional>
+      <!-- compiler.warn-bad-array-cast: Possibly invalid Array cast operation.-->
+      <warn-bad-array-cast>true</warn-bad-array-cast>
+      <!-- compiler.warn-bad-bool-assignment: Non-Boolean value used where a Boolean value was expected.-->
+      <warn-bad-bool-assignment>true</warn-bad-bool-assignment>
+      <!-- compiler.warn-bad-date-cast: Invalid Date cast operation.-->
+      <warn-bad-date-cast>true</warn-bad-date-cast>
+      <!-- compiler.warn-bad-es3-type-method: Unknown method.-->
+      <warn-bad-es3-type-method>true</warn-bad-es3-type-method>
+      <!-- compiler.warn-bad-es3-type-prop: Unknown property.-->
+      <warn-bad-es3-type-prop>true</warn-bad-es3-type-prop>
+      <!-- compiler.warn-bad-nan-comparison: Illogical comparison with NaN. Any comparison operation involving NaN will evaluate to false because NaN != NaN.-->
+      <warn-bad-nan-comparison>true</warn-bad-nan-comparison>
+      <!-- compiler.warn-bad-null-assignment: Impossible assignment to null.-->
+      <warn-bad-null-assignment>true</warn-bad-null-assignment>
+      <!-- compiler.warn-bad-null-comparison: Illogical comparison with null.-->
+      <warn-bad-null-comparison>true</warn-bad-null-comparison>
+      <!-- compiler.warn-bad-undefined-comparison: Illogical comparison with undefined.  Only untyped variables (or variables of type *) can be undefined.-->
+      <warn-bad-undefined-comparison>true</warn-bad-undefined-comparison>
+      <!-- compiler.warn-boolean-constructor-with-no-args: Boolean() with no arguments returns false in ActionScript 3.0.  Boolean() returned undefined in ActionScript 2.0.-->
+      <warn-boolean-constructor-with-no-args>false</warn-boolean-constructor-with-no-args>
+      <!-- compiler.warn-changes-in-resolve: __resolve is no longer supported.-->
+      <warn-changes-in-resolve>false</warn-changes-in-resolve>
+      <!-- compiler.warn-class-is-sealed: Class is sealed.  It cannot have members added to it dynamically.-->
+      <warn-class-is-sealed>true</warn-class-is-sealed>
+      <!-- compiler.warn-const-not-initialized: Constant not initialized.-->
+      <warn-const-not-initialized>true</warn-const-not-initialized>
+      <!-- compiler.warn-constructor-returns-value: Function used in new expression returns a value.  Result will be what the function returns, rather than a new instance of that function.-->
+      <warn-constructor-returns-value>false</warn-constructor-returns-value>
+      <!-- compiler.warn-deprecated-event-handler-error: EventHandler was not added as a listener.-->
+      <warn-deprecated-event-handler-error>false</warn-deprecated-event-handler-error>
+      <!-- compiler.warn-deprecated-function-error: Unsupported ActionScript 2.0 function.-->
+      <warn-deprecated-function-error>true</warn-deprecated-function-error>
+      <!-- compiler.warn-deprecated-property-error: Unsupported ActionScript 2.0 property.-->
+      <warn-deprecated-property-error>true</warn-deprecated-property-error>
+      <!-- compiler.warn-duplicate-argument-names: More than one argument by the same name.-->
+      <warn-duplicate-argument-names>true</warn-duplicate-argument-names>
+      <!-- compiler.warn-duplicate-variable-def: Duplicate variable definition -->
+      <warn-duplicate-variable-def>true</warn-duplicate-variable-def>
+      <!-- compiler.warn-for-var-in-changes: ActionScript 3.0 iterates over an object's properties within a "for x in target" statement in random order.-->
+      <warn-for-var-in-changes>false</warn-for-var-in-changes>
+      <!-- compiler.warn-import-hides-class: Importing a package by the same name as the current class will hide that class identifier in this scope.-->
+      <warn-import-hides-class>true</warn-import-hides-class>
+      <!-- compiler.warn-instance-of-changes: Use of the instanceof operator.-->
+      <warn-instance-of-changes>true</warn-instance-of-changes>
+      <!-- compiler.warn-internal-error: Internal error in compiler.-->
+      <warn-internal-error>true</warn-internal-error>
+      <!-- compiler.warn-level-not-supported: _level is no longer supported. For more information, see the flash.display package.-->
+      <warn-level-not-supported>true</warn-level-not-supported>
+      <!-- compiler.warn-missing-namespace-decl: Missing namespace declaration (e.g. variable is not defined to be public, private, etc.).-->
+      <warn-missing-namespace-decl>true</warn-missing-namespace-decl>
+      <!-- compiler.warn-negative-uint-literal: Negative value will become a large positive value when assigned to a uint data type.-->
+      <warn-negative-uint-literal>true</warn-negative-uint-literal>
+      <!-- compiler.warn-no-constructor: Missing constructor.-->
+      <warn-no-constructor>false</warn-no-constructor>
+      <!-- compiler.warn-no-explicit-super-call-in-constructor: The super() statement was not called within the constructor.-->
+      <warn-no-explicit-super-call-in-constructor>false</warn-no-explicit-super-call-in-constructor>
+      <!-- compiler.warn-no-type-decl: Missing type declaration.-->
+      <warn-no-type-decl>true</warn-no-type-decl>
+      <!-- compiler.warn-number-from-string-changes: In ActionScript 3.0, white space is ignored and '' returns 0. Number() returns NaN in ActionScript 2.0 when the parameter is '' or contains white space.-->
+      <warn-number-from-string-changes>false</warn-number-from-string-changes>
+      <!-- compiler.warn-scoping-change-in-this: Change in scoping for the this keyword.  Class methods extracted from an instance of a class will always resolve this back to that instance.  In ActionScript 2.0 this is looked up dynamically based on where the method is invoked from.-->
+      <warn-scoping-change-in-this>false</warn-scoping-change-in-this>
+      <!-- compiler.warn-slow-text-field-addition: Inefficient use of += on a TextField.-->
+      <warn-slow-text-field-addition>true</warn-slow-text-field-addition>
+      <!-- compiler.warn-unlikely-function-value: Possible missing parentheses.-->
+      <warn-unlikely-function-value>true</warn-unlikely-function-value>
+      <!-- compiler.warn-xml-class-has-changed: Possible usage of the ActionScript 2.0 XML class.-->
+      <warn-xml-class-has-changed>false</warn-xml-class-has-changed>
+   </compiler>
+   <!-- debug-password: the password to include in debuggable SWFs-->
+   <!-- debug-password usage:
+   <debug-password>string</debug-password>
+   -->
+   <!-- default-background-color: default background color (may be overridden by the application code)-->
+   <default-background-color>0xFFFFFF</default-background-color>
+   <!-- default-frame-rate: default frame rate to be used in the SWF.-->
+   <default-frame-rate>24</default-frame-rate>
+   <!-- default-script-limits: default script execution limits (may be overridden by root attributes)-->
+   <default-script-limits>
+      <max-recursion-depth>1000</max-recursion-depth>
+      <max-execution-time>60</max-execution-time>
+   </default-script-limits>
+   <!-- default-size: default application size (may be overridden by root attributes in the application)-->
+   <default-size>
+      <width>500</width>
+      <height>375</height>
+   </default-size>
+   <!-- externs: a list of symbols to omit from linking when building a SWF-->
+   <externs>
+      <symbol>mx.core:IFlexModuleFactory</symbol>
+      <symbol>mx.core:IChildList</symbol>
+      <symbol>mx.managers:ISystemManager</symbol>
+      <symbol>mx.core:IFlexDisplayObject</symbol>
+      <symbol>mx.managers:SystemManager</symbol>
+      <symbol>flashx.textLayout.compose:ISWFContext</symbol>
+      <symbol>mx.core:RSLData</symbol>
+      <symbol>mx.core:IUIComponent</symbol>
+      <symbol>mx.events:SandboxMouseEvent</symbol>
+      <symbol>mx.managers:SystemRawChildrenList</symbol>
+      <symbol>mx.managers:SystemManagerGlobals</symbol>
+      <symbol>mx.utils:LoaderUtil</symbol>
+      <symbol>mx.preloaders:Preloader</symbol>
+      <symbol>mx.events:RSLEvent</symbol>
+      <symbol>mx.managers:SystemChildrenList</symbol>
+      <symbol>mx.events:DynamicEvent</symbol>
+      <symbol>mx.core:IRawChildrenContainer</symbol>
+      <symbol>mx.core:mx_internal</symbol>
+      <symbol>mx.core:FlexSprite</symbol>
+      <symbol>mx.core:RSLItem</symbol>
+      <symbol>mx.events:Request</symbol>
+      <symbol>mx.core:Singleton</symbol>
+      <symbol>mx.utils:DensityUtil</symbol>
+      <symbol>mx.events:FlexEvent</symbol>
+      <symbol>mx.core:IInvalidating</symbol>
+      <symbol>mx.managers:ISystemManagerChildManager</symbol>
+      <symbol>mx.core:IFlexModule</symbol>
+      <symbol>mx.core:CrossDomainRSLItem</symbol>
+      <symbol>mx.preloaders:IPreloaderDisplay</symbol>
+      <symbol>mx.preloaders:SparkDownloadProgressBar</symbol>
+      <symbol>mx.core:ApplicationDomainTarget</symbol>
+      <symbol>mx.core:ResourceModuleRSLItem</symbol>
+      <symbol>mx.core:RSLListLoader</symbol>
+      <symbol>mx.utils:NameUtil</symbol>
+      <symbol>mx.core:RuntimeDPIProvider</symbol>
+      <symbol>mx.core:DPIClassification</symbol>
+      <symbol>mx.utils:SHA256</symbol>
+      <symbol>mx.graphics:RectangularDropShadow</symbol>
+      <symbol>mx.resources:IResourceManager</symbol>
+      <symbol>mx.events:ResourceEvent</symbol>
+      <symbol>mx.core:IRepeaterClient</symbol>
+      <symbol>mx.core:FlexShape</symbol>
+      <symbol>mx.utils:GraphicsUtil</symbol>
+      <symbol>mx.resources:IResourceBundle</symbol>
+      <symbol>index</symbol>
+      <symbol>views:v_Login</symbol>
+      <symbol>aw.external.jsinterface:JSFunction</symbol>
+      <symbol>com.adobe.fiber.services.wrapper:AbstractServiceWrapper</symbol>
+      <symbol>com.adobe.fiber.services.wrapper:RemoteObjectServiceWrapper</symbol>
+      <symbol>services.roleservice:_Super_RoleService</symbol>
+      <symbol>services.roleservice:RoleService</symbol>
+      <symbol>dm:DM</symbol>
+      <symbol>components:BusyIndicator</symbol>
+      <symbol>skins:DKI_DataGrid_Skin</symbol>
+      <symbol>aw.external.jsinterface:JSDynamic</symbol>
+      <symbol>skins:OM5000Skin</symbol>
+      <symbol>global</symbol>
+      <symbol>services.domainservice:_Super_DomainService</symbol>
+      <symbol>services.domainservice:DomainService</symbol>
+      <symbol>skins:DKI_DropDownList_Skin</symbol>
+      <symbol>views:v_Main</symbol>
+      <symbol>aw.external:JSInterface</symbol>
+      <symbol>mx.data:DataMessageCache</symbol>
+      <symbol>mx.data.messages:DataMessage</symbol>
+      <symbol>mx.data.messages:DataMessageExt</symbol>
+      <symbol>mx.data.messages:DataErrorMessage</symbol>
+      <symbol>mx.data:ChangedItems</symbol>
+      <symbol>mx.data:CacheDataDescriptor</symbol>
+      <symbol>mx.data.messages:SequencedMessage</symbol>
+      <symbol>mx.data.messages:SyncFillRequest</symbol>
+      <symbol>mx.data:ManagedAssociation</symbol>
+      <symbol>mx.data:IManaged</symbol>
+      <symbol>mx.data:ManagedObjectProxy</symbol>
+      <symbol>mx.data:DynamicProperty</symbol>
+      <symbol>mx.data.messages:UpdateCollectionMessage</symbol>
+      <symbol>mx.data.messages:UpdateCollectionMessageExt</symbol>
+      <symbol>mx.data:Metadata</symbol>
+      <symbol>mx.data.messages:PagedMessage</symbol>
+      <symbol>mx.data.utils:SerializationProxy</symbol>
+      <symbol>mx.data:UpdateCollectionRange</symbol>
+      <symbol>mx.data.messages:SequencedMessageExt</symbol>
+      <symbol>mx.data:Conflict</symbol>
+      <symbol>mx.data:ManagedEntity</symbol>
+      <symbol>mx.data.messages:PagedMessageExt</symbol>
+      <symbol>mx.data:MessageBatch</symbol>
+      <symbol>en_AU$default_properties</symbol>
+      <symbol>en_US$default_properties</symbol>
+      <symbol>zh_CN$default_properties</symbol>
+      <symbol>skins:LanguageSelectionSkin</symbol>
+      <symbol>renderers:LanguageRenderer</symbol>
+      <symbol>components:DKI_ValidatorInput</symbol>
+      <symbol>services.setsessionservice:_Super_SetSessionService</symbol>
+      <symbol>services.setsessionservice:SetSessionService</symbol>
+      <symbol>components:DKI_Button</symbol>
+      <symbol>components:DKI_AlertBox</symbol>
+      <symbol>services.httpsessionservice:_Super_HttpSessionService</symbol>
+      <symbol>services.httpsessionservice:HttpSessionService</symbol>
+      <symbol>components:DKI_DropDownList</symbol>
+      <symbol>services.siteconfigservice:_Super_SiteConfigService</symbol>
+      <symbol>services.siteconfigservice:SiteConfigService</symbol>
+      <symbol>services.passwordcheckservice:_Super_PasswordCheckService</symbol>
+      <symbol>services.passwordcheckservice:PasswordCheckService</symbol>
+      <symbol>aw.external:js_interface</symbol>
+      <symbol>aw.external.jsinterface:JSInfoObject</symbol>
+      <symbol>aw.external.jsinterface:JSCore</symbol>
+      <symbol>com.adobe.fiber.core:model_internal</symbol>
+      <symbol>com.adobe.fiber.valueobjects:IValueObject</symbol>
+      <symbol>valueObjects:_Super_Urbac_Roles</symbol>
+      <symbol>valueObjects:Urbac_Roles</symbol>
+      <symbol>valueObjects:_Super_UserRoles</symbol>
+      <symbol>valueObjects:UserRoles</symbol>
+      <symbol>com.adobe.serializers.utility:TypeUtility</symbol>
+      <symbol>dm.collections:dmCollection</symbol>
+      <symbol>dm.collections:dmPagedCollection</symbol>
+      <symbol>dm.collections:dmMovements</symbol>
+      <symbol>dm.collections:dmManualTransactionsData</symbol>
+      <symbol>dm.collections:dmMovementCompanyBays</symbol>
+      <symbol>dm.collections:dmMovementItems</symbol>
+      <symbol>dm.collections:dmMovementScheduleItems</symbol>
+      <symbol>dm.collections:dmMovementSchedules</symbol>
+      <symbol>dm.collections:dmSpecialMovements</symbol>
+      <symbol>dm.collections:dmManualTransactions</symbol>
+      <symbol>dm.collections:dmMovementReasons</symbol>
+      <symbol>dm.collections:dmFolioExceptionDates</symbol>
+      <symbol>dm.collections:dmFolioSettings</symbol>
+      <symbol>dm.collections:dmMessagingHost</symbol>
+      <symbol>dm.collections:dmFolioScheduling</symbol>
+      <symbol>renderers:DKI_HeaderColumn_Renderer</symbol>
+      <symbol>skins:DKI_Scroller_Skin</symbol>
+      <symbol>aw.external.jsinterface:JSTypeMap</symbol>
+      <symbol>aw.external.jsinterface:JSArguments</symbol>
+      <symbol>aw.utils:StringUtils</symbol>
+      <symbol>aw.external.jsinterface:JSCaller</symbol>
+      <symbol>aw.utils:MethodCaller</symbol>
+      <symbol>aw.external.jsinterface:JSInstanceCache</symbol>
+      <symbol>aw.external.jsinterface.objects:JSObjectTypeMapper</symbol>
+      <symbol>components:DKI_DateRange</symbol>
+      <symbol>com.hurlant.crypto:Crypto</symbol>
+      <symbol>com.hurlant.util:Hex</symbol>
+      <symbol>com.hurlant.crypto.symmetric:IPad</symbol>
+      <symbol>Crypto2:SHA256</symbol>
+      <symbol>Crypto2:MD5</symbol>
+      <symbol>components:FlexiTimer</symbol>
+      <symbol>com.hurlant.crypto.symmetric:PKCS5</symbol>
+      <symbol>br.com.rectius.library.notificator:NotificatorManager</symbol>
+      <symbol>com.hurlant.crypto.symmetric:ICipher</symbol>
+      <symbol>br.com.rectius.library.notificator:NotificatorMode</symbol>
+      <symbol>valueObjects:_Super_ModuleObjects</symbol>
+      <symbol>valueObjects:ModuleObjects</symbol>
+      <symbol>valueObjects:_Super_DomainLinks</symbol>
+      <symbol>valueObjects:DomainLinks</symbol>
+      <symbol>valueObjects:_Super_Domains</symbol>
+      <symbol>valueObjects:Domains</symbol>
+      <symbol>valueObjects:_Super_MenuObjects</symbol>
+      <symbol>valueObjects:MenuObjects</symbol>
+      <symbol>renderers:LabelRenderer</symbol>
+      <symbol>skins:DropDownListButtonSkin</symbol>
+      <symbol>components:MessageContainer</symbol>
+      <symbol>components:WidgetHome</symbol>
+      <symbol>components:WidgetContainer</symbol>
+      <symbol>components:PopupWindow</symbol>
+      <symbol>components:HeaderMenu</symbol>
+      <symbol>components:MenuContainer</symbol>
+      <symbol>components:StatusBar</symbol>
+      <symbol>events:ArrEvent</symbol>
+      <symbol>aw.external.jsinterface.objects:JSEvent</symbol>
+      <symbol>aw.external.jsinterface.objects:JSNode</symbol>
+      <symbol>aw.external.jsinterface.objects:JSDocument</symbol>
+      <symbol>aw.external.jsinterface.objects:JSNavigator</symbol>
+      <symbol>aw.system:FlashPlayerType</symbol>
+      <symbol>aw.external.jsinterface.objects:JSWindow</symbol>
+      <symbol>aw.external.jsinterface.objects:JSElement</symbol>
+      <symbol>aw.external.jsinterface.objects:JSHTMLElement</symbol>
+      <symbol>mx.data.utils:SerializationDescriptor</symbol>
+      <symbol>mx.data:MessageCacheItem</symbol>
+      <symbol>mx.data:DataList</symbol>
+      <symbol>mx.data.errors:DataServiceError</symbol>
+      <symbol>mx.data:ITokenResponder</symbol>
+      <symbol>mx.data:DataStore</symbol>
+      <symbol>mx.data.utils:Managed</symbol>
+      <symbol>mx.data:CommitResponder</symbol>
+      <symbol>mx.data:ConcreteDataService</symbol>
+      <symbol>mx.data:RemoveFromFillConflictDetails</symbol>
+      <symbol>mx.data:DataManager</symbol>
+      <symbol>mx.data:IPagedList</symbol>
+      <symbol>mx.data:PropertySpecifier</symbol>
+      <symbol>mx.data:DataServiceAdapter</symbol>
+      <symbol>mx.data:Conflicts</symbol>
+      <symbol>mx.data:ConflictResolver</symbol>
+      <symbol>skins:InputSkin</symbol>
+      <symbol>components:ValidationGroup</symbol>
+      <symbol>glyph</symbol>
+      <symbol>skins:ButtonSkin</symbol>
+      <symbol>skins:WidgetPanelSkin</symbol>
+      <symbol>valueObjects:_Super_Site_Config</symbol>
+      <symbol>valueObjects:Site_Config</symbol>
+      <symbol>aw.external.jsinterface:FLObject</symbol>
+      <symbol>aw.external.jsinterface:IJSSimple</symbol>
+      <symbol>aw.external.jsinterface:JSSimple</symbol>
+      <symbol>aw.utils:ClassUtils</symbol>
+      <symbol>aw.external.jsinterface:JSComplex</symbol>
+      <symbol>aw.external.jsinterface:JSCoreCommands</symbol>
+      <symbol>com.adobe.fiber.services:IFiberManagingService</symbol>
+      <symbol>com.adobe.fiber.valueobjects:IModelInstance</symbol>
+      <symbol>com.adobe.fiber.valueobjects:IModelType</symbol>
+      <symbol>com.adobe.fiber.valueobjects:AbstractEntityMetadata</symbol>
+      <symbol>valueObjects:_Urbac_RolesEntityMetadata</symbol>
+      <symbol>com.adobe.fiber.util:FiberUtils</symbol>
+      <symbol>valueObjects:_Super_DomainPrivilege_vo</symbol>
+      <symbol>valueObjects:DomainPrivilege_vo</symbol>
+      <symbol>valueObjects:_UserRolesEntityMetadata</symbol>
+      <symbol>dm.comms:amf</symbol>
+      <symbol>dm.utils:tools</symbol>
+      <symbol>dm.models:dmModel</symbol>
+      <symbol>dm.models:dmMovement</symbol>
+      <symbol>dm.models:dmManualTransactionData</symbol>
+      <symbol>dm.models:dmMovementCompanyBay</symbol>
+      <symbol>dm.models:dmMovementItem</symbol>
+      <symbol>dm.models:dmMovementScheduleItem</symbol>
+      <symbol>dm.models:dmMovementSchedule</symbol>
+      <symbol>dm.models:dmSpecialMovement</symbol>
+      <symbol>dm.models:dmManualTransaction</symbol>
+      <symbol>views:v_ManualTransactions</symbol>
+      <symbol>dm.models:dmMovementReason</symbol>
+      <symbol>controllers:C_FolioScheduling_Calendar</symbol>
+      <symbol>dm.utils:dmDate</symbol>
+      <symbol>dm.models:dmFolioExceptionDate</symbol>
+      <symbol>dm.models:dmMessagingIn</symbol>
+      <symbol>aw.external.jsinterface.objects:JSCSSValue</symbol>
+      <symbol>aw.external.jsinterface.objects:JSArray</symbol>
+      <symbol>aw.external.jsinterface.objects:JSLocation</symbol>
+      <symbol>aw.external.jsinterface.objects:JSMediaList</symbol>
+      <symbol>aw.external.jsinterface.objects:JSNavigatorPlugins</symbol>
+      <symbol>aw.external.jsinterface.objects:JSHTMLStyleObject</symbol>
+      <symbol>aw.external.jsinterface.objects:JSCSSRuleList</symbol>
+      <symbol>aw.external.jsinterface.objects:JSCharacterData</symbol>
+      <symbol>aw.external.jsinterface.objects:JSComment</symbol>
+      <symbol>aw.external.jsinterface.objects:JSCSSRule</symbol>
+      <symbol>aw.external.jsinterface.objects:JSDocumentType</symbol>
+      <symbol>aw.external.jsinterface.objects:JSStyleSheet</symbol>
+      <symbol>aw.external.jsinterface.objects:JSNamedNodeMap</symbol>
+      <symbol>aw.external.jsinterface.objects:JSScreen</symbol>
+      <symbol>aw.external.jsinterface.objects:JSNodeList</symbol>
+      <symbol>aw.external.jsinterface.objects:JSCSSStyleSheet</symbol>
+      <symbol>aw.external.jsinterface.objects:JSCSSStyleDeclaration</symbol>
+      <symbol>aw.external.jsinterface.objects:JSDocumentFragment</symbol>
+      <symbol>aw.external.jsinterface.objects:JSHistory</symbol>
+      <symbol>aw.external.jsinterface.objects:JSAttr</symbol>
+      <symbol>aw.data.json:JSONPacker</symbol>
+      <symbol>aw.errors:JSError</symbol>
+      <symbol>aw.external.jsinterface.objects:JSDate</symbol>
+      <symbol>aw.external.jsinterface.objects:JSForm</symbol>
+      <symbol>aw.external.jsinterface.objects:JSMimeType</symbol>
+      <symbol>aw.external.jsinterface.objects:JSAnchor</symbol>
+      <symbol>aw.external.jsinterface.objects:JSImage</symbol>
+      <symbol>aw.external.jsinterface.objects:JSApplet</symbol>
+      <symbol>aw.external.jsinterface.objects:JSFrame</symbol>
+      <symbol>aw.external.jsinterface.objects:JSLink</symbol>
+      <symbol>aw.external.jsinterface.objects:JSXMLHttpRequest</symbol>
+      <symbol>aw.external.jsinterface.objects:JSPlugin</symbol>
+      <symbol>skins:DateRangeSkin</symbol>
+      <symbol>com.hurlant.crypto.hash:HMAC</symbol>
+      <symbol>com.hurlant.util:Base64</symbol>
+      <symbol>com.hurlant.crypto.hash:IHash</symbol>
+      <symbol>com.hurlant.crypto.hash:SHABase</symbol>
+      <symbol>com.hurlant.crypto.hash:SHA256</symbol>
+      <symbol>com.hurlant.crypto.hash:MD2</symbol>
+      <symbol>com.hurlant.crypto.prng:IPRNG</symbol>
+      <symbol>com.hurlant.crypto.symmetric:IStreamCipher</symbol>
+      <symbol>com.hurlant.crypto.prng:ARC4</symbol>
+      <symbol>com.hurlant.crypto.hash:MD5</symbol>
+      <symbol>com.hurlant.crypto.symmetric:IVMode</symbol>
+      <symbol>com.hurlant.crypto.symmetric:IMode</symbol>
+      <symbol>com.hurlant.crypto.symmetric:CBCMode</symbol>
+      <symbol>com.hurlant.crypto.symmetric:CFBMode</symbol>
+      <symbol>com.hurlant.crypto.hash:SHA1</symbol>
+      <symbol>com.hurlant.crypto.symmetric:ISymmetricKey</symbol>
+      <symbol>com.hurlant.crypto.symmetric:DESKey</symbol>
+      <symbol>com.hurlant.crypto.rsa:RSAKey</symbol>
+      <symbol>com.hurlant.crypto.symmetric:OFBMode</symbol>
+      <symbol>com.hurlant.crypto.symmetric:TripleDESKey</symbol>
+      <symbol>com.hurlant.crypto.symmetric:CTRMode</symbol>
+      <symbol>com.hurlant.crypto.symmetric:NullPad</symbol>
+      <symbol>com.hurlant.crypto.symmetric:BlowFishKey</symbol>
+      <symbol>com.hurlant.crypto.symmetric:AESKey</symbol>
+      <symbol>com.hurlant.crypto.symmetric:SimpleIVMode</symbol>
+      <symbol>com.hurlant.crypto.symmetric:CFB8Mode</symbol>
+      <symbol>com.hurlant.crypto.symmetric:ECBMode</symbol>
+      <symbol>com.hurlant.crypto.symmetric:XTeaKey</symbol>
+      <symbol>com.hurlant.crypto.hash:SHA224</symbol>
+      <symbol>Crypto2:IntUtil</symbol>
+      <symbol>br.com.rectius.library.notificator:Notificator</symbol>
+      <symbol>valueObjects:_ModuleObjectsEntityMetadata</symbol>
+      <symbol>valueObjects:_DomainLinksEntityMetadata</symbol>
+      <symbol>valueObjects:_DomainsEntityMetadata</symbol>
+      <symbol>valueObjects:_MenuObjectsEntityMetadata</symbol>
+      <symbol>renderers:MessageRenderer</symbol>
+      <symbol>skins:SubMenuSkin</symbol>
+      <symbol>renderers:SubMenuRender</symbol>
+      <symbol>IModuleInterface</symbol>
+      <symbol>skins:FrameSkin</symbol>
+      <symbol>components:ConfigPopUp</symbol>
+      <symbol>components:UserProfile</symbol>
+      <symbol>renderers:MenuBarRender</symbol>
+      <symbol>mx.data:IChangeObject</symbol>
+      <symbol>mx.data:IITemReference</symbol>
+      <symbol>mx.data:ItemReference</symbol>
+      <symbol>mx.data.errors:DataListError</symbol>
+      <symbol>mx.data:PageRequest</symbol>
+      <symbol>mx.data.events:DataServiceFaultEvent</symbol>
+      <symbol>mx.data.events:UnresolvedConflictsEvent</symbol>
+      <symbol>mx.data.events:DataConflictEvent</symbol>
+      <symbol>mx.data.errors:UnresolvedConflictsError</symbol>
+      <symbol>mx.data:IDatabase</symbol>
+      <symbol>mx.data:DataStoreEventDispatcher</symbol>
+      <symbol>mx.data:DataServiceOfflineAdapter</symbol>
+      <symbol>mx.data:LocalStoreFactory</symbol>
+      <symbol>mx.data:MessagingDataServiceAdapter</symbol>
+      <symbol>mx.data:AsyncTokenResponder</symbol>
+      <symbol>mx.data:DataListRequestResponder</symbol>
+      <symbol>mx.data.events:DataServiceResultEvent</symbol>
+      <symbol>mx.data.utils:AsyncTokenChain</symbol>
+      <symbol>mx.data:ConflictDetector</symbol>
+      <symbol>mx.data:DataManagementConsumer</symbol>
+      <symbol>mx.data:ChangeObject</symbol>
+      <symbol>mx.data:ManualSyncConfiguration</symbol>
+      <symbol>mx.data:PageInformation</symbol>
+      <symbol>components:PasswordCheckDlg</symbol>
+      <symbol>skins:ErrorDisplaySkin</symbol>
+      <symbol>renderers:ValidRenderer</symbol>
+      <symbol>glyph_m_transactionlist</symbol>
+      <symbol>glyph_input_attach</symbol>
+      <symbol>glyph_m_orderlisting</symbol>
+      <symbol>glyph_input_number</symbol>
+      <symbol>glyph_m_journalreport</symbol>
+      <symbol>glyph_m_loadschedules</symbol>
+      <symbol>glyph_button_save</symbol>
+      <symbol>glyph_search_search</symbol>
+      <symbol>glyph_m_addresses</symbol>
+      <symbol>glyph_m_tankconfiguration</symbol>
+      <symbol>glyph_m_bayarms</symbol>
+      <symbol>glyph_m_apatransactions</symbol>
+      <symbol>glyph_button_update</symbol>
+      <symbol>glyph_button_back</symbol>
+      <symbol>glyph_button_refresh</symbol>
+      <symbol>glyph_m_metering</symbol>
+      <symbol>glyph_m_gsapmessaging</symbol>
+      <symbol>glyph_m_priceoffsets</symbol>
+      <symbol>glyph_input_user</symbol>
+      <symbol>glyph_input_gear</symbol>
+      <symbol>glyph_dateTime_null</symbol>
+      <symbol>glyph_m_terminallocations</symbol>
+      <symbol>glyph_dropDown_error</symbol>
+      <symbol>glyph_button_report</symbol>
+      <symbol>glyph_m_repooplimits</symbol>
+      <symbol>glyph_button_close</symbol>
+      <symbol>glyph_m_tripreport</symbol>
+      <symbol>glyph_m_manualtransactions</symbol>
+      <symbol>glyph_input_calc</symbol>
+      <symbol>glyph_button_filteroff</symbol>
+      <symbol>glyph_comboBox_indicator</symbol>
+      <symbol>glyph_input_key</symbol>
+      <symbol>glyph_button_delete</symbol>
+      <symbol>glyph_button_edit</symbol>
+      <symbol>glyph_button_forward</symbol>
+      <symbol>glyph_m_identificationassignment</symbol>
+      <symbol>glyph_input_star</symbol>
+      <symbol>glyph_m_rightsofscreenaccess</symbol>
+      <symbol>glyph_m_inventoryrequest</symbol>
+      <symbol>glyph_m_foliomanagement</symbol>
+      <symbol>glyph_button_tag</symbol>
+      <symbol>glyph_m_companies</symbol>
+      <symbol>glyph_m_baymovement</symbol>
+      <symbol>glyph_input_search</symbol>
+      <symbol>glyph_m_productbaseprices</symbol>
+      <symbol>glyph_m_loadmeters</symbol>
+      <symbol>glyph_gridCheck_blank</symbol>
+      <symbol>glyph_m_specialmovements</symbol>
+      <symbol>glyph_m_productmovement</symbol>
+      <symbol>glyph_input_percent</symbol>
+      <symbol>glyph_m_gatecontrol</symbol>
+      <symbol>glyph_button_export</symbol>
+      <symbol>glyph_input_home</symbol>
+      <symbol>glyph_m_repoprofile</symbol>
+      <symbol>glyph_m_customers</symbol>
+      <symbol>glyph_m_products</symbol>
+      <symbol>glyph_m_tankerlist</symbol>
+      <symbol>glyph_button_clear</symbol>
+      <symbol>glyph_m_scheduling</symbol>
+      <symbol>glyph_m_transactions</symbol>
+      <symbol>glyph_m_gatepermission</symbol>
+      <symbol>glyph_comboBox_error</symbol>
+      <symbol>glyph_equipmentEdit_pmv</symbol>
+      <symbol>glyph_m_configuration</symbol>
+      <symbol>glyph_button_ok</symbol>
+      <symbol>glyph_tanker_rigid</symbol>
+      <symbol>glyph_tanker_trailer</symbol>
+      <symbol>glyph_m_tankgroups</symbol>
+      <symbol>glyph_input_question</symbol>
+      <symbol>glyph_tanker_pmv</symbol>
+      <symbol>glyph_m_tankstatus</symbol>
+      <symbol>glyph_m_customerpricing</symbol>
+      <symbol>glyph_equipmentEdit_trailer</symbol>
+      <symbol>glyph_input_document</symbol>
+      <symbol>glyph_m_siteaccessdevices</symbol>
+      <symbol>glyph_m_onsitereport</symbol>
+      <symbol>glyph_input_dollar</symbol>
+      <symbol>glyph_m_productinventory</symbol>
+      <symbol>glyph_m_jasperreports</symbol>
+      <symbol>glyph_m_physicalprinters</symbol>
+      <symbol>glyph_m_events</symbol>
+      <symbol>glyph_button_pause</symbol>
+      <symbol>glyph_button_print</symbol>
+      <symbol>glyph_gridCheck_checked</symbol>
+      <symbol>glyph_m_keyreaderdevices</symbol>
+      <symbol>glyph_m_customercategories</symbol>
+      <symbol>glyph_m_equipment</symbol>
+      <symbol>glyph_m_timecodes</symbol>
+      <symbol>glyph_button_create</symbol>
+      <symbol>glyph_input_mail</symbol>
+      <symbol>glyph_input_lock</symbol>
+      <symbol>glyph_m_hazchem</symbol>
+      <symbol>glyph_m_equipmentlist</symbol>
+      <symbol>glyph_button_lock</symbol>
+      <symbol>glyph_m_personnel</symbol>
+      <symbol>glyph_m_folioscheduling</symbol>
+      <symbol>glyph_m_sftransactionlist</symbol>
+      <symbol>glyph_m_repoconfiguration</symbol>
+      <symbol>glyph_m_sitebalance</symbol>
+      <symbol>glyph_dateTime_calendar</symbol>
+      <symbol>glyph_m_movementreason</symbol>
+      <symbol>glyph_m_deliverylocations</symbol>
+      <symbol>glyph_m_expirydates</symbol>
+      <symbol>glyph_m_bayqueue</symbol>
+      <symbol>glyph_m_meteringdevices</symbol>
+      <symbol>glyph_m_drawerproducts</symbol>
+      <symbol>glyph_m_baseproducts</symbol>
+      <symbol>glyph_m_roleaccess</symbol>
+      <symbol>glyph_dropDown_indicator</symbol>
+      <symbol>glyph_m_area</symbol>
+      <symbol>glyph_m_tankinventory</symbol>
+      <symbol>glyph_equipmentEdit_rigid</symbol>
+      <symbol>glyph_m_tankers</symbol>
+      <symbol>glyph_button_default</symbol>
+      <symbol>glyph_button_unlock</symbol>
+      <symbol>glyph_input_pen</symbol>
+      <symbol>glyph_m_nomination</symbol>
+      <symbol>glyph_m_loadbays</symbol>
+      <symbol>glyph_m_logicalprinters</symbol>
+      <symbol>glyph_m_orderproductpricing</symbol>
+      <symbol>glyph_button_filteron</symbol>
+      <symbol>glyph_m_allocations</symbol>
+      <symbol>glyph_m_adaptiveflow</symbol>
+      <symbol>glyph_button_cancel</symbol>
+      <symbol>glyph_input_info</symbol>
+      <symbol>glyph_m_transactioncurrent</symbol>
+      <symbol>glyph_input_light</symbol>
+      <symbol>glyph_gridCheck_unchecked</symbol>
+      <symbol>valueObjects:_Site_ConfigEntityMetadata</symbol>
+      <symbol>aw.external.jsinterface.flobject:FLObjectCommands</symbol>
+      <symbol>aw.utils:EvalUtils</symbol>
+      <symbol>com.adobe.fiber.services:IFiberService</symbol>
+      <symbol>com.adobe.fiber.styles:IStyle</symbol>
+      <symbol>com.adobe.fiber.valueobjects:IPropertyIterator</symbol>
+      <symbol>com.adobe.fiber.valueobjects:AvailablePropertyIterator</symbol>
+      <symbol>com.adobe.fiber.styles:StyleValidator</symbol>
+      <symbol>com.adobe.fiber.styles:Style</symbol>
+      <symbol>valueObjects:_DomainPrivilege_voEntityMetadata</symbol>
+      <symbol>com.adobe.fiber.runtime.lib:StringFunc</symbol>
+      <symbol>renderers:MeterTypeTolRenderer</symbol>
+      <symbol>components:DKI_ValidatorComboBox</symbol>
+      <symbol>controllers:C_ManualTransactions</symbol>
+      <symbol>renderers:EquipmentIDRenderer</symbol>
+      <symbol>skins:NullSkin</symbol>
+      <symbol>components:DKI_DateTime</symbol>
+      <symbol>renderers:BaseProductCodeTotRenderer</symbol>
+      <symbol>renderers:TankCodeTotRenderer</symbol>
+      <symbol>renderers:BaseProductCodeRenderer</symbol>
+      <symbol>renderers:BaseProductClassTotRenderer</symbol>
+      <symbol>services.manualtransactionsservice:_Super_ManualTransactionsService</symbol>
+      <symbol>services.manualtransactionsservice:ManualTransactionsService</symbol>
+      <symbol>renderers:DrawerCodeRenderer</symbol>
+      <symbol>renderers:CompartmentNumberRenderer</symbol>
+      <symbol>renderers:DrawerProductCodeRenderer</symbol>
+      <symbol>renderers:QuantityNumberRenderer</symbol>
+      <symbol>renderers:MeterCodeRenderer</symbol>
+      <symbol>renderers:MeterTypeRenderer</symbol>
+      <symbol>renderers:TankCodeRenderer</symbol>
+      <symbol>components:DKI_DataGrid</symbol>
+      <symbol>renderers:MeterCodeTolRenderer</symbol>
+      <symbol>renderers:BaseProductClassRenderer</symbol>
+      <symbol>renderers:ArmCodeRenderer</symbol>
+      <symbol>components:DKI_ValidatorDropDown</symbol>
+      <symbol>views:v_FolioSchedulling_Calendar</symbol>
+      <symbol>skins:VScrollBarSkin</symbol>
+      <symbol>skins:HScrollBarSkin</symbol>
+      <symbol>com.hurlant.util:Memory</symbol>
+      <symbol>com.hurlant.crypto.prng:Random</symbol>
+      <symbol>com.hurlant.math:BigInteger</symbol>
+      <symbol>br.com.rectius.library.notificator.assets:IconWarning</symbol>
+      <symbol>br.com.rectius.library.notificator.assets:IconFailure</symbol>
+      <symbol>br.com.rectius.library.notificator.assets:IconSuccess</symbol>
+      <symbol>components:WidgetPanel</symbol>
+      <symbol>valueObjects:_Super_Gui_Personnel</symbol>
+      <symbol>valueObjects:Gui_Personnel</symbol>
+      <symbol>skins:UserProfileSkin</symbol>
+      <symbol>components:PasswordChanger</symbol>
+      <symbol>services.personnelservice:_Super_PersonnelService</symbol>
+      <symbol>services.personnelservice:PersonnelService</symbol>
+      <symbol>mx.data:IDatabaseCollection</symbol>
+      <symbol>mx.data:IDatabaseCursor</symbol>
+      <symbol>mx.data.events:DatabaseResultEvent</symbol>
+      <symbol>mx.data.events:DatabaseStatusEvent</symbol>
+      <symbol>mx.data:LSODatabase</symbol>
+      <symbol>mx.data:DataService</symbol>
+      <symbol>skins:DialogBoxSkin</symbol>
+      <symbol>aw.utils.propertyinspector:PropertyAccessType</symbol>
+      <symbol>aw.utils.propertyinspector:PropertyInspectorItem</symbol>
+      <symbol>aw.utils.propertyinspector:PropertyItem</symbol>
+      <symbol>aw.utils:PropertyInspector</symbol>
+      <symbol>aw.utils.propertyinspector:static_ns</symbol>
+      <symbol>aw.utils.eval:ObjectEval</symbol>
+      <symbol>aw.utils.eval:ExecutableEval</symbol>
+      <symbol>aw.utils.eval:XMLEval</symbol>
+      <symbol>aw.utils.eval:NumberEval</symbol>
+      <symbol>aw.utils.eval:StringEval</symbol>
+      <symbol>aw.utils.eval:OperationEval</symbol>
+      <symbol>aw.utils.eval:RegExpEval</symbol>
+      <symbol>aw.utils:IterationIndex</symbol>
+      <symbol>aw.utils.iteration:LengthIterationIndex</symbol>
+      <symbol>aw.utils.eval:ArrayEval</symbol>
+      <symbol>com.adobe.fiber.styles:ILocalizeableMessage</symbol>
+      <symbol>com.adobe.fiber.styles:LocalizeableMessage</symbol>
+      <symbol>skins:ValidateComboBoxSkin</symbol>
+      <symbol>com.adobe.fiber.runtime.lib:DateTimeFunc</symbol>
+      <symbol>views:v_ManualTransactionsData</symbol>
+      <symbol>components:ViewPopupDlg</symbol>
+      <symbol>controllers:C_ManualTransactionsCal</symbol>
+      <symbol>components:DKI_PassBox</symbol>
+      <symbol>components:DKI_NumericStepper</symbol>
+      <symbol>skins:DateTimeSkin</symbol>
+      <symbol>skins:MeasuresSkin</symbol>
+      <symbol>skins:ValidateDropDownSkin</symbol>
+      <symbol>components:DKI_Advanced_Calendar</symbol>
+      <symbol>views:v_FolioScheduling</symbol>
+      <symbol>skins:ScrollBarUpButtonSkin</symbol>
+      <symbol>skins:VScrollBarThumbSkin</symbol>
+      <symbol>skins:ScrollBarDownButtonSkin</symbol>
+      <symbol>skins:ScrollBarLeftButtonSkin</symbol>
+      <symbol>skins:ScrollBarRightButtonSkin</symbol>
+      <symbol>skins:HScrollbarThumbSkin</symbol>
+      <symbol>com.hurlant.math:bi_internal</symbol>
+      <symbol>com.hurlant.math:IReduction</symbol>
+      <symbol>com.hurlant.math:MontgomeryReduction</symbol>
+      <symbol>com.hurlant.math:BarrettReduction</symbol>
+      <symbol>com.hurlant.math:NullReduction</symbol>
+      <symbol>com.hurlant.math:ClassicReduction</symbol>
+      <symbol>skins:PanelSkin</symbol>
+      <symbol>valueObjects:_Gui_PersonnelEntityMetadata</symbol>
+      <symbol>valueObjects:_Super_SiteAreas</symbol>
+      <symbol>valueObjects:SiteAreas</symbol>
+      <symbol>mx.data:RPCDataManager</symbol>
+      <symbol>valueObjects:_Super_AccessPermissions_vo</symbol>
+      <symbol>valueObjects:AccessPermissions_vo</symbol>
+      <symbol>valueObjects:_Super_CompaniesLookup</symbol>
+      <symbol>valueObjects:CompaniesLookup</symbol>
+      <symbol>valueObjects:_Super_PersonnelOnSite</symbol>
+      <symbol>valueObjects:PersonnelOnSite</symbol>
+      <symbol>valueObjects:_Super_TimeCode</symbol>
+      <symbol>valueObjects:TimeCode</symbol>
+      <symbol>valueObjects:_Super_PersonnelRoles</symbol>
+      <symbol>valueObjects:PersonnelRoles</symbol>
+      <symbol>mx.data:ManagedOperation</symbol>
+      <symbol>mx.data:ManagedQuery</symbol>
+      <symbol>mx.data.events:DatabaseUpdateEvent</symbol>
+      <symbol>aw.utils.propertyinspector:PropertyContainerType</symbol>
+      <symbol>aw.data:BasicValue</symbol>
+      <symbol>aw.errors:EvalUtilsError</symbol>
+      <symbol>aw.utils.eval:PredefinedEval</symbol>
+      <symbol>aw.emulate:IEmulate</symbol>
+      <symbol>aw.emulate:Arithmetic</symbol>
+      <symbol>aw.emulate:OperatorPriority</symbol>
+      <symbol>aw.emulate:ICondition</symbol>
+      <symbol>aw.emulate:Condition</symbol>
+      <symbol>aw.emulate:Operators</symbol>
+      <symbol>skins:DKI_ComboBoxButton_Skin</symbol>
+      <symbol>controllers:C_ManualTransactionsData</symbol>
+      <symbol>renderers:UserDataStatRenderer</symbol>
+      <symbol>skins:PopupSkin</symbol>
+      <symbol>skins:DKI_NumericStepperSkin</symbol>
+      <symbol>skins:MeasureBtnSkin</symbol>
+      <symbol>components:DKI_Advanced_Calendar_Cell</symbol>
+      <symbol>controllers:C_FolioScheduling</symbol>
+      <symbol>views:v_FolioSchedulling_Settings</symbol>
+      <symbol>views:v_FolioSchedulling_Planner</symbol>
+      <symbol>valueObjects:_SiteAreasEntityMetadata</symbol>
+      <symbol>mx.data:RPCDataServiceAdapter</symbol>
+      <symbol>valueObjects:_AccessPermissions_voEntityMetadata</symbol>
+      <symbol>valueObjects:_CompaniesLookupEntityMetadata</symbol>
+      <symbol>valueObjects:_PersonnelOnSiteEntityMetadata</symbol>
+      <symbol>valueObjects:_TimeCodeEntityMetadata</symbol>
+      <symbol>valueObjects:_PersonnelRolesEntityMetadata</symbol>
+      <symbol>mx.data:TypeUtility</symbol>
+      <symbol>aw.emulate:Bitwise</symbol>
+      <symbol>dm.models:dmFolioSchedule</symbol>
+      <symbol>controllers:C_FolioScheduling_Settings</symbol>
+      <symbol>controllers:C_FolioScheduling_Planner</symbol>
+      <symbol>components:DKI_DateChooser</symbol>
+      <symbol>components:ManualCloseOut</symbol>
+   </externs>
+   <frames>
+      <!-- frames.frame: A SWF frame label with a sequence of classnames that will be linked onto the frame.-->
+      <!-- frames.frame usage:
+      <frame>
+         <label>string</label>
+         <classname>string</classname>
+      </frame>
+      -->
+   </frames>
+   <framework>halo</framework>
+   <!-- include-inheritance-dependencies-only: only include inheritance dependencies of classes specified with include-classes -->
+   <!-- include-inheritance-dependencies-only usage:
+   <include-inheritance-dependencies-only>boolean</include-inheritance-dependencies-only>
+   -->
+   <!-- include-resource-bundles: a list of resource bundles to include in the output SWC-->
+   <!-- include-resource-bundles usage:
+   <include-resource-bundles>
+      <bundle>string</bundle>
+      <bundle>string</bundle>
+   </include-resource-bundles>
+   -->
+   <!-- includes: a list of symbols to always link in when building a SWF-->
+   <!-- includes usage:
+   <includes>
+      <symbol>string</symbol>
+      <symbol>string</symbol>
+   </includes>
+   -->
+   <!-- link-report: Output a XML-formatted report of all definitions linked into the application.-->
+   <!-- link-report usage:
+   <link-report>filename</link-report>
+   -->
+   <!-- load-config: load a file containing configuration options-->
+   <load-config>${flexlib}/${configname}-config.xml</load-config>
+   <!-- load-externs: an XML file containing <def>, <pre>, and <ext> symbols to omit from linking when building a SWF-->
+   <!-- load-externs usage:
+   <load-externs>filename</load-externs>
+   -->
+   <metadata>
+      <!-- metadata.contributor: A contributor's name to store in the SWF metadata-->
+      <!-- metadata.contributor usage:
+      <contributor>name</contributor>
+      -->
+      <!-- metadata.creator: A creator's name to store in the SWF metadata-->
+      <creator>unknown</creator>
+      <!-- metadata.date: The creation date to store in the SWF metadata-->
+      <!-- metadata.date usage:
+      <date>text</date>
+      -->
+      <!-- metadata.description: The default description to store in the SWF metadata-->
+      <description>https://www.adobe.com/products/flex</description>
+      <!-- metadata.language: The language to store in the SWF metadata (i.e. EN, FR)-->
+      <language>EN</language>
+      <!-- metadata.localized-description: A localized RDF/XMP description to store in the SWF metadata-->
+      <!-- metadata.localized-description usage:
+      <localized-description>
+         <text>string</text>
+         <lang>string</lang>
+         <lang>string</lang>
+      </localized-description>
+      -->
+      <!-- metadata.localized-title: A localized RDF/XMP title to store in the SWF metadata-->
+      <!-- metadata.localized-title usage:
+      <localized-title>
+         <title>string</title>
+         <lang>string</lang>
+         <lang>string</lang>
+      </localized-title>
+      -->
+      <!-- metadata.publisher: A publisher's name to store in the SWF metadata-->
+      <publisher>unknown</publisher>
+      <!-- metadata.title: The default title to store in the SWF metadata-->
+      <title>Adobe Flex 4 Application</title>
+   </metadata>
+   <!-- raw-metadata: XML text to store in the SWF metadata (overrides metadata.* configuration)-->
+   <!-- raw-metadata usage:
+   <raw-metadata>text</raw-metadata>
+   -->
+   <!-- remove-unused-rsls: remove RSLs that are not being used by the application-->
+   <remove-unused-rsls>true</remove-unused-rsls>
+   <!-- resource-bundle-list: prints a list of resource bundles to a file for input to the compc compiler to create a resource bundle SWC file. -->
+   <!-- resource-bundle-list usage:
+   <resource-bundle-list>filename</resource-bundle-list>
+   -->
+   <!-- runtime-shared-libraries: a list of runtime shared library URLs to be loaded before the application starts-->
+   <!-- runtime-shared-libraries usage:
+   <runtime-shared-libraries>
+      <url>string</url>
+      <url>string</url>
+   </runtime-shared-libraries>
+   -->
+   <!-- runtime-shared-library-path: specifies a SWC to link against, an RSL URL to load, with an optional policy file URL and optional failover URLs -->
+   <runtime-shared-library-path>
+      <path-element>E:/flex_sdk4.6/frameworks/libs/charts.swc</path-element>
+      <rsl-url>https://fpdownload.adobe.com/pub/swz/flex/4.6.0.23201/charts_4.6.0.23201.swz</rsl-url>
+      <policy-file-url>https://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>charts_4.6.0.23201.swz</rsl-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>E:/flex_sdk4.6/frameworks/libs/spark_dmv.swc</path-element>
+      <rsl-url>https://fpdownload.adobe.com/pub/swz/flex/4.6.0.23201/spark_dmv_4.6.0.23201.swz</rsl-url>
+      <policy-file-url>https://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>spark_dmv_4.6.0.23201.swz</rsl-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>E:/flex_sdk4.6/frameworks/libs/osmf.swc</path-element>
+      <rsl-url>https://fpdownload.adobe.com/pub/swz/flex/4.6.0.23201/osmf_1.0.0.16316.swz</rsl-url>
+      <policy-file-url>https://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>osmf_1.0.0.16316.swz</rsl-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>E:/flex_sdk4.6/frameworks/libs/advancedgrids.swc</path-element>
+      <rsl-url>https://fpdownload.adobe.com/pub/swz/flex/4.6.0.23201/advancedgrids_4.6.0.23201.swz</rsl-url>
+      <policy-file-url>https://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>advancedgrids_4.6.0.23201.swz</rsl-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-settings>
+      <!-- runtime-shared-library-settings.application-domain: override the application domain an RSL is loaded into. The supported values are 'current', 'default', 'parent', or 'top-level'.-->
+      <application-domain>
+         <path-element>E:/flex_sdk4.6/frameworks/libs/charts.swc</path-element>
+         <application-domain-target>default</application-domain-target>
+         <path-element>E:/flex_sdk4.6/frameworks/libs/spark_dmv.swc</path-element>
+         <application-domain-target>default</application-domain-target>
+         <path-element>E:/flex_sdk4.6/frameworks/libs/osmf.swc</path-element>
+         <application-domain-target>default</application-domain-target>
+         <path-element>E:/flex_sdk4.6/frameworks/libs/advancedgrids.swc</path-element>
+         <application-domain-target>default</application-domain-target>
+      </application-domain>
+      <!-- runtime-shared-library-settings.force-rsls: force an RSL to be loaded, overriding the removal caused by using the remove-unused-rsls option-->
+      <!-- runtime-shared-library-settings.force-rsls usage:
+      <force-rsls>
+         <path-element>string</path-element>
+         <path-element>string</path-element>
+      </force-rsls>
+      -->
+   </runtime-shared-library-settings>
+   <!-- size-report: Output an XML-formatted report detailing the size of all code and data linked into the application.-->
+   <!-- size-report usage:
+   <size-report>filename</size-report>
+   -->
+   <!-- static-link-runtime-shared-libraries: statically link the libraries specified by the -runtime-shared-libraries-path option.-->
+   <static-link-runtime-shared-libraries>false</static-link-runtime-shared-libraries>
+   <!-- swf-version: specifies the version of the compiled SWF file.-->
+   <swf-version>14</swf-version>
+   <!-- target-player: specifies the version of the player the application is targeting. Features requiring a later version will not be compiled into the application. The minimum value supported is "9.0.0".-->
+   <target-player>11.1.0</target-player>
+   <!-- tools-locale: specifies the locale used by the compiler when reporting errors and warnings.-->
+   <!-- tools-locale usage:
+   <tools-locale>string</tools-locale>
+   -->
+   <!-- use-direct-blit: Use hardware acceleration to blit graphics to the screen, where such acceleration is available.-->
+   <!-- use-direct-blit usage:
+   <use-direct-blit>boolean</use-direct-blit>
+   -->
+   <!-- use-gpu: Use GPU compositing features when drawing graphics, where such acceleration is available.-->
+   <!-- use-gpu usage:
+   <use-gpu>boolean</use-gpu>
+   -->
+   <!-- use-network: toggle whether the SWF is flagged for access to network resources-->
+   <use-network>true</use-network>
+   <!-- verify-digests: verifies the libraries loaded at runtime are the correct ones.-->
+   <verify-digests>true</verify-digests>
+   <!-- warnings: toggle the display of warnings-->
+   <!-- warnings usage:
+   <warnings>boolean</warnings>
+   -->
+</flex-config>

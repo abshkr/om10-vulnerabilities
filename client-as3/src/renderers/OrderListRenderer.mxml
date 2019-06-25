@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:s="library://ns.adobe.com/flex/spark"
+					xmlns:mx="library://ns.adobe.com/flex/mx"
+					clipAndEnableScrolling="true" creationComplete="griditemrenderer1_creationCompleteHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			import spark.components.DataGrid;
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable] private var ooPopupEnabled:Boolean=false;
+			
+			override public function prepare(hasBeenRecycled:Boolean):void 
+			{
+				if (data)
+				{
+					if ((data[column.dataField]!=null) && (data[column.dataField]!='null') && (data[column.dataField]!=''))
+					{
+						orderInp.text=data[column.dataField];
+						orderLbl.text=data[column.dataField];
+					}
+					else
+					{
+						orderInp.text='';
+						orderLbl.text='';
+					}
+				}	
+			}
+				
+			protected function ordersBtn_clickHandler(event:MouseEvent):void
+			{
+				dispatchEvent(new Event('OrderSelect', true, false));
+				
+			}
+			
+			protected function orderInp_keyUpHandler(event:KeyboardEvent):void
+			{
+				if (event.keyCode==13)
+				{
+					data[column.dataField] = orderInp.text;
+					if ( orderInp.text != "" )
+					{
+						dispatchEvent(new Event('OrderGet', true, false));
+					}
+				}
+			}
+			
+			protected function griditemrenderer1_creationCompleteHandler(event:FlexEvent):void
+			{
+				if ( global.getValueFromSiteConfigSettings("SITE_OO_ASSN_FROM_SCHD_CMPT") == 'Y' )
+				{
+					this.ooPopupEnabled = true;
+				}
+				else
+				{
+					this.ooPopupEnabled = false;
+				}
+				
+				// TODO Auto-generated method stub
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<s:HGroup width="100%" height="100%" paddingLeft="2" gap="-1" paddingTop="0" paddingBottom="0" visible="{!ooPopupEnabled}" includeInLayout="{!ooPopupEnabled}">
+		<s:Label id="orderLbl" width="100%" height="100%" minHeight="12"/>
+	</s:HGroup>	
+	<s:HGroup width="100%" height="100%" paddingLeft="2" gap="-1" paddingTop="0" paddingBottom="0" visible="{ooPopupEnabled}" includeInLayout="{ooPopupEnabled}">
+		<s:TextInput id="orderInp" width="100%" height="100%" minHeight="12" keyUp="orderInp_keyUpHandler(event)"/>
+		<s:Group height="100%" width="18">
+			<s:Image source="{glyph.input_search}" buttonMode="true" verticalCenter="0" horizontalCenter="0" click="ordersBtn_clickHandler(event)"/>			
+		</s:Group>
+	</s:HGroup>	
+</s:GridItemRenderer>

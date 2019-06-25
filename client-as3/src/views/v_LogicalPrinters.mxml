@@ -1,0 +1,1102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  creationComplete="creationCompleteHandler(event)"
+		  gap="2" width="100%" height="100%">
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="edit" enterState="
+				 callLater(function():void{dataGrid.ensureCellIsVisible(dataGrid.selectedIndex);});"/>
+		<s:State name="create"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.fiber.runtime.lib.DateTimeFunc;
+			
+			import components.ActionDialog;
+			import components.ConfirmDialog;
+			import components.DKI_AlertBox;
+			import components.DeleteDialog;
+			import components.ExportData;
+			import components.MessageDialog;
+			
+			import dm.remoteDataService;
+			import dm.remoteListService;
+			import dm.utils.tools;
+			
+			import flash.events.KeyboardEvent;
+			import flash.globalization.LocaleID;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			
+			
+			public static const MAIN_WINDOW_WIDTH:int = 1500;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable] public var labelWidth:uint = 120;
+			[Bindable] public var labelHeight:uint = 26;
+			[Bindable] public var fieldWidth:uint = 200;
+			[Bindable] public var fieldHeight:uint = 26;
+			[Bindable] public var spaceWidth:uint = 15;
+			[Bindable] public var spaceHeight:uint = 2;
+			
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='logical_printer_code';
+			private var currentDirection:String="ASC";
+			
+			private var currentOffset:int=0;
+			private var currentPageSize:int=1000;
+			[Bindable] private var totalLength:int=0;
+			[Bindable] private var currentLength:int=0;
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			private var currentSorts:Object=new Object();
+			private var currentOrders:Object=new Object();
+			private var currentSortSeq:int=0;
+			
+			private var eq_filter:String=null;
+			
+			private var confirmDelete:DKI_AlertBox;
+			
+			private var  originalItems:ArrayCollection;
+			
+			
+			private var confirmReport:ActionDialog;
+			
+			//private var exportContents:String="";
+			private var f:FileReference = new FileReference();
+			
+			
+			//private var getData:Responder = new Responder(getData_resultHandler);
+			
+			//private var pagedRecords:ArrayCollection=new ArrayCollection();
+			//private var pagedRecords:remoteDataService = new remoteDataService( "LogicalPrinterService.getPaged", getData, null );
+			[Bindable] private var pagedRecords:remoteListService;
+			
+			private var deleteAction:remoteDataService = new remoteDataService( "LogicalPrinterService.delete", null, deleteData_resultHandler, 1 );
+			private var createAction:remoteDataService = new remoteDataService( "LogicalPrinterService.create", null, createData_resultHandler, 1 );
+			private var updateAction:remoteDataService = new remoteDataService( "LogicalPrinterService.update", null, updateData_resultHandler, 1 );
+			
+			private var logicalPrinterChecker:remoteDataService = new remoteDataService( "LogicalPrinterService.isLogicalPrinterExisted", null, logicalPrinterChecker_resultHandler, 2 );
+
+			[Bindable] private var companyList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCompanyPlusDefault", null, companyList_resultHandler );
+//			[Bindable] private var companyList:remoteDataService = new remoteDataService( "ListLibraryService.lookupCompanyPlusDefault", null, null );
+			[Bindable] private var printerUsageList:remoteDataService = new remoteDataService( "ListLibraryService.lookupPrinterUsage", null, null );
+			[Bindable] private var printerList:remoteDataService = new remoteDataService( "ListLibraryService.lookupPrinter", null, null );
+			[Bindable] private var areaList:remoteDataService = new remoteDataService( "ListLibraryService.lookupArea", null, null );
+			
+			
+			private var pageCount:int=1;
+			[Bindable] public  var bytesTotal:Number  = 1000000;
+			[Bindable] public  var bytesLoaded:Number = 0;
+			//			[Bindable] public  var totalCount:Number  = 0;
+			
+			//			[Bindable] private var currentPage:Number 		= 1;
+			//private var pageBy:int = 1000;
+			[Bindable] private var finishedAllPages:Boolean =  true;
+			//			[Bindable] private var interruptor:Boolean 		=  false;
+			//[Bindable] private var orderArr:ArrayCollection=new ArrayCollection();
+			
+			
+			//private var genData:ExportData = new ExportData();
+			
+			public var mainListSelection:int = -1;
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				trace ("-------------start creationCompleteHandler");
+				pagedRecords = new remoteListService( this.dataGrid, "LogicalPrinterService.getPaged", null, getPageData_resultHandler );
+				//resourceManager.localeChain = ['zh_CN'];
+				//global.LanguageCode="CHN";
+				
+				this.startFiltering();
+				
+				this.companyList.service( 1 );
+				this.printerUsageList.service( );
+				this.printerList.service( );
+				this.areaList.service( );
+				
+				trace ("------------End creationCompleteHandler");
+				
+				
+				//trace("this.grid.scroller1111", this.dataGrid.scroller);
+				//trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+				this.dataGrid.scroller.verticalScrollBar.addEventListener(Event.CHANGE, verticalScrollBarChanged);
+				this.dataGrid.addEventListener(KeyboardEvent.KEY_UP, reportKeyUp);
+				this.dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+			}
+			
+			
+			
+			protected function startLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				//this.panel.enabled = false;
+				
+				currentLength=0;
+				currentOffset = 0;
+				
+				//this.exportContents = this.genData.prepExportHeader( dataGrid );
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				this.pb.values(0, 0);
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			protected function endLoadingPages():void
+			{
+				this.btn_create.enabled = this.canCreate;
+				this.btn_export.enabled = true;
+				this.dataGrid.enabled = true;
+				this.toolbar.enabled = true;
+				//this.panel.enabled = true;
+				//this.pb.values(totalCount, totalCount);
+				this.pb.values(pagedRecords.totalCount, pagedRecords.totalCount, true);
+				
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = false;
+				
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				//if ( totalLength > totalCount )
+				if ( pagedRecords.totalLength > pagedRecords.totalCount )
+				{
+					this.resumeBtn.enabled = true;
+				}
+				else
+				{
+					this.resumeBtn.enabled = false;
+				}
+			}
+			
+			protected function exportCsvHandler(event:MouseEvent):void
+			{
+				this.confirmReport = new ActionDialog( doExport, cancelExport, resourceManager.getString('default','CONFIRM_REPORT_CSV') );
+				
+				//this.startLoadingPages();
+			}
+			
+			private function getPageData_resultHandler():void
+			{
+				// if not finished
+				if(pagedRecords.length < pagedRecords.totalCount)
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+				}
+				else
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+					
+					this.endLoadingPages();
+					
+					this.dataGrid.selectedIndex = this.mainListSelection;
+					if ( this.mainListSelection >= 0)
+					{
+						this.dataGrid_selectionChangeHandler(null);
+					}
+					this.mainListSelection = -1;
+					
+				}
+				
+			}
+			
+			
+			public function doExport():void
+			{
+				//genData.prepOther(dataGrid,'orderlist.csv', this.pagedRecords);
+				
+				//f.save( this.exportContents, "orderlist.csv" );
+				f.save( pagedRecords.exportContents, "phyprinterlist.csv" );
+				
+				this.endLoadingPages();
+			}
+			
+			
+			public function cancelExport():void
+			{
+				this.endLoadingPages();
+				
+				//trace( this.exportContents );
+			}
+			
+			
+			
+			private function verticalScrollBarChanged(event:Event):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function reportKeyUp(event:KeyboardEvent):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				if(event.column.dataField!='NA')
+				{
+					var currentRenderer:IGridItemRenderer;
+					var dir:String;
+					
+					if ( global.sortingBySingleColumn == true )
+					{	// sorted by single column only
+						for (var i:int=0; i < dataGrid.columns.length; i++)
+						{
+							currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+							if ( currentRenderer != null)
+							{
+								(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+							}
+							//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+						}
+					}
+					else
+					{	// sorted by multiple columns
+						;
+					}
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if( currentSorts.hasOwnProperty(event.column.dataField ) )
+					{
+						dir = currentSorts[event.column.dataField];
+						if( dir=="ASC" )
+						{
+							dir = "DESC";
+						}
+						else if ( dir == "DESC" )
+						{
+							dir = "";
+						}
+						else if ( dir == "" )
+						{
+							dir = "ASC";
+						}
+						else 
+						{
+							dir = "ASC";
+						}
+						
+						if ( dir != "" )
+						{
+							currentSorts[event.column.dataField] = dir;	
+						}
+						else
+						{
+							delete currentSorts[event.column.dataField];
+							delete currentOrders[event.column.dataField];
+						}
+					}
+					else
+					{
+						if ( global.sortingBySingleColumn == true )
+						{	// sorted by single column only
+							currentSorts = new Object();
+							currentOrders = new Object();
+							currentSortSeq = 0;
+						}
+						else
+						{	// sorted by multiple columns
+							;
+						}
+						currentSorts[event.column.dataField] = "ASC";	
+						dir = currentSorts[event.column.dataField];
+						currentSortSeq += 1;
+						currentOrders[event.column.dataField] = currentSortSeq;	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+					this.startFiltering();
+				}
+			}
+			
+			
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				idx=dataGrid.selectedIndex;
+				dataGrid.ensureCellIsVisible(idx);
+				
+				currentState = "edit";					
+				this.btn_save.enabled = this.canUpdate;
+				
+				// get selectedIndex for company list
+				if ( this.dataGrid.selectedIndex>=0 )
+				{
+					logical_printer_company.selectedIndex = tools.getItemIndexFromCode( this.dataGrid.selectedItem.prt_cmpy, this.companyList, "cmpy_code");
+				}
+			}
+			
+			
+			protected function cancel_clickHandler():void
+			{
+				clearDetail();
+				if ( currentState== "create" )
+				{
+					dataGrid.enabled=true;
+				}
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+			}			
+			
+			protected function fltr_company_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_usage_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_printer_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_area_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			private function startFiltering():void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				fields = new Object();
+				types = new Object();
+				
+				
+				if (fltr_company.selectedIndex > -1) 
+				{
+					fields["prt_cmpy"] = companyList[fltr_company.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					fields["prt_cmpy"] = "";
+				}
+				types["prt_cmpy"] = "EXACT_STRING";
+				
+				if (fltr_usage.selectedIndex > -1) 
+				{
+					fields["prt_usage"] = printerUsageList[fltr_usage.selectedIndex].prt_usage;
+				}
+				else
+				{
+					fields["prt_usage"] = "";
+				}
+				types["prt_usage"] = "EXACT_STRING";
+				
+				if (fltr_printer.selectedIndex > -1) 
+				{
+					fields["prt_printer"] = printerList[fltr_printer.selectedIndex].prntr;
+				}
+				else
+				{
+					fields["prt_printer"] = "";
+				}
+				types["prt_printer"] = "EXACT_STRING";
+				
+				if (fltr_area.selectedIndex > -1) 
+				{
+					fields["prt_area"] = areaList[fltr_area.selectedIndex].area_k;
+				}
+				else
+				{
+					fields["prt_area"] = "";
+				}
+				types["prt_area"] = "EXACT_STRING";
+				
+				currentFields = fields;
+				currentTypes = types;
+				
+				this.startLoadingPages();
+				
+				trace("this.grid.scroller3333", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			private function findByID(cmpy:String, usage:String, printer:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["prt_cmpy"] = cmpy;
+				types["prt_cmpy"] = "EXACT_STRING";
+				fields["prt_usage"] = usage;
+				types["prt_usage"] = "EXACT_STRING";
+				fields["prt_printer"] = printer;
+				types["prt_printer"] = "EXACT_STRING";
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				//this.pagedRecords.service( fields, types, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( fields, types, currentSorts, currentOrders );
+			}
+			
+			protected function filterRecords(event:MouseEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				this.startFiltering();
+			}
+			
+			protected function refreshRecords(event:MouseEvent):void
+			{
+				currentState = 'normal';
+				dataGrid.enabled=true;
+				
+				clearDetail();
+				fltr_company.selectedIndex = -1;
+				fltr_usage.selectedIndex = -1;
+				fltr_printer.selectedIndex = -1;
+				fltr_area.selectedIndex = -1;
+				dataGrid.selectedIndex = -1;
+				currentFilter = null;
+				currentOrder = null;
+				currentFields = new Object();
+				currentTypes = new Object();
+				
+				currentSorts = new Object();
+				currentOrders = new Object();
+				var currentRenderer:IGridItemRenderer;
+				for (var i:int=0; i < dataGrid.columns.length; i++)
+				{
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					if ( currentRenderer != null)
+					{
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+					}
+					//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+				}
+				this.startLoadingPages();
+				trace("this.grid.scroller2222", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			protected function clearDetail(): void
+			{
+			}			
+			
+			private function editRecord():void
+			{
+				
+				var order_num:int;
+				
+				order_num = logicalPrinterChecker.dataInteger;
+				trace ("isLogicalPrinterExisted", order_num);
+				if ( order_num > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__LOGICAL_PRINTER_EXIST') );
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				if (logical_printer_company.selectedIndex>=0)
+				{
+					obj.prt_cmpy = companyList[logical_printer_company.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.prt_cmpy = dataGrid.selectedItem.prt_cmpy;
+				}
+				
+				if (logical_printer_usage.selectedIndex>=0)
+				{
+					obj.prt_usage_name = printerUsageList[logical_printer_usage.selectedIndex].prt_usage_name;
+					obj.prt_usage = printerUsageList[logical_printer_usage.selectedIndex].prt_usage;
+				}
+				else
+				{
+					obj.prt_usage_name = dataGrid.selectedItem.prt_usage_name;
+					obj.prt_usage = dataGrid.selectedItem.prt_usage;
+				}
+				
+				if (logical_printer_printer.selectedIndex>=0)
+				{
+					obj.prt_printer = printerList[logical_printer_printer.selectedIndex].prntr;
+				}
+				else
+				{
+					obj.prt_printer = dataGrid.selectedItem.prt_printer;
+				}
+				
+				obj.prt_orig = dataGrid.selectedItem.prt_printer;
+				
+				
+				updateAction.service( obj );
+			}
+			
+			protected function updateData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.updateAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var cmpy:String="";
+				var usage:String="";
+				var printer:String="";
+				if (logical_printer_company.selectedIndex>=0)
+				{
+					cmpy = companyList[logical_printer_company.selectedIndex].cmpy_code;
+				}
+				if (logical_printer_usage.selectedIndex>=0)
+				{
+					usage = printerUsageList[logical_printer_usage.selectedIndex].prt_usage;
+				}
+				
+				if (logical_printer_printer.selectedIndex>=0)
+				{
+					printer = printerList[logical_printer_printer.selectedIndex].prntr;
+				}
+				
+				currentState="normal";
+				this.findByID( cmpy, usage, printer );
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			private function doDelete(): void
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				else
+				{
+					var canDelete:DeleteDialog = new DeleteDialog(deleteRecord, hasPassword);
+				}
+			}
+			
+			private function deleteRecord():void
+			{
+				var obj:Object = new Object();
+				
+				
+				if (logical_printer_company.selectedIndex>=0)
+				{
+					obj.prt_cmpy = companyList[logical_printer_company.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.prt_cmpy = dataGrid.selectedItem.prt_cmpy;
+				}
+				
+				if (logical_printer_usage.selectedIndex>=0)
+				{
+					obj.prt_usage_name = printerUsageList[logical_printer_usage.selectedIndex].prt_usage_name;
+					obj.prt_usage = printerUsageList[logical_printer_usage.selectedIndex].prt_usage;
+				}
+				else
+				{
+					obj.prt_usage_name = dataGrid.selectedItem.prt_usage_name;
+					obj.prt_usage = dataGrid.selectedItem.prt_usage;
+				}
+				
+				if (logical_printer_printer.selectedIndex>=0)
+				{
+					obj.prt_printer = printerList[logical_printer_printer.selectedIndex].prntr;
+				}
+				else
+				{
+					obj.prt_printer = dataGrid.selectedItem.prt_printer;
+				}
+				
+				deleteAction.service( obj );
+			}
+			
+			protected function deleteData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.deleteAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+				}
+				
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+			}
+			
+			private function checkLogicalPrinter():void
+			{
+				var code:String;
+				var usage:String;
+				var printer:String;
+				
+				if ( this.logical_printer_company.selectedIndex < 0 )
+				{
+					code = "-1";
+				}
+				else
+				{
+					code = companyList[logical_printer_company.selectedIndex].cmpy_code;
+				}
+				
+				if ( this.logical_printer_usage.selectedIndex < 0 )
+				{
+					usage = "-1";
+				}
+				else
+				{
+					usage = printerUsageList[logical_printer_usage.selectedIndex].prt_usage;
+				}
+				
+				if ( this.logical_printer_printer.selectedIndex < 0 )
+				{
+					printer = "-1";
+				}
+				else
+				{
+					printer = printerList[logical_printer_printer.selectedIndex].prntr;
+				}
+				
+				logicalPrinterChecker.service( code, usage, printer );
+			}
+			
+			protected function logicalPrinterChecker_resultHandler( ):void
+			{
+				trace ("isLogicalPrinterExisted",  logicalPrinterChecker.dataInteger);
+				if ( logicalPrinterChecker.dataInteger > 0 )
+				{
+					//var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__LOGICAL_PRINTER_EXIST') );
+					global.msgWarning( resourceManager.getString('default','ALERT__LOGICAL_PRINTER_EXIST') );
+					if ( currentState == "create" )
+					{
+						this.btn_save.enabled = this.canCreate;
+					}
+					if ( currentState == "edit" )
+					{
+						this.btn_save.enabled = this.canUpdate;
+					}
+					
+				}
+				else
+				{
+					;
+				}
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return index;
+			}
+			
+			private function createRecord():void
+			{
+				var order_num:int;
+				
+				order_num = logicalPrinterChecker.dataInteger;
+				trace ("isLogicalPrinterExisted", order_num);
+				if ( order_num > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__LOGICAL_PRINTER_EXIST') );
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				if (logical_printer_company.selectedIndex>=0)
+				{
+					obj.prt_cmpy = companyList[logical_printer_company.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.prt_cmpy = "";
+				}
+				
+				if (logical_printer_usage.selectedIndex>=0)
+				{
+					obj.prt_usage_name = printerUsageList[logical_printer_usage.selectedIndex].prt_usage_name;
+					obj.prt_usage = printerUsageList[logical_printer_usage.selectedIndex].prt_usage;
+				}
+				else
+				{
+					obj.prt_usage_name = "";
+					obj.prt_usage = "";
+				}
+				
+				if (logical_printer_printer.selectedIndex>=0)
+				{
+					obj.prt_printer = printerList[logical_printer_printer.selectedIndex].prntr;
+				}
+				else
+				{
+					obj.prt_printer = "";
+				}
+				
+				createAction.service( obj );
+			}
+			
+			protected function createData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.createAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				}
+				
+				var cmpy:String="";
+				var usage:String="";
+				var printer:String="";
+				if (logical_printer_company.selectedIndex>=0)
+				{
+					cmpy = companyList[logical_printer_company.selectedIndex].cmpy_code;
+				}
+				if (logical_printer_usage.selectedIndex>=0)
+				{
+					usage = printerUsageList[logical_printer_usage.selectedIndex].prt_usage;
+				}
+				
+				if (logical_printer_printer.selectedIndex>=0)
+				{
+					printer = printerList[logical_printer_printer.selectedIndex].prntr;
+				}
+				
+				currentState="normal";
+				this.findByID( cmpy, usage, printer );
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			protected function createNewRecord(event:MouseEvent):void
+			{	
+				idx=dataGrid.selectedIndex;
+				dataGrid.ensureCellIsVisible(idx);
+				currentState="create";
+				this.btn_save.enabled = this.canCreate;
+				dataGrid.enabled=false;
+				//this.equipCmptsList.visible = false;
+			}
+			
+			
+			protected function save_clickHandler():void
+			{
+				this.btn_save.enabled = false;
+				if (currentState == "create")
+				{
+					createRecord();
+				}
+				if (currentState == "edit")
+				{
+					editRecord();
+				}
+			}
+			
+			
+			protected function killBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=true;
+				pagedRecords.interruptor=true;
+				trace("WTF >>>>>>>>>>");
+			}
+			
+			protected function resumeBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				this.resumeLoadingPages();
+				trace("RESUME >>>>>>>>>>");
+			}
+			
+			protected function resumeLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				
+				//pb.values(pagedRecords.length,totalLength);
+				pb.values(pagedRecords.length,pagedRecords.totalLength);
+				//currentPage = int(this.pagedRecords.length/currentPageSize) + 1;
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			private function companyList_resultHandler():void
+			{
+				// check the position of ANY-ALL, make sure it is on the top of the list
+				var notFirstOption:Boolean = false;
+				var pos:int=0;
+				for ( var i:int=0; i<companyList.length; i++ )
+				{
+					if ( companyList.source[i].cmpy_code == "ANY" && i != 0 )
+					{
+						notFirstOption = true;
+						pos = i;
+						break;
+					}
+				}
+				
+				if ( notFirstOption == true && pos > 0 )
+				{
+					var item:Object= new Object();
+					item = companyList.removeItemAt( pos );
+					companyList.addItemAt( item, 0 );
+				}
+				
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<components:ValidationGroup id="vg" action="{save_clickHandler}" defaultButton="{btn_save}" isProtected="{hasPassword}"/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin"
+			 >
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		<s:HGroup id="toolbar" width="100%" gap="5" paddingBottom="2" paddingTop="2">
+			<components:DKI_DropDownList id="fltr_company" width="200" height="100%"
+										 change="fltr_company_changeHandler(event)" cornerRadius="10"
+										 labelField="cmpy_desc" prompt="{resourceManager.getString('default','LOGICAL_PRINTER_COMPANY')+resourceManager.getString('default','FILTER')}"
+										 dataProvider="{companyList}"/>
+			<components:DKI_DropDownList id="fltr_usage" width="200" height="100%"
+										 change="fltr_usage_changeHandler(event)" cornerRadius="10"
+										 labelField="prt_usage_desc" prompt="{resourceManager.getString('default','LOGICAL_PRINTER_USAGE')+resourceManager.getString('default','FILTER')}"
+										 dataProvider="{printerUsageList}"/>
+			<components:DKI_DropDownList id="fltr_printer" width="200" height="100%"
+										 change="fltr_printer_changeHandler(event)" cornerRadius="10"
+										 labelField="prntr_desc" prompt="{resourceManager.getString('default','LOGICAL_PRINTER_PRINTER')+resourceManager.getString('default','FILTER')}"
+										 dataProvider="{printerList}"/>
+			<components:DKI_DropDownList id="fltr_area" width="200" height="100%"
+										 change="fltr_area_changeHandler(event)" cornerRadius="10"
+										 labelField="area_desc" prompt="{resourceManager.getString('default','LOGICAL_PRINTER_AREA')+resourceManager.getString('default','FILTER')}"
+										 dataProvider="{areaList}"/>
+			
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="filterBtn" height="24" noLabel="false" click="filterRecords(event)"
+								   type="filteron"/>
+			<components:DKI_Button id="resetBtn" height="24" noLabel="false" click="refreshRecords(event)"
+								   type="filteroff"/>
+			<components:DKI_Button id="btn_export" label="{resourceManager.getString('default','EXPORTDATA')}" type="report" click="exportCsvHandler(event)" includeIn="normal"/>
+			<components:DKI_Button id="btn_create" label="{resourceManager.getString('default','CREATE')}" height="24" click="createNewRecord(event)" includeIn="normal" enabled="{this.canCreate}" type="create"/>			
+		</s:HGroup>
+		<s:DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="4"
+					selectionChange="dataGrid_selectionChangeHandler(event)"
+					skinClass="skins.DKI_DataGrid_Skin">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="prt_cmpy" headerText="{resourceManager.getString('default','LOGICAL_PRINTER_CMPYCODE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="prt_cmpy_name" headerText="{resourceManager.getString('default','LOGICAL_PRINTER_COMPANY')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="prt_usage" headerText="{resourceManager.getString('default','LOGICAL_PRINTER_USAGEID')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="prt_usage_name" headerText="{resourceManager.getString('default','LOGICAL_PRINTER_USAGE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="prt_printer" headerText="{resourceManager.getString('default','LOGICAL_PRINTER_PRINTER')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="sys_printer" headerText="{resourceManager.getString('default','LOGICAL_PRINTER_SYSPRINTER')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="prt_area" headerText="{resourceManager.getString('default','LOGICAL_PRINTER_AREAID')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="area_name" headerText="{resourceManager.getString('default','LOGICAL_PRINTER_AREA')}" visible="true"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			<s:dataProvider>
+				<s:AsyncListView id="pgList" list="{pagedRecords}"/>
+			</s:dataProvider>
+		</s:DataGrid>
+		<s:HGroup width="100%">
+			<components:Downloader id="pb" width="100%" height="18"/>
+			<s:Button id="killBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="killBtn_clickHandler(event)"/>
+			<s:Button id="resumeBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="resumeBtn_clickHandler(event)"/>
+		</s:HGroup>
+	</s:Panel>
+	
+	<s:Panel id="details" includeIn="edit,create" width="100%" height="160"
+			 itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+			<!--s:TileLayout/-->
+		</s:layout>
+		
+		<s:Spacer height="5"/>
+		<s:VGroup>
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','LOGICAL_PRINTER_COMPANY')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="logical_printer_company" 
+													  dataProvider="{companyList}" 
+													  labelField="cmpy_desc" 
+													  selectedItem="" 
+													  enabled="false" enabled.create="true"
+													  selectedIndex.create="-1" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  change="checkLogicalPrinter();"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','LOGICAL_PRINTER_COMPANY')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','LOGICAL_PRINTER_COMPANY')}" 
+													  />
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','LOGICAL_PRINTER_USAGE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="logical_printer_usage" 
+													  dataProvider="{printerUsageList}" 
+													  labelField="prt_usage_desc" 
+													  selectedItem="{dataGrid.selectedItem.prt_usage+' - '+dataGrid.selectedItem.prt_usage_name}"
+													  enabled="false" enabled.create="true"
+													  selectedIndex.create="-1" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  change="checkLogicalPrinter();"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','LOGICAL_PRINTER_USAGE')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','LOGICAL_PRINTER_USAGE')}" 
+													  />
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}" />
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','LOGICAL_PRINTER_PRINTER')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="logical_printer_printer" 
+													  dataProvider="{printerList}" 
+													  labelField="prntr_desc" 
+													  selectedItem="{dataGrid.selectedItem.prt_printer+' - '+dataGrid.selectedItem.sys_printer}" 
+													  enabled="true"
+													  selectedIndex.create="-1" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  change="checkLogicalPrinter();"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','LOGICAL_PRINTER_PRINTER')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','LOGICAL_PRINTER_PRINTER')}" 
+													  />
+				</s:HGroup>
+			</s:HGroup>
+			
+		</s:VGroup>
+		
+		<s:Spacer height="0" />
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_delete" label="{resourceManager.getString('default','DELETE')}" height="100%" click="doDelete()" includeIn="edit" enabled="{this.canDelete}" type="delete"/>
+			<components:DKI_Button id="btn_save" label.create="{resourceManager.getString('default','SAVE')}" label="{resourceManager.getString('default','UPDATE')}" height="100%" includeIn="edit,create" enabled.create="{this.canCreate}" enabled="{this.canUpdate}" type.create="create" type="edit"/>
+			<components:DKI_Button id="btn_cancel" label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel"/>
+		</s:HGroup>
+	</s:Panel>
+	
+</s:VGroup>

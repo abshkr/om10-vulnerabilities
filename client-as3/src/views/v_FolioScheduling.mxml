@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  xmlns:skins="skins.*"
+		  xmlns:controllers="controllers.*"
+		  xmlns:components1="dk.components.*"
+		  currentState="normal"
+		  width="100%" height="100%" xmlns:views="views.*" xmlns:dm="dm.*">
+	<s:states>
+		<s:State name="widget"/>
+		<s:State name="normal"/>
+	</s:states>
+	<fx:Declarations>
+		<dm:DM/>
+		<controllers:C_FolioScheduling id="controller" view="{this}"/>
+		<controllers:C_FolioScheduling_Calendar/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%" minHeight="0"
+			 skinClass="skins.WidgetPanelSkin" title="Closeouts"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:Group width="100%" height="100%" includeIn="normal" >			
+			<mx:TabNavigator width="100%" height="100%" backgroundAlpha="0" alpha="0.9">
+				<views:v_FolioSchedulling_Planner  baseView="{this}"  label="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.TITLE')}"   id="planner"  creationComplete="{controller.setPlannerFunctions();}" />
+				<views:v_FolioSchedulling_Calendar baseView="{this}"  label="{resourceManager.getString('default','FOLIO_SCHEDULING.CALENDAR.TITLE')}"  id="calendar" creationComplete="{controller.setToggleDateFunction();}" />
+				<views:v_FolioSchedulling_Settings baseView="{this}"  label="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.TITLE')}"  id="settings" />
+			</mx:TabNavigator>
+		</s:Group>
+		<s:Group includeIn="widget" width="100%" height="100%">
+			<components:DKI_Advanced_Calendar  width="100%" height="100%" allowEdit="{controller.canUpdate}" concTitle="false"  exceptionDates="{DM.FolioExceptionDates.exceptions}" year="@{C_FolioScheduling_Calendar.SELECTED_YEAR}" month="@{C_FolioScheduling_Calendar.SELECTED_MONTH}"  toggleIcon="{controller.toggleDate}"/>
+		</s:Group>
+	</s:Panel>
+</s:VGroup>

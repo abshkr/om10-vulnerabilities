@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:components="components.*" 
+		 xmlns:dm="dm.*" 
+		 xmlns:manualtransactionsservice="services.manualtransactionsservice.*"
+		 width="800" skinClass="skins.WidgetPanelSkin" title="Create a schedule for a nomination item" creationComplete="creationCompleteHandler(event)">
+	<s:layout>
+		<s:VerticalLayout paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+	</s:layout>
+	<fx:Script>
+		<![CDATA[
+			
+			import components.MovSchedulesDlg;
+			import components.ViewPopupDlg;
+			
+			import dm.utils.tools;
+			
+			import flash.utils.getQualifiedClassName;
+			
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			
+			import spark.components.VScrollBar;
+			import spark.events.IndexChangeEvent;
+			import spark.events.TextOperationEvent;
+			
+			import views.v_MovementSchedules;
+			
+			[Bindable] private var isValid:Boolean=false;
+			
+			public var tanker:String;
+			private var tmp_txt:String;
+			private var obj:Object = new Object();
+
+			public var curr_supplier:Object=null;
+			public var curr_carrier:Object=null;
+			public var curr_vehicle:Object=null;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+//			[Bindable] public var key_movitem_id:String="";
+			[Bindable] public var payload:Object;
+			public var params:Object;
+			
+			public var callback:Function;
+			
+			//public var movSchedulePopup:MovSchedulesDlg = new MovSchedulesDlg;
+			public var movSchedulePopup:ViewPopupDlg = new ViewPopupDlg( "Schedules for nominations", new v_MovementSchedules(), null );
+			
+			public function creationCompleteHandler(event:FlexEvent):void
+			{
+				trace ("-------------start creationCompleteHandler");
+				
+				this.frmItemType.selectedIndex = int(payload.MVITM_TYPE);
+				
+				if ( payload.hasOwnProperty("MVITM_PRODCMPY_FROM") && payload.MVITM_PRODCMPY_FROM != null )
+				{
+					this.frmSupplierFrom.selectedIndex = tools.getItemIndexFromCode( payload.MVITM_PRODCMPY_FROM, DM.MovementNominations.suppliersFrom, "CMPY_CODE");
+				}
+				else
+				{
+					this.frmSupplierFrom.selectedIndex = -1;
+				}
+				
+				if ( payload.hasOwnProperty("MVITM_PRODCMPY_TO") && payload.MVITM_PRODCMPY_TO != null )
+				{
+					this.frmSupplierTo.selectedIndex = tools.getItemIndexFromCode( payload.MVITM_PRODCMPY_TO, DM.MovementNominations.suppliersTo, "CMPY_CODE");
+				}
+				else
+				{
+					this.frmSupplierTo.selectedIndex = -1;
+				}
+				
+				if ( payload.hasOwnProperty("MVITM_PRODCODE_FROM") && payload.MVITM_PRODCODE_FROM != null )
+				{
+					this.frmProductFrom.selectedIndex = tools.getItemIndexFromCode( payload.MVITM_PRODCODE_FROM, DM.MovementNominations.productsFrom, "PROD_CODE");
+				}
+				else
+				{
+					this.frmProductFrom.selectedIndex = -1;
+				}
+				
+				if ( payload.hasOwnProperty("MVITM_PRODCODE_TO") && payload.MVITM_PRODCODE_TO != null )
+				{
+					this.frmProductTo.selectedIndex = tools.getItemIndexFromCode( payload.MVITM_PRODCODE_TO, DM.MovementNominations.productsTo, "PROD_CODE");
+				}
+				else
+				{
+					this.frmProductTo.selectedIndex = -1;
+				}
+				
+				if ( payload.hasOwnProperty("MVITM_PRODCMPY_FROM") && payload.MVITM_PRODCMPY_FROM != null )
+				{
+					this.frmDrawerFrom.selectedIndex = tools.getItemIndexFromCode( payload.MVITM_PRODCMPY_FROM, DM.MovementNominations.drawersFrom, "CMPY_CODE");
+				}
+				else
+				{
+					this.frmDrawerFrom.selectedIndex = -1;
+				}
+				
+				if ( payload.hasOwnProperty("MVITM_PRODCMPY_TO") && payload.MVITM_PRODCMPY_TO != null )
+				{
+					this.frmDrawerTo.selectedIndex = tools.getItemIndexFromCode( payload.MVITM_PRODCMPY_TO, DM.MovementNominations.drawersTo, "CMPY_CODE");
+				}
+				else
+				{
+					this.frmDrawerTo.selectedIndex = -1;
+				}
+				
+				if ( curr_supplier != null )
+				{
+					this.frmSupplier.selectedIndex = tools.getItemIndexFromCode( curr_supplier.CMPY_CODE, DM.MovementNominations.suppliers, "CMPY_CODE");
+				}
+				else
+				{
+					this.frmSupplier.selectedIndex = -1;
+				}
+				
+				if ( curr_carrier != null )
+				{
+					this.frmCarrier.selectedIndex = tools.getItemIndexFromCode( curr_carrier.CMPY_CODE, DM.MovementNominations.carriers, "CMPY_CODE");
+				}
+				else
+				{
+					this.frmCarrier.selectedIndex = -1;
+				}
+				
+				if ( curr_vehicle != null )
+				{
+					this.frmVehicle.selectedIndex = tools.getItemIndexFromCode( curr_vehicle.TNKR_CODE, DM.MovementNominations.vehicles, "TNKR_CODE");
+				}
+				else
+				{
+					this.frmVehicle.selectedIndex = -1;
+				}
+				
+				if (payload.MVITM_TYPE == 0)
+				{
+					this.frmDrawerFrom.enabled = false;
+					this.frmDrawerTo.enabled = true;
+					this.frmDrawerFrom.required = false;
+					this.frmDrawerTo.required = true;
+					this.lblDrawerFrom.setStyle( "color", "0x606060");
+					this.lblDrawerTo.setStyle( "color", "0x000000");
+					this.frmProductFrom.enabled = false;
+					this.frmProductTo.enabled = true;
+					this.lblProductFrom.setStyle( "color", "0x606060");
+					this.lblProductTo.setStyle( "color", "0x000000");
+					
+					this.filterProductsToList();
+				}
+				else if (payload.MVITM_TYPE == 1)
+				{
+					this.frmDrawerFrom.enabled = true;
+					this.frmDrawerTo.enabled = false;
+					this.frmDrawerFrom.required = true;
+					this.frmDrawerTo.required = false;
+					this.lblDrawerFrom.setStyle( "color", "0x000000");
+					this.lblDrawerTo.setStyle( "color", "0x606060");
+					this.frmProductFrom.enabled = true;
+					this.frmProductTo.enabled = false;
+					this.lblProductFrom.setStyle( "color", "0x000000");
+					this.lblProductTo.setStyle( "color", "0x606060");
+					
+					this.filterProductsFromList();
+				}
+				else if (payload.MVITM_TYPE == 2)
+				{
+					this.frmDrawerFrom.enabled = true;
+					this.frmDrawerTo.enabled = true;
+					this.frmDrawerFrom.required = true;
+					this.frmDrawerTo.required = true;
+					this.lblDrawerFrom.setStyle( "color", "0x000000");
+					this.lblDrawerTo.setStyle( "color", "0x000000");
+					this.frmProductFrom.enabled = true;
+					this.frmProductTo.enabled = true;
+					this.lblProductFrom.setStyle( "color", "0x000000");
+					this.lblProductTo.setStyle( "color", "0x000000");
+					
+					this.filterProductsFromList();
+					this.filterProductsToList();
+				}
+				else
+				{
+					this.frmDrawerFrom.enabled = false;
+					this.frmDrawerTo.enabled = false;
+					this.frmDrawerFrom.required = false;
+					this.frmDrawerTo.required = false;
+					this.lblDrawerFrom.setStyle( "color", "0x606060");
+					this.lblDrawerTo.setStyle( "color", "0x606060");
+					this.frmProductFrom.enabled = false;
+					this.frmProductTo.enabled = false;
+					this.lblProductFrom.setStyle( "color", "0x606060");
+					this.lblProductTo.setStyle( "color", "0x606060");
+				}
+				
+			}
+			
+			public function clear_button_clickHandler(event:MouseEvent):void
+			{
+				isValid=false;
+				//card_txt.text='';
+				this.frmVehicle.selectedIndex = -1;
+				this.frmCarrier.selectedIndex = -1;
+				//this.frmSupplier.selectedIndex = -1;
+				this.frmOperator.selectedIndex = -1;
+				this.frmProdQty.text = "";
+			}
+			
+			protected function cancel_button_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp(this);				
+			}
+			
+			protected function update_button_clickHandler():void
+			{
+				var item_id:String;
+				var per_code:String;
+				var tnkr_code:String;
+				var schd_qty:String;
+				var drawer1:String;
+				var prod1:String;
+				var drawer2:String;
+				var prod2:String;
+				
+				item_id = this.lbl_key_movitem_id.text;
+				if ( this.frmOperator.selectedIndex >= 0 )
+				{
+					per_code = this.frmOperator.selectedItem.PER_CODE;
+				}
+				else
+				{
+					per_code = "";
+				}
+				tnkr_code = this.frmVehicle.selectedItem.TNKR_CODE;
+				schd_qty = this.frmProdQty.text;
+				
+				
+				if (payload.MVITM_TYPE == 0)
+				{
+					if ( this.frmDrawerTo.selectedIndex >= 0)
+					{
+						drawer1 = this.frmDrawerTo.selectedItem.CMPY_CODE;
+					}
+					else
+					{
+						drawer1 = "";
+					}
+					if ( this.frmProductTo.selectedIndex >= 0)
+					{
+						prod1 = this.frmProductTo.selectedItem.PROD_CODE;
+					}
+					else
+					{
+						prod1 = "";
+					}
+					drawer2 = "";
+					prod2 = "";
+				}
+				else if (payload.MVITM_TYPE == 1)
+				{
+					if ( this.frmDrawerFrom.selectedIndex >= 0)
+					{
+						drawer1 = this.frmDrawerFrom.selectedItem.CMPY_CODE;
+					}
+					else
+					{
+						drawer1 = "";
+					}
+					if ( this.frmProductFrom.selectedIndex >= 0)
+					{
+						prod1 = this.frmProductFrom.selectedItem.PROD_CODE;
+					}
+					else
+					{
+						prod1 = "";
+					}
+					drawer2 = "";
+					prod2 = "";
+				}
+				else if (payload.MVITM_TYPE == 2)
+				{
+					if ( this.frmDrawerTo.selectedIndex >= 0)
+					{
+						drawer1 = this.frmDrawerTo.selectedItem.CMPY_CODE;
+					}
+					else
+					{
+						drawer1 = "";
+					}
+					if ( this.frmProductTo.selectedIndex >= 0)
+					{
+						prod1 = this.frmProductTo.selectedItem.PROD_CODE;
+					}
+					else
+					{
+						prod1 = "";
+					}
+					if ( this.frmDrawerFrom.selectedIndex >= 0)
+					{
+						drawer2 = this.frmDrawerFrom.selectedItem.CMPY_CODE;
+					}
+					else
+					{
+						drawer2 = "";
+					}
+					if ( this.frmProductFrom.selectedIndex >= 0)
+					{
+						prod2 = this.frmProductFrom.selectedItem.PROD_CODE;
+					}
+					else
+					{
+						prod2 = "";
+					}
+				}
+				else
+				{
+					drawer1 = "";
+					prod1 = "";
+					drawer2 = "";
+					prod2 = "";
+				}
+				
+				createSchedule.token = this.manualTransactionsService.createSchedule(item_id, per_code, tnkr_code, schd_qty, drawer1, prod1, drawer2, prod2 );
+								
+			}
+			
+			
+			protected function createSchedule_resultHandler(event:ResultEvent):void
+			{
+				if (event.message.body.result_code == 0)
+				{
+					
+					this.movSchedulePopup.popupTitle = resourceManager.getString('default','MOVSCHD.TITLE.SCHD4NOM');
+					this.movSchedulePopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+					
+					//callback();
+					this.movSchedulePopup.callBackFunction = this.callback;
+					
+					global.msgSuccess(event.message.body.result_string);
+					PopUpManager.removePopUp(this);	
+					
+					this.movSchedulePopup.openDialog();
+					if ( int(event.message.body.trip2) <= 0 )
+					{
+						params["trip_number"] = StringUtil.trim( String(event.message.body.trip1) );
+					}
+					else
+					{
+						if (  int(event.message.body.trip2) > int(event.message.body.trip1) )
+						{
+							params["trip_number"] = StringUtil.trim( String(event.message.body.trip1) ) + "~" + StringUtil.trim( String(event.message.body.trip2) );
+						}
+						else
+						{
+							params["trip_number"] = StringUtil.trim( String(event.message.body.trip2) ) + "~" + StringUtil.trim( String(event.message.body.trip1) );
+						}
+						params["trip_number"] = StringUtil.trim( String(event.message.body.trip1) ) + "," + StringUtil.trim( String(event.message.body.trip2) );
+						
+					}
+					this.movSchedulePopup.setFilters( params );
+				}
+				else
+				{
+					global.msgWarning(event.message.body.result_string);
+				}
+					
+			}
+			
+			protected function vehicles_filterFunc(item:Object):Boolean
+			{
+				if (item.TNKR_CARRIER == this.frmCarrier.selectedItem.CMPY_CODE 
+					|| item.TNKR_OWNER == this.frmCarrier.selectedItem.CMPY_CODE )                
+				{ 
+					return true     
+				}
+				else
+				{
+					return false;
+				}
+			}
+			protected function filterVehiclesList():void
+			{
+				DM.MovementNominations.vehicles.filterFunction = vehicles_filterFunc;
+				DM.MovementNominations.vehicles.refresh();
+			}
+
+			
+			protected function getBaseStringFromProduct(prod_cmpy:String, prod_code:String):String
+			{
+				var base_string:String="";
+				
+				for each (var o:Object in DM.MovementNominations.ratios)
+				{
+					if( prod_cmpy == o.RAT_PROD_PRODCMPY && prod_code == o.RAT_PROD_PRODCODE )
+					{
+						base_string += String(o.RATIO_BASE);
+					}
+				}
+				
+				return base_string;
+			}
+			
+			protected function isProductCompatible( supp_prod_cmpy:String, supp_prod_code:String, prod_cmpy:String, prod_code:String):Boolean
+			{
+				if ( supp_prod_cmpy == prod_cmpy && supp_prod_code == prod_code )                
+				{ 
+					// match exactly
+					return true;     
+				}
+				else
+				{
+					// check the ratios
+					if ( getBaseStringFromProduct(supp_prod_cmpy, supp_prod_code) == getBaseStringFromProduct(prod_cmpy, prod_code) )
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+					
+				}
+			}
+			protected function productsFrom_filterFunc(item:Object):Boolean
+			{
+				trace ("*****************from productsFrom_filterFunc", payload.MVITM_PRODCMPY_FROM, payload.MVITM_PRODCODE_FROM, item.PROD_CMPY, item.PROD_CODE );
+				return isProductCompatible( payload.MVITM_PRODCMPY_FROM, payload.MVITM_PRODCODE_FROM, item.PROD_CMPY, item.PROD_CODE );
+			}
+			public function filterProductsFromList():void
+			{
+				DM.MovementNominations.productsFrom.filterFunction = productsFrom_filterFunc;
+				DM.MovementNominations.productsFrom.refresh();
+			}
+			protected function productsTo_filterFunc(item:Object):Boolean
+			{
+				trace ("*****************from productsTo_filterFunc", payload.MVITM_PRODCMPY_TO, payload.MVITM_PRODCODE_TO, item.PROD_CMPY, item.PROD_CODE );
+				return isProductCompatible( payload.MVITM_PRODCMPY_TO, payload.MVITM_PRODCODE_TO, item.PROD_CMPY, item.PROD_CODE );
+			}
+			public function filterProductsToList():void
+			{
+				DM.MovementNominations.productsTo.filterFunction = productsTo_filterFunc;
+				DM.MovementNominations.productsTo.refresh();
+			}
+			
+			protected function isCompanyMatched( prod_cmpy:String, drawer:String):Boolean
+			{
+				if ( prod_cmpy.search(drawer ) >= 0 )                
+				{ 
+					return true;     
+				}
+				else
+				{
+					return false;
+				}
+			}
+			protected function drawersFrom_filterFunc(item:Object):Boolean
+			{
+				return isCompanyMatched( this.frmProductFrom.selectedItem.PROD_CMPY, item.CMPY_CODE );
+			}
+			public function filterDrawersFromList():void
+			{
+				DM.MovementNominations.drawersFrom.filterFunction = drawersFrom_filterFunc;
+				DM.MovementNominations.drawersFrom.refresh();
+				if ( this.frmDrawerFrom.dataProvider.length>0 )
+				{
+					this.frmDrawerFrom.selectedIndex = 0;
+				}
+			}
+			protected function drawersTo_filterFunc(item:Object):Boolean
+			{
+				return isCompanyMatched( this.frmProductTo.selectedItem.PROD_CMPY, item.CMPY_CODE );
+			}
+			public function filterDrawersToList():void
+			{
+				DM.MovementNominations.drawersTo.filterFunction = drawersTo_filterFunc;
+				DM.MovementNominations.drawersTo.refresh();
+				if ( this.frmDrawerTo.dataProvider.length>0 )
+				{
+					this.frmDrawerTo.selectedIndex = 0;
+				}
+			}
+			
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<dm:DM />
+		<components:ValidationGroup id="vg" action="{update_button_clickHandler}" defaultButton="{btnSave}" isProtected="{hasPassword}"/>
+		
+		<s:CallResponder id="createSchedule" result="createSchedule_resultHandler(event)"/>
+		<manualtransactionsservice:ManualTransactionsService id="manualTransactionsService" channelSet="{global.channelSet}"
+												   fault="global.msgFail(global.DisasterError)"
+												   showBusyCursor="true"/>
+	</fx:Declarations>
+	<s:VGroup>
+		<s:HGroup width="100%" paddingTop="2" paddingLeft="5" paddingBottom="2">
+			<s:Label text="Please fill the follwoing information to create a schedule from a nomination item:" fontWeight="bold"/>
+		</s:HGroup>
+		<s:HGroup>
+			<s:Label width="200" fontFamily="Arial" fontSize="13" text="Nomination Item Id:"/>
+			<s:Label id="lbl_key_movitem_id" width="400" fontFamily="Arial" fontSize="13" text="{payload.MVITM_ITEM_ID}"/>
+		</s:HGroup>
+		<s:Spacer height="2"/>
+		<s:HGroup>
+			<s:Label text="Item Type:" width="200" verticalAlign="middle"/>
+			<components:DKI_ValidatorDropDown id="frmItemType" dataProvider="{DM.MovementNominations.movItemTypes}" 
+											  selectedIndex="{payload.MVITM_TYPE}"
+											  width="150" prompt="Select type"
+											  enabled="false"
+											  required="false" validationGroup="{vg}" automationName="Item Type" 
+											  />
+			<s:Label text="Supplier:" width="200" visible="false" verticalAlign="middle"/>
+			<components:DKI_ValidatorDropDown id="frmSupplier" dataProvider="{DM.MovementNominations.suppliers}" 
+											  labelField="CODE_NAME" width="150" prompt="Select supplier"
+											  enabled="false" visible="false"
+											  required="false" validationGroup="{vg}" automationName="Supplier" 
+											  />
+		</s:HGroup>
+		<s:Spacer height="2"/>
+		<s:HGroup>
+			<s:Label text="From Supplier:" width="200" verticalAlign="middle" color="0x606060"/>
+			<components:DKI_ValidatorDropDown id="frmSupplierFrom" dataProvider="{DM.MovementNominations.suppliersFrom}" 
+											  labelField="CODE_NAME" width="150" prompt="Select supplier"
+											  enabled="false"
+											  required="false" validationGroup="{vg}" automationName="From Supplier" 
+											  />
+			<s:Spacer width="50"/>
+			<s:Label text="To Supplier:" width="200" verticalAlign="middle" color="0x606060"/>
+			<components:DKI_ValidatorDropDown id="frmSupplierTo" dataProvider="{DM.MovementNominations.suppliersTo}" 
+											  labelField="CODE_NAME" width="150" prompt="Select supplier"
+											  enabled="false"
+											  required="false" validationGroup="{vg}" automationName="To Supplier" 
+											  />
+		</s:HGroup>
+		<s:Spacer height="2"/>
+		<s:HGroup>
+			<s:Label text="From Supplier Product:" width="200" verticalAlign="middle" color="0x606060"/>
+			<s:Label id="lblSuppProductFrom" width="150" fontFamily="Arial" fontSize="13" color="0x606060" text="{payload.MVITM_PRODNAME_FROM}"/>
+			<s:Spacer width="50"/>
+			<s:Label text="To Supplier Product:" width="200" verticalAlign="middle" color="0x606060"/>
+			<s:Label id="lblSuppProductTo" width="150" fontFamily="Arial" fontSize="13" color="0x606060" text="{payload.MVITM_PRODNAME_TO}"/>
+		</s:HGroup>
+		<s:Spacer height="2"/>
+		<s:HGroup>
+			<s:Label id="lblProductFrom" text="From Drawer Product (compatible with supplier product):" width="200" verticalAlign="middle" color="0x606060"/>
+			<components:DKI_ValidatorDropDown id="frmProductFrom" dataProvider="{DM.MovementNominations.productsFrom}" 
+											  labelField="CODE_NAME" width="150" prompt="Select product"
+											  enabled="false" change="filterDrawersFromList()"
+											  required="false" validationGroup="{vg}" automationName="From Product" 
+											  />
+			<s:Spacer width="50"/>
+			<s:Label id="lblProductTo" text="To Drawer Product (compatible with supplier product):" width="200" verticalAlign="middle" color="0x606060"/>
+			<components:DKI_ValidatorDropDown id="frmProductTo" dataProvider="{DM.MovementNominations.productsTo}" 
+											  labelField="CODE_NAME" width="150" prompt="Select product"
+											  enabled="false" change="filterDrawersToList()"
+											  required="false" validationGroup="{vg}" automationName="To Product" 
+											  />
+		</s:HGroup>
+		<s:Spacer height="2"/>
+		<s:HGroup>
+			<s:Label id="lblDrawerFrom" text="From Drawer:" width="200" verticalAlign="middle" color="0x606060"/>
+			<components:DKI_ValidatorDropDown id="frmDrawerFrom" dataProvider="{DM.MovementNominations.drawersFrom}" 
+											  labelField="CODE_NAME" width="150" prompt="Select drawer"
+											  enabled="false"
+											  required="false" validationGroup="{vg}" automationName="From Drawer" 
+											  />
+			<s:Spacer width="50"/>
+			<s:Label id="lblDrawerTo" text="To Drawer:" width="200" verticalAlign="middle" color="0x606060"/>
+			<components:DKI_ValidatorDropDown id="frmDrawerTo" dataProvider="{DM.MovementNominations.drawersTo}" 
+											  labelField="CODE_NAME" width="150" prompt="Select drawer"
+											  enabled="false"
+											  required="false" validationGroup="{vg}" automationName="To Drawer" 
+											  />
+		</s:HGroup>
+		<s:Spacer height="2"/>
+		<s:HGroup>
+			<s:Label width="200" fontFamily="Arial" fontSize="13" text="Carrier:" verticalAlign="middle"/>
+			<components:DKI_ValidatorDropDown id="frmCarrier" dataProvider="{DM.MovementNominations.carriers}" labelField="CODE_NAME" width="150" prompt="Select carrier" change="filterVehiclesList()"
+											  enabled="true"
+											  required="false" validationGroup="{vg}" automationName="Carrier" 
+											  />
+		</s:HGroup>
+		<s:Spacer height="2"/>
+		<s:HGroup>
+			<s:Label width="200" fontFamily="Arial" fontSize="13" text="Tanker:" verticalAlign="middle"/>
+			<components:DKI_ValidatorDropDown id="frmVehicle" dataProvider="{DM.MovementNominations.vehicles}" labelField="CODE_NAME" width="150" prompt="Select vehicle"
+											  enabled="true"
+											  required="true" validationGroup="{vg}" automationName="Vehicle" 
+											  />
+		</s:HGroup>
+		<s:Spacer height="2"/>
+		<s:HGroup>
+			<s:Label width="200" fontFamily="Arial" fontSize="13" text="Operator:" verticalAlign="middle"/>
+			<components:DKI_ValidatorDropDown id="frmOperator" dataProvider="{DM.MovementNominations.operators}" 
+											  labelField="CODE_NAME" width="150" prompt="Select operator"
+											  enabled="true"
+											  required="false" validationGroup="{vg}" automationName="Operator" 
+											  />
+		</s:HGroup>
+		<s:Spacer height="2"/>
+		<s:HGroup>
+			<s:Label text="Quantity assigned to schedule" width="200" verticalAlign="middle"/>
+			<components:DKI_ValidatorInput id="frmProdQty" width="150" prompt="Quantity assigned to schedule"
+										   enabled="true" restrict="0-9"
+										   required="true" validationType="integer_nonzero" validationGroup="{vg}" automationName="Quantity assigned to schedule" 
+										   />
+		</s:HGroup>
+	</s:VGroup>
+	<s:HGroup width="100%">
+		<s:Spacer width="100%"/>
+		<!--components:DKI_Button id="btnSave" label="Ok" type="save" click="update_button_clickHandler(event)"/-->
+		<components:DKI_Button id="btnSave" label="Ok" enabled="{this.canCreate}" type="save"/>
+		<components:DKI_Button label="Cancel" type="cancel" click="cancel_button_clickHandler(event)"/>
+		<components:DKI_Button label="Clear" type="clear" click="clear_button_clickHandler(event)"/>
+	</s:HGroup>
+</s:Panel>

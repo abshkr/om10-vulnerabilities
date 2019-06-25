@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+      xmlns:fb="http://ns.adobe.com/flashbuilder/2009" minWidth="112"
+      alpha.disabled="0.5" blendMode="normal"> 
+    
+    <fx:Metadata>
+    <![CDATA[ 
+        [HostComponent("spark.components.List")]
+    ]]>
+    </fx:Metadata> 
+    
+    <fx:Script fb:purpose="styling">
+		<![CDATA[
+		import mx.core.FlexVersion;
+		import flash.filters.BitmapFilterType;
+		
+        static private const exclusions:Array = ["scroller", "background", "border"];
+			
+		static private const exclusions_4_0:Array = ["scroller", "background"];
+			
+        override public function get colorizeExclusions():Array 
+		{
+			if (FlexVersion.compatibilityVersion < FlexVersion.VERSION_4_5)
+			{
+				return exclusions_4_0;
+			}
+			
+			return exclusions;
+		}
+        
+        static private const contentFill:Array = ["bgFill"];
+        
+        override public function get contentItems():Array {return contentFill};
+        
+        override protected function initializationComplete():void
+        {
+            useChromeColor = true;
+            super.initializationComplete();
+        }
+ 
+        override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+        {
+            if (getStyle("borderVisible") == true)
+            {
+                border.visible = true;
+                background.left = background.top = background.right = background.bottom = 1;
+                scroller.minViewportInset = 1;
+            }
+            else
+            {
+                border.visible = false;
+                background.left = background.top = background.right = background.bottom = 0;
+                scroller.minViewportInset = 0;
+            }
+            
+            borderStroke.color = getStyle("borderColor");
+            borderStroke.alpha = getStyle("borderAlpha");
+            
+            super.updateDisplayList(unscaledWidth, unscaledHeight);
+        }
+		]]>
+    </fx:Script>
+    
+    <s:states>
+        <s:State name="normal" />
+        <s:State name="disabled" />
+    </s:states>
+    
+    <fx:Declarations>
+        <fx:Component id="dropIndicator">
+            <s:Group minWidth="3" minHeight="3" maxWidth="3" maxHeight="3">
+                <s:Rect left="0" right="0" top="0" bottom="0">
+                    <s:fill>
+                        <s:SolidColor color="0xBBBBBB" />
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke color="0x868686" weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+            </s:Group>
+        </fx:Component>
+		<s:GlowFilter id="glow" inner="true" color="0xFFFFFF" strength="1.0"  blurX="2" blurY="2" alpha="0.75"/>  
+		<s:BevelFilter id="bevel" blurX="2" blurY="2" distance="2" type="BitmapFilterType.INNER" angle="180"/> 
+    </fx:Declarations>
+
+    <!-- border -->
+    <!--- @private -->
+    <s:Rect left="0" right="0" top="0" bottom="0" id="border" radiusX="6" radiusY="6" filters="{glow}" alpha="0.75" >
+        <s:stroke>
+            <!--- @private -->
+            <s:SolidColorStroke id="borderStroke" weight="4"/>
+        </s:stroke>
+    </s:Rect>
+    
+    <!-- fill -->
+    <!--- Defines the background appearance of the list-based component. -->
+    <s:Rect id="background" left="0" right="0" top="0" bottom="0" radiusX="4" radiusY="4" >
+        <s:fill>
+        <!--- Defines the color of the background. The default color is 0xFFFFFF. -->
+            <s:SolidColor id="bgFill" color="0xFFFFFF" />
+        </s:fill>
+    </s:Rect>
+
+    <!--- The Scroller component to add scroll bars to the list. -->
+    <s:Scroller left="10" top="8" right="10" bottom="8" id="scroller" minViewportInset="1" hasFocusableChildren="false">
+        <!--- @copy spark.components.SkinnableDataContainer#dataGroup -->
+        <s:DataGroup id="dataGroup" itemRenderer="spark.skins.spark.DefaultItemRenderer">
+            <s:layout>
+                <s:VerticalLayout gap="0" horizontalAlign="contentJustify" requestedMinRowCount="5"/>
+            </s:layout>
+        </s:DataGroup>
+    </s:Scroller>
+</s:SparkSkin>

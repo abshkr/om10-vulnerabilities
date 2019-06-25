@@ -1,0 +1,4 @@
+<sites>
+	<site name="Main Terminal"  port="80"/>
+	<site name="Secondary Terminal"  port="80"/>
+</sites>

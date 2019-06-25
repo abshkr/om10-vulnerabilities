@@ -1,0 +1,2798 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  xmlns:custordersservice="services.custordersservice.*"		 
+		  skinClass="skins.PopupSkin"
+		  title="Open Orders" width="1200" height="600"
+		  creationComplete="creationCompleteHandler(event)">
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State enterState="view_detailsHandler(event);orderItemGrid.enabled=true"
+				 name="detail"/>
+	</s:states>
+	
+	<s:layout>
+		<s:VerticalLayout paddingBottom="1" paddingLeft="1" paddingRight="1" paddingTop="1"/>
+	</s:layout>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.fiber.runtime.lib.DateTimeFunc;
+			
+			import components.ActionDialog;
+			import components.ApproveDialog;
+			import components.ConfirmDialog;
+			import components.DKI_AlertBox;
+			import components.DeleteDialog;
+			import components.ExportData;
+			import components.MessageDialog;
+			import components.TransactionsDlg;
+			import components.ViewPopupDlg;
+			
+			import dm.utils.tools;
+			
+			import flash.events.KeyboardEvent;
+			import flash.globalization.LocaleID;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			
+			import valueObjects.GUI_ORDERS;
+			import valueObjects.GUI_ORDER_ITEMS;
+			import valueObjects.GUI_ORDER_PERIODS;
+			
+
+			public static const MAIN_WINDOW_WIDTH:int = 1500;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable] public var labelWidth:uint = 80;
+			[Bindable] public var labelHeight:uint = 26;
+			[Bindable] public var fieldWidth:uint = 185;
+			[Bindable] public var fieldHeight:uint = 26;
+			[Bindable] public var spaceWidth:uint = 15;
+			[Bindable] public var spaceHeight:uint = 2;
+			
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='order_cust_no';
+			private var currentDirection:String="ASC";
+			
+			private var currentOffset:int=0;
+			private var currentPageSize:int=1000;
+			[Bindable] private var totalLength:int=0;
+			[Bindable] private var currentLength:int=0;
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			private var currentSorts:Object=new Object();
+			private var currentOrders:Object=new Object();
+			private var currentSortSeq:int=0;
+			
+			private var eq_filter:String=null;
+			
+			private var confirmDelete:DKI_AlertBox;
+			
+			private var  originalItems:ArrayCollection;
+			
+			
+			private var pagedRecords:ArrayCollection=new ArrayCollection();
+			
+			private var confirmReport:ActionDialog;
+			
+			private var exportContents:String="";
+			private var f:FileReference = new FileReference();
+			
+			
+			private var nc:NetConnection = new NetConnection();
+			private var getData:Responder = new Responder(getData_resultHandler);
+			
+			private var pageCount:int=1;
+			[Bindable] public  var bytesTotal:Number  = 1000000;
+			[Bindable] public  var bytesLoaded:Number = 0;
+			[Bindable] public  var totalCount:Number  = 0;
+			
+			[Bindable] private var currentPage:Number 		= 1;
+			//private var pageBy:int = 1000;
+			[Bindable] private var finishedAllPages:Boolean =  true;
+			[Bindable] private var interruptor:Boolean 		=  false;
+			//[Bindable] private var orderArr:ArrayCollection=new ArrayCollection();
+			
+			private var schedParams:Object = new Object();
+			public var orderItemLine:Object = new Object();
+			
+			public var okPressed:Boolean = false;
+			
+			/*
+			6 - ORD_EXPIRED: order expired
+			0 - ORD_NEW: new order
+			5 - ORD_COMPLETED: fully delivered  !!!
+			8 - ORD_PARTIALLY_COMPLETED: fully loaded but partially delivered !!!
+			3 - ORD_DELIVERY: fully loaded but not delivered yet  !!!
+			1 - ORD_FILLING: partially scheduled
+			7 - ORD_PARTIALLY_DELIVERY: partially loaded but not all loaded
+			2 - ORD_SCHEDULED: fully scheduled
+			4 - ORD_OUTSTANDING : other status
+			*/
+			public static const ORDER_STATUS__NEW:int = 0;
+			public static const ORDER_STATUS__FILLING:int = 1;
+			public static const ORDER_STATUS__SCHEDULED:int = 2;
+			public static const ORDER_STATUS__DELIVERY:int = 3;
+			public static const ORDER_STATUS__OUTSTANDING:int = 4;
+			public static const ORDER_STATUS__COMPLETED:int = 5;
+			public static const ORDER_STATUS__EXPIRED:int = 6;
+			public static const ORDER_STATUS__PARTIALLY_DELIVERY:int = 7;
+			public static const ORDER_STATUS__PARTIALLY_COMPLETED:int = 8;
+			
+			
+			public var mainListSelection:int = -1;
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				nc.objectEncoding = ObjectEncoding.AMF3;
+ 				//nc.connect("/amfservices/gateway/amf2/index.php");
+				nc.connect(global.gatewayURL);
+				lookupOrderCustomer.token = custOrdersService.lookupOrderCustomer("-1");
+				//getPagedResult.token = custOrdersService.getPaged( currentFields, currentTypes, currentSorts, currentOrders);
+				lookupOrderSupplier.token = custOrdersService.lookupOrderCompany(1);
+				lookupOrderCarrier.token = custOrdersService.lookupOrderCompany(2);
+				lookupOrderDrawer.token = custOrdersService.lookupCompatibleDrawer( "-1", "-1");
+				lookupOrderCompany.token = custOrdersService.lookupOrderCompany(-1);
+				
+				lookupOrderMethodType.token = custOrdersService.lookupOrderMethodType( );
+				lookupOrderTrnsptType.token = custOrdersService.lookupOrderTrnsptType( -1 );
+				lookupOrderStatusType.token = custOrdersService.lookupOrderStatusType( );
+				lookupOrderSaleType.token = custOrdersService.lookupOrderSaleType( );
+				lookupOrderDelvLocation.token = custOrdersService.lookupOrderDelvLocation( );
+				lookupOrderTerminal.token = custOrdersService.lookupOrderTerminal( );
+
+				lookupOrderPsnl.token = custOrdersService.lookupOrderPsnl("-1", -1);
+				
+				lookupOrderErpType.token = custOrdersService.lookupOrderErpType( );
+				lookupOrderUnit.token = custOrdersService.lookupOrderUnit( );
+				lookupOrderPriceType.token = custOrdersService.lookupOrderPriceType( );
+				lookupOrderPriceOffset.token = custOrdersService.lookupOrderPriceOffset( );
+					
+				lookupOrderProduct.token = custOrdersService.lookupOrderProduct("-1");
+				lookupOrderTrip.token = custOrdersService.lookupOrderTrip("-1", "-1");
+				initOrderItems.token = custOrdersService.initOrderItems("-1");
+				
+				dataGrid.scroller.verticalScrollBar.addEventListener(Event.CHANGE, verticalScrollBarChanged);
+				dataGrid.addEventListener(KeyboardEvent.KEY_UP, reportKeyUp);
+				dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+				
+				trace("IN v_OpenOrdersPopup.............................................................................................creationCompleteHandler");
+ 			}
+			
+			public function setParams(params:Object): void
+			{
+				// to do.............
+				this.okPressed = false;
+				
+				if ( params == false )
+				{
+					return;
+				}
+				
+				currentState = "normal";
+				this.schedParams = params;
+				
+				trace ("...............................in setParams");
+				//tools.pr( params);
+				
+				this.fltr_ordcustno.text 			= tools.getObjAttribute( params, "order", "" );
+				this.fltr_supplier.selectedIndex	= tools.getObjAttribute( params, "supplier", -1 );
+				this.fltr_ordstat.selectedIndex		= -1;
+				this.title 							= tools.getObjAttribute( params, "title", this.title );
+				
+				if ( this.fltr_supplier.dataProvider != null && this.fltr_supplier.dataProvider.length>0 )
+				{
+					this.startFiltering();
+				}
+			}
+			
+			protected function getPagedResult_resultHandler(event:ResultEvent):void
+			{
+				this.dataGrid.selectedIndex = this.mainListSelection;
+				if ( this.mainListSelection >= 0)
+				{
+					this.dataGrid_selectionChangeHandler(null);
+				}
+				this.mainListSelection = -1;
+			}
+						
+			private function getData_resultHandler(obj:Object):void
+			{
+				totalCount = Number(obj.count);
+				if(interruptor)
+				{
+					interruptor = false;
+				}
+				else
+				{
+					// uncompress
+					if ( obj.hasOwnProperty('zip_on') && obj.zip_on == 1 )
+					{
+						var mthd:String="zlib";
+						if ( obj.hasOwnProperty('zip_mthd') )
+						{
+							mthd = obj.zip_mthd;
+						}
+						obj.data = global.uncompressText( obj.data, mthd );
+					}
+					//var myobj:Object = JSON.parse(obj.data,null);
+					var myobj:Object;
+					if ( obj.hasOwnProperty('json_on') && obj.json_on == 1 )
+					{
+						myobj = JSON.parse( obj.data,null );
+					}
+					else
+					{
+						myobj = obj.data;
+					}
+					
+					for each(var s:Object in myobj)
+					{
+						pagedRecords.addItem( s );
+					}
+					pagedRecords.refresh();
+					bytesLoaded = pagedRecords.list.length/totalCount*bytesTotal-1;	
+					
+					var rptRecords:ArrayCollection;
+					rptRecords = new ArrayCollection();
+					rptRecords.source = (myobj as Array);
+					
+					currentLength += rptRecords.length;
+				}
+				
+				// if not finished
+				if(pagedRecords.length < totalCount)
+				{
+					this.pgList.list = this.pagedRecords;
+					currentPage += 1;
+					nc.call( 'OpenOrderService.getPaged', getData, currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				}
+				else
+				{
+					finishedAllPages = true;
+					this.pgList.list = this.pagedRecords;
+				}
+				
+			}
+			
+			
+			protected function lookupOrderSupplier_resultHandler(event:ResultEvent):void
+			{
+				this.fltr_supplier.selectedIndex	= tools.getObjAttribute( this.schedParams, "supplier", -1 );
+				this.startFiltering();
+			}
+
+
+			protected function lookupOrderCustomer_resultHandler(event:ResultEvent):void
+			{
+				if (currentState == "edit" || currentState == "detail")
+				{
+					this.order_cust_acnt.selectedItem = dataGrid.selectedItem.order_cust_acnt + ' - ' + dataGrid.selectedItem.order_cust_name;
+				}
+			}
+			
+			private function verticalScrollBarChanged(event:Event):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+				}
+			}
+			
+			private function reportKeyUp(event:KeyboardEvent):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+				}
+			}
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				if(event.column.dataField!='order_items')
+				{
+					var currentRenderer:IGridItemRenderer;
+					var dir:String;
+					
+					if ( global.sortingBySingleColumn == true )
+					{	// sorted by single column only
+						for (var i:int=0; i < dataGrid.columns.length; i++)
+						{
+							currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+							if ( currentRenderer != null)
+							{
+								(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+							}
+							//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+						}
+					}
+					else
+					{	// sorted by multiple columns
+						;
+					}
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if( currentSorts.hasOwnProperty(event.column.dataField ) )
+					{
+						dir = currentSorts[event.column.dataField];
+						if( dir=="ASC" )
+						{
+							dir = "DESC";
+						}
+						else if ( dir == "DESC" )
+						{
+							dir = "";
+						}
+						else if ( dir == "" )
+						{
+							dir = "ASC";
+						}
+						else 
+						{
+							dir = "ASC";
+						}
+						
+						if ( dir != "" )
+						{
+							currentSorts[event.column.dataField] = dir;	
+						}
+						else
+						{
+							delete currentSorts[event.column.dataField];
+							delete currentOrders[event.column.dataField];
+						}
+					}
+					else
+					{
+						if ( global.sortingBySingleColumn == true )
+						{	// sorted by single column only
+							currentSorts = new Object();
+							currentOrders = new Object();
+							currentSortSeq = 0;
+						}
+						else
+						{	// sorted by multiple columns
+							;
+						}
+						currentSorts[event.column.dataField] = "ASC";	
+						dir = currentSorts[event.column.dataField];
+						currentSortSeq += 1;
+						currentOrders[event.column.dataField] = currentSortSeq;	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+					this.startFiltering();
+				}
+			}
+			
+			
+			protected function initOrderItems_resultHandler(event:ResultEvent):void
+			{
+				trace ("---------------start initOrderItems_resultHandler");
+				if (currentState == "edit")
+				{
+					trace ("---------------edit initOrderItems_resultHandler");
+					this.orderItemGrid.dataProvider = this.mergeOrderItems();
+				}
+				if (currentState == "detail")
+				{
+					trace ("initOrderItems_resultHandler", dataGrid,  dataGrid.selectedItem );
+					if ( dataGrid.selectedItem != null )
+					{
+						this.orderItemGrid.dataProvider = dataGrid.selectedItem.order_items;
+					}
+				}
+				trace ("---------------End initOrderItems_resultHandler");
+			}
+			
+			protected function getOrderItems_resultHandler(event:ResultEvent):void
+			{
+				trace ("--------------Start getOrderItems_resultHandler");
+				dataGrid.selectedItem.order_items = this.getOrderItems.lastResult;
+				if ( dataGrid.selectedItem.order_items.length>0 )
+				{
+					orderItemTripGrid.dataProvider = dataGrid.selectedItem.order_items[0].oitem_schedules;
+				}
+				else
+				{
+					orderItemTripGrid.dataProvider = null;
+				}
+				
+				initOrderItems.token = custOrdersService.initOrderItems( dataGrid.selectedItem.order_drwr_code );
+				trace ("----------------End getOrderItems_resultHandler");
+			}
+			
+			protected function getOrderSchedules_resultHandler(event:ResultEvent):void
+			{
+				trace ("--------------Start getOrderSchedules_resultHandler");
+				dataGrid.selectedItem.order_schedules = this.getOrderSchedules.lastResult;
+				
+				if ( dataGrid.selectedItem.order_schedules.length>0 )
+				{
+					this.orderTripGrid.dataProvider = dataGrid.selectedItem.order_schedules;
+				}
+				else
+				{
+					this.orderTripGrid.dataProvider = null;
+				}
+				
+				trace ("----------------End getOrderSchedules_resultHandler");
+			}
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				idx=dataGrid.selectedIndex;
+				dataGrid.ensureCellIsVisible(idx+11);
+				
+				currentState = "detail";					
+				adjustOrderEditability( dataGrid.selectedItem.order_approved, dataGrid.selectedItem.order_stat_id );
+				
+				var order_id:int=-1;
+				
+				order_id = int( dataGrid.selectedItem.order_sys_no );
+				getOrderItems.token = custOrdersService.getOrderItems( order_id );
+				getOrderSchedules.token = custOrdersService.getOrderSchedules( order_id );
+			}
+			
+			private function mergeOrderItems():ArrayCollection
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				var used:Boolean;
+				var x:Object;
+				var y:Object;
+
+				this.originalItems = new ArrayCollection( );
+				
+				trace ("*****************start mergeOrderItems************");
+				
+				trace ("dataGrid", dataGrid);
+				
+				if ( dataGrid==null || dataGrid.selectedItem==null || dataGrid.selectedItem.order_items==null )
+				{
+				trace ("*****************dataGrid is null************");
+					for each(x in initOrderItems.lastResult)
+					{
+						temp.addItem(x);
+						this.originalItems.addItem(ObjectUtil.copy(x));
+						trace( "mergeOrderItems xy", x.oitem_prod_code, x.oitem_prod_cmpy, x.oitem_prod_qty );
+					}
+					return temp;
+				}
+				
+				trace ("dataGrid.selectedItem", dataGrid.selectedItem);
+				trace ("dataGrid.selectedItem.order_items", dataGrid.selectedItem.order_items);
+				for each(x in dataGrid.selectedItem.order_items)
+				{
+					trace( "mergeOrderItems x", x.oitem_prod_code, x.oitem_prod_cmpy, x.oitem_prod_qty );
+					temp.addItem(x);
+					this.originalItems.addItem(ObjectUtil.copy(x));
+				}
+				
+				for each(x in initOrderItems.lastResult)
+				{
+					used = false;
+					for each(y in dataGrid.selectedItem.order_items)
+					{
+						if ( y.oitem_prod_code == x.oitem_prod_code && y.oitem_prod_cmpy == x.oitem_prod_cmpy )
+						{
+							used = true;
+							break;
+						}
+					}
+					if ( used == false )
+					{
+						trace( "mergeOrderItems y", x.oitem_prod_code, x.oitem_prod_cmpy, x.oitem_prod_qty );
+						temp.addItem(x);
+						this.originalItems.addItem(ObjectUtil.copy(x));
+					}
+				}
+				
+				//this.originalItems = new ArrayCollection( temp.source );
+				//this.originalItems = ObjectUtil.copy(temp);
+				trace ("*****************end of inside mergeOrderItems************");
+				
+				return temp;
+			}
+			
+			protected function adjustOrderEditability(apprv:String, stat:int):void
+			{
+				//order_sys_no
+				//order_supp_code
+				//order_cust_acnt
+				//order_cust_no
+				//order_ord_time
+				//order_dlv_time
+				//order_exp_time
+				//order_stat_id
+				//order_mthd_id--
+				//order_app_no
+				//order_app_time
+				//order_inv_no
+				//order_total
+				//order_limit		
+				//order_price_printed
+				//order_pay_note
+				//order_psnl_code
+				//order_src_id
+				if ( apprv == "N" && stat != ORDER_STATUS__EXPIRED )
+				{
+					order_ref_code.enabled = true;
+					order_ttyp_id.enabled = true;
+					order_styp_id.enabled = true;
+					order_drwr_code.enabled = true;
+					order_carr_code.enabled = true;
+					order_dloc_code.enabled = true;
+					order_dtrm_code.enabled = true;
+					order_strm_code.enabled = true;
+					order_approved.enabled = false;
+					order_trsf_type.enabled = true;
+				}
+				else
+				{
+					order_ref_code.enabled = false;
+					order_ttyp_id.enabled = false;
+					order_styp_id.enabled = false;
+					order_drwr_code.enabled = false;
+					order_carr_code.enabled = false;
+					order_dloc_code.enabled = false;
+					order_dtrm_code.enabled = false;
+					order_strm_code.enabled = false;
+					order_approved.enabled = false;
+					order_trsf_type.enabled = false;
+				}
+			}
+			
+			protected function getOrderItemSchedules_resultHandler(event:ResultEvent):void
+			{
+				trace ("--------------Start getOrderItemSchedules_resultHandler");
+				orderItemGrid.selectedItem.oitem_schedules = this.getOrderItemSchedules.lastResult;
+				
+				if ( orderItemGrid.selectedItem.oitem_schedules.length>0 )
+				{
+					this.orderItemTripGrid.dataProvider = orderItemGrid.selectedItem.oitem_schedules;
+				}
+				else
+				{
+					this.orderItemTripGrid.dataProvider = null;
+				}
+				
+				trace ("----------------End getOrderItemSchedules_resultHandler");
+			}
+			
+			protected function orderItemGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				this.orderItemLine = null;
+				
+				trace( "orderItemGrid.selectedItem", orderItemGrid.selectedItem );
+				trace( "orderItemGrid.selectedItem.oitem_periods", orderItemGrid.selectedItem.oitem_periods );
+				if ( orderItemGrid.selectedItem.oitem_periods != null )
+				{
+					trace( "orderItemGrid.selectedItem.oitem_periods.length", orderItemGrid.selectedItem.oitem_periods.length );
+				}
+				
+				//orderPeriodGrid.dataProvider = orderItemGrid.selectedItem.oitem_periods;
+				
+				//orderItemTripGrid.dataProvider = orderItemGrid.selectedItem.oitem_schedules;
+				var order_id:int;
+				var prod_code:String;
+				var prod_cmpy:String;
+				order_id = int( orderItemGrid.selectedItem.oitem_order_id );
+				prod_code = orderItemGrid.selectedItem.oitem_prod_code;
+				prod_cmpy = orderItemGrid.selectedItem.oitem_prod_cmpy;
+				getOrderItemSchedules.token = custOrdersService.getOrderItemSchedules( order_id, prod_code, prod_cmpy );
+				
+			}
+			
+			protected function orderPeriodGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+			}
+			
+			protected function cancel_clickHandler():void
+			{
+				clearDetail();
+				if ( currentState== "create" )
+				{
+					dataGrid.enabled=true;
+				}
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+			}			
+			
+			protected function checkOrderAvailability( ):Boolean
+			{
+				var is_available:Boolean=false;
+				var is_approved:Boolean;
+				var stat_id:int;
+				
+				is_approved = this.order_approved.selected
+				
+				if ( order_stat_id.selectedIndex >= 0 )
+				{
+					stat_id = lookupOrderStatusType.lastResult[order_stat_id.selectedIndex].ordstat_type_id;
+				}
+				else
+				{
+					stat_id = dataGrid.selectedItem.order_stat_id;
+				}
+				
+				if ( is_approved == false )
+				{
+					is_available = false;
+					global.msgWarning( "This open order is not approved yet so cannot be used." );
+				}
+				else
+				{
+					if ( stat_id == ORDER_STATUS__EXPIRED )	//6	EXPIRED
+					{
+						is_available = false;
+						global.msgWarning( "This open order is expired so cannot be used." );
+					}
+					else
+					{
+						if ( Number(this.orderItemGrid.selectedItem.oitem_schd_qty) < 0.1 )
+						{
+							is_available = false;
+							global.msgWarning( "This open order has no enough amount to schedule." );
+						}
+						else
+						{
+							is_available = true;
+/*							
+							if ( stat_id == ORDER_STATUS__NEW )	//0	NEW 
+							{
+								is_available = true;
+								//global.msgWarning( "This open order is not approved yet so cannot be used." );
+							}
+							else if ( stat_id == ORDER_STATUS__FILLING )	//1	PARTIALLY SCHEDULED
+							{
+								is_available = true;
+								//global.msgWarning( "This open order is not approved yet so cannot be used." );
+							}
+							else if ( stat_id == ORDER_STATUS__SCHEDULED )	//2	FULLY SCHEDULED
+							{
+								is_available = false;
+								global.msgWarning( "This open order is fully scheduled so cannot be used." );
+							}
+							else if ( stat_id == ORDER_STATUS__DELIVERY )	//3	FULLY LOADED
+							{
+								is_available = false;
+								global.msgWarning( "This open order is fully loaded so cannot be used." );
+							}
+							else if ( stat_id == ORDER_STATUS__OUTSTANDING )	//4	OUTSTANDING
+							{
+								is_available = false;
+								global.msgWarning( "This open order is outstanding so cannot be used." );
+							}
+							else if ( stat_id == ORDER_STATUS__COMPLETED )	//5	FULLY DELIVERED
+							{
+								is_available = false;
+								global.msgWarning( "This open order is fully delivered so cannot be used." );
+							}
+							else if ( stat_id == ORDER_STATUS__PARTIALLY_DELIVERY )		//7	PARTIALLY LOADED
+							{
+								is_available = false;
+								global.msgWarning( "This open order is partially loaded so cannot be used." );
+							}
+							else if ( stat_id == ORDER_STATUS__PARTIALLY_COMPLETED )	//8	PARTIALLY DELIVERED
+							{
+								is_available = false;
+								global.msgWarning( "This open order is partially delivered so cannot be used." );
+							}
+							else 
+							{
+								is_available = false;
+								global.msgWarning( "This open order has unknown status so cannot be used." );
+							}
+*/							
+						}
+					}
+				}
+				
+				return is_available;
+			}
+			
+			protected function ok_clickHandler():void
+			{
+				
+				if ( this.orderItemGrid.selectedIndex < 0 )
+				{
+					global.msgWarning( "Please select a line before clicking OK." );
+				}
+				else
+				{
+					if ( checkOrderAvailability( ) == false )
+					{
+						return;
+					}
+					else
+					{
+						okPressed = true;
+						this.orderItemLine = Object(this.orderItemGrid.selectedItem);
+						this.orderItemLine['oitem_order_id'] = this.order_cust_no.text;
+						tools.pr( this.orderItemLine );
+						this.dispatchEvent( new CloseEvent(CloseEvent.CLOSE) );
+					}
+				}
+			}			
+			
+			protected function getNextOrderCustNum_resultHandler(event:ResultEvent):void
+			{
+				//order_cust_no.enabled = true;
+				if ( getNextOrderCustNum.lastResult == "ERROR" )
+				{
+					order_cust_no.text = "";
+				}
+				else
+				{
+					order_cust_no.text=getNextOrderCustNum.lastResult;
+				}
+			}
+			
+			protected function adjustOrderCustomer():void
+			{
+				var supplier:String;
+				
+				trace( "adjustOrderCustomer", this.order_supp_code.selectedIndex );
+				
+				if ( this.order_supp_code.selectedIndex < 0 )
+				{
+					supplier = "-1";
+				}
+				else
+				{
+					supplier = lookupOrderSupplier.lastResult[order_supp_code.selectedIndex].cmpy_code;
+					lookupOrderDrawer.token = custOrdersService.lookupCompatibleDrawer( supplier, "-1");
+					if ( currentState == "create" )
+					{
+						order_drwr_code.selectedItem = lookupOrderSupplier.lastResult[order_supp_code.selectedIndex].cmpy_name;
+						//initOrderItems.token = custOrdersService.initOrderItems( supplier );
+					}
+				}
+				
+				trace( "adjustOrderCustomer", supplier, this.order_supp_code.selectedIndex );
+				
+				lookupOrderCustomer.token = custOrdersService.lookupOrderCustomer( supplier );
+				
+				if ( currentState == "create" )
+				{
+					order_cust_no.text = "";
+				}
+				
+			}
+			
+			protected function adjustSupplerProducts():void
+			{
+				var supplier:String;
+				
+				trace( "adjustSupplerProducts", this.order_supp_code.selectedIndex );
+				
+				if ( this.order_supp_code.selectedIndex < 0 )
+				{
+					supplier = "-1";
+				}
+				else
+				{
+					supplier = lookupOrderSupplier.lastResult[order_supp_code.selectedIndex].cmpy_code;
+				}
+
+				trace( "adjustSupplerProducts", supplier, this.order_supp_code.selectedIndex );
+				
+				initOrderItems.token = custOrdersService.initOrderItems( supplier );
+			}
+			
+			protected function adjustDrawerProducts():void
+			{
+				this.adjustSupplerProducts();
+				return;
+				
+				var drawer:String;
+				
+				trace( "adjustDrawerProducts", this.order_drwr_code.selectedIndex );
+				
+				if ( this.order_drwr_code.selectedIndex < 0 )
+				{
+					drawer = "-1";
+				}
+				else
+				{
+					drawer = lookupOrderDrawer.lastResult[order_drwr_code.selectedIndex].cmpy_code;
+				}
+				
+				trace( "adjustDrawerProducts", drawer, this.order_drwr_code.selectedIndex );
+				
+				initOrderItems.token = custOrdersService.initOrderItems( drawer );
+			}
+			
+			protected function adjustOrderCustomerNumber():void
+			{
+				if (currentState!="create")
+				{
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				if (order_supp_code.selectedIndex>=0)
+				{
+					obj.order_supp_code = lookupOrderSupplier.lastResult[order_supp_code.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.order_supp_code = "-1";
+				}
+				if (order_cust_acnt.selectedIndex>=0)
+				{
+					obj.order_cust_acnt = lookupOrderCustomer.lastResult[order_cust_acnt.selectedIndex].cust_acnt;
+					obj.order_cust_code = lookupOrderCustomer.lastResult[order_cust_acnt.selectedIndex].cust_cmpy_code;
+				}
+				else
+				{
+					obj.order_cust_acnt = "-1";
+					obj.order_cust_code = "-1";
+				}
+				if (order_dtrm_code.selectedIndex>=0)
+				{
+					obj.order_dtrm_code = lookupOrderTerminal.lastResult[order_dtrm_code.selectedIndex].term_code;
+				}
+				else
+				{
+					obj.order_dtrm_code = lookupOrderTerminal.lastResult[0].term_code;
+				}
+				
+				getNextOrderCustNum.token = custOrdersService.getNextOrderCustNum( obj );
+				
+			}
+			
+			protected function getOrderMethod(trnspt_type:int):int
+			{
+				if ( trnspt_type == 1 || trnspt_type == 3 )
+				{
+					return 1;
+				}
+				else
+				{
+					return 0;
+				}
+			}
+			
+			protected function adjustTransportType():void
+			{
+				var ord_mthd:int;
+				
+				if ( this.order_mthd_id.selectedIndex < 0 )
+				{
+					ord_mthd = -1;
+				}
+				else
+				{
+					ord_mthd = lookupOrderMethodType.lastResult[order_mthd_id.selectedIndex].ordmthd_type_id;
+				}
+				
+				lookupOrderTrnsptType.token = custOrdersService.lookupOrderTrnsptType( ord_mthd );
+			}
+			
+			protected function fltr_ordcustno_keyUpHandler(event:KeyboardEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_refcode_keyUpHandler(event:KeyboardEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_supplier_changeHandler(event:IndexChangeEvent):void
+			{
+				var supplier:String;
+				
+				if ( this.fltr_supplier.selectedIndex < 0 )
+				{
+					supplier = "-1";
+				}
+				else
+				{
+					supplier = lookupOrderSupplier.lastResult[fltr_supplier.selectedIndex].cmpy_code;
+				}
+				
+				fltr_customer.textInput.text='';
+				fltr_customer.selectedIndex = -1;
+				
+				lookupOrderCustomer.token = custOrdersService.lookupOrderCustomer( supplier );
+				
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_customer_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_ordstat_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_refcode_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_ordcustno_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			private function startFiltering():void
+			{
+				var supplierFilter:String = '';  
+				var customerFilter:String = '';  
+				var ordstatFilter:String = '';
+				var refcodeFilter:String = '';
+				var ordcustnoFilter:String = '';
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				if (fltr_supplier.selectedIndex > -1) 
+				{
+					supplierFilter = "order_supp_code='"+lookupOrderSupplier.lastResult[fltr_supplier.selectedIndex].cmpy_code+"' ";
+					fields["order_supp_code"] = lookupOrderSupplier.lastResult[fltr_supplier.selectedIndex].cmpy_code;
+					if ( fields["order_supp_code"] == "ANY" )
+					{
+						supplierFilter = '';
+						fields["order_supp_code"] = "";
+					}
+				}
+				else
+				{
+					if ( global.setComboBoxNoSelection == true )
+					{
+						fltr_supplier.selectedIndex = -1;
+					}
+					supplierFilter = '';
+					fields["order_supp_code"] = "";
+				}
+				types["order_supp_code"] = "EXACT_STRING";
+				
+				if (fltr_customer.selectedIndex > -1) 
+				{
+					customerFilter = "order_cust_acnt='"+lookupOrderCustomer.lastResult[fltr_customer.selectedIndex].cust_acnt+"' ";
+					fields["order_cust_acnt"] = lookupOrderCustomer.lastResult[fltr_customer.selectedIndex].cust_acnt;
+					if ( fields["order_cust_acnt"] == "ANY" )
+					{
+						customerFilter = '';
+						fields["order_cust_acnt"] = "";
+					}
+				}
+				else
+				{
+					if ( global.setComboBoxNoSelection == true )
+					{
+						fltr_customer.selectedIndex = -1;
+					}
+					customerFilter = '';
+					fields["order_cust_acnt"] = "";
+				}
+				types["order_cust_acnt"] = "EXACT_STRING";
+				
+				if ( this.currentState != "widget" )
+				{
+					if (fltr_ordstat.selectedIndex > -1) 
+					{
+						ordstatFilter = "order_stat_id="+lookupOrderStatusType.lastResult[fltr_ordstat.selectedIndex].ordstat_type_id+" ";
+						fields["order_stat_id"] = lookupOrderStatusType.lastResult[fltr_ordstat.selectedIndex].ordstat_type_id;
+					}
+					else
+					{
+						if ( global.setComboBoxNoSelection == true )
+						{
+							fltr_ordstat.selectedIndex = -1;
+						}
+						ordstatFilter = '';
+						fields["order_stat_id"] = "";
+					}
+					types["order_stat_id"] = "NUMBER";
+					
+					if(fltr_ordcustno.text!='')
+					{					
+						ordcustnoFilter = "(UPPER(TO_CHAR(order_cust_no)) LIKE UPPER('%"+(fltr_ordcustno.text)+"%') ) ";
+						//ordcustnoFilter = "order_cust_no = " + fltr_ordcustno.text + " ";
+						fields["order_cust_no"] = fltr_ordcustno.text;
+					}
+					else
+					{
+						ordcustnoFilter = '';
+						fields["order_cust_no"] = "";
+					}
+					types["order_cust_no"] = "STRING";
+					//types["order_cust_no"] = "NUMBER";
+					
+					if(fltr_refcode.text!='')
+					{					
+						refcodeFilter = "(UPPER(order_ref_code) LIKE UPPER('%"+(fltr_refcode.text)+"%') ) ";
+						fields["order_ref_code"] = fltr_refcode.text;
+					}
+					else
+					{
+						refcodeFilter = '';
+						fields["order_ref_code"] = "";
+					}
+					types["order_ref_code"] = "STRING";
+				}
+				
+				currentFilter = "WHERE 1=1 ";
+				if ( ordcustnoFilter.length > 0 )
+				{
+					currentFilter += "AND " + ordcustnoFilter;
+				}
+				if ( refcodeFilter.length > 0 )
+				{
+					currentFilter += "AND " + refcodeFilter;
+				}
+				if ( supplierFilter.length > 0 )
+				{
+					currentFilter += "AND " + supplierFilter;
+				}
+				if ( customerFilter.length > 0 )
+				{
+					currentFilter += "AND " + customerFilter;
+				}
+				if ( ordstatFilter.length > 0 )
+				{
+					currentFilter += "AND " + ordstatFilter;
+				}
+				currentFields = fields;
+				currentTypes = types;
+				//				getPagedResult.token = custOrdersService.getPaged(currentFilter,currentOrder, currentDirection);
+				getPagedResult.token = custOrdersService.getPaged( currentFields, currentTypes, currentSorts, currentOrders);
+			}
+			
+			private function findByOrderCustNo(supplier:String, order_no:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["order_supp_code"] = supplier;
+				types["order_supp_code"] = "STRING";
+				fields["order_cust_no"] = order_no;
+				types["order_cust_no"] = "NUMBER";
+				
+				getPagedResult.token = custOrdersService.getPaged( fields, types, currentSorts, currentOrders);
+			}
+			
+			private function findByID(id:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["order_sys_no"] = id;
+				types["order_sys_no"] = "NUMBER";
+				
+				getPagedResult.token = custOrdersService.getPaged( fields, types, currentSorts, currentOrders);
+			}
+			
+			protected function refreshRecords(event:MouseEvent):void
+			{
+				if ( currentState != "widget" )
+				{
+					currentState = 'normal';
+					dataGrid.enabled=true;
+				}
+				clearDetail();
+				fltr_supplier.selectedIndex = -1;
+				fltr_customer.textInput.text = '';
+				fltr_customer.selectedIndex = -1;
+				if ( currentState != "widget" )
+				{
+					fltr_ordstat.selectedIndex = -1;
+					fltr_refcode.text = '';
+					fltr_ordcustno.text = '';
+				}
+				dataGrid.selectedIndex = -1;
+				currentFilter = null;
+				currentOrder = null;
+				currentFields = new Object();
+				currentTypes = new Object();
+				
+				currentSorts = new Object();
+				currentOrders = new Object();
+				var currentRenderer:IGridItemRenderer;
+				for (var i:int=0; i < dataGrid.columns.length; i++)
+				{
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					if ( currentRenderer != null)
+					{
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+					}
+					//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+				}
+				getPagedResult.token = custOrdersService.getPaged( currentFields, currentTypes, currentSorts, currentOrders);
+				trace("this.grid.scroller2222", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			protected function clearDetail(): void
+			{
+				if (currentState != 'widget')
+				{
+				}
+			}			
+			
+			private function editRecord():void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					return;
+				}
+				
+				if ( this.checkItemFields() == false )
+				{
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				obj.order_sys_no = order_sys_no.text;
+				
+				if (order_supp_code.selectedIndex>=0)
+				{
+					obj.order_supp_code = lookupOrderSupplier.lastResult[order_supp_code.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.order_supp_code = dataGrid.selectedItem.order_supp_code;
+				}
+				if (order_cust_acnt.selectedIndex>=0)
+				{
+					obj.order_cust_acnt = lookupOrderCustomer.lastResult[order_cust_acnt.selectedIndex].cust_acnt;
+					obj.order_cust_code = lookupOrderCustomer.lastResult[order_cust_acnt.selectedIndex].cust_cmpy_code;
+				}
+				else
+				{
+					obj.order_cust_acnt = dataGrid.selectedItem.order_cust_acnt;
+					obj.order_cust_code = dataGrid.selectedItem.order_cust_code;
+				}
+				
+				obj.order_cust_no = order_cust_no.text;
+				obj.order_ref_code = order_ref_code.text;
+				
+				obj.order_ord_time = dateConvertLong.format(order_ord_time.selectedDate);
+				obj.order_dlv_time = dateConvert.format(order_dlv_time.selectedDate);
+				obj.order_exp_time = dateConvert.format(order_exp_time.selectedDate);
+				
+				if (order_stat_id.selectedIndex>=0)
+				{
+					obj.order_stat_id = lookupOrderStatusType.lastResult[order_stat_id.selectedIndex].ordstat_type_id;
+				}
+				else
+				{
+					obj.order_stat_id = dataGrid.selectedItem.order_stat_id;
+				}
+				if (order_mthd_id.selectedIndex>=0)
+				{
+					obj.order_mthd_id = lookupOrderMethodType.lastResult[order_mthd_id.selectedIndex].ordmthd_type_id;
+				}
+				else
+				{
+					obj.order_mthd_id = lookupOrderMethodType.lastResult[0].ordmthd_type_id;
+				}
+				if (order_ttyp_id.selectedIndex>=0)
+				{
+					obj.order_ttyp_id = lookupOrderTrnsptType.lastResult[order_ttyp_id.selectedIndex].trnspt_type_id;
+				}
+				else
+				{
+					obj.order_ttyp_id = dataGrid.selectedItem.order_ttyp_id;
+				}
+				if (order_styp_id.selectedIndex>=0)
+				{
+					obj.order_styp_id = lookupOrderSaleType.lastResult[order_styp_id.selectedIndex].sale_type_id;
+				}
+				else
+				{
+					obj.order_styp_id = dataGrid.selectedItem.order_styp_id;
+				}
+				
+				if (order_drwr_code.selectedIndex>=0)
+				{
+					obj.order_drwr_code = lookupOrderDrawer.lastResult[order_drwr_code.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.order_drwr_code = dataGrid.selectedItem.order_drwr_code;
+				}
+				if (order_carr_code.selectedIndex>=0)
+				{
+					obj.order_carr_code = lookupOrderCarrier.lastResult[order_carr_code.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.order_carr_code = "ANY";
+				}
+				if (order_dloc_code.selectedIndex>=0)
+				{
+					obj.order_dloc_code = lookupOrderDelvLocation.lastResult[order_dloc_code.selectedIndex].delv_code;
+				}
+				else
+				{
+					obj.order_dloc_code = dataGrid.selectedItem.order_dloc_code;
+				}
+				if (order_dtrm_code.selectedIndex>=0)
+				{
+					obj.order_dtrm_code = lookupOrderTerminal.lastResult[order_dtrm_code.selectedIndex].term_code;
+				}
+				else
+				{
+					obj.order_dtrm_code = dataGrid.selectedItem.order_dtrm_code;
+				}
+				if (order_strm_code.selectedIndex>=0)
+				{
+					obj.order_strm_code = lookupOrderTerminal.lastResult[order_strm_code.selectedIndex].term_code;
+				}
+				else
+				{
+					obj.order_strm_code = dataGrid.selectedItem.order_strm_code;
+				}
+				
+				obj.order_approved = (order_approved.selected==true?"on":"");
+				//obj.order_app_no = order_app_no.text;
+				//obj.order_app_time = dateConvert.format(order_app_time.selectedDate);
+				//obj.order_inv_no = order_inv_no.text;
+				obj.order_total = order_total.text;
+				obj.order_limit = order_limit.text;
+				obj.order_trsf_type = order_trsf_type.text;
+				obj.order_price_printed = (order_price_printed.selected==true?"on":"");
+				obj.order_pay_note = order_pay_note.text;
+				
+				if (order_psnl_code.selectedIndex>=0)
+				{
+					obj.order_psnl_code = lookupOrderPsnl.lastResult[order_psnl_code.selectedIndex].psnl_code;
+				}
+				else
+				{
+					obj.order_psnl_code = dataGrid.selectedItem.order_psnl_code;
+				}
+				if (order_src_id.selectedIndex>=0)
+				{
+					obj.order_src_id = lookupOrderErpType.lastResult[order_src_id.selectedIndex].erp_type_id;
+				}
+				else
+				{
+					obj.order_src_id = dataGrid.selectedItem.order_src_id;
+				}
+				
+				obj.order_instructions = order_instructions.text;
+				
+				obj.order_sold_to_num = this.order_sold_to_num.text;
+				obj.order_ship_to_num = this.order_ship_to_num.text;
+				
+				
+				obj.has_items = 0;
+				var items:ArrayCollection=new ArrayCollection();
+				var x:Object;
+				var y:Object;
+				var actions:ArrayCollection=new ArrayCollection();
+				var action:Object;
+				var match_found:Boolean=false;
+				for each ( x in this.orderItemGrid.dataProvider)
+				{
+					action = new Object();
+					action.option = 0;  // do nothing
+					trace( "********X", x.oitem_prod_code, x.oitem_prod_qty);
+					match_found = false;
+					for each ( y in this.originalItems )
+					{
+						if ( x.oitem_prod_code == y.oitem_prod_code && x.oitem_prod_cmpy == y.oitem_prod_cmpy )
+						{
+							if ( x.oitem_prod_qty == y.oitem_prod_qty )
+							{
+								if ( x.oitem_prod_qty>0 && x.oitem_prod_unit != y.oitem_prod_unit )
+								{
+									action.option = 2; // update qty
+								}
+								else
+								{
+									action.option = 0;
+								}
+							}
+							else
+							{
+								if (x.oitem_prod_qty > 0 && y.oitem_prod_qty > 0 )
+								{
+									action.option = 2; // update qty
+								}
+								else if (x.oitem_prod_qty > 0 && y.oitem_prod_qty == 0 )
+								{
+									action.option = 1; // insert qty
+								}
+								else if (x.oitem_prod_qty == 0 && y.oitem_prod_qty > 0 )
+								{
+									action.option = 3; // delete qty
+								}
+								else
+								{
+									action.option = 0;
+								}
+							}
+							
+							match_found = true;
+						}
+						if ( match_found == true )
+						{
+							trace( "********Y found", y.oitem_prod_code, y.oitem_prod_qty, action.option);
+							break;
+						}
+						//trace( "********Y", y.oitem_prod_code, y.oitem_prod_qty, action.option);
+					}
+					actions.addItem(action);
+					items.addItem(x);
+					obj.has_items = 1;
+					trace( "********X", x.oitem_prod_code, x.oitem_prod_qty, "***********action", action.option);
+				}
+				obj.order_items = items;
+				obj.actions = actions;
+				
+				var aa:Object;
+				for each ( aa in obj.actions )
+				{
+					trace("???????????", aa.option);
+				}
+				
+				/*
+				trace ("equipCmptsList", equipCmptsList );
+				trace ("equipCmptsList.dataProvider", equipCmptsList.dataProvider );
+				trace ("equipCmptsList.dataProvider[0]", equipCmptsList.dataProvider[0] );
+				trace ("equipCmptsList(equipCmptsList.dataProvider[0] as Gui_Equipment_List )", (equipCmptsList.dataProvider[0] as Gui_Equipment_List ) );
+				//				trace ("equipCmptsList", Gui_Equipment_List(equipCmptsList.dataProvider[0]) );
+				trace ("equipCmptsList.dataProvider[0].eqpt_id", equipCmptsList.dataProvider[0].equipment[0].eqpt_id );
+				trace ("equipCmptsList.dataProvider[0].compartments", equipCmptsList.dataProvider[0].compartments );
+				trace ("equipCmptsList.dataProvider[0].equipment[0].compartments", equipCmptsList.dataProvider[0].equipment[0].compartments );
+				//trace ("equipCmptsList",  );
+				//obj.compartments = (equipCmptsList.dataProvider[0] as Gui_Equipment_List).compartments;
+				//obj.compartments = (equipCmptsList.dataProvider[0] as Gui_Equipment_List).compartments;
+				obj.compartments = (equipCmptsList.dataProvider[0]).equipment[0].compartments;
+				//obj.compartments = (equipCmptsList.dataProvider);
+				*/
+				updateResult.token = custOrdersService.update(obj);
+				/*
+				clearDetail();
+				currentState="normal";
+				this.findByID(obj.eqpt_id);
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+				*/
+			}
+			
+			private function updateResultHandler(event:Event):void
+			{
+				clearDetail();
+				if ( updateResult.lastResult == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var txt:String;
+				txt = this.order_sys_no.text;
+				
+				currentState="normal";
+				this.findByID( txt );
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			private function doDelete(): void
+			{
+				var errors:String="";
+				var index:int=0;
+				/*
+				//if ( eqpt_lock.selected == true )
+				if ( dataGrid.selectedItem.eqpt_lock == "Y" )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','ALERT__LOCKED_EQPT_CANNOT_BE_DELETED') + "\n";
+				}
+				//if ( eqp_must_tare_in.selected == true )
+				if ( dataGrid.selectedItem.eqp_must_tare_in == "Y" )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','ALERT__TAREIN_EQPT_CANNOT_BE_DELETED') + "\n";
+				}
+				
+				trace ( "isEqptUsedByTanker", eqpt_code.text, dataGrid.selectedItem.eqpt_code, isEqptUsedByTanker.lastResult);
+				if ( isEqptUsedByTanker.lastResult > 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','ALERT__EQPT_HAS_TANKER') + "\n";
+				}
+				*/
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				else
+				{
+					var canDelete:DeleteDialog = new DeleteDialog(deleteRecord, hasPassword);
+				}
+			}
+			
+			private function deleteRecord():void
+			{
+				var obj:Object = new Object();
+				
+				obj.order_cust_no = dataGrid.selectedItem.order_cust_no;
+				obj.order_sys_no = dataGrid.selectedItem.order_sys_no;
+				obj.order_cust_acnt = dataGrid.selectedItem.order_cust_acnt;
+				obj.order_supp_code = dataGrid.selectedItem.order_supp_code;
+				obj.order_cust_code = dataGrid.selectedItem.order_cust_code;
+				obj.order_dtrm_code = dataGrid.selectedItem.order_dtrm_code;
+				obj.order_stat_id = dataGrid.selectedItem.order_stat_id;
+				
+				removeResult.token = custOrdersService.remove(obj);
+			}
+			
+			private function removeResultHandler(event:Event):void
+			{
+				clearDetail();
+				if ( removeResult.lastResult == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+				}
+				
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+				//dataGrid.enabled=true;
+			}
+			
+			private function doApprove():void
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				else
+				{
+					var canApprove:ApproveDialog = new ApproveDialog(approveRecord, hasPassword);
+				}
+			}
+			
+			private function approveRecord():void
+			{
+				var obj:Object = new Object();
+				
+				obj.order_cust_no = dataGrid.selectedItem.order_cust_no;
+				obj.order_sys_no = dataGrid.selectedItem.order_sys_no;
+				obj.order_cust_acnt = dataGrid.selectedItem.order_cust_acnt;
+				obj.order_supp_code = dataGrid.selectedItem.order_supp_code;
+				obj.order_cust_code = dataGrid.selectedItem.order_cust_code;
+				obj.order_dtrm_code = dataGrid.selectedItem.order_dtrm_code;
+				obj.order_stat_id = dataGrid.selectedItem.order_stat_id;
+				
+				approveResult.token = custOrdersService.approve(obj);
+			}
+			
+			private function approveResultHandler(event:Event):void
+			{
+				clearDetail();
+				if ( approveResult.lastResult == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_APPROVE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_APPROVE__FAILURE'));
+				}
+				
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+				//dataGrid.enabled=true;
+			}
+				
+			private function checkOrderNo():void
+			{
+				isOrderNoUsed.token = custOrdersService.isOrderNoUsed( int(order_sys_no.text) );
+			}
+			
+			private function checkOrderCustNo():void
+			{
+				var supplier:String;
+				if ( this.order_supp_code.selectedIndex < 0 )
+				{
+					supplier = "-1";
+				}
+				else
+				{
+					supplier = lookupOrderSupplier.lastResult[order_supp_code.selectedIndex].cmpy_code;
+				}
+				isOrderCustNoUsed.token = custOrdersService.isOrderCustNoUsed( supplier, int(order_cust_no.text) );
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				if ( order_supp_code.selectedIndex == -1 )//< 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_SUPP_CODE') + "\n";
+				}
+				if ( order_cust_acnt.selectedIndex == -1 )//< 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_CUST_ACNT') + "\n";
+				}
+				if ( StringUtil.trim(order_cust_no.text).length == 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','ENTER')+resourceManager.getString('default','ORDER_CUST_NO') + "\n";
+				}
+				if ( StringUtil.trim(order_ord_time.currentDate).length == 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','ENTER')+resourceManager.getString('default','ORDER_ORD_TIME') + "\n";
+				}
+				if ( StringUtil.trim(order_dlv_time.currentDate).length == 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','ENTER')+resourceManager.getString('default','ORDER_DLV_TIME') + "\n";
+				}
+				if ( StringUtil.trim(order_exp_time.currentDate).length == 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','ENTER')+resourceManager.getString('default','ORDER_EXP_TIME') + "\n";
+				}
+				if ( order_drwr_code.selectedIndex == -1 )//< 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_DRWR_CODE') + "\n";
+				}
+				if ( order_ttyp_id.selectedIndex == -1 )//< 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_TTYP_ID') + "\n";
+				}
+				if ( order_dtrm_code.selectedIndex == -1 )//< 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_DTRM_CODE') + "\n";
+				}
+				if ( order_strm_code.selectedIndex == -1 )//< 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','PLEASE')+resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_STRM_CODE') + "\n";
+				}
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return index;
+			}
+			
+			private function createRecord():void
+			{
+				var order_num:int;
+				
+				order_num = isOrderCustNoUsed.lastResult;
+				trace ("isOrderCustNoUsed", order_sys_no.text, order_cust_no.text, order_num);
+				if ( order_num > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__ORDER_CUSTNO_EXIST') );
+					return;
+				}
+				
+				order_num = isOrderNoUsed.lastResult;
+				trace ("isOrderNoUsed", order_sys_no.text, order_cust_no.text, order_num);
+				if ( order_num > 0 )
+				{
+					var errorBox2:MessageDialog = new MessageDialog( resourceManager.getString('default','ALERT__ORDER_NO_EXIST') );
+					return;
+				}
+				
+				if ( this.checkFields() > 0 )
+				{
+					return;
+				}
+				
+				if ( this.checkItemFields() == false )
+				{
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				obj.order_sys_no = order_sys_no.text;
+				
+				if (order_supp_code.selectedIndex>=0)
+				{
+					obj.order_supp_code = lookupOrderSupplier.lastResult[order_supp_code.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.order_supp_code = lookupOrderSupplier.lastResult[0].cmpy_code;
+				}
+				if (order_cust_acnt.selectedIndex>=0)
+				{
+					obj.order_cust_acnt = lookupOrderCustomer.lastResult[order_cust_acnt.selectedIndex].cust_acnt;
+					obj.order_cust_code = lookupOrderCustomer.lastResult[order_cust_acnt.selectedIndex].cust_cmpy_code;
+				}
+				else
+				{
+					obj.order_cust_acnt = lookupOrderCustomer.lastResult[0].cust_acnt;
+					obj.order_cust_code = lookupOrderCustomer.lastResult[0].cust_cmpy_code;
+				}
+				
+				obj.order_cust_no = order_cust_no.text;
+				obj.order_ref_code = order_ref_code.text;
+				
+				obj.order_ord_time = dateConvertLong.format(order_ord_time.selectedDate);
+				obj.order_dlv_time = dateConvert.format(order_dlv_time.selectedDate);
+				obj.order_exp_time = dateConvert.format(order_exp_time.selectedDate);
+				
+				if (order_stat_id.selectedIndex>=0)
+				{
+					obj.order_stat_id = lookupOrderStatusType.lastResult[order_stat_id.selectedIndex].ordstat_type_id;
+				}
+				else
+				{
+					obj.order_stat_id = lookupOrderStatusType.lastResult[0].ordstat_type_id;
+				}
+				if (order_mthd_id.selectedIndex>=0)
+				{
+					obj.order_mthd_id = lookupOrderMethodType.lastResult[order_mthd_id.selectedIndex].ordmthd_type_id;
+				}
+				else
+				{
+					obj.order_mthd_id = lookupOrderMethodType.lastResult[0].ordmthd_type_id;
+				}
+				if (order_ttyp_id.selectedIndex>=0)
+				{
+					obj.order_ttyp_id = lookupOrderTrnsptType.lastResult[order_ttyp_id.selectedIndex].trnspt_type_id;
+				}
+				else
+				{
+					obj.order_ttyp_id = lookupOrderTrnsptType.lastResult[0].trnspt_type_id;
+				}
+				if (order_styp_id.selectedIndex>=0)
+				{
+					obj.order_styp_id = lookupOrderSaleType.lastResult[order_styp_id.selectedIndex].sale_type_id;
+				}
+				else
+				{
+					obj.order_styp_id = lookupOrderSaleType.lastResult[0].sale_type_id;
+				}
+				
+				if (order_drwr_code.selectedIndex>=0)
+				{
+					obj.order_drwr_code = lookupOrderDrawer.lastResult[order_drwr_code.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.order_drwr_code = lookupOrderDrawer.lastResult[0].cmpy_code;
+				}
+				if (order_carr_code.selectedIndex>=0)
+				{
+					obj.order_carr_code = lookupOrderCarrier.lastResult[order_carr_code.selectedIndex].cmpy_code;
+				}
+				else
+				{
+					obj.order_carr_code = "ANY";
+				}
+				if (order_dloc_code.selectedIndex>=0)
+				{
+					obj.order_dloc_code = lookupOrderDelvLocation.lastResult[order_dloc_code.selectedIndex].delv_code;
+				}
+				else
+				{
+					obj.order_dloc_code = "";
+				}
+				if (order_dtrm_code.selectedIndex>=0)
+				{
+					obj.order_dtrm_code = lookupOrderTerminal.lastResult[order_dtrm_code.selectedIndex].term_code;
+				}
+				else
+				{
+					obj.order_dtrm_code = lookupOrderTerminal.lastResult[0].term_code;
+				}
+				if (order_strm_code.selectedIndex>=0)
+				{
+					obj.order_strm_code = lookupOrderTerminal.lastResult[order_strm_code.selectedIndex].term_code;
+				}
+				else
+				{
+					obj.order_strm_code = lookupOrderTerminal.lastResult[0].term_code;
+				}
+				
+				obj.order_approved = (order_approved.selected==true?"on":"");
+				//obj.order_app_no = order_app_no.text;
+				//obj.order_app_time = dateConvert.format(order_app_time.selectedDate);
+				//obj.order_inv_no = order_inv_no.text;
+				obj.order_total = order_total.text;
+				obj.order_limit = order_limit.text;
+				obj.order_trsf_type = order_trsf_type.text;
+				obj.order_price_printed = (order_price_printed.selected==true?"on":"");
+				obj.order_pay_note = order_pay_note.text;
+				
+				if (order_psnl_code.selectedIndex>=0)
+				{
+					obj.order_psnl_code = lookupOrderPsnl.lastResult[order_psnl_code.selectedIndex].psnl_code;
+				}
+				else
+				{
+					obj.order_psnl_code = "";
+				}
+				if (order_src_id.selectedIndex>=0)
+				{
+					obj.order_src_id = lookupOrderErpType.lastResult[order_src_id.selectedIndex].erp_type_id;
+				}
+				else
+				{
+					obj.order_src_id = lookupOrderErpType.lastResult[4].erp_type_id;
+				}
+				
+				obj.order_instructions = order_instructions.text;
+				
+				obj.order_sold_to_num = this.order_sold_to_num.text;
+				obj.order_ship_to_num = this.order_ship_to_num.text;
+				
+				obj.has_items = 0;
+				var items:ArrayCollection=new ArrayCollection();
+				var x:Object;
+				for each ( x in this.orderItemGrid.dataProvider)
+				{
+					trace( "********X", x.oitem_prod_code, x.oitem_prod_qty);
+					if ( x.oitem_prod_qty > 0 )
+					{
+						items.addItem(x);
+						obj.has_items = 1;
+					}
+				}
+				obj.order_items = items;
+
+				createResult.token = custOrdersService.create(obj);
+			}
+			
+			private function createResultHandler(event:Event):void
+			{
+				clearDetail();
+				if ( createResult.lastResult == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				}
+				
+				var supp:String;
+				var id:String;
+				supp = lookupOrderSupplier.lastResult[order_supp_code.selectedIndex].cmpy_code;
+				id = this.order_cust_no.text;
+				
+				currentState="normal";
+				this.findByOrderCustNo( supp, id );
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+		
+			protected function createNewRecord(event:MouseEvent):void
+			{	
+				idx=dataGrid.selectedIndex;
+				dataGrid.ensureCellIsVisible(idx+11);
+				currentState="create";
+				dataGrid.enabled=false;
+				//transpEqptTypeLookup.token = custOrdersService.transpEqptTypeLookup('0', '-1');
+				//this.equipCmptsList.visible = false;
+			}
+			
+			
+			public function getArrayCollection(obj:Object):ArrayCollection
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				temp.addItem( obj );
+				return temp;
+			}
+			
+			public function convertDateToLocaleString(dt:String):String
+			{
+				var dt_string:String;
+				var dt_date:Date = new Date();
+				
+				dt_string = ""; 
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+					dt_string = dateFormatter.format( dt_date);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_string;
+			}
+			
+			public function convertDateToLocale(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_date;
+			}
+			
+			public function convertDateToLocaleLong(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					//dt_date = DateField.stringToDate(dt,"YYYY-MM-DD HH:NN:SS");
+					dt_date = DateTimeFunc.createDate(
+						int(dt.substr(0, 4))
+						, int(dt.substr(5, 2))
+						, int(dt.substr(8, 2))
+						, int(dt.substr(11, 2))
+						, int(dt.substr(14, 2))
+						, int(dt.substr(17, 2))
+						);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_date;
+			}
+			
+			public function getDefaultDate():Date
+			{
+				var now_date:Date;
+				var def_date:Date;
+				
+				now_date = new Date();
+				def_date = DateTimeFunc.dateAdd( "yyyy", 1, now_date );
+
+				//trace ("getDefaultDate", now_date, def_date);
+				
+				return def_date;
+			}
+			
+			protected function view_detailsHandler(event:FlexEvent):void
+			{
+			}
+			
+			protected function unitLabelFunction(item:Object, column:GridColumn):String
+			{
+				var ret:String = 'l(amb)';
+				for each(var obj:Object in lookupOrderUnit.lastResult)
+				{
+					if(obj.unit_id == item [column.dataField]) ret=obj.unit_name;
+				}
+				return ret;
+			}
+			
+			protected function dateLabelFunction(item:Object, column:GridColumn):String
+			{
+				var ret:String = "";
+				
+				ret = item [column.dataField];
+				return ret;
+			}
+			
+			protected function lookupOrderUnit_resultHandler(event:ResultEvent):void
+			{
+				global.prodUnits = lookupOrderUnit.lastResult;
+			}
+			
+			protected function save_clickHandler():void
+			{
+				if (currentState == "create")
+				{
+					createRecord();
+				}
+				if (currentState == "edit")
+				{
+					editRecord();
+				}
+				if (currentState == "detail")
+				{
+					editRecord();
+				}
+			}
+			
+			
+			public function closeDialogHandler():void
+			{
+				this.mainListSelection = this.dataGrid.selectedIndex;
+				this.currentState = "normal";
+				this.dataGrid.selectedIndex = -1;
+				this.startFiltering();
+			}
+			
+			public function checkItemFields():Boolean
+			{
+				var x:Object;
+				
+				for each ( x in this.orderItemGrid.dataProvider)
+				{
+					trace( "********X", x.oitem_prod_code, x.oitem_prod_qty);
+					if ( tools.isValueNumeric( x.oitem_prod_qty ) == false )
+					{
+						global.msgFail("Please enter the number for 'Prod Qty' of '" + x.oitem_prod_code + " - " + x.oitem_prod_name + "'");
+						return false;
+					}
+					else
+					{
+						if ( int( x.oitem_prod_qty ) < 0 || x.oitem_prod_qty.search("-")>=0 )
+						//if ( int( x.oitem_prod_qty ) < 0  )
+						{
+							global.msgFail("Please enter the number greater than zero for 'Prod Qty' of '" + x.oitem_prod_code + " - " + x.oitem_prod_name + "'");
+							return false;
+						}
+					}
+				}
+				
+				return true;
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateFormatter" dateStyle="short" locale="{LocaleID.DEFAULT}"
+							 timeStyle="none"/>
+		<s:DateTimeFormatter id="dateConvert" dateTimePattern="yyyy-MM-dd"/>
+		<s:DateTimeFormatter id="dateConvertLong" dateTimePattern="yyyy-MM-dd HH:mm:ss"/>
+		<s:CallResponder id="isOrderNoUsed"/>
+		<s:CallResponder id="isOrderCustNoUsed"/>
+		<s:CallResponder id="getPagedResult" result="this.getPagedResult_resultHandler(event)"/>
+		<s:CallResponder id="initOrderItems" result="initOrderItems_resultHandler(event)"/>
+		<s:CallResponder id="initOrderPeriods"/>
+		<s:CallResponder id="getOrderItems" result="getOrderItems_resultHandler(event)"/>
+		<s:CallResponder id="getOrderSchedules" result="getOrderSchedules_resultHandler(event)"/>
+		<s:CallResponder id="getOrderItemSchedules"
+						 result="getOrderItemSchedules_resultHandler(event)"/>
+		<s:CallResponder id="getOrderPeriods"/>
+		<s:CallResponder id="lookupOrderCustomer"
+						 result="this.lookupOrderCustomer_resultHandler(event)"/>
+		<s:CallResponder id="lookupOrderCompany"/>
+		<s:CallResponder id="lookupOrderSupplier" result="this.lookupOrderSupplier_resultHandler(event)"/>
+		<s:CallResponder id="lookupOrderCarrier"/>
+		<s:CallResponder id="lookupOrderDrawer"/>
+		<s:CallResponder id="lookupOrderMethodType"/>
+		<s:CallResponder id="lookupOrderTrnsptType"/>
+		<s:CallResponder id="lookupOrderStatusType"/>
+		<s:CallResponder id="lookupOrderSaleType"/>
+		<s:CallResponder id="lookupOrderDelvLocation"/>
+		<s:CallResponder id="lookupOrderTerminal"/>
+		<s:CallResponder id="lookupOrderPsnl"/>
+		<s:CallResponder id="lookupOrderErpType"/>
+		<s:CallResponder id="lookupOrderUnit" result="lookupOrderUnit_resultHandler(event)"/>
+		<s:CallResponder id="lookupOrderPriceType"/>
+		<s:CallResponder id="lookupOrderPriceOffset"/>
+		<s:CallResponder id="lookupOrderProduct"/>
+		<s:CallResponder id="lookupOrderTrip"/>
+		<s:CallResponder id="getNextOrderCustNum" result="getNextOrderCustNum_resultHandler(event)"/>
+		<custordersservice:CustOrdersService id="custOrdersService" channelSet="{global.channelSet}"
+											 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+											 showBusyCursor="true"/>
+		<s:CallResponder id="removeResult"
+						 fault="global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'))"
+						 result="removeResultHandler(event)"/>
+		<s:CallResponder id="updateResult"
+						 fault="global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'))"
+						 result="updateResultHandler(event)"/>
+		<s:CallResponder id="createResult"
+						 fault="global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'))"
+						 result="createResultHandler(event)"/>
+		<s:CallResponder id="approveResult"
+						 fault="global.msgFail(resourceManager.getString('default','ERROR_APPROVE__FAILURE'))"
+						 result="approveResultHandler(event)"/>
+		<components:ValidationGroup id="vg" action="{save_clickHandler}" defaultButton="{btn_save}"
+									isProtected="{hasPassword}"/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:HGroup id="toolbar" width="100%" gap="5" paddingBottom="2" paddingTop="2">
+			<components:DKI_DropDownList id="fltr_supplier" width="170" height="100%"
+										 change="fltr_supplier_changeHandler(event)"
+										 cornerRadius="10"
+										 dataProvider="{lookupOrderSupplier.lastResult}"
+										 labelField="cmpy_name" enabled="false"
+										 prompt="{resourceManager.getString('default','ORDER_SUPP_NAME')+resourceManager.getString('default','FILTER')}"
+										 />
+			<components:DKI_ComboBox id="fltr_customer" width="170" height="100%"
+									change="fltr_customer_changeHandler(event)" cornerRadius="10"
+									dataProvider="{lookupOrderCustomer.lastResult}"
+									enabled="{fltr_supplier.selectedIndex &gt; -1}"
+									labelField="cust_desc"
+									prompt="{resourceManager.getString('default','ORDER_CUST_ACNT')+resourceManager.getString('default','FILTER')}"
+									/>
+			<components:DKI_DropDownList id="fltr_ordstat" width="188"
+										 height="100%" change="fltr_ordstat_changeHandler(event)"
+										 cornerRadius="10"
+										 dataProvider="{lookupOrderStatusType.lastResult}"
+										 labelField="ordstat_type_name"
+										 prompt="{resourceManager.getString('default','ORDER_STAT_NAME')+resourceManager.getString('default','FILTER')}"
+										 />
+			<components:DKI_ValidatorInput id="fltr_ordcustno" width="160"
+										   height="{labelHeight}"
+										   keyUp="fltr_ordcustno_keyUpHandler(event)"
+										   prompt="{resourceManager.getString('default','ORDER_CUST_NO')+resourceManager.getString('default','FILTER')}"
+										   restrict="0-9" validationType="search"
+										   />
+			<components:DKI_ValidatorInput id="fltr_refcode" width="160"
+										   height="{labelHeight}"
+										   keyUp="fltr_refcode_keyUpHandler(event)"
+										   prompt="{resourceManager.getString('default','ORDER_REF_CODE')+resourceManager.getString('default','FILTER')}"
+										   restrict="A-Za-z0-9 \-" validationType="search"
+										   />
+
+			<components:DKI_Button height="100%"
+								   label="{resourceManager.getString('default','CLEAR')+resourceManager.getString('default','FILTER')}"
+								   click="refreshRecords(event)" type="refresh"/>
+			<s:Spacer width="100%"/>
+		</s:HGroup>
+		<s:DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="3"
+					selectionChange="dataGrid_selectionChangeHandler(event)"
+					skinClass="skins.DKI_DataGrid_Skin">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn visible="true" dataField="order_sys_no"
+									  headerText="{resourceManager.getString('default','ORDER_SYS_NO')}"></s:GridColumn>
+						<s:GridColumn visible="true" dataField="order_supp_code"
+									  headerText="{resourceManager.getString('default','ORDER_SUPP_CODE')}"></s:GridColumn>
+						<s:GridColumn dataField="order_supp_name"
+									  headerText="{resourceManager.getString('default','ORDER_SUPP_NAME')}"></s:GridColumn>
+						<s:GridColumn visible="true" dataField="order_cust_acnt"
+									  headerText="{resourceManager.getString('default','ORDER_CUST_ACNT')}"></s:GridColumn>
+						<s:GridColumn visible="true" dataField="order_cust_code"
+									  headerText="{resourceManager.getString('default','ORDER_CUST_CODE')}"></s:GridColumn>
+						<s:GridColumn dataField="order_cust_name"
+									  headerText="{resourceManager.getString('default','ORDER_CUST_NAME')}"></s:GridColumn>
+						<s:GridColumn dataField="order_cust_no"
+									  headerText="{resourceManager.getString('default','ORDER_CUST_NO')}"></s:GridColumn>
+						<s:GridColumn dataField="order_ord_time"
+									  headerText="{resourceManager.getString('default','ORDER_ORD_TIME')}"
+									  itemRenderer="renderers.DateTimeRenderer"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_ttyp_id"
+									  headerText="{resourceManager.getString('default','ORDER_TTYP_ID')}"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_ttyp_name"
+									  headerText="{resourceManager.getString('default','ORDER_TTYP_NAME')}"
+									  ></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_stat_id"
+									  headerText="{resourceManager.getString('default','ORDER_STAT_ID')}"></s:GridColumn>
+						<s:GridColumn dataField="order_stat_name"
+									  headerText="{resourceManager.getString('default','ORDER_STAT_NAME')}"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_styp_id"
+									  headerText="{resourceManager.getString('default','ORDER_STYP_ID')}"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_styp_name"
+									  headerText="{resourceManager.getString('default','ORDER_STYP_NAME')}"></s:GridColumn>
+						<s:GridColumn visible="true" dataField="order_dloc_code"
+									  headerText="{resourceManager.getString('default','ORDER_DLOC_CODE')}"></s:GridColumn>
+						<s:GridColumn visible="true" dataField="order_dloc_name"
+									  headerText="{resourceManager.getString('default','ORDER_DLOC_NAME')}"
+									  ></s:GridColumn>
+						<s:GridColumn dataField="order_ref_code"
+									  headerText="{resourceManager.getString('default','ORDER_REF_CODE')}"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_dlv_time"
+									  headerText="{resourceManager.getString('default','ORDER_DLV_TIME')}"
+									  itemRenderer="renderers.DateRenderer"
+									  ></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_dtrm_code"
+									  headerText="{resourceManager.getString('default','ORDER_DTRM_CODE')}"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_dtrm_name"
+									  headerText="{resourceManager.getString('default','ORDER_DTRM_NAME')}"
+									  ></s:GridColumn>
+						<s:GridColumn dataField="order_exp_time"
+									  headerText="{resourceManager.getString('default','ORDER_EXP_TIME')}"
+									  itemRenderer="renderers.DateRenderer"></s:GridColumn>
+						<s:GridColumn visible="true" dataField="order_drwr_code"
+									  headerText="{resourceManager.getString('default','ORDER_DRWR_CODE')}"></s:GridColumn>
+						<s:GridColumn visible="true" dataField="order_drwr_name"
+									  headerText="{resourceManager.getString('default','ORDER_DRWR_NAME')}"
+									  ></s:GridColumn>
+						<s:GridColumn visible="true" dataField="order_carr_code"
+									  headerText="{resourceManager.getString('default','ORDER_CARR_CODE')}"></s:GridColumn>
+						<s:GridColumn visible="true" dataField="order_carr_name"
+									  headerText="{resourceManager.getString('default','ORDER_CARR_NAME')}"
+									  ></s:GridColumn>
+						<s:GridColumn dataField="order_approved"
+									  headerText="{resourceManager.getString('default','ORDER_APPROVED')}"
+									  itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_inv_no"
+									  headerText="{resourceManager.getString('default','ORDER_INV_NO')}"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_total"
+									  headerText="{resourceManager.getString('default','ORDER_TOTAL')}"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_limit"
+									  headerText="{resourceManager.getString('default','ORDER_LIMIT')}"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_app_no"
+									  headerText="{resourceManager.getString('default','ORDER_APP_NO')}"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_app_time"
+									  headerText="{resourceManager.getString('default','ORDER_APP_TIME')}"
+									  itemRenderer="renderers.DateRenderer"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_trsf_type"
+									  headerText="{resourceManager.getString('default','ORDER_TRSF_TYPE')}"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_price_printed"
+									  headerText="{resourceManager.getString('default','ORDER_PRICE_PRINTED')}"
+									  itemRenderer="renderers.GridCheckRender"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_strm_code"
+									  headerText="{resourceManager.getString('default','ORDER_STRM_CODE')}"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_strm_name"
+									  headerText="{resourceManager.getString('default','ORDER_STRM_NAME')}"
+									  ></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_pay_note"
+									  headerText="{resourceManager.getString('default','ORDER_PAY_NOTE')}"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_psnl_code"
+									  headerText="{resourceManager.getString('default','ORDER_PSNL_CODE')}"></s:GridColumn>
+						<s:GridColumn dataField="order_psnl_name"
+									  headerText="{resourceManager.getString('default','ORDER_PSNL_NAME')}"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_sold_to_num"
+									  headerText="Sold To"
+									  ></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_ship_to_num"
+									  headerText="Ship To"
+									  ></s:GridColumn>
+						<s:GridColumn dataField="order_last_change" headerText="Last Modified On"
+									  itemRenderer="renderers.DateTimeRenderer"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_src_id"
+									  headerText="{resourceManager.getString('default','ORDER_SRC_ID')}"></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_src_name"
+									  headerText="{resourceManager.getString('default','ORDER_SRC_NAME')}"
+									  ></s:GridColumn>
+						<s:GridColumn visible="false" dataField="order_items"
+									  headerText="{resourceManager.getString('default','ORDER_ITEMS')}"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			<s:dataProvider>
+				<s:AsyncListView id="pgList" list="{getPagedResult.lastResult}"/>
+			</s:dataProvider>
+		</s:DataGrid>
+	</s:Panel>
+	
+	<s:Panel id="details" includeIn="detail" width="100%" height="420"
+			 itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+			<!--s:TileLayout/-->
+		</s:layout>
+		
+		<s:Spacer height="5"/>
+		<s:VGroup>
+			<s:HGroup>
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_SYS_NO')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="order_sys_no" width="{fieldWidth}"
+												   height="{fieldHeight}"
+												   automationName="{resourceManager.getString('default','ORDER_SYS_NO')}"
+												   change="this.checkOrderNo()" editable="false"
+												   enabled="false" required="false"
+												   text="{dataGrid.selectedItem.order_sys_no}"
+												   validationGroup="{vg}" validationType="integer"/>
+				</s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_SUPP_NAME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="order_supp_code" width="{fieldWidth}"
+													  height="{fieldHeight}"
+													  automationName="{resourceManager.getString('default','ORDER_SUPP_NAME')}"
+													  change="adjustOrderCustomer(); checkOrderCustNo()"
+													  dataProvider="{lookupOrderSupplier.lastResult}"
+													  enabled="false" labelField="cmpy_name"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_SUPP_NAME')}"
+													  required="true"
+													  selectedItem="{dataGrid.selectedItem.order_supp_name}"
+													  validationGroup="{vg}"
+													  valueCommit="adjustOrderCustomer()"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_CUST_ACNT')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="order_cust_acnt" width="{fieldWidth}"
+													  height="{fieldHeight}"
+													  automationName="{resourceManager.getString('default','ORDER_CUST_ACNT')}"
+													  change="adjustOrderCustomerNumber()"
+													  dataProvider="{lookupOrderCustomer.lastResult}"
+													  enabled="false" labelField="cust_desc"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_CUST_ACNT')}"
+													  required="true"
+													  selectedItem="{dataGrid.selectedItem.order_cust_acnt+' - '+dataGrid.selectedItem.order_cust_name}"
+													  validationGroup="{vg}"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_CUST_NO')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="order_cust_no" width="{fieldWidth}"
+												   height="{fieldHeight}"
+												   automationName="{resourceManager.getString('default','ORDER_CUST_NO')}"
+												   change="checkOrderCustNo()" editable="false"
+												   enabled="false" required="true"
+												   text="{dataGrid.selectedItem.order_cust_no}"
+												   validationGroup="{vg}" validationType="integer"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_REF_CODE')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="order_ref_code" width="{fieldWidth}"
+												   height="{fieldHeight}"
+												   automationName="{resourceManager.getString('default','ORDER_REF_CODE')}"
+												   editable="true" enabled="true" required="false"
+												   text="{dataGrid.selectedItem.order_ref_code}"
+												   validationGroup="{vg}"
+												   validationType="alphanumeric"
+												   editable.detail="false" enabled.detail="false"/>
+				</s:HGroup>
+			</s:HGroup>
+			
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_ORD_TIME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_DateTime id="order_ord_time" width="{fieldWidth}"
+											 height="{fieldHeight}" enabled="false"
+											 selectedDate="{convertDateToLocaleLong(dataGrid.selectedItem.order_ord_time)}"
+											 timeEnabled="false"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_DLV_TIME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_DateTime id="order_dlv_time" width="{fieldWidth}"
+											 height="{fieldHeight}" enabled="true"
+											 selectedDate="{convertDateToLocale(dataGrid.selectedItem.order_dlv_time)}"
+											 timeEnabled="false"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_EXP_TIME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_DateTime id="order_exp_time" width="{fieldWidth}"
+											 height="{fieldHeight}" enabled="true"
+											 selectedDate="{convertDateToLocale(dataGrid.selectedItem.order_exp_time)}"
+											 timeEnabled="false"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_MTHD_NAME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="order_mthd_id" width="{fieldWidth}"
+													  height="{fieldHeight}"
+													  change="adjustTransportType()"
+													  dataProvider="{lookupOrderMethodType.lastResult}"
+													  enabled="false" labelField="ordmthd_type_name"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_MTHD_NAME')}"
+													  required="false"
+													  selectedIndex="{getOrderMethod(dataGrid.selectedItem.order_ttyp_id)}"
+													  selectedItem=""/>
+				</s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_TTYP_NAME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="order_ttyp_id" width="{fieldWidth}"
+													  height="{fieldHeight}"
+													  automationName="{resourceManager.getString('default','ORDER_TTYP_NAME')}"
+													  dataProvider="{lookupOrderTrnsptType.lastResult}"
+													  enabled="false" labelField="trnspt_type_name"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_TTYP_NAME')}"
+													  required="true"
+													  selectedItem="{dataGrid.selectedItem.order_ttyp_name}"
+													  validationGroup="{vg}"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_STYP_NAME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="order_styp_id" width="{fieldWidth}"
+													  height="{fieldHeight}"
+													  dataProvider="{lookupOrderSaleType.lastResult}"
+													  enabled="false" labelField="sale_type_name"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_STYP_NAME')}"
+													  required="false"
+													  selectedItem="{dataGrid.selectedItem.order_styp_name}"/>
+				</s:HGroup>
+			</s:HGroup>
+			
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_CARR_NAME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="order_carr_code" width="{fieldWidth}"
+													  height="{fieldHeight}"
+													  dataProvider="{lookupOrderCarrier.lastResult}"
+													  enabled="false" labelField="cmpy_name"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_CARR_NAME')}"
+													  required="false"
+													  selectedItem="{dataGrid.selectedItem.order_carr_name}"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_DLOC_NAME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="order_dloc_code" width="{fieldWidth}"
+													  height="{fieldHeight}"
+													  dataProvider="{lookupOrderDelvLocation.lastResult}"
+													  enabled="false" labelField="delv_desc"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_DLOC_NAME')}"
+													  required="false"
+													  selectedItem="{dataGrid.selectedItem.order_dloc_code+' - '+dataGrid.selectedItem.order_dloc_name}"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_DTRM_NAME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="order_dtrm_code" width="{fieldWidth}"
+													  height="{fieldHeight}"
+													  automationName="{resourceManager.getString('default','ORDER_DTRM_NAME')}"
+													  dataProvider="{lookupOrderTerminal.lastResult}"
+													  enabled="false" labelField="term_name"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_DTRM_NAME')}"
+													  required="true"
+													  selectedItem="{dataGrid.selectedItem.order_dtrm_name}"
+													  validationGroup="{vg}"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_STRM_NAME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="order_strm_code" width="{fieldWidth}"
+													  height="{fieldHeight}"
+													  automationName="{resourceManager.getString('default','ORDER_STRM_NAME')}"
+													  dataProvider="{lookupOrderTerminal.lastResult}"
+													  enabled="false" labelField="term_name"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_STRM_NAME')}"
+													  required="true"
+													  selectedItem="{dataGrid.selectedItem.order_strm_name}"
+													  validationGroup="{vg}"/>
+				</s:HGroup>
+			</s:HGroup>
+			
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_DRWR_NAME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="order_drwr_code" width="{fieldWidth}"
+													  height="{fieldHeight}"
+													  automationName="{resourceManager.getString('default','ORDER_DRWR_NAME')}"
+													  change="adjustDrawerProducts()"
+													  dataProvider="{lookupOrderDrawer.lastResult}"
+													  enabled="false" labelField="cmpy_name"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_DRWR_NAME')}"
+													  required="true"
+													  selectedItem="{dataGrid.selectedItem.order_drwr_name}"
+													  validationGroup="{vg}"
+													  valueCommit="adjustDrawerProducts()"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_STAT_NAME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="order_stat_id" width="{fieldWidth}"
+													  height="{fieldHeight}"
+													  dataProvider="{lookupOrderStatusType.lastResult}"
+													  enabled="false" labelField="ordstat_type_name"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_STAT_NAME')}"
+													  required="false"
+													  selectedItem="{dataGrid.selectedItem.order_stat_name}"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup>
+					<s:CheckBox id="order_approved"
+								label="{resourceManager.getString('default','ORDER_APPROVED')}"
+								enabled="false" fontWeight="bold"
+								selected="{dataGrid.selectedItem.order_approved=='Y'?true:false}"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="Sold To"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="order_sold_to_num" width="{fieldWidth/2}"
+												   height="{fieldHeight}" automationName="Sold To"
+												   editable="true" enabled="true" required="false"
+												   text="{dataGrid.selectedItem.order_sold_to_num}"
+												   validationGroup="{vg}"
+												   validationType="alphanumeric"
+												   editable.detail="false" enabled.detail="false"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="Ship To"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="order_ship_to_num" width="{fieldWidth/2}"
+												   height="{fieldHeight}" automationName="Ship To"
+												   editable="true" enabled="true" required="false"
+												   text="{dataGrid.selectedItem.order_ship_to_num}"
+												   validationGroup="{vg}"
+												   validationType="alphanumeric"
+												   editable.detail="false" enabled.detail="false"/>
+				</s:HGroup>
+				<s:Spacer width="{spaceWidth}"/>
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_PSNL_NAME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="order_psnl_code" width="{fieldWidth}"
+													  height="{fieldHeight}"
+													  dataProvider="{lookupOrderPsnl.lastResult}"
+													  enabled="false" labelField="psnl_name"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_PSNL_NAME')}"
+													  required="false" requireSelection="false"
+													  selectedItem="{dataGrid.selectedItem.order_psnl_name}"/>
+				</s:HGroup>
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_SRC_NAME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="order_src_id" width="{fieldWidth}"
+													  height="{fieldHeight}"
+													  dataProvider="{lookupOrderErpType.lastResult}"
+													  enabled="false" labelField="erp_type_name"
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','ORDER_SRC_NAME')}"
+													  required="false"
+													  selectedItem="{dataGrid.selectedItem.order_src_name}"/>
+				</s:HGroup>
+				
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_APP_NO')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="order_app_no" width="{fieldWidth}"
+												   height="{fieldHeight}"
+												   automationName="{resourceManager.getString('default','ORDER_APP_NO')}"
+												   editable="false" enabled="false" required="false"
+												   text="{dataGrid.selectedItem.order_app_no}"
+												   validationGroup="{vg}"
+												   validationType="alphanumeric"/>
+				</s:HGroup>
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_APP_TIME')}"
+							 verticalAlign="middle"/>
+					<components:DKI_DateTime id="order_app_time" 
+											 selectedDate="{convertDateToLocaleLong(dataGrid.selectedItem.order_app_time)}" 
+											 enabled="false"
+											 width="{fieldWidth}" height="{fieldHeight}" timeEnabled="false"
+											 />
+					
+				</s:HGroup>
+				
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_INV_NO')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="order_inv_no" width="{fieldWidth}"
+												   height="{fieldHeight}"
+												   automationName="{resourceManager.getString('default','ORDER_INV_NO')}"
+												   editable="false" required="false"
+												   text="{dataGrid.selectedItem.order_inv_no}"
+												   validationGroup="{vg}" validationType="integer"/>
+				</s:HGroup>
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_TOTAL')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="order_total" width="{fieldWidth}"
+												   height="{fieldHeight}"
+												   automationName="{resourceManager.getString('default','ORDER_TOTAL')}"
+												   editable="false" enabled="false" required="false"
+												   text="{dataGrid.selectedItem.order_total}"
+												   validationGroup="{vg}" validationType="integer"/>
+				</s:HGroup>
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_LIMIT')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="order_limit" width="{fieldWidth}"
+												   height="{fieldHeight}"
+												   automationName="{resourceManager.getString('default','ORDER_LIMIT')}"
+												   editable="false" enabled="false" required="false"
+												   text="{dataGrid.selectedItem.order_limit}"
+												   validationGroup="{vg}" validationType="integer"/>
+				</s:HGroup>
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="  "/>
+					<s:CheckBox id="order_price_printed"
+								label="{resourceManager.getString('default','ORDER_PRICE_PRINTED')}"
+								enabled="false" fontWeight="bold"
+								selected="{dataGrid.selectedItem.order_price_printed=='Y'?true:false}"/>
+				</s:HGroup>
+				<s:HGroup visible="false" includeInLayout="false">
+					<s:Label width="{labelWidth}" height="{labelHeight}"
+							 text="{resourceManager.getString('default','ORDER_PAY_NOTE')}"
+							 verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="order_pay_note" width="{fieldWidth}"
+												   height="{fieldHeight}"
+												   automationName="{resourceManager.getString('default','ORDER_PAY_NOTE')}"
+												   editable="false" enabled="false" required="false"
+												   text="{dataGrid.selectedItem.order_pay_note}"
+												   validationGroup="{vg}"
+												   validationType="alphanumeric"/>
+				</s:HGroup>
+			</s:HGroup>
+			<s:Spacer height="5"/>
+			<s:HGroup width="100%">
+				<s:VGroup width="{fieldWidth}" visible="false" includeInLayout="false">
+					<s:HGroup>
+						<s:Label width="{fieldWidth/2-10}" height="16"
+								 text="{resourceManager.getString('default','ORDER_TRSF_TYPE')}"
+								 verticalAlign="middle"/>
+						<!--s:CheckBox id="order_approved"
+									label="{resourceManager.getString('default','ORDER_APPROVED')}"
+									enabled="false" fontWeight="bold"
+									selected="{dataGrid.selectedItem.order_approved=='Y'?true:false}"/-->
+					</s:HGroup>
+					<components:DKI_ValidatorInput id="order_trsf_type" width="{fieldWidth}"
+												   height="{fieldHeight}"
+												   automationName="{resourceManager.getString('default','ORDER_TRSF_TYPE')}"
+												   editable="false" enabled="false" required="false"
+												   text="{dataGrid.selectedItem.order_trsf_type}"
+												   validationGroup="{vg}"
+												   validationType="alphanumeric"/>
+					<s:Label width="{fieldWidth-10}" height="16"
+							 text="{resourceManager.getString('default','ORDER_INSTRUCTIONS')}"
+							 verticalAlign="middle"/>
+					<s:TextArea id="order_instructions" width="{fieldWidth}" height="130"
+								editable="false" enabled="false"
+								text="{dataGrid.selectedItem.order_instructions}"/>
+					<s:HGroup>
+					</s:HGroup>
+					<s:HGroup visible="true" includeInLayout="true">
+					</s:HGroup>
+				</s:VGroup>
+				
+				<s:HGroup width="99%">
+					
+					<s:VGroup visible="false" width="25%" includeInLayout="false">
+						<s:DataGrid id="orderTripGrid" excludeFrom="normal" width="100%"
+									height="210"
+									dataProvider="{dataGrid.selectedItem.order_schedules}"
+									editable="false" enabled="true" requestedRowCount="4"
+									skinClass="skins.DKI_DataGrid_Skin">
+							<s:columns>
+								<s:ArrayList>
+									<s:source>
+										<s:GridColumn visible="false" dataField="schd_order_id"
+													  headerText="{resourceManager.getString('default','SCHD_ORDER_ID')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="schd_supp_code"
+													  headerText="{resourceManager.getString('default','SCHD_SUPP_CODE')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="schd_supplier"
+													  headerText="{resourceManager.getString('default','SCHD_SUPPLIER')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="schd_trip_no"
+													  headerText="{resourceManager.getString('default','SCHD_TRIP_NO')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="schd_carr_code"
+													  headerText="{resourceManager.getString('default','SCHD_CARR_CODE')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="schd_carrier"
+													  headerText="{resourceManager.getString('default','SCHD_CARRIER')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="schd_tnkr_code"
+													  headerText="{resourceManager.getString('default','SCHD_TNKR_CODE')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="schd_tanker"
+													  headerText="{resourceManager.getString('default','SCHD_TANKER')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="schd_date"
+													  headerText="{resourceManager.getString('default','SCHD_DATE')}"
+													  itemRenderer="renderers.DateRenderer"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="schd_status_code"
+													  headerText="{resourceManager.getString('default','SCHD_STATUS_CODE')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="schd_status"
+													  headerText="{resourceManager.getString('default','SCHD_STATUS')}"></s:GridColumn>
+									</s:source>
+								</s:ArrayList>
+							</s:columns>
+						</s:DataGrid>
+					</s:VGroup>
+					
+					<s:VGroup width="60%">
+						<s:DataGrid id="orderItemGrid" excludeFrom="normal" width="100%"
+									height="210" dataProvider="{this.mergeOrderItems()}"
+									editable="true" requestedRowCount="4"
+									selectionChange="orderItemGrid_selectionChangeHandler(event)"
+									skinClass="skins.DKI_DataGrid_Skin"
+									editable.detail="false">
+							<s:columns>
+								<s:ArrayList>
+									<s:source>
+										<s:GridColumn visible="false" dataField="oitem_order_id"
+													  headerText="{resourceManager.getString('default','OITEM_ORDER_ID')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="oitem_prod_code"
+													  editable="false"
+													  headerText="{resourceManager.getString('default','OITEM_PROD_CODE')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_prod_cmpy"
+													  headerText="{resourceManager.getString('default','OITEM_PROD_CMPY')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="oitem_prod_name"
+													  editable="false"
+													  headerText="{resourceManager.getString('default','OITEM_PROD_NAME')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_drwr_name"
+													  headerText="{resourceManager.getString('default','OITEM_DRWR_NAME')}"></s:GridColumn>
+										<s:GridColumn visible="true" width="90"
+													  dataField="oitem_prod_qty" editable="true"
+													  headerText="{resourceManager.getString('default','OITEM_PROD_QTY')}"
+													  editable.detail="false"></s:GridColumn>
+										<s:GridColumn visible="true" width="100"
+													  dataField="oitem_prod_unit" editable="true"
+													  headerText="{resourceManager.getString('default','OITEM_PROD_UNIT')}"
+													  itemEditor="itemeditors.ProductUnits"
+													  labelFunction="unitLabelFunction"
+													  editable.detail="false">
+										</s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_unit_name"
+													  headerText="{resourceManager.getString('default','OITEM_UNIT_NAME')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_by_packs"
+													  headerText="{resourceManager.getString('default','OITEM_BY_PACKS')}"
+													  itemRenderer="renderers.GridCheckRender"
+													  visible.detail="false"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_pack_size"
+													  headerText="{resourceManager.getString('default','OITEM_PACK_SIZE')}"
+													  visible.detail="true"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_schd_qty"
+													  headerText="{resourceManager.getString('default','OITEM_SCHD_QTY')}"
+													  visible.detail="true"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_load_qty"
+													  headerText="{resourceManager.getString('default','OITEM_LOAD_QTY')}"
+													  visible.detail="true"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_delv_qty"
+													  headerText="{resourceManager.getString('default','OITEM_DELV_QTY')}"
+													  visible.detail="true"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_exempt_no"
+													  headerText="{resourceManager.getString('default','OITEM_EXEMPT_NO')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_padj_code"
+													  headerText="{resourceManager.getString('default','OITEM_PADJ_CODE')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_padj_name"
+													  headerText="{resourceManager.getString('default','OITEM_PADJ_NAME')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_price_type"
+													  headerText="{resourceManager.getString('default','OITEM_PRICE_TYPE')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_price_name"
+													  headerText="{resourceManager.getString('default','OITEM_PRICE_NAME')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_prod_price"
+													  headerText="{resourceManager.getString('default','OITEM_PROD_PRICE')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_period_no"
+													  headerText="{resourceManager.getString('default','OITEM_PERIOD_NO')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_line_no"
+													  headerText="{resourceManager.getString('default','OITEM_LINE_NO')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="oitem_periods"
+													  headerText="{resourceManager.getString('default','OITEM_PERIODS')}"></s:GridColumn>
+									</s:source>
+								</s:ArrayList>
+							</s:columns>
+						</s:DataGrid>
+					</s:VGroup>
+					
+					<s:VGroup width="40%">
+						<s:DataGrid id="orderItemTripGrid" excludeFrom="normal" width="100%"
+									height="210"
+									dataProvider="{orderItemGrid.selectedItem.oitem_schedules}"
+									editable="false" enabled="true" requestedRowCount="4"
+									skinClass="skins.DKI_DataGrid_Skin">
+							<s:columns>
+								<s:ArrayList>
+									<s:source>
+										<s:GridColumn visible="false" dataField="schd_order_id"
+													  headerText="{resourceManager.getString('default','SCHD_ORDER_ID')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="schd_supp_code"
+													  headerText="{resourceManager.getString('default','SCHD_SUPP_CODE')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="schd_supplier"
+													  headerText="{resourceManager.getString('default','SCHD_SUPPLIER')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="schd_trip_no"
+													  headerText="{resourceManager.getString('default','SCHD_TRIP_NO')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="schd_cmpt_no"
+													  headerText="{resourceManager.getString('default','SCHD_CMPT_NO')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="schd_prod_code"
+													  headerText="{resourceManager.getString('default','SCHD_PROD_CODE')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="schd_prod_cmpy"
+													  headerText="{resourceManager.getString('default','SCHD_PROD_CMPY')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="schd_prod_name"
+													  headerText="{resourceManager.getString('default','SCHD_PROD_NAME')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="schd_prod_qty"
+													  headerText="{resourceManager.getString('default','SCHD_PROD_QTY')}"></s:GridColumn>
+										<s:GridColumn visible="false" dataField="schd_prod_unit"
+													  headerText="{resourceManager.getString('default','SCHD_PROD_UNIT')}"></s:GridColumn>
+										<s:GridColumn visible="true" dataField="schd_unit_name"
+													  headerText="{resourceManager.getString('default','SCHD_UNIT_NAME')}"></s:GridColumn>
+									</s:source>
+								</s:ArrayList>
+							</s:columns>
+						</s:DataGrid>
+					</s:VGroup>
+					
+					
+				</s:HGroup>
+
+			</s:HGroup>
+			
+		</s:VGroup>
+		
+		<s:Spacer height="0"/>
+		
+		<s:HGroup width="100%" gap="5" paddingBottom="4"
+				  paddingTop="0">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_save" height="100%" visible="false"
+								   label="{resourceManager.getString('default','UPDATE')}"
+								   enabled="{this.canUpdate}" type="edit"/>
+			<components:DKI_Button id="btn_ok" height="100%"
+								   label="{resourceManager.getString('default','OK')}"
+								   enabled="{this.canUpdate}" type="edit" click="ok_clickHandler()"/>
+			
+			<components:DKI_Button id="btn_cancel" height="100%"
+								   label="{resourceManager.getString('default','CANCEL')}"
+								   click="cancel_clickHandler()" enabled="true" type="cancel"/>
+		</s:HGroup>
+	</s:Panel>
+</s:Panel>

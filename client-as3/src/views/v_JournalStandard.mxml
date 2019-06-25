@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:journalservice="services.journalservice.*"
+		  xmlns:components="components.*" 
+		  currentState="widget"
+		  creationComplete="creationCompleteHandler(event)"
+		  width="1020" height="600" gap="2" width.widget="100%" height.widget="100%" >
+	
+	<s:states>
+		<s:State name="widget"/>
+		<s:State name="normal"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import components.JournalFilters;
+			import components.JournalToCsv;
+			
+			import events.ObjEvent;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.errors.ItemPendingError;
+			import mx.controls.Alert;
+			import mx.controls.scrollClasses.ScrollBar;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.CollectionEvent;
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			import mx.formatters.DateFormatter;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.components.supportClasses.ItemRenderer;
+			import spark.core.NavigationUnit;
+			import spark.layouts.VerticalLayout;
+			
+			import valueObjects.JournalTypes;
+			
+			private var currItem:int = 0;
+			private var pending: Boolean = false;
+			private var rescroll:Boolean = false;
+			private var canscroll:Boolean = false;
+			private var scrollToTop:Boolean = false;
+			
+			[Bindable] private var doSearch:Boolean = false;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			private var fltrs:String;
+			
+			private var sDateStr:String;
+			private var eDateStr:String;
+			
+			[Bindable] public var filterArr:ArrayCollection = new ArrayCollection();
+			
+			private var filterDlg:JournalFilters = new JournalFilters();
+			private var dayToCsv:JournalToCsv;
+			
+			private var f:FileReference = new FileReference();
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				currItem = 0;
+				pending = false;
+				rescroll = false;
+				canscroll = false;
+				scrollToTop = false;
+				doSearch = false;
+				global.srchText = "";
+				ti.text = "";
+				fltrs = "";
+				var tmpDate:Date=new Date();
+				var tmpDate2:Date=new Date();
+				tmpDate.hours=0; tmpDate.minutes=0;
+				tmpDate2.date=tmpDate.date+1;
+				tmpDate2.hours=0; tmpDate2.minutes=0;
+				ed.selectedDate = tmpDate2;
+				sd.selectedDate = tmpDate;
+				sDateStr = dateformat.format(sd.selectedDate);
+				eDateStr = dateformat.format(ed.selectedDate);
+				getRecords.token = this.journalService.getPagedJournalEntries(fltrs, sDateStr, eDateStr);
+				getTypes.token = journalService.siteJournalTypesLookUp();
+			}
+			
+			protected function getTypes_resultHandler(event:ResultEvent):void
+			{
+				filterArr.removeAll();
+				filterArr.refresh();
+				for (var i:int=0;i < event.result.length;i++)
+				{	
+					var obj:Object = Object(
+						{
+							checked: false,
+							caption: event.result[i].message
+						}
+					);
+					filterArr.addItem(obj);
+				}
+			}
+			
+			protected function ti_keyUpHandler(event:KeyboardEvent):void
+			{
+				global.srchText = ti.text.toLowerCase();
+				if (ti.text.length > 1)
+				{
+					global.srchArr.removeAll();
+					currItem = 0;
+				}	
+				var ir:IFactory = list.itemRenderer;
+				list.itemRenderer=ir;
+			}
+			
+			protected function prev_clickHandler(event:MouseEvent):void
+			{
+				canscroll = true;
+				rescroll = false;
+				scrollUp.valueBy = list.scroller.viewport.getVerticalScrollPositionDelta(NavigationUnit.PAGE_UP);
+				trace(scrollUp.valueBy);
+				var lay:VerticalLayout = list.layout as VerticalLayout;
+				scrollBack.play([lay]);
+			}
+			
+			protected function next_clickHandler(event:MouseEvent):void
+			{
+				canscroll = true;
+				rescroll = true;
+				next.enabled=false;
+				scrollDn.valueBy = list.scroller.viewport.getVerticalScrollPositionDelta(NavigationUnit.PAGE_DOWN);
+				var lay:VerticalLayout = list.layout as VerticalLayout;
+				scrollForward.play([lay]);
+			}
+			
+			protected function scrollForward_effectEndHandler(event:EffectEvent):void
+			{
+				scrollForward.end();
+				doSearch = true;
+				if (global.srchText.length > 0 && pending==false && canscroll==true)
+				{
+					scrollDn.valueBy = list.scroller.viewport.getVerticalScrollPositionDelta(NavigationUnit.PAGE_DOWN);
+					var lay:VerticalLayout = list.layout as VerticalLayout;
+					var fi:int = lay.firstIndexInView;
+					var li:int = lay.lastIndexInView;
+					for (var i:int=fi;i < li; i++)
+					{
+						var tmpStr: String = getRecords.lastResult[i].message.toLowerCase();
+						if (tmpStr.indexOf(global.srchText) > -1) doSearch = false;
+					}
+					if (doSearch == true) scrollForward.play([lay]);
+				}	
+				next.enabled=true;
+			}
+			
+			protected function scrollBack_effectEndHandler(event:EffectEvent):void
+			{
+				scrollBack.end();
+				doSearch = true;
+				if (global.srchText.length > 0 && canscroll==true)
+				{
+					scrollUp.valueBy = list.scroller.viewport.getVerticalScrollPositionDelta(NavigationUnit.PAGE_UP);
+					var lay:VerticalLayout = list.layout as VerticalLayout;
+					var fi:int = lay.firstIndexInView;
+					var li:int = lay.lastIndexInView;
+					for (var i:int=fi;i < li; i++)
+					{
+						var tmpStr: String = getRecords.lastResult[i].message.toLowerCase();
+						if (tmpStr.indexOf(global.srchText) > -1) doSearch = false;
+					}
+					if (doSearch == true) scrollBack.play([lay]);
+				}	
+			}
+			
+			protected function itemPending(index:int, ipe:ItemPendingError):Object
+			{
+				pending = true;	
+				return null;
+			}
+			
+			protected function asynclistview1_collectionChangeHandler(event:CollectionEvent):void
+			{
+				pending = false;
+				if (rescroll == true) next_clickHandler(null);
+			}
+			
+			protected function stop_clickHandler(event:MouseEvent):void
+			{
+				doSearch=false;
+				canscroll=false;
+			}
+			
+			protected function refresh_clickHandler(event:MouseEvent):void
+			{
+				creationCompleteHandler(null);
+			}
+			
+			protected function getPagedJournalEntriesResult_resultHandler(event:ResultEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function btn_setFilters_clickHandler(event:MouseEvent):void
+			{
+				filterDlg.filterArr = filterArr;
+				filterDlg.addEventListener(CloseEvent.CLOSE, filter_close);
+				PopUpManager.addPopUp(filterDlg,this,true);
+				PopUpManager.centerPopUp(filterDlg);
+			}
+			
+			protected function filter_close(event:Event):void
+			{
+				fltrs = "";
+				for (var i:int=0;i < filterArr.length; i++)
+				{
+					if (filterArr[i].checked == true)
+					{
+						if (fltrs.length > 0) fltrs +=":";	
+						fltrs += filterArr[i].caption;
+					}
+				}
+				//if (filterArr[i].checked == true) fltrs.addItem(filterArr[i].caption);
+				PopUpManager.removePopUp(filterDlg);
+				filterDlg.removeEventListener(CloseEvent.CLOSE, filter_close);
+				btn_applyFilters_clickHandler(null);
+			}
+			
+			protected function btn_applyFilters_clickHandler(event:MouseEvent):void
+			{
+				sDateStr = dateformat.format(sd.selectedDate)+" 12:00:00 AM";
+				eDateStr = dateformat.format(ed.selectedDate)+" 12:00:00 AM";
+				getRecords.token = journalService.getPagedJournalEntries(fltrs, sDateStr, eDateStr);
+			}
+			
+			protected function list_creationCompleteHandler(event:FlexEvent):void
+			{
+				//
+			}
+			
+			protected function btn_exportCSV_clickHandler(event:MouseEvent):void
+			{
+				var firstItemDisplayed:int = ((list.dataGroup.layout) as VerticalLayout).firstIndexInView;
+				var itemsDisplayed:int = ((list.dataGroup.layout) as VerticalLayout).rowCount;
+				
+				var tempStr:String='GEN_DATE,MSG_EVENT,MSG_CLASS,MESSAGE,COMPANY_CODE,REGION_CODE,SEQ\n';
+				
+				for (var i:int=firstItemDisplayed; i<(firstItemDisplayed+itemsDisplayed);i++){
+					var tempDate:String = list.dataProvider.getItemAt(i).gen_date;
+					tempDate = tempDate.replace(".000000","");
+					tempStr += '"'+tempDate+'",';
+					tempStr += '"'+list.dataProvider.getItemAt(i).msg_event+'",';
+					tempStr += '"'+list.dataProvider.getItemAt(i).msg_class+'",';
+					tempStr += '"'+list.dataProvider.getItemAt(i).message+'",';
+					tempStr += '"'+list.dataProvider.getItemAt(i).company_code+'",';
+					tempStr += '"'+list.dataProvider.getItemAt(i).region_code+'",';
+					tempStr += '"'+list.dataProvider.getItemAt(i).seq+'",';
+					tempStr += "\n";
+				}
+				
+				var CurrentDF:DateFormatter = new DateFormatter();
+				var CurrentDateTime:Date = new Date();
+				CurrentDF.formatString = "DDMMYYYY_LNNSSA";
+				var myDate:String = CurrentDF.format(CurrentDateTime);
+				
+				f.save(tempStr,'journal_screenshot_'+myDate+'.csv');
+			}
+			
+			protected function btn_daytoCSV_clickHandler(event:MouseEvent):void
+			{
+				dayToCsv = new JournalToCsv();
+				dayToCsv.filterArr = filterArr;
+				FlexGlobals.topLevelApplication.addEventListener("generateDayCsv", exportcsv_generate);
+				PopUpManager.addPopUp(dayToCsv,this,true);
+				PopUpManager.centerPopUp(dayToCsv);
+			}
+			
+			protected function exportcsv_generate(event:Event):void
+			{
+				fltrs = "";
+				for (var i:int=0;i < filterArr.length; i++)
+				{
+					if (filterArr[i].checked == true)
+					{
+						if (fltrs.length > 0) fltrs +=":";	
+						fltrs += filterArr[i].caption;
+					}
+				}				
+				sDateStr = dateformat.format(dayToCsv.csvDate.selectedDate)+" 12:00:00 AM";
+				dayToCsv.csvDate.selectedDate.date = dayToCsv.csvDate.selectedDate.date+1;
+				eDateStr = dateformat.format(dayToCsv.csvDate.selectedDate)+" 12:00:00 AM";
+				getCSVRecords.token=journalService.getCSVJournalEntries(fltrs, sDateStr, eDateStr);
+			}	
+			
+			protected function getCSVRecords_resultHandler(event:ResultEvent):void
+			{
+				if(event.result!=null)
+				{
+					var tempResult:ArrayCollection = event.result as ArrayCollection;
+					var tempStr:String='GEN_DATE,MSG_EVENT,MSG_CLASS,MESSAGE,COMPANY_CODE,REGION_CODE,SEQ\n';
+					
+					for (var i:int=0; i<(tempResult.length);i++)
+					{
+						var tempDate:String = tempResult[i].gen_date;
+						tempDate = tempDate.replace(".000000","");
+						tempStr += '"'+tempDate+'",';
+						tempStr += '"'+tempResult[i].msg_event+'",';
+						tempStr += '"'+tempResult[i].msg_class+'",';
+						tempStr += '"'+tempResult[i].message+'",';
+						tempStr += '"'+tempResult[i].company_code+'",';
+						tempStr += '"'+tempResult[i].region_code+'",';
+						tempStr += '"'+tempResult[i].seq+'",';
+						tempStr += "\n";
+					}
+					
+					var CurrentDF:DateFormatter = new DateFormatter();
+					var CurrentDateTime:Date = new Date();
+					CurrentDF.formatString = "DDMMYYYY_LNNSSA";
+					var myDate:String = CurrentDF.format(CurrentDateTime);
+					dayToCsv.btn_save.enabled=true;
+					dayToCsv.csvString=tempStr;
+					dayToCsv.fileName='journal_day_'+myDate+'.csv';
+				}
+				else
+				{
+					dayToCsv.csvDate.selectedDate = new Date();
+					global.msgWarning('No records found in the selected day');
+				}
+			}
+			
+			protected function journalService_faultHandler(event:FaultEvent):void
+			{
+				Alert.show(event.message.toString());
+				
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:Animate id="scrollForward" startDelay="225" duration="250" effectEnd="scrollForward_effectEndHandler(event)">
+			<s:motionPaths>
+				<s:SimpleMotionPath id="scrollDn" property="verticalScrollPosition" />
+			</s:motionPaths>
+		</s:Animate>
+		<s:Animate id="scrollBack" startDelay="225" duration="250" effectEnd="scrollBack_effectEndHandler(event)">
+			<s:motionPaths>
+				<s:SimpleMotionPath id="scrollUp" property="verticalScrollPosition" />
+			</s:motionPaths>
+		</s:Animate>
+		<s:DateTimeFormatter id="dateformat" dateTimePattern="yyyy-MM-dd HH:mm"/>
+		<journalservice:JournalService id="journalService" channelSet="{global.channelSet}" showBusyCursor="true" fault="journalService_faultHandler(event)"/>
+		<s:CallResponder id="getRecords" fault="{global.msgFail(global.RetrieveError)}"/>
+		<s:CallResponder id="getTypes" result="getTypes_resultHandler(event)"/>
+		<s:CallResponder id="getCSVRecords" result="getCSVRecords_resultHandler(event)"/>
+	</fx:Declarations>
+	
+	
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin" title="Site Journal"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		<s:HGroup id="toolbar" width="100%" gap="4" paddingBottom="2" paddingTop="2">
+			<s:HGroup includeIn="normal" itemCreationPolicy="immediate">
+				<components:DKI_Button id="prev" width="36" type="back" click="prev_clickHandler(event)" toolTip="search back"/>
+				<components:DKI_ValidatorInput id="ti" width="160" keyUp="ti_keyUpHandler(event)" prompt="Please enter search key"/>		
+				<components:DKI_Button id="next" width="36" type="forward" click="next_clickHandler(event)" toolTip="search forward"/>
+				<components:DKI_Button id="stop" width="36" type="pause" click="stop_clickHandler(event)" enabled="{doSearch}" toolTip="Stop Search"/>		
+				<mx:VRule width="10" height="20" strokeWidth="2"/>
+				<components:DKI_Button id="btn_setFilters" label="Events" click="btn_setFilters_clickHandler(event)" toolTip="Change Event Filters"/>		
+				<mx:VRule width="10" height="20" strokeWidth="2"/>
+			</s:HGroup>
+			<s:Label height="100%" fontWeight="bold" text="Dates" verticalAlign="middle"/>		
+			<components:DKI_DateTime id="sd" width="134"/>
+			<s:Label height="100%" fontSize="14" fontWeight="bold" text="-" verticalAlign="middle"/>		
+			<components:DKI_DateTime id="ed" width="134"/>
+			<components:DKI_Button width="36" id="btn_applyFilters" type="refresh" click="btn_applyFilters_clickHandler(event)" toolTip="Apply Range"/>
+			<mx:VRule width="10" height="20" strokeWidth="2"/>
+			<s:HGroup includeIn="normal">
+				<components:DKI_Button id="btn_exportCSV" type="report" label="CSV(view)" click="btn_exportCSV_clickHandler(event)" toolTip="Export current view to CSV file"/>
+				<components:DKI_Button id="btn_daytoCSV" type="report" label="CSV(today)" click="btn_daytoCSV_clickHandler(event)" toolTip="Export selected day to CSV file"/>
+				<s:Spacer width="5"/>
+			</s:HGroup>
+		</s:HGroup>
+		<s:VGroup width="100%" height="100%" gap="-1">
+			<components:JournalHeader width="100%" height="28"/>
+			<components:DKI_List width="100%" height="100%" id="list" itemRenderer="renderers.TmpSrchRender" labelField="message" creationComplete="list_creationCompleteHandler(event)">
+				<s:AsyncListView list="{getRecords.lastResult}" createPendingItemFunction="itemPending" collectionChange="asynclistview1_collectionChangeHandler(event)"/>
+			</components:DKI_List>
+		</s:VGroup>
+	</s:Panel>
+</s:VGroup>
+

@@ -1,0 +1,906 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:DataGrid xmlns:fx="http://ns.adobe.com/mxml/2009"
+			xmlns:s="library://ns.adobe.com/flex/spark" skinClass="skins.DKI_DataGrid_Skin"
+			xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300"
+			mouseOver="grid_mouseOverHandler(event)"
+			mouseOut="grid_mouseOutHandler(event)" 
+			gridMouseDrag="gridMouseDragHandler(event)"
+			creationComplete="creationCompleteHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import dm.utils.dmNavigator;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.DragSource;
+			import mx.core.ScrollPolicy;
+			import mx.events.CollectionEvent;
+			import mx.events.DragEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.DragManager;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.Scroller;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.CellPosition;
+			import spark.components.gridClasses.GridColumn;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+
+			
+			public var dropEnabled:Boolean=false;
+			
+			public var dropAction:Function= new Function();
+			
+			private var dropIndex:int = -1;
+			
+			//variables defined for paging
+			public var navigator:dmNavigator=new dmNavigator( 100, 10 );
+			public var pageSize:int=100;
+			public var gs:Scroller;
+			public var vs:VScrollBar;
+			public var vsPage:int;
+			public var vsPos:int;
+			public var vsRecord:int;
+			public var vsValue:int;
+			public var isKeyReleased:Boolean;		//true when key is released, to make sure that no remote call will occur until key is up
+			public var isButtonReleased:Boolean;	//true when mouse left button is released, to make sure that no remote call will occur until button is up
+			public var isValueChanged:Boolean;		//true when value_commit event is triggered, otherwise deal the changes in mouse events
+			
+			public var sortingBySingleColumn:Boolean = true;
+			public var useCustomSorting:Boolean = false;
+			public var mapObj:Object = new Object(); 
+			public var orderCollection:ArrayCollection = new ArrayCollection( );
+			
+			public var filterAction:Function= new Function();
+			public var retrieveAction:Function= new Function();
+			
+			
+			protected function grid_mouseOverHandler(event:MouseEvent):void
+			{
+				scroller.verticalScrollBar.alpha=1.0;
+				scroller.horizontalScrollBar.alpha=1.0;
+				if (dropEnabled) addEventListener(DragEvent.DRAG_ENTER,gridDragEnter);
+				
+			}
+			
+			protected function gridMouseDragHandler(event:GridEvent):void
+			{
+				if (DragManager.isDragging)
+					return;
+			}
+			
+			protected function grid_mouseOutHandler(event:MouseEvent):void
+			{
+				scroller.verticalScrollBar.alpha=0.3;
+				scroller.horizontalScrollBar.alpha=0.3;
+			}
+			
+			private function rowDragOverHandler(event:DragEvent):void
+			{
+				showRowDropFeedback(event);
+			}
+			
+			protected function gridDragEnter(event:DragEvent):void
+			{
+				if (event.dragSource.hasFormat("itemsByIndex"))
+				{
+					grid.addEventListener(DragEvent.DRAG_OVER, rowDragOverHandler);
+					grid.addEventListener(DragEvent.DRAG_EXIT, rowDragExitHandler);
+					grid.addEventListener(DragEvent.DRAG_DROP, rowDragDropHandler);
+				}
+				DragManager.acceptDragDrop(grid);
+			}
+			
+			private function rowDragExitHandler(event:DragEvent):void
+			{
+				if (dropEnabled)
+				{
+					grid.removeEventListener(DragEvent.DRAG_OVER, rowDragOverHandler);
+					grid.removeEventListener(DragEvent.DRAG_EXIT, rowDragExitHandler);
+					grid.removeEventListener(DragEvent.DRAG_DROP, rowDragDropHandler);
+				}
+			}
+			
+			private function rowDragDropHandler(event:DragEvent):void
+			{
+				if (dropAction() != null) dropAction();
+			}
+			
+			
+			private function showRowDropFeedback(event:DragEvent):void
+			{
+				var pt:Point = new Point(event.stageX, event.stageY);
+				pt = grid.globalToLocal(pt);
+				var pos:CellPosition = grid.getCellAt(pt.x, pt.y);
+				if(pos!=null)
+				{
+					var newDropIndex:int = pos.rowIndex;
+					if ((pos.rowIndex > -1) && (pos.rowIndex < dataProvider.length)) 
+						selectedIndex = pos.rowIndex;
+				}
+				else
+					selectedIndex = -1;
+			}
+			
+			
+			// PAGING FUNCTIONS
+			private function creationCompleteHandler(event:FlexEvent):void
+			{
+				trace("-------------inside datagrid creationCompleteHandler", this.dataProvider.length, this.pageSize);
+				
+				this.navigator.setTotalRecords( this.dataProvider.length );
+				this.navigator.setRowsPerPage( this.pageSize );
+				
+				this.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPressedDown);
+				this.addEventListener(KeyboardEvent.KEY_UP, onKeyPressedUp);
+				this.isKeyReleased = true;
+				
+				gs = this.scroller;
+				if ( gs != null)
+				{
+					vs = gs.verticalScrollBar;
+					
+					if ( vs != null )
+					{
+						vs.addEventListener(Event.CHANGE, onGridChanged);
+						vs.addEventListener(MouseEvent.MOUSE_DOWN, onVBarMouseDown);
+						vs.addEventListener(MouseEvent.MOUSE_UP, onVBarMouseUp);
+						trace("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", vs.incrementButton.height, vs.decrementButton.height);
+					}
+				}
+				this.isButtonReleased = true;
+				
+				if ( this.useCustomSorting == true )
+				{
+					this.sortableColumns = false;
+					this.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, onGridHeaderClicked);
+					
+					var cId:int = 0;
+					var cln:GridColumn = this.columns.getItemAt(cId) as GridColumn;
+					this.initHeaderCondition( cId, cln.dataField );
+				}
+				else
+				{
+					this.sortableColumns = true;
+					this.sortingBySingleColumn = true;
+				}
+
+				this.dataProvider.addEventListener( CollectionEvent.COLLECTION_CHANGE, onDataProviderChanged);
+				
+				//this.columnHeaderGroup.addEventListener(GridSortEvent.SORT_CHANGE, onGridHeaderClicked);
+				//this.addEventListener(GridSortEvent.SORT_CHANGE, onGridHeaderClicked);
+				
+				//this.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+				
+				this.setVerticalScrollPolicy();
+				
+				callLater(adjustVerticalScrollBar, ["creationCompleteHandler"]);
+			}
+
+			private function onDataProviderChanged(event:CollectionEvent)
+			{
+				trace("-------------inside datagrid onDataProviderChanged", this.dataProvider.length, this.pageSize);
+				
+				this.navigator.setTotalRecords( this.dataProvider.length );
+				this.navigator.setRowsPerPage( this.pageSize );
+				
+				//this.navigator.onTotalRecordsChanged( this.dataProvider.length );
+				//this.navigator.onRowsPerPageChanged( this.pageSize );
+				//this.navigator.adjustNavigator( false );
+				var new_seek:int;
+				if ( this.navigator.currRecord >= this.dataProvider.length )
+				{
+					//this.navigator.onCurrRecordChanged( this.dataProvider.length-1 );
+					//new_seek = this.dataProvider.length - this.navigator.rowsPerPage*2;
+					new_seek = this.dataProvider.length - 1;
+				}
+				else
+				{
+					new_seek = this.navigator.currRecord;
+				}
+				this.navigator.onCurrRecordChanged( new_seek );
+				
+				this.navigator.adjustNavigator( false );
+				
+				trace( "@@@@@@@@@@@@$$$$$$$$$$$$$$$$$$$ onDataProviderChanged : "
+					, "[sID]", this.selectedIndex
+					, "[currRec]", this.navigator.currRecord
+					, "[currPage]", this.navigator.currPage
+					, "[totalPage]", this.navigator.totalPages
+					, "[totalRecord]", this.navigator.totalRecords
+				);
+				
+				this.setVerticalScrollPolicy();
+				
+				callLater(adjustVerticalScrollBar, ["adjustGridList"]);
+			}
+			
+			
+			public function adjustGridList(current_record:int, prev_page:int, request:Boolean):void
+			{
+				trace( "99999999---inside adjustGridList");
+				
+				this.navigator.prevRecord = this.navigator.currRecord;
+				this.navigator.setCurrentRecord( current_record );
+				this.navigator.adjustNavigator( false );
+				
+				if ( (prev_page != this.navigator.currPage) && (request == true) )
+				{
+					trace( "99999999---inside adjustGridList --- retrieveGridList");
+					//this.retrieveGridList();
+					
+					if ( retrieveAction != null)
+					{
+						callLater(retrieveAction);
+						//callLater( invalidateDisplayList );
+						//callLater(adjustVerticalScrollBar, ["adjustGridList"]);
+					}
+				}
+				else
+				{
+					trace( "99999999---inside adjustGridList --- getVerticalScrollPosition");
+					vsPos = this.getVerticalScrollPosition("adjustGridList");
+					vs.value = (vsPos - 1) * vs.stepSize;
+				}
+			}
+			
+			public function getVerticalScrollPosition(func:String):int
+			{
+				var curr_pos:int;
+				var page_pos:int;
+				
+				page_pos = (int((this.navigator.currRecord-1)/this.navigator.rowsPerPage))*this.navigator.rowsPerPage + 1;
+				curr_pos = this.navigator.currRecord;
+				
+				if ( (curr_pos - page_pos) >= (int(vs.pageSize/vs.stepSize)-1) )
+				{
+					vsPos = page_pos + (curr_pos - page_pos - (int(vs.pageSize/vs.stepSize)-1));
+				}
+				else
+				{
+					vsPos = page_pos;
+				}
+				
+				vsRecord = curr_pos;
+				vsValue = ( curr_pos - 1 ) * vs.stepSize;
+				if ( curr_pos == this.navigator.totalRecords )
+				{
+					vsValue += vs.stepSize;
+				}
+				vsPos = vsValue / vs.stepSize;
+				
+				trace( "         $$$$$$$$$$$$$$$$$$$ getVerticalScrollPosition in "+func+": "
+					, "[sID]", this.selectedIndex
+					, "[currRec]", this.navigator.currRecord
+					, "[*vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[page_pos]", page_pos
+					, "[curr_pos]", curr_pos
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[*vsValue]", vsValue
+					, "[max]", vs.maximum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+					, "[page/step]", int(vs.pageSize/vs.stepSize)
+				);
+				
+				return vsPos;
+			}
+			
+			public function adjustVerticalScrollBar(func:String):void
+			{
+				trace("!!!!!!!!!!!!!!!!!!-------Inside adjustVerticalScrollBar");
+				
+				vs.stepSize = this.rowHeight;
+				vs.maximum = this.navigator.totalRecords * vs.stepSize;
+				if ( vs.maximum > vs.pageSize )
+				{
+					vs.maximum -= vs.pageSize;
+				}
+				
+				trace("verticalScrollBar in "+func+": "
+					, "[sID]", this.selectedIndex
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[-vsValue]", vsValue
+					, "[currRec]", this.navigator.currRecord
+					, "[-vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[max]", vs.maximum
+					, "[min]", vs.minimum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+					, "[snap]", vs.snapInterval
+					, "[rowH]", this.rowHeight
+					, vs.scaleY, vs.scaleX
+				);
+				
+				this.vsPos = this.getVerticalScrollPosition("adjustVerticalScrollBar");
+				vs.value = (this.vsPos - 1) * vs.stepSize;
+				this.selectedIndex = -1;//this.vsRecord - 1; 
+				
+				trace("verticalScrollBar2 in "+func+": "
+					, "[sID]", this.selectedIndex
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[-vsValue]", vsValue
+					, "[currRec]", this.navigator.currRecord
+					, "[-vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[max]", vs.maximum
+					, "[min]", vs.minimum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+					, "[snap]", vs.snapInterval
+					, "[rowH]", this.rowHeight
+					, vs.scaleY, vs.scaleX
+				);
+				
+			}
+			
+			public function setVerticalScrollPolicy():void
+			{
+				if ( this.navigator.totalRecords*this.rowHeight > this.height )
+				{
+					this.setStyle ("verticalScrollPolicy", ScrollPolicy.ON);
+				}
+				else
+				{
+					this.setStyle ("verticalScrollPolicy", ScrollPolicy.OFF);
+				}
+			}
+			
+			private function initHeaderCondition(cln_index:int, cln_field:String):void
+			{
+				var currentRenderer:IGridItemRenderer;
+				var dir:String="";
+				var i:int;
+				
+				if ( this.sortingBySingleColumn == true )
+				{	// sorted by single column only
+					for (i=0; i < this.columns.length; i++)
+					{
+						currentRenderer = this.columnHeaderGroup.getHeaderRendererAt(i);
+						if ( currentRenderer != null)
+						{
+							(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+							(currentRenderer as DKI_HeaderColumn_Renderer).setSortSequence('', '');
+						}
+					}
+				}
+				else
+				{	// sorted by multiple columns
+					;
+				}
+				
+				currentRenderer = this.columnHeaderGroup.getHeaderRendererAt( cln_index );
+				
+				var orderObj:Object;
+				for (i=0; i<this.orderCollection.length; i++)
+				{
+					orderObj = this.orderCollection.getItemAt( i );
+					if ( orderObj.field == mapObj[cln_field] )
+					{
+						dir = orderObj.order;
+						break;
+					}
+				}
+				
+				if ( currentRenderer != null)
+				{
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+				}
+				
+				if ( global.sortingBySingleColumn == false )
+				{	// sorted by multiple columns
+					var currIndex:int = i;
+					
+					for (i=0; i<this.orderCollection.length; i++)
+					{
+						orderObj = this.orderCollection.getItemAt( i );
+						if ( orderObj == null )
+						{
+							continue;
+						}
+						
+						var j:int;
+						for (j=0; j < this.columns.length; j++)
+						{
+							var cln:GridColumn = this.columns.getItemAt(j) as GridColumn;
+							if ( orderObj.hasOwnProperty("field")==true &&  cln != null && orderObj.field == mapObj[ cln.dataField ] )
+							{
+								currentRenderer = this.columnHeaderGroup.getHeaderRendererAt(j);
+								if ( currentRenderer != null)
+								{
+									(currentRenderer as DKI_HeaderColumn_Renderer).setSortSequence( orderObj.order, String(i+1) );
+								}
+							}
+						}
+					}
+					
+					currentRenderer = this.columnHeaderGroup.getHeaderRendererAt( cln_index );
+					(currentRenderer as DKI_HeaderColumn_Renderer).setSortSequence( dir, String(currIndex+1));
+					
+				}
+			}
+			
+			private function onGridHeaderClicked(event:GridEvent):void
+			{
+				trace ("......................in headerClickListener of multiple sorting");
+				if(event.column.dataField!='')
+				{
+					var currentRenderer:IGridItemRenderer;
+					var dir:String;
+					var i:int;
+					
+					if ( sortingBySingleColumn == true )
+					{	// sorted by single column only
+						for (i=0; i < this.columns.length; i++)
+						{
+							currentRenderer = this.columnHeaderGroup.getHeaderRendererAt(i);
+							if ( currentRenderer != null)
+							{
+								(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+								(currentRenderer as DKI_HeaderColumn_Renderer).setSortSequence('', '');
+							}
+						}
+					}
+					else
+					{	// sorted by multiple columns
+						;
+					}
+					currentRenderer = this.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					var columnFound:Boolean = false;
+					var orderObj:Object;
+					for (i=0; i<this.orderCollection.length; i++)
+					{
+						orderObj = this.orderCollection.getItemAt( i );
+						if ( orderObj.hasOwnProperty("field")==true &&  orderObj.field == mapObj[event.column.dataField] )
+						{
+							dir = orderObj.order;
+							if( dir=="ASC" )
+							{
+								dir = "DESC";
+							}
+							else if ( dir == "DESC" )
+							{
+								dir = "";
+							}
+							else if ( dir == "" )
+							{
+								dir = "ASC";
+							}
+							else 
+							{
+								dir = "ASC";
+							}
+							
+							if ( dir != "" )
+							{
+								orderObj.order = dir;	
+							}
+							else
+							{
+								this.orderCollection.removeItemAt( i );
+							}
+							
+							columnFound = true;
+							break;
+						}
+					}
+					
+					if ( columnFound == false )
+					{
+						if ( sortingBySingleColumn == true )
+						{	// sorted by single column only
+							this.orderCollection.removeAll();
+						}
+						else
+						{	// sorted by multiple columns
+							;
+						}
+						
+						orderObj = new Object;
+						orderObj.field = mapObj[event.column.dataField];
+						orderObj.order = "ASC";
+						dir = orderObj.order;
+						
+						this.orderCollection.addItem( orderObj );
+					}
+					
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+					
+					if ( sortingBySingleColumn == false )
+					{	// sorted by multiple columns
+						var currIndex:int = i;
+						
+						for (i=0; i<this.orderCollection.length; i++)
+						{
+							orderObj = this.orderCollection.getItemAt( i );
+							if ( orderObj == null )
+							{
+								continue;
+							}
+							
+							var j:int;
+							for (j=0; j < this.columns.length; j++)
+							{
+								var cln:GridColumn = this.columns.getItemAt(j) as GridColumn;
+								if ( orderObj.hasOwnProperty("field")==true &&  cln != null && orderObj.field == mapObj[ cln.dataField ] )
+								{
+									currentRenderer = this.columnHeaderGroup.getHeaderRendererAt(j);
+									if ( currentRenderer != null)
+									{
+										(currentRenderer as DKI_HeaderColumn_Renderer).setSortSequence( orderObj.order, String(i+1) );
+									}
+								}
+							}
+						}
+						
+						currentRenderer = this.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+						(currentRenderer as DKI_HeaderColumn_Renderer).setSortSequence(dir, String(currIndex+1));
+						
+					}
+					
+					if ( filterAction != null)
+					{
+						filterAction();
+					}
+				}
+			}
+			
+			private function onKeyPressedDown(event:KeyboardEvent):void
+			{
+				trace ( "DOWN-KKKKKKKK***************onKeyPressedDown:KEY CODE", event.keyCode );
+				
+				if ( this.isKeyReleased == true )
+				{
+					trace ("vsPage1====", vsPage);
+					vsPage = this.navigator.currPage;
+					this.isKeyReleased = false;
+					trace ("vsPage2====", vsPage);
+				}
+				
+				//			this.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPressedDown);
+				
+				if ( this.selectedIndex != -1 )
+				{
+					this.adjustGridList( this.selectedIndex+1, vsPage, false );
+				}
+			}
+			
+			private function onKeyPressedUp(event:KeyboardEvent):void
+			{
+				trace ( "UP-KKKKKKKK***************onKeyPressedUp:KEY CODE", event.keyCode );
+				trace ("vsPage3====", vsPage);
+				//			this.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPressedDown);
+				trace ("vsPage4====", vsPage);
+				
+				if ( this.selectedIndex != -1 )
+				{
+					this.adjustGridList( this.selectedIndex+1, vsPage, true );
+				}
+				this.isKeyReleased = true;
+				
+				trace (">>>>>>>>>>>>>>>>>>onKeyProcessed"
+					, "[sID]", this.selectedIndex
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[-vsValue]", vsValue
+					, "[currRec]", this.navigator.currRecord
+					, "[-vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[max]", vs.maximum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+				);
+			}
+			
+			private function onGridChanged(event:Event):void
+			{
+				trace("33333333******************inside onGridChanged", this.isButtonReleased, this.selectedIndex );
+				trace("verticalScrollBar3 in onGridChanged: "
+					, "[sID]", this.selectedIndex
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[-vsValue]", vsValue
+					, "[currRec]", this.navigator.currRecord
+					, "[-vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[max]", vs.maximum
+					, "[min]", vs.minimum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+					, "[snap]", vs.snapInterval
+					, "[rowH]", this.rowHeight
+					, vs.scaleY, vs.scaleX
+				);
+				
+				vs.stepSize = this.rowHeight;
+				vs.maximum = this.navigator.totalRecords * vs.stepSize;
+				if ( vs.maximum > vs.pageSize )
+				{
+					vs.maximum -= vs.pageSize;
+				}
+				
+				trace("verticalScrollBar4 in onGridChanged: "
+					, "[sID]", this.selectedIndex
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[-vsValue]", vsValue
+					, "[currRec]", this.navigator.currRecord
+					, "[-vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[max]", vs.maximum
+					, "[min]", vs.minimum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+					, "[snap]", vs.snapInterval
+					, "[rowH]", this.rowHeight
+					, vs.scaleY, vs.scaleX
+				);
+				
+				if ( this.isButtonReleased == false )
+				{
+					isValueChanged = true;
+					
+					vsRecord += int(vs.value/vs.stepSize+0.5) + 1 - vsPos;
+					
+					this.adjustGridList( vsRecord, vsPage, false );
+					this.selectedIndex = -1;//vsRecord - 1;
+				}
+			}
+			
+			private function onValueChanged(event:FlexEvent):void
+			{
+				trace("\n44444444-----------------onValueChanged", this.isButtonReleased, "[vs.value]", vs.value );
+				trace("verticalScrollBar5 in onValueChanged: "
+					, "[sID]", this.selectedIndex
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[-vsValue]", vsValue
+					, "[currRec]", this.navigator.currRecord
+					, "[-vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[max]", vs.maximum
+					, "[min]", vs.minimum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+					, "[snap]", vs.snapInterval
+					, "[rowH]", this.rowHeight
+					, vs.scaleY, vs.scaleX
+				);
+				
+				vs.stepSize = this.rowHeight;
+				vs.maximum = this.navigator.totalRecords * vs.stepSize;
+				if ( vs.maximum > vs.pageSize )
+				{
+					vs.maximum -= vs.pageSize;
+				}
+				
+				trace("verticalScrollBar6 in onValueChanged: "
+					, "[sID]", this.selectedIndex
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[-vsValue]", vsValue
+					, "[currRec]", this.navigator.currRecord
+					, "[-vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[max]", vs.maximum
+					, "[min]", vs.minimum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+					, "[snap]", vs.snapInterval
+					, "[rowH]", this.rowHeight
+					, vs.scaleY, vs.scaleX
+				);
+				
+				if ( this.isButtonReleased == false )
+				{
+					isValueChanged = true;
+					
+					vsRecord += int(vs.value/vs.stepSize+0.5) + 1 - vsPos;
+					
+					this.adjustGridList( vsRecord, vsPage, false );
+					this.selectedIndex = -1;//vsRecord - 1;
+				}
+				
+				trace("verticalScrollBar6c in onValueChanged: "
+					, "[sID]", this.selectedIndex
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[-vsValue]", vsValue
+					, "[currRec]", this.navigator.currRecord
+					, "[-vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[max]", vs.maximum
+					, "[min]", vs.minimum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+					, "[snap]", vs.snapInterval
+					, "[rowH]", this.rowHeight
+					, vs.scaleY, vs.scaleX, "\n"
+				);
+			}
+			
+			
+			private function onVBarMouseDown(event:MouseEvent):void
+			{
+				systemManager.addEventListener(MouseEvent.MOUSE_UP, onVBarMouseUp);
+				
+				trace("55555555******************onVBarMouseDown", this.selectedIndex, "[vs.value]", vs.value );
+				trace("verticalScrollBar7 in onVBarMouseDown: "
+					, "[sID]", this.selectedIndex
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[-vsValue]", vsValue
+					, "[currRec]", this.navigator.currRecord
+					, "[-vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[max]", vs.maximum
+					, "[min]", vs.minimum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+					, "[snap]", vs.snapInterval
+					, "[rowH]", this.rowHeight
+					, vs.scaleY, vs.scaleX
+				);
+				
+				if ( this.isButtonReleased == true )
+				{
+					trace ("vsPage1m====", vsPage);
+					vsPage = this.navigator.currPage;
+					trace ("vsPage2m====", vsPage);
+					this.isButtonReleased = false;
+					this.isValueChanged = false;
+				}
+				
+				vs.stepSize = this.rowHeight;
+				vs.maximum = this.navigator.totalRecords * vs.stepSize;
+				if ( vs.maximum > vs.pageSize )
+				{
+					vs.maximum -= vs.pageSize;
+				}
+				
+				trace("verticalScrollBar8 in onVBarMouseDown: "
+					, "[sID]", this.selectedIndex
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[-vsValue]", vsValue
+					, "[currRec]", this.navigator.currRecord
+					, "[-vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[max]", vs.maximum
+					, "[min]", vs.minimum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+					, "[snap]", vs.snapInterval
+					, "[rowH]", this.rowHeight
+					, vs.scaleY, vs.scaleX
+				);
+				
+				vsRecord = this.navigator.currRecord;
+				this.adjustGridList( vsRecord, vsPage, true );
+				this.selectedIndex = -1;//vsRecord - 1;
+				
+				trace("verticalScrollBar8c in onVBarMouseDown: "
+					, "[sID]", this.selectedIndex
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[-vsValue]", vsValue
+					, "[currRec]", this.navigator.currRecord
+					, "[-vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[max]", vs.maximum
+					, "[min]", vs.minimum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+					, "[snap]", vs.snapInterval
+					, "[rowH]", this.rowHeight
+					, vs.scaleY, vs.scaleX
+				);
+				
+			}
+			
+			private function onVBarMouseUp(event:MouseEvent):void
+			{
+				systemManager.removeEventListener(MouseEvent.MOUSE_UP, onVBarMouseUp);
+				
+				trace("66666666******************onVBarMouseUp", this.selectedIndex, "[vs.value]", vs.value );
+				trace("verticalScrollBar9 in onVBarMouseUp: "
+					, "[sID]", this.selectedIndex
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[-vsValue]", vsValue
+					, "[currRec]", this.navigator.currRecord
+					, "[-vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[max]", vs.maximum
+					, "[min]", vs.minimum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+					, "[snap]", vs.snapInterval
+					, "[rowH]", this.rowHeight
+					, vs.scaleY, vs.scaleX
+				);
+				trace ("vsPage3m====", vsPage);
+				
+				vs.stepSize = this.rowHeight;
+				vs.maximum = this.navigator.totalRecords * vs.stepSize;
+				if ( vs.maximum > vs.pageSize )
+				{
+					vs.maximum -= vs.pageSize;
+				}
+				
+				trace("verticalScrollBar10 in onVBarMouseUp: "
+					, "[sID]", this.selectedIndex
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[-vsValue]", vsValue
+					, "[currRec]", this.navigator.currRecord
+					, "[-vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[max]", vs.maximum
+					, "[min]", vs.minimum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+					, "[snap]", vs.snapInterval
+					, "[rowH]", this.rowHeight
+					, vs.scaleY, vs.scaleX
+				);
+				
+				
+				if ( vs.value == 0 && this.isValueChanged==false )
+				{
+					vsRecord -= 1;
+				}
+				this.adjustGridList( vsRecord, vsPage, true );
+				this.selectedIndex = -1;//vsRecord - 1;
+				
+				this.isButtonReleased = true;
+				
+				trace("verticalScrollBar10c in onVBarMouseUp: "
+					, "[sID]", this.selectedIndex
+					, "[vsPos]", vsPos 
+					, "[value]", vs.value
+					, "[-vsValue]", vsValue
+					, "[currRec]", this.navigator.currRecord
+					, "[-vsRecord]", vsRecord
+					, "[vsPage]", vsPage
+					, "[currPage]", this.navigator.currPage
+					, "[max]", vs.maximum
+					, "[min]", vs.minimum
+					, "[step]", vs.stepSize
+					, "[page]", vs.pageSize
+					, "[snap]", vs.snapInterval
+					, "[rowH]", this.rowHeight
+					, vs.scaleY, vs.scaleX
+				);
+			}
+			
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</s:DataGrid>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  width="100" height="27" gap="2">
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.http.HTTPService;
+			
+			import spark.events.IndexChangeEvent;
+			
+			import events.ArrEvent;
+			
+			private var win:UserProfile = new UserProfile();
+			private var sitepop:ConfigPopUp = new ConfigPopUp();
+			
+			protected function profile_clickHandler(event:MouseEvent):void
+			{
+				if (global.hasAccess==true)
+				{	
+					win = new UserProfile();
+					win.addEventListener(CloseEvent.CLOSE,closePopUp);
+					FlexGlobals.topLevelApplication.main.removePopup();
+					PopUpManager.addPopUp(win,FlexGlobals.topLevelApplication.main.widgetList,true);
+					PopUpManager.centerPopUp(win);
+				}
+			}
+			
+			protected function closePopUp(event:CloseEvent):void
+			{
+				PopUpManager.removePopUp(win);
+			}
+			
+			protected function security_clickHandler(event:MouseEvent):void
+			{
+				var arr:Array = new Array(this.security.label, 'modules/M_SECURITY_CONFIG.swf', null);
+				showSiteConfig(arr);
+				//FlexGlobals.topLevelApplication.main.dispatchEvent(new ArrEvent('menu',true,false,arr));
+			}
+			
+			
+			protected function showSiteConfig(value:Array): void
+			{
+				sitepop.addEventListener(CloseEvent.CLOSE, win_close);
+				PopUpManager.addPopUp(sitepop,FlexGlobals.topLevelApplication.main,true);
+				sitepop.loadModule(value);
+				PopUpManager.centerPopUp(sitepop);
+			}
+			
+			protected function win_close(event:CloseEvent):void
+			{
+				event.stopImmediatePropagation();
+				sitepop.removeEventListener(CloseEvent.CLOSE, win_close);
+				PopUpManager.removePopUp(sitepop);
+			}
+			/* protected function shrink_clickHandler(event:MouseEvent):void
+			{
+				trace(FlexGlobals.topLevelApplication.main.height);
+			
+				if (global.app.scaleX == 1.00)
+				{
+					global.app.scaleX=0.80;
+					global.app.scaleY=0.80;
+					laptop.label="desktop";
+				}
+				else
+				{
+				global.app.scaleX=1.00;
+				global.app.scaleY=1.00;
+				laptop.label="laptop";
+				}
+			} */
+			
+			protected function logout_clickHandler(event:MouseEvent):void{
+				var app:index = FlexGlobals.topLevelApplication as index;
+				app.secureLogout();
+			}
+			
+			protected function eula_clickHandler(event:MouseEvent):void
+			{
+				navigateToURL(new URLRequest('docs/eula.pdf'),'_blank');
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:HGroup width="100%">
+		<s:Label id="lbl" text="{global.Build+' '+global.siteName}" height="100%" verticalAlign="middle" color="{global.OMLITE?0:0xFFFFFF}" fontWeight="bold"/>
+		<s:Spacer width="100%"/>
+		<!--<mx:LinkButton id="laptop" height="100%" label="Laptop" color="0xFFFFFF" fontWeight="bold"
+					   textAlign="left" click="shrink_clickHandler(event)"/>-->
+		<mx:LinkButton id="security" height="100%" label="{resourceManager.getString('default','global.hdrmenu.siteconfiguration')}" color="{global.OMLITE?0:0xFFFFFF}" fontWeight="bold" visible="{global.scView}"
+					   textAlign="left" click="security_clickHandler(event)"/>
+		<mx:LinkButton id="profile" height="100%" label="{resourceManager.getString('default','global.hdrmenu.profile')}" color="{global.OMLITE?0:0xFFFFFF}"
+					   fontWeight="bold" textAlign="left" click="profile_clickHandler(event)"/>
+		<mx:LinkButton id="eula" height="100%" label="{resourceManager.getString('default','ABOUT')}" color="{global.OMLITE?0:0xFFFFFF}" fontWeight="bold" click="eula_clickHandler(event)"
+					   textAlign="left"/>
+		<mx:LinkButton id="help" height="100%" label="{resourceManager.getString('default','HELP')}" color="{global.OMLITE?0:0xFFFFFF}" fontWeight="bold" textAlign="left" 
+					   click="navigateToURL(new URLRequest('docs/manual.pdf'),'_blank')"/>
+		<s:Spacer width="10"/>
+		<mx:LinkButton id="logout" height="100%" label="{resourceManager.getString('default','global.hdrmenu.logout')+'('+global.user+')'}" color="0xFF0000" fontWeight="bold" fontSize="12"
+					   textAlign="left" click="logout_clickHandler(event)"/>
+		<s:Spacer width="10"/>
+	</s:HGroup>
+	<s:Line width="100%">
+		<s:stroke>
+			<s:SolidColorStroke color="0xCCCCDD"/>
+		</s:stroke>
+	</s:Line>
+</s:VGroup>

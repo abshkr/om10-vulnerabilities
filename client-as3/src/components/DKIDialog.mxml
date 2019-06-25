@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 width="200" height="125" minHeight="100" skinClass="skins.DialogBoxSkin"
+		 title="Transaction Result">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			
+			[Bindable] public var errorMsg:String = "this is an error message just to let you know that something went terribly wrong"; 
+			
+			protected function closeHandler(event:MouseEvent):void
+			{
+				this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE,true, false));
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:Label left="10" right="10" height="38" text="{errorMsg}" textAlign="center"
+			 verticalAlign="middle" verticalCenter="-13"/> 
+	<s:Button label="OK" click="closeHandler(event)" horizontalCenter="0" bottom="10" cornerRadius="12"/>	
+</s:Panel>

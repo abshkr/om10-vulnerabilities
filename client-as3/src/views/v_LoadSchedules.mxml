@@ -1,0 +1,3725 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  xmlns:skins="skins.*"
+		  xmlns:companiesservice="services.companiesservice.*"
+		  xmlns:loadschedulesservice="services.loadschedulesservice.*"
+		  xmlns:tankersservice="services.tankersservice.*"
+		  xmlns:equipmenttypesservice="services.equipmenttypesservice.*"
+		  xmlns:equipmentlistservice="services.equipmentlistservice.*"
+		  xmlns:flexiframe="com.google.code.flexiframe.*"
+		  xmlns:transactionsservice="services.transactionsservice.*"
+		  xmlns:tankershapesservice="services.tankershapesservice.*"
+		  width="100%" height="100%" creationComplete="creationCompleteHandler(event)"
+		  currentState="normal" gap="2">
+	
+	<s:states>
+		<s:State name="normal" enterState="showDelivery=true" />
+		<s:State name="bol" exitState="doBOLFilter()" />
+		<s:State name="createByProduct" 	 stateGroups="edit"	enterState="viewOpts=false;repOpts=false;showDelivery=true;"/>
+		<s:State name="createByCompartment"  stateGroups="edit" enterState="viewOpts=false;repOpts=false;showDelivery=false;"/>
+		<s:State name="editByProduct" 	 	 stateGroups="edit" enterState="showDelivery=true" />
+		<s:State name="editByCompartment"    stateGroups="edit" enterState="showDelivery=false" />
+		<s:State name="scheduleDetails" 	 stateGroups="edit" enterState="view_detailsHandler(event);showDelivery=true;"/>
+	</s:states>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import components.ActionDialog;
+			import components.AdhocKeyDlg;
+			import components.BusyIndicator;
+			import components.ConfirmDialog;
+			import components.DeleteDialog;
+			import components.ExportData;
+			import components.MessageDialog;
+			import components.ModalOrderInfo;
+			import components.MovSchdTransactionsDlg;
+			import components.OpenOrdersDlg;
+			import components.PartnerChooser;
+			import components.RepostDlg;
+			import components.TransactionsDlg;
+			import components.ViewPopupDlg;
+			
+			import dm.DM;
+			import dm.remoteDataService;
+			import dm.utils.tools;
+			
+			import flash.globalization.LocaleID;
+			
+			import itemeditors.CompositionUnits;
+			import itemeditors.GridPartnerEditor;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.errors.ItemPendingError;
+			import mx.controls.Alert;
+			import mx.controls.DataGrid;
+			import mx.controls.DateField;
+			import mx.controls.Text;
+			import mx.core.FlexGlobals;
+			import mx.core.INavigatorContent;
+			import mx.data.CacheDataDescriptor;
+			import mx.data.MessageBatch;
+			import mx.events.CollectionEvent;
+			import mx.events.DragEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.CursorManager;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.HTTPService;
+			import mx.utils.ObjectUtil;
+			import mx.utils.OnDemandEventDispatcher;
+			import mx.utils.StringUtil;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			import renderers.compLimitsRenderer;
+			
+			import services.tankersservice.TankersService;
+			
+			import spark.components.gridClasses.GridColumn;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.effects.animation.RepeatBehavior;
+			import spark.events.GridEvent;
+			import spark.events.GridItemEditorEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.GridSortEvent;
+			import spark.events.IndexChangeEvent;
+			import spark.events.TextOperationEvent;
+			
+			import valueObjects.Compartment;
+			import valueObjects.GuiSchedules;
+			import valueObjects.TerminalLookup1;
+			
+			import views.v_DeliveryDetails;
+			import views.v_DorHistory;
+			import views.v_OpenOrdersPopup;
+			
+			private var currentFilter:Object = null;
+			private var currentOrder:String='shls_trip_no';
+			private var currentDirection:String="DESC";
+			
+			private var idx:int = -1;
+			private var comp_idx:int=-1;
+			
+			private var _bolHtml:String;
+			
+			[Bindable] public var compArr:ArrayCollection = new ArrayCollection();
+			[Bindable] public var prodArr:ArrayCollection = new ArrayCollection();
+			[Bindable] public var loadArr:ArrayCollection = new ArrayCollection();
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			[Bindable] public var specialInstructions:Boolean = false;
+			
+			
+			[Bindable] private var createMode:Boolean=false;
+			[Bindable] private var viewOpts:Boolean=false;
+			[Bindable] private var repOpts:Boolean=false;
+			[Bindable] private var printOpts:Boolean=false;
+			[Bindable] private var isPreloaded:Boolean=false;
+			[Bindable] private var isExtBlendAllowed:Boolean = false;
+			private var scheduleType:int = 2;
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			private var currentSorts:Object=new Object();
+			private var currentOrders:Object=new Object();
+			private var currentSortSeq:int=0;
+			
+			private var holdState:String = 'scheduleDetails';
+			
+			private var transactionPopup:TransactionsDlg = new TransactionsDlg();
+			private var openOrdersPopup:OpenOrdersDlg = new OpenOrdersDlg();
+			private var sealPopup:v_Seal;
+			
+			private var repostPopup:RepostDlg = new RepostDlg();
+			
+			public var makeTransactionPopup:MovSchdTransactionsDlg = new MovSchdTransactionsDlg();
+			
+			
+			private var tripSearch:Boolean=false;
+			
+			private var processingAnimation:BusyIndicator = new BusyIndicator();
+			
+			[Bindable] private var loadStr:String = 'Loaded';
+			
+			private var getData:Responder = new Responder(getSchedules_resultHandler);
+			private var getSuppliers:Responder = new Responder(getSuppliers_resultHandler);
+			private var getCustomers:Responder = new Responder(getCustomers_resultHandler);
+			
+			private var updateTripHostDOR:remoteDataService = new remoteDataService( "DorHistoryService.updateTripHostDOR", null, updateTripHostDOR_resultHandler, 1 );
+			private var removeDorHistory:remoteDataService = new remoteDataService( "DorHistoryService.removeDorHistory", null, removeDorHistory_resultHandler, 1 );
+			private var formButtonSettingsMaker:remoteDataService = new remoteDataService( "ScreenFormButtonService.lookupFormButtonSettings", null, formButtonSettingsMaker_resultHandler, 1 );
+			private var _formButtonSettingsString:String="";
+			[Bindable] private var drawerProductList:remoteDataService = new remoteDataService( "ListLibraryService.lookupProduct", null, lookupDrawerProduct_resultHandler );
+			
+			[Bindable] private var custArr:ArrayCollection = new ArrayCollection();
+			
+			
+			[Bindable] private var canRepost:Boolean = false;
+			[Bindable] private var canReverse:Boolean = false;
+			[Bindable] private var canArchive:Boolean = false;
+			[Bindable] private var canMake:Boolean = false;
+			[Bindable] private var showDelivery:Boolean = false;
+			
+			[Bindable] private var canViewDorNumber:Boolean = false;
+			[Bindable] private var canUpdateDorNumber:Boolean = false;
+			[Bindable] private var canUpdateCmptDorNumber:Boolean = false;
+			[Bindable] private var canManageDorHistory:Boolean = false;
+			[Bindable] private var isPartnershipEnabled:Boolean = false;
+			[Bindable] private var isJasperBolEnabled:Boolean = false;
+			[Bindable] private var isBolProcessControlEnabled:Boolean = false;
+			[Bindable] private var isPrintButtonRequired:Boolean = true;
+			
+			[Bindable] public var transDocBtnIndex:int = 0;
+			[Bindable] public var transDocBtnTexts:Array= new Array( "BOL", "DN", "BOL&DN" );
+			
+			private var confirmDlg:ConfirmDialog;
+			
+			private var isChange:Boolean = true;
+			
+			private var isReturned:Boolean = false;
+			
+			
+			private var pageCount:int=1;
+			[Bindable] public  var bytesTotal:Number  = 1000000;
+			[Bindable] public  var bytesLoaded:Number = 0;
+			[Bindable] public  var totalCount:Number  = 0;
+			
+			[Bindable] private var currentPage:Number 		= 1;
+			private var pageBy:int = 2000;
+			[Bindable] private var finishedAllPages:Boolean =  true;
+			[Bindable] private var interruptor:Boolean 		=  false;
+			[Bindable] private var preFilter:Boolean 		=  true;
+			[Bindable] private var scheduleArr:ArrayCollection=new ArrayCollection();
+			
+			
+			private var CSVOut:String='';
+			
+			public var fileName:String;
+			private var f:FileReference=new FileReference();
+			private var field:String;
+			[Bindable] private var isCancelLoad:Boolean=false;
+			
+			[Bindable] private var freeze:Boolean=false;
+			
+			[Bindable] public var supplierArr:ArrayCollection=new ArrayCollection();
+			[Bindable] public var productArr:ArrayCollection=new ArrayCollection();
+			
+			private var cancelLoadService:HTTPService = new HTTPService();
+			
+			public var isPopupWindow:Boolean=false;
+			[Bindable] private var ooPopupEnabled:Boolean=false;
+			
+			public var dorHistoryPopup:ViewPopupDlg = new ViewPopupDlg( "DOR History", new v_DorHistory(), closeDialogHandler );
+			public var partnershipPopup:ViewPopupDlg = new ViewPopupDlg( "Partnership List", new PartnerChooser(), afterClosePartnerList );
+			
+			public var deliveryDetailsPopup:ViewPopupDlg = new ViewPopupDlg( "Delivery Details", new v_DeliveryDetails(), closeDialogHandler );
+			
+			
+			
+			protected function lookupDrawerProduct_resultHandler():void
+			{
+				global.gDrawerProducts = new ArrayCollection( this.drawerProductList.source );
+			}
+			
+			private function getCustomers_resultHandler(obj:Object):void
+			{
+				custArr.source = obj as Array;
+				custArr.refresh();
+				custList.selectedIndex = -1;
+			}
+			
+			private function getSchedules_resultHandler(obj:Object):void
+			{
+				if (currentPage==1) 
+				{
+					scheduleArr.removeAll();
+					scheduleArr.refresh();
+					bytesLoaded=0;
+				}
+				totalCount = Number(obj.count);
+				if(interruptor)
+				{
+					totalCount = scheduleArr.length;
+					interruptor = false;
+				}
+				else
+				{
+					// uncompress
+					if ( obj.hasOwnProperty('zip_on') && obj.zip_on == 1 )
+					{
+						var mthd:String="zlib";
+						if ( obj.hasOwnProperty('zip_mthd') )
+						{
+							mthd = obj.zip_mthd;
+						}
+						obj.data = global.uncompressText( obj.data, mthd );
+					}
+					//var myobj:Object = JSON.parse(obj.data,null);
+					var myobj:Object;
+					if ( obj.hasOwnProperty('json_on') && obj.json_on == 1 )
+					{
+						myobj = JSON.parse( obj.data,null );
+					}
+					else
+					{
+						myobj = obj.data;
+					}
+					
+					for each(var s:Object in myobj)
+					{
+						scheduleArr.source[s.rn-1] = s;
+					}
+					scheduleArr.refresh();
+					//genCSV(myobj,false);
+					bytesLoaded = scheduleArr.list.length/totalCount*bytesTotal-1;	
+				}
+				if(scheduleArr.length < totalCount)
+				{
+					pb.values(scheduleArr.length,totalCount)
+					nccall('LoadScheduleService.getPaged',getData,currentFields,currentTypes,currentSorts,currentOrders,++currentPage,pageBy);
+				}
+				else
+				{
+					pb.values(totalCount,totalCount, true)
+					finishedAllPages = true;
+					freeze=true;
+					createMode=false;
+					
+					// somehow bring back focus to grid;
+					
+					//scheduleArr
+					callLater(function():void{
+						for (var i:int = 0; i < scheduleArr.length; i++) {
+							if(scheduleArr.getItemAt(i).supplier_code == editingSupplier &&
+								scheduleArr.getItemAt(i).shls_trip_no == editingTripNo){
+								callLater(function():void{
+									dataGrid.selectedIndex = i;
+									dataGrid.ensureCellIsVisible(i);
+									trace(dataGrid.scroller.verticalScrollBar.minimum, dataGrid.scroller.verticalScrollBar.value, dataGrid.scroller.verticalScrollBar.maximum)
+									
+								});
+								break;
+							}
+						}
+					});
+					
+					
+				}
+			}
+			
+			private function getSuppliers_resultHandler(obj:Object):void
+			{
+				supplierArr.source = obj.supp as Array;
+				supplierArr.refresh();
+				productArr.source=obj.prod as Array;
+				productArr.refresh();
+				trace("All is Well");
+			}
+			
+			protected function formButtonSettingsMaker_resultHandler():void
+			{
+				this._formButtonSettingsString =  formButtonSettingsMaker.dataString;
+			}
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				this.formButtonSettingsMaker.service( "LOAD_SCHEDULE" );
+				
+				suppliersLookupResult.token = loadSchedulesService.suppliersLookup();
+				drawersLookupResult.token 	= loadSchedulesService.drawersLookup();
+				carriersLookupResult.token 	= loadSchedulesService.carriersLookup();
+				terminalLookupResult.token 	= tankersService.terminalLookup();
+				getSchedStatusResult.token 	= loadSchedulesService.getSchedStatus();
+				tankersLookupResult.token 	= loadSchedulesService.tankersLookup();
+				employerLookupResult.token 	= loadSchedulesService.employerCmpyLookup();
+				
+				this.drawerProductList.service( );
+				this.loadConfigFromUrl();
+				addEventListener('delItem',deleteProductFromGrid);
+				addEventListener('OrderSelect',onOrderSelect);
+				addEventListener('OrderGet',onOrderGet);
+				
+				transDocBtnTexts = new Array( resourceManager.getString('default','global.lbl.bol'), resourceManager.getString('default','global.lbl.delvnote')
+					, (resourceManager.getString('default','global.lbl.bol')+'&'+resourceManager.getString('default','global.lbl.delvnote')) );
+				
+				
+				//date_from.getInitFilter(365);
+				//date_from.dateText.text = "";
+				global.resetDateRangeComponent( "SITE_DEFAULT_DATERANGE_SCHEDULE", this.date_from );
+				
+				dataGrid.dataProvider = scheduleArr;
+				killBtn.setStyle("chromeColor","0xff0000");
+				if ( this.isPopupWindow == false )
+				{
+					
+					var value:String = global.getValueFromSiteConfigSettings( "SITE_AUTO_FILTER_WHEN_OPEN_SCREEN" );
+					if ( value == 'Y' )
+					{
+						setFilters(true, true);
+					}
+					else
+					{
+						setFilters(false, true);
+						freeze=true;
+						createMode=false;
+					}
+				}
+				
+				value = global.getValueFromSiteConfigSettings( "SITE_DOR_NUMBER_VISIBLE" );
+				if ( value == 'Y' )
+				{
+					this.canViewDorNumber = true;
+				}
+				else
+				{
+					this.canViewDorNumber = false;
+				}
+				
+				value = global.getValueFromSiteConfigSettings( "SITE_DOR_NUMBER_EDITABLE" );
+				if ( value == 'Y' )
+				{
+					this.canUpdateDorNumber = true;
+				}
+				else
+				{
+					this.canUpdateDorNumber = false;
+				}
+				
+				value = global.getValueFromSiteConfigSettings( "SITE_CMPT_DOR_NUMBER_EDITABLE" );
+				if ( value == 'Y' )
+				{
+					this.canUpdateCmptDorNumber = true;
+				}
+				else
+				{
+					this.canUpdateCmptDorNumber = false;
+				}
+				
+				value = global.getValueFromSiteConfigSettings( "SITE_DOR_HISTORY_AVAILABLE" );
+				if ( value == 'Y' )
+				{
+					this.canManageDorHistory = true;
+				}
+				else
+				{
+					this.canManageDorHistory = false;
+				}
+				
+				if ( global.getValueFromSiteConfigSettings( "SITE_PARTNERSHIP_ENABLED" ) == 'Y' )
+				{
+					this.isPartnershipEnabled = true;
+				}
+				else
+				{
+					this.isPartnershipEnabled = false;
+				}
+				
+				if ( global.getValueFromSiteConfigSettings( "BOL_VERSION" ) == 'JASPER' )
+				{
+					this.isJasperBolEnabled = true;
+				}
+				else
+				{
+					this.isJasperBolEnabled = false;
+				}
+				
+				if ( global.getValueFromSiteConfigSettings( "BOL_DN_PROCESS_CONTROL" ) == 'Y' )
+				{
+					this.isBolProcessControlEnabled = true;
+				}
+				else
+				{
+					this.isBolProcessControlEnabled = false;
+				}
+				
+				if ( global.getValueFromSiteConfigSettings("SITE_EXTERNAL_BLENDING_ALLOWED") == 'Y' )
+				{
+					this.isExtBlendAllowed = true;
+				}
+				else
+				{
+					this.isExtBlendAllowed = false;
+				}
+				
+			}
+			
+			private function onOrderGet(event:Event):void
+			{
+				openOrdersPopup.openDialog();
+				var params:Object = new Object();
+				params["supplier"] = this.new_supplier.selectedIndex;
+				params["trip"] = this.new_tripno.text;
+				params["order"] = this.compGrid.dataProvider[this.compGrid.selectedIndex].order_id; //this.compGrid.selectedItem.order_id;
+				params["seek"] = true;
+				params["title"] = resourceManager.getString('default','LOADSCHD.TITLE.OO2SCHED');
+				openOrdersPopup.setParams(params);
+				openOrdersPopup.callback = prepareCompartment;
+				openOrdersPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+			}
+			
+			private function onOrderSelect(event:Event):void
+			{
+				openOrdersPopup.openDialog();
+				var params:Object = new Object();
+				params["supplier"] = this.new_supplier.selectedIndex;
+				params["trip"] = this.new_tripno.text;
+				params["order"] = this.compGrid.selectedItem.order_id;
+				params["seek"] = true;
+				params["title"] = resourceManager.getString('default','LOADSCHD.TITLE.OO2SCHED');
+				openOrdersPopup.setParams(params);
+				openOrdersPopup.callback = prepareCompartment;
+				openOrdersPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+			}
+			
+			private function prepareCompartment(item:Object, flag:Boolean): void
+			{
+				// item is the object from open order items grid, and it has the following attributes:
+				// oitem_order_id
+				// oitem_prod_code
+				// oitem_prod_cmpy
+				// oitem_prod_name
+				// oitem_prod_qty
+				// oitem_prod_unit
+				// oitem_by_packs
+				// oitem_pack_size
+				// oitem_schd_qty
+				// oitem_load_qty
+				// oitem_delv_qty
+				
+				if ( flag == false )
+				{
+					return;
+				}
+				if ( item == null )
+				{
+					return;
+				}
+				if ( this.compGrid.selectedIndex < 0 )
+				{
+					return;
+				}
+				this.compGrid.dataProvider[this.compGrid.selectedIndex].product_code = item.oitem_prod_code;
+				this.compGrid.dataProvider[this.compGrid.selectedIndex].product_name = item.oitem_prod_name;
+				if ( Number(item.oitem_schd_qty) > Number(this.compGrid.dataProvider[this.compGrid.selectedIndex].cmpt_capacit) )
+				{
+					this.compGrid.dataProvider[this.compGrid.selectedIndex].schedule = Number(this.compGrid.dataProvider[this.compGrid.selectedIndex].cmpt_capacit);
+				}
+				else
+				{
+					this.compGrid.dataProvider[this.compGrid.selectedIndex].schedule = Number(item.oitem_schd_qty);
+				}
+				
+				this.compGrid.dataProvider[this.compGrid.selectedIndex].unit = item.oitem_prod_unit;
+				this.compGrid.dataProvider[this.compGrid.selectedIndex].order_id = item.oitem_order_id;
+				
+				trace( "this is the selection made in open order popups .......................................................", item.oitem_prod_code, item.oitem_prod_qty );
+			}
+			
+			private function onDateChanged():void
+			{
+				setFilters(true,false);
+			}						
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				dataGrid.enabled=false;
+			}			
+			
+			protected function refreshRecords():void
+			{				
+				tankerList.selectedIndex = -1;
+				supplierList.selectedIndex = -1;
+				carrierList.selectedIndex = -1;
+				LoadStatus.selectedIndex = -1;
+				tripNo.text='';
+				//date_from.getInitFilter(365);
+				if ( global.getValueFromSiteConfigSettings("SITE_CLEAR_FILTER_BLANK") == 'Y' )
+				{
+					this.date_from.dateText.text = "";
+				}
+				else
+				{
+					global.resetDateRangeComponent( "SITE_DEFAULT_DATERANGE_SCHEDULE", this.date_from );
+				}
+				setFilters(true,false);
+			}
+			
+			protected function createNew():void
+			{				
+				this.transDocBtnIndex = 0;
+				
+				currentState="createByCompartment";
+				bycomp.selected=true;
+				createMode=true;
+				saveBtn.enabled=true;
+				clearCreationDetails();
+				
+				if ( _formButtonSettingsString.length > 0 )
+				{
+					global.adjustFormButtonSettings( _formButtonSettingsString.substr(1), this );
+				}
+			}
+			
+			protected function clearFilters(value:Boolean):void
+			{
+				if (value==true)
+				{	
+					var types:Object = new Object();
+					var fields:Object = new Object();
+					
+					tankerList.selectedIndex=-1;
+					supplierList.selectedIndex=-1;
+					custList.selectedIndex=-1;
+					custArr.removeAll();
+					custArr.refresh();
+					carrierList.selectedIndex=-1;
+					depotList.selectedIndex=-1;
+					LoadStatus.selectedIndex=-1;
+					tripNo.text ='';
+					orderNo.text ='';
+					currentFields=null;
+					currentTypes=null;
+					
+					//date_from.getInitFilter(365);
+					if ( global.getValueFromSiteConfigSettings("SITE_CLEAR_FILTER_BLANK") == 'Y' )
+					{
+						this.date_from.dateText.text = "";
+					}
+					else
+					{
+						global.resetDateRangeComponent( "SITE_DEFAULT_DATERANGE_SCHEDULE", this.date_from );
+					}
+					
+					setFilters(true,true);
+				}
+				isChange=true;
+				
+			}
+			
+			protected function suppChange():void
+			{
+				if ( supplierList.selectedIndex>=0)
+				{
+					custList.selectedIndex = -1;
+					nccall("Lookups.lookupOrderCustomer",getCustomers ,supplierList.selectedItem.cmpy_code);
+					setFilters(false,false);
+				}
+			}
+			
+			protected function setFilters(forceReload:Boolean , resetFilter:Boolean):void
+			{
+				var types:Object = new Object();
+				var fields:Object = new Object();
+				interruptor=false;
+				if (resetFilter){
+					tankerList.selectedIndex 	= -1;
+					supplierList.selectedIndex 	= -1;
+					custList.selectedIndex 		= -1;
+					custList.textInput.text 	= '';
+					custArr.refresh();
+					
+					carrierList.selectedIndex	= -1;
+					depotList.selectedIndex		= -1;
+					LoadStatus.selectedIndex 	=  -1;
+					tripNo.text 				= '';
+					orderNo.text 				= '';
+					//this.date_from.dateText.text = "";
+					if ( global.getValueFromSiteConfigSettings("SITE_CLEAR_FILTER_BLANK") == 'Y' )
+					{
+						this.date_from.dateText.text = "";
+					}
+					else
+					{
+						global.resetDateRangeComponent( "SITE_DEFAULT_DATERANGE_SCHEDULE", this.date_from );
+					}
+				}
+				
+				if(tankerList.selectedIndex > -1)
+				{
+					fields["tnkr_code"]=tankerList.selectedItem.tnkr_code;
+					types["tnkr_code"]="STRING";
+				}
+				else
+				{
+					if ( global.setComboBoxNoSelection == true )
+					{
+						tankerList.selectedIndex = -1;
+					}
+				}
+				
+				if(supplierList.selectedIndex > -1) 
+				{
+					fields["supplier_code"]=supplierList.selectedItem.cmpy_code;
+					types["supplier_code"]="STRING";
+				}
+				else
+				{
+					if ( global.setComboBoxNoSelection == true )
+					{
+						supplierList.selectedIndex = -1;
+					}
+				}
+				
+				if(custList.selectedIndex > -1)
+				{
+					fields["order_cust"]=custList.selectedItem.CUST_ACNT;
+					types["order_cust"]="STRING";
+				}
+				else
+				{
+					custList.textInput.text = '';
+					custList.selectedIndex = -1;
+					custArr.refresh();
+				}
+				
+				if(carrierList.selectedIndex > -1) 
+				{
+					fields["carrier_code"]=carrierList.selectedItem.cmpy_code;
+					types["carrier_code"]="STRING";
+				}
+				else
+				{
+					if ( global.setComboBoxNoSelection == true )
+					{
+						carrierList.selectedIndex = -1;
+					}
+				}
+				
+				if(depotList.selectedIndex > -1)
+				{
+					fields["shls_terminal"]=depotList.selectedItem.term_code;
+					types["shls_terminal"]="STRING";
+				}
+				else
+				{
+					if ( global.setComboBoxNoSelection == true )
+					{
+						depotList.selectedIndex = -1;
+					}
+				}
+				
+				if(LoadStatus.selectedIndex > -1)
+				{
+					fields["status"]=LoadStatus.selectedItem.STATUS_CODE;
+					types["status"]="STRING";
+				}
+				else
+				{
+					if ( global.setComboBoxNoSelection == true )
+					{
+						LoadStatus.selectedIndex = -1;
+					}
+				}
+				
+				if(tripNo.text !='' && tripNo != null)
+				{
+					tripSearch=false;
+					fields["shls_trip_no"]=tripNo.text;
+					types["shls_trip_no"]="STRING";
+				}
+				
+				if(orderNo.text !='' && orderNo != null)
+				{
+					fields["ORDER_CUST_ORDNO"]=orderNo.text;
+					types["ORDER_CUST_ORDNO"]="STRING";
+				}
+				
+				if ( this.date_from.dateText.text.length > 0 )
+				{
+					if(date_from.sDate != null) 
+					{
+						fields["shls_caldate"]=dateConvert.format(date_from.sDate) + "~~" + dateConvert.format(date_from.eDate);
+						types["shls_caldate"]="STRING";
+					}
+				}
+				
+				if ( (tripNo.text !='' && tripNo != null) || (orderNo.text !='' && orderNo != null) )
+				{
+					fields = new Object();
+					types = new Object();
+					if ( this.orderNo.text.length > 0 )
+					{
+						fields["ORDER_CUST_ORDNO"]=orderNo.text;
+						types["ORDER_CUST_ORDNO"]="NUMBER";
+					}
+					if ( this.tripNo.text.length > 0 )
+					{
+						fields["SHLS_TRIP_NO"]=tripNo.text;
+						types["SHLS_TRIP_NO"]="STRING";
+					}
+					
+					currentFields = fields;
+					currentTypes = types;
+				}
+				else
+				{
+					currentFields = fields;
+					currentTypes = types;
+				}
+				
+				if (forceReload)
+				{
+					currentPage=1;
+					freeze=false;
+					createMode=true;
+					
+					nccall('LoadScheduleService.getPaged',getData,currentFields,currentTypes,currentSorts,currentOrders,currentPage,pageBy);
+				}
+			}
+			
+			private function nccall(...params):void{
+				
+				
+				//FlexGlobals.topLevelApplication.url
+				
+				var nc:NetConnection = new NetConnection();
+				nc.objectEncoding = ObjectEncoding.AMF3;
+				//nc.connect("/amfservices/gateway/amf2/index.php");
+				nc.connect(global.gatewayURL);
+				nc.call.apply(nc,params);
+				
+			}
+			
+			protected function setScheduledCompartmentsProvider():void
+			{
+				compArr.removeAll();
+				var i:int=0;
+				var code:Array=new Array();
+				
+				for each(var obj:Object in getScheduledCompartmentsResult.lastResult)
+				{
+					var comp:Compartment = new Compartment();
+					i += 1;
+					comp.seq = i + " ["+obj.tnkr_cmpt_no+"]";
+					comp.etyp_title = obj.eqpt_code;
+					comp.prev_product_name = obj.prev_prod;
+					comp.prev_product_code = obj.prev_prodcode;
+					comp.unit = obj.cmpt_units;
+					comp.qty_preload = obj.preld_qty;
+					comp.order_id = obj.order_cust_ordno;
+					comp.cmpt_capacit = obj.cmpt_capacit;
+					comp.schedule = obj.allowed_qty;
+					comp.product_name = obj.prod_name;
+					comp.product_code = obj.prod_code;
+					comp.schd_deliv_num = obj.schd_deliv_num;
+					comp.schd_sold_to_num = obj.schd_sold_to_num;
+					comp.schd_ship_to_num = obj.schd_ship_to_num;
+					compArr.addItem(comp);
+				}
+				
+				if (createMode==true)
+				{
+					setCompartmentsProvider();
+				}
+			}			
+			
+			protected function setCompartmentsProvider():void
+			{
+				compArr.removeAll();
+				var i:int=0;
+				for each(var obj:Object in getEquipmentShapeResult.lastResult)
+				{					
+					for each(var comp:Object in obj.compartments)
+					{
+						i += 1;
+						comp.seq = i + " ["+comp.cmpt_no+"]";
+						comp.etyp_title = obj.etyp_title;
+						comp.unit = obj.cmpt_units;
+						comp.prev_product_name=null;
+						comp.prev_product_code=null;
+						
+						for each(var prod:Object in getLastCompartmentProductsResult.lastResult)
+						{
+							if(i==prod.schd_trailercomp)
+							{
+								comp.prev_product_name = prod.prod_name;
+								comp.prev_product_code = prod.prod_code;
+							}
+						}
+						
+						compArr.addItem(comp);
+					}
+				}
+			}
+			
+			protected function cancel_clickHandler(event:MouseEvent):void
+			{
+				isChange=false;
+				currentState="normal";
+				createMode=false;
+				callLater(function():void{dataGrid.ensureCellIsVisible(dataGrid.selectedIndex);});
+				trace("CancelHandler");
+			}
+			
+			private function clearCreationDetails():void
+			{
+				prodGrid.dataProvider=null;
+				productList.dataProvider=null;
+				compArr.removeAll();
+				prodArr.removeAll();
+				compArr.refresh();
+				prodArr.refresh();
+				new_tripno.text='';
+				new_tripno.enabled=false;
+				new_date.selectedDate=new Date();
+				new_date.enabled=true;
+				exp_date.selectedDate = new Date();
+				exp_date.selectedDate.minutes += global.expiryTime; 
+				exp_date.enabled=(global.hasExpiry&&true);
+				new_drawer.selectedIndex=-1;
+				new_drawer.enabled=false;
+				new_supplier.selectedIndex=-1;
+				new_supplier.enabled=true;
+				new_tanker.selectedIndex=-1;
+				new_tanker.enabled=false;
+				new_carrier.selectedIndex=-1;
+				new_carrier.enabled=false;
+				new_shift.text='';
+				spec_ins.text='';
+				new_priority.text='';
+				if (new_shipto != null)
+				{	
+					new_soldto.text='';
+					new_shipto.text='';
+				}
+				byprod.selected=false;
+				this.shl_fleet_data.text = '';
+				
+				this.printOpts = false;
+				this.itc.selected = false;
+				this.idc.selected = false;
+			}
+			
+			protected function goAskForShape():void
+			{
+				if(createMode==true) 
+					getEquipmentShapeResult.token = tankerShapeService.getEquipmentShape(new_tanker.selectedItem.tnkr_code)
+				else 
+					getEquipmentShapeResult.token = tankerShapeService.getEquipmentShape(dataGrid.selectedItem.tnkr_code)
+			}
+			
+			protected function new_supplier_changeHandler(event:IndexChangeEvent):void
+			{
+				prodGrid.dataProvider=productsLookupResult.lastResult;
+				//if (productList) productList.dataProvider=prodArr;
+				new_drawer.selectedIndex=-1;
+				new_drawer.invalidateDisplayList();
+				if(new_supplier.selectedIndex > -1)
+				{
+					productsLookupResult.token = loadSchedulesService.productsLookup(new_supplier.selectedItem.cmpy_code);
+					if(createMode==true) getSeqNumResult.token = loadSchedulesService.getSeqNum(null, new_depot.selectedItem.term_code, new_supplier.selectedItem.cmpy_code);
+					if(new_carrier.enabled==false) new_carrier.selectedIndex = -1;
+					new_drawer.enabled = true;
+					new_carrier.enabled = true;
+					new_drawer.selectedIndex=getSelectedDrawer();
+					//getOrdersResult.token = loadSchedulesService.getOrders(new_supplier.selectedItem.cmpy_code);
+				}
+			}
+			
+			protected function new_carrier_changeHandler(event:IndexChangeEvent):void
+			{				
+				if(new_carrier.selectedIndex > -1)
+				{
+					new_tanker.selectedIndex = -1;
+					new_tanker.enabled=true;
+					lookupByCarrierResult.token = this.loadSchedulesService.tankersLookupByCarrier(new_carrier.selectedItem.cmpy_code);
+					
+				}
+			}
+			
+			protected function new_tanker_changeHandler():void
+			{				
+				if(new_tanker.selectedIndex > -1)
+				{
+					getLastCompartmentProductsResult.token = loadSchedulesService.getLastCompartmentProducts(new_supplier.selectedItem.cmpy_code, new_tanker.selectedItem.tnkr_code);
+				}
+			}
+			
+			protected function compGridDragComplete():void
+			{
+				if(compGrid.selectedIndex!=-1)
+				{
+					compArr[compGrid.selectedIndex].product_name = productList.selectedItem.prod_name;
+					compArr[compGrid.selectedIndex].product_code = productList.selectedItem.prod_code;
+					compArr[compGrid.selectedIndex].schedule = compArr[compGrid.selectedIndex].cmpt_capacit;
+					if(productList.selectedItem.order_id!=null)
+					{
+						compArr[compGrid.selectedIndex].order_id = productList.selectedItem.cmpy_orderid;
+					}
+					
+					if((compGrid.selectedItem.prev_product_code!=null)&&(productList.selectedItem.prod_code != compGrid.selectedItem.prev_product_code))
+					{
+						global.msgWarning(resourceManager.getString('default','LOADSCHD.MESSAGE.CURR_PROD_NOT_PREV_PROD_CMPT'));
+					}
+					compGrid.selectedIndex = -1;
+					comp_idx = -1;
+				}
+			}
+			
+			protected function compGrid_dragOverHandler(event:DragEvent):void
+			{
+				var dropTarget:DataGrid = DataGrid(event.currentTarget);
+				dropTarget.showDropFeedback(event);
+			}
+			
+			protected function load_type_clickHandler(event:MouseEvent):void
+			{
+				currentState = (byprod.selected) ? 'createByProduct':'createByCompartment';
+				if (currentState=="createByProduct")
+				{	
+					for each(var z:Object in prodArr)
+					{
+						z.unit=5;
+						z.schedule='';
+					}
+					prodArr.refresh();
+					prodGrid.dataProvider=prodArr;
+				}
+			}
+			
+			
+			private var editingTripNo:String;
+			private var editingSupplier:String;
+			protected function goToCreateLoadSchedule():void
+			{
+				if(createMode)
+				{
+					editingTripNo = new_tripno.text;
+					editingSupplier = new_supplier.selectedItem.cmpy_code;
+					checkTripNumberResult.token = loadSchedulesService.checkTripNumber(int(new_tripno.text), new_supplier.selectedItem.cmpy_code);
+				}
+				else
+				{
+					updateLoadSchedule();
+				}
+			}
+			
+			protected function updateLoadSchedule(): void
+			{
+				var obj:Object = new Object();
+				
+				editingTripNo = dataGrid.selectedItem.shls_trip_no;
+				editingSupplier = new_supplier.selectedItem.cmpy_code;
+				
+				if 	(currentState == "editByProduct")
+				{
+					obj.type_of_schedule = 'PRODUCTS';
+					obj.tripNo = dataGrid.selectedItem.shls_trip_no;
+					obj.carr = new_carrier.selectedItem.cmpy_code;
+					obj.tanker = new_tanker.selectedItem.tnkr_code;
+					obj.date = new_date.isoDate;
+					obj.shift = new_shift.text;
+					obj.specInstruction = spec_ins.text;
+					obj.priority = new_priority.text;
+					obj.tankTerm = dataGrid.selectedItem.shls_terminal;
+					obj.tripExpirDteTime = '';
+					if (global.hasExpiry)obj.tripExpirDteTime = this.dateConvert.format(exp_date.selectedDate);
+					obj.supp = dataGrid.selectedItem.supplier_code;
+					obj.soldto = this.new_soldto.text;
+					obj.shipto = this.new_shipto.text;
+					obj.container = this.new_container.text;
+					
+					var products:ArrayCollection = new ArrayCollection();
+					for each(var z:Object in prodGrid.dataProvider)
+					{
+						if((z.schedule!='') && (z.schedule!=null))
+						{
+							var o:Object = new Object();
+							o.prod = z.prod_code;
+							o.unit = z.unit;
+							o.sched = z.schedule;
+							products.addItem(o);
+						}
+					}
+					obj.products = products;
+				}
+				
+				if (currentState == "editByCompartment")
+				{
+					var regexp:RegExp = /(\d+)\s\[(\d+)\]/;
+					obj.type_of_schedule = 'COMPARTMENTS';
+					obj.tripNo = dataGrid.selectedItem.shls_trip_no;
+					obj.carr = new_carrier.selectedItem.cmpy_code;
+					obj.tanker = new_tanker.selectedItem.tnkr_code;
+					obj.date = new_date.isoDate;
+					obj.shift = new_shift.text;
+					obj.specInstruction = spec_ins.text;
+					obj.priority = new_priority.text;
+					obj.container = this.new_container.text;
+					obj.tankTerm = dataGrid.selectedItem.shls_terminal;
+					obj.tripExpirDteTime = ''; 
+					if (global.hasExpiry)obj.tripExpirDteTime = this.dateConvert.format(exp_date.selectedDate);
+					obj.supp = dataGrid.selectedItem.supplier_code;					
+					
+					var comp:ArrayCollection = new ArrayCollection();
+					
+					for each(var x:Object in compArr)
+					{
+						trace("......PRE_SCHED   COMPARTMENTS", x.seq, x.schedule, x.unit, x.product_code );
+						if (x.schedule != null || (x.unit != null && x.product_code!=null))
+						{	
+							var y:Object = new Object();
+							var seq:String = x.seq;
+							var arr:Array = seq.match(regexp);					
+							y.unit = x.unit;
+							y.sched = x.schedule;
+							y.cmptID = arr[1];
+							y.tlrcmpt = arr[2];
+							y.prod = x.product_code;
+							y.bay_armCd = '-1';
+							y.order = x.order_id;
+							y.delnum = x.schd_deliv_num;
+							y.soldto = x.schd_sold_to_num;
+							y.shipto = x.schd_ship_to_num;
+							comp.addItem(y);
+						}
+					}
+					obj.compartments=comp;
+				}
+				
+				
+				if(driverList.selectedIndex > -1){
+					obj.driver = driverList.selectedItem.per_code;
+				}else{
+					obj.driver = null;
+				}
+				
+				updateResult.token = loadSchedulesService.update(obj);
+				
+			}
+			
+			protected function createLoadSchedule():void
+			{
+				var expDate:Date = new Date();
+				var curDate:Date = new Date(new_date.selectedDate.year, new_date.selectedDate.month, new_date.selectedDate.day, new_date.selectedDate.hours, new_date.selectedDate.minutes);
+				expDate.date = new_date.selectedDate.date;
+				expDate.minutes += global.expiryTime;
+				trace(curDate);
+				
+				var sched_type:int = unload.selected ? 6 : byprod.selected ? 3 : 2 ;
+				
+				if(byprod.selected)
+				{
+					currentState = "createByProduct";
+					var obx:Object=new Object();			
+					obx.type_of_schedule = 'PRODUCTS';
+					obx.sched_type = sched_type;
+					obx.tripNo = new_tripno.text;
+					obx.carr = new_carrier.selectedItem.cmpy_code;
+					obx.tanker = new_tanker.selectedItem.tnkr_code;
+					//obx.date = loadDateConvert.format(curDate);
+					obx.date = new_date.isoDate;
+					obx.shift = new_shift.text;
+					obx.specInstruction = spec_ins.text;
+					obx.priority = new_priority.text;
+					obx.tankTerm = new_depot.selectedItem.term_code;
+					obx.tripExpirDteTime = ''; 
+					if (global.hasExpiry)
+						obx.tripExpirDteTime = dateConvert.format(expDate); 
+					obx.supp = new_supplier.selectedItem.cmpy_code;					
+					obx.soldto = this.new_soldto.text;
+					obx.shipto = this.new_shipto.text;
+					obx.container = this.new_container.text;
+					var products:ArrayCollection = new ArrayCollection();
+					for each(var z:Object in prodGrid.dataProvider)
+					{
+						if((z.schedule!='') && (z.schedule!=null))
+						{
+							var o:Object = new Object();
+							o.prod = z.prod_code;
+							o.unit = z.unit as int;
+							if (o.unit < 5) o.unit=5;
+							o.sched = z.schedule;
+							trace(z.unit+":"+z.schedule);
+							products.addItem(o);
+						}
+					}
+					obx.products = products;
+					createResult.token = loadSchedulesService.create(obx);
+					byprod.selected = false;
+				}
+				else
+				{
+					currentState = "createByCompartment";
+					var obj:Object=new Object();		
+					obj.sched_type = sched_type;
+					obj.type_of_schedule = 'COMPARTMENTS';
+					obj.tripNo = new_tripno.text;
+					obj.carr = new_carrier.selectedItem.cmpy_code;
+					obj.tanker = new_tanker.selectedItem.tnkr_code;
+					//obj.date = loadDateConvert.format(curDate);
+					obj.date = new_date.isoDate;
+					obj.shift = new_shift.text;
+					obj.specInstruction = spec_ins.text;
+					obj.priority = new_priority.text;
+					obj.tankTerm = new_depot.selectedItem.term_code;
+					obj.tripExpirDteTime = ''; 
+					obj.container = this.new_container.text;
+					if (global.hasExpiry)
+						obj.tripExpirDteTime = dateConvert.format(expDate); 
+					obj.supp = new_supplier.selectedItem.cmpy_code;				
+					
+					var comp:ArrayCollection = new ArrayCollection();
+					for each(var x:Object in compArr)
+					{
+						if(x.product_code!='' && x.product_code != null)
+						{
+							var y:Object = new Object();
+							var seq:String = x.seq;
+							var regexp:RegExp = /(\d+)\s\[(\d+)\]/;
+							var arr:Array = seq.match(regexp);					
+							y.unit = x.unit;
+							y.sched = x.schedule;
+							y.cmptID = arr[1];
+							y.tlrcmpt = arr[2];
+							y.prod = x.product_code;
+							y.bay_armCd = '-1';
+							y.order = x.order_id;
+							y.delnum = x.schd_deliv_num;
+							y.soldto = x.schd_sold_to_num;
+							y.shipto = x.schd_ship_to_num;
+							comp.addItem(y);
+						}
+					}
+					obj.compartments = comp;
+					createResult.token = loadSchedulesService.create(obj);
+				}
+			}
+			
+			private function loadScheduleCreated(event:Event):void
+			{
+				// update host DOR in trip level
+				updateTripHostDorNumber();
+				
+				global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+				//currentState = 'normal';
+				//setFilters(true,true);
+			}
+			
+			public function deleteProductFromGrid(event:Event):void
+			{
+				if(comp_idx != -1)
+				{	
+					compArr[comp_idx].schedule = 0;
+				}
+			}
+			
+			private function getSelectedSupplier():int
+			{
+				var i:int=-1;
+				var ret:int=-1;
+				for each(var x:Object in new_supplier.dataProvider){
+					i+=1;
+					if(dataGrid.selectedItem.supplier_code == x.cmpy_code) ret=i;
+				}
+				return ret;
+			}
+			
+			private function getSelectedCarrier():int
+			{
+				var i:int=0;
+				var ret:int=0;
+				for each(var x:Object in new_carrier.dataProvider)
+				{
+					if(dataGrid.selectedItem.carrier_code == x.cmpy_code)
+					{
+						ret=i;
+						lookupByCarrierResult.token = this.loadSchedulesService.tankersLookupByCarrier(dataGrid.selectedItem.tnkr_code);
+					}
+					i+=1;
+				}
+				return ret;
+			}	
+			
+			private function getSelectedDrawer():int
+			{
+				var i:int=0;
+				var ret:int=0;
+				for each(var x:Object in new_drawer.dataProvider)
+				{
+					if(this.new_supplier.selectedItem.cmpy_code == x.cmpy_code) ret=i;
+					i+=1;
+				}
+				return ret;
+			}	
+			
+			private function getSelectedTanker():void
+			{
+				if (createMode == false)
+				{
+					new_tanker.selectedIndex=-1;
+					var num:int= new_tanker.dataProvider.length;
+					for(var i:int=0; i < num; i++)
+					{					
+						if(new_tanker.dataProvider[i].tnkr_code == dataGrid.selectedItem.tnkr_code)
+							new_tanker.selectedIndex=i;
+					}
+				}
+			}			
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				
+				canMake = canCreate;
+				canRepost=false;
+				canReverse=false;
+				canArchive=false;
+				prodArr.removeAll();
+				prodArr.refresh();
+				compArr.removeAll();
+				compArr.refresh();
+				loadArr.removeAll();
+				loadArr.refresh();
+				
+				
+				
+				switch(dataGrid.selectedItem.load_reverse_flag)
+				{
+					case "0":	canRepost=false;  //normal load
+						canReverse=true;
+						canArchive=true;
+						break;
+					case "1":	canRepost=true;  //reversed load
+						canReverse=false;
+						canArchive=true;
+						canMake = false;
+						break;
+					case "2":	canRepost=false; //reposted load
+						canReverse=true;
+						canArchive=true;
+						canMake = false;
+						break;
+					case "3":	canRepost=false; //archived load
+						canReverse=false;
+						canArchive=false;
+						canMake = false;
+						break;
+				}
+				
+				if (dataGrid.selectedItem.status == "A" || dataGrid.selectedItem.status == "L")
+				{
+					canRepost=false;
+					canReverse=false;
+					canArchive=false;
+				}
+				
+				if (dataGrid.selectedItem.status == "D" || dataGrid.selectedItem.status == "E") 
+					canMake = false;
+				
+				if((createMode==false) && (dataGrid.selectedIndex != -1))
+				{
+					idx=dataGrid.selectedIndex;
+					if (currentState=="normal") currentState="scheduleDetails";
+					
+					new_supplier.selectedIndex = getSelectedSupplier();
+					new_carrier.selectedIndex = getSelectedCarrier();
+					new_drawer.textInput.text = dataGrid.selectedItem.drawer_name;
+					new_date.selectedDate = convertDateToLocale( dataGrid.selectedItem.shls_caldate);
+					if (dataGrid.selectedItem.shls_exp2 != null) 
+						exp_date.selectedDate = convertDateToLocale( dataGrid.selectedItem.shls_exp2);
+					new_supplier.enabled = false;
+					new_carrier.enabled = true;
+					new_tanker.enabled = true;
+					try
+					{
+						//lookupByCarrierResult.token = tankersService.lookupByCarrier(new_carrier.selectedItem.cmpy_code);
+						lookupByCarrierResult.token = tankersService.lookupByCarrier(dataGrid.selectedItem.carrier_code);
+						getLastCompartmentProductsResult.token = loadSchedulesService.getLastCompartmentProducts(dataGrid.selectedItem.supplier_code, dataGrid.selectedItem.tnkr_code);
+						getScheduledCompartmentsResult.token = loadSchedulesService.getScheduledCompartments(dataGrid.selectedItem.supplier_code, dataGrid.selectedItem.shls_trip_no);
+						productsLookupResult.token = loadSchedulesService.productsLookup(dataGrid.selectedItem.supplier_code);
+					}
+					finally
+					{	
+						if(dataGrid.selectedItem.shlsload_load_id != "0") viewOpts = true else viewOpts=false;
+						if(dataGrid.selectedItem.shlsload_load_id && dataGrid.selectedItem.shls_ld_end) repOpts = true else repOpts=false;
+						if(dataGrid.selectedItem.shlsload_load_id != "0") printOpts = true else printOpts=false;
+						
+						if (dataGrid.selectedItem.status == "F")
+						{
+							getSchdTypeResult.token = equipmentListService.getSchdType(dataGrid.selectedItem.supplier_code, dataGrid.selectedItem.shls_trip_no);
+							//deleteBtn.enabled=canDelete;
+							//if (saveBtn != null)
+							//	saveBtn.enabled=canUpdate;
+						}
+						else
+						{
+							if (currentState !='scheduleDetails') currentState='scheduleDetails';
+							//deleteBtn.enabled=false;
+							//saveBtn.enabled=false;
+						}
+						/*
+						if (dataGrid.selectedItem.shls_ld_type == '6')
+						{
+						currentState='scheduleDetails';
+						deleteBtn.enabled=false;
+						//saveBtn.enabled=false;
+						}
+						*/							
+					}
+					callLater(function():void{
+						dataGrid.ensureCellIsVisible(dataGrid.selectedIndex);
+						
+						
+						
+						
+					});
+					
+				}
+				
+				this.itc.selected = false;
+				this.idc.selected = false;
+				
+				//if(dataGrid.selectedItem.shls_status != "NEW SCHEDULE")
+				if(dataGrid.selectedItem.status != "F")
+				{
+					new_carrier.enabled = false;
+					new_tanker.enabled = false;
+					viewTransactions.enabled=true;
+					this.viewDeliveryDetails.enabled=true;
+				}
+				else
+				{
+					if ( this.currentState == "editByCompartment" )
+					{
+						new_carrier.enabled = false;
+						new_tanker.enabled = false;
+					}
+					else
+					{
+						new_carrier.enabled = true;
+						new_tanker.enabled = true;
+					}
+					viewTransactions.enabled=false;
+					this.viewDeliveryDetails.enabled=true;
+				}
+				callLater(function():void{
+					
+					if ( employerList )
+					{
+						employerList.selectedIndex = -1;
+					}
+					if ( driverList )
+					{
+						driverList.selectedIndex = -1;
+					}
+					
+					if(dataGrid.selectedItem.hasOwnProperty("driver_company") && employerList){
+						for (var i:int = 0; i < employerList.dataProvider.length; i++) {
+							if(employerList.dataProvider.getItemAt(i).cmpy_code == dataGrid.selectedItem.driver_company){
+								employerList.selectedIndex = i;
+								driverLookupResult.token = loadSchedulesService.lookupPSNListByCmpy(employerList.selectedItem.cmpy_code);
+								break;
+							}
+						}
+					}
+					if(employerList.dataProvider.length >= 1 && employerList.selectedIndex <= 0){
+						employerList.selectedIndex = 0;
+						driverLookupResult.token = loadSchedulesService.lookupPSNListByCmpy(employerList.selectedItem.cmpy_code);
+					}
+					trace(ObjectUtil.toString(dataGrid.selectedItem));
+				});
+				
+			}
+			
+			protected function compGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				comp_idx = compGrid.selectedIndex;
+			}
+			
+			protected function getSchdTypeResult_resultHandler(event:ResultEvent):void
+			{
+				switch(getSchdTypeResult.lastResult as String)
+				{
+					case "0": if (currentState != "editByProduct") currentState = "editByProduct";
+						break;
+					case "1": if (currentState != "editByCompartment") currentState = "editByCompartment";
+						break;
+				};		
+			}
+			
+			
+			protected function unitLabelFunction(item:Object, column:GridColumn):String
+			{
+				var ret:String = 'l(amb)';
+				switch (item[column.dataField])
+				{
+					case "5": ret = 'l(amb)';
+						break;
+					case "11": ret = 'l(cor)';
+						break;
+					case "17": ret = 'kg';
+						break;
+					default: item[column.dataField]="5";
+				}
+				return ret;
+			}
+			
+			protected function cleanInvalidCharsFromText( txt:String, charset:String, maxlen:int ):String
+			{
+				var new_txt:String="";
+				var i:int;
+				var len:int;
+				var invalid:Boolean = false;
+				var errors:String="";
+				var index:int=0;
+				
+				len = txt.length;
+				for( i=0; i<len; i++ )
+				{
+					var c:String = txt.charAt(i);
+					if ( charset.indexOf(c) >= 0 )
+					{
+						new_txt += c;
+					}
+					else
+					{
+						invalid = true;
+					}
+				}
+				
+				if ( invalid == true )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','EXPECT_CHARSET_1') + " [" + txt + "] " + resourceManager.getString('default','EXPECT_CHARSET_2') + " \n";
+				}
+				
+				if ( new_txt.length > maxlen )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','MAX_LENGTH_1') + " " + maxlen + ", " + resourceManager.getString('default','MAX_LENGTH_2') + " [" + new_txt + "] " + resourceManager.getString('default','MAX_LENGTH_3') + " [";
+					new_txt = new_txt.substr(0, maxlen);
+					errors += new_txt + "]. \n";
+				}
+				
+				/* if ( errors.length>0 )
+				{
+					global.msgWarning( errors );
+				} */
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return new_txt;
+			}
+			
+			protected function compGrid_gridItemEditorSessionSaveHandler(event:GridItemEditorEvent):void
+			{
+				
+				if (event.column.dataField == 'schedule')
+				{
+					var safeFill:int = int(compArr[compGrid.selectedIndex].cmpt_capacit);
+					var enteredFill:int = int(compArr[compGrid.selectedIndex].schedule);
+					if (enteredFill > safeFill)
+					{
+						compArr[compGrid.selectedIndex].schedule=compGrid.selectedItem.cmpt_capacit;
+						global.msgWarning(resourceManager.getString('default','global.msg.safefillqty'));
+					}
+					else
+						compArr[compGrid.selectedIndex].schedule = enteredFill;	
+				}
+				
+				var alphanumeric_charset:String="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 _-";
+				if (event.column.dataField == 'schd_sold_to_num')
+				{
+					var new_sold:String;
+					new_sold = this.cleanInvalidCharsFromText( compArr[compGrid.selectedIndex].schd_sold_to_num, alphanumeric_charset, this.new_soldto.maxChars );
+					compArr[compGrid.selectedIndex].schd_sold_to_num = new_sold;
+				}
+				
+				if (event.column.dataField == 'schd_ship_to_num')
+				{
+					var new_ship:String;
+					new_ship = this.cleanInvalidCharsFromText( compArr[compGrid.selectedIndex].schd_ship_to_num, alphanumeric_charset, this.new_shipto.maxChars );
+					compArr[compGrid.selectedIndex].schd_ship_to_num = new_ship;
+				}
+				
+			}
+			
+			
+			
+			protected function goToDeleteLoadSchedule():void
+			{
+				//var dd:DeleteDialog = new DeleteDialog(doDelete,hasPassword);
+				var dd:DeleteDialog = new DeleteDialog(removeDorHistoryFromTrip,hasPassword);
+			}
+			
+			protected function removeDorHistoryFromTrip(): void
+			{
+				var tripNo:String = new_tripno.text;
+				var suppCode:String = "";
+				
+				if ( new_supplier.selectedIndex >= 0 )
+				{
+					suppCode = new_supplier.selectedItem.cmpy_code;
+				}
+				
+				removeDorHistory.service( tripNo, suppCode );
+			}
+			
+			protected function removeDorHistory_resultHandler():void
+			{
+				// delete the trip
+				doDelete();
+				
+				if ( this.removeDorHistory.dataString == "OK" )
+				{
+					//global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+					trace( "removeDorHistory............" + resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					//global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+					trace( "removeDorHistory............" + resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+			}
+			
+			protected function doDelete(): void
+			{
+				var obx:Object=new Object();			
+				obx.tripNo = dataGrid.selectedItem.shls_trip_no;
+				obx.tankTerm = dataGrid.selectedItem.shls_terminal;
+				obx.supp = dataGrid.selectedItem.supplier_code;					
+				delete_methodResult.token = loadSchedulesService.delete_method(obx);
+			}
+			
+			protected function removeResult_resultHandler(event:ResultEvent):void
+			{
+				if (event.result=="OK")
+					
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+					scheduleArr.removeItemAt(dataGrid.selectedIndex);
+					currentState="normal";
+					setFilters(true,true);
+				}	
+				else
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+			}
+			
+			protected function bolView_clickHandler2(event:MouseEvent):void
+			{
+				holdState = currentState;
+				var urlStr:String = "/phpwrapper/bill_of_lading_popup.php?";
+				urlStr += "tankTerm="+new_depot.selectedItem.term_code+"&supp="+new_supplier.selectedItem.cmpy_code+"&";
+				urlStr += "tripNo="+new_tripno.text+"&rpt_type=0&ftsize=16&forms=1&rows=1";
+				
+				this.isPrintButtonRequired = !this.isJasperBolEnabled;
+				currentState="bol";
+				frme.source=urlStr;
+			}
+			
+			protected function bolView_clickHandler(event:MouseEvent):void
+			{
+				var superModeOn:String="";
+				var dcsModeOn:String="";
+				if ( this.itc.selected == true )
+				{
+					superModeOn = "&supermode=on";
+				}
+				if ( this.idc.selected == true )
+				{
+					dcsModeOn = "&dcsmode=on";
+				}
+				
+				var urlStr:String = "/phpwrapper/bill_of_lading_popup.php?";
+				urlStr += "tankTerm="+new_depot.selectedItem.term_code+"&supp="+new_supplier.selectedItem.cmpy_code+"&";
+				urlStr += "tripNo="+new_tripno.text+"&rpt_type=0&ftsize=16&forms=1&rows=1";
+				
+				if ( this.transDocBtnIndex == 0 )
+				{
+					urlStr += "&transdoc=BOL";
+				}
+				else if ( this.transDocBtnIndex == 1 )
+				{
+					urlStr += "&transdoc=DN";
+				}
+				else
+				{
+					urlStr += "&transdoc=BOL_DN";
+				}
+				urlStr += superModeOn;
+				urlStr += dcsModeOn;
+				
+				var viewService:HTTPService = new HTTPService();
+				viewService.url = urlStr;
+				viewService.resultFormat="text";
+				viewService.method="POST";
+				viewService.addEventListener(FaultEvent.FAULT,onBolViewFault);
+				viewService.addEventListener(ResultEvent.RESULT,onBolViewResult);
+				
+				global.msgWarning(resourceManager.getString('default','LOADSCHD.MESSAGE.DOC_LOADING'));
+				//processingAnimation = new BusyIndicator();
+				//processingAnimation.width = processingAnimation.height = 80;
+				PopUpManager.addPopUp(processingAnimation, this, true);
+				PopUpManager.centerPopUp(processingAnimation);
+				
+				viewService.showBusyCursor = true;
+				
+				viewService.send();
+				
+				isCancelLoad = false;
+			}
+			
+			protected function onBolViewFault(event:FaultEvent):void
+			{
+				PopUpManager.removePopUp(processingAnimation);
+				
+				global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.FAIL_VIEW_BOL'));
+				refreshCancelLoadEnabled();
+			}
+			
+			protected function onBolViewResult(event:ResultEvent):void
+			{
+				PopUpManager.removePopUp(processingAnimation);
+				
+				global.msgWarning(resourceManager.getString('default','LOADSCHD.MESSAGE.DOC_LOADED'));
+				holdState = currentState;
+				var urlStr:String = "/phpwrapper/temp.php";
+				
+				this.isPrintButtonRequired = !this.isJasperBolEnabled;
+				currentState="bol";
+				frme.source="/phpwrapper/temp1.html";
+				frme.source=urlStr;
+			}
+
+			
+			protected function bolExport_clickHandler(event:MouseEvent):void
+			{
+				var urlStr:String = "/phpwrapper/bill_of_lading_popup.php?";
+				urlStr += "tankTerm="+new_depot.selectedItem.term_code+"&supp="+new_supplier.selectedItem.cmpy_code+"&";
+				urlStr += "tripNo="+new_tripno.text+"&rpt_type=0&ftsize=16&forms=1&rows=1";
+				
+				var viewService:HTTPService = new HTTPService();
+				viewService.url = urlStr;
+				viewService.resultFormat="text";
+				viewService.method="POST";
+				viewService.addEventListener(FaultEvent.FAULT,onBolExportFault);
+				viewService.addEventListener(ResultEvent.RESULT,onBolExportResult);
+				viewService.send();
+				
+				isCancelLoad = false;
+			}
+			
+			protected function bolExport_clickHandler2(event:MouseEvent):void
+			{
+				trace( "................................................", frme.loaderInfo.contentType, frme.loaderInfo.content.toString(), frme.loaderInfo.content.loaderInfo.bytesTotal);
+				
+				var f:FileReference = new FileReference();
+				f.save( "", "BOL_"+String(new_tripno.text)+".pdf" );
+			}
+			
+			protected function onBolExportFault(event:FaultEvent):void
+			{
+				global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.FAIL_EXPORT_BOL'));
+				refreshCancelLoadEnabled();
+			}
+			
+			public function cancelExport():void
+			{
+				;
+			}
+			
+			public function doExportPDF():void
+			{
+				var f:FileReference = new FileReference();
+				var pdfContents:ByteArray;
+				var ed:ExportData=new ExportData();
+				
+				var bol:String=_bolHtml;
+				var start:int = bol.indexOf( "<pre style=\"font-size:16px;\">" ) + String("<pre style=\"font-size:16px;\">").length;
+				var end:int = bol.indexOf( "</pre></td>" );
+				
+				bol = bol.substring( start, end );
+				
+				pdfContents = ed.getPDFTextFile( bol );
+				f.save( pdfContents, "BOL_"+String(new_tripno.text)+".pdf" );
+				
+				repOpts=true;
+				reloadSelectedRecord();
+			}
+			
+			protected function onBolExportResult(event:ResultEvent):void
+			{
+				_bolHtml = event.result as String;
+				
+				var confirmReport:ActionDialog;
+				confirmReport = new ActionDialog( doExportPDF, cancelExport, "BOL Data is ready. Confirm to save as PDF!" );
+			}
+			
+			protected function bolPrint_clickHandler(event:MouseEvent):void
+			{
+				var superModeOn:String="";
+				var dcsModeOn:String="";
+				if ( this.itc.selected == true )
+				{
+					superModeOn = "&supermode=on";
+				}
+				if ( this.idc.selected == true )
+				{
+					dcsModeOn = "&dcsmode=on";
+				}
+				
+				// disable the print button
+				this.btn_bol_print.enabled = false;
+				
+				// call printing service
+				var urlStr:String = "/phpwrapper/bill_of_lading.php?";
+				urlStr += "tankTerm="+new_depot.selectedItem.term_code+"&supp="+new_supplier.selectedItem.cmpy_code+"&";
+				urlStr += "tripNo="+new_tripno.text+"&tanker="+dataGrid.selectedItem.tnkr_code+"&op=18";
+				
+				if ( this.transDocBtnIndex == 0 )
+				{
+					urlStr += "&transdoc=BOL";
+				}
+				else if ( this.transDocBtnIndex == 1 )
+				{
+					urlStr += "&transdoc=DN";
+				}
+				else
+				{
+					urlStr += "&transdoc=BOL_DN";
+				}
+				urlStr += superModeOn;
+				urlStr += dcsModeOn;
+				
+				var viewService:HTTPService = new HTTPService();
+				viewService.url = urlStr;
+				viewService.resultFormat="text";
+				viewService.method="POST";
+				viewService.addEventListener(FaultEvent.FAULT,onBolFault);
+				viewService.addEventListener(ResultEvent.RESULT,onBolResult);
+				viewService.send();
+				
+				isCancelLoad = false;
+			}
+			
+			protected function onBolFault(event:FaultEvent):void
+			{
+				global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.FAIL_PRINT_BOL'));
+				refreshCancelLoadEnabled();
+				
+				this.btn_bol_print.enabled = this.printOpts;
+			}
+			
+			protected function onBolResult(event:ResultEvent):void
+			{
+				var ss:String= event.result as String;
+				var i:int =	ss.search("var op=28");
+				if (i > 0)
+				{
+					global.msgSuccess(resourceManager.getString('default','LOADSCHD.MESSAGE.SUCC_PRINT_BOL'));
+					repOpts=true;
+					reloadSelectedRecord();
+				}
+				else{
+					global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.FAIL_PRINT_BOL'));	
+					refreshCancelLoadEnabled();
+				}
+				
+				this.btn_bol_print.enabled = this.printOpts;
+			}
+			
+			protected function onDriverInstructionlFault(event:FaultEvent):void
+			{
+				global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.FAIL_PRINT_DLI'));
+				refreshCancelLoadEnabled();
+			}
+			
+			protected function onDriverInstructionlResult(event:ResultEvent):void
+			{
+				var ss:String= event.result as String;
+				var i:int =	ss.search("var op=28");
+				if (i > 0)
+				{
+					global.msgSuccess(resourceManager.getString('default','LOADSCHD.MESSAGE.SUCC_PRINT_DLI'));
+					repOpts=true;
+					reloadSelectedRecord();
+				}
+				else{
+					global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.FAIL_PRINT_DLI'));	
+					refreshCancelLoadEnabled();
+				}
+			}
+			
+			protected function loadView_clickHandler2(event:MouseEvent):void
+			{
+				holdState = currentState;
+				var urlStr:String = "/phpwrapper/bill_of_lading_popup.php?";
+				urlStr += "tankTerm="+new_depot.selectedItem.term_code+"&supp="+new_supplier.selectedItem.cmpy_code+"&";
+				urlStr += "tripNo="+new_tripno.text+"&rpt_type=1&ftsize=15&forms=1&rows=1";
+				currentState="bol";
+				frme.source=urlStr;
+			}
+			
+			protected function loadView_clickHandler(event:MouseEvent):void
+			{
+				var superModeOn:String="";
+				var dcsModeOn:String="";
+				if ( this.itc.selected == true )
+				{
+					superModeOn = "&supermode=on";
+				}
+				if ( this.idc.selected == true )
+				{
+					dcsModeOn = "&dcsmode=on";
+				}
+				
+				var urlStr:String = "/phpwrapper/bill_of_lading_popup.php?";
+				urlStr += "tankTerm="+new_depot.selectedItem.term_code+"&supp="+new_supplier.selectedItem.cmpy_code+"&";
+				urlStr += "tripNo="+new_tripno.text+"&rpt_type=1&ftsize=15&forms=1&rows=1";
+				urlStr += superModeOn;
+				urlStr += dcsModeOn;
+				
+				var viewService:HTTPService = new HTTPService();
+				viewService.url = urlStr;
+				viewService.resultFormat="text";
+				viewService.method="POST";
+				viewService.addEventListener(FaultEvent.FAULT,onLoadViewFault);
+				viewService.addEventListener(ResultEvent.RESULT,onLoadViewResult);
+				
+				global.msgWarning(resourceManager.getString('default','LOADSCHD.MESSAGE.DOC_LOADING'));
+				//processingAnimation = new BusyIndicator();
+				//processingAnimation.width = processingAnimation.height = 80;
+				PopUpManager.addPopUp(processingAnimation, this, true);
+				PopUpManager.centerPopUp(processingAnimation);
+				
+				viewService.showBusyCursor = true;
+				
+				viewService.send();
+				
+				isCancelLoad = false;
+			}
+			
+			protected function onLoadViewFault(event:FaultEvent):void
+			{
+				PopUpManager.removePopUp(processingAnimation);
+				
+				global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.FAIL_VIEW_LDRPT'));
+				refreshCancelLoadEnabled();
+			}
+			
+			protected function onLoadViewResult(event:ResultEvent):void
+			{
+				PopUpManager.removePopUp(processingAnimation);
+				
+				global.msgWarning(resourceManager.getString('default','LOADSCHD.MESSAGE.DOC_LOADED'));
+				holdState = currentState;
+				var urlStr:String = "/phpwrapper/temp.php";
+				
+				this.isPrintButtonRequired = true;
+				currentState="bol";
+				frme.source="/phpwrapper/temp1.html";
+				frme.source=urlStr;
+			}
+			
+			protected function loadPrint_clickHandler(event:MouseEvent):void
+			{
+				var superModeOn:String="";
+				var dcsModeOn:String="";
+				if ( this.itc.selected == true )
+				{
+					superModeOn = "&supermode=on";
+				}
+				if ( this.idc.selected == true )
+				{
+					dcsModeOn = "&dcsmode=on";
+				}
+				
+				var urlStr:String = "/phpwrapper/bill_of_lading.php?&rpt_type=1&";
+				urlStr += "tankTerm="+new_depot.selectedItem.term_code+"&supp="+new_supplier.selectedItem.cmpy_code+"&";
+				urlStr += "tripNo="+new_tripno.text+"&tanker="+dataGrid.selectedItem.tnkr_code+"&op=18";
+				urlStr += superModeOn;
+				urlStr += dcsModeOn;
+				
+				var viewService:HTTPService = new HTTPService();
+				viewService.url = urlStr;
+				viewService.resultFormat="text";
+				viewService.method="POST";
+				viewService.addEventListener(FaultEvent.FAULT,onLoadPrintFault);
+				viewService.addEventListener(ResultEvent.RESULT,onLoadPrintResult);
+				viewService.send();
+				
+				isCancelLoad = false;
+			}
+			
+			protected function onLoadPrintFault(event:FaultEvent):void
+			{
+				global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.FAIL_PRINT_LDRPT'));
+				refreshCancelLoadEnabled();
+			}
+			
+			protected function onLoadPrintResult(event:ResultEvent):void
+			{
+				var ss:String= event.result as String;
+				var i:int =	ss.search("var op=28");
+				if (i > 0)
+				{
+					global.msgSuccess(resourceManager.getString('default','LOADSCHD.MESSAGE.SUCC_PRINT_LDRPT'));
+					//repOpts=true;
+					//makeTransClosed();
+				}
+				else{
+					global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.FAIL_PRINT_LDRPT'));	
+					refreshCancelLoadEnabled();
+				}
+			}
+			
+			protected function getSeqNumResult_resultHandler(event:ResultEvent):void
+			{
+				new_tripno.enabled = true;
+				new_tripno.text=getSeqNumResult.lastResult;
+			}
+			
+			protected function updateResult_resultHandler(event:ResultEvent):void
+			{
+				if (event.result=="OK")
+				{
+					// update host DOR in trip level
+					updateTripHostDorNumber();
+					
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+					//currentState="normal";
+					//setFilters(true,true);
+				}	
+				else
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+			}
+			
+			protected function reloadSelectedRecord():void{
+				if(dataGrid.selectedItem){
+					CursorManager.setBusyCursor();
+					nccall("LoadScheduleService.getLoad", new Responder(function(o:Object):void{
+						for (var i:int = 0; i < scheduleArr.length; i++){
+							var co:Object = scheduleArr.getItemAt(i);
+							if(o.shls_trip_no == co.shls_trip_no && 
+								o.supplier_code == co.supplier_code ){
+								co = o;
+								scheduleArr.setItemAt(o,i);
+								scheduleArr.refresh();
+								dataGrid.dataProvider = scheduleArr;
+								dataGrid.selectedIndex = i;
+								dataGrid_clickHandler(null);
+							}
+						}
+						CursorManager.removeBusyCursor();
+					}), dataGrid.selectedItem.shls_trip_no, dataGrid.selectedItem.supplier_code);
+				}
+			}
+			
+			protected function tripNo_keyUpHandler(event:KeyboardEvent):void
+			{
+				var types:Object = new Object();
+				var fields:Object = new Object();
+				var keyCode:int=0;
+				
+				if (event == null)
+				{
+					keyCode=0;
+					freeze=false;
+					createMode=true;
+					currentPage=1;
+					nccall('LoadScheduleService.getPaged',getData,null,null,null,currentOrders,currentPage,pageBy);
+				}
+				else
+				{
+					keyCode=event.keyCode;
+				}
+				
+				if (keyCode==13)
+				{
+					fields["shls_trip_no"]=(event.currentTarget as DKI_ValidatorInput).text;
+					types["shls_trip_no"]="STRING";				
+					freeze=false;
+					createMode=true;
+					currentFields = fields;
+					currentTypes = types;
+					currentPage=1;
+					nccall('LoadScheduleService.getPaged',getData,currentFields,currentTypes,currentSorts,currentOrders,currentPage,pageBy);
+				}
+				
+			}
+			
+			protected function orderNo_keyUpHandler(event:KeyboardEvent):void
+			{
+				var types:Object = new Object();
+				var fields:Object = new Object();
+				var keyCode:int=0;
+				var currentRenderer:IGridItemRenderer;
+				
+				if (event == null)
+				{
+					keyCode=0;
+					currentFields = fields;
+					currentTypes = types;
+					freeze=false;
+					createMode=true;
+					currentPage=1;
+					nccall('LoadScheduleService.getPaged',getData,null,null,null,currentOrders,currentPage,pageBy);
+				}
+				else
+				{
+					keyCode=event.keyCode;
+				}
+				
+				if (keyCode==13)
+				{
+					fields["ORDER_CUST_ORDNO"]=(event.currentTarget as DKI_ValidatorInput).text;
+					types["ORDER_CUST_ORDNO"]="STRING";
+					freeze=false;
+					createMode=true;
+					currentFields = fields;
+					currentTypes = types;
+					currentPage=1;
+					nccall('LoadScheduleService.getPaged',getData,currentFields,currentTypes,currentSorts,currentOrders,currentPage,pageBy);
+				}
+			}
+			
+			protected function productsLookupResult_resultHandler(event:ResultEvent):void
+			{
+				prodArr.removeAll();
+				prodGrid.dataProvider=null;	
+				for (var i:int=0; i < event.result.length; i++)
+				{
+					var o:Object = new Object();
+					o.prod_code = event.result[i].prod_code;
+					o.prod_name = event.result[i].prod_name;
+					o.unit = "5";
+					o.index = 0;
+					o.schedule = "";
+					o.qty_loaded = "";
+					prodArr.addItem(o);
+				}
+				prodArr.refresh();
+				prodGrid.dataProvider=prodArr;
+				if(dataGrid.selectedItem != null && createMode==false)
+				{
+					getDetailsByProductsResult.token = loadSchedulesService.getDetailsByProducts(dataGrid.selectedItem.supplier_code, dataGrid.selectedItem.shls_trip_no);
+				}
+				
+			}
+			
+			protected function getDetailsByProductsResult_resultHandler(event:ResultEvent):void
+			{
+				prodArr.removeAll();
+				for each(var z:Object in productsLookupResult.lastResult)
+				{
+					var o:Object = new Object();
+					o.prod_code = z.prod_code;
+					o.prod_name = z.prod_name;
+					o.unit = 5;
+					o.schedule = "";
+					o.qty_loaded = "";
+					o.qty_preload = "";
+					for each(var obj:Object in getDetailsByProductsResult.lastResult)
+					if(obj.prod_code==o.prod_code)
+					{
+						o.unit = obj.unit_code;
+						o.schedule=obj.qty_scheduled;
+						if (obj.qty_preloaded != 0) o.qty_preload=obj.qty_preloaded;
+						
+						/* 						switch(o.unit)
+						{
+						case 5: o.qty_loaded = obj.qty_amb;
+						break;
+						case 11: o.qty_loaded = obj.qty_loaded;
+						break;
+						case 17: o.qty_loaded = obj.qty_kg;
+						break;
+						default: o.qty_loaded = obj.qty_loaded;
+						break;
+						} */
+						o.qty_loaded = obj.qty_loaded;
+						
+					}
+					prodArr.addItem(o);
+				}
+			}
+			
+			
+			protected function getScheduledCompartmentsResult_resultHandler(event:ResultEvent):void
+			{
+				getDetailsByCompartmentResult.token = loadSchedulesService.getDetailsByCompartments(dataGrid.selectedItem.supplier_code,dataGrid.selectedItem.shls_trip_no);
+				
+			}
+			
+			protected function getDetailsByCompartmentResult_resultHandler(event:ResultEvent):void
+			{
+				loadArr.removeAll();
+				for each(var obj:Object in getScheduledCompartmentsResult.lastResult)
+				{
+					var comp:Array = new Array();
+					comp.seq = obj.tnkr_cmpt_no;
+					comp.etyp_title = obj.eqpt_code;
+					comp.unit = obj.cmpt_units;
+					comp.order_id = obj.order_cust_ordno;
+					comp.cmpt_capacit = obj.cmpt_capacit;
+					comp.schedule = obj.allowed_qty;
+					comp.product_name = obj.prod_name;
+					comp.product_code = obj.prod_code;
+					comp.qty_loaded = "";
+					comp.qty_preload= "";
+					for each(var ob:Object in getDetailsByCompartmentResult.lastResult)
+					{
+						if (ob.compartment == comp.seq)
+						{
+							if (ob.qty_preload != null && ob.qty_preload != '0')
+							{
+								trace("hello world");
+								comp.qty_preload=ob.qty_preload;
+							}
+							
+							/* 							switch(ob.unit_code)
+							{
+							case "5": comp.qty_loaded = ob.qty_amb;
+							break;
+							case "11": comp.qty_loaded = ob.qty_loaded;
+							break;
+							case "17": comp.qty_loaded = ob.qty_kg;
+							break;
+							default: comp.qty_loaded = ob.qty_loaded;
+							break;
+							} */
+							comp.qty_loaded = ob.qty_loaded;
+							
+							comp.schd_deliv_num=ob.schd_deliv_num;
+							comp.schd_ship_to_num=ob.schd_ship_to_num;
+							comp.schd_sold_to_num=ob.schd_sold_to_num;
+							
+						}
+					}
+					loadArr.addItem(comp);
+				}
+			}
+			
+			protected function driverView_clickHandler(event:MouseEvent):void
+			{
+				holdState = currentState;
+				var urlStr:String = "/phpwrapper/drv_instr_popup.php?";
+				urlStr += "tankTerm="+new_depot.selectedItem.term_code+"&supp="+new_supplier.selectedItem.cmpy_code+"&";
+				urlStr += "tripNo="+new_tripno.text+"&rpt_type=0&ftsize=16&forms=1&rows=1";
+				
+				this.isPrintButtonRequired = true;
+				currentState="bol";
+				frme.source=urlStr;
+			}
+			
+			protected function driverPrint_clickHandler(event:MouseEvent):void
+			{
+				var urlStr:String = "/phpwrapper/drv_instr.php?";
+				urlStr += "tankTerm="+new_depot.selectedItem.term_code+"&supp="+new_supplier.selectedItem.cmpy_code+"&";
+				urlStr += "tripNo="+new_tripno.text+"&op=18";
+				var viewService:HTTPService = new HTTPService();
+				viewService.url = urlStr;
+				viewService.resultFormat="text";
+				viewService.method="POST";
+				viewService.addEventListener(FaultEvent.FAULT,onDriverInstructionlFault);
+				viewService.addEventListener(ResultEvent.RESULT,onDriverInstructionlResult);
+				viewService.send();
+			}
+			
+			protected function new_drawer_changeHandler(event:IndexChangeEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function create_enterStateHandler(event:FlexEvent):void
+			{
+				
+				
+			}
+			
+			protected function checkTripNumberResult_resultHandler(event:ResultEvent):void
+			{
+				if (event.result=="OK")
+				{
+					this.createMode=false;
+					createLoadSchedule();
+				}
+				else
+				{
+					global.msgWarning(resourceManager.getString('default','global.msg.tripserror'));
+					new_tripno.setFocus();
+				}
+				
+			}
+			
+			protected function dataGrid_clickHandler(event:Event):void
+			{
+				if (dataGrid.selectedIndex != -1)
+				{
+					if (dataGrid.selectedItem.shls_ld_type=='6') 
+					{
+						loadStr = resourceManager.getString('default','datagrid.headercaption.unloaded');
+					}
+					else
+					{
+						loadStr = resourceManager.getString('default','datagrid.headercaption.loaded');
+					}
+						
+					dataGrid_selectionChangeHandler(null);
+					
+					if (dataGrid.selectedItem.cmpy_schd_rev_repost=="Y") 
+					{
+						canRepost = true; 
+					}
+					else 
+					{
+						canRepost = false;
+					}
+					if (dataGrid.selectedItem.cmpy_schd_archive=="Y") 
+					{
+						canArchive = true; 
+					}
+					else 
+					{
+						canArchive = false;
+					}
+					refreshCancelLoadEnabled();
+					
+					this.transDocBtnIndex = 0;
+					
+					if ( _formButtonSettingsString.length > 0 )
+					{
+						global.adjustFormButtonSettings( _formButtonSettingsString.substr(1), this );
+					}
+				}	
+			}
+			
+			protected function refreshCancelLoadEnabled():void{
+				//if (dataGrid.selectedItem.shls_status=="ACTIVE" || dataGrid.selectedItem.shls_status=="NEW SCHEDULE") 
+				if (dataGrid.selectedItem.status=="A" || dataGrid.selectedItem.status=="F") 
+					isCancelLoad=true else isCancelLoad=false;
+			}
+			
+			protected function view_detailsHandler(event:FlexEvent):void
+			{
+				new_tripno.enabled=false;
+				new_supplier.enabled=false;
+				new_carrier.enabled=false;
+				new_drawer.enabled=false;
+				new_tanker.enabled=false; 
+			}
+			
+			protected function supplierLabel(item:Object):String
+			{
+				trace( "................supplierLabel.................", item );
+				if ( item!=null && item.hasOwnProperty("cmpy_code") && item.hasOwnProperty("cmpy_name") )
+				{
+					return item.cmpy_code+' ['+item.cmpy_name+']';
+				}
+				else
+				{
+					return String(item);
+				}
+				
+				
+			}
+			
+			protected function getPagedResult_resultHandler(event:ResultEvent):void
+			{
+				dataGrid.selectedIndex=0;
+				if (isReturned)
+				{
+					isReturned = false;
+					currentState="scheduleDetails";
+					dataGrid_clickHandler(null);
+				}
+			}
+			
+			protected function setTimeStamp(item:Object, column:GridColumn):String
+			{
+				var date:Date = new Date();
+				var str:String=item.shls_ld_start;
+				if (str==null)
+				{	
+					return '';
+				}	
+				else
+				{	
+					date = DateField.stringToDate(str,"YYYY-MM-DD");
+					return dateFormatter.format(date)+str.substr(10,9);
+				}
+			}
+			protected function setTimeStampEnd(item:Object, column:GridColumn):String
+			{
+				var date:Date = new Date();
+				var str:String=item.shls_ld_end;
+				if (str==null)
+				{	
+					return '';
+				}	
+				else
+				{	
+					date = DateField.stringToDate(str,"YYYY-MM-DD");
+					return dateFormatter.format(date)+str.substr(10,9);
+				}
+			}
+			
+			protected function setTimeStamp4(item:Object, column:GridColumn):String
+			{
+				var date:Date = new Date();
+				var str:String=item.shls_caldate;
+				if (str==null)
+				{	
+					return '';
+				}	
+				else
+				{	
+					date = DateField.stringToDate(str,"YYYY-MM-DD");
+					return dateFormatter.format(date)+str.substr(10,6);
+				}
+			}
+			protected function setTimeStamp3(item:Object, column:GridColumn):String
+			{
+				var date:Date = new Date();
+				var str:String=item.shls_exp2;
+				if (str==null)
+				{	
+					return '';
+				}	
+				else
+				{	
+					date = DateField.stringToDate(str,"YYYY-MM-DD");
+					return dateFormatter.format(date)+str.substr(10,6);
+				}
+			}
+			protected function setTimeStamp2(item:Object, column:GridColumn):String
+			{
+				var date:Date = new Date();
+				var str:String=item.last_chg_time;
+				if (str==null)
+				{	
+					return '';
+				}	
+				else
+				{	
+					date = DateField.stringToDate(str,"YYYY-MM-DD");
+					return dateFormatter.format(date)+str.substr(10,9);
+				}
+			}
+			
+			protected function tag_clickHandler(event:MouseEvent):void
+			{
+				if (new_tanker.selectedIndex > -1)
+				{
+					var card:AdhocKeyDlg = new AdhocKeyDlg();
+					PopUpManager.addPopUp(card, (FlexGlobals.topLevelApplication as DisplayObject), true );
+					PopUpManager.centerPopUp(card);
+					card.tanker = new_tanker.dataProvider[new_tanker.selectedIndex].tnkr_code;
+					card.key_trip_no = this.new_tripno.text;
+					card.key_supp_code = this.new_supplier.selectedItem.cmpy_code;
+					card.key_supp_name = this.new_supplier.selectedItem.cmpy_name;
+					card.key_carr_code = this.new_carrier.selectedItem.cmpy_code;
+					card.key_carr_name =this.new_carrier.selectedItem.cmpy_name;
+					card.key_tanker = card.tanker;
+					card.callback=updateLoadSchedule;
+					card.clear_button_clickHandler(null);
+				}
+			}
+			
+			protected function hgroup1_creationCompleteHandler(event:FlexEvent):void
+			{
+				//event.currentTarget.enabled = global.app.setUserPriv("42");
+			}
+			
+			public function convertDateToLocale(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				var hr:int = dt_date.hours;
+				var mn:int = dt_date.minutes;
+				var sc:int = dt_date.seconds;
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					hr = Number(dt.substr(11,2));
+					mn = Number(dt.substr(14,2));
+					sc = Number(dt.substr(17,2));
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+				}
+				dt_date.hours=hr;
+				dt_date.minutes=mn;
+				dt_date.seconds=sc;
+				return dt_date;
+			}
+			
+			protected function reverseTrans():void
+			{
+				confirmDlg = new ConfirmDialog(callReverse,'Confirm Schedule Reversal');
+			}
+			
+			protected function archiveTrans():void
+			{
+				confirmDlg = new ConfirmDialog(callArchive,'Confirm schedule is to be archived');
+			}
+			
+			protected function callArchive(): void
+			{
+				reverseTransactions.token = transactionsService.reverseTransactions(dataGrid.selectedItem.supplier_code,dataGrid.selectedItem.shls_trip_no,true,global.user);
+			}
+			
+			protected function callReverse(): void
+			{
+				reverseTransactions.token = transactionsService.reverseTransactions(dataGrid.selectedItem.supplier_code,dataGrid.selectedItem.shls_trip_no,false,global.user);
+			}
+			
+			protected function reverseTransactions_resultHandler(event:ResultEvent):void
+			{
+				if (event.message.body.result_code == 0)
+				{
+					global.msgSuccess(event.message.body.result_string);
+					reloadSelectedRecord();
+				}
+				else
+					global.msgWarning(event.message.body.result_string);
+			}
+			
+			protected function reverseTransactions_faultHandler(event:FaultEvent):void
+			{
+				global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.UNKNOWN_SERVER_ERROR'));
+			}
+			
+			protected function showTransactions(event:MouseEvent): void
+			{
+				transactionPopup.openDialog();
+				transactionPopup.setState('view');
+				var params:Object = new Object();
+				params["supplier"] = dataGrid.selectedItem.supplier_code;
+				params["trip"] = dataGrid.selectedItem.shls_trip_no;
+				params["drawer"] = dataGrid.selectedItem.drawer_code;
+				params["carrier"] = dataGrid.selectedItem.carrier_code;
+				params["driver"] = dataGrid.selectedItem.driver;
+				params["title"] = "Transactions(view)";
+				params["status"] = dataGrid.selectedItem.status;
+				transactionPopup.setParams(params);
+			}
+			
+			
+			protected function showRepost(event:MouseEvent):void
+			{
+				transactionPopup.openDialog();
+				transactionPopup.setState('edit');
+				var params:Object = new Object();
+				params["supplier"] = dataGrid.selectedItem.supplier_code;
+				params["trip"] = dataGrid.selectedItem.shls_trip_no;
+				params["drawer"] = dataGrid.selectedItem.drawer_code;
+				params["carrier"] = dataGrid.selectedItem.carrier_code;
+				params["driver"] = dataGrid.selectedItem.driver;
+				params["title"] = "Manual Transactions(repost)";
+				transactionPopup.setParams(params);
+				transactionPopup.callback = reloadSelectedRecord;
+			}
+			
+			protected function RepostSchedule(event:MouseEvent): void
+			{
+				repostPopup.openDialog();
+				var params:Object = new Object();
+				params["supplier"] = dataGrid.selectedItem.supplier_code;
+				params["trip"] = dataGrid.selectedItem.shls_trip_no;
+				params["drawer"] = dataGrid.selectedItem.drawer_code;
+				params["title"] = "Repost Trip Transactions";
+				repostPopup.setParams(params);
+				repostPopup.callback = reloadSelectedRecord;
+			}
+			
+			public function goToMakeTransaction(value:int=0):void
+			{
+				makeTransactionPopup.popupView.controller.canCreate = canCreate;
+				makeTransactionPopup.popupView.controller.canUpdate = canUpdate;
+				makeTransactionPopup.popupView.controller.canDelete = canDelete;
+				makeTransactionPopup.popupView.controller.hasPassword = hasPassword;
+				
+				// Child window scroll control
+				makeTransactionPopup.parentWidth = this.width;
+				makeTransactionPopup.parentHeight = this.height;
+				
+				makeTransactionPopup.openDialog();
+				
+				var params:Object = new Object();
+				params["supplier"] = dataGrid.selectedItem.supplier_code;
+				params["trip"] = dataGrid.selectedItem.shls_trip_no;
+				if (value==0)
+				{
+					params["repost"] = false;
+					params["title"] = "Create Transaction";
+				}
+				else
+				{	
+					params["repost"] = true;
+					params["title"] = "Repost Transaction";
+				}
+				params["transType"] = 0; //"N";
+				makeTransactionPopup.callback = reloadSelectedRecord;
+				makeTransactionPopup.setFilters( params );
+			}
+			
+			public function closeDialogHandler():void
+			{
+			}
+			
+			public function goToDorHistory(value:int=0):void
+			{
+				
+				this.dorHistoryPopup.popupTitle = resourceManager.getString('default','m_dorhistory');
+				this.dorHistoryPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+				
+				this.dorHistoryPopup.parentWidth = this.width*0.8;
+				this.dorHistoryPopup.parentHeight = this.height*0.8;
+				
+				trace ( "*******************Pop up a screen to manage DOR history!");
+				dorHistoryPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				params["dh_supp_code"] = dataGrid.selectedItem.supplier_code;
+				params["dh_trip_no"] = dataGrid.selectedItem.shls_trip_no;
+				
+				dorHistoryPopup.setFilters( params ); 
+				
+			}
+			
+
+			
+			protected function CSVOutHandler(event:MouseEvent):void
+			{
+				genCSV();
+				//f.save(CSVOut, 'loadschedule.csv');
+			}
+			
+			
+			public function initFilters( params:*=false ): void
+			{
+				if ( params == false )
+				{
+					return;
+				}
+				
+				//				currentState = "editByProduct";
+				currentState = "normal";
+				
+				trace ("...............................in setFilters");
+				tools.pr( params);
+				
+				this.orderNo.text 					= tools.getObjAttribute( params, "order_cust_no", "" );
+				this.tripNo.text 					= tools.getObjAttribute( params, "trip", "" );
+				this.supplierList.selectedIndex		= -1; //tools.getObjAttribute( params, "supplier", -1 );
+				this.LoadStatus.selectedIndex		= -1;
+				this.carrierList.selectedIndex		= -1;
+				this.tankerList.selectedIndex		= -1;
+				this.date_from.dateText.text		= "";
+				
+				// need to add this line otherwise the paging never starts
+				interruptor=false;
+				
+				var fields:Object=new Object();
+				var types:Object=new Object();
+				fields["ORDER_CUST_ORDNO"]=orderNo.text;
+				types["ORDER_CUST_ORDNO"]="NUMBER";
+				if ( this.tripNo.text.length > 0 )
+				{
+					fields["SHLS_TRIP_NO"]=tripNo.text;
+					types["SHLS_TRIP_NO"]="STRING";
+				}
+				freeze=false;
+				createMode=false;
+				currentFields = fields;
+				currentTypes = types;
+				currentPage=1;
+				
+				nccall('LoadScheduleService.getPaged',getData,currentFields,currentTypes,currentSorts,currentOrders,currentPage,pageBy);
+			}
+			
+			public function closeBol(event:MouseEvent):void
+			{
+				//currentState = 'scheduleDetails';
+				repOpts=true;
+				reloadSelectedRecord()
+			}
+			
+			
+			protected function genCSV(): void
+			{
+				CSVOut ='';
+				for (var i:int=0; i < dataGrid.columnsLength;i++)
+				{
+					if ((dataGrid.columns['source'][i] as GridColumn).visible==true)
+					{	
+						CSVOut += '"'+(dataGrid.columns['source'][i] as GridColumn).headerText+'"';
+						if (i != dataGrid.columnsLength-1) CSVOut += ','
+					}	
+				}
+				
+				CSVOut += '\n';
+				
+				for (var k:int=0; k < scheduleArr.length; k++)
+				{
+					for (var j:int=0; j < dataGrid.columnsLength; j++)
+					{
+						if ((dataGrid.columns['source'][j] as GridColumn).visible==true)
+						{
+							field =(dataGrid.columns['source'][j] as GridColumn).dataField;
+							if (scheduleArr[k][field] != null)
+								CSVOut += '"'+scheduleArr[k][field]+'"'
+							else
+								CSVOut += '" "';
+							if (j != dataGrid.columnsLength-1) CSVOut += ',';
+						}
+					}
+					CSVOut += '\n';
+					trace(k);
+				}
+				f.save(CSVOut, 'loadschedule.csv');
+			}
+			
+			protected function skinnablecontainer1_clickHandler(event:MouseEvent):void
+			{
+				interruptor=true;
+				trace("WTF >>>>>>>>>>");
+			}
+			
+			protected function doBOLFilter(): void
+			{
+				/* 				//this.tripNo.text=dataGrid.selectedItem.shls_trip_no;
+				this.tripNo.text=this.new_tripno.text;
+				setFilters(true);
+				dataGrid.selectedIndex=0; */
+			}
+			
+			protected function cancelLoad(event:MouseEvent):void
+			{
+				cancelLoadService.url = "/phpwrapper/load_spec_cancel.php?tripNo="+dataGrid.selectedItem.shls_trip_no+"&supp="+dataGrid.selectedItem.supplier_code+"&per_code="+global.user;
+				cancelLoadService.resultFormat="e4x";
+				cancelLoadService.method="POST";
+				cancelLoadService.addEventListener(FaultEvent.FAULT,onFault);
+				cancelLoadService.addEventListener(ResultEvent.RESULT,onResult);
+				//cancelLoadService.send(param);
+				cancelLoadService.send();
+				isCancelLoad = false;
+			}
+			
+			protected function onFault(event:FaultEvent):void
+			{
+				global.msgFail(resourceManager.getString('default','LOADSCHD.MESSAGE.SYS_CONN_ERROR'));
+				cancelLoadService.removeEventListener(FaultEvent.FAULT,onFault);
+				cancelLoadService.removeEventListener(ResultEvent.RESULT,onResult);
+				refreshCancelLoadEnabled();
+			}
+			
+			protected function onResult(event:ResultEvent):void
+			{
+				if ((event.result as XML).result == "0")
+					global.msgSuccess(resourceManager.getString('default','LOADSCHD.MESSAGE.SUCC_CANCEL_LOAD'))
+				else
+					global.msgFail((event.result as XML).msg);	
+				cancelLoadService.removeEventListener(FaultEvent.FAULT,onFault);
+				cancelLoadService.removeEventListener(ResultEvent.RESULT,onResult);
+				refreshCancelLoadEnabled();
+			}
+			
+			protected function viewSealWindow(event:MouseEvent):void
+			{
+				sealPopup = PopUpManager.createPopUp(this,v_Seal, true) as v_Seal;
+				PopUpManager.centerPopUp(sealPopup);
+				sealPopup.setParams(dataGrid.selectedItem.supplier_code, dataGrid.selectedItem.shls_trip_no);
+				sealPopup.loadStatus = dataGrid.selectedItem.status;
+				
+			}
+			
+			protected function adjustEmployerDriver():void{
+				driverLookupResult.lastResult = new ArrayCollection();
+				if(employerList.selectedIndex>=0){
+					trace(employerList.selectedItem.cmpy_code);
+					driverLookupResult.token = loadSchedulesService.lookupPSNListByCmpy(employerList.selectedItem.cmpy_code);
+				}
+				
+			}
+			
+			protected function changeEmployerDriver(event:IndexChangeEvent):void{
+				adjustEmployerDriver();
+			}
+			
+			protected function employerList_valueCommitHandler(event:FlexEvent):void
+			{
+				adjustEmployerDriver();
+			}
+			
+			protected function driverAutoSelectIndex(event:ResultEvent):void
+			{
+				driverList.selectedIndex = -1;
+				if(dataGrid.selectedItem!=null && dataGrid.selectedItem.hasOwnProperty("driver") && driverList){
+					if(dataGrid.selectedItem.driver == null){trace("Driver is null");return;}
+					for (var i:int = 0; i < driverList.dataProvider.length; i++){
+						if(driverList.dataProvider.getItemAt(i).per_code == dataGrid.selectedItem.driver){
+							driverList.selectedIndex = i;
+							break;
+						}
+					}
+					
+				}
+			}
+			
+			protected function updateTripHostDOR_resultHandler( ):void
+			{
+				this.tripNo.text = new_tripno.text;
+				currentState = 'normal';
+				//setFilters(true,true);
+				setFilters(true,false);
+				
+				if ( this.updateTripHostDOR.dataString == "OK" )
+				{
+					//global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+					trace( "updateTripHostDOR............" + resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					//global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+					trace( "updateTripHostDOR............" + resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+			}
+			
+			protected function updateTripHostDorNumber():void
+			{
+				var tripNo:String = new_tripno.text;
+				var suppCode:String = "";
+				var hostDOR:String = shl_fleet_data.text;
+				
+				if ( new_supplier.selectedIndex >= 0 )
+				{
+					suppCode = new_supplier.selectedItem.cmpy_code;
+				}
+				
+				updateTripHostDOR.service( tripNo, suppCode, hostDOR );
+			}
+			
+			
+			public function afterClosePartnerList():void
+			{
+				trace("-------------------Back from PartnerList", this.partnershipPopup.popupView.dataGrid.selectedIndex);
+				var obj:Object = this.partnershipPopup.popupView.partnerSelected;
+				if ( obj != null && obj.hasOwnProperty( 'ACTION' ) && obj["ACTION"] == "CANCEL" )
+				{
+					return;
+				}
+				
+				if ( obj != null && obj.hasOwnProperty( 'AG' ) )
+				{
+					this.new_soldto.text = obj[ "AG" ];
+				}
+				if ( obj != null && obj.hasOwnProperty( 'WE' ) )
+				{
+					this.new_shipto.text = obj[ "WE" ];
+				}
+			}
+			
+			protected function popupPartnerList(event:MouseEvent)
+			{
+				if ( this.new_supplier.selectedIndex < 0 )
+				{
+					global.msgWarning( resourceManager.getString('default','LOADSCHD.MESSAGE.REQUIRE_SUPP4PARTNER') );
+					return;
+				}
+				
+				this.partnershipPopup.popupTitle = resourceManager.getString('default','m_partnership');
+				this.partnershipPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+				
+				this.partnershipPopup.parentWidth = this.width/2;
+				this.partnershipPopup.parentHeight = this.height/2;
+				
+				trace ( "*******************Pop up a screen to manage partnership!");
+				partnershipPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				if ( event.currentTarget.id == 'btn_soldto' )
+				{
+					params["partner_code"] = this.new_soldto.text;
+					params["partner_type"] = "AG";
+					params["partner_cmpy_code"] = this.new_supplier.selectedItem.cmpy_code;
+					params["partner_cust_acct"] = "";
+				}
+				
+				if ( event.currentTarget.id == 'btn_shipto' )
+				{
+					params["partner_code"] = this.new_shipto.text;
+					params["partner_type"] = "WE";
+					params["partner_cmpy_code"] = this.new_supplier.selectedItem.cmpy_code;
+					params["partner_cust_acct"] = "";
+				}
+				
+				partnershipPopup.setFilters( params ); 
+			}
+			
+			protected function showDeliveryDetails(event:MouseEvent)
+			{
+				this.deliveryDetailsPopup.popupTitle = resourceManager.getString('default','BUTTON__DELIVERY_DETAILS');
+				this.deliveryDetailsPopup.setSecurity( this.readOnly, this.canUpdate, this.canCreate, this.canDelete, this.hasPassword );
+				//this.deliveryDetailsPopup.setSecurity( this.readOnly, false, false, false, false );
+				
+				this.deliveryDetailsPopup.parentWidth = this.width;
+				this.deliveryDetailsPopup.parentHeight = this.height;
+				
+				trace ( "*******************Pop up a screen to manage delivery details!");
+				deliveryDetailsPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				
+				params["dd_supp_code"] = dataGrid.selectedItem.supplier_code;
+				params["dd_tripord_no"] = dataGrid.selectedItem.shls_trip_no;
+				if ( dataGrid.selectedItem.ld_type == 'PreSchedule' )
+				{
+					params["dd_ld_type"] = 2;
+				}
+				else if ( dataGrid.selectedItem.ld_type == 'PreOrder' )
+				{
+					params["dd_ld_type"] = 1;
+				}
+				else if ( dataGrid.selectedItem.ld_type == 'CustomerOrder' )
+				{
+					params["dd_tripord_no"] = dataGrid.selectedItem.order_cust_ordno;
+					params["dd_ld_type"] = 3;
+				}
+				else
+				{
+					params["dd_ld_type"] = 1;
+				}
+				
+				//params["dd_ld_type"] = (dataGrid.selectedItem.ld_type=='PreSchedule')?2:1;
+				params["dd_number"] = "";
+				
+				deliveryDetailsPopup.setFilters( params ); 
+			}
+			
+			protected function compGrid_gridItemEditorSessionStartingHandler(event:GridItemEditorEvent):void
+			{
+				// TODO Auto-generated method stub
+				var i:int;
+				var cln:GridColumn;
+				var factory_generator:ClassFactory;
+				
+				for ( i=0; i<this.compGrid.columns.length; i++ )
+				{
+					cln = (this.compGrid.columns.getItemAt(i) as GridColumn);
+					
+					if ( cln.dataField == "schd_sold_to_num" )
+					{
+						factory_generator = new ClassFactory( itemeditors.GridPartnerEditor );
+						
+						factory_generator.properties = { partner_type:'AG', partner_cmpy:this.new_supplier.selectedItem.cmpy_code, partner_flag:this.isPartnershipEnabled };
+						//typeColumn.itemRenderer = factory_generator;
+						cln.itemEditor = factory_generator;
+					}
+					if ( cln.dataField == "schd_ship_to_num" )
+					{
+						factory_generator = new ClassFactory( itemeditors.GridPartnerEditor );
+						
+						factory_generator.properties = { partner_type:'WE', partner_cmpy:this.new_supplier.selectedItem.cmpy_code, partner_flag:this.isPartnershipEnabled };
+						//typeColumn.itemRenderer = factory_generator;
+						cln.itemEditor = factory_generator;
+					}
+				}
+				
+			}
+			
+			protected function bolLabel_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				if ( isBolProcessControlEnabled == true )
+				{
+					//this.transDocBtnIndex = 1 - this.transDocBtnIndex;
+					this.transDocBtnIndex = (this.transDocBtnIndex + 1) % 3;
+				}
+				else
+				{
+					this.transDocBtnIndex = 0;
+				}
+			}
+			
+			protected function loadConfigFromUrl():void
+			{
+				var urlRequest:URLRequest  = new URLRequest("views/config.json");
+				
+				var urlLoader:URLLoader = new URLLoader();
+				urlLoader.addEventListener(Event.COMPLETE, completeHandler);
+				
+				try{
+					urlLoader.load(urlRequest);
+				} catch (error:Error) {
+					trace("Cannot load : " + error.message);
+				}
+			}
+			
+			protected function completeHandler(event:Event):void {
+				var loader:URLLoader = URLLoader(event.target);
+				trace("completeHandler: " + loader.data);
+				
+				var data:Object = JSON.parse(loader.data);
+				var reseter = data.special_instructions;
+				specialInstructions = reseter;
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateFormatter" dateStyle="short" locale="{LocaleID.DEFAULT}"
+							 timeStyle="none"/>
+		<s:DateTimeFormatter id="dateConvert" dateTimePattern="yyyy-MM-dd HH:mm:ss"/>
+		<s:DateTimeFormatter id="loadDateConvert" dateTimePattern="yyyy-MM-dd"/>
+		<loadschedulesservice:LoadSchedulesService id="loadSchedulesService" channelSet="{global.channelSet}"
+												   fault="global.msgFail(event.fault.faultDetail)"
+												   showBusyCursor="false"/>
+		<tankersservice:TankersService id="tankersService"  channelSet="{global.channelSet}"
+									   fault="global.msgFail(event.fault.faultDetail)"
+									   showBusyCursor="false"/>
+		<equipmenttypesservice:EquipmentTypesService id="equipmentTypesService" channelSet="{global.channelSet}"
+													 fault="global.msgFail(event.fault.faultDetail)"
+													 showBusyCursor="false"/>
+		<transactionsservice:TransactionsService id="transactionsService" channelSet="{global.channelSet}"
+												 fault="global.msgFail(event.fault.faultDetail)"
+												 showBusyCursor="false"/>
+		<s:CallResponder id="reverseTransactions" fault="reverseTransactions_faultHandler(event)"
+						 result="reverseTransactions_resultHandler(event)"/>
+		<s:CallResponder id="getOrderDetailsResult"/>
+		<s:CallResponder id="productsLookupResult" result="productsLookupResult_resultHandler(event)"/>
+		<s:CallResponder id="getScheduledCompartmentsResult"
+						 result="getScheduledCompartmentsResult_resultHandler(event)"/>
+		<s:CallResponder id="getOrdersResult"/>
+		<s:CallResponder id="getLastCompartmentProductsResult" result="goAskForShape()"/>
+		<s:CallResponder id="lookupByCarrierResult" result="getSelectedTanker()"/>
+		<s:CallResponder id="createResult" fault="global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'))"
+						 result="loadScheduleCreated(event)"/>
+		<s:CallResponder id="checkTripNumberResult"
+						 result="checkTripNumberResult_resultHandler(event)"/>
+		<s:CallResponder id="getSeqNumResult" result="getSeqNumResult_resultHandler(event)"/>
+		<s:CallResponder id="suppliersLookupResult"/>
+		<s:CallResponder id="tankersLookupResult"/>
+		<s:CallResponder id="employerLookupResult"/>
+		<s:CallResponder id="driverLookupResult" result="driverAutoSelectIndex(event)"/>
+		<s:CallResponder id="carriersLookupResult"/>
+		<s:CallResponder id="terminalLookupResult"/>
+		<s:CallResponder id="updateResult" result="updateResult_resultHandler(event)"/>
+		<s:CallResponder id="getSchdTypeResult" result="getSchdTypeResult_resultHandler(event)"/>
+		<tankershapesservice:TankerShapesService id="tankerShapeService" channelSet="{global.channelSet}"
+												 fault="global.msgFail(event.fault.faultDetail)"
+												 showBusyCursor="false"/>
+		<s:CallResponder id="getEquipmentShapeResult" result="setScheduledCompartmentsProvider()"/>
+		
+		
+		
+		<equipmentlistservice:EquipmentListService id="equipmentListService" channelSet="{global.channelSet}"
+												   fault="global.msgFail(event.fault.faultDetail)"
+												   showBusyCursor="false"/>
+		<s:CallResponder id="delete_methodResult" result="removeResult_resultHandler(event)"/>
+		<s:CallResponder id="getSchedStatusResult"/>
+		<s:CallResponder id="drawersLookupResult"/>
+		<s:CallResponder id="getDetailsByProductsResult"
+						 result="getDetailsByProductsResult_resultHandler(event)"/>
+		<s:CallResponder id="getDetailsByCompartmentResult"
+						 result="getDetailsByCompartmentResult_resultHandler(event)"/>
+		<s:DateTimeFormatter id="dateFormater" dateTimePattern="yyyy-MM-dd"/>
+		<components:ValidationGroup id="vg" action="{goToCreateLoadSchedule}"
+									defaultButton="{saveBtn}" isProtected="{hasPassword}"/>
+	</fx:Declarations>
+	
+	<s:Panel id="panel" includeIn="normal,edit" width="100%" height="100%" minHeight="0"
+			 skinClass="skins.WidgetPanelSkin" title="Load Schedules">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:HGroup id="hGroup" width="100%" enabled="{freeze}" gap="5" paddingBottom="2"
+				  paddingTop="2"
+				  paddingTop.edit="-5">
+			<s:VGroup excludeFrom="edit,bol" width="100%" contentBackgroundAlpha="0.95">
+				<components:DKI_DropDownList id="depotList" width="100%" change="setFilters(false,false)"
+											 dataProvider="{terminalLookupResult.lastResult}"
+											 labelField="term_desc" prompt="{resourceManager.getString('default','global.prompts.depot')}"
+											 requireSelection="true"/>
+				<components:DKI_ValidatorInput id="tripNo" width="100%" height="26"
+											   keyUp="tripNo_keyUpHandler(event)"
+											   prompt="{resourceManager.getString('default','global.prompts.trip')}" restrict="[0-9]"
+											   validationType="search"/>
+			</s:VGroup>
+			<s:Spacer excludeFrom="edit,bol" width="8"/>
+			<s:VGroup excludeFrom="edit,bol" width="100%" contentBackgroundAlpha="0.95">
+				<components:DKI_ComboBox id="supplierList" width="100%" change="suppChange()"
+										 dataProvider="{suppliersLookupResult.lastResult}"
+										 labelFunction="supplierLabel" prompt="{resourceManager.getString('default','global.prompts.supplier')}"/>				
+				<components:SearchCombo id="custList" width="100%" change="setFilters(false,false)"
+										dataProvider="{custArr}"
+										enabled="{supplierList.selectedIndex &gt; -1}"
+										labelField="CUST_CMPY_NAME" prompt="{resourceManager.getString('default','global.prompts.customer')}"/>
+			</s:VGroup>
+			<s:Spacer excludeFrom="edit,bol" width="8"/>
+			<s:VGroup excludeFrom="edit,bol" width="100%" contentBackgroundAlpha="0.95">
+				<components:DKI_ComboBox id="LoadStatus" width="100%" change="setFilters(false,false)"
+										 dataProvider="{getSchedStatusResult.lastResult}"
+										 labelField="STATUS_TEXT" prompt="{resourceManager.getString('default','global.prompts.status')}"/>
+				<components:DKI_ValidatorInput id="orderNo" width="100%" height="26"
+											   keyUp="orderNo_keyUpHandler(event)"
+											   prompt="{resourceManager.getString('default','global.prompts.order')}" restrict="[0-9]"
+											   validationType="search"/>
+			</s:VGroup>
+			<s:Spacer excludeFrom="edit,bol" width="8"/>
+			<s:VGroup excludeFrom="edit,bol" width="100%" contentBackgroundAlpha="0.95">
+				<components:DKI_ComboBox id="carrierList" width="100%"
+										 change="tankerList.selectedIndex=-1;setFilters(false,false)"
+										 dataProvider="{carriersLookupResult.lastResult}"
+										 labelField="cmpy_name" prompt="{resourceManager.getString('default','global.prompts.carrier')}"/>
+				<components:DKI_ComboBox id="tankerList" width="100%" change="setFilters(false,false)"
+										 dataProvider="{tankersLookupResult.lastResult}"
+										 labelField="tnkr_code" prompt="{resourceManager.getString('default','global.prompts.tanker')}"/>
+			</s:VGroup>
+			<s:VGroup includeIn="normal" itemCreationPolicy="immediate">
+				<s:HGroup width="100%" depth="2">
+					<s:Label height="26" fontWeight="bold" text="{resourceManager.getString('default','global.lbl.daterange')}" verticalAlign="middle"/>
+					<components:DKI_DateRange id="date_from" width="220" height="26"
+											  dateChange="onDateChanged" defaultDays="7"
+											  timeEnabled="false"/>					
+				</s:HGroup>
+			</s:VGroup>			
+			<s:Spacer width="100%"/>
+			<s:VGroup includeIn="normal">
+				<s:Spacer height="26"/>
+				<s:HGroup enabled="{freeze}" gap="4">
+					<components:DKI_Button id="filterBtn" height="24" click="setFilters(true,false)"
+										   noLabel="false" type="filteron"/>
+					<components:DKI_Button id="resetBtn" height="24" click="clearFilters(true)"
+										   noLabel="false" type="filteroff"/>
+					<components:DKI_Button id="csvBtn" click="CSVOutHandler(event)" noLabel="false"
+										   type="export"/>
+					<components:DKI_Button id="createBtn" height="24" click="createNew()"
+										   enabled="{canCreate}" noLabel="false" type="create"/>					
+				</s:HGroup>
+			</s:VGroup>
+		</s:HGroup>
+		
+		
+		<components:DKI_DataGrid id="dataGrid" width="100%" height="100%"
+								 selectionChange.edit="dataGrid_clickHandler(event)"
+								 doubleClick.normal="dataGrid_clickHandler(event)"
+								 doubleClickEnabled.normal="true"
+								 enabled="{!createMode}"
+								 focusEnabled="false" requestedRowCount="4">
+			<components:columns>
+				<s:ArrayList>
+					<s:GridColumn width="68" dataField="shls_srctype" sortCompareFunction="{global.sortNumeric}"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.tripsource')}" itemRenderer="renderers.loadScheduleSourceType"/>
+					<s:GridColumn width="76" dataField="shls_trip_no" sortCompareFunction="{global.sortNumeric}"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.tripno')}"/>
+					<s:GridColumn width="76" dataField="shls_trip_no_org" headerText="{resourceManager.getString('default','datagrid.headercaption.triporig')}"/>
+					<s:GridColumn width="100" dataField="shls_caldate" sortCompareFunction="{global.sortDate}"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.Date')}"
+								  labelFunction="setTimeStamp4"/>
+					<s:GridColumn width="120" dataField="shls_status"
+								  headerText="{resourceManager.getString('default','SCHD_STATUS')}"/>
+					<s:GridColumn width="100" dataField="carrier_code"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.CarrierCode')}"/>
+					<s:GridColumn width="140" dataField="carrier"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.CarrierName')}"/>
+					<s:GridColumn width="140" dataField="tnkr_code"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.TankerCode')}"/>
+					<s:GridColumn width="140" dataField="tnkr_name"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.TankerName')}"/>
+					<s:GridColumn width="100" dataField="supplier_code"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.SupplierCode')}"/>
+					<s:GridColumn width="140" dataField="supplier"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.SupplierName')}"/>
+					<s:GridColumn width="55" dataField="shls_priority"
+								  headerText="{resourceManager.getString('default','global.lbl.priority')}"/>
+					<s:GridColumn width="45" dataField="shls_shift" visible="false"
+								  headerText="{resourceManager.getString('default','global.lbl.shift')}"/>
+					<s:GridColumn width="45" dataField="shl_rss_infdel" visible="false"
+								  headerText="{resourceManager.getString('default','global.lbl.shift')}"/>
+					<s:GridColumn width="80" dataField="shl_fleet_data" headerText="{resourceManager.getString('default','DH_DOR_ORIGIN')}" visible="{this.canViewDorNumber}"/>
+					<s:GridColumn width="60" dataField="order_cust_ordno" sortCompareFunction="{global.sortNumeric}"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.order')}"/>
+					<s:GridColumn width="100" dataField="order_cust_cmpy_code"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.CustomerCode')}"/>
+					<s:GridColumn width="140" dataField="order_cust_cmpy_name"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.CustomerName')}"/>
+					<s:GridColumn width="140" dataField="shls_ld_start" sortCompareFunction="{global.sortDate}"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.loadstart')}"
+								  labelFunction="setTimeStamp"/>
+					<s:GridColumn width="140" dataField="shls_ld_end" sortCompareFunction="{global.sortDate}"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.loadend')}"
+								  labelFunction="setTimeStampEnd"/>
+					<!-- Hamid - not needed apparantly
+					<s:GridColumn width="92" dataField="shls_ld_type" sortCompareFunction="{global.sortNumeric}"
+					headerText="{resourceManager.getString('default','datagrid.headercaption.loadtype')}" labelFunction="{function(item:Object, column:GridColumn):String{
+					switch(int(item.shls_ld_type)){
+					case 2: return 'Pre Schedule';
+					case 3: return 'Pre Order';
+					case 6: return 'Unload';
+					}
+					return 'Unknown';
+					}}"/> 
+					-->
+					<s:GridColumn width="65" dataField="shls_ld_type"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.unload')}"
+								  itemRenderer="renderers.SchedUnload"/>
+					<s:GridColumn visible="{global.hasExpiry}" width="140" dataField="shls_exp2" sortCompareFunction="{global.sortDate}"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.tripexpiry')}" labelFunction="setTimeStamp3"/>
+					<s:GridColumn visible="{global.canArchive}" width="40"
+								  dataField="load_reverse_flag" headerText="{resourceManager.getString('default','datagrid.headercaption.reversed')}"
+								  itemRenderer="renderers.GridCheckNullRenderer"/>
+					<s:GridColumn visible="{global.canArchive}" width="40"
+								  dataField="load_reverse_flag" headerText="{resourceManager.getString('default','datagrid.headercaption.archived')}"
+								  itemRenderer="renderers.GridCheckArchivedRenderer"/>
+					<s:GridColumn width="70" dataField="shls_supp_org" headerText="{resourceManager.getString('default','datagrid.headercaption.supporig')}"/>
+					<s:GridColumn width="65" dataField="shlsload_load_id" headerText="{resourceManager.getString('default','datagrid.headercaption.loadid')}" sortCompareFunction="{global.sortNumeric}"/>
+					<s:GridColumn width="120" dataField="operator"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.lastmodifieduser')}"/>
+					<s:GridColumn width="140" dataField="last_chg_time" sortCompareFunction="{global.sortDate}"
+								  headerText="{resourceManager.getString('default','datagrid.headercaption.modifiedtime')}"
+								  labelFunction="setTimeStamp2"/>
+					<s:GridColumn width="80" dataField="shls_sold_to_num" headerText="{resourceManager.getString('default','DD_SOLD_TO_TITLE')}"/>
+					<s:GridColumn width="80" dataField="shls_ship_to_num" headerText="{resourceManager.getString('default','DD_SHIP_TO_TITLE')}"/>
+				</s:ArrayList>
+			</components:columns>
+		</components:DKI_DataGrid>
+		<s:HGroup width="100%">
+			<components:Downloader id="pb" width="100%" height="18"/>
+			<s:Button id="killBtn" width="18" height="18" label="" cornerRadius="12"
+					  click="skinnablecontainer1_clickHandler(event)"/>
+		</s:HGroup>
+	</s:Panel>
+	
+	<s:Panel id="creation" includeIn="edit" width="100%" height="500" itemCreationPolicy="immediate"
+			 skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:HGroup width="100%" gap="2" paddingBottom="4" paddingLeft="5" paddingRight="8"
+				  paddingTop="8">
+			<s:Label height="28" fontWeight="bold"
+					 text="{resourceManager.getString('default','global.lbl.depot')}"
+					 verticalAlign="middle"/>
+			<components:DKI_DropDownList id="new_depot" width="160" cornerRadius="10"
+										 dataProvider="{terminalLookupResult.lastResult}"
+										 labelField="term_desc" requireSelection="true"/>
+			<s:Spacer width="10"/>	
+			<s:Label height="28" fontWeight="bold"
+					 text="{resourceManager.getString('default','SUPPLIER')}"
+					 verticalAlign="middle"/>
+			<components:DKI_ValidatorDropDown id="new_supplier" width="190"
+											  automationName="{resourceManager.getString('default','SUPPLIER')}"
+											  change="new_supplier_changeHandler(event)"
+											  dataProvider="{suppliersLookupResult.lastResult}"
+											  labelField="cmpy_name"
+											  prompt="{resourceManager.getString('default','global.prompts.supplier')}"
+											  required="true"
+											  validationGroup="{vg}"/>
+			<s:Spacer width="10"/>	
+			<s:Label height="28" fontWeight="bold"
+					 text="{resourceManager.getString('default','DRAWER')}"
+					 verticalAlign="middle"/>
+			<components:DKI_ComboBox id="new_drawer" width="190"
+									 change="new_drawer_changeHandler(event)"
+									 dataProvider="{drawersLookupResult.lastResult}"
+									 labelField="cmpy_name" prompt="{resourceManager.getString('default','global.prompts.drawer')}"/>
+			<s:Spacer width="10"/>	
+			<s:Label height="28" fontWeight="bold"
+					 text="{resourceManager.getString('default','CARRIER')}"
+					 verticalAlign="middle"/>
+			<components:DKI_ValidatorDropDown id="new_carrier" width="190"
+											  automationName="{resourceManager.getString('default','CARRIER')}"
+											  change="new_carrier_changeHandler(event)"
+											  dataProvider="{carriersLookupResult.lastResult}"
+											  labelField="cmpy_name" prompt="{resourceManager.getString('default','global.prompts.carrier')}"
+											  validationGroup="{vg}"
+											  enabled.editByCompartment="false"/>
+			<s:Spacer width="10"/>	
+			<s:Label height="28" fontWeight="bold"
+					 text="{resourceManager.getString('default','datagrid.headercaption.Tanker')}"
+					 verticalAlign="middle"/>
+			<components:DKI_ValidatorDropDown id="new_tanker" width="190" required="true"
+											  automationName="{resourceManager.getString('default','datagrid.headercaption.Tanker')}"
+											  change="new_tanker_changeHandler()"
+											  dataProvider="{lookupByCarrierResult.lastResult}"
+											  labelField="tnkr_code" prompt="{resourceManager.getString('default','global.prompts.tanker')}"
+											  validationGroup="{vg}"
+											  enabled.editByCompartment="false"/>
+			<components:DKI_Button width="40" click="tag_clickHandler(event)"
+								   enabled="{canUpdate}" type="tag"
+								   visible.createByCompartment="false"
+								   visible.createByProduct="false"/>
+			
+			<s:Spacer width="10"/>
+			<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','DH_DOR_ORIGIN')}"  visible="{this.canViewDorNumber}" includeInLayout="{this.canViewDorNumber}"
+					 verticalAlign="middle"/>
+			<components:DKI_ValidatorInput id="shl_fleet_data" width="120"  visible="{this.canViewDorNumber}" includeInLayout="{this.canViewDorNumber}"
+										   automationName="{resourceManager.getString('default','DH_DOR_ORIGIN')}" maxChars="40" restrict="A-Za-z0-9 _\-"
+										   required="false"
+										   text="{dataGrid.selectedItem.shl_fleet_data}"
+										   enabled="{this.canUpdateDorNumber}" editable="{this.canUpdateDorNumber}" enabled.scheduleDetails="false"
+										   validationGroup="{vg}"
+										   validationType="alphanumeric"/>
+		</s:HGroup>
+		<s:HGroup gap="2">
+			<s:Label height="28" fontWeight="bold"
+					 text="{resourceManager.getString('default','global.lbl.scheddate')}"
+					 verticalAlign="middle"/>
+			<components:DKI_DateTime id="new_date" width="170" height="26"
+									 enabled="{dataGrid.selectedItem.status=='F'}"
+									 focusEnabled="true" timeEnabled="true"
+									 enabled.createByCompartment="true"
+									 enabled.createByProduct="true"
+									 enabled.scheduleDetails="false"/>
+			<s:Label visible="{global.hasExpiry}" height="28" fontWeight="bold"
+					 text="{resourceManager.getString('default','ORDER_EXP_TIME')}" verticalAlign="middle"/>
+			<components:DKI_DateTime id="exp_date" visible="{global.hasExpiry}" width="160"
+									 height="26"
+									 enabled="{dataGrid.selectedItem.status=='F'}"
+									 focusEnabled="true" timeEnabled="true"/>
+			<s:Label height="28" fontWeight="bold"
+					 text="{resourceManager.getString('default','datagrid.headercaption.tripno')}"
+					 verticalAlign="middle"/>
+			<components:DKI_ValidatorInput id="new_tripno" width="120"
+										   automationName="{resourceManager.getString('default','datagrid.headercaption.tripno')}" maxChars="9"
+										   required="true"
+										   text="{dataGrid.selectedItem.shls_trip_no}"
+										   validationGroup="{vg}"
+										   validationType="integer_nonzero"/>
+			<s:Spacer width="10"/>
+			<s:Label height="28" fontWeight="bold"
+					 text="{resourceManager.getString('default','global.lbl.shift')}"
+					 verticalAlign="middle"/>
+			<components:DKI_ValidatorInput id="new_shift" width="60" enabled.scheduleDetails="false"
+										   automationName="{resourceManager.getString('default','global.lbl.shift')}" maxChars="1" restrict="0-9"
+										   text="{dataGrid.selectedItem.shls_shift}"
+										   validationType="integer"/>
+			<s:Spacer width="10"/>
+			<s:Label height="28" fontWeight="bold"
+					 text="{resourceManager.getString('default','global.lbl.priority')}"
+					 verticalAlign="middle"/>
+			
+			<s:Spacer width="10"/>
+			<components:DKI_ValidatorInput id="new_priority" width="60" enabled.scheduleDetails="false"
+										   automationName="{resourceManager.getString('default','global.lbl.priority')}" maxChars="1" restrict="0-9"
+										   text="{dataGrid.selectedItem.shls_priority}"
+										   validationType="integer"/>
+			<s:Spacer width="10"/>
+			<s:Label height="28" fontWeight="bold" width="60" text="Special Instructions" visible="{this.specialInstructions}"/>
+			<s:Spacer width="10"/>
+				<s:TextArea id="spec_ins" width="520" height="60" enabled.scheduleDetails="false" visible="{this.specialInstructions}" text="{dataGrid.selectedItem.shl_rss_infdel}" maxChars="3500"/>	
+		</s:HGroup>
+		
+		<s:HGroup width="100%" gap="2">
+			<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','global.lbl.isotainerid')}"
+					 visible="{global.isContainer}"
+					 verticalAlign="middle"/>
+			<components:DKI_ValidatorInput id="new_container" width="120"
+										   automationName="{resourceManager.getString('default','global.lbl.isotainerid')}" maxChars="12"
+										   required="false"
+										   enabled.scheduleDetails="false"
+										   text="{dataGrid.selectedItem.shls_isotainer_num}"
+										   validationGroup="{vg}"
+										   visible="{global.isContainer}"
+										   validationType="alphanumeric"/>
+			
+			<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','DD_SOLD_TO_TITLE')}"  visible="{showDelivery}"
+					 verticalAlign="middle"/>
+			<components:DKI_ValidatorInput id="new_soldto" width="120"  visible="{showDelivery}"
+										   automationName="{resourceManager.getString('default','DD_SOLD_TO_TITLE')}" maxChars="17" restrict="A-Za-z0-9 _\-"
+										   required="false"
+										   text="{dataGrid.selectedItem.shls_sold_to_num}"
+										   enabled.scheduleDetails="false"
+										   validationGroup="{vg}"
+										   validationType="alphanumeric"/>
+			<components:DKI_Button id="btn_soldto" label="" width="19" skinClass="skins.DKI_ComboBoxButton_Skin" 
+								   enabled="{this.isPartnershipEnabled &amp;&amp; showDelivery}" enabled.scheduleDetails="false" 
+								   visible="{this.isPartnershipEnabled &amp;&amp; showDelivery}" includeInLayout="{this.isPartnershipEnabled &amp;&amp; showDelivery}" click="popupPartnerList(event);"/>
+			<s:Spacer width="10"/>
+			<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','DD_SHIP_TO_TITLE')}"  visible="{showDelivery}"
+					 verticalAlign="middle"/>
+			<components:DKI_ValidatorInput id="new_shipto" width="120"  visible="{showDelivery}"
+										   automationName="{resourceManager.getString('default','DD_SHIP_TO_TITLE')}" maxChars="17" restrict="A-Za-z0-9 _\-"
+										   required="false"
+										   enabled.scheduleDetails="false"
+										   text="{dataGrid.selectedItem.shls_ship_to_num}"
+										   validationGroup="{vg}"
+										   validationType="alphanumeric"/>
+			<components:DKI_Button id="btn_shipto" label="" width="19" skinClass="skins.DKI_ComboBoxButton_Skin" 
+								   enabled="{this.isPartnershipEnabled &amp;&amp; showDelivery}" enabled.scheduleDetails="false" 
+								   visible="{this.isPartnershipEnabled &amp;&amp; showDelivery}" includeInLayout="{this.isPartnershipEnabled &amp;&amp; showDelivery}" click="popupPartnerList(event);"/>
+		</s:HGroup>
+		
+		<s:HGroup  verticalAlign="middle" includeInLayout="{global.siteCanResetDriver}" visible="{global.siteCanResetDriver}" enabled="{dataGrid.selectedItem.status == 'F'}" 
+				   visible.createByCompartment="false" visible.createByProduct="false">
+			<s:Label height="28" fontWeight="bold" verticalAlign="middle" text="{resourceManager.getString('default','datagrid.headercaption.Employer')}"/>
+			<components:DKI_ComboBox id="employerList" width="220" dataProvider="{employerLookupResult.lastResult}" 
+									 labelField="cmpy_name" valueCommit="employerList_valueCommitHandler(event)" change="changeEmployerDriver(event)" requireSelection="true"/>
+			<s:Label height="28" fontWeight="bold" verticalAlign="middle" text="{resourceManager.getString('default','datagrid.headercaption.Personnel')}"/>
+			<components:DKI_ComboBox id="driverList"   width="220" dataProvider="{driverLookupResult.lastResult}" 
+									 labelFunction="{function(o:Object):String{if(o!=null &amp;&amp; o.hasOwnProperty('per_code'))return o.per_code +' | '+ o.per_name;return'';}}" 
+									 requireSelection="false" prompt="{resourceManager.getString('default','global.prompts.driver')}"/>			
+		</s:HGroup>
+		
+		
+		<!--
+		<s:HGroup>
+		<s:CheckBox id="load_type" includeIn="createByCompartment,createByProduct"
+		label="{resourceManager.getString('default','global.lbl.preorder')}" click="this.bycomp.selected=!this.load_type.selected;load_type_clickHandler(event)" enabled="{new_supplier.selectedIndex > -1}"/>
+		<s:CheckBox id="bycomp" includeIn="createByCompartment,createByProduct"
+		label="{resourceManager.getString('default','global.lbl.preschedule')}" click="this.load_type.selected=!this.bycomp.selected;load_type_clickHandler(event)" enabled="{new_supplier.selectedIndex > -1}"
+		selected="true"/>
+		</s:HGroup>-->
+		<s:HGroup verticalAlign="middle">
+			<s:RadioButton id="byprod" includeIn="createByCompartment,createByProduct" groupName="ld_type" skinClass="spark.skins.spark.RadioButtonSkin"
+						   label="{resourceManager.getString('default','global.lbl.preorder')}" click="load_type_clickHandler(event)" enabled="{new_supplier.selectedIndex > -1}"/>
+			<s:RadioButton id="bycomp" includeIn="createByCompartment,createByProduct" groupName="ld_type" skinClass="spark.skins.spark.RadioButtonSkin"
+						   label="{resourceManager.getString('default','global.lbl.preschedule')}" click="load_type_clickHandler(event)" enabled="{new_supplier.selectedIndex > -1}"
+						   selected="true"/>
+			<mx:VRule height="10" minHeight="10" includeIn="createByCompartment,createByProduct"/>
+			<s:CheckBox id="unload" includeIn="createByCompartment,createByProduct"
+						label="{resourceManager.getString('default','global.lbl.unload')}" enabled="{new_supplier.selectedIndex > -1}" />
+		</s:HGroup>
+		
+		
+		
+
+		
+		<s:HGroup width="100%" height="66" gap="12" paddingBottom="2" paddingLeft="5"
+				  paddingRight="8">
+			<components:DKI_List id="detailsList" visible="{new_tanker.selectedIndex>-1}"
+								 left="10" width="100%" height="64" borderVisible="true"
+								 contentBackgroundAlpha="0"
+								 dataProvider="{getEquipmentShapeResult.lastResult}"
+								 itemRenderer="renderers.equipmentPreviewRenderer">
+				<components:layout>
+					<s:HorizontalLayout gap="0"/>
+				</components:layout>
+			</components:DKI_List>
+		</s:HGroup>
+		
+		
+		<s:HGroup verticalAlign="middle" horizontalAlign="center" width="100%" includeIn="editByCompartment, editByProduct, scheduleDetails" includeInLayout="{global.siteUseWeighbridge}" visible="{global.siteUseWeighbridge}">
+			
+			<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','global.lbl.endweight')}" verticalAlign="middle"/>
+			<components:DKI_ValidatorInput width="120" text="{dataGrid.selectedItem.sum_ldw_end_kg}" enabled = "false"/>
+			
+			<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','global.lbl.startweight')}" verticalAlign="middle"/>
+			<components:DKI_ValidatorInput width="120" text="{dataGrid.selectedItem.sum_ldw_start_kg}" enabled = "false"/>
+			
+			<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','global.lbl.diffweight')}" verticalAlign="middle"/>
+			<components:DKI_ValidatorInput width="120" text="{(dataGrid.selectedItem.sum_ldw_start_kg==null)?null:(dataGrid.selectedItem.sum_ldw_end_kg==null)?null:(dataGrid.selectedItem.sum_ldw_end_kg - dataGrid.selectedItem.sum_ldw_start_kg)}" enabled = "false"/>
+			
+		</s:HGroup>
+		<s:Group width="100%" height="100%">
+			<s:HGroup includeIn="createByCompartment,editByCompartment" width="100%" height="100%"
+					  gap="5" itemDestructionPolicy="auto" paddingLeft="5" paddingRight="5">
+				<s:VGroup width="340" height="100%" gap="4">
+					<s:HGroup width="300">
+						<s:Label fontWeight="bold"
+								 text="{resourceManager.getString('default','global.lbl.availproducts')}"/>
+					</s:HGroup>
+					<components:DKI_List id="productList" width="330" height="100%"
+										 dataProvider="{productsLookupResult.lastResult}"
+										 dragEnabled="true"
+										 itemRenderer="renderers.scheduleProductListRenderer"
+										 labelField="prod_name">
+						<components:layout>
+							<s:TileLayout/>
+						</components:layout>
+					</components:DKI_List>
+				</s:VGroup>
+				
+				<s:VGroup width="100%" height="100%" gap="4">
+					<s:HGroup>
+						<s:Label fontWeight="bold"
+								 text="{resourceManager.getString('default','global.lbl.compdetails')}"/>
+					</s:HGroup>
+					<components:DKI_DataGrid id="compGrid" width="100%" height="100%"
+											 dataProvider="{compArr}"
+											 dragOver="compGrid_dragOverHandler(event)"
+											 dropAction="compGridDragComplete" dropEnabled="true"
+											 editable="true" gridItemEditorSessionStarting="compGrid_gridItemEditorSessionStartingHandler(event)"
+											 gridItemEditorSessionSave="compGrid_gridItemEditorSessionSaveHandler(event)"
+											 selectionChange="compGrid_selectionChangeHandler(event)">
+						<components:columns>
+							<s:ArrayList>
+								<s:GridColumn width="100" dataField="etyp_title" editable="false"
+											  headerText="{resourceManager.getString('default','datagrid.headercaption.equipment')}"></s:GridColumn>
+								<s:GridColumn width="70" dataField="seq" editable="false"
+											  headerText="{resourceManager.getString('default','datagrid.headercaption.compno')}"></s:GridColumn>
+								<s:GridColumn width="80" dataField="product_code" editable="false"
+											  headerText="{resourceManager.getString('default','datagrid.headercaption.productcode')}"/>
+								<s:GridColumn dataField="product_name" editable="false"
+											  headerText="{resourceManager.getString('default','datagrid.headercaption.product')}"
+											  itemRenderer="renderers.ProductNameRender"/>
+								<s:GridColumn width="90" dataField="schedule" editable="true"
+											  headerText="{resourceManager.getString('default','datagrid.headercaption.schedule')}"/>
+								<s:GridColumn width="90" dataField="unit" editable="false"
+											  headerText="{resourceManager.getString('default','datagrid.headercaption.unit')}"
+											  itemRenderer="renderers.LoadMeasureRender"/>
+								<!--<s:GridColumn width="70" dataField="order_id" editable="false"
+								headerText="{resourceManager.getString('default','datagrid.headercaption.order')}"/>-->
+								<s:GridColumn width="70" dataField="order_id"  editable="false"
+											  headerText="{resourceManager.getString('default','datagrid.headercaption.order')}"
+											  itemRenderer="renderers.OrderListRenderer"></s:GridColumn>
+								<s:GridColumn width="70" dataField="cmpt_capacit" editable="false"
+											  headerText="{global.gSafefillLabel}"></s:GridColumn>
+								<s:GridColumn width="110" dataField="prev_product_name"
+											  editable="false"
+											  headerText="{resourceManager.getString('default','datagrid.headercaption.prevproduct')}"></s:GridColumn>
+								<s:GridColumn width="80" dataField="schd_sold_to_num"
+											  headerText="{resourceManager.getString('default','DD_SOLD_TO_TITLE')}"></s:GridColumn>
+								<s:GridColumn width="70" dataField="schd_deliv_num" editable="{this.canUpdateCmptDorNumber}"
+											  headerText="{resourceManager.getString('default','DH_DOR_ORIGIN_CMPT')}"></s:GridColumn>
+								<s:GridColumn width="80" dataField="schd_ship_to_num"
+											  headerText="{resourceManager.getString('default','DD_SHIP_TO_TITLE')}"></s:GridColumn>
+								<s:GridColumn width="20" dataField="blank_cln" editable="false"
+											  headerText=""></s:GridColumn>
+							</s:ArrayList>
+						</components:columns>
+					</components:DKI_DataGrid>
+				</s:VGroup>				
+			</s:HGroup>
+			
+			<s:HGroup includeIn="createByProduct,editByProduct" width="100%" height="100%" gap="5"
+					  itemCreationPolicy="immediate">
+				<components:DKI_DataGrid id="prodGrid" width="500" height="100%"
+										 dataProvider="{prodArr}"
+										 editable="{global.app.getUserPriv('78')}">
+					<components:columns>
+						<s:ArrayList>
+							<s:GridColumn width="80" dataField="prod_code" editable="false"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.productcode')}"/>
+							<s:GridColumn dataField="prod_name" editable="false"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.product')}"
+										  itemRenderer="renderers.ProductRender"/>
+							<s:GridColumn width="80" dataField="schedule" editable="true"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.schedule')}"/>
+							<s:GridColumn width="100" dataField="unit" editable="false"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.unit')}"
+										  itemRenderer="renderers.LoadMeasureRender"/>
+						</s:ArrayList>
+					</components:columns>
+				</components:DKI_DataGrid>
+			</s:HGroup>
+			
+			<s:HGroup includeIn="scheduleDetails" width="100%" height="100%" gap="5" paddingLeft="5"
+					  paddingRight="5">
+				<components:DKI_DataGrid width="40%" height="100%" dataProvider="{prodArr}">
+					<components:columns>
+						<s:ArrayList>
+							<s:GridColumn width="75" dataField="prod_code"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.productcode')}"/>
+							<s:GridColumn width="155" dataField="prod_name"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.productname')}"
+										  itemRenderer="renderers.ProductRender"/>
+							<s:GridColumn width="60" dataField="schedule"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.schedule')}"/>
+							<s:GridColumn width="70" dataField="qty_loaded" editable="false"
+										  headerText="{loadStr}"/>
+							<s:GridColumn width="65" dataField="qty_preload" editable="false"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.preloaded')}"/>
+							<s:GridColumn width="56" dataField="unit"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.unit')}"
+										  labelFunction="unitLabelFunction"/>
+						</s:ArrayList>
+					</components:columns>
+				</components:DKI_DataGrid>
+				
+				<components:DKI_DataGrid width="60%" height="100%" dataProvider="{loadArr}">
+					<components:columns>
+						<s:ArrayList>
+							<s:GridColumn width="90" dataField="etyp_title"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.equipment')}"></s:GridColumn>
+							<s:GridColumn width="60" dataField="seq"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.compno')}"></s:GridColumn>
+							<s:GridColumn width="60" dataField="product_code"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.productcode')}"></s:GridColumn>
+							<s:GridColumn width="155" dataField="product_name"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.productname')}"
+										  itemRenderer="renderers.ProductRender"/>
+							<s:GridColumn width="75" dataField="schedule"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.schedule')}"/>
+					
+							<s:GridColumn width="70" dataField="qty_loaded" editable="false"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.loaded')}"/>
+							<s:GridColumn width="65" dataField="qty_preload" editable="false"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.preloaded')}"/>
+							<s:GridColumn width="70" dataField="unit"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.unit')}"
+										  labelFunction="unitLabelFunction"/>
+							<s:GridColumn width="70" dataField="order_id"
+										  headerText="{resourceManager.getString('default','datagrid.headercaption.order')}"></s:GridColumn>
+							<s:GridColumn width="70" dataField="cmpt_capacit"
+										  headerText="{global.gSafefillLabel}"></s:GridColumn>
+							<s:GridColumn width="70" dataField="schd_sold_to_num" editable="false"
+										  headerText="{resourceManager.getString('default','DD_SOLD_TO_TITLE')}"></s:GridColumn>
+							<s:GridColumn width="70" dataField="schd_deliv_num" editable="false"
+										  headerText="{resourceManager.getString('default','DH_DOR_ORIGIN_CMPT')}"></s:GridColumn>
+							<s:GridColumn width="70" dataField="schd_ship_to_num" editable="false"
+										  headerText="{resourceManager.getString('default','DD_SHIP_TO_TITLE')}"></s:GridColumn>
+							<s:GridColumn width="20" dataField="blank_cln" editable="false"
+										  headerText=""></s:GridColumn>
+						</s:ArrayList>
+					</components:columns>
+				</components:DKI_DataGrid>
+			</s:HGroup>
+			
+		</s:Group>
+		
+		<s:VGroup id="ActionGroup" width="100%" height="68" gap="4" paddingBottom="5" paddingLeft="5"
+				  paddingRight="5" paddingTop="0">
+			<s:HGroup width="100%" height="50%" gap="5">
+				<s:Label height="100%" text="{resourceManager.getString('default','global.lbl.TRANSACTIONS')}" verticalAlign="middle"
+						 visible.createByCompartment="false"
+						 visible.createByProduct="false"/>
+				<components:DKI_Button id="viewTransactions" height="100%"
+									   label="{resourceManager.getString('default','button.lbl.VIEW')}"
+									   click="showTransactions(event)" type="report"
+									   visible.createByCompartment="false"
+									   visible.createByProduct="false"/>
+				<components:DKI_Button id="btnMakeTransaction"
+									   includeIn="editByCompartment,editByProduct, scheduleDetails"
+									   height="100%" click="goToMakeTransaction(0)"
+									   enabled="{canMake}" noLabel="false" type="create"/>
+				<components:DKI_Button id="repostTransactions"
+									   includeIn="editByCompartment,editByProduct, scheduleDetails"
+									   height="100%" label="{resourceManager.getString('default','button.lbl.REPOST')}"
+									   visible="{canRepost}" includeInLayout="{canRepost}" 
+									   click="goToMakeTransaction(1)" enabled="{canRepost}"
+									   type="report"/>
+				<components:DKI_Button id="btnReverse" includeIn="scheduleDetails"
+									   visible="{canRepost}" height="100%" label="{resourceManager.getString('default','button.lbl.REVERSE')}"
+									   click="reverseTrans()" includeInLayout="{canRepost}" enabled="{canReverse}" type="edit"/>
+				<components:DKI_Button id="btnArchive" includeIn="scheduleDetails"
+									   visible="{canRepost}" includeInLayout="{canRepost}" height="100%"
+									   label="{resourceManager.getString('default','button.lbl.ARCHIVE')}" click="archiveTrans()"
+									   enabled="{canArchive}" type="edit"/>
+				
+				<components:DKI_Button id="viewDeliveryDetails" height="100%"
+									   includeIn="editByCompartment,editByProduct, scheduleDetails"
+									   label="{resourceManager.getString('default','BUTTON__DELIVERY_DETAILS')}"
+									   click="showDeliveryDetails(event)" type="report"
+									   visible.createByCompartment="false"
+									   visible.createByProduct="false"/>
+				<s:Spacer width="10"/>
+				
+				<s:Label height="100%" text="{resourceManager.getString('default','global.lbl.SEAL')}: " verticalAlign="middle" includeInLayout="{global.siteUseSeal}" visible="{global.siteUseSeal}" 
+						 visible.createByCompartment="false"
+						 visible.createByProduct="false"/>
+				<components:DKI_Button id="viewSeals" height="100%" click="viewSealWindow(event)" includeInLayout="{global.siteUseSeal}" visible="{global.siteUseSeal}"
+									   label="{resourceManager.getString('default','button.lbl.VIEW')}"
+									   type="report" 
+									   
+									   visible.createByCompartment="false"
+									   visible.createByProduct="false"/>
+				
+				
+				<s:Spacer width="100%"/>
+				
+				
+				<components:DKI_Button id="saveBtn"
+									   includeIn="createByCompartment,createByProduct,editByCompartment,editByProduct"
+									   height="100%" enabled="{canUpdate}" noLabel="false"
+									   type="save"/>
+				<components:DKI_Button id="deleteBtn" includeIn="editByProduct,editByCompartment"
+									   height="100%" click="goToDeleteLoadSchedule()"
+									   enabled="{canDelete &amp;&amp; 
+									   dataGrid.selectedItem.status == 'F' }" 
+									   itemCreationPolicy="immediate"
+									   noLabel="false" type="delete"/>
+				<components:DKI_Button height="100%" click="cancel_clickHandler(event)"
+									   enabled="true" noLabel="false" type="back"/>
+			</s:HGroup>
+			<mx:HRule width="100%" height="4"/>
+			<s:HGroup width="100%" height="50%" gap="5">
+				<components:DKI_Button id="cancelLoadBtn" height="100%"
+									   label="{resourceManager.getString('default','global.lbl.cancelload')}"
+									   click="cancelLoad(event)" type="cancel"
+									   enabled="{this.isCancelLoad}"
+									   visible="{global.isLoadCancel}"/>
+				<s:HGroup height="100%">
+					<s:CheckBox id="itc" visible="{printOpts}"
+								label="{resourceManager.getString('default','global.lbl.ignoretolcheck')}"
+								fontWeight="bold" verticalCenter="-2"/> 
+					<s:Spacer width="10"/>
+					<s:CheckBox id="idc" visible="{printOpts &amp;&amp; this.isExtBlendAllowed}"
+								label="{resourceManager.getString('default','global.lbl.ignoredcscheck')}"
+								fontWeight="bold" verticalCenter="-2"/> 
+				</s:HGroup>
+				<s:Spacer width="100%"/>
+				<components:DKI_Button width="100%" height="100%" includeIn="editByCompartment,scheduleDetails"
+									   click="goToDorHistory()" noLabel="false"
+									   type="report" label="{resourceManager.getString('default','BUTTON__DOR_HISTORY')}"
+									   enabled="{this.canManageDorHistory}" visible="{this.canManageDorHistory}" includeInLayout="{this.canManageDorHistory}"
+									   />
+				<s:Label height="100%" fontWeight="bold"
+						 text="{resourceManager.getString('default','global.lbl.driverinstruction')}"
+						 verticalAlign="middle"/>
+				<components:DKI_Button width="85" height="100%"
+									   click="driverView_clickHandler(event)" noLabel="false"
+									   type="report" label="{resourceManager.getString('default','button.lbl.VIEW')}"
+									   enabled.createByCompartment="false"
+									   enabled.createByProduct="false"/>
+				<components:DKI_Button width="85" height="100%"
+									   click="driverPrint_clickHandler(event)" noLabel="false"
+									   type="print" label="{resourceManager.getString('default','button.lbl.PRINT')}"
+									   enabled.createByCompartment="false"
+									   enabled.createByProduct="false"/>
+				<mx:VRule width="10" height="100%"/>
+				<s:Label height="100%" fontWeight="bold"
+						 text="{this.transDocBtnTexts[this.transDocBtnIndex]}" click="bolLabel_clickHandler(event)"
+						 verticalAlign="middle"/>
+				<!--s:Button id="btn_trans_doc" width="100%" height="100%" label="{this.transDocBtnTexts[this.transDocBtnIndex]}" click="{this.transDocBtnIndex = 1 - this.transDocBtnIndex}" /-->
+				
+				<components:DKI_Button width="85" height="100%" click="bolView_clickHandler(event)"
+									   enabled="{viewOpts}" noLabel="false" type="report"
+									   enabled.createByCompartment="false"  label="{resourceManager.getString('default','button.lbl.VIEW')}"
+									   enabled.createByProduct="false"/>
+				<components:DKI_Button width="85" height="100%" click="bolPrint_clickHandler(event)" id="btn_bol_print"
+									   enabled="{printOpts}" noLabel="false" type="print"
+									   enabled.createByCompartment="false"  label="{resourceManager.getString('default','button.lbl.PRINT')}"
+									   enabled.createByProduct="false"/>
+				<components:DKI_Button width="85" height="100%" click="bolExport_clickHandler(event)"
+									   enabled="{viewOpts}" noLabel="false" type="export" visible="{!this.isJasperBolEnabled}" includeInLayout="{!this.isJasperBolEnabled}"
+									   enabled.createByCompartment="false"  label="{resourceManager.getString('default','button.lbl.EXPORT')}"
+									   enabled.createByProduct="false"/>
+				<mx:VRule width="10" height="100%"/>
+				<s:Label height="100%" fontWeight="bold"
+						 text="{resourceManager.getString('default','global.lbl.loadreport')}"
+						 verticalAlign="middle"/>
+				<components:DKI_Button  width="85" height="100%" click="loadView_clickHandler(event)" 
+										enabled="{dataGrid.selectedItem.shlsload_load_id!=0 &amp;&amp; dataGrid.selectedItem.shls_ld_end}" noLabel="false" type="report" 
+										enabled.createByCompartment="false" enabled.createByProduct="false" 
+										label="{resourceManager.getString('default','button.lbl.VIEW')}"/>
+				<components:DKI_Button  width="85" height="100%" click="loadPrint_clickHandler(event)"
+										enabled="{dataGrid.selectedItem.shlsload_load_id!=0 &amp;&amp; dataGrid.selectedItem.shls_ld_end}" noLabel="false" type="print"  
+										enabled.createByCompartment="false" enabled.createByProduct="false" 
+										label="{resourceManager.getString('default','button.lbl.PRINT')}"/>
+			</s:HGroup>
+		</s:VGroup>
+	</s:Panel>
+	
+	<s:Panel id="frame" includeIn="bol" width="100%" height="100%" skinClass="skins.WidgetPanelSkin" 
+			 title="Load Schedules">
+		<s:VGroup width="100%" height="100%" paddingBottom="3" paddingLeft="3" paddingRight="3"
+				  paddingTop="3">
+			<flexiframe:IFrame id="frme" width="100%" height="100%"/>
+			<s:HGroup width="100%">
+				<s:Spacer width="100%"/>
+				<!--components:DKI_Button click="bolExport_clickHandler2(event)"
+				noLabel="false" type="export"
+				label="{resourceManager.getString('default','button.lbl.EXPORT')}"/-->
+				<components:DKI_Button click="frme.printIFrame()" noLabel="false" type="print" visible="{isPrintButtonRequired}" includeInLayout="{isPrintButtonRequired}"/> 
+				<components:DKI_Button id="btn" click="closeBol(event)" noLabel="false" type="ok"/> 
+			</s:HGroup>
+		</s:VGroup>	
+	</s:Panel>	
+</s:VGroup>

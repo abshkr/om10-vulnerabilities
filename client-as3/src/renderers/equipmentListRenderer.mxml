@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" width="{imgWidth+4+offset}"
+				autoDrawBackground="false" >
+	
+	<s:states>
+		<s:State name="normal" />
+		<s:State name="selected" />
+		<s:State name="hovered" />
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import assets.Assets;
+			
+			import components.ModalEquipmentDetails;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.BitmapAsset;
+			import mx.core.FlexGlobals;
+			import mx.managers.PopUpManager;
+			import mx.utils.ObjectUtil;
+			private var canDelete:Boolean=true;
+			
+			// static height variable width
+			[Bindable] private var imgHeight:Number = 60;
+			[Bindable] private var imgWidth:Number = 100;
+			[Bindable] private var img:BitmapAsset;
+			[Bindable] private var offset:Number  = 0;
+			
+			private function set image(qualifier:String):void{
+				switch(qualifier){
+					case 'F':case'f':
+						img = Assets.FLATBED;	
+						imgWidth = 284*imgHeight/120;
+						return;
+					case 'R':case'r':
+						img = Assets.RIGID;
+						imgWidth = 515*imgHeight/120;
+						return;
+					case 'P':case'p':
+						img = Assets.PRIME_MOVER;	
+						imgWidth = 222*imgHeight/120;
+						if(data.idx == 1)offset = -42;
+						return;
+					case 'T':case't':
+						img = Assets.TRAILER;
+						imgWidth = 375*imgHeight/120;
+						offset = -7;
+						return;
+					case 'S':case's':
+						img = Assets.SHIP;
+						imgWidth = 515*imgHeight/120;
+						return;
+					case 'E':case'e':
+						img = Assets.RAILTANK;
+						imgWidth = 386*imgHeight/120;
+						return;
+				}
+				trace("GRAPHICS NOT DEFINED = "+qualifier);
+				img = null; imgWidth = 0;
+			}
+			override public function set data(o:Object):void
+			{
+				super.data  = o;
+				/*idx = data.idx;
+				composition = data.eqc_sub_item;
+				schedul = data.etyp_schedul;
+				type = data.sub_item_sched_type;
+				rigid = data.sub_item_etyp_isrigid;
+				category = data.etyp_category;
+				*/
+				if(data.etyp_category != null){
+					image = data.etyp_category.toString();
+				}else{
+					if(data.eqc_sub_item == null){
+						if(data.etyp_isrigid == "Y" || 
+							data.etyp_isrigid == "y" || 
+							data.sub_item_etyp_isrigid == "Y" || 
+							data.sub_item_etyp_isrigid == "y" ){
+							image = "R";
+						}else{
+							if(data.etyp_schedul == "Y" ||
+							   data.etyp_schedul == "y" ){
+								image = "T";
+							}else{
+								image = "P";
+							}
+						}
+					}else{
+						if(data.sub_item_sched_type == "N" || 
+						   data.sub_item_sched_type == "n" ){
+							image = "P";
+						}else{
+							image = "T";
+						}
+					}
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<s:VGroup width="{imgWidth+4}" verticalAlign="bottom"  horizontalAlign="left"  paddingLeft="2" paddingRight="2">
+		<s:Image source="{img}" width="{imgWidth}"  minWidth="0" height="{imgHeight}" verticalAlign="bottom" horizontalAlign="right" />		
+	</s:VGroup>
+
+</s:ItemRenderer>

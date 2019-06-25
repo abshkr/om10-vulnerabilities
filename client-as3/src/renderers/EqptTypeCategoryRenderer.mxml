@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="true">
+	<fx:Script>
+		<![CDATA[
+			import assets.Assets;
+			
+			[Bindable] public var imgIcon:String="";
+			[Bindable] public var imgText:String="";
+			[Bindable] public var imgHeight:Number = 40;
+			[Bindable] public var imgWidth:Number  = 67;
+			[Bindable] public var img:Bitmap;
+			
+			
+			override public function set data(value:Object):void 
+			{      
+				super.data=value;
+				if (data)
+				{
+					var qualifier:String = data['code'];
+					imgText = data['name'];
+					switch(qualifier){
+						case 'F':case'f':
+							img = Assets.FLATBED;	
+							imgWidth = 284*imgHeight/120;
+							//imgText = resourceManager.getString('default','ETYP_CATEGORY.FLATBED');
+							return;
+						case 'R':case'r':
+							img = Assets.RIGID;
+							imgWidth = 515*imgHeight/120;
+							//imgText = resourceManager.getString('default','ETYP_CATEGORY.RIGID');
+							return;
+						case 'P':case'p':
+							img = Assets.PRIME_MOVER;	
+							imgWidth = 222*imgHeight/120;
+							//imgText = resourceManager.getString('default','ETYP_CATEGORY.PRIME_MOVER');
+							return;
+						case 'T':case't':
+							img = Assets.TRAILER;
+							imgWidth = 375*imgHeight/120;
+							//imgText = resourceManager.getString('default','ETYP_CATEGORY.TRAILER');
+							return;
+						case 'S':case's':
+							img = Assets.SHIP;
+							imgWidth = 515*imgHeight/120;
+							//imgText = resourceManager.getString('default','ETYP_CATEGORY.RIGID_SHIP');
+							return;
+						case 'E':case'e':
+							img = Assets.RAILTANK;
+							imgWidth = 386*imgHeight/120;
+							//imgText = resourceManager.getString('default','ETYP_CATEGORY.RAIL_TANK');
+							return;
+					}
+				}
+				img = null; 
+				imgWidth = 0;
+				imgText = "";
+			}			
+		]]>
+	</fx:Script>
+	
+	<s:VGroup top="4" left="4" bottom="4" right="4" horizontalAlign="center">
+		<s:Image scaleX="0.90" scaleY="0.90" source="{img}" width="{imgWidth}" height="{imgHeight}" />
+		<s:Spacer height="0"/>
+		<s:Label height="100%" text="{imgText}" horizontalCenter="0" verticalAlign="top"/>
+	</s:VGroup>
+</s:ItemRenderer>

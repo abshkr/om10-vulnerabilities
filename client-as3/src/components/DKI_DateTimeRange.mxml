@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:components="components.*">
+	<s:layout>
+		<s:VerticalLayout gap="1"/>
+	</s:layout>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.globalization.DateTimeFormatter;
+			import flash.globalization.LocaleID;
+			
+			import mx.events.CalendarLayoutChangeEvent;
+			import mx.utils.ObjectUtil;
+			[Bindable] [Embed (source="/assets/icons/calendar.png" )] private var ico_calendar:Class;
+			
+			[Bindable] private var dtf:DateTimeFormatter = new DateTimeFormatter(LocaleID.DEFAULT, "short", "short");
+			[Bindable] private var _time:Date = new Date(global.serverDateTime);
+			[Bindable] private var _hour:int   = 0;
+			[Bindable] private var _minute:int = 0;
+			
+			[Bindable] public var hideTime:Boolean = false;
+			[Bindable] public var limitDate:Boolean = false;
+			[Bindable] public var dateChange:Function = null;
+			
+ 			private var _rangeStart:Date = null;
+			private var _rangeEnd:Date   = null;
+			
+			[Bindable]public function get rangeEnd():Date{return _rangeEnd;}
+			public function set rangeEnd(value:Date):void{
+				_rangeEnd = value;
+				//if(_time.time > value.time){
+					//_time = new Date(value);
+					dispatchEvent(new Event("updatedDateTime"));
+				//}
+			}
+			[Bindable]public function get rangeStart():Date{return _rangeStart;}
+
+			public function set rangeStart(value:Date):void
+			{
+				_rangeStart = value;
+				//if(_time.time < value.time){
+					//_time = new Date(value);
+					dispatchEvent(new Event("updatedDateTime"));
+				//}
+			}
+
+			[Bindable (event="updatedDateTime")]
+			public function get selectedDate():Date{
+				if(hideTime){
+					_time.hours = 0;
+					_time.minutes = 0;
+				}
+				return _time;
+			}
+			public function set selectedDate(d:Date):void{
+				if(hideTime){
+					_time.hours = 0;
+					_time.minutes = 0;
+				}
+				_time = new Date(d); 
+			}
+			protected function openPopUp(event:MouseEvent):void
+			{
+				control.displayPopUp = true;
+				var range:Object = {rangeStart:_rangeStart, rangeEnd:_rangeEnd};
+				if(_rangeStart||_rangeEnd)dc.selectableRange = range;
+				dc.selectedDate = _time;
+				hns.value = _time.hours;
+				mns.value = _time.minutes;
+			}
+			[Bindable] public var change:Function = null;
+			protected function update(event:Event = null):void
+			{
+				
+				
+				// TODO Auto-generated method stub
+				_time = new Date(dc.selectedDate.fullYear, dc.selectedDate.month, dc.selectedDate.date, hns.value, mns.value);
+				
+				if(limitDate){
+					var limit:Date = new Date();
+					var errorString = "current";
+					if(global.limitToServerDateTime){
+						limit = global.serverDateTime;
+						errorString = "server";
+					}
+					if(_time.time > limit.time){
+						_time = new Date(limit.fullYear, limit.month, limit.date, limit.hours, limit.minutes);
+						global.msgWarning("Selected time cannot be greater than "+errorString+" time.\nSystem setting it back to "+errorString+" time.");
+					}
+				}
+				dispatchEvent(new Event("updatedDateTime"));
+				if(change)change(_time);
+				control.displayPopUp = false;
+				if(dateChange!=null)dateChange();
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:HGroup width="100%">
+		<s:TextInput text="{hideTime?dtf.format(_time).split(' ')[0]:dtf.format(_time)}" width="100%" editable="false" click="openPopUp(event)" minWidth="120"/>
+		<s:Image width="25" height="25" buttonMode="true" useHandCursor="true" click="openPopUp(event)" source="{new ico_calendar()}"/>
+	</s:HGroup>
+	<s:PopUpAnchor id="control">
+		<s:BorderContainer dropShadowVisible="true" cornerRadius="5" mouseDownOutside="{control.displayPopUp = false;}" backgroundAlpha="0.95" creationPolicy="all" >
+			<s:VGroup width="100%" verticalAlign="middle" horizontalAlign="center" paddingBottom="10" paddingLeft="10" paddingTop="10" paddingRight="10">
+				
+				<mx:DateChooser id="dc" yearNavigationEnabled="true" />
+				
+				<s:HGroup verticalAlign="middle" visible="{!hideTime}" includeInLayout="{!hideTime}">
+					<s:Label text="Hour:"/>
+					<components:DKI_NumericStepper id="hns" minimum="0" maximum="23" digitWidth="tabular"/>
+					<s:Label text="Minutes:"/>
+					<components:DKI_NumericStepper id="mns" minimum="0" maximum="59" digitWidth="tabular"/>
+					
+				</s:HGroup>
+				<s:HGroup width="100%">
+					<s:Spacer width="100%"/>
+					<components:DKI_Button label="Ok" click="update();" />
+				</s:HGroup>
+			</s:VGroup>
+		</s:BorderContainer>
+	</s:PopUpAnchor>
+</s:Group>

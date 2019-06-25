@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemEditor xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				  xmlns:s="library://ns.adobe.com/flex/spark"   
+				  xmlns:mx="library://ns.adobe.com/flex/mx" 
+				  preinitialize="getMyDataProvider()"
+				  creationComplete="creationCompleteHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import dm.DM;
+			import dm.utils.tools;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable] private var myDataProvider:ArrayCollection;
+			
+			public function getMyDataProvider():void
+			{
+				if ( column.dataField == "clnItemTerminal" )
+				{
+					myDataProvider = DM.MovementNominations.terminals;  
+				}
+				if ( column.dataField == "clnItemProdUnit" )
+				{
+					myDataProvider = DM.MovementNominations.prodUnits;  
+				}
+				if ( column.dataField == "clnItemPlantFrom" )
+				{
+					myDataProvider = DM.MovementNominations.plantsFrom;  
+				}
+				if ( column.dataField == "clnItemPlantTo" )
+				{
+					myDataProvider = DM.MovementNominations.plantsTo;  
+				}
+				if ( column.dataField == "clnItemProductFrom" )
+				{
+					//this.filterProductsFromList();
+					myDataProvider = new ArrayCollection( DM.MovementNominations.productsFrom.source );  
+				}
+				if ( column.dataField == "clnItemProductTo" )
+				{
+					//this.filterProductsToList();
+					myDataProvider = new ArrayCollection( DM.MovementNominations.productsTo.source );  
+				}
+				if ( column.dataField == "clnItemSupplierFrom" )
+				{
+					myDataProvider = DM.MovementNominations.suppliersFrom;  
+				}
+				if ( column.dataField == "clnItemSupplierTo" )
+				{
+					myDataProvider = DM.MovementNominations.suppliersTo;  
+				}
+				if ( column.dataField == "clnItemTankFrom" )
+				{
+					//this.filterTanksFromList();
+					myDataProvider = new ArrayCollection( DM.MovementNominations.tanksFrom.source );  
+				}
+				if ( column.dataField == "clnItemTankTo" )
+				{
+					//this.filterTanksToList();
+					myDataProvider = new ArrayCollection( DM.MovementNominations.tanksTo.source );  
+				}
+				           
+			}
+			
+			public function getMyDataProviderKey(i:int):String
+			{
+				var key:String="";
+				
+				if ( column.dataField == "clnItemTerminal" )
+				{
+					key = myDataProvider[i].CODE_NAME;  
+				}
+				if ( column.dataField == "clnItemProdUnit" )
+				{
+					key = myDataProvider[i].CODE_NAME;  
+				}
+				if ( column.dataField == "clnItemPlantFrom" )
+				{
+					key = myDataProvider[i].CODE_NAME;  
+				}
+				if ( column.dataField == "clnItemPlantTo" )
+				{
+					key = myDataProvider[i].CODE_NAME;  
+				}
+				if ( column.dataField == "clnItemProductFrom" )
+				{
+					key = myDataProvider[i].CODE_NAME;  
+				}
+				if ( column.dataField == "clnItemProductTo" )
+				{
+					key = myDataProvider[i].CODE_NAME;  
+				}
+				if ( column.dataField == "clnItemSupplierFrom" )
+				{
+					key = myDataProvider[i].CODE_NAME;  
+				}
+				if ( column.dataField == "clnItemSupplierTo" )
+				{
+					key = myDataProvider[i].CODE_NAME;  
+				}
+				if ( column.dataField == "clnItemTankFrom" )
+				{
+					key = myDataProvider[i].CODE_NAME;  
+				}
+				if ( column.dataField == "clnItemTankTo" )
+				{
+					key = myDataProvider[i].CODE_NAME;  
+				}
+				
+				return key;
+			}
+			
+			public function creationCompleteHandler(event:FlexEvent):void
+//			override public function prepare():void 
+			{
+				//trace (" ........................preparing !!!!" );
+				trace (" ........................creation completed !!!!" );
+				if ( column.dataField == "clnItemProductFrom" )
+				{
+					this.filterProductsFromList();
+					//myDataProvider = DM.MovementNominations.productsFrom;  
+				}
+				if ( column.dataField == "clnItemProductTo" )
+				{
+					this.filterProductsToList();
+					//myDataProvider = DM.MovementNominations.productsTo;  
+				}
+				if ( column.dataField == "clnItemTankFrom" )
+				{
+					this.filterTanksFromList();
+					//myDataProvider = DM.MovementNominations.tanksFrom;  
+				}
+				if ( column.dataField == "clnItemTankTo" )
+				{
+					this.filterTanksToList();
+					//myDataProvider = DM.MovementNominations.tanksTo;  
+				}
+			}
+			
+			
+			override public function set value(newValue:Object):void 
+			{
+				//this.getMyDataProvider();
+				trace("set value", column.dataField, column.headerText, newValue, data[column.dataField]);
+				trace("myDataProvider.length", myDataProvider.length);
+				
+				ddl.selectedIndex=-1;
+				for(var i:int=0;i <myDataProvider.length;i++)
+				{
+					if (myDataProvider[i].CODE_NAME == data[column.dataField])
+					//if ( this.getMyDataProviderKey(i) == newValue )
+					{
+						ddl.selectedIndex = i;
+						//ddl.selectedItem = myDataProvider[i];
+						//ddl.labelDisplay.text = myDataProvider[i].CODE_NAME;
+						break;
+					}
+				}
+				//data[column.dataField]=newValue;
+			}
+			
+			override public function get value():Object 
+			{
+				trace("here i am in get value !!!!!!!!!!!!!!!!!!!!!", ddl.selectedIndex);
+				var blank:String="";
+				if ( column.dataField == "clnItemPlantFrom"
+					|| column.dataField == "clnItemPlantTo" 
+					|| column.dataField == "clnItemProductFrom" 
+					|| column.dataField == "clnItemProductTo"
+					|| column.dataField == "clnItemSupplierFrom"
+					|| column.dataField == "clnItemSupplierTo" )
+				{
+					blank = global.INDICATOR_MANDATORY;
+				}
+				if ( column.dataField == "clnItemProdUnit" )
+				{
+					blank = myDataProvider[0].CODE_NAME;  
+				}
+				
+				
+				//this.getMyDataProvider();
+				if (ddl.selectedIndex != -1)
+				{
+					//return myDataProvider[ddl.selectedIndex].CODE_NAME;
+					if (ddl.selectedIndex != -3)
+					{
+						return myDataProvider[ddl.selectedIndex].CODE_NAME;
+					}
+					else
+					{
+						return blank;
+					}
+				}
+				else
+				{
+					return blank;
+					/*
+					if ( myDataProvider != null && myDataProvider.length>0 )
+					{
+						return myDataProvider[0].CODE_NAME;
+					}
+					else
+					{
+						return "";
+					}
+					*/
+				}
+			}
+			
+			override public function setFocus():void 
+			{
+				ddl.setFocus();
+			}
+
+			
+			// filters
+			
+			protected function isCompanyMatched( supplier:String, prod_cmpy:String):Boolean
+			{
+				if ( supplier.search(prod_cmpy ) >= 0 )                
+				{ 
+					trace("****************found it --- in isCompanyMatched: ", supplier, prod_cmpy);
+					return true;     
+				}
+				else
+				{
+					trace("****************found nothing in isCompanyMatched: ", supplier, prod_cmpy);
+					return false;
+				}
+			}
+			protected function productsFrom_filterFunc(item:Object):Boolean
+			{
+				//return isCompanyMatched( data["MVITM_PRODCMPY_FROM"], item.PROD_CMPY );
+				return isCompanyMatched( data["clnItemSupplierFrom"], item.PROD_CMPY );
+			}
+			public function filterProductsFromList():void
+			{
+				//DM.MovementNominations.productsFrom.filterFunction = productsFrom_filterFunc;
+				//DM.MovementNominations.productsFrom.refresh();
+				myDataProvider.filterFunction = productsFrom_filterFunc;
+				myDataProvider.refresh();
+			}
+			protected function productsTo_filterFunc(item:Object):Boolean
+			{
+				//return isCompanyMatched( data["MVITM_PRODCMPY_TO"], item.PROD_CMPY );
+				return isCompanyMatched( data["clnItemSupplierTo"], item.PROD_CMPY );
+			}
+			public function filterProductsToList():void
+			{
+				//DM.MovementNominations.productsTo.filterFunction = productsTo_filterFunc;
+				//DM.MovementNominations.productsTo.refresh();
+				myDataProvider.filterFunction = productsTo_filterFunc;
+				myDataProvider.refresh();
+			}
+			
+			protected function isBaseInProduct(prod_cmpy:String, prod_code:String, base:String):Boolean
+			{
+				for each (var o:Object in DM.MovementNominations.ratios)
+				{
+					//if( prod_cmpy == o.RAT_PROD_PRODCMPY && prod_code == o.RAT_PROD_PRODCODE && base == o.RATIO_BASE )
+					if( (prod_cmpy.search(o.RAT_PROD_PRODCMPY)>=0) && (prod_code.search(o.RAT_PROD_PRODCODE)>=0) && base == o.RATIO_BASE )
+					{
+						trace("****************found it --- [para]: ", prod_cmpy, prod_code, base, "[ratio]:", o.RAT_PROD_PRODCMPY, o.RAT_PROD_PRODCODE, o.RATIO_BASE);
+						return true;
+					}
+					//trace("****************not found yet --- [para]: ", prod_cmpy, prod_code, base, "[ratio]:", o.RAT_PROD_PRODCMPY, o.RAT_PROD_PRODCODE, o.RATIO_BASE);
+				}
+				trace("****************found nothing: ", base, prod_cmpy, prod_code);
+				
+				return false;
+			}
+			protected function tanksFrom_filterFunc(item:Object):Boolean
+			{
+				//return isBaseInProduct( data["MVITM_PRODCMPY_FROM"], data["MVITM_PRODCODE_FROM"], item.TANK_BASE );
+				return isBaseInProduct( data["clnItemSupplierFrom"], data["clnItemProductFrom"], item.TANK_BASE );
+			}
+			public function filterTanksFromList():void
+			{
+				//DM.MovementNominations.tanksFrom.filterFunction = tanksFrom_filterFunc;
+				//DM.MovementNominations.tanksFrom.refresh();
+				myDataProvider.filterFunction = tanksFrom_filterFunc;
+				myDataProvider.refresh();
+			}
+			protected function tanksTo_filterFunc(item:Object):Boolean
+			{
+				//return isBaseInProduct( data["MVITM_PRODCMPY_TO"], data["MVITM_PRODCODE_TO"], item.TANK_BASE );
+				return isBaseInProduct( data["clnItemSupplierTo"], data["clnItemProductTo"], item.TANK_BASE );
+			}
+			public function filterTanksToList():void
+			{
+				//DM.MovementNominations.tanksTo.filterFunction = tanksTo_filterFunc;
+				//DM.MovementNominations.tanksTo.refresh();
+				myDataProvider.filterFunction = tanksTo_filterFunc;
+				myDataProvider.refresh();
+			}
+			
+			protected function droplist_changeHandler(event:IndexChangeEvent):void
+			{
+				if ( column.dataField == "clnItemSupplierFrom" )
+				{
+					data["clnItemProductFrom"] = global.INDICATOR_MANDATORY;
+					data["clnItemTankFrom"] = "";//global.INDICATOR_MANDATORY;
+				}
+				if ( column.dataField == "clnItemSupplierTo" )
+				{
+					data["clnItemProductTo"] = global.INDICATOR_MANDATORY;
+					data["clnItemTankTo"] = "";//global.INDICATOR_MANDATORY;
+				}
+				if ( column.dataField == "clnItemProductFrom" )
+				{
+					data["clnItemTankFrom"] = "";//global.INDICATOR_MANDATORY;
+				}
+				if ( column.dataField == "clnItemProductTo" )
+				{
+					data["clnItemTankTo"] = "";//global.INDICATOR_MANDATORY;
+				}
+			}
+			
+			
+		]]>
+	</fx:Script>
+	<s:ComboBox id="ddl" dataProvider="{myDataProvider}"
+					prompt="Please select..." skinClass="skins.DKI_ComboBox_Skin" labelField="CODE_NAME"
+					change="droplist_changeHandler(event)" 
+					width="100%"/> 
+</s:GridItemEditor>

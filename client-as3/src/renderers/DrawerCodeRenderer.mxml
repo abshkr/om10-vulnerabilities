@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:s="library://ns.adobe.com/flex/spark"
+					xmlns:mx="library://ns.adobe.com/flex/mx" clipAndEnableScrolling="true"
+					xmlns:components="components.*"
+					xmlns:dm="dm.*"
+					>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.utils.ObjectUtil;
+			import mx.collections.ArrayCollection;
+			import spark.events.IndexChangeEvent;
+			import dm.utils.tools;
+			
+			public var readOnly:Boolean = true;
+
+			override public function prepare(hasBeenRecycled:Boolean):void
+			{
+				//trace(owner);
+				if (data)
+				{
+					var tmp:String = String(data[column.dataField]);
+					var idx:int = -1;
+					idx = tools.getItemIndexFromCode(tmp, DM.ManualTransactions.drawers, "CMPY_CODE");
+					
+					if (readOnly && idx == -1)
+					{
+						idx = DM.ManualTransactions.drawers.length-1;
+					}
+					
+					listData.selectedIndex = idx;
+					if (DM.ManualTransactions.drawers[idx])
+					{
+						listLabel.text = DM.ManualTransactions.drawers[idx].CMPY_CODE;
+					}
+					
+					validateDrawer();
+				}
+			}
+			
+			protected function validateDrawer():void
+			{
+				/*
+				if (listData.selectedIndex != -1)
+				{
+					// If one drawer product selected, set the drawer product code value.
+					data[column.dataField] = drawerProdCodes.getItemAt(listData.selectedIndex).PROD_CODE;
+				}
+				else
+				{
+					// If no drawer product selected, clear the drawer product code value.
+					data[column.dataField] = null;
+				}
+				*/
+				
+				// Update transfer data reference for Meter grid.
+				trace("validateDrawer =====> drawer code changed -------> refresh transfer data reference");
+				///if (DM.ManualTransactions.meterDataArr || DM.ManualTransactions.baseprodDataArr)
+				{
+					// Update current selected drawer code.
+					DM.ManualTransactions.setTransferDataRef(rowIndex, 1, data[column.dataField]);
+				}
+			}
+			
+			protected function droplist_changeHandler(event:IndexChangeEvent):void
+			{
+				data[column.dataField]=listData.selectedItem.CMPY_CODE;
+				
+				// Refresh Drawer Product List
+				//if (views.v_ManualTransactions)
+				//	trace(views.v_ManualTransactions.transferDetailsGrid.selectedItem)
+					
+				//trace(listData.selectedIndex);
+				//trace(ObjectUtil.toString(data));
+				
+				// Refresh meter code in Meter grid.
+				///if (DM.ManualTransactions.meterDataArr)
+				{
+					trace("Drawer selection changed --------> meterDataArr refresh");
+					trace("ROW_INDEX        ->"+rowIndex);
+					// Update current selected drawer code.
+					DM.ManualTransactions.setTransferDataRef(rowIndex, 1, listData.selectedItem.CMPY_CODE);
+					
+					// Refresh child grid.
+					DM.ManualTransactions.refreshChildGrid();
+					
+				}
+				
+				//var parnt:DataGrid = owner as DataGrid;
+				//(parnt.dataProvider as ArrayCollection).refresh();
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<dm:DM/>
+	</fx:Declarations>
+	
+	<s:DropDownList id="listData" top="0" left="0" bottom="0" right="0" includeInLayout="{!readOnly}" visible="{!readOnly}"
+					dataProvider="{DM.ManualTransactions.drawers}"
+					labelField="CODE_NAME" prompt="Select Drawer" change="droplist_changeHandler(event)" useVirtualLayout="false"
+					skinClass="skins.MeasuresSkin"/>
+	
+	<s:Label id="listLabel" top="2" left="2" bottom="2" right="2" backgroundColor="#EAEAEA" verticalAlign="middle" includeInLayout="{readOnly}" visible="{readOnly}" backgroundAlpha="1"/>
+	
+</s:GridItemRenderer>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel skinClass="skins.WidgetPanelSkin"
+		 xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 xmlns:components="components.*" 
+		 width="324" height="90" title="Enter New Password">
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable] public var msg:String;
+			
+			public var callBack:Function;
+			
+			protected function dki_button2_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp(this);	
+				callBack(pass.text);
+			}
+		]]>
+	</fx:Script>
+	
+	<s:VGroup width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5">
+		<s:HGroup width="100%" verticalAlign="middle">
+			<s:Label fontFamily="Arial" fontSize="12" fontWeight="bold" text="Password"/>
+			<components:DKI_ValidatorInput id="pass" text="12345" maxChars="6" prompt="enter up to 6 characters" displayAsPassword="true" width="100%"/>
+		</s:HGroup>
+		<s:HGroup width="100%">
+			<s:Spacer width="100%" />
+			<components:DKI_Button label="{resourceManager.getString('default','OK')}" type="save" click="dki_button2_clickHandler(event)"/>
+			
+		</s:HGroup>
+	</s:VGroup>
+</s:Panel>

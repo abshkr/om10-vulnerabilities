@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemEditor xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				  xmlns:s="library://ns.adobe.com/flex/spark" 
+				  xmlns:mx="library://ns.adobe.com/flex/mx"
+				  xmlns:components="components.*"
+				  creationComplete="griditemeditor1_creationCompleteHandler(event)"
+				  >
+	
+	<fx:Script>
+		<![CDATA[
+			import components.PartnerChooser;
+			import components.ViewPopupDlg;
+			
+			import mx.events.FlexEvent;
+			
+			public var partnershipPopup:ViewPopupDlg = new ViewPopupDlg( "Partnership List", new PartnerChooser(), afterClosePartnerList );
+			
+			[Bindable] public var partner_type:String="";
+			[Bindable] public var partner_cmpy:String="";
+			[Bindable] public var partner_flag:Boolean = false;
+			
+			override public function set value(newValue:Object):void 
+			{
+				partner_code.text=newValue as String;
+			}
+			
+			override public function get value():Object 
+			{
+				return partner_code.text;
+			}
+			
+			override public function setFocus():void 
+			{
+				partner_code.setFocus();
+			}
+			
+			protected function griditemeditor1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+				/* if ( global.getValueFromSiteConfigSettings( "SITE_PARTNERSHIP_ENABLED" ) == 'Y' )
+				{
+					this.partner_flag = true;
+				}
+				else
+				{
+					this.partner_flag = false;
+				}
+				
+				if ( this.column.dataField == "schd_sold_to_num" )
+				{
+					this.partner_type = "AG";
+				}
+				
+				if ( this.column.dataField == "schd_ship_to_num" )
+				{
+					this.partner_type = "WE";
+				} */
+				
+			}
+			
+			
+			public function afterClosePartnerList():void
+			{
+				trace("-------------------Back from PartnerList", this.partnershipPopup.popupView.dataGrid.selectedIndex);
+				var obj:Object = this.partnershipPopup.popupView.partnerSelected;
+				if ( obj != null && obj.hasOwnProperty( 'ACTION' ) && obj["ACTION"] == "CANCEL" )
+				{
+					return;
+				}
+				
+				if ( obj != null && obj.hasOwnProperty( this.partner_type ) )
+				{	
+					//this.setFocus();
+					
+					this.partner_code.text = obj[ this.partner_type ];
+					//this.value = obj[ this.partner_type ];
+					
+					this.dataGrid.dataProvider[this.rowIndex][this.column.dataField] = obj[ this.partner_type ];
+				}
+			}
+			
+			protected function popupPartnerList(event:MouseEvent)
+			{
+				if ( this.partner_cmpy == null || this.partner_cmpy.length == 0 )
+				{
+					global.msgWarning( resourceManager.getString('default','LOADSCHD.MESSAGE.REQUIRE_SUPP4PARTNER') );
+					return;
+				}
+				
+				this.partnershipPopup.popupTitle = resourceManager.getString('default','m_partnership');
+				this.partnershipPopup.setSecurity( true, false, false, false, false );
+				
+				this.partnershipPopup.parentWidth = 800;
+				this.partnershipPopup.parentHeight = 400;
+				
+				trace ( "*******************Pop up a screen to manage partnership!");
+				partnershipPopup.openDialog();
+				
+				var params:Object = new Object();
+				
+				params["partner_code"] = this.partner_code.text;
+				params["partner_type"] = this.partner_type;
+				params["partner_cmpy_code"] = this.partner_cmpy;
+				params["partner_cust_acct"] = "";
+				
+				partnershipPopup.setFilters( params ); 
+			}
+			
+		]]>
+	</fx:Script>
+	<s:HGroup gap="0">
+		<s:TextInput id="partner_code" borderVisible="true" width="{this.partner_flag?60:80}" restrict="A-Za-z0-9 _\-" />
+		<components:DKI_Button id="btn_partner" label="" width="19" skinClass="skins.DKI_ComboBoxButton_Skin" 
+							   enabled="{this.partner_flag}" 
+							   visible="{this.partner_flag}" includeInLayout="{this.partner_flag}" click="popupPartnerList(event);"/>
+	</s:HGroup>
+</s:GridItemEditor>

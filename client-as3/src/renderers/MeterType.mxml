@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" clipAndEnableScrolling="true">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.core.BitmapAsset;
+			
+			[Bindable] public var mtrType: String = "ltr";
+			
+			override public function prepare(hasBeenRecycled:Boolean):void 
+			{
+				if (data)
+				{
+					if (data[column.dataField] != null)
+					{
+						var s:String = (data[column.dataField] as String).toUpperCase();
+						trace(s);
+						if ( s == '0') mtrType="vol." else mtrType="mass";
+					}
+				}
+			}
+		]]>
+	</fx:Script>
+	<s:Group width="100%" height="100%">
+		<s:Label text="{mtrType}" verticalCenter="0" horizontalCenter="0"/>
+	</s:Group>
+ </s:GridItemRenderer>

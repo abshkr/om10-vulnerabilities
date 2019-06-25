@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:s="library://ns.adobe.com/flex/spark"
+					xmlns:mx="library://ns.adobe.com/flex/mx"
+					xmlns:controllers="controllers.*"
+					xmlns:dm="dm.*"
+					xmlns:components="components.*" show="DM.FolioSettings.reload();"
+					width="100%" height="100%" creationComplete="DM.FolioSettings" xmlns:views="views.*">
+	<fx:Declarations>
+		<dm:DM/>
+		<controllers:C_FolioScheduling_Settings id="controller" view="{this}"/>
+		<views:v_FolioScheduling id="baseView"/>
+	</fx:Declarations>
+	<s:BorderContainer backgroundAlpha="0.5" backgroundColor="#FFFFFF" left="5" right="5" top="5" bottom="5">
+		<s:VGroup width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+			<s:Label fontSize="24" fontWeight="bold" text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.TITLE')}"/>
+			<mx:HRule width="100%"/>
+			<s:HGroup width="100%"  horizontalAlign="left" verticalAlign="middle" height="28">
+				<s:Label width="202" fontWeight="bold" text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.LAST_CLOSEOUT_DATETIME')}:" textAlign="right"/>
+				<s:Label text="{controller.LDRD}" width="200"/>
+			</s:HGroup>
+			<mx:HRule width="95%"/>
+			<s:HGroup width="100%" horizontalAlign="left" verticalAlign="middle" height="28">
+				<s:Label width="202" fontWeight="bold" text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.LAST_WEEK_REPORT_DATE')}:" textAlign="right"/>
+				<s:Label text="{controller.LWRD}" width="200"/>
+			</s:HGroup>
+			<mx:HRule width="95%"/>
+			<s:HGroup width="100%" horizontalAlign="left" verticalAlign="middle" height="28">
+				<s:Label width="202" fontWeight="bold" text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.LAST_MONTH_REPORT_DATE')}:" textAlign="right"/>
+				<s:Label text="{controller.LMRD}" width="200"/>
+			</s:HGroup>
+			<mx:HRule width="95%"/>
+			<s:HGroup width="100%" horizontalAlign="left" verticalAlign="middle"  height="28" visible="false" includeInLayout="false">
+				<s:Label width="202" fontWeight="bold" text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.LOAD_RETENTION_PERIOD')} [60 ~ 1830]:" textAlign="right"/>
+				<components:DKI_NumericStepper id="lrpNS" width="100" change="{controller.dataChange(event)}" maximum="1830" minimum="60" enabled="{baseView.controller.canUpdate}" value="{Number(DM.FolioSettings.loadRetPeriod)}"/>
+				<s:Spacer width="94"/>
+			</s:HGroup>
+			<mx:HRule width="95%" visible="false" includeInLayout="false"/>
+			<s:HGroup width="100%" horizontalAlign="left" verticalAlign="middle" height="28" visible="false" includeInLayout="false">
+				<s:Label width="202" fontWeight="bold" text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.PSNL_EXPIRY_MONTH')}:" textAlign="right"/>
+				<components:DKI_NumericStepper id="pemNS" width="100" change="{controller.dataChange(event)}" maximum="12" minimum="0"  enabled="{baseView.controller.canUpdate}" value="{Number(DM.FolioSettings.expireMons)}"/>
+				<s:Spacer width="94"/>
+			</s:HGroup>
+			<mx:HRule width="95%" visible="false" includeInLayout="false"/>
+			<s:HGroup width="100%" horizontalAlign="left" verticalAlign="middle" height="28" visible="false" includeInLayout="false">
+				<s:Label width="202" fontWeight="bold" text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.NEWLOAD_RETENTION_PERIOD')} [60 ~ 1830]:" textAlign="right"/>
+				<components:DKI_NumericStepper id="lrnlNS" width="100" change="{controller.dataChange(event)}" maximum="1830" minimum="60" enabled="{baseView.controller.canUpdate}" value="{Number(DM.FolioSettings.loadRetNewLoad)}"/>
+				<s:Spacer width="94"/>
+			</s:HGroup>
+			<mx:HRule width="95%" visible="false" includeInLayout="false"/>
+			<s:HGroup width="100%" horizontalAlign="left" verticalAlign="middle" height="28">
+				<s:Label width="202" fontWeight="bold" text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.NEXT_CLOSEOUT_DATE')}:" textAlign="right"/>
+				<s:Label width="100" text="{DM.FolioExceptionDates.nextNonExceptionDateGUI}"/>
+				<components:DKI_Button width="144" label="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.RUN_OVERRIDE')}" click="controller.manualFreeze(true)" type="report"
+									   enabled="{DM.FolioExceptionDates.allowOverrideToday &amp;&amp; 
+									   baseView.controller.canCreate &amp;&amp;
+									   DM.FolioSettings.manual_freeze==null}"/>
+			</s:HGroup>
+			<mx:HRule width="95%"/>
+			<s:HGroup width="100%" horizontalAlign="left" verticalAlign="middle" height="28">
+				<s:Label width="202" fontWeight="bold" text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.DAILY_REPORT_TIME')}:" textAlign="right"/>
+				<components:DKI_NumericStepper width="40" id="drthNS" change="{controller.dataChange(event)}" maximum="23" minimum="0" value="{Number(DM.FolioSettings.nextDailyReportHour)}" enabled="{baseView.controller.canUpdate}"/>
+				<s:Label fontWeight="bold" text=":"/>
+				<components:DKI_NumericStepper width="40" id="drtmNS" change="{controller.dataChange(event)}" maximum="59" minimum="0" value="{Number(DM.FolioSettings.nextDailyReportMin)}"  enabled="{baseView.controller.canUpdate}"/>
+				<s:Spacer width="55"/>
+				<s:Label text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.LAST_MOD_ON')}: " fontWeight="bold" textAlign="right" width="140"/>
+				<s:Label text="{DM.FolioSettings.lmdDRT}" width="160"/>
+				<s:Label text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.LAST_MOD_BY')}: " fontWeight="bold" textAlign="right" width="60"/>
+				<s:Label text="{DM.FolioSettings.userDRT}" width="100"/>
+			</s:HGroup>
+			<mx:HRule width="95%"/>
+			<s:HGroup width="100%" horizontalAlign="left" verticalAlign="middle" height="28">
+				<s:Label width="202" fontWeight="bold" text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.NEXT_WRPT_DATE')}:" textAlign="right"/>
+				<!--<mx:DateField width="100" id="nwrDF" change="{controller.dataChange(event)}" creationComplete="{controller.nwrDateToString()}"  
+							  enabled="{baseView.controller.canUpdate}" selectedDate="{DM.FolioSettings.nextWeeklyReportDate}" yearNavigationEnabled="true" />-->
+				<components:DKI_DateTime id="nwrDF" width="120" timeEnabled="false" enabled="{baseView.controller.canUpdate}"  
+										 creationComplete="{controller.nwrDateToString();this.nwrDF.dateChange=controller.dateChangedFunction}"
+										 selectedDate="{DM.FolioSettings.nextWeeklyReportDate}" 
+										 />
+				
+				<s:Spacer width="30"/>
+				<s:Label text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.LAST_MOD_ON')}: " fontWeight="bold" textAlign="right" width="140"/>
+				<s:Label text="{DM.FolioSettings.lmdNWR}" width="160"/>
+				<s:Label text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.LAST_MOD_BY')}: " fontWeight="bold" textAlign="right" width="60"/>
+				<s:Label text="{DM.FolioSettings.userNWR}" width="100"/>
+			</s:HGroup>
+			<mx:HRule width="95%"/>
+			<s:HGroup width="100%" horizontalAlign="left" verticalAlign="middle" height="28">
+				<s:Label width="202" fontWeight="bold" text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.NEXT_MRPT_DATE')}:" textAlign="right"/>
+				<!--<mx:DateField width="100" id="nmrDF" change="{controller.dataChange(event)}" creationComplete="{controller.nmrDateToString()}"  
+							  enabled="{baseView.controller.canUpdate}" selectedDate="{DM.FolioSettings.nextMonthlyReportDate}" yearNavigationEnabled="true"/>-->
+				<components:DKI_DateTime id="nmrDF" width="120" timeEnabled="false" enabled="{baseView.controller.canUpdate}"  
+										 creationComplete="{controller.nmrDateToString();this.nmrDF.dateChange=controller.dateChangedFunction}"
+										 selectedDate="{DM.FolioSettings.nextMonthlyReportDate}" 
+										 />
+				<s:Spacer width="30"/>
+				<s:Label text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.LAST_MOD_ON')}: " fontWeight="bold" textAlign="right" width="140"/>
+				<s:Label text="{DM.FolioSettings.lmdNMR}" width="160"/>
+				<s:Label text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.LAST_MOD_BY')}: " fontWeight="bold" textAlign="right" width="60"/>
+				<s:Label text="{DM.FolioSettings.userNMR}" width="100"/>
+			</s:HGroup>
+			<mx:HRule width="95%"/>
+			<s:HGroup width="100%" horizontalAlign="left" verticalAlign="middle" height="28">
+				<s:Label width="202" fontWeight="bold" text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.OPERATING_DATE')}:" textAlign="right"/>
+				<!--<mx:DateField width="100" id="opDF" change="{controller.dataChange(event)}" creationComplete="{controller.opDateToString()}" 
+							  enabled="{baseView.controller.canUpdate}"  selectedDate="{DM.FolioSettings.operateDmy}" yearNavigationEnabled="true"/>-->
+				<components:DKI_DateTime id="opDF" width="120" timeEnabled="false" enabled="{baseView.controller.canUpdate}"  
+										 creationComplete="{controller.opDateToString();this.opDF.dateChange=controller.dateChangedFunction}"
+										 selectedDate="{DM.FolioSettings.operateDmy}" 
+										 />
+				<s:Spacer width="30"/>
+				<s:Label text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.LAST_MOD_ON')}: " fontWeight="bold" textAlign="right" width="140"/>
+				<s:Label text="{DM.FolioSettings.lmdOD}" width="160"/>
+				<s:Label text="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.LAST_MOD_BY')}: " fontWeight="bold" textAlign="right" width="60"/>
+				<s:Label text="{DM.FolioSettings.userOD}" width="100"/>
+			</s:HGroup>
+			<mx:HRule width="100%"/>
+			<s:HGroup enabled="{baseView.controller.setUpdate &amp;&amp; controller.differentData}">
+				<s:Spacer height="10"/>
+				<components:DKI_Button width="120" label="{resourceManager.getString('default','CANCEL')}" click="controller.cancel()" type="cancel"/>
+				<components:DKI_Button width="120" label="{resourceManager.getString('default','SAVE')}" click="controller.save()" type="save"/>
+				<s:Spacer height="10"/>
+			</s:HGroup>
+			<mx:HRule width="100%"/>
+			<s:Spacer height="10"/>
+			<s:HGroup>
+				<components:DKI_Button width="240" label="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.RUN_MANUAL_CLOSEOUT')}" enabled="{DM.FolioSettings.manual_freeze==null &amp;&amp; baseView.controller.setUpdate}" click="controller.manualFreeze(false)" type="report"/>
+				<components:DKI_Button width="240" label="{resourceManager.getString('default','FOLIO_SCHEDULING.SETTINGS.CLOSE_FIRST_FROZEN_FOLIO')}"  enabled="{DM.FolioSettings.manual_close==null  &amp;&amp; baseView.controller.setUpdate &amp;&amp; DM.FolioSettings.canCloseFolio}"  click="controller.manualClose()"  type="report"/>		
+			</s:HGroup>
+		</s:VGroup>
+	</s:BorderContainer>
+	
+	
+</s:NavigatorContent>

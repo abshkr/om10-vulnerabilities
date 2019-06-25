@@ -1,0 +1,202 @@
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  xmlns:skins="skins.*"
+		  xmlns:controllers="controllers.*"
+		  currentState="normal"
+		  width="100%" height="100%"
+		  creationComplete="vgroup1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			private var nc:NetConnection= new NetConnection()
+			private var getTransactions:Responder = new Responder(getAPAData_resultHandler);
+			private var idx:int=-1;
+			private var fltrs:String='';
+			private var srchStr:String='';
+			private var currentOrder:String='';
+			private var currentDirection:String="ASC";	
+			private var currentFilter:String=null;
+			[Bindable] private var sTime:Date=new Date();
+			[Bindable] private var eTime:Date=new Date();
+			
+			[Bindable] private var transArr:ArrayCollection = new ArrayCollection();
+						
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			protected function vgroup1_creationCompleteHandler(event:FlexEvent):void
+			{
+				sTime.date = eTime.date-7;
+				var nd1:Date = new Date();
+				var nd2:Date = new Date();
+				nd1.date=nd2.date-7;
+				eDate.selectedDate = nd2;
+				sDate.selectedDate = nd1;
+				nc.objectEncoding = ObjectEncoding.AMF3;
+				nc.connect(global.gatewayURL);
+				//nc.connect("/amfservices/gateway/amf2/index.php");
+				nc.call("APATransactionService.getData",getTransactions ,dateConvert.format(sTime),dateConvert.format(eTime));
+				transArr.filterFunction=filterFunc;
+			}
+			
+			private function getAPAData_resultHandler(obj:Object):void
+			{
+				transArr.source = obj as Array;
+			}
+			
+			protected function dateChanged(): void
+			{
+				if (eDate.selectedDate < sDate.selectedDate) {
+					eDate.selectedDate.date = sDate.selectedDate.date+7;
+					global.msgWarning("Date entered invalid ");
+				}
+				
+				if (sDate.selectedDate > eDate.selectedDate)
+				{
+					sDate.selectedDate.date = eDate.selectedDate.date - 7;
+				}
+				nc.call("APATransactionService.getData",getTransactions ,dateConvert.format(sDate.selectedDate),dateConvert.format(eDate.selectedDate));
+			}
+			
+			protected function searchText_keyUpHandler(event:KeyboardEvent):void
+			{
+				transArr.refresh();
+			}
+			
+			protected function filterFunc(item:Object):Boolean
+			{
+				if (searchText.text.length > 1)
+				
+				{	
+					var tmpStr: String = (item.TRAN_REF_NO as String).toLowerCase();
+					if (tmpStr.indexOf(searchText.text) > -1)
+						return true	
+					else
+						return false;
+				}
+				else
+					return true;	
+			}
+			
+			protected function refresh(): void
+			{
+				
+				var nd1:Date = new Date();
+				var nd2:Date = new Date();
+				nd1.date=nd2.date-7;
+				eDate.selectedDate = nd2;
+				sDate.selectedDate = nd1;
+				
+				//eDate.selectedDate = eTime.date;
+				searchText.text = "";
+				dateChanged();
+				//transArr.refresh();
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateConvert" dateTimePattern="yyyy-MM-dd HH:mm:ss"/>
+	</fx:Declarations>
+
+	<s:states>
+		<s:State name="widget"/>
+		<s:State name="normal"/>
+	</s:states>
+	
+		
+	
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		<s:HGroup id="toolbar" width="100%" gap="5" paddingBottom="2" paddingTop="2">
+			<components:DKI_ValidatorInput id="searchText" validationType="search" width="160" height="100%"  width.widget="140" prompt="search by TransRef#" keyUp="searchText_keyUpHandler(event)"/>
+			<s:Label height="100%" fontWeight="bold" text="Date Range" verticalAlign="middle"/>		
+			<components:DKI_DateTime id="sDate" width="150" timeEnabled="true" dateChange="dateChanged"/>		
+			<components:DKI_DateTime id="eDate" width="150" timeEnabled="true" dateChange="dateChanged"/>
+			<components:DKI_Button height="100%" label="{resourceManager.getString('default','CLEAR')+resourceManager.getString('default','FILTER')}" type="refresh" click="refresh()"/>
+		</s:HGroup>
+		<s:DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="4" dataProvider="{transArr}"
+					skinClass="skins.DKI_DataGrid_Skin"
+					height.widget="100%">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn width="90" dataField="SEQ"
+									  headerText="RecID" />
+						
+						
+						<s:GridColumn width="135" dataField="SITE_ID"
+									  headerText="Site ID" />
+						
+						<s:GridColumn width="135" dataField="TRAN_REF_NO"
+									  headerText="REF NO" />
+						
+						<s:GridColumn width="90" dataField="TRAN_DATE"
+									  headerText="Tran Date" />
+						
+						<s:GridColumn width="90" dataField="TRAN_PROD_CODE"
+									  headerText="Product ID" />
+						
+						<s:GridColumn width="135" dataField="TRAN_PROD_QTY"
+									  headerText="Amb Quantity" />
+						
+						<s:GridColumn width="90" dataField="TRAN_PROD_STD"
+									  headerText="Std Quantity"  />
+						
+						<s:GridColumn width="135" dataField="TRAN_TEMPERATURE"
+									  headerText="Temprature" />
+						
+						<s:GridColumn width="90" dataField="TRAN_IBUTTON"
+									  headerText="IButton" />
+						
+						<s:GridColumn width="135" dataField="TRAN_VEHICLE"
+									  headerText="Vehicle" />
+						
+						<s:GridColumn width="90" dataField="TRAN_USERID"
+									  headerText="User ID" />
+						
+						<s:GridColumn width="135" dataField="TRAN_ARMID"
+									  headerText="Arm ID" />
+						
+						<s:GridColumn width="90" dataField="TRAN_BAYID"
+									  headerText="Bay ID" />
+						
+						<s:GridColumn width="135" dataField="TRAN_TANKID"
+									  headerText="Tank ID" />
+						
+						<s:GridColumn width="135" dataField="TRAN_ODOMETER"
+									  headerText="Odometer" />
+						
+						<s:GridColumn width="135" dataField="TRAN_FILENAME"
+									  headerText="FileName" />
+						
+						<s:GridColumn width="135" dataField="SHLS_TRIP_NO"
+									  headerText="Trip No" />
+						
+						<s:GridColumn width="135" dataField="TRAN_FAILED_COUNT"
+									  headerText="Failed Count" itemRenderer="renderers.APAFailCount"/>
+						
+						<s:GridColumn width="135" dataField="STATUS"
+									  headerText="Status" />
+						
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			
+		</s:DataGrid>
+	</s:Panel>
+	
+	
+</s:VGroup>

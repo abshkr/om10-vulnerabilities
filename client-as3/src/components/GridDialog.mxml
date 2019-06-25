@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel skinClass="skins.PanelSkin"
+		 xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 minWidth="340" minHeight="90" title="Warning" xmlns:components="components.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable] public var msg:String;
+			[Bindable] private var _boxTitle:String;
+			[Bindable] private var _headerName:String;
+			[Bindable] private var _headerDesc:String;
+			[Bindable] public var lst:ArrayCollection;
+			
+			public var okFunc:Function;
+			
+			protected function dki_button2_clickHandler(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp(this);	
+				if ( okFunc != null && okFunc != false && okFunc is Function )
+				{
+					okFunc();
+				}
+			}
+			
+			public function set boxTitle( str:String ):void
+			{
+				_boxTitle = str;
+				this.title = str;
+			}
+			
+			public function set headerName( str:String ):void
+			{
+				_headerName = str;
+			}
+			
+			public function set headerDesc( str:String ):void
+			{
+				_headerDesc = str;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:VGroup width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="10">
+		<s:HGroup width="100%" verticalAlign="middle" visible="{msg.length!=0}" includeInLayout="{msg.length!=0}">
+			<s:Image id="img1" source="assets/icons/warning.png" visible="false" includeInLayout="false" />
+			<s:Label id="lbl1" width="100%" fontFamily="Arial" fontSize="13" fontWeight="bold" text="{msg}" textAlign="left"/>
+		</s:HGroup>
+		
+		<s:DataGrid id="gridData" dataProvider="{lst}" width="100%" height="100%" requestedRowCount="8" variableRowHeight="true" rowHeight="25">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="name" headerText="{_headerName}" width="200" ></s:GridColumn>
+						<s:GridColumn dataField="description" headerText="{_headerDesc}"  ></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+		</s:DataGrid>
+		
+		<s:HGroup width="100%">
+			<s:Spacer width="100%" />
+			<components:DKI_Button label="{resourceManager.getString('default','OK')}" click="dki_button2_clickHandler(event)"/>
+		</s:HGroup>
+	</s:VGroup>
+	
+</s:Panel>

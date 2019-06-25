@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" clipAndEnableScrolling="true">
+	
+	<fx:Script>
+		<![CDATA[
+			override public function prepare(hasBeenRecycled:Boolean):void {
+				if(data)
+				{
+					var code:String = (data[column.dataField] as String)
+					switch(code)
+					{
+						case "0":
+							lblData.text = "Visitor";
+							break;
+						case "1":
+							lblData.text = "Manager";
+							break;
+						case "2":
+							lblData.text = "Accountant";
+							break;
+						case "3":
+							lblData.text = "Supervisor";
+							break;
+						case "4":
+							lblData.text = "Engineer";
+							break;
+						case "5":
+							lblData.text = "Dispatcher";
+							break;
+						case "6":
+							lblData.text = "Guard";
+							break;
+						case "7":
+							lblData.text = "Driver";
+							break;
+						case "8":
+							lblData.text = "Contractor";
+							break;
+						case "9":
+							lblData.text = "Loader";
+							break;
+						default:
+							lblData.text = "";
+							break;
+					}
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Label id="lblData" top="9" left="7"/>
+	
+</s:GridItemRenderer>

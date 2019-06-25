@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" height="100%" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" 
+					xmlns:controllers="controllers.*" 
+					xmlns:components="components.*" 
+					xmlns:dm="dm.*" xmlns:views="views.*">
+
+	<fx:Declarations>
+		<dm:DM/>
+		<controllers:C_FolioScheduling_Planner id="controller" view="{this}"/>
+		<views:v_FolioScheduling id="baseView"/>
+	</fx:Declarations>
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="new_exception"/>
+		<s:State name="edit_exception"/>
+	</s:states>
+	<s:VGroup width="100%" height="100%">		
+		<s:Group includeIn="normal,new_exception, edit_exception" width="100%" height="100%" enabled="{currentState=='normal'}">
+			<s:VGroup width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+				<s:HGroup width="100%" verticalAlign="middle">
+					<s:Label text="{resourceManager.getString('default','SHOW')}:"/>
+					<s:DropDownList width="120" id="filterWindow" prompt="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.RULES.SELECT_WINDOW')}" height="100%" labelField="label"  useVirtualLayout="false" selectedItem="@{C_FolioScheduling_Planner.filterRule}" change="controller.dgExceptionData.refresh();">
+						<s:dataProvider>
+							<mx:ArrayList>
+								<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.RULES.ALL_WINDOW')}</fx:String>
+								<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.RULES.ONCE_WINDOW')}</fx:String>
+								<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.RULES.WEEK_WINDOW')}</fx:String>
+								<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.RULES.MONTH_WINDOW')}</fx:String>
+								<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.RULES.DATE_YEAR_WINDOW')}</fx:String>
+								<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.RULES.YEAR_WINDOW')}</fx:String>
+							</mx:ArrayList>
+						</s:dataProvider>
+					</s:DropDownList> 
+					<components:DKI_ValidatorInput width="100%" prompt="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.PROMPT.FILTER_DESC')}" validationType="search" change="controller.dgExceptionData.refresh();" text="@{C_FolioScheduling_Planner.filterDescription}"/>
+					<components:DKI_Button label="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.BTN.NEW_EXCEPT')}" enabled="{baseView.controller.canCreate}"  height="100%" type="create" click="controller.newModel(event)"/>
+					<components:DKI_Button label="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.BTN.UPD_DESC')}" enabled="{baseView.controller.canUpdate &amp;&amp; exceptionDG.selectedIndex>-1}" height="100%" type="update" click="controller.editModel(event)"/>
+					<components:DKI_Button label="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.BTN.DEL_EXCEPT')}" enabled="{baseView.controller.canUpdate &amp;&amp; exceptionDG.selectedIndex>-1}" height="100%" type="delete" click="controller.removeModel(event)"/>
+				</s:HGroup>
+							
+				<mx:VDividedBox width="100%" height="100%">
+					<s:VGroup width="100%" height="100%">
+						<s:Label fontWeight="bold" text="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.GRID.EXCEPT_RULES')}"/>
+						<s:DataGrid id="exceptionDG" height="100%" width="100%" dataProvider="{controller.dgExceptionData}" skinClass="skins.DKI_DataGrid_Skin">
+							<s:columns>
+								<s:ArrayList>
+									<s:GridColumn dataField="UIWindow"				headerText="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.GRID.WINDOW')}"    		width="120"></s:GridColumn>
+									<s:GridColumn dataField="UIDate"     		    headerText="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.GRID.EXCEPT')}" 		width="180"></s:GridColumn>
+									<s:GridColumn dataField="USER_CODE" 			headerText="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.GRID.USER')}"			width="100"></s:GridColumn>
+									<s:GridColumn dataField="LAST_CHG_TIME" 		headerText="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.GRID.MOD_DATE')}" 	width="180" labelFunction="{DM.dateTrim}"></s:GridColumn>
+									<s:GridColumn dataField="DESCRIPTION"   		headerText="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.GRID.DESC')}"></s:GridColumn>
+								</s:ArrayList>
+							</s:columns>
+						</s:DataGrid>
+					</s:VGroup>
+					<s:VGroup width="100%" height="50%">
+						<s:Label fontWeight="bold" text="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.GRID.OVERRIDE_RULES')}"/>
+						<s:DataGrid id="exceptionDG2" height="100%" width="100%"  dataProvider="{controller.dgOverrideData}" skinClass="skins.DKI_DataGrid_Skin">
+							<s:columns>
+								<s:ArrayList>
+									<s:GridColumn dataField="UIDate"		      	headerText="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.GRID.OVERRIDE')}" 		width="280"></s:GridColumn>
+									<s:GridColumn dataField="USER_CODE" 			headerText="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.GRID.USER')}" 			width="100"></s:GridColumn>
+									<s:GridColumn dataField="LAST_CHG_TIME" 		headerText="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.GRID.MOD_DATE')}" 	width="180" labelFunction="{DM.dateTrim}"></s:GridColumn>
+								</s:ArrayList>
+							</s:columns>
+						</s:DataGrid>
+					</s:VGroup>
+				</mx:VDividedBox>
+				
+			</s:VGroup>		
+		</s:Group>	
+		
+		<s:Group includeIn="new_exception, edit_exception" width="100%">
+			<!--put stuff here-->
+			<s:VGroup width="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+				<s:HGroup width="100%" verticalAlign="middle">
+					<mx:HRule width="100%"/>
+					<s:Label text.new_exception="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.BTN.NEW_EXCEPT')}"
+							 text.edit_exception="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.BTN.EDIT_EXCEPT')}"
+							 fontWeight="bold"/>
+					<mx:HRule width="100%"/>	
+				</s:HGroup>
+				
+				<s:HGroup width="100%">
+					
+					<s:DropDownList includeIn="new_exception" id="selectionRule" width="120" selectedIndex="0" height="100%" labelField="label"  useVirtualLayout="false" dataProvider="{controller.dgSelectionRules}"/>
+					
+					<s:HGroup includeIn="new_exception" width="{selectionRule.selectedIndex==4?280:selectionRule.selectedIndex==3?200:120}" verticalAlign="middle" height="100%">
+						
+						<!--<components:DKI_DateChooser id="oodDC" fontWeight="normal" width="100%" height="100%" 
+													includeInLayout="{selectionRule.selectedIndex==0}" 
+													visible="{selectionRule.selectedIndex==0}" />-->
+						<components:DKI_DateTime id="oodDC" fontWeight="normal" width="100%" height="100%" timeEnabled="false" 
+													includeInLayout="{selectionRule.selectedIndex==0}" 
+													visible="{selectionRule.selectedIndex==0}" />
+						
+						<s:DropDownList id="itterationList" width="100%" height="100%"
+													 includeInLayout="{selectionRule.selectedIndex==4}" 
+													 visible="{selectionRule.selectedIndex==4}" 
+													 selectedIndex="0"  useVirtualLayout="false">
+							<s:dataProvider>
+								<mx:ArrayList>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.NUMTH.1ST')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.NUMTH.2ND')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.NUMTH.3RD')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.NUMTH.4TH')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.NUMTH.5TH')}</fx:String>
+								</mx:ArrayList>
+							</s:dataProvider>
+						</s:DropDownList>
+						
+						<s:DropDownList id="daysList" width="100%" height="100%" labelField="label"
+													 includeInLayout="{selectionRule.selectedIndex==1||selectionRule.selectedIndex==4}" 
+													 visible="{selectionRule.selectedIndex==1||selectionRule.selectedIndex==4}" 
+													 selectedIndex="0"  useVirtualLayout="false">
+							<s:dataProvider>
+								<mx:ArrayList>
+									<fx:String>{{code:'Monday', label:resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.WEEK.MON')}}</fx:String>
+									<fx:String>{{code:'Tuesday', label:resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.WEEK.TUE')}}</fx:String>
+									<fx:String>{{code:'Wednesday', label:resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.WEEK.WED')}}</fx:String>
+									<fx:String>{{code:'Thursday', label:resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.WEEK.THU')}}</fx:String>
+									<fx:String>{{code:'Friday', label:resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.WEEK.FRI')}}</fx:String>
+									<fx:String>{{code:'Satday', label:resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.WEEK.SAT')}}</fx:String>
+									<fx:String>{{code:'Sunday', label:resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.WEEK.SUN')}}</fx:String>
+								</mx:ArrayList>
+							</s:dataProvider>
+						</s:DropDownList>
+						
+						<components:DKI_NumericStepper id="dateStepper" width="100%" height="100%"
+													   includeInLayout="{selectionRule.selectedIndex==2||selectionRule.selectedIndex==3}" 
+													   visible="{selectionRule.selectedIndex==2||selectionRule.selectedIndex==3}" 
+													   maximum="31" minimum="1"/>
+						
+						<s:DropDownList id="monthList" width="100%" height="100%"
+													 includeInLayout="{selectionRule.selectedIndex==3||selectionRule.selectedIndex==4}" 
+													 visible="{selectionRule.selectedIndex==3||selectionRule.selectedIndex==4}" 
+													 selectedIndex="0"  useVirtualLayout="false">
+							<s:dataProvider>
+								<mx:ArrayList>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.MONTH.JAN')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.MONTH.FEB')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.MONTH.MAR')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.MONTH.APR')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.MONTH.MAY')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.MONTH.JUN')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.MONTH.JUL')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.MONTH.AUG')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.MONTH.SEP')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.MONTH.OCT')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.MONTH.NOV')}</fx:String>
+									<fx:String>{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.MONTH.DEC')}</fx:String>
+								</mx:ArrayList>
+							</s:dataProvider>
+						</s:DropDownList>
+						
+					</s:HGroup>
+					<components:DKI_ValidatorInput id="descriptionTextInput" validationType="document" prompt="{resourceManager.getString('default','FOLIO_SCHEDULING.PLANNER.GRID.DESC')}" width="100%" height="100%"/>
+					<s:Label width="30" text="*" color="0xFF0000" fontSize="20"/>
+					<components:DKI_Button label.new_exception="{resourceManager.getString('default','CREATE')}" type.new_exception="create" click.new_exception="controller.createModel(event)"
+										   label.edit_exception="{resourceManager.getString('default','SAVE')}"  type.edit_exception="save"  click.edit_exception="controller.updateModel(event)"
+										   enabled="{descriptionTextInput.text.length}" height="100%"  />
+					<mx:VRule height="25"/>
+					<components:DKI_Button label="{resourceManager.getString('default','CANCEL')}" height="100%" type="cancel" click="controller.createCancel(event)"/>
+					
+				</s:HGroup>	
+			</s:VGroup>
+			
+		</s:Group>
+	</s:VGroup>
+</s:NavigatorContent>

@@ -1,0 +1,1010 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:components="components.*"
+		 xmlns:siteconfigservice="services.siteconfigservice.*"
+		 skinClass="skins.WidgetPanelSkin"
+		 creationComplete="creationCompleteHandler(event)" xmlns:terminalservice="services.terminalservice.*" xmlns:loadschedulesservice="services.loadschedulesservice.*">
+	
+	<s:layout>
+		<s:VerticalLayout gap="5"/>
+	</s:layout>	
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="general"/>
+		<s:State name="widget"/>
+		<s:State name="driver"/>
+		<s:State name="closeout"/>
+		<s:State name="terminal" enterState="clearTerminalForm()"/>
+		<s:State name="seal"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[			
+			import components.MessageDialog;
+			
+			import dm.DM;
+			import dm.remoteDataService;
+			import dm.utils.tools;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.messaging.channels.StreamingAMFChannel;
+			import mx.rpc.AsyncToken;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			
+			import renderers.SecurityConfigRenderer;
+			
+			import spark.components.DataGroup;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			
+			import valueObjects.DB_Address;
+			import valueObjects.Terminal;
+			
+			[Bindable] [Embed (source="/assets/icons/unchecked.png" )] private var ico_null:Class;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			private var currentOrder:String='term_code';
+			private var currentDirection:String="ASC";
+			private var currentFilter:String=null;
+			
+			private var success:Boolean = true;
+			
+			[Bindable] private var terminal:ArrayCollection;
+			[Bindable] private var dbAddress:ArrayCollection;
+			//[Bindable] private var term:Terminal;
+			[Bindable] private var createMode:Boolean = true;
+			
+			[Bindable] private var headArr:ArrayCollection;
+			
+			[Bindable] private var siteRecord:remoteDataService = new remoteDataService( "SiteTableService.getTheMainSite", null, getSiteRecord_resultHandler );
+			private var updateSiteAction:remoteDataService = new remoteDataService( "SiteTableService.update", null, updateSiteAction_resultHandler, 1 );
+			
+			[Bindable] private var ambQtyAdjust:Number=85000;
+			[Bindable] private var stdQtyAdjust:Number=85000;
+			[Bindable] private var massQtyAdjust:Number=70000;
+			[Bindable] private var siteData:Object;
+			
+
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				this.siteRecord.service();
+				
+				if(global.OMLITE){
+					headArr = new ArrayCollection([{id:resourceManager.getString('default','global.lbl.screenaccess')},{id:resourceManager.getString('default','global.lbl.terminallocations')}]);
+					
+					getSiteConfigService.token  = siteConfigService.getAllConfigSettingsRequiredByGUI("'Y'");
+					getPinConfigService.token   = siteConfigService.getAllConfigSettingsRequiredByGUI("'P'");
+					getMiscConfigService.token  = siteConfigService.getAllConfigSettingsRequiredByGUI("'M'");
+					getGenConfigService.token   = siteConfigService.getAllConfigSettingsRequiredByGUI("'R'");
+					
+				}else{
+					headArr = new ArrayCollection([{id:resourceManager.getString('default','global.lbl.screenaccess')},{id:resourceManager.getString('default','global.lbl.GENERAL')},{id:resourceManager.getString('default','global.lbl.driverpin')},{id:resourceManager.getString('default','global.lbl.closeoutoptions')},
+						{id:resourceManager.getString('default','global.lbl.terminallocations')}]);
+					
+					getSiteConfigService.token  = siteConfigService.getAllConfigSettingsRequiredByGUI("'Y'");
+					getPinConfigService.token   = siteConfigService.getAllConfigSettingsRequiredByGUI("'P'");
+					getMiscConfigService.token  = siteConfigService.getAllConfigSettingsRequiredByGUI("'M'");
+					getGenConfigService.token   = siteConfigService.getAllConfigSettingsRequiredByGUI("'R'");
+					
+					if(global.siteUseSeal){
+						headArr.addItem({id:resourceManager.getString('default','global.lbl.SEAL')});
+						getSealConfigService.token  = siteConfigService.getAllConfigSettingsRequiredByGUI("'S'");
+					}	
+				}
+				
+				
+				getDBAddress.token = terminalService.getDBAddress();
+				getTerminalService.token = terminalService.getAllTerminal();
+			}
+			
+			protected function getSiteRecord_resultHandler():void
+			{
+				if ( this.siteRecord.length >= 1 )
+				{
+					this.siteData = this.siteRecord.getItemAt(0);
+					if ( this.siteData.hasOwnProperty('site_al_adj') )
+					{
+						ambQtyAdjust = siteData['site_al_adj'];
+					}
+					if ( this.siteData.hasOwnProperty('site_cl_adj') )
+					{
+						stdQtyAdjust = siteData['site_cl_adj'];
+					}
+					if ( this.siteData.hasOwnProperty('site_kg_adj') )
+					{
+						massQtyAdjust = siteData['site_kg_adj'];
+					}
+
+				}
+			}
+			
+			private function updateSite():void
+			{
+				if ( currentState != 'general' )
+				{
+					return;
+				}
+				
+				ambQtyAdjust = this.ambAdj.value;
+				stdQtyAdjust = this.stdAdj.value;
+				massQtyAdjust = this.massAdj.value;
+				
+				siteData['site_al_adj'] = ambQtyAdjust;
+				siteData['site_cl_adj'] = stdQtyAdjust;
+				siteData['site_kg_adj'] = massQtyAdjust;
+				siteData['site_t_adj'] = ambQtyAdjust;
+				
+				updateSiteAction.service( this.siteData );
+			}
+			
+			protected function updateSiteAction_resultHandler():void
+			{
+				return;
+				
+				if ( this.updateSiteAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+			}
+			
+			
+			private function updateSecurity_clickHandler(event:MouseEvent):void
+			{
+				switch(currentState)
+				{
+					case 'normal'  :updateSecurityConfig(configList.dataGroup); break;
+					case 'general' :
+						updateSecurityConfig(genConfigList.dataGroup);
+						this.updateSite();
+						break;
+					case 'driver'  :updateSecurityConfig(pinConfigList.dataGroup); break;
+					case 'closeout':
+						
+						trace( "payload.SITE_LD_RETNPRD_NEW_MOV  = lrnmNS.value..................", lrnmNS.value, ">>>", lrnmNS.textDisplay.text, "<<<");
+						var payload:Object = new Object();
+						
+						/*
+						payload.SITE_LD_RETNPRD = lrpNS.value;
+						payload.SITE_LD_RETN_NEWLDS = lrnlNS.value;
+						payload.SITE_EXP_MONTHS = pemNS.value;
+						
+						payload.SITE_LD_RETNPRD_NEW_MOV  = lrnmNS.value;
+						payload.SITE_LD_RETNPRD_USED_MOV = lrcmnNS.value;
+						*/
+						payload.SITE_LD_RETNPRD = getStepperValue( this.lrpNS );
+						payload.SITE_LD_RETN_NEWLDS = getStepperValue( this.lrnlNS );
+						payload.SITE_EXP_MONTHS = getStepperValue( this.pemNS );
+						
+						payload.SITE_LD_RETNPRD_NEW_MOV  = getStepperValue( this.lrnmNS );
+						payload.SITE_LD_RETNPRD_USED_MOV = getStepperValue( this.lrcmnNS );
+						
+						
+						
+						DM.FolioSettings.save(payload, function():void{
+							//adjustCloseoutFields();
+							updateSecurityConfig(miscList.dataGroup); 
+						});
+						
+						
+						break;
+					case 'terminal':updateTermService(); break;
+					case 'seal':updateSeal();break;
+				}
+			}
+			
+			private function updateSeal():void{
+				for each (var o:Object in sealList.dataProvider){
+					if(o.config_key == "SEAL_POSTFIX" || o.config_key == "SEAL_PREFIX" ){
+						updateSiteConfigService.token = siteConfigService.update(o);
+					}
+					if(o.config_key == "SEAL_NUMBER"){
+						updateSiteConfigService.token =  loadSchedule.setNextSeal(o.config_value);			
+					}
+					/* if(o.config_key == "HOT_LITRE_SFL_FACTOR" ){
+						var sflFactor:Number = Number(o.config_value);
+						if ( sflFactor < 0 || sflFactor > 1 )
+						{
+							var errorBox:MessageDialog = new MessageDialog( o.config_comment );
+						}
+						else
+						{
+							updateSiteConfigService.token = siteConfigService.update(o);
+						}
+					} */
+				}
+			}
+			
+			private function updateTermService():void
+			{
+				var term:Object = new Object();
+				/*
+				if(term == null)
+				{
+					term = new Terminal();
+					term.term_code = siteCode.text;
+				}
+				*/
+				term.term_code = siteCode.text;
+				term.term_name = siteName.text;
+				if ( siteAddress.selectedIndex > -1 )
+				{
+					term.term_addr = siteAddress.selectedItem.db_address_key;
+				}
+				else
+				{
+					term.term_addr = "";
+				}
+				term.term_contact = siteContact.text;
+				updateTerminalService.token = terminalService.update(term.term_code,term);
+				
+			}
+			
+			protected function updateTerminalService_resultHandler(event:ResultEvent):void
+			{
+				if (event.result == "Success")
+				{
+					global.msgSuccess(global.UpdateSuccess);
+					getTerminalService.token = terminalService.getAllTerminal();
+					dataGrid.selectedIndex = -1;
+				}
+				else
+					global.msgFail(global.UpdateError);
+				
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				if ( StringUtil.trim(siteCode.text).length == 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','global.prompts.terminal_code') + "\n";
+				}
+				if ( StringUtil.trim(siteName.text).length == 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','global.prompts.terminal_name') + "\n";
+				}
+				/*
+				if ( StringUtil.trim(siteContact.text).length == 0 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','global.prompts.terminal_contact') + "\n";
+				}
+				if ( siteAddress.selectedIndex == -1 )
+				{
+					index += 1;
+					errors += String(index) + ". " + resourceManager.getString('default','global.prompts.terminal_address') + "\n";
+				}
+				*/
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				
+				return index;
+			}
+			
+			protected function createTerminal_clickHandler(event:MouseEvent):void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					return;
+				}
+				
+				var term:Object = new Object();
+				term.term_code = siteCode.text;
+				term.term_name = siteName.text;
+				if ( siteAddress.selectedIndex > -1 )
+				{
+					term.term_addr = siteAddress.selectedItem.db_address_key;
+				}
+				else
+				{
+					term.term_addr = "";
+				}
+				term.term_contact = siteContact.text;
+				createTerminal.token = terminalService.create(term);
+			}
+			
+			
+			
+			protected function createTerminal_resultHandler(event:ResultEvent):void
+			{
+				if (event.result == "Success")
+				{
+					global.msgSuccess(global.UpdateSuccess);
+					updateSecurity.enabled = global.scUpdate;
+					createTerminalBtn.visible = false;
+					getTerminalService.token = terminalService.getAllTerminal();
+				}
+				else
+					global.msgFail(global.UpdateError);
+			}
+			
+			protected function clearTerminalForm():void
+			{
+				getTerminalService.token = terminalService.getAllTerminal();
+				
+				this.siteCode.text = "";
+				this.siteName.text = "";
+				this.siteContact.text = "";
+				siteAddress.selectedIndex = -1;
+				siteCode.editable = true;
+				createTerminalBtn.visible = true;
+				updateSecurity.enabled = false;
+			}
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				/*
+				term = dataGrid.selectedItem as Terminal;
+				var count:int = 0;
+				for each(var dbAddress:DB_Address in getDBAddress.lastResult as DB_Address)
+				{
+					if(dbAddress.db_address_key == term.term_addr)
+					{
+						siteAddress.selectedIndex = count;
+						break
+					}
+					++count;
+				}
+				*/
+				if ( dataGrid.selectedIndex >= 0 )
+				{
+					this.siteCode.text = dataGrid.selectedItem.term_code;
+					this.siteName.text = dataGrid.selectedItem.term_name;
+					this.siteContact.text = dataGrid.selectedItem.term_contact;
+					siteAddress.selectedItem = dataGrid.selectedItem.term_addr;
+					siteCode.editable = false;
+					createTerminalBtn.visible = false;
+					updateSecurity.enabled = global.scUpdate;
+				}
+				else
+				{
+					clearTerminalForm();
+				}
+			}
+			
+			private function updateSecurityConfig(dataGroup:DataGroup):void
+			{
+				var o:Object = new Object();
+				var tempToken:AsyncToken;
+				var newArray:Array = new Array();
+				var errMsg:String = "";
+				var errIndex:int = 0;
+				for(var i:int = 0; i < dataGroup.numElements; i++)
+				{
+					var renderer:SecurityConfigRenderer = dataGroup.getElementAt(i) as SecurityConfigRenderer;
+					o.config_value = null;
+					o.config_key = renderer.siteConfigKey.text;
+					if(renderer.valueIsEnabled.selected)
+					{
+						o.config_key = renderer.siteConfigKey.text;
+						trace(o.config_key);
+						switch(o.config_key)
+						{
+							
+							case "HOST_COMM_MNTH_END":
+							case "THIRD_PARTY_LOADING":
+							case "MONTHLY_REPORT_INCLUSIVE":
+							case "CLOSEOUT_AUTO_CLOSE":
+							case "CLOSEOUT_REP_GEN_AT_CLOSE":
+							case "CLOSEOUT_REP_GEN_AT_FREEZE":
+							case "LIVE_JOURNAL_SORT":
+							case "SITE_AUTO_COMPLETE_TRANSACTOIN":
+								o.config_value = "Y";
+								break;
+						}
+						if(o.config_key == "URBAC_PWD_COMPLEXITY")
+						{
+							var tempString:int = renderer.siteConfigList.selectedIndex;
+							//newArray = tempString.split("(");
+							switch(tempString)
+							{
+								case 0:
+									o.config_value = 6;
+									break;
+								case 1:
+									o.config_value = 7;
+									break;
+								case 2:
+									o.config_value = 15;
+									break;
+							}
+						}
+						if(o.config_value == null)
+						{
+							if ( renderer.siteConfigValue.visible == true && renderer.siteConfigValue.includeInLayout == true )
+							{
+								o.config_value = renderer.siteConfigValue.value;
+							}
+							else
+							{
+								o.config_value = 'Y';
+							}
+						}
+						o.config_comment = renderer.siteConfigComment.text;
+					}
+					else
+					{
+						switch(o.config_key)
+						{
+							case "HOST_COMM_MNTH_END":
+							case "THIRD_PARTY_LOADING":
+							case "MONTHLY_REPORT_INCLUSIVE":
+							case "CLOSEOUT_AUTO_CLOSE":
+							case "CLOSEOUT_REP_GEN_AT_CLOSE":
+							case "CLOSEOUT_REP_GEN_AT_FREEZE":
+							case "LIVE_JOURNAL_SORT":
+							case "SITE_AUTO_COMPLETE_TRANSACTOIN":
+								o.config_value = "N";
+								break;
+							default:
+								//o.config_value = -1;
+								if(o.config_value == null)
+								{
+									if ( renderer.siteConfigValue.visible == true && renderer.siteConfigValue.includeInLayout == true )
+									{
+										o.config_value = -1;
+									}
+									else
+									{
+										o.config_value = 'N';
+									}
+								}
+								break;
+						}
+						o.config_comment = renderer.siteConfigComment.text;
+					}
+					
+					if ( o.config_key=="HOT_LITRE_SFL_FACTOR" || o.config_key=="SITE_MAX_TAGS")
+					{
+						o.config_comment = renderer.siteConfigComment.text;
+						o.config_value = renderer.siteConfigText.text;
+					}
+					
+					if(o.config_key == "HOT_LITRE_SFL_FACTOR" )
+					{
+						var sflFactor:Number = Number(o.config_value);
+						if ( sflFactor < 0 || sflFactor > 1 )
+						{
+							if ( errMsg.length > 0 ) {
+								errMsg += '\n';
+							}
+							errIndex += 1;
+							errMsg += String(errIndex) + '. ' + o.config_comment;
+						}
+					}
+					
+					if ( o.config_key=="SAFEFILL_TOLERANCE_QTY" || o.config_key=="SAFEFILL_TOLERANCE_PERCENT")
+					{
+						o.config_comment = renderer.siteConfigComment.text;
+						o.config_value = renderer.siteConfigText.text;
+					}
+					
+					if ( o.config_key=="SITE_2FA_DOMAINS")
+					{
+						o.config_comment = renderer.siteConfigComment.text;
+						o.config_value = renderer.siteConfigText.text;
+					}
+					
+					if(o.config_key == "SAFEFILL_TOLERANCE_QTY" )
+					{
+						var sflTolQty:Number = Number(o.config_value);
+						if ( sflTolQty < 0 || sflTolQty > 10000 )
+						{
+							if ( errMsg.length > 0 ) {
+								errMsg += '\n';
+							}
+							errIndex += 1;
+							errMsg += String(errIndex) + '. ' + o.config_comment;
+						}
+					}
+					
+					if(o.config_key == "SAFEFILL_TOLERANCE_PERCENT" )
+					{
+						var sflTolPer:Number = Number(o.config_value);
+						if ( sflTolPer < 0 || sflTolPer > 100 )
+						{
+							if ( errMsg.length > 0 ) {
+								errMsg += '\n';
+							}
+							errIndex += 1;
+							errMsg += String(errIndex) + '. ' + o.config_comment;
+						}
+					}
+					
+					if ( errMsg.length > 0 ) {
+						continue;
+					}
+					updateSiteConfigService.token = siteConfigService.update(o);
+				}
+				if ( errMsg.length > 0 ) {
+					var errorBox:MessageDialog = new MessageDialog( errMsg, 500 );
+					return;
+				}
+			}
+			
+			
+			protected function tabbar1_changeHandler(event:IndexChangeEvent):void
+			{
+				switch(event.newIndex)
+				{
+					case 0: currentState='normal';
+						createTerminalBtn.visible = false;
+						updateSecurity.enabled = global.scUpdate;
+						break
+					case 1: currentState='general';
+						createTerminalBtn.visible = false;
+						updateSecurity.enabled = global.scUpdate;
+						break
+					case 2: currentState='driver';
+						createTerminalBtn.visible = false;
+						updateSecurity.enabled = global.scUpdate;
+						break
+					case 3: currentState='closeout';
+						createTerminalBtn.visible = false;
+						updateSecurity.enabled = global.scUpdate;
+						adjustCloseoutFields();
+						break
+					case 4: currentState='terminal';
+						createTerminalBtn.visible = global.scUpdate;
+						updateSecurity.enabled = false;
+						break
+					case 5: currentState='seal';
+						createTerminalBtn.visible = false;
+						updateSecurity.enabled = global.scUpdate;
+						getSealConfigService.token  = siteConfigService.getAllConfigSettingsRequiredByGUI("'S'");
+						break
+				}
+			}
+			
+			protected function getTerminalService_resultHandler(event:ResultEvent):void
+			{
+				terminal = getTerminalService.lastResult;
+				//term = terminal.source[0];
+			}
+			
+			protected function updateSiteConfigService_resultHandler(event:ResultEvent):void
+			{
+				if (event.result == "Success")
+				{
+					global.msgSuccess(global.UpdateSuccess);
+					
+					// special settings for limit of max tags
+					/* for each( var o:Object in getGenConfigService.lastResult )
+					{
+						if (o.config_key == 'SITE_MAX_TAGS')
+						{
+							if ( int(o.config_value) > 0 )
+							{
+								global.wg_max_tags_flag = true;
+								global.wg_max_tags = int(o.config_value);
+							}
+							else
+							{
+								global.wg_max_tags_flag = false;
+								global.wg_max_tags = -1;
+							}
+							break;
+						}
+					} */
+					
+				}
+				else
+					global.msgFail(global.UpdateError);
+				adjustCloseoutFields();
+			}
+			
+			protected function updateSiteConfigService_faultHandler(event:FaultEvent):void
+			{
+				if (event.message.toString() == "Success")
+					global.msgSuccess(global.UpdateSuccess);
+				else
+					global.msgFail(global.UpdateError);// TODO Auto-generated method stub
+				
+			}
+			[Bindable] public var sealDP:ArrayCollection;
+			protected function getSealConfigService_resultHandler(event:ResultEvent):void
+			{
+				sealDP = new ArrayCollection();
+				sealDP.addItemAt({config_comment:"Next seal number", 
+					config_key:"SEAL_NUMBER",
+					config_required_by_gui:"S",
+					config_value:""},0);
+				for (var i:int = 0; i < getSealConfigService.lastResult.length; i++) {
+					sealDP.addItem(getSealConfigService.lastResult[i]);
+				}
+				getSealNumber.token = loadSchedule.getNextSeal();
+			}
+			
+			
+			protected function onNextSealLoaded(event:ResultEvent):void{
+				sealDP.setItemAt({config_comment:"Next seal number", 
+					config_key:"SEAL_NUMBER",
+					config_required_by_gui:"S",
+					config_value:getSealNumber.lastResult.getItemAt(0)["site_next_seal"]},0);
+				sealDP.refresh();
+			}
+			
+			public function refreshData():void{
+				if(currentState == "seal"){
+					getSealConfigService.token  = siteConfigService.getAllConfigSettingsRequiredByGUI("'S'");
+				}
+			}
+			
+			protected function getGenConfigService_resultHandler(event:ResultEvent):void
+			{
+				// TODO Auto-generated method stub
+				// This is the place to decide which configuration should be managed in GUI				
+				if ( global.getValueFromSiteConfigSettings("SITE_LOAD_SAFEFILL_CHECK_BY_HIGHTEMP") != 'Y' )
+				{
+					for ( var i:int=0; i<getGenConfigService.lastResult.length; i++ )
+					{
+						var o:Object = getGenConfigService.lastResult.getItemAt(i);
+						if ( o.hasOwnProperty("config_key") && o["config_key"] == "HOT_LITRE_SFL_FACTOR" )
+						{
+							//(getGenConfigService.lastResult as ArrayCollection).removeItemAt(i);
+							getGenConfigService.lastResult.removeItemAt(i);
+							break;
+						}
+					}
+				}
+				
+			}
+			
+			private function setStepperValue(value:String, target:DKI_NumericStepper, toggle:DKI_ToggleButton):void
+			{
+				trace( "setStepperValue...................................................>>>", value, "<<<");
+				if(value == "" || value == null || value == "null")
+				{
+					target.textDisplay.text = "";
+					toggle.selected = false;
+				}
+				else
+				{
+					target.value = parseInt(value);
+					toggle.selected = true;
+				}
+				
+				if (toggle.selected) 
+				{
+					toggle.label=resourceManager.getString('default','global.lbl.ON'); 
+				}
+				else 
+				{
+					toggle.label=resourceManager.getString('default','global.lbl.OFF');
+				}
+				
+			}
+			
+			private function getStepperValue(target:DKI_NumericStepper):*
+			{
+				var txt:String = StringUtil.trim(target.textDisplay.text);
+				
+				trace( "getStepperValue...................................................>>>", txt, "<<<");
+				if( txt.length == 0 )
+				{
+					return "";
+				}
+				else
+				{
+					return target.value;
+				}
+			}
+			
+			private function adjustCloseoutFields():void
+			{
+				if ( currentState == 'closeout' )
+				{
+					setStepperValue( DM.FolioSettings.loadRetPeriod, this.lrpNS, this.lrpNS_enabled );
+					setStepperValue( DM.FolioSettings.expireMons, this.pemNS, this.pemNS_enabled );
+					setStepperValue( DM.FolioSettings.loadRetNewLoad, this.lrnlNS, this.lrnlNS_enabled );
+					setStepperValue( DM.FolioSettings.loadRetNewMov, this.lrnmNS, this.lrnmNS_enabled );
+					setStepperValue( DM.FolioSettings.loadRetComMov, this.lrcmnNS, this.lrcmnNS_enabled );
+				}
+			}
+			
+			protected function lrpNS_creationCompleteHandler(event:FlexEvent):void
+			{
+				setStepperValue( DM.FolioSettings.loadRetPeriod, this.lrpNS, this.lrpNS_enabled );
+			}
+			
+			protected function pemNS_creationCompleteHandler(event:FlexEvent):void
+			{
+				setStepperValue( DM.FolioSettings.expireMons, this.pemNS, this.pemNS_enabled );
+			}
+			
+			protected function lrnlNS_creationCompleteHandler(event:FlexEvent):void
+			{
+				setStepperValue( DM.FolioSettings.loadRetNewLoad, this.lrnlNS, this.lrnlNS_enabled );
+			}
+			
+			protected function lrnmNS_creationCompleteHandler(event:FlexEvent):void
+			{
+				setStepperValue( DM.FolioSettings.loadRetNewMov, this.lrnmNS, this.lrnmNS_enabled );
+			}
+			
+			protected function lrcmnNS_creationCompleteHandler(event:FlexEvent):void
+			{
+				setStepperValue( DM.FolioSettings.loadRetComMov, this.lrcmnNS, this.lrcmnNS_enabled );
+			}
+			
+			
+			protected function updateStepperValue(target:DKI_NumericStepper, toggle:DKI_ToggleButton):void
+			{
+				if (toggle.selected) 
+				{
+					toggle.label=resourceManager.getString('default','global.lbl.ON'); 
+				}
+				else 
+				{
+					toggle.label=resourceManager.getString('default','global.lbl.OFF');
+				}
+				
+				//if(target.textDisplay.text == "")
+				if(toggle.selected)
+				{
+					target.value = target.minimum;
+					target.textDisplay.text = target.minimum.toString();
+				}
+				else
+				{
+					target.textDisplay.text = "";
+				}
+			}
+			
+			protected function lrpNS_enabled_clickHandler(event:MouseEvent):void
+			{
+				updateStepperValue( this.lrpNS, this.lrpNS_enabled );
+			}
+			
+			protected function pemNS_enabled_clickHandler(event:MouseEvent):void
+			{
+				updateStepperValue( this.pemNS, this.pemNS_enabled );
+			}
+			
+			protected function lrnlNS_enabled_clickHandler(event:MouseEvent):void
+			{
+				updateStepperValue( this.lrnlNS, this.lrnlNS_enabled );
+			}
+			
+			protected function lrnmNS_enabled_clickHandler(event:MouseEvent):void
+			{
+				updateStepperValue( this.lrnmNS, this.lrnmNS_enabled );
+			}
+			
+			protected function lrcmnNS_enabled_clickHandler(event:MouseEvent):void
+			{
+				updateStepperValue( this.lrcmnNS, this.lrcmnNS_enabled );
+			}
+			
+			
+			private function isNullOne(value:String, target:DKI_NumericStepper, toggle:DKI_ToggleButton):int
+			{
+				if(value == "" || value == null || value == "null")
+				{
+					target.textDisplay.text = "";
+					return target.minimum;
+				}
+				else
+				{
+					return parseInt(value);
+				}
+			}
+			
+			protected function lrcmnNS_valueCommitHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				return;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateformat" dateTimePattern="dd-MMM-yyyy"/>
+		<siteconfigservice:SiteConfigService id="siteConfigService"  channelSet="{global.channelSet}"
+											 showBusyCursor="true"/>
+		<terminalservice:TerminalService id="terminalService"  channelSet="{global.channelSet}"
+										 showBusyCursor="true"/>
+		<loadschedulesservice:LoadSchedulesService id="loadSchedule" showBusyCursor="true"  channelSet="{global.channelSet}"/>
+		<s:CallResponder id="getSiteConfigService"/>
+		<s:CallResponder id="getPinConfigService"/>
+		<s:CallResponder id="getMiscConfigService"/>
+		<s:CallResponder id="getGenConfigService" result="getGenConfigService_resultHandler(event)"/>
+		<s:CallResponder id="getSealNumber" result="onNextSealLoaded(event)"/>
+		<s:CallResponder id="getSealConfigService" result="getSealConfigService_resultHandler(event)"/>
+		<s:CallResponder id="getTerminalService" result="getTerminalService_resultHandler(event)"/>
+		<s:CallResponder id="getDBAddress"/>
+		<s:CallResponder id="updateSiteConfigService" result="updateSiteConfigService_resultHandler(event)" fault="updateSiteConfigService_faultHandler(event)"/>
+		<s:CallResponder id="updateTerminalService" result="updateTerminalService_resultHandler(event)"/>
+		<s:CallResponder id="createTerminal" result="createTerminal_resultHandler(event)"/>
+	</fx:Declarations>
+	<s:BorderContainer borderColor="0x000000" backgroundAlpha="0" cornerRadius="8" width="100%" height="100%">
+		<s:TabBar dataProvider="{headArr}" labelField="id" width="100%" top="-1" left="-1" right="-1" selectedIndex="0" 
+				  change="tabbar1_changeHandler(event)" alpha="0.70"/>	
+		<s:VGroup top="40" left="10" width="100%" includeIn="driver">
+			<s:HGroup horizontalAlign="left">
+				<s:Label text="{resourceManager.getString('default','global.lbl.status')}" textAlign="center" width="40" fontWeight="bold"/>
+				<s:Label text="{resourceManager.getString('default','global.lbl.description')}" textAlign="center" width="300" fontWeight="bold"/>
+				<s:Label text="{resourceManager.getString('default','global.lbl.value')}" textAlign="center" width="150" paddingLeft="90" fontWeight="bold"/>
+			</s:HGroup>
+			<components:DKI_List id="pinConfigList" width="100%" itemRenderer="renderers.SecurityConfigRenderer" horizontalScrollPolicy="off"
+								 dataProvider="{getPinConfigService.lastResult}" borderVisible="false" contentBackgroundAlpha="0">
+				<components:layout>
+					<s:VerticalLayout gap="0"/>
+				</components:layout>
+			</components:DKI_List>
+			<s:Rect id="tbDiv" left="0" right="0" height="1" bottom="0">
+				<s:fill>
+					<s:SolidColor color="0xC0C0C0" />
+				</s:fill>
+			</s:Rect>
+		</s:VGroup>
+		<s:VGroup width="100%" top="40" left="10" includeIn="normal">
+			<s:HGroup horizontalAlign="left">
+				<s:Label text="{resourceManager.getString('default','global.lbl.status')}" textAlign="center" width="40" fontWeight="bold"/>
+				<s:Label text="{resourceManager.getString('default','global.lbl.description')}" textAlign="center" width="300" fontWeight="bold"/>
+				<s:Label text="{resourceManager.getString('default','global.lbl.value')}" textAlign="center" width="150" paddingLeft="90" fontWeight="bold"/>
+			</s:HGroup>
+			<components:DKI_List id="configList" width="100%" itemRenderer="renderers.SecurityConfigRenderer" horizontalScrollPolicy="off"
+								 dataProvider="{getSiteConfigService.lastResult}" borderVisible="false" contentBackgroundAlpha="0">
+				<components:layout>
+					<s:VerticalLayout gap="0"/>
+				</components:layout>
+			</components:DKI_List>
+		</s:VGroup>
+		<s:VGroup width="100%" top="40" left="10" includeIn="general">
+			<s:HGroup horizontalAlign="left">
+				<s:Label text="{resourceManager.getString('default','global.lbl.status')}" textAlign="center" width="40" fontWeight="bold"/>
+				<s:Label text="{resourceManager.getString('default','global.lbl.description')}" textAlign="center" width="300" fontWeight="bold"/>
+				<s:Label text="{resourceManager.getString('default','global.lbl.value')}" textAlign="center" width="150" paddingLeft="90" fontWeight="bold"/>
+			</s:HGroup>
+			<components:DKI_List id="genConfigList" width="100%" itemRenderer="renderers.SecurityConfigRenderer" horizontalScrollPolicy="off"
+								 dataProvider="{getGenConfigService.lastResult}" borderVisible="false" contentBackgroundAlpha="0" verticalScrollPolicy="on">
+				<components:layout>
+					<s:VerticalLayout gap="0"/>
+				</components:layout>
+			</components:DKI_List>
+			<s:HGroup width="100%" horizontalAlign="left" height="28" verticalAlign.closeout="middle" >
+				<s:Spacer width="80"/>
+				<s:Label width="360" text="{resourceManager.getString('default','global.lbl.ambAdj')}"/>
+				<components:DKI_NumericStepper id="ambAdj" width="100" maximum="999999999" minimum="10000" value="{this.ambQtyAdjust}" contentBackgroundAlpha="0"/>
+			</s:HGroup>
+			<s:HGroup width="100%" horizontalAlign="left" height="28" verticalAlign.closeout="middle">
+				<s:Spacer width="80"/>
+				<s:Label width="360" text="{resourceManager.getString('default','global.lbl.stdAdj')}"/>
+				<components:DKI_NumericStepper id="stdAdj" width="100" maximum="999999999" minimum="10000" value="{this.stdQtyAdjust}" contentBackgroundAlpha="0"/>
+			</s:HGroup>
+			<s:HGroup width="100%" horizontalAlign="left" height="28" verticalAlign.closeout="middle">
+				<s:Spacer width="80"/>
+				<s:Label width="360" text="{resourceManager.getString('default','global.lbl.massAdj')}"/>
+				<components:DKI_NumericStepper id="massAdj" width="100" maximum="999999999" minimum="10000" value="{this.massQtyAdjust}" contentBackgroundAlpha="0"/>
+			</s:HGroup>
+		</s:VGroup>
+		<s:VGroup width="100%" top="40" left="10" includeIn="closeout">
+			<s:HGroup horizontalAlign="left">
+				<s:Label text="{resourceManager.getString('default','global.lbl.status')}" textAlign="center" width="40" fontWeight="bold"/>
+				<s:Label text="{resourceManager.getString('default','global.lbl.description')}" textAlign="center" width="300" fontWeight="bold"/>
+				<s:Label text="{resourceManager.getString('default','global.lbl.value')}" textAlign="center" width="150" paddingLeft="90" fontWeight="bold"/>
+			</s:HGroup>
+			<components:DKI_List id="miscList" width="100%" itemRenderer="renderers.SecurityConfigRenderer" horizontalScrollPolicy="off"
+								 dataProvider="{getMiscConfigService.lastResult}" borderVisible="false" contentBackgroundAlpha="0">
+				<components:layout>
+					<s:VerticalLayout gap="0"/>
+				</components:layout>
+			</components:DKI_List>
+			<s:HGroup width="100%" horizontalAlign="left" height="28" verticalAlign.closeout="middle" paddingLeft="5" gap="0">
+				<!--s:Spacer width="70"/-->
+				<components:DKI_ToggleButton id="lrpNS_enabled" width="45" cornerRadius="12" fontWeight="bold" label="{resourceManager.getString('default','global.lbl.OFF')}" click="lrpNS_enabled_clickHandler(event)"/>
+				<s:Label width="400" paddingLeft="35" paddingRight="15" text="{resourceManager.getString('default','global.lbl.lrpNS')} [60 ~ 1830]:"/>
+				<components:DKI_NumericStepper id="lrpNS" width="100" maximum="1830" minimum="60" value="{isNullOne(DM.FolioSettings.loadRetPeriod, lrpNS, lrpNS_enabled)}" contentBackgroundAlpha="0" 
+											   enabled="{lrpNS_enabled.selected}" creationComplete="lrpNS_creationCompleteHandler(event)"/>
+			</s:HGroup>
+			<s:HGroup width="100%" horizontalAlign="left" height="28" verticalAlign.closeout="middle" paddingLeft="5" gap="0">
+				<!--s:Spacer width="70"/-->
+				<components:DKI_ToggleButton id="pemNS_enabled" width="45" cornerRadius="12" fontWeight="bold" label="{resourceManager.getString('default','global.lbl.OFF')}" click="pemNS_enabled_clickHandler(event)"/>
+				<s:Label width="400" paddingLeft="35" paddingRight="15" text="{resourceManager.getString('default','global.lbl.pemNS')} [0 ~ 12]:"/>
+				<components:DKI_NumericStepper id="pemNS"  width="100"  maximum="12" minimum="0"  value="{isNullOne(DM.FolioSettings.expireMons, pemNS, pemNS_enabled)}" contentBackgroundAlpha="0" 
+											   enabled="{pemNS_enabled.selected}" creationComplete="pemNS_creationCompleteHandler(event)"/>
+			</s:HGroup>
+			<s:HGroup width="100%" horizontalAlign="left" height="28" verticalAlign.closeout="middle" paddingLeft="5" gap="0">
+				<!--s:Spacer width="70"/-->
+				<components:DKI_ToggleButton id="lrnlNS_enabled" width="45" cornerRadius="12" fontWeight="bold" label="{resourceManager.getString('default','global.lbl.OFF')}" click="lrnlNS_enabled_clickHandler(event)"/>
+				<s:Label width="400" paddingLeft="35" paddingRight="15" text="{resourceManager.getString('default','global.lbl.lrnlNS')} [1 ~ 365]:"/>
+				<components:DKI_NumericStepper id="lrnlNS" width="100"  maximum="365" minimum="1" value="{isNullOne(DM.FolioSettings.loadRetNewLoad, lrnlNS, lrnlNS_enabled)}" contentBackgroundAlpha="0" 
+											   enabled="{lrnlNS_enabled.selected}" creationComplete="lrnlNS_creationCompleteHandler(event)"/>
+			</s:HGroup>
+			<s:HGroup width="100%" horizontalAlign="left" height="28" verticalAlign.closeout="middle" paddingLeft="5" gap="0">
+				<!--s:Spacer width="70"/-->
+				<components:DKI_ToggleButton id="lrnmNS_enabled" width="45" cornerRadius="12" fontWeight="bold" label="{resourceManager.getString('default','global.lbl.OFF')}" click="lrnmNS_enabled_clickHandler(event)"/>
+				<s:Label width="400" paddingLeft="35" paddingRight="15" text="{resourceManager.getString('default','global.lbl.lrnmNS')} [60 ~ 1830]:"/>
+				<components:DKI_NumericStepper id="lrnmNS" width="100"  maximum="1830" minimum="60" value="{isNullOne(DM.FolioSettings.loadRetNewMov, lrnmNS, lrnmNS_enabled)}" contentBackgroundAlpha="0" 
+											   enabled="{lrnmNS_enabled.selected}" creationComplete="lrnmNS_creationCompleteHandler(event)"/>
+			</s:HGroup>
+			<s:HGroup width="100%" horizontalAlign="left" height="28" verticalAlign.closeout="middle" paddingLeft="5" gap="0">
+				<!--s:Spacer width="70"/-->
+				<components:DKI_ToggleButton id="lrcmnNS_enabled" width="45" cornerRadius="12" fontWeight="bold" label="{resourceManager.getString('default','global.lbl.OFF')}" click="lrcmnNS_enabled_clickHandler(event)"/>
+				<s:Label width="400" paddingLeft="35" paddingRight="15" text="{resourceManager.getString('default','global.lbl.lrcmnNS')} [60 ~ 1830]:"/>
+				<components:DKI_NumericStepper id="lrcmnNS" width="100"  maximum="1830" minimum="60" value="{isNullOne(DM.FolioSettings.loadRetComMov, lrcmnNS, lrcmnNS_enabled)}" contentBackgroundAlpha="0" 
+											   enabled="{lrcmnNS_enabled.selected}" valueCommit="lrcmnNS_valueCommitHandler(event)" creationComplete="lrcmnNS_creationCompleteHandler(event)"/>
+			</s:HGroup>
+		</s:VGroup>
+		<s:VGroup width="100%" top="40" left="10" includeIn="terminal" verticalAlign="middle">
+			<s:Label text="{resourceManager.getString('default','global.lbl.terminallocations')}" fontWeight="bold"/>
+			<s:HGroup>
+				<components:DKI_DataGrid id="dataGrid" dataProvider="{getTerminalService.lastResult}" width="100%"
+										 height="100%" selectionChange="dataGrid_selectionChangeHandler(event)" sortableColumns="true">
+					<components:columns>
+						<s:ArrayList>
+							<s:GridColumn dataField="term_code" headerText="{resourceManager.getString('default','global.lbl.code')}" width="150"></s:GridColumn>
+							<s:GridColumn dataField="term_name" headerText="{resourceManager.getString('default','global.lbl.name')}" width="150"/>
+							<s:GridColumn dataField="term_contact" headerText="{resourceManager.getString('default','global.lbl.contact')}" width="150"/>
+							<s:GridColumn dataField="term_addr" headerText="{resourceManager.getString('default','global.lbl.address')}" width="150" visible="true"/>
+						</s:ArrayList>
+					</components:columns>
+				</components:DKI_DataGrid>
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label text="{resourceManager.getString('default','global.lbl.code')}:" width="200"/>
+				<components:DKI_ValidatorInput id="siteCode" width="200" validationType="alphanumeric" text="" maxChars="20"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label text="{resourceManager.getString('default','global.lbl.name')}:" width="200"/>
+				<components:DKI_ValidatorInput id="siteName" width="200" validationType="alphanumeric" text="" maxChars="49"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label text="{resourceManager.getString('default','global.lbl.contact')}:" width="200"/>
+				<components:DKI_ValidatorInput id="siteContact" width="200" validationType="alphanumeric" text="" maxChars="49"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label text="{resourceManager.getString('default','global.lbl.address')}:" width="200"/>
+				<components:DKI_ValidatorDropDown id="siteAddress" width="200" dataProvider="{getDBAddress.lastResult}" labelField="db_address_key"/>
+			</s:HGroup>
+		</s:VGroup>
+		
+		<s:VGroup width="100%" top="40" left="10" includeIn="seal" verticalAlign="middle">
+			<s:HGroup horizontalAlign="left">
+				<s:Label text="{resourceManager.getString('default','global.lbl.status')}" textAlign="center" width="40" fontWeight="bold"/>
+				<s:Label text="{resourceManager.getString('default','global.lbl.description')}" textAlign="center" width="300" fontWeight="bold"/>
+				<s:Label text="{resourceManager.getString('default','global.lbl.value')}" textAlign="center" width="150" paddingLeft="90" fontWeight="bold"/>
+			</s:HGroup>
+			<components:DKI_List id="sealList" width="100%" itemRenderer="renderers.SecurityConfigRenderer" horizontalScrollPolicy="off"
+								 dataProvider="{sealDP}" borderVisible="false" contentBackgroundAlpha="0">
+				<components:layout>
+					<s:VerticalLayout gap="0"/>
+				</components:layout>
+			</components:DKI_List>
+		</s:VGroup>
+		
+	</s:BorderContainer>
+	<s:HGroup paddingBottom="5" paddingLeft="5" right="5" width="100%" verticalAlign="middle">
+		<s:Label text="* {resourceManager.getString('default','global.lbl.CHANGE_EFFECT_TIME')}" fontWeight="bold" color="0xFF0000"/>
+		<s:Spacer width="100%"/>
+		<components:DKI_Button id="createTerminalBtn" label="{resourceManager.getString('default','CREATE')}" click="createTerminal_clickHandler(event)" visible="false"/>
+		<components:DKI_Button id="updateSecurity" label="{resourceManager.getString('default','UPDATE')}" click="updateSecurity_clickHandler(event)" enabled="{global.scUpdate}"/>
+	</s:HGroup>
+</s:Panel>

@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="false" dataChange="onDataChange(event)" 
+				xmlns:components="components.*" clipAndEnableScrolling="true" creationComplete="itemrenderer1_creationCompleteHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import components.DKI_AlertBox;
+			import components.MessageDialog;
+			
+			import dm.DM;
+			
+			import mx.collections.ArrayList;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.messaging.channels.StreamingAMFChannel;
+			import mx.utils.ObjectUtil;
+			
+			import spark.skins.spark.StackedFormHeadingSkin;
+			
+			[Bindable] public var passwordArray:ArrayList = new ArrayList([{id:'Simple(alpha,numeric)'},{id:'Medium(upper,lower,numeric)'},{id:'Complex(upper,lower,numeric,symbol)'}]);
+			[Bindable] public var passwordFieldText:String;
+			[Bindable] public var labelText:String;
+					
+			private function isNegativeOne(value:String):int
+			{
+				if(value == "-1")
+				{
+					siteConfigValue.textDisplay.text = "";
+					return siteConfigValue.minimum;
+				}
+				else
+					return parseInt(value);
+			}
+			
+			private function isDeselectable(value:String):Boolean
+			{
+				switch(value)
+				{
+					case "URBAC_PWD_LEN_MAX":
+					case "URBAC_PWD_LEN_MIN":
+					case "URBAC_PWD_COMPLEXITY":
+					case "SEAL_POSTFIX":
+					case "SEAL_PREFIX":
+					case "SEAL_NUMBER":
+					case "HOT_LITRE_SFL_FACTOR":
+					case "SITE_MAX_TAGS":
+					case "SAFEFILL_TOLERANCE_QTY":
+					case "SAFEFILL_TOLERANCE_PERCENT":
+					case "SITE_2FA_DOMAINS":
+						return false;
+						break;
+					default:
+						return true;
+				}
+			}
+			
+			private function isListVisible(value:String):Boolean
+			{
+				switch(value)
+				{
+					case "URBAC_PWD_COMPLEXITY":
+						this.siteConfigValue.width = -1;
+						return true;
+						break;
+					default:
+						this.siteConfigValue.width = 60;
+						return false;
+				}
+				
+				//				if(value == "URBAC_PWD_COMPLEXITY")
+//				{
+//					this.siteConfigValue.width = -1;
+//					return true;
+//				}
+//				else
+//				{
+//					this.siteConfigValue.width = 60;
+//					return false;
+//				}
+			}
+			
+			private function isNumericStepperVisible(value:String):Boolean
+			{
+				var cfg_value:String;
+				
+				cfg_value = String(this.data.config_value).toUpperCase();
+				if ( cfg_value == 'Y' || cfg_value == 'N' )
+				{
+					return false;
+				}
+				
+				switch(value)
+				{
+					case "THIRD_PARTY_LOADING":
+					case "MONTHLY_REPORT_INCLUSIVE":
+					case "HOST_COMM_MNTH_END":
+					case "CLOSEOUT_AUTO_CLOSE":
+					case "CLOSEOUT_REP_GEN_AT_CLOSE":
+					case "CLOSEOUT_REP_GEN_AT_FREEZE":
+					case "URBAC_PWD_COMPLEXITY":
+					case "LIVE_JOURNAL_SORT":
+					case "SEAL_POSTFIX":
+					case "SEAL_PREFIX":
+					case "SEAL_NUMBER":
+					case "SITE_AUTO_COMPLETE_TRANSACTOIN":
+					case "HOT_LITRE_SFL_FACTOR":
+					case "SITE_MAX_TAGS":
+					case "SAFEFILL_TOLERANCE_QTY":
+					case "SAFEFILL_TOLERANCE_PERCENT":
+					case "SITE_2FA_DOMAINS":
+						return false;
+						break;
+					default:
+						return true;
+				}
+			}
+			
+			private function initPasswordArray(value:String):void
+			{
+				switch(value)
+				{
+					case "6":
+						siteConfigList.selectedIndex = 0;
+						break;
+					case "7":
+						siteConfigList.selectedIndex = 1;
+						break;
+					case "15":
+						siteConfigList.selectedIndex = 2;
+						break;
+					default : 
+						siteConfigList.selectedIndex = 0;
+				} 
+				
+			}
+			
+			private function getLabel(value:String, code:String):String
+			{
+				var mValue:String=resourceManager.getString('default',code);
+				if ( mValue!=null && mValue.length> 0 )
+				{
+					return mValue;
+				}
+				
+				if(code == "URBAC_PWD_COMPLEXITY")
+				{
+					var temp:Array = value.split(",");
+					return temp[0];
+				}
+				else
+					return value;
+			}
+			
+			private function getMinimum(key:String):int
+			{
+				switch(key)
+				{
+					case "DRIVER_PIN_AUTO_EXPIRE":
+					case "DRIVER_PIN_AUTO_LOCK":
+					case "URBAC_PWD_AUTO_LOCK":
+					case "URBAC_PWD_AUTO_EXPIRE":
+					case "URBAC_PWD_UPD_INTERVAL":
+					case "URBAC_PWD_REUSE":
+					case "URBAC_AUTO_LOGOFF":
+					case "URBAC_SESSION_PER_USER":
+					case "URBAC_USER_AUTO_LOCK":
+					case "URBAC_USER_AUTO_DELETE":
+						return 1;
+						break;
+					case "URBAC_PWD_LEN_MIN":
+						return 2;
+						break;
+					case "URBAC_PWD_LEN_MAX":
+						return 6;
+						break;
+					default:
+						return 0;
+				}
+			}
+			
+			private function getMaximum(key:String):int
+			{
+				switch(key)
+				{
+					case "URBAC_PWD_AUTO_EXPIRE":
+					case "URBAC_PWD_UPD_INTERVAL":
+					case "URBAC_USER_AUTO_LOCK":
+					case "URBAC_USER_AUTO_DELETE":
+					case "DRIVER_PIN_AUTO_EXPIRE":
+						return 365;
+						break;
+					case "URBAC_PWD_LEN_MIN":
+					case "URBAC_PWD_LEN_MAX":
+						return 40;
+						break;
+					case "URBAC_PWD_AUTO_LOCK":
+					case "URBAC_PWD_REUSE":
+					case "URBAC_SESSION_PER_USER":
+					case "DRIVER_PIN_AUTO_LOCK":
+						return 99;
+						break;
+					case "URBAC_AUTO_LOGOFF":
+						return 2000;
+					default:
+						return 0;
+				}
+			}
+			
+			private function getTextDisplay(value:String):void
+			{
+				if(value == "-1")
+					siteConfigValue.textDisplay.text = ""
+				else
+					siteConfigValue.textDisplay.text = value
+			}
+			
+			private function updateStepper(key:String):void
+			{
+				if (valueIsEnabled.selected) 
+				{
+					valueIsEnabled.label=resourceManager.getString('default','global.lbl.ON'); 
+				}
+				else 
+				{
+					valueIsEnabled.label=resourceManager.getString('default','global.lbl.OFF');
+				}
+				if( (key=="CLOSEOUT_AUTO_CLOSE") && (valueIsEnabled.selected))
+				{
+					DM.FolioSettings.canSetAuto(allowToggle);
+				}
+				
+				if(siteConfigValue.textDisplay.text == "")
+				{
+					siteConfigValue.value = siteConfigValue.minimum;
+					siteConfigValue.textDisplay.text = siteConfigValue.minimum.toString();
+					this.updateDisplayList(this.width, this.height);
+				}
+				else
+				{
+					siteConfigValue.textDisplay.text = "";
+				}
+			}
+			
+			private function isSelected(value:String):Boolean
+			{
+				switch(value)
+				{
+					case "-1":
+					case "N":
+						valueIsEnabled.label=resourceManager.getString('default','global.lbl.OFF');
+						return false;
+						break;
+					default: 
+						valueIsEnabled.label=resourceManager.getString('default','global.lbl.ON');
+						return true;
+						break;
+				}
+			}
+			
+			protected function allowToggle(obj:Object): void
+			{
+				if (obj.data.num != "0")
+				{
+					valueIsEnabled.selected = false;
+					valueIsEnabled.label = resourceManager.getString('default','global.lbl.OFF');
+					var ad:MessageDialog = new MessageDialog( resourceManager.getString('default','global.msg.frozenfolios2autoclose') );
+				}
+			}
+			[Bindable (event="mcDataUpdate")]
+			public function get isInterfaceTextInput():Boolean{
+				return 	data.config_key == "SEAL_POSTFIX"||
+					data.config_key == "SEAL_PREFIX"||
+					data.config_key == "HOT_LITRE_SFL_FACTOR"||
+					data.config_key == "SITE_MAX_TAGS"||
+					data.config_key == "SAFEFILL_TOLERANCE_QTY"||
+					data.config_key == "SAFEFILL_TOLERANCE_PERCENT"||
+					data.config_key == "SITE_2FA_DOMAINS"||
+					data.config_key == "SEAL_NUMBER";
+			}
+			[Bindable (event="mcDataUpdate")]
+			public function get textMaxChar():int{
+				return 	data.config_key == "SEAL_POSTFIX" ? 3 :
+					data.config_key == "SEAL_PREFIX"  ? 5 :
+					data.config_key == "SITE_2FA_DOMAINS"  ? 100 :
+					data.config_key == "SEAL_NUMBER"  ? 7 : 100;
+				
+			}
+			[Bindable (event="mcDataUpdate")]
+			public function get textRestrict():String{
+				return 	data.config_key == "SEAL_POSTFIX" ? "a-zA-Z0-9" :
+						data.config_key == "SEAL_PREFIX"  ? "a-zA-Z0-9" :
+						data.config_key == "HOT_LITRE_SFL_FACTOR"  ? "0-9." :
+						data.config_key == "SAFEFILL_TOLERANCE_PERCENT"  ? "0-9." :
+						data.config_key == "SAFEFILL_TOLERANCE_QTY"  ? "0-9" :
+						data.config_key == "SITE_2FA_DOMAINS"  ? "A-zA-z0-9!_' '.-@#$,%^&*\w" :
+						data.config_key == "SITE_MAX_TAGS"  ? "0-9" :
+						data.config_key == "SEAL_NUMBER"  ? "0-9" : "";
+				
+			}
+			
+			
+			
+			
+			
+			protected function onDataChange(event:FlexEvent):void{
+				invalidateRendererState();
+				dispatchEvent(new Event("mcDataUpdate"));
+			}
+			
+			protected function itemrenderer1_creationCompleteHandler(event:FlexEvent):void
+			{
+				passwordArray = new ArrayList([
+					{id:resourceManager.getString('default','global.lbl.pwd_complex1')},
+					{id:resourceManager.getString('default','global.lbl.pwd_complex2')},
+					{id:resourceManager.getString('default','global.lbl.pwd_complex3')}
+				]);
+			}
+			
+		]]>
+	</fx:Script>
+	<s:HGroup width="100%" paddingLeft="5" paddingTop="5" verticalAlign="middle" horizontalAlign="center" gap="0">
+		<components:DKI_ToggleButton id="valueIsEnabled" width="45" cornerRadius="12" fontWeight="bold" label="{resourceManager.getString('default','global.lbl.OFF')}" selected="{isSelected(data.config_value)}" enabled="{isDeselectable(data.config_key)}" click="updateStepper(data.config_key)"/>
+		<s:Label text="{getLabel(data.config_comment, data.config_key)}"  height="28" verticalAlign="middle" paddingLeft="35" id="siteConfigComment" width="400" paddingRight="15"/>
+		<components:DKI_NumericStepper id="siteConfigValue" 
+									   value="{isNegativeOne(data.config_value)}" 
+									   creationComplete="{getTextDisplay(data.config_value)}" 
+									   minimum="{getMinimum(data.config_key)}" 
+									   maximum="{getMaximum(data.config_key)}"
+									   visible="{isNumericStepperVisible(data.config_key)}"
+									   includeInLayout="{isNumericStepperVisible(data.config_key)}"/>
+		<components:DKI_DropDownList id="siteConfigList" 
+									 creationComplete="{initPasswordArray(data.config_value)}" 
+									 width="195" 
+									 dataProvider="{passwordArray}" 
+									 labelField="id" 
+									 visible="{isListVisible(data.config_key)}"
+									 includeInLayout="{isListVisible(data.config_key)}"/>
+		<components:DKI_TextInput width="195" id="siteConfigText"
+								  text="@{data.config_value}" 
+								  visible="{isInterfaceTextInput}"
+								  includeInLayout="{isInterfaceTextInput}"
+								  maxChars="{textMaxChar}"
+								  restrict="{textRestrict}"/>
+		
+		<s:Label text="{data.config_key}" visible="false" id="siteConfigKey"/>
+	</s:HGroup>
+	
+</s:ItemRenderer>

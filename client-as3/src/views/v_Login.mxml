@@ -1,0 +1,906 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				   xmlns:s="library://ns.adobe.com/flex/spark"
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   xmlns:httpsessionservice="services.httpsessionservice.*"
+				   xmlns:siteconfigservice="services.siteconfigservice.*"
+				   xmlns:components="components.*"
+				   xmlns:passwordcheckservice="services.passwordcheckservice.*"
+				   xmlns:setsessionservice="services.setsessionservice.*"
+				   height="375" backgroundAlpha="0" borderVisible="false"
+				   creationComplete="creationCompleteHandler(event)" defaultButton.normal="{btn_login}" defaultButton.changepass="{passChange}"
+				   width.about="490" height.about="504">
+	
+	<fx:Metadata>
+		[ResourceBundle("default")] 
+	</fx:Metadata>
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State enterState="newPass.text=''; conPass.text=''" name="changepass"/>
+		<s:State name="twoFactor"/>
+		<s:State name="support"/>
+		<s:State name="about"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import components.BusyIndicator;
+			import components.DKI_AlertBox;
+			
+			import dm.DM;
+			
+			import flash.utils.setTimeout;
+			
+			import flashx.textLayout.conversion.TextConverter;
+			import flashx.textLayout.elements.TextFlow;
+			import flashx.textLayout.tlf_internal;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.HTTPService;
+			import mx.utils.ObjectUtil;
+			import flash.external.ExternalInterface;
+
+			import spark.events.IndexChangeEvent;
+			import spark.events.TextOperationEvent;
+			
+			private var LoginID:SharedObject;
+			private var loginType:int=0;
+			
+			[Bindable] private var passOk:Boolean = false;
+			[Bindable] private var checkTwoFactor:Boolean = false;
+			[Bindable] public var isVerifying2FA:Boolean = false;
+			
+			[Bindable][Embed(source="/assets/skinning/dialog.jpg")] private var dialog:Class;
+			[Bindable][Embed(source="/assets/skinning/dialog_lite.jpg")]  private var dialog_lite:Class;
+			
+			[Bindable][Embed(source="/assets/omega5000.png")] private var omLogo:Class;
+			[Bindable][Embed(source="/assets/OmegaLite_Logo_Small.png")]  private var omLogo_lite:Class;
+			
+			
+			[Embed(source="/assets/support.html",mimeType="application/octet-stream")]
+			private var TextClass : Class;
+			
+			[Bindable] private var suppStr:String = new TextClass();
+			
+			//[Bindable] private var currBuild:String = "Omega-9-05-01-46-Coogee-6";
+			//[Bindable] private var currBuild:String = "Omega-9-05-01-46";
+			[Bindable] private var currBuild:String = "Omega-9-06-01-12";
+			
+			[Bindable] private var loginStr:String = "";
+			[Bindable] public var attempts:String="";
+			[Bindable] private var sites:ArrayCollection = new ArrayCollection();
+			[Bindable] private var langArr:ArrayCollection = new ArrayCollection([{id:'AU',ico:'assets/language/m_english.png'},{id:'US',ico:'assets/language/m_usa.png'},{id:'CN',ico:'assets/language/m_chinese.png'},{id:'CA',ico:'assets/language/m_chinese.png'}]);
+			
+			private var lockuser:String = 'N';
+			private var status:int = 0;
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				LoginID = SharedObject.getLocal("UserData","/");
+				global.LanguageCode = LoginID.data.lang;
+				var myurl:String = FlexGlobals.topLevelApplication.url;
+				
+				/* switch (global.LanguageCode)
+				{
+				case 'ENG': langDD.selectedIndex = 0; break;
+				case 'CHN':  langDD.selectedIndex = 2; break;	
+				} */
+				
+				this.langDD.selectedIndex=0;
+				global.LangImage=langArr[0].ico;
+				user.text = LoginID.data.user;
+				setLanguage();
+				/* if (LoginID.data.locale)
+				{	
+				langDD.selectedIndex=LoginID.data.locale;
+				global.LangImage=langArr[langDD.selectedIndex].ico;
+				} */
+				getAllConfigSettingsResult.token = siteConfigService.getAllConfigSettings();
+				
+				
+				
+		
+				if(sites.length == 0)
+				{
+					FlexGlobals.topLevelApplication.browser.setTitle(global.OMLITE?'OMEGA LITE':'OMEGA 5000');
+					termDD.selectedIndex = -1;
+					var urlLoader:URLLoader = new URLLoader();
+					urlLoader.addEventListener(flash.events.IOErrorEvent.IO_ERROR, function():void{
+						//global.msgFail("sites.xml does not exist on server!!!!!!!!!!");
+						
+					});
+					urlLoader.addEventListener(Event.COMPLETE, function():void{
+						sites.removeAll();
+						var tmp:XML = XML(urlLoader.data);
+						for (var s:String in tmp.site)
+						{
+							sites.addItem({Name:tmp.site.@name[s],URL:tmp.site.@url[s],PORT:tmp.site.@port[s]});
+						}
+						
+						if(sites.length > 0)
+						{
+							FlexGlobals.topLevelApplication.browser.setTitle(sites[0].Name);
+							for (var i:int = 0; i < sites.length; i++) 
+							{
+								if(FlexGlobals.topLevelApplication.url.indexOf(":"+sites[i].PORT)>-1)
+								{
+									termDD.selectedIndex = i;
+									FlexGlobals.topLevelApplication.browser.setTitle(sites[i].Name);
+								}
+							}
+							if(termDD.selectedIndex==-1){
+								termDD.selectedIndex = 0;
+							}
+						}
+						
+					});
+					try
+					{
+						urlLoader.load(new URLRequest("../sites.xml"));
+					}
+					catch(e:Error)
+					{
+						//
+					}
+				}
+				
+			}
+			
+			
+			
+			
+			/*************************************************************************************************************************************
+			 * Mirza's Authentication Method
+			 * Please only replace with a more secure one, and not go back to the insecure ways
+			 * --- 
+			 *************************************************************************************************************************************/
+			protected function secureLogin(session:Boolean = false):void{
+				var username:String 	= session?'':user.text;
+				var password:String 	= session?'':global.nonsense(user.text, passwd.text);
+				var rev_password:String = session?'':global.anonsense(user.text, passwd.text);
+				var two_factor_code = session?'':twoFactor.text; 
+				
+				global.amfRequest("SecureAuth.login",
+					function(o:Object = null):void{
+						if (o == "AUTH 2FA") {
+							currentState = "twoFactor";
+							return;
+						}
+						
+						if(o == "NO VALID SESSION"){
+							return;
+						}
+						
+						if (o == "2FA FAILED") {
+							two_factor_code = '';
+							global.msgWarning("Authentication Code is incorrect.");
+							return;
+						}
+						
+						if (o == "2FA NOEMAIL") {
+							currentState = "normal";
+							two_factor_code = '';
+							global.msgWarning("Authentication Failed due to No Email Associated with the User.");
+							return;
+						}
+						
+						if (o == "2FA INVALIDMAIL") {
+							currentState = "normal";
+							two_factor_code = '';
+							global.msgWarning("Email Provided is Invalid.");
+							return;
+						}
+						
+						if (o == "2FA INVALIDDOMAIN") {
+							currentState = "normal";
+							two_factor_code = '';
+							global.msgWarning("Email Provided does not belong to an approved domain group.");
+							return;
+						}
+						
+			
+						if (o == "2FA TIMEOUT") {
+							currentState = "normal";
+							two_factor_code = '';
+							global.msgWarning("Authentication Code has expired.");
+							return;
+						}
+						
+						if(o == "VALID SESSION STILL RUNNING"){
+							global.msgWarning(resourceManager.getString('default','global.msg.login.validsessionrunning'));
+							return;
+						}
+						if(!o.hasOwnProperty("MSG_CODE")){
+							global.msgFail(resourceManager.getString('default','global.msg.login.enginebroken'));
+							return;
+						}
+						// grab the MSG_CODE and USER_DETAIL.USER_STATUS_FLAG;
+						global.LOGIN_OBJECT = o;
+						var err:int = int(o.MSG_CODE);
+						var tmpstatus:int = int(o.USER_DETAIL.USER_STATUS_FLAG);
+						// if error
+						if (err != 0){	
+							passwd.text='';					
+							switch(err){
+								case 30001:	
+									global.autoLockout = global.autoLockout - 1;
+									if(global.autoLockout == 1){
+										lockuser="Y";
+									}
+									if(global.autoLockout < 1){
+										global.msgWarning(resourceManager.getString('default','global.msg.systemlocked'));
+										loginStr="";
+										enabled = false;
+									}else{
+										//global.msgWarning("Incorrect Password Used");
+										global.msgWarning(resourceManager.getString('default','global.msg.login.invaliddetails'));
+										
+									}
+									break;
+								case 30002:	
+									global.msgWarning(resourceManager.getString('default','global.msg.connectionfail'));
+									loginStr = "";
+									attempts = "";
+									break;
+								case 30003:	global.autoLockout -= 1;
+									loginStr = "";
+									attempts = "";
+									switch(tmpstatus){
+										case 2: global.msgWarning(resourceManager.getString('default','global.msg.accountlocked')); break;
+										case 3: global.msgWarning(resourceManager.getString('default','global.msg.accountdeleted')); break;
+										//default:global.msgWarning(resourceManager.getString('default','global.msg.accountinvalid'));
+										default:global.msgWarning(resourceManager.getString('default','global.msg.login.invaliddetails'));
+									}
+									break;
+							}
+							LoginID.data.session ='';
+							LoginID.flush();
+							global.autoLockout = o.USER_DETAIL.USER_ATTEMPT_LEFT;
+							attempts = global.autoLockout+" "+resourceManager.getString('default','global.msg.attempts');
+							if (global.autoLockout < 1) {
+								enabled = false;
+								global.msgFail(resourceManager.getString('default','global.msg.systemlocked'));
+							}
+						}else{
+							
+						
+
+							getGlobalContentsOnLangauge();
+							
+							global.isLoadCancel 		= (o.USER_DETAIL.SITE_CANCEL_LOAD_ENABLED		== 'Y');
+							global.isContainer 			= (o.USER_DETAIL.SITE_ISOTAINER_ENABLED			== 'Y');
+							global.canRepost 			= (o.USER_DETAIL.SITE_SCHD_REV_REPOST_ENABLED	== 'Y');
+							global.canArchive			= (o.USER_DETAIL.SITE_SCHD_ARCHIVE_ENABLED		== 'Y');
+							global.canReverseMovement 	= (o.USER_DETAIL.SITE_MOVEMENTS_REV_ENABLED 	== 'Y');
+							global.user 				=  o.USER_DETAIL.USER_CODE;
+							global.username 	        =  o.USER_DETAIL.USER_NAME;
+							global.userdept 	        =  o.USER_DETAIL.USER_DEPARTMENT;
+							global.isManager 	        =  o.USER_DETAIL.ISMANAGER_CMPY;
+							global.manager 		        =  o.USER_DETAIL.ISMANAGER_CMPY;
+							global.company 		        =  o.USER_DETAIL.USER_CMPY;
+							global.siteName 	        =  o.USER_DETAIL.SITE_NAME;
+							global.siteCode 	        =  o.USER_DETAIL.SITE_CODE;
+							global.expiryTime 	        =  o.SITE_EXP_MINUTES;
+							
+							if (global.expiryTime > 0) global.hasExpiry = true else global.hasExpiry = false;
+							global.userpass = passwd.text;
+							passwd.text 	= "";
+							var passExpire:String = o.USER_DETAIL.USER_PASSWD_EXP;
+							var activeSessions : int = int(o.USER_DETAIL.HTTP_SESSION_TRACE_COUNT);
+							var allowedSessions: int = int(o.USER_DETAIL.MAX_HTTP_SESSION_ALLOWED);
+							var validSession:Boolean = (allowedSessions > activeSessions);
+							
+							if (allowedSessions == -1) validSession = true;
+							
+							status = int(o.USER_DETAIL.USER_STATUS_FLAG);
+							
+							LoginID.data.username = name;
+							LoginID.data.lang = global.LanguageCode;
+							LoginID.data.locale = langDD.selectedIndex;
+							LoginID.flush();
+							
+							
+							
+							
+							
+							if (passExpire == 'T') status=4;
+							if (!validSession){
+								resetSession();
+								return;
+							}
+							switch (status){
+								case 0: 
+									currentState = "changepass";
+									break;
+								case 1: 
+									global.app.initMainView();
+									break;
+								case 2: Alert.show(resourceManager.getString('default','global.msg.login.lockandcontact'), resourceManager.getString('default','global.msg.login.'));
+									break;
+								case 3: Alert.show(resourceManager.getString('default','global.msg.login.deleteandcontact'), resourceManager.getString('default','global.msg.login.adminwarning'));
+									break;
+								case 4: 
+									currentState = "changepass";
+									break;
+								default : currentState="normal";
+							}
+						}
+					},
+					function(o:Object = null):void{
+						// we probably need to do something here
+					}, 
+					username, 
+					password, 
+					rev_password, 
+					global.LanguageCode,
+					two_factor_code
+				);
+			}
+			
+			
+			
+			
+	
+			
+			
+			private function resetSession(): void{
+				var clearSessions:DKI_AlertBox=new DKI_AlertBox();
+				passwd.text="";
+				btn_login.enabled=false;
+				clearSessions.callBack = dlgResponse;
+				clearSessions.msg=resourceManager.getString('default','global.msg.login.sessionlimit');
+				PopUpManager.addPopUp(clearSessions,this,true);
+				PopUpManager.centerPopUp(clearSessions);
+			}
+			
+			protected function dlgResponse():void{
+				killSessionsResult.token = httpSessionService.killSessions(user.text, null);
+				
+			}
+			
+			private function onLoginFault(event:FaultEvent):void
+			{
+				global.msgWarning(resourceManager.getString('default','global.msg.login.requestfailed'));
+			}
+			
+			private function setLanguage():void
+			{
+				
+				trace('LANG:'+ langArr[langDD.selectedIndex].id);
+				switch (langArr[langDD.selectedIndex].id)
+				{
+					case "US":	resourceManager.localeChain = ['en_US'];
+						global.LanguageCode="ENG";
+						global.LangImage="assets/language/m_usa.png";
+						break;
+					case "AU":	resourceManager.localeChain = ['en_AU'];
+						global.LanguageCode="ENG";
+						global.LangImage="assets/language/m_english.png";
+						break;
+					case "CN":	resourceManager.localeChain = ['zh_CN'];
+						global.LanguageCode="CHN";
+						global.LangImage="assets/language/m_chinese.png";
+						break;
+					case "CA":	resourceManager.localeChain = ['zh_TW'];
+						global.LanguageCode="ENG";
+						global.LangImage="assets/language/m_chinese.png";
+						break;
+					default:	resourceManager.localeChain = ['en_AU'];
+						global.LangImage="assets/language/m_english.png";
+						global.LanguageCode="ENG";
+						
+				}
+				
+				setGlobalLang();
+			}
+			
+			protected function setGlobalLang():void{
+				if (global.LanguageCode=='') global.LanguageCode="ENG"; 
+				LoginID.data.username = name;
+				LoginID.data.lang = global.LanguageCode;
+				LoginID.data.locale = langDD.selectedIndex;
+				LoginID.flush();
+				var service:HTTPService = new HTTPService();
+				service.url = "/phpwrapper/index.php";
+				service.resultFormat="e4x";
+				service.method="POST";
+				service.addEventListener(FaultEvent.FAULT,onLangFault);
+				service.addEventListener(ResultEvent.RESULT,onLangResult);
+				var param:Object = {lang:global.LanguageCode};
+				service.send(param);
+			}
+			
+			private function onLangResult(event:ResultEvent):void{
+				trace(event.result as String);
+			}
+			
+			private function onLangFault(event:FaultEvent):void{
+				trace(event.fault as String);
+			}
+			
+			protected function getAllConfigSettingsResult_resultHandler(event:ResultEvent):void{
+				// store the site config settings to use later
+				global.siteConfigSettings = new ArrayCollection();
+				for( var k:int=0; k<event.result.length; k++ )
+				{
+					var cfgObj:Object = new Object();
+					cfgObj.config_key = event.result[k].config_key;
+					cfgObj.config_value = event.result[k].config_value;
+					global.siteConfigSettings.addItem( cfgObj );
+					if (event.result[k].config_key == 'SITE_DEFAULT_LOGIN_LANG_ID')
+					{
+						var idx:int = int(event.result[k].config_value);
+						if ( idx < langArr.length )
+						{
+							this.langDD.selectedIndex = idx;
+							global.LangImage = langArr[idx].ico;
+							//user.text = LoginID.data.user;
+							setLanguage();
+						}
+					}
+				}
+				/* 
+				for passwords
+				6 = basic  (alphanumeric)
+				7 = medium (combination of alpha and numeric)
+				15= complex (combination of alpha, numeric and printable symbols) !@#$%^&*;
+				
+				*/
+				global.gSafefillLabel = '';
+				global.gCapacityLabel = '';
+				global.wg_max_tags_flag = false;
+				global.wg_max_tags = -1;
+				
+				for (var i:int=0; i < event.result.length; i++)
+				{
+					if (event.result[i].config_key == 'URBAC_PWD_LEN_MIN') global.minPassLength = event.result[i].config_value;
+					if (event.result[i].config_key == 'URBAC_PWD_LEN_MAX') global.maxPassLength = event.result[i].config_value;
+					if (event.result[i].config_key == 'URBAC_PWD_AUTO_LOCK') global.autoLockout = event.result[i].config_value;
+					if (event.result[i].config_key == 'URBAC_PWD_COMPLEXITY') global.passComplexity = event.result[i].config_value;
+					if (event.result[i].config_key == 'URBAC_AUTO_LOGOFF') global.timeOut = event.result[i].config_value;
+					if (event.result[i].config_key == 'LIMIT_TO_SERVER_DATETIME') global.limitToServerDateTime = (event.result[i].config_value=='Y');
+					if (event.result[i].config_key == 'LIVE_JOURNAL_SORT') global.journalSort = event.result[i].config_value;
+					
+					if (event.result[i].config_key == 'SEALNUM_SOURCE') global.siteSealSourceExternal = event.result[i].config_value == 'EXTERNAL';
+					if (event.result[i].config_key == 'SITE_USE_SEAL') global.siteUseSeal = event.result[i].config_value == 'Y';
+					if (event.result[i].config_key == 'SCHD_RESET_DRIVER') global.siteCanResetDriver = event.result[i].config_value == 'Y';
+					if (event.result[i].config_key == 'SITE_USE_WEIGHBRIDGE') global.siteUseWeighbridge = event.result[i].config_value == 'Y';
+					
+					if (event.result[i].config_key == 'SITE_DEFAULT_TIME_STRING') global.gDefaultTimeString = event.result[i].config_value;
+					
+					// special settings for compartment safefill and capacity
+					if (event.result[i].config_key == 'SITE_SAFEFILL_LABEL')
+					{
+						global.gSafefillLabel = event.result[i].config_value;
+					}
+					if (event.result[i].config_key == 'SITE_CAPACITY_LABEL')
+					{
+						global.gCapacityLabel = event.result[i].config_value;
+					}
+					
+					// special settings for limit of max tags
+					if (event.result[i].config_key == 'SITE_MAX_TAGS')
+					{
+						if ( int(event.result[i].config_value) > 0 )
+						{
+							global.wg_max_tags_flag = true;
+							global.wg_max_tags = int(event.result[i].config_value);
+						}
+						else
+						{
+							global.wg_max_tags_flag = false;
+							global.wg_max_tags = -1;
+						}
+					}
+					
+				}
+				loginStr = global.minPassLength+' ~ '+global.maxPassLength+' '+resourceManager.getString('default','LIMITS');
+				if (global.autoLockout == 1) lockuser="Y";
+				
+				switch(global.passComplexity){
+					case 6: 
+						//global.passStr = "requires characters or numbers ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						global.passStr = resourceManager.getString('default','global.msg.PASSWORD_COMPLEXITY_MEDIUM') + " ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						break;
+					case 7:
+						//global.passStr = "requires number,uppercase and lowercase ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						global.passStr = resourceManager.getString('default','global.msg.PASSWORD_COMPLEXITY_HIGH') + " ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						break;
+					case 15: 
+						//global.passStr = "requires number,uppercase, lowercase and a symbol '!@#$%^&*+=)(' ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						global.passStr = resourceManager.getString('default','global.msg.PASSWORD_COMPLEXITY_SUPER') + " '!@#$%^&*+=)(' ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						break;
+					default:
+						//global.passStr = "only length constraints required ("+global.minPassLength+" ~ "+global.maxPassLength+")";;
+						global.passStr = resourceManager.getString('default','global.msg.PASSWORD_COMPLEXITY_LOW') + " ("+global.minPassLength+" ~ "+global.maxPassLength+")";;
+				}
+				
+				loginStr = global.passStr;
+				
+				if (global.autoLockout < 1)
+				{
+					global.autoLockout = 9999;
+					lbl_lockout.visible = false;
+				}
+				
+				// lets try autologin from session here ~MC
+				
+				secureLogin(true);
+			}
+			
+			protected function passChange_clickHandler(event:MouseEvent):void{		
+				// MC -- Security issue! code and pwd should never be sent in clear text, check in front end!
+				/*
+				var passObj:Object = {per_code:global.user,per_password:newPass.text};
+				checkPwdValidityResult.token = passwordCheckService.checkPwdValidity(passObj);
+				*/
+				trace(newPass.text, conPass.text,global.pwdComplexity(newPass.text, conPass.text));
+				switch(global.pwdComplexity(newPass.text, conPass.text)){
+					case 0:
+						global.amfRequest("SecureAuth.updatePassword",
+							function(o:Object):void{
+								trace("SUCCESS UPDATE",o);
+								
+								if(o.hasOwnProperty("MSG_CODE")){
+									if(o.MSG_CODE == "0"){
+										
+										/* if( o.hasOwnProperty("MSG_DESC") ){
+											global.msgSuccess(o.MSG_DESC);
+										}else{
+											global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+										} */
+										global.msgSuccess(resourceManager.getString('default','USER_PROFILE.ALERT.SUCCESS.CHANGE_DONE'));
+										
+										// log user out then log in again
+										global.amfRequest("SecureAuth.logout",
+											function(o:Object = null):void{
+												// this line needs to go away.
+												global.userpass = newPass.text; 
+												passwd.text = newPass.text;
+												secureLogin();		
+												newPass.text = "";
+												conPass.text= "";
+											},null);	
+									}else{
+										// Check all these
+										if(o.hasOwnProperty("MSG_CODE")){
+											switch(o.MSG_CODE){
+												//case 2:global.msgFail("Can not change password as it has previously been used");return;
+												case 2:global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.CANNOT_CHANGE_PASSWORD') );return;
+													//case 5:global.msgFail("Password change interval prevented password change");return;
+												case 5:global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.PASSWORD_INTERVAL') );return;
+													//case 6:global.msgFail("You are not permitted to change your password, Contact Administrator");return;
+												case 6:global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.NOT_PERMIT_CHANGE_PASSWORD') );return;
+													//case '100000':case 100000:global.msgFail("Invalid current password");return;
+												case '100000':case 100000:global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.INVALID_PASSWORD') );return;
+											}
+										}
+										//global.msgFail("Password change failed, Please try again later");
+										global.msgFail( resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.PASSWORD_CHANGE_ERROR') );
+										
+									}
+								}
+							},
+							function(o:Object):void{trace("FAILED UPDATE",o)},
+							global.nonsense(user.text, global.userpass),
+							global.nonsense(user.text, newPass.text)
+						);
+						break;
+					case 1:	global.msgFail(resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.PASSWORD_COMPLEXITY')+global.passStr);
+						conPass.text='';
+						newPass.text='';
+						break;
+					case 3:	global.msgFail(resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.PASSWORD_LENGTH'));
+						conPass.text='';
+						newPass.text='';
+						break;
+					case 4:	global.msgFail(resourceManager.getString('default','USER_PROFILE.ALERT.FAILURE.PASSWORD_MISMATCH'));
+						conPass.text='';
+						newPass.text='';
+						break;
+				}
+				
+			}
+			
+			
+			private function handleTwoFactorValidation():void {
+				if ((twoFactor.text.length == 6 ))
+					checkTwoFactor = true
+				else
+					checkTwoFactor = false;
+			}
+			
+			private function handleTwoFactorCancel():void {
+					currentState = "normal";
+			}
+			
+			private function onPassError(event:FaultEvent):void
+			{
+				global.msgWarning(resourceManager.getString('default','global.msg.login.passwordadminerror'));
+			}
+			
+			private function allowPass(): void
+			{
+				passOk = (newPass.text == conPass.text) && (newPass.text.length > global.minPassLength-1);
+			}
+
+			
+			protected function login_changeHandler(event:TextOperationEvent):void
+			{
+				if ((passwd.text.length > 0) && (user.text.length > 0))
+					btn_login.enabled = true
+				else
+					btn_login.enabled = false;
+			}
+			
+			protected function manual_clickHandler(event:MouseEvent):void
+			{
+				navigateToURL(new URLRequest('docs/manual.pdf'),'_blank');
+			}
+			
+			protected function newPass_keyUpHandler(event:KeyboardEvent):void{
+				conPass.text="";
+				vPass.validate();
+			}
+			
+			protected function dropdownlist1_changeHandler(event:IndexChangeEvent):void{
+				var url:String = FlexGlobals.topLevelApplication.url;
+				var http:String = url.split("//")[0];
+				var body:String = url.split("//")[1];
+				var splitBody:Array = body.split("/");
+				splitBody.pop();
+				var base:String = splitBody.shift();
+				base = base.split(":")[0];
+				url = http+"//"+base+":"+termDD.selectedItem.PORT+"/"+splitBody.join("/");
+				trace(url);
+				navigateToURL(new URLRequest(url),'_self');
+			}
+			
+			protected function linkbutton1_clickHandler(event:MouseEvent):void{
+				navigateToURL(new URLRequest('docs/eula.pdf'),'_blank');
+			}
+			
+			protected function onResultReset(event:ResultEvent):void{
+				global.amfRequest('SecureAuth.logout',function(){
+					passwd.text = global.userpass;
+					secureLogin();
+				},null);
+				
+			}
+			
+			protected function getGlobalContentsOnLangauge():void
+			{
+				if ( global.gSafefillLabel == null || global.gSafefillLabel == '' || global.gSafefillLabel == ' ' )
+				{
+					global.gSafefillLabel = resourceManager.getString('default','datagrid.headercaption.safefill');
+				}
+				if ( global.gCapacityLabel == null || global.gCapacityLabel == '' || global.gCapacityLabel == ' ' )
+				{
+					global.gCapacityLabel = resourceManager.getString('default','datagrid.headercaption.capacity');
+				}
+				
+				switch(global.passComplexity){
+					case 6: 
+						//global.passStr = "requires characters or numbers ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						global.passStr = resourceManager.getString('default','global.msg.PASSWORD_COMPLEXITY_MEDIUM') + " ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						break;
+					case 7:
+						//global.passStr = "requires number,uppercase and lowercase ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						global.passStr = resourceManager.getString('default','global.msg.PASSWORD_COMPLEXITY_HIGH') + " ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						break;
+					case 15: 
+						//global.passStr = "requires number,uppercase, lowercase and a symbol '!@#$%^&*+=)(' ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						global.passStr = resourceManager.getString('default','global.msg.PASSWORD_COMPLEXITY_SUPER') + " '!@#$%^&*+=)(' ("+global.minPassLength+" ~ "+global.maxPassLength+")";
+						break;
+					default:
+						//global.passStr = "only length constraints required ("+global.minPassLength+" ~ "+global.maxPassLength+")";;
+						global.passStr = resourceManager.getString('default','global.msg.PASSWORD_COMPLEXITY_LOW') + " ("+global.minPassLength+" ~ "+global.maxPassLength+")";;
+				}
+				
+				loginStr = global.passStr;
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:DropShadowFilter id="drop" alpha="0.85" angle="45" blurX="8" blurY="8" color="#666666"
+							distance="4" strength="0.8"/>
+		<mx:RegExpValidator id="letters"/>
+		<mx:RegExpValidator id="numeric"/>
+		<mx:RegExpValidator id="symbol"/>
+		<mx:StringValidator id="vPass" maxLength="{global.maxPassLength}"
+							minLength="{global.minPassLength}" property="text" required="true"
+							source="{newPass}"/>
+		<s:CallResponder id="killSessionsResult"/>
+		<httpsessionservice:HttpSessionService id="httpSessionService"  channelSet="{global.channelSet}" result="onResultReset(event)" 
+											   fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+											   showBusyCursor="false"/>
+		<siteconfigservice:SiteConfigService id="siteConfigService" showBusyCursor="false"  channelSet="{global.channelSet}" />
+		<s:CallResponder id="getAllConfigSettingsResult"
+						 result="getAllConfigSettingsResult_resultHandler(event)"/>
+
+		<setsessionservice:SetSessionService id="setSessionService" showBusyCursor="false" channelSet="{global.channelSet}" 
+											 fault="global.msgFail(resourceManager.getString('default','global.msg.login.nosessioncreate'))"/>
+	</fx:Declarations>
+	
+	<s:Group id="maskGroup" left="0" right="0" top="0" bottom="0">
+		<s:Rect left="0" right="0" top="0" bottom="0" bottomLeftRadiusX="15" bottomLeftRadiusY="15"
+				bottomRightRadiusX="15" bottomRightRadiusY="15" topLeftRadiusX="15"
+				topLeftRadiusY="15" topRightRadiusX="15" topRightRadiusY="15">
+			<s:fill>
+				<s:SolidColor color="0xFFFFFF"/>
+			</s:fill>
+		</s:Rect>
+	</s:Group>
+	
+	
+	<s:Rect left="0" right="0" top="0" bottom="0" filters="{drop}" alpha="{global.OMLITE?0.7:0}" 
+			topLeftRadiusX="8" topLeftRadiusY="8" topRightRadiusX="8" topRightRadiusY="8"
+			bottomLeftRadiusX="8" bottomLeftRadiusY="8" bottomRightRadiusX="8" bottomRightRadiusY="8">
+		<s:fill>
+			<s:LinearGradient rotation="60">
+				<s:GradientEntry color="0xF0F0F0"/>
+				<s:GradientEntry color="0xE0E0E0"/>
+				<s:GradientEntry color="0xF0F0F0"/>
+				<s:GradientEntry color="0xE0E0E0"/>
+			</s:LinearGradient>				
+		</s:fill>
+	</s:Rect>
+	<s:Rect id="border" left="0" top="0" right="0" bottom="0" alpha="{global.OMLITE?1:0}" 
+			topLeftRadiusX="8" topLeftRadiusY="8" topRightRadiusX="8" topRightRadiusY="8"
+			bottomLeftRadiusX="8" bottomLeftRadiusY="8" bottomRightRadiusX="8" bottomRightRadiusY="8">
+		<s:stroke>
+			<s:SolidColorStroke weight="1" color="0xAAAAAA" alpha="0.75"/>
+		</s:stroke>
+	</s:Rect>	
+	
+	
+	
+	<mx:Image id="image" left="0" right="0" top="0" bottom="0" alpha="{global.OMLITE?0:0.85}" filters="{drop}" 
+			  maintainAspectRatio="false" mask="{maskGroup}" scaleContent="true"
+			  source="{new dialog as Bitmap}"/>
+
+	<s:RichText includeIn="about" left="8" right="8" top="65" bottom="8" backgroundColor="#E8F6F7"
+				chromeColor="#E0F6F6" click="currentState='normal'"
+				textFlow="{TextConverter.importToFlow(suppStr, TextConverter.TEXT_FIELD_HTML_FORMAT)}">
+	</s:RichText>
+	
+	<mx:Image top="15" source="{global.OMLITE? new omLogo_lite as Bitmap : new omLogo as Bitmap}" scaleContent="true" 
+			  left.about="5" top.about="5" width.about="85" height.about="52"
+			  horizontalCenter.changepass="0"
+			  horizontalCenter.normal="0"
+			  horizontalCenter.support="0"
+			  horizontalCenter.twoFactor="0"/>
+	
+	<s:VGroup includeIn="normal" left="15" right="15" top="175">
+		<s:Label id="Plant" visible="{sites.length&gt;=2}" includeInLayout="{sites.length&gt;=2}"
+				 text="{resourceManager.getString('default','global.prompts.terminal')}"/>
+		<s:DropDownList id="termDD" visible="{sites.length&gt;=2}" width="165"
+						change="dropdownlist1_changeHandler(event)" cornerRadius="12"
+						dataProvider="{sites}" includeInLayout="{sites.length&gt;=2}"
+						labelField="Name"></s:DropDownList>
+		<s:Spacer height="10"/>
+		<s:Label text="{resourceManager.getString('default','USERNAME')}"/>
+		<!--<s:TextInput id="user" width="100%" change="login_changeHandler(event)" filters="{drop}" text="" maxChars="6"/>-->
+		<components:DKI_ValidatorInput id="user" width="100%" change="login_changeHandler(event)"
+									   filters="{drop}" maxChars="6" text=""
+									   validationType="alphanumeric"/>
+		<mx:Spacer height="10"/>
+		<s:Label text="{resourceManager.getString('default','PASSWORD')}"/>
+		<!--<s:TextInput id="passwd" displayAsPassword="{!dispPass.selected}" filters="{drop}" width="100%" change="login_changeHandler(event)" maxChars="15"/>-->
+		<components:DKI_ValidatorInput id="passwd" width="100%" change="login_changeHandler(event)"
+									   displayAsPassword="{!dispPass.selected}" filters="{drop}"
+									   maxChars="40" text=""/>
+		<s:CheckBox id="dispPass" visible="false"
+					label="{resourceManager.getString('default','DISPLAY_PASSWORD')}"
+					selected="false"/> 
+		<s:Spacer height="10"/>
+		<s:HGroup width="100%">
+			<components:DKI_DropDownList id="langDD" height="24" change="setLanguage()"
+										 dataProvider="{langArr}"
+										 itemRenderer="renderers.LanguageRenderer" labelField="id"
+										 requireSelection="true" selectedIndex="0"
+										 skinClass="skins.LanguageSelectionSkin"/>
+			<s:CheckBox id="chk_save" visible="false"
+						label="{resourceManager.getString('default','REMEMBER_ME')}" color="#5B5858"
+						fontSize="11"/>
+			<s:CheckBox id="chk_newpass" visible="false"
+						label="{resourceManager.getString('default','CHANGE_PASSWORD')}"
+						color="#5B5858" fontSize="11"/>
+			<mx:Spacer width="100%"/>
+			<components:DKI_Button id="btn_login" right="0"
+								   label="{resourceManager.getString('default','LOGIN')}"
+								   click="secureLogin()" cornerRadius="5" enabled="false"/>
+		</s:HGroup>
+		<s:HGroup width="100%">
+			<s:Spacer width="100%"/>
+			<s:Label id="lbl_lockout" text="{attempts}"/>
+		</s:HGroup>
+		<s:Spacer height="6"/>
+		<s:HGroup width="100%">
+			<mx:LinkButton label="{resourceManager.getString('default','SUPPORT')}"
+						   click="currentState='support'" color="#5B5858" fontFamily="Verdana"
+						   fontSize="10" textAlign="left" textDecoration="underline"
+						   verticalCenter="0"/>
+			<mx:LinkButton label="{resourceManager.getString('default','ABOUT')}"
+						   click="linkbutton1_clickHandler(event)" color="#5B5858"
+						   fontFamily="Verdana" fontSize="10" textAlign="left"
+						   textDecoration="underline" verticalCenter="0"/>
+			<mx:LinkButton label="{resourceManager.getString('default','HELP')}"
+						   click="manual_clickHandler(event)" color="#5B5858" fontFamily="Verdana"
+						   fontSize="10" textAlign="left" textDecoration="underline"
+						   verticalCenter="0"/>
+			<s:Spacer width="100%"/>
+			<s:Label id="build" height="100%" color="0x606060" text="{global.Build}" toolTip="{global.BuildMain}"
+					 verticalAlign="middle"/>
+		</s:HGroup>
+	</s:VGroup>
+	
+	<s:VGroup includeIn="changepass" left="15" right="15" top="175" itemCreationPolicy="immediate">
+		<s:Label text="{resourceManager.getString('default','NEW_PASSWORD')}"/>
+		<s:HGroup width="100%">
+			<components:DKI_ValidatorInput id="newPass" width="100%"
+										   displayAsPassword="{!dispPass2.selected}"
+										   filters="{drop}"
+										   keyUp="vPass.validate();conPass.text='';passOk=false"
+										   maxChars="{global.maxPassLength}"
+										   restrict="[a-z][A-Z][0-9]~!@#$%"/>
+			<s:Label color="#FF0000" fontSize="16" text="*"/> 
+		</s:HGroup>
+		<mx:Spacer height="10"/>
+		<s:Label text="{resourceManager.getString('default','CONFIRM_PASSWORD')}"/>
+		<s:HGroup width="100%">
+			<components:DKI_ValidatorInput id="conPass" width="100%" change="allowPass()"
+						 displayAsPassword="{!dispPass2.selected}" filters="{drop}"/>
+			<s:Label color="#FF0000" fontSize="16" text="*"/> 
+		</s:HGroup>
+		<s:CheckBox id="dispPass2" visible="false"
+					label="{resourceManager.getString('default','DISPLAY_PASSWORD')}"
+					selected="false"/> 
+		<s:Label width="100%" color="#F50808" maxDisplayedLines="2" text="{loginStr}"/>
+		<!--<s:Label color="#FF0000" text="* password change required"/>-->
+	</s:VGroup>
+	
+	<s:VGroup includeIn="twoFactor" left="50" right="50" top="200" itemCreationPolicy="immediate">
+		<s:Label text="Please Enter your 6 Character Authentication Code."/>
+		<s:HGroup width="100%">
+			<components:DKI_ValidatorInput id="twoFactor" change="handleTwoFactorValidation()" width="100%" text=""/>
+			<s:Label color="#FF0000" fontSize="16" text="*"/> 
+		</s:HGroup>
+	</s:VGroup>
+	
+	<s:HGroup includeIn="twoFactor" bottom="15" horizontalCenter="0">
+		<components:DKI_Button id="twoFactorSubmit"  enabled="{checkTwoFactor}" label="{isVerifying2FA ? 'Verifying' : 'Verify'}" type="ok" click="secureLogin()"/>
+		<components:DKI_Button id="twoFactorCancel"  label="Cancel" type="cancel" click="global.amfRequest('SecureAuth.logout',function():void{currentState='normal';},null)"/>
+	</s:HGroup>
+	
+	<s:HGroup includeIn="changepass" bottom="15" horizontalCenter="0">
+		
+		<components:DKI_Button label="{resourceManager.getString('default','CANCEL')}"
+							   click="global.amfRequest('SecureAuth.logout',function():void{currentState='normal';},null)" type="cancel"/>
+		<components:DKI_Button id="passChange" label="{resourceManager.getString('default','OK')}"
+							   click="passChange_clickHandler(event)" enabled="{passOk}" type="ok"/>
+	</s:HGroup>
+	
+	<s:VGroup includeIn="support" left="15" right="15" top="175" bottom="5">
+		<s:RichText width="100%" height="100%"
+					textFlow="{TextConverter.importToFlow(suppStr, TextConverter.TEXT_FIELD_HTML_FORMAT)}">
+			
+		</s:RichText>
+		<s:Group width="100%">
+			<components:DKI_Button label="{resourceManager.getString('default','OK')}"
+								   click="currentState='normal'" horizontalCenter="0"/> 
+		</s:Group>
+	</s:VGroup>
+	<s:Label includeIn="about" x="89" y="10" width="391" height="47" color="#181294" fontSize="32"
+			 fontWeight="bold" text="Diamondkey International" verticalAlign="middle"/>
+</s:BorderContainer>

@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:journalservice="services.journalservice.*"
+		  xmlns:components="components.*" 
+		  currentState="normal"
+		  creationComplete="creationCompleteHandler(event)"
+		  gap="2" width="100%" height="100%" >
+	
+	<s:states>
+		<s:State name="widget"/>
+		<s:State name="normal"/>
+		<s:State name="search" enterState="prepareSearch(event)"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import components.JournalFilters;
+			import components.JournalToCsv;
+			import components.ResetDialog;
+			
+			import dm.collections.dmJournal;
+			
+			import events.ObjEvent;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.errors.ItemPendingError;
+			import mx.controls.Alert;
+			import mx.controls.scrollClasses.ScrollBar;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.CollectionEvent;
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			import mx.formatters.DateFormatter;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.components.supportClasses.ItemRenderer;
+			import spark.core.NavigationUnit;
+			import spark.events.IndexChangeEvent;
+			import spark.layouts.VerticalLayout;
+			
+			import valueObjects.JournalTypes;
+			
+			private var currItem:int = 0;
+			private var pending: Boolean = false;
+			private var rescroll:Boolean = false;
+			private var canscroll:Boolean = false;
+			private var scrollToTop:Boolean = false;
+			
+			[Bindable] private var doSearch:Boolean = false;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			private var fltrs:String;
+			private var srchStr:String;
+			
+			private var sDateStr:String;
+			private var eDateStr:String;
+			
+			[Bindable] public var filterArr:ArrayCollection = new ArrayCollection();
+			
+			private var filterDlg:JournalFilters = new JournalFilters();
+			private var dayToCsv:JournalToCsv;
+			
+			private var f:FileReference = new FileReference();
+			
+			
+			//*********************************
+			// Rest service declarations
+			//*********************************
+			
+			[Bindable] public var currView:ArrayCollection = new ArrayCollection(['live','search']);
+			[Bindable] private var liveFeed:dmJournal = new dmJournal({
+					pageSize : 250,  keepSync : true, syncDelay : 2000, 
+					order:{field:"GEN_DATE", order:"DESC"}
+				});
+			[Bindable] private var searchHits:ArrayCollection = new ArrayCollection(); // search criteria bookmarks
+			[Bindable] private var searchDetails:ArrayCollection = new ArrayCollection(); // bookmark -500 to +500 records
+			[Bindable] public var journalCollection:dmJournal = new dmJournal({ pageSize:1000, keepSync:false });
+			[Bindable] public var journalResults:dmJournal;//=new dmJournal({ pageSize:1000, keepSync:false });;
+			
+			private function resetGrid(): void
+			{
+				var delta:int;
+				delta = live.layout.getVerticalScrollPositionDelta(NavigationUnit.END);
+				live.layout.verticalScrollPosition += delta;
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				currItem = 0;
+				pending = false;
+				rescroll = false;
+				canscroll = false;
+				scrollToTop = false;
+				doSearch = false;
+				global.srchText = "";
+				//ti.text = "";
+				fltrs = "";
+				var tmpDate:Date=new Date();
+				var tmpDate2:Date=new Date();
+				tmpDate.hours=0; tmpDate.minutes=0;
+				tmpDate2.date=tmpDate.date+1;
+				tmpDate2.hours=0; tmpDate2.minutes=0;
+			}
+			
+			protected function ti_keyUpHandler(event:KeyboardEvent):void
+			{
+				
+			this.journalCollection.populate(
+					{
+						startTime:sd.selectedDate,
+						endTime: ed.selectedDate,
+						filter : 
+						{
+							(ti.text as String):
+							{
+								'fields': ["MESSAGE"],
+								'equality': 'like'
+							}
+						}
+					});
+			}
+			
+			protected function refresh_clickHandler(event:MouseEvent):void
+			{
+				creationCompleteHandler(null);
+			}
+			
+			protected function btn_setFilters_clickHandler(event:MouseEvent):void
+			{
+				filterDlg.filterArr = journalCollection.eventsArray;
+				filterDlg.addEventListener(CloseEvent.CLOSE, filter_close);
+				PopUpManager.addPopUp(filterDlg,this,true);
+				PopUpManager.centerPopUp(filterDlg);
+			}
+			
+			protected function filter_close(event:Event):void
+			{
+				fltrs = "";
+				for (var i:int=0;i < filterArr.length; i++)
+				{
+					if (filterArr[i].checked == true)
+					{
+						if (fltrs.length > 0) fltrs +=":";	
+						fltrs += filterArr[i].caption;
+					}
+				}
+				//if (filterArr[i].checked == true) fltrs.addItem(filterArr[i].caption);
+				PopUpManager.removePopUp(filterDlg);
+				filterDlg.removeEventListener(CloseEvent.CLOSE, filter_close);
+				btn_applyFilters_clickHandler(null);
+			}
+			
+			protected function btn_applyFilters_clickHandler(event:MouseEvent):void
+			{
+				sDateStr = dateformat.format(sd.selectedDate)+" 12:00:00 AM";
+				eDateStr = dateformat.format(ed.selectedDate)+" 12:00:00 AM";
+				//getRecords.token = journalService.getPagedJournalEntries(fltrs, sDateStr, eDateStr);
+			}
+			
+			protected function list_creationCompleteHandler(event:FlexEvent):void
+			{
+				//
+			}
+			
+			protected function btn_exportCSV_clickHandler(event:MouseEvent):void
+			{
+				/* var firstItemDisplayed:int = ((list.dataGroup.layout) as VerticalLayout).firstIndexInView;
+				var itemsDisplayed:int = ((list.dataGroup.layout) as VerticalLayout).rowCount;
+				
+				var tempStr:String='GEN_DATE,MSG_EVENT,MSG_CLASS,MESSAGE,COMPANY_CODE,REGION_CODE,SEQ\n';
+				
+				for (var i:int=firstItemDisplayed; i<(firstItemDisplayed+itemsDisplayed);i++){
+				var tempDate:String = list.dataProvider.getItemAt(i).gen_date;
+				tempDate = tempDate.replace(".000000","");
+				tempStr += '"'+tempDate+'",';
+				tempStr += '"'+list.dataProvider.getItemAt(i).msg_event+'",';
+				tempStr += '"'+list.dataProvider.getItemAt(i).msg_class+'",';
+				tempStr += '"'+list.dataProvider.getItemAt(i).message+'",';
+				tempStr += '"'+list.dataProvider.getItemAt(i).company_code+'",';
+				tempStr += '"'+list.dataProvider.getItemAt(i).region_code+'",';
+				tempStr += '"'+list.dataProvider.getItemAt(i).seq+'",';
+				tempStr += "\n";
+				}
+				
+				var CurrentDF:DateFormatter = new DateFormatter();
+				var CurrentDateTime:Date = new Date();
+				CurrentDF.formatString = "DDMMYYYY_LNNSSA";
+				var myDate:String = CurrentDF.format(CurrentDateTime);
+				
+				f.save(tempStr,'journal_screenshot_'+myDate+'.csv'); */
+			}
+			
+			protected function btn_daytoCSV_clickHandler(event:MouseEvent):void
+			{
+				dayToCsv = new JournalToCsv();
+				dayToCsv.filterArr = filterArr;
+				FlexGlobals.topLevelApplication.addEventListener("generateDayCsv", exportcsv_generate);
+				PopUpManager.addPopUp(dayToCsv,this,true);
+				PopUpManager.centerPopUp(dayToCsv);
+			}
+			
+			protected function exportcsv_generate(event:Event):void
+			{
+				fltrs = "";
+				for (var i:int=0;i < filterArr.length; i++)
+				{
+					if (filterArr[i].checked == true)
+					{
+						if (fltrs.length > 0) fltrs +=":";	
+						fltrs += filterArr[i].caption;
+					}
+				}				
+				sDateStr = dateformat.format(dayToCsv.csvDate.selectedDate)+" 12:00:00 AM";
+				dayToCsv.csvDate.selectedDate.date = dayToCsv.csvDate.selectedDate.date+1;
+				eDateStr = dateformat.format(dayToCsv.csvDate.selectedDate)+" 12:00:00 AM";
+				//getCSVRecords.token=journalService.getCSVJournalEntries(fltrs, sDateStr, eDateStr);
+			}	
+			
+			protected function getCSVRecords_resultHandler(event:ResultEvent):void
+			{
+				/* if(event.result!=null)
+				{
+				var tempResult:ArrayCollection = event.result as ArrayCollection;
+				var tempStr:String='GEN_DATE,MSG_EVENT,MSG_CLASS,MESSAGE,COMPANY_CODE,REGION_CODE,SEQ\n';
+				
+				for (var i:int=0; i<(tempResult.length);i++)
+				{
+				var tempDate:String = tempResult[i].gen_date;
+				tempDate = tempDate.replace(".000000","");
+				tempStr += '"'+tempDate+'",';
+				tempStr += '"'+tempResult[i].msg_event+'",';
+				tempStr += '"'+tempResult[i].msg_class+'",';
+				tempStr += '"'+tempResult[i].message+'",';
+				tempStr += '"'+tempResult[i].company_code+'",';
+				tempStr += '"'+tempResult[i].region_code+'",';
+				tempStr += '"'+tempResult[i].seq+'",';
+				tempStr += "\n";
+				}
+				
+				var CurrentDF:DateFormatter = new DateFormatter();
+				var CurrentDateTime:Date = new Date();
+				CurrentDF.formatString = "DDMMYYYY_LNNSSA";
+				var myDate:String = CurrentDF.format(CurrentDateTime);
+				dayToCsv.btn_save.enabled=true;
+				dayToCsv.csvString=tempStr;
+				dayToCsv.fileName='journal_day_'+myDate+'.csv';
+				}
+				else
+				{
+				dayToCsv.csvDate.selectedDate = new Date();
+				global.msgWarning('No records found in the selected day');
+				} */
+			}
+			
+			protected function journalService_faultHandler(event:FaultEvent):void
+			{
+				Alert.show(event.message.toString());
+			}
+			
+			//******************************
+			// new restservices functions
+			//******************************
+			protected function prepareSearch(event:FlexEvent):void
+			{
+				liveFeed.stopSync();
+				ti.text = "";
+				var endDate:Date=new Date();
+				var tmpDate:Date = new Date();
+				tmpDate.date=tmpDate.date-1;
+				sd.selectedDate = tmpDate;
+				ed.selectedDate= endDate;
+				//doSearch(global.srchText);
+			}
+			
+			
+			protected function searchResult_changeHandler(event:IndexChangeEvent):void
+			{
+				journalResults = new dmJournal({ pageSize:500, keepSync:false});
+				searchExpand.invalidateDisplayList();
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateformat" dateTimePattern="yyyy-MM-dd HH:mm"/>
+	</fx:Declarations>
+	
+	
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin" title="Site Journal"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		<s:HGroup id="toolbar1" width="100%" gap="4" paddingBottom="2" paddingTop="2" includeIn="normal">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_live" type="report" label="journal search" click="currentState='search'" toolTip="switch to live feed"/>
+		</s:HGroup>
+		
+		<s:HGroup id="toolbar" width="100%" gap="2" paddingBottom="2" paddingTop="2" includeIn="search">
+			<s:HGroup>
+				<components:DKI_ValidatorInput id="ti" validationType="search" width="160" keyUp="ti_keyUpHandler(event)" prompt="Please enter search key"/>		
+				<mx:VRule width="8" height="20" strokeWidth="2"/>
+				<components:DKI_Button id="btn_setFilters" label="Events" click="btn_setFilters_clickHandler(event)" toolTip="Change Event Filters"/>		
+				<mx:VRule width="8" height="20" strokeWidth="2"/>
+			</s:HGroup>
+			<s:Label height="100%" fontWeight="bold" text="Span" verticalAlign="middle"/>		
+			<components:DKI_DateTime id="sd" width="148"/>
+			<s:Label height="100%" fontWeight="normal" text="-" verticalAlign="middle"/>		
+			<components:DKI_DateTime id="ed" width="148"/>
+			<components:DKI_Button width="35" id="btn_applyFilters" type="refresh" click="btn_applyFilters_clickHandler(event)" toolTip="Apply Range"/>
+			<mx:VRule width="8" height="20" strokeWidth="2"/>
+			<s:HGroup>
+				<components:DKI_Button id="btn_exportCSV" type="report" label="CSV(view)" click="btn_exportCSV_clickHandler(event)" toolTip="Export current view to CSV file"/>
+				<components:DKI_Button id="btn_daytoCSV" type="report" label="CSV(today)" click="btn_daytoCSV_clickHandler(event)" toolTip="Export selected day to CSV file"/>
+				<s:Spacer width="3"/>
+				<components:DKI_Button id="normal" type="report" label="Live Feed" click="currentState='normal'" toolTip="switch to live feed"/>
+				<s:Spacer width="3"/>
+			</s:HGroup>
+		</s:HGroup>
+		<s:VGroup width="100%" height="100%" gap="-1" excludeFrom="search">
+			<components:JournalHeader width="100%" height="28"/>
+			<components:DKI_List id="live" width="100%" height="100%" labelField="MESSAGE" itemRenderer="renderers.SearchRenderer">
+				<s:AsyncListView list="{liveFeed}"/>
+			</components:DKI_List>
+		</s:VGroup>
+		<s:VGroup width="100%" height="100%" gap="-1" includeIn="search">
+			<components:JournalHeader width="100%" height="28"/>
+			<components:DKI_List id="searchResult" width="100%" height="30%" labelField="MESSAGE" itemRenderer="renderers.SearchRenderer" change="searchResult_changeHandler(event)">
+				<s:AsyncListView list="{journalCollection}"/>
+			</components:DKI_List>
+			<mx:HRule width="100%"/> 
+			<components:DKI_List id="searchExpand" width="100%" height="70%" labelField="MESSAGE" itemRenderer="renderers.SearchRenderer">
+				<s:AsyncListView list="{journalResults}"/>
+			</components:DKI_List>
+		</s:VGroup>
+	</s:Panel>
+</s:VGroup>
+

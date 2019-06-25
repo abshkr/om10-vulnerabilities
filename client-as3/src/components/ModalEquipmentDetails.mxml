@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:components="components.*"
+		 width="640" height="300" skinClass="skins.DialogBoxSkin" title="New Equipment Details">
+	
+	<fx:Script>
+		<![CDATA[
+			import events.ObjEvent;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.FlexGlobals;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]public var arr:ArrayCollection = new ArrayCollection();
+			[Bindable]public var nComp:String = '';
+			
+			protected function closeWindow(event:MouseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}			
+			
+			public function isNumSealColumnVisible():Boolean
+			{
+				var value:String = global.getValueFromSiteConfigSettings( "SITE_USE_SEAL" );
+				if ( value == 'Y' )
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			
+		]]>
+	</fx:Script>	
+	
+	<s:VGroup top="10" left="10" right="10" height="100%" width="100%">
+		<s:HGroup>
+			<s:Label height="28" fontWeight="bold" text="{resourceManager.getString('default','ETYP_CMPT_EDITOR.TOTAL_CMPTS')}" verticalAlign="middle" />
+			<components:DKI_ValidatorInput width="100" id="compartments" text="{nComp}" prompt="{resourceManager.getString('default','global.lbl.required')}" editable="false"/>
+		</s:HGroup>		
+		<components:DKI_List width="100%" height="100%" contentBackgroundAlpha="0" id="compList" dataProvider="{arr}" borderVisible="false">
+			<components:itemRenderer>
+				<fx:Component>
+					<s:ItemRenderer autoDrawBackground="false">
+						<s:HGroup width="100%">
+							<s:Label text="{resourceManager.getString('default','ETYP_CMPT_EDITOR.LINE_CMPT_NO')+String(itemIndex+1)}" height="28" verticalAlign="middle"/>
+							<s:Spacer width="30" />
+							<s:Label text="{global.gCapacityLabel}" height="28" verticalAlign="middle"/>
+							<components:DKI_ValidatorInput width="120" id="mytext" text="{data.cmpt_capacit}" editable="false" />
+							<s:Label text="{data.unit}" height="28" verticalAlign="middle"/>
+							<s:Spacer width="30" />
+							<s:Label text="{resourceManager.getString('default','ETYP_CMPT_EDITOR.LINE_TOTAL_SEALS')}" height="28" verticalAlign="middle" visible="{outerDocument.isNumSealColumnVisible()}"/>
+							<components:DKI_ValidatorInput validationType="integer" required="false" restrict="0-9" maxChars="2" width="70" id="numSeals" 
+														   text="{data.cmpt_n_seals}" editable="false" visible="{outerDocument.isNumSealColumnVisible()}"/>
+						</s:HGroup>
+					</s:ItemRenderer>
+				</fx:Component>
+			</components:itemRenderer>
+		</components:DKI_List>
+		<s:Spacer height="5" />
+		<s:HGroup width="100%">
+			<s:Spacer width="100%" />
+			<components:DKI_Button label="{resourceManager.getString('default','OK')}" click="closeWindow(event)"/>
+		</s:HGroup>
+		<s:Spacer height="5" />
+	</s:VGroup>	
+</s:Panel>

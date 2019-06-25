@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="false" >
+	
+	<s:states>
+		<s:State name="normal" />
+		<s:State name="selected" />
+		<s:State name="hovered" />
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import components.ModalEquipmentDetails;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.managers.PopUpManager;
+			private var canDelete:Boolean=true;
+			
+			private function getImage(idx:int,composition:String,schedul:String,type:String,rigid:String):String
+			{
+				if(composition==null){
+					if((rigid=='y')||(rigid=='Y')){
+						return 'assets/rigid.png';
+					}else{
+						if((schedul=='y')||(schedul=='Y')) return 'assets/trailer_1.png';
+						else return 'assets/pmv_1.png';	
+					}
+				}else{
+					if((type=='N')||(type=='n')){
+						return 'assets/pmv_1.png';
+					}else{
+						return 'assets/trailer_1.png';
+					}					
+				}
+			}
+				
+			private function getMarginLeft(idx:int, type:String):int
+			{
+				if((type=='N')||(type=='n')) return 10;
+				else{
+					if(idx==1) return 10;
+					else return 0;
+				}
+			}
+			
+			private function getMarginRight(type:String):int
+			{
+				if((type=='N')||(type=='n')) return -8;
+				else return -2;
+			}	
+			
+			private function getImageWidth(type:String):int
+			{
+				if((type=='N')||(type=='n')) return 30;
+				else return 68;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:VGroup right="{getMarginRight(data.sub_item_sched_type)}" left="{getMarginLeft(data.idx, data.sub_item_sched_type)}">
+		<s:Image source="{getImage(data.idx, data.eqc_sub_item, data.etyp_schedul, data.sub_item_sched_type, data.etyp_isrigid)}" width="{getImageWidth(data.sub_item_sched_type)}" height="40" />
+	</s:VGroup>
+
+</s:ItemRenderer>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemEditor xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				  xmlns:s="library://ns.adobe.com/flex/spark" 
+				  xmlns:mx="library://ns.adobe.com/flex/mx"
+				  xmlns:components="components.*"
+				  >
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.DateField;
+			import flash.globalization.LocaleID;
+			
+			override public function set value(newValue:Object):void 
+			{
+				var date:Date = new Date();
+				var str:String;
+				
+				str = newValue as String;
+				date = DateField.stringToDate(str,"YYYY-MM-DD");
+				dt.textDate = dateFormatter.format(date);
+				dt.selectedDate = date;
+				trace( "DateEditor Set", str, dt.textDate );
+//				dt.textDate = newValue as String;
+			}
+			
+			override public function get value():Object 
+			{
+				var str:String;
+				
+				str = dateConvert.format(dt.selectedDate);
+				trace( "DateEditor Get", str );
+				
+				return str;
+			}
+			
+			override public function setFocus():void 
+			{
+				dt.setFocus();
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateFormatter" locale="{LocaleID.DEFAULT}" dateStyle="short" timeStyle="none"/>
+		<s:DateTimeFormatter id="dateConvert" dateTimePattern="yyyy-MM-dd"/>
+	</fx:Declarations>
+	<components:DKI_DateChooser id="dt" top="1" left="1" bottom="1" right="1" />
+</s:GridItemEditor>

@@ -1,0 +1,1565 @@
+{
+    "CHN": {
+        "(dummy)": {
+            "NO__0": "环境变量 [%] 未设置"
+        },
+        "ALLOC_LOCK": {
+            "NO__0": "禁用",
+            "NO__1": "无限制",
+            "NO__2": "检查",
+            "NO__3": "定期重置",
+            "NO__4": "有效期"
+        },
+        "ALLOC_PERIOD": {
+            "NO__0": " ",
+            "NO__1": "每天",
+            "NO__2": "每周",
+            "NO__3": "每两周",
+            "NO__4": "每月"
+        },
+        "AUTH_LEVEL": {
+            "NO__0": "参观者",
+            "NO__1": "经理",
+            "NO__2": "会计",
+            "NO__3": "主管",
+            "NO__4": "工程师",
+            "NO__5": "开票员",
+            "NO__6": "保安员",
+            "NO__7": "提货人",
+            "NO__8": "承包人",
+            "NO__9": "发油人"
+        },
+        "BAM_USAGE_ENUM": {
+            "NO__0": "未定义",
+            "NO__1": "发油台未指定",
+            "NO__2": "油罐到发油台",
+            "NO__3": "发油台到油罐",
+            "NO__4": "批次未定义",
+            "NO__5": "批次到油罐",
+            "NO__6": "油罐到批次",
+            "NO__7": "地秤发油",
+            "NO__8": "地秤卸油"
+        },
+        "BAT_DEV_TYPE": {
+            "NO__0": "*****",
+            "NO__1": "发油控制器 RBM",
+            "NO__2": "发油控制器 RBU",
+            "NO__3": "发油控制器",
+            "NO__4": "发油控制器 SEQ ACS",
+            "NO__5": "发油控制器SEQ ACT",
+            "NO__6": "发油控制器SEQ ACN",
+            "NO__7": "发油控制器 STD ACS",
+            "NO__8": "发油控制器STD ACT",
+            "NO__9": "发油控制器STD ACN",
+            "NO__10": "发油控制器 STM",
+            "NO__11": "发油控制器 WBG",
+            "NO__12": "发油控制器 WBG",
+            "NO__13": "BLC 100",
+            "NO__14": "BLC 80 顶部发油",
+            "NO__15": "BLC 80 底部发油",
+            "NO__16": "CONTREC 803 4",
+            "NO__17": "IDIS UPC IDS",
+            "NO__18": "ULTRA称重装置",
+            "NO__19": "MERCURY称重装置",
+            "NO__20": "TOLEDO 称重装置",
+            "NO__21": "地秤CONTREC读卡器",
+            "NO__22": "交易控制器地秤",
+            "NO__23": "输油控制器3"
+        },
+        "BA_METER_TYPE": {
+            "NO__0": "*****",
+            "NO__1": "涡轮",
+            "NO__2": "刮板",
+            "NO__3": "质量"
+        },
+        "BA_TYPE": {
+            "NO__0": "???",
+            "NO__1": "交易_OBP",
+            "NO__2": "卸油_OBP",
+            "NO__3": "BLC80_发油台",
+            "NO__4": "地秤",
+            "NO__5": "TC_地秤",
+            "NO__6": "伸缩_油桶_装填",
+            "NO__7": "旧的_发油控制器"
+        },
+        "BCLASS_DESC": {
+            "NO__0": "未定义",
+            "NO__1": "航空燃料\/煤油",
+            "NO__2": "汽油",
+            "NO__3": "润滑油",
+            "NO__4": "柴油\/燃油\/民用燃油",
+            "NO__5": "原油",
+            "NO__6": "添加剂",
+            "NO__7": "酒精\/水",
+            "NO__8": "液化石油气",
+            "NO__9": "特有的\/特别石油馏出物",
+            "NO__10": "没有温度调整量",
+            "NO__11": "已报告添加剂",
+            "NO__12": "普通精炼油",
+            "NO__13": "沥青"
+        },
+        "BLEND_TYPES": {
+            "NO__0": "未知",
+            "NO__1": "无需调和",
+            "NO__2": "支线调和",
+            "NO__3": "比例调和",
+            "NO__4": "顺序调和"
+        },
+        "COMPANY_TYPE": {
+            "NO__0": "油库经理",
+            "NO__1": "供应商",
+            "NO__2": "承运方",
+            "NO__3": "客户",
+            "NO__4": "提货单位",
+            "NO__5": "发行者",
+            "NO__6": "雇主",
+            "NO__7": "业主"
+        },
+        "COMPENSATION_MTHD": {
+            "NO__0": "UNSPECIFIED",
+            "NO__1": "NO_COMPENSTN",
+            "NO__2": "ASTM_DENSITY",
+            "NO__3": "ASTM_API",
+            "NO__4": "ASTM_C_OF_E",
+            "NO__5": "OIML_ETHANOL",
+            "NO__6": "ASTM_ASPHALT"
+        },
+        "CONTACT_TYPE": {
+            "NO__1": "街道",
+            "NO__2": "城市1",
+            "NO__3": "城市2",
+            "NO__4": "地区",
+            "NO__5": "邮政编码",
+            "NO__6": "州\/省",
+            "NO__7": "国家",
+            "NO__8": "电话",
+            "NO__9": "联系人",
+            "NO__10": "电子邮件",
+            "NO__11": "传真",
+            "NO__12": "语言"
+        },
+        "CO_VETTING": {
+            "NO__0": "检查承运方",
+            "NO__1": "检查拖车头",
+            "NO__2": "检查拖车",
+            "NO__3": "检查所有"
+        },
+        "CUSTOMER_AMNT_TYP": {
+            "NO__0": "贷方",
+            "NO__1": "借方"
+        },
+        "CUSTOMER_INV_TYP": {
+            "NO__0": "已定价",
+            "NO__1": "未定价"
+        },
+        "CUSTOMER_PRICE_TYP": {
+            "NO__0": "发油",
+            "NO__1": "开放订单",
+            "NO__2": "合同",
+            "NO__3": "运送"
+        },
+        "CUSTOMER_SALE_TYP": {
+            "NO__0": "现金",
+            "NO__1": "贷方",
+            "NO__2": "支票",
+            "NO__3": "贷款",
+            "NO__4": "传送",
+            "NO__5": "预先支付的"
+        },
+        "CUSTOMER_TERMS": {
+            "NO__0": "仅在请求时",
+            "NO__1": "在发油完成时",
+            "NO__2": "在发油调节时",
+            "NO__3": "在盘点时",
+            "NO__4": "在配额重置时",
+            "NO__5": "开放订单批准",
+            "NO__6": "在开放订单完成\/过期"
+        },
+        "DELV_DESCRIPTION": {
+            "NO__0": " ",
+            "NO__1": "客户",
+            "NO__2": "第一地址行",
+            "NO__3": "第二地址行",
+            "NO__4": "省",
+            "NO__5": "邮政编码",
+            "NO__6": "国家"
+        },
+        "DOCUMENT_TYPE": {
+            "NO__0": "发票",
+            "NO__1": "贷款",
+            "NO__2": "转账"
+        },
+        "EXPLAIN_ENUM_TYPE": {
+            "NO__0": "返回",
+            "NO__1": "调节",
+            "NO__2": "库存增益",
+            "NO__3": "库存损失",
+            "NO__4": "传送"
+        },
+        "GAUGE_METHOD": {
+            "NO__0": "手动",
+            "NO__1": "自动"
+        },
+        "INV_DOC_TYPE": {
+            "NO__0": "运送单",
+            "NO__1": "运送配置",
+            "NO__2": "传送",
+            "NO__3": "传送配置"
+        },
+        "INV_PRINT": {
+            "NO__0": "已发油",
+            "NO__1": "已调节"
+        },
+        "INV_STRING": {
+            "NO__0": "总计金额",
+            "NO__1": "税前总计",
+            "NO__2": "运费",
+            "NO__3": "油品总计",
+            "NO__4": "发油发票",
+            "NO__5": "开放订单发票",
+            "NO__6": "提单号码:",
+            "NO__7": "发油日期:",
+            "NO__8": "发油时间:",
+            "NO__9": "发油号码:",
+            "NO__10": "正在更换发票:",
+            "NO__11": "开放订单批准",
+            "NO__12": "增值税",
+            "NO__13": "运送单",
+            "NO__14": "运送确认",
+            "NO__15": "运送收据"
+        },
+        "JNL_CLASS": {
+            "NO__0": "调试",
+            "NO__1": "事件",
+            "NO__2": "错误",
+            "NO__3": "紧急",
+            "NO__4": "重要",
+            "NO__5": "次要",
+            "NO__6": "警告",
+            "NO__7": "事故"
+        },
+        "JNL_EVENT": {
+            "NO__0": "全部",
+            "NO__1": "开放订单",
+            "NO__2": "调度",
+            "NO__3": "发油",
+            "NO__4": "发油台",
+            "NO__5": "运送",
+            "NO__6": "付款",
+            "NO__7": "转移",
+            "NO__8": "车辆",
+            "NO__9": "文件",
+            "NO__10": "失败",
+            "NO__11": "配置",
+            "NO__12": "通信",
+            "NO__13": "警报",
+            "NO__14": "系统",
+            "NO__15": "RSS",
+            "NO__16": "监控和数据采集系统"
+        },
+        "JNL_REP_COLUMN": {
+            "NO__0": "日期",
+            "NO__1": "时间",
+            "NO__2": "事件",
+            "NO__3": "类型",
+            "NO__4": "信息"
+        },
+        "KEY_PHYS_TYPE": {
+            "NO__0": "未知类型",
+            "NO__1": "B.L.C. 卡",
+            "NO__2": "双磁道卡",
+            "NO__3": "个人标识号码",
+            "NO__4": "标识标签",
+            "NO__5": "纽扣式",
+            "NO__6": "密码标识",
+            "NO__7": "接触式按钮",
+            "NO__8": "免接触卡",
+            "NO__9": "IC卡"
+        },
+        "KEY_TYPE": {
+            "NO__0": "未分配的",
+            "NO__1": "主管",
+            "NO__2": "提货人",
+            "NO__3": "人员",
+            "NO__4": "油槽车",
+            "NO__5": "组合",
+            "NO__6": "铁路发油人",
+            "NO__7": "提单",
+            "NO__8": "可调度",
+            "NO__9": "不可调度",
+            "NO__10": "发油"
+        },
+        "KRD_ACTION": {
+            "NO__0": "已接受",
+            "NO__1": "被拒绝",
+            "NO__2": "卡无效",
+            "NO__3": "卡过期",
+            "NO__4": "发行者无效",
+            "NO__5": "发油号码无效",
+            "NO__6": "发油未完成",
+            "NO__7": "错误的车辆",
+            "NO__8": "发油被拒绝",
+            "NO__9": "发油没有设置",
+            "NO__10": "无效参数",
+            "NO__11": "没有可用的油品",
+            "NO__12": "没有配额",
+            "NO__13": "没有剩余空间",
+            "NO__14": "没有添加剂",
+            "NO__15": "授权错误",
+            "NO__16": "人员没有被授权",
+            "NO__17": "发油完成",
+            "NO__18": "上一次发油未完成",
+            "NO__19": "回答提示",
+            "NO__20": "信息被接受",
+            "NO__21": "缺少封签号码",
+            "NO__22": "错误的油仓",
+            "NO__23": "错误的油仓油品",
+            "NO__24": "发油已经激活",
+            "NO__25": "不合法的组件",
+            "NO__26": "配置错误",
+            "NO__27": "设备重量太小",
+            "NO__28": "太多的拖车",
+            "NO__29": "没有拖车明细",
+            "NO__30": "错误的标识序列",
+            "NO__31": "设备被使用超过一次",
+            "NO__32": "设备已经在发油中",
+            "NO__33": "先收集上次货单",
+            "NO__34": "先调节上一次发油",
+            "NO__35": "发油可用",
+            "NO__36": "没有发油",
+            "NO__37": "油品不纯",
+            "NO__38": "密度没有指定",
+            "NO__39": "错误的油品返还位置",
+            "NO__40": "没有返还油品的调节",
+            "NO__41": "卡车位置正确"
+        },
+        "LD_RECONCILED": {
+            "NO__0": "无效类型",
+            "NO__1": "新的",
+            "NO__2": "发油中",
+            "NO__3": "未完成",
+            "NO__4": "在运输中",
+            "NO__5": "没有传送",
+            "NO__6": "运送成功",
+            "NO__7": "有返还油品",
+            "NO__8": "重定向"
+        },
+        "LD_STATUS": {
+            "NO__0": "无效类型",
+            "NO__1": "新的",
+            "NO__2": "活动的",
+            "NO__3": "完成"
+        },
+        "LD_TYPE": {
+            "NO__0": "无效类型",
+            "NO__1": "油仓订单",
+            "NO__2": "油品订单",
+            "NO__3": "开放订单",
+            "NO__4": "卸油",
+            "NO__5": "加油器",
+            "NO__6": "客户订单",
+            "NO__7": "已分配的油品",
+            "NO__8": "主机明细",
+            "NO__9": "地秤"
+        },
+        "LEVEL_ALARMS": {
+            "NO__0": "成功 - 正常",
+            "NO__1": "超高液位警报",
+            "NO__2": "高液位警报",
+            "NO__3": "超低液位警报",
+            "NO__4": "低液位警报",
+            "NO__5": "操作员改变高液位警报",
+            "NO__6": "操作员改变低液位警报",
+            "NO__7": "操作员设置高液位警报点",
+            "NO__8": "操作员设置低液位警报点"
+        },
+        "LOAD_ARM_TYPES": {
+            "NO__0": "任何",
+            "NO__1": "下装式",
+            "NO__2": "上装式"
+        },
+        "LOAD_BAY_TYPES": {
+            "NO__1": "油槽车下装发油",
+            "NO__2": "油槽车上装发油",
+            "NO__3": "铁路槽车发油",
+            "NO__4": "油船发油",
+            "NO__5": "油品卸载"
+        },
+        "LOCALE_LANGUAGES": {
+            "NO__0": "中文 - 中国",
+            "NO__1": "中文 - 香港",
+            "NO__2": "中文 - 新加坡",
+            "NO__3": "中文 - 台湾",
+            "NO__4": "英语 - 澳大利亚",
+            "NO__5": "英语 - 英国",
+            "NO__6": "英语 - 美国",
+            "NO__7": "法语 - 法国",
+            "NO__8": "德语 - 德国",
+            "NO__9": "印度语 - 印度",
+            "NO__10": "意大利语 - 意大利",
+            "NO__11": "日语 - 日本",
+            "NO__12": "马来语 - 文莱",
+            "NO__13": "马来语 - 马来西亚",
+            "NO__14": "西班牙语 - 西班牙",
+            "NO__15": "泰语 - 泰国",
+            "NO__16": "越南语 - 越南"
+        },
+        "MOVITEM_TYPE": {
+            "NO__0": "油品进库",
+            "NO__1": "油品出库",
+            "NO__2": "油品转移"
+        },
+        "MOVSOURCE_TYPE": {
+            "NO__0": "远程计划本地自动生成",
+            "NO__1": "本地计划本地手工生成",
+            "NO__2": "远程计划本地手工生成",
+            "NO__3": "特殊计划本地自动生成"
+        },
+        "MOVSTATUS_TYPE": {
+            "NO__0": "新计划",
+            "NO__1": "部分调度",
+            "NO__2": "完成调度",
+            "NO__3": "完成移动",
+            "NO__4": "无法调度",
+            "NO__5": "完成配送",
+            "NO__6": "计划过期",
+            "NO__7": "部分移动",
+            "NO__8": "部分配送"
+        },
+        "MTD_TYPE_ENUM": {
+            "NO__0": "CONTREC_411",
+            "NO__1": "EMAIL_TPM",
+            "NO__2": "SARASOTA_FCT_900"
+        },
+        "NODE_TYPES": {
+            "NO__0": "未连接",
+            "NO__1": "油品储存油罐",
+            "NO__2": "流量计",
+            "NO__3": "泵",
+            "NO__4": "阀 (F型)",
+            "NO__5": "阀 (D型)",
+            "NO__6": "鹤管油管",
+            "NO__7": "添加剂注射器",
+            "NO__8": "鹤管",
+            "NO__9": "无效"
+        },
+        "OFFSET_SUBJECT": {
+            "NO__0": "油品单位",
+            "NO__1": "包装单位",
+            "NO__2": "发票"
+        },
+        "ORDER_STATUS": {
+            "NO__0": "新的",
+            "NO__1": "部分调度",
+            "NO__2": "完全调度",
+            "NO__3": "完全发油",
+            "NO__4": "未付款的",
+            "NO__5": "完全运送",
+            "NO__6": "已过期",
+            "NO__7": "部分发油",
+            "NO__8": "部分运送"
+        },
+        "ORD_MTHD": {
+            "NO__0": "散装",
+            "NO__1": "集装"
+        },
+        "PARTNER_TYPE": {
+            "NO__1": "买方",
+            "NO__2": "接货方",
+            "NO__3": "承运方"
+        },
+        "PAYMENT_TYPE": {
+            "NO__0": "支票",
+            "NO__1": "现金",
+            "NO__2": "转账",
+            "NO__3": "信用卡",
+            "NO__4": "直接借记",
+            "NO__5": "信用证"
+        },
+        "PMV_CATEGORY": {
+            "NO__0": "收据",
+            "NO__1": "运送",
+            "NO__2": "转账"
+        },
+        "PMV_DUTY": {
+            "NO__0": "未抵押",
+            "NO__1": "抵押"
+        },
+        "PMV_STATE": {
+            "NO__0": "新的",
+            "NO__1": "在处理中",
+            "NO__2": "暂停",
+            "NO__3": "完成",
+            "NO__4": "不存在"
+        },
+        "PMV_TRANSFER_CLASS": {
+            "NO__0": "转账",
+            "NO__1": "本地",
+            "NO__2": "入库",
+            "NO__3": "返回",
+            "NO__4": "降级",
+            "NO__5": "油罐"
+        },
+        "PMV_TYPE": {
+            "NO__0": "公路散装",
+            "NO__1": "铁路散装",
+            "NO__2": "船",
+            "NO__3": "油罐",
+            "NO__4": "管道",
+            "NO__5": "炼油厂"
+        },
+        "PRICE_OFFSET_TRIGGER": {
+            "NO__0": "油库",
+            "NO__1": "种类",
+            "NO__2": "供应商",
+            "NO__3": "供应商类别",
+            "NO__4": "客户",
+            "NO__5": "开放订单",
+            "NO__6": "油品",
+            "NO__7": "有效期"
+        },
+        "PRN_USE": {
+            "NO__0": "报表",
+            "NO__1": "文件",
+            "NO__2": "说明",
+            "NO__3": "日志",
+            "NO__4": "开放订单",
+            "NO__5": "调度",
+            "NO__6": "发油",
+            "NO__7": "发油台",
+            "NO__8": "运送",
+            "NO__9": "付款",
+            "NO__10": "转移",
+            "NO__11": "车辆",
+            "NO__12": "文件",
+            "NO__13": "失败",
+            "NO__14": "配置",
+            "NO__15": "通信",
+            "NO__16": "警报",
+            "NO__17": "系统",
+            "NO__18": "监控和数据采集系统",
+            "NO__19": "发油报表",
+            "NO__20": "发票",
+            "NO__21": "开放订单配置",
+            "NO__22": "借贷",
+            "NO__23": "传送",
+            "NO__24": "发油校验",
+            "NO__25": "运送地点文件",
+            "NO__26": "收据文件"
+        },
+        "PSN_MSG_CLASS": {
+            "NO__0": "没有信息",
+            "NO__1": "个人的",
+            "NO__2": "所有角色",
+            "NO__3": "所有公司",
+            "NO__4": "公司的所有角色",
+            "NO__5": "所有人员"
+        },
+        "QTY_TYPE": {
+            "NO__0": "视量",
+            "NO__1": "标准量",
+            "NO__2": "质量"
+        },
+        "REF_TEMP_SPEC": {
+            "NO__1": "COMPENSTN_PT",
+            "NO__2": "15C",
+            "NO__3": "60F"
+        },
+        "RQ_PERIOD": {
+            "NO__0": "一次",
+            "NO__1": "每天",
+            "NO__2": "每周",
+            "NO__3": "每月",
+            "NO__4": "每年的"
+        },
+        "RQ_TYPE": {
+            "NO__0": "信息的",
+            "NO__1": "官方的"
+        },
+        "RTN_CFG_ENUM": {
+            "NO__0": "只有发油台",
+            "NO__1": "门禁和发油台",
+            "NO__2": "门禁和返回装置",
+            "NO__3": "只有门禁",
+            "NO__4": "只有返回装置",
+            "NO__5": "业主发油台或者装置",
+            "NO__6": "只有业主",
+            "NO__7": "无"
+        },
+        "RTN_ORIGIN": {
+            "NO__0": " ",
+            "NO__1": "发油台",
+            "NO__2": "明细",
+            "NO__3": "菜单",
+            "NO__4": "业主",
+            "NO__5": "卡车"
+        },
+        "RTN_REASON": {
+            "NO__0": "未知的",
+            "NO__1": "损耗不足",
+            "NO__2": "设备失败",
+            "NO__3": "客户不可用",
+            "NO__4": "错误的油品",
+            "NO__5": "没有权限",
+            "NO__6": "货到付款方式不可用",
+            "NO__7": "在其他地方被丢弃",
+            "NO__8": "工作未完成",
+            "NO__9": "未指明的",
+            "NO__10": "已知的",
+            "NO__11": "开放订单被取消"
+        },
+        "RTN_RETURNS_TYPE": {
+            "NO__0": "预装",
+            "NO__1": "获取"
+        },
+        "SHL_CLASSIFICATION": {
+            "NO__0": "USUAL",
+            "NO__1": "MAVIS",
+            "NO__2": "U PRESCHEDULE",
+            "NO__3": "U PREORDER",
+            "NO__4": "U OPEN ORDER",
+            "NO__5": "U HOST DETS",
+            "NO__6": "U IMPORT",
+            "NO__7": "BAY DETS"
+        },
+        "SHL_COMPLETION_LOCATION": {
+            "NO__0": "LOC SCREEN",
+            "NO__1": "LOC CARD",
+            "NO__2": "LOC BAY",
+            "NO__3": "WB"
+        },
+        "SHL_LD_PROCEDURE": {
+            "NO__0": "AUTO",
+            "NO__1": "PART",
+            "NO__2": "MANUAL"
+        },
+        "SHL_LD_STATE": {
+            "NO__0": "未分配的",
+            "NO__1": "空闲油仓",
+            "NO__2": "基于油品",
+            "NO__3": "已授权",
+            "NO__4": "活动的",
+            "NO__5": "发油中",
+            "NO__6": "在运输中",
+            "NO__7": "运送成功",
+            "NO__8": "改变运送",
+            "NO__9": "有返还油品",
+            "NO__10": "授权卸油",
+            "NO__11": "在发油台",
+            "NO__12": "卸油中",
+            "NO__13": "活动的卸油",
+            "NO__14": "已运送"
+        },
+        "SHL_OFFICE_KEY_TYPE": {
+            "NO__0": "INVALID",
+            "NO__1": "BY CMPT",
+            "NO__2": "BY PROD",
+            "NO__3": "DRUMFILL",
+            "NO__4": "IMPORT",
+            "NO__5": "MAX TYPE"
+        },
+        "SHL_PROF_STAT": {
+            "NO__0": "IGNORE",
+            "NO__1": "CURRENT",
+            "NO__2": "PREVIOUS"
+        },
+        "SHL_STATE": {
+            "NO__0": "INVALID",
+            "NO__1": "NEW",
+            "NO__2": "LOADING",
+            "NO__3": "TRF IN PROG",
+            "NO__4": "LD COMPLETE"
+        },
+        "SHL_TYPE": {
+            "NO__0": "SPECIAL",
+            "NO__1": "PREORDER",
+            "NO__2": "PRESCHEDULE",
+            "NO__3": "OPEN ORDER",
+            "NO__4": "HOST DETAILS",
+            "NO__5": "IMPORT"
+        },
+        "SPECIAL_MOVSTATUS_TYPE": {
+            "NO__0": "信息输入中",
+            "NO__1": "已完成",
+            "NO__2": "已还原"
+        },
+        "TANK_STATUS_TYP": {
+            "NO__0": "在服务中 - 储罐待命",
+            "NO__1": "在服务中 - 油品进罐",
+            "NO__2": "在服务中 - 油品沉降",
+            "NO__3": "在服务中 - 油品出罐",
+            "NO__4": "在服务中 - 储罐工作",
+            "NO__5": "暂停服务 - 离线"
+        },
+        "TIME_WEEKDAY": {
+            "NO__0": "星期一",
+            "NO__1": "星期二",
+            "NO__2": "星期三",
+            "NO__3": "星期四",
+            "NO__4": "星期五",
+            "NO__5": "星期六",
+            "NO__6": "星期日"
+        },
+        "TRANSPORT_TYPE": {
+            "NO__0": "公路散装",
+            "NO__1": "公路集装",
+            "NO__2": "铁路散装",
+            "NO__3": "铁路集装",
+            "NO__4": "管道",
+            "NO__5": "船"
+        },
+        "TRANS_STATUS": {
+            "NO__0": "无效",
+            "NO__1": "授权",
+            "NO__2": "注册中",
+            "NO__3": "已注册",
+            "NO__4": "已结束"
+        },
+        "UNIT_SCALE": {
+            "NO__0": "摄氏度",
+            "NO__1": "华氏度",
+            "NO__2": "帕斯卡",
+            "NO__3": "磅\/平方英寸",
+            "NO__4": "标准大气压",
+            "NO__5": "升 (视量)",
+            "NO__6": "立方米 (视量)",
+            "NO__7": "英制加仑 (视量)",
+            "NO__8": "美制加仑 (视量)",
+            "NO__9": "英制桶 (视量)",
+            "NO__10": "美制桶 (视量)",
+            "NO__11": "升 (标准)",
+            "NO__12": "立方米 (标准)",
+            "NO__13": "英制加仑 (标准)",
+            "NO__14": "美制加仑 (标准)",
+            "NO__15": "英制桶 (标准)",
+            "NO__16": "美制桶 (标准)",
+            "NO__17": "公斤",
+            "NO__18": "磅",
+            "NO__19": "吨",
+            "NO__20": "英制吨",
+            "NO__21": "公斤\/立方米(视量)",
+            "NO__22": "磅\/立方英寸 (视量)",
+            "NO__23": "公斤\/立方米 (标准)",
+            "NO__24": "磅\/立方英寸 (标准)",
+            "NO__25": "英寸",
+            "NO__26": "英尺",
+            "NO__27": "米",
+            "NO__28": "升",
+            "NO__29": "立方米",
+            "NO__30": "英制加仑",
+            "NO__31": "美制加仑",
+            "NO__32": "英制桶",
+            "NO__33": "美制桶",
+            "NO__34": "毫升"
+        },
+        "WGHC_STATE": {
+            "NO__0": "出错",
+            "NO__1": "请刷卡",
+            "NO__2": "刷下一张卡",
+            "NO__3": "请刷人员卡",
+            "NO__4": "请刷设备卡",
+            "NO__5": "更多拖车？",
+            "NO__6": "个人信息",
+            "NO__7": "请输入提单:",
+            "NO__8": "发油(Y) 还是 卸油(N)?",
+            "NO__9": "[%] 在地秤上?",
+            "NO__10": "正在轮询地秤",
+            "NO__11": "[%] 在 [%] 中?",
+            "NO__12": "最大毛重 公斤:",
+            "NO__13": "输入旋转式流量表输出量:",
+            "NO__14": "上次在这里发油的油品?",
+            "NO__15": "开始发油过程?",
+            "NO__16": "删除 [%] ?",
+            "NO__17": "前往发油装置",
+            "NO__18": "请离开地秤"
+        },
+        "WGHM_MODE": {
+            "NO__0": "未知类型",
+            "NO__1": "等待标识",
+            "NO__2": "预装称重",
+            "NO__3": "装后称重"
+        }
+    },
+    "ENG": {
+        "(dummy)": {
+            "NO__0": "Environment [%] not set."
+        },
+        "ALLOC_LOCK": {
+            "NO__0": "LOCK",
+            "NO__1": "FREE",
+            "NO__2": "CHECK",
+            "NO__3": "RESET",
+            "NO__4": "PERIOD"
+        },
+        "ALLOC_PERIOD": {
+            "NO__0": " ",
+            "NO__1": "DAILY",
+            "NO__2": "WEEKLY",
+            "NO__3": "FORTNIGHTLY",
+            "NO__4": "MONTHLY"
+        },
+        "AUTH_LEVEL": {
+            "NO__0": "VISITOR",
+            "NO__1": "MANAGER",
+            "NO__2": "ACCOUNTANT",
+            "NO__3": "SUPERVISOR",
+            "NO__4": "ENGINEER",
+            "NO__5": "DISPATCHER",
+            "NO__6": "GUARD",
+            "NO__7": "DRIVER",
+            "NO__8": "CONTRACTOR",
+            "NO__9": "LOADER"
+        },
+        "BAM_USAGE_ENUM": {
+            "NO__0": "UNDEFINED",
+            "NO__1": "BAY UNSPECIFIED",
+            "NO__2": "BAY FROM TANK",
+            "NO__3": "BAY TO TANK",
+            "NO__4": "BATCH UNSPECIFIED",
+            "NO__5": "BATCH TO TANK",
+            "NO__6": "BATCH FROM TANK",
+            "NO__7": "WEIGHBRIDGE LOADING",
+            "NO__8": "WEIGHBRIDGE UN-LOADING"
+        },
+        "BAT_DEV_TYPE": {
+            "NO__0": "*****",
+            "NO__1": "ACCULOAD RBM",
+            "NO__2": "ACCULOAD RBU",
+            "NO__3": "ACCULOAD",
+            "NO__4": "ACCULOAD SEQ ACS",
+            "NO__5": "ACCULOAD SEQ ACT",
+            "NO__6": "ACCULOAD SEQ ACN",
+            "NO__7": "ACCULOAD STD ACS",
+            "NO__8": "ACCULOAD STD ACT",
+            "NO__9": "ACCULOAD STD ACN",
+            "NO__10": "ACCULOAD STM",
+            "NO__11": "ACCULOAD WBG",
+            "NO__12": "ACCULOAD WBG",
+            "NO__13": "BLC 100",
+            "NO__14": "BLC 80 TOP LOADING",
+            "NO__15": "BLC 80 BOTTOM LOADING",
+            "NO__16": "CONTREC 803 4",
+            "NO__17": "IDIS UPC IDS",
+            "NO__18": "ULTRA WEIGH DEVICE",
+            "NO__19": "MERCURY WEIGH DEVICE",
+            "NO__20": "TOLEDO WEIGH DEVICE",
+            "NO__21": "WEIGHBRIDGE CONTREC CARDREADER",
+            "NO__22": "TRANSACTION CONTROLLER WEIGHBRIDGE",
+            "NO__23": "ACCULOAD 3"
+        },
+        "BA_METER_TYPE": {
+            "NO__0": "*****",
+            "NO__1": "TURBINE",
+            "NO__2": "P-D",
+            "NO__3": "MASS"
+        },
+        "BA_TYPE": {
+            "NO__0": "???",
+            "NO__1": "TRANSACTION_OBP",
+            "NO__2": "UNLOADING_OBP",
+            "NO__3": "BLC80_BAY",
+            "NO__4": "WEIGHBRIDGE",
+            "NO__5": "TC_WEIGHBRIDGE",
+            "NO__6": "FLEX_DRUM_FILL",
+            "NO__7": "OLD_ACCULOAD",
+            "NO__8": "UNLOAD_WBRIDGE"
+        },
+        "BCLASS_DESC": {
+            "NO__0": "Undefined",
+            "NO__1": "Jet Fuels\/Kerosines",
+            "NO__2": "Gasolines",
+            "NO__3": "Lubricating oils",
+            "NO__4": "Diesel oils\/Fuel oils\/Heating oils",
+            "NO__5": "Crude oil",
+            "NO__6": "Additive",
+            "NO__7": "Ethanol\/Water",
+            "NO__8": "L.P.G.",
+            "NO__9": "Individual\/Special Petroleum Distillate",
+            "NO__10": "No Volume adjustment for temperature",
+            "NO__11": "Reported Additive",
+            "NO__12": "General refined",
+            "NO__13": "Asphalt"
+        },
+        "BLEND_TYPES": {
+            "NO__0": "Unknown",
+            "NO__1": "Straight Product",
+            "NO__2": "Sidestream Blend",
+            "NO__3": "Ratio Blend",
+            "NO__4": "Sequential Blend"
+        },
+        "COMPANY_TYPE": {
+            "NO__0": "SITE_MANAGER",
+            "NO__1": "SUPPLIER",
+            "NO__2": "CARRIER",
+            "NO__3": "CUSTOMER",
+            "NO__4": "DRAWER",
+            "NO__5": "ISSUER",
+            "NO__6": "EMPLOYER",
+            "NO__7": "HOST"
+        },
+        "COMPENSATION_MTHD": {
+            "NO__0": "UNSPECIFIED",
+            "NO__1": "NO_COMPENSTN",
+            "NO__2": "ASTM_DENSITY",
+            "NO__3": "ASTM_API",
+            "NO__4": "ASTM_C_OF_E",
+            "NO__5": "OIML_ETHANOL",
+            "NO__6": "ASTM_ASPHALT"
+        },
+        "CONTACT_TYPE": {
+            "NO__1": "STREET",
+            "NO__2": "CITY1",
+            "NO__3": "CITY2",
+            "NO__4": "DISTRICT",
+            "NO__5": "POSTAL_CODE",
+            "NO__6": "STATE",
+            "NO__7": "COUNTRY",
+            "NO__8": "TEL",
+            "NO__9": "NAME",
+            "NO__10": "EMAIL",
+            "NO__11": "FAX",
+            "NO__12": "TEMPL_ID"
+        },
+        "CO_VETTING": {
+            "NO__0": "VET CARRIER",
+            "NO__1": "VET PRIMEMOVER",
+            "NO__2": "VET TRAILER",
+            "NO__3": "VET ALL"
+        },
+        "CUSTOMER_AMNT_TYP": {
+            "NO__0": "CREDIT",
+            "NO__1": "DEBIT"
+        },
+        "CUSTOMER_INV_TYP": {
+            "NO__0": "PRICED",
+            "NO__1": "UNPRICED"
+        },
+        "CUSTOMER_PRICE_TYP": {
+            "NO__0": "LOAD",
+            "NO__1": "ORDER",
+            "NO__2": "CONTRACT",
+            "NO__3": "DELIVERY"
+        },
+        "CUSTOMER_SALE_TYP": {
+            "NO__0": "CASH",
+            "NO__1": "CREDIT",
+            "NO__2": "CHEQUE",
+            "NO__3": "LOAN",
+            "NO__4": "TRANSFER",
+            "NO__5": "PREPAID"
+        },
+        "CUSTOMER_TERMS": {
+            "NO__0": "ON DEMAND ONLY",
+            "NO__1": "AT LOAD COMPLETION TIME",
+            "NO__2": "AT LOAD RECONCILIATION TIME",
+            "NO__3": "AT CLOSEOUT TIME",
+            "NO__4": "AT ALLOCATION RESET TIME",
+            "NO__5": "ORDER APPROVAL",
+            "NO__6": "AT ORDER COMPLETION\/EXPIRY"
+        },
+        "DELV_DESCRIPTION": {
+            "NO__0": " ",
+            "NO__1": "CUSTOMER",
+            "NO__2": "1st Address Line",
+            "NO__3": "2nd Address Line",
+            "NO__4": "Province",
+            "NO__5": "Postal Code",
+            "NO__6": "Country"
+        },
+        "DOCUMENT_TYPE": {
+            "NO__0": "INVOICE",
+            "NO__1": "LOAN",
+            "NO__2": "TRANSFER"
+        },
+        "EXPLAIN_ENUM_TYPE": {
+            "NO__0": "RETURN",
+            "NO__1": "RECONCILIATION",
+            "NO__2": "STOCK_GAIN",
+            "NO__3": "STOCK_LOSS",
+            "NO__4": "TRANSFER"
+        },
+        "GAUGE_METHOD": {
+            "NO__0": "MANUAL",
+            "NO__1": "AUTOMATIC"
+        },
+        "INV_DOC_TYPE": {
+            "NO__0": "DELIVERYNOTE",
+            "NO__1": "DELVCONF",
+            "NO__2": "TRANSFER",
+            "NO__3": "TRANSCONF"
+        },
+        "INV_PRINT": {
+            "NO__0": "LOADED",
+            "NO__1": "RECONCILED"
+        },
+        "INV_STRING": {
+            "NO__0": "TOTAL AMOUNT OWED",
+            "NO__1": "SUB TOTAL",
+            "NO__2": "DELIVERY CHARGES",
+            "NO__3": "PRODUCT TOTAL",
+            "NO__4": "LOAD INVOICE",
+            "NO__5": "ORDER INVOICE",
+            "NO__6": "TRIP NUMBER: ",
+            "NO__7": "LOAD DATE: ",
+            "NO__8": "LOAD TIME: ",
+            "NO__9": "LOAD NUMBER: ",
+            "NO__10": "Replacing Invoice: ",
+            "NO__11": "ORDER APPROVAL",
+            "NO__12": "VALUE ADDED TAX",
+            "NO__13": "DELIVERY NOTE",
+            "NO__14": "DELIVERY CONFIRMATION",
+            "NO__15": "DELIVERY NOTE"
+        },
+        "JNL_CLASS": {
+            "NO__0": "DEBUG",
+            "NO__1": "EVENT",
+            "NO__2": "ERROR",
+            "NO__3": "CRITICAL",
+            "NO__4": "MAJOR",
+            "NO__5": "MINOR",
+            "NO__6": "WARNING",
+            "NO__7": "INCIDENT"
+        },
+        "JNL_EVENT": {
+            "NO__0": "ALL",
+            "NO__1": "ORDER",
+            "NO__2": "SCHED",
+            "NO__3": "LOAD",
+            "NO__4": "BAY",
+            "NO__5": "DELIVER",
+            "NO__6": "PAY",
+            "NO__7": "MOVE",
+            "NO__8": "VEHICLE",
+            "NO__9": "DOC",
+            "NO__10": "FAIL",
+            "NO__11": "CONF",
+            "NO__12": "COMMS",
+            "NO__13": "ALARM",
+            "NO__14": "SYSTEM",
+            "NO__15": "RSS",
+            "NO__16": "SCADA"
+        },
+        "JNL_REP_COLUMN": {
+            "NO__0": "Date",
+            "NO__1": "Time",
+            "NO__2": "Event",
+            "NO__3": "Class",
+            "NO__4": "Message"
+        },
+        "KEY_PHYS_TYPE": {
+            "NO__0": "Unknown Type",
+            "NO__1": "B.L.C. Card",
+            "NO__2": "Track Two Card",
+            "NO__3": "Personal Identification Number",
+            "NO__4": "Identification Tag",
+            "NO__5": "Micro Cans",
+            "NO__6": "P.I.N. KEY",
+            "NO__7": "Touch Button",
+            "NO__8": "Proximity Card",
+            "NO__9": "Smart Card"
+        },
+        "KEY_TYPE": {
+            "NO__0": "Unassigned",
+            "NO__1": "SUPERVISOR",
+            "NO__2": "DRIVER",
+            "NO__3": "Personnel",
+            "NO__4": "TANKER",
+            "NO__5": "COMBINATION",
+            "NO__6": "RAIL LOADER",
+            "NO__7": "SCUP TRIP",
+            "NO__8": "Schedulable",
+            "NO__9": "Non Schedulable",
+            "NO__10": "Load"
+        },
+        "KRD_ACTION": {
+            "NO__0": "ACCEPTED",
+            "NO__1": "REJECTED",
+            "NO__2": "CARD INVALID",
+            "NO__3": "CARD EXPIRED",
+            "NO__4": "ISSUER INVALID",
+            "NO__5": "LOAD NUMBER   INVALID",
+            "NO__6": "LOAD       INCOMPLETE",
+            "NO__7": "WRONG VEHICLE",
+            "NO__8": "LOAD REJECTED",
+            "NO__9": "NO LOAD SET UP",
+            "NO__10": "BAD PARMAMETERS",
+            "NO__11": "No products available",
+            "NO__12": "NO ALLOCATION",
+            "NO__13": "NO SPACE LEFT",
+            "NO__14": "NO ADDITIVES",
+            "NO__15": "AUTHORISATION   ERROR",
+            "NO__16": "PERSON NOT    AUTHORISED",
+            "NO__17": "LOAD IS     COMPLETE",
+            "NO__18": "PREVIOUS LOAD   IS INCOMPLETE",
+            "NO__19": "ANSWER PROMPT",
+            "NO__20": "MESSAGE ACCEPTED",
+            "NO__21": "SEALNUMBER MISSING",
+            "NO__22": "WRONG COMPARTMENT",
+            "NO__23": "WRONG PRODUCT FOR COMPARTMENT",
+            "NO__24": "LOAD IS AREADY ACTIVE",
+            "NO__25": "ILLEGAL COMPONENT",
+            "NO__26": "CONFIGURATION ERROR",
+            "NO__27": "WEIGHT TOO SMALL FOR EQUIPMENT",
+            "NO__28": "TOO MANY    TRAILERS",
+            "NO__29": "HAVE NO TRAILER SPECIFICATION",
+            "NO__30": "WRONG KEY   SEQUENCE",
+            "NO__31": "EQUIPMENT USED  MORE THAN ONCE",
+            "NO__32": "EQUIPMENT   ALREADY LOADING",
+            "NO__33": "COLLECT LAST    DOCKET FIRST",
+            "NO__34": "RECONCILE LAST LOAD FIRST",
+            "NO__35": "LOAD AVAILABLE",
+            "NO__36": "NO LOADS",
+            "NO__37": "PRODUCT NOT PURE",
+            "NO__38": "DENSITY NOT SPECIFIED",
+            "NO__39": "WRONG RETURN LOCATION",
+            "NO__40": "RECONCILED WITHOUT RTNS",
+            "NO__41": "Position truck  correctly"
+        },
+        "LD_RECONCILED": {
+            "NO__0": "INVALID_TYPE",
+            "NO__1": "NEW",
+            "NO__2": "LOADING",
+            "NO__3": "INCOMPLETE",
+            "NO__4": "IN TRANSIT",
+            "NO__5": "NO TRANSFERS",
+            "NO__6": "DELIVERED OK",
+            "NO__7": "WITH RETURNS",
+            "NO__8": "REDIRECTED"
+        },
+        "LD_STATUS": {
+            "NO__0": "INVALID_TYPE",
+            "NO__1": "NEW",
+            "NO__2": "ACTIVE",
+            "NO__3": "COMPLETE"
+        },
+        "LD_TYPE": {
+            "NO__0": "INVALID_TYPE",
+            "NO__1": "PRESCHEDULE",
+            "NO__2": "PREORDER",
+            "NO__3": "ORDER",
+            "NO__4": "UNLOAD",
+            "NO__5": "REFUELLER",
+            "NO__6": "CUST_ORDER",
+            "NO__7": "ALLOCATED PRODUCT",
+            "NO__8": "HOST_DETAILS",
+            "NO__9": "WEIGHBRIDGE"
+        },
+        "LEVEL_ALARMS": {
+            "NO__0": "OK - NORMAL",
+            "NO__1": "HIGH HIGH",
+            "NO__2": "HIGH",
+            "NO__3": "LOW LOW",
+            "NO__4": "LOW",
+            "NO__5": "OPERATOR CHANGE HIGH",
+            "NO__6": "OPERATOR CHANGE LOW",
+            "NO__7": "OPERATOR SETPOINT HIGH",
+            "NO__8": "OPERATOR SETPOINT LOW"
+        },
+        "LOAD_ARM_TYPES": {
+            "NO__0": "ANY",
+            "NO__1": "Bottom",
+            "NO__2": "Top"
+        },
+        "LOAD_BAY_TYPES": {
+            "NO__1": "Truck Bottom Loading",
+            "NO__2": "Truck Top Loading",
+            "NO__3": "Train Loading",
+            "NO__4": "Ship Loading",
+            "NO__5": "Unloading"
+        },
+        "LOCALE_LANGUAGES": {
+            "NO__0": "Chinese - China",
+            "NO__1": "Chinese - Hong Kong",
+            "NO__2": "Chinese - Singapore",
+            "NO__3": "Chinese - Taiwan",
+            "NO__4": "English - Australia",
+            "NO__5": "English - United Kingdom",
+            "NO__6": "English - United States",
+            "NO__7": "French - France",
+            "NO__8": "German - Germany",
+            "NO__9": "Hindi - India",
+            "NO__10": "Italian - Italy",
+            "NO__11": "Japanese - Japan",
+            "NO__12": "Malay - Brunei",
+            "NO__13": "Malay - Malaysia",
+            "NO__14": "Spanish - Spain",
+            "NO__15": "Thai - Thailand",
+            "NO__16": "Vietnamese - Vietnam"
+        },
+        "MOVITEM_TYPE": {
+            "NO__0": "Receipt",
+            "NO__1": "Disposal",
+            "NO__2": "Transfer"
+        },
+        "MOVSOURCE_TYPE": {
+            "NO__0": "Auto From HOST",
+            "NO__1": "Manual From Local",
+            "NO__2": "Manual From HOST",
+            "NO__3": "Local Special Movement"
+        },
+        "MOVSTATUS_TYPE": {
+            "NO__0": "NEW",
+            "NO__1": "PARTIALLY SCHEDULED",
+            "NO__2": "FULLY SCHEDULED",
+            "NO__3": "FULLY MOVED",
+            "NO__4": "OUTSTANDING",
+            "NO__5": "FULLY DELIVERED",
+            "NO__6": "EXPIRED",
+            "NO__7": "PARTIALLY MOVED",
+            "NO__8": "PARTIALLY DELIVERED"
+        },
+        "MTD_TYPE_ENUM": {
+            "NO__0": "CONTREC_411",
+            "NO__1": "EMAIL_TPM",
+            "NO__2": "SARASOTA_FCT_900"
+        },
+        "NODE_TYPES": {
+            "NO__0": "Unconnected",
+            "NO__1": "Product Storage Tank",
+            "NO__2": "Meter",
+            "NO__3": "Pump",
+            "NO__4": "Valve (F)",
+            "NO__5": "Valve (D)",
+            "NO__6": "Arm Hose",
+            "NO__7": "Additive Injector",
+            "NO__8": "Arm",
+            "NO__9": "Invalid"
+        },
+        "OFFSET_SUBJECT": {
+            "NO__0": "PRODUCT UNIT",
+            "NO__1": "PACK UNIT",
+            "NO__2": "INVOICE"
+        },
+        "ORDER_STATUS": {
+            "NO__0": "NEW",
+            "NO__1": "PARTIALLY SCHEDULED",
+            "NO__2": "FULLY SCHEDULED",
+            "NO__3": "FULLY LOADED",
+            "NO__4": "OUTSTANDING",
+            "NO__5": "FULLY DELIVERED",
+            "NO__6": "EXPIRED",
+            "NO__7": "PARTIALLY LOADED",
+            "NO__8": "PARTIALLY DELIVERED"
+        },
+        "ORD_MTHD": {
+            "NO__0": "BULK",
+            "NO__1": "PACK"
+        },
+        "PARTNER_TYPE": {
+            "NO__1": "Sold To",
+            "NO__2": "Ship To",
+            "NO__3": "Carrier"
+        },
+        "PAYMENT_TYPE": {
+            "NO__0": "CHEQUE",
+            "NO__1": "CASH",
+            "NO__2": "TRANSFER",
+            "NO__3": "CREDIT CARD",
+            "NO__4": "DIRECT DEBIT",
+            "NO__5": "CREDIT NOTE"
+        },
+        "PMV_CATEGORY": {
+            "NO__0": "Receipt",
+            "NO__1": "DELIVERY",
+            "NO__2": "TRANSFER"
+        },
+        "PMV_DUTY": {
+            "NO__0": "Unbonded",
+            "NO__1": "Bonded"
+        },
+        "PMV_STATE": {
+            "NO__0": "NEW",
+            "NO__1": "In progress",
+            "NO__2": "Halted",
+            "NO__3": "COMPLETE",
+            "NO__4": "Does not exist"
+        },
+        "PMV_TRANSFER_CLASS": {
+            "NO__0": "TRANSFER",
+            "NO__1": "LOCAL",
+            "NO__2": "IMPORT",
+            "NO__3": "RETURN",
+            "NO__4": "DOWNGRADE",
+            "NO__5": "TANK"
+        },
+        "PMV_TYPE": {
+            "NO__0": "ROAD BULK",
+            "NO__1": "RAIL BULK",
+            "NO__2": "SHIP",
+            "NO__3": "TANK",
+            "NO__4": "PIPELINE",
+            "NO__5": "REFINERY"
+        },
+        "PRICE_OFFSET_TRIGGER": {
+            "NO__0": "SITE",
+            "NO__1": "CATEGORY",
+            "NO__2": "SUPPLIER",
+            "NO__3": "SUPPLIER_CATEGORY",
+            "NO__4": "CUSTOMER",
+            "NO__5": "ORDER",
+            "NO__6": "PRODUCT",
+            "NO__7": "PERIOD"
+        },
+        "PRN_USE": {
+            "NO__0": "REPORT",
+            "NO__1": "DOCUMENT",
+            "NO__2": "INSTRUCT",
+            "NO__3": "JOURNAL",
+            "NO__4": "ORDER",
+            "NO__5": "SCHED",
+            "NO__6": "LOAD",
+            "NO__7": "BAY",
+            "NO__8": "DELIVER",
+            "NO__9": "PAY",
+            "NO__10": "MOVE",
+            "NO__11": "VEHI",
+            "NO__12": "DOC",
+            "NO__13": "FAIL",
+            "NO__14": "CONFIG",
+            "NO__15": "COMMS",
+            "NO__16": "ALARM",
+            "NO__17": "SYS",
+            "NO__18": "SCADA",
+            "NO__19": "LD_REPORT",
+            "NO__20": "INVOICE",
+            "NO__21": "ORDERCONF",
+            "NO__22": "BOR_LOAN",
+            "NO__23": "TRANSFER",
+            "NO__24": "LD_VERIFY",
+            "NO__25": "DLV_LOC_DOC",
+            "NO__26": "RECEIPT_DOC"
+        },
+        "PSN_MSG_CLASS": {
+            "NO__0": "NO MESSAGE",
+            "NO__1": "PERSONAL",
+            "NO__2": "ALL_ROLE",
+            "NO__3": "ALL COMPANY",
+            "NO__4": "ALL ROLE FOR COMPANY",
+            "NO__5": "ALL PERSONNEL"
+        },
+        "QTY_TYPE": {
+            "NO__0": "OBSERVED",
+            "NO__1": "STANDARD",
+            "NO__2": "MASS"
+        },
+        "REF_TEMP_SPEC": {
+            "NO__1": "COMPENSTN_PT",
+            "NO__2": "15C",
+            "NO__3": "60F"
+        },
+        "RQ_PERIOD": {
+            "NO__0": "ONCE",
+            "NO__1": "DAILY",
+            "NO__2": "WEEKLY",
+            "NO__3": "MONTHLY",
+            "NO__4": "ANNUALLY"
+        },
+        "RQ_TYPE": {
+            "NO__0": "INFORMATIONAL",
+            "NO__1": "OFFICIAL"
+        },
+        "RTN_CFG_ENUM": {
+            "NO__0": "BAY only",
+            "NO__1": "GATE and BAY",
+            "NO__2": "GATE and RETURNS DEVICE",
+            "NO__3": "GATE only",
+            "NO__4": "RETURNS DEVICE only",
+            "NO__5": "HOST BAY OR DEVICE",
+            "NO__6": "HOST ONLY",
+            "NO__7": "NONE"
+        },
+        "RTN_ORIGIN": {
+            "NO__0": " ",
+            "NO__1": "BAY",
+            "NO__2": "SPC",
+            "NO__3": "MENU",
+            "NO__4": "HOST",
+            "NO__5": "TRUCK"
+        },
+        "RTN_REASON": {
+            "NO__0": "NOT KNOWN",
+            "NO__1": "INSUFFICIENT ULLAGE",
+            "NO__2": "EQUIPMENT FAILURE",
+            "NO__3": "CUSTOMER NOT AVAIL",
+            "NO__4": "WRONG PRODUCT",
+            "NO__5": "NO ACCESS",
+            "NO__6": "COD NOT AVAIL",
+            "NO__7": "DROPPED ELSEWHERE",
+            "NO__8": "WORK INCOMPLETE",
+            "NO__9": "UNSPECIFIED",
+            "NO__10": "KNOWN",
+            "NO__11": "ORDER CANCELLED"
+        },
+        "RTN_RETURNS_TYPE": {
+            "NO__0": "PRELOAD",
+            "NO__1": "DEBRIEF"
+        },
+        "SHL_CLASSIFICATION": {
+            "NO__0": "USUAL",
+            "NO__1": "MAVIS",
+            "NO__2": "U PRESCHEDULE",
+            "NO__3": "U PREORDER",
+            "NO__4": "U OPEN ORDER",
+            "NO__5": "U HOST DETS",
+            "NO__6": "U IMPORT",
+            "NO__7": "BAY DETS"
+        },
+        "SHL_COMPLETION_LOCATION": {
+            "NO__0": "LOC SCREEN",
+            "NO__1": "LOC CARD",
+            "NO__2": "LOC BAY",
+            "NO__3": "WB"
+        },
+        "SHL_LD_PROCEDURE": {
+            "NO__0": "AUTO",
+            "NO__1": "PART",
+            "NO__2": "MANUAL"
+        },
+        "SHL_LD_STATE": {
+            "NO__0": "UNASSIGNED",
+            "NO__1": "FREE COMPT",
+            "NO__2": "BY PRODUCT",
+            "NO__3": "AUTHORISED",
+            "NO__4": "ACTIVE",
+            "NO__5": "LOADING",
+            "NO__6": "IN TRANSIT",
+            "NO__7": "DELIVERED OK",
+            "NO__8": "CHANGED DELIVERY",
+            "NO__9": "HAS RETURNS",
+            "NO__10": "AUTH UNLOAD",
+            "NO__11": "IN BAY",
+            "NO__12": "UNLOADING",
+            "NO__13": "ACTIVE UNLOAD",
+            "NO__14": "DELIVERED"
+        },
+        "SHL_OFFICE_KEY_TYPE": {
+            "NO__0": "INVALID",
+            "NO__1": "BY CMPT",
+            "NO__2": "BY PROD",
+            "NO__3": "DRUMFILL",
+            "NO__4": "IMPORT",
+            "NO__5": "MAX TYPE"
+        },
+        "SHL_PROF_STAT": {
+            "NO__0": "IGNORE",
+            "NO__1": "CURRENT",
+            "NO__2": "PREVIOUS"
+        },
+        "SHL_STATE": {
+            "NO__0": "INVALID",
+            "NO__1": "NEW",
+            "NO__2": "LOADING",
+            "NO__3": "TRF IN PROG",
+            "NO__4": "LD COMPLETE"
+        },
+        "SHL_TYPE": {
+            "NO__0": "SPECIAL",
+            "NO__1": "PREORDER",
+            "NO__2": "PRESCHEDULE",
+            "NO__3": "OPEN ORDER",
+            "NO__4": "HOST DETAILS",
+            "NO__5": "IMPORT"
+        },
+        "SPECIAL_MOVSTATUS_TYPE": {
+            "NO__0": "ENTERING",
+            "NO__1": "COMLETED",
+            "NO__2": "REVERSED"
+        },
+        "TANK_STATUS_TYP": {
+            "NO__0": "In Service - Not used",
+            "NO__1": "In Service - Receiving",
+            "NO__2": "In Service - Settling",
+            "NO__3": "In Service - Loading",
+            "NO__4": "In Service - Working",
+            "NO__5": "Out Of Service - Offline"
+        },
+        "TIME_WEEKDAY": {
+            "NO__0": "Monday",
+            "NO__1": "Tuesday",
+            "NO__2": "Wednesday",
+            "NO__3": "Thursday",
+            "NO__4": "Friday",
+            "NO__5": "Saturday",
+            "NO__6": "Sunday"
+        },
+        "TRANSPORT_TYPE": {
+            "NO__0": "ROAD BULK",
+            "NO__1": "ROAD PACK",
+            "NO__2": "RAIL BULK",
+            "NO__3": "RAIL PACK",
+            "NO__4": "PIPELINE",
+            "NO__5": "SHIP"
+        },
+        "TRANS_STATUS": {
+            "NO__0": "INVAL",
+            "NO__1": "AUTH",
+            "NO__2": "LOGGING",
+            "NO__3": "LOGGED",
+            "NO__4": "ENDED"
+        },
+        "UNIT_SCALE": {
+            "NO__0": "C",
+            "NO__1": "F",
+            "NO__2": "Pa",
+            "NO__3": "psi",
+            "NO__4": "atm",
+            "NO__5": "l (amb)",
+            "NO__6": "m3 (amb)",
+            "NO__7": "gal IMP (amb)",
+            "NO__8": "gal US (amb)",
+            "NO__9": "bbl IMP (amb)",
+            "NO__10": "bbl US (amb)",
+            "NO__11": "l (cor)",
+            "NO__12": "m3 (cor)",
+            "NO__13": "gal IMP (cor)",
+            "NO__14": "gal US (cor)",
+            "NO__15": "bbl IMP (cor)",
+            "NO__16": "bbl US (cor)",
+            "NO__17": "kg",
+            "NO__18": "lb",
+            "NO__19": "ton",
+            "NO__20": "ton IMP",
+            "NO__21": "kg\/m3 (amb)",
+            "NO__22": "lb\/in3 (amb)",
+            "NO__23": "kg\/m3 (cor)",
+            "NO__24": "lb\/in3(cor)",
+            "NO__25": "in",
+            "NO__26": "ft",
+            "NO__27": "m",
+            "NO__28": "l",
+            "NO__29": "m3",
+            "NO__30": "gal IMP",
+            "NO__31": "gal US",
+            "NO__32": "bbl IMP",
+            "NO__33": "bbl US",
+            "NO__34": "ml"
+        },
+        "WGHC_STATE": {
+            "NO__0": "OUT OF ORDER",
+            "NO__1": "Please wipe card",
+            "NO__2": "Wipe next card",
+            "NO__3": "Please  wipe  personnel  card",
+            "NO__4": "Please  wipe  equipment  card",
+            "NO__5": "More trailers?",
+            "NO__6": "personal msg",
+            "NO__7": "Please enter  trip: ",
+            "NO__8": "Loading(Y)   or Unloading(N)?",
+            "NO__9": "[%] on bridge?",
+            "NO__10": "Polling bridge",
+            "NO__11": "[%] in [%] ?",
+            "NO__12": "Maximum Gross   kg: ",
+            "NO__13": "Enter rotogauge output: ",
+            "NO__14": "Last  product   loaded  here?",
+            "NO__15": "Followed switch loading proc.?",
+            "NO__16": "Removed [%] ?",
+            "NO__17": "Proceed  to   loading  device",
+            "NO__18": "Please move off weighbridge"
+        },
+        "WGHM_MODE": {
+            "NO__0": "Unknown Type",
+            "NO__1": "Awaiting Key",
+            "NO__2": "Pre-load weighing",
+            "NO__3": "Post-load weighing"
+        }
+    }
+}

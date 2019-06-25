@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  creationComplete="creationCompleteHandler(event)"
+		  gap="2" width="100%" height="100%">
+
+	<fx:Script>
+		<![CDATA[
+			import components.ErrorDialog;
+			import dm.utils.tools;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			
+			import spark.events.TextOperationEvent;
+			
+			private var errorDialog:ErrorDialog;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			
+			[Bindable] private var templates:ArrayCollection;
+			
+			private var listRefreshed:Boolean = false;
+			private var msgCleared:Boolean=false;
+			
+			public var parentParams:Object = new Object();
+			public var parentObject:Object = new Object();
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void{
+				refreshList(null);
+			}
+			protected function httpFault(event:FaultEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			protected function refreshList(event:MouseEvent):void{
+				listTemplates.send({action:"listTemplates"})
+			}
+			protected function onRefreshListComplete(event:ResultEvent):void{
+				var s:Object = JSON.parse(String(event.result));
+				templates = new ArrayCollection();
+				for (var i:int = 0; i < s.length; i++){
+					templates.addItem({label:s[i]});
+				}
+				tempList.selectedIndex = 0;
+				listRefreshed = true;
+				loadSelected(null);
+			}
+			
+			protected function loadSelected(event:MouseEvent):void{
+				if(tempList.selectedItem){
+					getTemplate.send({action:"getTemplate", fileName:tempList.selectedItem.label});
+				}else{
+					Alert.show("Please select a template from the list", "Error");
+				}
+			}
+			protected function onLoadSelectedComplete(event:ResultEvent):void{
+				try{
+					var o:Object = JSON.parse(String(event.result));
+					dyn.items = o as Array;
+					if ( msgCleared )
+					{
+						output.appendText(tempList.selectedItem.label+" Cleared Succesfully\n");
+						msgCleared = false;
+					}
+					else if ( listRefreshed )
+					{
+						output.appendText("Template List Refreshed and "+tempList.selectedItem.label+" Loaded Succesfully\n");
+						listRefreshed = false;
+					}
+					else
+					{
+						output.appendText(tempList.selectedItem.label+" Loaded Succesfully\n");
+					}
+					output.scrollToRange(2147483647);
+				}catch(e:Error){
+					output.appendText(e.message+"\n");
+					output.scrollToRange(2147483647);
+				}
+			}
+			
+			
+			
+			protected function onSaveComplete(event:ResultEvent):void{
+				//Alert.show("File Generated! Form will now reset", "Yatta!");
+				Alert.show("File Generated! You can continue modifying data or reset the form by clicking \"Clear Message\".", "Yatta!");
+				//loadSelected(null);
+			}
+			
+			private var filename:String;
+			private var message:String;
+			private var errors:ArrayCollection;
+			protected function generateMessage(event:MouseEvent):void{
+				// validate the form first
+				errors = dyn.validateForm();
+				if ( errors.length > 0 )
+				{
+					errorDialog = new ErrorDialog( 
+						closeErrorDialog
+						, resourceManager.getString('default','VALIDATION__PROMPT')
+						, errors
+						, resourceManager.getString('default','VALIDATION__TITLE')
+					);
+					return;
+				}
+				
+				// all mandatory fields are filled, then do saving
+				message =  dyn.getString();
+				filename = new Date().time+"";
+				output.appendText("File Generated and Uploaded with Name: "+filename+"\nContent:\n"+message+"\nLength:\n"+message.length+"\n");
+				output.scrollToRange(2147483647);
+				save.send({action:"save", fileName:filename, data:message});
+			}
+			
+			protected function clearMessage(event:MouseEvent):void{
+				//dyn.items = new Array();
+				msgCleared = true;
+				loadSelected(null);
+			}
+			
+			
+			public function closeErrorDialog():void
+			{
+				PopUpManager.removePopUp(this.errorDialog.dialog );	
+			}
+
+			
+			public function setFilters( params:*=false ): void
+			{
+				if ( params == false )
+				{
+					return;
+				}
+				
+				this.parentParams = params;
+				
+				trace ("...............................in setFilters");
+				tools.pr( params);
+				
+				var po:Object=new Object();
+				
+				po["dd_supp_code"] = tools.getObjAttribute( params, "dd_supp_code", "" );
+				po["dd_ld_type"] = tools.getObjAttribute( params, "dd_ld_type", "" );
+				po["dd_tripord_no"] = tools.getObjAttribute( params, "dd_tripord_no", "" );
+				po["dd_number"] = tools.getObjAttribute( params, "dd_number", "" );
+				
+				this.parentObject = po;
+				
+				this.dyn.defValues = po;
+				
+				refreshList(null);
+
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:HTTPService id="listTemplates" 	url="Service.php" result="onRefreshListComplete(event)" 	 fault="httpFault(event)" method="POST" resultFormat="object" />
+		<s:HTTPService id="getTemplate"   	url="Service.php" result="onLoadSelectedComplete(event)" 	 fault="httpFault(event)" method="POST" resultFormat="object" />
+		<s:HTTPService id="save"   			url="Service.php" result="onSaveComplete(event)"  			 fault="httpFault(event)" method="POST" resultFormat="object" />
+	</fx:Declarations>
+	<s:VGroup width="100%" height="100%" horizontalAlign="center" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10">
+		<s:HGroup width="100%">
+			<s:Button label="Refresh Template List" click="refreshList(event)" height="24" skinClass="skins.DKI_Button_Skin"/>
+			<components:DKI_DropDownList id="tempList" requireSelection="true" dataProvider="{templates}" width="100%"/>
+			<s:Button label="Load Selected Templates" click="loadSelected(event)" height="24" skinClass="skins.DKI_Button_Skin"/>
+			<s:Button label="Export Message" click="generateMessage(event)" height="24" skinClass="skins.DKI_Button_Skin"/>
+			<s:Button label="Clear Message" click="clearMessage(event)" height="24" skinClass="skins.DKI_Button_Skin"/>
+			<s:Button label="Clear Log " click="output.text = ''" height="24" skinClass="skins.DKI_Button_Skin"/>
+		</s:HGroup>
+		<mx:HRule width="100%"/>
+		<components:DynaForm id="dyn" width="100%" height="100%"/>
+		<mx:HRule width="100%"/>
+		<s:Label text="Log"/>
+		<s:TextArea id="output" width="100%" height="100" editable="false"/>
+	</s:VGroup>
+	
+	
+</s:VGroup>
+

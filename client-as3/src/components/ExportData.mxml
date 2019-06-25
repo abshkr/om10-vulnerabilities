@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:components="components.*"
+		 width="250" minHeight="290" skinClass="skins.WidgetPanelSkin" title="Export Data">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			
+			import flash.utils.ByteArray;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			import org.alivepdf.colors.IColor;
+			import org.alivepdf.colors.RGBColor;
+			import org.alivepdf.display.Display;
+			import org.alivepdf.fonts.CoreFont;
+			import org.alivepdf.fonts.FontFamily;
+			import org.alivepdf.layout.Orientation;
+			import org.alivepdf.layout.Size;
+			import org.alivepdf.layout.Unit;
+			import org.alivepdf.pdf.PDF;
+			import org.alivepdf.saving.Method;
+			
+			import spark.components.DataGrid;
+			import spark.components.gridClasses.GridColumn;
+			
+			[Bindable] public var filterArr:ArrayCollection = new ArrayCollection();
+			[Bindable] public var header:String;
+			public var dataArr:DataGrid;
+			public var fileName:String;
+			private var f:FileReference = new FileReference();
+			private var field:String;
+			[Bindable] private var isCSV:Boolean = true;
+			
+			public function prepExport(dg:DataGrid, name:String, custom:ArrayCollection=null, data:ArrayCollection=null): void
+			{
+				dataArr = dg;
+				if (custom != null)
+				{
+					filterArr = custom;
+				}
+				else
+				{
+					//set parameters for header
+				}
+				if (data != null)
+				{
+					// gen data from array collection	
+				}
+				else
+				{
+					//gen data from dataprovider
+				}
+				//PopUpManager.addPopUp(this, FlexGlobals.topLevelApplication.main,true);
+				//PopUpManager.centerPopUp(this);
+				
+				header='';
+				for (var i:int=0; i < dataArr.columnsLength;i++)
+				{
+					header += '"'+(dataArr.columns['source'][i] as GridColumn).headerText+'"';
+					if (i != dataArr.columnsLength-1) header += ','
+				}
+				header += '\n';
+				for (var k:int=0; k < dataArr.dataProvider.length; k++)
+				{
+					for (var j:int=0; j < dataArr.columnsLength; j++)
+					{
+						
+						var gridColumn:GridColumn = (dataArr.columns['source'][j] as GridColumn); 
+						
+						var dataObj:Object = dataArr.dataProvider[k];
+						
+						field = gridColumn.dataField;
+						
+						if(gridColumn.labelFunction){
+							header += '"'+gridColumn.labelFunction(dataObj,gridColumn)+'"';
+						}else{
+							header += '"'+dataObj[field]+'"';	
+						}
+						
+						
+						
+						
+						if (j != dataArr.columnsLength-1) header += ',';
+					}
+					header += '\n';
+				}
+				f.save(header, name);
+			}
+			
+			public function prepExportHeader(dg:DataGrid): String
+			{
+				dataArr = dg;
+				
+				header='';
+				for (var i:int=0; i < dataArr.columnsLength;i++)
+				{
+					if ( (dataArr.columns['source'][i] as GridColumn).visible == false )
+					{
+						continue;
+					}
+					header += '"'+(dataArr.columns['source'][i] as GridColumn).headerText+'"';
+					if (i != dataArr.columnsLength-1) 
+					{
+						header += ',';
+					}
+				}
+				header += '\n';
+				
+				return header;
+			}
+			
+			public function prepExportBody(dg:DataGrid, custom:ArrayCollection=null, data:ArrayCollection=null): String
+			{
+				dataArr = dg;
+				if (custom != null)
+				{
+					filterArr = custom;
+				}
+				else
+				{
+					//set parameters for header
+				}
+				if (data != null)
+				{
+					// gen data from array collection	
+				}
+				else
+				{
+					//gen data from dataprovider
+				}
+				//PopUpManager.addPopUp(this, FlexGlobals.topLevelApplication.main,true);
+				//PopUpManager.centerPopUp(this);
+				
+/* 				var fieldCodes:Array=new Array();
+				for (var i:int=0; i < dataArr.columnsLength;i++)
+				{
+					fieldCodes[i] = (dataArr.columns['source'][i] as GridColumn).dataField;
+				}
+ */				
+				header='';
+				for (var k:int=0; k < filterArr.length; k++)
+				{
+					for (var j:int=0; j < dataArr.columnsLength; j++)
+					{
+						if ( (dataArr.columns['source'][j] as GridColumn).visible == false )
+						{
+							continue;
+						}
+						field =(dataArr.columns['source'][j] as GridColumn).dataField;
+						//field = fieldCodes[j];
+						if (filterArr[k][field] != null)
+						{
+							header += '"'+filterArr[k][field]+'"';
+						}
+						else
+						{
+							header += '" "';
+						}
+						if (j != dataArr.columnsLength-1) 
+						{
+							header += ',';
+						}
+						//trace( ".........................................", k, j );
+					}
+					header += '\n';
+				}
+				
+				return header;
+			}
+			
+
+			public function prepOther(dg:DataGrid, name:String, custom:ArrayCollection=null, data:ArrayCollection=null): void
+			{
+				dataArr = dg;
+				if (custom != null)
+				{
+					filterArr = custom;
+				}
+				else
+				{
+					//set parameters for header
+				}
+				if (data != null)
+				{
+					// gen data from array collection	
+				}
+				else
+				{
+					//gen data from dataprovider
+				}
+				//PopUpManager.addPopUp(this, FlexGlobals.topLevelApplication.main,true);
+				//PopUpManager.centerPopUp(this);
+				
+				header='';
+				var fieldCodes:Array=new Array();
+				for (var i:int=0; i < dataArr.columnsLength;i++)
+				{
+					header += '"'+(dataArr.columns['source'][i] as GridColumn).headerText+'"';
+					if (i != dataArr.columnsLength-1) 
+					{
+						header += ',';
+					}
+					fieldCodes[i] = (dataArr.columns['source'][i] as GridColumn).dataField;
+				}
+				header += '\n';
+				for (var k:int=0; k < filterArr.length; k++)
+				{
+					for (var j:int=0; j < dataArr.columnsLength; j++)
+					{
+						//field =(dataArr.columns['source'][j] as GridColumn).dataField;
+						field = fieldCodes[j];
+						if (filterArr[k][field] != null)
+						{
+							header += '"'+filterArr[k][field]+'"';
+						}
+						else
+						{
+							header += '" "';
+						}
+						if (j != dataArr.columnsLength-1) 
+						{
+							header += ',';
+						}
+						//trace( ".........................................", k, j );
+					}
+					header += '\n';
+				}
+				f.save(header, name);
+			}
+			
+			public function prepExportWithMappingColumns(dg:DataGrid, name:String, mapObj:Object=null, custom:ArrayCollection=null, data:ArrayCollection=null): void
+			{
+				dataArr = dg;
+				if (custom != null)
+				{
+					filterArr = custom;
+				}
+				else
+				{
+					//set parameters for header
+				}
+				if (data != null)
+				{
+					// gen data from array collection	
+				}
+				else
+				{
+					//gen data from dataprovider
+				}
+				//PopUpManager.addPopUp(this, FlexGlobals.topLevelApplication.main,true);
+				//PopUpManager.centerPopUp(this);
+				
+				header='';
+				for (var i:int=0; i < dataArr.columnsLength;i++)
+				{
+					header += '"'+(dataArr.columns['source'][i] as GridColumn).headerText+'"';
+					if (i != dataArr.columnsLength-1) header += ','
+				}
+				header += '\n';
+				
+				if (data != null)
+				{
+					// gen data from array collection	
+					for (var k:int=0; k < data.length; k++)
+					{
+						for (var j:int=0; j < dataArr.columnsLength; j++)
+						{
+							field =(dataArr.columns['source'][j] as GridColumn).dataField;
+							if ( mapObj != null )
+							{
+								header += '"'+data[k][ mapObj[field] ]+'"';
+							}
+							else
+							{
+								header += '"'+data[k][field]+'"';
+							}
+							if (j != dataArr.columnsLength-1) header += ',';
+						}
+						header += '\n';
+					}
+				}
+				else
+				{
+					//gen data from dataprovider
+					for (var k:int=0; k < dataArr.dataProvider.length; k++)
+					{
+						for (var j:int=0; j < dataArr.columnsLength; j++)
+						{
+							field =(dataArr.columns['source'][j] as GridColumn).dataField;
+							if ( mapObj != null )
+							{
+								header += '"'+dataArr.dataProvider[k][ mapObj[field] ]+'"';
+							}
+							else
+							{
+								header += '"'+dataArr.dataProvider[k][field]+'"';
+							}
+							if (j != dataArr.columnsLength-1) header += ',';
+						}
+						header += '\n';
+					}
+				}
+				f.save(header, name);
+			}
+			
+			private function prepareCSV(): void
+			{
+				
+			}
+			
+			private function preparePDF(): void
+			{
+				
+			}
+			
+			public function getPDFTextFile( records:String ):ByteArray
+			{
+				//var pdf:PDF  = new PDF( Orientation.PORTRAIT, Unit.MM, true, Size.A4 ); 
+				var pdf:PDF  = new PDF( Orientation.PORTRAIT, Unit.MM, Size.A4 ); 
+				
+				pdf.addPage();
+				pdf.setAutoPageBreak( false,1 );							
+				pdf.setDisplayMode ( Display.FULL_PAGE );							
+				
+				//pdf.setFont( new CoreFont(), 9 );
+				pdf.setFont( new CoreFont(FontFamily.COURIER), 11 );
+				pdf.textStyle( new RGBColor(0x000000) );
+				//pdf.setBottomMargin( 10 );
+				
+				
+				pdf.writeText( 5, records );
+				//pdf.writeFlashHtmlText( 5, records );
+				
+				var ba:ByteArray = pdf.save( Method.LOCAL);
+				
+				return ba;
+				
+			} 
+			
+			
+			private function closeWindow(evt:Event):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function btn_generate_clickHandler(event:MouseEvent):void
+			{
+				f.addEventListener(Event.COMPLETE,closeWindow); 
+				FlexGlobals.topLevelApplication.dispatchEvent(new Event("generateDayCsv", true, false));
+			}			
+			
+			protected function btn_save_clickHandler(event:MouseEvent):void
+			{
+				f.save(header, 'test.csv');
+			}			
+		]]>
+	</fx:Script>	
+	<s:VGroup width="100%" height="100%" paddingTop="5" paddingLeft="5" paddingBottom="5" paddingRight="5">		
+		<s:TextArea text="{header}" width="100%" height="100%"/>
+		<s:Spacer height="10" />
+		<s:HGroup width="100%">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_cancel" y="0" label="Cancel" click="closeWindow(null)"/>			
+			<components:DKI_Button id="btn_save" label="Save CSV" click="btn_save_clickHandler(event)"/>
+		</s:HGroup>	
+	</s:VGroup>
+</s:Panel>

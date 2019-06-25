@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:PopupWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:components="components.*" 
+		 width="800" height="700" 
+		 keyUp="onKeyUp(event)" show="this.setFocus();" creationComplete="init(event)"
+		 tabEnabled="true" tabFocusEnabled="true" title="Viewer" xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Script>
+		<![CDATA[
+			import controllers.MessageInterpreter;
+			
+			import flashx.textLayout.conversion.TextConverter;
+			
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable] public var caption:String;
+			[Bindable] private var _content:String;
+			[Bindable] private var htmlStr:String = "";
+			
+			protected function close(event:Event):void
+			{
+				_content='';
+				PopUpManager.removePopUp(this);	
+				
+			}
+			public function set content(s:String):void{
+				_content = s;
+				MessageInterpreter.process(_content,function(o:String):void{
+					if(o == "false"){
+						var tmpXML:XML = new XML(_content);
+						_content = (tmpXML).toString();
+						htmlStr = MessageInterpreter.XMLProcess(tmpXML);
+						if(htmlStr == "false"){
+							inContainer.percentHeight = 0;
+							message.percentHeight = 100;
+						}else{
+							inContainer.percentHeight = 50;
+							message.percentHeight = 50;
+									
+						}
+						
+						
+					}else{
+						htmlStr = o;
+						inContainer.percentHeight = 80;
+						message.percentHeight = 20;
+					}
+				});
+			}
+			
+			public function get content():String{
+				return _content;
+			}
+			
+			protected function onKeyUp(event:KeyboardEvent):void
+			{
+				// TODO Auto-generated method stub
+				if(event.keyCode == 27){
+					close(null);
+				}
+			}
+			
+			protected function init(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				this.addEventListener(CloseEvent.CLOSE, close);
+				this.canMove()
+			}
+			
+			override public function canMove(): Boolean{
+				return true;
+			}
+			
+			
+			
+		]]>
+	</fx:Script>
+	<s:VGroup width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+		<s:Label text="{caption}" fontWeight="bold"/>
+		<s:TextArea  id="message"     width="100%" text="{_content}" editable="false"/>
+		<s:Scroller id="inContainer" width="100%" >
+			<s:Group width="100%" height="100%">
+					<s:RichEditableText id="interpreted" focusEnabled="true" editable="false" selectionHighlighting="whenFocused">
+						<s:textFlow>{TextConverter.importToFlow(htmlStr, TextConverter.TEXT_FIELD_HTML_FORMAT)} </s:textFlow>
+					</s:RichEditableText>
+			</s:Group>	
+		</s:Scroller>
+		<s:HGroup width="100%">
+			<s:Spacer width="100%" />
+			<components:DKI_Button label="{resourceManager.getString('default','CLOSE')}" type="cancel" click="close(event)"/>
+		</s:HGroup>
+	</s:VGroup>
+</components:PopupWindow>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:fb="http://ns.adobe.com/flashbuilder/2009">
+	
+	<fx:Metadata>
+		<![CDATA[ 
+		[HostComponent("spark.components.Application")]
+		]]>
+	</fx:Metadata> 
+	
+	<fx:Script fb:purpose="styling">
+		<![CDATA[
+			
+			[Bindable][Embed(source="/assets/skinning/main_bg.jpg")] private var bg5k:Class;
+			[Bindable][Embed(source="/assets/skinning/main_bg_lite2.jpg")]  private var bglt:Class;
+			
+			
+			override protected function updateDisplayList(unscaledWidth:Number, 
+														  unscaledHeight:Number) : void
+			{
+				super.updateDisplayList(unscaledWidth, unscaledHeight);
+			}
+		]]>
+	</fx:Script>
+	
+	<s:states>
+		<s:State name="normal" />
+		<s:State name="disabled" />
+		<s:State name="normalWithControlBar" />
+		<s:State name="disabledWithControlBar" />
+	</s:states>
+	<s:BitmapImage source="{global.OMLITE?new bglt as Bitmap : new bg5k as Bitmap}" alpha="{global.OMLITE?0.5:1}" left="0" right="0" top="0" bottom="0" fillMode="scale" smooth="true"/>
+	
+	<s:Rect width="100%" height="100%" alpha="0.6" 
+			includeInLayout="{!global.OMLITE}"
+			visible="{!global.OMLITE}">
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry color="0x004A92"/>
+				<s:GradientEntry color="0x003571" alpha="0.2"/>
+				<s:GradientEntry color="0x003571" alpha="0.2"/>
+				<s:GradientEntry color="0x003571" alpha="0.2"/>
+				<s:GradientEntry color="0x004A92"/>
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>	
+	<s:Scroller left="0" top="0" right="0" bottom="0" id="scroller" minViewportInset="1" hasFocusableChildren="true"
+				skinClass="skins.DKI_Scroller_Skin" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+		<s:Group id="contentGroup"/>	
+	</s:Scroller>	
+</s:Skin>

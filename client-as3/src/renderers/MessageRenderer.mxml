@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="false" width="100%">
+	<fx:Script>
+		<![CDATA[
+			private function hideMe():void{
+				dispatchEvent(new Event("delMsg",true,false));
+			}
+		]]>
+	</fx:Script>
+	
+	<s:states>
+		<s:State name="normal"  />
+		<s:State name="hovered" />
+		<s:State name="selected" />
+	</s:states>	
+	<s:Label right="20" top="5" fontWeight="bold" text="{data.GEN_DATE}" left="5"/>
+	<s:TextArea editable="false" top="30" height="60" right="20" bottom="5" left="5" borderVisible="false" text="{data.MESSAGE}" verticalScrollPolicy="off" horizontalScrollPolicy="off"/>
+	<s:Rect width="100%" height="1" alpha="0.8" horizontalCenter="0" bottom="1">
+		<s:fill>
+			<s:LinearGradient>
+				<s:GradientEntry color="0xDDDDDD" alpha="0.4"/>
+				<s:GradientEntry color="0xDDDDDD"/>
+				<s:GradientEntry color="0xDDDDDD" alpha="0.4"/>
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>		
+	<s:Image right="4" top="4" source="assets/icons/canc.png" buttonMode="true" useHandCursor="true" click="hideMe()"/>
+	
+</s:ItemRenderer>

@@ -1,0 +1,91 @@
+<s:TileGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Metadata>
+		[Event(name="companyTypeChange",type="flash.events.Event")]
+	</fx:Metadata>
+
+	<fx:Script>
+		<![CDATA[
+			
+			[Bindable] private var isSiteManger:Boolean = false;
+			[Bindable] private var isSupplier:Boolean = false;
+			[Bindable] private var isCarrier:Boolean = false;
+			[Bindable] private var isCustomer:Boolean = false;
+			[Bindable] private var isDrawer:Boolean = false;
+			[Bindable] private var isIssuer:Boolean = false;
+			[Bindable] private var isEmployer:Boolean = false;
+			[Bindable] private var isHost:Boolean = false;
+			
+			private const MANAGER:int=1;
+			private const SUPPLIER:int=2;
+			private const CARRIER:int=4;
+			private const CUSTOMER:int=8;
+			private const DRAWER:int=16;
+			private const ISSUER:int=32;
+			private const EMPLOYER:int=64;
+			private const HOST:int=128;
+			private const INVALID:int=999;
+			
+			private var _companyType:int = 999;
+			
+			[Bindable]
+			public function get companyType():int
+			{
+				return _companyType;
+			}
+			
+			public function set companyType(value:int):void
+			{
+				if (_companyType != value)
+				{
+					manager.selected =(value & MANAGER) == MANAGER;              
+					supplier.selected =(value & SUPPLIER) == SUPPLIER;              
+					carrier.selected =(value & CARRIER) == CARRIER;              
+					customer.selected =(value & CUSTOMER) == CUSTOMER;              
+					drawer.selected =(value & DRAWER) == DRAWER;              
+					issuer.selected =(value & ISSUER) == ISSUER;              
+					employer.selected =(value & EMPLOYER) == EMPLOYER;              
+					host.selected =(value & HOST) == HOST;              
+					_companyType = value;
+				}
+			}
+			
+			
+			protected function company_changeHandler(event:Event):void
+			{
+				set_flags();
+			}
+			
+			public function set_flags(): void
+			{
+				var tmp:int = 0;
+				if (manager.selected) tmp += MANAGER;
+				if (supplier.selected) tmp += SUPPLIER;
+				if (carrier.selected) tmp += CARRIER;
+				if (customer.selected) tmp += CUSTOMER;
+				if (drawer.selected) tmp += DRAWER;
+				if (issuer.selected) tmp += ISSUER;
+				if (employer.selected) tmp += EMPLOYER;
+				if (host.selected) tmp += HOST;
+				companyType = tmp;
+			}
+			
+			public function getIsSiteManger():Boolean
+			{
+				return isSiteManger;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:CheckBox id="manager" label="{resourceManager.getString('default','SITE_MANAGER')}" change="company_changeHandler(event)" enabled="false"/>
+	<s:CheckBox id="supplier" label="{resourceManager.getString('default','SUPPLIER')}" change="company_changeHandler(event)"/>
+	<s:CheckBox id="carrier" label="{resourceManager.getString('default','CARRIER')}" change="company_changeHandler(event)"/>
+	<s:CheckBox id="customer" label="{resourceManager.getString('default','CUSTOMER')}" change="company_changeHandler(event)"/>
+	<s:CheckBox id="drawer" label="{resourceManager.getString('default','DRAWER')}" change="company_changeHandler(event)"/>
+	<s:CheckBox id="issuer" label="{resourceManager.getString('default','ISSUER')}" change="company_changeHandler(event)"/>
+	<s:CheckBox id="employer" label="{resourceManager.getString('default','EMPLOYER')}" change="company_changeHandler(event)"/>
+	<s:CheckBox id="host" label="{resourceManager.getString('default','HOST')}" change="company_changeHandler(event)"/>
+
+</s:TileGroup>

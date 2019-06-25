@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:s="library://ns.adobe.com/flex/spark"
+					xmlns:mx="library://ns.adobe.com/flex/mx" clipAndEnableScrolling="true"
+					xmlns:components="components.*"
+					xmlns:dm="dm.*"
+					>
+	
+	<fx:Script>
+		<![CDATA[
+			import dm.utils.tools;
+			import mx.charts.CategoryAxis;
+			import mx.collections.ArrayCollection;
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable] public var basetankCodes:ArrayCollection;
+			
+			public var readOnly:Boolean = true;
+			
+			override public function prepare(hasBeenRecycled:Boolean):void
+			{
+				// TODO Auto-generated method stub
+				//trace(owner);
+				if (data)
+				{
+					///if (DM.ManualTransactions.curr_selected_transfer == -1) return;
+					
+					// The reference transfer data array could be null, user could delete all transfers by clicking 'Del Transfer' button.
+					if (DM.ManualTransactions.curr_trsf_ref != null && DM.ManualTransactions.curr_trsf_ref.length == 0)
+						return;
+					
+					//Ver2.9 When loading from saved MT data, this index is -1. (Related to initMemberValues())
+					if (DM.ManualTransactions.curr_selected_transfer < 0)
+						return;
+					
+					var oTmp:Object = DM.ManualTransactions.curr_trsf_ref.getItemAt(DM.ManualTransactions.curr_selected_transfer);
+					trace(" ");
+					trace("TankCodeRender ====> prepare");
+					trace("Drawer Code ->"+oTmp.curr_trsf_drwr_cd);
+					trace("Drawer Prod Code ->"+oTmp.curr_trsf_drwr_prod_cd);
+					trace("Arm Code ->"+oTmp.curr_trsf_arm_cd);
+					trace("Base Product Code ->"+data.trsf_bs_prodcd);
+					basetankCodes = new ArrayCollection();
+					for each (var obj:Object in DM.ManualTransactions.tankcodes)
+					{
+						// Drawer + Drawer Product + Arm + Base Product ==> Tank
+						if (obj.RAT_PROD_PRODCMPY == oTmp.curr_trsf_drwr_cd
+						 && obj.RAT_PROD_PRODCODE == oTmp.curr_trsf_drwr_prod_cd
+						 && obj.STREAM_ARMCODE    == oTmp.curr_trsf_arm_cd //0702
+						 && obj.STREAM_BASECODE   == data.trsf_bs_prodcd)
+						{
+							// Only add the tanks belong to this company+product+arm+baseprod.
+							var found:int = 0;
+							for each (var o:Object in basetankCodes)
+							{
+								if (obj.STREAM_TANKCODE == o.STREAM_TANKCODE)
+								{
+									found = 1;
+									break;
+								}
+							}
+							if (!found)
+							{
+								basetankCodes.addItem(obj);
+							}
+						}
+					}
+					var idx:int = -1;
+					if (basetankCodes.length == 1)
+					{
+						// Only one tank available, so select it.
+						listData.selectedIndex = 0;	
+						idx = 0;
+					}
+					else
+					{
+						// This case is unlikely to happen. As base+arm =>(should) unique tank ?
+						var tmp:String = String(data[column.dataField]);
+						idx = tools.getItemIndexFromCode(tmp, basetankCodes, "STREAM_TANKCODE");
+						if (readOnly && idx == -1)
+						{
+							idx = basetankCodes.length - 1;
+						}
+						listData.selectedIndex = idx;
+					}
+					try
+					{
+						listLabel.text = basetankCodes[idx].STREAM_TANKCODE;
+						listLabel.setStyle("color", DM.ManualTransactions.TEXT_COLOR_BLACK);
+					}
+					catch(e:Error)
+					{
+						listLabel.text = "Select Prod & Arm";
+						listLabel.setStyle("color", DM.ManualTransactions.TEXT_COLOR_RED);
+					}
+					validateTankCode();
+				}
+			}
+			
+			protected function droplist_changeHandler(event:IndexChangeEvent):void
+			{
+				data[column.dataField] = listData.selectedItem.TANK_CODE;
+				//var parnt:DataGrid = owner as DataGrid;
+				//(parnt.dataProvider as ArrayCollection).refresh();
+			}
+			
+			protected function validateTankCode():void
+			{
+				if (listData.selectedIndex != -1)
+				{
+					// If one tank selected, set the tank value.
+					if (basetankCodes.length > 0)
+						data[column.dataField] = basetankCodes.getItemAt(listData.selectedIndex).STREAM_TANKCODE;
+				}
+				else
+				{
+					// If no tank selected, clear the tank value.
+					data[column.dataField] = null;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<dm:DM/>
+	</fx:Declarations>
+	<!--
+	dataProvider="{DM.ManualTransactions.tankcodes}"
+	selectedItem="{data[column.dataField]}"
+	-->
+	<s:DropDownList id="listData" top="0" left="0" bottom="0" right="0" includeInLayout="{!readOnly}" visible="{!readOnly}"
+					dataProvider="{basetankCodes}"
+					change="droplist_changeHandler(event)"
+					labelField="STREAM_TANKCODE" prompt="Select Tank Code" useVirtualLayout="false"/>
+	
+	<s:Label id="listLabel" top="2" left="2" bottom="2" right="2" backgroundColor="#EAEAEA" verticalAlign="middle" includeInLayout="{readOnly}" visible="{readOnly}" backgroundAlpha="1"/>
+	
+</s:GridItemRenderer>

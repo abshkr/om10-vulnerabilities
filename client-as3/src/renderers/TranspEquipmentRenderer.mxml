@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="false" xmlns:components="components.*" creationComplete="itemrenderer1_creationCompleteHandler(event)">
+	
+	<s:states>
+		<s:State name="normal" />
+		<s:State name="selected" />
+		<s:State name="hovered"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.core.BitmapAsset;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.utils.ObjectUtil;
+			
+			import assets.Assets;
+			
+			import components.ModalCompartmentDetails;
+			import components.ModalEquipmentDetails;
+			
+			import valueObjects.Compartment;
+			import valueObjects.EquipmentCompartment;
+			import valueObjects.EquipmentStructure;
+			
+			[Bindable] private var gridData:Object;
+			
+			
+			
+			[Bindable] private var imgHeight:Number = 100;
+			[Bindable] private var imgWidth:Number = 100;
+			[Bindable] private var img:BitmapAsset;
+			[Bindable] private var offset:Number  = 0;
+			[Bindable] private var isFlatBed:Boolean  = false;
+			[Bindable] public var isLockedVisible=true;
+			
+			private function set image(qualifier:String):void{
+				isFlatBed = false;
+				switch(qualifier){
+					case 'F':case'f':
+						img = Assets.FLATBED;	
+						imgWidth = 284*imgHeight/120;
+						isFlatBed = true;
+						return;
+					case 'R':case'r':
+						img = Assets.RIGID;
+						imgWidth = 515*imgHeight/120;
+						return;
+					case 'P':case'p':
+						img = Assets.PRIME_MOVER;	
+						imgWidth = 222*imgHeight/120;
+						if(data.idx == 1)offset = -26;
+						return;
+					case 'T':case't':
+						img = Assets.TRAILER;
+						imgWidth = 375*imgHeight/120;
+						offset = -7;
+						return;
+					case 'S':case's':
+						img = Assets.SHIP;
+						imgWidth = 515*imgHeight/120;
+						return;
+					case 'E':case'e':
+						img = Assets.RAILTANK;
+						imgWidth = 386*imgHeight/120;
+						return;
+				}
+				trace("GRAPHICS NOT DEFINED = "+qualifier);
+				img = null; imgWidth = 0;
+			}
+			
+			override public function set data(value:Object):void 
+			{      
+				trace ( "................................in TranspEquipmentRenderer............................................................................." );
+				trace ( this.currentState );
+				super.data = value;	
+				
+				if (data != null)
+				{
+					if ( data.equipment!=null ) 
+					{
+						if ( data.equipment.length>0 )
+						{
+							trace("TankerRenderer::set data::1", (data.equipment!=null), (data.equipment==null), ">"+data.equipment+"<", data.hasOwnProperty("equipment")) 
+							trace("TankerRenderer::set data::1-length", data.equipment.length, (data.equipment is Array), (data.equipment is ArrayCollection) ); 
+							gridData = data.equipment[0].compartments;
+							this.compList.includeInLayout = true;
+							this.compList2.includeInLayout = false;
+							if( isGridVisible(data.compartments) == true )
+							{
+								this.compList.visible = true;
+								this.compList2.visible = false;
+							}
+						}
+						else
+						{
+							trace("TankerRenderer::set data::2", (data.equipment!=null), (data.equipment==null), ">"+data.equipment+"<", data.hasOwnProperty("equipment")) 
+							trace("TankerRenderer::set data::2-length", data.equipment.length, (data.equipment is Array), (data.equipment is ArrayCollection) ); 
+							gridData = new Object();
+							this.compList.includeInLayout = false;
+							this.compList2.includeInLayout = true;
+							if( isGridVisible(data.compartments) == true )
+							{
+								this.compList.visible = false;
+								this.compList2.visible = true;
+							}
+							data.equipment.addItem( new Object() );
+						}
+					}
+					else
+					{
+						gridData = new Object();
+						this.compList.includeInLayout = false;
+						this.compList2.includeInLayout = true;
+						if( isGridVisible(data.compartments) == true )
+						{
+							this.compList.visible = false;
+							this.compList2.visible = true;
+						}
+						data.equipment.addItem( new Object() );
+						trace("TankerRenderer::set data::3", (data.equipment!=null), (data.equipment==null), ">"+data.equipment+"<", data.hasOwnProperty("equipment")) 
+					}
+					
+					
+					trace("TRANSQuip", ObjectUtil.toString(data));
+					if(data.etyp_category != null ){
+						image = data.etyp_category.toString();
+					}else{
+						if(data.eqc_sub_item == null){
+							if(data.etyp_isrigid == "Y" || 
+								data.etyp_isrigid == "y" || 
+								data.sub_item_etyp_isrigid == "Y" || 
+								data.sub_item_etyp_isrigid == "y" ){
+								image = "R";
+							}else{
+								if(data.etyp_schedul == "Y" ||
+									data.etyp_schedul == "y" ){
+									image = "T";
+								}else{
+									image = "P";
+								}
+							}
+						}else{
+							if(data.sub_item_sched_type == "N" || 
+								data.sub_item_sched_type == "n" ){
+								image = "P";
+							}else{
+								image = "T";
+							}
+						}
+					}
+					
+					
+					
+				}
+				else
+				{
+					// it may never come here
+					gridData = new Object();
+					this.compList.includeInLayout = false;
+					this.compList2.includeInLayout = false;
+					this.compList.visible = false;
+					this.compList2.visible = false;
+				}
+				
+				this.updBtn.visible = this.compList.visible;
+				this.equipList.visible = this.updBtn.visible;
+				this.equipListPrompt.visible = this.updBtn.visible;
+				
+				
+				dispatchEvent(new Event("dataUpdate"));
+				
+			}
+			
+			private function getEqptCompartments():void
+			{
+				if ( (equipList.selectedItem != null) && (equipList.selectedItem as Object).hasOwnProperty("compartments") == true )
+				{
+					gridData = equipList.selectedItem.compartments;
+					this.compList.includeInLayout=true;
+					this.compList2.includeInLayout=false;
+					if( isGridVisible(data.compartments) == true )
+					{
+						this.compList.visible = true;
+						this.compList2.visible = false;
+					}
+					data.equipment[0] = equipList.selectedItem;
+				}
+				else
+				{
+					gridData = new Object();
+					this.compList.includeInLayout=false;
+					this.compList2.includeInLayout=true;
+					if( isGridVisible(data.compartments) == true )
+					{
+						this.compList.visible = false;
+						this.compList2.visible = true;
+					}
+					data.equipment[0].eqpt_code = equipList.selectedItem;
+				}
+				this.updBtn.visible = this.compList.visible;
+			}
+			
+			[Bindable("dataUpdate")]
+			private function get isBadgeVisibleMC():Boolean{	
+				if(data.eqc_sub_item == null){
+					if((data.etyp_schedul=='N')||(data.etyp_schedul=='n')) return false;
+					else return true;
+				}else{
+					if((data.sub_item_sched_type=='N')||(data.sub_item_sched_type=='n')) return false;
+					else return true;
+				}
+			}
+			
+			private function isBadgeVisible(composition:String,schedul:String,type:String):Boolean
+			{
+				if(composition==null){
+					if((schedul=='N')||(schedul=='n')) return false;
+					else return true;
+				}else{
+					if((type=='N')||(type=='n')) return false;
+					else return true;
+				}								
+			}
+			
+			private function showTypeCmptDetails(arr:Object):void
+			{
+				var eq:ModalEquipmentDetails = new ModalEquipmentDetails();
+				eq.title = resourceManager.getString('default','global.titles.cmpt_details');
+				
+				var temp:ArrayCollection = new ArrayCollection;
+				for each(var x:Object in arr){
+					temp.addItem(x);
+				}
+				eq.arr = temp;
+				eq.nComp = arr.length.toString();
+				PopUpManager.addPopUp(eq,this.parentApplication as DisplayObject,true);
+				PopUpManager.centerPopUp(eq);
+			}
+			
+			private function showEqptCmptDetails(arr:Object, can_edit:Boolean):void
+			{
+				var eq:ModalCompartmentDetails = new ModalCompartmentDetails();
+				eq.title = resourceManager.getString('default','global.titles.cmpt_details');
+				eq.canEdit = can_edit;
+				
+				var temp:ArrayCollection = new ArrayCollection;
+				for each(var x:Object in arr){
+					temp.addItem(x);
+				}
+				eq.arr = temp;
+				eq.nComp = arr.length.toString();
+				PopUpManager.addPopUp(eq,this.parentApplication as DisplayObject,true);
+				PopUpManager.centerPopUp(eq);
+			}
+			
+			private function showCompartmentDetails(can_edit:Boolean):void
+			{
+				if ( this.compList.visible == true )
+				{
+					this.showEqptCmptDetails( gridData, can_edit );
+				}
+				else
+				{
+					if ( this.compList2.visible == true )
+					{
+						this.showTypeCmptDetails( data.compartments );
+					}
+				}
+			}
+			
+			public function getCompArray(arr:Object):ArrayCollection
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				for each(var x:Object in arr){
+					temp.addItem(x);
+				}
+				return temp;
+			}
+			
+			public function getEqptArray(arr:Object):ArrayCollection
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				for each(var x:Object in arr){
+					temp.addItem(x);
+				}
+				return temp;
+			}
+			
+			public function getEqptName(arr:Object):String
+			{
+				var title:String="";
+				
+				for each(var x:Object in arr){
+					title = x.eqpt_name;
+				}
+				
+				return title;
+			}
+			
+			public function getRowCount(arr:Object):uint
+			{
+				var count:uint;
+				
+				count = arr.length;
+				if( count>=5 )
+				{
+					count = 5;
+				}
+				
+				return count;
+			}
+			
+			public function isGridVisible(arr:Object):Boolean
+			{
+				if(arr.length==0) return false;
+				else return true;
+			}
+			
+			private function getTitle(composition:String, ncTitle:String, cTitle:String):String
+			{
+				if(composition==null) return ncTitle;
+				else return cTitle;
+			}
+			
+			protected function unlockCompartments(event:MouseEvent):void
+			{
+			
+			}
+			
+			protected function itemrenderer1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				getEqptCompartments();
+				this.equipList.visible = this.updBtn.visible;
+				this.equipListPrompt.visible = this.updBtn.visible;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:transitions>
+		<s:Transition fromState="normal" toState="hovered">
+			<s:Fade target="{btnGrp}" duration="500"/>
+		</s:Transition>
+		<s:Transition fromState="hovered" toState="normal">
+			<s:Fade target="{btnGrp}" duration="500"/>
+		</s:Transition>
+	</s:transitions>
+	
+	<s:VGroup top="5">
+		<s:Image id="eqpt_image" source="{img}" width="{imgWidth}" height="{imgHeight}" />
+		<s:Label text="{getTitle(data.eqc_sub_item,data.etyp_title,data.eqc_sub_item_title)}" width="100%" textAlign="center" />
+		<!--s:Spacer height="10" /-->
+		
+		<components:DKI_ComboBox id="equipList" contentBackgroundAlpha="0.95" 
+								 dataProvider="{getEqptArray(data.equip_list)}" 
+								 labelField="eqpt_name" 
+								 selectedItem="{getEqptName(data.equipment)}" 
+								 enabled="true" width="{eqpt_image.width-20}" height="26" 
+								 prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','TNKR_EQPT')}" 
+								 change="getEqptCompartments()"/>
+		<s:Label id="equipListPrompt" text="{resourceManager.getString('default','EQPT_CMPT_PROMPT')}" width="100%" textAlign="center" />
+		
+		<!--components:DKI_DataGrid width="100%" height="155" contentBackgroundAlpha="0" id="compList" requestedRowCount="{getRowCount(data.equipment[0].compartments)}" dataProvider="{getCompArray(data.equipment[0].compartments)}" visible="{isGridVisible(data.equipment[0].compartments)}"-->
+		<components:DKI_DataGrid width="100%" height="155" editable="true" contentBackgroundAlpha="0" id="compList" requestedRowCount="{getRowCount(gridData)}" dataProvider="{getCompArray(gridData)}" visible="{isGridVisible(data.compartments)}">
+			<components:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="cmpt_no" headerText="{resourceManager.getString('default','EQPT_CMPT_NO')}" editable="false"></s:GridColumn>
+						<s:GridColumn dataField="adj_safefill" headerText="{global.gSafefillLabel}" editable="false"></s:GridColumn>
+						<s:GridColumn dataField="unit_title" headerText="{resourceManager.getString('default','EQPT_CMPT_UNIT')}" editable="false"></s:GridColumn>
+						<s:GridColumn dataField="adj_capacity" headerText="{global.gCapacityLabel+'(L)'}" editable="false"></s:GridColumn>
+						<!--s:GridColumn dataField="adj_cmpt_lock" width="50" headerText="{resourceManager.getString('default','EQPT_LOCK')}" editable="true" visible="true" itemRenderer="renderers.GridLockRender" itemEditor="itemeditors.GridLockEditor"></s:GridColumn-->
+						<s:GridColumn dataField="adj_cmpt_lock" width="50" headerText="{resourceManager.getString('default','EQPT_LOCK')}" editable="false" visible="{this.isLockedVisible}" itemRenderer="renderers.GridLockButtonRender"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</components:columns>
+		</components:DKI_DataGrid>
+		
+		<components:DKI_DataGrid width="100%" height="155" contentBackgroundAlpha="0" id="compList2" dataProvider="{getCompArray(data.compartments)}" visible="{isGridVisible(data.compartments)}">
+			<components:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="cmpt_no" headerText="{resourceManager.getString('default','EQPT_CMPT_NO')}"></s:GridColumn>
+						<s:GridColumn dataField="cmpt_capacit" headerText="{global.gSafefillLabel}"></s:GridColumn>
+						<s:GridColumn dataField="unit" headerText="{resourceManager.getString('default','EQPT_CMPT_UNIT')}"></s:GridColumn>
+						<s:GridColumn dataField="cmpt_capacit" headerText="{global.gCapacityLabel}"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</components:columns>
+		</components:DKI_DataGrid>
+		
+		
+	</s:VGroup>
+	
+	<s:Graphic top="35" horizontalCenter="0" visible="{isBadgeVisible(data.eqc_sub_item, data.etyp_schedul,data.sub_item_sched_type)}" id="badge">
+		<s:Ellipse height="20" width="20">
+			<s:stroke>
+				<s:SolidColorStroke color="0x000000" weight="1"/>
+			</s:stroke>
+			<s:fill>
+				<s:SolidColor color="0xff0000" />
+			</s:fill>
+		</s:Ellipse>
+	</s:Graphic>
+	
+	<s:Graphic top="57" horizontalCenter="0" visible="{isBadgeVisible(data.eqc_sub_item, data.etyp_schedul,data.sub_item_sched_type)}">
+		<s:Rect height="12" width="89">
+			<s:stroke>
+				<s:SolidColorStroke color="0x000000" weight="1"/>
+			</s:stroke>
+			<s:fill>
+				<s:SolidColor color="0xFFFFFF" />
+			</s:fill>
+		</s:Rect>
+	</s:Graphic>
+	
+	<s:Label text="{data.compartments.length.toString()}" horizontalCenter="0" top="40" fontSize="13" fontWeight="bold" color="0xFFFFFF" width="100%" textAlign="center" visible="{isBadgeVisible(data.eqc_sub_item, data.etyp_schedul,data.sub_item_sched_type)}"/>
+	<s:Label visible="{isBadgeVisible(data.eqc_sub_item, data.etyp_schedul,data.sub_item_sched_type)}" top="59" width="85" color="0x555555" fontSize="11" fontWeight="bold" horizontalCenter="0" text="compartments" textAlign="center"/>
+	
+	<s:HGroup top="3" left="3" gap="1">
+		<components:DKI_Button id="updBtn" label="" width="30" height="20" click="showCompartmentDetails(true)" enabled="true" visible="{badge.visible}" type="edit"/>
+		<!--components:DKI_Button id="unlockBtn" label="Unlock All Compartments" height="20" click="unlockCompartments(event)" enabled="true" visible="{badge.visible}" type="unlock"/-->
+	</s:HGroup>
+	
+	<s:HGroup id="btnGrp" top="3" right="3" includeIn="hovered,selected" gap="1">
+		<s:Image source="@Embed('/assets/icons/info.png')" useHandCursor="true" buttonMode="true" click="showCompartmentDetails(false)" visible="{badge.visible}"/>
+	</s:HGroup>
+	
+</s:ItemRenderer>
