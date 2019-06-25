@@ -4,7 +4,11 @@ export default class Bar extends Component {
   render() {
     return (
       <div className="nav">
-        <img className="logo" alt="tide" src={require("./logo.png")} />
+        <div className="omega">
+          <span>
+            <strong> OMEGA</strong>5000
+          </span>
+        </div>
       </div>
     );
   }
