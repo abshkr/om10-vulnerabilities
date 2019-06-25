@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<s:DropDownList xmlns:fx="http://ns.adobe.com/mxml/2009" 
-				xmlns:s="library://ns.adobe.com/flex/spark" cornerRadius="0" minHeight="24" contentBackgroundAlpha="0.90"
-				xmlns:mx="library://ns.adobe.com/flex/mx" skinClass="skins.DKI_DropDownButton_Skin" useVirtualLayout="false">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
-</s:DropDownList>
