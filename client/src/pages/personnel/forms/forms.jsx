@@ -1,9 +1,18 @@
 import React, { Component } from "react";
 import { Form, Button, Tabs, Modal } from "antd";
-import { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, ExpiryDates, Lock } from "./fields";
+import { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, Lock, SLP } from "./fields";
+import ExpiryDates from "./expiryDates";
 
 class PersonnelForm extends Component {
   handleUpdate = () => {
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log(values);
+      }
+    });
+  };
+
+  handleCreate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log(values);
@@ -38,7 +47,8 @@ class PersonnelForm extends Component {
       okText: "Yes",
       okType: "primary",
       cancelText: "No",
-      centered: true
+      centered: true,
+      onOk: this.handleCreate
     });
   };
 
@@ -54,6 +64,7 @@ class PersonnelForm extends Component {
               <Employer decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <Code decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <Name decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <SLP decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <Department decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <Email decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <Role decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />

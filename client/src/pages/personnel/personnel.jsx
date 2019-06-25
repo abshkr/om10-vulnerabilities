@@ -59,7 +59,7 @@ class Personnel extends Component {
           });
         })
       )
-      .catch(function(error) {
+      .catch(error => {
         notification.error({
           message: error.message,
           description: "Failed to make the request."
