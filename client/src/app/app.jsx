@@ -1,10 +1,16 @@
-import React from "react";
+import React, { Component } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
+import { Layout } from "antd";
+import { Navigation } from "../components";
 import reduxThunk from "redux-thunk";
 import reducers from "../reducers";
 import paths from "./paths";
+
+import "./app.css";
+
+const { Content, Sider } = Layout;
 
 /**
  * @description
@@ -28,18 +34,43 @@ const store = createStore(
  * It also wrapped in a redux provider which gives each component auth information.
  */
 
-const App = () => (
-  <Provider store={store}>
-    <BrowserRouter>
-      <div>
-        <Switch>
-          {paths.map((item, index) => {
-            return <Route exact key={index} path={item.path} component={item.component} />;
-          })}
-        </Switch>
-      </div>
-    </BrowserRouter>
-  </Provider>
-);
+export default class App extends Component {
+  state = {
+    collapsed: false,
+    defaultKey: ["1"],
+    filter: ""
+  };
 
-export default App;
+  handleMenuState = collapsed => {
+    this.setState({
+      collapsed
+    });
+  };
+
+  render() {
+    const { collapsed, defaultKey } = this.state;
+    return (
+      <Provider store={store}>
+        <BrowserRouter>
+          <Layout className="app" style={{ minHeight: "100vh" }}>
+            <Sider collapsible collapsed={collapsed} onCollapse={this.handleMenuState} width={256}>
+              <Navigation defaultKey={defaultKey} />
+            </Sider>
+            <Layout>
+              <div className="search" style={{ background: "#fff", padding: 10, height: 60, paddingLeft: 40 }} />
+              <Content className="content">
+                <div>
+                  <Switch>
+                    {paths.map((item, index) => {
+                      return <Route exact key={index} path={item.path} component={item.component} />;
+                    })}
+                  </Switch>
+                </div>
+              </Content>
+            </Layout>
+          </Layout>
+        </BrowserRouter>
+      </Provider>
+    );
+  }
+}
