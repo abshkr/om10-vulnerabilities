@@ -11,8 +11,21 @@ export default class Department extends Component {
     }
   }
 
+  handleValidation = (rule, value, callback) => {
+    if (value && value.length > 100) {
+      callback("Department must be under 100 characters.");
+    }
+    callback();
+  };
+
   render() {
     const { decorator } = this.props;
-    return <Form.Item label="Department">{decorator("per_department")(<Input />)}</Form.Item>;
+    return (
+      <Form.Item label="Department">
+        {decorator("per_department", {
+          rules: [{ validator: this.handleValidation }]
+        })(<Input />)}
+      </Form.Item>
+    );
   }
 }

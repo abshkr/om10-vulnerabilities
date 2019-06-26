@@ -8,6 +8,7 @@ import TimeCode from "./timeCode";
 import DriverLicence from "./driverLicense";
 import Status from "./status";
 import Comment from "./comment";
-import ExpiryDates from "./expiryDates";
+import Lock from "./lock";
+import SLP from "./slp";
 
-export { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, ExpiryDates };
+export { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, Lock, SLP };

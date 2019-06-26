@@ -11,12 +11,19 @@ export default class Name extends Component {
     }
   }
 
+  handleValidation = (rule, value, callback) => {
+    if (value && value.length > 100) {
+      callback("Name must be under 100 characters.");
+    }
+    callback();
+  };
+
   render() {
     const { decorator } = this.props;
     return (
       <Form.Item label="Name">
         {decorator("per_name", {
-          rules: [{ required: true, message: "Please Enter A Name." }]
+          rules: [{ required: true, message: "Please Enter A Name." }, { validator: this.handleValidation }]
         })(<Input />)}
       </Form.Item>
     );

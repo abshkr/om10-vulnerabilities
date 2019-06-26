@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { Tag } from "antd";
-import moment from "moment-timezone";
+import moment from "moment";
 import { generateOptions } from "../../utils";
 
 const columns = (data, configuration) => {

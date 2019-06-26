@@ -1,8 +1,25 @@
 import React, { Component } from "react";
 import { Form, Button, Tabs, Modal } from "antd";
-import { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, ExpiryDates } from "./fields";
+import { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, Lock, SLP } from "./fields";
+import ExpiryDates from "./expiryDates";
 
 class PersonnelForm extends Component {
+  handleUpdate = () => {
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log(values);
+      }
+    });
+  };
+
+  handleCreate = () => {
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log(values);
+      }
+    });
+  };
+
   showDeleteConfirm = () => {
     Modal.confirm({
       title: "Are you sure you want to delete this Personnel?",
@@ -19,7 +36,8 @@ class PersonnelForm extends Component {
       okText: "Yes",
       okType: "primary",
       cancelText: "No",
-      centered: true
+      centered: true,
+      onOk: this.handleUpdate
     });
   };
 
@@ -29,12 +47,13 @@ class PersonnelForm extends Component {
       okText: "Yes",
       okType: "primary",
       cancelText: "No",
-      centered: true
+      centered: true,
+      onOk: this.handleCreate
     });
   };
 
   render() {
-    const { form, value } = this.props;
+    const { form, value, data } = this.props;
     const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
     const TabPane = Tabs.TabPane;
     return (
@@ -43,8 +62,9 @@ class PersonnelForm extends Component {
           <Tabs defaultActiveKey="1">
             <TabPane tab="General" key="1" style={{ height: 550, overflowY: "scroll", paddingRight: 20 }}>
               <Employer decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Code decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <Code decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
               <Name decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <SLP decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <Department decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <Email decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <Role decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
@@ -56,7 +76,9 @@ class PersonnelForm extends Component {
             <TabPane tab="Expiry Dates" key="2" style={{ height: 550, overflowY: "scroll", paddingRight: 20 }}>
               <ExpiryDates decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} />
             </TabPane>
-            <TabPane tab="Area Access Control" key="3" />
+            <TabPane tab="Area Access Control" key="3">
+              <Lock decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} />
+            </TabPane>
             <TabPane tab="Reset Password" key="4" />
           </Tabs>
         </Form>

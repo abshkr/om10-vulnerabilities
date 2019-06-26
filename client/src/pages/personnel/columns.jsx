@@ -1,13 +1,26 @@
 import React from "react";
-import { Tag } from "antd";
+
+import _ from "lodash";
+import moment from "moment";
+import { Tag, Icon } from "antd";
 import generate from "../../utils/generateOptions";
 
-const columns = (data, roles) => [
+const columns = (data, roles, configuration) => {
+  const values = defaults(data, roles, configuration);
+  const config = configuration.columns.personnel;
+  const modified = _.reject(values, o => {
+    return !config[o.dataIndex];
+  });
+
+  return modified;
+};
+
+const defaults = (data, roles, config) => [
   {
     title: "Code",
     dataIndex: "per_code",
     key: "per_code",
-    width: 150,
+    width: 100,
     fixed: "left",
     // eslint-disable-next-line
     render: text => <a>{text}</a>
@@ -16,7 +29,7 @@ const columns = (data, roles) => [
     title: "Name",
     dataIndex: "per_name",
     key: "per_name",
-    width: 200
+    width: 150
   },
   {
     title: "Employer Code",
@@ -38,10 +51,10 @@ const columns = (data, roles) => [
     title: "Role",
     dataIndex: "per_auth",
     key: "per_auth",
-    width: 100,
+    width: 150,
     filters: generate(data, "per_auth"),
     onFilter: (value, record) => record.per_auth.indexOf(value) === 0,
-    render: data => <Tag color="blue">{data}</Tag>
+    render: text => <Tag color="blue">{_.find(roles, ["role_id", text]).role_name}</Tag>
   },
   {
     title: "Licence No.",
@@ -63,18 +76,23 @@ const columns = (data, roles) => [
   },
   {
     title: "Area Access",
-    dataIndex: "kya_role_name",
-    key: "kya_role_name",
-    width: 100
-  },
-  {
-    title: "Status",
     dataIndex: "per_lock",
     key: "per_lock",
     width: 100,
+    render: text => (
+      <span>
+        <Icon type={text === "N" ? "unlock" : "lock"} />
+      </span>
+    )
+  },
+  {
+    title: "Status",
+    dataIndex: "user_status_flag",
+    key: "user_status_flag",
+    width: 100,
     filters: generate(data, "per_lock"),
     onFilter: (value, record) => String(record.per_lock).indexOf(value) === 0,
-    render: data => <Tag color={data === "N" ? "" : "green"}>{data === "N" ? "Inactive" : "Active"}</Tag>
+    render: data => <Tag color={data === "0" ? "" : "green"}>{data === "0" ? "Inactive" : "Active"}</Tag>
   },
   {
     title: "Department",
@@ -88,25 +106,25 @@ const columns = (data, roles) => [
     title: "Email",
     dataIndex: "per_email",
     key: "per_email",
-    width: 150,
-    filters: generate(data, "per_email"),
-    onFilter: (value, record) => String(record.per_email).indexOf(value) === 0
+    width: 200
   },
   {
     title: "Last Modified",
-    dataIndex: "kya_supp_name",
-    key: "kya_supp_name",
-    width: 150,
-    filters: generate(data, "kya_supp_name"),
-    onFilter: (value, record) => String(record.kya_supp_name).indexOf(value) === 0
+    dataIndex: "per_last_modified",
+    key: "per_last_modified",
+    width: 250,
+    sorter: (a, b) => moment(b.per_last_modified, config.defaultTimeFormat).valueOf() - moment(a.per_last_modified, config.defaultTimeFormat).valueOf(),
+    // eslint-disable-next-line
+    render: text => <a>{text !== "" ? moment(text, config.defaultTimeFormat).format(config.dateTimeFormat) : ""}</a>
   },
   {
     title: "Last Used",
     dataIndex: "user_last_reason",
     key: "user_last_reason",
-    width: 150,
-    filters: generate(data, "user_last_reason"),
-    onFilter: (value, record) => String(record.user_last_reason).indexOf(value) === 0
+    width: 250,
+    sorter: (a, b) => moment(b.user_last_reason, config.defaultTimeFormat).valueOf() - moment(a.user_last_reason, config.defaultTimeFormat).valueOf(),
+    // eslint-disable-next-line
+    render: text => <a>{text !== "" ? moment(text, config.defaultTimeFormat).format(config.dateTimeFormat) : ""}</a>
   }
 ];
 export default columns;
