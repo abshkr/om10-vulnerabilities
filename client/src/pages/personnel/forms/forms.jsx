@@ -53,7 +53,7 @@ class PersonnelForm extends Component {
   };
 
   render() {
-    const { form, value } = this.props;
+    const { form, value, data } = this.props;
     const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
     const TabPane = Tabs.TabPane;
     return (
@@ -62,7 +62,7 @@ class PersonnelForm extends Component {
           <Tabs defaultActiveKey="1">
             <TabPane tab="General" key="1" style={{ height: 550, overflowY: "scroll", paddingRight: 20 }}>
               <Employer decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Code decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <Code decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
               <Name decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <SLP decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <Department decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />

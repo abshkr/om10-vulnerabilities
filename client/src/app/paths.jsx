@@ -17,6 +17,15 @@ const paths = [
       loading: Loading
     })
   },
+
+  {
+    path: ROUTES.EQUIPMENT_LIST,
+    component: Loadable({
+      loader: () => import("../pages/equipmentList"),
+      loading: Loading
+    })
+  },
+
   {
     path: ROUTES.PERSONNEL,
     component: Loadable({

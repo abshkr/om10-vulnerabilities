@@ -207,7 +207,9 @@ export default class ExpiryDates extends Component {
         render: (text, record) =>
           this.state.dataSource.length >= 1 ? (
             <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.edt_type_code)}>
-              <a href="javascript:;">Delete</a>
+              {/*eslint-disable */}
+              <a href="#">Delete</a>
+              {/*eslint-enable */}
             </Popconfirm>
           ) : null
       }

@@ -1,31 +1,6 @@
 import React, { Component } from "react";
-import { stack as BurgerMenu } from "react-burger-menu";
-import { Menu, Icon } from "antd";
-import Bar from "./bar";
-import * as ROUTES from "../../../constants/routes";
-
 import { withRouter } from "react-router-dom";
-
-const { SubMenu } = Menu;
-
-export const smooth = [
-  {
-    style: {
-      opacity: 0
-    },
-    duration: 200
-  },
-  {
-    style: {
-      opacity: 1
-    },
-    duration: 800
-  },
-  {
-    style: {},
-    duration: 1000
-  }
-];
+import Bar from "./bar";
 
 class Authenticated extends Component {
   constructor(props) {
