@@ -49,13 +49,6 @@ class Personnel extends CommonClass
         }
     }
 
-    //Calls CGI. This is because there is some logic inside CGI
-    //Do not want to reimplement this funciton in PHP
-    // function create()
-    // {
-
-    // }
-
     // pure php function
     public function create()
     {
@@ -238,6 +231,123 @@ class Personnel extends CommonClass
 
         oci_commit($this->conn);
         return true;
+    }
+
+    /**
+     * Encrypt a passwd by cript.
+     *   The linux function crypt only use the first 8 letters, so the string input is splitted by 8 letters to handle,
+     */
+    private function ecrypt_password($password)
+    {
+        $enctyped = '';
+        $chunks = str_split($password, 8);
+        foreach ($chunks as $value) {
+            $tmp = crypt($value, ENCTYPED_SALT);
+            $enctyped .= $tmp;
+        }
+
+        return $enctyped;
+    }
+
+    //it is called in Utilities::read() so it must print its own output
+    public function update_password()
+    {
+        write_log(__CLASS__ . ":::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
+
+        Utilities::sanitize($this);
+
+        $result = array();
+        $result["records"] = array();
+
+        $query = "
+        SELECT CONFIG_VALUE VAL FROM SITE_CONFIG
+        WHERE CONFIG_KEY='URBAC_PWD_REUSE'";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $result["result"] = -1;
+            $result["message"] = sprintf("database storage error:%s", $e['message']);
+            echo json_encode($result, JSON_PRETTY_PRINT);
+            return $result;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $reuse = $row['VAL'];
+
+        $query = "
+        SELECT PWDTRACE_PWD
+        FROM URBAC_PWD_TRACES, URBAC_USERS
+        WHERE PWDTRACE_USERID = USER_ID AND USER_CODE = :per_code
+        ORDER BY PWDTRACE_LAST_CHG DESC";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $result["result"] = -1;
+            $result["message"] = sprintf("database storage error:%s", $e['message']);
+            echo json_encode($result, JSON_PRETTY_PRINT);
+            return $result;
+        }
+
+        $encrypted = $this->ecrypt_password($this->password);
+        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            if ($reuse <= 0) {
+                break;
+            }
+
+            $password_hist = $row['PWDTRACE_PWD'];
+            if ($encrypted === $password_hist) {
+                $result["result"] = -2;
+                $result["message"] = sprintf("cannot change to this password because it is recently used");
+                write_log($result["message"], __FILE__, __LINE__, LogLevel::ERROR);
+                echo json_encode($result, JSON_PRETTY_PRINT);
+                return $result;
+            }
+
+            $reuse -= 1;
+        }
+
+        $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/cgi-bin/en/atm/resetpassword.cgi?usr=" . $this->per_code .
+        "&new_pwd=" . $this->password;
+        if (isset($_SESSION['SESSION'])) {
+            $url .= "&sess_id=" . $_SESSION['SESSION'];
+        }
+        write_log(sprintf("%s::%s(), url:%s", __CLASS__, __FUNCTION__, $url),
+            __FILE__, __LINE__);
+        $cgi_response = @file_get_contents($url);
+        if ($cgi_response === false) {
+            $e = error_get_last();
+            write_log($e['message'], __FILE__, __LINE__);
+            $result["result"] = -3;
+            $result["message"] = sprintf("failed to invoke cgi:%s", $e['message']);
+            echo json_encode($result, JSON_PRETTY_PRINT);
+            return $result;
+        }
+
+        // write_log(json_encode($cgi_response), __FILE__, __LINE__);
+        $cgi_ret = Utilities::get_cgi_xml_value($cgi_response, 'MSG_CODE');
+        $cgi_desc = Utilities::get_cgi_xml_value($cgi_response, 'MSG_DESC');
+
+        $result = array();
+        $result["records"] = array();
+        if ($cgi_ret == 0) {
+            $result["result"] = 0;
+            $result["message"] = sprintf("password of user %s has been updated", $this->per_code);
+            // $journal = new Journal($this->conn, false);
+            // $jnl_data[0] = sprintf("cannot change to this password because it is recently used");
+            // $journal->jnlLogEvent(
+            //     Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT);
+            // oci_commit($this->conn);
+        } else {
+            $result["result"] = $cgi_ret;
+            $result["message"] = sprintf("failed to update password of user %s. err: %s",
+                $this->per_code, $cgi_desc);
+            write_log($result["message"], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+        echo json_encode($result, JSON_PRETTY_PRINT);
+        return $result;
     }
 
     public function update()

@@ -544,4 +544,22 @@ class Utilities
         return $paging_arr;
     }
 
+    /**
+     * When CGI returns a xml, this can get value of a field
+     * for example:
+     * <?xml version="1.0" encoding="GB2312" ?>
+     * <OMEGA_XML>
+     * <MSG_CODE>0</MSG_CODE>
+     * <MSG_DESC>SUCCESS!</MSG_DESC>
+     * </OMEGA_XML>
+     * If want to get 0, $xml_str would be this string, $field is MSG_CODE
+     */
+    public static function get_cgi_xml_value($xml_str, $field)
+    {
+        $pattern = $field . ">";
+        $pattern_len = strlen($pattern);
+        $pos_1 = strpos($xml_str, $pattern);
+        $pos_2 = strpos($xml_str, "<", $pos_1);
+        return substr($xml_str, $pos_1 + $pattern_len, $pos_2 - $pos_1 - $pattern_len);
+    }
 }

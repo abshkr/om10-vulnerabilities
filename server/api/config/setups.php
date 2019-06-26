@@ -46,6 +46,10 @@ define('INVALIDATE_TOKEN_ENABLED', false);
 
 define('JASPERREPORT_DIR', 'reports/');
 
+//salt to call crypt
+//Use "a1" because the old C functin used "a1", just for back-compatible
+define('ENCTYPED_SALT', 'a1\0');
+
 if (DISPLAY_ALL_ERROS) {
     ini_set('display_errors', 1);
     error_reporting(E_ALL);

@@ -1,4 +1,5 @@
 tank.php is the latest example
+read to update: take pesonnel::update_password() as an example
 
 https://10.1.10.66/api/config/getenv.php
 
@@ -9,6 +10,7 @@ https://10.1.10.66/api/pages/cust_cat/update.php?category_code=cat1&category_nam
 https://10.1.10.66/api/pages/cust_cat/delete.php?category_code=cat1&category_name=testname3
 
 https://10.1.10.66/api/pages/personnel/read.php
+https://10.1.10.66/api/pages/personnel/update_password.php?per_code=02066C&password=7e64fc124a0630f478617e9b51e64f4b43606ed84049ef72e3906f976c205974
 https://10.1.10.66/api/pages/personnel/read_one.php?per_code=cw3
 https://10.1.10.66/api/pages/personnel/search.php?s=cw
 https://10.1.10.66/api/pages/personnel/read_page.php?page=2
@@ -211,4 +213,4 @@ https://10.1.10.66/api/pages/folio/create_reports.php?closeout_nr=167
 https://10.1.10.66/api/pages/folio/pds.php
 https://10.1.10.66/api/pages/folio/manual_close.php
 https://10.1.10.66/api/pages/folio/calc_vcf.php?frm_baseCd=220000130&frm_which_type=LT&frm_real_amount=111&frm_real_temp=0&frm_real_dens=854
-C:\Users\bluet>curl -k --insecure -X POST -H "Content-Type: application/json" -d "[ {\"frm_baseCd\": \"220000130\",\"frm_which_type\": \"LT\",\"frm_real_amount\": 111,\"frm_real_temp\": 0,\"frm_real_dens\": 854},{\"frm_baseCd\": \"220000130\",\"frm_which_type\": \"LT\",\"frm_real_amount\": 112,\"frm_real_temp\": 12,\"frm_real_dens\": 854}]" https://10.1.10.66/api/pages/folio/calc_vcfs.php
+curl -k --insecure -X POST -H "Content-Type: application/json" -d "[ {\"frm_baseCd\": \"220000130\",\"frm_which_type\": \"LT\",\"frm_real_amount\": 111,\"frm_real_temp\": 0,\"frm_real_dens\": 854},{\"frm_baseCd\": \"220000130\",\"frm_which_type\": \"LT\",\"frm_real_amount\": 112,\"frm_real_temp\": 12,\"frm_real_dens\": 854}]" https://10.1.10.66/api/pages/folio/calc_vcfs.php

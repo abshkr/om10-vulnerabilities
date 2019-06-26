@@ -107,30 +107,10 @@ class Folio extends CommonClass
             }
             // write_log(json_encode($result), __FILE__, __LINE__);
 
-            $pattern = "REAL_VCF>";
-            $pattern_len = strlen($pattern);
-            $pos_1 = strpos($result, $pattern);
-            $pos_2 = strpos($result, "<", $pos_1);
-            $real_cvf = substr($result, $pos_1 + $pattern_len, $pos_2 - $pos_1 - $pattern_len);
-            // write_log($real_cvf, __FILE__, __LINE__);
-
-            $pattern = "REAL_LITRE>";
-            $pattern_len = strlen($pattern);
-            $pos_1 = strpos($result, $pattern);
-            $pos_2 = strpos($result, "<", $pos_1);
-            $real_litre = substr($result, $pos_1 + $pattern_len, $pos_2 - $pos_1 - $pattern_len);
-
-            $pattern = "REAL_LITRE15>";
-            $pattern_len = strlen($pattern);
-            $pos_1 = strpos($result, $pattern);
-            $pos_2 = strpos($result, "<", $pos_1);
-            $real_litre15 = substr($result, $pos_1 + $pattern_len, $pos_2 - $pos_1 - $pattern_len);
-
-            $pattern = "REAL_KG>";
-            $pattern_len = strlen($pattern);
-            $pos_1 = strpos($result, $pattern);
-            $pos_2 = strpos($result, "<", $pos_1);
-            $real_kg = substr($result, $pos_1 + $pattern_len, $pos_2 - $pos_1 - $pattern_len);
+            $real_cvf = Utilities::get_cgi_xml_value($result, 'REAL_VCF');
+            $real_litre = Utilities::get_cgi_xml_value($result, 'REAL_LITRE');
+            $real_litre15 = Utilities::get_cgi_xml_value($result, 'REAL_LITRE15');
+            $real_kg = Utilities::get_cgi_xml_value($result, 'REAL_KG');
 
             $item = new stdClass();
             $item->real_cvf = $real_cvf;
