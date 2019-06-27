@@ -1,10 +1,11 @@
 import React from "react";
 import _ from "lodash";
+import moment from "moment";
 import { Tag, Icon } from "antd";
-import generate from "../../utils/generateOptions";
+import { generateOptions } from "../../utils";
 
 const columns = (data, configuration) => {
-  const values = defaults(data);
+  const values = defaults(data, configuration);
   const config = configuration.columns.equipmentList;
   const modified = _.reject(values, o => {
     return !config[o.dataIndex];
@@ -13,7 +14,7 @@ const columns = (data, configuration) => {
   return modified;
 };
 
-const defaults = data => [
+const defaults = (data, config) => [
   {
     title: "Id",
     dataIndex: "eqpt_id",
@@ -45,7 +46,7 @@ const defaults = data => [
     dataIndex: "eqpt_owner_name",
     key: "eqpt_owner_name",
     width: 350,
-    filters: generate(data, "eqpt_owner_name"),
+    filters: generateOptions(data, "eqpt_owner_name"),
     onFilter: (value, record) => record.eqpt_owner_name.indexOf(value) === 0
   },
   {
@@ -58,7 +59,12 @@ const defaults = data => [
     title: "Locked?",
     dataIndex: "eqpt_lock",
     key: "eqpt_lock",
-    width: 100
+    width: 80,
+    render: text => (
+      <span>
+        <Icon type={text === "Y" ? "lock" : "unlock"} />
+      </span>
+    )
   },
   {
     title: "Load Type",
@@ -67,7 +73,7 @@ const defaults = data => [
     width: 100,
     render: text => (
       <span>
-        <Icon type={text === "0" ? "close" : "check"} style={{ color: text === "0" ? "#ec6e68" : "#a4ec68" }} />
+        <Tag color="blue">{text}</Tag>
       </span>
     )
   },
@@ -79,38 +85,43 @@ const defaults = data => [
   },
   {
     title: "Prime Mover SLP",
-    dataIndex: "base_tank_list",
-    key: "base_tank_list",
+    dataIndex: "eqpt_exp_d2_dmy",
+    key: "eqpt_exp_d2_dmy",
     width: 150,
     render: tanks => <span>{tanks}</span>
   },
   {
     title: "Trailer SLP",
-    dataIndex: "base_class_dens_lo",
-    key: "base_class_dens_lo",
-    width: 180,
-    render: data => <span> {data}kg/m3 </span>
+    dataIndex: "eqpt_exp_d3_dmy",
+    key: "eqpt_exp_d3_dmy",
+    width: 180
   },
   {
     title: "Must Tare In?",
     dataIndex: "eqp_must_tare_in",
     key: "eqp_must_tare_in",
-    width: 180,
-    render: data => <span> {data} kg/m3 </span>
+    width: 100,
+    render: text => (
+      <span>
+        <Icon type={text === "N" ? "close" : "check"} style={{ color: text === "N" ? "#ec6e68" : "#a4ec68" }} />
+      </span>
+    )
   },
   {
     title: "Last Modified",
     dataIndex: "eqpt_last_modified",
     key: "eqpt_last_modified",
-    width: 150,
-    render: data => <span> {data}°C</span>
+    width: 200,
+    sorter: (a, b) => moment(b.eqpt_last_modified, config.defaultTimeFormat).valueOf() - moment(a.eqpt_last_modified, config.defaultTimeFormat).valueOf(),
+    render: text => <span>{text === "" ? "" : moment(text, config.defaultTimeFormat).format(config.dateTimeFormat)}</span>
   },
   {
     title: "Last Used",
     dataIndex: "eqpt_last_used",
     key: "eqpt_last_used",
-    width: 150,
-    render: data => <span> {data}°C</span>
+    width: 200,
+    sorter: (a, b) => moment(b.eqpt_last_used, config.defaultTimeFormat).valueOf() - moment(a.eqpt_last_used, config.defaultTimeFormat).valueOf(),
+    render: text => <span>{text === "" ? "" : moment(text, config.defaultTimeFormat).format(config.dateTimeFormat)}</span>
   }
 ];
 
