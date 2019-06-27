@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import { Table, Input, Button, Popconfirm, Form, Select, DatePicker, Icon } from "antd";
 import axios from "axios";
-import { equipmentList } from "../../../../api";
+import { personnel } from "../../../../api";
 import _ from "lodash";
 
 const EditableContext = React.createContext();
@@ -169,7 +169,7 @@ export default class ExpiryDates extends Component {
   };
 
   componentDidMount() {
-    axios.all([equipmentList.readExpiry()]).then(
+    axios.all([personnel.readPersonnelExpiryTypes()]).then(
       axios.spread(expiryTypes => {
         this.setState({
           expiryTypes: expiryTypes.data.records

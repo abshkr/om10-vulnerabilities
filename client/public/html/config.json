@@ -16,6 +16,8 @@
       "eqpt_lock": true,
       "eqpt_load_type_name": true,
       "eqpt_exp_d1_dmy": true,
+      "eqpt_exp_d2_dmy": true,
+      "eqpt_exp_d3_dmy": true,
       "base_tank_list": true,
       "eqp_must_tare_in": true,
       "eqpt_last_modified": true,

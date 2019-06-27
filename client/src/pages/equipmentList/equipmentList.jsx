@@ -5,12 +5,13 @@
  */
 
 import React, { Component } from "react";
-import auth from "../../utils/auth";
+import auth from "../../auth";
 import { Button, Modal, notification } from "antd";
 import { Page, Filter, DataTable, Download, Container } from "../../components";
+import Forms from "./forms";
 import { equipmentList } from "../../api";
 import axios from "axios";
-import search from "../../utils/search";
+import { search } from "../../utils";
 import columns from "./columns";
 
 class EquipmentList extends Component {
@@ -28,11 +29,11 @@ class EquipmentList extends Component {
     const { data } = this.state;
 
     Modal.info({
-      title: !!object ? `Editing (${object.per_code} / ${object.per_name})` : "Create",
+      title: !!object ? `Editing (${object.eqpt_id} / ${object.eqpt_code})` : "Create",
       centered: true,
       width: 1024,
       icon: !!object ? "edit" : "form",
-      content: <div value={object} refresh={this.handleFetch} data={data} />,
+      content: <Forms value={object} refresh={this.handleFetch} data={data} />,
       okButtonProps: {
         style: { display: "none" }
       }
@@ -93,8 +94,8 @@ class EquipmentList extends Component {
           <Filter value={value} search={this.handleSearch} loading={isLoading} />
           <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
           <Download data={data} type={"equipment_list"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
-          <Button shape="round" icon="user" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
-            Create Personnel
+          <Button shape="round" icon="build" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
+            Create Equipment
           </Button>
           <DataTable rowKey="per_code" resize={resize} columns={columns(results, configuration)} data={results} isLoading={isLoading} click={this.handleClick} />
         </Container>
