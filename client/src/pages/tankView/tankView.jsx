@@ -21,7 +21,8 @@ class TankView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: null,
+      isLoading: false,
+      data: [],
       value: ""
     };
   }
@@ -35,10 +36,12 @@ class TankView extends Component {
   };
 
   getTanks = () => {
-    axios.get(`https://10.1.10.192/api/pages/tank/read.php`).then(response => {
+    this.setState({ isLoading: true });
+    axios.get(`https://10.1.10.66/api/pages/tank/read.php`).then(response => {
       const data = response.data.records;
       this.setState({
-        data
+        data,
+        isLoading: false
       });
     });
   };
@@ -48,10 +51,10 @@ class TankView extends Component {
   }
 
   render() {
-    const { data, filtered, value } = this.state;
+    const { data, filtered, value, isLoading } = this.state;
     const results = !!filtered ? filtered : data;
     return (
-      <Page page="Operations" name="Tank View" isLoading={false} block>
+      <Page page="Operations" name="Tank View" isLoading={isLoading} block>
         <Container>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <Filter value={value} search={this.searchObjects} />
@@ -65,7 +68,7 @@ class TankView extends Component {
 
           <Tabs defaultActiveKey="1">
             <Panel tab="Tank View" key="1" style={{ padding: 5 }}>
-              <Tanks results={results} />
+              {!isLoading && <Tanks results={results} />}
             </Panel>
             <Panel tab="Table View" key="2">
               <Summary data={results} />
