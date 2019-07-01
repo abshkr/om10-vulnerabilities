@@ -86,7 +86,7 @@ class Utilities
 
         if ($filter) {
             $data = json_decode(file_get_contents("php://input"));
-            // write_log(json_encode($_dataGET), __FILE__, __LINE__);
+            // write_log(json_encode($data), __FILE__, __LINE__);
             if ($data) {
                 foreach ($data as $key => $value) {
                     $object->$key = $value;
@@ -294,7 +294,9 @@ class Utilities
         // write_log(json_encode($object), __FILE__, __LINE__);
 
         try {
-            $object->mandatory_fields_check();
+            if (method_exists($object, "mandatory_fields_check")) {
+                $object->mandatory_fields_check();
+            }
         } catch (NullableException $e) {
             // http_response_code(422);
             http_response_code(200);
@@ -542,4 +544,22 @@ class Utilities
         return $paging_arr;
     }
 
+    /**
+     * When CGI returns a xml, this can get value of a field
+     * for example:
+     * <?xml version="1.0" encoding="GB2312" ?>
+     * <OMEGA_XML>
+     * <MSG_CODE>0</MSG_CODE>
+     * <MSG_DESC>SUCCESS!</MSG_DESC>
+     * </OMEGA_XML>
+     * If want to get 0, $xml_str would be this string, $field is MSG_CODE
+     */
+    public static function get_cgi_xml_value($xml_str, $field)
+    {
+        $pattern = $field . ">";
+        $pattern_len = strlen($pattern);
+        $pos_1 = strpos($xml_str, $pattern);
+        $pos_2 = strpos($xml_str, "<", $pos_1);
+        return substr($xml_str, $pos_1 + $pattern_len, $pos_2 - $pos_1 - $pattern_len);
+    }
 }

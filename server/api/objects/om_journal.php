@@ -91,7 +91,6 @@ class OMJournal
             FROM GUI_SITE_JOURNAL
             WHERE SEQ >= :start_num
                 AND SEQ <= :end_num
-                AND REGION_CODE = :region_code
             ORDER BY GEN_DATE DESC";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':start_num', $this->start_num);
@@ -201,48 +200,9 @@ class OMJournal
         }
     }
 
-    public function search($types, $start_date, $end_date, $target_str)
+    public function search()
     {
-        Utilities::sanitize($this);
-
-        $query = "
-            SELECT GEN_DATE,
-                REGION_CODE,
-                PRINT_DATE,
-                COMPANY_CODE,
-                MSG_EVENT,
-                MSG_CLASS,
-                MESSAGE,
-                SEQ,
-                JNL_CAT
-            FROM GUI_SITE_JOURNAL
-            WHERE GEN_DATE >= TO_DATE(:start_date, 'yyyy-mm-dd hh24:mi')
-                AND GEN_DATE <= TO_DATE(:end_date, 'yyyy-mm-dd hh24:mi')
-                AND REGION_CODE = :region_code
-                AND MESSAGE LIKE :target_str
-            ORDER BY GEN_DATE DESC
-            ";
-        if (isset($types_str)) {
-            $query = $query . " AND MSG_EVENT IN (" . $types_str . ")";
-        }
-
-        $query = $query . " ORDER BY GEN_DATE ASC";
-        // write_log("search query:" . $query, __FILE__, __LINE__, LogLevel::DEBUG);
-
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':start_date', $start_date);
-        oci_bind_by_name($stmt, ':end_date', $end_date);
-        oci_bind_by_name($stmt, ':region_code', $this->region_code);
-        oci_bind_by_name($stmt, ':target_str', $target_str);
-        oci_bind_by_name($stmt, ':start_num', $this->start_num);
-        oci_bind_by_name($stmt, ':end_num', $this->end_num);
-        if (oci_execute($stmt)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
+        return $this->read();
     }
 
 }
