@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Doughnut } from "react-chartjs-2";
-import { Badge, Modal, Tag } from "antd";
+import { Modal, Tag } from "antd";
+import summary from "./summary";
 import config from "./config";
 import Tank from "./tank";
 import _ from "lodash";
@@ -24,38 +25,46 @@ export default class Tanks extends Component {
 
   handleClick = tank => {
     Modal.info({
-      title: tank.tank_name,
+      title: tank.name,
       centered: true,
       width: 1024,
       maskClosable: true,
+      okButtonProps: {
+        style: { display: "none" }
+      },
       content: <Tank tank={tank} />
     });
   };
 
-  handleManipulation = () => {
-    const { results } = this.props;
+  handleManipulation = results => {
     const data = [];
 
     _.forEach(results, tank => {
       const ullage = _.toInteger(tank.tank_ullage);
       const volume = _.toInteger(tank.tank_cor_vol);
-      data.push({
-        code: tank.tank_code,
-        status: tank.tank_status_name,
-        ullage,
-        volume,
-        percentage: Math.round((ullage / volume) * 100, 2) < 100 ? Math.round((ullage / volume) * 100, 2) : 100,
-        payload: {
-          labels: ["Current Volume", "Current Ullage"],
-          datasets: [
-            {
-              data: [80, 20],
-              backgroundColor: ["rgba(104, 164, 236, 1)", "rgba(104, 164, 236, 0.3)"],
-              hoverBackgroundColor: ["rgba(104, 164, 236, 0.8)", "rgba(104, 164, 236, 0.6)"]
-            }
-          ]
-        }
-      });
+      const percent = ((volume * 100) / ullage).toFixed(2);
+
+      if (ullage && volume > 0) {
+        data.push({
+          code: tank.tank_code,
+          name: tank.tank_name,
+          status: tank.tank_status_name,
+          title: tank.tank_base_name,
+          default: tank,
+          payload: {
+            labels: ["Current Volume", "Current Ullage"],
+            datasets: [
+              {
+                data: percent > 100 ? [percent, 0] : [percent, 100 - percent],
+                values: [volume, ullage],
+                percentage: percent,
+                backgroundColor: ["rgba(104, 164, 236, 1)", "rgba(104, 164, 236, 0.2)"],
+                hoverBackgroundColor: ["rgba(104, 164, 236, 0.8)", "rgba(104, 164, 236, 0.3)"]
+              }
+            ]
+          }
+        });
+      }
     });
 
     this.setState({
@@ -64,7 +73,17 @@ export default class Tanks extends Component {
   };
 
   componentDidMount() {
-    this.handleManipulation();
+    const { results } = this.props;
+    this.handleManipulation(results);
+    summary();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { results } = this.props;
+
+    if (results !== prevProps.results) {
+      this.handleManipulation(results);
+    }
   }
 
   render() {
@@ -80,16 +99,7 @@ export default class Tanks extends Component {
               </div>
 
               <div className="tank-body">
-                <div>
-                  <Doughnut data={item.payload} options={config} width={220} height={220} />
-                </div>
-
-                <div className="tank-status">
-                  <Badge status="default" text="HH" />
-                  <Badge status="processing" text="H" />
-                  <Badge status="default" text="L" />
-                  <Badge status="default" text="LL" />
-                </div>
+                <Doughnut data={item.payload} options={config(item.title)} width={220} height={220} />
               </div>
             </div>
           );

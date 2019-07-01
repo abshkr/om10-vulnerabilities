@@ -37,7 +37,7 @@ class TankView extends Component {
 
   getTanks = () => {
     this.setState({ isLoading: true });
-    axios.get(`https://10.1.10.66/api/pages/tank/read.php`).then(response => {
+    axios.get(`https://10.1.10.192/api/pages/tank/read.php`).then(response => {
       const data = response.data.records;
       this.setState({
         data,
