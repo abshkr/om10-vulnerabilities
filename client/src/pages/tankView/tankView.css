@@ -34,5 +34,6 @@
 .tank-status {
   display: flex;
   flex-direction: row;
+  margin-top: 6px;
   justify-content: space-around;
 }

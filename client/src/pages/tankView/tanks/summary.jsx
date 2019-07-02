@@ -13,18 +13,26 @@ const summary = () => {
         ctx = chart.chart.ctx;
 
       let fontSize = (height / 180).toFixed(2);
-      ctx.font = "bold " + fontSize + "em 'Oxygen', sans-serif";
+      ctx.font = fontSize + "em 'Oxygen', sans-serif";
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#36393f";
 
       const percent = chart.config.data.datasets[0].percentage;
+      const code = chart.config.data.datasets[0].title;
+
       let sum = percent;
 
       if (sum !== 0) {
         let text = sum.toLocaleString() + "%",
           textX = Math.round((width - ctx.measureText(text).width) / 2),
           textY = height / 2;
-        ctx.fillText(text, textX, textY - 15);
+
+        let title = code,
+          titleX = Math.round((width - ctx.measureText(code).width) / 2),
+          titleY = height / 2;
+
+        ctx.fillText(title, titleX, titleY - 15);
+        ctx.fillText(text, textX, textY + 10);
       }
 
       if (sum === 0) {
@@ -33,7 +41,12 @@ const summary = () => {
           textX = Math.round((width - ctx.measureText(text).width) / 2),
           textY = height / 2;
 
-        ctx.fillText(text, textX, textY - 15);
+        let title = code,
+          titleX = Math.round((width - ctx.measureText(code).width) / 2),
+          titleY = height / 2;
+
+        ctx.fillText(title, titleX, titleY - 15);
+        ctx.fillText(text, textX, textY + 5);
       }
     }
   });

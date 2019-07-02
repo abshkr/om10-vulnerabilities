@@ -1,13 +1,9 @@
 const config = title => {
   return {
     maintainAspectRatio: false,
-    cutoutPercentage: 70,
+    cutoutPercentage: 75,
     title: {
-      display: true,
-      text: title,
-      fontColor: "#36393f",
-      fontSize: 13,
-      position: "bottom"
+      display: false
     },
 
     tooltips: {
