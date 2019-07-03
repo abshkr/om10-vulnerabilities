@@ -1,19 +1,9 @@
 import React, { Component } from "react";
 import { Doughnut } from "react-chartjs-2";
-import { Modal, Tag, Badge } from "antd";
+import { Tag, Badge } from "antd";
 import summary from "./summary";
 import config from "./config";
-import Tank from "./tank";
 import _ from "lodash";
-
-const status = {
-  "In Service - Not used": "",
-  "Out of Service": "blue",
-  "In Service – Working": "gold",
-  "In Service – Loading": "green",
-  "In Service – Settling": "orange",
-  "In Service – Receiving": "purple"
-};
 
 export default class Tanks extends Component {
   constructor(props) {
@@ -22,20 +12,6 @@ export default class Tanks extends Component {
       data: []
     };
   }
-
-  handleClick = tank => {
-    const { configuration } = this.props;
-    Modal.info({
-      title: `${tank.code} - ${tank.title}`,
-      centered: true,
-      width: 1024,
-      maskClosable: true,
-      okButtonProps: {
-        style: { display: "none" }
-      },
-      content: <Tank tank={tank} configuration={configuration} />
-    });
-  };
 
   handleStatusProcess = (level, hhValue, hValue, lValue, llValue) => {
     level = _.toInteger(level !== "" ? level : 0);
@@ -72,12 +48,22 @@ export default class Tanks extends Component {
   handleManipulation = results => {
     const data = [];
 
-    _.forEach(results, tank => {
-      const ullage = _.toInteger(tank.tank_ullage);
-      const volume = _.toInteger(tank.tank_cor_vol);
-      const percent = ((volume * 100) / ullage).toFixed(2);
+    const status = {
+      "In Service - Not used": "",
+      "Out of Service": "blue",
+      "In Service – Working": "gold",
+      "In Service – Loading": "green",
+      "In Service – Settling": "orange",
+      "In Service – Receiving": "purple"
+    };
 
-      if (ullage && volume > 0) {
+    _.forEach(results, tank => {
+      const capacity = _.toInteger(tank.tank_ullage) + _.toInteger(tank.tank_cor_vol);
+      const volume = _.toInteger(tank.tank_cor_vol);
+      const percent = ((volume * 100) / capacity).toFixed(2);
+
+      if (capacity && volume > 0) {
+        const levels = this.handleStatusProcess(tank.tank_prod_lvl, tank.tank_hh_level, tank.tank_h_level, tank.tank_ll_level, tank.tank_l_level);
         data.push({
           code: tank.tank_code,
           name: tank.tank_name,
@@ -85,14 +71,15 @@ export default class Tanks extends Component {
           title: tank.tank_base_name,
           color: status[tank.tank_status_name],
           defaults: tank,
-          levels: this.handleStatusProcess(tank.tank_prod_lvl, tank.tank_hh_level, tank.tank_h_level, tank.tank_ll_level, tank.tank_l_level),
+          levels,
+          error: Object.values(levels).includes("error"),
           payload: {
-            labels: ["Current Volume", "Current Ullage"],
+            labels: ["Current Volume", "Total Capacity"],
             datasets: [
               {
                 title: tank.tank_code,
                 data: percent > 100 ? [percent, 0] : [percent, 100 - percent],
-                values: [volume, ullage],
+                values: [volume, capacity],
                 percentage: percent,
                 backgroundColor: ["rgba(104, 164, 236, 1)", "rgba(104, 164, 236, 0.2)"],
                 hoverBackgroundColor: ["rgba(104, 164, 236, 0.8)", "rgba(104, 164, 236, 0.3)"]
@@ -110,6 +97,7 @@ export default class Tanks extends Component {
 
   componentDidMount() {
     const { results } = this.props;
+
     this.handleManipulation(results);
     summary();
   }
@@ -124,11 +112,13 @@ export default class Tanks extends Component {
 
   render() {
     const { data } = this.state;
+    const { handleClick } = this.props;
+
     return (
       <div className="tank-view">
         {data.map((item, index) => {
           return (
-            <div key={index} className="tank" disabled onClick={() => this.handleClick(item)}>
+            <div key={index} className="tank" disabled onClick={() => handleClick(item.defaults)}>
               <div className="titles">
                 <span>{item.title}</span>
                 <Tag color={item.color}>{item.status}</Tag>
@@ -136,7 +126,7 @@ export default class Tanks extends Component {
 
               <div className="tank-body">
                 <div className="tank-graph">
-                  <Doughnut data={item.payload} options={config(item.code)} width={180} height={180} />
+                  <Doughnut data={item.payload} options={config} width={180} height={180} />
                 </div>
 
                 <div className="tank-status">
