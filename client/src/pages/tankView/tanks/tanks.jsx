@@ -60,9 +60,10 @@ export default class Tanks extends Component {
     _.forEach(results, tank => {
       const capacity = _.toInteger(tank.tank_ullage) + _.toInteger(tank.tank_cor_vol);
       const volume = _.toInteger(tank.tank_cor_vol);
-      const percent = ((volume * 100) / capacity).toFixed(2);
+      const percent = _.isNaN((volume * 100) / capacity) ? 0.0 : ((volume * 100) / capacity).toFixed(2);
 
-      if (capacity && volume > 0) {
+      // capacity && volume > 0
+      if (true) {
         const levels = this.handleStatusProcess(tank.tank_prod_lvl, tank.tank_hh_level, tank.tank_h_level, tank.tank_ll_level, tank.tank_l_level);
         data.push({
           code: tank.tank_code,

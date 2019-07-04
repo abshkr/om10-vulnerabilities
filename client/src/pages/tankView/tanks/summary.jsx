@@ -1,5 +1,5 @@
 import { Chart } from "react-chartjs-2";
-
+import _ from "lodash";
 const summary = () => {
   let originalDoughnutDraw = Chart.controllers.doughnut.prototype.draw;
 
@@ -20,7 +20,7 @@ const summary = () => {
       const percent = chart.config.data.datasets[0].percentage;
       const code = chart.config.data.datasets[0].title;
 
-      let sum = percent;
+      let sum = _.toInteger(percent);
 
       if (sum !== 0) {
         let text = sum.toLocaleString() + "%",
@@ -36,7 +36,7 @@ const summary = () => {
       }
 
       if (sum === 0) {
-        sum = "No throughputs";
+        sum = "Tank Is Empty";
         let text = sum,
           textX = Math.round((width - ctx.measureText(text).width) / 2),
           textY = height / 2;

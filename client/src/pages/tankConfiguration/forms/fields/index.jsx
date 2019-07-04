@@ -2,6 +2,8 @@ import Product from "./product";
 import Density from "./density";
 import TankName from "./tankName";
 import TankCode from "./tankCode";
+import UserLLevel from "./userLLevel";
+import UserHLevel from "./userHLevel";
 import TankMaxFlow from "./tankMaxFlow";
 import ExcludeFromPID from "./excludeFromPID";
 import ExcludeFromPOS from "./excludeFromPOS";
@@ -25,5 +27,7 @@ export {
   ExcludeFromPID,
   ExcludeFromPOS,
   ExcludeFromSMG,
-  ExcludeFromStockReports
+  ExcludeFromStockReports,
+  UserLLevel,
+  UserHLevel
 };

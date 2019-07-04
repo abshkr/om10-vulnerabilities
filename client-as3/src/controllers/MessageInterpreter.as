@@ -138,7 +138,7 @@ package controllers
 				html+= "<b>Terminal MaterialCode:</b><font color=\"#FF0000\"> " 		+ xml.IDOC.E1OILIH.E1WVINH.E1WVINI[i]["_-DS1_-HM_C_OILM001"].BISMT+"</font>"+ "<br>";
 				html+= "<b>Comments:</b><font color=\"#FF0000\"> " 						+ xml.IDOC.E1OILIH.E1WVINH.E1WVINI[i]["_-DS1_-HM_C_OILM001"].SGTXT+"</font>"+ "<br>";
 				html+= "<b>Alternate Qty:</b><font color=\"#FF0000\"> " 				+ xml.IDOC.E1OILIH.E1WVINH.E1WVINI[i].E1OILT2.ADQNT1+"</font>"+ "<br>";
-				
+				html+= "<b>UOM of Alternate Qty:</b><font color=\"#FF0000\"> " 				+ xml.IDOC.E1OILIH.E1WVINH.E1WVINI[i].E1OILT2.ADUOM1+"</font>"+ "<br>";
 				html+="  "+"<br>";
 				trace("should be called Multiple Times.");
 				}

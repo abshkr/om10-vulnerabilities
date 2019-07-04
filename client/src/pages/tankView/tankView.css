@@ -37,3 +37,10 @@
   margin-top: 6px;
   justify-content: space-around;
 }
+
+.form-tank {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 120px;
+}

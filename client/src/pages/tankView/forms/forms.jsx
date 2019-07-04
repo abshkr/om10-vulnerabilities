@@ -1,6 +1,8 @@
 import React, { Component } from "react";
-import { Form, Button, Tabs, notification, Modal, Descriptions, Progress, Slider } from "antd";
+import { Form, Button, Tabs, notification, Modal, Descriptions } from "antd";
+import { WaterWave } from "ant-design-pro/lib/Charts";
 import { tanks } from "../../../api";
+import _ from "lodash";
 import moment from "moment";
 import axios from "axios";
 import {
@@ -15,7 +17,9 @@ import {
   ExcludeFromPID,
   ExcludeFromPOS,
   ExcludeFromSMG,
-  ExcludeFromStockReports
+  ExcludeFromStockReports,
+  UserLLevel,
+  UserHLevel
 } from "../../tankConfiguration/forms/fields";
 
 class TankConfigurationForm extends Component {
@@ -138,14 +142,9 @@ class TankConfigurationForm extends Component {
     const { form, value, baseProducts, profile, data } = this.props;
     const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
     const TabPane = Tabs.TabPane;
-
-    const marks = {
-      0: "0%",
-      26: "26%",
-      37: "37%",
-      100: "100%"
-    };
-
+    const capacity = _.toInteger(value.tank_ullage) + _.toInteger(value.tank_cor_vol);
+    const volume = _.toInteger(value.tank_cor_vol);
+    const percent = _.isNaN((volume * 100) / capacity) ? 0.0 : ((volume * 100) / capacity).toFixed(2);
     return (
       <div>
         <Form style={{ height: 640 }}>
@@ -204,7 +203,21 @@ class TankConfigurationForm extends Component {
                 </Descriptions>
               </TabPane>
             )}
-            <TabPane tab="Tank" key="2" />
+
+            {!!value && (
+              <TabPane tab="Tank" key="2">
+                <div className="form-tank">
+                  <div style={{ display: "none" }}>
+                    <TankCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
+                  </div>
+                  <UserHLevel decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
+
+                  <WaterWave height={300} title={value.tank_base_name} percent={percent} />
+
+                  <UserLLevel decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
+                </div>
+              </TabPane>
+            )}
 
             <TabPane tab="General" key="1">
               <TankCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />

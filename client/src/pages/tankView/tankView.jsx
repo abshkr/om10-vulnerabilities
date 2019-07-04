@@ -40,7 +40,7 @@ class TankView extends Component {
       title: !!object ? `Editing (${object.tank_code} / ${object.tank_name})` : "Create",
       centered: true,
       icon: !!object ? "edit" : "form",
-      width: 1024,
+      width: 800,
       content: <Forms value={object} refresh={this.handleFetch} baseProducts={baseProducts} profile={configuration} data={data} />,
       okButtonProps: {
         style: { display: "none" }
@@ -101,7 +101,6 @@ class TankView extends Component {
     this.setState({
       isLoading: true
     });
-
     axios.all([tanks.readTanks(), baseProducts.readBaseProduct()]).then(
       axios.spread((tanks, baseProducts) => {
         this.setState({
@@ -113,8 +112,20 @@ class TankView extends Component {
     );
   };
 
+  handleLiveUpdate = () => {
+    axios.all([tanks.readTanks(), baseProducts.readBaseProduct()]).then(
+      axios.spread((tanks, baseProducts) => {
+        this.setState({
+          data: tanks.data.records,
+          baseProducts: baseProducts.data.records
+        });
+      })
+    );
+  };
+
   componentDidMount() {
     this.handleFetch();
+    this.liveUpdate = setInterval(this.handleLiveUpdate, 1000);
   }
 
   render() {
