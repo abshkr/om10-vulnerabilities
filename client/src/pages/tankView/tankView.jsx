@@ -11,15 +11,12 @@ import { tanks, baseProducts } from "../../api";
 import { Button, Tabs, Modal } from "antd";
 import { search } from "../../utils/";
 import Summary from "./summary";
-import auth from "../../auth";
-import Tanks from "./tanks";
 import Forms from "./forms";
+import Tanks from "./tanks";
 import axios from "axios";
 import _ from "lodash";
 
 import "./tankView.css";
-
-const Panel = Tabs.TabPane;
 
 class TankView extends Component {
   constructor(props) {
@@ -91,6 +88,7 @@ class TankView extends Component {
 
   handleSearch = query => {
     const { value } = query.target;
+
     this.setState({
       filtered: search(value, this.state.data),
       value
@@ -98,9 +96,8 @@ class TankView extends Component {
   };
 
   handleFetch = () => {
-    this.setState({
-      isLoading: true
-    });
+    this.setState({ isLoading: true });
+
     axios.all([tanks.readTanks(), baseProducts.readBaseProduct()]).then(
       axios.spread((tanks, baseProducts) => {
         this.setState({
@@ -131,22 +128,26 @@ class TankView extends Component {
   render() {
     const { data, filtered, value, isLoading } = this.state;
     const { configuration } = this.props;
+
     const results = !!filtered ? filtered : data;
+
     return (
       <Page page="Operations" name="Tank View" isLoading={isLoading} block>
         <Container>
           <Filter value={value} search={this.handleSearch} />
           <Download data={this.handleExport(results)} type={"Tank View"} style={{ float: "right", marginRight: 5 }} />
           <Button shape="round" icon="setting" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)}>
-            Create New Tank
+            Add Tank
           </Button>
+
           <Tabs defaultActiveKey="1">
-            <Panel tab="Tank View" key="1" style={{ padding: 5 }}>
+            <Tabs.TabPane tab="Tank View" key="1" style={{ padding: 5 }}>
               {!isLoading && <Tanks results={results} configuration={configuration} handleClick={this.handleClick} />}
-            </Panel>
-            <Panel tab="Table View" key="2">
+            </Tabs.TabPane>
+
+            <Tabs.TabPane tab="Table View" key="2">
               <Summary data={results} />
-            </Panel>
+            </Tabs.TabPane>
           </Tabs>
         </Container>
       </Page>
@@ -154,4 +155,4 @@ class TankView extends Component {
   }
 }
 
-export default auth(TankView);
+export default TankView;

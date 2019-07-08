@@ -1,43 +1,46 @@
-import React from "react";
-import "./summary.css";
+import React, { Component } from "react";
 import { DataTable } from "../../../components";
 import columns from "./columns";
 import _ from "lodash";
 
-const handleModelling = data => {
-  const values = [];
+import "./summary.css";
 
-  _.chain(data)
-    .groupBy(object => object.tank_bclass_name)
-    .map((value, key) => {
-      const ullage = _.sumBy(value, o => {
-        return parseInt(o.tank_ullage);
-      });
+export default class Summary extends Component {
+  handleModelling = data => {
+    const values = [];
 
-      const volume = _.sumBy(value, o => {
-        return parseInt(o.tank_cor_vol);
-      });
+    _.chain(data)
+      .groupBy(object => object.tank_bclass_name)
+      .map((value, key) => {
+        const ullage = _.sumBy(value, tank => {
+          return parseInt(tank.tank_ullage);
+        });
 
-      const capacity = ullage + volume;
+        const volume = _.sumBy(value, tank => {
+          return parseInt(tank.tank_cor_vol);
+        });
 
-      values.push({
-        base_name: key,
-        tank_count: value.length,
-        total_capacity: capacity,
-        observed_quantity: volume,
-        total_ullage: ullage,
-        total_fill: (volume * 100) / capacity
-      });
+        const capacity = ullage + volume;
 
-      return true;
-    })
-    .value();
+        const fill = (volume * 100) / capacity;
 
-  return values;
-};
+        values.push({
+          base_name: key,
+          tank_count: value.length,
+          total_capacity: capacity,
+          observed_quantity: volume,
+          total_ullage: ullage,
+          total_fill: _.isNaN(fill) ? 0 : fill
+        });
 
-const Summary = ({ data }) => {
-  return <DataTable rowKey="base_name" columns={columns} data={handleModelling(data)} isLoading={false} />;
-};
+        return true;
+      })
+      .value();
+    return values;
+  };
 
-export default Summary;
+  render() {
+    const { data } = this.props;
+    return <DataTable rowKey="base_name" columns={columns} data={this.handleModelling(data)} isLoading={false} />;
+  }
+}

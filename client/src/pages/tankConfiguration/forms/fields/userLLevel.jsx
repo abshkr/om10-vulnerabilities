@@ -3,21 +3,41 @@ import { Form, Slider } from "antd";
 import _ from "lodash";
 
 export default class UserLLevel extends Component {
+  state = {
+    marks: {
+      0: "0%",
+      100: "100%"
+    }
+  };
+
   componentDidMount() {
     const { value, setValue } = this.props;
+    let { marks } = this.state;
+
     if (!!value) {
+      const baseLevel = value.tank_cor_vol === "" ? 0 : _.toInteger(value.tank_cor_vol);
+      const level = value.tank_ul_level === "" ? 0 : _.toInteger(value.tank_ul_level);
+
       setValue({
-        tank_ul_level: value.tank_ul_level === "" ? 0 : _.toInteger(value.tank_ul_level)
+        tank_ul_level: level
+      });
+
+      marks[level] = {
+        style: {
+          color: baseLevel <= level ? "red" : "black"
+        },
+        label: <strong>{level}%</strong>
+      };
+
+      this.setState({
+        marks
       });
     }
   }
 
   render() {
     const { decorator } = this.props;
-    const marks = {
-      0: "0%",
-      100: "100%"
-    };
+    const { marks } = this.state;
 
     return (
       <Form.Item label="User L Level">
@@ -33,7 +53,7 @@ export default class UserLLevel extends Component {
               vertical
               marks={marks}
               tipFormatter={value => {
-                return `User L: ${value}`;
+                return `User L: ${value}%`;
               }}
             />
           )}
