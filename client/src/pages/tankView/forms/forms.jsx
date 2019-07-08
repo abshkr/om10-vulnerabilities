@@ -3,7 +3,7 @@ import { Form, Button, Tabs, notification, Modal, Descriptions } from "antd";
 import { WaterWave } from "ant-design-pro/lib/Charts";
 import { tanks } from "../../../api";
 import _ from "lodash";
-import moment from "moment";
+
 import axios from "axios";
 import {
   TankCode,
@@ -139,11 +139,12 @@ class TankConfigurationForm extends Component {
   };
 
   render() {
-    const { form, value, baseProducts, profile, data } = this.props;
+    const { form, value, baseProducts, data } = this.props;
     const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
     const TabPane = Tabs.TabPane;
-    const capacity = _.toInteger(value.tank_ullage) + _.toInteger(value.tank_cor_vol);
-    const volume = _.toInteger(value.tank_cor_vol);
+
+    const capacity = !!value ? _.toInteger(value.tank_ullage) + _.toInteger(value.tank_cor_vol) : 0;
+    const volume = !!value ? _.toInteger(value.tank_cor_vol) : 0;
     const percent = _.isNaN((volume * 100) / capacity) ? 0.0 : ((volume * 100) / capacity).toFixed(2);
     return (
       <div>
@@ -168,16 +169,16 @@ class TankConfigurationForm extends Component {
                   </Descriptions.Item>
 
                   <Descriptions.Item label="Tank Capacity" span={3}>
-                    {} ML
+                    {capacity} ML
                   </Descriptions.Item>
                   <Descriptions.Item label="Level" span={3}>
                     {value.tank_outflow_ope === "" ? 0 : value.tank_outflow_ope} CM
                   </Descriptions.Item>
                   <Descriptions.Item label="Observed Quantity" span={3}>
-                    {} ML
+                    {volume} ML
                   </Descriptions.Item>
                   <Descriptions.Item label="Standard Quantity" span={3}>
-                    {} ML
+                    {tanks.tank_prod_lvl} ML
                   </Descriptions.Item>
                   <Descriptions.Item label="Weight in Air" span={3}>
                     {value.tank_vapour_kg} T
@@ -189,7 +190,7 @@ class TankConfigurationForm extends Component {
                     {value.tank_ullage} ML
                   </Descriptions.Item>
                   <Descriptions.Item label="Pumpable Volume" span={3}>
-                    {} T
+                    {value.tank_pump_vol} T
                   </Descriptions.Item>
                   <Descriptions.Item label="Water Level" span={3}>
                     {value.tank_water_lvl} CM
@@ -198,7 +199,7 @@ class TankConfigurationForm extends Component {
                     {value.tank_water} ML
                   </Descriptions.Item>
                   <Descriptions.Item label="Last Online" span={3}>
-                    {moment(value.tank_date, profile.defaultTimeFormat).format(profile.dateTimeFormat)}
+                    {value.tank_date}
                   </Descriptions.Item>
                 </Descriptions>
               </TabPane>

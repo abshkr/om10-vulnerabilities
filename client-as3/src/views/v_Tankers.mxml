@@ -1679,9 +1679,9 @@
 				<s:HGroup>
 					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','TNKR_CODE')}" verticalAlign="middle"/>
 					<components:DKI_ValidatorInput id="tnkr_code" 
-												   maxChars="20"
 												   focusOut="tnkr_code_focusOutHandler(event)"
-												   width="{fieldWidth}" height="{fieldHeight}" 
+												   width="{fieldWidth}" height="{fieldHeight}"
+												   maxChars="20"
 												   text.edit="{dataGrid.selectedItem.tnkr_code}" editable.edit="false" enabled.edit="false" 
 												   text.create="" editable.create="true" enabled.create="true"
 												   change.create="checkTankerCode()"

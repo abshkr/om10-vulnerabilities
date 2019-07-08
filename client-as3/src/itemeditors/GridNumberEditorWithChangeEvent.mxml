@@ -9,12 +9,13 @@
 			import events.ObjEvent;
 			
 			override public function set value(newValue:Object):void 
-			{
+			{	
+				
 				ti.text=newValue as String;
 			}
 			
 			override public function get value():Object 
-			{
+			{	
 				return ti.text;
 			}
 			
@@ -35,7 +36,10 @@
 					data["CLOSE_MASS_TOT"] = data["CLOSE_MASS_TOT_RND"];
 				}
  */				
+				
+				
 				data[column.dataField] = ti.text;
+		
 				this.dispatchEvent(new ObjEvent("GRID_NUMBER_HAS_CHANGED", true, false, {cln:column.dataField}));
 			}
 			

@@ -149,7 +149,7 @@ ddi_tank_code			VARCHAR2(20 BYTE)
 		
 		if ( $screen == "TANKER_LIST" )
 		{
-			$str .= "|tnkr_code,document,40";
+			$str .= "|tnkr_code,document,20";
 			$str .= "|tnkr_name,document,40";
 			$str .= "|remarks,document,800";
 			$str .= "|tnkr_lic_exp,TBD,0,1";

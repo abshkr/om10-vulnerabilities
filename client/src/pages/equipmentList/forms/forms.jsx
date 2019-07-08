@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Form, Button, Tabs, Modal } from "antd";
 import { Owner, Code, Title, Id, EquipmentType, Area, LoadType, EmptyWeight, PullingLimit, Locks, Comments } from "./fields";
 import ExpiryDates from "./expiryDates";
+import Compartments from "./compartments";
 
 class PersonnelForm extends Component {
   handleUpdate = () => {
@@ -76,7 +77,9 @@ class PersonnelForm extends Component {
             <TabPane tab="Expiry Dates" key="2" style={{ height: 550, overflowY: "scroll", paddingRight: 20 }}>
               <ExpiryDates decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} />
             </TabPane>
-            <TabPane tab="Compartments" key="3" />
+            <TabPane tab="Compartments" key="3">
+              <Compartments decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} />
+            </TabPane>
           </Tabs>
         </Form>
 
