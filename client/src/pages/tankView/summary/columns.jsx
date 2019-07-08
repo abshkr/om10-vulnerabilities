@@ -15,25 +15,25 @@ const columns = [
     title: "Total Capacity",
     dataIndex: "total_capacity",
     key: "total_capacity",
-    render: text => <span>{text} ML</span>
+    render: text => <span>{text.toLocaleString()} ML</span>
   },
   {
     title: "Observed Quantity",
     dataIndex: "observed_quantity",
     key: "observed_quantity",
-    render: text => <span>{text} ML</span>
+    render: text => <span>{text.toLocaleString()} ML</span>
   },
   {
     title: "Ullage",
     dataIndex: "total_ullage",
     key: "total_ullage",
-    render: text => <span>{text} ML</span>
+    render: text => <span>{text.toLocaleString()} ML</span>
   },
   {
     title: "Full",
     dataIndex: "total_fill",
     key: "total_fill",
-    render: text => <span>{text} %</span>
+    render: text => <span>{text.toFixed(2)} %</span>
   }
 ];
 

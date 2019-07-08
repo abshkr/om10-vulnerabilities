@@ -31,7 +31,7 @@ export default class MonthlyVariancePercent extends Component {
   render() {
     const { decorator } = this.props;
     return (
-      <Form.Item label="Monthly Limit">
+      <Form.Item label="Monthly Limit (%)">
         {decorator("tank_mtol_percent", {
           initialValue: 0,
           rules: [

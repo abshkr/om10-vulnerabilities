@@ -5,22 +5,32 @@ import columns from "./columns";
 import _ from "lodash";
 
 const handleModelling = data => {
-  let values = [];
+  const values = [];
 
-  _(data)
+  _.chain(data)
     .groupBy(object => object.tank_bclass_name)
-    .map((value, key) =>
+    .map((value, key) => {
+      const ullage = _.sumBy(value, o => {
+        return parseInt(o.tank_ullage);
+      });
+
+      const volume = _.sumBy(value, o => {
+        return parseInt(o.tank_cor_vol);
+      });
+
+      const capacity = ullage + volume;
+
       values.push({
         base_name: key,
         tank_count: value.length,
-        total_capacity: 0,
-        observed_quantity: 0,
-        total_ullage: _.sumBy(value, function(o) {
-          return parseInt(o.tank_ullage);
-        }),
-        total_fill: 0
-      })
-    )
+        total_capacity: capacity,
+        observed_quantity: volume,
+        total_ullage: ullage,
+        total_fill: (volume * 100) / capacity
+      });
+
+      return true;
+    })
     .value();
 
   return values;
