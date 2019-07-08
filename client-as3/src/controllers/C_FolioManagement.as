@@ -455,13 +455,14 @@ package controllers
 		}
 		
 		public function closefolio(): void
-		{
+		{	
+			
 			this.frozenFolioList.service( 1 );
 			//DM.FolioSettings.manualCloseoutClose(function(response:*):void{global.msgSuccess(mx.resources.ResourceManager.getInstance().getString('default','FOLIO_MANAGER.MSG.CLS_1ST_FRZ_FOLIO_REQ'));});
 		}
 		
 		protected function frozenFolioList_resultHandler():void
-		{
+		{	
 			if ( frozenFolioList.length > 0 ) {
 				DM.FolioSettings.manualCloseoutClose(function(response:*):void{global.msgSuccess(mx.resources.ResourceManager.getInstance().getString('default','FOLIO_MANAGER.MSG.CLS_1ST_FRZ_FOLIO_REQ'));});
 			}
@@ -981,11 +982,15 @@ package controllers
 				if( ( closeoutTanks[tankCount].CLOSE_TEMP!=null && closeoutTanks[tankCount].CLOSE_TEMP!="") && (Number(closeoutTanks[tankCount].CLOSE_TEMP) < global.MIN_TEMPERATURE || Number(closeoutTanks[tankCount].CLOSE_TEMP) > global.MAX_TEMPERATURE) ){
 					global.msgFail(mx.resources.ResourceManager.getInstance().getString('default','FOLIO_MANAGER.MSG.OBS_TEMP_OUTRANGE')+ String(global.MIN_TEMPERATURE) + "~" + String(global.MAX_TEMPERATURE) + mx.resources.ResourceManager.getInstance().getString('default','FOLIO_MANAGER.MSG.IN_TANK') + closeoutTanks[tankCount]["TANK_CODE"] +".");
 					return;
-				}			
+				}		
+				
 				if( ( closeoutTanks[tankCount].CLOSE_DENSITY!=null && closeoutTanks[tankCount].CLOSE_DENSITY!="") && (Number(closeoutTanks[tankCount].CLOSE_DENSITY) < closeoutTanks[tankCount]["BCLASS_DENS_LO"] || Number(closeoutTanks[tankCount].CLOSE_DENSITY) > closeoutTanks[tankCount]["BCLASS_DENS_HI"]) ){
 					global.msgFail(mx.resources.ResourceManager.getInstance().getString('default','FOLIO_MANAGER.MSG.STD_DENS_OUTRANGE')+ String(closeoutTanks[tankCount]["BCLASS_DENS_LO"]) + "~" + String(closeoutTanks[tankCount]["BCLASS_DENS_HI"]) + mx.resources.ResourceManager.getInstance().getString('default','FOLIO_MANAGER.MSG.IN_TANK') + closeoutTanks[tankCount]["TANK_CODE"] +".");
 					return;
-				}			
+				}	
+				
+			
+				
 				trace (".......................in updateTanks", closeoutTanks[tankCount].payload.CLOSE_MASS_TOT, closeoutTanks[tankCount].CLOSE_MASS_TOT);
 				trace (".......................in updateTanks", closeoutTanks[tankCount].payload.CLOSE_STD_TOT, closeoutTanks[tankCount].CLOSE_STD_TOT);
 				var Folio:int = int(coll[view.dgFolios.selectedIndex].CLOSEOUT_NR)+1;
