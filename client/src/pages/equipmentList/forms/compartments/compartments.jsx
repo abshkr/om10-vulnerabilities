@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 
-import { Table, Input, Form, Select, DatePicker, Icon } from "antd";
-import axios from "axios";
+import { Table, Input, Form, Select, Icon } from "antd";
 import { equipmentList } from "../../../../api";
-import _ from "lodash";
+import axios from "axios";
 
 const EditableContext = React.createContext();
 
@@ -41,6 +40,10 @@ class EditableCell extends React.Component {
             ...values
           });
         });
+      } else {
+        this.setState({
+          editing: false
+        });
       }
     } else {
       this.setState({
@@ -59,7 +62,7 @@ class EditableCell extends React.Component {
       return editing ? (
         <Form.Item style={{ margin: 0 }}>
           {form.getFieldDecorator("adj_cmpt_lock")(
-            <Select ref={node => (this.input = node)} onPressEnter={this.save} onBlur={value => this.save(value, dataIndex)}>
+            <Select ref={node => (this.input = node)} onPressEnter={value => this.save(value, dataIndex)} onBlur={value => this.save(value, dataIndex)}>
               <Option value="1">Locked</Option>
               <Option value="0">Unlocked</Option>
             </Select>
@@ -72,7 +75,9 @@ class EditableCell extends React.Component {
       );
     } else {
       return editing ? (
-        <Form.Item style={{ margin: 0 }}>{form.getFieldDecorator(dataIndex)(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)}</Form.Item>
+        <Form.Item style={{ margin: 0 }}>
+          {form.getFieldDecorator(dataIndex)(<Input ref={node => (this.input = node)} onPressEnter={value => this.save(value, dataIndex)} onBlur={this.save} />)}
+        </Form.Item>
       ) : (
         <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
           {children}
@@ -91,7 +96,8 @@ export default class Compatments extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: []
+      data: [],
+      isLoading: true
     };
   }
 
@@ -115,47 +121,59 @@ export default class Compatments extends Component {
     });
   };
 
-  componentDidMount() {
-    const { value } = this.props;
-    axios.all([equipmentList.readCompartments(value.eqpt_id)]).then(
+  handleFetch = id => {
+    this.setState({ isLoading: true });
+
+    axios.all([equipmentList.readCompartments(id)]).then(
       axios.spread(compartments => {
         this.setState({
+          isLoading: false,
           data: compartments.data.records
         });
       })
     );
+  };
+
+  componentDidMount() {
+    const { value } = this.props;
+    this.handleFetch(value.eqpt_id);
   }
 
   render() {
-    const { data } = this.state;
+    const { data, isLoading } = this.state;
     const { decorator } = this.props;
 
     const defaults = [
       {
         title: "Compartments",
         dataIndex: "cmpt_no",
+        key: "cmpt_no",
         width: 250
       },
       {
         title: "Safe Fill",
         dataIndex: "safefill",
+        key: "safefill",
         width: 300,
         editable: true
       },
       {
         title: "Safe Fill Unit",
         dataIndex: "cmpt_units",
+        key: "cmpt_units",
         width: 300
       },
       {
         title: "Capacity",
         dataIndex: "sfl",
+        key: "sfl",
         width: 300,
         editable: true
       },
       {
         title: "Status",
         dataIndex: "adj_cmpt_lock",
+        key: "adj_cmpt_lock",
         width: 300,
         editable: true,
         render: text => (
@@ -191,6 +209,7 @@ export default class Compatments extends Component {
         <Table
           size="middle"
           rowKey="cmpt_no"
+          loading={isLoading}
           components={{
             body: {
               row: EditableFormRow,

@@ -97,7 +97,7 @@ class EquipmentList extends Component {
           <Button shape="round" icon="build" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
             Create Equipment
           </Button>
-          <DataTable rowKey="per_code" resize={resize} columns={columns(results, configuration)} data={results} isLoading={isLoading} click={this.handleClick} />
+          <DataTable rowKey="eqpt_id" resize={resize} columns={columns(results, configuration)} data={results} isLoading={isLoading} click={this.handleClick} />
         </Container>
       </Page>
     );

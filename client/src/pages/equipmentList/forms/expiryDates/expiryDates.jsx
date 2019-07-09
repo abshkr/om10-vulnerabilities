@@ -32,26 +32,19 @@ class EditableCell extends React.Component {
   save = (value, index) => {
     if (!!value) {
       const { record, handleSave } = this.props;
-      if (index === "edt_type_desc") {
-        this.form.validateFields((error, values) => {
-          if (error && error[value.currentTarget.id]) {
-            return;
-          }
-          this.toggleEdit();
-          handleSave({
-            ...record,
-            ...values
-          });
-        });
-      } else {
-        this.form.validateFields((error, values) => {
-          this.toggleEdit();
-          handleSave({
-            ...record,
-            ed_exp_date: index
-          });
-        });
+
+      if (index === "ed_exp_date") {
+        value = value.format("DD/MM/YYYY");
       }
+
+      this.form.validateFields((error, values) => {
+        values[index] = value;
+        this.toggleEdit();
+        handleSave({
+          ...record,
+          ...values
+        });
+      });
     } else {
       this.setState({
         editing: false
@@ -71,7 +64,12 @@ class EditableCell extends React.Component {
       return editing ? (
         <Form.Item style={{ margin: 0 }}>
           {form.getFieldDecorator(dataIndex)(
-            <Select loading={expiry.length === 0} ref={node => (this.input = node)} onPressEnter={this.save} onBlur={value => this.save(value, dataIndex)}>
+            <Select
+              loading={expiry.length === 0}
+              ref={node => (this.input = node)}
+              onPressEnter={value => this.save(value, dataIndex)}
+              onBlur={value => this.save(value, dataIndex)}
+            >
               {!!expiry &&
                 expiry.map((item, index) => (
                   <Option key={index} value={item.edt_type_desc} disabled={unique.includes(item.edt_type_desc)}>
@@ -88,12 +86,29 @@ class EditableCell extends React.Component {
       );
     }
 
+    if (dataIndex === "ed_status") {
+      return editing ? (
+        <Form.Item style={{ margin: 0 }}>
+          {form.getFieldDecorator("ed_status")(
+            <Select ref={node => (this.input = node)} onPressEnter={value => this.save(value, dataIndex)} onBlur={value => this.save(value, dataIndex)}>
+              <Option value="0">Disabled</Option>
+              <Option value="1">Enabled</Option>
+            </Select>
+          )}
+        </Form.Item>
+      ) : (
+        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
+          {children}
+        </div>
+      );
+    }
+
     if (dataIndex === "ed_exp_date") {
       return editing ? (
         <Form.Item style={{ margin: 0 }}>
           {form.getFieldDecorator(dataIndex, {
             rules: [{ type: "object" }]
-          })(<DatePicker ref={node => (this.input = node)} onChange={this.save} />)}
+          })(<DatePicker ref={node => (this.input = node)} onChange={value => this.save(value, dataIndex)} format="DD/MM/YYYY" />)}
         </Form.Item>
       ) : (
         <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
@@ -102,7 +117,11 @@ class EditableCell extends React.Component {
       );
     } else {
       return editing ? (
-        <Form.Item style={{ margin: 0 }}>{form.getFieldDecorator(dataIndex)(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)}</Form.Item>
+        <Form.Item style={{ margin: 0 }}>
+          {form.getFieldDecorator(dataIndex)(
+            <Input ref={node => (this.input = node)} onPressEnter={value => this.save(value, dataIndex)} onBlur={value => this.save(value, dataIndex)} />
+          )}
+        </Form.Item>
       ) : (
         <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
           {children}
@@ -132,6 +151,7 @@ export default class ExpiryDates extends Component {
     const newData = [...this.state.dataSource];
     const index = newData.findIndex(item => row.edt_type_code === item.edt_type_code);
     const item = newData[index];
+
     newData.splice(index, 1, {
       ...item,
       ...row
@@ -186,12 +206,14 @@ export default class ExpiryDates extends Component {
       {
         title: "Type Description",
         dataIndex: "edt_type_desc",
+        key: "edt_type_desc",
         width: 250,
         editable: true
       },
       {
         title: "Expiry Date",
         dataIndex: "ed_exp_date",
+        key: "ed_exp_date",
         width: 300,
         editable: true,
         render: (text, record) => <span> {text === "" ? "Select A Date" : !!text ? text : "Select A Date"}</span>
@@ -199,11 +221,14 @@ export default class ExpiryDates extends Component {
       {
         title: "Enabled",
         dataIndex: "ed_status",
+        key: "ed_status",
+        editable: true,
         render: (text, record) => <span> {text === "" ? "Select A Status" : !!text ? <Icon type={text === "1" ? "check" : "close"} /> : "Select A Status"}</span>
       },
       {
         title: "Delete",
         dataIndex: "operation",
+        key: "operation",
         render: (text, record) =>
           this.state.dataSource.length >= 1 ? (
             <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.edt_type_code)}>
@@ -238,9 +263,10 @@ export default class ExpiryDates extends Component {
 
     return (
       <div>
-        <Button shape="round" onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }} disabled={dataSource.length === expiryTypes.length}>
+        <Button shape="round" icon="calendar" onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }} disabled={dataSource.length === expiryTypes.length}>
           Add New Expiry
         </Button>
+
         <Table
           size="middle"
           rowKey="edt_type_code"
