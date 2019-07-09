@@ -22,33 +22,98 @@ class dmsFolioSettingsService extends dmsService
         $sess = $this->PLUG->dmpSession;
         $ucode = $_SESSION['PERCODE'];
 
-        if ($params->NEXT_REPORT_TIME) {
+        if (isset($params->NEXT_REPORT_TIME) && $params->NEXT_REPORT_TIME) {
+            $sql = "SELECT TO_CHAR(PARAM_VALUE, 'yyyy-MM-dd hh24:mi') REPORT_TIME
+                FROM CLOSEOUT_DATE_SETTINGS
+                WHERE PARAM_KEY = 'NEXT_REPORT_TIME'";
+            if (!($chk = $this->ctl->query(array("sql" => $sql))) instanceof dmMesg) {
+                return $chk;
+            }
+
+            if ($chk->data[0]["REPORT_TIME"] != $params->NEXT_REPORT_TIME) {
+                $msg = sprintf("User %s changed next report time from %s to %s",
+                    $ucode, $chk->data[0]["REPORT_TIME"], $params->NEXT_REPORT_TIME);
+
+                if (!($chk = $this->bind(array("plug" => "dmpJournal"))) instanceof dmMesg) {
+                    $chk->opType = "journal msg";
+                    return $chk;
+                }
+                $jnl = $chk->data;
+                if (!($chk = $jnl->recordMsg($msg) instanceof dmMesg)) {
+                    $chk->opType = "journal msg";
+                    return $chk;
+                }
+            }
+
             $sql = "UPDATE CLOSEOUT_DATE_SETTINGS SET PARAM_VALUE = to_date('" . $params->NEXT_REPORT_TIME . "',   'yyyy-MM-dd hh24:mi'), LAST_CHG_TIME = sysdate, LAST_CHG_USER = '$ucode' WHERE PARAM_KEY = 'NEXT_REPORT_TIME'";
             if (!($chk = $this->ctl->query(array("sql" => $sql))) instanceof dmMesg) {
                 return $chk;
             }
 
         }
-        if ($params->NEXT_WEEKLY_REPORT_DATE) {
+        if (isset($params->NEXT_WEEKLY_REPORT_DATE) && $params->NEXT_WEEKLY_REPORT_DATE) {
+            $sql = "SELECT TO_CHAR(PARAM_VALUE, 'yyyy-MM-dd hh24:mi') REPORT_TIME
+                FROM CLOSEOUT_DATE_SETTINGS
+                WHERE PARAM_KEY = 'NEXT_WEEKLY_REPORT_DATE'";
+            if (!($chk = $this->ctl->query(array("sql" => $sql))) instanceof dmMesg) {
+                return $chk;
+            }
+
+            if ($chk->data[0]["REPORT_TIME"] != $params->NEXT_WEEKLY_REPORT_DATE) {
+                $msg = sprintf("User %s changed next weekly report time from %s to %s",
+                    $ucode, $chk->data[0]["REPORT_TIME"], $params->NEXT_WEEKLY_REPORT_DATE);
+
+                if (!($chk = $this->bind(array("plug" => "dmpJournal"))) instanceof dmMesg) {
+                    $chk->opType = "journal msg";
+                    return $chk;
+                }
+                $jnl = $chk->data;
+                if (!($chk = $jnl->recordMsg($msg) instanceof dmMesg)) {
+                    $chk->opType = "journal msg";
+                    return $chk;
+                }
+            }
+
             $sql = "UPDATE CLOSEOUT_DATE_SETTINGS SET PARAM_VALUE = to_date('" . $params->NEXT_WEEKLY_REPORT_DATE . "',   'yyyy-MM-dd'), LAST_CHG_TIME = sysdate, LAST_CHG_USER = '$ucode' WHERE PARAM_KEY = 'NEXT_WEEKLY_REPORT_DATE'";
             if (!($chk = $this->ctl->query(array("sql" => $sql))) instanceof dmMesg) {
                 return $chk;
             }
 
         }
-        if ($params->NEXT_MONTHLY_REPORT_DATE) {
+        if (isset($params->NEXT_MONTHLY_REPORT_DATE) && $params->NEXT_MONTHLY_REPORT_DATE) {
+            $sql = "SELECT TO_CHAR(PARAM_VALUE, 'yyyy-MM-dd hh24:mi') REPORT_TIME
+                FROM CLOSEOUT_DATE_SETTINGS
+                WHERE PARAM_KEY = 'NEXT_MONTHLY_REPORT_DATE'";
+            if (!($chk = $this->ctl->query(array("sql" => $sql))) instanceof dmMesg) {
+                return $chk;
+            }
+
+            if ($chk->data[0]["REPORT_TIME"] != $params->NEXT_MONTHLY_REPORT_DATE) {
+                $msg = sprintf("User %s changed next monthly report time from %s to %s",
+                    $ucode, $chk->data[0]["REPORT_TIME"], $params->NEXT_MONTHLY_REPORT_DATE);
+
+                if (!($chk = $this->bind(array("plug" => "dmpJournal"))) instanceof dmMesg) {
+                    $chk->opType = "journal msg";
+                    return $chk;
+                }
+                $jnl = $chk->data;
+                if (!($chk = $jnl->recordMsg($msg) instanceof dmMesg)) {
+                    $chk->opType = "journal msg";
+                    return $chk;
+                }
+            }
+
             $sql = "UPDATE CLOSEOUT_DATE_SETTINGS SET PARAM_VALUE = to_date('" . $params->NEXT_MONTHLY_REPORT_DATE . "',   'yyyy-MM-dd'), LAST_CHG_TIME = sysdate, LAST_CHG_USER = '$ucode' WHERE PARAM_KEY = 'NEXT_MONTHLY_REPORT_DATE'";
             if (!($chk = $this->ctl->query(array("sql" => $sql))) instanceof dmMesg) {
                 return $chk;
             }
-
         }
-        if ($params->OP_DAY_MNTH_YEAR) {
+
+        if (isset($params->OP_DAY_MNTH_YEAR) && $params->OP_DAY_MNTH_YEAR) {
             $sql = "UPDATE CLOSEOUT_DATE_SETTINGS SET PARAM_VALUE = to_date('" . $params->OP_DAY_MNTH_YEAR . "',   'yyyy-MM-dd'), LAST_CHG_TIME = sysdate, LAST_CHG_USER = '$ucode' WHERE PARAM_KEY = 'OP_DAY_MNTH_YEAR'";
             if (!($chk = $this->ctl->query(array("sql" => $sql))) instanceof dmMesg) {
                 return $chk;
             }
-
         }
 
         $sql = "UPDATE SITE SET
