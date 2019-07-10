@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 
-import { Table, Input, Form, Select, Icon } from "antd";
+import { Table, Input, Form, Select, Icon, Card } from "antd";
 import { equipmentList } from "../../../../api";
+import ProgressiveImage from "react-progressive-image";
+import _ from "lodash";
 import axios from "axios";
 
 const EditableContext = React.createContext();
@@ -141,11 +143,13 @@ export default class Compatments extends Component {
 
   render() {
     const { data, isLoading } = this.state;
-    const { decorator } = this.props;
+    const { decorator, value } = this.props;
+
+    const { Option } = Select;
 
     const defaults = [
       {
-        title: "Compartments",
+        title: "Compartment",
         dataIndex: "cmpt_no",
         key: "cmpt_no",
         width: 250
@@ -204,8 +208,40 @@ export default class Compatments extends Component {
 
     decorator("compartments");
 
+    const equipments = !!value ? _.filter(this.props.data, ["eqpt_etp_title", value.eqpt_etp_title]) : [];
+    const source = !!value ? value.etyp_category : "S";
+    const title = !!value ? value.eqpt_etp_title : "S";
+
     return (
       <div>
+        <ProgressiveImage src={`/assets/${_.toLower(source)}.png`} placeholder="tiny-image.jpg">
+          {(src, loading) => (
+            <Card style={{ marginBottom: 10 }} size="small" title={`Compartments: ${data.length}`} loading={loading}>
+              <div className="equipment-icon">
+                <img src={src} alt="equipment" />
+              </div>
+              <p style={{ textAlign: "center" }}> {title} </p>
+            </Card>
+          )}
+        </ProgressiveImage>
+
+        {!!value && (
+          <Select
+            defaultValue={value.eqpt_code}
+            onChange={this.handleFetch}
+            style={{ marginBottom: 10 }}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          >
+            {equipments.map((item, index) => (
+              <Option key={index} value={item.eqpt_id}>
+                {item.eqpt_code}
+              </Option>
+            ))}
+          </Select>
+        )}
+
         <Table
           size="middle"
           rowKey="cmpt_no"
@@ -216,6 +252,7 @@ export default class Compatments extends Component {
               cell: EditableCell
             }
           }}
+          scroll={{ y: 250 }}
           rowClassName={() => "editable-row"}
           bordered
           dataSource={data}

@@ -14,6 +14,8 @@ import axios from "axios";
 import { search } from "../../utils";
 import columns from "./columns";
 
+import "./equipmentList.css";
+
 class EquipmentList extends Component {
   constructor(props) {
     super(props);
@@ -41,9 +43,7 @@ class EquipmentList extends Component {
   };
 
   handleFetch = () => {
-    this.setState({
-      isLoading: true
-    });
+    this.setState({ isLoading: true });
 
     axios
       .all([equipmentList.readEquipment()])
@@ -67,6 +67,7 @@ class EquipmentList extends Component {
 
   handleResize = () => {
     const { resize } = this.state;
+
     this.setState({
       resize: !resize
     });
@@ -74,6 +75,7 @@ class EquipmentList extends Component {
 
   handleSearch = query => {
     const { value } = query.target;
+
     this.setState({
       filtered: search(value, this.state.data),
       value
@@ -87,7 +89,9 @@ class EquipmentList extends Component {
   render() {
     const { data, isLoading, filtered, value, resize } = this.state;
     const { configuration } = this.props;
+
     const results = !!filtered ? filtered : data;
+
     return (
       <Page page={"Access Control"} name={"Equipment List"} isLoading={isLoading} block={true}>
         <Container>

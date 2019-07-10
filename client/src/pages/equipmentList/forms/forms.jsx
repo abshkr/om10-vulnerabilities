@@ -150,7 +150,7 @@ class PersonnelForm extends Component {
               <ExpiryDates decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} />
             </TabPane>
             <TabPane tab="Compartments" key="3">
-              <Compartments decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} />
+              <Compartments decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} data={data} />
             </TabPane>
           </Tabs>
         </Form>
@@ -167,6 +167,10 @@ class PersonnelForm extends Component {
           onClick={!!value ? this.showConsolidateConfirm : this.showCreateConfirm}
         >
           {!!value ? "Update" : "Create"}
+        </Button>
+
+        <Button shape="round" type="dashed" icon="unlock" style={{ float: "right", marginRight: 5 }}>
+          Unlock All Compartments
         </Button>
 
         {!!value && (
