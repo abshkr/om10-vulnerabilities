@@ -1,3 +1,16 @@
 .app .content {
-  margin: 10px 10px 0 10px;
+  background: "#fff";
+  padding: 1vh;
+  margin: 0;
+  min-height: 280;
+}
+
+.loader {
+  margin-left: 256px;
+  background-color: #68a4ec;
+}
+
+.loader-collapsed {
+  margin-left: 80px;
+  background-color: #68a4ec;
 }

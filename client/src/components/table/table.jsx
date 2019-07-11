@@ -1,9 +1,10 @@
 import React from "react";
+
 import { Table, Icon } from "antd";
 import { Resizable } from "react-resizable";
 import "./table.css";
 
-const loader = <Icon type="loading" style={{ fontSize: 24, position: "fixed", color: "#68a4ec" }} spin />;
+const loader = <Icon type="loading" style={{ fontSize: 24, color: "#68a4ec" }} spin />;
 
 const ResizeableTitle = props => {
   const { onResize, width, ...restProps } = props;
@@ -63,7 +64,7 @@ class DataTable extends React.Component {
 
     return (
       <Table
-        size="small"
+        size="middle"
         bordered
         loading={{
           indicator: loader,
@@ -76,7 +77,7 @@ class DataTable extends React.Component {
         dataSource={data}
         onChange={change}
         pagination={paginationConfig}
-        scroll={!!scroll ? { x: !!scroll ? scroll : 2400, y: "49em" } : { y: "49em" }}
+        scroll={!!scroll ? { x: !!scroll ? scroll : 2400, y: "75vh" } : { y: "75vh" }}
         onRow={record => {
           return {
             onClick: () => {

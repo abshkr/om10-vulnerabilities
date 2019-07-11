@@ -1,118 +1,126 @@
-import Loading from "../components/loading";
+import React, { Component } from "react";
 import Loadable from "react-loadable";
 import { ROUTES } from "../constants";
 
-const paths = [
+import LoadingBar from "react-top-loading-bar";
+
+class Loading extends Component {
+  render() {
+    return <LoadingBar height={4} progress={100} className={this.props.collapsed ? "loader-collapsed" : "loader"} />;
+  }
+}
+
+const paths = collapsed => [
   {
     path: ROUTES.DASHBOARD,
     component: Loadable({
       loader: () => import("../pages/dashboard"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.UNAUTHORIZED,
     component: Loadable({
       loader: () => import("../pages/unauthorized"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.PERSONNEL,
     component: Loadable({
       loader: () => import("../pages/personnel"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.LOGICAL_PRINTERS,
     component: Loadable({
       loader: () => import("../pages/logicalPrinters"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.PHYSICAL_PRINTERS,
     component: Loadable({
       loader: () => import("../pages/physicalPrinters"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.FOLIO_SUMMARY,
     component: Loadable({
       loader: () => import("../pages/folioSummary"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.METERING,
     component: Loadable({
       loader: () => import("../pages/metering"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.TANK_INVENTORY,
     component: Loadable({
       loader: () => import("../pages/tankInventory"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.SITE_BALANCE,
     component: Loadable({
       loader: () => import("../pages/siteBalance"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.PRODUCT_INVENTORY,
     component: Loadable({
       loader: () => import("../pages/productInventory"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.BASE_PRODUCTS,
     component: Loadable({
       loader: () => import("../pages/baseProducts"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.TANK_VIEW,
     component: Loadable({
       loader: () => import("../pages/tankView"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.TANK_CONFIGURATIONS,
     component: Loadable({
       loader: () => import("../pages/tankConfiguration"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.TANK_STATUS,
     component: Loadable({
       loader: () => import("../pages/tankStatus"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.ADAPTIVE_FLOW_CONTROL,
     component: Loadable({
       loader: () => import("../pages/adaptiveFlowControl"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.JOURNAL,
     component: Loadable({
       loader: () => import("../pages/journal"),
-      loading: Loading
+      loading: () => <Loading collapsed={collapsed} />
     })
   }
 ];

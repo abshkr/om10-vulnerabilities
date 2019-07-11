@@ -49,6 +49,9 @@ export default class App extends Component {
 
   render() {
     const { collapsed, defaultKey } = this.state;
+
+    const routes = paths(collapsed);
+
     return (
       <Provider store={store}>
         <BrowserRouter>
@@ -57,11 +60,11 @@ export default class App extends Component {
               <Navigation defaultKey={defaultKey} />
             </Sider>
             <Layout>
-              <div className="search" style={{ background: "#fff", padding: 10, height: 60, paddingLeft: 40 }} />
+              <div className="search" style={{ background: "#fff", padding: 10, height: "6vh", paddingLeft: 40 }} />
               <Content className="content">
                 <div>
                   <Switch>
-                    {paths.map((item, index) => {
+                    {routes.map((item, index) => {
                       return <Route exact key={index} path={item.path} component={item.component} />;
                     })}
                   </Switch>

@@ -14,20 +14,4 @@ import Page from "./page";
 import DataTable from "./table";
 import Title from "./title";
 
-export {
-  Breadcrumbs,
-  Calendar,
-  Container,
-  Download,
-  Drawer,
-  Filter,
-  Footer,
-  FormModal,
-  IButton,
-  Loading,
-  Locked,
-  Navigation,
-  Page,
-  DataTable,
-  Title
-};
+export { Breadcrumbs, Calendar, Container, Download, Drawer, Filter, Footer, FormModal, IButton, Loading, Locked, Navigation, Page, DataTable, Title };
