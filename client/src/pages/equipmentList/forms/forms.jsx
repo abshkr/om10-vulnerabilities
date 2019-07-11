@@ -149,7 +149,7 @@ class PersonnelForm extends Component {
             <TabPane tab="Expiry Dates" key="2" style={{ height: 550, overflowY: "scroll", paddingRight: 20 }}>
               <ExpiryDates decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} />
             </TabPane>
-            <TabPane tab="Compartments" key="3">
+            <TabPane tab="Compartments" key="3" forceRender={true}>
               <Compartments decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} data={data} />
             </TabPane>
           </Tabs>

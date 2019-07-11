@@ -138,7 +138,19 @@ export default class Compatments extends Component {
 
   componentDidMount() {
     const { value } = this.props;
-    this.handleFetch(value.eqpt_id);
+
+    if (!!value) {
+      this.handleFetch(value.eqpt_id);
+    }
+  }
+
+  componentWillReceiveProps(prevProps) {
+    const { getValue } = this.props;
+
+    const id = getValue("eqpt_etp");
+    if (!!id || id !== "") {
+      this.handleFetch(id);
+    }
   }
 
   render() {
@@ -208,7 +220,7 @@ export default class Compatments extends Component {
 
     decorator("compartments");
 
-    const equipments = !!value ? _.filter(this.props.data, ["eqpt_etp_title", value.eqpt_etp_title]) : [];
+    const equipments = _.filter(this.props.data, ["eqpt_etp_title", !!value ? value.eqpt_etp_title : ""]);
     const source = !!value ? value.etyp_category : "S";
     const title = !!value ? value.eqpt_etp_title : "S";
 
