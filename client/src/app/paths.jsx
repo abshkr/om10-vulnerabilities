@@ -122,6 +122,13 @@ const paths = collapsed => [
       loader: () => import("../pages/journal"),
       loading: () => <Loading collapsed={collapsed} />
     })
+  },
+  {
+    path: "*",
+    component: Loadable({
+      loader: () => import("../pages/notFound"),
+      loading: () => <Loading collapsed={collapsed} />
+    })
   }
 ];
 

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
-import { Layout } from "antd";
+import { Layout, Input } from "antd";
 import { Navigation } from "../components";
 import reduxThunk from "redux-thunk";
 import reducers from "../reducers";
@@ -47,11 +47,17 @@ export default class App extends Component {
     });
   };
 
+  handleSearch = value => {
+    this.setState({
+      filter: value
+    });
+  };
+
   render() {
-    const { collapsed, defaultKey } = this.state;
+    const { collapsed, defaultKey, filter } = this.state;
 
     const routes = paths(collapsed);
-
+    console.log(filter);
     return (
       <Provider store={store}>
         <BrowserRouter>
@@ -60,12 +66,18 @@ export default class App extends Component {
               <Navigation defaultKey={defaultKey} />
             </Sider>
             <Layout>
-              <div className="search" style={{ background: "#fff", padding: 10, height: "6vh", paddingLeft: 40 }} />
+              <div className="search" style={{ background: "#fff", padding: 10, height: "6vh", paddingLeft: 5, paddingTop: 12 }}>
+                <Input.Search placeholder="Type to search..." onSearch={value => this.handleSearch(value)} />
+              </div>
               <Content className="content">
                 <div>
                   <Switch>
                     {routes.map((item, index) => {
-                      return <Route exact key={index} path={item.path} component={item.component} />;
+                      if (filter === "") {
+                        return <Route exact key={index} path={item.path} component={item.component} />;
+                      } else {
+                        return null;
+                      }
                     })}
                   </Switch>
                 </div>
