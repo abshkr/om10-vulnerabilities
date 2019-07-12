@@ -189,10 +189,26 @@ class EquipmentType
         Utilities::sanitize($this);
         $this->etyp_title = isset($this->etyp_title) ? '%' . $this->etyp_title . '%' : '%';
 
+        // $query = "
+        //     SELECT ETYP_ID, ETYP_TITLE
+        //     FROM EQUIP_TYPES_VW
+        //     WHERE ETYP_CLASS = 0 AND ETYP_TITLE like :etyp_title ";
         $query = "
-            SELECT ETYP_ID, ETYP_TITLE
-            FROM EQUIP_TYPES_VW
-            WHERE ETYP_CLASS = 0 AND ETYP_TITLE like :etyp_title ";
+        SELECT EQUIP_TYPES_VW.ETYP_ID, EQUIP_TYPES_VW.ETYP_TITLE,
+            NVL(ETYP_CATEGORY,
+                DECODE(ECNCT_ETYP,
+                    NULL,
+                    DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
+                    DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
+                ) IMAGE
+        FROM EQUIP_TYPES_VW,
+            (SELECT NVL(ETYP_SCHEDUL, 'N') ETYP_SCHEDUL, NVL(ETYP_ISRIGID, 'N') ETYP_ISRIGID, CMPTNU, ECNCT_ETYP
+            FROM EQUIP_TYPES_VW, EQP_CONNECT
+            WHERE EQP_CONNECT.ECNCT_ETYP = EQUIP_TYPES_VW.ETYP_ID
+                AND EQC_COUNT = 1) FIRST_SUB_ITEM
+        WHERE FIRST_SUB_ITEM.ECNCT_ETYP(+) = EQUIP_TYPES_VW.ETYP_ID
+            AND ETYP_TITLE like :etyp_title ";
+
         if (isset($this->cmptnu)) {
             $query = $query . " AND CMPTNU = :cmptnu ";
         }
@@ -214,10 +230,10 @@ class EquipmentType
 
     public function search()
     {
-        if (!isset($this->end_num)) {
-            $this->start_num = 1;
-            $this->end_num = 50;
-        }
+        // if (!isset($this->end_num)) {
+        //     $this->start_num = 1;
+        //     $this->end_num = 50;
+        // }
 
         Utilities::sanitize($this);
 
