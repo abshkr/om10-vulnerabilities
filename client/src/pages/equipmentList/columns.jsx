@@ -70,7 +70,7 @@ const defaults = (data, config) => [
     title: "Load Type",
     dataIndex: "eqpt_load_type_name",
     key: "eqpt_load_type_name",
-    width: 100,
+    width: 80,
     render: text => (
       <span>
         <Tag color="blue">{text}</Tag>
@@ -81,7 +81,7 @@ const defaults = (data, config) => [
     title: "Registration Expired",
     dataIndex: "eqpt_exp_d1_dmy",
     key: "eqpt_exp_d1_dmy",
-    width: 150
+    width: 180
   },
   {
     title: "Prime Mover SLP",

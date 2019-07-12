@@ -1,14 +1,40 @@
 import React, { Component } from "react";
-import { Form, Button, Tabs, Modal } from "antd";
-import { Owner, Code, Title, Id, EquipmentType, Area, LoadType, EmptyWeight, PullingLimit, Locks, Comments } from "./fields";
+
+import _ from "lodash";
+import axios from "axios";
 import ExpiryDates from "./expiryDates";
 import Compartments from "./compartments";
+import { equipmentList } from "../../../api";
+import { Form, Button, Tabs, Modal, notification } from "antd";
+import { Owner, Code, Title, Id, EquipmentType, Area, LoadType, EmptyWeight, PullingLimit, Locks, Comments } from "./fields";
 
 class PersonnelForm extends Component {
   handleUpdate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log(values);
+        axios
+          .all([equipmentList.updateEquipment(values)])
+          .then(
+            axios.spread(response => {
+              this.props.refresh();
+              Modal.destroyAll();
+              notification.success({
+                message: "Successfully Updated.",
+                description: `You have updated the Equipment ${values.eqpt_id}`
+              });
+            })
+          )
+          .catch(function(error) {
+            notification.error({
+              message: error.message,
+              description: "Failed to updated the Equipment."
+            });
+          });
+      } else {
+        notification.error({
+          message: "Validation Failed.",
+          description: "Make sure all the fields meet the requirements."
+        });
       }
     });
   };
@@ -16,7 +42,29 @@ class PersonnelForm extends Component {
   handleCreate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log(values);
+        axios
+          .all([equipmentList.createEquipment(values)])
+          .then(
+            axios.spread(response => {
+              this.props.refresh();
+              Modal.destroyAll();
+              notification.success({
+                message: "Successfully Created.",
+                description: `You have created the Equipment ${values.eqpt_id}`
+              });
+            })
+          )
+          .catch(function(error) {
+            notification.error({
+              message: error.message,
+              description: "Failed to created the Equipment."
+            });
+          });
+      } else {
+        notification.error({
+          message: "Validation Failed.",
+          description: "Make sure all the fields meet the requirements."
+        });
       }
     });
   };
@@ -28,6 +76,30 @@ class PersonnelForm extends Component {
       okType: "danger",
       cancelText: "No",
       centered: true
+    });
+  };
+
+  showConsolidateConfirm = () => {
+    const { data } = this.props;
+
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        const records = _.find(data, ["eqpt_title", values.eqpt_title]);
+        if (records.length > 0) {
+          Modal.confirm({
+            title: `Expiry Date Adjustments.`,
+            content: <div>{`We have found ${records.length} records with similar configurations. Do you want to apply the same expiry dates?`}</div>,
+            okText: "Yes",
+            okType: "primary",
+            cancelText: "No",
+            centered: true,
+            onOk: this.handleCreate,
+            onCancel: this.handleUpdate
+          });
+        } else {
+          this.showUpdateConfirm();
+        }
+      }
     });
   };
 
@@ -77,8 +149,8 @@ class PersonnelForm extends Component {
             <TabPane tab="Expiry Dates" key="2" style={{ height: 550, overflowY: "scroll", paddingRight: 20 }}>
               <ExpiryDates decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} />
             </TabPane>
-            <TabPane tab="Compartments" key="3">
-              <Compartments decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} />
+            <TabPane tab="Compartments" key="3" forceRender={true}>
+              <Compartments decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} data={data} />
             </TabPane>
           </Tabs>
         </Form>
@@ -92,9 +164,13 @@ class PersonnelForm extends Component {
           type="primary"
           icon={!!value ? "edit" : "plus"}
           style={{ float: "right", marginRight: 5 }}
-          onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}
+          onClick={!!value ? this.showConsolidateConfirm : this.showCreateConfirm}
         >
           {!!value ? "Update" : "Create"}
+        </Button>
+
+        <Button shape="round" type="dashed" icon="unlock" style={{ float: "right", marginRight: 5 }}>
+          Unlock All Compartments
         </Button>
 
         {!!value && (

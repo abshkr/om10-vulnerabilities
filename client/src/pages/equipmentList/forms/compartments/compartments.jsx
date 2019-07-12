@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 
-import { Table, Input, Form, Select, DatePicker, Icon } from "antd";
-import axios from "axios";
+import { Table, Input, Form, Select, Icon, Card } from "antd";
 import { equipmentList } from "../../../../api";
+import ProgressiveImage from "react-progressive-image";
 import _ from "lodash";
+import axios from "axios";
 
 const EditableContext = React.createContext();
 
@@ -41,6 +42,10 @@ class EditableCell extends React.Component {
             ...values
           });
         });
+      } else {
+        this.setState({
+          editing: false
+        });
       }
     } else {
       this.setState({
@@ -59,7 +64,7 @@ class EditableCell extends React.Component {
       return editing ? (
         <Form.Item style={{ margin: 0 }}>
           {form.getFieldDecorator("adj_cmpt_lock")(
-            <Select ref={node => (this.input = node)} onPressEnter={this.save} onBlur={value => this.save(value, dataIndex)}>
+            <Select ref={node => (this.input = node)} onPressEnter={value => this.save(value, dataIndex)} onBlur={value => this.save(value, dataIndex)}>
               <Option value="1">Locked</Option>
               <Option value="0">Unlocked</Option>
             </Select>
@@ -72,7 +77,9 @@ class EditableCell extends React.Component {
       );
     } else {
       return editing ? (
-        <Form.Item style={{ margin: 0 }}>{form.getFieldDecorator(dataIndex)(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)}</Form.Item>
+        <Form.Item style={{ margin: 0 }}>
+          {form.getFieldDecorator(dataIndex)(<Input ref={node => (this.input = node)} onPressEnter={value => this.save(value, dataIndex)} onBlur={this.save} />)}
+        </Form.Item>
       ) : (
         <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
           {children}
@@ -91,7 +98,8 @@ export default class Compatments extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: []
+      data: [],
+      isLoading: true
     };
   }
 
@@ -115,47 +123,73 @@ export default class Compatments extends Component {
     });
   };
 
-  componentDidMount() {
-    const { value } = this.props;
-    axios.all([equipmentList.readCompartments(value.eqpt_id)]).then(
+  handleFetch = id => {
+    this.setState({ isLoading: true });
+
+    axios.all([equipmentList.readCompartments(id)]).then(
       axios.spread(compartments => {
         this.setState({
+          isLoading: false,
           data: compartments.data.records
         });
       })
     );
+  };
+
+  componentDidMount() {
+    const { value } = this.props;
+
+    if (!!value) {
+      this.handleFetch(value.eqpt_id);
+    }
+  }
+
+  componentWillReceiveProps(prevProps) {
+    const { getValue } = this.props;
+
+    const id = getValue("eqpt_etp");
+    if (!!id || id !== "") {
+      this.handleFetch(id);
+    }
   }
 
   render() {
-    const { data } = this.state;
-    const { decorator } = this.props;
+    const { data, isLoading } = this.state;
+    const { decorator, value } = this.props;
+
+    const { Option } = Select;
 
     const defaults = [
       {
-        title: "Compartments",
+        title: "Compartment",
         dataIndex: "cmpt_no",
+        key: "cmpt_no",
         width: 250
       },
       {
         title: "Safe Fill",
         dataIndex: "safefill",
+        key: "safefill",
         width: 300,
         editable: true
       },
       {
         title: "Safe Fill Unit",
         dataIndex: "cmpt_units",
+        key: "cmpt_units",
         width: 300
       },
       {
         title: "Capacity",
         dataIndex: "sfl",
+        key: "sfl",
         width: 300,
         editable: true
       },
       {
         title: "Status",
         dataIndex: "adj_cmpt_lock",
+        key: "adj_cmpt_lock",
         width: 300,
         editable: true,
         render: text => (
@@ -186,17 +220,51 @@ export default class Compatments extends Component {
 
     decorator("compartments");
 
+    const equipments = _.filter(this.props.data, ["eqpt_etp_title", !!value ? value.eqpt_etp_title : ""]);
+    const source = !!value ? value.etyp_category : "S";
+    const title = !!value ? value.eqpt_etp_title : "S";
+
     return (
       <div>
+        <ProgressiveImage src={`/assets/${_.toLower(source)}.png`} placeholder="tiny-image.jpg">
+          {(src, loading) => (
+            <Card style={{ marginBottom: 10 }} size="small" title={`Compartments: ${data.length}`} loading={loading}>
+              <div className="equipment-icon">
+                <img src={src} alt="equipment" />
+              </div>
+              <p style={{ textAlign: "center" }}> {title} </p>
+            </Card>
+          )}
+        </ProgressiveImage>
+
+        {!!value && (
+          <Select
+            defaultValue={value.eqpt_code}
+            onChange={this.handleFetch}
+            style={{ marginBottom: 10 }}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          >
+            {equipments.map((item, index) => (
+              <Option key={index} value={item.eqpt_id}>
+                {item.eqpt_code}
+              </Option>
+            ))}
+          </Select>
+        )}
+
         <Table
           size="middle"
           rowKey="cmpt_no"
+          loading={isLoading}
           components={{
             body: {
               row: EditableFormRow,
               cell: EditableCell
             }
           }}
+          scroll={{ y: 250 }}
           rowClassName={() => "editable-row"}
           bordered
           dataSource={data}

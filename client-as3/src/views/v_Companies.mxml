@@ -74,6 +74,7 @@
 			private var currentDirection:String="ASC";	
 			private var currentSorts:Object=new Object();
 			private var currentOrders:Object=new Object();
+			private var currentSortSeq:int=0;
 			
 			[Bindable] private var plantArr:ArrayCollection=new ArrayCollection();
 			private var _saveButtonClicked:Boolean=false;
@@ -172,25 +173,45 @@
 			private function headerClickListener(event:GridEvent):void
 			{
 				var currentRenderer:IGridItemRenderer;
-				if(event.columnIndex <=1)
+			
+				
+				for (var i:int=0; i < dataGrid.columns.length; i++)
 				{
-					for (var i:int=0; i<dataGrid.columns.length; i++){
-						currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
-						(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					if ( currentRenderer != null)
+					{
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
 					}
-					
-					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
-					
-					if(currentOrder.indexOf(event.column.dataField, 0) != -1){
-						if(currentDirection=="ASC") currentDirection="DESC";
-						else currentDirection="ASC";
-					}else{
-						currentDirection="ASC";	
-					}
-					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(currentDirection);
-					currentOrder = "ORDER BY nlssort (" + event.column.dataField + ", 'NLS_SORT=BINARY_CI') " + currentDirection;
-					getCompanyResult.token = companiesService.getCompanies(currentFilter,currentOrder);
+			
 				}
+				
+				currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+				
+				
+				if( currentDirection =="ASC" )
+				{
+					currentDirection = "DESC";
+				}
+				else if ( currentDirection == "DESC" )
+				{
+					currentDirection = "";
+				}
+				else if ( currentDirection == "" )
+				{
+					currentDirection = "ASC";
+				}
+				else 
+				{
+					currentDirection = "ASC";
+				}
+				
+				
+				
+				
+				(currentRenderer as DKI_HeaderColumn_Renderer).setImage(currentDirection);
+				currentOrder = "ORDER BY nlssort (" + event.column.dataField + ", 'NLS_SORT=BINARY_CI') " + currentDirection;
+				getCompanyResult.token = companiesService.getCompanies(currentFilter,currentOrder);
+				
 			}		
 			
 			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
@@ -873,8 +894,8 @@
 								 selectionChange="dataGrid_selectionChangeHandler(event)" sortableColumns="true">
 			<components:columns>
 				<s:ArrayList>
-					<s:GridColumn dataField="cmpy_code" headerText="{resourceManager.getString('default','COMPANY_CODE')}" width="100"></s:GridColumn>
-					<s:GridColumn dataField="cmpy_name" headerText="{resourceManager.getString('default','COMPANY_NAME')}" width="200" width.widget="250"></s:GridColumn>
+					<s:GridColumn dataField="cmpy_code" sortable="true" headerText="{resourceManager.getString('default','COMPANY_CODE')}" width="100"></s:GridColumn>
+					<s:GridColumn dataField="cmpy_name" sortable="true" headerText="{resourceManager.getString('default','COMPANY_NAME')}" width="200" width.widget="250"></s:GridColumn>
 					<s:GridColumn dataField="cmpy_plant" headerText="{resourceManager.getString('default','PLANT_CODE')}" width="100"></s:GridColumn>
 					<s:GridColumn dataField="cmpy_aoi" headerText="{resourceManager.getString('default','AOI_NO')}" width="60" excludeFrom="widget"></s:GridColumn>
 					<s:GridColumn dataField="cmpy_permit_no" headerText="Permit Number" labelFunction="permitNoFunction" width="100" visible="{false}"></s:GridColumn>
