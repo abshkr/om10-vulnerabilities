@@ -7,3 +7,4 @@ include_once '../../config/database.php';
 include_once '../../objects/eqpt_type.php';
 
 Utilities::read('EquipmentType', $method = 'search2', $filter = true);
+// Utilities::read('EquipmentType', $method = 'search', $filter = true);
