@@ -1,4 +1,0 @@
-Django==2.0.3
-django-tastypie==0.14.2
-django-haystack==2.8.1
-cx-Oracle==6.3.1
