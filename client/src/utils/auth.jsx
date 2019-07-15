@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import checkSession from "./checkSession";
 import * as ROUTES from "../constants/routes";
-import { Loading } from "../components";
+
 import axios from "axios";
 
 export default Module => {

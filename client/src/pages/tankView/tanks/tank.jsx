@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { Descriptions, Badge, Tabs } from "antd";
+import { Descriptions, Tabs } from "antd";
 
 export default class Tank extends Component {
   render() {
     const tank = this.props.tank.default;
     const { TabPane } = Tabs;
-    console.log(tank);
+
     return (
       <Tabs defaultActiveKey="1">
         <TabPane tab="Information" key="1" style={{ height: 600 }} size="small">
