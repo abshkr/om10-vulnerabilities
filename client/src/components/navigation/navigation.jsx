@@ -1,15 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Authenticated from "./authenticated";
+
 import "./navigation.css";
 
 class Navigation extends Component {
   render() {
-    if (true) {
-      return <Authenticated />;
-    } else {
-      return <div />;
-    }
+    return <Authenticated />;
   }
 }
 

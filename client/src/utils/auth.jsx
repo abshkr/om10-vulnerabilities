@@ -57,7 +57,7 @@ export default Module => {
       const { configuration } = this.state;
 
       if (!configuration) {
-        return <Loading />;
+        return null;
       }
 
       return <Module {...this.props} configuration={configuration} />;
