@@ -32,3 +32,7 @@ export function openFolioReports(id, report) {
 export function regenerateReports(id) {
   return axios.get(`https://${api}/api/pages/folio/create_reports.php?closeout_nr=${id}`);
 }
+
+export function calculateVCF(payload) {
+  return axios.post(`https://${api}/api/pages/folio/calc_vcfs.php`, payload);
+}

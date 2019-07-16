@@ -137,7 +137,6 @@ class PersonnelForm extends Component {
               <Code decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
               <Id decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
               <Owner decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-              <EquipmentType decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
               <Title decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
               <Area decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
               <LoadType decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
@@ -149,8 +148,18 @@ class PersonnelForm extends Component {
             <TabPane tab="Expiry Dates" key="2" style={{ height: 550, overflowY: "scroll", paddingRight: 20 }}>
               <ExpiryDates decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} />
             </TabPane>
+
             <TabPane tab="Compartments" key="3" forceRender={true}>
-              <Compartments decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} data={data} />
+              <EquipmentType decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
+              <Compartments
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+                form={form}
+                data={data}
+                equipment={getFieldValue("eqpt_etp")}
+              />
             </TabPane>
           </Tabs>
         </Form>
@@ -169,9 +178,11 @@ class PersonnelForm extends Component {
           {!!value ? "Update" : "Create"}
         </Button>
 
-        <Button shape="round" type="dashed" icon="unlock" style={{ float: "right", marginRight: 5 }}>
-          Unlock All Compartments
-        </Button>
+        {!!value && (
+          <Button shape="round" type="dashed" icon="unlock" style={{ float: "right", marginRight: 5 }}>
+            Unlock All Compartments
+          </Button>
+        )}
 
         {!!value && (
           <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>

@@ -99,7 +99,8 @@ export default class Compatments extends Component {
     super(props);
     this.state = {
       data: [],
-      isLoading: true
+      isLoading: true,
+      types: []
     };
   }
 
@@ -124,13 +125,40 @@ export default class Compatments extends Component {
   };
 
   handleFetch = id => {
+    const { setValue } = this.props;
+
     this.setState({ isLoading: true });
 
-    axios.all([equipmentList.readCompartments(id)]).then(
-      axios.spread(compartments => {
+    axios.all([equipmentList.readCompartments(id), equipmentList.readEquipmentTypes()]).then(
+      axios.spread((compartments, types) => {
         this.setState({
           isLoading: false,
+          types: types.data.records,
           data: compartments.data.records
+        });
+
+        setValue({
+          compartments: compartments.data.records
+        });
+      })
+    );
+  };
+
+  handleFetchByEquipment = id => {
+    const { setValue } = this.props;
+
+    this.setState({ isLoading: true });
+
+    axios.all([equipmentList.readCompartmentEquipment(id), equipmentList.readEquipmentTypes()]).then(
+      axios.spread((compartments, types) => {
+        this.setState({
+          isLoading: false,
+          data: compartments.data.records,
+          types: types.data.records
+        });
+
+        setValue({
+          compartments: compartments.data.records
         });
       })
     );
@@ -144,18 +172,17 @@ export default class Compatments extends Component {
     }
   }
 
-  componentWillReceiveProps(prevProps) {
-    const { getValue } = this.props;
+  componentDidUpdate(prevProps) {
+    const { equipment } = this.props;
 
-    const id = getValue("eqpt_etp");
-    if (!!id || id !== "") {
-      this.handleFetch(id);
+    if (prevProps.equipment !== equipment) {
+      this.handleFetchByEquipment(equipment);
     }
   }
 
   render() {
-    const { data, isLoading } = this.state;
-    const { decorator, value } = this.props;
+    const { data, isLoading, types } = this.state;
+    const { decorator, value, equipment } = this.props;
 
     const { Option } = Select;
 
@@ -218,31 +245,38 @@ export default class Compatments extends Component {
       };
     });
 
-    decorator("compartments");
+    const id = equipment;
 
-    const equipments = _.filter(this.props.data, ["eqpt_etp_title", !!value ? value.eqpt_etp_title : ""]);
-    const source = !!value ? value.etyp_category : "S";
-    const title = !!value ? value.eqpt_etp_title : "S";
+    const fiter = !!value ? ["eqpt_etp_title", value.eqpt_etp_title] : ["eqpt_etp", id];
+    const equipments = _.filter(this.props.data, fiter);
+
+    const imageFilter = !!value ? ["etyp_id", value.eqpt_etp] : ["etyp_id", id];
+    const image = _.find(types, imageFilter);
+
+    const source = !!image ? image.image : "";
+
+    decorator("compartments");
 
     return (
       <div>
         <ProgressiveImage src={`/assets/${_.toLower(source)}.png`} placeholder="tiny-image.jpg">
           {(src, loading) => (
-            <Card style={{ marginBottom: 10 }} size="small" title={`Compartments: ${data.length}`} loading={loading}>
+            <Card style={{ marginBottom: 10, marginTop: 5 }} size="small" loading={loading || !id}>
               <div className="equipment-icon">
                 <img src={src} alt="equipment" />
               </div>
-              <p style={{ textAlign: "center" }}> {title} </p>
+              <p style={{ textAlign: "center" }}> Compartments: {data.length} </p>
             </Card>
           )}
         </ProgressiveImage>
 
-        {!!value && (
+        {!!equipments && (
           <Select
-            defaultValue={value.eqpt_code}
+            placeholder={!!value ? value.eqpt_code : "Please Select"}
             onChange={this.handleFetch}
             style={{ marginBottom: 10 }}
             showSearch
+            disabled={equipments.length === 0}
             optionFilterProp="children"
             filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           >
@@ -264,7 +298,7 @@ export default class Compatments extends Component {
               cell: EditableCell
             }
           }}
-          scroll={{ y: 250 }}
+          scroll={{ y: 200 }}
           rowClassName={() => "editable-row"}
           bordered
           dataSource={data}
