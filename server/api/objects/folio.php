@@ -14,6 +14,15 @@ class FolioMeter extends CommonClass
         "meter_code");
 }
 
+class FolioTank extends CommonClass
+{
+    protected $TABLE_NAME = 'CLOSEOUT_TANK';
+    protected $VIEW_NAME = 'CLOSEOUT_TANK';
+
+    protected $primary_keys = array("closeout_nr",
+        "tank_code");
+}
+
 class Folio extends CommonClass
 {
     protected $TABLE_NAME = 'CLOSEOUTS';

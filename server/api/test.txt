@@ -208,7 +208,9 @@ curl -k --insecure -X POST -H "Content-Type: application/json" -d "{ \"start_dat
 https://10.1.10.66/api/pages/folio/get_reports.php?closeout_nr=167
 https://10.1.10.66/api/pages/folio/report_gateway.php?report=167/ANY_Drawer_Liftings_Blending.pdf
 https://10.1.10.66/api/pages/folio/get_tanks.php?closeout_nr=167
+https://10.1.10.66/api/pages/folio/update_tank.php?closeout_nr=205&tank_code=1&tank_terminal=H10&open_std_tot=4445
 https://10.1.10.66/api/pages/folio/get_meters.php?closeout_nr=167
+https://10.1.10.66/api/pages/folio/update_meter.php?closeout_nr=205&meter_code=101&open_amb_tot=48410
 https://10.1.10.66/api/pages/folio/create_reports.php?closeout_nr=167
 https://10.1.10.66/api/pages/folio/pds.php
 https://10.1.10.66/api/pages/folio/manual_close.php

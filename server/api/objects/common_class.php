@@ -230,6 +230,7 @@ class CommonClass
 
         $query = "
             SELECT * FROM " . $this->VIEW_NAME . $this->populate_primary_key_where();
+        // write_log(sprintf("query:%s", $query), __FILE__, __LINE__, LogLevel::DEBUG);
         $stmt = oci_parse($this->conn, $query);
         foreach ($this->primary_keys as $value) {
             // write_log(sprintf("%s:%s", $value, $this->$value), __FILE__, __LINE__, LogLevel::DEBUG);
