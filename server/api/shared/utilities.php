@@ -490,7 +490,10 @@ class Utilities
 
     public static function getCurrPsn()
     {
-        session_start();
+        if (!isset($_SESSION)) { 
+            session_start(); 
+        }
+
         return $_SESSION['PERCODE'];
         // return "DKI_SUPER_USER";
     }

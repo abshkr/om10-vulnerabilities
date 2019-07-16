@@ -5,6 +5,15 @@ include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once 'common_class.php';
 
+class FolioMeter extends CommonClass
+{
+    protected $TABLE_NAME = 'CLOSEOUT_METER';
+    protected $VIEW_NAME = 'CLOSEOUT_METER';
+
+    protected $primary_keys = array("closeout_nr",
+        "meter_code");
+}
+
 class Folio extends CommonClass
 {
     protected $TABLE_NAME = 'CLOSEOUTS';
