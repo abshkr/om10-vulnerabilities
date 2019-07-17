@@ -128,7 +128,7 @@ class CommonClass
         }
 
         $query = "UPDATE " . $this->TABLE_NAME . " SET " . $set_query . $this->populate_primary_key_where();
-        write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
+        // write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
         $stmt = oci_parse($this->conn, $query);
 
         foreach ($this->primary_keys as $value) {
@@ -230,6 +230,7 @@ class CommonClass
 
         $query = "
             SELECT * FROM " . $this->VIEW_NAME . $this->populate_primary_key_where();
+        // write_log(sprintf("query:%s", $query), __FILE__, __LINE__, LogLevel::DEBUG);
         $stmt = oci_parse($this->conn, $query);
         foreach ($this->primary_keys as $value) {
             // write_log(sprintf("%s:%s", $value, $this->$value), __FILE__, __LINE__, LogLevel::DEBUG);
@@ -261,7 +262,7 @@ class CommonClass
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
         $jnl_data[1] = $this->VIEW_NAME;
-        $jnl_data[2] = $this->tank_code;
+        $jnl_data[2] = $this->populate_primary_key_identifier();
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -272,7 +273,7 @@ class CommonClass
         }
 
         $module = $this->VIEW_NAME;
-        $record = $this->populate_primary_key_identifier();
+        $record = $jnl_data[2];
         foreach ($this as $key => $value) {
             if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
                 !$journal->valueChange(
