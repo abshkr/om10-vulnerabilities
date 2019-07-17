@@ -36,6 +36,7 @@ class FolioSummary extends Component {
 
   handleSearch = query => {
     const { value } = query.target;
+
     this.setState({
       filtered: search(value, this.state.data),
       value
@@ -121,10 +122,10 @@ class FolioSummary extends Component {
         <Container>
           <Filter value={value} search={this.handleSearch} loading={isLoading} />
           <Button shape="round" type="primary" icon="reload" style={{ float: "right", marginRight: 5 }} onClick={this.handleFetch} disabled={isLoading} />
-          <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} disabled={isLoading} onClick={this.handloeFolioClose}>
+          <Button shape="round" icon="safety-certificate" type="primary" style={{ float: "right", marginRight: 5 }} disabled={isLoading} onClick={this.handloeFolioClose}>
             Close First Frozen Folio
           </Button>
-          <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} disabled={isLoading} onClick={this.handlePDS}>
+          <Button shape="round" icon="reconciliation" type="primary" style={{ float: "right", marginRight: 5 }} disabled={isLoading} onClick={this.handlePDS}>
             Create PDS File
           </Button>
           <DataTable isLoading={isLoading} resize={resize} rowKey="closeout_nr" columns={columns(results, configuration)} data={results} click={this.handleClick} />
