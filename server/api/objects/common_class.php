@@ -128,7 +128,7 @@ class CommonClass
         }
 
         $query = "UPDATE " . $this->TABLE_NAME . " SET " . $set_query . $this->populate_primary_key_where();
-        write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
+        // write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
         $stmt = oci_parse($this->conn, $query);
 
         foreach ($this->primary_keys as $value) {

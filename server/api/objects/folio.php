@@ -203,6 +203,11 @@ class Folio extends CommonClass
             }
 
             $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/cgi-bin/en/calcvcf.cgi?";
+            if (!isset($value->frm_which_type)) {
+                //ReactJS only set frm_which_type if somebody changed something.
+                array_push($vcf_response, $value);
+                continue;
+            }
             $url .= "frm_which_type=" . rawurlencode(strip_tags($value->frm_which_type)) . "&";
             if ($value->frm_which_type === "KG") {
                 $url .= "frm_real_amount=" . $value->close_mass_tot . "&";

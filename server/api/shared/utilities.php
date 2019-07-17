@@ -352,7 +352,31 @@ class Utilities
         }
     }
 
-    public static function update($class, $method = 'update')
+    //Loop to update for an array
+    public static function updateArray($class, $method = 'update')
+    {
+        //Get data from POST
+        $data = json_decode(file_get_contents("php://input"));
+        foreach ($data as $item) {
+            if (self::update($class, $method, $item) === false) {
+                http_response_code(500);
+                echo '{';
+                echo '"message": "Unable to update. Check logs/php_rest_*.log file for details."';
+                echo '}';
+                return;
+            }
+        }
+
+        http_response_code(200);
+        echo '{';
+        echo '"message": "Successfully updated. "';
+        echo '}';
+        return;
+    }
+
+    //If $itemData is set, it means it is called from updateArray(), so
+    //do not echo if it success, just return true or false.
+    public static function update($class, $method = 'update', $itemData = null)
     {
         $database = new Database();
         $db = $database->getConnection();
@@ -361,7 +385,12 @@ class Utilities
         $desc = (isset($object->desc) ? $object->desc : $class);
 
         // get posted data
-        $data = json_decode(file_get_contents("php://input"));
+        if (isset($itemData)) {
+            $data = $itemData;
+        } else {
+            $data = json_decode(file_get_contents("php://input"));
+        }
+
         // write_log(json_encode($data), __FILE__, __LINE__);
         if ($data) {
             write_log(json_encode($data), __FILE__, __LINE__);
@@ -385,11 +414,15 @@ class Utilities
 
         } catch (NullableException $e) {
             // http_response_code(422);
-            http_response_code(200);
-            echo '{';
-            echo '"detail": "Caught exception: ', $e->getMessage() . '"';
-            echo '}';
-            return;
+            if (!isset($itemData)) {
+                http_response_code(200);
+                echo '{';
+                echo '"detail": "Caught exception: ', $e->getMessage() . '"';
+                echo '}';
+                return;
+            }
+
+            return false;
         }
 
         // write_log(json_encode($object), __FILE__, __LINE__, LogLevel::DEBUG);
@@ -399,35 +432,46 @@ class Utilities
             }
 
         } catch (NonexistentException $e) {
-            if (HTTP_CODE_ENABLED) {
-                http_response_code(422);
-            } else {
-                http_response_code(200);
+            if (!isset($itemData)) {
+                if (HTTP_CODE_ENABLED) {
+                    http_response_code(422);
+                } else {
+                    http_response_code(200);
+                }
+                echo '{';
+                echo '"detail": "Caught exception: ', $e->getMessage() . '"';
+                echo '}';
+                return;
             }
-            echo '{';
-            echo '"detail": "Caught exception: ', $e->getMessage() . '"';
-            echo '}';
-            return;
+            return false;
         }
 
         Utilities::sanitize($object);
 
         if ($object->$method()) {
-            http_response_code(200);
-            echo '{';
-            if (method_exists($object, 'primiary_key_str')) {
-                echo '"message": "' . $desc . ' (' . $object->primiary_key_str() . ') updated. "';
-            } else {
-                echo '"message": "' . $desc . ' updated. "';
+            if (!isset($itemData)) {
+                http_response_code(200);
+                echo '{';
+                if (method_exists($object, 'primiary_key_str')) {
+                    echo '"message": "' . $desc . ' (' . $object->primiary_key_str() . ') updated. "';
+                } else {
+                    echo '"message": "' . $desc . ' updated. "';
+                }
+                echo '}';
+                return;
             }
-            echo '}';
+            return true;
         } else {
-            http_response_code(500);
-            echo '{';
-            echo '"message": "Unable to update ' .
-                $desc .
-                '. Check logs/php_rest_*.log file for details."';
-            echo '}';
+            if (!isset($itemData)) {
+                http_response_code(500);
+                echo '{';
+                echo '"message": "Unable to update ' .
+                    $desc .
+                    '. Check logs/php_rest_*.log file for details."';
+                echo '}';
+                return;
+            }
+            return false;
         }
     }
 
@@ -490,12 +534,14 @@ class Utilities
 
     public static function getCurrPsn()
     {
-        if (!isset($_SESSION)) { 
-            session_start(); 
+        if (!isset($_SESSION)) {
+            session_start();
         }
 
-        return $_SESSION['PERCODE'];
-        // return "DKI_SUPER_USER";
+        if (isset($_SESSION['PERCODE'])) {
+            return $_SESSION['PERCODE'];
+        }
+        return "";
     }
 
     public static function getCurrentSession()
