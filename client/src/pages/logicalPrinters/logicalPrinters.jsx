@@ -63,7 +63,7 @@ class LogicalPrinters extends Component {
           });
         })
       )
-      .catch(function(error) {
+      .catch(function (error) {
         notification.error({
           message: error.message,
           description: "Failed to make the request."
