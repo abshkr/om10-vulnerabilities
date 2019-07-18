@@ -38,9 +38,9 @@ export function calculateTanks(payload) {
 }
 
 export function updateMeter(payload) {
-  return axios.post(`https://${api}/api/pages/folio/update_meter.php`, payload);
+  return axios.post(`https://${api}/api/pages/folio/update_meters.php`, payload);
 }
 
 export function updateTank(payload) {
-  return axios.post(`https://${api}/api/pages/folio/update_tank.php`, payload);
+  return axios.post(`https://${api}/api/pages/folio/update_tanks.php`, payload);
 }

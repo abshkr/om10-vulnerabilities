@@ -47,6 +47,7 @@ export default class Meters extends Component {
           isLoading: false
         });
 
+        this.props.refresh();
         Modal.destroyAll();
       })
     );
@@ -54,22 +55,32 @@ export default class Meters extends Component {
 
   render() {
     const { values, isLoading } = this.state;
+    const { status } = this.props;
 
     const edit = {
       mode: "click",
       beforeSaveCell: this.handleValidation,
-      afterSaveCell: this.handleRowEdit
+      afterSaveCell: this.handleRowEdit,
+      onRowClick: this.onRowClick
     };
 
     return (
       <div>
-        <Button shape="round" type="primary" icon="edit" style={{ marginBottom: 15, marginRight: 5 }} onClick={() => this.handleSubmit(values)} loading={isLoading}>
+        <Button
+          shape="round"
+          type="primary"
+          icon="edit"
+          style={{ marginBottom: 15, marginRight: 5 }}
+          onClick={() => this.handleSubmit(values)}
+          loading={isLoading}
+          disabled={status === 2}
+        >
           Update Meters
         </Button>
 
         <Download data={values} type={"folio_summary_meters"} style={{ marginRight: 5 }} loading={isLoading} />
 
-        <BootstrapTable data={values} keyBoardNav cellEdit={edit} maxHeight="600px">
+        <BootstrapTable ref="table" data={values} cellEdit={edit} maxHeight="600px">
           <TableHeaderColumn
             dataField="meter_code"
             isKey={true}
@@ -88,7 +99,9 @@ export default class Meters extends Component {
             Product Name
           </TableHeaderColumn>
 
-          <TableHeaderColumn dataField="close_amb_tot">Closing Ambient (L)</TableHeaderColumn>
+          <TableHeaderColumn dataField="close_amb_tot" editable={status !== 2}>
+            Closing Ambient (L)
+          </TableHeaderColumn>
 
           <TableHeaderColumn dataField="close_mass_tot" editable={false}>
             Closing Mass (kg)

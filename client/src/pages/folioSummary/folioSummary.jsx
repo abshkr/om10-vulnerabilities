@@ -27,7 +27,7 @@ class FolioSummary extends Component {
       centered: true,
       width: "95%",
       icon: !!object ? "edit" : "form",
-      content: <Forms payload={object} />,
+      content: <Forms payload={object} refresh={this.handleFetch} />,
       okButtonProps: {
         style: { display: "none" }
       }

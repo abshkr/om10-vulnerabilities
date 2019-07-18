@@ -59,13 +59,13 @@ export default class Tanks extends Component {
   };
 
   handleCalculation = values => {
-    console.log(values);
     this.setState({ isLoading: true });
 
     axios.all([folioSummary.calculateTanks(values)]).then(
       axios.spread(data => {
         this.setState({
-          isLoading: false
+          isLoading: false,
+          values: data.data
         });
       })
     );
@@ -80,6 +80,7 @@ export default class Tanks extends Component {
           isLoading: false
         });
 
+        this.props.refresh();
         Modal.destroyAll();
       })
     );
@@ -87,6 +88,7 @@ export default class Tanks extends Component {
 
   render() {
     const { values, isLoading } = this.state;
+    const { status } = this.props;
 
     const edit = {
       mode: "click",
@@ -96,7 +98,15 @@ export default class Tanks extends Component {
 
     return (
       <div>
-        <Button shape="round" type="primary" icon="edit" style={{ marginBottom: 15, marginRight: 5 }} onClick={() => this.handleSubmit(values)} loading={isLoading}>
+        <Button
+          shape="round"
+          type="primary"
+          icon="edit"
+          style={{ marginBottom: 15, marginRight: 5 }}
+          onClick={() => this.handleSubmit(values)}
+          loading={isLoading}
+          disabled={status === 2}
+        >
           Update Tanks
         </Button>
         <Download data={values} type={"folio_msummary_tanks"} style={{ marginRight: 5 }} />
@@ -107,11 +117,12 @@ export default class Tanks extends Component {
           style={{ marginBottom: 15, marginRight: 5, float: "right" }}
           loading={isLoading}
           onClick={() => this.handleCalculation(values)}
+          disabled={status === 2}
         >
           Calculate
         </Button>
 
-        <BootstrapTable data={values} keyBoardNav cellEdit={edit} maxHeight="600px">
+        <BootstrapTable data={values} cellEdit={edit} maxHeight="600px">
           <TableHeaderColumn dataField="tank_code" isKey={true}>
             Tank Code
           </TableHeaderColumn>
@@ -124,12 +135,24 @@ export default class Tanks extends Component {
           <TableHeaderColumn dataField="bclass_desc" editable={false}>
             Class
           </TableHeaderColumn>
-          <TableHeaderColumn dataField="close_amb_tot">Closing Ambient (L)</TableHeaderColumn>
-          <TableHeaderColumn dataField="close_std_tot">Closing Corrected (L)</TableHeaderColumn>
-          <TableHeaderColumn dataField="close_mass_tot">Closing Mass (kg)</TableHeaderColumn>
-          <TableHeaderColumn dataField="close_temp">Closing Temp (C)</TableHeaderColumn>
-          <TableHeaderColumn dataField="close_density">Closing Density (km/m3)</TableHeaderColumn>
-          <TableHeaderColumn dataField="description">Gain / Loss Reason</TableHeaderColumn>
+          <TableHeaderColumn dataField="close_amb_tot" editable={status !== 2}>
+            Closing Ambient (L)
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="close_std_tot" editable={status !== 2}>
+            Closing Corrected (L)
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="close_mass_tot" editable={status !== 2}>
+            Closing Mass (kg)
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="close_temp" editable={status !== 2}>
+            Closing Temp (C)
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="close_density" editable={status !== 2}>
+            Closing Density (km/m3)
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="description" editable={status !== 2}>
+            Gain / Loss Reason
+          </TableHeaderColumn>
           <TableHeaderColumn dataField="user_code" editable={false}>
             Last Modified By
           </TableHeaderColumn>

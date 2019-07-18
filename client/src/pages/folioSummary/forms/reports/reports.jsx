@@ -44,13 +44,13 @@ export default class Reports extends Component {
 
   render() {
     const { isLoading } = this.state;
-    const { data, id } = this.props;
+    const { data, id, status } = this.props;
     return (
       <div>
-        <Button shape="round" type="primary" icon="reload" style={{ marginBottom: 15 }} loading={isLoading} onClick={() => this.handleRegenerate(id)}>
+        <Button shape="round" type="primary" icon="reload" style={{ marginBottom: 15 }} loading={isLoading} onClick={() => this.handleRegenerate(id)} disabled={status === 2}>
           {isLoading ? "Regenerating..." : "Regenerate"}
         </Button>
-        <DataTable isLoading={false} rowKey="value" columns={columns(id)} data={this.handleDataModel(data)} />
+        <DataTable isLoading={false} rowKey="value" columns={columns(id)} data={this.handleDataModel(data)} height="520px" />
       </div>
     );
   }
