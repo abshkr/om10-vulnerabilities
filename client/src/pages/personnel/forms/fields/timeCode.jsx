@@ -40,8 +40,8 @@ export default class TimeCode extends Component {
           <Select loading={timeCodes === null}>
             {!!timeCodes &&
               timeCodes.map((item, index) => (
-                <Option key={index} value={item.cmpy_code}>
-                  {item.cmpy_name}
+                <Option key={index} value={item.tcd_title}>
+                  {item.tcd_title}
                 </Option>
               ))}
           </Select>

@@ -26,12 +26,12 @@ export default class Code extends Component {
   };
 
   render() {
-    const { decorator } = this.props;
+    const { decorator, value } = this.props;
     return (
       <Form.Item label="Code">
         {decorator("per_code", {
           rules: [{ required: true, message: "Please Enter The Code." }, { validator: this.handleValidation }]
-        })(<Input />)}
+        })(<Input disabled={!!value} />)}
       </Form.Item>
     );
   }

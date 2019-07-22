@@ -30,17 +30,17 @@ export default class Status extends Component {
   }
 
   render() {
-    const { decorator } = this.props;
+    const { decorator, value } = this.props;
     const { states } = this.state;
     const { Option } = Select;
-
+    const disabledOptions = ["Inactive", "Active"];
     return (
       <Form.Item label="Status">
         {decorator("per_lock")(
           <Select loading={states === null}>
             {!!states &&
               states.map((item, index) => (
-                <Option key={index} value={item.key}>
+                <Option key={index} value={item.key} disabled={disabledOptions.includes(item.value) && !!value}>
                   {item.value}
                 </Option>
               ))}

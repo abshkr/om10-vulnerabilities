@@ -3,7 +3,7 @@ import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
 import { Download } from "../../../../components";
 import { folioSummary } from "../../../../api";
 import axios from "axios";
-import { Button, Modal } from "antd";
+import { Button, Modal, notification } from "antd";
 import _ from "lodash";
 
 export default class Tanks extends Component {
@@ -63,9 +63,19 @@ export default class Tanks extends Component {
 
     axios.all([folioSummary.calculateTanks(values)]).then(
       axios.spread(data => {
+        if (data.data.calc_issues > 0) {
+          _.forEach(data.data.desc, value => {
+            const args = {
+              message: "Error While Calculating",
+              description: value
+            };
+            notification.error(args);
+          });
+        }
+
         this.setState({
           isLoading: false,
-          values: data.data
+          values: data.data.data
         });
       })
     );
@@ -122,7 +132,7 @@ export default class Tanks extends Component {
           Calculate
         </Button>
 
-        <BootstrapTable data={values} cellEdit={edit} maxHeight="600px">
+        <BootstrapTable keyBoardNav data={values} cellEdit={edit} maxHeight="600px">
           <TableHeaderColumn dataField="tank_code" isKey={true}>
             Tank Code
           </TableHeaderColumn>
