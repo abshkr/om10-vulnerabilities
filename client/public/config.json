@@ -6,6 +6,24 @@
     "adaptiveFlowControl": false
   },
   "columns": {
+    "equipmentList": {
+      "eqpt_id": true,
+      "eqpt_code": true,
+      "eqpt_title": true,
+      "eqpt_tanker": true,
+      "eqpt_owner_name": true,
+      "eqpt_etp_title": true,
+      "eqpt_lock": true,
+      "eqpt_load_type_name": true,
+      "eqpt_exp_d1_dmy": true,
+      "eqpt_exp_d2_dmy": true,
+      "eqpt_exp_d3_dmy": true,
+      "base_tank_list": true,
+      "eqp_must_tare_in": true,
+      "eqpt_last_modified": true,
+      "eqpt_last_used": true
+    },
+
     "logicalPrinters": {
       "prt_cmpy": true,
       "prt_cmpy_name": true,
@@ -98,6 +116,9 @@
       "per_last_dmy": true,
       "kya_psnl_name": true,
       "per_lock": true,
+      "per_exp_d1_dmy": true,
+      "per_exp_d2_dmy": true,
+      "per_exp_d3_dmy": true,
       "user_status_flag": true,
       "per_department": true,
       "per_email": true,

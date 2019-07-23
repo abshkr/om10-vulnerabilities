@@ -23,6 +23,7 @@ class Personnel extends Component {
       value: "",
       data: [],
       roles: [],
+      expiry: [],
       resize: false,
       isLoading: true
     };
@@ -44,18 +45,17 @@ class Personnel extends Component {
   };
 
   handleFetch = () => {
-    this.setState({
-      isLoading: true
-    });
+    this.setState({ isLoading: true });
 
     axios
-      .all([personnel.readPersonnel(), personnel.readPersonnelRoles()])
+      .all([personnel.readPersonnel(), personnel.readPersonnelRoles(), personnel.readPersonnelExpiryTypes()])
       .then(
-        axios.spread((personnel, roles) => {
+        axios.spread((personnel, roles, expiry) => {
           this.setState({
-            isLoading: false,
             data: personnel.data.records,
+            expiry: expiry.data.records,
             roles: roles.data.records,
+            isLoading: false,
             filtered: null,
             value: ""
           });
@@ -71,6 +71,7 @@ class Personnel extends Component {
 
   handleResize = () => {
     const { resize } = this.state;
+
     this.setState({
       resize: !resize
     });
@@ -78,6 +79,7 @@ class Personnel extends Component {
 
   handleSearch = query => {
     const { value } = query.target;
+
     this.setState({
       filtered: search(value, this.state.data),
       value
@@ -89,9 +91,11 @@ class Personnel extends Component {
   }
 
   render() {
-    const { data, isLoading, filtered, value, resize, roles } = this.state;
+    const { data, isLoading, filtered, value, resize, roles, expiry } = this.state;
     const { configuration } = this.props;
+
     const results = !!filtered ? filtered : data;
+
     return (
       <Page page={"Access Control"} name={"Personnel"} isLoading={isLoading} block={true}>
         <Container>
@@ -104,7 +108,7 @@ class Personnel extends Component {
           <DataTable
             rowKey="per_code"
             resize={resize}
-            columns={columns(results, roles, configuration)}
+            columns={columns(results, roles, configuration, expiry)}
             data={results}
             isLoading={isLoading}
             scroll={2300}

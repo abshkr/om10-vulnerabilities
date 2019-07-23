@@ -83,11 +83,11 @@
 						//file_url = "/bootstrap/BayView.php";
 						file_url = "/scadaviews/bayview/index.html";
 					}
-					if ( info.title == "m_tankview" )
-					{
-						//file_url = "/bootstrap/TankView.php";
-						file_url = "/scadaviews/tankview/index.html";
-					}
+//					if ( info.title == "m_tankview" )
+//					{
+//						//file_url = "/bootstrap/TankView.php";
+//						file_url = "/scadaviews/tankview/index.html";
+//					}
 					
 //					if ( info.title == "m_jasperreports" )
 //					{

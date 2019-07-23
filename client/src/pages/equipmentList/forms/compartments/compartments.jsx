@@ -257,9 +257,11 @@ export default class Compatments extends Component {
 
     decorator("compartments");
 
+    const path = `/assets/${_.toLower(source)}.png`;
+
     return (
       <div>
-        <ProgressiveImage src={`/assets/${_.toLower(source)}.png`} placeholder="tiny-image.jpg">
+        <ProgressiveImage src={path} placeholder="tiny-image.jpg">
           {(src, loading) => (
             <Card style={{ marginBottom: 10, marginTop: 5 }} size="small" loading={loading || !id}>
               <div className="equipment-icon">

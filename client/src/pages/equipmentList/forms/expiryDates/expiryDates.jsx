@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 
 import { Table, Input, Button, Popconfirm, Form, Select, DatePicker, Icon } from "antd";
-import axios from "axios";
 import { equipmentList } from "../../../../api";
+import axios from "axios";
 import _ from "lodash";
 
 const EditableContext = React.createContext();
@@ -34,7 +34,7 @@ class EditableCell extends React.Component {
       const { record, handleSave } = this.props;
 
       if (index === "ed_exp_date") {
-        value = value.format("DD/MM/YYYY");
+        value = value.format("YYYY-MM-DD 00:00:00:00000");
       }
 
       this.form.validateFields((error, values) => {
@@ -108,7 +108,7 @@ class EditableCell extends React.Component {
         <Form.Item style={{ margin: 0 }}>
           {form.getFieldDecorator(dataIndex, {
             rules: [{ type: "object" }]
-          })(<DatePicker ref={node => (this.input = node)} onChange={value => this.save(value, dataIndex)} format="DD/MM/YYYY" />)}
+          })(<DatePicker ref={node => (this.input = node)} onChange={value => this.save(value, dataIndex)} format="YYYY-MM-DD" />)}
         </Form.Item>
       ) : (
         <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
@@ -216,7 +216,7 @@ export default class ExpiryDates extends Component {
         key: "ed_exp_date",
         width: 300,
         editable: true,
-        render: (text, record) => <span> {text === "" ? "Select A Date" : !!text ? text : "Select A Date"}</span>
+        render: (text, record) => <span> {text === "" ? "Select A Date" : !!text ? text.substring(0, 10) : "Select A Date"}</span>
       },
       {
         title: "Enabled",
