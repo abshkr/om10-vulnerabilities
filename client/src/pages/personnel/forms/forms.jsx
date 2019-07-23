@@ -1,13 +1,40 @@
 import React, { Component } from "react";
-import { Form, Button, Tabs, Modal } from "antd";
-import { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, Lock, SLP } from "./fields";
+
+import axios from "axios";
 import ExpiryDates from "./expiryDates";
+import { personnel } from "../../../api";
+import PasswordReset from "./passwordReset";
+import { Form, Button, Tabs, Modal, notification } from "antd";
+import { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, Lock, SLP } from "./fields";
 
 class PersonnelForm extends Component {
   handleUpdate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log(values);
+        axios
+          .all([personnel.updatePersonnel(values)])
+          .then(
+            axios.spread(response => {
+              this.props.refresh();
+
+              Modal.destroyAll();
+              notification.success({
+                message: "Successfully Updated.",
+                description: `You have updated the Personnel ${values.per_code}`
+              });
+            })
+          )
+          .catch(function(error) {
+            notification.error({
+              message: error.message,
+              description: "Failed to update the Personnel."
+            });
+          });
+      } else {
+        notification.error({
+          message: "Validation Failed.",
+          description: "Make sure all the fields meet the requirements."
+        });
       }
     });
   };
@@ -15,7 +42,61 @@ class PersonnelForm extends Component {
   handleCreate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log(values);
+        axios
+          .all([personnel.createPersonnel(values)])
+          .then(
+            axios.spread(response => {
+              this.props.refresh();
+
+              Modal.destroyAll();
+              notification.success({
+                message: "Successfully Created.",
+                description: `You have create the Personnel ${values.per_code}`
+              });
+            })
+          )
+          .catch(function(error) {
+            notification.error({
+              message: error.message,
+              description: "Failed to create the Personnel."
+            });
+          });
+      } else {
+        notification.error({
+          message: "Validation Failed.",
+          description: "Make sure all the fields meet the requirements."
+        });
+      }
+    });
+  };
+
+  handleDelete = () => {
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        axios
+          .all([personnel.deletePersonnel(values.per_code)])
+          .then(
+            axios.spread(response => {
+              this.props.refresh();
+
+              Modal.destroyAll();
+              notification.success({
+                message: "Successfully Deleted.",
+                description: `You have deleted the Personnel ${values.per_code}`
+              });
+            })
+          )
+          .catch(function(error) {
+            notification.error({
+              message: error.message,
+              description: "Failed to delete the Personnel."
+            });
+          });
+      } else {
+        notification.error({
+          message: "Validation Failed.",
+          description: "Make sure all the fields meet the requirements."
+        });
       }
     });
   };
@@ -26,7 +107,8 @@ class PersonnelForm extends Component {
       okText: "Yes",
       okType: "danger",
       cancelText: "No",
-      centered: true
+      centered: true,
+      onOk: this.handleDelete
     });
   };
 
@@ -79,7 +161,11 @@ class PersonnelForm extends Component {
             <TabPane tab="Area Access Control" key="3">
               <Lock decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} />
             </TabPane>
-            <TabPane tab="Reset Password" key="4" />
+            {!!value && (
+              <TabPane tab="Reset Password" key="4">
+                <PasswordReset value={value} />
+              </TabPane>
+            )}
           </Tabs>
         </Form>
 

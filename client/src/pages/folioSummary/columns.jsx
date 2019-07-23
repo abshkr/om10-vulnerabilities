@@ -4,6 +4,18 @@ import { Tag } from "antd";
 import moment from "moment";
 import { generateOptions } from "../../utils";
 
+const statusColors = {
+  0: "green",
+  1: "blue",
+  2: ""
+};
+
+const status = {
+  0: "Open",
+  1: "Frozen",
+  2: "Closed"
+};
+
 const columns = (data, configuration) => {
   const values = defaults(data, configuration);
   const config = configuration.columns.folioSummary;
@@ -56,7 +68,7 @@ const defaults = (data, config) => [
     onFilter: (value, record) => record.status.indexOf(value) === 0,
     render: text => (
       <span>
-        <Tag color={text === 0 ? "green" : "blue"}> {text === 0 ? "Open" : "Frozen"}</Tag>
+        <Tag color={statusColors[text]}> {status[text]}</Tag>
       </span>
     )
   },

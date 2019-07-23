@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Doughnut } from "react-chartjs-2";
-import { Tag, Badge } from "antd";
+import { Tag, Badge, Empty } from "antd";
 import summary from "./summary";
 import config from "./config";
 import _ from "lodash";
@@ -117,6 +117,11 @@ export default class Tanks extends Component {
 
     return (
       <div className="tank-view">
+        {data.length === 0 && (
+          <div className="empty">
+            <Empty />
+          </div>
+        )}
         {data.map((item, index) => {
           return (
             <div key={index} className="tank" disabled onClick={() => handleClick(item.defaults)}>

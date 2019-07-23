@@ -24,6 +24,7 @@ class TankView extends Component {
     this.state = {
       data: [],
       value: "",
+      showAll: false,
       isLoading: false,
       baseProducts: []
     };
@@ -95,6 +96,26 @@ class TankView extends Component {
     });
   };
 
+  filterEmptyTanks = data => {
+    const { showAll } = this.state;
+
+    return _.filter(data, tank => {
+      if (showAll) {
+        return tank;
+      } else {
+        return _.toInteger(tank.tank_cor_vol) !== 0;
+      }
+    });
+  };
+
+  handleEmptyTankToggle = status => {
+    this.setState({
+      showAll: !status
+    });
+
+    this.handleFetch();
+  };
+
   handleFetch = () => {
     this.setState({ isLoading: true });
 
@@ -102,7 +123,7 @@ class TankView extends Component {
       axios.spread((tanks, baseProducts) => {
         this.setState({
           isLoading: false,
-          data: tanks.data.records,
+          data: this.filterEmptyTanks(tanks.data.records),
           baseProducts: baseProducts.data.records
         });
       })
@@ -113,7 +134,7 @@ class TankView extends Component {
     axios.all([tanks.readTanks(), baseProducts.readBaseProduct()]).then(
       axios.spread((tanks, baseProducts) => {
         this.setState({
-          data: tanks.data.records,
+          data: this.filterEmptyTanks(tanks.data.records),
           baseProducts: baseProducts.data.records
         });
       })
@@ -126,7 +147,7 @@ class TankView extends Component {
   }
 
   render() {
-    const { data, filtered, value, isLoading } = this.state;
+    const { data, filtered, value, isLoading, showAll } = this.state;
     const { configuration } = this.props;
 
     const results = !!filtered ? filtered : data;
@@ -136,6 +157,11 @@ class TankView extends Component {
         <Container>
           <Filter value={value} search={this.handleSearch} />
           <Download data={this.handleExport(results)} type={"Tank View"} style={{ float: "right", marginRight: 5 }} />
+
+          <Button shape="round" icon="filter" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleEmptyTankToggle(showAll)}>
+            {showAll ? "Hide Empty Tanks" : "Show Empty Tanks"}
+          </Button>
+
           <Button shape="round" icon="setting" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)}>
             Add Tank
           </Button>

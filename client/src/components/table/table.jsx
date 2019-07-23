@@ -51,7 +51,7 @@ class DataTable extends React.Component {
   };
 
   render() {
-    const { data, rowKey, change, resize, click, isLoading, scroll, nested } = this.props;
+    const { data, rowKey, change, resize, click, isLoading, scroll, nested, height } = this.props;
 
     const columns = this.state.columns.map((col, index) => ({
       ...col,
@@ -76,7 +76,7 @@ class DataTable extends React.Component {
         dataSource={data}
         onChange={change}
         pagination={paginationConfig}
-        scroll={!!scroll ? { x: !!scroll ? scroll : 2400, y: "84vh" } : { y: "84vh" }}
+        scroll={!!scroll ? { x: !!scroll ? scroll : 2400, y: "84vh" } : { y: !!height ? height : "84vh" }}
         onRow={record => {
           return {
             onClick: () => {
