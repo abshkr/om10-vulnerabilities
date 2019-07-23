@@ -20,7 +20,7 @@ class LogicalPrinterForm extends Component {
               });
             })
           )
-          .catch(function(error) {
+          .catch(function (error) {
             notification.error({
               message: error.message,
               description: "Failed to create the Printer."
@@ -50,7 +50,7 @@ class LogicalPrinterForm extends Component {
               });
             })
           )
-          .catch(function(error) {
+          .catch(function (error) {
             notification.error({
               message: error.message,
               description: "Failed to update the Printer."
@@ -79,7 +79,7 @@ class LogicalPrinterForm extends Component {
           });
         })
       )
-      .catch(function(error) {
+      .catch(function (error) {
         notification.error({
           message: error.message,
           description: "Failed to delete the Tank."
@@ -121,12 +121,14 @@ class LogicalPrinterForm extends Component {
   };
 
   render() {
+    console.log(this.props);
+
     const { form, value } = this.props;
     const { getFieldDecorator, setFieldsValue } = form;
     const TabPane = Tabs.TabPane;
     return (
       <div>
-        <Form style={{ height: 640 }}>
+        <Form style={{ height: 420 }}>
           <Tabs defaultActiveKey="1">
             <TabPane tab="General" key="1">
               <Company decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />

@@ -195,6 +195,8 @@ class Folio extends CommonClass
         }
 
         $vcf_response = array();
+        $calc_in_trouble = 0;
+        $desc_array = array();
         foreach ($this as $key => $value) {
             // write_log($key, __FILE__, __LINE__);
             // write_log(json_encode($value), __FILE__, __LINE__);
@@ -210,12 +212,13 @@ class Folio extends CommonClass
             }
             $url .= "frm_which_type=" . rawurlencode(strip_tags($value->frm_which_type)) . "&";
             if ($value->frm_which_type === "KG") {
-                $url .= "frm_real_amount=" . $value->close_mass_tot . "&";
+                $amount = $value->close_mass_tot;
             } else if ($value->frm_which_type === "L15") {
-                $url .= "frm_real_amount=" . $value->close_std_tot . "&";
+                $amount = $value->close_std_tot;
             } else if ($value->frm_which_type === "LT") {
-                $url .= "frm_real_amount=" . $value->close_amb_tot . "&";
+                $amount = $value->close_amb_tot;
             }
+            $url .= "frm_real_amount=" . $amount . "&";
             $url .= "frm_baseCd=" . $value->tank_base . "&";
             $url .= "frm_real_temp=" . $value->close_temp . "&";
             $url .= "frm_real_dens=" . $value->close_density;
@@ -231,25 +234,40 @@ class Folio extends CommonClass
                 $e = error_get_last();
                 write_log($e['message'], __FILE__, __LINE__);
             }
+
             write_log(json_encode($result), __FILE__, __LINE__);
+
+            if (Utilities::get_cgi_xml_value($result, 'MSG_CODE') > 0) {
+                $calc_in_trouble += 1;
+                $msg = Utilities::get_cgi_xml_value($result, 'MSG_DESC');
+                $identifier = sprintf("base: %s, temp:%f, density:%f, from:%s, quantity:%d",
+                    $value->tank_base, $value->close_temp, $value->close_density, $value->frm_which_type, $amount);
+                array_push($desc_array, $msg . "; " . $identifier);
+            }
 
             $real_cvf = Utilities::get_cgi_xml_value($result, 'REAL_VCF');
             $real_litre = Utilities::get_cgi_xml_value($result, 'REAL_LITRE');
             $real_litre15 = Utilities::get_cgi_xml_value($result, 'REAL_LITRE15');
             $real_kg = Utilities::get_cgi_xml_value($result, 'REAL_KG');
 
-            $value->real_cvf = $real_cvf;
-            $value->close_mass_tot = $real_kg;
-            $value->close_std_tot = $real_litre15;
-            $value->close_amb_tot = $real_litre;
+            if ($real_cvf !== "") {
+                $value->real_cvf = $real_cvf;
+                $value->close_mass_tot = $real_kg;
+                $value->close_std_tot = $real_litre15;
+                $value->close_amb_tot = $real_litre;
+            }
 
             array_push($vcf_response, $value);
         }
 
         http_response_code(200);
 
-        echo json_encode($vcf_response, JSON_PRETTY_PRINT);
-
+        // echo json_encode($vcf_response, JSON_PRETTY_PRINT);
+        $restReponse = new stdClass();
+        $restReponse->calc_issues = $calc_in_trouble;
+        $restReponse->desc = $desc_array;
+        $restReponse->data = $vcf_response;
+        echo json_encode($restReponse, JSON_PRETTY_PRINT);
         //return an arrary to stop caller to do follow-up work
         return $vcf_response;
     }

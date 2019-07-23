@@ -945,7 +945,8 @@ class PersonnelClass
         }
 
         $mydb = DB::getInstance();
-        $sql = "SELECT PER_CODE,PER_NAME,CMPY_NAME,AREA_NAME per_area,PERL_ENTER_TIME per_enter_time from GUI_PERSONNEL,AREA_RC where PER_CODE=PERL_PSN and PERL_ARA <> 9999 and PERL_ARA = AREA_K order by $order";
+        $sql = "SELECT PER_CODE,PER_NAME,CMPY_NAME,AREA_NAME per_area,PERL_ENTER_TIME per_enter_time 
+        from GUI_PERSONNEL,AREA_RC where PER_CODE=PERL_PSN and PERL_ARA <> 9999 and PERL_ARA = AREA_K order by $order";
         $rows = $mydb->query($sql);
         //XarrayEncodingConversion($rows);
         return (prepareForAMF($rows, array(0 => 'PersonnelOnSite')));

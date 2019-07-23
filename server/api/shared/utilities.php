@@ -393,7 +393,7 @@ class Utilities
 
         // write_log(json_encode($data), __FILE__, __LINE__);
         if ($data) {
-            write_log(json_encode($data), __FILE__, __LINE__);
+            // write_log(json_encode($data), __FILE__, __LINE__);
             foreach ($data as $key => $value) {
                 // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
                 $object->$key = $value;
@@ -608,6 +608,10 @@ class Utilities
         $pattern = $field . ">";
         $pattern_len = strlen($pattern);
         $pos_1 = strpos($xml_str, $pattern);
+        if ($pos_1 === false) {
+            return "";
+        }
+
         $pos_2 = strpos($xml_str, "<", $pos_1);
         return substr($xml_str, $pos_1 + $pattern_len, $pos_2 - $pos_1 - $pattern_len);
     }
