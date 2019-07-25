@@ -85,74 +85,75 @@
     <application path="index.mxml"/>
   </applications>
   <modules>
-    <module application="src/index.mxml" destPath="modules/M_SECURITY_CONFIG.swf" optimize="true" sourcePath="src/modules/M_SECURITY_CONFIG.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_LOADSCHEDULES.swf" optimize="true" sourcePath="src/modules/M_LOADSCHEDULES.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_TANKERS.swf" optimize="true" sourcePath="src/modules/M_TANKERS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_NOMINATION.swf" optimize="true" sourcePath="src/modules/M_NOMINATION.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_TANKSTATUS.swf" optimize="true" sourcePath="src/modules/M_TANKSTATUS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_AREA.swf" optimize="true" sourcePath="src/modules/M_AREA.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_CUSTOMERCATEGORIES.swf" optimize="true" sourcePath="src/modules/M_CUSTOMERCATEGORIES.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_SPECIALMOVEMENTS.swf" optimize="true" sourcePath="src/modules/M_SPECIALMOVEMENTS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_SITECONFIG.swf" optimize="true" sourcePath="src/modules/M_SITECONFIG.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_MOVEMENTTRANSACTIONS.swf" optimize="true" sourcePath="src/modules/M_MOVEMENTTRANSACTIONS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_REPOPROFILE.swf" optimize="true" sourcePath="src/modules/M_REPOPROFILE.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_GATECONTROL.swf" optimize="true" sourcePath="src/modules/M_GATECONTROL.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_EQUIPMENT.swf" optimize="true" sourcePath="src/modules/M_EQUIPMENT.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_FOLIOMANAGEMENT.swf" optimize="true" sourcePath="src/modules/M_FOLIOMANAGEMENT.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_EQUIPMENTLIST.swf" optimize="true" sourcePath="src/modules/M_EQUIPMENTLIST.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_BASEPRODUCTS.swf" optimize="true" sourcePath="src/modules/M_BASEPRODUCTS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_ORDERLISTING.swf" optimize="true" sourcePath="src/modules/M_ORDERLISTING.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_JOURNALSV2.swf" optimize="true" sourcePath="src/modules/M_JOURNALSV2.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_TANKINVENTORY.swf" optimize="true" sourcePath="src/modules/M_TANKINVENTORY.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_DELIVERYLOCATIONS.swf" optimize="true" sourcePath="src/modules/M_DELIVERYLOCATIONS.mxml"/>
     <module application="src/index.mxml" destPath="modules/M_TANKCONFIGURATION.swf" optimize="true" sourcePath="src/modules/M_TANKCONFIGURATION.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_ROLEACCESS.swf" optimize="true" sourcePath="src/modules/M_ROLEACCESS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_GSAPMESSAGING.swf" optimize="true" sourcePath="src/modules/M_GSAPMESSAGING.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_BAYMOVEMENT.swf" optimize="true" sourcePath="src/modules/M_BAYMOVEMENT.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_ADDRESSES.swf" optimize="true" sourcePath="src/modules/M_ADDRESSES.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_JOURNALREPORT.swf" optimize="true" sourcePath="src/modules/M_JOURNALREPORT.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_ALLOCATIONS.swf" optimize="true" sourcePath="src/modules/M_ALLOCATIONS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_LOGICALPRINTERS.swf" optimize="true" sourcePath="src/modules/M_LOGICALPRINTERS.mxml"/>
     <module application="src/index.mxml" destPath="modules/M_MOVEMENTREASON.swf" optimize="true" sourcePath="src/modules/M_MOVEMENTREASON.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_SITEBALANCE.swf" optimize="true" sourcePath="src/modules/M_SITEBALANCE.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_TANKGROUPS.swf" optimize="true" sourcePath="src/modules/M_TANKGROUPS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_RESOURCES.swf" optimize="true" sourcePath="src/modules/M_RESOURCES.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_LOADMETERS.swf" optimize="true" sourcePath="src/modules/M_LOADMETERS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_SITEACCESSDEVICES.swf" optimize="true" sourcePath="src/modules/M_SITEACCESSDEVICES.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_ONSITEREPORT.swf" optimize="true" sourcePath="src/modules/M_ONSITEREPORT.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_LOADBAYS.swf" optimize="true" sourcePath="src/modules/M_LOADBAYS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_KEYREADERDEVICES.swf" optimize="true" sourcePath="src/modules/M_KEYREADERDEVICES.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_DRAWERPRODUCTS.swf" optimize="true" sourcePath="src/modules/M_DRAWERPRODUCTS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_CUSTOMERS.swf" optimize="true" sourcePath="src/modules/M_CUSTOMERS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_HAZCHEM.swf" optimize="true" sourcePath="src/modules/M_HAZCHEM.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_JASPERREPORTS.swf" optimize="true" sourcePath="src/modules/M_JASPERREPORTS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_APATRANSACTIONS.swf" optimize="true" sourcePath="src/modules/M_APATRANSACTIONS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_TANKVIEW.swf" optimize="true" sourcePath="src/modules/M_TANKVIEW.mxml"/>
     <module application="src/index.mxml" destPath="modules/M_METERING.swf" optimize="true" sourcePath="src/modules/M_METERING.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_TIMECODES.swf" optimize="true" sourcePath="src/modules/M_TIMECODES.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_TANKINVENTORY.swf" optimize="true" sourcePath="src/modules/M_TANKINVENTORY.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_RESOURCES.swf" optimize="true" sourcePath="src/modules/M_RESOURCES.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_ONSITEREPORT.swf" optimize="true" sourcePath="src/modules/M_ONSITEREPORT.mxml"/>
     <module application="src/index.mxml" destPath="modules/M_PRODUCTINVENTORY.swf" optimize="true" sourcePath="src/modules/M_PRODUCTINVENTORY.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_EXPIRYDATES.swf" optimize="true" sourcePath="src/modules/M_EXPIRYDATES.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_MONTHEND.swf" optimize="true" sourcePath="src/modules/M_MONTHEND.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_CUSTOMERPRICING.swf" optimize="true" sourcePath="src/modules/M_CUSTOMERPRICING.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_NOMINATION.swf" optimize="true" sourcePath="src/modules/M_NOMINATION.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_CUSTOMERCATEGORIES.swf" optimize="true" sourcePath="src/modules/M_CUSTOMERCATEGORIES.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_TANKERS.swf" optimize="true" sourcePath="src/modules/M_TANKERS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_INVENTORYREQUEST.swf" optimize="true" sourcePath="src/modules/M_INVENTORYREQUEST.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_FOLIOMANAGEMENT.swf" optimize="true" sourcePath="src/modules/M_FOLIOMANAGEMENT.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_IDENTIFICATIONASSIGNMENT.swf" optimize="true" sourcePath="src/modules/M_IDENTIFICATIONASSIGNMENT.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_BASEPRODUCTS.swf" optimize="true" sourcePath="src/modules/M_BASEPRODUCTS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_BAYMOVEMENT.swf" optimize="true" sourcePath="src/modules/M_BAYMOVEMENT.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_SITEBALANCE.swf" optimize="true" sourcePath="src/modules/M_SITEBALANCE.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_TANKSTATUS.swf" optimize="true" sourcePath="src/modules/M_TANKSTATUS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_PRODUCTMOVEMENT.swf" optimize="true" sourcePath="src/modules/M_PRODUCTMOVEMENT.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_JASPERREPORTS.swf" optimize="true" sourcePath="src/modules/M_JASPERREPORTS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_MOVEMENTTRANSACTIONS.swf" optimize="true" sourcePath="src/modules/M_MOVEMENTTRANSACTIONS.mxml"/>
     <module application="src/index.mxml" destPath="modules/M_METERINGDEVICES.swf" optimize="true" sourcePath="src/modules/M_METERINGDEVICES.mxml"/>
     <module application="src/index.mxml" destPath="modules/M_MANUALTRANSACTIONS.swf" optimize="true" sourcePath="src/modules/M_MANUALTRANSACTIONS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_COMPANIES.swf" optimize="true" sourcePath="src/modules/M_COMPANIES.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_PERSONNEL.swf" optimize="true" sourcePath="src/modules/M_PERSONNEL.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_PRODUCTMOVEMENT.swf" optimize="true" sourcePath="src/modules/M_PRODUCTMOVEMENT.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_INVENTORYREQUEST.swf" optimize="true" sourcePath="src/modules/M_INVENTORYREQUEST.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_IDENTIFICATIONASSIGNMENT.swf" optimize="true" sourcePath="src/modules/M_IDENTIFICATIONASSIGNMENT.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_FOLIOSCHEDULING.swf" optimize="true" sourcePath="src/modules/M_FOLIOSCHEDULING.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_REPOCONFIGURATION.swf" optimize="true" sourcePath="src/modules/M_REPOCONFIGURATION.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_GATEPERMISSION.swf" optimize="true" sourcePath="src/modules/M_GATEPERMISSION.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_LOGICALPRINTERS.swf" optimize="true" sourcePath="src/modules/M_LOGICALPRINTERS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_PHYSICALPRINTERS.swf" optimize="true" sourcePath="src/modules/M_PHYSICALPRINTERS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_TRANSACTIONLIST.swf" optimize="true" sourcePath="src/modules/M_TRANSACTIONLIST.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_PRODUCTS.swf" optimize="true" sourcePath="src/modules/M_PRODUCTS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_PARTNERS.swf" optimize="true" sourcePath="src/modules/M_PARTNERS.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_PARTNERSHIP.swf" optimize="true" sourcePath="src/modules/M_PARTNERSHIP.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_DRAWERPRODUCTS.swf" optimize="true" sourcePath="src/modules/M_DRAWERPRODUCTS.mxml"/>
     <module application="src/index.mxml" destPath="modules/M_COMPLIANCEMESSAGES.swf" optimize="true" sourcePath="src/modules/M_COMPLIANCEMESSAGES.mxml"/>
-    <module application="src/index.mxml" destPath="modules/M_COMPLIANCEMESSAGEGROUPS.swf" optimize="true" sourcePath="src/modules/M_COMPLIANCEMESSAGEGROUPS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_ALLOCATIONS.swf" optimize="true" sourcePath="src/modules/M_ALLOCATIONS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_PARTNERSHIP.swf" optimize="true" sourcePath="src/modules/M_PARTNERSHIP.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_ROLEACCESS.swf" optimize="true" sourcePath="src/modules/M_ROLEACCESS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_ORDERLISTING.swf" optimize="true" sourcePath="src/modules/M_ORDERLISTING.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_TRANSACTIONLIST.swf" optimize="true" sourcePath="src/modules/M_TRANSACTIONLIST.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_COMPANIES.swf" optimize="true" sourcePath="src/modules/M_COMPANIES.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_MONTHEND.swf" optimize="true" sourcePath="src/modules/M_MONTHEND.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_REPOPROFILE.swf" optimize="true" sourcePath="src/modules/M_REPOPROFILE.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_PHYSICALPRINTERS.swf" optimize="true" sourcePath="src/modules/M_PHYSICALPRINTERS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_SITEACCESSDEVICES.swf" optimize="true" sourcePath="src/modules/M_SITEACCESSDEVICES.mxml"/>
     <module application="src/index.mxml" destPath="modules/M_AUDITREPORT.swf" optimize="true" sourcePath="src/modules/M_AUDITREPORT.mxml"/>
     <module application="src/index.mxml" destPath="modules/M_PRODUCTASSETS.swf" optimize="true" sourcePath="src/modules/M_PRODUCTASSETS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_GATEPERMISSION.swf" optimize="true" sourcePath="src/modules/M_GATEPERMISSION.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_LOADSCHEDULES.swf" optimize="true" sourcePath="src/modules/M_LOADSCHEDULES.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_COMPLIANCEMESSAGEGROUPS.swf" optimize="true" sourcePath="src/modules/M_COMPLIANCEMESSAGEGROUPS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_EQUIPMENTLIST.swf" optimize="true" sourcePath="src/modules/M_EQUIPMENTLIST.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_SECURITY_CONFIG.swf" optimize="true" sourcePath="src/modules/M_SECURITY_CONFIG.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_KEYREADERDEVICES.swf" optimize="true" sourcePath="src/modules/M_KEYREADERDEVICES.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_LOADMETERS.swf" optimize="true" sourcePath="src/modules/M_LOADMETERS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_FOLIOSCHEDULING.swf" optimize="true" sourcePath="src/modules/M_FOLIOSCHEDULING.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_GATECONTROL.swf" optimize="true" sourcePath="src/modules/M_GATECONTROL.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_HAZCHEM.swf" optimize="true" sourcePath="src/modules/M_HAZCHEM.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_SITECONFIG.swf" optimize="true" sourcePath="src/modules/M_SITECONFIG.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_ADDRESSES.swf" optimize="true" sourcePath="src/modules/M_ADDRESSES.mxml"/>
     <module application="src/index.mxml" destPath="modules/M_ADAPTIVEFLOW.swf" optimize="true" sourcePath="src/modules/M_ADAPTIVEFLOW.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_PRODUCTS.swf" optimize="true" sourcePath="src/modules/M_PRODUCTS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_CUSTOMERPRICING.swf" optimize="true" sourcePath="src/modules/M_CUSTOMERPRICING.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_AREA.swf" optimize="true" sourcePath="src/modules/M_AREA.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_GSAPMESSAGING.swf" optimize="true" sourcePath="src/modules/M_GSAPMESSAGING.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_JOURNALREPORT.swf" optimize="true" sourcePath="src/modules/M_JOURNALREPORT.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_DELIVERYLOCATIONS.swf" optimize="true" sourcePath="src/modules/M_DELIVERYLOCATIONS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_JOURNALSV2.swf" optimize="true" sourcePath="src/modules/M_JOURNALSV2.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_APATRANSACTIONS.swf" optimize="true" sourcePath="src/modules/M_APATRANSACTIONS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_EXPIRYDATES.swf" optimize="true" sourcePath="src/modules/M_EXPIRYDATES.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_REPOCONFIGURATION.swf" optimize="true" sourcePath="src/modules/M_REPOCONFIGURATION.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_TIMECODES.swf" optimize="true" sourcePath="src/modules/M_TIMECODES.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_EQUIPMENT.swf" optimize="true" sourcePath="src/modules/M_EQUIPMENT.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_LOADBAYS.swf" optimize="true" sourcePath="src/modules/M_LOADBAYS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_TANKGROUPS.swf" optimize="true" sourcePath="src/modules/M_TANKGROUPS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_PERSONNEL.swf" optimize="true" sourcePath="src/modules/M_PERSONNEL.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_PARTNERS.swf" optimize="true" sourcePath="src/modules/M_PARTNERS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_SPECIALMOVEMENTS.swf" optimize="true" sourcePath="src/modules/M_SPECIALMOVEMENTS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_CUSTOMERS.swf" optimize="true" sourcePath="src/modules/M_CUSTOMERS.mxml"/>
   </modules>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>

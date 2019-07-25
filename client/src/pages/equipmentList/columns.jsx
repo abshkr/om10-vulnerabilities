@@ -59,7 +59,7 @@ const defaults = (data, config) => [
     title: "Locked?",
     dataIndex: "eqpt_lock",
     key: "eqpt_lock",
-    width: 80,
+    width: 60,
     render: text => (
       <span>
         <Icon type={text === "Y" ? "lock" : "unlock"} />
@@ -81,20 +81,20 @@ const defaults = (data, config) => [
     title: "Registration Expired",
     dataIndex: "eqpt_exp_d1_dmy",
     key: "eqpt_exp_d1_dmy",
-    width: 180
+    width: 200
   },
   {
     title: "Prime Mover SLP",
     dataIndex: "eqpt_exp_d2_dmy",
     key: "eqpt_exp_d2_dmy",
-    width: 150,
+    width: 200,
     render: tanks => <span>{tanks}</span>
   },
   {
     title: "Trailer SLP",
     dataIndex: "eqpt_exp_d3_dmy",
     key: "eqpt_exp_d3_dmy",
-    width: 180
+    width: 150
   },
   {
     title: "Must Tare In?",
@@ -111,7 +111,7 @@ const defaults = (data, config) => [
     title: "Last Modified",
     dataIndex: "eqpt_last_modified",
     key: "eqpt_last_modified",
-    width: 200,
+    width: 250,
     sorter: (a, b) => moment(b.eqpt_last_modified, config.defaultTimeFormat).valueOf() - moment(a.eqpt_last_modified, config.defaultTimeFormat).valueOf(),
     render: text => <span>{text === "" ? "" : moment(text, config.defaultTimeFormat).format(config.dateTimeFormat)}</span>
   },
@@ -119,7 +119,7 @@ const defaults = (data, config) => [
     title: "Last Used",
     dataIndex: "eqpt_last_used",
     key: "eqpt_last_used",
-    width: 200,
+    width: 250,
     sorter: (a, b) => moment(b.eqpt_last_used, config.defaultTimeFormat).valueOf() - moment(a.eqpt_last_used, config.defaultTimeFormat).valueOf(),
     render: text => <span>{text === "" ? "" : moment(text, config.defaultTimeFormat).format(config.dateTimeFormat)}</span>
   }
