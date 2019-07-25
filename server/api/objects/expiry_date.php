@@ -109,7 +109,9 @@ class ExpiryDate
         return true;
     }
 
-    //Do not commit
+    //Do not commit.
+    //First insert into EXPIRY_DATE_DETAILS all, then delete
+    //the records where ED_EXP_DATE IS NULL.
     public function create($expiry_dates)
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
@@ -175,6 +177,29 @@ class ExpiryDate
                 oci_rollback($this->conn);
                 return false;
             }
+        }
+
+        $query = "
+            DELETE FROM EXPIRY_DATE_DETAILS
+            WHERE ED_TARGET_CODE = :ed_target_code
+                AND ED_OBJECT_ID = :ed_object_id
+                AND ED_EXP_DATE IS NULL";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':ed_target_code', $value->edt_target_code);
+        if ($this->ed_object_id !== "") {
+            oci_bind_by_name($stmt, ':ed_object_id', $this->ed_object_id);
+        } else {
+            oci_bind_by_name($stmt, ':ed_object_id', $value->ed_object_id);
+        }
+        // write_log(sprintf("%s, %s, %s, %s",
+        //     $value->edt_target_code, $this->ed_object_id,
+        //     $value->ed_object_id, ),
+        //     __FILE__, __LINE__);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
         }
 
         return true;
