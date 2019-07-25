@@ -5,18 +5,10 @@ include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/expiry_type.php';
 include_once __DIR__ . '/expiry_date.php';
+include_once 'common_class.php';
 
-class Equipment
+class Equipment extends CommonClass
 {
-    // database connection and table name
-    private $conn;
-
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
-
     public function compartmentCount($eqpt_id)
     {
         Utilities::sanitize($this);
@@ -65,6 +57,39 @@ class Equipment
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function toggleLocks($eqpt)
+    {
+        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
+
+        Utilities::sanitize($this);
+
+        $query = "
+            UPDATE SFILL_ADJUST
+            SET ADJ_CMPT_LOCK = 1 - NVL(ADJ_CMPT_LOCK, 0)
+            WHERE ADJ_EQP = :eqpt";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':eqpt', $eqpt);
+
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $journal = new Journal($this->conn);
+        $jnl_data[0] = sprintf("Compartment lock status of equipment ID:%s toggled", $eqpt);
+
+        if (!$journal->jnlLogEvent(
+            Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        return true;
     }
 
     public function toggleLock($eqpt, $cmpt)
