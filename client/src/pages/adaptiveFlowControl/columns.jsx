@@ -1,19 +1,8 @@
 import React from "react";
-import _ from "lodash";
 import { Tag, Progress } from "antd";
 import generate from "../../utils/generateOptions";
 
-const columns = (data, configuration) => {
-  const values = defaults(data);
-  const config = configuration.columns.adaptiveFlowControl;
-  const modified = _.reject(values, o => {
-    return !config[o.dataIndex];
-  });
-
-  return modified;
-};
-
-const defaults = data => [
+const columns = data => [
   {
     title: "Tank Code",
     dataIndex: "tankCode",
@@ -54,6 +43,13 @@ const defaults = data => [
     dataIndex: "level",
     key: "level",
     width: 250
+  },
+  {
+    title: "Current Flow Rate",
+    dataIndex: "currentFlowRate",
+    key: "currentFlowRate",
+    width: 150,
+    render: value => <span>{value} LPM</span>
   },
   {
     title: "Total Flow Contribution",

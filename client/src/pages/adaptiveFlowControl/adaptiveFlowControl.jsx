@@ -8,6 +8,8 @@ import generator from "./generator";
 import search from "../../utils/search";
 import { baseProducts, adaptiveFlow } from "../../api";
 import { Page, Filter, Container, DataTable } from "../../components";
+import _ from "lodash";
+
 import "./adaptiveFlowControl.css";
 
 class AdaptiveFlowControl extends Component {
@@ -27,7 +29,8 @@ class AdaptiveFlowControl extends Component {
         axios.spread((baseProducts, flowRate, currentFlow) => {
           this.setState({
             isLoading: false,
-            data: generator(baseProducts.data.records, flowRate.data.records, currentFlow.data)
+            data: generator(baseProducts.data.records, flowRate.data.records, currentFlow.data),
+            totalFlow: _.sumBy(flowRate.data, "current_flow_rate")
           });
         })
       )
@@ -59,20 +62,24 @@ class AdaptiveFlowControl extends Component {
   }
 
   render() {
-    const { data, filtered, value, resize, isLoading } = this.state;
+    const { data, filtered, value, resize, isLoading, totalFlow } = this.state;
     const { configuration } = this.props;
+
     const results = !!filtered ? filtered : data;
+
     return (
       <Page page={"Gantry"} name={"Adaptive Flow Control"} block={true}>
         <Container>
           <Filter value={value} search={this.searchObjects} />
           <DataTable
+            size="middle"
             isLoading={isLoading}
             resize={resize}
             rowKey="baseCode"
-            columns={columns(results, configuration)}
+            columns={columns(results)}
             data={results}
             nested={tank => FlowRates(tank, configuration)}
+            footer={<span style={{ textAlign: "center" }}>Total Flow of All Products: {totalFlow} LPM </span>}
           />
         </Container>
       </Page>
