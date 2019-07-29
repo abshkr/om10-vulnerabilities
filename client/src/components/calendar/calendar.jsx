@@ -23,7 +23,7 @@ const Calendar = ({ change, start, end }) => {
     <DatePicker.RangePicker
       allowClear={false}
       disabledDate={disabled}
-      style={{ marginBottom: 10, marginRight: 10 }}
+      style={{ marginBottom: 10, marginLeft: 10 }}
       ranges={ranges}
       showTime={{ format: "HH:mm:ss" }}
       format="DD-MM-YYYY HH:mm"

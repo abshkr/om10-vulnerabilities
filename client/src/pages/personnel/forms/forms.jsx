@@ -125,7 +125,7 @@ class PersonnelForm extends Component {
 
   showCreateConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to update this Personnel?",
+      title: "Are you sure you want to create this Personnel?",
       okText: "Yes",
       okType: "primary",
       cancelText: "No",

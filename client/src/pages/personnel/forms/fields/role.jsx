@@ -39,7 +39,12 @@ export default class Role extends Component {
         {decorator("per_auth", {
           rules: [{ required: true, message: "Please Select A Role." }]
         })(
-          <Select loading={roles === null}>
+          <Select
+            loading={roles === null}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          >
             {!!roles &&
               roles.map((item, index) => (
                 <Option key={index} value={item.role_id}>

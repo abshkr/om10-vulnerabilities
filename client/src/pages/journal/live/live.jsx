@@ -27,6 +27,7 @@ export default class Live extends Component {
 
   handleSearch = query => {
     const { value } = query.target;
+
     this.setState({
       filtered: search(value, this.state.data),
       value
@@ -35,9 +36,16 @@ export default class Live extends Component {
 
   componentDidMount() {
     this.handleFetch();
-    this.interval = setInterval(() => {
-      this.handleFetch();
-    }, 1000);
+
+    this.setState({
+      interval: setInterval(() => {
+        this.handleFetch();
+      }, 1000)
+    });
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.state.interval);
   }
 
   render() {

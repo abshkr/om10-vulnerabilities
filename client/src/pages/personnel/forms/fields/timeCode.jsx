@@ -37,7 +37,12 @@ export default class TimeCode extends Component {
     return (
       <Form.Item label="Time Code">
         {decorator("pt_timecd")(
-          <Select loading={timeCodes === null}>
+          <Select
+            loading={timeCodes === null}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          >
             {!!timeCodes &&
               timeCodes.map((item, index) => (
                 <Option key={index} value={item.tcd_title}>

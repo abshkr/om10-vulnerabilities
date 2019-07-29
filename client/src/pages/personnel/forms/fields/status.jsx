@@ -37,7 +37,12 @@ export default class Status extends Component {
     return (
       <Form.Item label="Status">
         {decorator("per_lock")(
-          <Select loading={states === null}>
+          <Select
+            loading={states === null}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          >
             {!!states &&
               states.map((item, index) => (
                 <Option key={index} value={item.key} disabled={disabledOptions.includes(item.value) && !!value}>
