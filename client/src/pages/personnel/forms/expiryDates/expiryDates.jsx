@@ -173,9 +173,17 @@ export default class ExpiryDates extends Component {
 
   handleDelete = key => {
     const { dataSource } = this.state;
+    const { setValue } = this.props;
+
     const data = [...dataSource];
+    const source = data.filter(item => item.edt_type_code !== key);
+
     this.setState({
-      dataSource: data.filter(item => item.edt_type_code !== key)
+      dataSource: source
+    });
+
+    setValue({
+      expiry_dates: source
     });
   };
 

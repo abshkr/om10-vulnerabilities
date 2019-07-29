@@ -20,6 +20,18 @@ const defaults = (data, roles, config, expiry) => {
   const expiryTwo = _.find(expiry, ["edt_type_code", "PSNL_EXPIRY_DATE_2"]);
   const expiryThree = _.find(expiry, ["edt_type_code", "PSNL_EXPIRY_DATE_3"]);
 
+  const lockStatus = {
+    "1": "Active",
+    "2": "Locked",
+    "0": "Inactive"
+  };
+
+  const lockColors = {
+    "1": "green",
+    "2": "red",
+    "0": ""
+  };
+
   return [
     {
       title: "Code",
@@ -57,7 +69,7 @@ const defaults = (data, roles, config, expiry) => {
       dataIndex: "per_auth",
       key: "per_auth",
       width: 150,
-      filters: generate(data, "per_auth"),
+      filters: generate(data, "per_auth", roles, "role_id", "role_name"),
       onFilter: (value, record) => record.per_auth.indexOf(value) === 0,
       render: text => <Tag color="blue">{!!_.find(roles, ["role_id", text]) ? _.find(roles, ["role_id", text]).role_name : ""}</Tag>
     },
@@ -104,9 +116,9 @@ const defaults = (data, roles, config, expiry) => {
       dataIndex: "user_status_flag",
       key: "user_status_flag",
       width: 100,
-      filters: generate(data, "per_lock"),
-      onFilter: (value, record) => String(record.per_lock).indexOf(value) === 0,
-      render: data => <Tag color={data === "0" ? "" : "green"}>{data === "0" ? "Inactive" : "Active"}</Tag>
+      filters: generate(data, "user_status_flag"),
+      onFilter: (value, record) => String(record.user_status_flag).indexOf(value) === 0,
+      render: data => <Tag color={lockColors[data]}>{lockStatus[data]}</Tag>
     },
     {
       title: "Department",

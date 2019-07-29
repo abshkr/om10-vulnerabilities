@@ -5,15 +5,15 @@ export default class Status extends Component {
   state = {
     states: [
       {
-        key: "N",
+        key: "0",
         value: "Inactive"
       },
       {
-        key: "Y",
+        key: "1",
         value: "Active"
       },
       {
-        key: "L",
+        key: "2",
         value: "Locked"
       }
     ]
@@ -24,19 +24,19 @@ export default class Status extends Component {
 
     if (!!value) {
       setValue({
-        per_lock: value.per_lock
+        user_status_flag: value.user_status_flag
       });
     }
   }
 
   render() {
-    const { decorator, value } = this.props;
+    const { decorator } = this.props;
     const { states } = this.state;
     const { Option } = Select;
-    const disabledOptions = ["Inactive", "Active"];
+
     return (
       <Form.Item label="Status">
-        {decorator("per_lock")(
+        {decorator("user_status_flag")(
           <Select
             loading={states === null}
             showSearch
@@ -45,7 +45,7 @@ export default class Status extends Component {
           >
             {!!states &&
               states.map((item, index) => (
-                <Option key={index} value={item.key} disabled={disabledOptions.includes(item.value) && !!value}>
+                <Option key={index} value={item.key}>
                   {item.value}
                 </Option>
               ))}
