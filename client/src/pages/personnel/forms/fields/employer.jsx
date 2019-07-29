@@ -39,7 +39,12 @@ export default class Employer extends Component {
         {decorator("per_cmpy", {
           rules: [{ required: true, message: "Please Select An Employer." }]
         })(
-          <Select loading={employers === null}>
+          <Select
+            loading={employers === null}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          >
             {!!employers &&
               employers.map((item, index) => (
                 <Option key={index} value={item.cmpy_code}>

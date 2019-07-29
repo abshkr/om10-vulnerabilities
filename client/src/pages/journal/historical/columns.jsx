@@ -18,6 +18,7 @@ const defaults = (data, config) => [
     title: "Time",
     dataIndex: "gen_date",
     key: "gen_date",
+    width: 300,
     sorter: (a, b) => moment(b.gen_date, config.defaultTimeFormat).valueOf() - moment(a.gen_date, config.defaultTimeFormat).valueOf(),
     // eslint-disable-next-line
     render: text => <a>{moment(text, config.defaultTimeFormat).format(config.dateTimeFormat)}</a>
@@ -26,6 +27,7 @@ const defaults = (data, config) => [
     title: "Event",
     dataIndex: "msg_event",
     key: "msg_event",
+    width: 200,
     filters: generateOptions(data, "msg_event"),
     onFilter: (value, record) => record.msg_event.indexOf(value) === 0
   },

@@ -1,2 +1,2 @@
-import Messaging from "./messaging";
-export default Messaging;
+import DriverMessaging from "./driverMessaging";
+export default DriverMessaging;

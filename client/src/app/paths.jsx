@@ -123,6 +123,13 @@ const paths = [
       loader: () => import("../pages/journal"),
       loading: Loading
     })
+  },
+  {
+    path: ROUTES.DRIVER_MESSAGING,
+    component: Loadable({
+      loader: () => import("../pages/driverMessaging"),
+      loading: Loading
+    })
   }
 ];
 
