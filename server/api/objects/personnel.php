@@ -188,7 +188,7 @@ class Personnel extends CommonClass
                 VALUES (:perm_area, :per_code)";
                 $stmt = oci_parse($this->conn, $query);
                 oci_bind_by_name($stmt, ':per_code', $this->per_code);
-                oci_bind_by_name($stmt, ':perm_area', $value->perm_area);
+                oci_bind_by_name($stmt, ':perm_area', $value);
                 if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                     $e = oci_error($stmt);
                     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -493,7 +493,7 @@ class Personnel extends CommonClass
                     VALUES (:perm_area, :per_code)";
                 $stmt = oci_parse($this->conn, $query);
                 oci_bind_by_name($stmt, ':per_code', $this->per_code);
-                oci_bind_by_name($stmt, ':perm_area', $value->perm_area);
+                oci_bind_by_name($stmt, ':perm_area', $value);
                 if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                     $e = oci_error($stmt);
                     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
