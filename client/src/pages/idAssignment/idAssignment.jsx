@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import auth from "../../utils/auth";
+import auth from "../../auth";
 import { Page, Filter, DataTable, Container, Download, IButton } from "../../components";
 import { Button, Modal } from "antd";
 import columns from "./columns";
@@ -65,19 +65,11 @@ class IdAssignment extends Component {
           <Filter value={value} search={this.searchObjects} />
           <Download data={results} type={"ID Assignment"} style={{ float: "right" }} />
 
-          <Button
-            type="primary"
-            style={{ float: "right", marginRight: 5 }}
-            onClick={() => this.handleClick(null)}
-          >
+          <Button type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)}>
             Create Assignment
           </Button>
 
-          <Button
-            type="primary"
-            style={{ float: "right", marginRight: 5 }}
-            onClick={() => this.setState({ iButtonVisibility: true })}
-          >
+          <Button type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.setState({ iButtonVisibility: true })}>
             Scan I-Button
           </Button>
 
@@ -90,13 +82,7 @@ class IdAssignment extends Component {
               })
             }
           />
-          <DataTable
-            data={results}
-            rowKey="kya_key_no"
-            isLoading={isLoading}
-            click={this.handleClick}
-            columns={columns(results)}
-          />
+          <DataTable data={results} rowKey="kya_key_no" isLoading={isLoading} click={this.handleClick} columns={columns(results)} />
         </Container>
       </Page>
     );

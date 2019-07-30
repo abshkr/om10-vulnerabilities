@@ -1,6 +1,6 @@
 import React from "react";
 import Form from "./Form";
-import auth from "../../utils/auth";
+import auth from "../../auth";
 import Page from "../../components/page";
 import Container from "../../components/container";
 import "./reports.css";

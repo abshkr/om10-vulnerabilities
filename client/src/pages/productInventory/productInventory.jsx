@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import auth from "../../utils/auth";
+import auth from "../../auth";
 import { Page, Download, Container, DataTable, Filter } from "../../components";
 import { Select } from "antd";
 import { stockManagement } from "../../api";

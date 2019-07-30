@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import { message } from "antd";
 import columns from "./columns";
-import auth from "../../utils/auth";
+import auth from "../../auth";
 import FlowRates from "./flowRates";
 import generator from "./generator";
 import search from "../../utils/search";

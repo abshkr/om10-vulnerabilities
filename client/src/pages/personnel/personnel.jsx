@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from "react";
-import auth from "../../utils/auth";
+import auth from "../../auth";
 import { Button, Modal, notification } from "antd";
 import { Page, Filter, DataTable, Download, Container } from "../../components";
 import { personnel } from "../../api";

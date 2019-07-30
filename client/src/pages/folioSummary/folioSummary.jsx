@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import columns from "./columns";
-import auth from "../../utils/auth";
+import auth from "../../auth";
 import Forms from "./forms";
 import { search } from "../../utils";
 import { folioSummary } from "../../api";
