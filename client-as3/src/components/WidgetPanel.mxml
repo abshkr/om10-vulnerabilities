@@ -74,7 +74,7 @@
 			private function allowView():void
 			{
 				// special popup for BayView and TankView
-				if ( info.title == "m_bayview" || info.title == "m_tankview")
+				if ( info.title == "m_bayview")
 				{
 					var file_url:String;
 					

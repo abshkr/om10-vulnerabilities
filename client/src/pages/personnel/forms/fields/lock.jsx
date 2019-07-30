@@ -1,5 +1,9 @@
 import React, { Component } from "react";
+
 import { Form, Select, Checkbox, Divider } from "antd";
+import { personnel } from "../../../../api";
+import axios from "axios";
+import _ from "lodash";
 
 const values = [
   {
@@ -12,33 +16,49 @@ const values = [
   }
 ];
 
-const options = [
-  "BITUMEN AUX ROOM",
-  "MAIN AUX ROOM",
-  "CHEMICAL / OWN USE",
-  "SCHEDULING ROOM",
-  "LUBE AUX ROOM",
-  "JETTY AUX ROOM",
-  "TANK FARM",
-  "TTLR AREA",
-  "JETTY AREA",
-  "LUBE AREA",
-  "OFF SITE",
-  "ON SITE",
-  "GATE HOUSE"
-];
-
 export default class Lock extends Component {
+  state = {
+    areas: [],
+    isLoading: false
+  };
+
+  handleAreaConversion = values => {
+    const payload = [];
+
+    _.forEach(values, object => {
+      payload.push({
+        label: object.area_name,
+        value: object.area_name
+      });
+    });
+
+    return payload;
+  };
+
   componentDidMount() {
     const { value, setValue } = this.props;
+
+    this.setState({ isLoading: true });
+
+    axios.all([personnel.readPersonnelAreas()]).then(
+      axios.spread(areas => {
+        this.setState({
+          isLoading: false,
+          areas: this.handleAreaConversion(areas.data.records)
+        });
+      })
+    );
+
     if (!!value) {
       setValue({
-        per_lock: value.per_lock
+        per_lock: value.per_lock,
+        area_accesses: value.area_accesses
       });
     }
   }
 
   render() {
+    const { areas, isLoading } = this.state;
     const { decorator, getValue } = this.props;
     const { Option } = Select;
 
@@ -57,7 +77,7 @@ export default class Lock extends Component {
         </Form.Item>
         <Divider />
         <Form.Item label="">
-          {decorator("area_accesses")(<Checkbox.Group style={{ display: "flex", flexDirection: "column" }} disabled={getValue("per_lock") === "Y"} options={options} />)}
+          {decorator("area_accesses")(<Checkbox.Group style={{ display: "flex", flexDirection: "column" }} disabled={getValue("per_lock") === "Y" || isLoading} options={areas} />)}
         </Form.Item>
       </div>
     );

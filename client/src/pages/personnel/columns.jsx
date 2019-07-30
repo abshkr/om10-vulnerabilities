@@ -39,6 +39,8 @@ const defaults = (data, roles, config, expiry) => {
       key: "per_code",
       width: 100,
       fixed: "left",
+      onFilter: (value, record) => record.per_code.indexOf(value) === 0,
+      sorter: (a, b) => a.per_code.localeCompare(b.per_code),
       // eslint-disable-next-line
       render: text => <a>{text}</a>
     },
@@ -46,7 +48,9 @@ const defaults = (data, roles, config, expiry) => {
       title: "Name",
       dataIndex: "per_name",
       key: "per_name",
-      width: 150
+      width: 150,
+      onFilter: (value, record) => record.per_name.indexOf(value) === 0,
+      sorter: (a, b) => a.per_name.localeCompare(b.per_name)
     },
     {
       title: "Employer Code",
@@ -77,7 +81,9 @@ const defaults = (data, roles, config, expiry) => {
       title: "Licence No.",
       dataIndex: "per_licence_no",
       key: "per_licence_no",
-      width: 250
+      width: 250,
+      onFilter: (value, record) => record.per_licence_no.indexOf(value) === 0,
+      sorter: (a, b) => a.per_licence_no.localeCompare(b.per_licence_no)
     },
     {
       title: !!expiryOne ? expiryOne.edt_type_desc : "Expiry 1",
@@ -98,13 +104,17 @@ const defaults = (data, roles, config, expiry) => {
       dataIndex: "per_exp_d3_dmy",
       key: "per_exp_d3_dmy",
       width: 170,
+
+      // eslint-disable-next-line
       render: data => <span>{data.substring(0, 10)}</span>
     },
     {
       title: "Area Access",
       dataIndex: "per_lock",
       key: "per_lock",
-      width: 100,
+      width: 130,
+      onFilter: (value, record) => record.per_lock.indexOf(value) === 0,
+      sorter: (a, b) => a.per_lock.localeCompare(b.per_lock),
       render: text => (
         <span>
           <Icon type={text === "N" ? "unlock" : "lock"} />
@@ -132,7 +142,9 @@ const defaults = (data, roles, config, expiry) => {
       title: "Email",
       dataIndex: "per_email",
       key: "per_email",
-      width: 200
+      width: 200,
+      onFilter: (value, record) => record.per_email.indexOf(value) === 0,
+      sorter: (a, b) => a.per_email.localeCompare(b.per_email)
     },
     {
       title: "Last Modified",
