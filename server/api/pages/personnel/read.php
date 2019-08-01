@@ -44,9 +44,9 @@ while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
         // foreach ($row as $key => $value) {
         //     $base_item2[strtolower($key)] = $value;
         // }
-        if (isset($row['AREA_NAME'])) {
+        if (isset($row['PERM_AREA'])) {
             // write_log(json_encode($row), __FILE__, __LINE__);
-            array_push($base_item["area_accesses"], $row['AREA_NAME']);
+            array_push($base_item["area_accesses"], $row['PERM_AREA']);
         }
 
         // $base_item2['area_name'] = $row['area_name'];

@@ -353,6 +353,7 @@ class Personnel extends CommonClass
     public function update()
     {
         write_log(__CLASS__ . ":::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
 
         //Old data
         $query = "
@@ -507,13 +508,14 @@ class Personnel extends CommonClass
             //Update expiry dates
             $expiry_dates = array();
             $expiry_date = new ExpiryDate($this->conn);
+            $expiry_date->edt_target_code = 'PERSONNEL';
+            $expiry_date->ed_object_id = $this->per_code;
 
             // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
             foreach ($this->expiry_dates as $key => $value) {
                 $expiry_dates[$value->edt_type_code] = $value;
             }
-
-            // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+            // write_log(json_encode(expiry_dates), __FILE__, __LINE__);
             if (!$expiry_date->update($expiry_dates)) {
                 write_log("Failed to update expiry dates",
                     __FILE__, __LINE__, LogLevel::ERROR);
