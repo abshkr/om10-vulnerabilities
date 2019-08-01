@@ -23,7 +23,6 @@ class Personnel extends Component {
       value: "",
       data: [],
       roles: [],
-      expiry: [],
       resize: false,
       isLoading: true
     };
@@ -48,12 +47,11 @@ class Personnel extends Component {
     this.setState({ isLoading: true });
 
     axios
-      .all([personnel.readPersonnel(), personnel.readPersonnelRoles(), personnel.readPersonnelExpiryTypes()])
+      .all([personnel.readPersonnel(), personnel.readPersonnelRoles()])
       .then(
         axios.spread((personnel, roles, expiry) => {
           this.setState({
             data: personnel.data.records,
-            expiry: expiry.data.records,
             roles: roles.data.records,
             isLoading: false,
             filtered: null,
@@ -91,7 +89,7 @@ class Personnel extends Component {
   }
 
   render() {
-    const { data, isLoading, filtered, value, resize, roles, expiry } = this.state;
+    const { data, isLoading, filtered, value, resize, roles } = this.state;
     const { configuration } = this.props;
 
     const results = !!filtered ? filtered : data;
@@ -105,15 +103,7 @@ class Personnel extends Component {
           <Button shape="round" icon="user" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
             Create Personnel
           </Button>
-          <DataTable
-            rowKey="per_code"
-            resize={resize}
-            columns={columns(results, roles, configuration, expiry)}
-            data={results}
-            isLoading={isLoading}
-            scroll={2300}
-            click={this.handleClick}
-          />
+          <DataTable rowKey="per_code" resize={resize} columns={columns(results, roles, configuration)} data={results} isLoading={isLoading} click={this.handleClick} />
         </Container>
       </Page>
     );

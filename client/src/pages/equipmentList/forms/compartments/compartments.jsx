@@ -257,7 +257,7 @@ export default class Compatments extends Component {
 
     decorator("compartments");
 
-    const path = `/assets/${_.toLower(source)}.png`;
+    const path = `/api/assets/${_.toLower(source)}.png`;
 
     return (
       <div>

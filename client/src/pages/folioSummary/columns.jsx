@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { Tag } from "antd";
 import moment from "moment";
-import { generateOptions } from "../../utils";
+import { generateOptions, validateDateTime } from "../../utils";
 
 const statusColors = {
   0: "green",
@@ -48,16 +48,18 @@ const defaults = (data, config) => [
     dataIndex: "prev_closeout_date",
     key: "prev_closeout_date",
     width: 200,
-    sorter: (a, b) => moment(b.prev_closeout_date, config.defaultTimeFormat).valueOf() - moment(a.prev_closeout_date, config.defaultTimeFormat).valueOf(),
-    render: text => moment(text, config.defaultTimeFormat).format(config.dateTimeFormat)
+    sorter: (a, b) => validateDateTime(b.prev_closeout_date) - validateDateTime(a.prev_closeout_date),
+    // eslint-disable-next-line
+    render: text => <a>{text !== "" ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat) : ""}</a>
   },
   {
     title: "Freeze Date",
     dataIndex: "closeout_date",
     key: "closeout_date",
     width: 200,
-    sorter: (a, b) => moment(b.closeout_date, config.defaultTimeFormat).valueOf() - moment(a.closeout_date, config.defaultTimeFormat).valueOf(),
-    render: text => <span>{text === "" ? "-" : moment(text, config.defaultTimeFormat).format(config.dateTimeFormat)}</span>
+    sorter: (a, b) => validateDateTime(b.closeout_date) - validateDateTime(a.closeout_date),
+    // eslint-disable-next-line
+    render: text => <a>{text !== "" ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat) : ""}</a>
   },
   {
     title: "Status",
@@ -85,8 +87,9 @@ const defaults = (data, config) => [
     dataIndex: "last_chg_time",
     width: 200,
     key: "last_chg_time",
-    sorter: (a, b) => moment(b.last_chg_time, config.defaultTimeFormat).valueOf() - moment(a.last_chg_time, config.defaultTimeFormat).valueOf(),
-    render: text => moment(text, config.defaultTimeFormat).format(config.dateTimeFormat)
+    sorter: (a, b) => validateDateTime(b.last_chg_time) - validateDateTime(a.last_chg_time),
+    // eslint-disable-next-line
+    render: text => <a>{text !== "" ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat) : ""}</a>
   }
 ];
 

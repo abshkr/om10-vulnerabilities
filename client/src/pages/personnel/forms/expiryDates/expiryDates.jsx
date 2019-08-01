@@ -220,9 +220,7 @@ export default class ExpiryDates extends Component {
         dataIndex: "ed_status",
         key: "ed_status",
         editable: true,
-        render: (text, record) => (
-          <span> {record.edt_status === "" ? "Select A Status" : !!record.edt_status ? <Icon type={record.edt_status === "1" ? "check" : "close"} /> : "Select A Status"}</span>
-        )
+        render: (text, record) => <span> {text === "" ? "Select A Status" : !!text ? <Icon type={text === "1" ? "check" : "close"} /> : "Select A Status"}</span>
       },
       {
         title: "Delete",

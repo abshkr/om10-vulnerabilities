@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import moment from "moment";
 import { Tag, Icon } from "antd";
-import { generateOptions } from "../../utils";
+import { generateOptions, validateDateTime } from "../../utils";
 
 const columns = (data, configuration) => {
   const values = defaults(data, configuration);
@@ -112,16 +112,18 @@ const defaults = (data, config) => [
     dataIndex: "eqpt_last_modified",
     key: "eqpt_last_modified",
     width: 250,
-    sorter: (a, b) => moment(b.eqpt_last_modified, config.defaultTimeFormat).valueOf() - moment(a.eqpt_last_modified, config.defaultTimeFormat).valueOf(),
-    render: text => <span>{text === "" ? "" : moment(text, config.defaultTimeFormat).format(config.dateTimeFormat)}</span>
+    sorter: (a, b) => validateDateTime(b.eqpt_last_modified) - validateDateTime(a.eqpt_last_modified),
+    // eslint-disable-next-line
+    render: text => <a>{text !== "" ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat) : ""}</a>
   },
   {
     title: "Last Used",
     dataIndex: "eqpt_last_used",
     key: "eqpt_last_used",
     width: 250,
-    sorter: (a, b) => moment(b.eqpt_last_used, config.defaultTimeFormat).valueOf() - moment(a.eqpt_last_used, config.defaultTimeFormat).valueOf(),
-    render: text => <span>{text === "" ? "" : moment(text, config.defaultTimeFormat).format(config.dateTimeFormat)}</span>
+    sorter: (a, b) => validateDateTime(b.eqpt_last_used) - validateDateTime(a.eqpt_last_used),
+    // eslint-disable-next-line
+    render: text => <a>{text !== "" ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat) : ""}</a>
   }
 ];
 

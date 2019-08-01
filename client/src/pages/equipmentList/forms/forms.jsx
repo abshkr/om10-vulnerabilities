@@ -131,9 +131,9 @@ class PersonnelForm extends Component {
     const TabPane = Tabs.TabPane;
     return (
       <div>
-        <Form style={{ height: 640 }}>
+        <Form style={{ height: "65vh" }}>
           <Tabs defaultActiveKey="1">
-            <TabPane tab="General" key="1" style={{ height: 550, overflowY: "scroll", paddingRight: 20 }}>
+            <TabPane tab="General" key="1" style={{ height: "55vh", overflowY: "scroll", paddingRight: 20 }}>
               <Code decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
               <Id decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
               <Owner decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
@@ -145,7 +145,7 @@ class PersonnelForm extends Component {
               <Locks decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
               <Comments decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
             </TabPane>
-            <TabPane tab="Expiry Dates" key="2" style={{ height: 550, overflowY: "scroll", paddingRight: 20 }}>
+            <TabPane tab="Expiry Dates" key="2" style={{ height: "55vh", overflowY: "scroll", paddingRight: 20 }}>
               <ExpiryDates decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} />
             </TabPane>
 
