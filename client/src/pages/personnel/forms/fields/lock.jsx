@@ -28,7 +28,7 @@ export default class Lock extends Component {
     _.forEach(values, object => {
       payload.push({
         label: object.area_name,
-        value: object.area_name
+        value: object.area_k
       });
     });
 
