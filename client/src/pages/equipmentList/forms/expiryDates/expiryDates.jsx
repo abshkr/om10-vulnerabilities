@@ -148,6 +148,7 @@ export default class ExpiryDates extends Component {
 
   handleSave = row => {
     const { setValue } = this.props;
+
     const newData = [...this.state.dataSource];
     const index = newData.findIndex(item => row.edt_type_code === item.edt_type_code);
     const item = newData[index];
@@ -182,9 +183,17 @@ export default class ExpiryDates extends Component {
 
   handleDelete = key => {
     const { dataSource } = this.state;
+    const { setValue } = this.props;
+
     const data = [...dataSource];
+    const source = data.filter(item => item.edt_type_code !== key);
+
     this.setState({
-      dataSource: data.filter(item => item.edt_type_code !== key)
+      dataSource: source
+    });
+
+    setValue({
+      expiry_dates: source
     });
   };
 
