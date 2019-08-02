@@ -34,7 +34,8 @@ const defaults = (data, config) => [
   {
     title: "Details",
     dataIndex: "message",
-    key: "message"
+    key: "message",
+    sorter: (a, b) => a.message.localeCompare(b.message)
   }
 ];
 
