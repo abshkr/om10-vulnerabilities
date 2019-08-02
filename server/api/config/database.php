@@ -60,6 +60,10 @@ class Database
         $stmt = oci_parse($this->conn, $query);
         oci_execute($stmt);
 
+        $query = "ALTER SESSION SET nls_timestamp_format = 'YYYY-MM-DD HH24:MI:SS:SSSSS'";
+        $stmt = oci_parse($this->conn, $query);
+        oci_execute($stmt);
+
         return $this->conn;
     }
 
