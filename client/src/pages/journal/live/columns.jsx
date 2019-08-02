@@ -1,7 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import moment from "moment";
-import { generateOptions } from "../../../utils";
+import { generateOptions, validateDateTime } from "../../../utils";
 
 const columns = (data, configuration) => {
   const values = defaults(data, configuration);
@@ -19,9 +18,9 @@ const defaults = (data, config) => [
     dataIndex: "gen_date",
     key: "gen_date",
     width: 300,
-    sorter: (a, b) => moment(b.gen_date, config.defaultTimeFormat).valueOf() - moment(a.gen_date, config.defaultTimeFormat).valueOf(),
+    sorter: (a, b) => validateDateTime(b.gen_date) - validateDateTime(a.gen_date),
     // eslint-disable-next-line
-    render: text => <a>{moment(text, config.defaultTimeFormat).format(config.dateTimeFormat)}</a>
+    render: text => <a>{text}</a>
   },
   {
     title: "Event",
@@ -34,7 +33,8 @@ const defaults = (data, config) => [
   {
     title: "Details",
     dataIndex: "message",
-    key: "message"
+    key: "message",
+    sorter: (a, b) => a.message.localeCompare(b.message)
   }
 ];
 
