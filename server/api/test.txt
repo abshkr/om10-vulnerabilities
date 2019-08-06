@@ -220,3 +220,6 @@ https://10.1.10.66/api/pages/folio/manual_close.php
 https://10.1.10.66/api/pages/folio/calc_vcf.php?frm_baseCd=220000130&frm_which_type=LT&frm_real_amount=111&frm_real_temp=0&frm_real_dens=854
 curl -k --insecure -X POST -H "Content-Type: application/json" -d "[ {\"frm_baseCd\": \"220000130\",\"frm_which_type\": \"LT\",\"frm_real_amount\": 111,\"frm_real_temp\": 0,\"frm_real_dens\": 854},{\"frm_baseCd\": \"220000130\",\"frm_which_type\": \"LT\",\"frm_real_amount\": 112,\"frm_real_temp\": 12,\"frm_real_dens\": 854}]" https://10.1.10.66/api/pages/folio/calc_vcfs.php
 C:\Users\bluet>curl -k --insecure -X POST -H "Content-Type: application/json" -d "[ {\"tank_base\": \"220000130\",\"frm_which_type\": \"LT\",\"close_std_tot\": 111, \"close_mass_tot\":222, \"close_amb_tot\": 333, \"close_temp\": 29.7, \"close_density\": 854}, {\"tank_base\": \"220000130\",\"frm_which_type\": \"LT\",\"close_std_tot\": 112, \"close_mass_tot\":223, \"close_amb_tot\": 334, \"close_temp\": 29.7, \"close_density\": 854}]" https://10.1.10.66/api/pages/folio/calc_tank_vcfs.php
+
+https://10.1.10.66/api/pages/report_config/read.php
+https://10.1.10.66/api/pages/report_config/update.php?report_cmpycode=ANY&report_file=All_Load_Details_Bay11.jrxml&report_enabled=N

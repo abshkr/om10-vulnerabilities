@@ -18,6 +18,13 @@ class CommonClass
      */
     protected $primary_keys = null;
 
+    /**
+     * Sometimes when TABLE_NAME != VIEW_NAME, use primary_keys as update
+     * use view_keys when retrieve from view. If not use, will use
+     * primary_keys instead. All lower case
+     */
+    protected $view_keys = null;
+
     protected $TABLE_NAME = null; //used in update(), delete() and create()
     protected $VIEW_NAME = null; //used in read()
 
@@ -77,6 +84,26 @@ class CommonClass
 
         $where_query = " WHERE ";
         foreach ($this->primary_keys as $value) {
+            $where_query .= strtoupper($value) . " = :" . $value . " AND ";
+        }
+
+        return rtrim($where_query, 'AND ');
+    }
+
+    private function view_primary_key_where()
+    {
+        if (!isset($this->view_keys)) {
+            $this->view_keys = $this->primary_keys;
+            if (!isset($this->view_keys)) {
+                return "";
+            }
+        }
+
+        $where_query = " WHERE ";
+        foreach ($this->view_keys as $value) {
+            if (isset($this->table_view_map[strtoupper($value)])) {
+                $value = strtolow($this->table_view_map[strtoupper($value)]);
+            }
             $where_query .= strtoupper($value) . " = :" . $value . " AND ";
         }
 
@@ -229,11 +256,17 @@ class CommonClass
         Utilities::sanitize($this);
 
         $query = "
-            SELECT * FROM " . $this->VIEW_NAME . $this->populate_primary_key_where();
+            SELECT * FROM " . $this->VIEW_NAME . $this->view_primary_key_where();
         // write_log(sprintf("query:%s", $query), __FILE__, __LINE__, LogLevel::DEBUG);
         $stmt = oci_parse($this->conn, $query);
         foreach ($this->primary_keys as $value) {
             // write_log(sprintf("%s:%s", $value, $this->$value), __FILE__, __LINE__, LogLevel::DEBUG);
+            if (isset($this->TABLE_NAME) &&
+                isset($this->VIEW_NAME) &&
+                $this->TABLE_NAME !== $this->VIEW_NAME &&
+                isset($this->table_view_map[strtoupper($value)])) {
+                $value = strtolower($this->table_view_map[strtoupper($value)]);
+            }
             oci_bind_by_name($stmt, ':' . $value, $this->$value);
         }
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
@@ -338,6 +371,28 @@ class CommonClass
         return ltrim($primey_key_record, ", ");
     }
 
+    private function map_view_files_to_table_fiels()
+    {
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
+        if (!isset($this->primary_keys)) {
+            return;
+        }
+
+        if (isset($this->table_view_map)) {
+            $view_table_map = array_flip($this->table_view_map);
+        }
+
+        foreach ($this as $key => $value) {
+            if (isset($view_table_map[strtoupper($key)])) {
+                $prop = strtolower($view_table_map[strtoupper($key)]);
+                $this->$prop = $value;
+            }
+        }
+        // write_log(json_encode($this), __FILE__, __LINE__);
+    }
+
     //Check if the record that is to be updated is in db
     public function check_existence()
     {
@@ -346,6 +401,12 @@ class CommonClass
 
         if ($this->TABLE_NAME === null) {
             return true;
+        }
+
+        if (isset($this->TABLE_NAME) &&
+            isset($this->VIEW_NAME) &&
+            $this->TABLE_NAME !== $this->VIEW_NAME) {
+            $this->map_view_files_to_table_fiels();
         }
 
         if (!isset($this->primary_keys)) {
@@ -404,10 +465,13 @@ class CommonClass
 
             $this->retrieve_mandatory_fields();
             // write_log(json_encode($this->mandatory_fields), __FILE__, __LINE__);
-
             foreach ($this->mandatory_fields as $value) {
                 // write_log($value, __FILE__, __LINE__);
                 // write_log(json_encode($this), __FILE__, __LINE__);
+                if (isset($this->table_view_map) && isset($this->table_view_map[strtoupper($value)])) {
+                    $value = strtolower($this->table_view_map[strtoupper($value)]);
+                }
+
                 if (!property_exists($this, $value) || $this->$value == null) {
                     write_log($value . " is not set for class " . get_class($this),
                         __FILE__, __LINE__);
