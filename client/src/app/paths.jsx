@@ -130,6 +130,13 @@ const paths = [
       loader: () => import("../pages/driverMessaging"),
       loading: Loading
     })
+  },
+  {
+    path: ROUTES.REPORT_CONFIGURATION,
+    component: Loadable({
+      loader: () => import("../pages/reportConfiguration"),
+      loading: Loading
+    })
   }
 ];
 
