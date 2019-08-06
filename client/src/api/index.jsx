@@ -9,6 +9,21 @@ import * as logicalPrinters from "./logicalPrinters";
 import * as physicalPrinters from "./physicalPrinters";
 import * as journal from "./journal";
 import * as equipmentList from "./equipmentList";
+import * as reportConfiguration from "./reportConfiguration";
 import api from "./api";
 
-export { tanks, journal, baseProducts, adaptiveFlow, stockManagement, customerCategories, api, folioSummary, personnel, logicalPrinters, physicalPrinters, equipmentList };
+export {
+  tanks,
+  journal,
+  baseProducts,
+  adaptiveFlow,
+  stockManagement,
+  customerCategories,
+  api,
+  folioSummary,
+  personnel,
+  logicalPrinters,
+  physicalPrinters,
+  equipmentList,
+  reportConfiguration
+};
