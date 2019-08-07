@@ -223,3 +223,7 @@ C:\Users\bluet>curl -k --insecure -X POST -H "Content-Type: application/json" -d
 
 https://10.1.10.66/api/pages/report_config/read.php
 https://10.1.10.66/api/pages/report_config/update.php?report_cmpycode=ANY&report_file=All_Load_Details_Bay11.jrxml&report_enabled=N
+https://10.1.10.66/api/pages/report_config/companys.php
+https://10.1.10.66/api/pages/report_config/reports.php
+https://10.1.10.66/api/pages/report_config/create.php?report_cmpycode=ANY&report_file=All_Load_Details_Bay11.jrxml&report_enabled=N
+https://10.1.10.66/api/pages/report_config/delete.php?report_cmpycode=ANY&report_file=All_Load_Details_Bay11.jrxml
