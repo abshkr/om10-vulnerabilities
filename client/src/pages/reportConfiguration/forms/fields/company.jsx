@@ -34,7 +34,7 @@ export default class Company extends Component {
     return (
       <Form.Item label="Report Name">
         {decorator("report_name", {
-          rules: [{ required: true, message: "Please Select a Report Name" }]
+          rules: [{ required: true, message: "Please Select a Report" }]
         })(
           <Select>
             {!!companies &&
