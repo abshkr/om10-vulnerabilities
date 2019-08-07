@@ -76,6 +76,12 @@ class CommonClass
         $this->conn = $db;
     }
 
+    //Will be called before displaying
+    public function read_decorate(&$result_array)
+    {
+
+    }
+
     private function populate_primary_key_where()
     {
         if (!isset($this->primary_keys)) {

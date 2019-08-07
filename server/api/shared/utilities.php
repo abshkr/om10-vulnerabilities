@@ -114,6 +114,10 @@ class Utilities
         $result["records"] = array();
         $num = self::retrieve($result["records"], $object, $stmt);
 
+        if (method_exists($object, "read_decorate")) {
+            $object->read_decorate($result["records"]);
+        }
+
         http_response_code(200);
         if ($num > 0) {
             echo json_encode($result, JSON_PRETTY_PRINT);
