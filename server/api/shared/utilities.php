@@ -114,6 +114,10 @@ class Utilities
         $result["records"] = array();
         $num = self::retrieve($result["records"], $object, $stmt);
 
+        if (method_exists($object, "read_decorate")) {
+            $object->read_decorate($result["records"]);
+        }
+
         http_response_code(200);
         if ($num > 0) {
             echo json_encode($result, JSON_PRETTY_PRINT);
@@ -292,7 +296,6 @@ class Utilities
         }
 
         // write_log(json_encode($object), __FILE__, __LINE__);
-
         try {
             if (method_exists($object, "mandatory_fields_check")) {
                 $object->mandatory_fields_check();
@@ -304,6 +307,20 @@ class Utilities
             echo '"detail": "Caught exception: ', $e->getMessage() . '"';
             echo '}';
             return;
+        }
+
+        if (method_exists($object, "check_existence")) {
+            if ($object->check_existence()) {
+                if (HTTP_CODE_ENABLED) {
+                    http_response_code(422);
+                } else {
+                    http_response_code(200);
+                }
+                echo '{';
+                echo '"detail": "', sprintf("record (%s) already exist", $object->primiary_key_str()) . '"';
+                echo '}';
+                return;
+            }
         }
 
         if ($object->$method()) {
@@ -426,24 +443,18 @@ class Utilities
         }
 
         // write_log(json_encode($object), __FILE__, __LINE__, LogLevel::DEBUG);
-        try {
-            if (method_exists($object, "check_existence")) {
-                $object->check_existence();
-            }
-
-        } catch (NonexistentException $e) {
-            if (!isset($itemData)) {
+        if (method_exists($object, "check_existence")) {
+            if (!$object->check_existence()) {
                 if (HTTP_CODE_ENABLED) {
                     http_response_code(422);
                 } else {
                     http_response_code(200);
                 }
                 echo '{';
-                echo '"detail": "Caught exception: ', $e->getMessage() . '"';
+                echo '"detail": "', sprintf("record (%s) does not not exist", $object->primiary_key_str()) . '"';
                 echo '}';
                 return;
             }
-            return false;
         }
 
         Utilities::sanitize($object);
@@ -497,15 +508,18 @@ class Utilities
         }
 
         // write_log(json_encode($object), __FILE__, __LINE__);
-        try {
-            if (method_exists($object, "check_existence")) {
-                $object->check_existence();
+        if (method_exists($object, "check_existence")) {
+            if (!$object->check_existence()) {
+                if (HTTP_CODE_ENABLED) {
+                    http_response_code(422);
+                } else {
+                    http_response_code(200);
+                }
+                echo '{';
+                echo '"detail": "', sprintf("record (%s) does not not exist", $object->primiary_key_str()) . '"';
+                echo '}';
+                return;
             }
-
-        } catch (NonexistentException $e) {
-            http_response_code(422);
-            echo 'Caught exception: ', $e->getMessage();
-            return;
         }
 
         if ($object->$method()) {
