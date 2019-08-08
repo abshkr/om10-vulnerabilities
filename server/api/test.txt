@@ -229,3 +229,6 @@ https://10.1.10.66/api/pages/report_config/create.php?report_cmpycode=ANY&report
 https://10.1.10.66/api/pages/report_config/delete.php?report_cmpycode=ANY&report_file=All_Load_Details_Bay11.jrxml
 
 https://10.1.10.66/api/pages/report_profile/read.php
+https://10.1.10.66/api/pages/report_profile/update.php?report_file=All_Load_Details_Bay11.jrxml&report_closeout_flag2=1&report_ondemand_flag=0&report_closeout_flag=1
+https://10.1.10.66/api/pages/report_profile/delete.php?report_file=All_Load_Details_Bay11.jrxml
+https://10.1.10.66/api/pages/report_profile/create.php?report_file=All_Load_Details_Bay11.jrxml&report_closeout_flag2=1&report_type=N&report_lang=ENG

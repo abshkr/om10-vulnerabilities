@@ -135,7 +135,8 @@ class CommonClass
         if (!isset($this->updatable_fields)) {
             $this->initial_updatable_fields();
         }
-
+        write_log(json_encode($this->updatable_fields), __FILE__, __LINE__, LogLevel::DEBUG);
+        write_log(json_encode($this), __FILE__, __LINE__, LogLevel::DEBUG);
         $set_query = "";
         $to_update = array();
         if (isset($this->table_view_map)) {
@@ -161,7 +162,7 @@ class CommonClass
         }
 
         $query = "UPDATE " . $this->TABLE_NAME . " SET " . $set_query . $this->populate_primary_key_where();
-        // write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
+        write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
         $stmt = oci_parse($this->conn, $query);
 
         foreach ($this->primary_keys as $value) {
@@ -211,7 +212,7 @@ class CommonClass
         }
 
         $query = "INSERT INTO " . $this->TABLE_NAME . $fields_query . " VALUES " . $para_query;
-        // write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
+        write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
         $stmt = oci_parse($this->conn, $query);
 
         foreach ($this->primary_keys as $value) {
@@ -250,6 +251,15 @@ class CommonClass
 
     }
 
+    /**
+     * Descendant can implement this function to do some update that 
+     * cannot be done in common way. Refer to report_profile as an example
+     */
+    public function update_supplement()
+    {
+        return true;
+    }
+
     public function update()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -285,6 +295,12 @@ class CommonClass
         } else if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        if ($this->update_supplement() === false) {
+            write_log("Failed to execute update_supplement", __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -332,9 +348,9 @@ class CommonClass
 
         Utilities::sanitize($this);
 
-        $query = "
-                DELETE FROM " . $this->TABLE_NAME . " " . $this->populate_primary_key_where();
+        $query = "DELETE FROM " . $this->TABLE_NAME . " " . $this->populate_primary_key_where();
         write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
+
         $stmt = oci_parse($this->conn, $query);
         foreach ($this->primary_keys as $value) {
             // write_log(sprintf("%s:%s", $value, $this->$value), __FILE__, __LINE__, LogLevel::DEBUG);
@@ -540,7 +556,7 @@ class CommonClass
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             if (intval($row['CN']) <= 0) {
                 write_log(sprintf("record (%s) does not exist", $this->primiary_key_str()),
-                    __FILE__, __LINE__, LogLevel::ERROR);
+                    __FILE__, __LINE__, LogLevel::INFO);
                 return false;
             }
             return true;

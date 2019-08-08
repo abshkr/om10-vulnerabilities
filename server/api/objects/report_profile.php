@@ -9,7 +9,7 @@ class ReportProfile extends CommonClass
 {
     protected $TABLE_NAME = 'REPORT_FILES';
     protected $VIEW_NAME = 'GUI_REPORT_PROFILE';
-    public $desc = "report configuration";
+    public $desc = "report profile";
     protected $primary_keys = array("rpt_file");
     protected $view_keys = array("report_file");
     protected $table_view_map = array(
@@ -19,6 +19,8 @@ class ReportProfile extends CommonClass
         "DESCRIPTION" => "REPORT_DESC",
         "JASPER_FILE" => "REPORT_JASPER_FILE",
         "ONDEMAND_TITLE" => "REPORT_ONDEMAND_TITLE",
+        "IS_CLOSEOUT_REPORT" => "REPORT_CLOSEOUT_FLAG2",
+        "LANG_ID" => "REPORT_LANG",
     );
     public $NUMBER_FIELDS = array(
         "REPORT_ONDEMAND_FLAG",
@@ -64,33 +66,30 @@ class ReportProfile extends CommonClass
         }
     }
 
-    public function copmanys()
+    public function update_supplement()
     {
-        $query = "
-            SELECT CMPY_CODE, CMPY_NAME
-            FROM COMPANYS
-            ORDER BY DECODE(CMPY_CODE, 'ANY', 0, 1), CMPY_CODE";
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
+        $ondemand_flag = 0;
+        if (isset($this->report_ondemand_flag) && $this->report_ondemand_flag == 1) {
+            $ondemand_flag |= 1;
         }
-    }
 
-    public function reports()
-    {
+        if (isset($this->report_closeout_flag) && $this->report_closeout_flag == 1) {
+            $ondemand_flag |= 1 << 1;
+        }
+
         $query = "
-            SELECT * FROM GUI_REPORT_PROFILE ORDER BY REPORT_NAME";
+            UPDATE " . $this->TABLE_NAME . " SET ONDEMAND_FLAG = :ondemand_flag
+            WHERE RPT_FILE = :rpt_file";
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':ondemand_flag', $ondemand_flag);
+        oci_bind_by_name($stmt, ':rpt_file', $this->rpt_file);
         if (oci_execute($stmt)) {
-            return $stmt;
+            return true;
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
+            oci_rollback($this->conn);
+            return false;
         }
     }
 }
