@@ -409,7 +409,8 @@ class Utilities
             $data = json_decode(file_get_contents("php://input"));
         }
 
-        // write_log(json_encode($data), __FILE__, __LINE__);
+        write_log(json_encode($data), __FILE__, __LINE__);
+
         if ($data) {
             // write_log(json_encode($data), __FILE__, __LINE__);
             foreach ($data as $key => $value) {

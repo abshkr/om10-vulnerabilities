@@ -255,7 +255,7 @@ class CommonClass
     }
 
     /**
-     * Descendant can implement this function to do some update that 
+     * Descendant can implement this function to do some update that
      * cannot be done in common way. Refer to report_profile as an example
      */
     public function update_supplement()
@@ -267,7 +267,7 @@ class CommonClass
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
-        // write_log(json_encode($this), __FILE__, __LINE__);
+        write_log(json_encode($this), __FILE__, __LINE__);
 
         Utilities::sanitize($this);
 
@@ -398,6 +398,12 @@ class CommonClass
         } else if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        if ($this->update_supplement() === false) {
+            write_log("Failed to execute update_supplement", __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
