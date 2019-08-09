@@ -34,7 +34,9 @@ export function readCompartmentEquipment(id) {
 }
 
 export function toggleLock(id, state) {
-  return axios.get(`https://${api}/api/pages/equipment/toggle_lock.php?eqpt_id=${id}&cmptnu=${state}`);
+  return axios.get(
+    `https://${api}/api/pages/equipment/toggle_lock.php?eqpt_id=${id}&cmptnu=${state}`
+  );
 }
 
 export function createEquipment(payload) {
@@ -48,3 +50,5 @@ export function updateEquipment(payload) {
 export function deleteEquipment(id) {
   return axios.post(`https://${api}/api/pages/equipment/delete.php?eqpt_id=${id}`);
 }
+
+export const getEquipmentImage = `https://${api}/api/assets/`;

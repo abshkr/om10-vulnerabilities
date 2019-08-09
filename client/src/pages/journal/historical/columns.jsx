@@ -1,5 +1,7 @@
 import React from "react";
 import _ from "lodash";
+import { Tag } from "antd";
+import { SYSTEM_COLORS } from "../../../constants";
 import { generateOptions, validateDateTime } from "../../../utils";
 
 const columns = (data, configuration) => {
@@ -18,6 +20,7 @@ const defaults = (data, config) => [
     dataIndex: "gen_date",
     key: "gen_date",
     width: 300,
+    align: "center",
     sorter: (a, b) => validateDateTime(b.gen_date) - validateDateTime(a.gen_date),
     // eslint-disable-next-line
     render: text => <a>{text}</a>
@@ -27,8 +30,14 @@ const defaults = (data, config) => [
     dataIndex: "msg_event",
     key: "msg_event",
     width: 200,
+    align: "center",
     filters: generateOptions(data, "msg_event"),
-    onFilter: (value, record) => record.msg_event.indexOf(value) === 0
+    onFilter: (value, record) => record.msg_event.indexOf(value) === 0,
+    render: text => (
+      <span>
+        <Tag color={SYSTEM_COLORS[text]}>{text}</Tag>
+      </span>
+    )
   },
   {
     title: "Details",

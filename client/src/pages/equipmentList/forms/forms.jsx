@@ -6,7 +6,19 @@ import ExpiryDates from "./expiryDates";
 import Compartments from "./compartments";
 import { equipmentList } from "../../../api";
 import { Form, Button, Tabs, Modal, notification } from "antd";
-import { Owner, Code, Title, Id, EquipmentType, Area, LoadType, EmptyWeight, PullingLimit, Locks, Comments } from "./fields";
+import {
+  Owner,
+  Code,
+  Title,
+  Id,
+  EquipmentType,
+  Area,
+  LoadType,
+  EmptyWeight,
+  PullingLimit,
+  Locks,
+  Comments
+} from "./fields";
 
 class PersonnelForm extends Component {
   handleUpdate = () => {
@@ -88,7 +100,11 @@ class PersonnelForm extends Component {
         if (records.length > 0) {
           Modal.confirm({
             title: `Expiry Date Adjustments.`,
-            content: <div>{`We have found ${records.length} records with similar configurations. Do you want to apply the same expiry dates?`}</div>,
+            content: (
+              <div>{`We have found ${
+                records.length
+              } records with similar configurations. Do you want to apply the same expiry dates?`}</div>
+            ),
             okText: "Yes",
             okType: "primary",
             cancelText: "No",
@@ -133,24 +149,93 @@ class PersonnelForm extends Component {
       <div>
         <Form style={{ height: "65vh" }}>
           <Tabs defaultActiveKey="1">
-            <TabPane tab="General" key="1" style={{ height: "55vh", overflowY: "scroll", paddingRight: 20 }}>
-              <Code decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-              <Id decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-              <Owner decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-              <Title decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-              <Area decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-              <LoadType decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-              <EmptyWeight decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-              <PullingLimit decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-              <Locks decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-              <Comments decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
+            <TabPane
+              tab="General"
+              key="1"
+              style={{ height: "55vh", overflowY: "scroll", paddingRight: 20 }}
+            >
+              <Code
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                data={data}
+              />
+              <Id
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                data={data}
+              />
+              <Owner
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                data={data}
+              />
+              <Title
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                data={data}
+              />
+              <Area
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                data={data}
+              />
+              <LoadType
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                data={data}
+              />
+              <EmptyWeight
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                data={data}
+              />
+              <PullingLimit
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                data={data}
+              />
+              <Locks
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                data={data}
+              />
+              <Comments
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                data={data}
+              />
             </TabPane>
-            <TabPane tab="Expiry Dates" key="2" style={{ height: "55vh", overflowY: "scroll", paddingRight: 20 }}>
-              <ExpiryDates decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} />
+            <TabPane
+              tab="Expiry Dates"
+              key="2"
+              style={{ height: "55vh", overflowY: "scroll", paddingRight: 20 }}
+            >
+              <ExpiryDates
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+                form={form}
+              />
             </TabPane>
 
             <TabPane tab="Compartments" key="3" forceRender={true}>
-              <EquipmentType decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
+              <EquipmentType
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                data={data}
+              />
               <Compartments
                 decorator={getFieldDecorator}
                 value={value}
@@ -164,7 +249,12 @@ class PersonnelForm extends Component {
           </Tabs>
         </Form>
 
-        <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
+        <Button
+          shape="round"
+          icon="close"
+          style={{ float: "right" }}
+          onClick={() => Modal.destroyAll()}
+        >
           Cancel
         </Button>
 
@@ -179,13 +269,24 @@ class PersonnelForm extends Component {
         </Button>
 
         {!!value && (
-          <Button shape="round" type="dashed" icon="unlock" style={{ float: "right", marginRight: 5 }}>
+          <Button
+            shape="round"
+            type="dashed"
+            icon="unlock"
+            style={{ float: "right", marginRight: 5 }}
+          >
             Unlock All Compartments
           </Button>
         )}
 
         {!!value && (
-          <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
+          <Button
+            shape="round"
+            type="danger"
+            icon="delete"
+            style={{ float: "right", marginRight: 5 }}
+            onClick={this.showDeleteConfirm}
+          >
             Delete
           </Button>
         )}

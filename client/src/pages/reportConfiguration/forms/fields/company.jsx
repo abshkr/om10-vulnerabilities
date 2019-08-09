@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Form, Select } from "antd";
-import { baseProducts } from "../../../../api";
+import { reportConfiguration } from "../../../../api";
 import axios from "axios";
 
 export default class Company extends Component {
@@ -11,7 +11,7 @@ export default class Company extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.all([baseProducts.readBaseProductClassification()]).then(
+    axios.all([reportConfiguration.readCompany()]).then(
       axios.spread(companies => {
         this.setState({
           companies: companies.data.records
@@ -21,7 +21,7 @@ export default class Company extends Component {
 
     if (!!value) {
       setValue({
-        report_name: value.report_name
+        report_cmpycode: value.report_cmpycode
       });
     }
   }
@@ -32,15 +32,15 @@ export default class Company extends Component {
     const { Option } = Select;
 
     return (
-      <Form.Item label="Report Name">
-        {decorator("report_name", {
+      <Form.Item label="Company Name">
+        {decorator("report_cmpycode", {
           rules: [{ required: true, message: "Please Select a Report" }]
         })(
           <Select>
             {!!companies &&
               companies.map((item, index) => (
-                <Option key={index} value={item.bclass_no}>
-                  {item.bclass_desc}
+                <Option key={index} value={item.cmpy_code}>
+                  {item.cmpy_name}
                 </Option>
               ))}
           </Select>

@@ -21,7 +21,6 @@
 
 .ant-table-thead > tr > th,
 .ant-table-tbody > tr > td {
-  text-align: center;
   max-width: 100px;
   min-width: 100px;
 }

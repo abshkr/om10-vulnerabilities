@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Form, Select } from "antd";
-import { baseProducts } from "../../../../api";
+import { reportConfiguration } from "../../../../api";
 import axios from "axios";
 
 export default class Name extends Component {
@@ -11,7 +11,7 @@ export default class Name extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.all([baseProducts.readBaseProductClassification()]).then(
+    axios.all([reportConfiguration.readReports()]).then(
       axios.spread(reports => {
         this.setState({
           reports: reports.data.records
@@ -39,8 +39,8 @@ export default class Name extends Component {
           <Select>
             {!!reports &&
               reports.map((item, index) => (
-                <Option key={index} value={item.bclass_no}>
-                  {item.bclass_desc}
+                <Option key={index} value={item.report_name}>
+                  {item.report_name}
                 </Option>
               ))}
           </Select>

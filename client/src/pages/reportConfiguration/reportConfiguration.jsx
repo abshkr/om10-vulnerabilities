@@ -21,9 +21,9 @@ class ReportConfiguration extends Component {
 
   handleClick = object => {
     Modal.info({
-      title: !!object ? `Editing (${object.base_code} / ${object.base_name})` : "Create",
+      title: !!object ? `Editing ${object.report_name}` : "Create",
       centered: true,
-      width: 720,
+      width: "40vw",
       icon: !!object ? "edit" : "form",
       content: <Forms value={object} refresh={this.handleFetch} />,
       okButtonProps: {
@@ -88,16 +88,49 @@ class ReportConfiguration extends Component {
         <Container>
           <Filter value={value} search={this.handleSearch} loading={isLoading} />
 
-          <Button shape="round" type="primary" icon="reload" style={{ float: "right" }} onClick={this.handleFetch} loading={isLoading} />
-          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right", marginRight: 5 }} onClick={this.handleResize} loading={isLoading} />
+          <Button
+            shape="round"
+            type="primary"
+            icon="reload"
+            style={{ float: "right" }}
+            onClick={this.handleFetch}
+            loading={isLoading}
+          />
+          <Button
+            shape="round"
+            type="primary"
+            icon={resize ? "shrink" : "arrows-alt"}
+            style={{ float: "right", marginRight: 5 }}
+            onClick={this.handleResize}
+            loading={isLoading}
+          />
 
-          <Download data={data} type={"report_configuration"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
+          <Download
+            data={data}
+            type={"report_configuration"}
+            style={{ float: "right", marginRight: 5 }}
+            loading={isLoading}
+          />
 
-          <Button shape="round" type="primary" icon="container" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} loading={isLoading}>
+          <Button
+            shape="round"
+            type="primary"
+            icon="container"
+            style={{ float: "right", marginRight: 5 }}
+            onClick={() => this.handleClick(null)}
+            loading={isLoading}
+          >
             Create Configuration
           </Button>
 
-          <DataTable isLoading={isLoading} resize={resize} rowKey="report_file" columns={columns(results, configuration)} data={results} click={this.handleClick} />
+          <DataTable
+            isLoading={isLoading}
+            resize={resize}
+            rowKey="report_file"
+            columns={columns(results, configuration)}
+            data={results}
+            click={this.handleClick}
+          />
         </Container>
       </Page>
     );
