@@ -46,7 +46,7 @@ class Equipment extends CommonClass
             WHERE COMPARTMENT.CMPT_ETYP = TRANSP_EQUIP.EQPT_ETP
                 AND EQPT_ID = :eqpt_id
                 AND EQPT_ID = SFILL_ADJUST.ADJ_EQP(+)
-                AND CMPT_NO = SFILL_ADJUST.ADJ_CMPT(+)
+                AND CMPT_NO(+) = SFILL_ADJUST.ADJ_CMPT
             ORDER BY CMPT_NO";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
