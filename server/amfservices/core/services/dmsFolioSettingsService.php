@@ -199,23 +199,33 @@ class dmsFolioSettingsService extends dmsService
             return $chk;
         }
 
-        $sql = "UPDATE CLOSEOUT_TANK SET CLOSE_STD_TOT = 0 WHERE CLOSE_STD_TOT IS NULL";
+        $sql = "UPDATE CLOSEOUT_TANK SET CLOSE_STD_TOT = 0 
+            WHERE CLOSE_STD_TOT IS NULL 
+                AND CLOSEOUT_NR = (SELECT MIN(CLOSEOUT_NR) FROM CLOSEOUTS WHERE STATUS = 1)";
         if (!($chk = $this->ctl->query(array("sql" => $sql))) instanceof dmMesg) {
             return $chk;
         }
-        $sql = "UPDATE CLOSEOUT_TANK SET CLOSE_MASS_TOT = 0 WHERE CLOSE_MASS_TOT IS NULL";
+        $sql = "UPDATE CLOSEOUT_TANK SET CLOSE_MASS_TOT = 0 
+            WHERE CLOSE_MASS_TOT IS NULL
+                AND CLOSEOUT_NR = (SELECT MIN(CLOSEOUT_NR) FROM CLOSEOUTS WHERE STATUS = 1)";
         if (!($chk = $this->ctl->query(array("sql" => $sql))) instanceof dmMesg) {
             return $chk;
         }
-        $sql = "UPDATE CLOSEOUT_METER SET CLOSE_AMB_TOT = 0 WHERE CLOSE_AMB_TOT IS NULL";
+        $sql = "UPDATE CLOSEOUT_METER SET CLOSE_AMB_TOT = 0 
+            WHERE CLOSE_AMB_TOT IS NULL
+                AND CLOSEOUT_NR = (SELECT MIN(CLOSEOUT_NR) FROM CLOSEOUTS WHERE STATUS = 1)";
         if (!($chk = $this->ctl->query(array("sql" => $sql))) instanceof dmMesg) {
             return $chk;
         }
-        $sql = "UPDATE CLOSEOUT_METER SET CLOSE_STD_TOT = 0 WHERE CLOSE_STD_TOT IS NULL";
+        $sql = "UPDATE CLOSEOUT_METER SET CLOSE_STD_TOT = 0 
+            WHERE CLOSE_STD_TOT IS NULL
+                AND CLOSEOUT_NR = (SELECT MIN(CLOSEOUT_NR) FROM CLOSEOUTS WHERE STATUS = 1)";
         if (!($chk = $this->ctl->query(array("sql" => $sql))) instanceof dmMesg) {
             return $chk;
         }
-        $sql = "UPDATE CLOSEOUT_METER SET CLOSE_MASS_TOT = 0 WHERE CLOSE_MASS_TOT IS NULL";
+        $sql = "UPDATE CLOSEOUT_METER SET CLOSE_MASS_TOT = 0 
+            WHERE CLOSE_MASS_TOT IS NULL
+                AND CLOSEOUT_NR = (SELECT MIN(CLOSEOUT_NR) FROM CLOSEOUTS WHERE STATUS = 1)";
         if (!($chk = $this->ctl->query(array("sql" => $sql))) instanceof dmMesg) {
             return $chk;
         }
