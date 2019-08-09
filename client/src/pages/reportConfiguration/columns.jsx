@@ -1,19 +1,8 @@
 import React from "react";
-import _ from "lodash";
-import { Tag, Icon } from "antd";
+import { Icon } from "antd";
 import generate from "../../utils/generateOptions";
 
-const columns = (data, configuration) => {
-  const values = defaults(data);
-  const config = configuration.columns.baseProducts;
-  const modified = _.reject(values, o => {
-    return !config[o.dataIndex];
-  });
-
-  return values;
-};
-
-const defaults = data => [
+const columns = (data, configuration) => [
   {
     title: "Company Code",
     dataIndex: "report_cmpycode",
@@ -24,15 +13,15 @@ const defaults = data => [
     onFilter: (value, record) => record.report_cmpycode.indexOf(value) === 0
   },
   {
-    title: "Report Company",
+    title: "Company",
     dataIndex: "report_cmpyname",
     key: "report_cmpyname",
-    width: 160,
+    width: 120,
     filters: generate(data, "report_cmpyname"),
     onFilter: (value, record) => record.report_cmpyname.indexOf(value) === 0
   },
   {
-    title: "Report Type",
+    title: "Type",
     dataIndex: "report_type_name",
     key: "report_type_name",
     width: 120,
@@ -40,64 +29,124 @@ const defaults = data => [
     onFilter: (value, record) => record.report_type_name.indexOf(value) === 0
   },
   {
-    title: "Report Name",
+    title: "Name",
     dataIndex: "report_name",
     key: "report_name",
-    width: 350
+    sorter: (a, b) => a.report_name.localeCompare(b.report_name),
+    width: 300
   },
   {
     title: "Description",
     dataIndex: "report_desc",
     key: "report_desc",
-    width: 100
+    sorter: (a, b) => a.report_desc.localeCompare(b.report_desc),
+    width: 130
   },
   {
-    title: "Report Source",
+    title: "Source",
     dataIndex: "report_jasper_file",
     key: "report_jasper_file",
-    width: 250
+    sorter: (a, b) => a.report_jasper_file.localeCompare(b.report_jasper_file),
+    width: 230
   },
   {
     title: "Enabled",
     dataIndex: "report_enabled",
     key: "report_enabled",
-    width: 100
+    width: 100,
+    sorter: (a, b) => a.report_enabled.localeCompare(b.report_enabled),
+
+    render: text => (
+      <span>
+        <Icon
+          type={text !== "Y" ? "close" : "check"}
+          style={{ color: text !== "Y" ? "#ec6e68" : "#a4ec68" }}
+        />
+      </span>
+    )
   },
   {
     title: "Active",
     dataIndex: "report_active",
     key: "report_active",
-    width: 100
+    width: 100,
+    sorter: (a, b) => a.report_active.localeCompare(b.report_active),
+
+    render: text => (
+      <span>
+        <Icon
+          type={text !== "Y" ? "close" : "check"}
+          style={{ color: text !== "Y" ? "#ec6e68" : "#a4ec68" }}
+        />
+      </span>
+    )
   },
   {
     title: "Can Be Printed",
     dataIndex: "report_canprint",
     key: "report_canprint",
-    width: 120
+    width: 150,
+    sorter: (a, b) => a.report_canprint.localeCompare(b.report_canprint),
+    render: text => (
+      <span>
+        <Icon
+          type={text !== "Y" ? "close" : "check"}
+          style={{ color: text !== "Y" ? "#ec6e68" : "#a4ec68" }}
+        />
+      </span>
+    )
   },
   {
     title: "Can Be Emailed",
     dataIndex: "report_canemail",
     key: "report_canemail",
-    width: 120
+    sorter: (a, b) => a.report_canemail.localeCompare(b.report_canemail),
+    width: 160,
+    render: text => (
+      <span>
+        <Icon
+          type={text !== "Y" ? "close" : "check"}
+          style={{ color: text !== "Y" ? "#ec6e68" : "#a4ec68" }}
+        />
+      </span>
+    )
   },
   {
     title: "Company Email",
     dataIndex: "report_cmpyemail",
     key: "report_cmpyemail",
-    width: 120
+    sorter: (a, b) => a.report_cmpyemail.localeCompare(b.report_cmpyemail),
+    width: 150
   },
   {
     title: "On Demand Report",
     dataIndex: "report_ondemand_flag",
     key: "report_ondemand_flag",
-    width: 180
+    sorter: (a, b) => a.report_ondemand_flag.localeCompare(b.report_ondemand_flag),
+    width: 180,
+    render: text => (
+      <span>
+        <Icon
+          type={text !== "1" ? "close" : "check"}
+          style={{ color: text !== "1" ? "#ec6e68" : "#a4ec68" }}
+        />
+      </span>
+    )
   },
   {
     title: "Closeout Report",
     dataIndex: "report_closeout_flag",
     key: "report_closeout_flag",
-    width: 120
+    sorter: (a, b) => a.report_closeout_flag.localeCompare(b.report_closeout_flag),
+    width: 150,
+    render: text => (
+      <span>
+        <Icon
+          type={text !== "Y" ? "close" : "check"}
+          style={{ color: text !== "Y" ? "#ec6e68" : "#a4ec68" }}
+        />
+      </span>
+    )
   }
 ];
 

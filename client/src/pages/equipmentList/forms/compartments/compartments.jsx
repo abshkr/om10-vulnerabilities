@@ -64,24 +64,42 @@ class EditableCell extends React.Component {
       return editing ? (
         <Form.Item style={{ margin: 0 }}>
           {form.getFieldDecorator("adj_cmpt_lock")(
-            <Select ref={node => (this.input = node)} onPressEnter={value => this.save(value, dataIndex)} onBlur={value => this.save(value, dataIndex)}>
+            <Select
+              ref={node => (this.input = node)}
+              onPressEnter={value => this.save(value, dataIndex)}
+              onBlur={value => this.save(value, dataIndex)}
+            >
               <Option value="1">Locked</Option>
               <Option value="0">Unlocked</Option>
             </Select>
           )}
         </Form.Item>
       ) : (
-        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
+        <div
+          className="editable-cell-value-wrap"
+          style={{ paddingRight: 24 }}
+          onClick={this.toggleEdit}
+        >
           {children}
         </div>
       );
     } else {
       return editing ? (
         <Form.Item style={{ margin: 0 }}>
-          {form.getFieldDecorator(dataIndex)(<Input ref={node => (this.input = node)} onPressEnter={value => this.save(value, dataIndex)} onBlur={this.save} />)}
+          {form.getFieldDecorator(dataIndex)(
+            <Input
+              ref={node => (this.input = node)}
+              onPressEnter={value => this.save(value, dataIndex)}
+              onBlur={this.save}
+            />
+          )}
         </Form.Item>
       ) : (
-        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
+        <div
+          className="editable-cell-value-wrap"
+          style={{ paddingRight: 24 }}
+          onClick={this.toggleEdit}
+        >
           {children}
         </div>
       );
@@ -89,8 +107,25 @@ class EditableCell extends React.Component {
   };
 
   render() {
-    const { editable, dataIndex, title, record, index, handleSave, children, ...restProps } = this.props;
-    return <td {...restProps}>{editable ? <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer> : children}</td>;
+    const {
+      editable,
+      dataIndex,
+      title,
+      record,
+      index,
+      handleSave,
+      children,
+      ...restProps
+    } = this.props;
+    return (
+      <td {...restProps}>
+        {editable ? (
+          <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>
+        ) : (
+          children
+        )}
+      </td>
+    );
   }
 }
 
@@ -149,19 +184,21 @@ export default class Compatments extends Component {
 
     this.setState({ isLoading: true });
 
-    axios.all([equipmentList.readCompartmentEquipment(id), equipmentList.readEquipmentTypes()]).then(
-      axios.spread((compartments, types) => {
-        this.setState({
-          isLoading: false,
-          data: compartments.data.records,
-          types: types.data.records
-        });
+    axios
+      .all([equipmentList.readCompartmentEquipment(id), equipmentList.readEquipmentTypes()])
+      .then(
+        axios.spread((compartments, types) => {
+          this.setState({
+            isLoading: false,
+            data: compartments.data.records,
+            types: types.data.records
+          });
 
-        setValue({
-          compartments: compartments.data.records
-        });
-      })
-    );
+          setValue({
+            compartments: compartments.data.records
+          });
+        })
+      );
   };
 
   componentDidMount() {
@@ -182,6 +219,7 @@ export default class Compatments extends Component {
 
   render() {
     const { data, isLoading, types } = this.state;
+
     const { decorator, value, equipment } = this.props;
 
     const { Option } = Select;
@@ -257,7 +295,7 @@ export default class Compatments extends Component {
 
     decorator("compartments");
 
-    const path = `/api/assets/${_.toLower(source)}.png`;
+    const path = `${equipmentList.getEquipmentImage}/${_.toLower(source)}.png`;
 
     return (
       <div>
@@ -280,7 +318,9 @@ export default class Compatments extends Component {
             showSearch
             disabled={equipments.length === 0}
             optionFilterProp="children"
-            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
           >
             {equipments.map((item, index) => (
               <Option key={index} value={item.eqpt_id}>
@@ -300,7 +340,7 @@ export default class Compatments extends Component {
               cell: EditableCell
             }
           }}
-          scroll={{ y: 200 }}
+          scroll={{ y: "15vh" }}
           rowClassName={() => "editable-row"}
           bordered
           dataSource={data}

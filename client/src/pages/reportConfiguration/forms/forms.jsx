@@ -1,14 +1,25 @@
 import React, { Component } from "react";
-import { Form, Button, Tabs, notification, Modal } from "antd";
+
+import {
+  Name,
+  Email,
+  Company,
+  Enable,
+  CanActivate,
+  CanReceiveByPrinting,
+  CanReceiveByEmail
+} from "./fields";
+
 import axios from "axios";
-import { baseProducts } from "../../../api";
+import { Form, Button, Tabs, notification, Modal } from "antd";
+import { reportConfiguration } from "../../../api";
 
 class BaseProductsForm extends Component {
   handleCreate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         axios
-          .all([baseProducts.createBaseProduct(values)])
+          .all([reportConfiguration.createConfiguration(values)])
           .then(
             axios.spread(response => {
               this.props.refresh();
@@ -38,7 +49,7 @@ class BaseProductsForm extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         axios
-          .all([baseProducts.updateBaseProduct(values)])
+          .all([reportConfiguration.updateConfiguration(values)])
           .then(
             axios.spread(response => {
               this.props.refresh();
@@ -67,7 +78,7 @@ class BaseProductsForm extends Component {
   handleDelete = () => {
     const { value } = this.props;
     axios
-      .all([baseProducts.deleteBaseProduct(value.base_code)])
+      .all([reportConfiguration.deleteConfiguration(value)])
       .then(
         axios.spread(response => {
           this.props.refresh();
@@ -78,7 +89,7 @@ class BaseProductsForm extends Component {
           });
         })
       )
-      .catch(function(error) {
+      .catch(error => {
         notification.error({
           message: error.message,
           description: "Failed to delete the Tank."
@@ -120,20 +131,69 @@ class BaseProductsForm extends Component {
   };
 
   render() {
-    const { form, value, profile, data } = this.props;
-    const { getFieldDecorator, setFieldsValue } = form;
+    const { form, value } = this.props;
+    const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
 
     const TabPane = Tabs.TabPane;
 
     return (
       <div>
-        <Form style={{ height: 640 }}>
+        <Form style={{ height: "65vh" }}>
           <Tabs defaultActiveKey="1">
-            <TabPane tab="General" key="1" />
+            <TabPane tab="General" key="1">
+              <Company
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+              />
+              <Name
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+              />
+              <Enable
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+              />
+              <CanActivate
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+              />
+
+              <CanReceiveByPrinting
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+
+              <CanReceiveByEmail
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+
+              <Email
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+              />
+            </TabPane>
           </Tabs>
         </Form>
 
-        <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
+        <Button
+          shape="round"
+          icon="close"
+          style={{ float: "right" }}
+          onClick={() => Modal.destroyAll()}
+        >
           Cancel
         </Button>
 
@@ -148,7 +208,13 @@ class BaseProductsForm extends Component {
         </Button>
 
         {!!value && (
-          <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
+          <Button
+            shape="round"
+            type="danger"
+            icon="delete"
+            style={{ float: "right", marginRight: 5 }}
+            onClick={this.showDeleteConfirm}
+          >
             Delete
           </Button>
         )}

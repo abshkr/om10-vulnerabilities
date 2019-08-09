@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Form, Select } from "antd";
-import { baseProducts } from "../../../../api";
+import { reportConfiguration } from "../../../../api";
 import axios from "axios";
 
 export default class Company extends Component {
@@ -11,7 +11,7 @@ export default class Company extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
 
-    axios.all([baseProducts.readBaseProductClassification()]).then(
+    axios.all([reportConfiguration.readCompany()]).then(
       axios.spread(companies => {
         this.setState({
           companies: companies.data.records
