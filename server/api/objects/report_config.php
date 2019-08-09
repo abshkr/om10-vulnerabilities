@@ -21,6 +21,17 @@ class ReportConfig extends CommonClass
         "RPT_CANEMAIL" => "REPORT_CANEMAIL",
     );
 
+    //All the fields that should be treated as BOOLEAN in JSON
+    public $BOOLEAN_FIELDS = array(
+        "REPORT_CLOSEOUT_FLAG2" => 1,
+        "REPORT_ONDEMAND_FLAG" => 1,
+        "REPORT_CLOSEOUT_FLAG" => 1,
+        "REPORT_ENABLED" => "Y",
+        "REPORT_ACTIVE" => "Y",
+        "REPORT_CANPRINT" => "Y",
+        "REPORT_CANEMAIL" => "Y",
+    );
+
     public function read()
     {
         Utilities::sanitize($this);

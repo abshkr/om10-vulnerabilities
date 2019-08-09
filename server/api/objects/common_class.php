@@ -48,7 +48,10 @@ class CommonClass
     //An array that include all the fileds that can be updated.
     protected $updatable_fields = null;
 
-    //All the fields that should be treated as BOOLEAN in JSON
+    /**
+     * All the fields that should be treated as BOOLEAN in JSON
+     * Check tank.php as an example
+     */
     public $BOOLEAN_FIELDS = null;
 
     //All the fields that should be treated as number in JSON

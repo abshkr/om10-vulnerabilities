@@ -240,10 +240,11 @@ class Utilities
             $base_item = array();
             foreach ($row as $key => $value) {
                 $lower_key = strtolower($key);
-                // write_log(sprintf("%s, %s", $object, $lower_key), __FILE__, __LINE__);
+                // write_log(sprintf("%s, %s", $lower_key, $key), __FILE__, __LINE__);
                 if (isset($object->BOOLEAN_FIELDS) &&
                     array_key_exists($key, $object->BOOLEAN_FIELDS)) {
-                    if ($value === 1 || $value === 'T' || $value === 'Y') {
+                    // write_log("getit", __FILE__, __LINE__);
+                    if ($value == 1 || $value === 'T' || $value === 'Y') {
                         $base_item[$lower_key] = true;
                     } else {
                         $base_item[$lower_key] = false;
