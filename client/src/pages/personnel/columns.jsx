@@ -35,6 +35,7 @@ const defaults = (data, roles, config) => {
       key: "per_code",
       width: 100,
       fixed: "left",
+      align: "center",
       onFilter: (value, record) => record.per_code.indexOf(value) === 0,
       sorter: (a, b) => a.per_code.localeCompare(b.per_code),
       // eslint-disable-next-line
@@ -69,9 +70,14 @@ const defaults = (data, roles, config) => {
       dataIndex: "per_auth",
       key: "per_auth",
       width: 130,
+      align: "center",
       filters: generateOptions(data, "per_auth", roles, "role_id", "role_name"),
       onFilter: (value, record) => record.per_auth.indexOf(value) === 0,
-      render: text => <Tag color="blue">{!!_.find(roles, ["role_id", text]) ? _.find(roles, ["role_id", text]).role_name : ""}</Tag>
+      render: text => (
+        <Tag color="blue">
+          {!!_.find(roles, ["role_id", text]) ? _.find(roles, ["role_id", text]).role_name : ""}
+        </Tag>
+      )
     },
     {
       title: "Licence No.",
@@ -87,6 +93,7 @@ const defaults = (data, roles, config) => {
       dataIndex: "per_lock",
       key: "per_lock",
       width: 130,
+      align: "center",
       onFilter: (value, record) => record.per_lock.indexOf(value) === 0,
       sorter: (a, b) => a.per_lock.localeCompare(b.per_lock),
       render: text => (
@@ -100,6 +107,7 @@ const defaults = (data, roles, config) => {
       dataIndex: "user_status_flag",
       key: "user_status_flag",
       width: 100,
+      align: "center",
       filters: generateOptions(data, "user_status_flag"),
       onFilter: (value, record) => String(record.user_status_flag).indexOf(value) === 0,
       render: data => <Tag color={lockColors[data]}>{lockStatus[data]}</Tag>
@@ -109,6 +117,7 @@ const defaults = (data, roles, config) => {
       dataIndex: "per_department",
       key: "per_department",
       width: 150,
+      align: "center",
       filters: generateOptions(data, "per_department"),
       onFilter: (value, record) => String(record.per_department).indexOf(value) === 0
     },
@@ -117,6 +126,7 @@ const defaults = (data, roles, config) => {
       dataIndex: "per_email",
       key: "per_email",
       width: 200,
+      align: "center",
       onFilter: (value, record) => record.per_email.indexOf(value) === 0,
       sorter: (a, b) => a.per_email.localeCompare(b.per_email)
     },
@@ -125,9 +135,18 @@ const defaults = (data, roles, config) => {
       dataIndex: "per_last_modified",
       key: "per_last_modified",
       width: 250,
-      sorter: (a, b) => validateDateTime(b.per_last_modified) - validateDateTime(a.per_last_modified),
+      align: "center",
+      sorter: (a, b) =>
+        validateDateTime(b.per_last_modified) - validateDateTime(a.per_last_modified),
       // eslint-disable-next-line
-      render: text => <a>{text !== "" ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat) : ""}</a>
+      render: text => (
+        // eslint-disable-next-line
+        <a>
+          {text !== ""
+            ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat)
+            : ""}
+        </a>
+      )
     },
     {
       title: "Last Used",
@@ -136,7 +155,14 @@ const defaults = (data, roles, config) => {
       width: 250,
       sorter: (a, b) => validateDateTime(b.user_last_reason) - validateDateTime(a.user_last_reason),
       // eslint-disable-next-line
-      render: text => <a>{text !== "" ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat) : ""}</a>
+      render: text => (
+        // eslint-disable-next-line
+        <a>
+          {text !== ""
+            ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat)
+            : ""}
+        </a>
+      )
     }
   ];
 };

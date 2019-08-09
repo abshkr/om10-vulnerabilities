@@ -8,4 +8,13 @@ const LOCK_COLOURS = {
   N: "#989898"
 };
 
-export { CHECK_COLOURS, LOCK_COLOURS };
+const SYSTEM_COLORS = {
+  SYSTEM: "blue",
+  CONF: "green",
+  COMMS: "magenta",
+  ALARM: "red",
+  BAY: "orange",
+  DOC: "purple"
+};
+
+export { CHECK_COLOURS, LOCK_COLOURS, SYSTEM_COLORS };

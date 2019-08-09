@@ -39,8 +39,8 @@ export default class Name extends Component {
           <Select>
             {!!reports &&
               reports.map((item, index) => (
-                <Option key={index} value={item.bclass_no}>
-                  {item.bclass_desc}
+                <Option key={index} value={item.report_name}>
+                  {item.report_name}
                 </Option>
               ))}
           </Select>

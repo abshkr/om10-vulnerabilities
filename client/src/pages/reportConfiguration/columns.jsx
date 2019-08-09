@@ -9,6 +9,7 @@ const columns = (data, configuration) => [
     key: "report_cmpycode",
     width: 130,
     fixed: "left",
+    align: "center",
     filters: generate(data, "report_cmpycode"),
     onFilter: (value, record) => record.report_cmpycode.indexOf(value) === 0
   },
@@ -17,6 +18,7 @@ const columns = (data, configuration) => [
     dataIndex: "report_cmpyname",
     key: "report_cmpyname",
     width: 120,
+    align: "center",
     filters: generate(data, "report_cmpyname"),
     onFilter: (value, record) => record.report_cmpyname.indexOf(value) === 0
   },
@@ -25,6 +27,7 @@ const columns = (data, configuration) => [
     dataIndex: "report_type_name",
     key: "report_type_name",
     width: 120,
+    align: "center",
     filters: generate(data, "report_type_name"),
     onFilter: (value, record) => record.report_type_name.indexOf(value) === 0
   },
@@ -54,6 +57,7 @@ const columns = (data, configuration) => [
     dataIndex: "report_enabled",
     key: "report_enabled",
     width: 100,
+    align: "center",
     sorter: (a, b) => a.report_enabled.localeCompare(b.report_enabled),
 
     render: text => (
@@ -70,6 +74,7 @@ const columns = (data, configuration) => [
     dataIndex: "report_active",
     key: "report_active",
     width: 100,
+    align: "center",
     sorter: (a, b) => a.report_active.localeCompare(b.report_active),
 
     render: text => (
@@ -86,6 +91,7 @@ const columns = (data, configuration) => [
     dataIndex: "report_canprint",
     key: "report_canprint",
     width: 150,
+    align: "center",
     sorter: (a, b) => a.report_canprint.localeCompare(b.report_canprint),
     render: text => (
       <span>
@@ -100,6 +106,7 @@ const columns = (data, configuration) => [
     title: "Can Be Emailed",
     dataIndex: "report_canemail",
     key: "report_canemail",
+    align: "center",
     sorter: (a, b) => a.report_canemail.localeCompare(b.report_canemail),
     width: 160,
     render: text => (
@@ -122,6 +129,7 @@ const columns = (data, configuration) => [
     title: "On Demand Report",
     dataIndex: "report_ondemand_flag",
     key: "report_ondemand_flag",
+    align: "center",
     sorter: (a, b) => a.report_ondemand_flag.localeCompare(b.report_ondemand_flag),
     width: 180,
     render: text => (
@@ -137,6 +145,7 @@ const columns = (data, configuration) => [
     title: "Closeout Report",
     dataIndex: "report_closeout_flag",
     key: "report_closeout_flag",
+    align: "center",
     sorter: (a, b) => a.report_closeout_flag.localeCompare(b.report_closeout_flag),
     width: 150,
     render: text => (

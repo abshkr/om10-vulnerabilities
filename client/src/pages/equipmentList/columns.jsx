@@ -20,6 +20,7 @@ const defaults = (data, config) => [
     dataIndex: "eqpt_id",
     key: "eqpt_id",
     width: 100,
+    align: "center",
     onFilter: (value, record) => record.eqpt_id.indexOf(value) === 0,
     sorter: (a, b) => a.eqpt_id.localeCompare(b.eqpt_id),
     // eslint-disable-next-line
@@ -68,6 +69,7 @@ const defaults = (data, config) => [
     title: "Locked?",
     dataIndex: "eqpt_lock",
     key: "eqpt_lock",
+    align: "center",
     width: 60,
     render: text => (
       <span>
@@ -79,6 +81,7 @@ const defaults = (data, config) => [
     title: "Load Type",
     dataIndex: "eqpt_load_type_name",
     key: "eqpt_load_type_name",
+    align: "center",
     width: 80,
     filters: generateOptions(data, "eqpt_load_type_name"),
     render: text => (
@@ -90,13 +93,17 @@ const defaults = (data, config) => [
   {
     title: "Must Tare In?",
     dataIndex: "eqp_must_tare_in",
+    align: "center",
     key: "eqp_must_tare_in",
     onFilter: (value, record) => record.eqp_must_tare_in.indexOf(value) === 0,
     sorter: (a, b) => a.eqp_must_tare_in.localeCompare(b.eqp_must_tare_in),
     width: 150,
     render: text => (
       <span>
-        <Icon type={text === "N" ? "close" : "check"} style={{ color: text === "N" ? "#ec6e68" : "#a4ec68" }} />
+        <Icon
+          type={text === "N" ? "close" : "check"}
+          style={{ color: text === "N" ? "#ec6e68" : "#a4ec68" }}
+        />
       </span>
     )
   },
@@ -104,19 +111,32 @@ const defaults = (data, config) => [
     title: "Last Modified",
     dataIndex: "eqpt_last_modified",
     key: "eqpt_last_modified",
+    align: "center",
     width: 250,
-    sorter: (a, b) => validateDateTime(b.eqpt_last_modified) - validateDateTime(a.eqpt_last_modified),
-    // eslint-disable-next-line
-    render: text => <a>{text !== "" ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat) : ""}</a>
+    sorter: (a, b) =>
+      validateDateTime(b.eqpt_last_modified) - validateDateTime(a.eqpt_last_modified),
+
+    render: text => (
+      // eslint-disable-next-line
+      <a>
+        {text !== "" ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat) : ""}
+      </a>
+    )
   },
   {
     title: "Last Used",
     dataIndex: "eqpt_last_used",
     key: "eqpt_last_used",
+    align: "center",
     width: 250,
     sorter: (a, b) => validateDateTime(b.eqpt_last_used) - validateDateTime(a.eqpt_last_used),
-    // eslint-disable-next-line
-    render: text => <a>{text !== "" ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat) : ""}</a>
+
+    render: text => (
+      // eslint-disable-next-line
+      <a>
+        {text !== "" ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat) : ""}
+      </a>
+    )
   }
 ];
 

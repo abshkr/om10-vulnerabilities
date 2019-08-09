@@ -17,7 +17,11 @@ export default class Email extends Component {
   };
 
   render() {
-    const { decorator } = this.props;
+    const { decorator, getValue } = this.props;
+
+    const status = getValue("report_canemail");
+    const enabled = !!status ? status : false;
+
     return (
       <Form.Item label="Company Email">
         {decorator("report_cmpyemail", {
@@ -25,7 +29,7 @@ export default class Email extends Component {
             { required: false, message: "Please Enter An Email" },
             { validator: this.handleCodeValidation }
           ]
-        })(<Input />)}
+        })(<Input disabled={!enabled} />)}
       </Form.Item>
     );
   }

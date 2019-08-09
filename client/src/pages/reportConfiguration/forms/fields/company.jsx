@@ -21,7 +21,7 @@ export default class Company extends Component {
 
     if (!!value) {
       setValue({
-        report_name: value.report_name
+        report_cmpycode: value.report_cmpycode
       });
     }
   }
@@ -32,15 +32,15 @@ export default class Company extends Component {
     const { Option } = Select;
 
     return (
-      <Form.Item label="Report Name">
-        {decorator("report_name", {
+      <Form.Item label="Company Name">
+        {decorator("report_cmpycode", {
           rules: [{ required: true, message: "Please Select a Report" }]
         })(
           <Select>
             {!!companies &&
               companies.map((item, index) => (
-                <Option key={index} value={item.bclass_no}>
-                  {item.bclass_desc}
+                <Option key={index} value={item.cmpy_code}>
+                  {item.cmpy_name}
                 </Option>
               ))}
           </Select>

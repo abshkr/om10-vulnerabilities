@@ -15,7 +15,8 @@ export default class CanActivate extends Component {
   render() {
     const { decorator, getValue } = this.props;
 
-    const enabled = getValue("report_enabled");
+    const status = getValue("report_enabled");
+    const enabled = !!status ? status : false;
 
     return (
       <Form.Item label="Company can activate the report usage">

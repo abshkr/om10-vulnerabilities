@@ -26,14 +26,14 @@ class BaseProductsForm extends Component {
               Modal.destroyAll();
               notification.success({
                 message: "Successfully Created.",
-                description: `You have created the Base Product ${values.base_code}`
+                description: `You have created the Report Configuration ${values.base_code}`
               });
             })
           )
           .catch(function(error) {
             notification.error({
               message: error.message,
-              description: "Failed to create the Base Product."
+              description: "Failed to create the Report Configuration."
             });
           });
       } else {
@@ -56,14 +56,14 @@ class BaseProductsForm extends Component {
               Modal.destroyAll();
               notification.success({
                 message: "Successfully Updated.",
-                description: `You have updated the Base Product ${values.base_code}`
+                description: `You have updated the Report Configuration ${values.base_code}`
               });
             })
           )
           .catch(function(error) {
             notification.error({
               message: error.message,
-              description: "Failed to update the Base Product."
+              description: "Failed to update the Report Configuration."
             });
           });
       } else {
@@ -99,7 +99,7 @@ class BaseProductsForm extends Component {
 
   showDeleteConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to delete this Base Product?",
+      title: "Are you sure you want to delete this Report Configuration?",
       okText: "Yes",
       okType: "danger",
       cancelText: "No",
@@ -110,7 +110,7 @@ class BaseProductsForm extends Component {
 
   showUpdateConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to update this Base Product?",
+      title: "Are you sure you want to update this Report Configuration?",
       okText: "Yes",
       okType: "primary",
       cancelText: "No",
@@ -121,7 +121,7 @@ class BaseProductsForm extends Component {
 
   showCreateConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to update this Base Product?",
+      title: "Are you sure you want to update this Report Configuration?",
       okText: "Yes",
       okType: "primary",
       cancelText: "No",
@@ -170,12 +170,14 @@ class BaseProductsForm extends Component {
                 decorator={getFieldDecorator}
                 value={value}
                 setValue={setFieldsValue}
+                getValue={getFieldValue}
               />
 
               <CanReceiveByEmail
                 decorator={getFieldDecorator}
                 value={value}
                 setValue={setFieldsValue}
+                getValue={getFieldValue}
               />
 
               <Email

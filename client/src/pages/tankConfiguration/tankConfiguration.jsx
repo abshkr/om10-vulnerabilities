@@ -36,7 +36,15 @@ class TankConfiguration extends Component {
       centered: true,
       icon: !!object ? "edit" : "form",
       width: 720,
-      content: <Forms value={object} refresh={this.handleFetch} baseProducts={this.state.baseProducts} profile={this.props.configuration} data={data} />,
+      content: (
+        <Forms
+          value={object}
+          refresh={this.handleFetch}
+          baseProducts={this.state.baseProducts}
+          profile={this.props.configuration}
+          data={data}
+        />
+      ),
       okButtonProps: {
         style: { display: "none" }
       }
@@ -96,14 +104,47 @@ class TankConfiguration extends Component {
       <Page page={"Gantry"} name={"Tank Configuration"} block={true}>
         <Container>
           <Filter value={value} search={this.handleSearch} loading={isLoading} />
-          <Button shape="round" type="primary" icon="reload" style={{ float: "right" }} onClick={this.handleFetch} loading={isLoading} />
-          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right", marginRight: 5 }} onClick={this.handleResize} loading={isLoading} />
-          <Download data={data} type={"Tank Configuration"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
-          <Button shape="round" icon="setting" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} loading={isLoading}>
+          <Button
+            shape="round"
+            type="primary"
+            icon="reload"
+            style={{ float: "right" }}
+            onClick={this.handleFetch}
+            loading={isLoading}
+          />
+          <Button
+            shape="round"
+            type="primary"
+            icon={resize ? "shrink" : "arrows-alt"}
+            style={{ float: "right", marginRight: 5 }}
+            onClick={this.handleResize}
+            loading={isLoading}
+          />
+          <Download
+            data={data}
+            type={"Tank Configuration"}
+            style={{ float: "right", marginRight: 5 }}
+            loading={isLoading}
+          />
+          <Button
+            shape="round"
+            icon="setting"
+            type="primary"
+            style={{ float: "right", marginRight: 5 }}
+            onClick={() => this.handleClick(null)}
+            loading={isLoading}
+          >
             Create Tank Configuration
           </Button>
 
-          <DataTable scroll={2000} data={results} resize={resize} rowKey="tank_code" isLoading={isLoading} click={this.handleClick} columns={columns(results, configuration)} />
+          <DataTable
+            data={results}
+            resize={resize}
+            rowKey="tank_code"
+            isLoading={isLoading}
+            click={this.handleClick}
+            columns={columns(results, configuration)}
+          />
         </Container>
       </Page>
     );
