@@ -278,6 +278,9 @@ class Utilities
 
     public static function create($class, $method = 'create')
     {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
         $database = new Database();
         $db = $database->getConnection();
 

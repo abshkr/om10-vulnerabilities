@@ -77,6 +77,14 @@ class CommonClass
     public function __construct($db)
     {
         $this->conn = $db;
+        if (!isset($this->TABLE_NAME)) {
+            write_log("TABLE_NAME not set for class " . get_class($this),
+                __FILE__, __LINE__, LogLevel::DEBUG);
+        }
+
+        if (!isset($this->VIEW_NAME)) {
+            $this->VIEW_NAME = $this->TABLE_NAME;
+        }
     }
 
     //Will be called before displaying
@@ -550,7 +558,7 @@ class CommonClass
             }
             $and_count += 1;
         }
-
+        // write_log($query, __FILE__, __LINE__);
         $stmt = oci_parse($this->conn, $query);
         foreach ($this->primary_keys as $value) {
             oci_bind_by_name($stmt, ':' . $value, $this->$value);

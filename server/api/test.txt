@@ -232,3 +232,8 @@ https://10.1.10.66/api/pages/report_profile/read.php
 curl -k --insecure -X POST -H "Content-Type: application/json" -d "{\"report_file\": \"All_Load_Details_Bay11.jrxml\",\"report_ondemand_flag\": true,\"report_closeout_flag\": false, \"report_closeout_flag2\": true}" https://10.1.10.66/api/pages/report_profile/update.php
 https://10.1.10.66/api/pages/report_profile/delete.php?report_file=All_Load_Details_Bay11.jrxml
 curl -k --insecure -X POST -H "Content-Type: application/json" -d "{\"report_file\": \"All_Load_Details_Bay11.jrxml\",\"report_ondemand_flag\": true,\"report_closeout_flag\": false, \"report_closeout_flag2\": true,\"report_lang\":\"ENG\",\"report_type\": \"D\"}" https://10.1.10.66/api/pages/report_profile/create.php
+
+https://10.1.10.66/api/pages/area/read.php
+https://10.1.10.66/api/pages/area/create.php?area_k=13&area_name=ADDTEST
+https://10.1.10.66/api/pages/area/update.php?area_k=13&area_name=ADDTEST2
+https://10.1.10.66/api/pages/area/delete.php?area_k=13

@@ -3,17 +3,12 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once 'common_class.php';
 
-class Area
+class Area extends CommonClass
 {
-    // database connection and table name
-    private $conn;
-
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
+    protected $TABLE_NAME = 'AREA_RC';
+    protected $primary_keys = array("area_k");
 
     public function read()
     {
@@ -22,7 +17,8 @@ class Area
                 AREA_NAME,
                 AREA_CPCTY,
                 AREA_EQP_SFT_LNK
-            FROM AREA_RC";
+            FROM AREA_RC
+            ORDER BY AREA_K";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             return $stmt;
