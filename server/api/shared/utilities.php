@@ -233,6 +233,9 @@ class Utilities
 
     public static function retrieve(&$result_array, $object, $stmt)
     {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
         $num = 0;
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
             $num += 1;
