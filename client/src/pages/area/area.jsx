@@ -16,6 +16,7 @@ class Area extends Component {
     this.state = {
       data: null,
       isLoading: true,
+      resize: false,
       value: ""
     };
   }
@@ -30,6 +31,13 @@ class Area extends Component {
       okButtonProps: {
         style: { display: "none" }
       }
+    });
+  };
+
+  handleResize = () => {
+    const { resize } = this.state;
+    this.setState({
+      resize: !resize
     });
   };
 
@@ -59,7 +67,7 @@ class Area extends Component {
   }
 
   render() {
-    const { isLoading, data, filtered } = this.state;
+    const { isLoading, data, filtered, resize } = this.state;
     const results = !!filtered ? filtered : data;
 
     const columns = (data) => [
@@ -83,11 +91,12 @@ class Area extends Component {
       <Page page={"Access Control"} name={"Area"} isLoading={isLoading} block={true} >
         <Container>
           <Filter value={this.state.value} search={this.searchObjects} />
+          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
           <Download data={data} type={"Area"} style={{ float: "right" }} />
           <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null, results)} disabled={isLoading}>
             Create Area
           </Button>
-          <DataTable columns={columns(results)} data={results} isLoading={isLoading} click={this.handleClick} scroll={300} />
+          <DataTable columns={columns(results)} resize={resize} data={results} isLoading={isLoading} click={this.handleClick} scroll={300} />
         </Container>
       </Page>
     );
