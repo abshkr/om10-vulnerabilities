@@ -48,7 +48,10 @@ class CommonClass
     //An array that include all the fileds that can be updated.
     protected $updatable_fields = null;
 
-    //All the fields that should be treated as BOOLEAN in JSON
+    /**
+     * All the fields that should be treated as BOOLEAN in JSON
+     * Check tank.php as an example
+     */
     public $BOOLEAN_FIELDS = null;
 
     //All the fields that should be treated as number in JSON
@@ -74,6 +77,14 @@ class CommonClass
     public function __construct($db)
     {
         $this->conn = $db;
+        if (!isset($this->TABLE_NAME)) {
+            write_log("TABLE_NAME not set for class " . get_class($this),
+                __FILE__, __LINE__, LogLevel::DEBUG);
+        }
+
+        if (!isset($this->VIEW_NAME)) {
+            $this->VIEW_NAME = $this->TABLE_NAME;
+        }
     }
 
     //Will be called before displaying
@@ -252,7 +263,7 @@ class CommonClass
     }
 
     /**
-     * Descendant can implement this function to do some update that 
+     * Descendant can implement this function to do some update that
      * cannot be done in common way. Refer to report_profile as an example
      */
     public function update_supplement()
@@ -264,7 +275,7 @@ class CommonClass
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
-        // write_log(json_encode($this), __FILE__, __LINE__);
+        write_log(json_encode($this), __FILE__, __LINE__);
 
         Utilities::sanitize($this);
 
@@ -395,6 +406,12 @@ class CommonClass
         } else if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        if ($this->update_supplement() === false) {
+            write_log("Failed to execute update_supplement", __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -541,7 +558,7 @@ class CommonClass
             }
             $and_count += 1;
         }
-
+        // write_log($query, __FILE__, __LINE__);
         $stmt = oci_parse($this->conn, $query);
         foreach ($this->primary_keys as $value) {
             oci_bind_by_name($stmt, ':' . $value, $this->$value);

@@ -62,6 +62,13 @@ const paths = [
     })
   },
   {
+    path: ROUTES.AREA,
+    component: Loadable({
+      loader: () => import("../pages/area"),
+      loading: Loading
+    })
+  },
+  {
     path: ROUTES.TANK_INVENTORY,
     component: Loadable({
       loader: () => import("../pages/tankInventory"),
