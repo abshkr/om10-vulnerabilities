@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Form, Input } from "antd";
 import _ from "lodash";
 
-export default class Area_K extends Component {
+export default class AreaID extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
     if (!!value) {

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Form, Button, Tabs, notification, Modal } from "antd";
 import axios from "axios";
-import { Area_K, AreaName } from "./fields";
+import { AreaID, AreaName } from "./fields";
 import { area } from "../../../api";
 
 class AreaForm extends Component {
@@ -130,7 +130,7 @@ class AreaForm extends Component {
         <Form style={{ height: 320 }}>
           <Tabs defaultActiveKey="1">
             <TabPane tab="General" key="1">
-              <Area_K decorator={getFieldDecorator} value={value} editable={false} setValue={setFieldsValue} data={data} />
+              <AreaID decorator={getFieldDecorator} value={value} editable={false} setValue={setFieldsValue} data={data} />
               <AreaName decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
           </Tabs>

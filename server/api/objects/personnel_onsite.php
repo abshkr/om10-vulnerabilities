@@ -14,7 +14,7 @@ class PersonnelOnsite extends CommonClass
         Utilities::sanitize($this);
 
         $query = "
-            SELECT PER_CODE, PER_NAME ,CMPY_NAME, AREA_NAME, PERL_ENTER_TIME
+            SELECT PER_CODE, PER_NAME ,CMPY_NAME, AREA_K, AREA_NAME, PERL_ENTER_TIME
             FROM GUI_PERSONNEL, AREA_RC
             WHERE PER_CODE = PERL_PSN AND PERL_ARA <> 9999 AND PERL_ARA = AREA_K
             ORDER BY PER_CODE";
