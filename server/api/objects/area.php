@@ -14,9 +14,7 @@ class Area extends CommonClass
     {
         $query = "
             SELECT AREA_K,
-                AREA_NAME,
-                AREA_CPCTY,
-                AREA_EQP_SFT_LNK
+                AREA_NAME
             FROM AREA_RC
             ORDER BY AREA_K";
         $stmt = oci_parse($this->conn, $query);
