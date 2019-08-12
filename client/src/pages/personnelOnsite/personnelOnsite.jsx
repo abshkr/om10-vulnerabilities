@@ -1,0 +1,92 @@
+/**
+ * @description
+ * Base Products Screen
+ * Lets the user perform simple CRUD operations to manipulate the Base Products Data.
+ */
+
+import React, { Component } from "react";
+import auth from "../../auth";
+import { Button, notification } from "antd";
+import { Page, Filter, DataTable, Download, Container } from "../../components";
+import { personnelOnsite } from "../../api";
+import axios from "axios";
+import search from "../../utils/search";
+import columns from "./columns";
+// import Forms from "./forms";
+
+import "./personnelOnsite.css";
+
+class PersonnelOnsite extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: "",
+      data: [],
+      resize: false,
+      isLoading: true
+    };
+  }
+
+  handleFetch = () => {
+    this.setState({ isLoading: true });
+
+    axios
+      .all([personnelOnsite.read()])
+      .then(
+        axios.spread((personnel) => {
+          this.setState({
+            data: personnel.data.records,
+            isLoading: false,
+            filtered: null,
+            value: ""
+          });
+        })
+      )
+      .catch(error => {
+        notification.error({
+          message: error.message,
+          description: "Failed to make the request."
+        });
+      });
+  };
+
+  handleResize = () => {
+    const { resize } = this.state;
+
+    this.setState({
+      resize: !resize
+    });
+  };
+
+  handleSearch = query => {
+    const { value } = query.target;
+
+    this.setState({
+      filtered: search(value, this.state.data),
+      value
+    });
+  };
+
+  componentDidMount() {
+    this.handleFetch();
+  }
+
+  render() {
+    const { data, isLoading, filtered, value, resize } = this.state;
+
+    const results = !!filtered ? filtered : data;
+
+    return (
+      <Page page={"Access Control"} name={"Personnel Onsite"} isLoading={isLoading} block={true}>
+        <Container>
+          <Filter value={value} search={this.handleSearch} loading={isLoading} />
+          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
+          <Download data={results} type={"personnel"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
+          <DataTable rowKey="per_code" resize={resize} columns={columns(results)} data={results} isLoading={isLoading} />
+        </Container>
+      </Page>
+    );
+  }
+}
+
+export default auth(PersonnelOnsite);

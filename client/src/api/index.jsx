@@ -7,6 +7,7 @@ import * as folioSummary from "./folioSummary";
 import * as personnel from "./personnel";
 import * as logicalPrinters from "./logicalPrinters";
 import * as area from "./area";
+import * as personnelOnsite from "./personnelOnsite";
 import * as physicalPrinters from "./physicalPrinters";
 import * as journal from "./journal";
 import * as equipmentList from "./equipmentList";
@@ -16,6 +17,7 @@ import api from "./api";
 export {
   tanks,
   area,
+  personnelOnsite,
   journal,
   baseProducts,
   adaptiveFlow,

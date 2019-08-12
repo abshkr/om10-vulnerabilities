@@ -137,6 +137,7 @@ class AreaForm extends Component {
                 setValue={setFieldsValue}
                 data={data}
               />
+
               <AreaName decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
           </Tabs>
