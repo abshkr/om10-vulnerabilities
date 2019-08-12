@@ -132,6 +132,13 @@ const paths = [
     })
   },
   {
+    path: ROUTES.PERSONNEL_ON_SITE,
+    component: Loadable({
+      loader: () => import("../pages/personnelOnsite"),
+      loading: Loading
+    })
+  },
+  {
     path: ROUTES.DRIVER_MESSAGING,
     component: Loadable({
       loader: () => import("../pages/driverMessaging"),
