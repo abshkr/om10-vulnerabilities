@@ -20,7 +20,9 @@ export default class CanReceiveByPrinting extends Component {
 
     return (
       <Form.Item label="Company can receive the report by printing">
-        {decorator("report_canprint")(<Checkbox disabled={!enabled} />)}
+        {decorator("report_canprint", { valuePropName: "checked" })(
+          <Checkbox disabled={!enabled} />
+        )}
       </Form.Item>
     );
   }

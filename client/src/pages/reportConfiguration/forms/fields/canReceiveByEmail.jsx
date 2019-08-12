@@ -20,7 +20,9 @@ export default class CanReceiveByEmail extends Component {
 
     return (
       <Form.Item label="Company can receive the report by email">
-        {decorator("report_canemail")(<Checkbox disabled={!enabled} />)}
+        {decorator("report_canemail", { valuePropName: "checked" })(
+          <Checkbox disabled={!enabled} />
+        )}
       </Form.Item>
     );
   }

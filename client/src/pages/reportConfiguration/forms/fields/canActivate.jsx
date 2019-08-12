@@ -7,7 +7,7 @@ export default class CanActivate extends Component {
 
     if (!!value) {
       setValue({
-        report_closeout_flag: value.report_closeout_flag
+        report_active: value.report_active
       });
     }
   }
@@ -20,7 +20,7 @@ export default class CanActivate extends Component {
 
     return (
       <Form.Item label="Company can activate the report usage">
-        {decorator("report_closeout_flag")(<Checkbox disabled={!enabled} />)}
+        {decorator("report_active", { valuePropName: "checked" })(<Checkbox disabled={!enabled} />)}
       </Form.Item>
     );
   }

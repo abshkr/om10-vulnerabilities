@@ -62,10 +62,7 @@ const columns = (data, configuration) => [
 
     render: text => (
       <span>
-        <Icon
-          type={text !== "Y" ? "close" : "check"}
-          style={{ color: text !== "Y" ? "#ec6e68" : "#a4ec68" }}
-        />
+        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
       </span>
     )
   },
@@ -79,10 +76,7 @@ const columns = (data, configuration) => [
 
     render: text => (
       <span>
-        <Icon
-          type={text !== "Y" ? "close" : "check"}
-          style={{ color: text !== "Y" ? "#ec6e68" : "#a4ec68" }}
-        />
+        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
       </span>
     )
   },
@@ -95,10 +89,7 @@ const columns = (data, configuration) => [
     sorter: (a, b) => a.report_canprint.localeCompare(b.report_canprint),
     render: text => (
       <span>
-        <Icon
-          type={text !== "Y" ? "close" : "check"}
-          style={{ color: text !== "Y" ? "#ec6e68" : "#a4ec68" }}
-        />
+        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
       </span>
     )
   },
@@ -111,10 +102,7 @@ const columns = (data, configuration) => [
     width: 160,
     render: text => (
       <span>
-        <Icon
-          type={text !== "Y" ? "close" : "check"}
-          style={{ color: text !== "Y" ? "#ec6e68" : "#a4ec68" }}
-        />
+        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
       </span>
     )
   },
@@ -134,10 +122,7 @@ const columns = (data, configuration) => [
     width: 180,
     render: text => (
       <span>
-        <Icon
-          type={text !== "1" ? "close" : "check"}
-          style={{ color: text !== "1" ? "#ec6e68" : "#a4ec68" }}
-        />
+        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
       </span>
     )
   },
@@ -150,10 +135,7 @@ const columns = (data, configuration) => [
     width: 150,
     render: text => (
       <span>
-        <Icon
-          type={text !== "Y" ? "close" : "check"}
-          style={{ color: text !== "Y" ? "#ec6e68" : "#a4ec68" }}
-        />
+        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
       </span>
     )
   }

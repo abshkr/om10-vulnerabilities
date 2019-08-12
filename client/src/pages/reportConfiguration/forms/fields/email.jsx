@@ -26,7 +26,7 @@ export default class Email extends Component {
       <Form.Item label="Company Email">
         {decorator("report_cmpyemail", {
           rules: [
-            { required: false, message: "Please Enter An Email" },
+            { required: enabled, message: "Please Enter An Email" },
             { validator: this.handleCodeValidation }
           ]
         })(<Input disabled={!enabled} />)}
