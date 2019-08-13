@@ -16,7 +16,7 @@ export default class Enable extends Component {
     const { decorator } = this.props;
     return (
       <Form.Item label="Enable the report usage for company">
-        {decorator("report_enabled")(<Checkbox />)}
+        {decorator("report_enabled", { valuePropName: "checked" })(<Checkbox />)}
       </Form.Item>
     );
   }

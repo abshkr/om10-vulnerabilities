@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Form, Input } from "antd";
 import _ from "lodash";
 
-export default class AreaID extends Component {
+export default class Area extends Component {
   componentDidMount() {
     const { value, setValue } = this.props;
     if (!!value) {
@@ -30,7 +30,10 @@ export default class AreaID extends Component {
     return (
       <Form.Item label="Area ID">
         {decorator("area_k", {
-          rules: [{ required: true, message: "Please set area id" }, { validator: this.handleValidation }]
+          rules: [
+            { required: true, message: "Please set area id" },
+            { validator: this.handleValidation }
+          ]
         })(<Input disabled={!!value} />)}
       </Form.Item>
     );

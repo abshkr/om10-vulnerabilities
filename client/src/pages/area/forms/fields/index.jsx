@@ -1,4 +1,4 @@
-import AreaID from "./area";
-import AreaName from "./area_name";
+import Area from "./area";
+import AreaName from "./areaName";
 
-export { AreaID, AreaName };
+export { Area, AreaName };

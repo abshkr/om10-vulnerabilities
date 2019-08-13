@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Form, Button, Tabs, notification, Modal } from "antd";
 import axios from "axios";
-import { AreaID, AreaName } from "./fields";
+import { Area, AreaName } from "./fields";
 import { area } from "../../../api";
 
 class AreaForm extends Component {
@@ -20,7 +20,7 @@ class AreaForm extends Component {
               });
             })
           )
-          .catch(function (error) {
+          .catch(function(error) {
             notification.error({
               message: error.message,
               description: "Failed to create the area."
@@ -50,7 +50,7 @@ class AreaForm extends Component {
               });
             })
           )
-          .catch(function (error) {
+          .catch(function(error) {
             notification.error({
               message: error.message,
               description: "Failed to update the area."
@@ -79,7 +79,7 @@ class AreaForm extends Component {
           });
         })
       )
-      .catch(function (error) {
+      .catch(function(error) {
         notification.error({
           message: error.message,
           description: "Failed to delete the area."
@@ -130,13 +130,25 @@ class AreaForm extends Component {
         <Form style={{ height: 320 }}>
           <Tabs defaultActiveKey="1">
             <TabPane tab="General" key="1">
-              <AreaID decorator={getFieldDecorator} value={value} editable={false} setValue={setFieldsValue} data={data} />
+              <Area
+                decorator={getFieldDecorator}
+                value={value}
+                editable={false}
+                setValue={setFieldsValue}
+                data={data}
+              />
+
               <AreaName decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
             </TabPane>
           </Tabs>
         </Form>
 
-        <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
+        <Button
+          shape="round"
+          icon="close"
+          style={{ float: "right" }}
+          onClick={() => Modal.destroyAll()}
+        >
           Cancel
         </Button>
 
@@ -151,7 +163,13 @@ class AreaForm extends Component {
         </Button>
 
         {!!value && (
-          <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
+          <Button
+            shape="round"
+            type="danger"
+            icon="delete"
+            style={{ float: "right", marginRight: 5 }}
+            onClick={this.showDeleteConfirm}
+          >
             Delete
           </Button>
         )}
