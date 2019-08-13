@@ -29,25 +29,24 @@ class PersonnelForm extends Component {
   handleUpdate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log(values);
-        // axios
-        //   .all([equipmentList.updateEquipment(values)])
-        //   .then(
-        //     axios.spread(response => {
-        //       this.props.refresh();
-        //       Modal.destroyAll();
-        //       notification.success({
-        //         message: "Successfully Updated.",
-        //         description: `You have updated the Equipment ${values.eqpt_id}`
-        //       });
-        //     })
-        //   )
-        //   .catch(function(error) {
-        //     notification.error({
-        //       message: error.message,
-        //       description: "Failed to updated the Equipment."
-        //     });
-        //   });
+        axios
+          .all([equipmentList.updateEquipment(values)])
+          .then(
+            axios.spread(response => {
+              this.props.refresh();
+              Modal.destroyAll();
+              notification.success({
+                message: "Successfully Updated.",
+                description: `You have updated the Equipment ${values.eqpt_id}`
+              });
+            })
+          )
+          .catch(function(error) {
+            notification.error({
+              message: error.message,
+              description: "Failed to updated the Equipment."
+            });
+          });
       } else {
         notification.error({
           message: "Validation Failed.",
