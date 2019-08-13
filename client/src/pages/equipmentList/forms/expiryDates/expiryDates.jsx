@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Table, Input, Button, Popconfirm, Form, Select, DatePicker, Icon, Switch } from "antd";
+import { Table, Input, Button, Popconfirm, Form, Select, DatePicker, Icon } from "antd";
 import { equipmentList } from "../../../../api";
 import axios from "axios";
 import _ from "lodash";

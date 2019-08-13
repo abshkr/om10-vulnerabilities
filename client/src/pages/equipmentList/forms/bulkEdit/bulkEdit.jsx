@@ -10,7 +10,7 @@ export default class BulkEdit extends Component {
 
   componentDidMount() {
     const { data, value } = this.props;
-    const matches = _.filter(data, ["eqpt_code", value.eqpt_code]);
+    const matches = _.filter(data, ["eqpt_title", value.eqpt_title]);
 
     this.setState({
       data: matches

@@ -36,7 +36,6 @@ const IButtonForm = Form.create({ name: "form_in_modal" })(
     };
 
     render() {
-      const { isValid } = this.state;
       const { visible, onCancel, onCreate, form } = this.props;
       const { getFieldDecorator } = form;
       return (
