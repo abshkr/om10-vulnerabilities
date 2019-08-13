@@ -23,7 +23,7 @@ class Area extends Component {
 
   handleClick = (object, data) => {
     Modal.info({
-      title: !!object ? `Editing (${object.prntr})` : "Create",
+      title: !!object ? `Editing (${object.area_k} / ${object.area_name})` : "Create",
       centered: true,
       icon: !!object ? "edit" : "form",
       width: 720,
@@ -70,33 +70,56 @@ class Area extends Component {
     const { isLoading, data, filtered, resize } = this.state;
     const results = !!filtered ? filtered : data;
 
-    const columns = (data) => [
+    const columns = data => [
       {
         title: "Area ID",
         dataIndex: "area_k",
         key: "area_k",
-        sorter: (a, b) => a.area_k - b.area_k,
+        sorter: (a, b) => a.area_k - b.area_k
       },
       {
         title: "Area Name",
         dataIndex: "area_name",
         key: "area_name",
-        sorter: (a, b) => { return a.area_name.localeCompare(b.area_name) },
+        sorter: (a, b) => {
+          return a.area_name.localeCompare(b.area_name);
+        },
         filters: generate(data, "area_name"),
         onFilter: (value, record) => record.area_name.indexOf(value) === 0
       }
     ];
 
     return (
-      <Page page={"Access Control"} name={"Area"} isLoading={isLoading} block={true} >
+      <Page page={"Access Control"} name={"Area"} isLoading={isLoading} block={true}>
         <Container>
           <Filter value={this.state.value} search={this.searchObjects} />
-          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
-          <Download data={data} type={"Area"} style={{ float: "right" }} />
-          <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null, results)} disabled={isLoading}>
+          <Button
+            shape="round"
+            type="primary"
+            icon={resize ? "shrink" : "arrows-alt"}
+            style={{ float: "right" }}
+            onClick={this.handleResize}
+            disabled={isLoading}
+          />
+          <Download data={data} type={"Area"} style={{ float: "right", marginRight: 5 }} />
+          <Button
+            shape="round"
+            type="primary"
+            icon="environment"
+            style={{ float: "right", marginRight: 5 }}
+            onClick={() => this.handleClick(null, results)}
+            disabled={isLoading}
+          >
             Create Area
           </Button>
-          <DataTable columns={columns(results)} resize={resize} data={results} isLoading={isLoading} click={this.handleClick} scroll={300} />
+          <DataTable
+            columns={columns(results)}
+            resize={resize}
+            data={results}
+            isLoading={isLoading}
+            click={this.handleClick}
+            scroll={300}
+          />
         </Container>
       </Page>
     );

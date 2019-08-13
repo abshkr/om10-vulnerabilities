@@ -157,3 +157,7 @@
 .ant-calendar-ok-btn {
   color: white !important;
 }
+
+.ant-switch-checked {
+  background-color: #68a4ec;
+}

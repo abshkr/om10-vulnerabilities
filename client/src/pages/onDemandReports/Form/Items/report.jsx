@@ -6,7 +6,7 @@ const Option = Select.Option;
 
 const ReportsForm = ({ decorator, reports, getFilter, loading, validator }) => {
   return (
-    <FormItem label="Report" validateStatus={loading} hasFeedback>
+    <FormItem label="Report" hasFeedback>
       {decorator("report", {
         rules: [{ required: true, message: "Please select a report." }]
       })(

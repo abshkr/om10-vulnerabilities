@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Table, Input, Button, Popconfirm, Form, Select, DatePicker, Icon } from "antd";
+import { Table, Input, Button, Popconfirm, Form, Select, DatePicker, Icon, Switch } from "antd";
 import { equipmentList } from "../../../../api";
 import axios from "axios";
 import _ from "lodash";
@@ -72,7 +72,11 @@ class EditableCell extends React.Component {
             >
               {!!expiry &&
                 expiry.map((item, index) => (
-                  <Option key={index} value={item.edt_type_desc} disabled={unique.includes(item.edt_type_desc)}>
+                  <Option
+                    key={index}
+                    value={item.edt_type_desc}
+                    disabled={unique.includes(item.edt_type_desc)}
+                  >
                     {item.edt_type_desc}
                   </Option>
                 ))}
@@ -80,7 +84,11 @@ class EditableCell extends React.Component {
           )}
         </Form.Item>
       ) : (
-        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
+        <div
+          className="editable-cell-value-wrap"
+          style={{ paddingRight: 24 }}
+          onClick={this.toggleEdit}
+        >
           {children}
         </div>
       );
@@ -90,14 +98,22 @@ class EditableCell extends React.Component {
       return editing ? (
         <Form.Item style={{ margin: 0 }}>
           {form.getFieldDecorator("ed_status")(
-            <Select ref={node => (this.input = node)} onPressEnter={value => this.save(value, dataIndex)} onBlur={value => this.save(value, dataIndex)}>
+            <Select
+              ref={node => (this.input = node)}
+              onPressEnter={value => this.save(value, dataIndex)}
+              onBlur={value => this.save(value, dataIndex)}
+            >
               <Option value="0">Disabled</Option>
               <Option value="1">Enabled</Option>
             </Select>
           )}
         </Form.Item>
       ) : (
-        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
+        <div
+          className="editable-cell-value-wrap"
+          style={{ paddingRight: 24 }}
+          onClick={this.toggleEdit}
+        >
           {children}
         </div>
       );
@@ -106,12 +122,22 @@ class EditableCell extends React.Component {
     if (dataIndex === "ed_exp_date") {
       return editing ? (
         <Form.Item style={{ margin: 0 }}>
-          {form.getFieldDecorator(dataIndex, {
+          {form.getFieldDecorator("ed_exp_date", {
             rules: [{ type: "object" }]
-          })(<DatePicker ref={node => (this.input = node)} onChange={value => this.save(value, dataIndex)} format="YYYY-MM-DD" />)}
+          })(
+            <DatePicker
+              ref={node => (this.input = node)}
+              onChange={value => this.save(value, dataIndex)}
+              format="YYYY-MM-DD"
+            />
+          )}
         </Form.Item>
       ) : (
-        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
+        <div
+          className="editable-cell-value-wrap"
+          style={{ paddingRight: 24 }}
+          onClick={this.toggleEdit}
+        >
           {children}
         </div>
       );
@@ -119,11 +145,19 @@ class EditableCell extends React.Component {
       return editing ? (
         <Form.Item style={{ margin: 0 }}>
           {form.getFieldDecorator(dataIndex)(
-            <Input ref={node => (this.input = node)} onPressEnter={value => this.save(value, dataIndex)} onBlur={value => this.save(value, dataIndex)} />
+            <Input
+              ref={node => (this.input = node)}
+              onPressEnter={value => this.save(value, dataIndex)}
+              onBlur={value => this.save(value, dataIndex)}
+            />
           )}
         </Form.Item>
       ) : (
-        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
+        <div
+          className="editable-cell-value-wrap"
+          style={{ paddingRight: 24 }}
+          onClick={this.toggleEdit}
+        >
           {children}
         </div>
       );
@@ -131,8 +165,25 @@ class EditableCell extends React.Component {
   };
 
   render() {
-    const { editable, dataIndex, title, record, index, handleSave, children, ...restProps } = this.props;
-    return <td {...restProps}>{editable ? <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer> : children}</td>;
+    const {
+      editable,
+      dataIndex,
+      title,
+      record,
+      index,
+      handleSave,
+      children,
+      ...restProps
+    } = this.props;
+    return (
+      <td {...restProps}>
+        {editable ? (
+          <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>
+        ) : (
+          children
+        )}
+      </td>
+    );
   }
 }
 
@@ -142,7 +193,8 @@ export default class ExpiryDates extends Component {
     this.state = {
       expiryTypes: [],
       dataSource: !!this.props.value ? this.props.value.expiry_dates : [],
-      count: 3
+      count: 3,
+      bulkEdit: false
     };
   }
 
@@ -217,6 +269,7 @@ export default class ExpiryDates extends Component {
         dataIndex: "edt_type_desc",
         key: "edt_type_desc",
         width: 250,
+
         editable: true
       },
       {
@@ -224,23 +277,45 @@ export default class ExpiryDates extends Component {
         dataIndex: "ed_exp_date",
         key: "ed_exp_date",
         width: 300,
+        align: "center",
         editable: true,
-        render: (text, record) => <span> {text === "" ? "Select A Date" : !!text ? text.substring(0, 10) : "Select A Date"}</span>
+        render: (text, record) => (
+          <span>
+            {" "}
+            {text === "" ? "Select A Date" : !!text ? text.substring(0, 10) : "Select A Date"}
+          </span>
+        )
       },
       {
         title: "Enabled",
         dataIndex: "ed_status",
         key: "ed_status",
+        align: "center",
         editable: true,
-        render: (text, record) => <span> {text === "" ? "Select A Status" : !!text ? <Icon type={text === "1" ? "check" : "close"} /> : "Select A Status"}</span>
+        render: (text, record) => (
+          <span>
+            {" "}
+            {text === "" ? (
+              "Select A Status"
+            ) : !!text ? (
+              <Icon type={text === "1" ? "check" : "close"} />
+            ) : (
+              "Select A Status"
+            )}
+          </span>
+        )
       },
       {
         title: "Delete",
         dataIndex: "operation",
+        align: "center",
         key: "operation",
         render: (text, record) =>
           this.state.dataSource.length >= 1 ? (
-            <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.edt_type_code)}>
+            <Popconfirm
+              title="Sure to delete?"
+              onConfirm={() => this.handleDelete(record.edt_type_code)}
+            >
               {/*eslint-disable */}
               <a href="#">Delete</a>
               {/*eslint-enable */}
@@ -272,7 +347,14 @@ export default class ExpiryDates extends Component {
 
     return (
       <div>
-        <Button shape="round" icon="calendar" onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }} disabled={dataSource.length === expiryTypes.length}>
+        <Button
+          shape="round"
+          icon="calendar"
+          onClick={this.handleAdd}
+          type="primary"
+          style={{ marginBottom: 16 }}
+          disabled={dataSource.length === expiryTypes.length}
+        >
           Add New Expiry
         </Button>
 

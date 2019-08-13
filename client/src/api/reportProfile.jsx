@@ -1,8 +1,8 @@
 import axios from "axios";
 import api from "./api";
 
-export function readConfiguration() {
-  return axios.get(`https://${api}/api/pages/report_config/read.php`);
+export function readProfile() {
+  return axios.get(`https://${api}/api/pages/report_profile/read.php`);
 }
 
 export function readCompany() {
@@ -13,14 +13,14 @@ export function readReports() {
   return axios.get(`https://${api}/api/pages/report_config/reports.php`);
 }
 
-export function createConfiguration(payload) {
-  return axios.post(`https://${api}/api/pages/report_config/create.php`, payload);
+export function createProfile(payload) {
+  return axios.post(`https://${api}/api/pages/report_profile/create.php`, payload);
 }
 
-export function updateConfiguration(payload) {
-  return axios.post(`https://${api}/api/pages/report_config/update.php`, payload);
+export function updateProfile(payload) {
+  return axios.post(`https://${api}/api/pages/report_profile/update.php`, payload);
 }
 
-export function deleteConfiguration(payload) {
-  return axios.post(`https://${api}/api/pages/report_config/delete.php`, payload);
+export function deleteProfile(payload) {
+  return axios.post(`https://${api}/api/pages/report_profile/delete.php`, payload);
 }

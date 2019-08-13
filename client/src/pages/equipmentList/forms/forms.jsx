@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 import _ from "lodash";
 import axios from "axios";
+import BulkEdit from "./bulkEdit";
 import ExpiryDates from "./expiryDates";
 import Compartments from "./compartments";
 import { equipmentList } from "../../../api";
@@ -21,27 +22,32 @@ import {
 } from "./fields";
 
 class PersonnelForm extends Component {
+  state = {
+    bulkEdit: false
+  };
+
   handleUpdate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([equipmentList.updateEquipment(values)])
-          .then(
-            axios.spread(response => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: "Successfully Updated.",
-                description: `You have updated the Equipment ${values.eqpt_id}`
-              });
-            })
-          )
-          .catch(function(error) {
-            notification.error({
-              message: error.message,
-              description: "Failed to updated the Equipment."
-            });
-          });
+        console.log(values);
+        // axios
+        //   .all([equipmentList.updateEquipment(values)])
+        //   .then(
+        //     axios.spread(response => {
+        //       this.props.refresh();
+        //       Modal.destroyAll();
+        //       notification.success({
+        //         message: "Successfully Updated.",
+        //         description: `You have updated the Equipment ${values.eqpt_id}`
+        //       });
+        //     })
+        //   )
+        //   .catch(function(error) {
+        //     notification.error({
+        //       message: error.message,
+        //       description: "Failed to updated the Equipment."
+        //     });
+        //   });
       } else {
         notification.error({
           message: "Validation Failed.",
@@ -246,6 +252,18 @@ class PersonnelForm extends Component {
                 equipment={getFieldValue("eqpt_etp")}
               />
             </TabPane>
+
+            {!!value && (
+              <TabPane tab="Bulk Edit" key="4" forceRender={true}>
+                <BulkEdit
+                  decorator={getFieldDecorator}
+                  form={form}
+                  value={value}
+                  setValue={setFieldsValue}
+                  data={data}
+                />
+              </TabPane>
+            )}
           </Tabs>
         </Form>
 

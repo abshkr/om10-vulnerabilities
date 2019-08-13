@@ -21,7 +21,7 @@ export default class Name extends Component {
 
     if (!!value) {
       setValue({
-        report_name: value.report_name
+        report_file: value.report_file
       });
     }
   }
@@ -33,13 +33,13 @@ export default class Name extends Component {
 
     return (
       <Form.Item label="Report Name">
-        {decorator("report_name", {
+        {decorator("report_file", {
           rules: [{ required: true, message: "Please Select a Report Name" }]
         })(
           <Select>
             {!!reports &&
               reports.map((item, index) => (
-                <Option key={index} value={item.report_name}>
+                <Option key={index} value={item.report_file}>
                   {item.report_name}
                 </Option>
               ))}

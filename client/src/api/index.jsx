@@ -12,6 +12,7 @@ import * as physicalPrinters from "./physicalPrinters";
 import * as journal from "./journal";
 import * as equipmentList from "./equipmentList";
 import * as reportConfiguration from "./reportConfiguration";
+import * as reportProfile from "./reportProfile";
 import api from "./api";
 
 export {
@@ -29,5 +30,6 @@ export {
   logicalPrinters,
   physicalPrinters,
   equipmentList,
-  reportConfiguration
+  reportConfiguration,
+  reportProfile
 };

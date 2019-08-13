@@ -29,7 +29,7 @@ export const HAZCHEM_CODES = "/html/hazchem-codes";
 export const LOAD_METERS = "/html/load-meters";
 
 export const JOURNAL = "/html/journal";
-export const PROFILE = "/html/profile";
+export const REPORT_PROFILE = "/html/report-profile";
 export const ON_DEMAND_REPORTS = "/html/on-demand-reports";
 export const REPORT_CONFIGURATION = "/html/report-configuration";
 export const PERSONNEL_ON_SITE = "/html/personnel-on-site";

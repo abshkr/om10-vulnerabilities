@@ -96,12 +96,38 @@ class EquipmentList extends Component {
       <Page page={"Access Control"} name={"Equipment List"} isLoading={isLoading} block={true}>
         <Container>
           <Filter value={value} search={this.handleSearch} loading={isLoading} />
-          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
-          <Download data={data} type={"equipment_list"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
-          <Button shape="round" icon="build" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
+          <Button
+            shape="round"
+            type="primary"
+            icon={resize ? "shrink" : "arrows-alt"}
+            style={{ float: "right" }}
+            onClick={this.handleResize}
+            disabled={isLoading}
+          />
+          <Download
+            data={data}
+            type={"equipment_list"}
+            style={{ float: "right", marginRight: 5 }}
+            loading={isLoading}
+          />
+          <Button
+            shape="round"
+            icon="build"
+            type="primary"
+            style={{ float: "right", marginRight: 5 }}
+            onClick={() => this.handleClick(null)}
+            disabled={isLoading}
+          >
             Create Equipment
           </Button>
-          <DataTable rowKey="eqpt_id" resize={resize} columns={columns(results, configuration)} data={results} isLoading={isLoading} click={this.handleClick} />
+          <DataTable
+            rowKey="eqpt_id"
+            resize={resize}
+            columns={columns(results, configuration)}
+            data={results}
+            isLoading={isLoading}
+            click={this.handleClick}
+          />
         </Container>
       </Page>
     );

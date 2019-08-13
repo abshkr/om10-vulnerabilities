@@ -151,6 +151,13 @@ const paths = [
       loader: () => import("../pages/reportConfiguration"),
       loading: Loading
     })
+  },
+  {
+    path: ROUTES.REPORT_PROFILE,
+    component: Loadable({
+      loader: () => import("../pages/reportProfile"),
+      loading: Loading
+    })
   }
 ];
 
