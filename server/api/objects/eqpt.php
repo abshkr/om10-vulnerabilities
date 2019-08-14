@@ -9,6 +9,15 @@ include_once 'common_class.php';
 
 class Equipment extends CommonClass
 {
+    public $BOOLEAN_FIELDS = array(
+        "ADJ_CMPT_LOCK" => 1
+    );
+
+    public $NUMBER_FIELDS = array(
+        "SFL",
+        "SAFEFILL"
+    );
+
     public function compartmentCount($eqpt_id)
     {
         Utilities::sanitize($this);
@@ -336,11 +345,7 @@ class Equipment extends CommonClass
 
     public function loadType()
     {
-        $query = "
-            SELECT LD_TYPE_ID,
-                LD_TYPE_CODE,
-                LD_TYPE_TEXT
-            FROM EQUIP_LIST_LD_TYPE_LOOKUP";
+        $query = "SELECT * FROM EQUIP_LIST_LD_TYPE_LOOKUP ORDER BY LD_TYPE_ID";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             return $stmt;

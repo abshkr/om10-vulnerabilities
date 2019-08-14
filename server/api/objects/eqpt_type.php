@@ -17,6 +17,9 @@ class EquipmentType extends CommonClass
         "ETYP_N_ITEMS",
         "ETYP_MAX_GROSS",
         "CMPTNU",
+        "SAFEFILL",
+        "SFL",
+        "CMPT_NO"
     );
 
     public function equipmentCount($eqpt_etp)
@@ -107,7 +110,7 @@ class EquipmentType extends CommonClass
         }
     }
 
-    public function compartments($etyp_id)
+    public function compartments()
     {
         Utilities::sanitize($this);
 
@@ -115,12 +118,13 @@ class EquipmentType extends CommonClass
             SELECT CMPT_NO,
                 DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS,
                 CMPT_CAPACIT SAFEFILL,
-                CMPT_CAPACIT SFL
+                CMPT_CAPACIT SFL,
+                COMPARTMENT.CMPT_ETYP ETYP_ID
             FROM COMPARTMENT
             WHERE COMPARTMENT.CMPT_ETYP = :etyp_id
             ORDER BY CMPT_NO";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':etyp_id', $etyp_id);
+        oci_bind_by_name($stmt, ':etyp_id', $this->etyp_id);
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
