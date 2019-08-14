@@ -25,7 +25,7 @@ class ReportProfileForm extends Component {
               Modal.destroyAll();
               notification.success({
                 message: "Successfully Created.",
-                description: `You have created the Report Profile ${values.base_code}`
+                description: `You have created the Report Profile ${values.report_file}`
               });
             })
           )
@@ -55,7 +55,7 @@ class ReportProfileForm extends Component {
               Modal.destroyAll();
               notification.success({
                 message: "Successfully Updated.",
-                description: `You have updated the Report Profile ${values.base_code}`
+                description: `You have updated the Report Profile ${values.report_file}`
               });
             })
           )
@@ -84,7 +84,7 @@ class ReportProfileForm extends Component {
           Modal.destroyAll();
           notification.success({
             message: "Successfully Deleted.",
-            description: `You have deleted the Tank ${value.base_code}`
+            description: `You have deleted the Tank ${value.report_file}`
           });
         })
       )
@@ -175,14 +175,14 @@ class ReportProfileForm extends Component {
                 getValue={getFieldValue}
               />
 
-              <CloseOutReport
+              <OnDemandReport
                 decorator={getFieldDecorator}
                 value={value}
                 setValue={setFieldsValue}
                 getValue={getFieldValue}
               />
 
-              <OnDemandReport
+              <CloseOutReport
                 decorator={getFieldDecorator}
                 value={value}
                 setValue={setFieldsValue}

@@ -26,7 +26,9 @@ class BaseProductsForm extends Component {
               Modal.destroyAll();
               notification.success({
                 message: "Successfully Created.",
-                description: `You have created the Report Configuration ${values.base_code}`
+                description: `You have created the Report Configuration ${
+                  values.report_jasper_file
+                }`
               });
             })
           )
@@ -56,7 +58,9 @@ class BaseProductsForm extends Component {
               Modal.destroyAll();
               notification.success({
                 message: "Successfully Updated.",
-                description: `You have updated the Report Configuration ${values.base_code}`
+                description: `You have updated the Report Configuration ${
+                  values.report_jasper_file
+                }`
               });
             })
           )
@@ -85,7 +89,7 @@ class BaseProductsForm extends Component {
           Modal.destroyAll();
           notification.success({
             message: "Successfully Deleted.",
-            description: `You have deleted the Tank ${value.base_code}`
+            description: `You have deleted the Tank ${value.report_jasper_file}`
           });
         })
       )

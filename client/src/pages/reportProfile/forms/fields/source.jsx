@@ -21,7 +21,7 @@ export default class Source extends Component {
 
     if (!!value) {
       setValue({
-        report_jasper_file: value.report_jasper_file
+        report_file: value.report_file
       });
     }
   }
@@ -33,7 +33,7 @@ export default class Source extends Component {
 
     return (
       <Form.Item label="Source">
-        {decorator("report_jasper_file", {
+        {decorator("report_file", {
           rules: [{ required: true, message: "Please Select a Report Source" }]
         })(
           <Select disabled={!!value}>

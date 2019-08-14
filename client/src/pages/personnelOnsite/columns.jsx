@@ -1,11 +1,9 @@
 import React from "react";
+import moment from "moment";
 
-import _ from "lodash";
 import { generateOptions, validateDateTime } from "../../utils";
 
-const columns = (data) => defaults(data);
-
-const defaults = (data) => {
+const columns = (data, configuration) => {
   return [
     {
       title: "Code",
@@ -13,8 +11,8 @@ const defaults = (data) => {
       key: "per_code",
       width: 100,
       // fixed: "left",
-      // align: "center",
-      sorter: (a, b) => a.per_code.localeCompare(b.per_code),
+      align: "center",
+      sorter: (a, b) => a.per_code.localeCompare(b.per_code)
     },
     {
       title: "Name",
@@ -36,6 +34,7 @@ const defaults = (data) => {
       title: "Area ID",
       dataIndex: "area_k",
       key: "area_k",
+      align: "center",
       width: 150,
       sorter: (a, b) => a.area_k.localeCompare(b.area_k)
     },
@@ -55,8 +54,17 @@ const defaults = (data) => {
       width: 130,
       align: "center",
       sorter: (a, b) =>
-        validateDateTime(b.perl_enter_time) - validateDateTime(a.perl_enter_time),
-    },
+        validateDateTime(b.per_last_modified) - validateDateTime(a.per_last_modified),
+      // eslint-disable-next-line
+      render: text => (
+        // eslint-disable-next-line
+        <a>
+          {text !== ""
+            ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(configuration.dateTimeFormat)
+            : ""}
+        </a>
+      )
+    }
   ];
 };
 export default columns;
