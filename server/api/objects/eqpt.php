@@ -9,56 +9,11 @@ include_once 'common_class.php';
 
 class Equipment extends CommonClass
 {
-    // public function update_expdates()
-    // {
-    //     write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__), __FILE__, __LINE__);
-
-    //     Utilities::sanitize($this);
-
-    //     write_log(json_encode($this), __FILE__, __LINE__);
-
-    //     $status = true;
-
-    //     //Update expiry dates
-    //     foreach($this->equip_list as $eqpt_id) {
-    //         $expiry_dates = array();
-    //         $expiry_date = new ExpiryDate($this->conn);
-    //         $expiry_date->edt_target_code = ExpiryTarget::TRANSP_EQUIP;
-    //         // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
-    //         foreach ($this->expiry_dates as $key => $value) {
-    //             $value->edt_object_id = $eqpt_id;
-    //             $expiry_date->ed_object_id = $eqpt_id;
-    //             $expiry_dates[$value->edt_type_code] = $value;
-    //         }
-
-    //         write_log(json_encode($expiry_dates), __FILE__, __LINE__);
-    //         if (!$expiry_date->update($expiry_dates)) {
-    //             write_log("Failed to update expiry dates",
-    //                 __FILE__, __LINE__, LogLevel::ERROR);
-    //             oci_rollback($this->conn);
-    //             $status = false;
-    //         }
-    //     }
-        
-    //     $result = array();
-    //     $result["records"] = array();
-    //     if ($status) {
-    //         oci_commit($this->conn);
-    //         $result["result"] = 0;
-    //         $result["message"] = sprintf("OK");
-    //         // $journal = new Journal($this->conn, false);
-    //         // $jnl_data[0] = sprintf("cannot change to this password because it is recently used");
-    //         // $journal->jnlLogEvent(
-    //         //     Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT);
-    //         // oci_commit($this->conn);
-    //     } else {
-    //         $result["result"] = -1;;
-    //         $result["message"] = "Failed";
-    //         write_log($result["message"], __FILE__, __LINE__, LogLevel::ERROR);
-    //     }
-    //     echo json_encode($result, JSON_PRETTY_PRINT);
-    //     return $result;
-    // }
+    public function expiry_types()
+    {
+        $expiry_types = new ExpiryDateType($this->conn);
+        return $expiry_types->read(ExpiryTarget::TRANSP_EQUIP);
+    }
 
     public function compartmentCount($eqpt_id)
     {
