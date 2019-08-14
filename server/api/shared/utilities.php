@@ -104,7 +104,7 @@ class Utilities
         }
 
         if ($params) {
-            foreach($params as $prop => $value) {
+            foreach ($params as $prop => $value) {
                 $object->$prop = $value;
             }
         }
@@ -327,7 +327,7 @@ class Utilities
             return;
         }
 
-        if (method_exists($object, "check_existence")) {
+        if ($object->check_exists && method_exists($object, "check_existence")) {
             if ($object->check_existence()) {
                 if (HTTP_CODE_ENABLED) {
                     http_response_code(422);
@@ -462,7 +462,7 @@ class Utilities
         }
 
         // write_log(json_encode($object), __FILE__, __LINE__, LogLevel::DEBUG);
-        if (method_exists($object, "check_existence")) {
+        if ($object->check_exists && method_exists($object, "check_existence")) {
             if (!$object->check_existence()) {
                 if (HTTP_CODE_ENABLED) {
                     http_response_code(422);
@@ -527,7 +527,7 @@ class Utilities
         }
 
         // write_log(json_encode($object), __FILE__, __LINE__);
-        if (method_exists($object, "check_existence")) {
+        if ($object->check_exists && method_exists($object, "check_existence")) {
             if (!$object->check_existence()) {
                 if (HTTP_CODE_ENABLED) {
                     http_response_code(422);

@@ -189,7 +189,7 @@ class ExpiryDate
     public function delete()
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
+        // write_log(json_encode($this), __FILE__, __LINE__);
         Utilities::sanitize($this);
 
         $query = "
@@ -216,7 +216,7 @@ class ExpiryDate
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
         // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
-
+        // write_log(json_encode($this), __FILE__, __LINE__);
         Utilities::sanitize($this);
         $query = "
             INSERT INTO EXPIRY_DATE_DETAILS (

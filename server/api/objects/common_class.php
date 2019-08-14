@@ -67,6 +67,13 @@ class CommonClass
      */
     protected $PRIMIRAY_KEY_EXCLUSIONS = null;
 
+    /**
+     * If it is false, will not check existence
+     * before insert/delete/update/create. This is because sometimes primary key
+     * is an auto-incremental number, it is not from outside.
+     */
+    public $check_exists = true;
+
     //read imp will be called inside read. Make it public because Utilities::update() calls it
     public function read_hook(&$hook_item)
     {
@@ -523,8 +530,8 @@ class CommonClass
      */
     public function check_existence()
     {
-        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-        //     __FILE__, __LINE__);
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
 
         if ($this->TABLE_NAME === null) {
             return true;
@@ -559,6 +566,8 @@ class CommonClass
             $and_count += 1;
         }
         // write_log($query, __FILE__, __LINE__);
+        // write_log(json_encode($this->primary_keys), __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
         $stmt = oci_parse($this->conn, $query);
         foreach ($this->primary_keys as $value) {
             oci_bind_by_name($stmt, ':' . $value, $this->$value);

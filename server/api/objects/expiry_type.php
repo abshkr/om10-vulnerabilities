@@ -15,6 +15,8 @@ class ExpiryTarget
 
 class ExpiryDateType extends CommonClass
 {
+    protected $TABLE_NAME = "EXPIRY_DATE_TYPES";
+
     public $BOOLEAN_FIELDS = array(
         "EDT_STATUS" => 1,
         "EDT_REJECT" => 1,

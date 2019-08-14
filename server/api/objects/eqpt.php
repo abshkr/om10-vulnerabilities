@@ -9,14 +9,20 @@ include_once 'common_class.php';
 
 class Equipment extends CommonClass
 {
+    protected $TABLE_NAME = "TRANSP_EQUIP";
+    protected $primary_keys = array("eqpt_id");
+
     public $BOOLEAN_FIELDS = array(
         "ADJ_CMPT_LOCK" => 1
     );
-
+    
     public $NUMBER_FIELDS = array(
         "SFL",
         "SAFEFILL"
     );
+
+    protected $check_mandatory = false;
+    public $check_exists = false;
 
     public function compartmentCount($eqpt_id)
     {
@@ -170,6 +176,8 @@ class Equipment extends CommonClass
 
     public function read()
     {
+        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
+
         if (!isset($this->end_num)) {
             $this->start_num = 1;
             $this->end_num = $this->count();

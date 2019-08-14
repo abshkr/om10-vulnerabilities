@@ -7,6 +7,8 @@ include_once 'common_class.php';
 
 class EquipmentType extends CommonClass
 {
+    protected $TABLE_NAME = "EQUIP_TYPES";
+
     public $BOOLEAN_FIELDS = array(
         "ETYP_SCHEDUL" => "Y",
         "ETYP_ISRIGID" => "Y",
