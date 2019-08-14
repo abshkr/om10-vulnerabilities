@@ -5,7 +5,7 @@ import axios from "axios";
 
 export default class Company extends Component {
   state = {
-    companies: null
+    companies: []
   };
 
   componentDidMount() {
@@ -27,7 +27,7 @@ export default class Company extends Component {
   }
 
   render() {
-    const { decorator } = this.props;
+    const { decorator, value } = this.props;
     const { companies } = this.state;
     const { Option } = Select;
 
@@ -36,13 +36,12 @@ export default class Company extends Component {
         {decorator("report_cmpycode", {
           rules: [{ required: true, message: "Please Select a Report" }]
         })(
-          <Select>
-            {!!companies &&
-              companies.map((item, index) => (
-                <Option key={index} value={item.cmpy_code}>
-                  {item.cmpy_name}
-                </Option>
-              ))}
+          <Select disabled={!!value}>
+            {companies.map((item, index) => (
+              <Option key={index} value={item.cmpy_code}>
+                {item.cmpy_name}
+              </Option>
+            ))}
           </Select>
         )}
       </Form.Item>
