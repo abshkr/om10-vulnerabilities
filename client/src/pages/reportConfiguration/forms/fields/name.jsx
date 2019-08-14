@@ -5,7 +5,7 @@ import axios from "axios";
 
 export default class Name extends Component {
   state = {
-    reports: null
+    reports: []
   };
 
   componentDidMount() {
@@ -27,7 +27,7 @@ export default class Name extends Component {
   }
 
   render() {
-    const { decorator } = this.props;
+    const { decorator, value } = this.props;
     const { reports } = this.state;
     const { Option } = Select;
 
@@ -36,13 +36,12 @@ export default class Name extends Component {
         {decorator("report_file", {
           rules: [{ required: true, message: "Please Select a Report Name" }]
         })(
-          <Select>
-            {!!reports &&
-              reports.map((item, index) => (
-                <Option key={index} value={item.report_file}>
-                  {item.report_name}
-                </Option>
-              ))}
+          <Select disabled={!!value}>
+            {reports.map((item, index) => (
+              <Option key={index} value={item.report_file}>
+                {item.report_name}
+              </Option>
+            ))}
           </Select>
         )}
       </Form.Item>

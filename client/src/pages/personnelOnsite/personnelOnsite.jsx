@@ -33,7 +33,7 @@ class PersonnelOnsite extends Component {
     axios
       .all([personnelOnsite.read()])
       .then(
-        axios.spread((personnel) => {
+        axios.spread(personnel => {
           this.setState({
             data: personnel.data.records,
             isLoading: false,
@@ -73,6 +73,7 @@ class PersonnelOnsite extends Component {
 
   render() {
     const { data, isLoading, filtered, value, resize } = this.state;
+    const { configuration } = this.props;
 
     const results = !!filtered ? filtered : data;
 
@@ -80,9 +81,27 @@ class PersonnelOnsite extends Component {
       <Page page={"Access Control"} name={"Personnel Onsite"} isLoading={isLoading} block={true}>
         <Container>
           <Filter value={value} search={this.handleSearch} loading={isLoading} />
-          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
-          <Download data={results} type={"personnel"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
-          <DataTable rowKey="per_code" resize={resize} columns={columns(results)} data={results} isLoading={isLoading} />
+          <Button
+            shape="round"
+            type="primary"
+            icon={resize ? "shrink" : "arrows-alt"}
+            style={{ float: "right" }}
+            onClick={this.handleResize}
+            disabled={isLoading}
+          />
+          <Download
+            data={results}
+            type={"personnel"}
+            style={{ float: "right", marginRight: 5 }}
+            loading={isLoading}
+          />
+          <DataTable
+            rowKey="per_code"
+            resize={resize}
+            columns={columns(results, configuration)}
+            data={results}
+            isLoading={isLoading}
+          />
         </Container>
       </Page>
     );
