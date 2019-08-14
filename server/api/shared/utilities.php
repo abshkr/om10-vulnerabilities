@@ -66,8 +66,12 @@ class Utilities
         return $result;
     }
 
-    //
-    public static function read($class, $method = 'read', $filter = false)
+    /**
+     * params can be an array, like array (
+     * "
+     * );
+     */
+    public static function read($class, $method = 'read', $filter = false, $params = null)
     {
         $database = new Database();
         $db = null;
@@ -96,6 +100,12 @@ class Utilities
                 foreach ($_GET as $key => $value) {
                     $object->$key = $value;
                 }
+            }
+        }
+
+        if ($params) {
+            foreach($params as $prop => $value) {
+                $object->$prop = $value;
             }
         }
 

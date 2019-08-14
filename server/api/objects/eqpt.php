@@ -9,12 +9,6 @@ include_once 'common_class.php';
 
 class Equipment extends CommonClass
 {
-    public function expiry_types()
-    {
-        $expiry_types = new ExpiryDateType($this->conn);
-        return $expiry_types->read(ExpiryTarget::TRANSP_EQUIP);
-    }
-
     public function compartmentCount($eqpt_id)
     {
         Utilities::sanitize($this);
