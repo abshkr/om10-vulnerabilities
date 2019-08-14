@@ -2,14 +2,23 @@ import React, { Component } from "react";
 
 import axios from "axios";
 import { Form, Button, Tabs, notification, Modal } from "antd";
-import { reportConfiguration } from "../../../api";
+import { reportProfile } from "../../../api";
+import {
+  Source,
+  Name,
+  Description,
+  Type,
+  CloseOutReport,
+  OnDemandReport,
+  CloseOutBy
+} from "./fields";
 
 class ReportProfileForm extends Component {
   handleCreate = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         axios
-          .all([reportConfiguration.createConfiguration(values)])
+          .all([reportProfile.createProfile(values)])
           .then(
             axios.spread(response => {
               this.props.refresh();
@@ -39,7 +48,7 @@ class ReportProfileForm extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         axios
-          .all([reportConfiguration.updateConfiguration(values)])
+          .all([reportProfile.updateProfile(values)])
           .then(
             axios.spread(response => {
               this.props.refresh();
@@ -68,7 +77,7 @@ class ReportProfileForm extends Component {
   handleDelete = () => {
     const { value } = this.props;
     axios
-      .all([reportConfiguration.deleteConfiguration(value)])
+      .all([reportProfile.deleteProfile(value)])
       .then(
         axios.spread(response => {
           this.props.refresh();
@@ -130,7 +139,56 @@ class ReportProfileForm extends Component {
       <div>
         <Form style={{ height: "65vh" }}>
           <Tabs defaultActiveKey="1">
-            <TabPane tab="General" key="1" />
+            <TabPane tab="General" key="1">
+              <Source
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+              />
+
+              <Name
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+              />
+
+              <Type
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+              />
+
+              <Description
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+              />
+
+              <CloseOutBy
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+              />
+
+              <CloseOutReport
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+              />
+
+              <OnDemandReport
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+              />
+            </TabPane>
           </Tabs>
         </Form>
 

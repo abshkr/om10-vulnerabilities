@@ -53,7 +53,7 @@ const columns = (data, configuration) => [
     key: "report_ondemand_flag",
     align: "center",
     sorter: (a, b) => a.report_ondemand_flag.localeCompare(b.report_ondemand_flag),
-    width: 150,
+    width: 130,
     render: text => (
       <span>
         <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
@@ -64,7 +64,7 @@ const columns = (data, configuration) => [
     title: "Closeout Report",
     dataIndex: "report_closeout_flag",
     key: "report_closeout_flag",
-    width: 150,
+    width: 130,
     align: "center",
     sorter: (a, b) => a.report_closeout_flag.localeCompare(b.report_closeout_flag),
 
@@ -76,16 +76,14 @@ const columns = (data, configuration) => [
   },
   {
     title: "Closeout Report By",
-    dataIndex: "report_active",
-    key: "report_active",
-    width: 150,
+    dataIndex: "report_closeout_flag2",
+    key: "report_closeout_flag2",
+    width: 200,
     align: "center",
-    sorter: (a, b) => a.report_active.localeCompare(b.report_active),
+    sorter: (a, b) => a.report_closeout_flag2.localeCompare(b.report_closeout_flag2),
 
     render: text => (
-      <span>
-        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
-      </span>
+      <span>{text ? "Folio Range [Start/End Folio Number]" : "Date Range [Start/End Date]"}</span>
     )
   }
 ];
