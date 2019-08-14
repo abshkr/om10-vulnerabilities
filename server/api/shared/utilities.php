@@ -233,8 +233,8 @@ class Utilities
 
     public static function retrieve(&$result_array, $object, $stmt)
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
 
         $num = 0;
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
@@ -416,7 +416,7 @@ class Utilities
             $data = json_decode(file_get_contents("php://input"));
         }
 
-        write_log(json_encode($data), __FILE__, __LINE__);
+        // write_log(json_encode($data), __FILE__, __LINE__);
 
         if ($data) {
             // write_log(json_encode($data), __FILE__, __LINE__);

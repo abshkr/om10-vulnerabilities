@@ -89,12 +89,14 @@ class ExpiryDate
         foreach ($expiry_dates as $key => $value) {
             // write_log($key, __FILE__, __LINE__);
             // write_log(json_encode($value), __FILE__, __LINE__);
+            $target = (isset($value->ed_target_code) ? $value->ed_target_code : $value->edt_target_code);
+            $object_id = (isset($value->ed_object_id) ? $value->ed_object_id : $value->edt_object_id);
             if (!in_array($key, array_keys($old_data))) {
                 // write_log("In old, not in new", __FILE__, __LINE__);
                 //In new, but not in old
                 $jnl_data[0] = Utilities::getCurrPsn();
                 $jnl_data[1] = "expiry dates";
-                $jnl_data[2] = sprintf("target:%s, code:%s", $value->ed_target_code, $value->ed_object_id);
+                $jnl_data[2] = sprintf("target:%s, code:%s", $target, $object_id);
                 $jnl_data[3] = sprintf("expiry type:%s", $value->edt_type_desc);
 
                 if (!$journal->jnlLogEvent(
@@ -216,7 +218,6 @@ class ExpiryDate
         // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
 
         Utilities::sanitize($this);
-
         $query = "
             INSERT INTO EXPIRY_DATE_DETAILS (
                 ED_TARGET_CODE,
