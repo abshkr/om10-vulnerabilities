@@ -3,17 +3,21 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once 'common_class.php';
 
-class EquipmentType
+class EquipmentType extends CommonClass
 {
-    // database connection and table name
-    private $conn;
+    public $BOOLEAN_FIELDS = array(
+        "ETYP_SCHEDUL" => "Y",
+        "ETYP_ISRIGID" => "Y",
+        "ETYP_IS_DRUMFILL" => "Y",
+    );
 
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
+    public $NUMBER_FIELDS = array(
+        "ETYP_N_ITEMS",
+        "ETYP_MAX_GROSS",
+        "CMPTNU",
+    );
 
     public function equipmentCount($eqpt_etp)
     {
@@ -177,24 +181,22 @@ class EquipmentType
         }
     }
 
-    /* Only display non-combine equpment type. because for equipment, the type can
+    /* Only all equpment type. because for equipment, the type can
     only be non-combine, but for tanker, the type can be non-combine or combine */
-    public function search2()
+    public function read()
     {
-        // if (!isset($this->end_num)) {
-        //     $this->start_num = 1;
-        //     $this->end_num = 50;
-        // }
-
         Utilities::sanitize($this);
         $this->etyp_title = isset($this->etyp_title) ? '%' . $this->etyp_title . '%' : '%';
 
-        // $query = "
-        //     SELECT ETYP_ID, ETYP_TITLE
-        //     FROM EQUIP_TYPES_VW
-        //     WHERE ETYP_CLASS = 0 AND ETYP_TITLE like :etyp_title ";
         $query = "
-        SELECT EQUIP_TYPES_VW.ETYP_ID, EQUIP_TYPES_VW.ETYP_TITLE,
+        SELECT EQUIP_TYPES_VW.ETYP_ID,
+            EQUIP_TYPES_VW.ETYP_TITLE,
+            EQUIP_TYPES_VW.ETYP_CLASS,
+            EQUIP_TYPES_VW.ETYP_N_ITEMS,
+            EQUIP_TYPES_VW.ETYP_IS_DRUMFILL,
+            EQUIP_TYPES_VW.ETYP_MAX_GROSS,
+            EQUIP_TYPES_VW.ETYP_ISRIGID,
+            EQUIP_TYPES_VW.ETYP_SCHEDUL,
             NVL(ETYP_CATEGORY,
                 DECODE(ECNCT_ETYP,
                     NULL,
@@ -211,6 +213,57 @@ class EquipmentType
 
         if (isset($this->cmptnu)) {
             $query = $query . " AND CMPTNU = :cmptnu ";
+        }
+
+        $query = $query . " ORDER BY ETYP_TITLE ASC";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':etyp_title', $this->etyp_title);
+        if (isset($this->cmptnu)) {
+            oci_bind_by_name($stmt, ':cmptnu', $this->cmptnu);
+        }
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    /* Only display non-combine equpment type. because for equipment, the type can
+    only be non-combine, but for tanker, the type can be non-combine or combine */
+    public function non_combo_only()
+    {
+        Utilities::sanitize($this);
+        $this->etyp_title = isset($this->etyp_title) ? '%' . $this->etyp_title . '%' : '%';
+
+        $query = "
+        SELECT EQUIP_TYPES_VW.ETYP_ID,
+            EQUIP_TYPES_VW.ETYP_TITLE,
+            EQUIP_TYPES_VW.ETYP_CLASS,
+            EQUIP_TYPES_VW.ETYP_N_ITEMS,
+            EQUIP_TYPES_VW.ETYP_IS_DRUMFILL,
+            EQUIP_TYPES_VW.ETYP_MAX_GROSS,
+            EQUIP_TYPES_VW.ETYP_ISRIGID,
+            EQUIP_TYPES_VW.ETYP_SCHEDUL,
+            EQUIP_TYPES_VW.CMPTNU,
+            NVL(ETYP_CATEGORY,
+                DECODE(ECNCT_ETYP,
+                    NULL,
+                    DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
+                    DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
+                ) IMAGE
+        FROM EQUIP_TYPES_VW,
+            (SELECT NVL(ETYP_SCHEDUL, 'N') ETYP_SCHEDUL, NVL(ETYP_ISRIGID, 'N') ETYP_ISRIGID, CMPTNU, ECNCT_ETYP
+            FROM EQUIP_TYPES_VW, EQP_CONNECT
+            WHERE EQP_CONNECT.ECNCT_ETYP = EQUIP_TYPES_VW.ETYP_ID
+                AND EQC_COUNT = 1) FIRST_SUB_ITEM
+        WHERE FIRST_SUB_ITEM.ECNCT_ETYP(+) = EQUIP_TYPES_VW.ETYP_ID
+            AND ETYP_CLASS = 0
+            AND ETYP_TITLE like :etyp_title ";
+
+        if (isset($this->cmptnu)) {
+            $query = $query . " AND EQUIP_TYPES_VW.CMPTNU = :cmptnu ";
         }
 
         $query = $query . " ORDER BY ETYP_TITLE ASC";
