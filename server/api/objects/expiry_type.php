@@ -19,6 +19,7 @@ class ExpiryDateType extends CommonClass
         "EDT_STATUS" => 1,
         "EDT_REJECT" => 1,
         "EDT_DEFAULT" => 1,
+        "EDT_TIME_ENABLED" => 1,
     );
 
     public function readSimple($target_code = ExpiryTarget::ALL)
