@@ -367,12 +367,12 @@ class Equipment extends CommonClass
     }
  
     //This function does not auto-commit
-    private function updateCmpts($cmpts, $insert = false)
+    private function updateCmpts($insert = false)
     {
-        write_log(sprintf("%s::%s() START. cmpts:%s", __CLASS__, __FUNCTION__, json_encode($cmpts)),
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
-        $cmpt_count = count($cmpts);
+        $cmpt_count = count($this->compartments);
 
         for ($i = 1; $i <= $cmpt_count; $i++) {
             $base_cap = 0;
@@ -395,8 +395,9 @@ class Equipment extends CommonClass
                 return false;
             }
 
-            $adj_amnt = (int) $cmpts[$i - 1]->safefill - $base_cap;
-            $adj_capacity = (int) $cmpts[$i - 1]->sfl;
+            $adj_amnt = (int) $this->compartments[$i - 1]->safefill - $base_cap;
+            $adj_capacity = (int) $this->compartments[$i - 1]->sfl;
+            $adj_cmpt_lock = (int) $this->compartments[$i - 1]->adj_cmpt_lock;
 
             /* Old data*/
             $query = "
@@ -420,7 +421,8 @@ class Equipment extends CommonClass
             $query = "
                 UPDATE SFILL_ADJUST
                 SET ADJ_AMNT = :adj_amnt,
-                    ADJ_CAPACITY = :adj_capacity
+                    ADJ_CAPACITY = :adj_capacity,
+                    ADJ_CMPT_LOCK = :adj_cmpt_lock
                 WHERE ADJ_EQP = :eqpt_id AND ADJ_CMPT = :cmpt_no";
 
             $stmt = oci_parse($this->conn, $query);
@@ -428,6 +430,7 @@ class Equipment extends CommonClass
             oci_bind_by_name($stmt, ':cmpt_no', $i);
             oci_bind_by_name($stmt, ':adj_amnt', $adj_amnt);
             oci_bind_by_name($stmt, ':adj_capacity', $adj_capacity);
+            oci_bind_by_name($stmt, ':adj_cmpt_lock', $adj_cmpt_lock);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -442,10 +445,10 @@ class Equipment extends CommonClass
             $journal = new Journal($this->conn, false);
             $module = "Equipment";
             $record = sprintf("equipment id:%s, cmpt num:%d", $this->eqpt_id, $i);
-            if ($old_limit != (int) $cmpts[$i - 1]->safefill &&
+            if ($old_limit != (int) $this->compartments[$i - 1]->safefill &&
                 !$journal->valueChange(
                     $module, $record, "scheduled limit",
-                    $old_limit, $cmpts[$i - 1]->safefill)) {
+                    $old_limit, $this->compartments[$i - 1]->safefill)) {
                 oci_rollback($this->conn);
                 return false;
             }
@@ -461,7 +464,7 @@ class Equipment extends CommonClass
         return true;
     }
 
-    public function update($cmpts = null, $expiry_dates = null)
+    public function update()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
@@ -635,10 +638,12 @@ class Equipment extends CommonClass
         return true;
     }
 
-    public function create($cmpts = null, $expiry_dates = null)
+    public function create()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
+
+        // write_log(json_encode($this), __FILE__, __LINE__);    
 
         Utilities::sanitize($this);
 
@@ -755,8 +760,8 @@ class Equipment extends CommonClass
             return false;
         }
 
-        if (isset($cmpts)) {
-            if (!$this->updateCmpts($cmpts, $insert = true)) {
+        if (isset($this->compartments)) {
+            if (!$this->updateCmpts($this->compartments, $insert = true)) {
                 write_log("Failed to update equipment compartment",
                     __FILE__, __LINE__, LogLevel::ERROR);
                 oci_rollback($this->conn);
@@ -784,6 +789,23 @@ class Equipment extends CommonClass
             __FILE__, __LINE__);
 
         Utilities::sanitize($this);
+
+        //For journal
+        $query = "
+            SELECT *
+            FROM TRANSP_EQUIP
+            WHERE EQPT_ID = :eqpt_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $this->eqpt_code = $row['EQPT_CODE'];
+            $this->eqpt_etp = $row['EQPT_ETP'];
+            $this->eqpt_owner = $row['EQPT_OWNER'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
 
         $query = "
             DELETE FROM SFILL_ADJUST
@@ -828,7 +850,8 @@ class Equipment extends CommonClass
         $jnl_data[0] = $curr_psn;
         $jnl_data[1] = "Equpment";
         $jnl_data[2] = $this->eqpt_id;
-        $jnl_data[3] = "";
+        $jnl_data[3] = sprintf("code:%s, type:%s, owner:%s",
+            $this->eqpt_code, $this->eqpt_etp, $this->eqpt_owner);
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
