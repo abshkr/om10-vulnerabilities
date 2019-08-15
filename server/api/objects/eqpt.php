@@ -18,7 +18,9 @@ class Equipment extends CommonClass
     
     public $NUMBER_FIELDS = array(
         "SFL",
-        "SAFEFILL"
+        "SAFEFILL",
+        "EQPT_EMPTY_KG",
+        "EQPT_MAX_GROSS"
     );
 
     protected $check_mandatory = false;
