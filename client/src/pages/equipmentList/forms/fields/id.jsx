@@ -23,12 +23,15 @@ export default class Id extends Component {
   };
 
   render() {
-    const { decorator, value } = this.props;
+    const { decorator } = this.props;
     return (
       <Form.Item label="Id">
         {decorator("eqpt_id", {
-          rules: [{ required: true, message: "Please Enter an Equipment Code" }, { validator: this.handleCodeValidation }]
-        })(<Input disabled={!!value} />)}
+          rules: [
+            { required: true, message: "Please Enter an Equipment Code" },
+            { validator: this.handleCodeValidation }
+          ]
+        })(<Input disabled />)}
       </Form.Item>
     );
   }
