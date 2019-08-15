@@ -69,7 +69,7 @@ class CommonClass
 
     /**
      * If it is false, will not check existence
-     * before insert/delete/update/create. This is because sometimes primary key
+     * before insert. This is because sometimes primary key
      * is an auto-incremental number, it is not from outside.
      */
     public $check_exists = true;

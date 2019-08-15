@@ -462,7 +462,7 @@ class Utilities
         }
 
         // write_log(json_encode($object), __FILE__, __LINE__, LogLevel::DEBUG);
-        if ($object->check_exists && method_exists($object, "check_existence")) {
+        if (method_exists($object, "check_existence")) {
             if (!$object->check_existence()) {
                 if (HTTP_CODE_ENABLED) {
                     http_response_code(422);
@@ -527,7 +527,7 @@ class Utilities
         }
 
         // write_log(json_encode($object), __FILE__, __LINE__);
-        if ($object->check_exists && method_exists($object, "check_existence")) {
+        if (method_exists($object, "check_existence")) {
             if (!$object->check_existence()) {
                 if (HTTP_CODE_ENABLED) {
                     http_response_code(422);
