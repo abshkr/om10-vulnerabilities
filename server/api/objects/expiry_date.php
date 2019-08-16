@@ -9,12 +9,12 @@ include_once 'common_class.php';
 class ExpiryDate extends CommonClass
 {
     protected $TABLE_NAME = "EXPIRY_DATE_DETAILS";
-    
+
     public $BOOLEAN_FIELDS = array(
-        "ED_STATUS" => 1
+        "ED_STATUS" => 1,
     );
 
-    public function update($expiry_dates)
+    public function update($expiry_dates = null)
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
         Utilities::sanitize($this);
@@ -210,7 +210,7 @@ class ExpiryDate extends CommonClass
     //Do not commit.
     //First insert into EXPIRY_DATE_DETAILS all, then delete
     //the records where ED_EXP_DATE IS NULL.
-    public function create($expiry_dates)
+    public function create($expiry_dates = null)
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
         // write_log(json_encode($expiry_dates), __FILE__, __LINE__);

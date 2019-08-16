@@ -122,7 +122,13 @@ class Utilities
 
         $result = array();
         $result["records"] = array();
-        $num = self::retrieve($result["records"], $object, $stmt);
+
+        /**
+         * Only call read_hook when method === 'read', because other methods can also
+         * be called through Utilies::read, for example,
+         * Utilities::read('Equipment', $method = 'compartments', $filter = true);
+         */
+        $num = self::retrieve($result["records"], $object, $stmt, $method === 'read');
 
         if (method_exists($object, "read_decorate")) {
             $object->read_decorate($result["records"]);
@@ -241,7 +247,7 @@ class Utilities
         }
     }
 
-    public static function retrieve(&$result_array, $object, $stmt)
+    public static function retrieve(&$result_array, $object, $stmt, $call_hook = true)
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
@@ -276,7 +282,7 @@ class Utilities
                 return (is_null($v)) ? "" : $v;
             }, $base_item);
 
-            if (method_exists($object, "read_hook")) {
+            if ($call_hook && method_exists($object, "read_hook")) {
                 $object->read_hook($base_item);
             }
             array_push($result_array, $base_item);
