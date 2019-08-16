@@ -249,7 +249,8 @@ class ExpiryDate extends CommonClass
             // write_log(json_encode($this), __FILE__, __LINE__);
             $query = "
                 UPDATE EXPIRY_DATE_DETAILS
-                SET ED_EXP_DATE = :ed_exp_date
+                SET ED_EXP_DATE = :ed_exp_date,
+                    ED_STATUS = :ed_status
                 WHERE ED_TARGET_CODE = :ed_target_code
                     AND ED_OBJECT_ID = :ed_object_id
                     AND ED_TYPE_CODE = :ed_type_code";
@@ -259,6 +260,11 @@ class ExpiryDate extends CommonClass
                 oci_bind_by_name($stmt, ':ed_object_id', $this->ed_object_id);
             } else {
                 oci_bind_by_name($stmt, ':ed_object_id', $value->ed_object_id);
+            }
+            if (isset($this->ed_status)) {
+                oci_bind_by_name($stmt, ':ed_status', $this->ed_status);
+            } else {
+                oci_bind_by_name($stmt, ':ed_status', $value->ed_status);
             }
 
             oci_bind_by_name($stmt, ':ed_type_code', $key);
