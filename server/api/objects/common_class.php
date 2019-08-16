@@ -94,7 +94,7 @@ class CommonClass
         }
     }
 
-    //Will be called before displaying
+    //Will be called before displaying, example: report_profile.php
     public function read_decorate(&$result_array)
     {
 
