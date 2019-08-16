@@ -176,6 +176,21 @@ class Equipment extends CommonClass
         }
     }
 
+    public function read_hook(&$hook_item)
+    {
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
+
+        $expiry_date = new ExpiryDate($this->conn);
+        $expiry_date->ed_target_code = ExpiryTarget::TRANSP_EQUIP;
+        $expiry_date->ed_object_id = $hook_item['eqpt_id'];
+        $stmt = $expiry_date->read();
+        $result = array();
+        Utilities::retrieve($result, $expiry_date, $stmt);
+        // write_log(json_encode($result), __FILE__, __LINE__);
+        $hook_item['expiry_dates'] = $result;
+    }
+
     public function read()
     {
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);

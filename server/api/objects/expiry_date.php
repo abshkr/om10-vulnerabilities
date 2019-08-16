@@ -4,17 +4,15 @@ include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/expiry_type.php';
+include_once 'common_class.php';
 
-class ExpiryDate
+class ExpiryDate extends CommonClass
 {
-    // database connection and table name
-    private $conn;
-
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
+    protected $TABLE_NAME = "EXPIRY_DATE_DETAILS";
+    
+    public $BOOLEAN_FIELDS = array(
+        "ED_STATUS" => 1
+    );
 
     public function update($expiry_dates)
     {
