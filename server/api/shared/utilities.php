@@ -243,8 +243,8 @@ class Utilities
 
     public static function retrieve(&$result_array, $object, $stmt)
     {
-        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-        //     __FILE__, __LINE__);
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
 
         $num = 0;
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
@@ -262,7 +262,6 @@ class Utilities
                     } else {
                         $base_item[$lower_key] = false;
                     }
-
                 } else {
                     if (isset($object->NUMBER_FIELDS) && in_array($key, $object->NUMBER_FIELDS)) {
                         // write_log($value, __FILE__, __LINE__);
