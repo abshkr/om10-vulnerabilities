@@ -13,7 +13,9 @@ class Equipment extends CommonClass
     protected $primary_keys = array("eqpt_id");
 
     public $BOOLEAN_FIELDS = array(
-        "ADJ_CMPT_LOCK" => 1
+        "ADJ_CMPT_LOCK" => 1,
+        "EQP_MUST_TARE_IN" => "Y",
+        "EQPT_LOCK" => "Y"
     );
     
     public $NUMBER_FIELDS = array(
