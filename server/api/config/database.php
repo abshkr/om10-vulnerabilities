@@ -27,7 +27,7 @@ class Database
             $this->password = $temp;
         }
 
-        $this->db_name = 'localhost' . (isset($_SERVER['DB_PORT']) ? ':' . $_SERVER['DB_PORT'] : '') .
+        $this->db_name = 'localhost' . (isset($_SERVER['OMEGA_DBPORT']) ? ':' . $_SERVER['OMEGA_DBPORT'] : '') .
             (isset($_SERVER['OMEGA_DBASE']) ? '/' . $_SERVER['OMEGA_DBASE'] : '/OML5K');
         // write_log("Database::__construct. username:" . $this->username .
         //     " password:" . $this->password . " db_name:" . $this->db_name, __FILE__, __LINE__);
