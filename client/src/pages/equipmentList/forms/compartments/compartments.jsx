@@ -2,7 +2,8 @@ import React, { Component } from "react";
 
 import { Table, Input, Form, Select, Icon, Card } from "antd";
 import { equipmentList } from "../../../../api";
-import ProgressiveImage from "react-progressive-image";
+import { Rail, Flat, Prime, Rigid, Ship, Trailer, Default } from "../../../../assets/equipment";
+
 import _ from "lodash";
 import axios from "axios";
 
@@ -291,25 +292,21 @@ export default class Compatments extends Component {
     const imageFilter = !!value ? ["etyp_id", value.eqpt_etp] : ["etyp_id", id];
     const image = _.find(types, imageFilter);
 
-    const source = !!image ? image.image : "";
+    const source = !!image ? image.image : "x";
 
     decorator("compartments");
 
-    const path = `${equipmentList.getEquipmentImage}/${_.toLower(source)}.png`;
+    const path = { e: Rail, f: Flat, p: Prime, r: Rigid, s: Ship, t: Trailer, x: Default };
 
     return (
       <div>
-        <ProgressiveImage src={path} placeholder="tiny-image.jpg">
-          {(src, loading) => (
-            <Card style={{ marginBottom: 10, marginTop: 5 }} size="small" loading={loading || !id}>
-              <div className="equipment-icon">
-                <img src={src} alt="equipment" />
-              </div>
-              <p style={{ textAlign: "center" }}> Compartments: {data.length} </p>
-            </Card>
-          )}
-        </ProgressiveImage>
-
+        <Card style={{ marginBottom: 10, marginTop: 5 }} size="small">
+          <div className="equipment-icon">
+            <img src={path[_.toLower(source)]} alt="equipment" />
+          </div>
+          <p style={{ textAlign: "center" }}> Compartments: {data.length} </p>
+        </Card>
+        )}
         {!!equipments && (
           <Select
             placeholder={!!value ? value.eqpt_code : "Please Select"}
@@ -329,7 +326,6 @@ export default class Compatments extends Component {
             ))}
           </Select>
         )}
-
         <Table
           size="middle"
           rowKey="cmpt_no"
