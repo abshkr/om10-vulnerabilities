@@ -1,8 +1,18 @@
 import React, { Component } from "react";
 
-import { Table, Input, Button, Popconfirm, Form, Select, DatePicker, Icon } from "antd";
+import {
+  Table,
+  Input,
+  Button,
+  Popconfirm,
+  Form,
+  Select,
+  DatePicker,
+  Icon
+} from "antd";
 import { equipmentList } from "../../../../api";
 import axios from "axios";
+import moment from "moment";
 import _ from "lodash";
 
 const EditableContext = React.createContext();
@@ -128,7 +138,7 @@ class EditableCell extends React.Component {
             <DatePicker
               ref={node => (this.input = node)}
               onChange={value => this.save(value, dataIndex)}
-              format="YYYY-MM-DD"
+              format={moment.localeData().longDateFormat("L")}
             />
           )}
         </Form.Item>
@@ -202,7 +212,9 @@ export default class ExpiryDates extends Component {
     const { setValue } = this.props;
 
     const newData = [...this.state.dataSource];
-    const index = newData.findIndex(item => row.edt_type_code === item.edt_type_code);
+    const index = newData.findIndex(
+      item => row.edt_type_code === item.edt_type_code
+    );
     const item = newData[index];
 
     newData.splice(index, 1, {
@@ -281,8 +293,13 @@ export default class ExpiryDates extends Component {
         editable: true,
         render: (text, record) => (
           <span>
-            {" "}
-            {text === "" ? "Select A Date" : !!text ? text.substring(0, 10) : "Select A Date"}
+            {text === ""
+              ? "Select A Date"
+              : !!text
+              ? moment(text, "YYYY-MM-DD HH:mm:ss").format(
+                  moment.localeData().longDateFormat("L")
+                )
+              : "Select A Date"}
           </span>
         )
       },

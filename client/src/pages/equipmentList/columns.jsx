@@ -114,14 +114,23 @@ const defaults = (data, config) => [
     align: "center",
     width: 250,
     sorter: (a, b) =>
-      validateDateTime(b.eqpt_last_modified) - validateDateTime(a.eqpt_last_modified),
+      validateDateTime(b.eqpt_last_modified) -
+      validateDateTime(a.eqpt_last_modified),
 
-    render: text => (
-      // eslint-disable-next-line
-      <a>
-        {text !== "" ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat) : ""}
-      </a>
-    )
+    render: text => {
+      const value =
+        text !== ""
+          ? `${moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(
+              moment.localeData().longDateFormat("L")
+            )} ${moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(
+              moment.localeData().longDateFormat("LTS")
+            )}`
+          : "";
+      return (
+        // eslint-disable-next-line
+        <a>{value}</a>
+      );
+    }
   },
   {
     title: "Last Used",
@@ -129,14 +138,23 @@ const defaults = (data, config) => [
     key: "eqpt_last_used",
     align: "center",
     width: 250,
-    sorter: (a, b) => validateDateTime(b.eqpt_last_used) - validateDateTime(a.eqpt_last_used),
+    sorter: (a, b) =>
+      validateDateTime(b.eqpt_last_used) - validateDateTime(a.eqpt_last_used),
 
-    render: text => (
-      // eslint-disable-next-line
-      <a>
-        {text !== "" ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat) : ""}
-      </a>
-    )
+    render: text => {
+      const value =
+        text !== ""
+          ? `${moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(
+              moment.localeData().longDateFormat("L")
+            )} ${moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(
+              moment.localeData().longDateFormat("LTS")
+            )}`
+          : "";
+      return (
+        // eslint-disable-next-line
+        <a>{value}</a>
+      );
+    }
   }
 ];
 

@@ -234,7 +234,12 @@ class PersonnelForm extends Component {
               />
             </TabPane>
 
-            <TabPane tab="Compartments" key="3" forceRender={true}>
+            <TabPane
+              tab="Compartments"
+              key="3"
+              forceRender={true}
+              style={{ height: "55vh", overflowY: "scroll", paddingRight: 20 }}
+            >
               <EquipmentType
                 decorator={getFieldDecorator}
                 value={value}
@@ -253,7 +258,16 @@ class PersonnelForm extends Component {
             </TabPane>
 
             {!!value && (
-              <TabPane tab="Bulk Edit" key="4" forceRender={true}>
+              <TabPane
+                tab="Bulk Edit"
+                key="4"
+                forceRender={true}
+                style={{
+                  height: "55vh",
+                  overflowY: "scroll",
+                  paddingRight: 20
+                }}
+              >
                 <BulkEdit
                   decorator={getFieldDecorator}
                   form={form}
@@ -280,7 +294,9 @@ class PersonnelForm extends Component {
           type="primary"
           icon={!!value ? "edit" : "plus"}
           style={{ float: "right", marginRight: 5 }}
-          onClick={!!value ? this.showConsolidateConfirm : this.showCreateConfirm}
+          onClick={
+            !!value ? this.showConsolidateConfirm : this.showCreateConfirm
+          }
         >
           {!!value ? "Update" : "Create"}
         </Button>

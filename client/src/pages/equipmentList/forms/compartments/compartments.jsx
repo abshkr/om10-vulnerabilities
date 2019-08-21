@@ -2,7 +2,15 @@ import React, { Component } from "react";
 
 import { Table, Input, Form, Select, Icon, Card } from "antd";
 import { equipmentList } from "../../../../api";
-import { Rail, Flat, Prime, Rigid, Ship, Trailer, Default } from "../../../../assets/equipment";
+import {
+  Rail,
+  Flat,
+  Prime,
+  Rigid,
+  Ship,
+  Trailer,
+  Default
+} from "../../../../assets/equipment";
 
 import _ from "lodash";
 import axios from "axios";
@@ -165,19 +173,24 @@ export default class Compatments extends Component {
 
     this.setState({ isLoading: true });
 
-    axios.all([equipmentList.readCompartments(id), equipmentList.readEquipmentTypes()]).then(
-      axios.spread((compartments, types) => {
-        this.setState({
-          isLoading: false,
-          types: types.data.records,
-          data: compartments.data.records
-        });
+    axios
+      .all([
+        equipmentList.readCompartments(id),
+        equipmentList.readEquipmentTypes()
+      ])
+      .then(
+        axios.spread((compartments, types) => {
+          this.setState({
+            isLoading: false,
+            types: types.data.records,
+            data: compartments.data.records
+          });
 
-        setValue({
-          compartments: compartments.data.records
-        });
-      })
-    );
+          setValue({
+            compartments: compartments.data.records
+          });
+        })
+      );
   };
 
   handleFetchByEquipment = id => {
@@ -186,7 +199,10 @@ export default class Compatments extends Component {
     this.setState({ isLoading: true });
 
     axios
-      .all([equipmentList.readCompartmentEquipment(id), equipmentList.readEquipmentTypes()])
+      .all([
+        equipmentList.readCompartmentEquipment(id),
+        equipmentList.readEquipmentTypes()
+      ])
       .then(
         axios.spread((compartments, types) => {
           this.setState({
@@ -286,7 +302,9 @@ export default class Compatments extends Component {
 
     const id = equipment;
 
-    const fiter = !!value ? ["eqpt_etp_title", value.eqpt_etp_title] : ["eqpt_etp", id];
+    const fiter = !!value
+      ? ["eqpt_etp_title", value.eqpt_etp_title]
+      : ["eqpt_etp", id];
     const equipments = _.filter(this.props.data, fiter);
 
     const imageFilter = !!value ? ["etyp_id", value.eqpt_etp] : ["etyp_id", id];
@@ -296,7 +314,15 @@ export default class Compatments extends Component {
 
     decorator("compartments");
 
-    const path = { e: Rail, f: Flat, p: Prime, r: Rigid, s: Ship, t: Trailer, x: Default };
+    const path = {
+      e: Rail,
+      f: Flat,
+      p: Prime,
+      r: Rigid,
+      s: Ship,
+      t: Trailer,
+      x: Default
+    };
 
     return (
       <div>
@@ -306,17 +332,19 @@ export default class Compatments extends Component {
           </div>
           <p style={{ textAlign: "center" }}> Compartments: {data.length} </p>
         </Card>
-        )}
-        {!!equipments && (
+
+        {!!equipments && !!value && (
           <Select
-            placeholder={!!value ? value.eqpt_code : "Please Select"}
+            value={!!value ? value.eqpt_code : null}
             onChange={this.handleFetch}
             style={{ marginBottom: 10 }}
             showSearch
             disabled={equipments.length === 0}
             optionFilterProp="children"
             filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              option.props.children
+                .toLowerCase()
+                .indexOf(input.toLowerCase()) >= 0
             }
           >
             {equipments.map((item, index) => (
