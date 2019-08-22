@@ -6,6 +6,7 @@ import { tankerList } from "../../api";
 import { search } from "../../utils";
 import columns from "./columns";
 import auth from "../../auth";
+import Forms from "./forms";
 import axios from "axios";
 
 class TankerList extends Component {
@@ -20,16 +21,18 @@ class TankerList extends Component {
   }
 
   handleClick = object => {
-    const { data } = this.state;
+    const { t } = this.props;
 
     Modal.info({
       title: !!object
-        ? `Editing (${object.eqpt_id} / ${object.eqpt_code})`
-        : "Create",
+        ? `${t("operations.editing")} (${object.tnkr_name} / ${
+            object.tnkr_code
+          })`
+        : `${t("operations.create")}`,
       centered: true,
-      width: 1024,
+      width: "50vw",
       icon: !!object ? "edit" : "form",
-      content: <div value={object} refresh={this.handleFetch} data={data} />,
+      content: <Forms value={object} refresh={this.handleFetch} t={t} />,
       okButtonProps: {
         style: { display: "none" }
       }
@@ -37,6 +40,8 @@ class TankerList extends Component {
   };
 
   handleFetch = () => {
+    const { t } = this.props;
+
     this.setState({ isLoading: true });
 
     axios
@@ -52,7 +57,7 @@ class TankerList extends Component {
       .catch(error => {
         notification.error({
           message: error.message,
-          description: "Failed to make the request."
+          description: t("operations.create")
         });
       });
   };
@@ -86,8 +91,8 @@ class TankerList extends Component {
 
     return (
       <Page
-        page={"Schedules"}
-        name={"Tanker List"}
+        page={t("pageMenu.schedules")}
+        name={t("pageNames.tankerList")}
         isLoading={isLoading}
         block={true}
       >
@@ -119,7 +124,7 @@ class TankerList extends Component {
             onClick={() => this.handleClick(null)}
             disabled={isLoading}
           >
-            Create
+            {t("operations.create")}
           </Button>
           <DataTable
             rowKey="tnkr_code"
