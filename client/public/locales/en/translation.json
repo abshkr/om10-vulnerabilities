@@ -1,0 +1,16 @@
+{
+  "dataColumns": {
+    "code": "Code",
+    "name": "Name",
+    "carrierName": "Carrier Name",
+    "ownerName": "Owner Name",
+    "equipmentName": "Equipment Name",
+    "baseSiteName": "Base Depot",
+    "locked": "Locked?",
+    "active": "Active?",
+    "bayCheck": "Bay Check?",
+    "archived": "Archived?",
+    "lastModified": "Last Modified",
+    "lastUsed": "Last Used"
+  }
+}

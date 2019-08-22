@@ -5,10 +5,11 @@ import {
   validateDateTime,
   convertToLocale
 } from "../../utils";
+import { Trans } from "react-i18next";
 
 const columns = (data, config) => [
   {
-    title: "Code",
+    title: <Trans i18nKey="dataColumns.code" />,
     dataIndex: "tnkr_code",
     key: "tnkr_code",
     width: 100,
@@ -19,7 +20,7 @@ const columns = (data, config) => [
     render: text => <a>{text}</a>
   },
   {
-    title: "Name",
+    title: <Trans i18nKey="dataColumns.name" />,
     dataIndex: "tnkr_name",
     key: "eqpt_code",
     onFilter: (value, record) => record.tnkr_name.indexOf(value) === 0,
@@ -27,7 +28,7 @@ const columns = (data, config) => [
     width: 200
   },
   {
-    title: "Carrier",
+    title: <Trans i18nKey="dataColumns.carrierName" />,
     dataIndex: "tnkr_carrier_name",
     key: "tnkr_carrier_name",
     onFilter: (value, record) => record.tnkr_carrier_name.indexOf(value) === 0,
@@ -35,7 +36,7 @@ const columns = (data, config) => [
     width: 200
   },
   {
-    title: "Owner",
+    title: <Trans i18nKey="dataColumns.ownerName" />,
     dataIndex: "tnkr_owner_name",
     key: "tnkr_owner_name",
     onFilter: (value, record) => record.tnkr_owner_name.indexOf(value) === 0,
@@ -43,7 +44,7 @@ const columns = (data, config) => [
     width: 200
   },
   {
-    title: "Equipment Type",
+    title: <Trans i18nKey="dataColumns.equipmentName" />,
     dataIndex: "tnkr_eqpt_name",
     key: "tnkr_eqpt_name",
     width: 350,
@@ -51,14 +52,14 @@ const columns = (data, config) => [
     onFilter: (value, record) => record.tnkr_eqpt_name.indexOf(value) === 0
   },
   {
-    title: "Base Depot",
+    title: <Trans i18nKey="dataColumns.baseSiteName" />,
     dataIndex: "tnkr_base_site_name",
     key: "tnkr_base_site_name",
     filters: generateOptions(data, "tnkr_base_site_name"),
     width: 150
   },
   {
-    title: "Locked?",
+    title: <Trans i18nKey="dataColumns.locked" />,
     dataIndex: "tnkr_lock",
     key: "tnkr_lock",
     align: "center",
@@ -70,7 +71,7 @@ const columns = (data, config) => [
     )
   },
   {
-    title: "Active?",
+    title: <Trans i18nKey="dataColumns.active" />,
     dataIndex: "tnkr_active",
     key: "tnkr_active",
     align: "center",
@@ -82,7 +83,7 @@ const columns = (data, config) => [
     )
   },
   {
-    title: "Bay Check?",
+    title: <Trans i18nKey="dataColumns.bayCheck" />,
     dataIndex: "tnkr_bay_loop_ch",
     key: "tnkr_bay_loop_ch",
     align: "center",
@@ -94,7 +95,7 @@ const columns = (data, config) => [
     )
   },
   {
-    title: "Archived?",
+    title: <Trans i18nKey="dataColumns.archived" />,
     dataIndex: "tnkr_archive",
     key: "tnkr_archive",
     align: "center",
@@ -106,7 +107,7 @@ const columns = (data, config) => [
     )
   },
   {
-    title: "Last Modified",
+    title: <Trans i18nKey="dataColumns.lastModified" />,
     dataIndex: "tnkr_last_modified",
     key: "tnkr_last_modified",
     align: "center",
@@ -117,7 +118,7 @@ const columns = (data, config) => [
     render: text => <span>{convertToLocale(text)}</span>
   },
   {
-    title: "Last Used",
+    title: <Trans i18nKey="dataColumns.lastUsed" />,
     dataIndex: "tnkr_last_used",
     key: "tnkr_last_used",
     align: "center",

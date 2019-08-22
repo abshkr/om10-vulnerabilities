@@ -80,7 +80,7 @@ class TankerList extends Component {
 
   render() {
     const { data, isLoading, filtered, value, resize } = this.state;
-    const { configuration } = this.props;
+    const { configuration, t } = this.props;
 
     const results = !!filtered ? filtered : data;
 

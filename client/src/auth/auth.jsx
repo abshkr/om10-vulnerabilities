@@ -4,6 +4,7 @@ import { ROUTES } from "../constants";
 import { connect } from "react-redux";
 import { Loading } from "../components";
 import { api } from "../api";
+import { withTranslation } from "react-i18next";
 
 export default Module => {
   class ComposedComponent extends Component {
@@ -27,7 +28,10 @@ export default Module => {
     };
 
     getConfiguration = () => {
-      const url = process.env.NODE_ENV === "development" ? "/config.json" : `https://${api}/api/config.json`;
+      const url =
+        process.env.NODE_ENV === "development"
+          ? "/config.json"
+          : `https://${api}/api/config.json`;
 
       axios.get(url).then(response => {
         this.setState({
@@ -57,9 +61,11 @@ export default Module => {
     }
   }
 
+  const AuthComponent = withTranslation()(ComposedComponent);
+
   const mapStateToProps = state => {
     return { auth: state.auth.authenticated };
   };
 
-  return connect(mapStateToProps)(ComposedComponent);
+  return connect(mapStateToProps)(AuthComponent);
 };
