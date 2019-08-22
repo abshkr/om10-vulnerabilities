@@ -6,5 +6,16 @@ import stringToHex from "./stringToHex";
 import checkSession from "./checkSession";
 import generateOptions from "./generateOptions";
 import validateDateTime from "./validateDateTime";
+import convertToLocale from "./convertToLocale";
 
-export { search, decodeJWT, hexToArray, stringToHex, checkSession, generateOptions, hash, validateDateTime };
+export {
+  search,
+  decodeJWT,
+  hexToArray,
+  stringToHex,
+  checkSession,
+  generateOptions,
+  hash,
+  validateDateTime,
+  convertToLocale
+};
