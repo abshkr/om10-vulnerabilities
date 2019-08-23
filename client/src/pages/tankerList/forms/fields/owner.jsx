@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from "react";
-
 import { tankerList } from "../../../../api";
 import { Form, Select } from "antd";
 import axios from "axios";
 
-const Owner = ({ decorator, value, setValue }) => {
+const Owner = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
   const [isLoading, setLoading] = useState(false);
   const [options, setOptions] = useState([]);
 
-  const handleSetValues = () => {
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         tnkr_owner: value.tnkr_owner
       });
     }
-  };
 
-  useEffect(() => {
     const getContext = () => {
       axios.all([tankerList.owners()]).then(
         axios.spread(options => {
@@ -26,15 +25,14 @@ const Owner = ({ decorator, value, setValue }) => {
       );
     };
 
-    handleSetValues();
     setLoading(true);
     getContext();
-  }, []);
+  }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label="Owner">
-      {decorator("tnkr_owner", {
-        rules: [{ required: false }]
+    <Form.Item label={t("fields.owner")}>
+      {getFieldDecorator("tnkr_owner", {
+        rules: [{ required: true }]
       })(
         <Select loading={isLoading} disabled={!!value}>
           {options.map((item, index) => (
