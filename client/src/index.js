@@ -1,9 +1,13 @@
-import "babel-polyfill";
+import "core-js/stable";
+import "regenerator-runtime/runtime";
+
+import "react-app-polyfill/ie9";
 import "react-app-polyfill/ie11";
 
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./app";
+import "./localization";
 
 import "antd/dist/antd.css";
 import "./styles/app.css";

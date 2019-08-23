@@ -158,6 +158,13 @@ const paths = [
       loader: () => import("../pages/reportProfile"),
       loading: Loading
     })
+  },
+  {
+    path: ROUTES.TANKER_LIST,
+    component: Loadable({
+      loader: () => import("../pages/tankerList"),
+      loading: Loading
+    })
   }
 ];
 

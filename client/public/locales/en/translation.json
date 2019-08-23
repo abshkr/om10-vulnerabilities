@@ -1,0 +1,45 @@
+{
+  "dataColumns": {
+    "code": "Code",
+    "name": "Name",
+    "carrierName": "Carrier Name",
+    "ownerName": "Owner Name",
+    "equipmentName": "Equipment Name",
+    "baseSiteName": "Base Depot",
+    "locked": "Locked?",
+    "active": "Active?",
+    "bayCheck": "Bay Check?",
+    "archived": "Archived?",
+    "lastModified": "Last Modified",
+    "lastUsed": "Last Used"
+  },
+
+  "pageMenu": {
+    "schedules": "Schedules"
+  },
+
+  "pageNames": {
+    "tankerList": "Tanker List"
+  },
+
+  "operations": {
+    "editing": "Editing",
+    "create": "Create",
+    "export": "Export CSV",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "update": "Update"
+  },
+
+  "tabColumns": {
+    "general": "General",
+    "expiryDates": "Expiry Dates",
+    "compartments": "Compartments",
+    "tanker": "Tanker",
+    "bulkEdit": "Bulk Edit"
+  },
+
+  "errors": {
+    "requestFailed": "Failed to make the request."
+  }
+}

@@ -12,7 +12,7 @@ export default class Historical extends Component {
     this.state = {
       data: [],
       start: moment()
-        .subtract(1, "day")
+        .subtract(11, "hour")
         .format("YYYY-MM-DD h:mm"),
       end: moment().format("YYYY-MM-DD h:mm"),
       value: "",
@@ -55,9 +55,23 @@ export default class Historical extends Component {
     return (
       <div>
         <Filter value={value} search={this.handleSearch} />
-        <Calendar start={start} end={end} change={this.handleFetch} style={{ marginLeft: 5 }} />
-        <Download data={data} type={`journal_${start}-${end}`} style={{ float: "right" }} />
-        <DataTable rowKey="seq" columns={columns(data, config)} data={!!filtered ? filtered : data} isLoading={isLoading} />
+        <Calendar
+          start={start}
+          end={end}
+          change={this.handleFetch}
+          style={{ marginLeft: 5 }}
+        />
+        <Download
+          data={data}
+          type={`journal_${start}-${end}`}
+          style={{ float: "right" }}
+        />
+        <DataTable
+          rowKey="seq"
+          columns={columns(data, config)}
+          data={!!filtered ? filtered : data}
+          isLoading={isLoading}
+        />
       </div>
     );
   }
