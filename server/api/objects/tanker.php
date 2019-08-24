@@ -13,6 +13,13 @@ class Tanker extends CommonClass
     protected $VIEW_NAME = "GUI_TANKERS";
     protected $primary_keys = array("tnkr_code");
 
+    public $BOOLEAN_FIELDS = array(
+        "TNKR_LOCK" => "Y",
+        "TNKR_ACTIVE" => "Y",
+        "TNKR_BAY_LOOP_CH" => "Y",
+        "TNKR_ARCHIVE" => "Y"
+    );
+
     public $start_num = 1;
     public $end_num = null;
     public $err_msg;
