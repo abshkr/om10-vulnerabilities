@@ -20,6 +20,14 @@ class Tanker extends CommonClass
         "TNKR_ARCHIVE" => "Y"
     );
 
+    public $NUMBER_FIELDS = array(
+        "TNKR_MAX_KG"
+    );
+
+    // protected $table_view_map = array(
+    //     "STATS" => "TNKR_STATS",
+    // );
+
     public $start_num = 1;
     public $end_num = null;
     public $err_msg;
@@ -382,6 +390,7 @@ class Tanker extends CommonClass
     {
         write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code),
             __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
 
         Utilities::sanitize($this);
 
@@ -408,9 +417,6 @@ class Tanker extends CommonClass
                 TNKR_BASE_SITE,
                 TNKR_ETP,
                 TNKR_NTRIPS,
-                TNKR_LIC_EXP,
-                TNKR_DGLIC_EXP,
-                TNKR_INS_EXP,
                 TNKR_LOCK,
                 TNKR_ACTIVE,
                 TNKR_BAY_LOOP_CH,
@@ -434,9 +440,6 @@ class Tanker extends CommonClass
                 :term_code,
                 :tnkr_etp,
                 :tnkr_ntrips,
-                TO_DATE(:tnkr_lic_exp, 'YYYY-MM-DD'),
-                TO_DATE(:tnkr_dglic_exp, 'YYYY-MM-DD'),
-                TO_DATE(:tnkr_ins_exp, 'YYYY-MM-DD'),
                 :tnkr_lock,
                 :tnkr_active,
                 :tnkr_bay_loop_ch,
@@ -459,11 +462,11 @@ class Tanker extends CommonClass
         oci_bind_by_name($stmt, ':tnkr_bay_loop_ch', $this->tnkr_bay_loop_ch);
         oci_bind_by_name($stmt, ':tnkr_ntrips', $this->tnkr_ntrips);
         oci_bind_by_name($stmt, ':tnkr_own_txt', $this->tnkr_own_txt);
-        oci_bind_by_name($stmt, ':tnkr_lic_exp', $this->tnkr_lic_exp);
-        oci_bind_by_name($stmt, ':tnkr_dglic_exp', $this->tnkr_dglic_exp);
-        oci_bind_by_name($stmt, ':tnkr_ins_exp', $this->tnkr_ins_exp);
-        oci_bind_by_name($stmt, ':stats', $this->stats);
-        oci_bind_by_name($stmt, ':last_trip', $this->last_trip);
+        // oci_bind_by_name($stmt, ':tnkr_lic_exp', $this->tnkr_lic_exp);
+        // oci_bind_by_name($stmt, ':tnkr_dglic_exp', $this->tnkr_dglic_exp);
+        // oci_bind_by_name($stmt, ':tnkr_ins_exp', $this->tnkr_ins_exp);
+        oci_bind_by_name($stmt, ':stats', $this->tnkr_stats);
+        oci_bind_by_name($stmt, ':last_trip', $this->tnkr_last_trip);
         oci_bind_by_name($stmt, ':tnkr_name', $this->tnkr_name);
         oci_bind_by_name($stmt, ':tnkr_pin', $this->tnkr_pin);
         oci_bind_by_name($stmt, ':tnkr_archive', $this->tnkr_archive);
