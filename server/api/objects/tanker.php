@@ -3,9 +3,10 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
-include_once __DIR__ . '/../objects/expiry_date.php';
-include_once __DIR__ . '/../objects/expiry_type.php';
+include_once 'expiry_date.php';
+include_once 'expiry_type.php';
 include_once 'common_class.php';
+include_once 'eqpt_type.php';
 
 class Tanker extends CommonClass
 {
@@ -46,6 +47,19 @@ class Tanker extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return 0;
         }
+    }
+
+    public function composition_hook(&$hook_item)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $eqpt_types = new EquipmentType($this->conn);
+        $stmt = $eqpt_types->equipments($hook_item['eqpt_etp']);
+        $result = array();
+        Utilities::retrieve($result, $eqpt_types, $stmt);
+        // write_log(json_encode($result), __FILE__, __LINE__);
+        $hook_item['eqpt_list'] = $result;
     }
 
     public function read_hook(&$hook_item)
@@ -264,7 +278,7 @@ class Tanker extends CommonClass
         }
     }
 
-    public function composition($tnkr_code)
+    public function composition()
     {
         $query = "
             SELECT TC_EQPT,
@@ -295,7 +309,7 @@ class Tanker extends CommonClass
             ORDER BY TC_SEQNO";
 
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
