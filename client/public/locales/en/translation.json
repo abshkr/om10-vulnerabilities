@@ -1,17 +1,28 @@
 {
-  "dataColumns": {
+  "fields": {
     "code": "Code",
     "name": "Name",
-    "carrierName": "Carrier Name",
-    "ownerName": "Owner Name",
+    "owner": "Owner",
     "equipmentName": "Equipment Name",
-    "baseSiteName": "Base Depot",
+    "baseDepot": "Base Depot",
     "locked": "Locked?",
     "active": "Active?",
     "bayCheck": "Bay Check?",
     "archived": "Archived?",
     "lastModified": "Last Modified",
-    "lastUsed": "Last Used"
+    "lastUsed": "Last Used",
+    "equipmentType": "Equipment Type",
+    "carrier": "Carrier",
+    "tankerPrompt": "Tanker Prompt",
+    "pin": "Pin",
+    "destination": "Destination",
+    "lastDepot": "Last Depot",
+    "currentDepot": "Current Depot",
+    "maxKg": "Max Kg",
+    "totalTrips": "Total Trips",
+    "lastTrip": "Last Trip",
+    "comments": "Comments",
+    "locks": "Locks"
   },
 
   "pageMenu": {
@@ -28,7 +39,9 @@
     "export": "Export CSV",
     "delete": "Delete",
     "cancel": "Cancel",
-    "update": "Update"
+    "update": "Update",
+    "yes": "Yes",
+    "no": "No"
   },
 
   "tabColumns": {
@@ -39,7 +52,27 @@
     "bulkEdit": "Bulk Edit"
   },
 
-  "errors": {
-    "requestFailed": "Failed to make the request."
+  "messages": {
+    "validationFailed": "Validation Failed.",
+    "createSuccess": "Successfully Created.",
+    "updateSuccess": "Successfully Updated.",
+    "deleteSuccess": "Successfully Deleted."
+  },
+
+  "prompts": {
+    "create": "Are you sure you want to create this record?",
+    "update": "Are you sure you want to update this record?",
+    "delete": "Are you sure you want to delete this record?"
+  },
+
+  "descriptions": {
+    "validationFailed": "Make sure all the fields meet the requirements.",
+    "requestFailed": "Failed to make the request.",
+    "createFailed": "Failed to create the record.",
+    "updateFailed": "Failed to update the record.",
+    "deleteFailed": "Failed to delete the record.",
+    "createSuccess": "You have created the record",
+    "updateSuccess": "You have updated the record.",
+    "deleteSuccess": "You have deleted the record"
   }
 }

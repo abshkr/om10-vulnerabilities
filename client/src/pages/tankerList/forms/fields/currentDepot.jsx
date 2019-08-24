@@ -4,7 +4,7 @@ import { tankerList } from "../../../../api";
 import { Form, Select } from "antd";
 import axios from "axios";
 
-const Depot = ({ form, value, t }) => {
+const CurrentDepot = ({ form, value, t }) => {
   const { getFieldDecorator, setFieldsValue } = form;
 
   const [isLoading, setLoading] = useState(false);
@@ -13,7 +13,7 @@ const Depot = ({ form, value, t }) => {
   useEffect(() => {
     if (!!value) {
       setFieldsValue({
-        tnkr_base_site: value.tnkr_base_site
+        tnkr_cur_depot: value.tnkr_cur_depot
       });
     }
 
@@ -31,9 +31,9 @@ const Depot = ({ form, value, t }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t("fields.baseDepot")}>
-      {getFieldDecorator("tnkr_base_site", {
-        rules: [{ required: true }]
+    <Form.Item label={t("fields.currentDepot")}>
+      {getFieldDecorator("tnkr_cur_depot", {
+        rules: [{ required: false }]
       })(
         <Select loading={isLoading} disabled={!!value}>
           {options.map((item, index) => (
@@ -47,4 +47,4 @@ const Depot = ({ form, value, t }) => {
   );
 };
 
-export default Depot;
+export default CurrentDepot;

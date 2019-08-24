@@ -4,7 +4,7 @@ import { tankerList } from "../../../../api";
 import { Form, Select } from "antd";
 import axios from "axios";
 
-const Depot = ({ form, value, t }) => {
+const EquipmentType = ({ form, value, t }) => {
   const { getFieldDecorator, setFieldsValue } = form;
 
   const [isLoading, setLoading] = useState(false);
@@ -13,12 +13,12 @@ const Depot = ({ form, value, t }) => {
   useEffect(() => {
     if (!!value) {
       setFieldsValue({
-        tnkr_base_site: value.tnkr_base_site
+        tnkr_etp: value.tnkr_etp
       });
     }
 
     const getContext = () => {
-      axios.all([tankerList.terminal()]).then(
+      axios.all([tankerList.equipmentTypes()]).then(
         axios.spread(options => {
           setOptions(options.data.records);
           setLoading(false);
@@ -31,14 +31,14 @@ const Depot = ({ form, value, t }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t("fields.baseDepot")}>
-      {getFieldDecorator("tnkr_base_site", {
+    <Form.Item label={t("fields.equipmentType")}>
+      {getFieldDecorator("tnkr_etp", {
         rules: [{ required: true }]
       })(
         <Select loading={isLoading} disabled={!!value}>
           {options.map((item, index) => (
-            <Select.Option key={index} value={item.term_code}>
-              {item.term_name}
+            <Select.Option key={index} value={item.etyp_id}>
+              {item.etyp_title}
             </Select.Option>
           ))}
         </Select>
@@ -47,4 +47,4 @@ const Depot = ({ form, value, t }) => {
   );
 };
 
-export default Depot;
+export default EquipmentType;
