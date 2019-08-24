@@ -253,8 +253,8 @@ class Utilities
 
     public static function retrieve(&$result_array, $object, $stmt, $method = "read")
     {
-        write_log(sprintf("%s::%s() START, method:%s",
-            __CLASS__, __FUNCTION__, $method),
+        write_log(sprintf("%s::%s() START, class:%s, method:%s",
+            __CLASS__, __FUNCTION__, get_class($object), $method),
             __FILE__, __LINE__);
 
         $num = 0;

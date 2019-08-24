@@ -7,6 +7,7 @@ include_once 'expiry_date.php';
 include_once 'expiry_type.php';
 include_once 'common_class.php';
 include_once 'eqpt_type.php';
+include_once 'eqpt.php';
 
 class Tanker extends CommonClass
 {
@@ -57,9 +58,17 @@ class Tanker extends CommonClass
         $eqpt_types = new EquipmentType($this->conn);
         $stmt = $eqpt_types->equipments($hook_item['eqpt_etp']);
         $result = array();
-        Utilities::retrieve($result, $eqpt_types, $stmt);
+        Utilities::retrieve($result, $eqpt_types, $stmt, $method = 'equipments');
         // write_log(json_encode($result), __FILE__, __LINE__);
         $hook_item['eqpt_list'] = $result;
+
+        $eqpt = new Equipment($this->conn);
+        $eqpt->eqpt_id = $hook_item['tc_eqpt'];
+        $stmt = $eqpt->compartments();
+        $result = array();
+        Utilities::retrieve($result, $eqpt, $stmt, $method = 'compartments');
+        // write_log(json_encode($result), __FILE__, __LINE__);
+        $hook_item['compartments'] = $result;
     }
 
     public function read_hook(&$hook_item)
