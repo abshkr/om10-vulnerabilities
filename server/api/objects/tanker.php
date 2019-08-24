@@ -5,21 +5,17 @@ include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/../objects/expiry_date.php';
 include_once __DIR__ . '/../objects/expiry_type.php';
+include_once 'common_class.php';
 
-class Tanker
+class Tanker extends CommonClass
 {
-    // database connection and table name
-    private $conn;
+    protected $TABLE_NAME = "TANKERS";
+    protected $VIEW_NAME = "GUI_TANKERS";
+    protected $primary_keys = array("tnkr_code");
 
     public $start_num = 1;
     public $end_num = null;
     public $err_msg;
-
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
 
     public function count()
     {
@@ -35,6 +31,21 @@ class Tanker
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return 0;
         }
+    }
+
+    public function read_hook(&$hook_item)
+    {
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
+
+        $expiry_date = new ExpiryDate($this->conn);
+        $expiry_date->ed_target_code = ExpiryTarget::TANKER;
+        $expiry_date->ed_object_id = $hook_item['tnkr_code'];
+        $stmt = $expiry_date->read();
+        $result = array();
+        Utilities::retrieve($result, $expiry_date, $stmt);
+        // write_log(json_encode($result), __FILE__, __LINE__);
+        $hook_item['expiry_dates'] = $result;
     }
 
     public function read()
