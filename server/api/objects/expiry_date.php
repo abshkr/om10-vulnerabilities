@@ -19,7 +19,7 @@ class ExpiryDate extends CommonClass
         write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
         Utilities::sanitize($this);
         // write_log(json_encode($this), __FILE__, __LINE__);
-        // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+        write_log(json_encode($expiry_dates), __FILE__, __LINE__);
         $query = "
             SELECT ED_EXP_DATE, ED_TARGET_CODE, ED_OBJECT_ID, ED_TYPE_CODE, EDT_TYPE_DESC
             FROM EXPIRY_DATE_DETAILS, EXPIRY_DATE_TYPES
@@ -49,8 +49,7 @@ class ExpiryDate extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
-        // write_log(print_r($old_data, true), __FILE__, __LINE__);
-
+        write_log(json_encode($old_data), __FILE__, __LINE__);
         $journal = new Journal($this->conn, false);
         foreach ($old_data as $key => $value) {
             // write_log($key, __FILE__, __LINE__);
@@ -269,6 +268,7 @@ class ExpiryDate extends CommonClass
 
             oci_bind_by_name($stmt, ':ed_type_code', $key);
             oci_bind_by_name($stmt, ':ed_exp_date', $value->ed_exp_date);
+            write_log($value->ed_exp_date, __FILE__, __LINE__);
             // write_log(sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
             //     $this->eqpt_title, $this->eqpt_code, $this->eqpt_owner,
             //     $this->eqpt_lock, $this->eqpt_empty_kg, $this->eqp_must_tare_in,

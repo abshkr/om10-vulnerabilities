@@ -19,11 +19,15 @@ class Tanker extends CommonClass
         "TNKR_LOCK" => "Y",
         "TNKR_ACTIVE" => "Y",
         "TNKR_BAY_LOOP_CH" => "Y",
-        "TNKR_ARCHIVE" => "Y"
+        "TNKR_ARCHIVE" => "Y",
+        "EQPT_LOCK" => "Y",
+        "EQP_MUST_TARE_IN" => "Y",
     );
 
     public $NUMBER_FIELDS = array(
-        "TNKR_MAX_KG"
+        "TNKR_MAX_KG",
+        "EQPT_MAX_GROSS",
+        "CMPT_COUNT"
     );
 
     // protected $table_view_map = array(
@@ -664,27 +668,9 @@ class Tanker extends CommonClass
     {
         write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code),
             __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
 
         Utilities::sanitize($this);
-
-        $tnkr_lock = null;
-        $tnkr_carrier = null;
-        $tnkr_etp = null;
-        $tnkr_owner = null;
-        $tnkr_active = null;
-        $tnkr_max_kg = null;
-        $tnkr_bay_loop_ch = null;
-        $tnkr_ntrips = null;
-        $tnkr_own_txt = null;
-        $tnkr_lic_exp = null;
-        $tnkr_dglic_exp = null;
-        $tnkr_ins_exp = null;
-        $stats = null;
-        $last_trip = null;
-        $tnkr_name = null;
-        $tnkr_pin = null;
-        $tnkr_archive = null;
-        $remarks = null;
 
         $query = "
             SELECT *
@@ -718,6 +704,7 @@ class Tanker extends CommonClass
         $query = "
             UPDATE TANKERS
             SET TNKR_LOCK = :tnkr_lock,
+                TNKR_CARRIER = :tnkr_carrier,
                 TNKR_ACTIVE = :tnkr_active,
                 TNKR_MAX_KG = :tnkr_max_kg,
                 TNKR_BAY_LOOP_CH = :tnkr_bay_loop_ch,
@@ -736,6 +723,7 @@ class Tanker extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
         oci_bind_by_name($stmt, ':tnkr_lock', $this->tnkr_lock);
+        oci_bind_by_name($stmt, ':tnkr_carrier', $this->tnkr_carrier);
         oci_bind_by_name($stmt, ':tnkr_active', $this->tnkr_active);
         oci_bind_by_name($stmt, ':tnkr_max_kg', $this->tnkr_max_kg);
         oci_bind_by_name($stmt, ':tnkr_bay_loop_ch', $this->tnkr_bay_loop_ch);
@@ -744,8 +732,8 @@ class Tanker extends CommonClass
         oci_bind_by_name($stmt, ':tnkr_lic_exp', $this->tnkr_lic_exp);
         oci_bind_by_name($stmt, ':tnkr_dglic_exp', $this->tnkr_dglic_exp);
         oci_bind_by_name($stmt, ':tnkr_ins_exp', $this->tnkr_ins_exp);
-        oci_bind_by_name($stmt, ':stats', $this->stats);
-        oci_bind_by_name($stmt, ':last_trip', $this->last_trip);
+        oci_bind_by_name($stmt, ':stats', $this->tnkr_stats);
+        oci_bind_by_name($stmt, ':last_trip', $this->tnkr_last_trip);
         oci_bind_by_name($stmt, ':tnkr_name', $this->tnkr_name);
         oci_bind_by_name($stmt, ':tnkr_pin', $this->tnkr_pin);
         oci_bind_by_name($stmt, ':tnkr_archive', $this->tnkr_archive);
@@ -787,6 +775,8 @@ class Tanker extends CommonClass
         //Update expiry dates
         $expiry_dates = array();
         $expiry_date = new ExpiryDate($this->conn);
+        $expiry_date->ed_object_id = $this->tnkr_code;
+        $expiry_date->edt_target_code = ExpiryTarget::TANKER;
         // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
         foreach ($this->expiry_dates as $key => $value) {
             $expiry_dates[$value->edt_type_code] = $value;
