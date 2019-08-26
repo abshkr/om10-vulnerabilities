@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from "react";
 
 import { tankerList } from "../../../../api";
-import { Table, Select } from "antd";
+import { Table, Select, Card } from "antd";
 import columns from "./columns";
 import axios from "axios";
 import Cell from "./cell";
 import Row from "./row";
 import _ from "lodash";
+
+import {
+  Rail,
+  Flat,
+  Prime,
+  Rigid,
+  Ship,
+  Trailer,
+  Default
+} from "../../../../assets/equipment";
 
 const Compartments = ({ form, value, t }) => {
   const [data, setdata] = useState([]);
@@ -75,10 +85,26 @@ const Compartments = ({ form, value, t }) => {
 
   getFieldDecorator("composition");
 
+  const path = {
+    E: Rail,
+    F: Flat,
+    P: Prime,
+    R: Rigid,
+    S: Ship,
+    T: Trailer,
+    X: Default
+  };
+
   return (
     <div>
       {data.map((item, index) => (
         <div key={index}>
+          <Card style={{ marginTop: 5 }} size="small">
+            <div className="equipment-icon">
+              <img src={path[item.image]} alt="equipment" />
+            </div>
+          </Card>
+
           <Select
             onChange={fetch}
             value={item.eqpt_code}
