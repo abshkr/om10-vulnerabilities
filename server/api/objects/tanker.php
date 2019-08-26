@@ -294,32 +294,47 @@ class Tanker extends CommonClass
     public function composition()
     {
         $query = "
-            SELECT TC_EQPT,
-                TC_SEQNO,
-                EQPT_CODE,
-                EQPT_TITLE,
-                EQPT_OWNER,
-                EQPT_ETP,
-                ETYP_TITLE,
-                EQPT_EXP_D1_DMY,
-                EQPT_EXP_D2_DMY,
-                EQPT_EXP_D3_DMY,
-                EQPT_LOCK,
-                EQPT_EMPTY_KG,
-                EQP_MUST_TARE_IN,
-                EQPT_MAX_GROSS,
-                EQPT_AREA,
-                EQPT_LOAD_TYPE,
-                EQPT_COMMENTS,
-                NVL(CMPT_COUNT, 0) CMPT_COUNT
-            FROM TNKR_EQUIP, TRANSP_EQUIP, EQUIP_TYPES,
-                (SELECT COUNT(*) CMPT_COUNT, CMPT_ETYP
-                FROM COMPARTMENT GROUP BY CMPT_ETYP)
-            WHERE TC_TANKER = :tnkr_code
-                AND TC_EQPT = EQPT_ID
-                AND EQPT_ETP = ETYP_ID
-                AND EQPT_ETP = CMPT_ETYP(+)
-            ORDER BY TC_SEQNO";
+        SELECT TC_EQPT,
+            TC_SEQNO,
+            EQPT_CODE,
+            EQPT_TITLE,
+            EQPT_OWNER,
+            EQPT_ETP,
+            ETYP_TITLE,
+            IMAGE,
+            EQPT_EXP_D1_DMY,
+            EQPT_EXP_D2_DMY,
+            EQPT_EXP_D3_DMY,
+            EQPT_LOCK,
+            EQPT_EMPTY_KG,
+            EQP_MUST_TARE_IN,
+            EQPT_MAX_GROSS,
+            EQPT_AREA,
+            EQPT_LOAD_TYPE,
+            EQPT_COMMENTS,
+            NVL(CMPT_COUNT, 0) CMPT_COUNT
+        FROM TNKR_EQUIP, TRANSP_EQUIP,
+            (SELECT EQUIP_TYPES_VW.ETYP_TITLE, ETYP_ID, 
+                NVL(ETYP_CATEGORY,
+                    DECODE(ECNCT_ETYP,
+                        NULL,
+                        DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
+                        DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
+                    ) IMAGE
+            FROM EQUIP_TYPES_VW,
+                (SELECT NVL(ETYP_SCHEDUL, 'N') ETYP_SCHEDUL, NVL(ETYP_ISRIGID, 'N') ETYP_ISRIGID, CMPTNU, ECNCT_ETYP
+                FROM EQUIP_TYPES_VW, EQP_CONNECT
+                WHERE EQP_CONNECT.ECNCT_ETYP = EQUIP_TYPES_VW.ETYP_ID
+                    AND EQC_COUNT = 1) FIRST_SUB_ITEM
+            WHERE FIRST_SUB_ITEM.ECNCT_ETYP(+) = EQUIP_TYPES_VW.ETYP_ID  
+                    ),
+            (SELECT COUNT(*) CMPT_COUNT, CMPT_ETYP
+            FROM COMPARTMENT GROUP BY CMPT_ETYP)
+        WHERE TC_TANKER = :tnkr_code
+            AND TC_EQPT = EQPT_ID
+            AND EQPT_ETP = ETYP_ID
+            AND EQPT_ETP = CMPT_ETYP(+)
+        ORDER BY TC_SEQNO";
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
