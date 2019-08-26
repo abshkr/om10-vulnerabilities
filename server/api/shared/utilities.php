@@ -124,12 +124,16 @@ class Utilities
         $result["records"] = array();
 
         /**
-         * Only call read_hook when method === 'read', because other methods can also
-         * be called through Utilies::read, for example,
-         * Utilities::read('Equipment', $method = 'compartments', $filter = true);
+         * last parameter method: normally it is read, so the hook name
+         * is read_hook; if method is other name, like composition
+         * in Tanker, so the hook method is composition_hook
          */
-        $num = self::retrieve($result["records"], $object, $stmt, $method === 'read');
+        $num = self::retrieve($result["records"], $object, $stmt, $method);
 
+        /**
+         * For read_decorate, it can change the result from read(), check
+         * report_profile.php read_decorate for example
+         */
         if (method_exists($object, "read_decorate")) {
             $object->read_decorate($result["records"]);
         }
@@ -247,9 +251,10 @@ class Utilities
         }
     }
 
-    public static function retrieve(&$result_array, $object, $stmt, $call_hook = true)
+    public static function retrieve(&$result_array, $object, $stmt, $method = "read")
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        write_log(sprintf("%s::%s() START, class:%s, method:%s",
+            __CLASS__, __FUNCTION__, get_class($object), $method),
             __FILE__, __LINE__);
 
         $num = 0;
@@ -282,8 +287,9 @@ class Utilities
                 return (is_null($v)) ? "" : $v;
             }, $base_item);
 
-            if ($call_hook && method_exists($object, "read_hook")) {
-                $object->read_hook($base_item);
+            $hook_method = $method . '_hook';
+            if (method_exists($object, $hook_method)) {
+                $object->$hook_method($base_item);
             }
             array_push($result_array, $base_item);
         }

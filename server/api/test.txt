@@ -103,6 +103,7 @@ https://10.1.10.66/api/pages/tanker/read.php
 https://10.1.10.66/api/pages/tanker/read.php?start_num=5&end_num=10
 https://10.1.10.66/api/pages/tanker/owners.php
 https://10.1.10.66/api/pages/tanker/carriers.php
+https://10.1.10.66/api/pages/tanker/expiry_types.php
 https://10.1.10.66/api/pages/tanker/eqpt_types.php
 https://10.1.10.66/api/pages/tanker/eqpt_types.php?etyp_title=E&cmptnu=8
 https://10.1.10.66/api/pages/tanker/terminal.php

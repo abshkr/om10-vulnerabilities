@@ -602,6 +602,7 @@ class CommonClass
 
             $this->retrieve_mandatory_fields();
             // write_log(json_encode($this->mandatory_fields), __FILE__, __LINE__);
+            // write_log(json_encode($this), __FILE__, __LINE__);
             foreach ($this->mandatory_fields as $value) {
                 // write_log($value, __FILE__, __LINE__);
                 // write_log(json_encode($this), __FILE__, __LINE__);

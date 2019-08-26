@@ -3,23 +3,40 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
-include_once __DIR__ . '/../objects/expiry_date.php';
-include_once __DIR__ . '/../objects/expiry_type.php';
+include_once 'expiry_date.php';
+include_once 'expiry_type.php';
+include_once 'common_class.php';
+include_once 'eqpt_type.php';
+include_once 'eqpt.php';
 
-class Tanker
+class Tanker extends CommonClass
 {
-    // database connection and table name
-    private $conn;
+    protected $TABLE_NAME = "TANKERS";
+    protected $VIEW_NAME = "GUI_TANKERS";
+    protected $primary_keys = array("tnkr_code");
+
+    public $BOOLEAN_FIELDS = array(
+        "TNKR_LOCK" => "Y",
+        "TNKR_ACTIVE" => "Y",
+        "TNKR_BAY_LOOP_CH" => "Y",
+        "TNKR_ARCHIVE" => "Y",
+        "EQPT_LOCK" => "Y",
+        "EQP_MUST_TARE_IN" => "Y",
+    );
+
+    public $NUMBER_FIELDS = array(
+        "TNKR_MAX_KG",
+        "EQPT_MAX_GROSS",
+        "CMPT_COUNT"
+    );
+
+    // protected $table_view_map = array(
+    //     "STATS" => "TNKR_STATS",
+    // );
 
     public $start_num = 1;
     public $end_num = null;
     public $err_msg;
-
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
 
     public function count()
     {
@@ -35,6 +52,42 @@ class Tanker
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return 0;
         }
+    }
+
+    public function composition_hook(&$hook_item)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $eqpt_types = new EquipmentType($this->conn);
+        $stmt = $eqpt_types->equipments($hook_item['eqpt_etp']);
+        $result = array();
+        Utilities::retrieve($result, $eqpt_types, $stmt, $method = 'equipments');
+        // write_log(json_encode($result), __FILE__, __LINE__);
+        $hook_item['eqpt_list'] = $result;
+
+        $eqpt = new Equipment($this->conn);
+        $eqpt->eqpt_id = $hook_item['tc_eqpt'];
+        $stmt = $eqpt->compartments();
+        $result = array();
+        Utilities::retrieve($result, $eqpt, $stmt, $method = 'compartments');
+        // write_log(json_encode($result), __FILE__, __LINE__);
+        $hook_item['compartments'] = $result;
+    }
+
+    public function read_hook(&$hook_item)
+    {
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
+
+        $expiry_date = new ExpiryDate($this->conn);
+        $expiry_date->ed_target_code = ExpiryTarget::TANKER;
+        $expiry_date->ed_object_id = $hook_item['tnkr_code'];
+        $stmt = $expiry_date->read();
+        $result = array();
+        Utilities::retrieve($result, $expiry_date, $stmt);
+        // write_log(json_encode($result), __FILE__, __LINE__);
+        $hook_item['expiry_dates'] = $result;
     }
 
     public function read()
@@ -238,38 +291,53 @@ class Tanker
         }
     }
 
-    public function composition($tnkr_code)
+    public function composition()
     {
         $query = "
-            SELECT TC_EQPT,
-                TC_SEQNO,
-                EQPT_CODE,
-                EQPT_TITLE,
-                EQPT_OWNER,
-                EQPT_ETP,
-                ETYP_TITLE,
-                EQPT_EXP_D1_DMY,
-                EQPT_EXP_D2_DMY,
-                EQPT_EXP_D3_DMY,
-                EQPT_LOCK,
-                EQPT_EMPTY_KG,
-                EQP_MUST_TARE_IN,
-                EQPT_MAX_GROSS,
-                EQPT_AREA,
-                EQPT_LOAD_TYPE,
-                EQPT_COMMENTS,
-                NVL(CMPT_COUNT, 0) CMPT_COUNT
-            FROM TNKR_EQUIP, TRANSP_EQUIP, EQUIP_TYPES,
-                (SELECT COUNT(*) CMPT_COUNT, CMPT_ETYP
-                FROM COMPARTMENT GROUP BY CMPT_ETYP)
-            WHERE TC_TANKER = :tnkr_code
-                AND TC_EQPT = EQPT_ID
-                AND EQPT_ETP = ETYP_ID
-                AND EQPT_ETP = CMPT_ETYP(+)
-            ORDER BY TC_SEQNO";
+        SELECT TC_EQPT,
+            TC_SEQNO,
+            EQPT_CODE,
+            EQPT_TITLE,
+            EQPT_OWNER,
+            EQPT_ETP,
+            ETYP_TITLE,
+            IMAGE,
+            EQPT_EXP_D1_DMY,
+            EQPT_EXP_D2_DMY,
+            EQPT_EXP_D3_DMY,
+            EQPT_LOCK,
+            EQPT_EMPTY_KG,
+            EQP_MUST_TARE_IN,
+            EQPT_MAX_GROSS,
+            EQPT_AREA,
+            EQPT_LOAD_TYPE,
+            EQPT_COMMENTS,
+            NVL(CMPT_COUNT, 0) CMPT_COUNT
+        FROM TNKR_EQUIP, TRANSP_EQUIP,
+            (SELECT EQUIP_TYPES_VW.ETYP_TITLE, ETYP_ID, 
+                NVL(ETYP_CATEGORY,
+                    DECODE(ECNCT_ETYP,
+                        NULL,
+                        DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
+                        DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
+                    ) IMAGE
+            FROM EQUIP_TYPES_VW,
+                (SELECT NVL(ETYP_SCHEDUL, 'N') ETYP_SCHEDUL, NVL(ETYP_ISRIGID, 'N') ETYP_ISRIGID, CMPTNU, ECNCT_ETYP
+                FROM EQUIP_TYPES_VW, EQP_CONNECT
+                WHERE EQP_CONNECT.ECNCT_ETYP = EQUIP_TYPES_VW.ETYP_ID
+                    AND EQC_COUNT = 1) FIRST_SUB_ITEM
+            WHERE FIRST_SUB_ITEM.ECNCT_ETYP(+) = EQUIP_TYPES_VW.ETYP_ID  
+                    ),
+            (SELECT COUNT(*) CMPT_COUNT, CMPT_ETYP
+            FROM COMPARTMENT GROUP BY CMPT_ETYP)
+        WHERE TC_TANKER = :tnkr_code
+            AND TC_EQPT = EQPT_ID
+            AND EQPT_ETP = ETYP_ID
+            AND EQPT_ETP = CMPT_ETYP(+)
+        ORDER BY TC_SEQNO";
 
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
@@ -364,6 +432,7 @@ class Tanker
     {
         write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code),
             __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
 
         Utilities::sanitize($this);
 
@@ -390,9 +459,6 @@ class Tanker
                 TNKR_BASE_SITE,
                 TNKR_ETP,
                 TNKR_NTRIPS,
-                TNKR_LIC_EXP,
-                TNKR_DGLIC_EXP,
-                TNKR_INS_EXP,
                 TNKR_LOCK,
                 TNKR_ACTIVE,
                 TNKR_BAY_LOOP_CH,
@@ -416,9 +482,6 @@ class Tanker
                 :term_code,
                 :tnkr_etp,
                 :tnkr_ntrips,
-                TO_DATE(:tnkr_lic_exp, 'YYYY-MM-DD'),
-                TO_DATE(:tnkr_dglic_exp, 'YYYY-MM-DD'),
-                TO_DATE(:tnkr_ins_exp, 'YYYY-MM-DD'),
                 :tnkr_lock,
                 :tnkr_active,
                 :tnkr_bay_loop_ch,
@@ -441,11 +504,11 @@ class Tanker
         oci_bind_by_name($stmt, ':tnkr_bay_loop_ch', $this->tnkr_bay_loop_ch);
         oci_bind_by_name($stmt, ':tnkr_ntrips', $this->tnkr_ntrips);
         oci_bind_by_name($stmt, ':tnkr_own_txt', $this->tnkr_own_txt);
-        oci_bind_by_name($stmt, ':tnkr_lic_exp', $this->tnkr_lic_exp);
-        oci_bind_by_name($stmt, ':tnkr_dglic_exp', $this->tnkr_dglic_exp);
-        oci_bind_by_name($stmt, ':tnkr_ins_exp', $this->tnkr_ins_exp);
-        oci_bind_by_name($stmt, ':stats', $this->stats);
-        oci_bind_by_name($stmt, ':last_trip', $this->last_trip);
+        // oci_bind_by_name($stmt, ':tnkr_lic_exp', $this->tnkr_lic_exp);
+        // oci_bind_by_name($stmt, ':tnkr_dglic_exp', $this->tnkr_dglic_exp);
+        // oci_bind_by_name($stmt, ':tnkr_ins_exp', $this->tnkr_ins_exp);
+        oci_bind_by_name($stmt, ':stats', $this->tnkr_stats);
+        oci_bind_by_name($stmt, ':last_trip', $this->tnkr_last_trip);
         oci_bind_by_name($stmt, ':tnkr_name', $this->tnkr_name);
         oci_bind_by_name($stmt, ':tnkr_pin', $this->tnkr_pin);
         oci_bind_by_name($stmt, ':tnkr_archive', $this->tnkr_archive);
@@ -620,27 +683,9 @@ class Tanker
     {
         write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code),
             __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
 
         Utilities::sanitize($this);
-
-        $tnkr_lock = null;
-        $tnkr_carrier = null;
-        $tnkr_etp = null;
-        $tnkr_owner = null;
-        $tnkr_active = null;
-        $tnkr_max_kg = null;
-        $tnkr_bay_loop_ch = null;
-        $tnkr_ntrips = null;
-        $tnkr_own_txt = null;
-        $tnkr_lic_exp = null;
-        $tnkr_dglic_exp = null;
-        $tnkr_ins_exp = null;
-        $stats = null;
-        $last_trip = null;
-        $tnkr_name = null;
-        $tnkr_pin = null;
-        $tnkr_archive = null;
-        $remarks = null;
 
         $query = "
             SELECT *
@@ -674,6 +719,7 @@ class Tanker
         $query = "
             UPDATE TANKERS
             SET TNKR_LOCK = :tnkr_lock,
+                TNKR_CARRIER = :tnkr_carrier,
                 TNKR_ACTIVE = :tnkr_active,
                 TNKR_MAX_KG = :tnkr_max_kg,
                 TNKR_BAY_LOOP_CH = :tnkr_bay_loop_ch,
@@ -692,6 +738,7 @@ class Tanker
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
         oci_bind_by_name($stmt, ':tnkr_lock', $this->tnkr_lock);
+        oci_bind_by_name($stmt, ':tnkr_carrier', $this->tnkr_carrier);
         oci_bind_by_name($stmt, ':tnkr_active', $this->tnkr_active);
         oci_bind_by_name($stmt, ':tnkr_max_kg', $this->tnkr_max_kg);
         oci_bind_by_name($stmt, ':tnkr_bay_loop_ch', $this->tnkr_bay_loop_ch);
@@ -700,8 +747,8 @@ class Tanker
         oci_bind_by_name($stmt, ':tnkr_lic_exp', $this->tnkr_lic_exp);
         oci_bind_by_name($stmt, ':tnkr_dglic_exp', $this->tnkr_dglic_exp);
         oci_bind_by_name($stmt, ':tnkr_ins_exp', $this->tnkr_ins_exp);
-        oci_bind_by_name($stmt, ':stats', $this->stats);
-        oci_bind_by_name($stmt, ':last_trip', $this->last_trip);
+        oci_bind_by_name($stmt, ':stats', $this->tnkr_stats);
+        oci_bind_by_name($stmt, ':last_trip', $this->tnkr_last_trip);
         oci_bind_by_name($stmt, ':tnkr_name', $this->tnkr_name);
         oci_bind_by_name($stmt, ':tnkr_pin', $this->tnkr_pin);
         oci_bind_by_name($stmt, ':tnkr_archive', $this->tnkr_archive);
@@ -743,6 +790,8 @@ class Tanker
         //Update expiry dates
         $expiry_dates = array();
         $expiry_date = new ExpiryDate($this->conn);
+        $expiry_date->ed_object_id = $this->tnkr_code;
+        $expiry_date->edt_target_code = ExpiryTarget::TANKER;
         // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
         foreach ($this->expiry_dates as $key => $value) {
             $expiry_dates[$value->edt_type_code] = $value;
