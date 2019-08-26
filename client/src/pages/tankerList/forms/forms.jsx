@@ -21,6 +21,7 @@ import {
   Locks
 } from "./fields";
 import axios from "axios";
+import Compartments from "./compartments";
 
 const TabPane = Tabs.TabPane;
 
@@ -152,6 +153,7 @@ const FormModal = ({ form, value, t }) => {
           <TabPane
             className="ant-tab-window"
             tab={t("tabColumns.general")}
+            forceRender={true}
             key="1"
           >
             <Depot form={form} value={value} t={t} />
@@ -166,6 +168,7 @@ const FormModal = ({ form, value, t }) => {
           <TabPane
             className="ant-tab-window"
             tab={t("tabColumns.tanker")}
+            forceRender={true}
             key="2"
           >
             <EquipmentType form={form} value={value} t={t} />
@@ -180,16 +183,21 @@ const FormModal = ({ form, value, t }) => {
           <TabPane
             className="ant-tab-window"
             tab={t("tabColumns.compartments")}
+            forceRender={true}
             key="3"
-          />
+          >
+            <Compartments form={form} value={value} t={t} />
+          </TabPane>
           <TabPane
             className="ant-tab-window"
             tab={t("tabColumns.expiryDates")}
+            forceRender={true}
             key="4"
           />
           <TabPane
             className="ant-tab-window"
             tab={t("tabColumns.bulkEdit")}
+            forceRender={true}
             key="5"
           />
         </Tabs>

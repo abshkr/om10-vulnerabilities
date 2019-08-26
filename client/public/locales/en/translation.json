@@ -22,7 +22,12 @@
     "totalTrips": "Total Trips",
     "lastTrip": "Last Trip",
     "comments": "Comments",
-    "locks": "Locks"
+    "locks": "Locks",
+    "compartment": "Compartment",
+    "safeFill": "Safe Fill",
+    "safeFillUnit": "Safe Fill Unit",
+    "capacity": "Capacity",
+    "status": "Status"
   },
 
   "pageMenu": {
