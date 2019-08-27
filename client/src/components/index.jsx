@@ -13,9 +13,12 @@ import Navigation from "./navigation";
 import Page from "./page";
 import DataTable from "./table";
 import Title from "./title";
+import Equipment from "./equipment";
+import Expiry from "./expiry";
 
 export {
   Breadcrumbs,
+  Expiry,
   Calendar,
   Container,
   Download,
@@ -29,5 +32,6 @@ export {
   Navigation,
   Page,
   DataTable,
-  Title
+  Title,
+  Equipment
 };
