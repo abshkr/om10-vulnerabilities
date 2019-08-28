@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import { Page, Filter, DataTable, Download, Container } from "../../components";
 import { Button, Modal, notification } from "antd";
@@ -9,20 +9,15 @@ import auth from "../../auth";
 import Forms from "./forms";
 import axios from "axios";
 
-class TankerList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: "",
-      data: [],
-      resize: false,
-      isLoading: true
-    };
-  }
+const TankerList = ({ configuration, t }) => {
+  const [data, setData] = useState([]);
+  const [value, setValue] = useState("");
+  const [expiry, setExpiry] = useState([]);
+  const [resize, setResize] = useState(false);
+  const [filtered, setFiltered] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  handleClick = object => {
-    const { t } = this.props;
-
+  const handleClick = object => {
     Modal.info({
       title: !!object
         ? `${t("operations.editing")} (${object.tnkr_name} / ${
@@ -32,26 +27,28 @@ class TankerList extends Component {
       centered: true,
       width: "50vw",
       icon: !!object ? "edit" : "form",
-      content: <Forms value={object} refresh={this.handleFetch} t={t} />,
+      content: <Forms value={object} refresh={fetch} t={t} expiry={expiry} />,
       okButtonProps: {
         style: { display: "none" }
       }
     });
   };
 
-  handleFetch = () => {
-    const { t } = this.props;
+  const handleSearch = query => {
+    const { value } = query.target;
 
-    this.setState({ isLoading: true });
+    setFiltered(search(value, data));
+    setValue(value);
+  };
 
+  const fetch = useCallback(() => {
     axios
-      .all([tankerList.tankers()])
+      .all([tankerList.tankers(), tankerList.expiry()])
       .then(
-        axios.spread(payload => {
-          this.setState({
-            isLoading: false,
-            data: payload.data.records
-          });
+        axios.spread((tankers, expiry) => {
+          setIsLoading(false);
+          setData(tankers.data.records);
+          setExpiry(expiry.data.records);
         })
       )
       .catch(error => {
@@ -60,84 +57,59 @@ class TankerList extends Component {
           description: t("operations.create")
         });
       });
-  };
+  }, [t]);
 
-  handleResize = () => {
-    const { resize } = this.state;
+  useEffect(() => {
+    setIsLoading(true);
+    fetch();
+  }, [fetch]);
 
-    this.setState({
-      resize: !resize
-    });
-  };
+  const results = !!filtered ? filtered : data;
 
-  handleSearch = query => {
-    const { value } = query.target;
-
-    this.setState({
-      filtered: search(value, this.state.data),
-      value
-    });
-  };
-
-  componentDidMount() {
-    this.handleFetch();
-  }
-
-  render() {
-    const { data, isLoading, filtered, value, resize } = this.state;
-    const { configuration, t } = this.props;
-
-    const results = !!filtered ? filtered : data;
-
-    return (
-      <Page
-        page={t("pageMenu.schedules")}
-        name={t("pageNames.tankerList")}
-        isLoading={isLoading}
-        block={true}
-      >
-        <Container>
-          <Filter
-            value={value}
-            search={this.handleSearch}
-            loading={isLoading}
-          />
-          <Button
-            shape="round"
-            type="primary"
-            icon={resize ? "shrink" : "arrows-alt"}
-            style={{ float: "right" }}
-            onClick={this.handleResize}
-            disabled={isLoading}
-          />
-          <Download
-            data={data}
-            type={"equipment_list"}
-            style={{ float: "right", marginRight: 5 }}
-            loading={isLoading}
-          />
-          <Button
-            shape="round"
-            icon="plus"
-            type="primary"
-            style={{ float: "right", marginRight: 5 }}
-            onClick={() => this.handleClick(null)}
-            disabled={isLoading}
-          >
-            {t("operations.create")}
-          </Button>
-          <DataTable
-            rowKey="tnkr_code"
-            resize={resize}
-            columns={columns(results, configuration)}
-            data={results}
-            isLoading={isLoading}
-            click={this.handleClick}
-          />
-        </Container>
-      </Page>
-    );
-  }
-}
+  return (
+    <Page
+      page={t("pageMenu.schedules")}
+      name={t("pageNames.tankerList")}
+      isLoading={isLoading}
+      block={true}
+    >
+      <Container>
+        <Filter value={value} search={handleSearch} loading={isLoading} />
+        <Button
+          shape="round"
+          type="primary"
+          icon={resize ? "shrink" : "arrows-alt"}
+          style={{ float: "right" }}
+          onClick={() => setResize(!resize)}
+          disabled={isLoading}
+        />
+        <Download
+          data={data}
+          type={"equipment_list"}
+          style={{ float: "right", marginRight: 5 }}
+          loading={isLoading}
+        />
+        <Button
+          shape="round"
+          icon="plus"
+          type="primary"
+          style={{ float: "right", marginRight: 5 }}
+          onClick={() => handleClick(null)}
+          disabled={isLoading}
+        >
+          {t("operations.create")}
+        </Button>
+        <DataTable
+          rowKey="tnkr_code"
+          resize={resize}
+          columns={columns(results, configuration)}
+          data={results}
+          isLoading={isLoading}
+          click={handleClick}
+        />
+      </Container>
+    </Page>
+  );
+};
 
 export default auth(TankerList);

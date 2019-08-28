@@ -1,7 +1,8 @@
 import React from "react";
 
 import { Form, Button, Tabs, notification, Modal } from "antd";
-import { logicalPrinters } from "../../../api";
+import { tankerList } from "../../../api";
+import BulkEdit from "./bulkEdit";
 import {
   Depot,
   Owner,
@@ -22,33 +23,14 @@ import {
 } from "./fields";
 import axios from "axios";
 import Compartments from "./compartments";
-
+import { Expiry } from "../../../components";
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, value, t }) => {
+const FormModal = ({ form, value, t, expiry }) => {
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([logicalPrinters.createLogicalPrinters(values)])
-          .then(
-            axios.spread(response => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: t("messages.createSuccess"),
-                description: `${t("descriptions.createSuccess")} ${
-                  value.prt_printer
-                }`
-              });
-            })
-          )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: t("descriptions.createFailed")
-            });
-          });
+        console.log(values);
       } else {
         notification.error({
           message: t("messages.validationFailed"),
@@ -61,26 +43,7 @@ const FormModal = ({ form, value, t }) => {
   const handleUpdate = () => {
     form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([logicalPrinters.updateLogicalPrinters(values)])
-          .then(
-            axios.spread(response => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: t("messages.updateSuccess"),
-                description: `${t("descriptions.updateSuccess")} ${
-                  value.prt_printer
-                }`
-              });
-            })
-          )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: t("descriptions.updateFailed")
-            });
-          });
+        console.log(values);
       } else {
         notification.error({
           message: t("messages.validationFailed"),
@@ -92,7 +55,7 @@ const FormModal = ({ form, value, t }) => {
 
   const handleDelete = () => {
     axios
-      .all([logicalPrinters.deleteLogicalPrinters(value)])
+      .all([tankerList.deleteTanker(value)])
       .then(
         axios.spread(response => {
           this.props.refresh();
@@ -193,13 +156,19 @@ const FormModal = ({ form, value, t }) => {
             tab={t("tabColumns.expiryDates")}
             forceRender={true}
             key="4"
-          />
-          <TabPane
-            className="ant-tab-window"
-            tab={t("tabColumns.bulkEdit")}
-            forceRender={true}
-            key="5"
-          />
+          >
+            <Expiry form={form} value={value} t={t} types={expiry} />
+          </TabPane>
+          {!!value && (
+            <TabPane
+              className="ant-tab-window"
+              tab={t("tabColumns.bulkEdit")}
+              forceRender={true}
+              key="5"
+            >
+              <BulkEdit form={form} value={value} t={t} />
+            </TabPane>
+          )}
         </Tabs>
       </Form>
 

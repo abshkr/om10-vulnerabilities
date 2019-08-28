@@ -1,45 +1,34 @@
-import React, { useEffect, useState } from "react";
-
+import React, { useEffect, useState, useCallback } from "react";
+import { Equipment } from "../../../../components";
 import { tankerList } from "../../../../api";
-import { Table, Select, Card } from "antd";
+import { Table, Select } from "antd";
 import columns from "./columns";
 import axios from "axios";
 import Cell from "./cell";
 import Row from "./row";
 import _ from "lodash";
 
-import {
-  Rail,
-  Flat,
-  Prime,
-  Rigid,
-  Ship,
-  Trailer,
-  Default
-} from "../../../../assets/equipment";
-
 const Compartments = ({ form, value, t }) => {
   const [data, setdata] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+
+  const fetch = useCallback(id => {
+    setIsLoading(true);
+    axios.all([tankerList.composition(id)]).then(
+      axios.spread(composition => {
+        setdata(composition.data.records);
+        setIsLoading(false);
+      })
+    );
+  }, []);
 
   useEffect(() => {
-    setIsLoading(true);
-
-    const fetch = id => {
-      axios.all([tankerList.composition(id)]).then(
-        axios.spread(composition => {
-          setdata(composition.data.records);
-          setIsLoading(false);
-        })
-      );
-    };
-
     if (!!value) {
       fetch(value.tnkr_code);
     }
-  }, [value]);
+  }, [value, fetch]);
 
   const save = row => {
     const payload = [...data];
@@ -65,6 +54,28 @@ const Compartments = ({ form, value, t }) => {
     });
   };
 
+  const changeType = (compartment, code) => {
+    axios.all([tankerList.compartment(code)]).then(
+      axios.spread(composition => {
+        const payload = [...data];
+
+        const comp = composition.data.records;
+
+        let value = _.find(payload, ["tc_eqpt", compartment.tc_eqpt]);
+        const index = _.findIndex(payload, ["tc_eqpt", compartment.tc_eqpt]);
+        value["compartments"] = comp;
+
+        payload.splice(index, 1, value);
+
+        setdata(payload);
+
+        setFieldsValue({
+          composition: payload
+        });
+      })
+    );
+  };
+
   const fields = columns(t).map(col => {
     if (!col.editable) {
       return col;
@@ -85,35 +96,27 @@ const Compartments = ({ form, value, t }) => {
 
   getFieldDecorator("composition");
 
-  const path = {
-    E: Rail,
-    F: Flat,
-    P: Prime,
-    R: Rigid,
-    S: Ship,
-    T: Trailer,
-    X: Default
-  };
+  const equipment = getFieldValue("tnkr_etp");
+
+  if (!!equipment) {
+    console.log(equipment);
+  }
 
   return (
     <div>
       {data.map((item, index) => (
         <div key={index}>
-          <Card style={{ marginTop: 5 }} size="small">
-            <div className="equipment-icon">
-              <img src={path[item.image]} alt="equipment" />
-            </div>
-          </Card>
-
+          <Equipment value={item.image} />
           <Select
-            onChange={fetch}
-            value={item.eqpt_code}
+            onChange={value => changeType(item, value)}
+            placeholder={item.eqpt_code}
             style={{ marginBottom: 10, marginTop: 10 }}
+            disabled={item.compartments.length === 0}
           >
             {!isLoading &&
-              data.map((item, index) => (
-                <Select.Option key={index} value={item.etyp_id}>
-                  {item.etyp_title}
+              item.eqpt_list.map((item, index) => (
+                <Select.Option value={item.eqpt_id}>
+                  {item.eqpt_code}
                 </Select.Option>
               ))}
           </Select>
@@ -129,6 +132,7 @@ const Compartments = ({ form, value, t }) => {
                   cell: Cell
                 }
               }}
+              style={{ marginBottom: 5 }}
               scroll={{ y: "25vh" }}
               rowClassName={() => "editable-row"}
               bordered

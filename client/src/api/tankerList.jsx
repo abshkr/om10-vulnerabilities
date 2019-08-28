@@ -27,9 +27,13 @@ export function composition(id) {
   );
 }
 
+export function expiry() {
+  return axios.get(`https://${api}/api/pages/tanker/expiry_types.php`);
+}
+
 export function compartment(id) {
   return axios.get(
-    `https://${api}/api/pages/tanker/tnkr_compartments.php?tnkr_code=${id}`
+    `https://${api}/api/pages/tanker/eqpt_compartments.php?eqpt_id=${id}`
   );
 }
 
