@@ -244,4 +244,8 @@ https://10.1.10.66/api/pages/area/delete.php?area_k=13
 
 https://10.1.10.66/api/pages/personnel_onsite/read.php
 
+//Check POST MAN test cases
 https://10.1.10.66/api/pages/hazchem/read.php
+https://10.1.10.66/api/pages/hazchem/create.php
+https://10.1.10.66/api/pages/hazchem/update.php
+https://10.1.10.66/api/pages/hazchem/delete.php
