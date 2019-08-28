@@ -27,7 +27,15 @@ const TankerList = ({ configuration, t }) => {
       centered: true,
       width: "50vw",
       icon: !!object ? "edit" : "form",
-      content: <Forms value={object} refresh={fetch} t={t} expiry={expiry} />,
+      content: (
+        <Forms
+          value={object}
+          refresh={fetch}
+          t={t}
+          expiry={expiry}
+          data={data}
+        />
+      ),
       okButtonProps: {
         style: { display: "none" }
       }

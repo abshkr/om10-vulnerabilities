@@ -26,7 +26,7 @@ import Compartments from "./compartments";
 import { Expiry } from "../../../components";
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, value, t, expiry }) => {
+const FormModal = ({ form, value, t, expiry, data }) => {
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
@@ -121,7 +121,7 @@ const FormModal = ({ form, value, t, expiry }) => {
           >
             <Depot form={form} value={value} t={t} />
             <Owner form={form} value={value} t={t} />
-            <Code form={form} value={value} t={t} />
+            <Code form={form} value={value} t={t} data={data} />
             <Name form={form} value={value} t={t} />
             <TotalTrips form={form} value={value} t={t} />
             <LastTrip form={form} value={value} t={t} />

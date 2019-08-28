@@ -35,7 +35,17 @@ const EquipmentType = ({ form, value, t }) => {
       {getFieldDecorator("tnkr_etp", {
         rules: [{ required: true }]
       })(
-        <Select loading={isLoading} disabled={!!value}>
+        <Select
+          loading={isLoading}
+          disabled={!!value}
+          showSearch
+          optionFilterProp="children"
+          placeholder={!value ? t("placeholder.selectEquipmentType") : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+            0
+          }
+        >
           {options.map((item, index) => (
             <Select.Option key={index} value={item.etyp_id}>
               {item.etyp_title}

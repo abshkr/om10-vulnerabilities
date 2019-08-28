@@ -56,7 +56,7 @@ const Expiry = ({ form, value, t, types }) => {
 
   const defaults = [
     {
-      title: "Type Description",
+      title: t("fields.typeDescription"),
       dataIndex: "edt_type_desc",
       key: "edt_type_desc",
       width: 250,
@@ -64,7 +64,7 @@ const Expiry = ({ form, value, t, types }) => {
       editable: true
     },
     {
-      title: "Expiry Date",
+      title: t("fields.expiryDate"),
       dataIndex: "ed_exp_date",
       key: "ed_exp_date",
       width: 300,
@@ -73,47 +73,46 @@ const Expiry = ({ form, value, t, types }) => {
       render: (text, record) => (
         <span>
           {text === ""
-            ? "Select A Date"
+            ? t("placeholder.selectDate")
             : !!text
             ? moment(text, "YYYY-MM-DD HH:mm:ss").format(
                 moment.localeData().longDateFormat("L")
               )
-            : "Select A Date"}
+            : t("placeholder.selectDate")}
         </span>
       )
     },
     {
-      title: "Enabled",
+      title: t("fields.enabled"),
       dataIndex: "ed_status",
       key: "ed_status",
       align: "center",
       editable: true,
       render: (text, record) => (
         <span>
-          {" "}
           {text === "" ? (
-            "Select A Status"
+            t("placeholder.selectStatus")
           ) : !!text ? (
             <Icon type={text === "1" ? "check" : "close"} />
           ) : (
-            "Select A Status"
+            t("placeholder.selectStatus")
           )}
         </span>
       )
     },
     {
-      title: "Delete",
+      title: t("operations.delete"),
       dataIndex: "operation",
       align: "center",
       key: "operation",
       render: (text, record) =>
         data.length >= 1 ? (
           <Popconfirm
-            title="Sure to delete?"
+            title={t("prompts.delete")}
             onConfirm={() => handleDelete(record.edt_type_code)}
           >
             {/*eslint-disable */}
-            <a href="#">Delete</a>
+            <a href="#">{t("operations.delete")}</a>
             {/*eslint-enable */}
           </Popconfirm>
         ) : null
@@ -151,7 +150,7 @@ const Expiry = ({ form, value, t, types }) => {
         style={{ marginBottom: 16 }}
         disabled={data.length === types.length}
       >
-        Add New Expiry
+        {t("operations.addNewExpiry")}
       </Button>
 
       <Table

@@ -112,6 +112,13 @@ const Compartments = ({ form, value, t }) => {
             placeholder={item.eqpt_code}
             style={{ marginBottom: 10, marginTop: 10 }}
             disabled={item.compartments.length === 0}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option.props.children
+                .toLowerCase()
+                .indexOf(input.toLowerCase()) >= 0
+            }
           >
             {!isLoading &&
               item.eqpt_list.map((item, index) => (

@@ -35,7 +35,17 @@ const CurrentDepot = ({ form, value, t }) => {
       {getFieldDecorator("tnkr_cur_depot", {
         rules: [{ required: false }]
       })(
-        <Select loading={isLoading} disabled={!!value}>
+        <Select
+          loading={isLoading}
+          disabled={!!value}
+          showSearch
+          optionFilterProp="children"
+          placeholder={!value ? t("placeholder.selectCurrentDepot") : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+            0
+          }
+        >
           {options.map((item, index) => (
             <Select.Option key={index} value={item.term_code}>
               {item.term_name}
