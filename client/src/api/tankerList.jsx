@@ -27,6 +27,12 @@ export function composition(id) {
   );
 }
 
+export function typeComposition(id) {
+  return axios.get(
+    `https://${api}/api/pages/tanker/etyp_composition.php?etyp_id=${id}`
+  );
+}
+
 export function expiry() {
   return axios.get(`https://${api}/api/pages/tanker/expiry_types.php`);
 }

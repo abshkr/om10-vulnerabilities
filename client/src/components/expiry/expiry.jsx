@@ -101,7 +101,7 @@ const Expiry = ({ form, value, t, types }) => {
       )
     },
     {
-      title: t("operations.delete"),
+      title: t("fields.operations"),
       dataIndex: "operation",
       align: "center",
       key: "operation",

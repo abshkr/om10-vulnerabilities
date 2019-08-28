@@ -30,7 +30,8 @@
     "status": "Status",
     "typeDescription": "Type Description",
     "expiryDate": "Expiry Date",
-    "enabled": "Enabled"
+    "enabled": "Enabled",
+    "operations": "Operations"
   },
 
   "pageMenu": {

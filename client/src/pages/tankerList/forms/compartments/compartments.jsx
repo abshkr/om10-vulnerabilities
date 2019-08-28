@@ -8,17 +8,27 @@ import Cell from "./cell";
 import Row from "./row";
 import _ from "lodash";
 
-const Compartments = ({ form, value, t }) => {
+const Compartments = ({ form, value, t, equipment }) => {
   const [data, setdata] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+  const { getFieldDecorator, setFieldsValue } = form;
 
   const fetch = useCallback(id => {
     setIsLoading(true);
     axios.all([tankerList.composition(id)]).then(
-      axios.spread(composition => {
-        setdata(composition.data.records);
+      axios.spread(response => {
+        setdata(response.data.records);
+        setIsLoading(false);
+      })
+    );
+  }, []);
+
+  const fetchComposition = useCallback(id => {
+    setIsLoading(true);
+    axios.all([tankerList.typeComposition(id)]).then(
+      axios.spread(response => {
+        console.log(response.data.records);
         setIsLoading(false);
       })
     );
@@ -27,8 +37,12 @@ const Compartments = ({ form, value, t }) => {
   useEffect(() => {
     if (!!value) {
       fetch(value.tnkr_code);
+    } else {
+      if (!!equipment) {
+        fetchComposition(equipment);
+      }
     }
-  }, [value, fetch]);
+  }, [value, fetch, equipment, fetchComposition]);
 
   const save = row => {
     const payload = [...data];
@@ -95,12 +109,6 @@ const Compartments = ({ form, value, t }) => {
   });
 
   getFieldDecorator("composition");
-
-  const equipment = getFieldValue("tnkr_etp");
-
-  if (!!equipment) {
-    console.log(equipment);
-  }
 
   return (
     <div>

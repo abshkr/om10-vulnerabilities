@@ -27,6 +27,8 @@ import { Expiry } from "../../../components";
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ form, value, t, expiry, data }) => {
+  const { getFieldValue } = form;
+
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
@@ -109,6 +111,8 @@ const FormModal = ({ form, value, t, expiry, data }) => {
     });
   };
 
+  const equipment = getFieldValue("tnkr_etp");
+
   return (
     <div>
       <Form>
@@ -148,8 +152,14 @@ const FormModal = ({ form, value, t, expiry, data }) => {
             tab={t("tabColumns.compartments")}
             forceRender={true}
             key="3"
+            disabled={!equipment}
           >
-            <Compartments form={form} value={value} t={t} />
+            <Compartments
+              form={form}
+              value={value}
+              t={t}
+              equipment={equipment}
+            />
           </TabPane>
           <TabPane
             className="ant-tab-window"
@@ -165,6 +175,7 @@ const FormModal = ({ form, value, t, expiry, data }) => {
               tab={t("tabColumns.bulkEdit")}
               forceRender={true}
               key="5"
+              disabled={value.tnkr_name === ""}
             >
               <BulkEdit form={form} value={value} t={t} />
             </TabPane>
