@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:views="views.*"
+		  xmlns:flexiframe="com.google.code.flexiframe.*"
+		  width="100%" height="100%" implements="IModuleInterface" >
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="widget"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			
+			[Bindable] private var _url:String = "/html/personnel";
+			
+			private var callback:Function;
+			
+			public function setCallback(func:Function): void
+			{
+				callback = func;
+			}
+			
+			public function setState(value:String): void
+			{
+				currentState = value;
+				if (value == 'normal')
+				{
+					width=FlexGlobals.topLevelApplication.main.widgetList.width-30;
+					height=FlexGlobals.topLevelApplication.main.widgetList.height-30;
+				}
+			}
+			
+			public function setSize(w:int, h:int): void
+			{
+				//this.height=h;
+				//this.width=w;
+			}
+			
+			public function setSecurity(isRead:Boolean=true, isUpdate:Boolean=false, isCreate:Boolean=false, isDelete:Boolean=false, isPassword:Boolean=false): void
+			{
+				//view.readOnly = isRead;
+				//view.canUpdate = isCreate;
+				//view.canCreate = isCreate;
+				//view.canDelete = isDelete;
+				//view.hasPassword = isPassword;
+			}
+			
+			public function setFramePosition(): void
+			{
+				frme.invalidateDisplayList();
+			}
+			
+			protected function view_creationCompleteHandler(event:FlexEvent):void
+			{	
+				//width = view.width;
+				//height = view.height;
+			}
+			
+		]]>
+	</fx:Script>
+	<s:Group top="0" left="0" bottom="0" right="0" includeIn="widget" mouseEnabledWhereTransparent="true" click="callback()">
+		<s:BitmapImage source="@Embed('/assets/cgi/m_Metering.png')" verticalCenter="0" horizontalCenter="0" width="128" height="128" fillMode="scale" smooth="true"/> 
+	</s:Group>
+	<s:Group top="4" left="4" bottom="4" right="4" includeIn="normal">
+		<flexiframe:IFrame id="frme" width="100%" height="100%" contentBackgroundAlpha="0" source="{_url}"/> 	
+	</s:Group>
+</s:Module>

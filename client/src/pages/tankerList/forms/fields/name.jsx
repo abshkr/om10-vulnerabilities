@@ -12,10 +12,21 @@ const Name = ({ form, value, t }) => {
     }
   }, [value, setFieldsValue]);
 
+  const validate = (rule, input, callback) => {
+    if (input && input.length > 40) {
+      callback(
+        `${t("placeholder.maxCharacters")}: 40 ─ ${t(
+          "descriptions.maxCharacters"
+        )}`
+      );
+    }
+    callback();
+  };
+
   return (
     <Form.Item label={t("fields.name")}>
       {getFieldDecorator("tnkr_name", {
-        rules: [{ required: false }]
+        rules: [{ required: false, validator: validate }]
       })(<Input />)}
     </Form.Item>
   );

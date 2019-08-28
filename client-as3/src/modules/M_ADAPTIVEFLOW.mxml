@@ -32,7 +32,6 @@
 				{
 					width=FlexGlobals.topLevelApplication.main.widgetList.width-30;
 					height=FlexGlobals.topLevelApplication.main.widgetList.height-30;
-					_url = "/html/adaptive-flow-control";
 				}
 			}
 			
@@ -65,7 +64,7 @@
 		]]>
 	</fx:Script>
 	<s:Group top="0" left="0" bottom="0" right="0" includeIn="widget" mouseEnabledWhereTransparent="true" click="callback()">
-		<s:BitmapImage source="@Embed('/assets/cgi/m_AdaptiveFlow.png')" verticalCenter="0" horizontalCenter="0" width="128" height="128" fillMode="scale" smooth="true"/> 
+		<s:BitmapImage source="@Embed('/assets/cgi/m_Metering.png')" verticalCenter="0" horizontalCenter="0" width="128" height="128" fillMode="scale" smooth="true"/> 
 	</s:Group>
 	<s:Group top="4" left="4" bottom="4" right="4" includeIn="normal">
 		<flexiframe:IFrame id="frme" width="100%" height="100%" contentBackgroundAlpha="0" source="{_url}"/> 	

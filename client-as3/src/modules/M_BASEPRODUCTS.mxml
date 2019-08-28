@@ -6,12 +6,12 @@
 		  xmlns:views="views.*"
 		  implements="IModuleInterface"
 		  width="100%" height="100%" >
-	
+
 	<s:states>
 		<s:State name="widget"/>
 		<s:State name="normal"/>
 	</s:states>
-	
+
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;

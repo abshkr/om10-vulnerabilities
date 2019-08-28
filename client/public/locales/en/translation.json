@@ -27,7 +27,11 @@
     "safeFill": "Safe Fill",
     "safeFillUnit": "Safe Fill Unit",
     "capacity": "Capacity",
-    "status": "Status"
+    "status": "Status",
+    "typeDescription": "Type Description",
+    "expiryDate": "Expiry Date",
+    "enabled": "Enabled",
+    "operations": "Operations"
   },
 
   "pageMenu": {
@@ -46,7 +50,9 @@
     "cancel": "Cancel",
     "update": "Update",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "addNewExpiry": "Add New Expiry",
+    "unlockAll": "Unlock All Compartments"
   },
 
   "tabColumns": {
@@ -61,7 +67,8 @@
     "validationFailed": "Validation Failed.",
     "createSuccess": "Successfully Created.",
     "updateSuccess": "Successfully Updated.",
-    "deleteSuccess": "Successfully Deleted."
+    "deleteSuccess": "Successfully Deleted.",
+    "unlockSuccess": "Successfully Unlocked."
   },
 
   "prompts": {
@@ -78,6 +85,25 @@
     "deleteFailed": "Failed to delete the record.",
     "createSuccess": "You have created the record",
     "updateSuccess": "You have updated the record.",
-    "deleteSuccess": "You have deleted the record"
+    "deleteSuccess": "You have deleted the record",
+    "expiryDateTable": "Apply the Expiry Dates to the following tankers",
+    "alreadyExists": "This value already exists. Please Try Another.",
+    "maxCharacters": "This character count is too high.",
+    "unlockSuccess": "You have unlocked all compartments.",
+    "unlockFailed": "Failed to unlock."
+  },
+
+  "placeholder": {
+    "selectDepot": "Select Base Depot",
+    "selectCarrier": "Select Carrier",
+    "selectOwner": "Select Owner",
+    "selectEquipmentType": "Select Equipment Type",
+    "selectDestination": "Select Destination",
+    "selectLastDepot": "Select Last Depot",
+    "selectCurrentDepot": "Select Current Depot",
+    "selectEquipment": "Select Equipment",
+    "selectDate": "Select Date",
+    "selectStatus": "Select Status",
+    "maxCharacters": "Max Characters"
   }
 }

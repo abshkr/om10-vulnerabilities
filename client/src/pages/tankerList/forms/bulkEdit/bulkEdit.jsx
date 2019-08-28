@@ -47,9 +47,9 @@ const BulkEdit = ({ form, value, t }) => {
     <Table
       size="middle"
       bordered
-      rowKey="eqpt_id"
+      rowKey="tnkr_code"
       pagination={false}
-      title={() => "Apply the Expiry Dates to the following tankers"}
+      title={() => t("descriptions.expiryDateTable")}
       rowSelection={rowSelection}
       columns={columns(t)}
       dataSource={data}

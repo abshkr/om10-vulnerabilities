@@ -8,17 +8,27 @@ import Cell from "./cell";
 import Row from "./row";
 import _ from "lodash";
 
-const Compartments = ({ form, value, t }) => {
+const Compartments = ({ form, value, t, equipment }) => {
   const [data, setdata] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+  const { getFieldDecorator, setFieldsValue } = form;
 
   const fetch = useCallback(id => {
     setIsLoading(true);
     axios.all([tankerList.composition(id)]).then(
-      axios.spread(composition => {
-        setdata(composition.data.records);
+      axios.spread(response => {
+        setdata(response.data.records);
+        setIsLoading(false);
+      })
+    );
+  }, []);
+
+  const fetchComposition = useCallback(id => {
+    setIsLoading(true);
+    axios.all([tankerList.typeComposition(id)]).then(
+      axios.spread(response => {
+        setdata(response.data.records);
         setIsLoading(false);
       })
     );
@@ -27,8 +37,12 @@ const Compartments = ({ form, value, t }) => {
   useEffect(() => {
     if (!!value) {
       fetch(value.tnkr_code);
+    } else {
+      if (!!equipment) {
+        fetchComposition(equipment);
+      }
     }
-  }, [value, fetch]);
+  }, [value, fetch, equipment, fetchComposition]);
 
   const save = row => {
     const payload = [...data];
@@ -61,11 +75,19 @@ const Compartments = ({ form, value, t }) => {
 
         const comp = composition.data.records;
 
-        let value = _.find(payload, ["tc_eqpt", compartment.tc_eqpt]);
-        const index = _.findIndex(payload, ["tc_eqpt", compartment.tc_eqpt]);
-        value["compartments"] = comp;
+        if (!!value) {
+          let value = _.find(payload, ["etyp_id", compartment.etyp_id]);
+          const index = _.findIndex(payload, ["etyp_id", compartment.etyp_id]);
 
-        payload.splice(index, 1, value);
+          value["compartments"] = comp;
+          payload.splice(index, 1, value);
+        } else {
+          let value = _.find(payload, ["etyp_id", compartment.etyp_id]);
+          const index = _.findIndex(payload, ["etyp_id", compartment.etyp_id]);
+
+          value["compartments"] = comp;
+          payload.splice(index, 1, value);
+        }
 
         setdata(payload);
 
@@ -96,12 +118,6 @@ const Compartments = ({ form, value, t }) => {
 
   getFieldDecorator("composition");
 
-  const equipment = getFieldValue("tnkr_etp");
-
-  if (!!equipment) {
-    console.log(equipment);
-  }
-
   return (
     <div>
       {data.map((item, index) => (
@@ -112,6 +128,13 @@ const Compartments = ({ form, value, t }) => {
             placeholder={item.eqpt_code}
             style={{ marginBottom: 10, marginTop: 10 }}
             disabled={item.compartments.length === 0}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option.props.children
+                .toLowerCase()
+                .indexOf(input.toLowerCase()) >= 0
+            }
           >
             {!isLoading &&
               item.eqpt_list.map((item, index) => (

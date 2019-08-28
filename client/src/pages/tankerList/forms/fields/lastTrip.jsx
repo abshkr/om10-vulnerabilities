@@ -16,7 +16,7 @@ const LastTrip = ({ form, value, t }) => {
     <Form.Item label={t("fields.lastTrip")}>
       {getFieldDecorator("tnkr_last_trip", {
         rules: [{ required: false }]
-      })(<InputNumber disabled={!!value} />)}
+      })(<InputNumber disabled />)}
     </Form.Item>
   );
 };

@@ -16,7 +16,7 @@
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
 			
-			[Bindable] private var _url:String = "/html/tank-inventory";
+			[Bindable] private var _url:String = "/phpwrapper/tank_inv.php";
 			
 			private var callback:Function;
 			
@@ -32,7 +32,7 @@
 				{
 					width=FlexGlobals.topLevelApplication.main.widgetList.width-30;
 					height=FlexGlobals.topLevelApplication.main.widgetList.height-30;
-					_url =  "/html/tank-inventory";
+					_url =  "/phpwrapper/tank_inv.php";
 				}
 			}
 			
