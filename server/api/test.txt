@@ -243,3 +243,5 @@ https://10.1.10.66/api/pages/area/update.php?area_k=13&area_name=ADDTEST3
 https://10.1.10.66/api/pages/area/delete.php?area_k=13
 
 https://10.1.10.66/api/pages/personnel_onsite/read.php
+
+https://10.1.10.66/api/pages/hazchem/read.php
