@@ -26,13 +26,31 @@ import Compartments from "./compartments";
 import { Expiry } from "../../../components";
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, value, t, expiry, data }) => {
+const FormModal = ({ form, refresh, value, t, expiry, data }) => {
   const { getFieldValue } = form;
 
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
-        console.log(values);
+        axios
+          .all([tankerList.create(values)])
+          .then(
+            axios.spread(response => {
+              refresh();
+
+              Modal.destroyAll();
+              notification.success({
+                message: t("messages.createSuccess"),
+                description: t("messages.createSuccess")
+              });
+            })
+          )
+          .catch(error => {
+            notification.error({
+              message: error.message,
+              description: t("messages.createFailed")
+            });
+          });
       } else {
         notification.error({
           message: t("messages.validationFailed"),
@@ -45,7 +63,25 @@ const FormModal = ({ form, value, t, expiry, data }) => {
   const handleUpdate = () => {
     form.validateFields((err, values) => {
       if (!err) {
-        console.log(values);
+        axios
+          .all([tankerList.update(values)])
+          .then(
+            axios.spread(response => {
+              refresh();
+
+              Modal.destroyAll();
+              notification.success({
+                message: t("messages.updateSuccess"),
+                description: t("messages.updateSuccess")
+              });
+            })
+          )
+          .catch(error => {
+            notification.error({
+              message: error.message,
+              description: t("messages.updateFailed")
+            });
+          });
       } else {
         notification.error({
           message: t("messages.validationFailed"),
@@ -60,7 +96,8 @@ const FormModal = ({ form, value, t, expiry, data }) => {
       .all([tankerList.deleteTanker(value)])
       .then(
         axios.spread(response => {
-          this.props.refresh();
+          refresh();
+
           Modal.destroyAll();
           notification.success({
             message: t("messages.deleteSuccess"),
@@ -74,6 +111,30 @@ const FormModal = ({ form, value, t, expiry, data }) => {
         notification.error({
           message: error.message,
           description: t("descriptions.deleteFailed")
+        });
+      });
+  };
+
+  const handleUnlock = () => {
+    axios
+      .all([tankerList.unlockAll(value.tnkr_code)])
+      .then(
+        axios.spread(response => {
+          refresh();
+
+          Modal.destroyAll();
+          notification.success({
+            message: t("messages.unlockSuccess"),
+            description: `${t("descriptions.unlockSuccess")} ${
+              value.prt_printer
+            }`
+          });
+        })
+      )
+      .catch(error => {
+        notification.error({
+          message: error.message,
+          description: t("descriptions.unlockFailed")
         });
       });
   };
@@ -201,6 +262,18 @@ const FormModal = ({ form, value, t, expiry, data }) => {
       >
         {!!value ? t("operations.update") : t("operations.create")}
       </Button>
+
+      {!!value && (
+        <Button
+          shape="round"
+          type="dashed"
+          icon="unlock"
+          style={{ float: "right", marginRight: 5 }}
+          onClick={handleUnlock}
+        >
+          {t("operations.unlockAll")}
+        </Button>
+      )}
 
       {!!value && (
         <Button

@@ -51,7 +51,8 @@
     "update": "Update",
     "yes": "Yes",
     "no": "No",
-    "addNewExpiry": "Add New Expiry"
+    "addNewExpiry": "Add New Expiry",
+    "unlockAll": "Unlock All Compartments"
   },
 
   "tabColumns": {
@@ -66,7 +67,8 @@
     "validationFailed": "Validation Failed.",
     "createSuccess": "Successfully Created.",
     "updateSuccess": "Successfully Updated.",
-    "deleteSuccess": "Successfully Deleted."
+    "deleteSuccess": "Successfully Deleted.",
+    "unlockSuccess": "Successfully Unlocked."
   },
 
   "prompts": {
@@ -86,7 +88,9 @@
     "deleteSuccess": "You have deleted the record",
     "expiryDateTable": "Apply the Expiry Dates to the following tankers",
     "alreadyExists": "This value already exists. Please Try Another.",
-    "maxCharacters": "This character count is too high."
+    "maxCharacters": "This character count is too high.",
+    "unlockSuccess": "You have unlocked all compartments.",
+    "unlockFailed": "Failed to unlock."
   },
 
   "placeholder": {

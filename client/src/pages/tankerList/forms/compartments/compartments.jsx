@@ -28,7 +28,7 @@ const Compartments = ({ form, value, t, equipment }) => {
     setIsLoading(true);
     axios.all([tankerList.typeComposition(id)]).then(
       axios.spread(response => {
-        console.log(response.data.records);
+        setdata(response.data.records);
         setIsLoading(false);
       })
     );
@@ -75,11 +75,19 @@ const Compartments = ({ form, value, t, equipment }) => {
 
         const comp = composition.data.records;
 
-        let value = _.find(payload, ["tc_eqpt", compartment.tc_eqpt]);
-        const index = _.findIndex(payload, ["tc_eqpt", compartment.tc_eqpt]);
-        value["compartments"] = comp;
+        if (!!value) {
+          let value = _.find(payload, ["etyp_id", compartment.etyp_id]);
+          const index = _.findIndex(payload, ["etyp_id", compartment.etyp_id]);
 
-        payload.splice(index, 1, value);
+          value["compartments"] = comp;
+          payload.splice(index, 1, value);
+        } else {
+          let value = _.find(payload, ["etyp_id", compartment.etyp_id]);
+          const index = _.findIndex(payload, ["etyp_id", compartment.etyp_id]);
+
+          value["compartments"] = comp;
+          payload.splice(index, 1, value);
+        }
 
         setdata(payload);
 

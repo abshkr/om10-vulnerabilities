@@ -31,23 +31,23 @@ const columns = (data, config) => [
     title: <Trans i18nKey="fields.carrier" />,
     dataIndex: "tnkr_carrier_name",
     key: "tnkr_carrier_name",
+    filters: generateOptions(data, "tnkr_carrier_name"),
     onFilter: (value, record) => record.tnkr_carrier_name.indexOf(value) === 0,
-    sorter: (a, b) => a.tnkr_carrier_name.localeCompare(b.tnkr_carrier_name),
-    width: 200
+    width: 250
   },
   {
     title: <Trans i18nKey="fields.owner" />,
     dataIndex: "tnkr_owner_name",
     key: "tnkr_owner_name",
+    filters: generateOptions(data, "tnkr_owner_name"),
     onFilter: (value, record) => record.tnkr_owner_name.indexOf(value) === 0,
-    sorter: (a, b) => a.tnkr_owner_name.localeCompare(b.tnkr_owner_name),
-    width: 200
+    width: 250
   },
   {
     title: <Trans i18nKey="fields.equipmentType" />,
     dataIndex: "tnkr_eqpt_name",
     key: "tnkr_eqpt_name",
-    width: 350,
+    width: 200,
     filters: generateOptions(data, "tnkr_eqpt_name"),
     onFilter: (value, record) => record.tnkr_eqpt_name.indexOf(value) === 0
   },
@@ -55,6 +55,7 @@ const columns = (data, config) => [
     title: <Trans i18nKey="fields.baseDepot" />,
     dataIndex: "tnkr_base_site_name",
     key: "tnkr_base_site_name",
+    align: "center",
     filters: generateOptions(data, "tnkr_base_site_name"),
     width: 150
   },
@@ -63,10 +64,12 @@ const columns = (data, config) => [
     dataIndex: "tnkr_lock",
     key: "tnkr_lock",
     align: "center",
+    onFilter: (value, record) => record.tnkr_lock.indexOf(value) === 0,
+    sorter: (a, b) => (a.tnkr_lock === b.tnkr_lock ? 0 : a.tnkr_lock ? -1 : 1),
     width: 60,
     render: text => (
       <span>
-        <Icon type={text === "Y" ? "lock" : "unlock"} />
+        <Icon type={!text ? "lock" : "unlock"} />
       </span>
     )
   },
@@ -75,10 +78,13 @@ const columns = (data, config) => [
     dataIndex: "tnkr_active",
     key: "tnkr_active",
     align: "center",
+    onFilter: (value, record) => record.tnkr_active.indexOf(value) === 0,
+    sorter: (a, b) =>
+      a.tnkr_active === b.tnkr_active ? 0 : a.tnkr_active ? -1 : 1,
     width: 60,
     render: text => (
       <span>
-        <Icon type={text === "Y" ? "lock" : "unlock"} />
+        <Icon type={!text ? "lock" : "unlock"} />
       </span>
     )
   },
@@ -87,10 +93,17 @@ const columns = (data, config) => [
     dataIndex: "tnkr_bay_loop_ch",
     key: "tnkr_bay_loop_ch",
     align: "center",
-    width: 60,
+    onFilter: (value, record) => record.tnkr_bay_loop_ch.indexOf(value) === 0,
+    sorter: (a, b) =>
+      a.tnkr_bay_loop_ch === b.tnkr_bay_loop_ch
+        ? 0
+        : a.tnkr_bay_loop_ch
+        ? -1
+        : 1,
+    width: 100,
     render: text => (
       <span>
-        <Icon type={text === "Y" ? "lock" : "unlock"} />
+        <Icon type={!text ? "lock" : "unlock"} />
       </span>
     )
   },
@@ -99,10 +112,13 @@ const columns = (data, config) => [
     dataIndex: "tnkr_archive",
     key: "tnkr_archive",
     align: "center",
+    onFilter: (value, record) => record.tnkr_archive.indexOf(value) === 0,
+    sorter: (a, b) =>
+      a.tnkr_archive === b.tnkr_archive ? 0 : a.tnkr_archive ? -1 : 1,
     width: 60,
     render: text => (
       <span>
-        <Icon type={text === "Y" ? "lock" : "unlock"} />
+        <Icon type={!text ? "lock" : "unlock"} />
       </span>
     )
   },
