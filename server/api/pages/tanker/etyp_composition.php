@@ -45,12 +45,15 @@ while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
     // just $name only
     extract(array_change_key_case($row));
 
+    $image = $eqyp->get_image($etyp_id);
+
     $personnel_item = array(
         "etyp_id" => $etyp_id,
         "etyp_title" => $etyp_title,
         "equip_isleaf" => $equip_isleaf,
         "cmpt_count" => $cmpt_count,
         "etyp_isrigid" => $etyp_isrigid,
+        "image" => $image,
         "eqpt_list" => $equip_list,
     );
 
