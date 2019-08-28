@@ -16,7 +16,7 @@
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
 			
-			[Bindable] private var _url:String = "/html/base-products";
+			[Bindable] private var _url:String = "/html/physical-printers";
 			
 			private var callback:Function;
 			

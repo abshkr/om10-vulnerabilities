@@ -31,7 +31,7 @@ export default Module => {
       const url =
         process.env.NODE_ENV === "development"
           ? "/config.json"
-          : `https://${api}/api/config.json`;
+          : `https://${api}/api/config.php`;
 
       axios.get(url).then(response => {
         this.setState({

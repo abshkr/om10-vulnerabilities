@@ -154,6 +154,22 @@
     <module application="src/index.mxml" destPath="modules/M_PERSONNEL.swf" optimize="true" sourcePath="src/modules/M_PERSONNEL.mxml"/>
     <module application="src/index.mxml" destPath="modules/M_DRAWERPRODUCTS.swf" optimize="true" sourcePath="src/modules/M_DRAWERPRODUCTS.mxml"/>
     <module application="src/index.mxml" destPath="modules/HTML_TANKCONFIGURATION.swf" optimize="true" sourcePath="src/modules/HTML_TANKCONFIGURATION.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_AREA.swf" optimize="true" sourcePath="src/modules/HTML_AREA.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_EQUIPMENTLIST.swf" optimize="true" sourcePath="src/modules/HTML_EQUIPMENTLIST.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_FOLIOMANAGEMENT.swf" optimize="true" sourcePath="src/modules/HTML_FOLIOMANAGEMENT.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_JOURNALREPORT.swf" optimize="true" sourcePath="src/modules/HTML_JOURNALREPORT.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_LOGICALPRINTERS.swf" optimize="true" sourcePath="src/modules/HTML_LOGICALPRINTERS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_METERING.swf" optimize="true" sourcePath="src/modules/HTML_METERING.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_PERSONNEL.swf" optimize="true" sourcePath="src/modules/HTML_PERSONNEL.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_ONSITEREPORT.swf" optimize="true" sourcePath="src/modules/HTML_ONSITEREPORT.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_PHYSICALPRINTERS.swf" optimize="true" sourcePath="src/modules/HTML_PHYSICALPRINTERS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_PRODUCTINVENTORY.swf" optimize="true" sourcePath="src/modules/HTML_PRODUCTINVENTORY.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_REPOCONFIGURATION.swf" optimize="true" sourcePath="src/modules/HTML_REPOCONFIGURATION.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_REPOPROFILE.swf" optimize="true" sourcePath="src/modules/HTML_REPOPROFILE.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_SITEBALANCE.swf" optimize="true" sourcePath="src/modules/HTML_SITEBALANCE.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_TANKERS.swf" optimize="true" sourcePath="src/modules/HTML_TANKERS.mxml"/>
+    <module application="src/index.mxml" destPath="modules/HTML_TANKINVENTORY.swf" optimize="true" sourcePath="src/modules/HTML_TANKINVENTORY.mxml"/>
+    <module application="src/index.mxml" destPath="modules/M_ADAPTIVEFLOW.swf" optimize="true" sourcePath="src/modules/M_ADAPTIVEFLOW.mxml"/>
   </modules>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
