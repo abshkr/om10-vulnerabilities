@@ -10,6 +10,14 @@ const EquipmentType = ({ form, value, t }) => {
   const [isLoading, setLoading] = useState(false);
   const [options, setOptions] = useState([]);
 
+  const validate = (rule, input, callback) => {
+    if (input === "" || !input) {
+      callback(`${t("validate.select")} ─ ${t("fields.equipmentType")}`);
+    }
+
+    callback();
+  };
+
   useEffect(() => {
     if (!!value) {
       setFieldsValue({
@@ -33,7 +41,7 @@ const EquipmentType = ({ form, value, t }) => {
   return (
     <Form.Item label={t("fields.equipmentType")}>
       {getFieldDecorator("tnkr_etp", {
-        rules: [{ required: true }]
+        rules: [{ required: true, validator: validate }]
       })(
         <Select
           loading={isLoading}
@@ -41,10 +49,7 @@ const EquipmentType = ({ form, value, t }) => {
           showSearch
           optionFilterProp="children"
           placeholder={!value ? t("placeholder.selectEquipmentType") : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-            0
-          }
+          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
         >
           {options.map((item, index) => (
             <Select.Option key={index} value={item.etyp_id}>

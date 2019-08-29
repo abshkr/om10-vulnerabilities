@@ -19,10 +19,10 @@ const Area = ({ configuration, t }) => {
 
   const handleClick = object => {
     Modal.info({
-      title: !!object ? `Editing (${object.area_k} / ${object.area_name})` : "Create",
+      title: !!object ? `${t("operations.editing")} (${object.area_k} / ${object.area_name})` : `${t("operations.create")}`,
       centered: true,
       icon: !!object ? "edit" : "form",
-      width: 720,
+      width: "40vw",
       content: <Forms refresh={fetch} value={object} t={t} data={data} />,
       okButtonProps: {
         style: { display: "none" }
@@ -61,6 +61,8 @@ const Area = ({ configuration, t }) => {
 
   const results = !!filtered ? filtered : data;
 
+  const fields = columns(results, configuration, t);
+
   return (
     <Page page={t("pageMenu.accessControl")} name={t("pageNames.area")} isLoading={isLoading} block={true}>
       <Container>
@@ -76,7 +78,7 @@ const Area = ({ configuration, t }) => {
         >
           {t("operations.create")}
         </Button>
-        <DataTable rowKey="area_k" columns={columns(results, configuration)} data={results} isLoading={isLoading} click={handleClick} />
+        <DataTable rowKey="area_k" columns={fields} data={results} isLoading={isLoading} click={handleClick} />
       </Container>
     </Page>
   );

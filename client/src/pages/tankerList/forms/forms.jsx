@@ -24,6 +24,7 @@ import {
 import axios from "axios";
 import Compartments from "./compartments";
 import { Expiry } from "../../../components";
+
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ form, refresh, value, t, expiry, data }) => {
@@ -32,29 +33,33 @@ const FormModal = ({ form, refresh, value, t, expiry, data }) => {
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([tankerList.create(values)])
-          .then(
-            axios.spread(response => {
-              refresh();
+        Modal.confirm({
+          title: t("prompts.create"),
+          okText: t("operations.yes"),
+          okType: "primary",
+          cancelText: t("operations.no"),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([tankerList.create(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
 
-              Modal.destroyAll();
-              notification.success({
-                message: t("messages.createSuccess"),
-                description: t("messages.createSuccess")
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t("messages.createSuccess"),
+                    description: t("messages.createSuccess")
+                  });
+                })
+              )
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t("messages.createFailed")
+                });
               });
-            })
-          )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: t("messages.createFailed")
-            });
-          });
-      } else {
-        notification.error({
-          message: t("messages.validationFailed"),
-          description: t("descriptions.validationFailed")
+          }
         });
       }
     });
@@ -63,29 +68,33 @@ const FormModal = ({ form, refresh, value, t, expiry, data }) => {
   const handleUpdate = () => {
     form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([tankerList.update(values)])
-          .then(
-            axios.spread(response => {
-              refresh();
+        Modal.confirm({
+          title: t("prompts.update"),
+          okText: t("operations.yes"),
+          okType: "primary",
+          cancelText: t("operations.no"),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([tankerList.update(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
 
-              Modal.destroyAll();
-              notification.success({
-                message: t("messages.updateSuccess"),
-                description: t("messages.updateSuccess")
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t("messages.updateSuccess"),
+                    description: t("messages.updateSuccess")
+                  });
+                })
+              )
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t("messages.updateFailed")
+                });
               });
-            })
-          )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: t("messages.updateFailed")
-            });
-          });
-      } else {
-        notification.error({
-          message: t("messages.validationFailed"),
-          description: t("descriptions.validationFailed")
+          }
         });
       }
     });
@@ -101,9 +110,7 @@ const FormModal = ({ form, refresh, value, t, expiry, data }) => {
           Modal.destroyAll();
           notification.success({
             message: t("messages.deleteSuccess"),
-            description: `${t("descriptions.deleteSuccess")} ${
-              value.prt_printer
-            }`
+            description: `${t("descriptions.deleteSuccess")} ${value.prt_printer}`
           });
         })
       )
@@ -125,9 +132,7 @@ const FormModal = ({ form, refresh, value, t, expiry, data }) => {
           Modal.destroyAll();
           notification.success({
             message: t("messages.unlockSuccess"),
-            description: `${t("descriptions.unlockSuccess")} ${
-              value.prt_printer
-            }`
+            description: `${t("descriptions.unlockSuccess")} ${value.prt_printer}`
           });
         })
       )
@@ -150,40 +155,13 @@ const FormModal = ({ form, refresh, value, t, expiry, data }) => {
     });
   };
 
-  const showUpdateConfirm = () => {
-    Modal.confirm({
-      title: t("prompts.update"),
-      okText: t("operations.yes"),
-      okType: "primary",
-      cancelText: t("operations.no"),
-      centered: true,
-      onOk: handleUpdate
-    });
-  };
-
-  const showCreateConfirm = () => {
-    Modal.confirm({
-      title: t("prompts.create"),
-      okText: t("operations.yes"),
-      okType: "primary",
-      cancelText: t("operations.no"),
-      centered: true,
-      onOk: handleCreate
-    });
-  };
-
   const equipment = getFieldValue("tnkr_etp");
 
   return (
     <div>
       <Form>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane
-            className="ant-tab-window"
-            tab={t("tabColumns.general")}
-            forceRender={true}
-            key="1"
-          >
+          <TabPane className="ant-tab-window" tab={t("tabColumns.general")} forceRender={true} key="1">
             <Depot form={form} value={value} t={t} />
             <Owner form={form} value={value} t={t} />
             <Code form={form} value={value} t={t} data={data} />
@@ -193,12 +171,7 @@ const FormModal = ({ form, refresh, value, t, expiry, data }) => {
             <Locks form={form} value={value} t={t} />
             <Comments form={form} value={value} t={t} />
           </TabPane>
-          <TabPane
-            className="ant-tab-window"
-            tab={t("tabColumns.tanker")}
-            forceRender={true}
-            key="2"
-          >
+          <TabPane className="ant-tab-window" tab={t("tabColumns.tanker")} forceRender={true} key="2">
             <EquipmentType form={form} value={value} t={t} />
             <Carrier form={form} value={value} t={t} />
             <TankerPrompt form={form} value={value} t={t} />
@@ -208,48 +181,21 @@ const FormModal = ({ form, refresh, value, t, expiry, data }) => {
             <Pin form={form} value={value} t={t} />
             <MaxKg form={form} value={value} t={t} />
           </TabPane>
-          <TabPane
-            className="ant-tab-window"
-            tab={t("tabColumns.compartments")}
-            forceRender={true}
-            key="3"
-            disabled={!equipment}
-          >
-            <Compartments
-              form={form}
-              value={value}
-              t={t}
-              equipment={equipment}
-            />
+          <TabPane className="ant-tab-window" tab={t("tabColumns.compartments")} forceRender={true} key="3" disabled={!equipment}>
+            <Compartments form={form} value={value} t={t} equipment={equipment} />
           </TabPane>
-          <TabPane
-            className="ant-tab-window"
-            tab={t("tabColumns.expiryDates")}
-            forceRender={true}
-            key="4"
-          >
+          <TabPane className="ant-tab-window" tab={t("tabColumns.expiryDates")} forceRender={true} key="4">
             <Expiry form={form} value={value} t={t} types={expiry} />
           </TabPane>
           {!!value && (
-            <TabPane
-              className="ant-tab-window"
-              tab={t("tabColumns.bulkEdit")}
-              forceRender={true}
-              key="5"
-              disabled={value.tnkr_name === ""}
-            >
+            <TabPane className="ant-tab-window" tab={t("tabColumns.bulkEdit")} forceRender={true} key="5" disabled={value.tnkr_name === ""}>
               <BulkEdit form={form} value={value} t={t} />
             </TabPane>
           )}
         </Tabs>
       </Form>
 
-      <Button
-        shape="round"
-        icon="close"
-        style={{ float: "right" }}
-        onClick={() => Modal.destroyAll()}
-      >
+      <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
         {t("operations.cancel")}
       </Button>
 
@@ -258,31 +204,19 @@ const FormModal = ({ form, refresh, value, t, expiry, data }) => {
         type="primary"
         icon={!!value ? "edit" : "plus"}
         style={{ float: "right", marginRight: 5 }}
-        onClick={!!value ? showUpdateConfirm : showCreateConfirm}
+        onClick={!!value ? handleUpdate : handleCreate}
       >
         {!!value ? t("operations.update") : t("operations.create")}
       </Button>
 
       {!!value && (
-        <Button
-          shape="round"
-          type="dashed"
-          icon="unlock"
-          style={{ float: "right", marginRight: 5 }}
-          onClick={handleUnlock}
-        >
+        <Button shape="round" type="dashed" icon="unlock" style={{ float: "right", marginRight: 5 }} onClick={handleUnlock}>
           {t("operations.unlockAll")}
         </Button>
       )}
 
       {!!value && (
-        <Button
-          shape="round"
-          type="danger"
-          icon="delete"
-          style={{ float: "right", marginRight: 5 }}
-          onClick={showDeleteConfirm}
-        >
+        <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={showDeleteConfirm}>
           {t("operations.delete")}
         </Button>
       )}

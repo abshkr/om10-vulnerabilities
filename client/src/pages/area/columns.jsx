@@ -1,15 +1,15 @@
 import { generateOptions } from "../../utils";
 
-const columns = (data, t) => [
+const columns = (data, configuration, t) => [
   {
-    title: "Area ID",
+    title: t("fields.areaId"),
     dataIndex: "area_k",
     key: "area_k",
     align: "center",
     sorter: (a, b) => a.area_k - b.area_k
   },
   {
-    title: "Area Name",
+    title: t("fields.areaName"),
     dataIndex: "area_name",
     key: "area_name",
     align: "center",

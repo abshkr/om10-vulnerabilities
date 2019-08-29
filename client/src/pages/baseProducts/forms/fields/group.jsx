@@ -1,31 +1,24 @@
-import React, { useState, useEffect } from "react";
-import { tankerList } from "../../../../api";
-import { Form, Select } from "antd";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 
-const Carrier = ({ form, value, t }) => {
+import axios from "axios";
+import { Form, Select } from "antd";
+import { baseProducts } from "../../../../api";
+
+const Group = ({ form, value, t }) => {
   const { getFieldDecorator, setFieldsValue } = form;
 
   const [isLoading, setLoading] = useState(false);
   const [options, setOptions] = useState([]);
 
-  const validate = (rule, input, callback) => {
-    if (input === "" || !input) {
-      callback(`${t("validate.select")} ─ ${t("fields.carrier")}`);
-    }
-
-    callback();
-  };
-
   useEffect(() => {
     if (!!value) {
       setFieldsValue({
-        tnkr_carrier: value.tnkr_carrier
+        base_prod_group: value.base_prod_group
       });
     }
 
     const getContext = () => {
-      axios.all([tankerList.carriers()]).then(
+      axios.all([baseProducts.readBaseProductGroups()]).then(
         axios.spread(options => {
           setOptions(options.data.records);
           setLoading(false);
@@ -38,20 +31,19 @@ const Carrier = ({ form, value, t }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t("fields.carrier")}>
-      {getFieldDecorator("tnkr_carrier", {
-        rules: [{ required: true, validator: validate }]
-      })(
+    <Form.Item label={t("fields.group")}>
+      {getFieldDecorator("base_prod_group")(
         <Select
           loading={isLoading}
+          disabled={!!value}
           showSearch
           optionFilterProp="children"
-          placeholder={!value ? t("placeholder.selectCarrier") : null}
+          placeholder={!value ? t("placeholder.selectGroup") : null}
           filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
         >
           {options.map((item, index) => (
-            <Select.Option key={index} value={item.cmpy_code}>
-              {item.cmpy_name}
+            <Select.Option key={index} value={item.pgr_code}>
+              {item.pgr_text}
             </Select.Option>
           ))}
         </Select>
@@ -60,4 +52,4 @@ const Carrier = ({ form, value, t }) => {
   );
 };
 
-export default Carrier;
+export default Group;

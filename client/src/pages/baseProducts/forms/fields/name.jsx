@@ -2,26 +2,20 @@ import React, { useEffect } from "react";
 import { Form, Input } from "antd";
 import _ from "lodash";
 
-const Code = ({ form, value, t, data }) => {
+const Name = ({ form, value, t, data }) => {
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
     if (!!value) {
       setFieldsValue({
-        tnkr_code: value.tnkr_code
+        base_name: value.base_name
       });
     }
   }, [value, setFieldsValue]);
 
   const validate = (rule, input, callback) => {
-    const match = _.find(data, ["tnkr_code", input]);
-
     if (input === "" || !input) {
-      callback(`${t("validate.set")} ─ ${t("fields.code")}`);
-    }
-
-    if (input && !!match && !value) {
-      callback(t("descriptions.alreadyExists"));
+      callback(`${t("validate.set")} ─ ${t("fields.name")}`);
     }
 
     if (input && input.length > 40) {
@@ -31,12 +25,12 @@ const Code = ({ form, value, t, data }) => {
   };
 
   return (
-    <Form.Item label={t("fields.code")}>
-      {getFieldDecorator("tnkr_code", {
+    <Form.Item label={t("fields.name")}>
+      {getFieldDecorator("base_name", {
         rules: [{ required: true, validator: validate }]
       })(<Input disabled={!!value} />)}
     </Form.Item>
   );
 };
 
-export default Code;
+export default Name;

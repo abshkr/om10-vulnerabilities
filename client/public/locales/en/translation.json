@@ -8,8 +8,21 @@
     "areaId": "Area Id",
     "areaName": "Area Name",
     "tankCode": "Tank Code",
-    "baseProductCode": "Base Product Code",
-    "baseProductName": "Base Product Name",
+    "classId": "Class Id",
+    "classification": "Classification",
+    "groupCode": "Group Code",
+    "group": "Group",
+    "color": "Color",
+    "isAdditive": "Is Additive?",
+    "numberOfTanks": "Number of Tanks",
+    "listOfTanks": "List of Tanks",
+    "baseClassMinDensity": "Base Class Min Density",
+    "baseClassMaxDensity": "Base Class Max Density",
+    "baseClassMinTemp": "Base Class Min Temperature",
+    "baseClassMaxTemp": "Base Class Max Temperature",
+    "correctionMethod": "Correction Method",
+    "refTempSpec": "Ref Temp Spec",
+    "hotTempFlag": "Hot Temp Flag",
     "armPriority": "Arm Priority",
     "tankLevel": "Tank Level",
     "currentFlowRate": "Current Flow Rate",
@@ -55,13 +68,15 @@
   "pageMenu": {
     "schedules": "Schedules",
     "operations": "Operations",
-    "accessControl": "Access Control"
+    "accessControl": "Access Control",
+    "gantry": "Gantry"
   },
 
   "pageNames": {
     "tankerList": "Tanker List",
     "adaptiveFlow": "Adaptive Flow Control",
-    "area": "Area"
+    "area": "Area",
+    "baseProducts": "Base Products"
   },
 
   "operations": {
@@ -82,7 +97,9 @@
     "expiryDates": "Expiry Dates",
     "compartments": "Compartments",
     "tanker": "Tanker",
-    "bulkEdit": "Bulk Edit"
+    "bulkEdit": "Bulk Edit",
+    "adaptiveFlow": "Adaptive Flow",
+    "hotLitre": "Hot Litre Calculation"
   },
 
   "messages": {
@@ -128,19 +145,23 @@
     "selectDestination": "Select Destination",
     "selectLastDepot": "Select Last Depot",
     "selectCurrentDepot": "Select Current Depot",
+    "selectClassification": "Select Classification",
     "selectEquipment": "Select Equipment",
     "selectDate": "Select Date",
     "selectStatus": "Select Status",
     "maxCharacters": "Max Characters",
-    "wrongType": "Wrong Type"
+    "wrongType": "Wrong Type",
+    "selectGroup": "Select Group"
   },
 
   "validate": {
-    "set": "The Following Field is Required. Please Set",
-    "select": "The Following Field is Required. Please Select"
+    "set": "This Field is Required. Please Set",
+    "select": "This Field is Required. Please Select"
   },
 
   "units": {
-    "lpm": "LPM"
+    "lpm": "LPM",
+    "celsius": "°C",
+    "kgm3": "kg/m3"
   }
 }

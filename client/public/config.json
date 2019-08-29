@@ -1,9 +1,8 @@
 {
-  "version": "8.20.1",
-  "defaultTimeFormat": "YYYY-MM-DD HH:mm:ss:SSSSSSS",
-  "dateTimeFormat": "DD/MM/YYYY h:mm:ss A",
+  "version": "8.23.0",
   "features": {
-    "adaptiveFlowControl": false
+    "adaptiveFlowControl": true,
+    "hotLitreCalculation": true
   },
   "columns": {
     "equipmentList": {

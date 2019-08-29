@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { tankerList } from "../../../../api";
-import { Form, Select } from "antd";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 
-const Carrier = ({ form, value, t }) => {
+import axios from "axios";
+import { Form, Select } from "antd";
+import { baseProducts } from "../../../../api";
+
+const Classification = ({ form, value, t }) => {
   const { getFieldDecorator, setFieldsValue } = form;
 
   const [isLoading, setLoading] = useState(false);
@@ -11,7 +12,7 @@ const Carrier = ({ form, value, t }) => {
 
   const validate = (rule, input, callback) => {
     if (input === "" || !input) {
-      callback(`${t("validate.select")} ─ ${t("fields.carrier")}`);
+      callback(`${t("validate.select")} ─ ${t("fields.classification")}`);
     }
 
     callback();
@@ -20,12 +21,12 @@ const Carrier = ({ form, value, t }) => {
   useEffect(() => {
     if (!!value) {
       setFieldsValue({
-        tnkr_carrier: value.tnkr_carrier
+        base_cat: value.base_cat
       });
     }
 
     const getContext = () => {
-      axios.all([tankerList.carriers()]).then(
+      axios.all([baseProducts.readBaseProductClassification()]).then(
         axios.spread(options => {
           setOptions(options.data.records);
           setLoading(false);
@@ -38,20 +39,21 @@ const Carrier = ({ form, value, t }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t("fields.carrier")}>
-      {getFieldDecorator("tnkr_carrier", {
+    <Form.Item label={t("fields.classification")}>
+      {getFieldDecorator("base_cat", {
         rules: [{ required: true, validator: validate }]
       })(
         <Select
           loading={isLoading}
+          disabled={!!value}
           showSearch
           optionFilterProp="children"
-          placeholder={!value ? t("placeholder.selectCarrier") : null}
+          placeholder={!value ? t("placeholder.selectClassification") : null}
           filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
         >
           {options.map((item, index) => (
-            <Select.Option key={index} value={item.cmpy_code}>
-              {item.cmpy_name}
+            <Select.Option key={index} value={item.bclass_no}>
+              {item.bclass_desc}
             </Select.Option>
           ))}
         </Select>
@@ -60,4 +62,4 @@ const Carrier = ({ form, value, t }) => {
   );
 };
 
-export default Carrier;
+export default Classification;

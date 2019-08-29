@@ -8,13 +8,13 @@ const Code = ({ form, value, t, data }) => {
   useEffect(() => {
     if (!!value) {
       setFieldsValue({
-        tnkr_code: value.tnkr_code
+        base_code: value.base_code
       });
     }
   }, [value, setFieldsValue]);
 
   const validate = (rule, input, callback) => {
-    const match = _.find(data, ["tnkr_code", input]);
+    const match = _.find(data, ["base_code", input]);
 
     if (input === "" || !input) {
       callback(`${t("validate.set")} ─ ${t("fields.code")}`);
@@ -24,15 +24,15 @@ const Code = ({ form, value, t, data }) => {
       callback(t("descriptions.alreadyExists"));
     }
 
-    if (input && input.length > 40) {
-      callback(`${t("placeholder.maxCharacters")}: 40 ─ ${t("descriptions.maxCharacters")}`);
+    if (input && input.length > 20) {
+      callback(`${t("placeholder.maxCharacters")}: 20 ─ ${t("descriptions.maxCharacters")}`);
     }
     callback();
   };
 
   return (
     <Form.Item label={t("fields.code")}>
-      {getFieldDecorator("tnkr_code", {
+      {getFieldDecorator("base_code", {
         rules: [{ required: true, validator: validate }]
       })(<Input disabled={!!value} />)}
     </Form.Item>

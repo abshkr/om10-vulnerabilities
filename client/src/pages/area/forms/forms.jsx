@@ -9,9 +9,9 @@ const FormModal = ({ form, refresh, value, t, data }) => {
     form.validateFields((err, values) => {
       if (!err) {
         Modal.confirm({
-          title: t("prompts.delete"),
+          title: t("prompts.create"),
           okText: t("operations.yes"),
-          okType: "danger",
+          okType: "primary",
           cancelText: t("operations.no"),
           centered: true,
           onOk: () => {
