@@ -3,9 +3,9 @@ import React, { Component } from "react";
 import _ from "lodash";
 import axios from "axios";
 import BulkEdit from "./bulkEdit";
-import ExpiryDates from "./expiryDates";
 import Compartments from "./compartments";
 import { equipmentList } from "../../../api";
+import { Expiry } from "../../../components";
 import { Form, Button, Tabs, Modal, notification } from "antd";
 import {
   Owner,
@@ -106,9 +106,7 @@ class PersonnelForm extends Component {
           Modal.confirm({
             title: `Expiry Date Adjustments.`,
             content: (
-              <div>{`We have found ${
-                records.length
-              } records with similar configurations. Do you want to apply the same expiry dates?`}</div>
+              <div>{`We have found ${records.length} records with similar configurations. Do you want to apply the same expiry dates?`}</div>
             ),
             okText: "Yes",
             okType: "primary",
@@ -147,18 +145,16 @@ class PersonnelForm extends Component {
   };
 
   render() {
-    const { form, value, data } = this.props;
+    const { form, value, data, expiry, t } = this.props;
     const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+
     const TabPane = Tabs.TabPane;
+
     return (
       <div>
-        <Form style={{ height: "65vh" }}>
-          <Tabs defaultActiveKey="1">
-            <TabPane
-              tab="General"
-              key="1"
-              style={{ height: "55vh", overflowY: "scroll", paddingRight: 20 }}
-            >
+        <Form>
+          <Tabs defaultActiveKey="1" animated={false}>
+            <TabPane tab="General" key="1" className="ant-tab-window">
               <Code
                 decorator={getFieldDecorator}
                 value={value}
@@ -220,25 +216,15 @@ class PersonnelForm extends Component {
                 data={data}
               />
             </TabPane>
-            <TabPane
-              tab="Expiry Dates"
-              key="2"
-              style={{ height: "55vh", overflowY: "scroll", paddingRight: 20 }}
-            >
-              <ExpiryDates
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-                form={form}
-              />
+            <TabPane tab="Expiry Dates" key="2" className="ant-tab-window">
+              <Expiry form={form} value={value} t={t} types={expiry} />
             </TabPane>
 
             <TabPane
               tab="Compartments"
               key="3"
               forceRender={true}
-              style={{ height: "55vh", overflowY: "scroll", paddingRight: 20 }}
+              className="ant-tab-window"
             >
               <EquipmentType
                 decorator={getFieldDecorator}
@@ -262,11 +248,7 @@ class PersonnelForm extends Component {
                 tab="Bulk Edit"
                 key="4"
                 forceRender={true}
-                style={{
-                  height: "55vh",
-                  overflowY: "scroll",
-                  paddingRight: 20
-                }}
+                className="ant-tab-window"
               >
                 <BulkEdit
                   decorator={getFieldDecorator}

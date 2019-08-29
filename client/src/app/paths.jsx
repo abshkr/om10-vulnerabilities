@@ -4,13 +4,6 @@ import { ROUTES } from "../constants";
 
 const paths = [
   {
-    path: ROUTES.DASHBOARD,
-    component: Loadable({
-      loader: () => import("../pages/dashboard"),
-      loading: Loading
-    })
-  },
-  {
     path: ROUTES.UNAUTHORIZED,
     component: Loadable({
       loader: () => import("../pages/unauthorized"),

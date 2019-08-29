@@ -1,8 +1,17 @@
 {
   "fields": {
+    "bay": "Bay",
+    "arm": "Arm",
     "code": "Code",
     "name": "Name",
     "owner": "Owner",
+    "tankCode": "Tank Code",
+    "baseProductCode": "Base Product Code",
+    "baseProductName": "Base Product Name",
+    "armPriority": "Arm Priority",
+    "tankLevel": "Tank Level",
+    "currentFlowRate": "Current Flow Rate",
+    "totalFlowContribution": "Total Flow Contribution",
     "equipmentName": "Equipment Name",
     "baseDepot": "Base Depot",
     "locked": "Locked?",
@@ -31,15 +40,24 @@
     "typeDescription": "Type Description",
     "expiryDate": "Expiry Date",
     "enabled": "Enabled",
-    "operations": "Operations"
+    "operations": "Operations",
+    "activeTank": "Active Tank",
+    "flowing": "Flowing",
+    "limiting": "Limiting",
+    "flowContribution": "Flow Contribution",
+    "actualFlowRate": "Actual Flowrate",
+    "loadedQuantity": "Loaded Quantity",
+    "presetQuantity": "Preset Quantity"
   },
 
   "pageMenu": {
-    "schedules": "Schedules"
+    "schedules": "Schedules",
+    "operations": "Operations"
   },
 
   "pageNames": {
-    "tankerList": "Tanker List"
+    "tankerList": "Tanker List",
+    "adaptiveFlow": "Adaptive Flow Control"
   },
 
   "operations": {
@@ -90,7 +108,11 @@
     "alreadyExists": "This value already exists. Please Try Another.",
     "maxCharacters": "This character count is too high.",
     "unlockSuccess": "You have unlocked all compartments.",
-    "unlockFailed": "Failed to unlock."
+    "unlockFailed": "Failed to unlock.",
+    "totalFlow": "Total Flow of All Products",
+    "tankMaxFlowRate": "Tank Max Flow Rate",
+    "actualTankFlowRate": "Actual Tank Flowrate",
+    "flowContribution": "Flow Contribution"
   },
 
   "placeholder": {
@@ -105,5 +127,9 @@
     "selectDate": "Select Date",
     "selectStatus": "Select Status",
     "maxCharacters": "Max Characters"
+  },
+
+  "units": {
+    "lpm": "LPM"
   }
 }

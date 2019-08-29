@@ -22,20 +22,31 @@ class EquipmentList extends Component {
     this.state = {
       value: "",
       data: [],
+      expiry: [],
       resize: false,
       isLoading: true
     };
   }
 
   handleClick = object => {
-    const { data } = this.state;
+    const { data, expiry } = this.state;
 
     Modal.info({
-      title: !!object ? `Editing (${object.eqpt_id} / ${object.eqpt_code})` : "Create",
+      title: !!object
+        ? `Editing (${object.eqpt_id} / ${object.eqpt_code})`
+        : "Create",
       centered: true,
-      width: 1024,
+      width: "50vw",
       icon: !!object ? "edit" : "form",
-      content: <Forms value={object} refresh={this.handleFetch} data={data} />,
+      content: (
+        <Forms
+          value={object}
+          refresh={this.handleFetch}
+          data={data}
+          t={this.props.t}
+          expiry={expiry}
+        />
+      ),
       okButtonProps: {
         style: { display: "none" }
       }
@@ -46,12 +57,13 @@ class EquipmentList extends Component {
     this.setState({ isLoading: true });
 
     axios
-      .all([equipmentList.readEquipment()])
+      .all([equipmentList.readEquipment(), equipmentList.readExpiry()])
       .then(
-        axios.spread(equipment => {
+        axios.spread((equipment, expiry) => {
           this.setState({
             isLoading: false,
             data: equipment.data.records,
+            expiry: expiry.data.records,
             filtered: null,
             value: ""
           });
@@ -93,9 +105,18 @@ class EquipmentList extends Component {
     const results = !!filtered ? filtered : data;
 
     return (
-      <Page page={"Access Control"} name={"Equipment List"} isLoading={isLoading} block={true}>
+      <Page
+        page={"Access Control"}
+        name={"Equipment List"}
+        isLoading={isLoading}
+        block={true}
+      >
         <Container>
-          <Filter value={value} search={this.handleSearch} loading={isLoading} />
+          <Filter
+            value={value}
+            search={this.handleSearch}
+            loading={isLoading}
+          />
           <Button
             shape="round"
             type="primary"

@@ -1,9 +1,3 @@
-/**
- * @description
- * Base Products Screen
- * Lets the user perform simple CRUD operations to manipulate the Base Products Data.
- */
-
 import React, { Component } from "react";
 import auth from "../../auth";
 import { Button, Modal, notification } from "antd";
@@ -23,20 +17,21 @@ class Personnel extends Component {
       value: "",
       data: [],
       roles: [],
+      expiry: [],
       resize: false,
       isLoading: true
     };
   }
 
   handleClick = object => {
-    const { data } = this.state;
+    const { data, expiry } = this.state;
 
     Modal.info({
       title: !!object ? `Editing (${object.per_code} / ${object.per_name})` : "Create",
       centered: true,
       width: 1024,
       icon: !!object ? "edit" : "form",
-      content: <Forms value={object} refresh={this.handleFetch} data={data} />,
+      content: <Forms value={object} refresh={this.handleFetch} data={data} expiry={expiry} t={this.props.t} />,
       okButtonProps: {
         style: { display: "none" }
       }
@@ -47,15 +42,14 @@ class Personnel extends Component {
     this.setState({ isLoading: true });
 
     axios
-      .all([personnel.readPersonnel(), personnel.readPersonnelRoles()])
+      .all([personnel.readPersonnel(), personnel.readPersonnelRoles(), personnel.readPersonnelExpiryTypes()])
       .then(
         axios.spread((personnel, roles, expiry) => {
           this.setState({
             data: personnel.data.records,
+            expiry: expiry.data.records,
             roles: roles.data.records,
-            isLoading: false,
-            filtered: null,
-            value: ""
+            isLoading: false
           });
         })
       )
@@ -98,12 +92,33 @@ class Personnel extends Component {
       <Page page={"Access Control"} name={"Personnel"} isLoading={isLoading} block={true}>
         <Container>
           <Filter value={value} search={this.handleSearch} loading={isLoading} />
-          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
+          <Button
+            shape="round"
+            type="primary"
+            icon={resize ? "shrink" : "arrows-alt"}
+            style={{ float: "right" }}
+            onClick={this.handleResize}
+            disabled={isLoading}
+          />
           <Download data={results} type={"personnel"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
-          <Button shape="round" icon="user" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
+          <Button
+            shape="round"
+            icon="user"
+            type="primary"
+            style={{ float: "right", marginRight: 5 }}
+            onClick={() => this.handleClick(null)}
+            disabled={isLoading}
+          >
             Create Personnel
           </Button>
-          <DataTable rowKey="per_code" resize={resize} columns={columns(results, roles, configuration)} data={results} isLoading={isLoading} click={this.handleClick} />
+          <DataTable
+            rowKey="per_code"
+            resize={resize}
+            columns={columns(results, roles, configuration)}
+            data={results}
+            isLoading={isLoading}
+            click={this.handleClick}
+          />
         </Container>
       </Page>
     );

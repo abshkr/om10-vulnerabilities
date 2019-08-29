@@ -1,11 +1,24 @@
 import React, { Component } from "react";
 
 import axios from "axios";
-import ExpiryDates from "./expiryDates";
 import { personnel } from "../../../api";
 import PasswordReset from "./passwordReset";
 import { Form, Button, Tabs, Modal, notification } from "antd";
-import { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, Lock, SLP } from "./fields";
+import {
+  Employer,
+  Code,
+  Name,
+  Department,
+  Email,
+  Role,
+  TimeCode,
+  DriverLicence,
+  Status,
+  Comment,
+  Lock,
+  SLP
+} from "./fields";
+import { Expiry } from "../../../components";
 
 class PersonnelForm extends Component {
   handleUpdate = () => {
@@ -135,31 +148,89 @@ class PersonnelForm extends Component {
   };
 
   render() {
-    const { form, value, data } = this.props;
+    const { form, value, data, t, expiry } = this.props;
     const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
     const TabPane = Tabs.TabPane;
     return (
       <div>
         <Form style={{ height: "65vh" }}>
           <Tabs defaultActiveKey="1">
-            <TabPane tab="General" key="1" style={{ height: "55vh", overflowY: "scroll", paddingRight: 20 }}>
-              <Employer decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Code decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-              <Name decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <SLP decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Department decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Email decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Role decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <TimeCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <DriverLicence decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Status decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Comment decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+            <TabPane
+              tab="General"
+              key="1"
+              style={{ height: "55vh", overflowY: "scroll", paddingRight: 20 }}
+            >
+              <Employer
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <Code
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                data={data}
+              />
+              <Name
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <SLP
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <Department
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <Email
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <Role
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <TimeCode
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <DriverLicence
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <Status
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <Comment
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
             </TabPane>
-            <TabPane tab="Expiry Dates" key="2" style={{ height: "55vh", overflowY: "scroll", paddingRight: 20 }}>
-              <ExpiryDates decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} />
+            <TabPane
+              tab="Expiry Dates"
+              key="2"
+              style={{ height: "55vh", overflowY: "scroll", paddingRight: 20 }}
+            >
+              <Expiry form={form} value={value} t={t} types={expiry} />
             </TabPane>
             <TabPane tab="Area Access Control" key="3">
-              <Lock decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} />
+              <Lock
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                getValue={getFieldValue}
+              />
             </TabPane>
             {!!value && (
               <TabPane tab="Reset Password" key="4">
@@ -169,7 +240,12 @@ class PersonnelForm extends Component {
           </Tabs>
         </Form>
 
-        <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
+        <Button
+          shape="round"
+          icon="close"
+          style={{ float: "right" }}
+          onClick={() => Modal.destroyAll()}
+        >
           Cancel
         </Button>
 
@@ -184,7 +260,13 @@ class PersonnelForm extends Component {
         </Button>
 
         {!!value && (
-          <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
+          <Button
+            shape="round"
+            type="danger"
+            icon="delete"
+            style={{ float: "right", marginRight: 5 }}
+            onClick={this.showDeleteConfirm}
+          >
             Delete
           </Button>
         )}

@@ -7,10 +7,10 @@ const Locks = ({ form, value, t }) => {
   useEffect(() => {
     if (!!value) {
       setFieldsValue({
-        tnkr_lock: value.tnkr_lock === "Y" ? true : false,
-        tnkr_active: value.tnkr_active === "Y" ? true : false,
-        tnkr_bay_loop_ch: value.tnkr_bay_loop_ch === "Y" ? true : false,
-        tnkr_archive: value.tnkr_archive === "Y" ? true : false
+        tnkr_lock: value.tnkr_lock,
+        tnkr_active: value.tnkr_active,
+        tnkr_bay_loop_ch: value.tnkr_bay_loop_ch,
+        tnkr_archive: value.tnkr_archive
       });
     }
   }, [value, setFieldsValue]);

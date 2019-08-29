@@ -3,33 +3,33 @@ import { Table } from "antd";
 import _ from "lodash";
 import columns from "./columns";
 
-const summary = (arms, tank) => {
+const summary = (arms, tank, t) => {
   return (
     <div className="flow-rate-summary">
       <p>
-        <span>Tank Max Flow Rate: </span>
-        {tank.max.toFixed(2)} LPM
+        <span>{t("descriptions.tankMaxFlowRate")}: </span>
+        {tank.max.toFixed(2)} {t("units.lpm")}
       </p>
       <p>
-        <span>Actual Tank Flowrate: </span>
-        {_.sumBy(arms, "current_flow_rate").toFixed(2)} LPM
+        <span>{t("descriptions.actualTankFlowRate")}: </span>
+        {_.sumBy(arms, "current_flow_rate").toFixed(2)} {t("units.lpm")}
       </p>
       <p>
-        <span>Flow Contribution: </span>
-        {_.sumBy(arms, "flow_contribution").toFixed(2)} LPM
+        <span>{t("descriptions.flowContribution")}: </span>
+        {_.sumBy(arms, "flow_contribution").toFixed(2)} {t("units.lpm")}
       </p>
     </div>
   );
 };
 
-const FlowRates = (tank, configuration) => {
+const FlowRates = (tank, t) => {
   return (
     <Table
       size="middle"
-      columns={columns(configuration)}
+      columns={columns(t)}
       dataSource={tank.arms}
       pagination={false}
-      title={arms => summary(arms, tank)}
+      title={arms => summary(arms, tank, t)}
       rowKey="baa_code"
       className="nested-table"
     />

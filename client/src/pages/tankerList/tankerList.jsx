@@ -15,27 +15,15 @@ const TankerList = ({ configuration, t }) => {
   const [expiry, setExpiry] = useState([]);
   const [resize, setResize] = useState(false);
   const [filtered, setFiltered] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setLoading] = useState(true);
 
   const handleClick = object => {
     Modal.info({
-      title: !!object
-        ? `${t("operations.editing")} (${object.tnkr_name} / ${
-            object.tnkr_code
-          })`
-        : `${t("operations.create")}`,
+      title: !!object ? `${t("operations.editing")} (${object.tnkr_name} / ${object.tnkr_code})` : `${t("operations.create")}`,
       centered: true,
       width: "50vw",
       icon: !!object ? "edit" : "form",
-      content: (
-        <Forms
-          value={object}
-          refresh={fetch}
-          t={t}
-          expiry={expiry}
-          data={data}
-        />
-      ),
+      content: <Forms value={object} refresh={fetch} t={t} expiry={expiry} data={data} />,
       okButtonProps: {
         style: { display: "none" }
       }
@@ -54,7 +42,7 @@ const TankerList = ({ configuration, t }) => {
       .all([tankerList.tankers(), tankerList.expiry()])
       .then(
         axios.spread((tankers, expiry) => {
-          setIsLoading(false);
+          setLoading(false);
           setData(tankers.data.records);
           setExpiry(expiry.data.records);
         })
@@ -68,19 +56,14 @@ const TankerList = ({ configuration, t }) => {
   }, [t]);
 
   useEffect(() => {
-    setIsLoading(true);
+    setLoading(true);
     fetch();
   }, [fetch]);
 
   const results = !!filtered ? filtered : data;
 
   return (
-    <Page
-      page={t("pageMenu.schedules")}
-      name={t("pageNames.tankerList")}
-      isLoading={isLoading}
-      block={true}
-    >
+    <Page page={t("pageMenu.schedules")} name={t("pageNames.tankerList")} isLoading={isLoading} block={true}>
       <Container>
         <Filter value={value} search={handleSearch} loading={isLoading} />
         <Button
@@ -91,12 +74,7 @@ const TankerList = ({ configuration, t }) => {
           onClick={() => setResize(!resize)}
           disabled={isLoading}
         />
-        <Download
-          data={data}
-          type={"equipment_list"}
-          style={{ float: "right", marginRight: 5 }}
-          loading={isLoading}
-        />
+        <Download data={data} type={"equipment_list"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
         <Button
           shape="round"
           icon="plus"

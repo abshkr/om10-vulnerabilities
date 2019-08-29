@@ -1,90 +1,66 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
+
+import _ from "lodash";
 import axios from "axios";
-import { message } from "antd";
-import columns from "./columns";
 import auth from "../../auth";
+import columns from "./columns";
 import FlowRates from "./flowRates";
 import generator from "./generator";
 import search from "../../utils/search";
 import { baseProducts, adaptiveFlow } from "../../api";
 import { Page, Filter, Container, DataTable } from "../../components";
-import _ from "lodash";
 
 import "./adaptiveFlowControl.css";
 
-class AdaptiveFlowControl extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: [],
-      value: "",
-      isLoading: true
-    };
-  }
+const AdaptiveFlowControl = ({ configuration, t }) => {
+  const [data, setData] = useState([]);
+  const [value, setValue] = useState("");
+  const [totalFlow, setTotalFLow] = useState(0);
+  const [isLoading, setLoading] = useState(true);
+  const [filtered, setFiltered] = useState(null);
 
-  getBaseProducts = () => {
-    axios
-      .all([baseProducts.readBaseProduct(), adaptiveFlow.readFlowRate(), adaptiveFlow.readTankCurrentFlow()])
-      .then(
-        axios.spread((baseProducts, flowRate, currentFlow) => {
-          this.setState({
-            isLoading: false,
-            data: generator(baseProducts.data.records, flowRate.data.records, currentFlow.data),
-            totalFlow: _.sumBy(flowRate.data, "current_flow_rate")
-          });
-        })
-      )
-      .catch(error => {
-        message.warn("Failed to make the request.");
-      });
-  };
-
-  searchObjects = query => {
+  const handleSearch = query => {
     const { value } = query.target;
-    this.setState({
-      filtered: search(value, this.state.data),
-      value
-    });
+
+    setFiltered(search(value, data));
+    setValue(value);
   };
 
-  componentDidMount() {
-    try {
-      this.periodic = setInterval(async () => {
-        this.getBaseProducts();
-      }, 1000);
-    } catch (e) {
-      clearInterval(this.periodic);
-    }
-  }
+  useEffect(() => {
+    const fetch = setInterval(() => {
+      axios.all([baseProducts.readBaseProduct(), adaptiveFlow.readFlowRate(), adaptiveFlow.readTankCurrentFlow()]).then(
+        axios.spread((baseProducts, flowRate, currentFlow) => {
+          setLoading(false);
+          setTotalFLow(_.sumBy(flowRate.data, "current_flow_rate"));
+          setData(generator(baseProducts.data.records, flowRate.data.records, currentFlow.data));
+        })
+      );
+    }, 1000);
+    return () => clearInterval(fetch);
+  }, []);
 
-  componentWillUnmount() {
-    clearInterval(this.periodic);
-  }
+  const results = !!filtered ? filtered : data;
 
-  render() {
-    const { data, filtered, value, resize, isLoading, totalFlow } = this.state;
-    const { configuration } = this.props;
-
-    const results = !!filtered ? filtered : data;
-
-    return (
-      <Page page={"Gantry"} name={"Adaptive Flow Control"} block={true}>
-        <Container>
-          <Filter value={value} search={this.searchObjects} />
-          <DataTable
-            size="middle"
-            isLoading={isLoading}
-            resize={resize}
-            rowKey="baseCode"
-            columns={columns(results)}
-            data={results}
-            nested={tank => FlowRates(tank, configuration)}
-            footer={<span style={{ textAlign: "center" }}>Total Flow of All Products: {totalFlow} LPM </span>}
-          />
-        </Container>
-      </Page>
-    );
-  }
-}
+  return (
+    <Page page={t("pageMenu.operations")} name={t("pageNames.adaptiveFlow")} block={true}>
+      <Container>
+        <Filter value={value} search={handleSearch} />
+        <DataTable
+          size="middle"
+          data={results}
+          rowKey="baseCode"
+          isLoading={isLoading}
+          columns={columns(results, t)}
+          nested={tank => FlowRates(tank, t)}
+          footer={
+            <span style={{ textAlign: "center" }}>
+              {t("descriptions.totalFlow")}: {totalFlow} {t("units.lpm")}{" "}
+            </span>
+          }
+        />
+      </Container>
+    </Page>
+  );
+};
 
 export default auth(AdaptiveFlowControl);

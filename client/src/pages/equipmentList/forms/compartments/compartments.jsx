@@ -1,19 +1,10 @@
 import React, { Component } from "react";
 
-import { Table, Input, Form, Select, Icon, Card } from "antd";
+import { Table, Input, Form, Select, Icon } from "antd";
+import { Equipment } from "../../../../components";
 import { equipmentList } from "../../../../api";
-import {
-  Rail,
-  Flat,
-  Prime,
-  Rigid,
-  Ship,
-  Trailer,
-  Default
-} from "../../../../assets/equipment";
-
-import _ from "lodash";
 import axios from "axios";
+import _ from "lodash";
 
 const EditableContext = React.createContext();
 
@@ -310,34 +301,17 @@ export default class Compatments extends Component {
     const imageFilter = !!value ? ["etyp_id", value.eqpt_etp] : ["etyp_id", id];
     const image = _.find(types, imageFilter);
 
-    const source = !!image ? image.image : "x";
-
     decorator("compartments");
-
-    const path = {
-      e: Rail,
-      f: Flat,
-      p: Prime,
-      r: Rigid,
-      s: Ship,
-      t: Trailer,
-      x: Default
-    };
 
     return (
       <div>
-        <Card style={{ marginBottom: 10, marginTop: 5 }} size="small">
-          <div className="equipment-icon">
-            <img src={path[_.toLower(source)]} alt="equipment" />
-          </div>
-          <p style={{ textAlign: "center" }}> Compartments: {data.length} </p>
-        </Card>
+        {!!image && <Equipment value={image.image} />}
 
         {!!equipments && !!value && (
           <Select
-            value={!!value ? value.eqpt_code : null}
+            placeholder={!!value ? value.eqpt_code : null}
             onChange={this.handleFetch}
-            style={{ marginBottom: 10 }}
+            style={{ marginBottom: 10, marginTop: 10 }}
             showSearch
             disabled={equipments.length === 0}
             optionFilterProp="children"
@@ -354,10 +328,11 @@ export default class Compatments extends Component {
             ))}
           </Select>
         )}
+
         <Table
           size="middle"
           rowKey="cmpt_no"
-          loading={isLoading}
+          loading={!!image && isLoading}
           components={{
             body: {
               row: EditableFormRow,
