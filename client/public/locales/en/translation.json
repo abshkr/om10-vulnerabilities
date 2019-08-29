@@ -5,6 +5,8 @@
     "code": "Code",
     "name": "Name",
     "owner": "Owner",
+    "areaId": "Area Id",
+    "areaName": "Area Name",
     "tankCode": "Tank Code",
     "baseProductCode": "Base Product Code",
     "baseProductName": "Base Product Name",
@@ -52,12 +54,14 @@
 
   "pageMenu": {
     "schedules": "Schedules",
-    "operations": "Operations"
+    "operations": "Operations",
+    "accessControl": "Access Control"
   },
 
   "pageNames": {
     "tankerList": "Tanker List",
-    "adaptiveFlow": "Adaptive Flow Control"
+    "adaptiveFlow": "Adaptive Flow Control",
+    "area": "Area"
   },
 
   "operations": {
@@ -112,7 +116,8 @@
     "totalFlow": "Total Flow of All Products",
     "tankMaxFlowRate": "Tank Max Flow Rate",
     "actualTankFlowRate": "Actual Tank Flowrate",
-    "flowContribution": "Flow Contribution"
+    "flowContribution": "Flow Contribution",
+    "mustBeInteger": "Value must be an Integer."
   },
 
   "placeholder": {
@@ -126,7 +131,13 @@
     "selectEquipment": "Select Equipment",
     "selectDate": "Select Date",
     "selectStatus": "Select Status",
-    "maxCharacters": "Max Characters"
+    "maxCharacters": "Max Characters",
+    "wrongType": "Wrong Type"
+  },
+
+  "validate": {
+    "set": "The Following Field is Required. Please Set",
+    "select": "The Following Field is Required. Please Select"
   },
 
   "units": {

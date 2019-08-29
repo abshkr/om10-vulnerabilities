@@ -1,25 +1,36 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import { Form, Input } from "antd";
 
-export default class AreaName extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const AreaName = ({ form, value, t, data }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         area_name: value.area_name
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  render() {
-    const { decorator } = this.props;
+  const validate = (rule, input, callback) => {
+    if (input === "" || !input) {
+      callback(`${t("validate.set")} ─ ${t("fields.areaName")}`);
+    }
 
-    return (
-      <Form.Item label="Area Name">
-        {decorator("area_name", {
-          rules: [{ required: true, message: "Please set area name" }]
-        })(<Input />)}
-      </Form.Item>
-    );
-  }
-}
+    if (input && input.length > 40) {
+      callback(`${t("placeholder.maxCharacters")}: 40 ─ ${t("descriptions.maxCharacters")}`);
+    }
+
+    callback();
+  };
+
+  return (
+    <Form.Item label={t("fields.areaName")}>
+      {getFieldDecorator("area_name", {
+        rules: [{ required: true, validator: validate }]
+      })(<Input />)}
+    </Form.Item>
+  );
+};
+
+export default AreaName;

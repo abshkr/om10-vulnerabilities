@@ -50,7 +50,7 @@ const TankerList = ({ configuration, t }) => {
       .catch(error => {
         notification.error({
           message: error.message,
-          description: t("operations.create")
+          description: t("descriptions.requestFailed")
         });
       });
   }, [t]);
