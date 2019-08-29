@@ -192,6 +192,37 @@ class EquipmentType extends CommonClass
         }
     }
 
+    /**
+     * Get imege of equipment type. equipment type cannot be a composition
+     */
+    public function get_image($etyp_id)
+    {
+        $query = "
+        SELECT NVL(ETYP_CATEGORY,
+                DECODE(ECNCT_ETYP,
+                    NULL,
+                    DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
+                    DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
+                ) IMAGE
+        FROM EQUIP_TYPES_VW,
+            (SELECT NVL(ETYP_SCHEDUL, 'N') ETYP_SCHEDUL, NVL(ETYP_ISRIGID, 'N') ETYP_ISRIGID, CMPTNU, ECNCT_ETYP
+            FROM EQUIP_TYPES_VW, EQP_CONNECT
+            WHERE EQP_CONNECT.ECNCT_ETYP = EQUIP_TYPES_VW.ETYP_ID
+                AND EQC_COUNT = 1) FIRST_SUB_ITEM
+        WHERE FIRST_SUB_ITEM.ECNCT_ETYP(+) = EQUIP_TYPES_VW.ETYP_ID
+            AND ETYP_ID = :etyp_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':etyp_id', $etyp_id);
+        if (oci_execute($stmt)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            return $row['IMAGE'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     /* Only all equpment type. because for equipment, the type can
     only be non-combine, but for tanker, the type can be non-combine or combine */
     public function read()

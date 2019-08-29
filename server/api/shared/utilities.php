@@ -253,9 +253,9 @@ class Utilities
 
     public static function retrieve(&$result_array, $object, $stmt, $method = "read")
     {
-        write_log(sprintf("%s::%s() START, class:%s, method:%s",
-            __CLASS__, __FUNCTION__, get_class($object), $method),
-            __FILE__, __LINE__);
+        // write_log(sprintf("%s::%s() START, class:%s, method:%s",
+        //     __CLASS__, __FUNCTION__, get_class($object), $method),
+        //     __FILE__, __LINE__);
 
         $num = 0;
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
