@@ -42,6 +42,11 @@
 			<location>C:/Users/uw/Documents/GitHub/omega-v5k/lib/build</location>
 		</link>
 		<link>
+			<name>bin-release4</name>
+			<type>2</type>
+			<location>C:/Users/uw/Documents/Releases/omega5000/8.23.0/om5000</location>
+		</link>
+		<link>
 			<name>services/BAMetersService.php</name>
 			<type>1</type>
 			<location>Z:/phpservices/services/BAMetersService.php</location>
