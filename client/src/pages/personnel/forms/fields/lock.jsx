@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 
 import { Form, Select, Checkbox, Divider } from "antd";
 import { personnel } from "../../../../api";
@@ -22,28 +22,31 @@ const Lock = ({ form, value, t }) => {
     }
   ];
 
-  const handleAreaConversion = values => {
-    if (!!value) {
-      const payload = [];
+  const handleAreaConversion = useCallback(
+    values => {
+      if (!!value) {
+        const payload = [];
 
-      _.forEach(values, object => {
-        payload.push({
-          label: object.area_name,
-          value: object.area_k
+        _.forEach(values, object => {
+          payload.push({
+            label: object.area_name,
+            value: object.area_k
+          });
         });
-      });
 
-      const checked = _.reject(payload, object => {
-        return value.area_accesses.includes(object.value);
-      });
+        const checked = _.reject(payload, object => {
+          return value.area_accesses.includes(object.value);
+        });
 
-      setFieldsValue({
-        area_accesses: _.uniq(_.map(checked, "value"))
-      });
+        setFieldsValue({
+          area_accesses: _.uniq(_.map(checked, "value"))
+        });
 
-      return payload;
-    }
-  };
+        return payload;
+      }
+    },
+    [value, setFieldsValue]
+  );
 
   useEffect(() => {
     if (!!value) {
@@ -64,7 +67,7 @@ const Lock = ({ form, value, t }) => {
 
     setLoading(true);
     getContext();
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, handleAreaConversion]);
 
   return (
     <div className="personnel-lock">
