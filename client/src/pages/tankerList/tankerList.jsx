@@ -38,6 +38,7 @@ const TankerList = ({ configuration, t }) => {
   };
 
   const fetch = useCallback(() => {
+    setLoading(true);
     axios
       .all([tankerList.tankers(), tankerList.expiry()])
       .then(
@@ -48,6 +49,7 @@ const TankerList = ({ configuration, t }) => {
         })
       )
       .catch(error => {
+        setLoading(false);
         notification.error({
           message: error.message,
           description: t("descriptions.requestFailed")
@@ -56,7 +58,6 @@ const TankerList = ({ configuration, t }) => {
   }, [t]);
 
   useEffect(() => {
-    setLoading(true);
     fetch();
   }, [fetch]);
 

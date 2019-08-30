@@ -1,57 +1,63 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
+import { personnel } from "../../../../api";
 import { Form, Select } from "antd";
 import axios from "axios";
-import { personnel } from "../../../../api";
 
-export default class TimeCode extends Component {
-  state = {
-    timeCodes: null
+const TimeCode = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  const [isLoading, setLoading] = useState(false);
+  const [options, setOptions] = useState([]);
+
+  const validate = (rule, input, callback) => {
+    if (input === "" || !input) {
+      callback(`${t("validate.select")} ─ ${t("fields.timeCode")}`);
+    }
+
+    callback();
   };
 
-  componentDidMount() {
-    const { value, setValue } = this.props;
-
-    axios.all([personnel.readPersonnelTimeCodes()]).then(
-      axios.spread(timeCodes => {
-        this.setState({
-          isLoading: false,
-          timeCodes: timeCodes.data.records,
-          filtered: null,
-          value: ""
-        });
-      })
-    );
-
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         pt_timecd: value.pt_timecd
       });
     }
-  }
 
-  render() {
-    const { decorator } = this.props;
-    const { timeCodes } = this.state;
-    const { Option } = Select;
+    const getContext = () => {
+      axios.all([personnel.readPersonnelTimeCodes()]).then(
+        axios.spread(options => {
+          setOptions(options.data.records);
+          setLoading(false);
+        })
+      );
+    };
 
-    return (
-      <Form.Item label="Time Code">
-        {decorator("pt_timecd")(
-          <Select
-            loading={timeCodes === null}
-            showSearch
-            optionFilterProp="children"
-            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-          >
-            {!!timeCodes &&
-              timeCodes.map((item, index) => (
-                <Option key={index} value={item.tcd_title}>
-                  {item.tcd_title}
-                </Option>
-              ))}
-          </Select>
-        )}
-      </Form.Item>
-    );
-  }
-}
+    setLoading(true);
+    getContext();
+  }, [value, setFieldsValue]);
+
+  return (
+    <Form.Item label={t("fields.timeCode")}>
+      {getFieldDecorator("pt_timecd", {
+        rules: [{ required: true, validator: validate }]
+      })(
+        <Select
+          loading={isLoading}
+          showSearch
+          optionFilterProp="children"
+          placeholder={!value ? t("placeholder.selectTimeCode") : null}
+          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+        >
+          {options.map((item, index) => (
+            <Select.Option key={index} value={item.tcd_title}>
+              {item.tcd_title}
+            </Select.Option>
+          ))}
+        </Select>
+      )}
+    </Form.Item>
+  );
+};
+
+export default TimeCode;

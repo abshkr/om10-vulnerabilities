@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Code, Name, Classification, Group, Color, AdaptiveFlowControl, AdaptiveArmPriority } from "./fields";
+import { Code, Name, Classification, Group } from "./fields";
 import { Form, Button, Tabs, notification, Modal } from "antd";
 import { tankerList } from "../../../api";
 import axios from "axios";

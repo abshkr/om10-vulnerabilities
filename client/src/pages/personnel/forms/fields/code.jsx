@@ -1,38 +1,42 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import { Form, Input } from "antd";
 import _ from "lodash";
 
-export default class Code extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const Code = ({ form, value, t, data }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         per_code: value.per_code
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  handleValidation = (rule, value, callback) => {
-    const match = _.find(this.props.data, ["per_code", value]);
+  const validate = (rule, input, callback) => {
+    const match = _.find(data, ["per_code", input]);
 
-    if (value && !!match && !this.props.value) {
-      callback("This Code already exists.");
+    if (input === "" || !input) {
+      callback(`${t("validate.set")} ─ ${t("fields.code")}`);
     }
 
-    if (value && value.length > 12) {
-      callback("Code must be under 12 characters.");
+    if (input && !!match && !value) {
+      callback(t("descriptions.alreadyExists"));
+    }
+
+    if (input && input.length > 12) {
+      callback(`${t("placeholder.maxCharacters")}: 12 ─ ${t("descriptions.maxCharacters")}`);
     }
     callback();
   };
 
-  render() {
-    const { decorator, value } = this.props;
-    return (
-      <Form.Item label="Code">
-        {decorator("per_code", {
-          rules: [{ required: true, message: "Please Enter The Code." }, { validator: this.handleValidation }]
-        })(<Input disabled={!!value} />)}
-      </Form.Item>
-    );
-  }
-}
+  return (
+    <Form.Item label={t("fields.code")}>
+      {getFieldDecorator("per_code", {
+        rules: [{ required: true, validator: validate }]
+      })(<Input disabled={!!value} />)}
+    </Form.Item>
+  );
+};
+
+export default Code;

@@ -31,6 +31,7 @@ const Area = ({ configuration, t }) => {
   };
 
   const fetch = useCallback(() => {
+    setLoading(true);
     axios
       .all([area.readArea()])
       .then(
@@ -40,6 +41,7 @@ const Area = ({ configuration, t }) => {
         })
       )
       .catch(error => {
+        setLoading(false);
         notification.error({
           message: error.message,
           description: t("descriptions.requestFailed")
@@ -55,7 +57,6 @@ const Area = ({ configuration, t }) => {
   };
 
   useEffect(() => {
-    setLoading(true);
     fetch();
   }, [fetch]);
 

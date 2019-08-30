@@ -1,57 +1,55 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Select } from "antd";
 
-export default class Status extends Component {
-  state = {
-    states: [
-      {
-        key: "0",
-        value: "Inactive"
-      },
-      {
-        key: "1",
-        value: "Active"
-      },
-      {
-        key: "2",
-        value: "Locked"
-      }
-    ]
-  };
+const Status = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
 
-  componentDidMount() {
-    const { value, setValue } = this.props;
+  const [isLoading, setLoading] = useState(false);
+  const [options] = useState([
+    {
+      key: "0",
+      value: "Inactive"
+    },
+    {
+      key: "1",
+      value: "Active"
+    },
+    {
+      key: "2",
+      value: "Locked"
+    }
+  ]);
 
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         user_status_flag: value.user_status_flag
       });
     }
-  }
+    setLoading(true);
+  }, [value, setFieldsValue]);
 
-  render() {
-    const { decorator } = this.props;
-    const { states } = this.state;
-    const { Option } = Select;
+  return (
+    <Form.Item label={t("fields.status")}>
+      {getFieldDecorator("user_status_flag", {
+        rules: [{ required: false }]
+      })(
+        <Select
+          loading={isLoading}
+          showSearch
+          optionFilterProp="children"
+          placeholder={!value ? t("placeholder.selectStatus") : null}
+          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+        >
+          {options.map((item, index) => (
+            <Select.Option key={index} value={item.key} disabled={item.key !== "0"}>
+              {item.value}
+            </Select.Option>
+          ))}
+        </Select>
+      )}
+    </Form.Item>
+  );
+};
 
-    return (
-      <Form.Item label="Status">
-        {decorator("user_status_flag")(
-          <Select
-            loading={states === null}
-            showSearch
-            optionFilterProp="children"
-            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-          >
-            {!!states &&
-              states.map((item, index) => (
-                <Option key={index} value={item.key}>
-                  {item.value}
-                </Option>
-              ))}
-          </Select>
-        )}
-      </Form.Item>
-    );
-  }
-}
+export default Status;

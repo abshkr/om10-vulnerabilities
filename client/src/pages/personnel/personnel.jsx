@@ -1,128 +1,106 @@
-import React, { Component } from "react";
-import auth from "../../auth";
-import { Button, Modal, notification } from "antd";
+import React, { useState, useEffect, useCallback } from "react";
+
 import { Page, Filter, DataTable, Download, Container } from "../../components";
+import { Button, Modal, notification } from "antd";
 import { personnel } from "../../api";
-import axios from "axios";
-import search from "../../utils/search";
+import { search } from "../../utils";
 import columns from "./columns";
+import auth from "../../auth";
 import Forms from "./forms";
+import axios from "axios";
 
 import "./personnel.css";
 
-class Personnel extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: "",
-      data: [],
-      roles: [],
-      expiry: [],
-      resize: false,
-      isLoading: true
-    };
-  }
+const Personnel = ({ configuration, t }) => {
+  const [data, setData] = useState([]);
+  const [value, setValue] = useState("");
+  const [roles, setRoles] = useState([]);
+  const [expiry, setExpiry] = useState([]);
+  const [resize, setResize] = useState(false);
+  const [filtered, setFiltered] = useState(null);
+  const [isLoading, setLoading] = useState(true);
 
-  handleClick = object => {
-    const { data, expiry } = this.state;
-
+  const handleClick = object => {
     Modal.info({
-      title: !!object ? `Editing (${object.per_code} / ${object.per_name})` : "Create",
+      title: !!object ? `${t("operations.editing")} (${object.per_code} / ${object.per_code})` : `${t("operations.create")}`,
       centered: true,
-      width: 1024,
+      width: "50vw",
       icon: !!object ? "edit" : "form",
-      content: <Forms value={object} refresh={this.handleFetch} data={data} expiry={expiry} t={this.props.t} />,
+      content: <Forms value={object} refresh={fetch} t={t} expiry={expiry} data={data} />,
       okButtonProps: {
         style: { display: "none" }
       }
     });
   };
 
-  handleFetch = () => {
-    this.setState({ isLoading: true });
+  const handleSearch = query => {
+    const { value } = query.target;
 
+    setFiltered(search(value, data));
+    setValue(value);
+  };
+
+  const fetch = useCallback(() => {
+    setLoading(true);
     axios
       .all([personnel.readPersonnel(), personnel.readPersonnelRoles(), personnel.readPersonnelExpiryTypes()])
       .then(
         axios.spread((personnel, roles, expiry) => {
-          this.setState({
-            data: personnel.data.records,
-            expiry: expiry.data.records,
-            roles: roles.data.records,
-            isLoading: false
-          });
+          setLoading(false);
+          setRoles(roles.data.records);
+          setExpiry(expiry.data.records);
+          setData(personnel.data.records);
         })
       )
       .catch(error => {
+        setLoading(false);
         notification.error({
           message: error.message,
-          description: "Failed to make the request."
+          description: t("descriptions.requestFailed")
         });
       });
-  };
+  }, [t]);
 
-  handleResize = () => {
-    const { resize } = this.state;
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
-    this.setState({
-      resize: !resize
-    });
-  };
+  const results = !!filtered ? filtered : data;
 
-  handleSearch = query => {
-    const { value } = query.target;
-
-    this.setState({
-      filtered: search(value, this.state.data),
-      value
-    });
-  };
-
-  componentDidMount() {
-    this.handleFetch();
-  }
-
-  render() {
-    const { data, isLoading, filtered, value, resize, roles } = this.state;
-    const { configuration } = this.props;
-
-    const results = !!filtered ? filtered : data;
-
-    return (
-      <Page page={"Access Control"} name={"Personnel"} isLoading={isLoading} block={true}>
-        <Container>
-          <Filter value={value} search={this.handleSearch} loading={isLoading} />
-          <Button
-            shape="round"
-            type="primary"
-            icon={resize ? "shrink" : "arrows-alt"}
-            style={{ float: "right" }}
-            onClick={this.handleResize}
-            disabled={isLoading}
-          />
-          <Download data={results} type={"personnel"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
-          <Button
-            shape="round"
-            icon="user"
-            type="primary"
-            style={{ float: "right", marginRight: 5 }}
-            onClick={() => this.handleClick(null)}
-            disabled={isLoading}
-          >
-            Create Personnel
-          </Button>
-          <DataTable
-            rowKey="per_code"
-            resize={resize}
-            columns={columns(results, roles, configuration)}
-            data={results}
-            isLoading={isLoading}
-            click={this.handleClick}
-          />
-        </Container>
-      </Page>
-    );
-  }
-}
+  return (
+    <Page page={t("pageMenu.accessControl")} name={t("pageNames.personnel")} isLoading={isLoading} block={true}>
+      <Container>
+        <Filter value={value} search={handleSearch} loading={isLoading} />
+        <Button
+          shape="round"
+          type="primary"
+          icon={resize ? "shrink" : "arrows-alt"}
+          style={{ float: "right" }}
+          onClick={() => setResize(!resize)}
+          disabled={isLoading}
+        />
+        <Download data={data} type={"personnel"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
+        <Button
+          shape="round"
+          icon="plus"
+          type="primary"
+          style={{ float: "right", marginRight: 5 }}
+          onClick={() => handleClick(null)}
+          disabled={isLoading}
+        >
+          {t("operations.create")}
+        </Button>
+        <DataTable
+          rowKey="per_code"
+          resize={resize}
+          columns={columns(results, roles, configuration, t)}
+          data={results}
+          isLoading={isLoading}
+          click={handleClick}
+        />
+      </Container>
+    </Page>
+  );
+};
 
 export default auth(Personnel);

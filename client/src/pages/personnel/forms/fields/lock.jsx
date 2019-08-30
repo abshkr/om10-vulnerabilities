@@ -1,85 +1,96 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Form, Select, Checkbox, Divider } from "antd";
 import { personnel } from "../../../../api";
 import axios from "axios";
 import _ from "lodash";
 
-const values = [
-  {
-    key: "Yes",
-    value: "Y"
-  },
-  {
-    key: "No",
-    value: "N"
-  }
-];
+const Lock = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
 
-export default class Lock extends Component {
-  state = {
-    areas: [],
-    isLoading: false
-  };
+  const [isLoading, setLoading] = useState(false);
+  const [options, setOptions] = useState([]);
 
-  handleAreaConversion = values => {
-    const payload = [];
+  const choices = [
+    {
+      key: "Yes",
+      value: "Y"
+    },
+    {
+      key: "No",
+      value: "N"
+    }
+  ];
 
-    _.forEach(values, object => {
-      payload.push({
-        label: object.area_name,
-        value: object.area_k
-      });
-    });
-
-    return payload;
-  };
-
-  componentDidMount() {
-    const { value, setValue } = this.props;
-
-    this.setState({ isLoading: true });
-
-    axios.all([personnel.readPersonnelAreas()]).then(
-      axios.spread(areas => {
-        this.setState({
-          isLoading: false,
-          areas: this.handleAreaConversion(areas.data.records)
-        });
-      })
-    );
-
+  const handleAreaConversion = values => {
     if (!!value) {
-      setValue({
+      const payload = [];
+
+      _.forEach(values, object => {
+        payload.push({
+          label: object.area_name,
+          value: object.area_k
+        });
+      });
+
+      const checked = _.reject(payload, object => {
+        return value.area_accesses.includes(object.value);
+      });
+
+      setFieldsValue({
+        area_accesses: _.uniq(_.map(checked, "value"))
+      });
+
+      return payload;
+    }
+  };
+
+  useEffect(() => {
+    if (!!value) {
+      setFieldsValue({
         per_lock: value.per_lock,
         area_accesses: value.area_accesses
       });
     }
-  }
 
-  render() {
-    const { areas, isLoading } = this.state;
-    const { decorator, getValue } = this.props;
-    const { Option } = Select;
+    const getContext = () => {
+      axios.all([personnel.readPersonnelAreas()]).then(
+        axios.spread(options => {
+          setOptions(handleAreaConversion(options.data.records));
+          setLoading(false);
+        })
+      );
+    };
 
-    return (
-      <div className="personnel-lock">
-        <Form.Item label="Lock Out">
-          {decorator("per_lock")(
-            <Select>
-              {values.map((item, index) => (
-                <Option key={index} value={item.value}>
-                  {item.key}
-                </Option>
-              ))}
-            </Select>
-          )}
-        </Form.Item>
-        <Divider />
-        <Form.Item label="">
-          {decorator("area_accesses")(<Checkbox.Group style={{ display: "flex", flexDirection: "column" }} disabled={getValue("per_lock") === "Y" || isLoading} options={areas} />)}
-        </Form.Item>
-      </div>
-    );
-  }
-}
+    setLoading(true);
+    getContext();
+  }, [value, setFieldsValue]);
+
+  return (
+    <div className="personnel-lock">
+      <Form.Item label={t("fields.lockOut")}>
+        {getFieldDecorator("per_lock")(
+          <Select>
+            {choices.map((item, index) => (
+              <Select.Option key={index} value={item.value}>
+                {item.key}
+              </Select.Option>
+            ))}
+          </Select>
+        )}
+      </Form.Item>
+      <Divider />
+      <Form.Item label="">
+        {getFieldDecorator("area_accesses")(
+          <Checkbox.Group
+            style={{ display: "flex", flexDirection: "column" }}
+            disabled={getFieldValue("per_lock") === "Y" || isLoading}
+            options={options}
+          />
+        )}
+      </Form.Item>
+    </div>
+  );
+};
+
+export default Lock;

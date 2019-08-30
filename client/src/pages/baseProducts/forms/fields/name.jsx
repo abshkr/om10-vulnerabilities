@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Form, Input } from "antd";
-import _ from "lodash";
 
 const Name = ({ form, value, t, data }) => {
   const { getFieldDecorator, setFieldsValue } = form;

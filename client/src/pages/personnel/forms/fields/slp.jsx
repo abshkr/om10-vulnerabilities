@@ -1,18 +1,31 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import { Form, Input } from "antd";
 
-export default class SLP extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const SLP = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         slp_id: value.slp_id
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  render() {
-    const { decorator } = this.props;
-    return <Form.Item label="SLP Id">{decorator("slp_id")(<Input />)}</Form.Item>;
-  }
-}
+  const validate = (rule, input, callback) => {
+    if (input && input.length > 40) {
+      callback(`${t("placeholder.maxCharacters")}: 40 ─ ${t("descriptions.maxCharacters")}`);
+    }
+    callback();
+  };
+
+  return (
+    <Form.Item label={t("fields.slp")}>
+      {getFieldDecorator("slp_id", {
+        rules: [{ required: false, validator: validate }]
+      })(<Input />)}
+    </Form.Item>
+  );
+};
+
+export default SLP;

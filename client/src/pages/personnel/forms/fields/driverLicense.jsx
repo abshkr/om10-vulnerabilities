@@ -1,18 +1,31 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import { Form, Input } from "antd";
 
-export default class DriverLicence extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const DriverLicense = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         per_licence_no: value.per_licence_no
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  render() {
-    const { decorator } = this.props;
-    return <Form.Item label="Driver Licence">{decorator("per_licence_no")(<Input />)}</Form.Item>;
-  }
-}
+  const validate = (rule, input, callback) => {
+    if (input && input.length > 40) {
+      callback(`${t("placeholder.maxCharacters")}: 40 ─ ${t("descriptions.maxCharacters")}`);
+    }
+    callback();
+  };
+
+  return (
+    <Form.Item label={t("fields.driveLicence")}>
+      {getFieldDecorator("per_licence_no", {
+        rules: [{ required: false, validator: validate }]
+      })(<Input />)}
+    </Form.Item>
+  );
+};
+
+export default DriverLicense;

@@ -30,6 +30,7 @@ const BaseProducts = ({ configuration, t }) => {
   };
 
   const fetch = useCallback(() => {
+    setLoading(true);
     axios
       .all([baseProducts.readBaseProduct()])
       .then(
@@ -39,6 +40,7 @@ const BaseProducts = ({ configuration, t }) => {
         })
       )
       .catch(error => {
+        setLoading(false);
         notification.error({
           message: error.message,
           description: t("descriptions.requestFailed")
@@ -54,7 +56,6 @@ const BaseProducts = ({ configuration, t }) => {
   };
 
   useEffect(() => {
-    setLoading(true);
     fetch();
   }, [fetch]);
 

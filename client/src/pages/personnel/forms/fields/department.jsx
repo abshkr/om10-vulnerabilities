@@ -1,31 +1,31 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import { Form, Input } from "antd";
 
-export default class Department extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const Department = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         per_department: value.per_department
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  handleValidation = (rule, value, callback) => {
-    if (value && value.length > 100) {
-      callback("Department must be under 100 characters.");
+  const validate = (rule, input, callback) => {
+    if (input && input.length > 16) {
+      callback(`${t("placeholder.maxCharacters")}: 16 ─ ${t("descriptions.maxCharacters")}`);
     }
     callback();
   };
 
-  render() {
-    const { decorator } = this.props;
-    return (
-      <Form.Item label="Department">
-        {decorator("per_department", {
-          rules: [{ validator: this.handleValidation }]
-        })(<Input />)}
-      </Form.Item>
-    );
-  }
-}
+  return (
+    <Form.Item label={t("fields.department")}>
+      {getFieldDecorator("per_department", {
+        rules: [{ required: false, validator: validate }]
+      })(<Input />)}
+    </Form.Item>
+  );
+};
+
+export default Department;

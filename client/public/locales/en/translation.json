@@ -62,7 +62,20 @@
     "flowContribution": "Flow Contribution",
     "actualFlowRate": "Actual Flowrate",
     "loadedQuantity": "Loaded Quantity",
-    "presetQuantity": "Preset Quantity"
+    "presetQuantity": "Preset Quantity",
+    "employerCode": "Employer Code",
+    "employer": "Employer",
+    "role": "Role",
+    "licenceNumber": "Licence No.",
+    "areaAccess": "Area Access",
+    "department": "Department",
+    "email": "Email",
+    "user": "User",
+    "password": "Password",
+    "slp": "SLP Id",
+    "timeCode": "Time Code",
+    "driveLicence": "Drive Licence",
+    "lockOut": "Lock Out"
   },
 
   "pageMenu": {
@@ -76,7 +89,8 @@
     "tankerList": "Tanker List",
     "adaptiveFlow": "Adaptive Flow Control",
     "area": "Area",
-    "baseProducts": "Base Products"
+    "baseProducts": "Base Products",
+    "personnel": "Personnel"
   },
 
   "operations": {
@@ -89,7 +103,10 @@
     "yes": "Yes",
     "no": "No",
     "addNewExpiry": "Add New Expiry",
-    "unlockAll": "Unlock All Compartments"
+    "unlockAll": "Unlock All Compartments",
+    "randomize": "Randomize",
+    "copyToClipboard": "Copy to Clipboard",
+    "changePassword": "Change Password"
   },
 
   "tabColumns": {
@@ -99,7 +116,9 @@
     "tanker": "Tanker",
     "bulkEdit": "Bulk Edit",
     "adaptiveFlow": "Adaptive Flow",
-    "hotLitre": "Hot Litre Calculation"
+    "hotLitre": "Hot Litre Calculation",
+    "areaAccess": "Area Access",
+    "resetPassword": "Reset Password"
   },
 
   "messages": {
@@ -125,7 +144,7 @@
     "createSuccess": "You have created the record",
     "updateSuccess": "You have updated the record.",
     "deleteSuccess": "You have deleted the record",
-    "expiryDateTable": "Apply the Expiry Dates to the following tankers",
+    "expiryDateTable": "Apply the Expiry Dates to the following Records.",
     "alreadyExists": "This value already exists. Please Try Another.",
     "maxCharacters": "This character count is too high.",
     "unlockSuccess": "You have unlocked all compartments.",
@@ -143,15 +162,20 @@
     "selectOwner": "Select Owner",
     "selectEquipmentType": "Select Equipment Type",
     "selectDestination": "Select Destination",
+    "selectRole": "Select Role",
     "selectLastDepot": "Select Last Depot",
     "selectCurrentDepot": "Select Current Depot",
     "selectClassification": "Select Classification",
     "selectEquipment": "Select Equipment",
+    "selectEmployer": "Select Employer",
     "selectDate": "Select Date",
     "selectStatus": "Select Status",
+    "selectTimeCode": "Select Time Code",
     "maxCharacters": "Max Characters",
-    "wrongType": "Wrong Type",
-    "selectGroup": "Select Group"
+    "wrongType": "Incorrect Type",
+    "selectGroup": "Select Group",
+    "incorrectFormat": "Incorrect Format",
+    "emailInvalid": "This Email is Invalid."
   },
 
   "validate": {

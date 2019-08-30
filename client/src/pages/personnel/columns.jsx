@@ -1,21 +1,10 @@
 import React from "react";
 
 import _ from "lodash";
-import moment from "moment";
 import { Tag, Icon } from "antd";
-import { generateOptions, validateDateTime } from "../../utils";
+import { generateOptions, validateDateTime, convertToLocale } from "../../utils";
 
-const columns = (data, roles, configuration) => {
-  const values = defaults(data, roles, configuration);
-  const config = configuration.columns.personnel;
-  const modified = _.reject(values, o => {
-    return !config[o.dataIndex];
-  });
-
-  return modified;
-};
-
-const defaults = (data, roles, config) => {
+const columns = (data, roles, config, t) => {
   const lockStatus = {
     "1": "Active",
     "2": "Locked",
@@ -30,7 +19,7 @@ const defaults = (data, roles, config) => {
 
   return [
     {
-      title: "Code",
+      title: t("fields.code"),
       dataIndex: "per_code",
       key: "per_code",
       width: 100,
@@ -42,7 +31,7 @@ const defaults = (data, roles, config) => {
       render: text => <a>{text}</a>
     },
     {
-      title: "Name",
+      title: t("fields.name"),
       dataIndex: "per_name",
       key: "per_name",
       width: 150,
@@ -50,15 +39,16 @@ const defaults = (data, roles, config) => {
       sorter: (a, b) => a.per_name.localeCompare(b.per_name)
     },
     {
-      title: "Employer Code",
+      title: t("fields.employerCode"),
       dataIndex: "cmpy_code",
       key: "cmpy_code",
       width: 150,
+      align: "center",
       sorter: (a, b) => a.cmpy_code.localeCompare(b.cmpy_code),
       onFilter: (value, record) => record.cmpy_code.indexOf(value) === 0
     },
     {
-      title: "Employer",
+      title: t("fields.employer"),
       dataIndex: "cmpy_name",
       key: "cmpy_name",
       width: 300,
@@ -66,21 +56,17 @@ const defaults = (data, roles, config) => {
       onFilter: (value, record) => record.cmpy_name.indexOf(value) === 0
     },
     {
-      title: "Role",
+      title: t("fields.role"),
       dataIndex: "per_auth",
       key: "per_auth",
       width: 130,
       align: "center",
       filters: generateOptions(data, "per_auth", roles, "role_id", "role_name"),
       onFilter: (value, record) => record.per_auth.indexOf(value) === 0,
-      render: text => (
-        <Tag color="blue">
-          {!!_.find(roles, ["role_id", text]) ? _.find(roles, ["role_id", text]).role_name : ""}
-        </Tag>
-      )
+      render: text => <Tag color="blue">{!!_.find(roles, ["role_id", text]) ? _.find(roles, ["role_id", text]).role_name : ""}</Tag>
     },
     {
-      title: "Licence No.",
+      title: t("fields.licenceNumber"),
       dataIndex: "per_licence_no",
       key: "per_licence_no",
       width: 150,
@@ -89,7 +75,7 @@ const defaults = (data, roles, config) => {
     },
 
     {
-      title: "Area Access",
+      title: t("fields.areaAccess"),
       dataIndex: "per_lock",
       key: "per_lock",
       width: 130,
@@ -103,7 +89,7 @@ const defaults = (data, roles, config) => {
       )
     },
     {
-      title: "Status",
+      title: t("fields.status"),
       dataIndex: "user_status_flag",
       key: "user_status_flag",
       width: 100,
@@ -113,7 +99,7 @@ const defaults = (data, roles, config) => {
       render: data => <Tag color={lockColors[data]}>{lockStatus[data]}</Tag>
     },
     {
-      title: "Department",
+      title: t("fields.department"),
       dataIndex: "per_department",
       key: "per_department",
       width: 150,
@@ -122,7 +108,7 @@ const defaults = (data, roles, config) => {
       onFilter: (value, record) => String(record.per_department).indexOf(value) === 0
     },
     {
-      title: "Email",
+      title: t("fields.email"),
       dataIndex: "per_email",
       key: "per_email",
       width: 200,
@@ -131,38 +117,22 @@ const defaults = (data, roles, config) => {
       sorter: (a, b) => a.per_email.localeCompare(b.per_email)
     },
     {
-      title: "Last Modified",
+      title: t("fields.lastModified"),
       dataIndex: "per_last_modified",
       key: "per_last_modified",
       width: 250,
       align: "center",
-      sorter: (a, b) =>
-        validateDateTime(b.per_last_modified) - validateDateTime(a.per_last_modified),
-      // eslint-disable-next-line
-      render: text => (
-        // eslint-disable-next-line
-        <a>
-          {text !== ""
-            ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat)
-            : ""}
-        </a>
-      )
+      sorter: (a, b) => validateDateTime(b.tnkr_last_modified) - validateDateTime(a.tnkr_last_modified),
+      render: text => <span>{convertToLocale(text)}</span>
     },
     {
-      title: "Last Used",
+      title: t("fields.lastUsed"),
       dataIndex: "user_last_reason",
       key: "user_last_reason",
       width: 250,
+      align: "center",
       sorter: (a, b) => validateDateTime(b.user_last_reason) - validateDateTime(a.user_last_reason),
-      // eslint-disable-next-line
-      render: text => (
-        // eslint-disable-next-line
-        <a>
-          {text !== ""
-            ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(config.dateTimeFormat)
-            : ""}
-        </a>
-      )
+      render: text => <span>{convertToLocale(text)}</span>
     }
   ];
 };

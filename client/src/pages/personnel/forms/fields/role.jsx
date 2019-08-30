@@ -1,59 +1,63 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
+import { personnel } from "../../../../api";
 import { Form, Select } from "antd";
 import axios from "axios";
-import { personnel } from "../../../../api";
 
-export default class Role extends Component {
-  state = {
-    roles: null
+const Role = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  const [isLoading, setLoading] = useState(false);
+  const [options, setOptions] = useState([]);
+
+  const validate = (rule, input, callback) => {
+    if (input === "" || !input) {
+      callback(`${t("validate.select")} ─ ${t("fields.role")}`);
+    }
+
+    callback();
   };
 
-  componentDidMount() {
-    const { value, setValue } = this.props;
-
-    axios.all([personnel.readPersonnelRoles()]).then(
-      axios.spread(roles => {
-        this.setState({
-          isLoading: false,
-          roles: roles.data.records,
-          filtered: null,
-          value: ""
-        });
-      })
-    );
-
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         per_auth: value.per_auth
       });
     }
-  }
 
-  render() {
-    const { decorator } = this.props;
-    const { roles } = this.state;
-    const { Option } = Select;
+    const getContext = () => {
+      axios.all([personnel.readPersonnelRoles()]).then(
+        axios.spread(options => {
+          setOptions(options.data.records);
+          setLoading(false);
+        })
+      );
+    };
 
-    return (
-      <Form.Item label="Role">
-        {decorator("per_auth", {
-          rules: [{ required: true, message: "Please Select A Role." }]
-        })(
-          <Select
-            loading={roles === null}
-            showSearch
-            optionFilterProp="children"
-            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-          >
-            {!!roles &&
-              roles.map((item, index) => (
-                <Option key={index} value={item.role_id}>
-                  {item.role_name}
-                </Option>
-              ))}
-          </Select>
-        )}
-      </Form.Item>
-    );
-  }
-}
+    setLoading(true);
+    getContext();
+  }, [value, setFieldsValue]);
+
+  return (
+    <Form.Item label={t("fields.role")}>
+      {getFieldDecorator("per_auth", {
+        rules: [{ required: true, validator: validate }]
+      })(
+        <Select
+          loading={isLoading}
+          showSearch
+          optionFilterProp="children"
+          placeholder={!value ? t("placeholder.selectRole") : null}
+          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+        >
+          {options.map((item, index) => (
+            <Select.Option key={index} value={item.role_id}>
+              {item.role_name}
+            </Select.Option>
+          ))}
+        </Select>
+      )}
+    </Form.Item>
+  );
+};
+
+export default Role;

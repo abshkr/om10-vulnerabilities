@@ -1,6 +1,5 @@
 import React from "react";
 
-import _ from "lodash";
 import { Tag, Icon } from "antd";
 import { generateOptions } from "../../utils";
 
