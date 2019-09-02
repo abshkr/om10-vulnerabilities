@@ -35,7 +35,6 @@ const Status = ({ form, value, t }) => {
         rules: [{ required: false }]
       })(
         <Select
-          loading={isLoading}
           showSearch
           optionFilterProp="children"
           placeholder={!value ? t("placeholder.selectStatus") : null}
