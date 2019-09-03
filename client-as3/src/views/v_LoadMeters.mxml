@@ -1242,7 +1242,7 @@
 			<s:HGroup width="100%">
 				<s:HGroup>
 					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','LOADMETER.LABEL.BAM_CODE')}" verticalAlign="middle"/>
-					<components:DKI_ValidatorInput id="bam_code" maxChars="20" 
+					<components:DKI_ValidatorInput id="bam_code" maxChars="10" 
 												   width="{fieldWidth}" height="{fieldHeight}" 
 												   text="{dataGrid.selectedItem.bam_code}" editable="false" enabled="false" 
 												   text.create="" editable.create="true" enabled.create="true" focusOut="checkLoadMeterKey()" 
