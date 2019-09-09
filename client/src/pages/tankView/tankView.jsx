@@ -1,29 +1,23 @@
-/**
- * @description
- * Tank View Screen
- * Lets the user perform simple CRUD operations to manipulate the Base Products Data.
- */
+import React, { Component } from 'react';
 
-import React, { Component } from "react";
+import { Page, Container, Filter, Download, Tank } from '../../components';
+import { tanks, baseProducts } from '../../api';
+import { Button, Tabs, Modal } from 'antd';
+import { search } from '../../utils/';
+import Summary from './summary';
+import Forms from './forms';
+import Tanks from './tanks';
+import axios from 'axios';
+import _ from 'lodash';
 
-import { Page, Container, Filter, Download } from "../../components";
-import { tanks, baseProducts } from "../../api";
-import { Button, Tabs, Modal } from "antd";
-import { search } from "../../utils/";
-import Summary from "./summary";
-import Forms from "./forms";
-import Tanks from "./tanks";
-import axios from "axios";
-import _ from "lodash";
-
-import "./tankView.css";
+import './tankView.css';
 
 class TankView extends Component {
   constructor(props) {
     super(props);
     this.state = {
       data: [],
-      value: "",
+      value: '',
       showAll: false,
       isLoading: false,
       baseProducts: []
@@ -35,13 +29,21 @@ class TankView extends Component {
     const { data, baseProducts } = this.state;
 
     Modal.info({
-      title: !!object ? `Editing (${object.tank_code} / ${object.tank_name})` : "Create",
+      title: !!object ? `Editing (${object.tank_code} / ${object.tank_name})` : 'Create',
       centered: true,
-      icon: !!object ? "edit" : "form",
+      icon: !!object ? 'edit' : 'form',
       width: 800,
-      content: <Forms value={object} refresh={this.handleFetch} baseProducts={baseProducts} profile={configuration} data={data} />,
+      content: (
+        <Forms
+          value={object}
+          refresh={this.handleFetch}
+          baseProducts={baseProducts}
+          profile={configuration}
+          data={data}
+        />
+      ),
       okButtonProps: {
-        style: { display: "none" }
+        style: { display: 'none' }
       }
     });
   };
@@ -64,10 +66,10 @@ class TankView extends Component {
         monthly_variance_limit_percent: tank.tank_mtol_percent,
         tank_state: tank.tank_status_name,
         tank_level: tank.tank_prod_lvl,
-        obs_quantity: "",
-        average_temperature: "",
-        standard_quantity: "",
-        mass_quantity: "",
+        obs_quantity: '',
+        average_temperature: '',
+        standard_quantity: '',
+        mass_quantity: '',
         ullage: tank.tank_ullage,
         hh__percent: tank.tank_hh_level,
         hh_state: tank.tank_hh_state,
@@ -156,22 +158,41 @@ class TankView extends Component {
       <Page page="Operations" name="Tank View" isLoading={isLoading} block>
         <Container>
           <Filter value={value} search={this.handleSearch} />
-          <Download data={this.handleExport(results)} type={"Tank View"} style={{ float: "right", marginRight: 5 }} />
 
-          <Button shape="round" icon="filter" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleEmptyTankToggle(showAll)}>
-            {showAll ? "Hide Empty Tanks" : "Show Empty Tanks"}
+          <Download
+            data={this.handleExport(results)}
+            type={'Tank View'}
+            style={{ float: 'right', marginRight: 5 }}
+          />
+
+          <Button
+            shape="round"
+            icon="filter"
+            type="primary"
+            style={{ float: 'right', marginRight: 5 }}
+            onClick={() => this.handleEmptyTankToggle(showAll)}
+          >
+            {showAll ? 'Hide Empty Tanks' : 'Show Empty Tanks'}
           </Button>
 
-          <Button shape="round" icon="setting" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)}>
+          <Button
+            shape="round"
+            icon="setting"
+            type="primary"
+            style={{ float: 'right', marginRight: 5 }}
+            onClick={() => this.handleClick(null)}
+          >
             Add Tank
           </Button>
 
-          <Tabs defaultActiveKey="1">
-            <Tabs.TabPane tab="Tank View" key="1" style={{ padding: 5 }}>
-              {!isLoading && <Tanks results={results} configuration={configuration} handleClick={this.handleClick} />}
+          <Tabs defaultActiveKey="1" animated={false}>
+            <Tabs.TabPane tab="Tank View" key="1" style={{ padding: 5 }} forceRender={true}>
+              <div>
+                <Tank />
+              </div>
             </Tabs.TabPane>
 
-            <Tabs.TabPane tab="Table View" key="2">
+            <Tabs.TabPane tab="Table View" key="2" forceRender={true}>
               <Summary data={results} />
             </Tabs.TabPane>
           </Tabs>

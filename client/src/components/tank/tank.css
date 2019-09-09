@@ -1,0 +1,35 @@
+.tank-widget {
+  width: 410px;
+  height: 250px;
+  transition: all 0.3s;
+  border: 1px solid #538aef36;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tank-widget .bar {
+  position: absolute;
+}
+
+.tank-widget .svg {
+  position: absolute;
+}
+
+.tank-badge {
+  display: flex;
+  flex-direction: column;
+  margin-top: 45px;
+  margin-right: 340px;
+  text-align: left;
+  justify-content: space-between;
+  height: 160px;
+}
+
+.tank-badge .ant-badge-status-processing {
+  background-color: #ec6e68;
+}
+
+.tank-badge .ant-badge-status-processing::after {
+  border-color: #ec6e68;
+}
