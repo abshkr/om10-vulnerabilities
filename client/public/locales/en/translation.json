@@ -75,7 +75,15 @@
     "slp": "SLP Id",
     "timeCode": "Time Code",
     "driveLicence": "Drive Licence",
-    "lockOut": "Lock Out"
+    "lockOut": "Lock Out",
+    "id": "Id",
+    "title": "Title",
+    "activeTanker": "Active Tanker",
+    "loadType": "Load Type",
+    "mustTareIn": "Must Tare In",
+    "area": "Area",
+    "emptyWeight": "Empty Weight",
+    "pullingLimit": "Pulling Limit"
   },
 
   "pageMenu": {
@@ -90,7 +98,8 @@
     "adaptiveFlow": "Adaptive Flow Control",
     "area": "Area",
     "baseProducts": "Base Products",
-    "personnel": "Personnel"
+    "personnel": "Personnel",
+    "equipmentList": "Equipment List"
   },
 
   "operations": {
@@ -163,6 +172,7 @@
     "selectEquipmentType": "Select Equipment Type",
     "selectDestination": "Select Destination",
     "selectRole": "Select Role",
+    "selectArea": "Select Area",
     "selectLastDepot": "Select Last Depot",
     "selectCurrentDepot": "Select Current Depot",
     "selectClassification": "Select Classification",
@@ -170,6 +180,7 @@
     "selectEmployer": "Select Employer",
     "selectDate": "Select Date",
     "selectStatus": "Select Status",
+    "selectLoadType": "Select Load Type",
     "selectTimeCode": "Select Time Code",
     "maxCharacters": "Max Characters",
     "wrongType": "Incorrect Type",

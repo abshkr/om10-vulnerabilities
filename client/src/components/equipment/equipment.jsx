@@ -1,17 +1,9 @@
-import React from "react";
-import { Card } from "antd";
+import React from 'react';
+import { Card } from 'antd';
 
-import {
-  Rail,
-  Flat,
-  Prime,
-  Rigid,
-  Ship,
-  Trailer,
-  Default
-} from "../../assets/equipment";
+import { Rail, Flat, Prime, Rigid, Ship, Trailer, Default } from '../../assets/equipment';
 
-import "./equipment.css";
+import './equipment.css';
 
 const path = {
   E: Rail,
@@ -25,7 +17,7 @@ const path = {
 
 const Equipment = ({ value }) => {
   return (
-    <Card style={{ marginTop: 5 }} size="small">
+    <Card style={{ marginTop: 5 }} size="small" loading={!value}>
       <div className="equipment-icon">
         <img src={path[value]} alt="equipment" />
       </div>

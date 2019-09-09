@@ -1,5 +1,5 @@
-import axios from "axios";
-import api from "./api";
+import axios from 'axios';
+import api from './api';
 
 export function readEquipment() {
   return axios.get(`https://${api}/api/pages/equipment/read.php`);
@@ -33,10 +33,8 @@ export function readCompartmentEquipment(id) {
   return axios.get(`https://${api}/api/pages/equipment/etyp_compartments.php?etyp_id=${id}`);
 }
 
-export function toggleLock(id, state) {
-  return axios.get(
-    `https://${api}/api/pages/equipment/toggle_lock.php?eqpt_id=${id}&cmptnu=${state}`
-  );
+export function toggleLocks(id) {
+  return axios.get(`https://${api}/api/pages/equipment/toggle_lock.phps?eqpt_id=${id}`);
 }
 
 export function createEquipment(payload) {

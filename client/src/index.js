@@ -7,6 +7,8 @@ import "react-app-polyfill/ie11";
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./app";
+import * as serviceWorker from "./serviceWorker";
+
 import "./localization";
 
 import "antd/dist/antd.css";
@@ -19,3 +21,4 @@ import "react-bootstrap-table/dist/react-bootstrap-table-all.min.css";
 import "./styles/reactBootstrapTable.css";
 
 ReactDOM.render(<App />, document.getElementById("root"));
+serviceWorker.register();

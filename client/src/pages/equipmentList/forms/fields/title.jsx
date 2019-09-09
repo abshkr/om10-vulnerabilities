@@ -1,35 +1,35 @@
-import React, { Component } from "react";
-import { Form, Input } from "antd";
-import _ from "lodash";
+import React, { useEffect } from 'react';
+import { Form, Input } from 'antd';
 
-export default class Title extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const Title = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         eqpt_title: value.eqpt_title
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  handleCodeValidation = (rule, value, callback) => {
-    const match = _.find(this.props.data, ["eqpt_title", value]);
-
-    if (value && !!match && !this.props.value) {
-      callback("This Base Code already exists.");
+  const validate = (rule, input, callback) => {
+    if (input === '' || !input) {
+      callback(`${t('validate.set')} ─ ${t('fields.title')}`);
     }
 
+    if (input && input.length > 40) {
+      callback(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
+    }
     callback();
   };
 
-  render() {
-    const { decorator } = this.props;
-    return (
-      <Form.Item label="Title">
-        {decorator("eqpt_title", {
-          rules: [{ required: true, message: "Please Enter an Equipment Code" }, { validator: this.handleCodeValidation }]
-        })(<Input />)}
-      </Form.Item>
-    );
-  }
-}
+  return (
+    <Form.Item label={t('fields.title')}>
+      {getFieldDecorator('eqpt_title', {
+        rules: [{ required: true, validator: validate }]
+      })(<Input />)}
+    </Form.Item>
+  );
+};
+
+export default Title;

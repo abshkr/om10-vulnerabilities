@@ -1,12 +1,10 @@
-import React, { Component } from "react";
+import React from 'react';
 
-import _ from "lodash";
-import axios from "axios";
-import BulkEdit from "./bulkEdit";
-import Compartments from "./compartments";
-import { equipmentList } from "../../../api";
-import { Expiry } from "../../../components";
-import { Form, Button, Tabs, Modal, notification } from "antd";
+import { Form, Button, Tabs, notification, Modal } from 'antd';
+import { equipmentList } from '../../../api';
+import BulkEdit from './bulkEdit';
+import Compartments from './compartments';
+import axios from 'axios';
 import {
   Owner,
   Code,
@@ -17,299 +15,241 @@ import {
   LoadType,
   EmptyWeight,
   PullingLimit,
-  Locks,
   Comments
-} from "./fields";
+} from './fields';
+import { Expiry } from '../../../components';
 
-class PersonnelForm extends Component {
-  state = {
-    bulkEdit: false
-  };
+const TabPane = Tabs.TabPane;
 
-  handleUpdate = () => {
-    this.props.form.validateFields((err, values) => {
+const FormModal = ({ form, refresh, value, t, expiry, data }) => {
+  const { getFieldValue } = form;
+
+  const handleCreate = () => {
+    form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([equipmentList.updateEquipment(values)])
-          .then(
-            axios.spread(response => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: "Successfully Updated.",
-                description: `You have updated the Equipment ${values.eqpt_id}`
+        Modal.confirm({
+          title: t('prompts.create'),
+          okText: t('operations.yes'),
+          okType: 'primary',
+          cancelText: t('operations.no'),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([equipmentList.createEquipment(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
+
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t('messages.createSuccess'),
+                    description: t('messages.createSuccess')
+                  });
+                })
+              )
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t('messages.createFailed')
+                });
               });
-            })
-          )
-          .catch(function(error) {
-            notification.error({
-              message: error.message,
-              description: "Failed to updated the Equipment."
-            });
-          });
-      } else {
-        notification.error({
-          message: "Validation Failed.",
-          description: "Make sure all the fields meet the requirements."
-        });
-      }
-    });
-  };
-
-  handleCreate = () => {
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        axios
-          .all([equipmentList.createEquipment(values)])
-          .then(
-            axios.spread(response => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: "Successfully Created.",
-                description: `You have created the Equipment ${values.eqpt_id}`
-              });
-            })
-          )
-          .catch(function(error) {
-            notification.error({
-              message: error.message,
-              description: "Failed to created the Equipment."
-            });
-          });
-      } else {
-        notification.error({
-          message: "Validation Failed.",
-          description: "Make sure all the fields meet the requirements."
-        });
-      }
-    });
-  };
-
-  showDeleteConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to delete this Equipment?",
-      okText: "Yes",
-      okType: "danger",
-      cancelText: "No",
-      centered: true
-    });
-  };
-
-  showConsolidateConfirm = () => {
-    const { data } = this.props;
-
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        const records = _.find(data, ["eqpt_title", values.eqpt_title]);
-        if (records.length > 0) {
-          Modal.confirm({
-            title: `Expiry Date Adjustments.`,
-            content: (
-              <div>{`We have found ${records.length} records with similar configurations. Do you want to apply the same expiry dates?`}</div>
-            ),
-            okText: "Yes",
-            okType: "primary",
-            cancelText: "No",
-            centered: true,
-            onOk: this.handleCreate,
-            onCancel: this.handleUpdate
-          });
-        } else {
-          this.showUpdateConfirm();
-        }
-      }
-    });
-  };
-
-  showUpdateConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to update this Equipment?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      centered: true,
-      onOk: this.handleUpdate
-    });
-  };
-
-  showCreateConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to update this Equipment?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      centered: true,
-      onOk: this.handleCreate
-    });
-  };
-
-  render() {
-    const { form, value, data, expiry, t } = this.props;
-    const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
-
-    const TabPane = Tabs.TabPane;
-
-    return (
-      <div>
-        <Form>
-          <Tabs defaultActiveKey="1" animated={false}>
-            <TabPane tab="General" key="1" className="ant-tab-window">
-              <Code
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                data={data}
-              />
-              <Id
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                data={data}
-              />
-              <Owner
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                data={data}
-              />
-              <Title
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                data={data}
-              />
-              <Area
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                data={data}
-              />
-              <LoadType
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                data={data}
-              />
-              <EmptyWeight
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                data={data}
-              />
-              <PullingLimit
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                data={data}
-              />
-              <Locks
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                data={data}
-              />
-              <Comments
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                data={data}
-              />
-            </TabPane>
-            <TabPane tab="Expiry Dates" key="2" className="ant-tab-window">
-              <Expiry form={form} value={value} t={t} types={expiry} />
-            </TabPane>
-
-            <TabPane
-              tab="Compartments"
-              key="3"
-              forceRender={true}
-              className="ant-tab-window"
-            >
-              <EquipmentType
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                data={data}
-              />
-              <Compartments
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-                form={form}
-                data={data}
-                equipment={getFieldValue("eqpt_etp")}
-              />
-            </TabPane>
-
-            {!!value && (
-              <TabPane
-                tab="Bulk Edit"
-                key="4"
-                forceRender={true}
-                className="ant-tab-window"
-              >
-                <BulkEdit
-                  decorator={getFieldDecorator}
-                  form={form}
-                  value={value}
-                  setValue={setFieldsValue}
-                  data={data}
-                />
-              </TabPane>
-            )}
-          </Tabs>
-        </Form>
-
-        <Button
-          shape="round"
-          icon="close"
-          style={{ float: "right" }}
-          onClick={() => Modal.destroyAll()}
-        >
-          Cancel
-        </Button>
-
-        <Button
-          shape="round"
-          type="primary"
-          icon={!!value ? "edit" : "plus"}
-          style={{ float: "right", marginRight: 5 }}
-          onClick={
-            !!value ? this.showConsolidateConfirm : this.showCreateConfirm
           }
+        });
+      }
+    });
+  };
+
+  const handleUpdate = () => {
+    form.validateFields((err, values) => {
+      if (!err) {
+        Modal.confirm({
+          title: t('prompts.update'),
+          okText: t('operations.yes'),
+          okType: 'primary',
+          cancelText: t('operations.no'),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([equipmentList.updateEquipment(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
+
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t('messages.updateSuccess'),
+                    description: t('messages.updateSuccess')
+                  });
+                })
+              )
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t('messages.updateFailed')
+                });
+              });
+          }
+        });
+      }
+    });
+  };
+
+  const handleDelete = () => {
+    axios
+      .all([equipmentList.deleteEquipment(value)])
+      .then(
+        axios.spread(response => {
+          refresh();
+
+          Modal.destroyAll();
+          notification.success({
+            message: t('messages.deleteSuccess'),
+            description: `${t('descriptions.deleteSuccess')} ${value.prt_printer}`
+          });
+        })
+      )
+      .catch(error => {
+        notification.error({
+          message: error.message,
+          description: t('descriptions.deleteFailed')
+        });
+      });
+  };
+
+  const handleUnlock = () => {
+    axios
+      .all([equipmentList.toggleLocks(value.eqpt_id)])
+      .then(
+        axios.spread(response => {
+          refresh();
+
+          Modal.destroyAll();
+          notification.success({
+            message: t('messages.unlockSuccess'),
+            description: `${t('descriptions.unlockSuccess')} ${value.prt_printer}`
+          });
+        })
+      )
+      .catch(error => {
+        notification.error({
+          message: error.message,
+          description: t('descriptions.unlockFailed')
+        });
+      });
+  };
+
+  const showDeleteConfirm = () => {
+    Modal.confirm({
+      title: t('prompts.delete'),
+      okText: t('operations.yes'),
+      okType: 'danger',
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: handleDelete
+    });
+  };
+
+  const equipment = getFieldValue('eqpt_etp');
+
+  return (
+    <div>
+      <Form>
+        <Tabs defaultActiveKey="1" animated={false}>
+          <TabPane
+            className="ant-tab-window"
+            tab={t('tabColumns.general')}
+            forceRender={true}
+            key="1"
+          >
+            <Id form={form} value={value} t={t} />
+            <Owner form={form} value={value} t={t} />
+            <Code form={form} value={value} t={t} data={data} />
+            <Title form={form} value={value} t={t} />
+            <Area form={form} value={value} t={t} />
+            <LoadType form={form} value={value} t={t} />
+
+            <EmptyWeight form={form} value={value} t={t} />
+            <PullingLimit form={form} value={value} t={t} />
+
+            <Comments form={form} value={value} t={t} />
+          </TabPane>
+
+          <TabPane
+            className="ant-tab-window"
+            tab={t('tabColumns.compartments')}
+            forceRender={true}
+            key="3"
+          >
+            <EquipmentType form={form} value={value} t={t} />
+            <Compartments form={form} value={value} t={t} equipment={equipment} values={data} />
+          </TabPane>
+          <TabPane
+            className="ant-tab-window"
+            tab={t('tabColumns.expiryDates')}
+            forceRender={true}
+            key="4"
+          >
+            <Expiry form={form} value={value} t={t} types={expiry} />
+          </TabPane>
+          {!!value && (
+            <TabPane
+              className="ant-tab-window"
+              tab={t('tabColumns.bulkEdit')}
+              forceRender={true}
+              key="5"
+            >
+              <BulkEdit form={form} value={value} t={t} />
+            </TabPane>
+          )}
+        </Tabs>
+      </Form>
+
+      <Button
+        shape="round"
+        icon="close"
+        style={{ float: 'right' }}
+        onClick={() => Modal.destroyAll()}
+      >
+        {t('operations.cancel')}
+      </Button>
+
+      <Button
+        shape="round"
+        type="primary"
+        icon={!!value ? 'edit' : 'plus'}
+        style={{ float: 'right', marginRight: 5 }}
+        onClick={!!value ? handleUpdate : handleCreate}
+      >
+        {!!value ? t('operations.update') : t('operations.create')}
+      </Button>
+
+      {!!value && (
+        <Button
+          shape="round"
+          type="dashed"
+          icon="unlock"
+          style={{ float: 'right', marginRight: 5 }}
+          onClick={handleUnlock}
         >
-          {!!value ? "Update" : "Create"}
+          {t('operations.unlockAll')}
         </Button>
+      )}
 
-        {!!value && (
-          <Button
-            shape="round"
-            type="dashed"
-            icon="unlock"
-            style={{ float: "right", marginRight: 5 }}
-          >
-            Unlock All Compartments
-          </Button>
-        )}
+      {!!value && (
+        <Button
+          shape="round"
+          type="danger"
+          icon="delete"
+          style={{ float: 'right', marginRight: 5 }}
+          onClick={showDeleteConfirm}
+        >
+          {t('operations.delete')}
+        </Button>
+      )}
+    </div>
+  );
+};
 
-        {!!value && (
-          <Button
-            shape="round"
-            type="danger"
-            icon="delete"
-            style={{ float: "right", marginRight: 5 }}
-            onClick={this.showDeleteConfirm}
-          >
-            Delete
-          </Button>
-        )}
-      </div>
-    );
-  }
-}
-
-const Forms = Form.create()(PersonnelForm);
+const Forms = Form.create()(FormModal);
 
 export default Forms;

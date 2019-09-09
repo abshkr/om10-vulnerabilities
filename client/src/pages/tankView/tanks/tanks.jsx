@@ -62,33 +62,52 @@ export default class Tanks extends Component {
       const volume = _.toInteger(tank.tank_cor_vol);
       const percent = _.isNaN((volume * 100) / capacity) ? 0.0 : ((volume * 100) / capacity).toFixed(2);
 
-      // capacity && volume > 0
-      if (true) {
-        const levels = this.handleStatusProcess(tank.tank_prod_lvl, tank.tank_hh_level, tank.tank_h_level, tank.tank_ll_level, tank.tank_l_level);
-        data.push({
-          code: tank.tank_code,
-          name: tank.tank_name,
-          status: tank.tank_status_name,
-          title: tank.tank_base_name,
-          color: status[tank.tank_status_name],
-          defaults: tank,
-          levels,
-          error: Object.values(levels).includes("error"),
-          payload: {
-            labels: ["Current Volume", "Total Capacity"],
-            datasets: [
-              {
-                title: tank.tank_code,
-                data: percent > 100 ? [percent, 0] : [percent, 100 - percent],
-                values: [volume, capacity],
-                percentage: percent,
-                backgroundColor: ["rgba(104, 164, 236, 1)", "rgba(104, 164, 236, 0.2)"],
-                hoverBackgroundColor: ["rgba(104, 164, 236, 0.8)", "rgba(104, 164, 236, 0.3)"]
-              }
-            ]
-          }
-        });
-      }
+      const levels = this.handleStatusProcess(tank.tank_prod_lvl, tank.tank_hh_level, tank.tank_h_level, tank.tank_ll_level, tank.tank_l_level);
+
+      const userLow = tank.tank_ul_level !== "" ? _.toInteger(tank.tank_ul_level) : 0;
+      const userHigh = tank.tank_uh_level !== "" ? _.toInteger(tank.tank_uh_level) : 0;
+
+      const userHighColor = volume >= userHigh ? "236, 110, 104" : "104, 164, 236";
+      const userLowColor = volume <= userLow ? "236, 110, 104" : "104, 164, 236";
+
+      data.push({
+        code: tank.tank_code,
+        name: tank.tank_name,
+        status: tank.tank_status_name,
+        title: tank.tank_base_name,
+        color: status[tank.tank_status_name],
+        defaults: tank,
+        levels,
+        error: Object.values(levels).includes("error"),
+        payload: {
+          datasets: [
+            {
+              title: tank.tank_code,
+              labels: ["Current Volume", "Total Capacity"],
+              data: percent > 100 ? [percent, 0] : [percent, 100 - percent],
+              values: [volume, capacity],
+              percentage: percent,
+              backgroundColor: ["rgba(104, 164, 236, 1)", "rgba(104, 164, 236, 0.2)"],
+              hoverBackgroundColor: ["rgba(104, 164, 236, 0.8)", "rgba(104, 164, 236, 0.3)"],
+              hoverBorderColor: "rgba(104, 164, 236, 0.0)"
+            },
+            {
+              label: "User H Level",
+              data: [userHigh, 100 - userHigh],
+              labels: ["HH Level", "Remaining Level"],
+              backgroundColor: [`rgba(${userHighColor}, 1)`, `rgba(${userHighColor}, 0)`],
+              hoverBorderColor: "rgba(104, 164, 236, 0.0)"
+            },
+            {
+              label: "User L Level",
+              data: [userLow, 100 - userLow],
+              labels: ["LL Level", "Remaining Level"],
+              backgroundColor: [`rgba(${userLowColor}, 1)`, `rgba(${userLowColor}, 0)`],
+              hoverBorderColor: "rgba(104, 164, 236, 0.0)"
+            }
+          ]
+        }
+      });
     });
 
     this.setState({

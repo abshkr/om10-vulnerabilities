@@ -1,38 +1,24 @@
-import React, { Component } from "react";
-import { Form, Input } from "antd";
-import _ from "lodash";
+import React, { useEffect } from 'react';
+import { Form, Input } from 'antd';
 
-export default class Id extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const Id = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         eqpt_id: value.eqpt_id
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  handleCodeValidation = (rule, value, callback) => {
-    const match = _.find(this.props.data, ["eqpt_id", value]);
+  return (
+    <Form.Item label={t('fields.id')}>
+      {getFieldDecorator('eqpt_id', {
+        rules: [{ required: false }]
+      })(<Input disabled />)}
+    </Form.Item>
+  );
+};
 
-    if (value && !!match && !this.props.value) {
-      callback("This Base Code already exists.");
-    }
-
-    callback();
-  };
-
-  render() {
-    const { decorator } = this.props;
-    return (
-      <Form.Item label="Id">
-        {decorator("eqpt_id", {
-          rules: [
-            { required: true, message: "Please Enter an Equipment Code" },
-            { validator: this.handleCodeValidation }
-          ]
-        })(<Input disabled />)}
-      </Form.Item>
-    );
-  }
-}
+export default Id;

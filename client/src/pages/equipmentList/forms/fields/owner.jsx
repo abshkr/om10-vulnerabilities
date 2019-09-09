@@ -1,50 +1,67 @@
-import React, { Component } from "react";
-import { Form, Select } from "antd";
-import axios from "axios";
-import { equipmentList } from "../../../../api";
+import React, { useState, useEffect } from 'react';
 
-export default class Owner extends Component {
-  state = {
-    owners: []
-  };
+import { equipmentList } from '../../../../api';
+import { Form, Select } from 'antd';
+import axios from 'axios';
 
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const Owner = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
 
-    axios.all([equipmentList.readOwners()]).then(
-      axios.spread(owners => {
-        this.setState({
-          owners: owners.data.records
-        });
-      })
-    );
+  const [isLoading, setLoading] = useState(false);
+  const [options, setOptions] = useState([]);
 
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         eqpt_owner: value.eqpt_owner
       });
     }
-  }
 
-  render() {
-    const { decorator, value } = this.props;
-    const { owners } = this.state;
-    const { Option } = Select;
+    const getContext = () => {
+      axios.all([equipmentList.readOwners()]).then(
+        axios.spread(options => {
+          setOptions(options.data.records);
+          setLoading(false);
+        })
+      );
+    };
 
-    return (
-      <Form.Item label="Owners">
-        {decorator("eqpt_owner", {
-          rules: [{ required: false }]
-        })(
-          <Select disabled={!!value}>
-            {owners.map((item, index) => (
-              <Option key={index} value={item.cmpy_code}>
-                {item.cmpy_name}
-              </Option>
-            ))}
-          </Select>
-        )}
-      </Form.Item>
-    );
-  }
-}
+    setLoading(true);
+    getContext();
+  }, [value, setFieldsValue]);
+
+  const validate = (rule, input, callback) => {
+    if (input === '' || !input) {
+      callback(`${t('validate.select')} ─ ${t('fields.owner')}`);
+    }
+
+    callback();
+  };
+
+  return (
+    <Form.Item label={t('fields.owner')}>
+      {getFieldDecorator('eqpt_owner', {
+        rules: [{ required: true, validator: validate }]
+      })(
+        <Select
+          loading={isLoading}
+          disabled={!!value}
+          showSearch
+          optionFilterProp="children"
+          placeholder={!value ? t('placeholder.selectOwner') : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {options.map((item, index) => (
+            <Select.Option key={index} value={item.cmpy_code}>
+              {item.cmpy_name}
+            </Select.Option>
+          ))}
+        </Select>
+      )}
+    </Form.Item>
+  );
+};
+
+export default Owner;

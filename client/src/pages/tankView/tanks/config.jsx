@@ -1,12 +1,17 @@
 const config = {
   maintainAspectRatio: false,
-  cutoutPercentage: 75,
+  cutoutPercentage: 60,
   title: {
     display: false
   },
 
   tooltips: {
     enabled: true,
+
+    filter: tooltipItem => {
+      return tooltipItem.index === 0;
+    },
+
     callbacks: {
       label: (tooltipItems, data) => {
         const index = tooltipItems.index;
