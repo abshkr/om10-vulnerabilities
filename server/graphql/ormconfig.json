@@ -1,0 +1,18 @@
+{
+  "type": "oracle",
+  "host": "dkitest.diamondkey.com",
+  "username": "r001_zetimaru",
+  "password": "abcd1234",
+  "port": 1521,
+  "sid": "T12B",
+  "synchronize": false,
+  "logging": false,
+  "entities": ["src/entity/**/*.ts"],
+  "migrations": ["src/migration/**/*.ts"],
+  "subscribers": ["src/subscriber/**/*.ts"],
+  "cli": {
+    "entitiesDir": "src/entity",
+    "migrationsDir": "src/migration",
+    "subscribersDir": "src/subscriber"
+  }
+}
