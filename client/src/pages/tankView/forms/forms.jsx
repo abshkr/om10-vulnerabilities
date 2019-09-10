@@ -1,10 +1,9 @@
-import React, { Component } from "react";
-import { Form, Button, Tabs, notification, Modal, Descriptions } from "antd";
-import { WaterWave } from "ant-design-pro/lib/Charts";
-import { tanks } from "../../../api";
-import _ from "lodash";
+import React, { Component } from 'react';
+import { Form, Button, Tabs, notification, Modal, Descriptions } from 'antd';
+import { tanks } from '../../../api';
+import _ from 'lodash';
 
-import axios from "axios";
+import axios from 'axios';
 import {
   TankCode,
   Product,
@@ -17,10 +16,10 @@ import {
   ExcludeFromPID,
   ExcludeFromPOS,
   ExcludeFromSMG,
-  ExcludeFromStockReports,
-  UserLLevel,
-  UserHLevel
-} from "../../tankConfiguration/forms/fields";
+  ExcludeFromStockReports
+} from '../../tankConfiguration/forms/fields';
+
+import TankForm from './tank-form';
 
 class TankConfigurationForm extends Component {
   handleCreate = () => {
@@ -33,7 +32,7 @@ class TankConfigurationForm extends Component {
               this.props.refresh();
               Modal.destroyAll();
               notification.success({
-                message: "Successfully Created.",
+                message: 'Successfully Created.',
                 description: `You have Created the Tank ${values.tank_code}`
               });
             })
@@ -41,13 +40,13 @@ class TankConfigurationForm extends Component {
           .catch(error => {
             notification.error({
               message: error.message,
-              description: "Failed to create the Tank."
+              description: 'Failed to create the Tank.'
             });
           });
       } else {
         notification.error({
-          message: "Validation Failed.",
-          description: "Make sure all the fields meet the requirements."
+          message: 'Validation Failed.',
+          description: 'Make sure all the fields meet the requirements.'
         });
       }
     });
@@ -63,7 +62,7 @@ class TankConfigurationForm extends Component {
               this.props.refresh();
               Modal.destroyAll();
               notification.success({
-                message: "Successfully Updated.",
+                message: 'Successfully Updated.',
                 description: `You have updated the Tank ${values.tank_code}`
               });
             })
@@ -71,13 +70,13 @@ class TankConfigurationForm extends Component {
           .catch(error => {
             notification.error({
               message: error.message,
-              description: "Failed to update the Tank."
+              description: 'Failed to update the Tank.'
             });
           });
       } else {
         notification.error({
-          message: "Validation Failed.",
-          description: "Make sure all the fields meet the requirements."
+          message: 'Validation Failed.',
+          description: 'Make sure all the fields meet the requirements.'
         });
       }
     });
@@ -92,7 +91,7 @@ class TankConfigurationForm extends Component {
           this.props.refresh();
           Modal.destroyAll();
           notification.success({
-            message: "Successfully Deleted.",
+            message: 'Successfully Deleted.',
             description: `You have deleted the Tank ${value.tank_code}`
           });
         })
@@ -100,17 +99,17 @@ class TankConfigurationForm extends Component {
       .catch(error => {
         notification.error({
           message: error.message,
-          description: "Failed to delete the Tank."
+          description: 'Failed to delete the Tank.'
         });
       });
   };
 
   showDeleteConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to delete this tank?",
-      okText: "Yes",
-      okType: "danger",
-      cancelText: "No",
+      title: 'Are you sure you want to delete this tank?',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
       centered: true,
       onOk: this.handleDelete
     });
@@ -118,10 +117,10 @@ class TankConfigurationForm extends Component {
 
   showUpdateConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to update this tank?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
+      title: 'Are you sure you want to update this tank?',
+      okText: 'Yes',
+      okType: 'primary',
+      cancelText: 'No',
       centered: true,
       onOk: this.handleUpdate
     });
@@ -129,30 +128,30 @@ class TankConfigurationForm extends Component {
 
   showCreateConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to update this tank?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
+      title: 'Are you sure you want to update this tank?',
+      okText: 'Yes',
+      okType: 'primary',
+      cancelText: 'No',
       centered: true,
       onOk: this.handleCreate
     });
   };
 
   render() {
-    const { form, value, baseProducts, data } = this.props;
+    const { form, value, products, data, tank } = this.props;
     const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
     const TabPane = Tabs.TabPane;
 
     const capacity = !!value ? _.toInteger(value.tank_ullage) + _.toInteger(value.tank_cor_vol) : 0;
     const volume = !!value ? _.toInteger(value.tank_cor_vol) : 0;
-    const percent = _.isNaN((volume * 100) / capacity) ? 0.0 : ((volume * 100) / capacity).toFixed(2);
+
     return (
       <div>
         <Form style={{ height: 640 }}>
-          <Tabs defaultActiveKey={!!value ? "0" : "1"}>
+          <Tabs defaultActiveKey={!!value ? '0' : '1'} animated={false}>
             {!!value && (
-              <TabPane tab="Information" key="0">
-                <Descriptions bordered size="small">
+              <TabPane className="tank-view-tab" tab="Information" key="0">
+                <Descriptions bordered size="small" style={{ width: '40vw' }}>
                   <Descriptions.Item label="Product" span={2}>
                     {value.tank_base_name}
                   </Descriptions.Item>
@@ -162,103 +161,151 @@ class TankConfigurationForm extends Component {
                     {value.tank_temp} °C
                   </Descriptions.Item>
                   <Descriptions.Item label="Reference Density" span={3}>
-                    {value.tank_15_density} Kg / m³
+                    {value.tank_density} Kg / m³
                   </Descriptions.Item>
                   <Descriptions.Item label="Reference Temperature" span={3}>
                     {value.tank_base_ref_temp} °C
                   </Descriptions.Item>
 
                   <Descriptions.Item label="Tank Capacity" span={3}>
-                    {capacity} ML
+                    {capacity} Litres
                   </Descriptions.Item>
                   <Descriptions.Item label="Level" span={3}>
-                    {value.tank_outflow_ope === "" ? 0 : value.tank_outflow_ope} CM
+                    {value.tank_prod_lvl} cm
                   </Descriptions.Item>
                   <Descriptions.Item label="Observed Quantity" span={3}>
-                    {volume} ML
+                    {value.tank_amb_vol} Litres
                   </Descriptions.Item>
                   <Descriptions.Item label="Standard Quantity" span={3}>
-                    {tanks.tank_prod_lvl} ML
+                    {volume} Litres
                   </Descriptions.Item>
                   <Descriptions.Item label="Weight in Air" span={3}>
                     {value.tank_vapour_kg} T
                   </Descriptions.Item>
-                  <Descriptions.Item label="Weight in Volume" span={3}>
+                  <Descriptions.Item label="Weight in Vaccum" span={3}>
                     {value.tank_liquid_kg} T
                   </Descriptions.Item>
                   <Descriptions.Item label="Ullage" span={3}>
-                    {value.tank_ullage} ML
+                    {value.tank_ullage}
                   </Descriptions.Item>
                   <Descriptions.Item label="Pumpable Volume" span={3}>
                     {value.tank_pump_vol} T
                   </Descriptions.Item>
                   <Descriptions.Item label="Water Level" span={3}>
-                    {value.tank_water_lvl} CM
+                    {value.tank_water_lvl} mm
                   </Descriptions.Item>
                   <Descriptions.Item label="Water Volume" span={3}>
-                    {value.tank_water} ML
+                    {value.tank_liquid_kg} Kg
                   </Descriptions.Item>
                   <Descriptions.Item label="Last Online" span={3}>
                     {value.tank_date}
                   </Descriptions.Item>
                 </Descriptions>
-              </TabPane>
-            )}
-
-            {!!value && (
-              <TabPane tab="Tank" key="2">
-                <div className="form-tank">
-                  <div style={{ display: "none" }}>
-                    <TankCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-                  </div>
-                  <UserHLevel decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-
-                  <WaterWave height={300} title={value.tank_base_name} percent={percent} />
-
-                  <UserLLevel decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
+                <div className="tank-view-tank">
+                  <TankForm
+                    tank={tank}
+                    decorator={getFieldDecorator}
+                    value={value}
+                    setValue={setFieldsValue}
+                    data={data}
+                  />
                 </div>
               </TabPane>
             )}
 
             <TabPane tab="General" key="1">
-              <TankCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
+              <TankCode
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                data={data}
+              />
               <Product decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
               <TankName decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Density decorator={getFieldDecorator} value={value} setValue={setFieldsValue} baseProducts={baseProducts} selectedBase={getFieldValue("tank_base")} />
+              <Density
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+                baseProducts={products}
+                selectedBase={getFieldValue('tank_base')}
+              />
             </TabPane>
 
             <TabPane tab="Variance" key="3">
-              <DailyVarianceVol decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <MonthlyVarianceVol decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <DailyVariancePercent decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <MonthlyVariancePercent decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <DailyVarianceVol
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <MonthlyVarianceVol
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <DailyVariancePercent
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <MonthlyVariancePercent
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
             </TabPane>
 
             <TabPane tab="Flags" key="4">
-              <ExcludeFromPID decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <ExcludeFromPOS decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <ExcludeFromSMG decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <ExcludeFromStockReports decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+              <ExcludeFromPID
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <ExcludeFromPOS
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <ExcludeFromSMG
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
+              <ExcludeFromStockReports
+                decorator={getFieldDecorator}
+                value={value}
+                setValue={setFieldsValue}
+              />
             </TabPane>
           </Tabs>
         </Form>
 
-        <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
+        <Button
+          shape="round"
+          icon="close"
+          style={{ float: 'right' }}
+          onClick={() => Modal.destroyAll()}
+        >
           Cancel
         </Button>
 
         <Button
           shape="round"
           type="primary"
-          icon={!!value ? "edit" : "plus"}
-          style={{ float: "right", marginRight: 5 }}
+          icon={!!value ? 'edit' : 'plus'}
+          style={{ float: 'right', marginRight: 5 }}
           onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}
         >
-          {!!value ? "Update" : "Create"}
+          {!!value ? 'Update' : 'Create'}
         </Button>
 
         {!!value && (
-          <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
+          <Button
+            shape="round"
+            type="danger"
+            icon="delete"
+            style={{ float: 'right', marginRight: 5 }}
+            onClick={this.showDeleteConfirm}
+          >
             Delete
           </Button>
         )}

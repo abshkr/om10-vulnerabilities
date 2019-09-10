@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Page, Container, Filter, Download, Tank } from '../../components';
+import { Page, Container, Filter, Download } from '../../components';
 import { tanks, baseProducts } from '../../api';
 import { Button, Tabs, Modal } from 'antd';
 import { search } from '../../utils/';
@@ -20,26 +20,28 @@ class TankView extends Component {
       value: '',
       showAll: false,
       isLoading: false,
-      baseProducts: []
+      products: []
     };
   }
 
   handleClick = object => {
     const { configuration } = this.props;
-    const { data, baseProducts } = this.state;
+    const { data, products } = this.state;
+    const { defaults } = object;
 
     Modal.info({
-      title: !!object ? `Editing (${object.tank_code} / ${object.tank_name})` : 'Create',
+      title: !!object ? `Editing (${defaults.tank_code} / ${defaults.tank_name})` : 'Create',
       centered: true,
       icon: !!object ? 'edit' : 'form',
-      width: 800,
+      width: '90vw',
       content: (
         <Forms
-          value={object}
+          value={defaults}
           refresh={this.handleFetch}
-          baseProducts={baseProducts}
+          products={products}
           profile={configuration}
           data={data}
+          tank={object}
         />
       ),
       okButtonProps: {
@@ -122,11 +124,11 @@ class TankView extends Component {
     this.setState({ isLoading: true });
 
     axios.all([tanks.readTanks(), baseProducts.readBaseProduct()]).then(
-      axios.spread((tanks, baseProducts) => {
+      axios.spread((tanks, products) => {
         this.setState({
           isLoading: false,
           data: this.filterEmptyTanks(tanks.data.records),
-          baseProducts: baseProducts.data.records
+          products: products.data.records
         });
       })
     );
@@ -134,10 +136,10 @@ class TankView extends Component {
 
   handleLiveUpdate = () => {
     axios.all([tanks.readTanks(), baseProducts.readBaseProduct()]).then(
-      axios.spread((tanks, baseProducts) => {
+      axios.spread((tanks, products) => {
         this.setState({
           data: this.filterEmptyTanks(tanks.data.records),
-          baseProducts: baseProducts.data.records
+          products: products.data.records
         });
       })
     );
@@ -149,7 +151,7 @@ class TankView extends Component {
   }
 
   render() {
-    const { data, filtered, value, isLoading, showAll } = this.state;
+    const { data, filtered, value, isLoading, showAll, products } = this.state;
     const { configuration } = this.props;
 
     const results = !!filtered ? filtered : data;
@@ -187,9 +189,14 @@ class TankView extends Component {
 
           <Tabs defaultActiveKey="1" animated={false}>
             <Tabs.TabPane tab="Tank View" key="1" style={{ padding: 5 }} forceRender={true}>
-              <div>
-                <Tank />
-              </div>
+              {!isLoading && (
+                <Tanks
+                  results={results}
+                  products={products}
+                  configuration={configuration}
+                  handleClick={this.handleClick}
+                />
+              )}
             </Tabs.TabPane>
 
             <Tabs.TabPane tab="Table View" key="2" forceRender={true}>

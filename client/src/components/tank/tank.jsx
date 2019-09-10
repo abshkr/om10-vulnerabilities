@@ -1,33 +1,9 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
-import { Badge } from 'antd';
+import { Badge, Icon, Tooltip } from 'antd';
 
 import { ReactComponent } from '../../assets/tank.svg';
 import './tank.css';
-
-const data = {
-  labels: ['Tank'],
-  datasets: [
-    {
-      label: 'Quantity',
-      backgroundColor: 'rgba(205,214,172,1)',
-      borderColor: 'rgba(105,105,105,0.9)',
-      borderWidth: 1,
-      hoverBackgroundColor: 'rgba(205,214,172,0.9)',
-      hoverBorderColor: 'rgba(105,105,105,1)',
-      data: [80]
-    },
-    {
-      label: 'Ullage',
-      backgroundColor: 'rgba(105,105,105,0.7)',
-      borderColor: 'rgba(105,105,105,1)',
-      borderWidth: 1,
-      hoverBackgroundColor: 'rgba(105,105,105,0.7)',
-      hoverBorderColor: 'rgba(105,105,105,1)',
-      data: [20]
-    }
-  ]
-};
 
 const config = {
   maintainAspectRatio: false,
@@ -40,10 +16,12 @@ const config = {
       left: 45,
       right: 0,
       top: 50,
-      bottom: 10
+      bottom: 5
     }
   },
-
+  tooltips: {
+    enabled: false
+  },
   scales: {
     xAxes: [
       {
@@ -77,20 +55,40 @@ const config = {
   }
 };
 
-const Tank = () => {
+const Tank = ({ tank, handleClick }) => {
+  const { hh, h, l, ll } = tank.levels;
+
+  const errors = Object.values(tank.levels).includes('processing');
+
   return (
-    <div className="tank-widget">
-      <div className="svg">
+    <div
+      className="tank-widget"
+      style={{ backgroundColor: errors ? 'rgba(236,110,104, 0.3)' : tank.color }}
+    >
+      <div className="tank-auto">
+        <Tooltip title={tank.automatic ? 'Gauging Method: Automatic' : 'Gauaging Method: Manual'}>
+          <Icon type="sync" spin={tank.automatic} />
+        </Tooltip>
+      </div>
+
+      <div className="tank-name">{tank.title}</div>
+      <div className="tank-status">{tank.status}</div>
+      <div className="tank-base">{tank.name}</div>
+      <div className="tank-volume">{tank.level} mm</div>
+
+      <div className="tank-badge">
+        <Badge status={hh} text="HH" />
+        <Badge status={h} text="H" />
+        <Badge status={l} text="L" />
+        <Badge status={ll} text="LL" />
+      </div>
+
+      <div className="tank-svg">
         <ReactComponent />
       </div>
-      <div className="bar">
-        <Bar height={210} width={400} data={data} options={config} />
-      </div>
-      <div className="tank-badge">
-        <Badge status="processing" text="HH" />
-        <Badge status="default" text="H" />
-        <Badge status="default" text="L" />
-        <Badge status="default" text="LL" />
+
+      <div className="tank-bar" onClick={() => handleClick(tank)}>
+        <Bar height={210} width={400} data={tank.payload} options={config} />
       </div>
     </div>
   );

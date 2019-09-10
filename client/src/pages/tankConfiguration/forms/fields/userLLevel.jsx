@@ -1,12 +1,12 @@
-import React, { Component } from "react";
-import { Form, Slider } from "antd";
-import _ from "lodash";
+import React, { Component } from 'react';
+import { Form, Slider } from 'antd';
+import _ from 'lodash';
 
 export default class UserLLevel extends Component {
   state = {
     marks: {
-      0: "0%",
-      100: "100%"
+      0: '0%',
+      100: '100%'
     }
   };
 
@@ -15,8 +15,8 @@ export default class UserLLevel extends Component {
     let { marks } = this.state;
 
     if (!!value) {
-      const baseLevel = value.tank_cor_vol === "" ? 0 : _.toInteger(value.tank_cor_vol);
-      const level = value.tank_ul_level === "" ? 0 : _.toInteger(value.tank_ul_level);
+      const baseLevel = value.tank_cor_vol === '' ? 0 : _.toInteger(value.tank_cor_vol);
+      const level = value.tank_ul_level === '' ? 0 : _.toInteger(value.tank_ul_level);
 
       setValue({
         tank_ul_level: level
@@ -24,7 +24,7 @@ export default class UserLLevel extends Component {
 
       marks[level] = {
         style: {
-          color: baseLevel <= level ? "red" : "black"
+          color: baseLevel <= level ? 'red' : 'black'
         },
         label: <strong>{level}%</strong>
       };
@@ -40,15 +40,16 @@ export default class UserLLevel extends Component {
     const { marks } = this.state;
 
     return (
-      <Form.Item label="User L Level">
+      <Form.Item label="User L" labelCol={{ offset: 15 }}>
         <div
           style={{
-            float: "left",
-            height: 250,
-            marginLeft: 20
+            float: 'right',
+            height: 220,
+            marginLeft: 10,
+            textAlign: 'right'
           }}
         >
-          {decorator("tank_ul_level")(
+          {decorator('tank_ul_level')(
             <Slider
               vertical
               marks={marks}

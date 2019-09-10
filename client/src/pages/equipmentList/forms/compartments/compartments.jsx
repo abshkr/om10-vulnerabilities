@@ -137,6 +137,7 @@ const Compartments = ({ form, value, t, equipment, values }) => {
         showSearch
         value={selected}
         onSelect={handleSelect}
+        loading={!image}
         disabled={options.length === 0}
         optionFilterProp="children"
         filterOption={(input, option) =>
