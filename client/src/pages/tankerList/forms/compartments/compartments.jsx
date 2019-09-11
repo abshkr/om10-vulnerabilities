@@ -1,18 +1,20 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { Equipment } from "../../../../components";
-import { tankerList } from "../../../../api";
-import { Table, Select } from "antd";
-import columns from "./columns";
-import axios from "axios";
-import Cell from "./cell";
-import Row from "./row";
-import _ from "lodash";
+import React, { useEffect, useState, useCallback } from 'react';
+import { Equipment } from '../../../../components';
+import { tankerList } from '../../../../api';
+import { Table, Select } from 'antd';
+import columns from './columns';
+import axios from 'axios';
+import Cell from './cell';
+import Row from './row';
+import _ from 'lodash';
 
 const Compartments = ({ form, value, t, equipment }) => {
   const [data, setdata] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { getFieldDecorator, setFieldsValue } = form;
+
+  getFieldDecorator('composition');
 
   const fetch = useCallback(id => {
     setIsLoading(true);
@@ -47,7 +49,7 @@ const Compartments = ({ form, value, t, equipment }) => {
   const save = row => {
     const payload = [...data];
 
-    let composition = _.find(payload, ["eqpt_code", row.eqpt_code]);
+    let composition = _.find(payload, ['eqpt_code', row.eqpt_code]);
 
     const compositionIndex = _.findIndex(payload, object => {
       return object.eqpt_code === row.eqpt_code;
@@ -70,24 +72,14 @@ const Compartments = ({ form, value, t, equipment }) => {
 
   const changeType = (compartment, code) => {
     axios.all([tankerList.compartment(code)]).then(
-      axios.spread(composition => {
+      axios.spread(response => {
         const payload = [...data];
+        const composition = response.data.records;
 
-        const comp = composition.data.records;
+        const index = _.findIndex(payload, ['eqpt_code', compartment.eqpt_code]);
+        compartment['compartments'] = composition;
 
-        if (!!value) {
-          let value = _.find(payload, ["etyp_id", compartment.etyp_id]);
-          const index = _.findIndex(payload, ["etyp_id", compartment.etyp_id]);
-
-          value["compartments"] = comp;
-          payload.splice(index, 1, value);
-        } else {
-          let value = _.find(payload, ["etyp_id", compartment.etyp_id]);
-          const index = _.findIndex(payload, ["etyp_id", compartment.etyp_id]);
-
-          value["compartments"] = comp;
-          payload.splice(index, 1, value);
-        }
+        payload.splice(index, 1, compartment);
 
         setdata(payload);
 
@@ -116,8 +108,6 @@ const Compartments = ({ form, value, t, equipment }) => {
     };
   });
 
-  getFieldDecorator("composition");
-
   return (
     <div>
       {data.map((item, index) => (
@@ -131,16 +121,12 @@ const Compartments = ({ form, value, t, equipment }) => {
             showSearch
             optionFilterProp="children"
             filterOption={(input, option) =>
-              option.props.children
-                .toLowerCase()
-                .indexOf(input.toLowerCase()) >= 0
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
           >
             {!isLoading &&
               item.eqpt_list.map((item, index) => (
-                <Select.Option value={item.eqpt_id}>
-                  {item.eqpt_code}
-                </Select.Option>
+                <Select.Option value={item.eqpt_id}>{item.eqpt_code}</Select.Option>
               ))}
           </Select>
 
@@ -156,8 +142,8 @@ const Compartments = ({ form, value, t, equipment }) => {
                 }
               }}
               style={{ marginBottom: 5 }}
-              scroll={{ y: "25vh" }}
-              rowClassName={() => "editable-row"}
+              scroll={{ y: '25vh' }}
+              rowClassName={() => 'editable-row'}
               bordered
               dataSource={item.compartments}
               columns={fields}
