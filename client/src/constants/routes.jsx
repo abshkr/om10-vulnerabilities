@@ -43,7 +43,6 @@ export const AREA = "/area";
 export const SITE_ACCESS_DEVICES = "/site-access-devices";
 export const GATE_PERMISSION = "/gate-permission";
 export const GATE_CONTROL = "/gate-control";
-export const TIME_CODES = "/time-codes";
 
 export const CUSTOMERS = "/customers";
 export const ORDER_LISTINGS = "/order-listings";

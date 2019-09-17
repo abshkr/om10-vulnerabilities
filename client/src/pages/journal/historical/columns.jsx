@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import moment from "moment";
-import { generateOptions } from "../../../utils";
+import { Tag } from "antd";
+import { SYSTEM_COLORS } from "../../../constants";
+import { generateOptions, validateDateTime } from "../../../utils";
 
 const columns = (data, configuration) => {
   const values = defaults(data, configuration);
@@ -18,21 +19,31 @@ const defaults = (data, config) => [
     title: "Time",
     dataIndex: "gen_date",
     key: "gen_date",
-    sorter: (a, b) => moment(b.gen_date, config.defaultTimeFormat).valueOf() - moment(a.gen_date, config.defaultTimeFormat).valueOf(),
+    width: 300,
+    align: "center",
+    sorter: (a, b) => validateDateTime(b.gen_date) - validateDateTime(a.gen_date),
     // eslint-disable-next-line
-    render: text => <a>{moment(text, config.defaultTimeFormat).format(config.dateTimeFormat)}</a>
+    render: text => <a>{text}</a>
   },
   {
     title: "Event",
     dataIndex: "msg_event",
     key: "msg_event",
+    width: 200,
+    align: "center",
     filters: generateOptions(data, "msg_event"),
-    onFilter: (value, record) => record.msg_event.indexOf(value) === 0
+    onFilter: (value, record) => record.msg_event.indexOf(value) === 0,
+    render: text => (
+      <span>
+        <Tag color={SYSTEM_COLORS[text]}>{text}</Tag>
+      </span>
+    )
   },
   {
     title: "Details",
     dataIndex: "message",
-    key: "message"
+    key: "message",
+    sorter: (a, b) => a.message.localeCompare(b.message)
   }
 ];
 

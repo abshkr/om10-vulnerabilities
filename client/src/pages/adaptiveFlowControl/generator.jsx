@@ -24,6 +24,7 @@ const generator = (base, flow, current) => {
   _.forEach(filtered, key => {
     const levels = findTankLevel(current, key.tank_code);
     const arms = _.filter(flow, ["tank_code", key.tank_code]);
+
     payload.push({
       tankCode: key.tank_code,
       baseCode: key.base_code,
@@ -32,7 +33,8 @@ const generator = (base, flow, current) => {
       level: levels.tank_level,
       arms,
       max: levels.flow_rate,
-      flowRate: findFlowRate(arms, levels.flow_rate)
+      flowRate: findFlowRate(arms, levels.flow_rate),
+      currentFlowRate: _.sumBy(arms, "current_flow_rate")
     });
   });
 

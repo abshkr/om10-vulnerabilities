@@ -1,19 +1,8 @@
-import React, { Component } from "react";
-import { Doughnut } from "react-chartjs-2";
-import { Modal, Tag } from "antd";
-import summary from "./summary";
-import config from "./config";
-import Tank from "./tank";
-import _ from "lodash";
+import React, { Component } from 'react';
+import { Tank } from '../../../components';
 
-const status = {
-  "In Service - Not used": "",
-  "Out of Service": "blue",
-  "In Service – Working": "gold",
-  "In Service – Loading": "green",
-  "In Service – Settling": "orange",
-  "In Service – Receiving": "purple"
-};
+import summary from './summary';
+import _ from 'lodash';
 
 export default class Tanks extends Component {
   constructor(props) {
@@ -23,48 +12,159 @@ export default class Tanks extends Component {
     };
   }
 
-  handleClick = tank => {
-    Modal.info({
-      title: tank.name,
-      centered: true,
-      width: 1024,
-      maskClosable: true,
-      okButtonProps: {
-        style: { display: "none" }
-      },
-      content: <Tank tank={tank} />
+  handleStatusProcess = (level, hhValue, hValue, lValue, llValue) => {
+    const currentLevel = _.toInteger(level !== '' ? level : 0);
+
+    const getHH = () => {
+      if (hhValue !== '') {
+        const hh = _.toInteger(hhValue);
+
+        if (currentLevel >= hh) {
+          return 'processing';
+        } else {
+          return 'success';
+        }
+      } else {
+        return 'success';
+      }
+    };
+
+    const getH = () => {
+      if (hhValue !== '' || hValue !== '') {
+        const hh = _.toInteger(hhValue);
+        const h = _.toInteger(hValue);
+        if (currentLevel >= hh) {
+          return 'processing';
+        } else if (currentLevel >= h) {
+          return 'processing';
+        } else {
+          return 'success';
+        }
+      } else {
+        return 'success';
+      }
+    };
+
+    const getLL = () => {
+      if (llValue !== '') {
+        const ll = _.toInteger(llValue);
+
+        if (ll >= currentLevel) {
+          return 'processing';
+        } else {
+          return 'success';
+        }
+      } else {
+        return 'success';
+      }
+    };
+
+    const getL = () => {
+      if (llValue !== '' || lValue !== '') {
+        const ll = _.toInteger(llValue);
+        const l = _.toInteger(lValue);
+        if (ll >= currentLevel) {
+          return 'processing';
+        } else if (l >= currentLevel) {
+          return 'processing';
+        } else {
+          return 'success';
+        }
+      } else {
+        return 'success';
+      }
+    };
+
+    return {
+      hh: getHH(),
+      h: getH(),
+      l: getL(),
+      ll: getLL()
+    };
+  };
+
+  hexToRgb = hex => {
+    const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+
+    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+      return r + r + g + g + b + b;
     });
+
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result
+      ? `rgba(${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}, 1)`
+      : null;
   };
 
   handleManipulation = results => {
     const data = [];
 
-    _.forEach(results, tank => {
-      const ullage = _.toInteger(tank.tank_ullage);
-      const volume = _.toInteger(tank.tank_cor_vol);
-      const percent = ((volume * 100) / ullage).toFixed(2);
+    const status = {
+      'In Service - Not used': 'rgba(220,220,220,0.3)',
+      'Out of Service': 'rgba(103,164,236, 0.2)',
+      'In Service - Working': 'rgba(255,255,224,0.9)',
+      'In Service - Loading': 'rgba(148,205,108,0.3)',
+      'In Service - Settling': 'rgba(255,191,0,0.2)',
+      'In Service - Receiving': 'rgba(155,136,233,0.2)',
+      'Out Of Service - Offline': 'rgba(103,164,236,0.2)'
+    };
 
-      if (ullage && volume > 0) {
-        data.push({
-          code: tank.tank_code,
-          name: tank.tank_name,
-          status: tank.tank_status_name,
-          title: tank.tank_base_name,
-          default: tank,
-          payload: {
-            labels: ["Current Volume", "Current Ullage"],
-            datasets: [
-              {
-                data: percent > 100 ? [percent, 0] : [percent, 100 - percent],
-                values: [volume, ullage],
-                percentage: percent,
-                backgroundColor: ["rgba(104, 164, 236, 1)", "rgba(104, 164, 236, 0.2)"],
-                hoverBackgroundColor: ["rgba(104, 164, 236, 0.8)", "rgba(104, 164, 236, 0.3)"]
-              }
-            ]
-          }
-        });
-      }
+    _.forEach(results, tank => {
+      const capacity = _.toInteger(tank.tank_ullage) + _.toInteger(tank.tank_cor_vol);
+      const volume = _.toInteger(tank.tank_cor_vol);
+      const percent = _.isNaN((volume * 100) / capacity)
+        ? 0.0
+        : ((volume * 100) / capacity).toFixed(2);
+
+      const levels = this.handleStatusProcess(
+        tank.tank_prod_lvl,
+        tank.tank_hh_level,
+        tank.tank_h_level,
+        tank.tank_l_level,
+        tank.tank_ll_level
+      );
+
+      const base = _.find(this.props.products, ['base_name', tank.tank_base_name]);
+
+      const baseColor =
+        base && base.base_color !== '' ? this.hexToRgb(base.base_color) : 'rgba(205,214,172,1)';
+
+      data.push({
+        code: tank.tank_code,
+        name: tank.tank_name,
+        status: tank.tank_status_name,
+        title: tank.tank_base_name,
+        color: status[tank.tank_status_name],
+        defaults: tank,
+        level: tank.tank_prod_lvl,
+        automatic: tank.tank_gaugingmthd === '1',
+        base,
+        levels,
+        volume,
+        payload: {
+          labels: ['Tank'],
+          datasets: [
+            {
+              label: 'Quantity',
+              backgroundColor: baseColor,
+              borderColor: 'rgba(105,105,105,0.9)',
+              borderWidth: 1,
+              hoverBackgroundColor: baseColor,
+              hoverBorderColor: 'rgba(105,105,105,1)',
+              data: [percent]
+            },
+            {
+              label: 'Ullage',
+              backgroundColor: 'rgba(105,105,105,0.7)',
+              borderColor: 'rgba(105,105,105,1)',
+              borderWidth: 1,
+              hoverBackgroundColor: 'rgba(105,105,105,0.7)',
+              hoverBorderColor: 'rgba(105,105,105,1)',
+              data: percent > 100 ? [0] : [100 - percent]
+            }
+          ]
+        }
+      });
     });
 
     this.setState({
@@ -74,6 +174,7 @@ export default class Tanks extends Component {
 
   componentDidMount() {
     const { results } = this.props;
+
     this.handleManipulation(results);
     summary();
   }
@@ -88,20 +189,13 @@ export default class Tanks extends Component {
 
   render() {
     const { data } = this.state;
+    const { handleClick } = this.props;
+
     return (
       <div className="tank-view">
         {data.map((item, index) => {
           return (
-            <div key={index} className="tank" disabled onClick={() => this.handleClick(item)}>
-              <div className="titles">
-                <span>{item.code}</span>
-                <Tag color={status[item.status]}>{item.status}</Tag>
-              </div>
-
-              <div className="tank-body">
-                <Doughnut data={item.payload} options={config(item.title)} width={220} height={220} />
-              </div>
-            </div>
+            <Tank key={index} tank={item} handleClick={handleClick} height={300} width={410} />
           );
         })}
       </div>

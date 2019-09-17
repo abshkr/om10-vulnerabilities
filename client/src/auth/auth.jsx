@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-
 import axios from "axios";
 import { ROUTES } from "../constants";
 import { connect } from "react-redux";
 import { Loading } from "../components";
+import { api } from "../api";
+import { withTranslation } from "react-i18next";
 
 export default Module => {
   class ComposedComponent extends Component {
@@ -27,7 +28,12 @@ export default Module => {
     };
 
     getConfiguration = () => {
-      axios.get("/html/config.json").then(response => {
+      const url =
+        process.env.NODE_ENV === "development"
+          ? "/config.json"
+          : `https://${api}/api/config.php`;
+
+      axios.get(url).then(response => {
         this.setState({
           configuration: response.data,
           isLoading: false
@@ -55,9 +61,11 @@ export default Module => {
     }
   }
 
+  const AuthComponent = withTranslation()(ComposedComponent);
+
   const mapStateToProps = state => {
     return { auth: state.auth.authenticated };
   };
 
-  return connect(mapStateToProps)(ComposedComponent);
+  return connect(mapStateToProps)(AuthComponent);
 };

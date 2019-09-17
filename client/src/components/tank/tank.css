@@ -1,0 +1,89 @@
+.tank-widget {
+  width: 410px;
+  height: 300px;
+  transition: all 0.3s;
+  border: 1px solid #538aef36;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  margin: 5px;
+  flex-flow: row nowrap; /* required */
+  position: relative;
+  border-radius: 4px;
+  box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.082);
+}
+
+.tank-bar {
+  position: absolute;
+  width: 410px;
+}
+
+.tank-name {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  margin-left: 10px;
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+.tank-status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-right: 10px;
+  margin-top: 5px;
+  display: flex;
+  text-align: right;
+  font-weight: bold;
+}
+
+.tank-base {
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 10px;
+  display: flex;
+  text-align: right;
+  font-weight: bold;
+}
+
+.tank-volume {
+  position: absolute;
+  bottom: 0;
+  z-index: 10;
+  margin-bottom: 60px;
+  display: flex;
+  text-align: right;
+  font-weight: bold;
+}
+
+.tank-badge {
+  position: absolute;
+  height: 210px;
+  top: 65px;
+  left: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.tank-badge .ant-badge-status-processing {
+  background-color: #ec6e68;
+}
+
+.tank-badge .ant-badge-status-processing::after {
+  border-color: #ec6e68;
+}
+
+.test {
+  color: rgba(255, 191, 0, 0.397);
+}
+
+.tank-auto {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin-right: 5px;
+}

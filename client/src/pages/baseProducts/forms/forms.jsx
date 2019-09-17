@@ -1,229 +1,166 @@
-import React, { Component } from "react";
+import React from "react";
+
+import { Code, Name, Classification, Group } from "./fields";
 import { Form, Button, Tabs, notification, Modal } from "antd";
+import { tankerList } from "../../../api";
 import axios from "axios";
-import { baseProducts } from "../../../api";
 
-import {
-  AdaptiveArmPriority,
-  AdaptiveFlowControl,
-  BaseProductCode,
-  BaseProductName,
-  BaseProductClassifications,
-  BaseProductGroup,
-  BaseProductColor,
-  RefTempSpec,
-  DensityRangeLow,
-  DensityRangeHigh,
-  CorrectionMethod,
-  HotTempFlag
-} from "./fields";
+const TabPane = Tabs.TabPane;
 
-class BaseProductsForm extends Component {
-  state = {
-    color: "#fff"
-  };
-
-  changeColor = color => {
-    this.setState({
-      color
-    });
-  };
-
-  resetColor = () => {
-    this.setState({
-      color: null
-    });
-  };
-
-  handleCreate = () => {
-    const { color } = this.state;
-    this.props.form.validateFields((err, values) => {
+const FormModal = ({ form, refresh, value, t, data, configuration }) => {
+  const handleCreate = () => {
+    form.validateFields((err, values) => {
       if (!err) {
-        if (!!color) {
-          values["base_color"] = this.state.color;
-        }
+        Modal.confirm({
+          title: t("prompts.create"),
+          okText: t("operations.yes"),
+          okType: "primary",
+          cancelText: t("operations.no"),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([tankerList.create(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
 
-        axios
-          .all([baseProducts.createBaseProduct(values)])
-          .then(
-            axios.spread(response => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: "Successfully Created.",
-                description: `You have created the Base Product ${values.base_code}`
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t("messages.createSuccess"),
+                    description: t("messages.createSuccess")
+                  });
+                })
+              )
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t("messages.createFailed")
+                });
               });
-            })
-          )
-          .catch(function(error) {
-            notification.error({
-              message: error.message,
-              description: "Failed to create the Base Product."
-            });
-          });
-      } else {
-        notification.error({
-          message: "Validation Failed.",
-          description: "Make sure all the fields meet the requirements."
+          }
         });
       }
     });
   };
 
-  handleUpdate = () => {
-    const { color } = this.state;
-    this.props.form.validateFields((err, values) => {
+  const handleUpdate = () => {
+    form.validateFields((err, values) => {
       if (!err) {
-        if (!!color) {
-          values["base_color"] = this.state.color;
-        }
-        axios
-          .all([baseProducts.updateBaseProduct(values)])
-          .then(
-            axios.spread(response => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: "Successfully Updated.",
-                description: `You have updated the Base Product ${values.base_code}`
+        Modal.confirm({
+          title: t("prompts.update"),
+          okText: t("operations.yes"),
+          okType: "primary",
+          cancelText: t("operations.no"),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([tankerList.update(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
+
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t("messages.updateSuccess"),
+                    description: t("messages.updateSuccess")
+                  });
+                })
+              )
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t("messages.updateFailed")
+                });
               });
-            })
-          )
-          .catch(function(error) {
-            notification.error({
-              message: error.message,
-              description: "Failed to update the Base Product."
-            });
-          });
-      } else {
-        notification.error({
-          message: "Validation Failed.",
-          description: "Make sure all the fields meet the requirements."
+          }
         });
       }
     });
   };
 
-  handleDelete = () => {
-    const { value } = this.props;
+  const handleDelete = () => {
     axios
-      .all([baseProducts.deleteBaseProduct(value.base_code)])
+      .all([tankerList.deleteTanker(value)])
       .then(
         axios.spread(response => {
-          this.props.refresh();
+          refresh();
+
           Modal.destroyAll();
           notification.success({
-            message: "Successfully Deleted.",
-            description: `You have deleted the Tank ${value.base_code}`
+            message: t("messages.deleteSuccess"),
+            description: `${t("descriptions.deleteSuccess")} ${value.prt_printer}`
           });
         })
       )
-      .catch(function(error) {
+      .catch(error => {
         notification.error({
           message: error.message,
-          description: "Failed to delete the Tank."
+          description: t("descriptions.deleteFailed")
         });
       });
   };
 
-  showDeleteConfirm = () => {
+  const showDeleteConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to delete this Base Product?",
-      okText: "Yes",
+      title: t("prompts.delete"),
+      okText: t("operations.yes"),
       okType: "danger",
-      cancelText: "No",
+      cancelText: t("operations.no"),
       centered: true,
-      onOk: this.handleDelete
+      onOk: handleDelete
     });
   };
 
-  showUpdateConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to update this Base Product?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      centered: true,
-      onOk: this.handleUpdate
-    });
-  };
+  return (
+    <div>
+      <Form>
+        <Tabs defaultActiveKey="1" animated={false}>
+          <TabPane className="ant-tab-window" tab={t("tabColumns.general")} forceRender={true} key="1">
+            <Code form={form} value={value} t={t} data={data} />
+            <Name form={form} value={value} t={t} data={data} />
+            <Classification form={form} value={value} t={t} data={data} />
+            <Group form={form} value={value} t={t} data={data} />
+          </TabPane>
 
-  showCreateConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to update this Base Product?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      centered: true,
-      onOk: this.handleCreate
-    });
-  };
-
-  componentDidMount() {
-    const { value } = this.props;
-    if (!!value) {
-      this.setState({
-        color: value.base_color
-      });
-    }
-  }
-
-  render() {
-    const { form, value, profile, data } = this.props;
-    const { getFieldDecorator, setFieldsValue } = form;
-    const TabPane = Tabs.TabPane;
-    return (
-      <div>
-        <Form style={{ height: 640 }}>
-          <Tabs defaultActiveKey="1">
-            <TabPane tab="General" key="1" st>
-              <BaseProductCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-              <BaseProductName decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <BaseProductClassifications decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <BaseProductGroup decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <BaseProductColor decorator={getFieldDecorator} value={value} color={this.state.color} setValue={setFieldsValue} change={this.changeColor} reset={this.resetColor} />
+          {configuration.features.hotLitreCalculation && (
+            <TabPane className="ant-tab-window" tab={t("tabColumns.hotLitre")} forceRender={true} key="2">
+              <Code form={form} value={value} t={t} data={data} />
+              <Name form={form} value={value} t={t} data={data} />
             </TabPane>
-            <TabPane tab="Correction" key="2">
-              <HotTempFlag decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <CorrectionMethod decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <RefTempSpec decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <DensityRangeLow decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <DensityRangeHigh decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
+          )}
+
+          {configuration.features.adaptiveFlowControl && (
+            <TabPane className="ant-tab-window" tab={t("tabColumns.adaptiveFlow")} forceRender={true} key="3">
+              <Code form={form} value={value} t={t} data={data} />
+              <Name form={form} value={value} t={t} data={data} />
             </TabPane>
+          )}
+        </Tabs>
+      </Form>
 
-            {profile.features.adaptiveFlowControl && (
-              <TabPane tab="Adaptive Flow" key="3">
-                <AdaptiveFlowControl decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-                <AdaptiveArmPriority decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              </TabPane>
-            )}
-          </Tabs>
-        </Form>
+      <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
+        {t("operations.cancel")}
+      </Button>
 
-        <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
-          Cancel
+      <Button
+        shape="round"
+        type="primary"
+        icon={!!value ? "edit" : "plus"}
+        style={{ float: "right", marginRight: 5 }}
+        onClick={!!value ? handleUpdate : handleCreate}
+      >
+        {!!value ? t("operations.update") : t("operations.create")}
+      </Button>
+
+      {!!value && (
+        <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={showDeleteConfirm}>
+          {t("operations.delete")}
         </Button>
+      )}
+    </div>
+  );
+};
 
-        <Button
-          shape="round"
-          type="primary"
-          icon={!!value ? "edit" : "plus"}
-          style={{ float: "right", marginRight: 5 }}
-          onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}
-        >
-          {!!value ? "Update" : "Create"}
-        </Button>
-
-        {!!value && (
-          <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
-            Delete
-          </Button>
-        )}
-      </div>
-    );
-  }
-}
-
-const Forms = Form.create()(BaseProductsForm);
+const Forms = Form.create()(FormModal);
 
 export default Forms;

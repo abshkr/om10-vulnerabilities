@@ -1,28 +1,31 @@
-import React, { Component } from "react";
-import { Form, InputNumber } from "antd";
+import React, { useEffect } from 'react';
+import { Form, InputNumber } from 'antd';
 
-export default class PullingLimit extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const PullingLimit = ({ form, value, t, data }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         eqpt_max_gross: value.eqpt_max_gross
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  handleValidation = (rule, value, callback) => {
+  const validate = (rule, input, callback) => {
+    if (input && input.length > 126) {
+      callback(`${t('placeholder.maxCharacters')}: 126 ─ ${t('descriptions.maxCharacters')}`);
+    }
     callback();
   };
 
-  render() {
-    const { decorator } = this.props;
-    return (
-      <Form.Item label="Pulling Limit">
-        {decorator("eqpt_max_gross", {
-          rules: [{ validator: this.handleValidation }]
-        })(<InputNumber />)}
-      </Form.Item>
-    );
-  }
-}
+  return (
+    <Form.Item label={t('fields.pullingLimit')}>
+      {getFieldDecorator('eqpt_max_gross', {
+        rules: [{ required: false, validator: validate }]
+      })(<InputNumber />)}
+    </Form.Item>
+  );
+};
+
+export default PullingLimit;

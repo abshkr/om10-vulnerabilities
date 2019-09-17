@@ -1,14 +1,14 @@
-import React, { Component } from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { Provider } from "react-redux";
-import { createStore, applyMiddleware } from "redux";
-import { Layout, Input } from "antd";
-import { Navigation } from "../components";
-import reduxThunk from "redux-thunk";
-import reducers from "../reducers";
-import paths from "./paths";
+import React, { Component } from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import { Layout, Input } from 'antd';
+import { Navigation } from '../components';
+import reduxThunk from 'redux-thunk';
+import reducers from '../reducers';
+import paths from './paths';
 
-import "./app.css";
+import './app.css';
 
 const { Content, Sider } = Layout;
 
@@ -37,8 +37,8 @@ const store = createStore(
 export default class App extends Component {
   state = {
     collapsed: false,
-    defaultKey: ["1"],
-    filter: ""
+    defaultKey: ['1'],
+    filter: ''
   };
 
   handleMenuState = collapsed => {
@@ -61,20 +61,34 @@ export default class App extends Component {
     return (
       <Provider store={store}>
         <BrowserRouter>
-          <Layout className="app" style={{ minHeight: "100vh" }}>
+          <Layout className="app" style={{ minHeight: '100vh' }}>
             <Sider collapsible collapsed={collapsed} onCollapse={this.handleMenuState} width={256}>
               <Navigation defaultKey={defaultKey} />
             </Sider>
             <Layout>
-              <div className="search" style={{ background: "#fff", padding: 10, height: "6vh", paddingLeft: 5, paddingTop: 12 }}>
-                <Input.Search placeholder="Type to search..." onSearch={value => this.handleSearch(value)} />
+              <div
+                className="search"
+                style={{
+                  background: '#fff',
+                  padding: 10,
+                  height: '6vh',
+                  paddingLeft: 5,
+                  paddingTop: 12
+                }}
+              >
+                <Input.Search
+                  placeholder="Type to search..."
+                  onSearch={value => this.handleSearch(value)}
+                />
               </div>
               <Content className="content">
                 <div>
                   <Switch>
                     {routes.map((item, index) => {
-                      if (filter === "") {
-                        return <Route exact key={index} path={item.path} component={item.component} />;
+                      if (filter === '') {
+                        return (
+                          <Route exact key={index} path={item.path} component={item.component} />
+                        );
                       } else {
                         return null;
                       }

@@ -1,24 +1,14 @@
 import React from "react";
-import _ from "lodash";
 import { Tag, Progress } from "antd";
-import generate from "../../utils/generateOptions";
+import { generateOptions } from "../../utils/";
 
-const columns = (data, configuration) => {
-  const values = defaults(data);
-  const config = configuration.columns.adaptiveFlowControl;
-  const modified = _.reject(values, o => {
-    return !config[o.dataIndex];
-  });
-
-  return modified;
-};
-
-const defaults = data => [
+const columns = (data, t) => [
   {
-    title: "Tank Code",
+    title: t("fields.tankCode"),
     dataIndex: "tankCode",
     key: "tankCode",
     width: 200,
+    align: "center",
     render: tank => (
       <span>
         <Tag color="green">{tank}</Tag>
@@ -26,42 +16,64 @@ const defaults = data => [
     )
   },
   {
-    title: "Base Product Code",
+    title: t("fields.baseProductCode"),
     dataIndex: "baseCode",
     key: "baseCode",
     width: 200,
+    align: "center",
     // eslint-disable-next-line
     render: text => <a>{text}</a>
   },
   {
-    title: "Base Product Name",
+    title: t("fields.baseProductName"),
     dataIndex: "baseName",
     key: "baseName",
     width: 250,
-    filters: generate(data, "baseName"),
+    align: "center",
+    filters: generateOptions(data, "baseName"),
     onFilter: (value, record) => record.baseName.indexOf(value) === 0
   },
   {
-    title: "Arm Priority",
+    title: t("fields.armPriority"),
     dataIndex: "armPriority",
     key: "armPriority",
-    filters: generate(data, "armPriority"),
+    align: "center",
+    filters: generateOptions(data, "armPriority"),
     width: 250,
     onFilter: (value, record) => record.armPriority.indexOf(value) === 0
   },
   {
-    title: "Tank Level",
+    title: t("fields.tankLevel"),
     dataIndex: "level",
     key: "level",
-    width: 250
+    width: 250,
+    align: "center"
   },
   {
-    title: "Total Flow Contribution",
+    title: t("fields.currentFlowRate"),
+    dataIndex: "currentFlowRate",
+    key: "currentFlowRate",
+    width: 150,
+    align: "center",
+    render: value => (
+      <span>
+        {value} {t("units.lpm")}
+      </span>
+    )
+  },
+  {
+    title: t("fields.totalFlowContribution"),
     dataIndex: "flowRate",
     key: "flowRate",
+    align: "center",
     render: percent => (
       <div style={{ display: "flex", flexDirection: "column", width: "95%" }}>
-        <Progress percent={percent} strokeColor={percent > 100 ? "#ec6e68" : "#68a4ec"} strokeWidth={6} status={percent > 100 ? "exception" : "active"} />
+        <Progress
+          percent={percent}
+          strokeColor={percent > 100 ? "#ec6e68" : "#68a4ec"}
+          strokeWidth={6}
+          status={percent > 100 ? "exception" : "active"}
+        />
       </div>
     )
   }

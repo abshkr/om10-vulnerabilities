@@ -1,112 +1,183 @@
-import React, { Component } from "react";
-import { Form, Button, Tabs, Modal } from "antd";
-import { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, Lock, SLP } from "./fields";
-import ExpiryDates from "./expiryDates";
+import React from "react";
 
-class PersonnelForm extends Component {
-  handleUpdate = () => {
-    this.props.form.validateFields((err, values) => {
+import { Form, Button, Tabs, notification, Modal } from "antd";
+import { Employer, Code, Name, SLP, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, Lock } from "./fields";
+import { Expiry } from "../../../components";
+import PasswordReset from "./passwordReset";
+import { personnel } from "../../../api";
+import BulkEdit from "./bulkEdit";
+import axios from "axios";
+
+const TabPane = Tabs.TabPane;
+
+const FormModal = ({ form, refresh, value, t, expiry, data }) => {
+  const handleCreate = () => {
+    form.validateFields((err, values) => {
       if (!err) {
-        console.log(values);
+        Modal.confirm({
+          title: t("prompts.create"),
+          okText: t("operations.yes"),
+          okType: "primary",
+          cancelText: t("operations.no"),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([personnel.createPersonnel(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
+
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t("messages.createSuccess"),
+                    description: t("messages.createSuccess")
+                  });
+                })
+              )
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t("messages.createFailed")
+                });
+              });
+          }
+        });
       }
     });
   };
 
-  handleCreate = () => {
-    this.props.form.validateFields((err, values) => {
+  const handleUpdate = () => {
+    form.validateFields((err, values) => {
       if (!err) {
-        console.log(values);
+        Modal.confirm({
+          title: t("prompts.update"),
+          okText: t("operations.yes"),
+          okType: "primary",
+          cancelText: t("operations.no"),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([personnel.updatePersonnel(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
+
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t("messages.updateSuccess"),
+                    description: t("messages.updateSuccess")
+                  });
+                })
+              )
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t("messages.updateFailed")
+                });
+              });
+          }
+        });
       }
     });
   };
 
-  showDeleteConfirm = () => {
+  const handleDelete = () => {
+    axios
+      .all([personnel.deletePersonnel(value)])
+      .then(
+        axios.spread(response => {
+          refresh();
+
+          Modal.destroyAll();
+          notification.success({
+            message: t("messages.deleteSuccess"),
+            description: `${t("descriptions.deleteSuccess")} ${value.prt_printer}`
+          });
+        })
+      )
+      .catch(error => {
+        notification.error({
+          message: error.message,
+          description: t("descriptions.deleteFailed")
+        });
+      });
+  };
+
+  const showDeleteConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to delete this Personnel?",
-      okText: "Yes",
+      title: t("prompts.delete"),
+      okText: t("operations.yes"),
       okType: "danger",
-      cancelText: "No",
-      centered: true
-    });
-  };
-
-  showUpdateConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to update this Personnel?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
+      cancelText: t("operations.no"),
       centered: true,
-      onOk: this.handleUpdate
+      onOk: handleDelete
     });
   };
 
-  showCreateConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to update this Personnel?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      centered: true,
-      onOk: this.handleCreate
-    });
-  };
+  return (
+    <div>
+      <Form>
+        <Tabs defaultActiveKey="1" animated={false}>
+          <TabPane className="ant-tab-window" tab={t("tabColumns.general")} forceRender={true} key="1">
+            <Employer form={form} value={value} t={t} />
+            <Code form={form} value={value} t={t} data={data} />
+            <Name form={form} value={value} t={t} />
+            <SLP form={form} value={value} t={t} />
+            <Department form={form} value={value} t={t} />
+            <Email form={form} value={value} t={t} />
+            <Role form={form} value={value} t={t} />
+            <TimeCode form={form} value={value} t={t} />
+            <DriverLicence form={form} value={value} t={t} />
+            <Status form={form} value={value} t={t} />
+            <Comment form={form} value={value} t={t} />
+          </TabPane>
+          <TabPane className="ant-tab-window" tab={t("tabColumns.expiryDates")} forceRender={true} key="2">
+            <Expiry form={form} value={value} t={t} types={expiry} />
+          </TabPane>
 
-  render() {
-    const { form, value, data } = this.props;
-    const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
-    const TabPane = Tabs.TabPane;
-    return (
-      <div>
-        <Form style={{ height: 640 }}>
-          <Tabs defaultActiveKey="1">
-            <TabPane tab="General" key="1" style={{ height: 550, overflowY: "scroll", paddingRight: 20 }}>
-              <Employer decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Code decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-              <Name decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <SLP decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Department decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Email decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Role decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <TimeCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <DriverLicence decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Status decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Comment decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-            </TabPane>
-            <TabPane tab="Expiry Dates" key="2" style={{ height: 550, overflowY: "scroll", paddingRight: 20 }}>
-              <ExpiryDates decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} form={form} />
-            </TabPane>
-            <TabPane tab="Area Access Control" key="3">
-              <Lock decorator={getFieldDecorator} value={value} setValue={setFieldsValue} getValue={getFieldValue} />
-            </TabPane>
-            <TabPane tab="Reset Password" key="4" />
-          </Tabs>
-        </Form>
+          <TabPane className="ant-tab-window" tab={t("tabColumns.areaAccess")} forceRender={true} key="3">
+            <Lock form={form} value={value} t={t} />
+          </TabPane>
 
-        <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
-          Cancel
+          <TabPane className="ant-tab-window" tab={t("tabColumns.resetPassword")} forceRender={true} key="4" disabled={!value}>
+            <PasswordReset value={value} t={t} />
+          </TabPane>
+
+          <TabPane
+            className="ant-tab-window"
+            tab={t("tabColumns.bulkEdit")}
+            forceRender={true}
+            key="5"
+            disabled={(!!value && value.tnkr_name === "") || !value}
+          >
+            <BulkEdit form={form} value={value} t={t} />
+          </TabPane>
+        </Tabs>
+      </Form>
+
+      <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
+        {t("operations.cancel")}
+      </Button>
+
+      <Button
+        shape="round"
+        type="primary"
+        icon={!!value ? "edit" : "plus"}
+        style={{ float: "right", marginRight: 5 }}
+        onClick={!!value ? handleUpdate : handleCreate}
+      >
+        {!!value ? t("operations.update") : t("operations.create")}
+      </Button>
+
+      {!!value && (
+        <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={showDeleteConfirm}>
+          {t("operations.delete")}
         </Button>
+      )}
+    </div>
+  );
+};
 
-        <Button
-          shape="round"
-          type="primary"
-          icon={!!value ? "edit" : "plus"}
-          style={{ float: "right", marginRight: 5 }}
-          onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}
-        >
-          {!!value ? "Update" : "Create"}
-        </Button>
-
-        {!!value && (
-          <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
-            Delete
-          </Button>
-        )}
-      </div>
-    );
-  }
-}
-
-const Forms = Form.create()(PersonnelForm);
+const Forms = Form.create()(FormModal);
 
 export default Forms;

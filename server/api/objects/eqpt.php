@@ -5,17 +5,28 @@ include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/expiry_type.php';
 include_once __DIR__ . '/expiry_date.php';
+include_once 'common_class.php';
 
-class Equipment
+class Equipment extends CommonClass
 {
-    // database connection and table name
-    private $conn;
+    protected $TABLE_NAME = "TRANSP_EQUIP";
+    protected $primary_keys = array("eqpt_id");
 
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
+    public $BOOLEAN_FIELDS = array(
+        "ADJ_CMPT_LOCK" => 1,
+        "EQP_MUST_TARE_IN" => "Y",
+        "EQPT_LOCK" => "Y"
+    );
+    
+    public $NUMBER_FIELDS = array(
+        "SFL",
+        "SAFEFILL",
+        "EQPT_EMPTY_KG",
+        "EQPT_MAX_GROSS"
+    );
+
+    protected $check_mandatory = false;
+    public $check_exists = false;
 
     public function compartmentCount($eqpt_id)
     {
@@ -54,7 +65,7 @@ class Equipment
             WHERE COMPARTMENT.CMPT_ETYP = TRANSP_EQUIP.EQPT_ETP
                 AND EQPT_ID = :eqpt_id
                 AND EQPT_ID = SFILL_ADJUST.ADJ_EQP(+)
-                AND CMPT_NO = SFILL_ADJUST.ADJ_CMPT(+)
+                AND CMPT_NO(+) = SFILL_ADJUST.ADJ_CMPT
             ORDER BY CMPT_NO";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
@@ -65,6 +76,39 @@ class Equipment
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function toggleLocks($eqpt)
+    {
+        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
+
+        Utilities::sanitize($this);
+
+        $query = "
+            UPDATE SFILL_ADJUST
+            SET ADJ_CMPT_LOCK = 1 - NVL(ADJ_CMPT_LOCK, 0)
+            WHERE ADJ_EQP = :eqpt";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':eqpt', $eqpt);
+
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $journal = new Journal($this->conn);
+        $jnl_data[0] = sprintf("Compartment lock status of equipment ID:%s toggled", $eqpt);
+
+        if (!$journal->jnlLogEvent(
+            Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        return true;
     }
 
     public function toggleLock($eqpt, $cmpt)
@@ -134,8 +178,25 @@ class Equipment
         }
     }
 
+    public function read_hook(&$hook_item)
+    {
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
+
+        $expiry_date = new ExpiryDate($this->conn);
+        $expiry_date->ed_target_code = ExpiryTarget::TRANSP_EQUIP;
+        $expiry_date->ed_object_id = $hook_item['eqpt_id'];
+        $stmt = $expiry_date->read();
+        $result = array();
+        Utilities::retrieve($result, $expiry_date, $stmt);
+        // write_log(json_encode($result), __FILE__, __LINE__);
+        $hook_item['expiry_dates'] = $result;
+    }
+
     public function read()
     {
+        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
+
         if (!isset($this->end_num)) {
             $this->start_num = 1;
             $this->end_num = $this->count();
@@ -311,11 +372,7 @@ class Equipment
 
     public function loadType()
     {
-        $query = "
-            SELECT LD_TYPE_ID,
-                LD_TYPE_CODE,
-                LD_TYPE_TEXT
-            FROM EQUIP_LIST_LD_TYPE_LOOKUP";
+        $query = "SELECT * FROM EQUIP_LIST_LD_TYPE_LOOKUP ORDER BY LD_TYPE_ID";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             return $stmt;
@@ -325,14 +382,14 @@ class Equipment
             return null;
         }
     }
-
+ 
     //This function does not auto-commit
-    private function updateCmpts($cmpts, $insert = false)
+    private function updateCmpts($insert = false)
     {
-        write_log(sprintf("%s::%s() START. cmpts:%s", __CLASS__, __FUNCTION__, json_encode($cmpts)),
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
-        $cmpt_count = count($cmpts);
+        $cmpt_count = count($this->compartments);
 
         for ($i = 1; $i <= $cmpt_count; $i++) {
             $base_cap = 0;
@@ -355,8 +412,9 @@ class Equipment
                 return false;
             }
 
-            $adj_amnt = (int) $cmpts[$i - 1]->safefill - $base_cap;
-            $adj_capacity = (int) $cmpts[$i - 1]->sfl;
+            $adj_amnt = (int) $this->compartments[$i - 1]->safefill - $base_cap;
+            $adj_capacity = (int) $this->compartments[$i - 1]->sfl;
+            $adj_cmpt_lock = (int) $this->compartments[$i - 1]->adj_cmpt_lock;
 
             /* Old data*/
             $query = "
@@ -380,7 +438,8 @@ class Equipment
             $query = "
                 UPDATE SFILL_ADJUST
                 SET ADJ_AMNT = :adj_amnt,
-                    ADJ_CAPACITY = :adj_capacity
+                    ADJ_CAPACITY = :adj_capacity,
+                    ADJ_CMPT_LOCK = :adj_cmpt_lock
                 WHERE ADJ_EQP = :eqpt_id AND ADJ_CMPT = :cmpt_no";
 
             $stmt = oci_parse($this->conn, $query);
@@ -388,6 +447,7 @@ class Equipment
             oci_bind_by_name($stmt, ':cmpt_no', $i);
             oci_bind_by_name($stmt, ':adj_amnt', $adj_amnt);
             oci_bind_by_name($stmt, ':adj_capacity', $adj_capacity);
+            oci_bind_by_name($stmt, ':adj_cmpt_lock', $adj_cmpt_lock);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -402,10 +462,10 @@ class Equipment
             $journal = new Journal($this->conn, false);
             $module = "Equipment";
             $record = sprintf("equipment id:%s, cmpt num:%d", $this->eqpt_id, $i);
-            if ($old_limit != (int) $cmpts[$i - 1]->safefill &&
+            if ($old_limit != (int) $this->compartments[$i - 1]->safefill &&
                 !$journal->valueChange(
                     $module, $record, "scheduled limit",
-                    $old_limit, $cmpts[$i - 1]->safefill)) {
+                    $old_limit, $this->compartments[$i - 1]->safefill)) {
                 oci_rollback($this->conn);
                 return false;
             }
@@ -421,7 +481,7 @@ class Equipment
         return true;
     }
 
-    public function update($cmpts = null, $expiry_dates = null)
+    public function update()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
@@ -473,11 +533,13 @@ class Equipment
         //Update expiry dates
         $expiry_dates = array();
         $expiry_date = new ExpiryDate($this->conn);
+        $expiry_date->ed_object_id = $this->eqpt_id;
+        $expiry_date->edt_target_code = ExpiryTarget::TRANSP_EQUIP;
         // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
         foreach ($this->expiry_dates as $key => $value) {
             $expiry_dates[$value->edt_type_code] = $value;
         }
-        write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+        // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
         if (!$expiry_date->update($expiry_dates)) {
             write_log("Failed to update expiry dates",
                 __FILE__, __LINE__, LogLevel::ERROR);
@@ -491,6 +553,33 @@ class Equipment
                 __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
+        }
+
+        //Bulk etp
+        if (isset($this->bulk_edit)) {
+            foreach($this->bulk_edit as $bluk_eqpt) {
+                // write_log(json_encode($value), __FILE__, __LINE__);
+                if ($bluk_eqpt->eqpt_id === $this->eqpt_id) {
+                    continue;
+                }
+
+                $expiry_dates = array();
+                $expiry_date->ed_object_id = $bluk_eqpt->eqpt_id;
+                // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
+                foreach ($this->expiry_dates as $key => $value) {
+                    $value->edt_object_id = $bluk_eqpt->eqpt_id;
+                    $value->ed_object_id = $bluk_eqpt->eqpt_id;
+                    $expiry_date->ed_object_id = $bluk_eqpt->eqpt_id;
+                    $expiry_dates[$value->edt_type_code] = $value;
+                }
+                // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+                if (!$expiry_date->update($expiry_dates)) {
+                    write_log("Failed to update expiry dates",
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
         }
 
         $journal = new Journal($this->conn, false);
@@ -566,10 +655,12 @@ class Equipment
         return true;
     }
 
-    public function create($cmpts = null, $expiry_dates = null)
+    public function create()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
+
+        write_log(json_encode($this), __FILE__, __LINE__);    
 
         Utilities::sanitize($this);
 
@@ -686,8 +777,8 @@ class Equipment
             return false;
         }
 
-        if (isset($cmpts)) {
-            if (!$this->updateCmpts($cmpts, $insert = true)) {
+        if (isset($this->compartments)) {
+            if (!$this->updateCmpts($this->compartments, $insert = true)) {
                 write_log("Failed to update equipment compartment",
                     __FILE__, __LINE__, LogLevel::ERROR);
                 oci_rollback($this->conn);
@@ -715,6 +806,23 @@ class Equipment
             __FILE__, __LINE__);
 
         Utilities::sanitize($this);
+
+        //For journal
+        $query = "
+            SELECT *
+            FROM TRANSP_EQUIP
+            WHERE EQPT_ID = :eqpt_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $this->eqpt_code = $row['EQPT_CODE'];
+            $this->eqpt_etp = $row['EQPT_ETP'];
+            $this->eqpt_owner = $row['EQPT_OWNER'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
 
         $query = "
             DELETE FROM SFILL_ADJUST
@@ -759,7 +867,8 @@ class Equipment
         $jnl_data[0] = $curr_psn;
         $jnl_data[1] = "Equpment";
         $jnl_data[2] = $this->eqpt_id;
-        $jnl_data[3] = "";
+        $jnl_data[3] = sprintf("code:%s, type:%s, owner:%s",
+            $this->eqpt_code, $this->eqpt_etp, $this->eqpt_owner);
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {

@@ -18,6 +18,13 @@ class CommonClass
      */
     protected $primary_keys = null;
 
+    /**
+     * Sometimes when TABLE_NAME != VIEW_NAME, use primary_keys as update
+     * use view_keys when retrieve from view. If not use, will use
+     * primary_keys instead. All lower case
+     */
+    protected $view_keys = null;
+
     protected $TABLE_NAME = null; //used in update(), delete() and create()
     protected $VIEW_NAME = null; //used in read()
 
@@ -41,7 +48,10 @@ class CommonClass
     //An array that include all the fileds that can be updated.
     protected $updatable_fields = null;
 
-    //All the fields that should be treated as BOOLEAN in JSON
+    /**
+     * All the fields that should be treated as BOOLEAN in JSON
+     * Check tank.php as an example
+     */
     public $BOOLEAN_FIELDS = null;
 
     //All the fields that should be treated as number in JSON
@@ -57,6 +67,13 @@ class CommonClass
      */
     protected $PRIMIRAY_KEY_EXCLUSIONS = null;
 
+    /**
+     * If it is false, will not check existence
+     * before insert. This is because sometimes primary key
+     * is an auto-incremental number, it is not from outside.
+     */
+    public $check_exists = true;
+
     //read imp will be called inside read. Make it public because Utilities::update() calls it
     public function read_hook(&$hook_item)
     {
@@ -67,6 +84,20 @@ class CommonClass
     public function __construct($db)
     {
         $this->conn = $db;
+        if (!isset($this->TABLE_NAME)) {
+            write_log("TABLE_NAME not set for class " . get_class($this),
+                __FILE__, __LINE__, LogLevel::DEBUG);
+        }
+
+        if (!isset($this->VIEW_NAME)) {
+            $this->VIEW_NAME = $this->TABLE_NAME;
+        }
+    }
+
+    //Will be called before displaying, example: report_profile.php
+    public function read_decorate(&$result_array)
+    {
+
     }
 
     private function populate_primary_key_where()
@@ -77,6 +108,26 @@ class CommonClass
 
         $where_query = " WHERE ";
         foreach ($this->primary_keys as $value) {
+            $where_query .= strtoupper($value) . " = :" . $value . " AND ";
+        }
+
+        return rtrim($where_query, 'AND ');
+    }
+
+    private function view_primary_key_where()
+    {
+        if (!isset($this->view_keys)) {
+            $this->view_keys = $this->primary_keys;
+            if (!isset($this->view_keys)) {
+                return "";
+            }
+        }
+
+        $where_query = " WHERE ";
+        foreach ($this->view_keys as $value) {
+            if (isset($this->table_view_map[strtoupper($value)])) {
+                $value = strtolow($this->table_view_map[strtoupper($value)]);
+            }
             $where_query .= strtoupper($value) . " = :" . $value . " AND ";
         }
 
@@ -97,12 +148,13 @@ class CommonClass
     }
 
     //Only update the fields that are passed in
-    public function prepare_update($stmt)
+    public function prepare_update()
     {
         if (!isset($this->updatable_fields)) {
             $this->initial_updatable_fields();
         }
-
+        write_log(json_encode($this->updatable_fields), __FILE__, __LINE__, LogLevel::DEBUG);
+        write_log(json_encode($this), __FILE__, __LINE__, LogLevel::DEBUG);
         $set_query = "";
         $to_update = array();
         if (isset($this->table_view_map)) {
@@ -144,6 +196,56 @@ class CommonClass
         return $stmt;
     }
 
+    //Only update the fields that are passed in
+    public function prepare_insert()
+    {
+        if (!isset($this->updatable_fields)) {
+            $this->initial_updatable_fields();
+        }
+
+        $fields_query = "( ";
+        $para_query = " ( ";
+        $to_update = array();
+        if (isset($this->table_view_map)) {
+            $view_table_map = array_flip($this->table_view_map);
+        }
+
+        foreach ($this as $key => $value) {
+            if (in_array($key, $this->primary_keys)) {
+                $fields_query .= $key . ", ";
+                $para_query .= " :" . $key . ", ";
+                $to_insert[$key] = $value;
+            } else if (in_array($key, $this->updatable_fields)) {
+                $fields_query .= $key . ", ";
+                $para_query .= " :" . $key . ", ";
+                $to_insert[$key] = $value;
+            }
+        }
+        // write_log($fields_query, __FILE__, __LINE__, LogLevel::DEBUG);
+        $fields_query = rtrim($fields_query, ', ') . ")";
+        $para_query = rtrim($para_query, ', ') . ")";
+        if (count($to_insert) <= 0) {
+            write_log("Nothing to insert", __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        $query = "INSERT INTO " . $this->TABLE_NAME . $fields_query . " VALUES " . $para_query;
+        write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
+        $stmt = oci_parse($this->conn, $query);
+
+        foreach ($this->primary_keys as $value) {
+            // write_log(sprintf("%s:%s", $value, $this->$value), __FILE__, __LINE__, LogLevel::DEBUG);
+            oci_bind_by_name($stmt, ':' . $value, $this->$value);
+        }
+
+        foreach ($to_insert as $key => $value) {
+            // write_log(sprintf("%s:%s:%s", $key, $value, $this->$key), __FILE__, __LINE__);
+            oci_bind_by_name($stmt, ':' . $key, $this->$key);
+        }
+
+        return $stmt;
+    }
+
     //Descedant class need to implement this
     protected function delete_children()
     {
@@ -167,72 +269,35 @@ class CommonClass
 
     }
 
-    // private function update_children()
-    // {
-    //     if (!isset($this->CHILD_OBJECTS)) {
-    //         return;
-    //     }
-
-    //     foreach ($this->CHILD_OBJECTS as $child_class => $child_table) {
-    //         write_log(sprintf($child_class . ":%s, ", $this->$child_table),
-    //             __FILE__, __LINE__, LogLevel::DEBUG);
-    //         $this->delete_children();
-    //         $this->insert_children();
-    //     }
-
-    //     // foreach ($this->CHILD_OBJECTS as $child_class => $child_table) {
-    //     //     write_log(sprintf($child_class . ":%s, ", $this->$child_table),
-    //     //         __FILE__, __LINE__, LogLevel::DEBUG);
-
-    //     //     $lowercase_child_table = strtolower($child_table);
-    //     //     if (!isset($this->$lowercase_child_table)) {
-    //     //         write_log("not ready, do not update child table", __FILE__, __LINE__, LogLevel::DEBUG);
-    //     //         return;
-    //     //     }
-    //     //     // oci_bind_by_name($stmt, ':' . $value, $this->$value);
-
-    //     //     //For child table, do not journal, because parent table will journal it.
-    //     //     include_once $lowercase_child_table . '.php';
-    //     //     $child_object = new $child_class($this->conn);
-
-    //     //     $set_query = "";
-    //     //     $to_update = array();
-    //     //     foreach ($child_object as $key => $value) {
-    //     //         if (in_array($key, $child_object->updatable_fields)) {
-    //     //             $set_query .= strtoupper($key) . " = :" . $key . ", ";
-    //     //             $to_update[$key] = $value;
-    //     //         }
-    //     //     }
-
-    //     //     $query = "UPDATE " . $child_object->TABLE_NAME . " SET " . $set_query . $child_object->populate_primary_key_where();
-    //     //     write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
-    //     //     $stmt = oci_parse($child_object->conn, $query);
-
-    //     //     foreach ($child_object->primary_keys as $value) {
-    //     //         // write_log(sprintf("%s:%s", $value, $this->$value), __FILE__, __LINE__, LogLevel::DEBUG);
-    //     //         oci_bind_by_name($stmt, ':' . $value, $child_object->$value);
-    //     //     }
-
-    //     //     foreach ($to_update as $key => $value) {
-    //     //         // write_log(sprintf("%s:%s:%s", $key, $value, $this->$key), __FILE__, __LINE__);
-    //     //         oci_bind_by_name($stmt, ':' . $key, $child_object->$key);
-    //     //     }
-    //     // }
-    // }
+    /**
+     * Descendant can implement this function to do some update that
+     * cannot be done in common way. Refer to report_profile as an example
+     */
+    public function update_supplement()
+    {
+        return true;
+    }
 
     public function update()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
-        // write_log(json_encode($this), __FILE__, __LINE__);
+        write_log(json_encode($this), __FILE__, __LINE__);
 
         Utilities::sanitize($this);
 
         $query = "
-            SELECT * FROM " . $this->VIEW_NAME . $this->populate_primary_key_where();
+            SELECT * FROM " . $this->VIEW_NAME . $this->view_primary_key_where();
+        // write_log(sprintf("query:%s", $query), __FILE__, __LINE__, LogLevel::DEBUG);
         $stmt = oci_parse($this->conn, $query);
         foreach ($this->primary_keys as $value) {
             // write_log(sprintf("%s:%s", $value, $this->$value), __FILE__, __LINE__, LogLevel::DEBUG);
+            if (isset($this->TABLE_NAME) &&
+                isset($this->VIEW_NAME) &&
+                $this->TABLE_NAME !== $this->VIEW_NAME &&
+                isset($this->table_view_map[strtoupper($value)])) {
+                $value = strtolower($this->table_view_map[strtoupper($value)]);
+            }
             oci_bind_by_name($stmt, ':' . $value, $this->$value);
         }
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
@@ -242,12 +307,18 @@ class CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
-        $stmt = $this->prepare_update($stmt);
+        $stmt = $this->prepare_update();
         if (!$stmt) {
             return false;
         } else if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        if ($this->update_supplement() === false) {
+            write_log("Failed to execute update_supplement", __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -261,7 +332,7 @@ class CommonClass
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
         $jnl_data[1] = $this->VIEW_NAME;
-        $jnl_data[2] = $this->tank_code;
+        $jnl_data[2] = $this->populate_primary_key_identifier();
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -272,7 +343,7 @@ class CommonClass
         }
 
         $module = $this->VIEW_NAME;
-        $record = $this->populate_primary_key_identifier();
+        $record = $jnl_data[2];
         foreach ($this as $key => $value) {
             if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
                 !$journal->valueChange(
@@ -283,6 +354,99 @@ class CommonClass
         }
 
         $this->journal_children_change($journal, $old_child_data, $new_child_data);
+
+        oci_commit($this->conn);
+        return true;
+    }
+
+    public function delete()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        Utilities::sanitize($this);
+
+        $query = "DELETE FROM " . $this->TABLE_NAME . " " . $this->populate_primary_key_where();
+        write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
+
+        $stmt = oci_parse($this->conn, $query);
+        foreach ($this->primary_keys as $value) {
+            // write_log(sprintf("%s:%s", $value, $this->$value), __FILE__, __LINE__, LogLevel::DEBUG);
+            oci_bind_by_name($stmt, ':' . $value, $this->$value);
+        }
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $journal = new Journal($this->conn, false);
+        $curr_psn = Utilities::getCurrPsn();
+        $jnl_data[0] = $curr_psn;
+        $jnl_data[1] = $this->VIEW_NAME;
+        $jnl_data[2] = $this->populate_primary_key_identifier();
+
+        if (!$journal->jnlLogEvent(
+            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        oci_commit($this->conn);
+        return true;
+    }
+
+    public function create()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
+
+        Utilities::sanitize($this);
+
+        $stmt = $this->prepare_insert();
+        if (!$stmt) {
+            return false;
+        } else if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        if ($this->update_supplement() === false) {
+            write_log("Failed to execute update_supplement", __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $journal = new Journal($this->conn, false);
+        $curr_psn = Utilities::getCurrPsn();
+        $jnl_data[0] = $curr_psn;
+        $jnl_data[1] = $this->VIEW_NAME;
+        $jnl_data[2] = $this->populate_primary_key_identifier();
+
+        if (!$journal->jnlLogEvent(
+            Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $module = $this->VIEW_NAME;
+        $record = $jnl_data[2];
+        foreach ($this as $key => $value) {
+            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
+                !$journal->valueChange(
+                    $module, $record, strtoupper($key), $row[strtoupper($key)], $value)) {
+                oci_rollback($this->conn);
+                return false;
+            }
+        }
 
         oci_commit($this->conn);
         return true;
@@ -302,11 +466,11 @@ class CommonClass
         if (oci_execute($stmt)) {
             while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
                 if (!in_array(strtolower($row['COLUMN_NAME']), $this->primary_keys)) {
-                    if (isset($this->table_view_map[$row['COLUMN_NAME']])) {
-                        array_push($this->updatable_fields, strtolower($this->table_view_map[$row['COLUMN_NAME']]));
-                    } else {
-                        array_push($this->updatable_fields, strtolower($row['COLUMN_NAME']));
-                    }
+                    // if (isset($this->table_view_map[$row['COLUMN_NAME']])) {
+                    //     array_push($this->updatable_fields, strtolower($this->table_view_map[$row['COLUMN_NAME']]));
+                    // } else {
+                    array_push($this->updatable_fields, strtolower($row['COLUMN_NAME']));
+                    // }
                 }
             }
         } else {
@@ -337,14 +501,46 @@ class CommonClass
         return ltrim($primey_key_record, ", ");
     }
 
-    //Check if the record that is to be updated is in db
-    public function check_existence()
+    private function map_view_files_to_table_fiels()
     {
         // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
         //     __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
+        if (!isset($this->primary_keys)) {
+            return;
+        }
+
+        if (isset($this->table_view_map)) {
+            $view_table_map = array_flip($this->table_view_map);
+        }
+
+        foreach ($this as $key => $value) {
+            if (isset($view_table_map[strtoupper($key)])) {
+                $prop = strtolower($view_table_map[strtoupper($key)]);
+                $this->$prop = $value;
+            }
+        }
+        // write_log(json_encode($this), __FILE__, __LINE__);
+    }
+
+    /**
+     * Check if the record that is to be updated is in db
+     * return true: exist; false: not exist
+     *
+     */
+    public function check_existence()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
 
         if ($this->TABLE_NAME === null) {
             return true;
+        }
+
+        if (isset($this->TABLE_NAME) &&
+            isset($this->VIEW_NAME) &&
+            $this->TABLE_NAME !== $this->VIEW_NAME) {
+            $this->map_view_files_to_table_fiels();
         }
 
         if (!isset($this->primary_keys)) {
@@ -369,13 +565,15 @@ class CommonClass
             }
             $and_count += 1;
         }
-
+        // write_log($query, __FILE__, __LINE__);
+        // write_log(json_encode($this->primary_keys), __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
         $stmt = oci_parse($this->conn, $query);
         foreach ($this->primary_keys as $value) {
             oci_bind_by_name($stmt, ':' . $value, $this->$value);
 
             if (!isset($this->$value)) {
-                throw new NonexistentException(
+                throw new Exception(
                     "Primary key fields are missing. Please check these fields: " .
                     json_encode($this->primary_keys));
             }
@@ -383,10 +581,11 @@ class CommonClass
         if (oci_execute($stmt)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             if (intval($row['CN']) <= 0) {
-                throw new NonexistentException(
-                    sprintf("record (%s) does not exist", $this->primiary_key_str())
-                );
+                write_log(sprintf("record (%s) does not exist", $this->primiary_key_str()),
+                    __FILE__, __LINE__, LogLevel::INFO);
+                return false;
             }
+            return true;
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -403,10 +602,14 @@ class CommonClass
 
             $this->retrieve_mandatory_fields();
             // write_log(json_encode($this->mandatory_fields), __FILE__, __LINE__);
-
+            // write_log(json_encode($this), __FILE__, __LINE__);
             foreach ($this->mandatory_fields as $value) {
                 // write_log($value, __FILE__, __LINE__);
                 // write_log(json_encode($this), __FILE__, __LINE__);
+                if (isset($this->table_view_map) && isset($this->table_view_map[strtoupper($value)])) {
+                    $value = strtolower($this->table_view_map[strtoupper($value)]);
+                }
+
                 if (!property_exists($this, $value) || $this->$value == null) {
                     write_log($value . " is not set for class " . get_class($this),
                         __FILE__, __LINE__);

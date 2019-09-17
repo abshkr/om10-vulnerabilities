@@ -1,31 +1,22 @@
 import React from "react";
-import _ from "lodash";
 import { Badge } from "antd";
 
-const columns = configuration => {
-  const values = defaults;
-  const config = configuration.columns.adaptiveFlowControl;
-  const modified = _.reject(values, o => {
-    return !config[o.dataIndex];
-  });
-
-  return modified;
-};
-
-const defaults = [
+const columns = t => [
   {
-    title: "Active Tank",
+    title: t("fields.activeTank"),
     dataIndex: "tank_code",
     key: "active_tank",
+    align: "center",
     // eslint-disable-next-line
     render: text => <a>{text}</a>
   },
-  { title: "Bay", dataIndex: "bad_physcode", key: "bay" },
-  { title: "Arm", dataIndex: "baa_code", key: "arm" },
+  { title: t("fields.bay"), dataIndex: "bad_physcode", align: "center", key: "bay" },
+  { title: t("fields.arm"), dataIndex: "baa_code", align: "center", key: "arm" },
   {
-    title: "Flowing",
+    title: t("fields.flowing"),
     key: "flowing",
     dataIndex: "flowing",
+    align: "center",
     render: flowing => (
       <span>
         <Badge status={flowing === "Y" ? "processing" : "warning"} />
@@ -35,9 +26,10 @@ const defaults = [
   },
 
   {
-    title: "Limiting",
+    title: t("fields.limiting"),
     key: "high_flow_state",
     dataIndex: "high_flow_state",
+    align: "center",
     render: state => (
       <span>
         <Badge status={state === "0" ? "warning" : "processing"} />
@@ -47,28 +39,32 @@ const defaults = [
   },
 
   {
-    title: "Flow Contribution (LPM)",
+    title: `${t("fields.flowContribution")} (${t("units.lpm")})`,
     dataIndex: "flow_contribution",
     key: "flow_contribution",
+    align: "center",
     render: value => <span>{value.toFixed(2)}</span>
   },
 
   {
-    title: "Actual Flowrate (LPM)",
+    title: `${t("fields.actualFlowRate")} (${t("units.lpm")})`,
     key: "current_flow_rate",
     dataIndex: "current_flow_rate",
+    align: "center",
     render: value => <span>{value.toFixed(2)}</span>
   },
   {
-    title: "Loaded Quantity",
+    title: t("fields.loadedQuantity"),
     dataIndex: "loaded_qty",
     key: "loaded_qty",
+    align: "center",
     render: value => <span>{value.toFixed(2)}</span>
   },
   {
-    title: "Preset Quantity",
+    title: t("fields.presetQuantity"),
     dataIndex: "preset",
     key: "preset",
+    align: "center",
     render: value => <span>{value.toFixed(2)}</span>
   }
 ];

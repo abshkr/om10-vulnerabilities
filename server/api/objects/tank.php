@@ -14,7 +14,7 @@ class Tank extends CommonClass
         "TANK_DAILY_TOL_VOL" => "TANK_DTOL_VOLUME",
         "TANK_DAILY_TOL_PERCENT" => "TANK_DTOL_PERCENT",
         "TANK_MONTHLY_TOL_VOL" => "TANK_MTOL_VOLUME",
-        "TANK_MONTHLY_TOL_PERCENT" => "TANK_MTOL_PERCENT"
+        "TANK_MONTHLY_TOL_PERCENT" => "TANK_MTOL_PERCENT",
     );
     // protected $CHILD_OBJECTS = array(
     //     "TankMaxFlow" => 'TANK_MAX_FLOW');

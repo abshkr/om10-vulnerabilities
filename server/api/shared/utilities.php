@@ -66,8 +66,12 @@ class Utilities
         return $result;
     }
 
-    //
-    public static function read($class, $method = 'read', $filter = false)
+    /**
+     * params can be an array, like array (
+     * "
+     * );
+     */
+    public static function read($class, $method = 'read', $filter = false, $params = null)
     {
         $database = new Database();
         $db = null;
@@ -99,6 +103,12 @@ class Utilities
             }
         }
 
+        if ($params) {
+            foreach ($params as $prop => $value) {
+                $object->$prop = $value;
+            }
+        }
+
         $stmt = $object->$method();
         if (is_array($stmt)) {
             //means it is handled inside $object->$method()
@@ -112,7 +122,21 @@ class Utilities
 
         $result = array();
         $result["records"] = array();
-        $num = self::retrieve($result["records"], $object, $stmt);
+
+        /**
+         * last parameter method: normally it is read, so the hook name
+         * is read_hook; if method is other name, like composition
+         * in Tanker, so the hook method is composition_hook
+         */
+        $num = self::retrieve($result["records"], $object, $stmt, $method);
+
+        /**
+         * For read_decorate, it can change the result from read(), check
+         * report_profile.php read_decorate for example
+         */
+        if (method_exists($object, "read_decorate")) {
+            $object->read_decorate($result["records"]);
+        }
 
         http_response_code(200);
         if ($num > 0) {
@@ -227,8 +251,12 @@ class Utilities
         }
     }
 
-    public static function retrieve(&$result_array, $object, $stmt)
+    public static function retrieve(&$result_array, $object, $stmt, $method = "read")
     {
+        // write_log(sprintf("%s::%s() START, class:%s, method:%s",
+        //     __CLASS__, __FUNCTION__, get_class($object), $method),
+        //     __FILE__, __LINE__);
+
         $num = 0;
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
             $num += 1;
@@ -236,15 +264,15 @@ class Utilities
             $base_item = array();
             foreach ($row as $key => $value) {
                 $lower_key = strtolower($key);
-                // write_log(sprintf("%s, %s", $object, $lower_key), __FILE__, __LINE__);
+                // write_log(sprintf("%s, %s", $lower_key, $key), __FILE__, __LINE__);
                 if (isset($object->BOOLEAN_FIELDS) &&
                     array_key_exists($key, $object->BOOLEAN_FIELDS)) {
-                    if ($value === 1 || $value === 'T' || $value === 'Y') {
+                    // write_log("getit", __FILE__, __LINE__);
+                    if ($value == 1 || $value === 'T' || $value === 'Y') {
                         $base_item[$lower_key] = true;
                     } else {
                         $base_item[$lower_key] = false;
                     }
-
                 } else {
                     if (isset($object->NUMBER_FIELDS) && in_array($key, $object->NUMBER_FIELDS)) {
                         // write_log($value, __FILE__, __LINE__);
@@ -259,8 +287,9 @@ class Utilities
                 return (is_null($v)) ? "" : $v;
             }, $base_item);
 
-            if (method_exists($object, "read_hook")) {
-                $object->read_hook($base_item);
+            $hook_method = $method . '_hook';
+            if (method_exists($object, $hook_method)) {
+                $object->$hook_method($base_item);
             }
             array_push($result_array, $base_item);
         }
@@ -270,6 +299,9 @@ class Utilities
 
     public static function create($class, $method = 'create')
     {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
         $database = new Database();
         $db = $database->getConnection();
 
@@ -278,6 +310,7 @@ class Utilities
 
         // get posted data
         $data = json_decode(file_get_contents("php://input"));
+        // write_log(json_encode($data), __FILE__, __LINE__);
         if ($data) {
             foreach ($data as $key => $value) {
                 $object->$key = $value;
@@ -292,7 +325,6 @@ class Utilities
         }
 
         // write_log(json_encode($object), __FILE__, __LINE__);
-
         try {
             if (method_exists($object, "mandatory_fields_check")) {
                 $object->mandatory_fields_check();
@@ -304,6 +336,20 @@ class Utilities
             echo '"detail": "Caught exception: ', $e->getMessage() . '"';
             echo '}';
             return;
+        }
+
+        if ($object->check_exists && method_exists($object, "check_existence")) {
+            if ($object->check_existence()) {
+                if (HTTP_CODE_ENABLED) {
+                    http_response_code(422);
+                } else {
+                    http_response_code(200);
+                }
+                echo '{';
+                echo '"detail": "', sprintf("record (%s) already exist", $object->primiary_key_str()) . '"';
+                echo '}';
+                return;
+            }
         }
 
         if ($object->$method()) {
@@ -352,7 +398,31 @@ class Utilities
         }
     }
 
-    public static function update($class, $method = 'update')
+    //Loop to update for an array
+    public static function updateArray($class, $method = 'update')
+    {
+        //Get data from POST
+        $data = json_decode(file_get_contents("php://input"));
+        foreach ($data as $item) {
+            if (self::update($class, $method, $item) === false) {
+                http_response_code(500);
+                echo '{';
+                echo '"message": "Unable to update. Check logs/php_rest_*.log file for details."';
+                echo '}';
+                return;
+            }
+        }
+
+        http_response_code(200);
+        echo '{';
+        echo '"message": "Successfully updated. "';
+        echo '}';
+        return;
+    }
+
+    //If $itemData is set, it means it is called from updateArray(), so
+    //do not echo if it success, just return true or false.
+    public static function update($class, $method = 'update', $itemData = null)
     {
         $database = new Database();
         $db = $database->getConnection();
@@ -361,10 +431,16 @@ class Utilities
         $desc = (isset($object->desc) ? $object->desc : $class);
 
         // get posted data
-        $data = json_decode(file_get_contents("php://input"));
+        if (isset($itemData)) {
+            $data = $itemData;
+        } else {
+            $data = json_decode(file_get_contents("php://input"));
+        }
+
         // write_log(json_encode($data), __FILE__, __LINE__);
+
         if ($data) {
-            write_log(json_encode($data), __FILE__, __LINE__);
+            // write_log(json_encode($data), __FILE__, __LINE__);
             foreach ($data as $key => $value) {
                 // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
                 $object->$key = $value;
@@ -385,49 +461,58 @@ class Utilities
 
         } catch (NullableException $e) {
             // http_response_code(422);
-            http_response_code(200);
-            echo '{';
-            echo '"detail": "Caught exception: ', $e->getMessage() . '"';
-            echo '}';
-            return;
+            if (!isset($itemData)) {
+                http_response_code(200);
+                echo '{';
+                echo '"detail": "Caught exception: ', $e->getMessage() . '"';
+                echo '}';
+                return;
+            }
+
+            return false;
         }
 
         // write_log(json_encode($object), __FILE__, __LINE__, LogLevel::DEBUG);
-        try {
-            if (method_exists($object, "check_existence")) {
-                $object->check_existence();
+        if (method_exists($object, "check_existence")) {
+            if (!$object->check_existence()) {
+                if (HTTP_CODE_ENABLED) {
+                    http_response_code(422);
+                } else {
+                    http_response_code(200);
+                }
+                echo '{';
+                echo '"detail": "', sprintf("record (%s) does not not exist", $object->primiary_key_str()) . '"';
+                echo '}';
+                return;
             }
-
-        } catch (NonexistentException $e) {
-            if (HTTP_CODE_ENABLED) {
-                http_response_code(422);
-            } else {
-                http_response_code(200);
-            }
-            echo '{';
-            echo '"detail": "Caught exception: ', $e->getMessage() . '"';
-            echo '}';
-            return;
         }
 
         Utilities::sanitize($object);
 
         if ($object->$method()) {
-            http_response_code(200);
-            echo '{';
-            if (method_exists($object, 'primiary_key_str')) {
-                echo '"message": "' . $desc . ' (' . $object->primiary_key_str() . ') updated. "';
-            } else {
-                echo '"message": "' . $desc . ' updated. "';
+            if (!isset($itemData)) {
+                http_response_code(200);
+                echo '{';
+                if (method_exists($object, 'primiary_key_str')) {
+                    echo '"message": "' . $desc . ' (' . $object->primiary_key_str() . ') updated. "';
+                } else {
+                    echo '"message": "' . $desc . ' updated. "';
+                }
+                echo '}';
+                return;
             }
-            echo '}';
+            return true;
         } else {
-            http_response_code(500);
-            echo '{';
-            echo '"message": "Unable to update ' .
-                $desc .
-                '. Check logs/php_rest_*.log file for details."';
-            echo '}';
+            if (!isset($itemData)) {
+                http_response_code(500);
+                echo '{';
+                echo '"message": "Unable to update ' .
+                    $desc .
+                    '. Check logs/php_rest_*.log file for details."';
+                echo '}';
+                return;
+            }
+            return false;
         }
     }
 
@@ -453,15 +538,18 @@ class Utilities
         }
 
         // write_log(json_encode($object), __FILE__, __LINE__);
-        try {
-            if (method_exists($object, "check_existence")) {
-                $object->check_existence();
+        if (method_exists($object, "check_existence")) {
+            if (!$object->check_existence()) {
+                if (HTTP_CODE_ENABLED) {
+                    http_response_code(422);
+                } else {
+                    http_response_code(200);
+                }
+                echo '{';
+                echo '"detail": "', sprintf("record (%s) does not not exist", $object->primiary_key_str()) . '"';
+                echo '}';
+                return;
             }
-
-        } catch (NonexistentException $e) {
-            http_response_code(422);
-            echo 'Caught exception: ', $e->getMessage();
-            return;
         }
 
         if ($object->$method()) {
@@ -490,9 +578,14 @@ class Utilities
 
     public static function getCurrPsn()
     {
-        session_start();
-        return $_SESSION['PERCODE'];
-        // return "DKI_SUPER_USER";
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
+        if (isset($_SESSION['PERCODE'])) {
+            return $_SESSION['PERCODE'];
+        }
+        return "";
     }
 
     public static function getCurrentSession()
@@ -559,6 +652,10 @@ class Utilities
         $pattern = $field . ">";
         $pattern_len = strlen($pattern);
         $pos_1 = strpos($xml_str, $pattern);
+        if ($pos_1 === false) {
+            return "";
+        }
+
         $pos_2 = strpos($xml_str, "<", $pos_1);
         return substr($xml_str, $pos_1 + $pattern_len, $pos_2 - $pos_1 - $pattern_len);
     }

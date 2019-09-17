@@ -73,3 +73,7 @@
 .ant-table.ant-table-bordered .ant-table-title {
   border-top-color: rgba(255, 255, 255, 0) !important;
 }
+
+.ant-table-footer {
+  text-align: center;
+}

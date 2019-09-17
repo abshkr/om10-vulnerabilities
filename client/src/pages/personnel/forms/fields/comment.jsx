@@ -1,18 +1,31 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import { Form, Input } from "antd";
 
-export default class Comment extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const DriverLicense = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         per_comments: value.per_comments
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  render() {
-    const { decorator } = this.props;
-    return <Form.Item label="Comments">{decorator("per_comments")(<Input.TextArea />)}</Form.Item>;
-  }
-}
+  const validate = (rule, input, callback) => {
+    if (input && input.length > 4000) {
+      callback(`${t("placeholder.maxCharacters")}: 4000 ─ ${t("descriptions.maxCharacters")}`);
+    }
+    callback();
+  };
+
+  return (
+    <Form.Item label={t("fields.comments")}>
+      {getFieldDecorator("per_comments", {
+        rules: [{ required: false, validator: validate }]
+      })(<Input.TextArea />)}
+    </Form.Item>
+  );
+};
+
+export default DriverLicense;

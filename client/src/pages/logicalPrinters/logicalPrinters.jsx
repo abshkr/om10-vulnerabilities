@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import Forms from "./forms";
 import columns from "./columns";
-import auth from "../../utils/auth";
+import auth from "../../auth";
 import search from "../../utils/search";
 import { logicalPrinters } from "../../api";
 import { Button, Modal, notification } from "antd";

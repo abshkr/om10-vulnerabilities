@@ -1,107 +1,115 @@
-/**
- * @description
- * Base Products Screen
- * Lets the user perform simple CRUD operations to manipulate the Base Products Data.
- */
+import React, { useState, useEffect, useCallback } from 'react';
 
-import React, { Component } from "react";
-import auth from "../../auth";
-import { Button, Modal, notification } from "antd";
-import { Page, Filter, DataTable, Download, Container } from "../../components";
-import Forms from "./forms";
-import { equipmentList } from "../../api";
-import axios from "axios";
-import { search } from "../../utils";
-import columns from "./columns";
+import { Page, Filter, DataTable, Download, Container } from '../../components';
+import { Button, Modal, notification } from 'antd';
+import { equipmentList } from '../../api';
+import { search } from '../../utils';
+import columns from './columns';
+import auth from '../../auth';
+import Forms from './forms';
+import axios from 'axios';
 
-class EquipmentList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: "",
-      data: [],
-      resize: false,
-      isLoading: true
-    };
-  }
+const EquipmentList = ({ configuration, t }) => {
+  const [data, setData] = useState([]);
+  const [value, setValue] = useState('');
+  const [expiry, setExpiry] = useState([]);
+  const [resize, setResize] = useState(false);
+  const [filtered, setFiltered] = useState(null);
+  const [isLoading, setLoading] = useState(true);
 
-  handleClick = object => {
-    const { data } = this.state;
-
+  const handleClick = object => {
     Modal.info({
-      title: !!object ? `Editing (${object.eqpt_id} / ${object.eqpt_code})` : "Create",
+      title: !!object
+        ? `${t('operations.editing')} (${object.eqpt_id} / ${object.eqpt_code})`
+        : `${t('operations.create')}`,
       centered: true,
-      width: 1024,
-      icon: !!object ? "edit" : "form",
-      content: <Forms value={object} refresh={this.handleFetch} data={data} />,
+      width: '50vw',
+      icon: !!object ? 'edit' : 'form',
+      content: <Forms value={object} refresh={fetch} t={t} expiry={expiry} data={data} />,
       okButtonProps: {
-        style: { display: "none" }
+        style: { display: 'none' }
       }
     });
   };
 
-  handleFetch = () => {
-    this.setState({
-      isLoading: true
-    });
+  const handleSearch = query => {
+    const { value } = query.target;
 
+    setFiltered(search(value, data));
+    setValue(value);
+  };
+
+  const fetch = useCallback(() => {
+    setLoading(true);
     axios
-      .all([equipmentList.readEquipment()])
+      .all([equipmentList.readEquipment(), equipmentList.readExpiry()])
       .then(
-        axios.spread(equipment => {
-          this.setState({
-            isLoading: false,
-            data: equipment.data.records,
-            filtered: null,
-            value: ""
-          });
+        axios.spread((tankers, expiry) => {
+          setLoading(false);
+          setData(tankers.data.records);
+          setExpiry(expiry.data.records);
         })
       )
       .catch(error => {
+        setLoading(false);
         notification.error({
           message: error.message,
-          description: "Failed to make the request."
+          description: t('descriptions.requestFailed')
         });
       });
-  };
+  }, [t]);
 
-  handleResize = () => {
-    const { resize } = this.state;
-    this.setState({
-      resize: !resize
-    });
-  };
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
-  handleSearch = query => {
-    const { value } = query.target;
-    this.setState({
-      filtered: search(value, this.state.data),
-      value
-    });
-  };
+  const results = !!filtered ? filtered : data;
+  const fields = columns(results, t);
 
-  componentDidMount() {
-    this.handleFetch();
-  }
-
-  render() {
-    const { data, isLoading, filtered, value, resize } = this.state;
-    const { configuration } = this.props;
-    const results = !!filtered ? filtered : data;
-    return (
-      <Page page={"Access Control"} name={"Equipment List"} isLoading={isLoading} block={true}>
-        <Container>
-          <Filter value={value} search={this.handleSearch} loading={isLoading} />
-          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
-          <Download data={data} type={"equipment_list"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
-          <Button shape="round" icon="build" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
-            Create Equipment
-          </Button>
-          <DataTable rowKey="per_code" resize={resize} columns={columns(results, configuration)} data={results} isLoading={isLoading} click={this.handleClick} />
-        </Container>
-      </Page>
-    );
-  }
-}
+  return (
+    <Page
+      page={t('pageMenu.schedules')}
+      name={t('pageNames.equipmentList')}
+      isLoading={isLoading}
+      block={true}
+    >
+      <Container>
+        <Filter value={value} search={handleSearch} loading={isLoading} />
+        <Button
+          shape="round"
+          type="primary"
+          icon={resize ? 'shrink' : 'arrows-alt'}
+          style={{ float: 'right' }}
+          onClick={() => setResize(!resize)}
+          disabled={isLoading}
+        />
+        <Download
+          data={data}
+          type={'equipment_list'}
+          style={{ float: 'right', marginRight: 5 }}
+          loading={isLoading}
+        />
+        <Button
+          shape="round"
+          icon="plus"
+          type="primary"
+          style={{ float: 'right', marginRight: 5 }}
+          onClick={() => handleClick(null)}
+          disabled={isLoading}
+        >
+          {t('operations.create')}
+        </Button>
+        <DataTable
+          rowKey="eqpt_id"
+          resize={resize}
+          columns={fields}
+          data={results}
+          isLoading={isLoading}
+          click={handleClick}
+        />
+      </Container>
+    </Page>
+  );
+};
 
 export default auth(EquipmentList);

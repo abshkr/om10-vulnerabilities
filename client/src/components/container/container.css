@@ -2,4 +2,11 @@
   padding: 10px;
   background-color: rgb(255, 255, 255);
   border: 1px solid #68a3ec28;
+  padding: 1vh;
+}
+
+.om-container .tag {
+  border-color: #68a4ec;
+  background-color: #fff;
+  color: #68a4ec;
 }

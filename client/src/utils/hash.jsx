@@ -37,7 +37,7 @@ const hashKey = (username, password) => {
   return util.bytesToHex(bf.encode(passData));
 };
 
-export const login = (lang, username, password) => {
+const hash = (lang, username, password) => {
   const user = username;
   const psw = passwordHash(username, password);
   const hash = hashKey(username, password);
@@ -51,3 +51,5 @@ export const login = (lang, username, password) => {
 
   return payload;
 };
+
+export default hash;

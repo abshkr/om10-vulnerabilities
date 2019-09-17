@@ -51,6 +51,8 @@ class Journal
     //Mainly table name
     private $modules = array(
         "GUI_TANKS" => "tank",
+        "GUI_REPORT_COMPANY" => "report configuration",
+        "GUI_REPORT_PROFILE" => "report profile",
         "GUI_PERSONNEL" => "personnel",
         "EXPIRY_DATE_PERSONNEL" => "personnel expiry date",
         "TIMECODE" => "time code",

@@ -43,18 +43,18 @@ export default class Forms extends Component {
 
   render() {
     const { tanks, meters, isLoading, reports } = this.state;
-    const { payload } = this.props;
+    const { payload, refresh } = this.props;
     return (
-      <Spin spinning={isLoading} style={{ minHeight: "700px" }}>
-        <Tabs defaultActiveKey="1" style={{ height: "708px" }}>
+      <Spin spinning={isLoading} style={{ minHeight: "85vh" }}>
+        <Tabs defaultActiveKey="1" style={{ height: "75vh" }}>
           <TabPane tab="Reports" key="1">
-            <Reports id={payload.closeout_nr} data={reports} refresh={this.handleFetch} />
+            <Reports id={payload.closeout_nr} status={payload.status} data={reports} refresh={this.handleFetch} />
           </TabPane>
           <TabPane tab="Meters" key="2">
-            {!isLoading && <Meters data={meters} update={this.getReadings} />}
+            {!isLoading && <Meters status={payload.status} data={meters} update={this.getReadings} refresh={refresh} />}
           </TabPane>
           <TabPane tab="Tanks" key="3">
-            {!isLoading && <Tanks data={tanks} update={this.getReadings} />}
+            {!isLoading && <Tanks status={payload.status} data={tanks} update={this.getReadings} refresh={refresh} />}
           </TabPane>
         </Tabs>
       </Spin>

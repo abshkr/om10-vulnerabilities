@@ -1,18 +1,31 @@
-import React, { Component } from "react";
-import { Form, Input } from "antd";
+import React, { useEffect } from 'react';
+import { Form, Input } from 'antd';
 
-export default class Comments extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const Comments = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  useEffect(() => {
     if (!!value) {
-      setValue({
-        eqpt_comments: value.eqpt_comments
+      setFieldsValue({
+        remarks: value.remarks
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  render() {
-    const { decorator } = this.props;
-    return <Form.Item label="Comments">{decorator("eqpt_comments")(<Input.TextArea />)}</Form.Item>;
-  }
-}
+  const validate = (rule, input, callback) => {
+    if (input && input.length > 4000) {
+      callback(`${t('placeholder.maxCharacters')}: 4000 ─ ${t('descriptions.maxCharacters')}`);
+    }
+    callback();
+  };
+
+  return (
+    <Form.Item label={t('fields.comments')}>
+      {getFieldDecorator('remarks', {
+        rules: [{ required: false, validator: validate }]
+      })(<Input.TextArea />)}
+    </Form.Item>
+  );
+};
+
+export default Comments;

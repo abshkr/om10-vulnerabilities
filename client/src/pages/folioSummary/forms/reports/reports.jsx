@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import _ from "lodash";
 import axios from "axios";
-import { Button, notification } from "antd";
+import { Button, notification, message } from "antd";
 import columns from "./columns";
 import { folioSummary } from "../../../../api";
 import { DataTable } from "../../../../components";
 
 export default class Reports extends Component {
   state = {
-    isGenerating: false
+    isLoading: false
   };
 
   handleDataModel = data => {
@@ -23,9 +23,9 @@ export default class Reports extends Component {
   };
 
   handleRegenerate = id => {
-    this.setState({
-      isGenerating: true
-    });
+    message.loading("A request to regenerate the report has been sent. It may take a few minutes before completion.");
+
+    this.setState({ isLoading: true });
 
     axios.all([folioSummary.regenerateReports(id)]).then(
       axios.spread(reports => {
@@ -43,14 +43,14 @@ export default class Reports extends Component {
   };
 
   render() {
-    const { isGenerating } = this.state;
-    const { data, id } = this.props;
+    const { isLoading } = this.state;
+    const { data, id, status } = this.props;
     return (
       <div>
-        <Button shape="round" type="primary" icon="reload" style={{ marginBottom: 15 }} loading={isGenerating} onClick={() => this.handleRegenerate(id)}>
-          {isGenerating ? "Regenerating..." : "Regenerate"}
+        <Button shape="round" type="primary" icon="reload" style={{ marginBottom: 15 }} loading={isLoading} onClick={() => this.handleRegenerate(id)} disabled={status === 2}>
+          {isLoading ? "Regenerating..." : "Regenerate"}
         </Button>
-        <DataTable isLoading={false} rowKey="value" columns={columns(id)} data={this.handleDataModel(data)} />
+        <DataTable isLoading={false} rowKey="value" columns={columns(id)} data={this.handleDataModel(data)} height="520px" />
       </div>
     );
   }

@@ -1,31 +1,35 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import { Form, Input } from "antd";
 
-export default class Name extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const Name = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  useEffect(() => {
     if (!!value) {
-      setValue({
+      setFieldsValue({
         per_name: value.per_name
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  handleValidation = (rule, value, callback) => {
-    if (value && value.length > 100) {
-      callback("Name must be under 100 characters.");
+  const validate = (rule, input, callback) => {
+    if (input === "" || !input) {
+      callback(`${t("validate.set")} ─ ${t("fields.name")}`);
+    }
+
+    if (input && input.length > 100) {
+      callback(`${t("placeholder.maxCharacters")}: 100 ─ ${t("descriptions.maxCharacters")}`);
     }
     callback();
   };
 
-  render() {
-    const { decorator } = this.props;
-    return (
-      <Form.Item label="Name">
-        {decorator("per_name", {
-          rules: [{ required: true, message: "Please Enter A Name." }, { validator: this.handleValidation }]
-        })(<Input />)}
-      </Form.Item>
-    );
-  }
-}
+  return (
+    <Form.Item label={t("fields.name")}>
+      {getFieldDecorator("per_name", {
+        rules: [{ required: true, validator: validate }]
+      })(<Input />)}
+    </Form.Item>
+  );
+};
+
+export default Name;

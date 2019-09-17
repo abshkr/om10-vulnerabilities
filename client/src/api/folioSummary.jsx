@@ -32,3 +32,15 @@ export function openFolioReports(id, report) {
 export function regenerateReports(id) {
   return axios.get(`https://${api}/api/pages/folio/create_reports.php?closeout_nr=${id}`);
 }
+
+export function calculateTanks(payload) {
+  return axios.post(`https://${api}/api/pages/folio/calc_tank_vcfs.php`, payload);
+}
+
+export function updateMeter(payload) {
+  return axios.post(`https://${api}/api/pages/folio/update_meters.php`, payload);
+}
+
+export function updateTank(payload) {
+  return axios.post(`https://${api}/api/pages/folio/update_tanks.php`, payload);
+}

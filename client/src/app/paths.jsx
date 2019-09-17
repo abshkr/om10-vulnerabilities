@@ -1,12 +1,18 @@
-import React, { Component } from "react";
-import Loadable from "react-loadable";
-import { ROUTES } from "../constants";
+import React, { Component } from 'react';
+import Loadable from 'react-loadable';
+import { ROUTES } from '../constants';
 
-import LoadingBar from "react-top-loading-bar";
+import LoadingBar from 'react-top-loading-bar';
 
 class Loading extends Component {
   render() {
-    return <LoadingBar height={4} progress={100} className={this.props.collapsed ? "loader-collapsed" : "loader"} />;
+    return (
+      <LoadingBar
+        height={4}
+        progress={100}
+        className={this.props.collapsed ? 'loader-collapsed' : 'loader'}
+      />
+    );
   }
 }
 
@@ -14,14 +20,14 @@ const paths = collapsed => [
   {
     path: ROUTES.DASHBOARD,
     component: Loadable({
-      loader: () => import("../pages/dashboard"),
+      loader: () => import('../pages/dashboard'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.UNAUTHORIZED,
     component: Loadable({
-      loader: () => import("../pages/unauthorized"),
+      loader: () => import('../pages/unauthorized'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
@@ -29,7 +35,7 @@ const paths = collapsed => [
   {
     path: ROUTES.EQUIPMENT_LIST,
     component: Loadable({
-      loader: () => import("../pages/equipmentList"),
+      loader: () => import('../pages/equipmentList'),
       loading: Loading
     })
   },
@@ -37,106 +43,141 @@ const paths = collapsed => [
   {
     path: ROUTES.PERSONNEL,
     component: Loadable({
-      loader: () => import("../pages/personnel"),
+      loader: () => import('../pages/personnel'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.LOGICAL_PRINTERS,
     component: Loadable({
-      loader: () => import("../pages/logicalPrinters"),
+      loader: () => import('../pages/logicalPrinters'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.PHYSICAL_PRINTERS,
     component: Loadable({
-      loader: () => import("../pages/physicalPrinters"),
+      loader: () => import('../pages/physicalPrinters'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.FOLIO_SUMMARY,
     component: Loadable({
-      loader: () => import("../pages/folioSummary"),
+      loader: () => import('../pages/folioSummary'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.METERING,
     component: Loadable({
-      loader: () => import("../pages/metering"),
+      loader: () => import('../pages/metering'),
       loading: () => <Loading collapsed={collapsed} />
+    })
+  },
+  {
+    path: ROUTES.AREA,
+    component: Loadable({
+      loader: () => import('../pages/area'),
+      loading: Loading
     })
   },
   {
     path: ROUTES.TANK_INVENTORY,
     component: Loadable({
-      loader: () => import("../pages/tankInventory"),
+      loader: () => import('../pages/tankInventory'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.SITE_BALANCE,
     component: Loadable({
-      loader: () => import("../pages/siteBalance"),
+      loader: () => import('../pages/siteBalance'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.PRODUCT_INVENTORY,
     component: Loadable({
-      loader: () => import("../pages/productInventory"),
+      loader: () => import('../pages/productInventory'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.BASE_PRODUCTS,
     component: Loadable({
-      loader: () => import("../pages/baseProducts"),
+      loader: () => import('../pages/baseProducts'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.TANK_VIEW,
     component: Loadable({
-      loader: () => import("../pages/tankView"),
+      loader: () => import('../pages/tankView'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.TANK_CONFIGURATIONS,
     component: Loadable({
-      loader: () => import("../pages/tankConfiguration"),
+      loader: () => import('../pages/tankConfiguration'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.TANK_STATUS,
     component: Loadable({
-      loader: () => import("../pages/tankStatus"),
+      loader: () => import('../pages/tankStatus'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.ADAPTIVE_FLOW_CONTROL,
     component: Loadable({
-      loader: () => import("../pages/adaptiveFlowControl"),
+      loader: () => import('../pages/adaptiveFlowControl'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
     path: ROUTES.JOURNAL,
     component: Loadable({
-      loader: () => import("../pages/journal"),
+      loader: () => import('../pages/journal'),
       loading: () => <Loading collapsed={collapsed} />
     })
   },
   {
-    path: "*",
+    path: '*',
     component: Loadable({
-      loader: () => import("../pages/notFound"),
+      loader: () => import('../pages/notFound'),
       loading: () => <Loading collapsed={collapsed} />
+    })
+  },
+  {
+    path: ROUTES.PERSONNEL_ON_SITE,
+    component: Loadable({
+      loader: () => import('../pages/personnelOnsite'),
+      loading: Loading
+    })
+  },
+  {
+    path: ROUTES.REPORT_CONFIGURATION,
+    component: Loadable({
+      loader: () => import('../pages/reportConfiguration'),
+      loading: Loading
+    })
+  },
+  {
+    path: ROUTES.REPORT_PROFILE,
+    component: Loadable({
+      loader: () => import('../pages/reportProfile'),
+      loading: Loading
+    })
+  },
+  {
+    path: ROUTES.TANKER_LIST,
+    component: Loadable({
+      loader: () => import('../pages/tankerList'),
+      loading: Loading
     })
   }
 ];

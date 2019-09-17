@@ -5,6 +5,24 @@ include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once 'common_class.php';
 
+class FolioMeter extends CommonClass
+{
+    protected $TABLE_NAME = 'CLOSEOUT_METER';
+    protected $VIEW_NAME = 'CLOSEOUT_METER';
+
+    protected $primary_keys = array("closeout_nr",
+        "meter_code");
+}
+
+class FolioTank extends CommonClass
+{
+    protected $TABLE_NAME = 'CLOSEOUT_TANK';
+    protected $VIEW_NAME = 'CLOSEOUT_TANK';
+
+    protected $primary_keys = array("closeout_nr",
+        "tank_code");
+}
+
 class Folio extends CommonClass
 {
     protected $TABLE_NAME = 'CLOSEOUTS';
@@ -164,6 +182,94 @@ class Folio extends CommonClass
         echo json_encode($result, JSON_PRETTY_PRINT);
 
         return $result;
+    }
+
+    public function calc_tank_vcfs()
+    {
+        Utilities::sanitize($this);
+
+        write_log(json_encode($this), __FILE__, __LINE__);
+
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
+        $vcf_response = array();
+        $calc_in_trouble = 0;
+        $desc_array = array();
+        foreach ($this as $key => $value) {
+            // write_log($key, __FILE__, __LINE__);
+            // write_log(json_encode($value), __FILE__, __LINE__);
+            if (!is_numeric($key)) {
+                continue;
+            }
+
+            $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/cgi-bin/en/calcvcf.cgi?";
+            if (!isset($value->frm_which_type)) {
+                //ReactJS only set frm_which_type if somebody changed something.
+                array_push($vcf_response, $value);
+                continue;
+            }
+            $url .= "frm_which_type=" . rawurlencode(strip_tags($value->frm_which_type)) . "&";
+            if ($value->frm_which_type === "KG") {
+                $amount = $value->close_mass_tot;
+            } else if ($value->frm_which_type === "L15") {
+                $amount = $value->close_std_tot;
+            } else if ($value->frm_which_type === "LT") {
+                $amount = $value->close_amb_tot;
+            }
+            $url .= "frm_real_amount=" . $amount . "&";
+            $url .= "frm_baseCd=" . $value->tank_base . "&";
+            $url .= "frm_real_temp=" . $value->close_temp . "&";
+            $url .= "frm_real_dens=" . $value->close_density;
+            if (isset($_SESSION["SESSION"])) {
+                $url .= "&sess_id=" . $_SESSION["SESSION"];
+            }
+
+            write_log(sprintf("%s::%s(), url:%s", __CLASS__, __FUNCTION__, $url),
+                __FILE__, __LINE__);
+
+            $result = @file_get_contents($url);
+            if ($result === false) {
+                $e = error_get_last();
+                write_log($e['message'], __FILE__, __LINE__);
+            }
+
+            write_log(json_encode($result), __FILE__, __LINE__);
+
+            if (Utilities::get_cgi_xml_value($result, 'MSG_CODE') > 0) {
+                $calc_in_trouble += 1;
+                $msg = Utilities::get_cgi_xml_value($result, 'MSG_DESC');
+                $identifier = sprintf("base: %s, temp:%f, density:%f, from:%s, quantity:%d",
+                    $value->tank_base, $value->close_temp, $value->close_density, $value->frm_which_type, $amount);
+                array_push($desc_array, $msg . "; " . $identifier);
+            }
+
+            $real_cvf = Utilities::get_cgi_xml_value($result, 'REAL_VCF');
+            $real_litre = Utilities::get_cgi_xml_value($result, 'REAL_LITRE');
+            $real_litre15 = Utilities::get_cgi_xml_value($result, 'REAL_LITRE15');
+            $real_kg = Utilities::get_cgi_xml_value($result, 'REAL_KG');
+
+            if ($real_cvf !== "") {
+                $value->real_cvf = $real_cvf;
+                $value->close_mass_tot = $real_kg;
+                $value->close_std_tot = $real_litre15;
+                $value->close_amb_tot = $real_litre;
+            }
+
+            array_push($vcf_response, $value);
+        }
+
+        http_response_code(200);
+
+        // echo json_encode($vcf_response, JSON_PRETTY_PRINT);
+        $restReponse = new stdClass();
+        $restReponse->calc_issues = $calc_in_trouble;
+        $restReponse->desc = $desc_array;
+        $restReponse->data = $vcf_response;
+        echo json_encode($restReponse, JSON_PRETTY_PRINT);
+        //return an arrary to stop caller to do follow-up work
+        return $vcf_response;
     }
 
     public function pds()

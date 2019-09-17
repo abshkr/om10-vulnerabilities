@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import columns from "./columns";
 import Forms from "./forms";
-import auth from "../../utils/auth";
+import auth from "../../auth";
 import search from "../../utils/search";
 import { physicalPrinters } from "../../api";
 import { Button, Modal, notification } from "antd";

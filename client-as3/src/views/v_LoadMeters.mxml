@@ -1,0 +1,1343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:components="components.*"
+		  creationComplete="creationCompleteHandler(event)"
+		  gap="2" width="100%" height="100%">
+	
+	<s:states>
+		<s:State name="normal" enterState="this.toolbar.enabled=true"/>
+		<s:State name="widget" enterState="this.toolbar.enabled=true"/>
+		<s:State name="edit" enterState="callLater(function():void{dataGrid.ensureCellIsVisible(idx);});this.toolbar.enabled=false"/>
+		<s:State name="create" enterState="this.toolbar.enabled=false"/>
+		<s:State name="detail" enterState="view_detailsHandler(event);this.toolbar.enabled=false"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.fiber.runtime.lib.DateTimeFunc;
+			
+			import components.ActionDialog;
+			import components.ConfirmDialog;
+			import components.DeleteDialog;
+			import components.ErrorDialog;
+			import components.ExportData;
+			import components.MessageDialog;
+			import components.TransactionsDlg;
+			import components.ViewPopupDlg;
+			
+			import dm.remoteBulkListService;
+			import dm.remoteDataService;
+			import dm.remoteListService;
+			import dm.utils.tools;
+			
+			import flash.events.KeyboardEvent;
+			import flash.globalization.LocaleID;
+			
+			import flashx.textLayout.container.ScrollPolicy;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			
+			import renderers.DKI_HeaderColumn_Renderer;
+			
+			import spark.components.ToggleButton;
+			import spark.components.VScrollBar;
+			import spark.components.gridClasses.IGridItemRenderer;
+			import spark.events.GridEvent;
+			import spark.events.GridSelectionEvent;
+			import spark.events.IndexChangeEvent;
+			
+			
+			public static const MAIN_WINDOW_WIDTH:int = 1500;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			[Bindable] public var canUpdate:Boolean = false;
+			[Bindable] public var canCreate:Boolean = false;
+			[Bindable] public var canDelete:Boolean = false;
+			[Bindable] public var hasPassword:Boolean = false;
+			
+			[Bindable] public var labelWidth:uint = 150;
+			[Bindable] public var labelHeight:uint = 26;
+			[Bindable] public var fieldWidth:uint = 300;
+			[Bindable] public var fieldHeight:uint = 26;
+			[Bindable] public var spaceWidth:uint = 15;
+			[Bindable] public var spaceHeight:uint = 5;
+			
+			private var idx:int=-1;
+			
+			private var currentFilter:String=null;
+			private var currentOrder:String='bam_code';
+			private var currentDirection:String="ASC";
+			
+			private var currentOffset:int=0;
+			private var currentPageSize:int=1000;
+			[Bindable] private var totalLength:int=0;
+			[Bindable] private var currentLength:int=0;
+			
+			private var currentFields:Object=new Object();
+			private var currentTypes:Object=new Object();
+			//private var currentSorts:Object=new Object();
+			//private var currentOrders:Object=new Object();
+			private var currentSorts:Object={bam_code:'ASC'};
+			private var currentOrders:Object={bam_code:1};
+			private var currentSortSeq:int=0;
+			
+			
+			private var confirmReport:ActionDialog;
+			private var confirmSave:ActionDialog;
+			private var errorDialog:ErrorDialog;
+			
+			//private var exportContents:String="";
+			private var f:FileReference = new FileReference();
+			
+			
+			//private var getData:Responder = new Responder(getData_resultHandler);
+			
+			//private var pagedRecords:ArrayCollection=new ArrayCollection();
+			//private var pagedRecords:remoteDataService = new remoteDataService( "LoadMeterService.getPaged", getData, null );
+			[Bindable] private var pagedRecords:remoteListService;
+			
+			private var deleteAction:remoteDataService = new remoteDataService( "LoadMeterService.delete", null, deleteData_resultHandler, 1 );
+			private var createAction:remoteDataService = new remoteDataService( "LoadMeterService.create", null, createData_resultHandler, 1 );
+			private var updateAction:remoteDataService = new remoteDataService( "LoadMeterService.update", null, updateData_resultHandler, 1 );
+			
+			private var loadMeterKeyChecker:remoteDataService = new remoteDataService( "LoadMeterService.isLoadMeterKeyUsed", null, loadMeterKeyChecker_resultHandler, 2 );
+			
+			private var gridColumnSequenceMaker:remoteDataService = new remoteDataService( "ScreenGridColumnService.lookupGridColumnSequence", null, gridColumnSequenceMaker_resultHandler, 1 );
+			private var _gridColumnSequenceString:String="";
+			private var formColumnSettingsMaker:remoteDataService = new remoteDataService( "ScreenFormColumnService.lookupFormColumnSettings", null, formColumnSettingsMaker_resultHandler, 1 );
+			private var _formColumnSettingsString:String="";
+			
+			
+			[Bindable] private var meterTypeList:remoteDataService = new remoteDataService( "ListLibraryService.lookupMeterType", null, lookupMeterType_resultHandler );
+			[Bindable] private var qtyTypeList:remoteDataService = new remoteDataService( "ListLibraryService.lookupQtyType", null, lookupQtyType_resultHandler );
+			[Bindable] private var loadMeterUsageList:remoteDataService = new remoteDataService( "ListLibraryService.lookupLoadMeterUsage", null, lookupLoadMeterUsage_resultHandler );
+			
+			private var numRanges:remoteDataService = new remoteDataService( "LoadMeterService.getNumberRanges", null, getNumberRanges_resultHandler, 1 );
+			
+			//private var genData:ExportData = new ExportData();
+			
+			public var mainListSelection:int = -1;
+			private var _saveButtonClicked:Boolean=false;
+			
+			[Bindable] private var minKFA:Number=1;
+			[Bindable] private var maxKFA:Number=20;
+			[Bindable] private var minMinFlow:Number=1;
+			[Bindable] private var maxMinFlow:Number=60;
+			[Bindable] private var minMaxFlow:Number=1;
+			[Bindable] private var maxMaxFlow:Number=60;
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				this.formColumnSettingsMaker.service( "LOAD_METERS" );
+				
+				trace ("-------------start creationCompleteHandler");
+				pagedRecords = new remoteListService( this.dataGrid, "LoadMeterService.getPaged", null, getPageData_resultHandler );
+				//resourceManager.localeChain = ['zh_CN'];
+				//global.LanguageCode="CHN";
+				this.gridColumnSequenceMaker.service( "LOAD_METERS" );
+				
+				
+				var value:String = global.getValueFromSiteConfigSettings( "SITE_AUTO_FILTER_WHEN_OPEN_SCREEN" );
+				if ( value == 'Y' )
+				{
+					this.startFiltering();
+				}
+				else
+				{
+					;
+				}
+				
+				this.meterTypeList.service( );
+				this.qtyTypeList.service( );
+				this.loadMeterUsageList.service( );
+				
+				
+				trace ("------------End creationCompleteHandler");
+				
+				
+				//trace("this.grid.scroller1111", this.dataGrid.scroller);
+				//trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+				this.dataGrid.scroller.verticalScrollBar.addEventListener(Event.CHANGE, verticalScrollBarChanged);
+				this.dataGrid.addEventListener(KeyboardEvent.KEY_UP, reportKeyUp);
+				this.dataGrid.columnHeaderGroup.addEventListener(GridEvent.GRID_CLICK, headerClickListener);
+				
+			}
+			
+			
+			protected function lookupMeterType_resultHandler():void
+			{
+				// TODO
+			}
+			
+			protected function lookupQtyType_resultHandler():void
+			{
+				// TODO
+			}
+			
+			protected function lookupLoadMeterUsage_resultHandler():void
+			{
+				// TODO
+			}
+			
+			protected function getNumberRanges_resultHandler():void
+			{
+				// TODO
+				var arr:Array = this.numRanges.dataString.split("1");
+				
+				if ( arr.length > 0 )
+				{
+					minKFA = Number(arr[0]);
+				}
+				if ( arr.length > 1 )
+				{
+					maxKFA = Number(arr[1]);
+				}
+				if ( arr.length > 2 )
+				{
+					minMinFlow = Number(arr[2]);
+				}
+				if ( arr.length > 3 )
+				{
+					maxMinFlow = Number(arr[3]);
+				}
+				if ( arr.length > 4 )
+				{
+					minMaxFlow = Number(arr[4]);
+				}
+				if ( arr.length > 5 )
+				{
+					maxMaxFlow = Number(arr[5]);
+				}
+			}
+			
+			
+			protected function formColumnSettingsMaker_resultHandler():void
+			{
+				this._formColumnSettingsString =  formColumnSettingsMaker.dataString;
+			}
+			
+			
+			protected function startLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				//this.panel.enabled = false;
+				
+				currentLength=0;
+				currentOffset = 0;
+				
+				//this.exportContents = this.genData.prepExportHeader( dataGrid );
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				this.pb.values(0, 0);
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+			protected function endLoadingPages():void
+			{
+				this.btn_create.enabled = this.canCreate;
+				this.btn_export.enabled = true;
+				this.dataGrid.enabled = true;
+				this.toolbar.enabled = true;
+				//this.panel.enabled = true;
+				//this.pb.values(totalCount, totalCount);
+				this.pb.values(pagedRecords.totalCount, pagedRecords.totalCount, true);
+				
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = false;
+				
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				//if ( totalLength > totalCount )
+				if ( pagedRecords.totalLength > pagedRecords.totalCount )
+				{
+					this.resumeBtn.enabled = true;
+				}
+				else
+				{
+					this.resumeBtn.enabled = false;
+				}
+				
+				//this.fltr_meter.setFocus();
+				var len:int = this.fltr_meter.text.length;
+				this.fltr_meter.selectRange(len, len);
+			}
+			
+			protected function exportCsvHandler(event:MouseEvent):void
+			{
+				this.confirmReport = new ActionDialog( doExport, cancelExport, resourceManager.getString('default','CONFIRM_REPORT_CSV') );
+				
+				//this.startLoadingPages();
+			}
+			
+			private function getPageData_resultHandler():void
+			{
+				// if not finished
+				if(pagedRecords.length < pagedRecords.totalCount)
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+				}
+				else
+				{
+					pb.values(pagedRecords.length,pagedRecords.totalCount)
+					
+					this.endLoadingPages();
+					
+					this.dataGrid.selectedIndex = this.mainListSelection;
+					if ( this.mainListSelection >= 0)
+					{
+						this.dataGrid_selectionChangeHandler(null);
+					}
+					this.mainListSelection = -1;
+					
+				}
+				
+			}
+			
+			
+			public function doExport():void
+			{
+				//genData.prepOther(dataGrid,'loadMeterlist.csv', this.pagedRecords);
+				
+				//f.save( this.exportContents, "loadMeterlist.csv" );
+				f.save( pagedRecords.exportContents, "loadMeterlist.csv" );
+				
+				this.endLoadingPages();
+			}
+			
+			
+			public function cancelExport():void
+			{
+				this.endLoadingPages();
+				
+				//trace( this.exportContents );
+			}
+			
+			public function doNothing():void
+			{
+			}
+			
+			
+			private function verticalScrollBarChanged(event:Event):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function reportKeyUp(event:KeyboardEvent):void
+			{
+				if ( this.dataGrid.scroller != null)
+				{
+					var vs:VScrollBar;
+					vs = this.dataGrid.scroller.verticalScrollBar;
+					//trace("this.grid.scroller.verticalScrollBar.value", vs.value, vs.maximum, vs.minimum, vs.stepSize, vs.pageSize, vs.	snapInterval);
+				}
+				else
+				{
+					trace("grid is changed");
+				}
+			}
+			
+			private function headerClickListener(event:GridEvent):void
+			{
+				if(event.column.dataField!='prod_items')
+				{
+					var currentRenderer:IGridItemRenderer;
+					var dir:String;
+					
+					if ( global.sortingBySingleColumn == true )
+					{	// sorted by single column only
+						for (var i:int=0; i < dataGrid.columns.length; i++)
+						{
+							currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+							if ( currentRenderer != null)
+							{
+								(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+							}
+							//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+						}
+					}
+					else
+					{	// sorted by multiple columns
+						;
+					}
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(event.columnIndex);
+					
+					if( currentSorts.hasOwnProperty(event.column.dataField ) )
+					{
+						dir = currentSorts[event.column.dataField];
+						if( dir=="ASC" )
+						{
+							dir = "DESC";
+						}
+						else if ( dir == "DESC" )
+						{
+							dir = "";
+						}
+						else if ( dir == "" )
+						{
+							dir = "ASC";
+						}
+						else 
+						{
+							dir = "ASC";
+						}
+						
+						if ( dir != "" )
+						{
+							currentSorts[event.column.dataField] = dir;	
+						}
+						else
+						{
+							delete currentSorts[event.column.dataField];
+							delete currentOrders[event.column.dataField];
+						}
+					}
+					else
+					{
+						if ( global.sortingBySingleColumn == true )
+						{	// sorted by single column only
+							currentSorts = new Object();
+							currentOrders = new Object();
+							currentSortSeq = 0;
+						}
+						else
+						{	// sorted by multiple columns
+							;
+						}
+						currentSorts[event.column.dataField] = "ASC";	
+						dir = currentSorts[event.column.dataField];
+						currentSortSeq += 1;
+						currentOrders[event.column.dataField] = currentSortSeq;	
+					}
+					(currentRenderer as DKI_HeaderColumn_Renderer).setImage(dir);
+					this.startFiltering();
+				}
+			}
+			
+			
+			protected function dataGrid_selectionChangeHandler(event:GridSelectionEvent):void
+			{
+				if(currentState != 'widget')
+				{
+					idx=dataGrid.selectedIndex;
+					//dataGrid.ensureCellIsVisible(idx+11);
+					dataGrid.ensureCellIsVisible(idx);
+					
+					currentState = "edit";					
+					this.btn_save.enabled = this.canUpdate;
+					
+					if ( _formColumnSettingsString.length > 0 )
+					{
+						global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+					}
+				}
+			}
+			
+			protected function cancel_clickHandler():void
+			{
+				clearDetail();
+				if ( currentState== "create" )
+				{
+					dataGrid.enabled=true;
+				}
+				currentState="normal";
+				dataGrid.selectedIndex = -1;
+			}			
+			
+			protected function gridColumnSequenceMaker_resultHandler():void
+			{
+				this._gridColumnSequenceString =  gridColumnSequenceMaker.dataString;
+				
+				if ( _gridColumnSequenceString.length > 0 )
+				{
+					global.adjustGridColumnSequence( _gridColumnSequenceString.substr(1), dataGrid );
+				}
+				
+			}
+			
+			
+			protected function fltr_meter_keyUpHandler(event:KeyboardEvent):void
+			{
+				if ( event.keyCode != 13 )
+				{
+					return;
+				}
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_usage_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_metertype_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			protected function fltr_qtytype_changeHandler(event:IndexChangeEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				startFiltering();
+			}
+			
+			private function startFiltering():void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				fields = new Object();
+				types = new Object();
+				
+				
+				if(fltr_meter.text!='')
+				{					
+					fields["bam_code||bam_name"] = fltr_meter.text+"||"+fltr_meter.text;
+				}
+				else
+				{
+					fields["bam_code||bam_name"] = "";
+				}
+				types["bam_code||bam_name"] = "STRING||STRING";
+				
+				
+				if ( this.currentState != "widget" )
+				{
+					if (fltr_usage.selectedIndex > -1) 
+					{
+						fields["bam_usage_id"] = loadMeterUsageList[fltr_usage.selectedIndex].bam_usage_id;
+					}
+					else
+					{
+						if ( global.setComboBoxNoSelection == true )
+						{
+							fltr_usage.selectedIndex = -1;
+						}
+						fields["bam_usage_id"] = "";
+					}
+					types["bam_usage_id"] = "EXACT_STRING";
+					
+					if (fltr_metertype.selectedIndex > -1) 
+					{
+						fields["bam_type_id"] = meterTypeList[fltr_metertype.selectedIndex].ba_meter_id;
+					}
+					else
+					{
+						if ( global.setComboBoxNoSelection == true )
+						{
+							fltr_metertype.selectedIndex = -1;
+						}
+						fields["bam_type_id"] = "";
+					}
+					types["bam_type_id"] = "EXACT_STRING";
+					
+					if (fltr_qtytype.selectedIndex > -1) 
+					{
+						fields["bam_qty_type"] = qtyTypeList[fltr_qtytype.selectedIndex].qty_id;
+					}
+					else
+					{
+						if ( global.setComboBoxNoSelection == true )
+						{
+							fltr_qtytype.selectedIndex = -1;
+						}
+						fields["bam_qty_type"] = "";
+					}
+					types["bam_qty_type"] = "EXACT_STRING";
+					
+				}
+				
+				currentFilter = "WHERE 1=1 ";
+				
+				currentFields = fields;
+				currentTypes = types;
+				
+				this.startLoadingPages();
+				
+				trace("this.grid.scroller3333", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			private function findByPrimaryKey(code:String):void
+			{
+				var fields:Object;
+				var types:Object;
+				
+				fields = new Object();
+				types = new Object();
+				
+				fields["bam_code"] = code;
+				types["bam_code"] = "EXACT_STRING";
+				
+				//currentPage=1;
+				pagedRecords.currentPage=1;
+				pagedRecords.removeAll();
+				pagedRecords.refresh();
+				//this.pagedRecords.service( fields, types, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( fields, types, currentSorts, currentOrders );
+			}
+			
+			protected function filterRecords(event:MouseEvent):void
+			{
+				if (currentState == "edit") clearDetail();
+				this.startFiltering();
+			}
+			
+			protected function refreshRecords(event:MouseEvent):void
+			{
+				if ( currentState != "widget" )
+				{
+					currentState = 'normal';
+					dataGrid.enabled=true;
+				}
+				clearDetail();
+				fltr_meter.text = "";
+				if ( currentState != "widget" )
+				{
+					fltr_usage.selectedIndex = -1;
+					fltr_qtytype.selectedIndex = -1;
+					fltr_metertype.selectedIndex = -1;
+				}
+				
+				dataGrid.selectedIndex = -1;
+				currentFilter = null;
+				currentOrder = null;
+				currentFields = new Object();
+				currentTypes = new Object();
+				
+				currentSorts = new Object();
+				currentOrders = new Object();
+				var currentRenderer:IGridItemRenderer;
+				for (var i:int=0; i < dataGrid.columns.length; i++)
+				{
+					currentRenderer = dataGrid.columnHeaderGroup.getHeaderRendererAt(i);
+					if ( currentRenderer != null)
+					{
+						(currentRenderer as DKI_HeaderColumn_Renderer).setImage('');
+					}
+					//(currentRenderer as DKI_HeaderColumn_Renderer).setImage(''); 
+				}
+				this.startFiltering();
+				//this.startLoadingPages();
+				trace("this.grid.scroller2222", this.dataGrid.scroller);
+				trace("this.grid.scroller.verticalScrollBar.value", this.dataGrid.scroller.verticalScrollBar.value);
+			}
+			
+			protected function clearDetail(): void
+			{
+				if (currentState != 'widget')
+				{
+				}
+			}			
+			
+			private function editRecord():void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canUpdate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.bam_code 			= bam_code.text;
+				obj.bam_name 			= bam_name.text;
+				obj.bam_min_flow 		= bam_min_flow.text;
+				obj.bam_max_flow 		= bam_max_flow.text;
+				obj.bam_kfa 			= bam_kfa.text;
+				
+				if (bam_usage_id.selectedIndex>=0)
+				{
+					obj.bam_usage_id = loadMeterUsageList[bam_usage_id.selectedIndex].bam_usage_id;
+				}
+				else
+				{
+					obj.bam_usage_id = dataGrid.selectedItem.bam_usage_id;
+				}
+				
+				if (bam_type_id.selectedIndex>=0)
+				{
+					obj.bam_type_id = meterTypeList[bam_type_id.selectedIndex].ba_meter_id;
+				}
+				else
+				{
+					obj.bam_type_id = dataGrid.selectedItem.bam_type_id;
+				}
+				
+				if (bam_qty_type.selectedIndex>=0)
+				{
+					obj.bam_qty_type = qtyTypeList[bam_qty_type.selectedIndex].qty_id;
+				}
+				else
+				{
+					obj.bam_qty_type = dataGrid.selectedItem.bam_qty_type;
+				}
+				
+				updateAction.service( obj );
+			}
+			
+			protected function updateData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.updateAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_UPDATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_UPDATE__FAILURE'));
+				}
+				
+				var code:String;
+				code = bam_code.text;
+				
+				currentState="normal";
+				findByPrimaryKey( code );
+				
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			private function doDelete(): void
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				
+				/*
+				TODO - is this product used by other records?
+				*/
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors );
+				}
+				else
+				{
+					var canDelete:DeleteDialog = new DeleteDialog(deleteRecord, hasPassword);
+				}
+			}
+			
+			private function deleteRecord():void
+			{
+				var obj:Object = new Object();
+				
+				
+				obj.bam_code 			= dataGrid.selectedItem.bam_code;
+				obj.bam_name 			= dataGrid.selectedItem.bam_name;
+				obj.bam_min_flow 		= dataGrid.selectedItem.bam_min_flow;
+				obj.bam_max_flow 		= dataGrid.selectedItem.bam_max_flow;
+				obj.bam_kfa 			= dataGrid.selectedItem.bam_kfa;
+				obj.bam_type_id 		= dataGrid.selectedItem.bam_type_id;
+				obj.bam_qty_type 		= dataGrid.selectedItem.bam_qty_type;
+				obj.bam_usage_id 		= dataGrid.selectedItem.bam_usage_id;
+				
+				deleteAction.service( obj );
+			}
+			
+			protected function deleteData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.deleteAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_DELETE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_DELETE__FAILURE'));
+				}
+				
+				currentState="normal";
+				this.startFiltering();
+				dataGrid.selectedIndex = -1;
+			}
+			
+			private function checkLoadMeterKey():void
+			{
+				var obj:Object=new Object();
+				
+				obj.bam_code = this.bam_code.text;
+				
+				loadMeterKeyChecker.service( obj.bam_code );
+			}
+			
+			protected function loadMeterKeyChecker_resultHandler( ):void
+			{
+				if ( loadMeterKeyChecker.dataInteger > 0 )
+				{
+					global.msgWarning( resourceManager.getString('default','ALERT__LOAD_METERS_EXIST') );
+					this.btn_save.enabled = this.canCreate;
+				}
+				else
+				{
+					if ( this._saveButtonClicked == true )
+					{
+						this.createRecord();
+					}
+				}
+				
+				this._saveButtonClicked = false;
+			}
+			
+			private function checkFields():int
+			{
+				var errors:String="";
+				var index:int=0;
+				
+				
+				if ( StringUtil.trim(bam_kfa.text).length> 0  )
+				{
+					var kfa:Number;
+					
+					kfa = Number(StringUtil.trim(bam_kfa.text));
+					if ( kfa < this.minKFA || kfa > this.maxKFA )
+					{
+						index += 1;
+						errors += String(index) + ". " + resourceManager.getString('default','LOADMETER.PROMOT.BAM_KFA') + "[" + String(this.minKFA) + " ~ " + String(this.maxKFA) + "]\n";
+					}
+					
+				}
+				
+				if ( StringUtil.trim(bam_min_flow.text).length> 0  )
+				{
+					var minflow:Number;
+					
+					minflow = Number(StringUtil.trim(bam_min_flow.text));
+					if ( minflow < this.minMinFlow || minflow > this.maxMinFlow )
+					{
+						index += 1;
+						errors += String(index) + ". " + resourceManager.getString('default','LOADMETER.PROMOT.BAM_MIN_FLOW') + "[" + String(this.minMinFlow) + " ~ " + String(this.maxMinFlow) + "]\n";
+					}
+					
+				}
+				
+				if ( StringUtil.trim(bam_max_flow.text).length> 0  )
+				{
+					var maxflow:Number;
+					
+					maxflow = Number(StringUtil.trim(bam_max_flow.text));
+					if ( maxflow < this.minMaxFlow || maxflow > this.maxMaxFlow )
+					{
+						index += 1;
+						errors += String(index) + ". " + resourceManager.getString('default','LOADMETER.PROMOT.BAM_MAX_FLOW') + "[" + String(this.minMaxFlow) + " ~ " + String(this.maxMaxFlow) + "]\n";
+					}
+					
+				}
+				
+				if ( StringUtil.trim(bam_min_flow.text).length> 0 && StringUtil.trim(bam_max_flow.text).length> 0  )
+				{
+					minflow = Number(StringUtil.trim(bam_min_flow.text));
+					maxflow = Number(StringUtil.trim(bam_max_flow.text));
+					if ( maxflow < minflow )
+					{
+						index += 1;
+						errors += String(index) + ". " + resourceManager.getString('default','LOADMETER.PROMOT.BAM_SEQ_FLOW') + "\n";
+					}
+					
+				}
+				
+				if ( index > 0 )
+				{
+					var errorBox:MessageDialog = new MessageDialog( errors, 400 );
+				}
+				
+				return index;
+			}
+
+			private function createRecord():void
+			{
+				
+				if ( this.checkFields() > 0 )
+				{
+					this.btn_save.enabled = this.canCreate;
+					return;
+				}
+				
+				var obj:Object = new Object();
+				
+				
+				obj.bam_code 			= bam_code.text;
+				obj.bam_name 			= bam_name.text;
+				obj.bam_min_flow 		= bam_min_flow.text;
+				obj.bam_max_flow 		= bam_max_flow.text;
+				obj.bam_kfa 			= bam_kfa.text;
+				
+				if (bam_usage_id.selectedIndex>=0)
+				{
+					obj.bam_usage_id = loadMeterUsageList[bam_usage_id.selectedIndex].bam_usage_id;
+				}
+				else
+				{
+					obj.bam_usage_id = loadMeterUsageList[0].bam_usage_id;
+				}
+				
+				
+				if (bam_type_id.selectedIndex>=0)
+				{
+					obj.bam_type_id = meterTypeList[bam_type_id.selectedIndex].ba_meter_id;
+				}
+				else
+				{
+					obj.bam_type_id = "";//meterTypeList[0].ba_meter_id;
+				}
+				
+				if (bam_qty_type.selectedIndex>=0)
+				{
+					obj.bam_qty_type = qtyTypeList[bam_qty_type.selectedIndex].qty_id;
+				}
+				else
+				{
+					obj.bam_qty_type = qtyTypeList[0].qty_id;
+				}
+				
+				createAction.service( obj );
+			}
+			
+			protected function createData_resultHandler( ):void
+			{
+				clearDetail();
+				if ( this.createAction.dataString == "OK" )
+				{
+					global.msgSuccess(resourceManager.getString('default','MSG_CREATE__SUCCESS'));
+				}
+				else
+				{
+					global.msgFail(resourceManager.getString('default','ERROR_CREATE__FAILURE'));
+				}
+				
+				var code:String;
+				code = bam_code.text;
+				
+				currentState="normal";
+				findByPrimaryKey( code );
+				
+				dataGrid.selectedIndex = -1;
+				dataGrid.enabled=true;
+			}
+			
+			protected function createNewRecord(event:MouseEvent):void
+			{	
+				idx=dataGrid.selectedIndex;
+				dataGrid.ensureCellIsVisible(idx);
+				currentState="create";
+				this.btn_save.enabled = this.canCreate;
+				dataGrid.enabled=false;
+				
+				if ( _formColumnSettingsString.length > 0 )
+				{
+					global.adjustFormFieldSettings( _formColumnSettingsString.substr(1), this );
+				}
+			}
+			
+			
+			public function getArrayCollection(obj:Object):ArrayCollection
+			{
+				var temp:ArrayCollection = new ArrayCollection;
+				temp.addItem( obj );
+				return temp;
+			}
+			
+			public function convertDateToLocaleString(dt:String):String
+			{
+				var dt_string:String;
+				var dt_date:Date = new Date();
+				
+				dt_string = ""; 
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+					dt_string = dateFormatter.format( dt_date);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_string;
+			}
+			
+			public function convertDateToLocale(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					dt_date = DateField.stringToDate(dt,"YYYY-MM-DD");
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_date;
+			}
+			
+			public function convertDateToLocaleLong(dt:String):Date
+			{
+				var dt_date:Date = new Date();
+				
+				if ((dt!=null) && (dt!='null') && (dt!=''))
+				{
+					//dt_date = DateField.stringToDate(dt,"YYYY-MM-DD HH:NN:SS");
+					dt_date = DateTimeFunc.createDate(
+						int(dt.substr(0, 4))
+						, int(dt.substr(5, 2))
+						, int(dt.substr(8, 2))
+						, int(dt.substr(11, 2))
+						, int(dt.substr(14, 2))
+						, int(dt.substr(17, 2))
+					);
+				}
+				//trace ("convertDateToLocale", dt, dt_date, dt_string);
+				return dt_date;
+			}
+			
+			public function getDefaultDate():Date
+			{
+				var now_date:Date;
+				var def_date:Date;
+				
+				now_date = new Date();
+				def_date = DateTimeFunc.dateAdd( "yyyy", 1, now_date );
+				
+				//trace ("getDefaultDate", now_date, def_date);
+				
+				return def_date;
+			}
+			
+			protected function view_detailsHandler(event:FlexEvent):void
+			{
+			}
+			
+			protected function save_clickHandler():void
+			{
+				this.btn_save.enabled = false;
+				doSave();
+				//this.confirmSave = new ActionDialog( doSave, doNothing, resourceManager.getString('default','CONFIRM_SAVE_RATIOS') );
+				
+				//this.startLoadingPages();
+			}
+			
+			protected function doSave():void
+			{
+				if (currentState == "create")
+				{
+					//createRecord();
+					this._saveButtonClicked = true;
+					checkLoadMeterKey();
+					//checkLoadMeterKeyBeforeCreate();
+				}
+				if (currentState == "edit")
+				{
+					editRecord();
+				}
+				if (currentState == "detail")
+				{
+					editRecord();
+				}
+			}
+			
+			protected function killBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=true;
+				pagedRecords.interruptor=true;
+				trace("WTF >>>>>>>>>>");
+			}
+			
+			protected function resumeBtn_clickHandler(event:MouseEvent):void
+			{
+				//interruptor=false;
+				pagedRecords.interruptor=false;
+				
+				this.resumeLoadingPages();
+				trace("RESUME >>>>>>>>>>");
+			}
+			
+			protected function resumeLoadingPages():void
+			{
+				killBtn.setStyle("chromeColor","0xff0000");
+				this.killBtn.includeInLayout=true;
+				this.killBtn.visible = true;
+				this.killBtn.enabled = true;
+				
+				resumeBtn.setStyle("chromeColor","0x00ff00");
+				this.resumeBtn.includeInLayout=true;
+				this.resumeBtn.visible = true;
+				this.resumeBtn.enabled = false;
+				
+				this.btn_create.enabled = false
+				this.btn_export.enabled = false;
+				this.dataGrid.enabled = false;
+				this.toolbar.enabled = false;
+				
+				//pb.values(pagedRecords.length,totalLength);
+				pb.values(pagedRecords.length,pagedRecords.totalLength);
+				//currentPage = int(this.pagedRecords.length/currentPageSize) + 1;
+				//this.pagedRecords.service( currentFields, currentTypes, currentSorts, currentOrders, currentPage, currentPageSize );
+				this.pagedRecords.listService( currentFields, currentTypes, currentSorts, currentOrders );
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:DateTimeFormatter id="dateFormatter" locale="{LocaleID.DEFAULT}" dateStyle="short" timeStyle="none"/>
+		<s:DateTimeFormatter id="dateConvert" dateTimePattern="yyyy-MM-dd"/>
+		<s:DateTimeFormatter id="dateConvertLong" dateTimePattern="yyyy-MM-dd HH:mm:ss"/>
+		<components:ValidationGroup id="vg" action="{save_clickHandler}" defaultButton="{btn_save}" parentScreen="{this}" isProtected="{hasPassword}"/>
+	</fx:Declarations>
+	<s:Panel id="panel" width="100%" height="100%"
+			 skinClass="skins.WidgetPanelSkin"
+			 skinClass.widget="skins.NullSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:VGroup width="100%" id="toolbar"  >
+			<s:HGroup gap="5" paddingBottom="2" paddingTop="2" width="100%">
+				<components:DKI_ValidatorInput id="fltr_meter" validationType="search" minWidth="160" height="{labelHeight}" width="100%"
+											   keyUp="fltr_meter_keyUpHandler(event)"  
+											   prompt="{resourceManager.getString('default','LOADMETER.LABEL.BAM_METER')+resourceManager.getString('default','FILTER')}"/>
+				
+				<components:DKI_DropDownList id="fltr_usage" width="200" height="100%"
+											 change="fltr_usage_changeHandler(event)" cornerRadius="10"
+											 labelField="bam_usage_name" prompt="{resourceManager.getString('default','LOADMETER.LABEL.BAM_USAGE')+resourceManager.getString('default','FILTER')}"
+											 visible.widget="false" excludeFrom="widget" dataProvider="{loadMeterUsageList}"/>
+				<components:DKI_DropDownList id="fltr_qtytype" width="200" height="100%"
+											 change="fltr_qtytype_changeHandler(event)" cornerRadius="10"
+											 labelField="qty_name" prompt="{resourceManager.getString('default','LOADMETER.LABEL.BAM_QTY_TYPE')+resourceManager.getString('default','FILTER')}"
+											 visible.widget="false" excludeFrom="widget" dataProvider="{qtyTypeList}"/>
+				<components:DKI_DropDownList id="fltr_metertype" width="200" height="100%"
+											 change="fltr_metertype_changeHandler(event)" cornerRadius="10"
+											 labelField="ba_meter_name" prompt="{resourceManager.getString('default','LOADMETER.LABEL.BAM_TYPE')+resourceManager.getString('default','FILTER')}"
+											 visible.widget="false" excludeFrom="widget" dataProvider="{meterTypeList}"/>
+				
+				<s:Spacer width="100%"/>
+				<components:DKI_Button id="filterBtn" height="24" noLabel="false" click="filterRecords(event)"
+									   type="filteron"/>
+				<components:DKI_Button id="resetBtn" height="24" noLabel="false" click="refreshRecords(event)"
+									   type="filteroff"/>
+				<components:DKI_Button id="btn_export" label="{resourceManager.getString('default','EXPORTDATA')}" type="report" click="exportCsvHandler(event)" includeIn="normal"/>
+				<components:DKI_Button id="btn_create" label="{resourceManager.getString('default','CREATE')}" height="24" click="createNewRecord(event)" includeIn="normal" enabled="{this.canCreate}" type="create"/>	
+			</s:HGroup>
+		</s:VGroup>
+		
+		
+		<s:DataGrid id="dataGrid" width="100%" height="100%" requestedRowCount="4"
+					selectionChange="dataGrid_selectionChangeHandler(event)"
+					skinClass="skins.DKI_DataGrid_Skin"
+					height.widget="100%">
+			<s:columns>
+				<s:ArrayList>
+					<s:source>
+						<s:GridColumn dataField="bam_usage_id" headerText="{resourceManager.getString('default','LOADMETER.LABEL.BAM_USAGE_ID')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="bam_usage_name" headerText="{resourceManager.getString('default','LOADMETER.LABEL.BAM_USAGE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="bam_code" headerText="{resourceManager.getString('default','LOADMETER.LABEL.BAM_CODE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="bam_type_id" headerText="{resourceManager.getString('default','LOADMETER.LABEL.BAM_TYPE_ID')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="bam_type_name" headerText="{resourceManager.getString('default','LOADMETER.LABEL.BAM_TYPE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="bam_qty_type" headerText="{resourceManager.getString('default','LOADMETER.LABEL.BAM_QTY_TYPEID')}" visible="false"></s:GridColumn>
+						<s:GridColumn dataField="bam_qty_typename" headerText="{resourceManager.getString('default','LOADMETER.LABEL.BAM_QTY_TYPE')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="bam_name" headerText="{resourceManager.getString('default','LOADMETER.LABEL.BAM_NAME')}" visible="true"></s:GridColumn>
+						
+						<s:GridColumn dataField="bam_min_flow" headerText="{resourceManager.getString('default','LOADMETER.LABEL.BAM_MIN_FLOW')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="bam_max_flow" headerText="{resourceManager.getString('default','LOADMETER.LABEL.BAM_MAX_FLOW')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="bam_kfa" headerText="{resourceManager.getString('default','LOADMETER.LABEL.BAM_KFA')}" visible="true"></s:GridColumn>
+						<s:GridColumn dataField="bam_last_mod" headerText="{resourceManager.getString('default','LOADMETER.LABEL.BAM_LAST_MOD')}" visible="true" itemRenderer="renderers.GridDateTimeRenderer"></s:GridColumn>
+					</s:source>
+				</s:ArrayList>
+			</s:columns>
+			<s:dataProvider>
+				<!--s:AsyncListView id="pgList" list="{getPagedResult.lastResult}"/-->
+				<s:AsyncListView id="pgList" list="{pagedRecords}"/>
+			</s:dataProvider>
+		</s:DataGrid>
+		<s:HGroup width="100%">
+			<components:Downloader id="pb" width="100%" height="18"/>
+			<!--mx:ProgressBar id="pb" width="100%" height="22" visible="false" includeInLayout="false"  mode="manual" source="{this.pgList}" label="{this.currentLength} records shown from {this.currentLength} loaded out of {this.totalLength} found." labelPlacement="center"/-->
+			<s:Button id="killBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="killBtn_clickHandler(event)"/>
+			<s:Button id="resumeBtn" width="18" height="18" label="" cornerRadius="12" visible="false" includeInLayout="false"
+					  click="resumeBtn_clickHandler(event)"/>
+		</s:HGroup>
+	</s:Panel>
+	
+	<s:Panel id="details" includeIn="edit,create,detail" width="100%" height="250"
+			 itemCreationPolicy="immediate" skinClass="skins.WidgetPanelSkin">
+		<s:layout>
+			<s:VerticalLayout/>
+			<!--s:TileLayout/-->
+		</s:layout>
+		
+		<s:Spacer height="5"/>
+		<s:VGroup width="100%">
+			
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','LOADMETER.LABEL.BAM_USAGE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="bam_usage_id" 
+													  dataProvider="{loadMeterUsageList}" 
+													  labelField="bam_usage_name" 
+													  selectedItem="{dataGrid.selectedItem.bam_usage_name}" enabled="false" 
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','LOADMETER.LABEL.BAM_USAGE')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','LOADMETER.LABEL.BAM_USAGE')}" 
+													  />
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="" verticalAlign="middle"/>
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','LOADMETER.LABEL.BAM_TYPE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="bam_type_id" 
+													  dataProvider="{meterTypeList}" 
+													  labelField="ba_meter_name" 
+													  selectedItem="{dataGrid.selectedItem.bam_type_name}" enabled="false" 
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','LOADMETER.LABEL.BAM_TYPE')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','LOADMETER.LABEL.BAM_TYPE')}" 
+													  />
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="" verticalAlign="middle"/>
+				</s:HGroup>
+				
+			</s:HGroup>
+			
+			<s:Spacer height="{this.spaceHeight}" />
+			
+			<s:HGroup width="100%">
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','LOADMETER.LABEL.BAM_CODE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="bam_code" maxChars="10" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.bam_code}" editable="false" enabled="false" 
+												   text.create="" editable.create="true" enabled.create="true" focusOut="checkLoadMeterKey()" 
+												   required="true" validationType="alphanumeric" validationGroup="{vg}" automationName="{resourceManager.getString('default','LOADMETER.LABEL.BAM_CODE')}" 
+												   />
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="" verticalAlign="middle"/>
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','LOADMETER.LABEL.BAM_NAME')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="bam_name" maxChars="30" 
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.bam_name}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="" editable.create="true" enabled.create="true" 
+												   required="true" validationType="document" validationGroup="{vg}" automationName="{resourceManager.getString('default','LOADMETER.LABEL.BAM_NAME')}" 
+												   />
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="" verticalAlign="middle"/>
+				</s:HGroup>
+			</s:HGroup>
+			
+			<s:Spacer height="{this.spaceHeight}" />
+			
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','LOADMETER.LABEL.BAM_MIN_FLOW')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="bam_min_flow"  
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.bam_min_flow}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="" editable.create="true" enabled.create="true" 
+												   required="true" validationType="integer_positive" validationGroup="{vg}" automationName="{resourceManager.getString('default','LOADMETER.LABEL.BAM_MIN_FLOW')}" 
+												   />
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="[{minMinFlow} ~ {maxMinFlow}]" verticalAlign="middle"/>
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','LOADMETER.LABEL.BAM_MAX_FLOW')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="bam_max_flow"  
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.bam_max_flow}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="" editable.create="true" enabled.create="true" 
+												   required="true" validationType="integer_positive" validationGroup="{vg}" automationName="{resourceManager.getString('default','LOADMETER.LABEL.BAM_MAX_FLOW')}" 
+												   />
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="[{minMaxFlow} ~ {maxMaxFlow}]" verticalAlign="middle"/>
+				</s:HGroup>
+			</s:HGroup>
+			
+			<s:Spacer height="{this.spaceHeight}" />
+			
+			<s:HGroup>
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','LOADMETER.LABEL.BAM_QTY_TYPE')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorComboBox id="bam_qty_type" 
+													  dataProvider="{qtyTypeList}" 
+													  labelField="qty_name" 
+													  selectedItem="{dataGrid.selectedItem.bam_qty_typename}" enabled="true" 
+													  selectedItem.create="" selectedIndex.create="-1" enabled.create="true" 
+													  width="{fieldWidth}" height="{fieldHeight}" 
+													  prompt="{resourceManager.getString('default','SELECT')+resourceManager.getString('default','LOADMETER.LABEL.BAM_QTY_TYPE')}"
+													  required="true" validationGroup="{vg}" automationName="{resourceManager.getString('default','LOADMETER.LABEL.BAM_QTY_TYPE')}" 
+													  />
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="" verticalAlign="middle"/>
+				</s:HGroup>
+				
+				<s:Spacer width="{this.spaceWidth}" />
+				
+				<s:HGroup>
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="{resourceManager.getString('default','LOADMETER.LABEL.BAM_KFA')}" verticalAlign="middle"/>
+					<components:DKI_ValidatorInput id="bam_kfa"  
+												   width="{fieldWidth}" height="{fieldHeight}" 
+												   text="{dataGrid.selectedItem.bam_kfa}" editable="false" enabled="false" editable.edit="true" enabled.edit="true"  
+												   text.create="" editable.create="true" enabled.create="true" 
+												   required="true" validationType="numeric_positive" validationGroup="{vg}" automationName="{resourceManager.getString('default','LOADMETER.LABEL.BAM_KFA')}" 
+												   />
+					<s:Label width="{labelWidth}" height="{labelHeight}" text="[{minKFA} ~ {maxKFA}]" verticalAlign="middle"/>
+				</s:HGroup>
+			</s:HGroup>
+			
+			
+			<s:Spacer height="5" />
+			
+		</s:VGroup>
+		
+		<s:Spacer height="0" />
+		
+		<s:HGroup width="100%" paddingBottom="4" paddingTop="0" gap="5">
+			<s:Spacer width="100%"/>
+			<components:DKI_Button id="btn_delete" label="{resourceManager.getString('default','DELETE')}" height="100%" click="doDelete()" includeIn="edit" enabled="{this.canDelete}" type="delete"/>
+			<components:DKI_Button id="btn_save" label.create="{resourceManager.getString('default','SAVE')}" label="{resourceManager.getString('default','UPDATE')}" height="100%" includeIn="edit,create,detail" 
+								   enabled.create="{this.canCreate}" enabled="{this.canUpdate}" type.create="create" type="edit" focusEnabled="true" focusEnabled.create="false"/>
+			<components:DKI_Button id="btn_cancel" label="{resourceManager.getString('default','CANCEL')}" height="100%" click="cancel_clickHandler()" enabled="true" type="cancel" focusEnabled="true" focusEnabled.create="false"/>
+		</s:HGroup>
+	</s:Panel>
+	
+</s:VGroup>

@@ -36,7 +36,6 @@ const IButtonForm = Form.create({ name: "form_in_modal" })(
     };
 
     render() {
-      const { isValid } = this.state;
       const { visible, onCancel, onCreate, form } = this.props;
       const { getFieldDecorator } = form;
       return (
@@ -50,7 +49,7 @@ const IButtonForm = Form.create({ name: "form_in_modal" })(
           destroyOnClose
         >
           <Form layout="vertical">
-            <Form.Item label="Tag Text" validateStatus={isValid} hasFeedback>
+            <Form.Item label="Tag Text" hasFeedback>
               {getFieldDecorator(
                 "tag_text",
                 {

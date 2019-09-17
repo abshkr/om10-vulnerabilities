@@ -18,6 +18,7 @@ const defaults = data => [
     title: "Tank Code",
     dataIndex: "tank_code",
     key: "tank_code",
+    align: "center",
     fixed: "left",
     sorter: (a, b) => b.tank_code - a.tank_code,
     // eslint-disable-next-line
@@ -45,7 +46,7 @@ const defaults = data => [
     key: "tank_base_name",
     filters: generateOptions(data, "tank_base_name"),
     onFilter: (value, record) => record.tank_base_name.indexOf(value) === 0,
-    width: 300
+    width: 200
   },
   {
     title: "Product Category",
@@ -53,12 +54,13 @@ const defaults = data => [
     key: "tank_bclass_name",
     filters: generateOptions(data, "tank_bclass_name"),
     onFilter: (value, record) => record.tank_bclass_name.indexOf(value) === 0,
-    width: 450
+    width: 300
   },
   {
     title: "Density",
     dataIndex: "tank_density",
     key: "tank_density",
+    align: "center",
     sorter: (a, b) => a.tank_density - b.tank_density,
     sortDirections: ["descend", "ascend"],
     width: 150,
@@ -68,6 +70,7 @@ const defaults = data => [
     title: "Daily Variance Limit",
     dataIndex: "tank_dtol_volume",
     key: "tank_dtol_volume",
+    align: "center",
     sorter: (a, b) => a.tank_dtol_volume - b.tank_dtol_volume,
     sortDirections: ["descend", "ascend"],
     width: 200,
@@ -77,6 +80,7 @@ const defaults = data => [
     title: "Daily Variance Limit",
     dataIndex: "tank_dtol_percent",
     key: "tank_dtol_percent",
+    align: "center",
     sorter: (a, b) => a.tank_dtol_percent - b.tank_dtol_percent,
     sortDirections: ["descend", "ascend"],
     width: 200,
@@ -86,6 +90,7 @@ const defaults = data => [
     title: "Monthly Variance Limit",
     dataIndex: "tank_mtol_volume",
     key: "tank_mtol_volume",
+    align: "center",
     sorter: (a, b) => a.tank_mtol_volume - b.tank_mtol_volume,
     sortDirections: ["descend", "ascend"],
     width: 200,
@@ -95,6 +100,7 @@ const defaults = data => [
     title: "Monthly Variance Limit",
     dataIndex: "tank_mtol_percent",
     key: "tank_mtol_percent",
+    align: "center",
     sorter: (a, b) => a.tank_mtol_percent - b.tank_mtol_percent,
     sortDirections: ["descend", "ascend"],
     width: 200,

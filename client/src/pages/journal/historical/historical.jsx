@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { journal } from "../../../api";
 import moment from "moment";
+import columns from "./columns";
+import { journal } from "../../../api";
 import { search } from "../../../utils";
 import { Calendar, DataTable, Download, Filter } from "../../../components";
-
-import columns from "./columns";
 
 export default class Historical extends Component {
   constructor(props) {
@@ -13,7 +12,7 @@ export default class Historical extends Component {
     this.state = {
       data: [],
       start: moment()
-        .subtract(1, "day")
+        .subtract(11, "hour")
         .format("YYYY-MM-DD h:mm"),
       end: moment().format("YYYY-MM-DD h:mm"),
       value: "",
@@ -24,6 +23,7 @@ export default class Historical extends Component {
 
   handleSearch = query => {
     const { value } = query.target;
+
     this.setState({
       filtered: search(value, this.state.data),
       value
@@ -32,6 +32,7 @@ export default class Historical extends Component {
 
   handleFetch = (start, end) => {
     this.setState({ isLoading: true });
+
     axios.all([journal.searchJournal(start, end)]).then(
       axios.spread(journal => {
         this.setState({
@@ -44,6 +45,7 @@ export default class Historical extends Component {
 
   componentDidMount() {
     const { start, end } = this.state;
+
     this.handleFetch(start, end);
   }
 
@@ -52,10 +54,24 @@ export default class Historical extends Component {
     const { config } = this.props;
     return (
       <div>
-        <Calendar start={start} end={end} change={this.handleFetch} />
         <Filter value={value} search={this.handleSearch} />
-        <Download data={data} type={`journal_${start}-${end}`} style={{ float: "right" }} />
-        <DataTable rowKey="seq" columns={columns(data, config)} data={!!filtered ? filtered : data} isLoading={isLoading} offset={0} scroll={300} />
+        <Calendar
+          start={start}
+          end={end}
+          change={this.handleFetch}
+          style={{ marginLeft: 5 }}
+        />
+        <Download
+          data={data}
+          type={`journal_${start}-${end}`}
+          style={{ float: "right" }}
+        />
+        <DataTable
+          rowKey="seq"
+          columns={columns(data, config)}
+          data={!!filtered ? filtered : data}
+          isLoading={isLoading}
+        />
       </div>
     );
   }

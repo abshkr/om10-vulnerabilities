@@ -41,17 +41,23 @@ while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
 
     while ($row = oci_fetch_array($stmt2, OCI_ASSOC + OCI_RETURN_NULLS)) {
         $base_item2 = array();
-        foreach ($row as $key => $value) {
-            $base_item2[strtolower($key)] = $value;
+        // foreach ($row as $key => $value) {
+        //     $base_item2[strtolower($key)] = $value;
+        // }
+        if (isset($row['PERM_AREA'])) {
+            // write_log(json_encode($row), __FILE__, __LINE__);
+            array_push($base_item["area_accesses"], $row['PERM_AREA']);
         }
 
-        $base_item2 = array_map(function ($v) {
-            return (is_null($v)) ? "" : $v;
-        }, $base_item2);
+        // $base_item2['area_name'] = $row['area_name'];
 
-        if (count($base_item2) > 0) {
-            array_push($base_item["area_accesses"], $base_item2);
-        }
+        // $base_item2 = array_map(function ($v) {
+        //     return (is_null($v)) ? "" : $v;
+        // }, $base_item2);
+
+        // if (count($base_item2) > 0) {
+        //     array_push($base_item["area_accesses"], $base_item2);
+        // }
     }
 
     //Expiry dates from EXPIRY_DATE_DETAILS

@@ -37,6 +37,10 @@ export function updatePersonnel(payload) {
   return axios.post(`https://${api}/api/pages/personnel/update.php`, payload);
 }
 
+export function updatePersonnelPassword(code, password) {
+  return axios.post(`https://${api}/api/pages/personnel/update_password.php?per_code=${code}&password=${password}`);
+}
+
 export function deletePersonnel(payload) {
   return axios.post(`https://${api}/api/pages/personnel/delete.php?per_code=${payload}`);
 }

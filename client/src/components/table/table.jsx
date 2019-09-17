@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 
-import { Table, Icon } from "antd";
-import { Resizable } from "react-resizable";
-import "./table.css";
+import { Table, Icon } from 'antd';
+import { Resizable } from 'react-resizable';
+import './table.css';
 
-const loader = <Icon type="loading" style={{ fontSize: 24, color: "#68a4ec" }} spin />;
+const loader = <Icon type="loading" style={{ fontSize: 24, color: '#68a4ec' }} spin />;
 
 const ResizeableTitle = props => {
   const { onResize, width, ...restProps } = props;
@@ -22,7 +22,7 @@ const ResizeableTitle = props => {
 
 const paginationConfig = {
   showSizeChanger: true,
-  pageSizeOptions: ["10", "30", "50", "100"],
+  pageSizeOptions: ['10', '30', '50', '100'],
   defaultPageSize: 100
 };
 
@@ -52,7 +52,19 @@ class DataTable extends React.Component {
   };
 
   render() {
-    const { data, rowKey, change, resize, click, isLoading, scroll, nested } = this.props;
+    const {
+      data,
+      rowKey,
+      change,
+      resize,
+      click,
+      isLoading,
+      scroll,
+      nested,
+      height,
+      size,
+      footer
+    } = this.props;
 
     const columns = this.state.columns.map((col, index) => ({
       ...col,
@@ -64,7 +76,7 @@ class DataTable extends React.Component {
 
     return (
       <Table
-        size="middle"
+        size={!!size ? size : 'small'}
         bordered
         loading={{
           indicator: loader,
@@ -77,7 +89,10 @@ class DataTable extends React.Component {
         dataSource={data}
         onChange={change}
         pagination={paginationConfig}
-        scroll={!!scroll ? { x: !!scroll ? scroll : 2400, y: "75vh" } : { y: "75vh" }}
+        scroll={
+          !!scroll ? { x: !!scroll ? scroll : 2400, y: '81vh' } : { y: !!height ? height : '81vh' }
+        }
+        footer={!!footer ? () => footer : null}
         onRow={record => {
           return {
             onClick: () => {
