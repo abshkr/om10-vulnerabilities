@@ -1,21 +1,19 @@
-import React, { useState } from "react";
-import Cell from "./cell";
-import Row from "./row";
-import _ from "lodash";
-import moment from "moment";
-import { Table, Button, Popconfirm, Icon } from "antd";
+import React, { useState } from 'react';
+import Cell from './cell';
+import Row from './row';
+import _ from 'lodash';
+import moment from 'moment';
+import { Table, Button, Popconfirm, Icon } from 'antd';
 
 const Expiry = ({ form, value, t, types }) => {
-  const [count, setCount] = useState(3);
+  const [count, setCount] = useState(value ? value.expiry_dates.length : 3);
   const [data, setData] = useState(!!value ? value.expiry_dates : []);
   const { getFieldDecorator, setFieldsValue } = form;
 
   const handleSave = row => {
     const payload = [...data];
 
-    const index = payload.findIndex(
-      item => row.edt_type_code === item.edt_type_code
-    );
+    const index = payload.findIndex(item => row.edt_type_code === item.edt_type_code);
     const item = payload[index];
 
     payload.splice(index, 1, {
@@ -31,7 +29,7 @@ const Expiry = ({ form, value, t, types }) => {
   };
 
   const handleAdd = () => {
-    const uniqueExpiry = _.uniq(_.map(data, "edt_type_code"));
+    const uniqueExpiry = _.uniq(_.map(data, 'edt_type_code'));
 
     const values = _.reject(types, value => {
       return uniqueExpiry.includes(value.edt_type_code);
@@ -56,63 +54,55 @@ const Expiry = ({ form, value, t, types }) => {
 
   const defaults = [
     {
-      title: t("fields.typeDescription"),
-      dataIndex: "edt_type_desc",
-      key: "edt_type_desc",
+      title: t('fields.typeDescription'),
+      dataIndex: 'edt_type_desc',
+      key: 'edt_type_desc',
       width: 250,
 
       editable: true
     },
     {
-      title: t("fields.expiryDate"),
-      dataIndex: "ed_exp_date",
-      key: "ed_exp_date",
+      title: t('fields.expiryDate'),
+      dataIndex: 'ed_exp_date',
+      key: 'ed_exp_date',
       width: 300,
-      align: "center",
+      align: 'center',
       editable: true,
       render: (text, record) => (
         <span>
-          {text === ""
-            ? t("placeholder.selectDate")
+          {text === ''
+            ? t('placeholder.selectDate')
             : !!text
-            ? moment(text, "YYYY-MM-DD HH:mm:ss").format(
-                moment.localeData().longDateFormat("L")
-              )
-            : t("placeholder.selectDate")}
+            ? Intl.DateTimeFormat().format(moment(text, 'YYYY-MM-DD HH:mm:ss'))
+            : t('placeholder.selectDate')}
         </span>
       )
     },
     {
-      title: t("fields.enabled"),
-      dataIndex: "ed_status",
-      key: "ed_status",
-      align: "center",
+      title: t('fields.enabled'),
+      dataIndex: 'ed_status',
+      key: 'ed_status',
+      align: 'center',
       editable: true,
       render: (text, record) => (
         <span>
-          {text === "" ? (
-            t("placeholder.selectStatus")
-          ) : !!text ? (
-            <Icon type={text === "1" ? "check" : "close"} />
-          ) : (
-            t("placeholder.selectStatus")
-          )}
+          {text === '' ? t('placeholder.selectStatus') : <Icon type={text ? 'check' : 'close'} />}
         </span>
       )
     },
     {
-      title: t("fields.operations"),
-      dataIndex: "operation",
-      align: "center",
-      key: "operation",
+      title: t('fields.operations'),
+      dataIndex: 'operation',
+      align: 'center',
+      key: 'operation',
       render: (text, record) =>
         data.length >= 1 ? (
           <Popconfirm
-            title={t("prompts.delete")}
+            title={t('prompts.delete')}
             onConfirm={() => handleDelete(record.edt_type_code)}
           >
             {/*eslint-disable */}
-            <a href="#">{t("operations.delete")}</a>
+            <a href="#">{t('operations.delete')}</a>
             {/*eslint-enable */}
           </Popconfirm>
         ) : null
@@ -138,7 +128,7 @@ const Expiry = ({ form, value, t, types }) => {
     };
   });
 
-  getFieldDecorator("expiry_dates");
+  getFieldDecorator('expiry_dates');
 
   return (
     <div>
@@ -150,7 +140,7 @@ const Expiry = ({ form, value, t, types }) => {
         style={{ marginBottom: 16 }}
         disabled={data.length === types.length}
       >
-        {t("operations.addNewExpiry")}
+        {t('operations.addNewExpiry')}
       </Button>
 
       <Table
@@ -162,7 +152,7 @@ const Expiry = ({ form, value, t, types }) => {
             cell: Cell
           }
         }}
-        rowClassName={() => "editable-row"}
+        rowClassName={() => 'editable-row'}
         bordered
         dataSource={data}
         columns={columns}

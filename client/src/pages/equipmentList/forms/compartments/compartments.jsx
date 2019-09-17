@@ -64,21 +64,11 @@ const Compartments = ({ form, value, t, equipment, values }) => {
   }, [value, fetch, equipment, fetchByEquipment]);
 
   const save = row => {
-    const payload = [...data];
+    let payload = [...data];
 
-    let composition = _.find(payload, ['eqpt_code', row.eqpt_code]);
+    const index = payload.findIndex(item => item.cmpt_no === row.cmpt_no);
 
-    const compositionIndex = _.findIndex(payload, object => {
-      return object.eqpt_code === row.eqpt_code;
-    });
-
-    const compartmentIndex = _.findIndex(composition.compartments, object => {
-      return object.cmpt_no === row.cmpt_no;
-    });
-
-    composition.compartments.splice(compartmentIndex, 1, row);
-
-    payload.splice(compositionIndex, 1, composition);
+    payload.splice(index, 1, row);
 
     setData(payload);
 

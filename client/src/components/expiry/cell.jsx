@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import EditableContext from "./editableContext";
-import { Input, Form, Select, DatePicker } from "antd";
-import _ from "lodash";
-import moment from "moment";
+import React, { Component } from 'react';
+import EditableContext from './editableContext';
+import { Input, Form, Select, DatePicker } from 'antd';
+import _ from 'lodash';
+import moment from 'moment';
 
 export default class Cell extends Component {
   state = {
@@ -19,11 +19,11 @@ export default class Cell extends Component {
   };
 
   save = (value, index) => {
-    if (!!value) {
+    if (value !== undefined) {
       const { record, handleSave } = this.props;
 
-      if (index === "ed_exp_date") {
-        value = value.format("YYYY-MM-DD 00:00:00");
+      if (index === 'ed_exp_date') {
+        value = value.format('YYYY-MM-DD 00:00:00');
       }
 
       this.form.validateFields((error, values) => {
@@ -47,9 +47,9 @@ export default class Cell extends Component {
     const { editing } = this.state;
     const { Option } = Select;
 
-    const unique = _.uniq(_.map(data, "edt_type_desc"));
+    const unique = _.uniq(_.map(data, 'edt_type_desc'));
 
-    if (dataIndex === "edt_type_desc") {
+    if (dataIndex === 'edt_type_desc') {
       return editing ? (
         <Form.Item style={{ margin: 0 }}>
           {form.getFieldDecorator(dataIndex)(
@@ -83,17 +83,17 @@ export default class Cell extends Component {
       );
     }
 
-    if (dataIndex === "ed_status") {
+    if (dataIndex === 'ed_status') {
       return editing ? (
         <Form.Item style={{ margin: 0 }}>
-          {form.getFieldDecorator("ed_status")(
+          {form.getFieldDecorator('ed_status')(
             <Select
               ref={node => (this.input = node)}
               onPressEnter={value => this.save(value, dataIndex)}
               onBlur={value => this.save(value, dataIndex)}
             >
-              <Option value="0">Disabled</Option>
-              <Option value="1">Enabled</Option>
+              <Option value={false}>Disabled</Option>
+              <Option value={true}>Enabled</Option>
             </Select>
           )}
         </Form.Item>
@@ -108,16 +108,16 @@ export default class Cell extends Component {
       );
     }
 
-    if (dataIndex === "ed_exp_date") {
+    if (dataIndex === 'ed_exp_date') {
       return editing ? (
         <Form.Item style={{ margin: 0 }}>
-          {form.getFieldDecorator("ed_exp_date", {
-            rules: [{ type: "object" }]
+          {form.getFieldDecorator('ed_exp_date', {
+            rules: [{ type: 'object' }]
           })(
             <DatePicker
               ref={node => (this.input = node)}
               onChange={value => this.save(value, dataIndex)}
-              format={moment.localeData().longDateFormat("L")}
+              format={moment.localeData().longDateFormat('L')}
             />
           )}
         </Form.Item>

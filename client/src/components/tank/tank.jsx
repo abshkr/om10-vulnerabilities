@@ -71,7 +71,9 @@ const Tank = ({ tank, handleClick }) => {
         </Tooltip>
       </div>
 
-      <div className="tank-name">{tank.title}</div>
+      <div className="tank-name">
+        {tank.code} / {tank.title}
+      </div>
       <div className="tank-status">{tank.status}</div>
       <div className="tank-base">{tank.name}</div>
       <div className="tank-volume">{tank.level} mm</div>

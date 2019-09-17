@@ -1,14 +1,15 @@
-import moment from "moment";
+import moment from 'moment';
 
 const convertToLocale = value => {
-  if (value !== "") {
-    const date = moment(value, "YYYY-MM-DD HH:mm:ss:SSSS").format(
-      moment.localeData().longDateFormat("L")
+  if (value !== '') {
+    const date = Intl.DateTimeFormat().format(moment(value, 'YYYY-MM-DD HH:mm:ss'));
+
+    const time = Intl.DateTimeFormat('en', { timeStyle: 'medium' }).format(
+      moment(value, 'YYYY-MM-DD HH:mm:ss')
     );
-    const time = moment(value, "YYYY-MM-DD HH:mm:ss:SSSS").format(
-      moment.localeData().longDateFormat("LTS")
-    );
+
     const payload = `${date} ${time}`;
+
     return payload;
   } else {
     return value;

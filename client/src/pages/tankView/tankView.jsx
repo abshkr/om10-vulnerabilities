@@ -107,7 +107,7 @@ class TankView extends Component {
       if (showAll) {
         return tank;
       } else {
-        return _.toInteger(tank.tank_cor_vol) !== 0;
+        return _.toInteger(tank.tank_active) === 1;
       }
     });
   };
@@ -174,7 +174,7 @@ class TankView extends Component {
             style={{ float: 'right', marginRight: 5 }}
             onClick={() => this.handleEmptyTankToggle(showAll)}
           >
-            {showAll ? 'Hide Empty Tanks' : 'Show Empty Tanks'}
+            {showAll ? 'Currently Showing All Tanks' : 'Currently Showing Active Tanks'}
           </Button>
 
           <Button

@@ -1,7 +1,6 @@
 import React from 'react';
-import moment from 'moment';
 import { Tag, Icon } from 'antd';
-import { generateOptions, validateDateTime } from '../../utils';
+import { generateOptions, validateDateTime, convertToLocale } from '../../utils';
 
 const columns = (data, t) => [
   {
@@ -105,20 +104,10 @@ const columns = (data, t) => [
     sorter: (a, b) =>
       validateDateTime(b.eqpt_last_modified) - validateDateTime(a.eqpt_last_modified),
 
-    render: text => {
-      const value =
-        text !== ''
-          ? `${moment(text, 'YYYY-MM-DD HH:mm:ss:SSSS').format(
-              moment.localeData().longDateFormat('L')
-            )} ${moment(text, 'YYYY-MM-DD HH:mm:ss:SSSS').format(
-              moment.localeData().longDateFormat('LTS')
-            )}`
-          : '';
-      return (
-        // eslint-disable-next-line
-        <a>{value}</a>
-      );
-    }
+    render: text => (
+      // eslint-disable-next-line
+      <a>{convertToLocale(text)}</a>
+    )
   },
   {
     title: t('fields.lastUsed'),
@@ -128,20 +117,10 @@ const columns = (data, t) => [
     width: 250,
     sorter: (a, b) => validateDateTime(b.eqpt_last_used) - validateDateTime(a.eqpt_last_used),
 
-    render: text => {
-      const value =
-        text !== ''
-          ? `${moment(text, 'YYYY-MM-DD HH:mm:ss:SSSS').format(
-              moment.localeData().longDateFormat('L')
-            )} ${moment(text, 'YYYY-MM-DD HH:mm:ss:SSSS').format(
-              moment.localeData().longDateFormat('LTS')
-            )}`
-          : '';
-      return (
-        // eslint-disable-next-line
-        <a>{value}</a>
-      );
-    }
+    render: text => (
+      // eslint-disable-next-line
+      <a>{convertToLocale(text)}</a>
+    )
   }
 ];
 

@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Form, InputNumber } from "antd";
+import React, { useEffect } from 'react';
+import { Form, InputNumber } from 'antd';
 
 const MaxKg = ({ form, value, t }) => {
   const { getFieldDecorator, setFieldsValue } = form;
@@ -14,18 +14,14 @@ const MaxKg = ({ form, value, t }) => {
 
   const validate = (rule, input, callback) => {
     if (input && input.length > 9) {
-      callback(
-        `${t("placeholder.maxCharacters")}: 9 ─ ${t(
-          "descriptions.maxCharacters"
-        )}`
-      );
+      callback(`${t('placeholder.maxCharacters')}: 9 ─ ${t('descriptions.maxCharacters')}`);
     }
     callback();
   };
 
   return (
-    <Form.Item label={t("fields.maxKg")}>
-      {getFieldDecorator("tnkr_pin", {
+    <Form.Item label={t('fields.maxKg')}>
+      {getFieldDecorator('tnkr_max_kg', {
         rules: [{ required: false, validator: validate }]
       })(<InputNumber />)}
     </Form.Item>
