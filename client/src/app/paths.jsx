@@ -1,34 +1,13 @@
-import React, { Component } from 'react';
 import Loadable from 'react-loadable';
+import { Loading } from '../components';
 import { ROUTES } from '../constants';
 
-import LoadingBar from 'react-top-loading-bar';
-
-class Loading extends Component {
-  render() {
-    return (
-      <LoadingBar
-        height={4}
-        progress={100}
-        className={this.props.collapsed ? 'loader-collapsed' : 'loader'}
-      />
-    );
-  }
-}
-
-const paths = collapsed => [
-  {
-    path: ROUTES.DASHBOARD,
-    component: Loadable({
-      loader: () => import('../pages/dashboard'),
-      loading: () => <Loading collapsed={collapsed} />
-    })
-  },
+const paths = [
   {
     path: ROUTES.UNAUTHORIZED,
     component: Loadable({
       loader: () => import('../pages/unauthorized'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
 
@@ -44,35 +23,35 @@ const paths = collapsed => [
     path: ROUTES.PERSONNEL,
     component: Loadable({
       loader: () => import('../pages/personnel'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
   {
     path: ROUTES.LOGICAL_PRINTERS,
     component: Loadable({
       loader: () => import('../pages/logicalPrinters'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
   {
     path: ROUTES.PHYSICAL_PRINTERS,
     component: Loadable({
       loader: () => import('../pages/physicalPrinters'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
   {
     path: ROUTES.FOLIO_SUMMARY,
     component: Loadable({
       loader: () => import('../pages/folioSummary'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
   {
     path: ROUTES.METERING,
     component: Loadable({
       loader: () => import('../pages/metering'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
   {
@@ -86,72 +65,66 @@ const paths = collapsed => [
     path: ROUTES.TANK_INVENTORY,
     component: Loadable({
       loader: () => import('../pages/tankInventory'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
   {
     path: ROUTES.SITE_BALANCE,
     component: Loadable({
       loader: () => import('../pages/siteBalance'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
   {
     path: ROUTES.PRODUCT_INVENTORY,
     component: Loadable({
       loader: () => import('../pages/productInventory'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
   {
     path: ROUTES.BASE_PRODUCTS,
     component: Loadable({
       loader: () => import('../pages/baseProducts'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
   {
     path: ROUTES.TANK_VIEW,
     component: Loadable({
       loader: () => import('../pages/tankView'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
   {
     path: ROUTES.TANK_CONFIGURATIONS,
     component: Loadable({
       loader: () => import('../pages/tankConfiguration'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
   {
     path: ROUTES.TANK_STATUS,
     component: Loadable({
       loader: () => import('../pages/tankStatus'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
   {
     path: ROUTES.ADAPTIVE_FLOW_CONTROL,
     component: Loadable({
       loader: () => import('../pages/adaptiveFlowControl'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
   {
     path: ROUTES.JOURNAL,
     component: Loadable({
       loader: () => import('../pages/journal'),
-      loading: () => <Loading collapsed={collapsed} />
+      loading: () => Loading
     })
   },
-  {
-    path: '*',
-    component: Loadable({
-      loader: () => import('../pages/notFound'),
-      loading: () => <Loading collapsed={collapsed} />
-    })
-  },
+
   {
     path: ROUTES.PERSONNEL_ON_SITE,
     component: Loadable({

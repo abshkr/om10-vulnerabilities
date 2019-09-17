@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Table, Icon } from 'antd';
 import { Resizable } from 'react-resizable';
 import './table.css';
@@ -90,7 +89,7 @@ class DataTable extends React.Component {
         onChange={change}
         pagination={paginationConfig}
         scroll={
-          !!scroll ? { x: !!scroll ? scroll : 2400, y: '81vh' } : { y: !!height ? height : '81vh' }
+          !!scroll ? { x: !!scroll ? scroll : 2400, y: '73vh' } : { y: !!height ? height : '73vh' }
         }
         footer={!!footer ? () => footer : null}
         onRow={record => {

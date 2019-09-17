@@ -1,13 +1,11 @@
-import React from "react";
-import { Spin, Icon } from "antd";
+import React from 'react';
+import { Icon } from 'antd';
 
-import "./loaders.css";
-
-const antIcon = <Icon type="loading" style={{ fontSize: 24, position: "fixed", color: "#68a4ec" }} spin />;
+import './loaders.css';
 
 const Loading = () => (
   <div className="loading">
-    <Spin indicator={antIcon} />
+    <Icon type="loading" style={{ fontSize: 24, color: '#68a4ec' }} spin />;
   </div>
 );
 

@@ -1,31 +1,20 @@
-.search .ant-input {
-  border-width: 0px;
-  border: none;
-  border-color: #f0f1f200 !important;
-  box-shadow: none !important;
-  outline: none !important;
+.ant-menu-vertical .ant-menu-item,
+.ant-menu-vertical-left .ant-menu-item,
+.ant-menu-vertical-right .ant-menu-item,
+.ant-menu-inline .ant-menu-item,
+.ant-menu-vertical .ant-menu-submenu-title,
+.ant-menu-vertical-left .ant-menu-submenu-title,
+.ant-menu-vertical-right .ant-menu-submenu-title,
+.ant-menu-inline .ant-menu-submenu-title {
+  margin-top: 0px !important;
 }
 
-.search .ant-input:visited {
-  border-color: #f0f1f200 !important;
-  box-shadow: none !important;
-  outline: none !important;
+.menu-icon {
+  font-size: 19px !important;
+  top: -2px;
 }
 
-.search .ant-input:focus {
-  border: none !important;
-  box-shadow: none;
-  outline: none !important;
-  border-radius: 0px;
-  border-bottom: 1px solid rgb(158, 158, 158) !important;
-  outline: 0;
-}
-
-.search .ant-input:hover {
-  border: none !important;
-  box-shadow: none;
-  outline: none !important;
-  border-radius: 0px;
-  border-bottom: 1px solid rgb(243, 243, 243) !important;
-  outline: 0;
+.ant-menu-item {
+  display: flex;
+  align-items: center;
 }

@@ -1,12 +1,13 @@
-import React from "react";
-import Title from "../title";
-import "./page.css";
+import React from 'react';
+import Title from '../title';
+import { Card } from 'antd';
+import './page.css';
 
 const Page = ({ name, page, block, children }) => {
   return (
-    <div className="page">
+    <div>
       <Title page={!!name ? name : page} />
-      {children}
+      <Card title={name}>{children}</Card>
     </div>
   );
 };
