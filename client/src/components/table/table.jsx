@@ -71,6 +71,7 @@ const Table = ({ data, click, columns, isLoading, t, create, modifiers }) => {
         type="primary"
         icon="plus"
         disabled={!create}
+        loading={isLoading}
         style={{ float: 'right', marginRight: 5 }}
         onClick={() => click(null)}
       >
