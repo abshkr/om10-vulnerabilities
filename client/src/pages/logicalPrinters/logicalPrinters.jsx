@@ -1,99 +1,71 @@
-import React, { Component } from "react";
+import React, { useState, useEffect, useCallback } from 'react';
 
-import axios from "axios";
-import Forms from "./forms";
-import columns from "./columns";
-import auth from "../../auth";
-import search from "../../utils/search";
-import { logicalPrinters } from "../../api";
-import { Button, Modal, notification } from "antd";
-import { Page, Filter, DataTable, Download, Container } from "../../components";
+import { Page, DataTable } from '../../components';
+import { Modal, notification } from 'antd';
+import { logicalPrinters } from '../../api';
+import _ from 'lodash';
 
-class LogicalPrinters extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: [],
-      value: "",
-      resize: false,
-      isLoading: true
-    };
-  }
+import columns from './columns';
+import auth from '../../auth';
+import Forms from './forms';
+import axios from 'axios';
 
-  handleClick = object => {
+const LogicalPrinters = ({ configuration, t }) => {
+  const [data, setData] = useState([]);
+  const [isLoading, setLoading] = useState(true);
+
+  const handleClick = object => {
     Modal.info({
-      title: !!object ? `Editing (${object.prt_printer})` : "Create",
+      title: !!object
+        ? `${t('operations.editing')} (${object.prt_printer})`
+        : `${t('operations.create')}`,
       centered: true,
-      icon: !!object ? "edit" : "form",
-      width: 720,
-      content: <Forms refresh={this.getLogicalPrinters} value={object} />,
+      width: '50vw',
+      icon: !!object ? 'edit' : 'form',
+      content: <Forms value={object} refresh={fetch} t={t} data={data} />,
       okButtonProps: {
-        style: { display: "none" }
-      }
+        style: { display: 'none' },
+      },
     });
   };
 
-  searchObjects = query => {
-    const { value } = query.target;
-    this.setState({
-      filtered: search(value, this.state.data),
-      value
-    });
-  };
-
-  handleResize = () => {
-    const { resize } = this.state;
-    this.setState({
-      resize: !resize
-    });
-  };
-
-  getLogicalPrinters = () => {
-    this.setState({
-      isLoading: true
-    });
-
+  const fetch = useCallback(() => {
+    setLoading(true);
     axios
       .all([logicalPrinters.readLogicalPrinters()])
       .then(
-        axios.spread(printers => {
-          this.setState({
-            isLoading: false,
-            data: printers.data.records
-          });
-        })
+        axios.spread(records => {
+          setData(records.data.records);
+          setLoading(false);
+        }),
       )
-      .catch(function(error) {
-        notification.error({
-          message: error.message,
-          description: "Failed to make the request."
+      .catch(errors => {
+        setLoading(false);
+        _.forEach(errors.response.data.errors, error => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
-  };
+  }, []);
 
-  componentDidMount() {
-    this.getLogicalPrinters();
-  }
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
-  render() {
-    const { data, isLoading, filtered, value, resize } = this.state;
-    const { configuration } = this.props;
-    const results = !!filtered ? filtered : data;
-    return (
-      <Page page={"Printer Configuration"} name={"Logical Printers"} block={true}>
-        <Container>
-          <Filter value={value} search={this.searchObjects} loading={isLoading} />
-          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
-          <Download data={data} type={"logical_printers"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
-          <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
-            Create Printer
-          </Button>
-
-          <DataTable data={results} resize={resize} rowKey="category_code" isLoading={isLoading} click={this.handleClick} columns={columns(results, configuration)} />
-        </Container>
-      </Page>
-    );
-  }
-}
+  return (
+    <Page page={t('pageMenu.printers')} name={t('pageNames.logicalPrinters')} isLoading={isLoading}>
+      <DataTable
+        columns={columns(configuration, t)}
+        data={data}
+        isLoading={isLoading}
+        click={handleClick}
+        t={t}
+        create
+      />
+    </Page>
+  );
+};
 
 export default auth(LogicalPrinters);

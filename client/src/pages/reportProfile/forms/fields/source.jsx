@@ -1,50 +1,69 @@
-import React, { Component } from "react";
-import { Form, Select } from "antd";
-import { reportProfile } from "../../../../api";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { reportProfile } from '../../../../api';
+import { Form, Select } from 'antd';
+import axios from 'axios';
 
-export default class Source extends Component {
-  state = {
-    options: []
+const Source = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  const [isLoading, setLoading] = useState(false);
+  const [options, setOptions] = useState([]);
+
+  const validate = (rule, input, callback) => {
+    if (input === '' || !input) {
+      callback(`${t('validate.select')} ─ ${t('fields.source')}`);
+    }
+
+    callback();
   };
 
-  componentDidMount() {
-    const { value, setValue } = this.props;
-
-    axios.all([reportProfile.readReports()]).then(
-      axios.spread(options => {
-        this.setState({
-          options: options.data.records
-        });
-      })
-    );
-
+  useEffect(() => {
     if (!!value) {
-      setValue({
-        report_file: value.report_file
+      setFieldsValue({
+        report_jasper_file: value.report_jasper_file,
+        report_file: value.report_file,
       });
     }
-  }
 
-  render() {
-    const { decorator, value } = this.props;
-    const { options } = this.state;
-    const { Option } = Select;
+    const getContext = () => {
+      axios.all([reportProfile.readReports()]).then(
+        axios.spread(options => {
+          setOptions(options.data.records);
+          setLoading(false);
+        }),
+      );
+    };
 
-    return (
-      <Form.Item label="Source">
-        {decorator("report_file", {
-          rules: [{ required: true, message: "Please Select a Report Source" }]
-        })(
-          <Select disabled={!!value}>
-            {options.map((item, index) => (
-              <Option key={index} value={item.report_file}>
-                {item.report_jasper_file}
-              </Option>
-            ))}
-          </Select>
-        )}
-      </Form.Item>
-    );
-  }
-}
+    setLoading(true);
+    getContext();
+  }, [value, setFieldsValue]);
+
+  getFieldDecorator('report_file', { rules: [{ required: !!value }] });
+
+  return (
+    <Form.Item label={t('fields.source')}>
+      {getFieldDecorator('report_jasper_file', {
+        rules: [{ required: true, validator: validate }],
+      })(
+        <Select
+          loading={isLoading}
+          disabled={!!value}
+          showSearch
+          optionFilterProp="children"
+          placeholder={!value ? t('placeholder.selectSource') : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {options.map(item => (
+            <Select.Option key={item} value={item}>
+              {item}
+            </Select.Option>
+          ))}
+        </Select>,
+      )}
+    </Form.Item>
+  );
+};
+
+export default Source;

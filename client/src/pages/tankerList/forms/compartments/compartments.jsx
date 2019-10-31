@@ -14,7 +14,7 @@ const Compartments = ({ form, value, t, equipment }) => {
 
   const { getFieldDecorator, setFieldsValue } = form;
 
-  getFieldDecorator('composition');
+  getFieldDecorator('tnkr_equips');
 
   const fetch = useCallback(id => {
     setIsLoading(true);
@@ -22,7 +22,7 @@ const Compartments = ({ form, value, t, equipment }) => {
       axios.spread(response => {
         setdata(response.data.records);
         setIsLoading(false);
-      })
+      }),
     );
   }, []);
 
@@ -32,7 +32,7 @@ const Compartments = ({ form, value, t, equipment }) => {
       axios.spread(response => {
         setdata(response.data.records);
         setIsLoading(false);
-      })
+      }),
     );
   }, []);
 
@@ -49,44 +49,76 @@ const Compartments = ({ form, value, t, equipment }) => {
   const save = row => {
     const payload = [...data];
 
-    let composition = _.find(payload, ['eqpt_code', row.eqpt_code]);
+    if (value) {
+      let composition = _.find(payload, ['eqpt_code', row.eqpt_code]);
 
-    const compositionIndex = _.findIndex(payload, object => {
-      return object.eqpt_code === row.eqpt_code;
-    });
+      const compartmentIndex = _.findIndex(composition.compartments, object => {
+        return object.cmpt_no === row.cmpt_no;
+      });
 
-    const compartmentIndex = _.findIndex(composition.compartments, object => {
-      return object.cmpt_no === row.cmpt_no;
-    });
+      const compositionIndex = _.findIndex(payload, object => {
+        return object.eqpt_code === row.eqpt_code;
+      });
 
-    composition.compartments.splice(compartmentIndex, 1, row);
+      composition.compartments.splice(compartmentIndex, 1, row);
 
-    payload.splice(compositionIndex, 1, composition);
+      payload.splice(compositionIndex, 1, composition);
 
-    setdata(payload);
+      setdata(payload);
 
-    setFieldsValue({
-      composition: payload
-    });
+      setFieldsValue({
+        tnkr_equips: _.map(payload, value => {
+          return _.omit(value, ['eqpt_list']);
+        }),
+      });
+    } else {
+      let composition = _.find(payload, ['eqpt_code', row.eqpt_code]);
+
+      const compartmentIndex = _.findIndex(composition.compartments, object => {
+        return object.cmpt_no === row.cmpt_no;
+      });
+
+      const compositionIndex = _.findIndex(payload, object => {
+        return object.eqpt_code === row.eqpt_code;
+      });
+
+      composition.compartments.splice(compartmentIndex, 1, row);
+
+      payload.splice(compositionIndex, 1, composition);
+
+      setdata(payload);
+
+      setFieldsValue({
+        tnkr_equips: _.map(payload, value => {
+          return _.omit(value, ['eqpt_list']);
+        }),
+      });
+    }
   };
 
-  const changeType = (compartment, code) => {
+  const changeType = (tanker, code) => {
     axios.all([tankerList.compartment(code)]).then(
       axios.spread(response => {
         const payload = [...data];
-        const composition = response.data.records;
 
-        const index = _.findIndex(payload, ['eqpt_code', compartment.eqpt_code]);
-        compartment['compartments'] = composition;
+        const index = _.findIndex(payload, ['etyp_id', tanker.etyp_id]);
+        let compartment = _.find(tanker.eqpt_list, ['eqpt_id', code]);
+
+        compartment['compartments'] = response.data.records;
+        compartment['eqpt_list'] = tanker.eqpt_list;
+        compartment['tc_eqpt'] = tanker.tc_eqpt;
+        compartment['image'] = tanker.image;
 
         payload.splice(index, 1, compartment);
 
         setdata(payload);
 
         setFieldsValue({
-          composition: payload
+          tnkr_equips: _.map(payload, value => {
+            return _.omit(value, ['eqpt_list']);
+          }),
         });
-      })
+      }),
     );
   };
 
@@ -103,21 +135,41 @@ const Compartments = ({ form, value, t, equipment }) => {
         editable: col.editable,
         dataIndex: col.dataIndex,
         title: col.title,
-        handleSave: save
-      })
+        handleSave: save,
+      }),
     };
   });
 
   return (
     <div>
+      {data.length === 0 && (
+        <Table
+          size="middle"
+          rowKey="cmpt_no"
+          loading={isLoading}
+          components={{
+            body: {
+              row: Row,
+              cell: Cell,
+            },
+          }}
+          style={{ marginBottom: 5 }}
+          scroll={{ y: '25vh' }}
+          rowClassName={() => 'editable-row'}
+          bordered
+          dataSource={[]}
+          columns={fields}
+          pagination={false}
+        />
+      )}
       {data.map((item, index) => (
         <div key={index}>
           <Equipment value={item.image} />
           <Select
             onChange={value => changeType(item, value)}
-            placeholder={item.eqpt_code}
+            placeholder={item.eqpt_code || 'Select Equipment'}
             style={{ marginBottom: 10, marginTop: 10 }}
-            disabled={item.compartments.length === 0}
+            disabled={item.eqpt_list.length === 0}
             showSearch
             optionFilterProp="children"
             filterOption={(input, option) =>
@@ -126,7 +178,9 @@ const Compartments = ({ form, value, t, equipment }) => {
           >
             {!isLoading &&
               item.eqpt_list.map((item, index) => (
-                <Select.Option value={item.eqpt_id}>{item.eqpt_code}</Select.Option>
+                <Select.Option key={index} value={item.eqpt_id}>
+                  {item.eqpt_code}
+                </Select.Option>
               ))}
           </Select>
 
@@ -138,8 +192,8 @@ const Compartments = ({ form, value, t, equipment }) => {
               components={{
                 body: {
                   row: Row,
-                  cell: Cell
-                }
+                  cell: Cell,
+                },
               }}
               style={{ marginBottom: 5 }}
               scroll={{ y: '25vh' }}

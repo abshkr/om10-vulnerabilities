@@ -1,144 +1,101 @@
-import React from "react";
-import { Icon } from "antd";
-import generate from "../../utils/generateOptions";
-
-const columns = (data, configuration) => [
+const columns = t => [
   {
-    title: "Company Code",
-    dataIndex: "report_cmpycode",
-    key: "report_cmpycode",
-    width: 130,
-    fixed: "left",
-    align: "center",
-    filters: generate(data, "report_cmpycode"),
-    onFilter: (value, record) => record.report_cmpycode.indexOf(value) === 0
+    headerName: t('fields.companyCode'),
+    field: 'report_cmpycode',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
   },
   {
-    title: "Company",
-    dataIndex: "report_cmpyname",
-    key: "report_cmpyname",
-    width: 120,
-    align: "center",
-    filters: generate(data, "report_cmpyname"),
-    onFilter: (value, record) => record.report_cmpyname.indexOf(value) === 0
+    headerName: t('fields.company'),
+    field: 'report_cmpyname',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
   },
   {
-    title: "Type",
-    dataIndex: "report_type_name",
-    key: "report_type_name",
-    width: 120,
-    align: "center",
-    filters: generate(data, "report_type_name"),
-    onFilter: (value, record) => record.report_type_name.indexOf(value) === 0
+    headerName: t('fields.type'),
+    field: 'report_type_name',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
   },
   {
-    title: "Name",
-    dataIndex: "report_name",
-    key: "report_name",
-    sorter: (a, b) => a.report_name.localeCompare(b.report_name),
-    width: 300
+    headerName: t('fields.name'),
+    field: 'report_name',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
   },
   {
-    title: "Description",
-    dataIndex: "report_desc",
-    key: "report_desc",
-    sorter: (a, b) => a.report_desc.localeCompare(b.report_desc),
-    width: 130
+    headerName: t('fields.description'),
+    field: 'report_desc',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
   },
   {
-    title: "Source",
-    dataIndex: "report_jasper_file",
-    key: "report_jasper_file",
-    sorter: (a, b) => a.report_jasper_file.localeCompare(b.report_jasper_file),
-    width: 230
+    headerName: t('fields.source'),
+    field: 'report_jasper_file',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
   },
   {
-    title: "Enabled",
-    dataIndex: "report_enabled",
-    key: "report_enabled",
-    width: 100,
-    align: "center",
-    sorter: (a, b) => a.report_enabled.localeCompare(b.report_enabled),
-
-    render: text => (
-      <span>
-        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
-      </span>
-    )
+    headerName: t('fields.email'),
+    field: 'report_cmpyemail',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
   },
   {
-    title: "Active",
-    dataIndex: "report_active",
-    key: "report_active",
-    width: 100,
-    align: "center",
-    sorter: (a, b) => a.report_active.localeCompare(b.report_active),
-
-    render: text => (
-      <span>
-        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
-      </span>
-    )
+    headerName: t('fields.enabled'),
+    field: 'report_enabled',
+    sortable: true,
+    resizable: true,
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
   },
   {
-    title: "Can Be Printed",
-    dataIndex: "report_canprint",
-    key: "report_canprint",
-    width: 150,
-    align: "center",
-    sorter: (a, b) => a.report_canprint.localeCompare(b.report_canprint),
-    render: text => (
-      <span>
-        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
-      </span>
-    )
+    headerName: t('fields.active'),
+    field: 'report_active',
+    sortable: true,
+    resizable: true,
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
   },
   {
-    title: "Can Be Emailed",
-    dataIndex: "report_canemail",
-    key: "report_canemail",
-    align: "center",
-    sorter: (a, b) => a.report_canemail.localeCompare(b.report_canemail),
-    width: 160,
-    render: text => (
-      <span>
-        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
-      </span>
-    )
+    headerName: t('fields.canBePrinted'),
+    field: 'report_canprint',
+    sortable: true,
+    resizable: true,
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
   },
   {
-    title: "Company Email",
-    dataIndex: "report_cmpyemail",
-    key: "report_cmpyemail",
-    sorter: (a, b) => a.report_cmpyemail.localeCompare(b.report_cmpyemail),
-    width: 150
+    headerName: t('fields.canBeEmailed'),
+    field: 'report_canemail',
+    sortable: true,
+    resizable: true,
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
   },
   {
-    title: "On Demand Report",
-    dataIndex: "report_ondemand_flag",
-    key: "report_ondemand_flag",
-    align: "center",
-    sorter: (a, b) => a.report_ondemand_flag.localeCompare(b.report_ondemand_flag),
-    width: 180,
-    render: text => (
-      <span>
-        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
-      </span>
-    )
+    headerName: t('fields.onDemandReport'),
+    field: 'report_ondemand_flag',
+    sortable: true,
+    resizable: true,
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
   },
   {
-    title: "Closeout Report",
-    dataIndex: "report_closeout_flag",
-    key: "report_closeout_flag",
-    align: "center",
-    sorter: (a, b) => a.report_closeout_flag.localeCompare(b.report_closeout_flag),
-    width: 150,
-    render: text => (
-      <span>
-        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
-      </span>
-    )
-  }
+    headerName: t('fields.closeOutReport'),
+    field: 'report_closeout_flag',
+    sortable: true,
+    resizable: true,
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
+  },
 ];
 
 export default columns;

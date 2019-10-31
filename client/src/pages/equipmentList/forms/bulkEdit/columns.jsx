@@ -10,18 +10,6 @@ const columns = t => [
     dataIndex: 'eqpt_code',
     key: 'eqpt_code',
     align: 'center'
-  },
-  {
-    title: t('fields.title'),
-    dataIndex: 'eqpt_title',
-    key: 'eqpt_title',
-    align: 'center'
-  },
-  {
-    title: t('fields.owner'),
-    dataIndex: 'eqpt_owner_name',
-    key: 'eqpt_owner_name',
-    align: 'center'
   }
 ];
 

@@ -73,7 +73,7 @@ class OMJournal
     public function read()
     {
         Utilities::sanitize($this);
-        write_log(json_encode($this), __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
         if (!isset($this->start_date) || !isset($this->end_date)) {
             $this->end_num = $this->get_max_seq();
             $this->start_num = $this->end_num - 500;
@@ -134,7 +134,7 @@ class OMJournal
             }
 
             $query .= "ORDER BY GEN_DATE DESC";
-            write_log(json_encode($query), __FILE__, __LINE__);
+            // write_log(json_encode($query), __FILE__, __LINE__);
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':start_date', $this->start_date);
             oci_bind_by_name($stmt, ':end_date', $this->end_date);

@@ -41,7 +41,7 @@ const Status = ({ form, value, t }) => {
           }
         >
           {options.map((item, index) => (
-            <Select.Option key={index} value={item.key} disabled={item.key !== '0'}>
+            <Select.Option key={index} value={item.key} disabled={item.key !== '2'}>
               {item.value}
             </Select.Option>
           ))}

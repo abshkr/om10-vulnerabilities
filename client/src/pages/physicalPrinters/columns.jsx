@@ -1,63 +1,39 @@
-import React from "react";
-import _ from "lodash";
-import { Icon } from "antd";
-import generate from "../../utils/generateOptions";
-
-const columns = (data, configuration) => {
-  const values = defaults(data);
-  const config = configuration.columns.physicalPrinters;
-
-  const modified = _.reject(values, o => {
-    return !config[o.dataIndex];
-  });
-
-  return modified;
-};
-
-const defaults = data => [
+const columns = (configuration, t) => [
   {
-    title: "Logical Printer",
-    dataIndex: "prntr",
-    key: "prntr",
-    width: 200,
-    // eslint-disable-next-line
-    render: text => <a>{text}</a>
+    headerName: 'Logical Printer',
+    field: 'prntr',
+    sortable: true,
+    filter: 'fuzzySearch',
+    resizable: true,
   },
   {
-    title: "System / Physical Printer",
-    dataIndex: "sys_prntr",
-    key: "sys_prntr",
-    width: 250,
-    filters: generate(data, "sys_prntr"),
-    onFilter: (value, record) => record.sys_prntr.indexOf(value) === 0
+    headerName: 'System / Physical Printer',
+    field: 'sys_prntr',
+    sortable: true,
+    filter: 'fuzzySearch',
+    resizable: true,
   },
   {
-    title: "Lock",
-    dataIndex: "prntr_lock",
-    key: "prntr_lock",
-    width: 150,
-    filters: generate(data, "prntr_lock"),
-    onFilter: (value, record) => record.prntr_lock.indexOf(value) === 0,
-    render: text => (
-      <span>
-        <Icon type={text === "N" ? "unlock" : "lock"} />
-      </span>
-    )
+    headerName: 'Lock',
+    field: 'prntr_lock',
+    sortable: true,
+    filter: true,
+    resizable: true,
   },
   {
-    title: "Area Id",
-    dataIndex: "prntr_area",
-    key: "prntr_area",
-    width: 150
+    headerName: 'Area Id',
+    field: 'prntr_area',
+    sortable: true,
+    filter: true,
+    resizable: true,
   },
   {
-    title: "Area Location",
-    dataIndex: "area_name",
-    key: "area_name",
-    width: 200,
-    filters: generate(data, "area_name"),
-    onFilter: (value, record) => record.area_name.indexOf(value) === 0
-  }
+    headerName: 'Area Location',
+    field: 'area_name',
+    sortable: true,
+    resizable: true,
+    filter: 'multiSelect',
+  },
 ];
 
 export default columns;

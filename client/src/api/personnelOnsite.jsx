@@ -1,7 +1,5 @@
-import axios from "axios";
-import api from "./api";
-
+import axios from 'axios';
 
 export function read() {
-  return axios.get(`https://${api}/api/pages/personnel_onsite/read.php`);
+  return axios.get(`/api/pages/personnel_onsite/read.php`);
 }

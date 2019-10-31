@@ -1,79 +1,78 @@
-import React, { Component } from "react";
-import auth from "../../auth";
-import { Page, Download, Container, DataTable, Filter } from "../../components";
-import { stockManagement } from "../../api";
-import { Select } from "antd";
-import search from "../../utils/search";
-import axios from "axios";
-import columns from "./columns";
-import "./metering.css";
+import React, { useCallback, useEffect, useState } from 'react';
 
-const units = ["Litres", "Cubic Metre", "Imperial Gallon", "U.S Gallon", "Imperial Barrel", "U.S Barrel"];
+import _ from 'lodash';
+import { notification, Select } from 'antd';
+import axios from 'axios';
 
-class Metering extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: null,
-      isLoading: true,
-      unit: "Litres",
-      value: ""
-    };
-  }
+import { Page, DataTable } from '../../components';
+import { stockManagement } from '../../api';
+import transform from './transform';
+import columns from './columns';
+import auth from '../../auth';
 
-  getMetering = () => {
-    this.setState({ isLoading: true });
-    axios.all([stockManagement.readMetering()]).then(
-      axios.spread(metering => {
-        this.setState({
-          isLoading: false,
-          data: metering.data.records
+const units = [
+  'Litres',
+  'Cubic Metre',
+  'Imperial Gallon',
+  'U.S Gallon',
+  'Imperial Barrel',
+  'U.S Barrel',
+];
+
+const Metering = ({ configuration, t }) => {
+  const [data, setData] = useState([]);
+  const [isLoading, setLoading] = useState(true);
+  const [unit, setUnit] = useState('Litres');
+
+  const fetch = useCallback(() => {
+    axios
+      .all([stockManagement.readMetering()])
+      .then(
+        axios.spread(record => {
+          const payload = transform(record.data.records, unit);
+
+          setData(payload);
+          setLoading(false);
+        }),
+      )
+      .catch(errors => {
+        setLoading(false);
+        _.forEach(errors.response.data.errors, error => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
-      })
-    );
-  };
+      });
+  }, [unit]);
 
-  handleUnitChange = unit => {
-    this.setState({
-      unit
-    });
-  };
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
-  searchObjects = query => {
-    const { value } = query.target;
-    this.setState({
-      filtered: search(value, this.state.data),
-      value
-    });
-  };
+  const UnitChanger = (
+    <Select key="1" style={{ width: 200 }} defaultValue={unit} onChange={setUnit}>
+      {units.map(item => {
+        return (
+          <Select.Option key={item} value={item}>
+            {item}
+          </Select.Option>
+        );
+      })}
+    </Select>
+  );
 
-  componentDidMount() {
-    this.getMetering();
-  }
-
-  render() {
-    const { isLoading, data, filtered, value, unit } = this.state;
-    const results = !!filtered ? filtered : data;
-
-    return (
-      <Page page={"Stock Management"} name={"Metering"} isLoading={isLoading} block={true}>
-        <Container>
-          <Filter value={value} search={this.searchObjects} />
-          <Select defaultValue={unit} style={{ width: 300, marginLeft: 5 }} onChange={this.handleUnitChange}>
-            {units.map((item, index) => {
-              return (
-                <Select.Option key={index} value={item}>
-                  {item}
-                </Select.Option>
-              );
-            })}
-          </Select>
-          <Download data={data} type={"Metering"} style={{ float: "right" }} />
-          <DataTable rowKey="metercode" columns={columns(results, unit)} data={results} isLoading={isLoading} scroll={300} />
-        </Container>
-      </Page>
-    );
-  }
-}
+  return (
+    <Page page={t('pageMenu.stockManagement')} name={t('pageNames.metering')} isLoading={isLoading}>
+      <DataTable
+        columns={columns(t, unit)}
+        data={data}
+        isLoading={isLoading}
+        t={t}
+        modifiers={[UnitChanger]}
+      />
+    </Page>
+  );
+};
 
 export default auth(Metering);

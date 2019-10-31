@@ -3,6 +3,18 @@
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../config/database.php';
 
+class ErrorSchema
+{
+    public function __construct($code, $type, $msg)
+    {
+        $this->errors = array();
+        $this->errors[0] = new stdClass();
+        $this->errors[0]->code = $code;
+        $this->errors[0]->type = $type;
+        $this->errors[0]->message = $msg;
+    }
+}
+
 class Utilities
 {
     // private static $COMPULSORY_FIELDS = array(
@@ -68,8 +80,9 @@ class Utilities
 
     /**
      * params can be an array, like array (
-     * "
+     * "target_code" => "TRANSP_EQUIP"
      * );
+     * See pages\equipment\expiry_types.php for reference
      */
     public static function read($class, $method = 'read', $filter = false, $params = null)
     {
@@ -78,7 +91,7 @@ class Utilities
 
         // initialize object
         try {
-            $db = $database->getConnection();
+            $db = $database->getConnection($class, $method);
         } catch (UnauthException $e) {
             // http_response_code(401);
             http_response_code(200);
@@ -150,7 +163,7 @@ class Utilities
     public static function count($class, $method = 'count', $filter = false)
     {
         $database = new Database();
-        $db = $database->getConnection();
+        $db = $database->getConnection($class, $method);
 
         // initialize object
         $object = new $class($db);
@@ -196,7 +209,7 @@ class Utilities
     public static function simpliedRead($class, $method = 'read', $filter = false)
     {
         $database = new Database();
-        $db = $database->getConnection();
+        $db = $database->getConnection($class, $method);
 
         // initialize object
         $object = new $class($db);
@@ -303,7 +316,7 @@ class Utilities
             __FILE__, __LINE__);
 
         $database = new Database();
-        $db = $database->getConnection();
+        $db = $database->getConnection($class, $method);
 
         $object = new $class($db);
         $desc = (isset($object->desc) ? $object->desc : $class);
@@ -324,14 +337,21 @@ class Utilities
             }
         }
 
+        if (method_exists($object, "pre_create")) {
+            $object->pre_create();
+        }
+
         // write_log(json_encode($object), __FILE__, __LINE__);
         try {
             if (method_exists($object, "mandatory_fields_check")) {
                 $object->mandatory_fields_check();
             }
         } catch (NullableException $e) {
-            // http_response_code(422);
-            http_response_code(200);
+            if (HTTP_CODE_ENABLED) {
+                http_response_code(400);
+            } else {
+                http_response_code(200);
+            }
             echo '{';
             echo '"detail": "Caught exception: ', $e->getMessage() . '"';
             echo '}';
@@ -341,27 +361,36 @@ class Utilities
         if ($object->check_exists && method_exists($object, "check_existence")) {
             if ($object->check_existence()) {
                 if (HTTP_CODE_ENABLED) {
-                    http_response_code(422);
+                    http_response_code(400);
                 } else {
                     http_response_code(200);
                 }
-                echo '{';
-                echo '"detail": "', sprintf("record (%s) already exist", $object->primiary_key_str()) . '"';
-                echo '}';
+                $error = new ErrorSchema(400, "Bad Request", sprintf("record (%s) already exist", $object->primiary_key_str()));
+                echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
         }
 
-        if ($object->$method()) {
-            echo '{';
-            echo '"message": "' . $desc . ' created."';
-            echo '}';
-        } else {
-            echo '{';
-            echo '"message": "Unable to create ' .
-                $desc .
-                '. Check logs/php_rest_*.log file for details."';
-            echo '}';
+        try {
+            if ($object->$method()) {
+                echo '{';
+                echo '"message": "' . $desc . ' created."';
+                echo '}';
+            } else {
+                echo '{';
+                echo '"message": "Unable to create ' .
+                    $desc .
+                    '. Check logs/php_rest_*.log file for details."';
+                echo '}';
+            }
+        } catch (IncompleteParameterException $e) {
+            if (HTTP_CODE_ENABLED) {
+                http_response_code(400);
+            } else {
+                http_response_code(200);
+            }
+            $error = new ErrorSchema(400, "Bad Request", $e->getMessage());
+            echo json_encode($error, JSON_PRETTY_PRINT);
         }
     }
 
@@ -425,7 +454,7 @@ class Utilities
     public static function update($class, $method = 'update', $itemData = null)
     {
         $database = new Database();
-        $db = $database->getConnection();
+        $db = $database->getConnection($class, $method);
 
         $object = new $class($db);
         $desc = (isset($object->desc) ? $object->desc : $class);
@@ -462,10 +491,14 @@ class Utilities
         } catch (NullableException $e) {
             // http_response_code(422);
             if (!isset($itemData)) {
-                http_response_code(200);
-                echo '{';
-                echo '"detail": "Caught exception: ', $e->getMessage() . '"';
-                echo '}';
+                if (HTTP_CODE_ENABLED) {
+                    http_response_code(500);
+                } else {
+                    http_response_code(200);
+                }
+                write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
+                $error = new ErrorSchema(400, "Bad Request", sprintf("Caught exception: %s", $e->getMessage()));
+                echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
 
@@ -476,40 +509,82 @@ class Utilities
         if (method_exists($object, "check_existence")) {
             if (!$object->check_existence()) {
                 if (HTTP_CODE_ENABLED) {
-                    http_response_code(422);
+                    http_response_code(500);
                 } else {
                     http_response_code(200);
                 }
-                echo '{';
-                echo '"detail": "', sprintf("record (%s) does not not exist", $object->primiary_key_str()) . '"';
-                echo '}';
+
+                // echo '{';
+                // echo '"errors": [';
+                // echo '   {';
+                // echo '    "code": 500,';
+                // echo '    "type": "ServerFailedError",';
+                // echo '    "message": "' . sprintf("record (%s) does not not exist", $object->primiary_key_str()) . '"';
+                // echo '   }';
+                // echo ']';
+                // echo '}';
+                write_log(sprintf("record (%s) does not not exist", $object->primiary_key_str()), __FILE__, __LINE__, LogLevel::ERROR);
+                $error = new ErrorSchema(400, "Bad Request", sprintf("record (%s) does not not exist", $object->primiary_key_str()));
+                echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
         }
 
         Utilities::sanitize($object);
 
-        if ($object->$method()) {
-            if (!isset($itemData)) {
-                http_response_code(200);
-                echo '{';
-                if (method_exists($object, 'primiary_key_str')) {
-                    echo '"message": "' . $desc . ' (' . $object->primiary_key_str() . ') updated. "';
-                } else {
-                    echo '"message": "' . $desc . ' updated. "';
+        try {
+            if ($object->$method()) {
+                if (!isset($itemData)) {
+                    http_response_code(200);
+                    echo '{';
+                    if (method_exists($object, 'primiary_key_str')) {
+                        echo '"message": "' . $desc . ' (' . $object->primiary_key_str() . ') updated. "';
+                    } else {
+                        echo '"message": "' . $desc . ' updated. "';
+                    }
+                    echo '}';
+                    return;
                 }
-                echo '}';
+                return true;
+            } else {
+                if (!isset($itemData)) {
+                    http_response_code(500);
+                    echo '{';
+                    echo '"message": "Unable to update ' .
+                        $desc .
+                        '. Check logs/php_rest_*.log file for details."';
+                    echo '}';
+                    return;
+                }
+                return false;
+            }
+        } catch (DatabaseException $e) {
+            // http_response_code(422);
+            if (!isset($itemData)) {
+                if (HTTP_CODE_ENABLED) {
+                    http_response_code(500);
+                } else {
+                    http_response_code(200);
+                }
+                
+                write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
+                $error = new ErrorSchema(500, "Database Error", $e->getMessage());
+                echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
-            return true;
-        } else {
+            return false;
+        } catch (Exception $e) {
+            // http_response_code(422);
             if (!isset($itemData)) {
-                http_response_code(500);
-                echo '{';
-                echo '"message": "Unable to update ' .
-                    $desc .
-                    '. Check logs/php_rest_*.log file for details."';
-                echo '}';
+                if (HTTP_CODE_ENABLED) {
+                    http_response_code(500);
+                } else {
+                    http_response_code(200);
+                }
+                
+                write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
+                $error = new ErrorSchema(500, "Server Failed Error", $e->getMessage());
+                echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
             return false;
@@ -519,7 +594,7 @@ class Utilities
     public static function delete($class, $method = 'delete')
     {
         $database = new Database();
-        $db = $database->getConnection();
+        $db = $database->getConnection($class, $method);
 
         $object = new $class($db);
         $desc = (isset($object->desc) ? $object->desc : $class);
@@ -541,27 +616,57 @@ class Utilities
         if (method_exists($object, "check_existence")) {
             if (!$object->check_existence()) {
                 if (HTTP_CODE_ENABLED) {
-                    http_response_code(422);
+                    http_response_code(400);
                 } else {
                     http_response_code(200);
                 }
-                echo '{';
-                echo '"detail": "', sprintf("record (%s) does not not exist", $object->primiary_key_str()) . '"';
-                echo '}';
+                
+                write_log(sprintf("record (%s) does not not exist", $object->primiary_key_str()), __FILE__, __LINE__, LogLevel::ERROR);
+                $error = new ErrorSchema(400, "Bad Request", sprintf("record (%s) does not not exist", $object->primiary_key_str()));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+
                 return;
             }
         }
 
-        if ($object->$method()) {
-            echo '{';
-            echo '"message": "' . $desc . ' deleted."';
-            echo '}';
-        } else {
-            echo '{';
-            echo '"message": "Unable to delete ' .
-                $desc .
-                '. Check logs/php_rest_*.log file for details."';
-            echo '}';
+        try {
+            if ($object->$method()) {
+                echo '{';
+                echo '"message": "' . $desc . ' deleted."';
+                echo '}';
+            } else {
+                if (HTTP_CODE_ENABLED) {
+                    http_response_code(500);
+                } else {
+                    http_response_code(200);
+                }
+                
+                echo '{';
+                echo '"message": "Unable to delete ' .
+                    $desc .
+                    '. Check logs/php_rest_*.log file for details."';
+                echo '}';
+            }
+        } catch (DatabaseException $e) {
+            if (HTTP_CODE_ENABLED) {
+                http_response_code(500);
+            } else {
+                http_response_code(200);
+            }
+
+            write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new ErrorSchema(500, "Database Error", $e->getMessage());
+            echo json_encode($error, JSON_PRETTY_PRINT);
+        } catch (Exception $e) {
+            if (HTTP_CODE_ENABLED) {
+                http_response_code(500);
+            } else {
+                http_response_code(200);
+            }
+
+            write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new ErrorSchema(500, "Server Failed Error", $e->getMessage());
+            echo json_encode($error, JSON_PRETTY_PRINT);
         }
     }
 

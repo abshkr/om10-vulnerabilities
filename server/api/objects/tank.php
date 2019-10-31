@@ -492,7 +492,9 @@ class Tank extends CommonClass
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return false;
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
         }
 
         $query = "
@@ -504,7 +506,8 @@ class Tank extends CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
-            return false;
+
+            throw new DatabaseException($e['message']);
         }
 
         $journal = new Journal($this->conn, false);
@@ -519,7 +522,8 @@ class Tank extends CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
-            return false;
+
+            throw new DatabaseException($e['message']);
         }
 
         oci_commit($this->conn);

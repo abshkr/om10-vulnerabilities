@@ -2,12 +2,13 @@
 
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
+include_once 'common_class.php';
 
-class FlowRate
+class FlowRate extends CommonClass
 {
     // database connection and table name
-    private $conn;
     public $desc = "flow rate";
+    protected $TABLE_NAME = "FLOW_RATES";
 
     //All the fields that should be a number in JSON
     public $NUMBER_FIELDS = array(
@@ -16,12 +17,6 @@ class FlowRate
         "PRESET",
         "LOADED_QTY",
     );
-
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
 
     // read personnel
     public function read()

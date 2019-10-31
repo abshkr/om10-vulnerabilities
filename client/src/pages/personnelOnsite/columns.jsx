@@ -1,70 +1,47 @@
-import React from "react";
-import moment from "moment";
-
-import { generateOptions, validateDateTime } from "../../utils";
-
-const columns = (data, configuration) => {
+const columns = (config, t) => {
   return [
     {
-      title: "Code",
-      dataIndex: "per_code",
-      key: "per_code",
-      width: 100,
-      // fixed: "left",
-      align: "center",
-      sorter: (a, b) => a.per_code.localeCompare(b.per_code)
+      headerName: t('fields.code'),
+      field: 'per_code',
+      sortable: true,
+      resizable: true,
+      filter: 'FuzzyFilter',
     },
     {
-      title: "Name",
-      dataIndex: "per_name",
-      key: "per_name",
-      width: 150,
-      sorter: (a, b) => a.per_name.localeCompare(b.per_name)
+      headerName: t('fields.name'),
+      field: 'per_name',
+      sortable: true,
+      resizable: true,
+      filter: 'FuzzyFilter',
     },
     {
-      title: "Company",
-      dataIndex: "cmpy_name",
-      key: "cmpy_name",
-      width: 150,
-      sorter: (a, b) => a.cmpy_name.localeCompare(b.cmpy_name),
-      filters: generateOptions(data, "cmpy_name"),
-      onFilter: (value, record) => record.cmpy_name.indexOf(value) === 0
+      headerName: t('fields.company'),
+      field: 'cmpy_name',
+      sortable: true,
+      resizable: true,
+      filter: 'MultiFilter',
     },
     {
-      title: "Area ID",
-      dataIndex: "area_k",
-      key: "area_k",
-      align: "center",
-      width: 150,
-      sorter: (a, b) => a.area_k.localeCompare(b.area_k)
+      headerName: t('fields.areaId'),
+      field: 'area_k',
+      sortable: true,
+      resizable: true,
+      filter: 'MultiFilter',
     },
     {
-      title: "Area Name",
-      dataIndex: "area_name",
-      key: "area_name",
-      width: 300,
-      sorter: (a, b) => a.area_name.localeCompare(b.area_name),
-      filters: generateOptions(data, "area_name"),
-      onFilter: (value, record) => record.area_name.indexOf(value) === 0
+      headerName: t('fields.areaName'),
+      field: 'area_name',
+      sortable: true,
+      resizable: true,
+      filter: 'MultiFilter',
     },
     {
-      title: "Enter Time",
-      dataIndex: "perl_enter_time",
-      key: "perl_enter_time",
-      width: 130,
-      align: "center",
-      sorter: (a, b) =>
-        validateDateTime(b.per_last_modified) - validateDateTime(a.per_last_modified),
-      // eslint-disable-next-line
-      render: text => (
-        // eslint-disable-next-line
-        <a>
-          {text !== ""
-            ? moment(text, "YYYY-MM-DD HH:mm:ss:SSSS").format(configuration.dateTimeFormat)
-            : ""}
-        </a>
-      )
-    }
+      headerName: t('fields.enterTime'),
+      field: 'perl_enter_time',
+      sortable: true,
+      resizable: true,
+      cellRenderer: 'DateRenderer',
+    },
   ];
 };
 export default columns;

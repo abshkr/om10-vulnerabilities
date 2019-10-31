@@ -1,20 +1,31 @@
-import React, { Component } from "react";
-import { Form, Input } from "antd";
+import React, { useEffect } from 'react';
+import { Form, Input } from 'antd';
 
-export default class Description extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const Description = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
 
+  useEffect(() => {
     if (!!value) {
-      setValue({
-        report_desc: value.report_desc
+      setFieldsValue({
+        report_desc: value.report_desc,
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  render() {
-    const { decorator } = this.props;
+  const validate = (rule, input, callback) => {
+    if (input && input.length > 100) {
+      callback(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
+    }
+    callback();
+  };
 
-    return <Form.Item label="Description">{decorator("report_desc")(<Input />)}</Form.Item>;
-  }
-}
+  return (
+    <Form.Item label={t('fields.description')}>
+      {getFieldDecorator('report_desc', {
+        rules: [{ required: false, validator: validate }],
+      })(<Input />)}
+    </Form.Item>
+  );
+};
+
+export default Description;

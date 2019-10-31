@@ -524,35 +524,117 @@ class Tanker extends CommonClass
             return false;
         }
 
+        if (!isset($this->tnkr_equips) || count($this->tnkr_equips) <= 0) {
+            write_log("Equipment list (tnkr_equips) is not provided.", __FILE__, __LINE__, LogLevel::ERROR);
+            // throw new IncompleteParameterException("Equipment list (tnkr_equips) is not provided.");
+            $eqpt = new Equipment($this->conn);
+            $eqpt->eqpt_code = $this->tnkr_code;
+            $eqpt->eqpt_area = 1;
+            $eqpt->eqpt_title = $this->tnkr_code;
+            $eqpt->eqpt_load_type = 'A';
+            $eqpt->eqpt_owner = $this->tnkr_owner;
+            $eqpt->eqpt_etp = $this->tnkr_etp;
+            $eqpt->eqpt_lock = 'N';
+            $eqpt->eqp_must_tare_in = 'N';
+            if (!$eqpt->create()) {
+                write_log("Cannot create equipment", __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
+
+            $this->tnkr_equips = array();
+            $eqpt_item = new stdClass();
+            $eqpt_item->eqpt_id = $eqpt->eqpt_id;
+            $eqpt_item->tc_seqno = 1;
+            $eqpt_item->eqpt_code = $eqpt->eqpt_code;
+            array_push($this->tnkr_equips, $eqpt_item);
+        }
+        
+        $seqno = 1;
         foreach ($this->tnkr_equips as $key => $value) {
             $query = "INSERT INTO TNKR_EQUIP (TC_TANKER, TC_EQPT, TC_SEQNO)
                 VALUES (:tnkr_code, :tc_eqpt, :tc_seqno)";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
-            oci_bind_by_name($stmt, ':tc_eqpt', $value->tc_eqpt);
-            oci_bind_by_name($stmt, ':tc_seqno', $value->tc_seqno);
+            oci_bind_by_name($stmt, ':tc_eqpt', $value->eqpt_id);
+            oci_bind_by_name($stmt, ':tc_seqno', $seqno);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 oci_rollback($this->conn);
                 return false;
             }
+
+            $seqno += 1;
+
+            if (!isset($value->compartments)) {
+                continue;
+            }
+
+            //compartment lock. The only thing about cmpt that can change on tanker is lock status
+            foreach ($value->compartments as $key2 => $value2) {
+                $query = "
+                    SELECT NVL(ADJ_CMPT_LOCK, 0) ADJ_CMPT_LOCK
+                    FROM SFILL_ADJUST
+                    WHERE ADJ_EQP = :eqpt and ADJ_CMPT = :cmpt";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':eqpt', $value->eqpt_id);
+                oci_bind_by_name($stmt, ':cmpt', $value2->cmpt_no);
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                } else {
+                    $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+                    $old_lock = (int) $row['ADJ_CMPT_LOCK'];
+                }
+
+                $query = "
+                    UPDATE SFILL_ADJUST
+                    SET ADJ_CMPT_LOCK = :new_lock
+                    WHERE ADJ_EQP = :eqpt and ADJ_CMPT = :cmpt";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':new_lock', $value2->adj_cmpt_lock);
+                oci_bind_by_name($stmt, ':eqpt', $value->eqpt_id);
+                oci_bind_by_name($stmt, ':cmpt', $value2->cmpt_no);
+
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+
+                if ($old_lock != (int)$value2->adj_cmpt_lock) {
+                    $journal = new Journal($this->conn);
+                    $module = "GUI_TANKERS";
+                    $record = sprintf("Equip ID:%s, Compartment No:%d", $value->eqpt_id, $value2->cmpt_no);
+
+                    if (!$journal->valueChange(
+                        $module, $record, "ADJ_CMPT_LOCK", $old_lock, (int)$value2->adj_cmpt_lock)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                        return false;
+                    }
+                }
+            }
         }
 
-        $expiry_dates = array();
-        $expiry_date = new ExpiryDate($this->conn);
-        $expiry_date->edt_target_code = ExpiryTarget::TANKER;
-        $expiry_date->ed_object_id = $this->tnkr_code;
-        // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
-        foreach ($this->expiry_dates as $key => $value) {
-            $expiry_dates[$value->edt_type_code] = $value;
-        }
-        // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
-        if (!$expiry_date->create($expiry_dates)) {
-            write_log("Failed to update expiry dates",
-                __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
+        if (isset($this->expiry_dates)) {
+            $expiry_dates = array();
+            $expiry_date = new ExpiryDate($this->conn);
+            $expiry_date->edt_target_code = ExpiryTarget::TANKER;
+            $expiry_date->ed_object_id = $this->tnkr_code;
+            // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
+            foreach ($this->expiry_dates as $key => $value) {
+                $expiry_dates[$value->edt_type_code] = $value;
+            }
+            // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+            if (!$expiry_date->create($expiry_dates)) {
+                write_log("Failed to update expiry dates",
+                    __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
         }
 
         // for ($i = 0; $i < count($eqpts); $i++) {
@@ -686,7 +768,9 @@ class Tanker extends CommonClass
         // write_log(json_encode($this), __FILE__, __LINE__);
 
         Utilities::sanitize($this);
-
+        $journal = new Journal($this->conn, false);
+        $curr_psn = Utilities::getCurrPsn();
+        
         $query = "
             SELECT *
             FROM GUI_TANKERS
@@ -694,7 +778,7 @@ class Tanker extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
         if (oci_execute($stmt)) {
-            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $old_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -733,7 +817,8 @@ class Tanker extends CommonClass
                 TNKR_NAME = :tnkr_name,
                 TNKR_PIN = :tnkr_pin,
                 TNKR_ARCHIVE = :tnkr_archive,
-                REMARKS = :remarks
+                REMARKS = :remarks,
+                TNKR_LAST_MODIFIED = SYSDATE
             WHERE TNKR_CODE = :tnkr_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
@@ -760,52 +845,161 @@ class Tanker extends CommonClass
             oci_rollback($this->conn);
             return false;
         }
-
+        
         //TNKR_EQUIP
-        $query = "DELETE FROM TNKR_EQUIP WHERE TC_TANKER = :tnkr_code";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        foreach ($this->tnkr_equips as $key => $value) {
-            $query = "INSERT INTO TNKR_EQUIP (TC_TANKER, TC_EQPT, TC_SEQNO)
-                VALUES (:tnkr_code, :tc_eqpt, :tc_seqno)";
+        if (isset($this->tnkr_equips)) {
+            $query = "DELETE FROM TNKR_EQUIP WHERE TC_TANKER = :tnkr_code";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
-            oci_bind_by_name($stmt, ':tc_eqpt', $value->tc_eqpt);
-            oci_bind_by_name($stmt, ':tc_seqno', $value->tc_seqno);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 oci_rollback($this->conn);
                 return false;
             }
+
+            $seqno = 1;
+            foreach ($this->tnkr_equips as $key => $value) {
+                $eqpt_id = (isset($value->eqpt_id) ? $value->eqpt_id : $value->tc_eqpt);
+                $query = "INSERT INTO TNKR_EQUIP (TC_TANKER, TC_EQPT, TC_SEQNO)
+                    VALUES (:tnkr_code, :tc_eqpt, :tc_seqno)";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+                oci_bind_by_name($stmt, ':tc_eqpt', $eqpt_id);
+                oci_bind_by_name($stmt, ':tc_seqno', $seqno);
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+
+                //compartment lock. The only thing about cmpt that can change on tanker is lock status
+                foreach ($value->compartments as $key2 => $value2) {
+                    $query = "
+                        SELECT NVL(ADJ_CMPT_LOCK, 0) ADJ_CMPT_LOCK
+                        FROM SFILL_ADJUST
+                        WHERE ADJ_EQP = :eqpt and ADJ_CMPT = :cmpt";
+                    $stmt = oci_parse($this->conn, $query);
+                    oci_bind_by_name($stmt, ':eqpt', $eqpt_id);
+                    oci_bind_by_name($stmt, ':cmpt', $value2->cmpt_no);
+                    if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                        return false;
+                    } else {
+                        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+                        $old_lock = (int) $row['ADJ_CMPT_LOCK'];
+                    }
+
+                    $query = "
+                        UPDATE SFILL_ADJUST
+                        SET ADJ_CMPT_LOCK = :new_lock
+                        WHERE ADJ_EQP = :eqpt and ADJ_CMPT = :cmpt";
+                    $stmt = oci_parse($this->conn, $query);
+                    oci_bind_by_name($stmt, ':new_lock', $value2->adj_cmpt_lock);
+                    oci_bind_by_name($stmt, ':eqpt', $eqpt_id);
+                    oci_bind_by_name($stmt, ':cmpt', $value2->cmpt_no);
+
+                    if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                        return false;
+                    }
+
+                    if ($old_lock != (int)$value2->adj_cmpt_lock) {
+                        $journal = new Journal($this->conn);
+                        $module = "GUI_TANKERS";
+                        $record = sprintf("Equip ID:%s, Compartment No:%d", $eqpt_id, $value2->cmpt_no);
+
+                        if (!$journal->valueChange(
+                            $module, $record, "ADJ_CMPT_LOCK", $old_lock, (int)$value2->adj_cmpt_lock)) {
+                            $e = oci_error($stmt);
+                            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                            return false;
+                        }
+                    }
+                }
+
+                $seqno += 1;
+            }
+        }
+        
+        //Deactivate other tankers that have the same equipment
+        if ($this->tnkr_active === 'Y') {
+            $query = "UPDATE TANKERS SET TNKR_ACTIVE = 'N'
+            WHERE TNKR_CODE IN (
+                SELECT TC_TANKER FROM TNKR_EQUIP WHERE TC_EQPT IN 
+                (SELECT TC_EQPT FROM TNKR_EQUIP WHERE TC_TANKER = :tnkr_code))
+            AND TNKR_CODE != :tnkr_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }    
         }
 
         //Update expiry dates
-        $expiry_dates = array();
-        $expiry_date = new ExpiryDate($this->conn);
-        $expiry_date->ed_object_id = $this->tnkr_code;
-        $expiry_date->edt_target_code = ExpiryTarget::TANKER;
-        // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
-        foreach ($this->expiry_dates as $key => $value) {
-            $expiry_dates[$value->edt_type_code] = $value;
-        }
-        // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
-        if (!$expiry_date->update($expiry_dates)) {
-            write_log("Failed to update expiry dates",
-                __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
+        if (isset($this->expiry_dates)) {
+            $expiry_dates = array();
+            $expiry_date = new ExpiryDate($this->conn);
+            $expiry_date->ed_object_id = $this->tnkr_code;
+            $expiry_date->edt_target_code = ExpiryTarget::TANKER;
+            // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
+            foreach ($this->expiry_dates as $key => $value) {
+                $expiry_dates[$value->edt_type_code] = $value;
+            }
+            // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+            if (!$expiry_date->update($expiry_dates)) {
+                write_log("Failed to update expiry dates",
+                    __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
         }
 
-        $journal = new Journal($this->conn, false);
-        $curr_psn = Utilities::getCurrPsn();
+        //Bulk etp
+        if (isset($this->bulk_edit)) {
+            foreach ($this->bulk_edit as $a_tanker) {
+                // write_log(json_encode($value), __FILE__, __LINE__);
+                if ($a_tanker->tnkr_code === $this->tnkr_code) {
+                    continue;
+                }
+
+                if (!isset($this->expiry_dates)) {
+                    $expiry_date = new ExpiryDate($this->conn);
+                    $expiry_date->ed_target_code = ExpiryTarget::TANKER;
+                    $expiry_date->ed_object_id = $this->tnkr_code;
+                    $stmt = $expiry_date->read();
+                    $result = array();
+                    Utilities::retrieve($result, $expiry_date, $stmt);
+                    $this->expiry_dates = $result;
+                }
+
+                $expiry_dates = array();
+                $expiry_date->ed_object_id = $a_tanker->tnkr_code;
+                $expiry_date->edt_target_code = ExpiryTarget::TANKER;
+                // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
+                foreach ($this->expiry_dates as $key => $value) {
+                    if (is_array($value)) {
+                        $value = (object)$value;
+                    }
+                    $value->edt_object_id = $a_tanker->tnkr_code;
+                    $value->ed_object_id = $a_tanker->tnkr_code;
+                    $expiry_dates[$value->edt_type_code] = $value;
+                }
+                if (!$expiry_date->update($expiry_dates)) {
+                    write_log("Failed to update expiry dates",
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+
         $jnl_data[0] = $curr_psn;
         $jnl_data[1] = $this->tnkr_code;
         $jnl_data[2] = $this->tnkr_owner;
@@ -822,7 +1016,7 @@ class Tanker extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $new_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -830,7 +1024,7 @@ class Tanker extends CommonClass
 
         $module = "GUI_TANKERS";
         $record = sprintf("tanker:%s, owner:%s", $this->tnkr_code, $this->tnkr_owner);
-        if (!$journal->updateChanges($row, $row2, $module, $record)) {
+        if (!$journal->updateChanges($old_row, $new_row, $module, $record)) {
             oci_rollback($this->conn);
             return false;
         }

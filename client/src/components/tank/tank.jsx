@@ -1,8 +1,7 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Badge, Icon, Tooltip } from 'antd';
-
-import { ReactComponent } from '../../assets/tank.svg';
+import logo from './img.png';
 import './tank.css';
 
 const config = {
@@ -65,18 +64,17 @@ const Tank = ({ tank, handleClick }) => {
       className="tank-widget"
       style={{ backgroundColor: errors ? 'rgba(236,110,104, 0.3)' : tank.color }}
     >
-      <div className="tank-auto">
-        <Tooltip title={tank.automatic ? 'Gauging Method: Automatic' : 'Gauaging Method: Manual'}>
-          <Icon type="sync" spin={tank.automatic} />
-        </Tooltip>
-      </div>
-
       <div className="tank-name">
         {tank.code} / {tank.title}
       </div>
+
       <div className="tank-status">{tank.status}</div>
+
       <div className="tank-base">{tank.name}</div>
-      <div className="tank-volume">{tank.level} mm</div>
+
+      <div className="tank-svg">
+        <img src={logo} alt="Logo" />
+      </div>
 
       <div className="tank-badge">
         <Badge status={hh} text="HH" />
@@ -85,13 +83,17 @@ const Tank = ({ tank, handleClick }) => {
         <Badge status={ll} text="LL" />
       </div>
 
-      <div className="tank-svg">
-        <ReactComponent />
+      <div className="tank-bar" onClick={() => handleClick(tank)}>
+        <Bar height={210} data={tank.payload} options={config} />
       </div>
 
-      <div className="tank-bar" onClick={() => handleClick(tank)}>
-        <Bar height={210} width={400} data={tank.payload} options={config} />
+      <div className="tank-auto">
+        <Tooltip title={tank.automatic ? 'Gauging Method: Automatic' : 'Gauaging Method: Manual'}>
+          <Icon type="sync" spin={tank.automatic} />
+        </Tooltip>
       </div>
+
+      <div className="tank-volume">{tank.level} mm</div>
     </div>
   );
 };

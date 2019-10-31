@@ -1,51 +1,65 @@
-import React, { Component } from "react";
-import { Form, Select } from "antd";
-import { tanks } from "../../../../api";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { tanks } from '../../../../api';
+import { Form, Select } from 'antd';
+import axios from 'axios';
 
-export default class Product extends Component {
-  state = {
-    classifications: null
+const Product = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  const [isLoading, setLoading] = useState(false);
+  const [options, setOptions] = useState([]);
+
+  const validate = (rule, input, callback) => {
+    if (input === '' || !input) {
+      callback(`${t('validate.select')} ─ ${t('fields.baseProductName')}`);
+    }
+
+    callback();
   };
 
-  componentDidMount() {
-    const { value, setValue } = this.props;
-
-    axios.all([tanks.readBaseList()]).then(
-      axios.spread(response => {
-        this.setState({
-          classifications: response.data.records
-        });
-      })
-    );
-
-    if (!!value) {
-      setValue({
-        tank_base: value.tank_base
+  useEffect(() => {
+    if (value) {
+      setFieldsValue({
+        tank_base: value.tank_base,
       });
     }
-  }
 
-  render() {
-    const { decorator } = this.props;
-    const { classifications } = this.state;
-    const { Option } = Select;
+    const getContext = () => {
+      axios.all([tanks.readBaseList()]).then(
+        axios.spread(options => {
+          setOptions(options.data.records);
+          setLoading(false);
+        }),
+      );
+    };
 
-    return (
-      <Form.Item label="Product">
-        {decorator("tank_base", {
-          rules: [{ required: true, message: "Please choose a Product." }]
-        })(
-          <Select showSearch optionFilterProp="children" filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
-            {!!classifications &&
-              classifications.map((item, index) => (
-                <Option key={index} value={item.base_code}>
-                  {`${item.base_name} / ${item.base_code}`}
-                </Option>
-              ))}
-          </Select>
-        )}
-      </Form.Item>
-    );
-  }
-}
+    setLoading(true);
+    getContext();
+  }, [value, setFieldsValue]);
+
+  return (
+    <Form.Item label={t('fields.baseProductName')}>
+      {getFieldDecorator('tank_base', {
+        rules: [{ required: true, validator: validate }],
+      })(
+        <Select
+          loading={isLoading}
+          showSearch
+          optionFilterProp="children"
+          placeholder={!value ? t('placeholder.selectBaseProduct') : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {options.map((item, index) => (
+            <Select.Option key={index} value={item.base_code}>
+              {item.base_name}
+            </Select.Option>
+          ))}
+        </Select>,
+      )}
+    </Form.Item>
+  );
+};
+
+export default Product;

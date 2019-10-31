@@ -7,6 +7,8 @@ include_once 'common_class.php';
 
 class ReportProfile extends CommonClass
 {
+    // public $check_exists = false; //Do not check existence when creating
+
     protected $TABLE_NAME = 'REPORT_FILES';
     protected $VIEW_NAME = 'GUI_REPORT_PROFILE';
     public $desc = "report profile";
@@ -47,6 +49,33 @@ class ReportProfile extends CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
+        }
+    }
+
+    public function jasper_files()
+    {
+        $result = array();
+        $result["records"] = array();
+
+        $dir = $_SERVER['OMEGA_HOME'] . '/bin/jasper';
+        $files = scandir($dir);
+
+        $jasper_files = array();
+        $num = 0;
+        foreach ($files as $name) {
+            if (!(substr($name, -7) === '.jasper')) {
+                continue;
+            }
+            $num += 1;
+            array_push($result["records"], $name);
+        }
+
+        http_response_code(200);
+        if ($num > 0) {
+            echo json_encode($result, JSON_PRETTY_PRINT);
+        } else {
+            $result["message"] = "No record found.";
+            echo json_encode($result, JSON_PRETTY_PRINT);
         }
     }
 
@@ -97,6 +126,20 @@ class ReportProfile extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
+        }
+    }
+
+    public function pre_create()
+    {
+        if (!isset($this->report_file)) {
+            $this->report_file = substr($this->report_jasper_file, 0, -7) . '_' . $this->report_type . ".jrxml";
+        }
+        if (!isset($this->report_lang)) {
+            $this->report_lang = 'ENG';
+        }
+
+        if (!isset($this->report_ondemand_title)) {
+            $this->report_ondemand_title = $this->report_name;
         }
     }
 }

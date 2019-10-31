@@ -1,59 +1,82 @@
-import React, { Component } from "react";
-import auth from "../../auth";
-import axios from "axios";
-import { Page, Download, Container, DataTable, Filter } from "../../components";
-import { stockManagement } from "../../api";
-import search from "../../utils/search";
-import columns from "./columns";
-import "./tankInventory.css";
+import React, { useState, useEffect, useCallback } from 'react';
 
-class TankInventory extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: null,
-      isLoading: true,
-      value: ""
-    };
-  }
+import axios from 'axios';
+import { notification, Select } from 'antd';
+import _ from 'lodash';
 
-  fetchTankInventory = () => {
-    this.setState({ isLoading: true });
-    axios.all([stockManagement.readTankInventory()]).then(
-      axios.spread(metering => {
-        this.setState({
-          isLoading: false,
-          data: metering.data.records
+import auth from '../../auth';
+import { stockManagement } from '../../api';
+import { Page, DataTable } from '../../components';
+import columns from './columns';
+import transform from './transform';
+
+const units = [
+  'Litres',
+  'Cubic Metre',
+  'Imperial Gallon',
+  'U.S Gallon',
+  'Imperial Barrel',
+  'U.S Barrel',
+];
+
+const TankInventory = ({ configuration, t, user }) => {
+  const [data, setData] = useState([]);
+  const [isLoading, setLoading] = useState(true);
+  const [unit, setUnit] = useState('Litres');
+
+  const fetch = useCallback(() => {
+    axios
+      .all([stockManagement.readTankInventory()])
+      .then(
+        axios.spread(record => {
+          const payload = transform(record.data.records, unit);
+
+          setData(payload);
+          setLoading(false);
+        }),
+      )
+      .catch(errors => {
+        setLoading(false);
+        _.forEach(errors.response.data.errors, error => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
-      })
-    );
-  };
+      });
+  }, [unit]);
 
-  searchObjects = query => {
-    const { value } = query.target;
-    this.setState({
-      filtered: search(value, this.state.data),
-      value
-    });
-  };
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
-  componentDidMount() {
-    this.fetchTankInventory();
-  }
+  const UnitChanger = (
+    <Select key="1" style={{ width: 200 }} defaultValue={unit} onChange={setUnit}>
+      {units.map(item => {
+        return (
+          <Select.Option key={item} value={item}>
+            {item}
+          </Select.Option>
+        );
+      })}
+    </Select>
+  );
 
-  render() {
-    const { isLoading, data, filtered, value } = this.state;
-    const results = !!filtered ? filtered : data;
-    return (
-      <Page page={"Stock Management"} name={"Tank Inventory"} isLoading={isLoading} block={true}>
-        <Container>
-          <Filter value={value} search={this.searchObjects} />
-          <Download data={data} type={"Tank Inventory"} style={{ float: "right" }} />
-          <DataTable rowKey="tank_code" columns={columns(results)} data={results} isLoading={isLoading} scroll={100} />
-        </Container>
-      </Page>
-    );
-  }
-}
+  return (
+    <Page
+      page={t('pageMenu.stockManagement')}
+      name={t('pageNames.tankInventory')}
+      isLoading={isLoading}
+    >
+      <DataTable
+        columns={columns(t)}
+        data={data}
+        isLoading={isLoading}
+        t={t}
+        modifiers={[UnitChanger]}
+      />
+    </Page>
+  );
+};
 
 export default auth(TankInventory);

@@ -62,7 +62,7 @@ class ExpiryDateType extends CommonClass
             WHERE EDT_TARGET_CODE LIKE :target_code
             ORDER BY EDT_TYPE_CODE";
         $stmt = oci_parse($this->conn, $query);
-        if ($this->target_code) {
+        if (isset($this->target_code)&& $this->target_code) {
             oci_bind_by_name($stmt, ':target_code', $this->target_code);
         } else {
             oci_bind_by_name($stmt, ':target_code', $target_code);

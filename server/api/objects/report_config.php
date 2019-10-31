@@ -19,7 +19,7 @@ class ReportConfig extends CommonClass
         "RPT_ACTIVE" => "REPORT_ACTIVE",
         "RPT_CANPRINT" => "REPORT_CANPRINT",
         "RPT_CANEMAIL" => "REPORT_CANEMAIL",
-        "RPT_EMAIL" => "REPORT_CMPYEMAIL"
+        "RPT_EMAIL" => "REPORT_CMPYEMAIL",
     );
 
     //All the fields that should be treated as BOOLEAN in JSON

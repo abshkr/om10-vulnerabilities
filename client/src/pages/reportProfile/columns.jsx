@@ -1,91 +1,63 @@
-import React from "react";
-import { Icon } from "antd";
-import generate from "../../utils/generateOptions";
-
-const columns = (data, configuration) => [
+const columns = t => [
   {
-    title: "Source Exists",
-    dataIndex: "source_exists",
-    key: "source_exists",
-    width: 130,
-    align: "center",
-    sorter: (a, b) => a.source_exists.localeCompare(b.source_exists),
-    render: text => (
-      <span>
-        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
-      </span>
-    )
+    headerName: t('fields.sourceExists'),
+    field: 'source_exists',
+    sortable: true,
+    resizable: true,
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
   },
   {
-    title: "Source",
-    dataIndex: "report_jasper_file",
-    key: "report_jasper_file",
-    width: 180,
-    filters: generate(data, "report_jasper_file"),
-    onFilter: (value, record) => record.report_jasper_file.indexOf(value) === 0
+    headerName: t('fields.source'),
+    field: 'report_jasper_file',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
   },
   {
-    title: "Type",
-    dataIndex: "report_type_name",
-    key: "report_type_name",
-    width: 120,
-    align: "center",
-    filters: generate(data, "report_type_name"),
-    onFilter: (value, record) => record.report_type_name.indexOf(value) === 0
+    headerName: t('fields.type'),
+    field: 'report_type_name',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
   },
   {
-    title: "Name",
-    dataIndex: "report_name",
-    key: "report_name",
-    sorter: (a, b) => a.report_name.localeCompare(b.report_name),
-    width: 300
+    headerName: t('fields.name'),
+    field: 'report_name',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
   },
   {
-    title: "Description",
-    dataIndex: "report_desc",
-    key: "report_desc",
-    sorter: (a, b) => a.report_desc.localeCompare(b.report_desc),
-    width: 200
+    headerName: t('fields.description'),
+    field: 'report_desc',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
   },
   {
-    title: "On-Demand Report",
-    dataIndex: "report_ondemand_flag",
-    key: "report_ondemand_flag",
-    align: "center",
-    sorter: (a, b) => a.report_ondemand_flag.localeCompare(b.report_ondemand_flag),
-    width: 130,
-    render: text => (
-      <span>
-        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
-      </span>
-    )
+    headerName: t('fields.onDemandReport'),
+    field: 'report_ondemand_flag',
+    sortable: true,
+    resizable: true,
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
   },
   {
-    title: "Closeout Report",
-    dataIndex: "report_closeout_flag",
-    key: "report_closeout_flag",
-    width: 130,
-    align: "center",
-    sorter: (a, b) => a.report_closeout_flag.localeCompare(b.report_closeout_flag),
-
-    render: text => (
-      <span>
-        <Icon type={text ? "check" : "close"} style={{ color: text ? "#a4ec68" : "#ec6e68" }} />
-      </span>
-    )
+    headerName: t('fields.closeOutReport'),
+    field: 'report_closeout_flag',
+    sortable: true,
+    resizable: true,
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
   },
   {
-    title: "Closeout Report By",
-    dataIndex: "report_closeout_flag2",
-    key: "report_closeout_flag2",
-    width: 200,
-    align: "center",
-    sorter: (a, b) => a.report_closeout_flag2.localeCompare(b.report_closeout_flag2),
-
-    render: text => (
-      <span>{text ? "Folio Range [Start/End Folio Number]" : "Date Range [Start/End Date]"}</span>
-    )
-  }
+    headerName: t('fields.closeOutReportBy'),
+    field: 'report_closeout_flag2_name',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
+  },
 ];
 
 export default columns;

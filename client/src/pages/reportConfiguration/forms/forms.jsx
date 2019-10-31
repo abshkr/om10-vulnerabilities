@@ -1,234 +1,198 @@
-import React, { Component } from "react";
+import React from 'react';
 
-import {
-  Name,
-  Email,
-  Company,
-  Enable,
-  CanActivate,
-  CanReceiveByPrinting,
-  CanReceiveByEmail
-} from "./fields";
+import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
+import axios from 'axios';
+import _ from 'lodash';
 
-import axios from "axios";
-import { Form, Button, Tabs, notification, Modal } from "antd";
-import { reportConfiguration } from "../../../api";
+import { reportConfiguration } from '../../../api';
+import { Company, Name, Email, Flags } from './fields';
 
-class BaseProductsForm extends Component {
-  handleCreate = () => {
-    this.props.form.validateFields((err, values) => {
+const TabPane = Tabs.TabPane;
+
+const FormModal = ({ form, refresh, value, t, data, access }) => {
+  const handleCreate = () => {
+    form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([reportConfiguration.createConfiguration(values)])
-          .then(
-            axios.spread(response => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: "Successfully Created.",
-                description: `You have created the Report Configuration ${
-                  values.report_jasper_file
-                }`
+        Modal.confirm({
+          title: t('prompts.create'),
+          okText: t('operations.yes'),
+          okType: 'primary',
+          cancelText: t('operations.no'),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([reportConfiguration.createConfiguration(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
+
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t('messages.createSuccess'),
+                    description: `${t('descriptions.createSuccess')} ${values.report_file}`,
+                  });
+                }),
+              )
+              .catch(errors => {
+                _.forEach(errors.response.data.errors, error => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message,
+                  });
+                });
               });
-            })
-          )
-          .catch(function(error) {
-            notification.error({
-              message: error.message,
-              description: "Failed to create the Report Configuration."
-            });
-          });
-      } else {
-        notification.error({
-          message: "Validation Failed.",
-          description: "Make sure all the fields meet the requirements."
+          },
         });
       }
     });
   };
 
-  handleUpdate = () => {
-    this.props.form.validateFields((err, values) => {
+  const handleUpdate = () => {
+    form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([reportConfiguration.updateConfiguration(values)])
-          .then(
-            axios.spread(response => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: "Successfully Updated.",
-                description: `You have updated the Report Configuration ${
-                  values.report_jasper_file
-                }`
+        Modal.confirm({
+          title: t('prompts.update'),
+          okText: t('operations.yes'),
+          okType: 'primary',
+          cancelText: t('operations.no'),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([reportConfiguration.updateConfiguration(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
+
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t('messages.updateSuccess'),
+                    description: `${t('descriptions.updateSuccess')} ${values.report_file}`,
+                  });
+                }),
+              )
+              .catch(errors => {
+                _.forEach(errors.response.data.errors, error => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message,
+                  });
+                });
               });
-            })
-          )
-          .catch(function(error) {
-            notification.error({
-              message: error.message,
-              description: "Failed to update the Report Configuration."
-            });
-          });
-      } else {
-        notification.error({
-          message: "Validation Failed.",
-          description: "Make sure all the fields meet the requirements."
+          },
         });
       }
     });
   };
 
-  handleDelete = () => {
-    const { value } = this.props;
+  const handleDelete = () => {
     axios
       .all([reportConfiguration.deleteConfiguration(value)])
       .then(
         axios.spread(response => {
-          this.props.refresh();
+          refresh();
+
           Modal.destroyAll();
           notification.success({
-            message: "Successfully Deleted.",
-            description: `You have deleted the Tank ${value.report_jasper_file}`
+            message: t('messages.deleteSuccess'),
+            description: `${t('descriptions.deleteSuccess')} ${value.report_file}`,
           });
-        })
+        }),
       )
-      .catch(error => {
-        notification.error({
-          message: error.message,
-          description: "Failed to delete the Tank."
+      .catch(errors => {
+        _.forEach(errors.response.data.errors, error => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
   };
 
-  showDeleteConfirm = () => {
+  const showDeleteConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to delete this Report Configuration?",
-      okText: "Yes",
-      okType: "danger",
-      cancelText: "No",
+      title: t('prompts.delete'),
+      okText: t('operations.yes'),
+      okType: 'danger',
+      cancelText: t('operations.no'),
       centered: true,
-      onOk: this.handleDelete
+      onOk: handleDelete,
     });
   };
 
-  showUpdateConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to update this Report Configuration?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      centered: true,
-      onOk: this.handleUpdate
-    });
-  };
+  const { getFieldValue } = form;
 
-  showCreateConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to update this Report Configuration?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      centered: true,
-      onOk: this.handleCreate
-    });
-  };
-
-  render() {
-    const { form, value } = this.props;
-    const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
-
-    const TabPane = Tabs.TabPane;
-
-    return (
-      <div>
-        <Form style={{ height: "65vh" }}>
-          <Tabs defaultActiveKey="1">
-            <TabPane tab="General" key="1">
-              <Company
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-              />
-              <Name
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-              />
-              <Enable
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-              />
-              <CanActivate
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-              />
-
-              <CanReceiveByPrinting
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-              />
-
-              <CanReceiveByEmail
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-              />
-
-              <Email
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-              />
-            </TabPane>
-          </Tabs>
-        </Form>
-
-        <Button
-          shape="round"
-          icon="close"
-          style={{ float: "right" }}
-          onClick={() => Modal.destroyAll()}
-        >
-          Cancel
-        </Button>
-
-        <Button
-          shape="round"
-          type="primary"
-          icon={!!value ? "edit" : "plus"}
-          style={{ float: "right", marginRight: 5 }}
-          onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}
-        >
-          {!!value ? "Update" : "Create"}
-        </Button>
-
-        {!!value && (
-          <Button
-            shape="round"
-            type="danger"
-            icon="delete"
-            style={{ float: "right", marginRight: 5 }}
-            onClick={this.showDeleteConfirm}
+  return (
+    <div>
+      <Form>
+        <Tabs defaultActiveKey="1" animated={false}>
+          <TabPane
+            className="ant-tab-window"
+            tab={t('tabColumns.general')}
+            forceRender={true}
+            key="1"
           >
-            Delete
-          </Button>
-        )}
-      </div>
-    );
-  }
-}
+            <Company form={form} value={value} t={t} />
+            <Name
+              form={form}
+              value={value}
+              t={t}
+              data={data}
+              source={getFieldValue('report_cmpycode')}
+            />
+            <Email
+              form={form}
+              value={value}
+              t={t}
+              enabled={getFieldValue('report_canemail') && getFieldValue('report_enabled')}
+            />
+            <Divider>{t('divider.flags')}</Divider>
+            <Flags
+              form={form}
+              value={value}
+              t={t}
+              enabled={getFieldValue('report_enabled')}
+              canEmail={getFieldValue('report_canemail')}
+            />
+          </TabPane>
+        </Tabs>
+      </Form>
 
-const Forms = Form.create()(BaseProductsForm);
+      <Button
+        shape="round"
+        icon="close"
+        style={{ float: 'right' }}
+        onClick={() => Modal.destroyAll()}
+      >
+        {t('operations.cancel')}
+      </Button>
+
+      <Button
+        shape="round"
+        type="primary"
+        disabled={!!value ? !access.canUpdate : !access.canCreate}
+        icon={!!value ? 'edit' : 'plus'}
+        style={{ float: 'right', marginRight: 5 }}
+        onClick={!!value ? handleUpdate : handleCreate}
+      >
+        {!!value ? t('operations.update') : t('operations.create')}
+      </Button>
+
+      {!!value && (
+        <Button
+          shape="round"
+          type="danger"
+          icon="delete"
+          style={{ float: 'right', marginRight: 5 }}
+          onClick={showDeleteConfirm}
+          disabled={!access.canDelete}
+        >
+          {t('operations.delete')}
+        </Button>
+      )}
+    </div>
+  );
+};
+
+const Forms = Form.create()(FormModal);
 
 export default Forms;

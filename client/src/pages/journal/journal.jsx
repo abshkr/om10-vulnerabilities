@@ -1,46 +1,38 @@
-import React from "react";
+import React from 'react';
 
-import Live from "./live";
-import auth from "../../auth";
-import Historical from "./historical";
-import { Tabs, Icon, Badge } from "antd";
-import { Page, Loading } from "../../components";
+import Live from './live';
+import auth from '../../auth';
+import Historical from './historical';
+import { Page } from '../../components';
 
-import "./journal.css";
+import { Tabs, Icon, Badge } from 'antd';
 
-const Journal = ({ configuration }) => {
-  const [tab, setTab] = React.useState("1");
-
-  const handleTabChange = tab => setTab(tab);
-
-  const TabPane = Tabs.TabPane;
-
+const Journal = ({ configuration, t }) => {
   return (
-    <Page page={"Reports"} name={"Journal"} isLoading={false} block>
-      <Tabs defaultActiveKey="1" style={{ padding: 10 }} tabPosition="left" onChange={handleTabChange}>
-        <TabPane
-          className="live-table"
+    <Page page={t('pageMenu.reports')} name={t('pageNames.journal')} isLoading={false}>
+      <Tabs defaultActiveKey="1" tabPosition="left">
+        <Tabs.TabPane
           tab={
             <span>
               <Badge status="processing" />
-              Live
+              {t('tabColumns.liveJournal')}
             </span>
           }
           key="1"
         >
-          {tab === "1" ? <Live config={configuration} /> : <Loading />}
-        </TabPane>
-        <TabPane
+          <Live configuration={configuration} t={t} />
+        </Tabs.TabPane>
+        <Tabs.TabPane
           tab={
             <span>
               <Icon type="calendar" />
-              Historical
+              {t('tabColumns.historicalJournal')}
             </span>
           }
           key="2"
         >
-          {tab === "2" ? <Historical config={configuration} /> : <Loading />}
-        </TabPane>
+          <Historical configuration={configuration} t={t} />
+        </Tabs.TabPane>
       </Tabs>
     </Page>
   );

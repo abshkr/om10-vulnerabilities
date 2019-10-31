@@ -1,63 +1,49 @@
-import React, { Component } from "react";
-import axios from "axios";
-import { search } from "../../../utils";
-import { journal } from "../../../api";
-import { Filter, DataTable, Download } from "../../../components";
-import columns from "./columns";
+import React, { useEffect, useState, useCallback } from 'react';
+import axios from 'axios';
+import _ from 'lodash';
+import columns from './columns';
+import { notification } from 'antd';
+import { journal } from '../../../api';
+import { DataTable } from '../../../components';
 
-export default class Live extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: [],
-      value: "",
-      isLoading: true
-    };
-  }
+const Live = ({ configuration, t }) => {
+  const [data, setData] = useState([]);
 
-  handleFetch = () => {
-    axios.all([journal.readJournal()]).then(
-      axios.spread(journal => {
-        this.setState({
-          data: journal.data.records
+  const fetch = useCallback(() => {
+    axios
+      .all([journal.readJournal()])
+      .then(
+        axios.spread(records => {
+          setData(records.data.records);
+        }),
+      )
+      .catch(errors => {
+        _.forEach(errors.response.data.errors, error => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
-      })
-    );
-  };
+      });
+  }, []);
 
-  handleSearch = query => {
-    const { value } = query.target;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch();
+    }, 1000);
 
-    this.setState({
-      filtered: search(value, this.state.data),
-      value
-    });
-  };
+    return () => clearInterval(interval);
+  }, [fetch]);
 
-  componentDidMount() {
-    this.handleFetch();
+  return (
+    <DataTable
+      columns={columns(configuration, t)}
+      isLoading={data.length === 0}
+      create={false}
+      data={data}
+      t={t}
+    />
+  );
+};
 
-    this.setState({
-      interval: setInterval(() => {
-        this.handleFetch();
-      }, 1000)
-    });
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.state.interval);
-  }
-
-  render() {
-    const { data, filtered, value } = this.state;
-    const { config } = this.props;
-    const results = !!filtered ? filtered : data;
-    return (
-      <div>
-        <Filter value={value} search={this.handleSearch} loading={false} />
-        <Download data={data} type={"base_products"} style={{ float: "right" }} loading={false} />
-        <DataTable isLoading={false} rowKey="seq" columns={columns(results, config)} data={results} />
-      </div>
-    );
-  }
-}
+export default Live;

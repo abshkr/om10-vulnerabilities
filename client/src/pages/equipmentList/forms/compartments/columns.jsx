@@ -7,7 +7,7 @@ const columns = t => [
     dataIndex: 'cmpt_no',
     key: 'cmpt_no',
     align: 'center',
-    width: 250
+    width: 120
   },
   {
     title: t('fields.safeFill'),
@@ -15,14 +15,14 @@ const columns = t => [
     key: 'safefill',
     align: 'center',
     editable: true,
-    width: 300
+    width: 120
   },
   {
     title: t('fields.safeFillUnit'),
     dataIndex: 'cmpt_units',
     key: 'cmpt_units',
     align: 'center',
-    width: 300
+    width: 120
   },
   {
     title: t('fields.capacity'),
@@ -30,13 +30,13 @@ const columns = t => [
     key: 'sfl',
     align: 'center',
     editable: true,
-    width: 300
+    width: 120
   },
   {
     title: t('fields.status'),
     dataIndex: 'adj_cmpt_lock',
     key: 'adj_cmpt_lock',
-    width: 300,
+    width: 120,
     editable: true,
     align: 'center',
     render: text => (

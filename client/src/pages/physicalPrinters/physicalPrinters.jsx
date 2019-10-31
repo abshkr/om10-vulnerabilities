@@ -1,99 +1,67 @@
-import React, { Component } from "react";
+import React, { useState, useEffect, useCallback } from 'react';
 
-import axios from "axios";
-import columns from "./columns";
-import Forms from "./forms";
-import auth from "../../auth";
-import search from "../../utils/search";
-import { physicalPrinters } from "../../api";
-import { Button, Modal, notification } from "antd";
-import { Page, Filter, DataTable, Download, Container } from "../../components";
+import { Page, DataTable } from '../../components';
+import { Modal, notification } from 'antd';
+import { physicalPrinters } from '../../api';
+import columns from './columns';
+import auth from '../../auth';
+import Forms from './forms';
+import axios from 'axios';
 
-class PhysicalPrinters extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: [],
-      value: "",
-      resize: false,
-      isLoading: true
-    };
-  }
+const PhysicalPrinters = ({ configuration, t }) => {
+  const [data, setData] = useState([]);
+  const [isLoading, setLoading] = useState(true);
 
-  handleClick = object => {
+  const handleClick = object => {
     Modal.info({
-      title: !!object ? `Editing (${object.prntr})` : "Create",
+      title: !!object
+        ? `${t('operations.editing')} (${object.prt_printer})`
+        : `${t('operations.create')}`,
       centered: true,
-      icon: !!object ? "edit" : "form",
-      width: 720,
-      content: <Forms refresh={this.handleFetch} value={object} />,
+      width: '50vw',
+      icon: !!object ? 'edit' : 'form',
+      content: <Forms value={object} refresh={fetch} t={t} data={data} />,
       okButtonProps: {
-        style: { display: "none" }
-      }
+        style: { display: 'none' },
+      },
     });
   };
 
-  handleSearch = query => {
-    const { value } = query.target;
-    this.setState({
-      filtered: search(value, this.state.data),
-      value
-    });
-  };
-
-  handleResize = () => {
-    const { resize } = this.state;
-    this.setState({
-      resize: !resize
-    });
-  };
-
-  handleFetch = () => {
-    this.setState({
-      isLoading: true
-    });
-
+  const fetch = useCallback(() => {
+    setLoading(true);
     axios
       .all([physicalPrinters.readPhysicalPrinters()])
       .then(
-        axios.spread(printers => {
-          this.setState({
-            isLoading: false,
-            data: printers.data.records
-          });
-        })
+        axios.spread(records => {
+          setData(records.data.records);
+          setLoading(false);
+        }),
       )
       .catch(error => {
+        setLoading(false);
         notification.error({
           message: error.message,
-          description: "Failed to make the request."
+          description: t('descriptions.requestFailed'),
         });
       });
-  };
+  }, [t]);
 
-  componentDidMount() {
-    this.handleFetch();
-  }
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
-  render() {
-    const { data, isLoading, filtered, value, resize } = this.state;
-    const { configuration } = this.props;
-    const results = !!filtered ? filtered : data;
-    return (
-      <Page page={"Printer Configuration"} name={"Physical Printers"} block={true}>
-        <Container>
-          <Filter value={value} search={this.handleSearch} loading={isLoading} />
-          <Button shape="round" type="primary" icon={resize ? "shrink" : "arrows-alt"} style={{ float: "right" }} onClick={this.handleResize} disabled={isLoading} />
-          <Download data={data} type={"physical_printers"} style={{ float: "right", marginRight: 5 }} loading={isLoading} />
-          <Button shape="round" type="primary" style={{ float: "right", marginRight: 5 }} onClick={() => this.handleClick(null)} disabled={isLoading}>
-            Create Printer
-          </Button>
-
-          <DataTable data={results} resize={resize} rowKey="category_code" isLoading={isLoading} click={this.handleClick} columns={columns(results, configuration)} />
-        </Container>
-      </Page>
-    );
-  }
-}
+  return (
+    <Page page={t('pageMenu.printers')} name={t('pageNames.logicalPrinters')} isLoading={isLoading}>
+      <DataTable
+        columns={columns(configuration, t)}
+        data={data}
+        isLoading={isLoading}
+        click={handleClick}
+        t={t}
+        create
+      />
+    </Page>
+  );
+};
 
 export default auth(PhysicalPrinters);

@@ -1,2 +1,3 @@
-import DataTable from "./table";
+import DataTable from './table';
+
 export default DataTable;

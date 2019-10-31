@@ -3,7 +3,10 @@ import React from 'react';
 import { Menu, Icon } from 'antd';
 import { withRouter } from 'react-router';
 
+import { ROUTES } from '../../constants';
+
 import './navigation.css';
+
 const { SubMenu } = Menu;
 
 const Navigation = ({ history }) => {
@@ -16,11 +19,11 @@ const Navigation = ({ history }) => {
   return (
     <Menu
       onClick={handleNavigation}
-      defaultSelectedKeys={['/dashboard']}
+      defaultSelectedKeys={[ROUTES.DASHBOARD]}
       theme="dark"
       mode="inline"
     >
-      <Menu.Item key="/dashboard">
+      <Menu.Item key={ROUTES.DASHBOARD}>
         <Icon className="menu-icon" type="fire" />
         <span className="menu-item">Dashboard</span>
       </Menu.Item>
@@ -33,10 +36,10 @@ const Navigation = ({ history }) => {
           </span>
         }
       >
-        <Menu.Item key="/equipment-list">
+        <Menu.Item key={ROUTES.EQUIPMENT_LIST}>
           <span className="submenu-item">Equipment List</span>
         </Menu.Item>
-        <Menu.Item key="/tanker-list">
+        <Menu.Item key={ROUTES.TANKER_LIST}>
           <span className="submenu-item">Tanker List</span>
         </Menu.Item>
       </SubMenu>
@@ -49,14 +52,8 @@ const Navigation = ({ history }) => {
           </span>
         }
       >
-        <Menu.Item key="/base-products">
-          <span className="submenu-item">Base Products</span>
-        </Menu.Item>
-        <Menu.Item key="/tank-configurations">
+        <Menu.Item key={ROUTES.TANK_CONFIGURATIONS}>
           <span className="submenu-item">Tank Configuration</span>
-        </Menu.Item>
-        <Menu.Item key="/transactions">
-          <span className="submenu-item">Transactions</span>
         </Menu.Item>
       </SubMenu>
 
@@ -68,17 +65,14 @@ const Navigation = ({ history }) => {
           </span>
         }
       >
-        <Menu.Item key="/journal">
+        <Menu.Item key={ROUTES.JOURNAL}>
           <span className="submenu-item">Journal</span>
         </Menu.Item>
-        <Menu.Item key="/report-profile">
+        <Menu.Item key={ROUTES.REPORT_PROFILE}>
           <span className="submenu-item">Report Profile</span>
         </Menu.Item>
-        <Menu.Item key="/report-configuration">
+        <Menu.Item key={ROUTES.REPORT_CONFIGURATION}>
           <span className="submenu-item">Report Configuration</span>
-        </Menu.Item>
-        <Menu.Item key="/folio-summary">
-          <span className="submenu-item">Folio Summary</span>
         </Menu.Item>
       </SubMenu>
 
@@ -90,10 +84,10 @@ const Navigation = ({ history }) => {
           </span>
         }
       >
-        <Menu.Item key="/personnel">
+        <Menu.Item key={ROUTES.PERSONNEL}>
           <span className="submenu-item">Personnel</span>
         </Menu.Item>
-        <Menu.Item key="/area">
+        <Menu.Item key={ROUTES.AREA}>
           <span className="submenu-item">Area</span>
         </Menu.Item>
       </SubMenu>
@@ -106,18 +100,18 @@ const Navigation = ({ history }) => {
           </span>
         }
       >
-        <Menu.Item key="/metering">
+        <Menu.Item key={ROUTES.METERING}>
           <span className="submenu-item">Metering</span>
         </Menu.Item>
-        <Menu.Item key="/site-balance">
+        <Menu.Item key={ROUTES.SITE_BALANCE}>
           <span className="submenu-item">Site Balance</span>
         </Menu.Item>
 
-        <Menu.Item key="/tank-inventory">
+        <Menu.Item key={ROUTES.TANK_INVENTORY}>
           <span className="submenu-item">Tank Inventory</span>
         </Menu.Item>
 
-        <Menu.Item key="/product-inventory">
+        <Menu.Item key={ROUTES.PRODUCT_INVENTORY}>
           <span className="submenu-item">Product Inventory</span>
         </Menu.Item>
       </SubMenu>
@@ -130,10 +124,10 @@ const Navigation = ({ history }) => {
           </span>
         }
       >
-        <Menu.Item key="/tank-view">
+        <Menu.Item key={ROUTES.TANK_VIEW}>
           <span className="submenu-item">Tank View</span>
         </Menu.Item>
-        <Menu.Item key="/adaptive-flow-control">
+        <Menu.Item key={ROUTES.ADAPTIVE_FLOW_CONTROL}>
           <span className="submenu-item">Adaptive Flow Control</span>
         </Menu.Item>
       </SubMenu>

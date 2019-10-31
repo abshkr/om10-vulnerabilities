@@ -1,201 +1,197 @@
-import React, { Component } from "react";
-import { Form, Button, Tabs, notification, Modal } from "antd";
-import { tanks } from "../../../api";
-import axios from "axios";
+import React from 'react';
+
+import _ from 'lodash';
+import axios from 'axios';
+import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
+
 import {
-  TankCode,
+  Name,
+  Code,
   Product,
-  TankName,
   Density,
-  DailyVariancePercent,
-  DailyVarianceVol,
-  MonthlyVariancePercent,
-  MonthlyVarianceVol,
-  ExcludeFromPID,
-  ExcludeFromPOS,
-  ExcludeFromSMG,
-  ExcludeFromStockReports,
-  TankMaxFlow
-} from "./fields";
+  Flags,
+  DailyVariance,
+  MontlhyVariance,
+  MaxFlow,
+} from './fields';
+import { tanks } from '../../../api';
 
-class TankConfigurationForm extends Component {
-  handleCreate = () => {
-    this.props.form.validateFields((err, values) => {
+const TabPane = Tabs.TabPane;
+
+const FormModal = ({ form, refresh, value, t, data, access, configuration }) => {
+  const handleCreate = () => {
+    form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([tanks.createTank(values)])
-          .then(
-            axios.spread(() => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: "Successfully Created.",
-                description: `You have Created the Tank ${values.tank_code}`
+        Modal.confirm({
+          title: t('prompts.create'),
+          okText: t('operations.yes'),
+          okType: 'primary',
+          cancelText: t('operations.no'),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([tanks.createTank(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t('messages.createSuccess'),
+                    description: `${t('descriptions.createSuccess')} ${values.tank_code}`,
+                  });
+                }),
+              )
+              .catch(errors => {
+                _.forEach(errors.response.data.errors, error => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message,
+                  });
+                });
               });
-            })
-          )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: "Failed to create the Tank."
-            });
-          });
-      } else {
-        notification.error({
-          message: "Validation Failed.",
-          description: "Make sure all the fields meet the requirements."
+          },
         });
       }
     });
   };
 
-  handleUpdate = () => {
-    this.props.form.validateFields((err, values) => {
+  const handleUpdate = () => {
+    form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([tanks.updateTank(values)])
-          .then(
-            axios.spread(() => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: "Successfully Updated.",
-                description: `You have updated the Tank ${values.tank_code}`
+        Modal.confirm({
+          title: t('prompts.update'),
+          okText: t('operations.yes'),
+          okType: 'primary',
+          cancelText: t('operations.no'),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([tanks.updateTank(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
+
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t('messages.updateSuccess'),
+                    description: `${t('descriptions.updateSuccess')} ${values.tank_code}`,
+                  });
+                }),
+              )
+              .catch(errors => {
+                _.forEach(errors.response.data.errors, error => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message,
+                  });
+                });
               });
-            })
-          )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: "Failed to update the Tank."
-            });
-          });
-      } else {
-        notification.error({
-          message: "Validation Failed.",
-          description: "Make sure all the fields meet the requirements."
+          },
         });
       }
     });
   };
 
-  handleDelete = () => {
-    const { value } = this.props;
+  const handleDelete = () => {
     axios
-      .all([tanks.deleteTank(value.tank_code)])
+      .all([tanks.deleteTank(value)])
       .then(
-        axios.spread(() => {
-          this.props.refresh();
+        axios.spread(response => {
+          refresh();
+
           Modal.destroyAll();
           notification.success({
-            message: "Successfully Deleted.",
-            description: `You have deleted the Tank ${value.tank_code}`
+            message: t('messages.deleteSuccess'),
+            description: `${t('descriptions.deleteSuccess')} ${value.tank_code}`,
           });
-        })
+        }),
       )
-      .catch(error => {
-        notification.error({
-          message: error.message,
-          description: "Failed to delete the Tank."
+      .catch(errors => {
+        _.forEach(errors.response.data.errors, error => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
   };
 
-  showDeleteConfirm = () => {
+  const showDeleteConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to delete this tank?",
-      okText: "Yes",
-      okType: "danger",
-      cancelText: "No",
+      title: t('prompts.delete'),
+      okText: t('operations.yes'),
+      okType: 'danger',
+      cancelText: t('operations.no'),
       centered: true,
-      onOk: this.handleDelete
+      onOk: handleDelete,
     });
   };
 
-  showUpdateConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to update this tank?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      centered: true,
-      onOk: this.handleUpdate
-    });
-  };
+  return (
+    <div>
+      <Form>
+        <Tabs defaultActiveKey="1" animated={false}>
+          <TabPane
+            className="ant-tab-window"
+            tab={t('tabColumns.general')}
+            forceRender={true}
+            key="1"
+          >
+            <Code form={form} value={value} t={t} data={data} />
+            <Name form={form} value={value} t={t} />
+            <Product form={form} value={value} t={t} />
+            <Density form={form} value={value} t={t} product={form.getFieldValue('tank_base')} />
+            <Divider>{t('divider.variances')}</Divider>
+            <DailyVariance form={form} value={value} t={t} />
+            <MontlhyVariance form={form} value={value} t={t} />
+            <Divider>{t('divider.flags')}</Divider>
+            <Flags form={form} value={value} t={t} />
+          </TabPane>
 
-  showCreateConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to update this tank?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      centered: true,
-      onOk: this.handleCreate
-    });
-  };
-
-  render() {
-    const { form, value, baseProducts, profile, data } = this.props;
-    const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
-    const TabPane = Tabs.TabPane;
-
-    return (
-      <div>
-        <Form style={{ height: 640 }}>
-          <Tabs defaultActiveKey="1">
-            <TabPane tab="General" key="1">
-              <TankCode decorator={getFieldDecorator} value={value} setValue={setFieldsValue} data={data} />
-              <Product decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <TankName decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Density decorator={getFieldDecorator} value={value} setValue={setFieldsValue} baseProducts={baseProducts} selectedBase={getFieldValue("tank_base")} />
+          {configuration.features.adaptiveFlowControl && (
+            <TabPane className="ant-tab-window" tab={t('tabColumns.adaptiveFlow')} key="2">
+              <MaxFlow form={form} value={value} t={t} />
             </TabPane>
+          )}
+        </Tabs>
+      </Form>
 
-            <TabPane tab="Variance" key="2">
-              <DailyVarianceVol decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <MonthlyVarianceVol decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <DailyVariancePercent decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <MonthlyVariancePercent decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-            </TabPane>
+      <Button
+        shape="round"
+        icon="close"
+        style={{ float: 'right' }}
+        onClick={() => Modal.destroyAll()}
+      >
+        {t('operations.cancel')}
+      </Button>
 
-            <TabPane tab="Flags" key="4">
-              <ExcludeFromPID decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <ExcludeFromPOS decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <ExcludeFromSMG decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <ExcludeFromStockReports decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-            </TabPane>
+      <Button
+        shape="round"
+        type="primary"
+        icon={!!value ? 'edit' : 'plus'}
+        style={{ float: 'right', marginRight: 5 }}
+        onClick={!!value ? handleUpdate : handleCreate}
+        disabled={!!value ? !access.canUpdate : !access.canCreate}
+      >
+        {!!value ? t('operations.update') : t('operations.create')}
+      </Button>
 
-            {profile.features.adaptiveFlowControl && (
-              <TabPane tab="Adaptive Flow" key="5">
-                <TankMaxFlow decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              </TabPane>
-            )}
-          </Tabs>
-        </Form>
-
-        <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
-          Cancel
-        </Button>
-
+      {!!value && (
         <Button
           shape="round"
-          type="primary"
-          icon={!!value ? "edit" : "plus"}
-          style={{ float: "right", marginRight: 5 }}
-          onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}
+          type="danger"
+          icon="delete"
+          style={{ float: 'right', marginRight: 5 }}
+          onClick={showDeleteConfirm}
+          disabled={!access.canDelete}
         >
-          {!!value ? "Update" : "Create"}
+          {t('operations.delete')}
         </Button>
+      )}
+    </div>
+  );
+};
 
-        {!!value && (
-          <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
-            Delete
-          </Button>
-        )}
-      </div>
-    );
-  }
-}
-
-const Forms = Form.create()(TankConfigurationForm);
+const Forms = Form.create()(FormModal);
 
 export default Forms;

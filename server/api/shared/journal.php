@@ -185,6 +185,9 @@ class Journal
     //Fields that do not count in valueChange.
     private $fields_excluded = array(
         "GUI_ACCESS_KEYS" => array("KYA_ROLE", "KYA_TYPE", "KYA_KEY_CREATED", "KYA_PHYS_TYPE"),
+        "TRANSP_EQUIP" => array("EQPT_LAST_MODIFIED"),
+        "GUI_TANKERS" => array("TNKR_LAST_MODIFIED"),
+        "GUI_PERSONNEL" => array("PER_LAST_MODIFIED"),
     );
 
     // constructor with $db as database connection
@@ -240,16 +243,25 @@ class Journal
             return null;
         }
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-        $template = $row['MESSAGE'];
+        $template_str = $row['MESSAGE'];
 
         $hit = 0;
         $message = "";
-        for ($i = 0; $i < strlen($template); $i++) {
-            if ($template[$i] === '%') {
+        for ($i = 0; $i < strlen($template_str); $i++) {
+            if ($template_str[$i] === '%') {
+                if ($hit === 1 && (
+                    $template == Lookup::RECORD_ALTERED
+                    || $template == Lookup::RECORD_ADD
+                    || $template == Lookup::RECORD_DELETE
+                )) {
+                    if (isset($this->modules[$data[1]])) {
+                        $data[1] = $this->modules[$data[1]];
+                    }
+                }
                 $message = $message . $data[$hit];
                 $hit += 1;
             } else {
-                $message = $message . $template[$i];
+                $message = $message . $template_str[$i];
             }
         }
         write_log("Write journal: " . $message, __FILE__, __LINE__, LogLevel::INFO);

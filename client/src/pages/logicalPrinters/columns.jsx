@@ -1,79 +1,61 @@
-import React from "react";
-import _ from "lodash";
-import { Tag } from "antd";
-import generate from "../../utils/generateOptions";
-
-const columns = (data, configuration) => {
-  const values = defaults(data);
-  const config = configuration.columns.logicalPrinters;
-
-  const modified = _.reject(values, o => {
-    return !config[o.dataIndex];
-  });
-
-  return modified;
-};
-
-const defaults = data => [
+const columns = (config, t) => [
   {
-    title: "Company Code",
-    dataIndex: "prt_cmpy",
-    key: "prt_cmpy",
-    width: 200,
-    // eslint-disable-next-line
-    render: text => <a>{text}</a>
+    headerName: t('fields.companyCode'),
+    field: 'prt_cmpy',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
   },
   {
-    title: "Company",
-    dataIndex: "prt_cmpy_name",
-    key: "prt_cmpy_name",
-    width: 250,
-    filters: generate(data, "base_name"),
-    onFilter: (value, record) => record.base_name.indexOf(value) === 0
+    headerName: t('fields.companyCode'),
+    field: 'prt_cmpy_name',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
   },
   {
-    title: "Usage Id",
-    dataIndex: "prt_usage",
-    key: "prt_usage",
-    width: 150,
-    filters: generate(data, "base_name"),
-    onFilter: (value, record) => record.base_name.indexOf(value) === 0
+    headerName: t('fields.usageId'),
+    field: 'prt_usage',
+    filter: 'MultiFilter',
+    filterable: true,
+    sortable: true,
+    resizable: true,
   },
   {
-    title: "Usage",
-    dataIndex: "prt_usage_name",
-    key: "base_prt_usage_namecprt_usage_nameat",
-    width: 150,
-    filters: generate(data, "base_name"),
-    onFilter: (value, record) => record.base_name.indexOf(value) === 0,
-    render: data => <Tag color="blue">{data}</Tag>
+    headerName: t('fields.usage'),
+    field: 'prt_usage_name',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
   },
   {
-    title: "Printer",
-    dataIndex: "prt_printer",
-    key: "prt_printer",
-    width: 200
+    headerName: t('fields.printer'),
+    field: 'prt_printer',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
   },
   {
-    title: "System / Physical Printer",
-    dataIndex: "sys_printer",
-    key: "sys_printer",
-    width: 200
+    headerName: t('fields.systemPrinter'),
+    field: 'sys_printer',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
   },
   {
-    title: "Area Id",
-    dataIndex: "prt_area",
-    key: "prt_area",
-    width: 200
+    headerName: t('fields.areaId'),
+    field: 'prt_area',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
   },
   {
-    title: "Area Location",
-    dataIndex: "area_name",
-    key: "area_name",
-    width: 150,
-    filters: generate(data, "base_name"),
-    onFilter: (value, record) => record.base_name.indexOf(value) === 0
-  }
+    headerName: t('fields.areaLocation'),
+    field: 'area_name',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
+  },
 ];
 
 export default columns;

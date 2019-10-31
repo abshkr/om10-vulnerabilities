@@ -7,6 +7,7 @@ include_once 'common_class.php';
 class TankMaxFlow extends CommonClass
 {
     public $desc = "tank max flow";
+    protected $TABLE_NAME = "TANK_MAX_FLOW";
 
     public $NUMBER_FIELDS = array('FLOW_RATE');
 

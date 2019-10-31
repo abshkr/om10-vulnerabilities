@@ -1,77 +1,82 @@
-import React, { Component } from "react";
-import auth from "../../auth";
-import { Page, Download, Container, DataTable, Filter } from "../../components";
-import axios from "axios";
-import { Select } from "antd";
-import search from "../../utils/search";
-import { stockManagement } from "../../api";
-import columns from "./columns";
-import "./siteBalance.css";
+import React, { useState, useEffect, useCallback } from 'react';
 
-const units = ["Litres", "Cubic Metre", "Imperial Gallon", "U.S Gallon", "Kilogram"];
+import axios from 'axios';
+import { notification, Select } from 'antd';
+import _ from 'lodash';
 
-class SiteBalance extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: null,
-      isLoading: true,
-      value: "",
-      unit: "Litres"
-    };
-  }
+import auth from '../../auth';
+import { stockManagement } from '../../api';
+import { Page, DataTable } from '../../components';
+import columns from './columns';
+import transform from './transform';
 
-  getSiteBalance = () => {
-    this.setState({ isLoading: true });
-    axios.all([stockManagement.readSiteBalance()]).then(
-      axios.spread(metering => {
-        this.setState({
-          isLoading: false,
-          data: metering.data.records
+const units = [
+  'Litres',
+  'Cubic Metre',
+  'Imperial Gallon',
+  'U.S Gallon',
+  'Imperial Barrel',
+  'U.S Barrel',
+];
+
+const SiteBalance = ({ configuration, t, user }) => {
+  const [data, setData] = useState([]);
+  const [isLoading, setLoading] = useState(true);
+  const [unit, setUnit] = useState('Litres');
+
+  const fetch = useCallback(() => {
+    axios
+      .all([stockManagement.readSiteBalance()])
+      .then(
+        axios.spread(record => {
+          const payload = transform(record.data.records, unit);
+
+          setData(payload);
+          setLoading(false);
+        }),
+      )
+      .catch(errors => {
+        setLoading(false);
+        _.forEach(errors.response.data.errors, error => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
-      })
-    );
-  };
+      });
+  }, [unit]);
 
-  searchObjects = query => {
-    const { value } = query.target;
-    this.setState({
-      filtered: search(value, this.state.data),
-      value
-    });
-  };
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
-  handleUnitChange = unit => {
-    this.setState({ unit });
-  };
+  const UnitChanger = (
+    <Select key="1" style={{ width: 200 }} defaultValue={unit} onChange={setUnit}>
+      {units.map(item => {
+        return (
+          <Select.Option key={item} value={item}>
+            {item}
+          </Select.Option>
+        );
+      })}
+    </Select>
+  );
 
-  componentDidMount() {
-    this.getSiteBalance();
-  }
-
-  render() {
-    const { isLoading, data, value, filtered, unit } = this.state;
-    const results = !!filtered ? filtered : data;
-
-    return (
-      <Page page={"Stock Management"} name={"Site Balance"} isLoading={isLoading} block={true}>
-        <Container>
-          <Filter value={value} search={this.searchObjects} />
-          <Download data={data} type={"Site Balance"} style={{ float: "right" }} />
-          <Select defaultValue={unit} style={{ width: 300, marginLeft: 5 }} onChange={this.handleUnitChange}>
-            {units.map((item, index) => {
-              return (
-                <Select.Option key={index} value={item}>
-                  {item}
-                </Select.Option>
-              );
-            })}
-          </Select>
-          <DataTable rowKey="tankcode" columns={columns(results, unit)} data={results} isLoading={isLoading} scroll={100} />
-        </Container>
-      </Page>
-    );
-  }
-}
+  return (
+    <Page
+      page={t('pageMenu.stockManagement')}
+      name={t('pageNames.siteBalance')}
+      isLoading={isLoading}
+    >
+      <DataTable
+        columns={columns(t)}
+        data={data}
+        isLoading={isLoading}
+        t={t}
+        modifiers={[UnitChanger]}
+      />
+    </Page>
+  );
+};
 
 export default auth(SiteBalance);

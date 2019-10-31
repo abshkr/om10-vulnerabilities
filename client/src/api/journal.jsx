@@ -1,10 +1,9 @@
-import axios from "axios";
-import api from "./api";
+import axios from 'axios';
 
-export function readJournal() {
-  return axios.get(`https://${api}/api/pages/journal/read.php`);
-}
+export const readJournal = () => {
+  return axios.get(`/api/pages/journal/read.php`);
+};
 
-export function searchJournal(start, end) {
-  return axios.get(`https://${api}/api/pages/journal/search.php?start_date=${start}&end_date=${end}`);
-}
+export const searchJournal = (start, end) => {
+  return axios.get(`/api/pages/journal/search.php?start_date=${start}&end_date=${end}`);
+};

@@ -16,6 +16,8 @@
     "isAdditive": "Is Additive?",
     "numberOfTanks": "Number of Tanks",
     "listOfTanks": "List of Tanks",
+    "baseProductCode": "Base Product Code",
+    "baseProductName": "Base Product Name",
     "baseClassMinDensity": "Base Class Min Density",
     "baseClassMaxDensity": "Base Class Max Density",
     "baseClassMinTemp": "Base Class Min Temperature",
@@ -54,7 +56,7 @@
     "status": "Status",
     "typeDescription": "Type Description",
     "expiryDate": "Expiry Date",
-    "enabled": "Enabled",
+    "enabled": "Enabled?",
     "operations": "Operations",
     "activeTank": "Active Tank",
     "flowing": "Flowing",
@@ -80,17 +82,90 @@
     "title": "Title",
     "activeTanker": "Active Tanker",
     "loadType": "Load Type",
-    "mustTareIn": "Must Tare In",
+    "mustTareIn": "Must Tare In ?",
     "area": "Area",
     "emptyWeight": "Empty Weight",
-    "pullingLimit": "Pulling Limit"
+    "pullingLimit": "Pulling Limit",
+    "time": "Time",
+    "event": "Event",
+    "details": "Details",
+    "companyCode": "Company Code",
+    "company": "Company",
+    "usageId": "Usage Id",
+    "usage": "Usage",
+    "printer": "Printer",
+    "systemPrinter": "System / Physical Printer",
+    "areaLocation": "Area Location",
+    "type": "Type",
+    "typeName": "Type Name",
+    "observedVolume": "Observed Volume",
+    "standardVolume": "Standard Volume",
+    "pumpableVolume": "Pumpable Volume",
+    "mass": "Mass",
+    "enterTime": "Enter Time",
+    "bookBalance": "Book Balance",
+    "grossVolume": "Gross Volume",
+    "netVolume": "Net Volume",
+    "usableVolume": "Usable Volume",
+    "location": "Location",
+    "temperature": "Temperature",
+    "openingStock": "Opening Stock",
+    "receiptsToSite": "Receipts To Site",
+    "totalAcc": "Total Acc",
+    "toTransferToOffsite": "To Transfer To Offsite",
+    "closingStock": "Closing Stock",
+    "gainLoss": "Gain/Loss",
+    "density": "Density",
+    "excludeFromPDS": "Exclude from PDS",
+    "excludeFromPID": "Exclude from PID",
+    "excludeFromSMG": "Exclude from Special Movement Gain/Loss",
+    "excludeFromStockReport": "Exclude from Stock Reports",
+    "dailyVarianceLimit": "Daily Variance Limit",
+    "monthlyVarianceLimit": "Monthly Variance Limit",
+    "flowContributionStage": "Flow Configuration Stage",
+    "flowRate": "Flow Rate ⁮⁮⁮⁮⁮⁮⁮⁮",
+    "productCategory": "Product Category",
+    "adaptiveArmPriority": "Adaptive Arm Priority",
+    "sourceExists": "Source Exists",
+    "source": "Source",
+    "description": "Description",
+    "onDemandReport": "On Demand Report",
+    "closeOutReport": "Close Out Report",
+    "closeOutReportBy": "Close Out Report By",
+    "canBePrinted": "Can Be Printed?",
+    "canBeEmailed": "Can Be Emailed?",
+    "reportName": "Report Name",
+    "enableReportForCompany": "Enable the report usage for company",
+    "companyCanActivateReportUsage": "Company can activate the report usage",
+    "companyCanReceiveReportByEmail": "Company can receive the report by Email",
+    "companyCanReceiveReportByPrinting": "Company can receive the report by printing",
+    "totalCustomerCategories": "Total Customer Categories",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "unNumber": "U.N Number",
+    "technicalName": "Technical Name",
+    "subsidiaryRisk": "Subsidiary Risk",
+    "class": "Class",
+    "emergencyActionCode": "Emergency Action Code",
+    "emergencyProcedureGuide": "Emergency Procedure Guide",
+    "packagingGroup": "Packaging Group",
+    "packagingMethod": "Packaging Method",
+    "customerCategory": "Customer Category"
   },
 
   "pageMenu": {
     "schedules": "Schedules",
     "operations": "Operations",
     "accessControl": "Access Control",
-    "gantry": "Gantry"
+    "gantry": "Gantry",
+    "reports": "Reports",
+    "printers": "Printers",
+    "stockManagement": "Stock Management"
   },
 
   "pageNames": {
@@ -99,7 +174,19 @@
     "area": "Area",
     "baseProducts": "Base Products",
     "personnel": "Personnel",
-    "equipmentList": "Equipment List"
+    "equipmentList": "Equipment List",
+    "journal": "Journal",
+    "logicalPrinters": "Logical Printers",
+    "physicalPrinters": "Physical Printers",
+    "metering": "Metering",
+    "productInventory": "Product Inventory",
+    "tankInventory": "Tank Inventory",
+    "siteBalance": "Site Balance",
+    "reportProfile": "Report Profile",
+    "reportConfiguration": "Report Configuration",
+    "customerCategories": "Customer Categories",
+    "timeCodes": "Time Codes",
+    "hazchemCodes": "Hazchem Codes"
   },
 
   "operations": {
@@ -115,7 +202,8 @@
     "unlockAll": "Unlock All Compartments",
     "randomize": "Randomize",
     "copyToClipboard": "Copy to Clipboard",
-    "changePassword": "Change Password"
+    "changePassword": "Change Password",
+    "filter": "Filter"
   },
 
   "tabColumns": {
@@ -124,10 +212,12 @@
     "compartments": "Compartments",
     "tanker": "Tanker",
     "bulkEdit": "Bulk Edit",
-    "adaptiveFlow": "Adaptive Flow",
+    "adaptiveFlow": "Adaptive Flow Control",
     "hotLitre": "Hot Litre Calculation",
     "areaAccess": "Area Access",
-    "resetPassword": "Reset Password"
+    "resetPassword": "Reset Password",
+    "liveJournal": "Live Journal",
+    "historicalJournal": "Historical Journal"
   },
 
   "messages": {
@@ -135,7 +225,8 @@
     "createSuccess": "Successfully Created.",
     "updateSuccess": "Successfully Updated.",
     "deleteSuccess": "Successfully Deleted.",
-    "unlockSuccess": "Successfully Unlocked."
+    "unlockSuccess": "Successfully Unlocked.",
+    "calculating": "Calculating ..."
   },
 
   "prompts": {
@@ -144,25 +235,35 @@
     "delete": "Are you sure you want to delete this record?"
   },
 
+  "divider": {
+    "flags": "Flags",
+    "variances": "Variances"
+  },
+
   "descriptions": {
     "validationFailed": "Make sure all the fields meet the requirements.",
     "requestFailed": "Failed to make the request.",
     "createFailed": "Failed to create the record.",
     "updateFailed": "Failed to update the record.",
     "deleteFailed": "Failed to delete the record.",
-    "createSuccess": "You have created the record",
-    "updateSuccess": "You have updated the record.",
-    "deleteSuccess": "You have deleted the record",
+    "createSuccess": "You have created the record: ",
+    "updateSuccess": "You have updated the record: ",
+    "deleteSuccess": "You have deleted the record: ",
     "expiryDateTable": "Apply the Expiry Dates to the following Records.",
     "alreadyExists": "This value already exists. Please Try Another.",
     "maxCharacters": "This character count is too high.",
-    "unlockSuccess": "You have unlocked all compartments.",
+    "unlockSuccess": "You have unlocked all compartments for",
     "unlockFailed": "Failed to unlock.",
     "totalFlow": "Total Flow of All Products",
     "tankMaxFlowRate": "Tank Max Flow Rate",
     "actualTankFlowRate": "Actual Tank Flowrate",
     "flowContribution": "Flow Contribution",
-    "mustBeInteger": "Value must be an Integer."
+    "mustBeInteger": "Value must be an Integer.",
+    "valueTooLow": "Value Too Low.",
+    "valueTooHigh": "Value Too High. ",
+    "invalidDecimals": "Invalid Decimal Places.",
+    "compartmentCopy": "Note: Select from above to copy its compartment settings.",
+    "emailDescription": "Multiple Email Addresses are allowed and seperated by either ':' or ';'"
   },
 
   "placeholder": {
@@ -180,13 +281,23 @@
     "selectEmployer": "Select Employer",
     "selectDate": "Select Date",
     "selectStatus": "Select Status",
+    "selectPrinter": "Select Printer",
+    "selectUsage": "Select Usage",
+    "selectCompany": "Select Company",
     "selectLoadType": "Select Load Type",
     "selectTimeCode": "Select Time Code",
+    "selectBaseProduct": "Select Base Product",
     "maxCharacters": "Max Characters",
-    "wrongType": "Incorrect Type",
+    "maxPlaces": "Max Places",
+    "limit": "Limit",
+    "wrongType": "Incorrect Type ─ Must Be",
     "selectGroup": "Select Group",
     "incorrectFormat": "Incorrect Format",
-    "emailInvalid": "This Email is Invalid."
+    "emailInvalid": "This Email is Invalid.",
+    "selectSource": "Select Source",
+    "selectType": "Select Type",
+    "selectReportName": "Select Report Name",
+    "selectCloseOutReportBy": "Select Closeout Report By"
   },
 
   "validate": {
@@ -197,6 +308,13 @@
   "units": {
     "lpm": "LPM",
     "celsius": "°C",
-    "kgm3": "kg/m3"
+    "kgm3": "kg/m3",
+    "volume": "Volume"
+  },
+
+  "types": {
+    "number": "Number",
+    "integer": "Integer",
+    "float": "Float"
   }
 }

@@ -1,137 +1,92 @@
-import React from 'react';
-import { Icon } from 'antd';
-import { generateOptions, validateDateTime, convertToLocale } from '../../utils';
-import { Trans } from 'react-i18next';
-
-const columns = (data, config) => [
+const columns = t => [
   {
-    title: <Trans i18nKey="fields.code" />,
-    dataIndex: 'tnkr_code',
-    key: 'tnkr_code',
-    width: 100,
-    align: 'center',
-    onFilter: (value, record) => record.tnkr_code.indexOf(value) === 0,
-    sorter: (a, b) => a.tnkr_code.localeCompare(b.tnkr_code),
-    // eslint-disable-next-line
-    render: text => <a>{text}</a>
+    headerName: t('fields.code'),
+    field: 'tnkr_code',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
   },
   {
-    title: <Trans i18nKey="fields.name" />,
-    dataIndex: 'tnkr_name',
-    key: 'eqpt_code',
-    onFilter: (value, record) => record.tnkr_name.indexOf(value) === 0,
-    sorter: (a, b) => a.tnkr_name.localeCompare(b.tnkr_name),
-    width: 200
+    headerName: t('fields.name'),
+    field: 'tnkr_name',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
   },
   {
-    title: <Trans i18nKey="fields.carrier" />,
-    dataIndex: 'tnkr_carrier_name',
-    key: 'tnkr_carrier_name',
-    filters: generateOptions(data, 'tnkr_carrier_name'),
-    onFilter: (value, record) => record.tnkr_carrier_name.indexOf(value) === 0,
-    width: 250
+    headerName: t('fields.carrier'),
+    field: 'tnkr_carrier_name',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
   },
   {
-    title: <Trans i18nKey="fields.owner" />,
-    dataIndex: 'tnkr_owner_name',
-    key: 'tnkr_owner_name',
-    filters: generateOptions(data, 'tnkr_owner_name'),
-    onFilter: (value, record) => record.tnkr_owner_name.indexOf(value) === 0,
-    width: 250
+    headerName: t('fields.owner'),
+    field: 'tnkr_owner_name',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
   },
   {
-    title: <Trans i18nKey="fields.equipmentType" />,
-    dataIndex: 'tnkr_eqpt_name',
-    key: 'tnkr_eqpt_name',
-    width: 200,
-    filters: generateOptions(data, 'tnkr_eqpt_name'),
-    onFilter: (value, record) => record.tnkr_eqpt_name.indexOf(value) === 0
+    headerName: t('fields.equipmentType'),
+    field: 'tnkr_eqpt_name',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
   },
   {
-    title: <Trans i18nKey="fields.baseDepot" />,
-    dataIndex: 'tnkr_base_site_name',
-    key: 'tnkr_base_site_name',
-    align: 'center',
-    filters: generateOptions(data, 'tnkr_base_site_name'),
-    width: 150
+    headerName: t('fields.baseDepot'),
+    field: 'tnkr_base_site_name',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
   },
   {
-    title: <Trans i18nKey="fields.locked" />,
-    dataIndex: 'tnkr_lock',
-    key: 'tnkr_lock',
-    align: 'center',
-    onFilter: (value, record) => record.tnkr_lock.indexOf(value) === 0,
-    sorter: (a, b) => (a.tnkr_lock === b.tnkr_lock ? 0 : a.tnkr_lock ? -1 : 1),
-    width: 60,
-    render: text => (
-      <span>
-        <Icon type={!text ? 'lock' : 'unlock'} />
-      </span>
-    )
+    headerName: t('fields.locked'),
+    field: 'tnkr_lock',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'LockRenderer',
+    filter: 'BooleanFilter',
   },
   {
-    title: <Trans i18nKey="fields.active" />,
-    dataIndex: 'tnkr_active',
-    key: 'tnkr_active',
-    align: 'center',
-    onFilter: (value, record) => record.tnkr_active.indexOf(value) === 0,
-    sorter: (a, b) => (a.tnkr_active === b.tnkr_active ? 0 : a.tnkr_active ? -1 : 1),
-    width: 60,
-    render: text => (
-      <span>
-        <Icon type={!text ? 'lock' : 'unlock'} />
-      </span>
-    )
+    headerName: t('fields.active'),
+    field: 'tnkr_active',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+    filter: 'BooleanFilter',
   },
   {
-    title: <Trans i18nKey="fields.bayCheck" />,
-    dataIndex: 'tnkr_bay_loop_ch',
-    key: 'tnkr_bay_loop_ch',
-    align: 'center',
-    onFilter: (value, record) => record.tnkr_bay_loop_ch.indexOf(value) === 0,
-    sorter: (a, b) => (a.tnkr_bay_loop_ch === b.tnkr_bay_loop_ch ? 0 : a.tnkr_bay_loop_ch ? -1 : 1),
-    width: 100,
-    render: text => (
-      <span>
-        <Icon type={!text ? 'lock' : 'unlock'} />
-      </span>
-    )
+    headerName: t('fields.bayCheck'),
+    field: 'tnkr_bay_loop_ch',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+    filter: 'BooleanFilter',
   },
   {
-    title: <Trans i18nKey="fields.archived" />,
-    dataIndex: 'tnkr_archive',
-    key: 'tnkr_archive',
-    align: 'center',
-    onFilter: (value, record) => record.tnkr_archive.indexOf(value) === 0,
-    sorter: (a, b) => (a.tnkr_archive === b.tnkr_archive ? 0 : a.tnkr_archive ? -1 : 1),
-    width: 60,
-    render: text => (
-      <span>
-        <Icon type={!text ? 'lock' : 'unlock'} />
-      </span>
-    )
+    headerName: t('fields.archived'),
+    field: 'tnkr_archive',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+    filter: 'BooleanFilter',
   },
   {
-    title: <Trans i18nKey="fields.lastModified" />,
-    dataIndex: 'tnkr_last_modified',
-    key: 'tnkr_last_modified',
-    align: 'center',
-    width: 250,
-    sorter: (a, b) =>
-      validateDateTime(b.tnkr_last_modified) - validateDateTime(a.tnkr_last_modified),
-    // eslint-disable-next-line
-    render: text => <a>{convertToLocale(text)}</a>
+    headerName: t('fields.lastModified'),
+    field: 'tnkr_last_modified',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'DateRenderer',
   },
   {
-    title: <Trans i18nKey="fields.lastUsed" />,
-    dataIndex: 'tnkr_last_used',
-    key: 'tnkr_last_used',
-    align: 'center',
-    width: 250,
-    sorter: (a, b) => validateDateTime(b.tnkr_last_used) - validateDateTime(a.tnkr_last_used),
-    // eslint-disable-next-line
-    render: text => <a>{convertToLocale(text)}</a>
-  }
+    headerName: t('fields.lastUsed'),
+    field: 'tnkr_last_used',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'DateRenderer',
+  },
 ];
 
 export default columns;

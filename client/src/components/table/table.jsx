@@ -1,109 +1,95 @@
-import React from 'react';
-import { Table, Icon } from 'antd';
-import { Resizable } from 'react-resizable';
+import React, { useState, useEffect } from 'react';
+
+import { AgGridReact } from 'ag-grid-react';
+import { Button } from 'antd';
+
+import { FuzzyFilter, MultiFilter, BooleanFilter } from './filters';
+import { BooleanRenderer, LockRenderer, DateRenderer } from './renderers';
+import { LoadingStatus } from './status';
+import { Search, Download } from '..';
+
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-balham.css';
+
 import './table.css';
 
-const loader = <Icon type="loading" style={{ fontSize: 24, color: '#68a4ec' }} spin />;
+const filters = {
+  FuzzyFilter,
+  MultiFilter,
+  BooleanFilter,
+  BooleanRenderer,
+  LockRenderer,
+  DateRenderer,
+  LoadingStatus,
+};
 
-const ResizeableTitle = props => {
-  const { onResize, width, ...restProps } = props;
+const Table = ({ data, click, columns, isLoading, t, create, modifiers }) => {
+  const [value, setValue] = useState('');
+  const [api, setAPI] = useState('');
 
-  if (!width) {
-    return <th {...restProps} />;
-  }
+  const onGridReady = params => {
+    setAPI(params.api);
+    params.api.sizeColumnsToFit();
+  };
+
+  useEffect(() => {
+    if (isLoading && api) {
+      api.showLoadingOverlay();
+    }
+  }, [isLoading, api]);
+
+  useEffect(() => {
+    const query = value === '' ? undefined : value;
+
+    if (api) {
+      api.setQuickFilter(query);
+    }
+  }, [value, api]);
 
   return (
-    <Resizable width={width} height={0} onResize={onResize}>
-      <th {...restProps} />
-    </Resizable>
+    <div
+      style={{
+        height: 'calc(100vh - 30px)',
+        width: '100%',
+      }}
+      className="ag-theme-balham"
+    >
+      <Search value={value} search={setValue} loading={isLoading} />
+
+      {modifiers}
+
+      <Download
+        data={data}
+        style={{ float: 'right' }}
+        loading={isLoading}
+        t={t}
+        columns={columns}
+      />
+
+      <Button
+        shape="round"
+        type="primary"
+        icon="plus"
+        disabled={!create}
+        style={{ float: 'right', marginRight: 5 }}
+        onClick={() => click(null)}
+      >
+        {t('operations.create')}
+      </Button>
+
+      <div style={{ height: 'calc(100vh - 95px)', marginTop: 5 }}>
+        <AgGridReact
+          columnDefs={columns}
+          rowData={data}
+          onGridReady={onGridReady}
+          frameworkComponents={filters}
+          onRowDoubleClicked={value => click && click(value.data)}
+          loadingOverlayComponent="LoadingStatus"
+          rowSelection="multiple"
+        />
+      </div>
+    </div>
   );
 };
 
-const paginationConfig = {
-  showSizeChanger: true,
-  pageSizeOptions: ['10', '30', '50', '100'],
-  defaultPageSize: 100
-};
-
-class DataTable extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      columns: this.props.columns
-    };
-  }
-
-  components = {
-    header: {
-      cell: ResizeableTitle
-    }
-  };
-
-  handleResize = index => (e, { size }) => {
-    this.setState(({ columns }) => {
-      const nextColumns = [...columns];
-      nextColumns[index] = {
-        ...nextColumns[index],
-        width: size.width
-      };
-      return { columns: nextColumns };
-    });
-  };
-
-  render() {
-    const {
-      data,
-      rowKey,
-      change,
-      resize,
-      click,
-      isLoading,
-      scroll,
-      nested,
-      height,
-      size,
-      footer
-    } = this.props;
-
-    const columns = this.state.columns.map((col, index) => ({
-      ...col,
-      onHeaderCell: column => ({
-        width: column.width,
-        onResize: this.handleResize(index)
-      })
-    }));
-
-    return (
-      <Table
-        size={!!size ? size : 'small'}
-        bordered
-        loading={{
-          indicator: loader,
-          spinning: isLoading
-        }}
-        rowKey={rowKey}
-        expandedRowRender={!!nested ? nested : null}
-        components={this.components}
-        columns={resize ? columns : this.props.columns}
-        dataSource={data}
-        onChange={change}
-        pagination={paginationConfig}
-        scroll={
-          !!scroll ? { x: !!scroll ? scroll : 2400, y: '73vh' } : { y: !!height ? height : '73vh' }
-        }
-        footer={!!footer ? () => footer : null}
-        onRow={record => {
-          return {
-            onClick: () => {
-              if (click !== undefined) {
-                click(record);
-              }
-            }
-          };
-        }}
-      />
-    );
-  }
-}
-
-export default DataTable;
+export default Table;

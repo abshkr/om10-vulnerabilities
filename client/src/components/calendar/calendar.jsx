@@ -1,34 +1,30 @@
-import React from "react";
-import { DatePicker } from "antd";
-import moment from "moment";
+import React from 'react';
+import { DatePicker } from 'antd';
+import moment from 'moment';
 
-const ranges = {
-  "Last 24 Hours": [moment(), moment().subtract("1", "days")],
-  "Last 3 Days": [moment(), moment().subtract("3", "days")],
-  "Last 7 Days": [moment(), moment().subtract("7", "days")],
-  "Last 14 Days": [moment(), moment().subtract("14", "days")],
-  "Last 30 Days": [moment(), moment().subtract("30", "days")]
-};
+import { getDateTimeFormat } from '../../utils';
 
-const disabled = current => {
-  return current && current > moment().endOf("day");
-};
+const Calendar = ({ handleChange, start, end }) => {
+  const dateString = getDateTimeFormat();
+  const format = `${dateString} HH:mm`;
 
-const handleDateChange = (dates, change) => {
-  change(dates[0].format("YYYY-MM-DD h:mm"), dates[1].format("YYYY-MM-DD h:mm"));
-};
+  const handleDateChange = dates => {
+    handleChange(dates[0].format('YYYY-MM-DD h:mm'), dates[1].format('YYYY-MM-DD h:mm'));
+  };
 
-const Calendar = ({ change, start, end }) => {
+  const disabledRange = current => {
+    return current && current > moment().endOf('day');
+  };
+
   return (
     <DatePicker.RangePicker
       allowClear={false}
-      disabledDate={disabled}
-      style={{ marginBottom: 10, marginLeft: 10 }}
-      ranges={ranges}
-      showTime={{ format: "HH:mm:ss" }}
-      format="DD-MM-YYYY HH:mm"
-      defaultValue={[moment(start, "YYYY-MM-DD HH:mm:ss"), moment(end, "YYYY-MM-DD HH:mm:ss")]}
-      onOk={dates => handleDateChange(dates, change)}
+      disabledDate={disabledRange}
+      style={{ marginLeft: 5 }}
+      showTime={{ format: 'HH:mm:ss' }}
+      format={format}
+      defaultValue={[moment(start, 'YYYY-MM-DD HH:mm:ss'), moment(end, 'YYYY-MM-DD HH:mm:ss')]}
+      onOk={dates => handleDateChange(dates)}
     />
   );
 };

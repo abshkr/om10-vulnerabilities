@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import EditableContext from './editableContext';
-import { Input, Form, Select, DatePicker } from 'antd';
-import _ from 'lodash';
+
+import { Input, Form, Select, DatePicker, Switch, Icon } from 'antd';
 import moment from 'moment';
+import _ from 'lodash';
+
+import EditableContext from './editableContext';
+import { getDateTimeFormat } from '../../utils';
 
 export default class Cell extends Component {
   state = {
-    editing: false
+    editing: false,
   };
 
   toggleEdit = () => {
@@ -31,19 +34,19 @@ export default class Cell extends Component {
         this.toggleEdit();
         handleSave({
           ...record,
-          ...values
+          ...values,
         });
       });
     } else {
       this.setState({
-        editing: false
+        editing: false,
       });
     }
   };
 
   renderCell = form => {
     this.form = form;
-    const { children, dataIndex, data, expiry } = this.props;
+    const { children, dataIndex, data, expiry, record } = this.props;
     const { editing } = this.state;
     const { Option } = Select;
 
@@ -69,7 +72,7 @@ export default class Cell extends Component {
                     {item.edt_type_desc}
                   </Option>
                 ))}
-            </Select>
+            </Select>,
           )}
         </Form.Item>
       ) : (
@@ -84,27 +87,20 @@ export default class Cell extends Component {
     }
 
     if (dataIndex === 'ed_status') {
-      return editing ? (
+      return (
         <Form.Item style={{ margin: 0 }}>
-          {form.getFieldDecorator('ed_status')(
-            <Select
+          {form.getFieldDecorator('ed_status', {
+            valuePropName: 'checked',
+            initialValue: record.ed_status,
+          })(
+            <Switch
               ref={node => (this.input = node)}
-              onPressEnter={value => this.save(value, dataIndex)}
-              onBlur={value => this.save(value, dataIndex)}
-            >
-              <Option value={false}>Disabled</Option>
-              <Option value={true}>Enabled</Option>
-            </Select>
+              onChange={value => this.save(value, dataIndex)}
+              checkedChildren={<Icon type="check" />}
+              unCheckedChildren={<Icon type="close" />}
+            />,
           )}
         </Form.Item>
-      ) : (
-        <div
-          className="editable-cell-value-wrap"
-          style={{ paddingRight: 24 }}
-          onClick={this.toggleEdit}
-        >
-          {children}
-        </div>
       );
     }
 
@@ -112,13 +108,19 @@ export default class Cell extends Component {
       return editing ? (
         <Form.Item style={{ margin: 0 }}>
           {form.getFieldDecorator('ed_exp_date', {
-            rules: [{ type: 'object' }]
+            rules: [
+              {
+                type: 'object',
+                required: true,
+              },
+            ],
+            initialValue: moment(record.ed_exp_date, 'YYYY-MM-DD 00:00:00'),
           })(
             <DatePicker
               ref={node => (this.input = node)}
               onChange={value => this.save(value, dataIndex)}
-              format={moment.localeData().longDateFormat('L')}
-            />
+              format={getDateTimeFormat()}
+            />,
           )}
         </Form.Item>
       ) : (
@@ -138,7 +140,7 @@ export default class Cell extends Component {
               ref={node => (this.input = node)}
               onPressEnter={value => this.save(value, dataIndex)}
               onBlur={value => this.save(value, dataIndex)}
-            />
+            />,
           )}
         </Form.Item>
       ) : (
@@ -164,6 +166,7 @@ export default class Cell extends Component {
       children,
       ...restProps
     } = this.props;
+
     return (
       <td {...restProps}>
         {editable ? (

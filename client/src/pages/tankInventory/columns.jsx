@@ -1,83 +1,67 @@
-import React from "react";
-import generate from "../../utils/generateOptions";
-
-const columns = data => [
+const columns = t => [
   {
-    title: "Tank",
-    dataIndex: "tank_code",
-    key: "tank_code",
-    width: 150,
-    filters: generate(data, "tank_code"),
-    // eslint-disable-next-line
-    render: text => <a>{text}</a>,
-    onFilter: (value, record) => record.tank_code.includes(value)
+    headerName: t('fields.code'),
+    field: 'tank_code',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
   },
   {
-    title: "Location",
-    dataIndex: "tank_location",
-    key: "tank_location",
-    width: 150,
-    filters: generate(data, "tank_location"),
-    onFilter: (value, record) => record.tank_location.includes(value)
+    headerName: t('fields.location'),
+    field: 'tank_location',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
   },
   {
-    title: "Product Name",
-    dataIndex: "base_name",
-    key: "base_name",
-    width: 130,
-    filters: generate(data, "base_name"),
-    onFilter: (value, record) => record.base_name.includes(value)
+    headerName: t('fields.baseProductName'),
+    field: 'base_name',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
   },
   {
-    title: "Level (mm)",
-    dataIndex: "tank_prod_lvl",
-    key: "tank_prod_lvl",
-    width: 130,
-    sorter: (a, b) => a.tank_prod_lvl - b.tank_prod_lvl
+    headerName: `${t('fields.tankLevel')} (mm)`,
+    field: 'tank_prod_lvl',
+    sortable: true,
+    resizable: true,
   },
   {
-    title: "Temp",
-    dataIndex: "tank_temp",
-    key: "tank_temp",
-    width: 160,
-    sorter: (a, b) => a.tank_temp - b.tank_temp,
-    render: text => text + "°C"
+    headerName: `${t('fields.temperature')} (°C)`,
+    field: 'tank_temp',
+    sortable: true,
+    resizable: true,
   },
   {
-    title: "Standard Volume (CorL)",
-    dataIndex: "netvol",
-    key: "netvol",
-    width: 160,
-    sorter: (a, b) => a.netvol - b.netvol
+    headerName: t('fields.standardVolume'),
+    field: 'netvol',
+    sortable: true,
+    resizable: true,
   },
   {
-    title: "Observed Volume (ObsL)",
-    dataIndex: "grossvol",
-    key: "grossvol",
-    width: 160,
-    sorter: (a, b) => a.grossvol - b.grossvol
+    headerName: t('fields.observedVolume'),
+    field: 'grossvol',
+    sortable: true,
+    resizable: true,
   },
   {
-    title: "Pumpable Volume (ObsL)",
-    dataIndex: "pumpablevol",
-    key: "pumpablevol",
-    width: 160,
-    sorter: (a, b) => a.pumpablevol - b.pumpablevol
+    headerName: t('fields.pumpableVolume'),
+    field: 'pumpablevol',
+    sortable: true,
+    resizable: true,
   },
   {
-    title: "Opening Stock (CorL)",
-    dataIndex: "usablevol",
-    key: "usablevol",
-    width: 160,
-    sorter: (a, b) => a.usablevol - b.usablevol
+    headerName: t('fields.openingStock'),
+    field: 'usablevol',
+    sortable: true,
+    resizable: true,
   },
   {
-    title: "Book Balance (CorL)",
-    dataIndex: "bookbalance",
-    key: "bookbalance",
-    width: 160,
-    sorter: (a, b) => a.bookbalance - b.bookbalance
-  }
+    headerName: t('fields.bookBalance'),
+    field: 'bookbalance',
+    sortable: true,
+    resizable: true,
+  },
 ];
 
 export default columns;

@@ -9,10 +9,10 @@ include_once __DIR__ . '/../shared/exceptions.php';
 class Database
 {
     // specify your own database credentials
-    private $host = "localhost";
-    private $db_name = "localhost/OML5K";
-    private $username = "test_coogee2";
-    private $password = "abcd1234";
+    private $host = null;
+    private $db_name = null;
+    private $username = null;
+    private $password = null;
     private $conn = null;
 
     public function __construct()
@@ -75,13 +75,21 @@ class Database
     }
 
     // get the database connection; if auth fails, return null
-    public function getConnection()
+    public function getConnection($class = null, $method = null)
     {
         // write_log(__METHOD__ . " START", __FILE__, __LINE__);
-
+        // write_log(json_encode($_SERVER, JSON_PRETTY_PRINT), __FILE__, __LINE__);
         $this->getConn();
 
-        if (AUTH_CHECK) {
+        /**
+         * Check AUTH by default, unless
+         * 1# Client is using Postman
+         * 2# is using localhost:3000 because this is Umesh is using
+         * his testing env.
+         */
+        if (AUTH_CHECK &&
+            substr($_SERVER['HTTP_USER_AGENT'], 0, 7) != 'Postman' &&
+            !strpos($_SERVER['HTTP_REFERER'], 'localhost')) {
             if (JWT_AUTH) {
                 $token = check_token(get_http_token());
                 if (!$token) {
@@ -99,7 +107,7 @@ class Database
                     }
                 }
             } else {
-                if (!$this->getSessionStatus()) {
+                if (!$this->getSessionStatus($class, $method)) {
                     write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
                     throw new UnauthException('Authentication check failed, cannot continue');
                 }
@@ -131,14 +139,20 @@ class Database
     /* The reason $_SESSION['SESSION'] and $_SESSION['PERCODE'] can be used here is because
     the old AMF php code is still using. In SecureAuth.php, the function login() sets all the
     _SESSION variables. */
-    private function getSessionStatus()
+    private function getSessionStatus($class = null, $method = null)
     {
-        session_start();
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
         if (isset($_SESSION['SESSION'])) {
             $sess_id = strip_tags($_SESSION['SESSION']);
             $per_code = strip_tags($_SESSION['PERCODE']);
 
-            write_log("sess_id:" . $_SESSION['SESSION'] . ", per_code:" . $_SESSION['PERCODE'],
+            // write_log("sess_id:" . $_SESSION['SESSION'] . ", per_code:" . $_SESSION['PERCODE'],
+            //     __FILE__, __LINE__);
+            write_log(sprintf("sess_id:%s, per_code:%s, class:%s, method:%s",
+                $_SESSION['SESSION'], $_SESSION['PERCODE'], $class, $method),
                 __FILE__, __LINE__);
 
             // write_log("get session. sess_id:" . $sess_id . " per_code:" . $per_code,

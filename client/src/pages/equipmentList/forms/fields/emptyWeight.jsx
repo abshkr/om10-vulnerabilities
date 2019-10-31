@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { Form, InputNumber } from 'antd';
 
-const EmptyWeight = ({ form, value, t, data }) => {
+const EmptyWeight = ({ form, value, t }) => {
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        eqpt_empty_kg: value.eqpt_empty_kg
+        eqpt_empty_kg: value.eqpt_empty_kg,
       });
     }
   }, [value, setFieldsValue]);
@@ -20,10 +20,10 @@ const EmptyWeight = ({ form, value, t, data }) => {
   };
 
   return (
-    <Form.Item label={t('fields.emptyWeight')}>
+    <Form.Item label={`${t('fields.emptyWeight')} (Kg)`}>
       {getFieldDecorator('eqpt_empty_kg', {
-        rules: [{ required: false, validator: validate }]
-      })(<InputNumber />)}
+        rules: [{ required: false, validator: validate }],
+      })(<InputNumber min={0} />)}
     </Form.Item>
   );
 };

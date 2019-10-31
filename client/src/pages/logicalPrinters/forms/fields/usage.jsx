@@ -1,51 +1,66 @@
-import React, { Component } from "react";
-import { Form, Select } from "antd";
-import { logicalPrinters } from "../../../../api";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { logicalPrinters } from '../../../../api';
+import { Form, Select } from 'antd';
+import axios from 'axios';
 
-export default class Usage extends Component {
-  state = {
-    usage: null
+const Usage = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  const [isLoading, setLoading] = useState(false);
+  const [options, setOptions] = useState([]);
+
+  const validate = (rule, input, callback) => {
+    if (input === '' || !input) {
+      callback(`${t('validate.select')} ─ ${t('fields.usage')}`);
+    }
+
+    callback();
   };
 
-  componentDidMount() {
-    const { value, setValue } = this.props;
-
-    axios.all([logicalPrinters.readLogicalPrinters()]).then(
-      axios.spread(usage => {
-        this.setState({
-          usage: usage.data.records
-        });
-      })
-    );
-
+  useEffect(() => {
     if (!!value) {
-      setValue({
-        prt_usage_name: value.prt_usage_name
+      setFieldsValue({
+        prt_usage_name: value.prt_usage_name,
       });
     }
-  }
 
-  render() {
-    const { decorator } = this.props;
-    const { usage } = this.state;
-    const { Option } = Select;
+    const getContext = () => {
+      axios.all([logicalPrinters.readLogicalPrinters()]).then(
+        axios.spread(options => {
+          setOptions(options.data.records);
+          setLoading(false);
+        }),
+      );
+    };
 
-    return (
-      <Form.Item label="Usage">
-        {decorator("prt_usage_name", {
-          rules: [{ required: true, message: "Please Select a Usage" }]
-        })(
-          <Select>
-            {!!usage &&
-              usage.map((item, index) => (
-                <Option key={index} value={item.bclass_no}>
-                  {item.bclass_desc}
-                </Option>
-              ))}
-          </Select>
-        )}
-      </Form.Item>
-    );
-  }
-}
+    setLoading(true);
+    getContext();
+  }, [value, setFieldsValue]);
+
+  return (
+    <Form.Item label={t('fields.usage')}>
+      {getFieldDecorator('prt_usage_name', {
+        rules: [{ required: true, validator: validate }],
+      })(
+        <Select
+          loading={isLoading}
+          showSearch
+          disabled={!!value}
+          optionFilterProp="children"
+          placeholder={!value ? t('placeholder.selectUsage') : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {options.map((item, index) => (
+            <Select.Option key={index} value={item.prt_cmpy}>
+              {item.prt_cmpy_name}
+            </Select.Option>
+          ))}
+        </Select>,
+      )}
+    </Form.Item>
+  );
+};
+
+export default Usage;

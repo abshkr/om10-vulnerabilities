@@ -7,7 +7,7 @@ const Comments = ({ form, value, t }) => {
   useEffect(() => {
     if (!!value) {
       setFieldsValue({
-        remarks: value.remarks
+        eqpt_comments: value.eqpt_comments
       });
     }
   }, [value, setFieldsValue]);
@@ -21,7 +21,7 @@ const Comments = ({ form, value, t }) => {
 
   return (
     <Form.Item label={t('fields.comments')}>
-      {getFieldDecorator('remarks', {
+      {getFieldDecorator('eqpt_comments', {
         rules: [{ required: false, validator: validate }]
       })(<Input.TextArea />)}
     </Form.Item>

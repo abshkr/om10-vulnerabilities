@@ -1,30 +1,29 @@
-import React, { Component } from "react";
-import { Form, Checkbox } from "antd";
+import React, { useEffect } from 'react';
+import { Form, Checkbox } from 'antd';
 
-export default class Locks extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const Locks = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  useEffect(() => {
     if (!!value) {
-      setValue({
-        eqpt_lock: value.eqpt_lock === "Y" ? true : false,
-        eqp_must_tare_in: value.eqp_must_tare_in === "Y" ? true : false
+      setFieldsValue({
+        eqpt_lock: value.eqpt_lock,
+        eqp_must_tare_in: value.eqp_must_tare_in
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  render() {
-    const { decorator } = this.props;
+  return (
+    <Form.Item style={{ marginTop: 5 }}>
+      {getFieldDecorator('eqpt_lock', {
+        valuePropName: 'checked'
+      })(<Checkbox> {t('fields.locked')} </Checkbox>)}
 
-    return (
-      <Form.Item label="Locks">
-        {decorator("eqpt_lock", {
-          valuePropName: "checked"
-        })(<Checkbox> Locked? </Checkbox>)}
+      {getFieldDecorator('eqp_must_tare_in', {
+        valuePropName: 'checked'
+      })(<Checkbox> {t('fields.mustTareIn')} </Checkbox>)}
+    </Form.Item>
+  );
+};
 
-        {decorator("eqp_must_tare_in", {
-          valuePropName: "checked"
-        })(<Checkbox> Must Tare In? </Checkbox>)}
-      </Form.Item>
-    );
-  }
-}
+export default Locks;

@@ -1,50 +1,84 @@
-import React, { Component } from "react";
-import { Form, Select } from "antd";
-import { reportConfiguration } from "../../../../api";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { Form, Select } from 'antd';
+import axios from 'axios';
+import _ from 'lodash';
 
-export default class Name extends Component {
-  state = {
-    reports: []
+import { reportConfiguration } from '../../../../api';
+
+const Name = ({ form, value, t, data, source }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  const [isLoading, setLoading] = useState(false);
+  const [options, setOptions] = useState([]);
+
+  const validate = (rule, input, callback) => {
+    const match = _.find(data, value => {
+      return value.report_cmpycode === source && value.report_file === input;
+    });
+
+    if (input === '' || !input) {
+      callback(`${t('validate.select')} ─ ${t('fields.reportName')}`);
+    }
+
+    if (!!match & !value) {
+      callback(t('descriptions.alreadyExists'));
+    }
+
+    callback();
   };
 
-  componentDidMount() {
-    const { value, setValue } = this.props;
-
-    axios.all([reportConfiguration.readReports()]).then(
-      axios.spread(reports => {
-        this.setState({
-          reports: reports.data.records
-        });
-      })
-    );
-
+  useEffect(() => {
     if (!!value) {
-      setValue({
-        report_file: value.report_file
+      setFieldsValue({
+        report_file: value.report_file,
       });
     }
-  }
 
-  render() {
-    const { decorator, value } = this.props;
-    const { reports } = this.state;
-    const { Option } = Select;
+    const getContext = () => {
+      axios.all([reportConfiguration.readReports()]).then(
+        axios.spread(options => {
+          setOptions(options.data.records);
+          setLoading(false);
+        }),
+      );
+    };
 
-    return (
-      <Form.Item label="Report Name">
-        {decorator("report_file", {
-          rules: [{ required: true, message: "Please Select a Report Name" }]
-        })(
-          <Select disabled={!!value}>
-            {reports.map((item, index) => (
-              <Option key={index} value={item.report_file}>
-                {item.report_name}
-              </Option>
-            ))}
-          </Select>
-        )}
-      </Form.Item>
-    );
-  }
-}
+    setLoading(true);
+    getContext();
+  }, [value, setFieldsValue]);
+
+  useEffect(() => {
+    if (!value) {
+      setFieldsValue({
+        report_file: undefined,
+      });
+    }
+  }, [source, setFieldsValue, value]);
+
+  return (
+    <Form.Item label={t('fields.reportName')}>
+      {getFieldDecorator('report_file', {
+        rules: [{ required: true, validator: validate }],
+      })(
+        <Select
+          loading={isLoading}
+          disabled={!!value}
+          showSearch
+          optionFilterProp="children"
+          placeholder={!value ? t('placeholder.selectReportName') : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {options.map(item => (
+            <Select.Option key={item.report_file} value={item.report_file}>
+              {item.report_name}
+            </Select.Option>
+          ))}
+        </Select>,
+      )}
+    </Form.Item>
+  );
+};
+
+export default Name;

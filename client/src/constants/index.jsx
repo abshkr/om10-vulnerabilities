@@ -1,14 +1,5 @@
-import * as ROUTES from "./routes";
-import * as AUTH_TYPES from "./authTypes";
-import { CHECK_COLOURS, LOCK_COLOURS, SYSTEM_COLORS } from "./colors";
-import { FLOW_CONTROL_PRIORITY, ROLE_DEFINITIONS } from "./definitions";
+import * as ROUTES from './routes';
+import * as SETTINGS from './settings';
+import * as REGEX from './regex';
 
-export {
-  CHECK_COLOURS,
-  LOCK_COLOURS,
-  FLOW_CONTROL_PRIORITY,
-  ROLE_DEFINITIONS,
-  ROUTES,
-  AUTH_TYPES,
-  SYSTEM_COLORS
-};
+export { ROUTES, SETTINGS, REGEX };

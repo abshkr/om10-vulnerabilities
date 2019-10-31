@@ -28,10 +28,10 @@ const Compartments = ({ form, value, t, equipment, values }) => {
           setTypes(types.data.records);
           setIsLoading(false);
           setFieldsValue({ compartments: compartments.data.records });
-        })
+        }),
       );
     },
-    [setFieldsValue]
+    [setFieldsValue],
   );
 
   const fetchByEquipment = useCallback(
@@ -46,10 +46,10 @@ const Compartments = ({ form, value, t, equipment, values }) => {
             setTypes(types.data.records);
             setIsLoading(false);
             setFieldsValue({ compartments: compartments.data.records });
-          })
+          }),
         );
     },
-    [setFieldsValue]
+    [setFieldsValue],
   );
 
   useEffect(() => {
@@ -73,7 +73,7 @@ const Compartments = ({ form, value, t, equipment, values }) => {
     setData(payload);
 
     setFieldsValue({
-      composition: payload
+      compartments: payload,
     });
   };
 
@@ -109,8 +109,8 @@ const Compartments = ({ form, value, t, equipment, values }) => {
         editable: col.editable,
         dataIndex: col.dataIndex,
         title: col.title,
-        handleSave: save
-      })
+        handleSave: save,
+      }),
     };
   });
 
@@ -140,7 +140,9 @@ const Compartments = ({ form, value, t, equipment, values }) => {
           </Select.Option>
         ))}
       </Select>
-
+      <div style={{ textAlign: 'center', marginBottom: 10 }}>
+        {t('descriptions.compartmentCopy')}
+      </div>
       <Table
         size="middle"
         rowKey="cmpt_no"
@@ -148,10 +150,10 @@ const Compartments = ({ form, value, t, equipment, values }) => {
         components={{
           body: {
             row: Row,
-            cell: Cell
-          }
+            cell: Cell,
+          },
         }}
-        scroll={{ y: '15vh' }}
+        scroll={{ y: '35vh' }}
         rowClassName={() => 'editable-row'}
         bordered
         dataSource={data}

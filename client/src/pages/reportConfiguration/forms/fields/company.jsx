@@ -1,50 +1,66 @@
-import React, { Component } from "react";
-import { Form, Select } from "antd";
-import { reportConfiguration } from "../../../../api";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { reportConfiguration } from '../../../../api';
+import { Form, Select } from 'antd';
+import axios from 'axios';
 
-export default class Company extends Component {
-  state = {
-    companies: []
+const Company = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  const [isLoading, setLoading] = useState(false);
+  const [options, setOptions] = useState([]);
+
+  const validate = (rule, input, callback) => {
+    if (input === '' || !input) {
+      callback(`${t('validate.select')} ─ ${t('fields.company')}`);
+    }
+
+    callback();
   };
 
-  componentDidMount() {
-    const { value, setValue } = this.props;
-
-    axios.all([reportConfiguration.readCompany()]).then(
-      axios.spread(companies => {
-        this.setState({
-          companies: companies.data.records
-        });
-      })
-    );
-
+  useEffect(() => {
     if (!!value) {
-      setValue({
-        report_cmpycode: value.report_cmpycode
+      setFieldsValue({
+        report_cmpycode: value.report_cmpycode,
       });
     }
-  }
 
-  render() {
-    const { decorator, value } = this.props;
-    const { companies } = this.state;
-    const { Option } = Select;
+    const getContext = () => {
+      axios.all([reportConfiguration.readCompany()]).then(
+        axios.spread(options => {
+          setOptions(options.data.records);
+          setLoading(false);
+        }),
+      );
+    };
 
-    return (
-      <Form.Item label="Company Name">
-        {decorator("report_cmpycode", {
-          rules: [{ required: true, message: "Please Select a Report" }]
-        })(
-          <Select disabled={!!value}>
-            {companies.map((item, index) => (
-              <Option key={index} value={item.cmpy_code}>
-                {item.cmpy_name}
-              </Option>
-            ))}
-          </Select>
-        )}
-      </Form.Item>
-    );
-  }
-}
+    setLoading(true);
+    getContext();
+  }, [value, setFieldsValue]);
+
+  return (
+    <Form.Item label={t('fields.company')}>
+      {getFieldDecorator('report_cmpycode', {
+        rules: [{ required: true, validator: validate }],
+      })(
+        <Select
+          loading={isLoading}
+          disabled={!!value}
+          showSearch
+          optionFilterProp="children"
+          placeholder={!value ? t('placeholder.selectCompany') : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {options.map(item => (
+            <Select.Option key={item.cmpy_code} value={item.cmpy_code}>
+              {item.cmpy_name}
+            </Select.Option>
+          ))}
+        </Select>,
+      )}
+    </Form.Item>
+  );
+};
+
+export default Company;

@@ -33,6 +33,46 @@ class Personnel extends CommonClass
         }
     }
 
+    public function read_hook(&$hook_item)
+    {
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
+        $this->per_code = $hook_item['per_code'];
+        $hook_item['area_accesses'] = array();
+        $stmt2 = $this->areaAccess2($hook_item['area_accesses'] );
+
+        $expiry_date = new ExpiryDate($this->conn);
+        $expiry_date->ed_target_code = ExpiryTarget::PERSONNEL;
+        $expiry_date->ed_object_id = $hook_item['per_code'];
+        $stmt = $expiry_date->read();
+        $result = array();
+        Utilities::retrieve($result, $expiry_date, $stmt);
+        // write_log(json_encode($result), __FILE__, __LINE__);
+        $hook_item['expiry_dates'] = $result;
+    }
+
+    public function areaAccess2(&$hook_item)
+    {
+        $query = "
+            SELECT PERM_OF_AREA.PERM_AREA
+            FROM PERM_OF_AREA
+            WHERE PERM_PSN = :perm_psn
+            ORDER BY PERM_AREA";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':perm_psn', $this->per_code);
+        // write_log(sprintf(" %s", $this->per_code), __FILE__, __LINE__);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            // write_log(sprintf("%s", json_encode($row)), __FILE__, __LINE__);
+            array_push($hook_item, $row["PERM_AREA"]);
+        }
+    }
+
     public function areaAccess()
     {
         $query = "
@@ -45,6 +85,8 @@ class Personnel extends CommonClass
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
     }
@@ -73,6 +115,7 @@ class Personnel extends CommonClass
                 PER_LEVEL_NUM,
                 PER_TERMINAL,
                 PER_COMMENTS,
+                PER_EMAIL,
                 PER_LAST_MODIFIED)
         VALUES (:per_code,
                 :per_name,
@@ -88,6 +131,7 @@ class Personnel extends CommonClass
                 :per_level_num,
                 :per_terminal,
                 :per_comments,
+                :per_email,
                 SYSDATE)";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
@@ -102,6 +146,7 @@ class Personnel extends CommonClass
         oci_bind_by_name($stmt, ':per_level_num', $this->per_level_num);
         oci_bind_by_name($stmt, ':per_terminal', $this->per_terminal);
         oci_bind_by_name($stmt, ':per_comments', $this->per_comments);
+        oci_bind_by_name($stmt, ':per_email', $this->per_email);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
@@ -123,6 +168,23 @@ class Personnel extends CommonClass
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         oci_bind_by_name($stmt, ':per_name', $this->per_name);
         oci_bind_by_name($stmt, ':user_password', $this->default_pwd);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $query = "INSERT INTO URBAC_USER_ROLES
+                (USER_ID, 
+                ROLE_ID, 
+                USER_ROLE_ACTIVE
+                )
+                SELECT USER_ID, :role_id, 1 FROM URBAC_USERS WHERE USER_CODE = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        oci_bind_by_name($stmt, ':role_id', $this->per_auth);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
@@ -405,34 +467,18 @@ class Personnel extends CommonClass
             return false;
         }
 
-        // $query = "
-        //     UPDATE PERSONNEL
-        //     SET PER_LOCK = :per_lock,
-        //         PER_NAME = :per_name,
-        //         PER_DEPARTMENT= DECODE(:per_department, '-1', NULL, :per_department),
-        //         PER_LICENCE_NO = DECODE(:per_licence_no, '-1', NULL, :per_licence_no),
-        //         PER_AUTH = :per_auth,
-        //         PER_CMPY = :per_cmpy,
-        //         PER_COMMENTS = :per_comments,
-        //         PER_LEVEL_NUM = :per_level_num,
-        //         PER_EMAIL = :per_email
-        //     WHERE TRIM(PER_CODE) = :per_code";
-        // $stmt = oci_parse($this->conn, $query);
-        // oci_bind_by_name($stmt, ':per_code', $this->per_code);
-        // oci_bind_by_name($stmt, ':per_name', $this->per_name);
-        // oci_bind_by_name($stmt, ':per_cmpy', $this->per_cmpy);
-        // oci_bind_by_name($stmt, ':per_auth', $this->per_auth);
-        // oci_bind_by_name($stmt, ':per_lock', $this->per_lock);
-        // oci_bind_by_name($stmt, ':per_department', $this->per_department);
-        // oci_bind_by_name($stmt, ':per_licence_no', $this->per_licence_no);
-        // oci_bind_by_name($stmt, ':per_level_num', $this->per_level_num);
-        // oci_bind_by_name($stmt, ':per_comments', $this->per_comments);
-        // oci_bind_by_name($stmt, ':per_email', $this->per_email);
-        // if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-        //     $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-        //     oci_rollback($this->conn);
-        //     return false;
-        // }
+        $query = "
+            UPDATE PERSONNEL SET PER_LAST_MODIFIED = SYSDATE
+            WHERE PER_CODE = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
 
         if (isset($this->user_status_flag)) {
             $query = "
@@ -521,6 +567,48 @@ class Personnel extends CommonClass
                     __FILE__, __LINE__, LogLevel::ERROR);
                 oci_rollback($this->conn);
                 return false;
+            }
+        }
+
+        //Bulk etp
+        if (isset($this->bulk_edit)) {
+            foreach ($this->bulk_edit as $bluk_eqpt) {
+                // write_log(json_encode($value), __FILE__, __LINE__);
+                if ($bluk_eqpt->per_code === $this->per_code) {
+                    continue;
+                }
+
+                if (!isset($this->expiry_dates)) {
+                    $expiry_date = new ExpiryDate($this->conn);
+                    $expiry_date->ed_target_code = ExpiryTarget::PERSONNEL;
+                    $expiry_date->ed_object_id = $this->per_code;
+                    $stmt = $expiry_date->read();
+                    $result = array();
+                    Utilities::retrieve($result, $expiry_date, $stmt);
+                    $this->expiry_dates = $result;
+                }
+
+                $expiry_dates = array();
+                $expiry_date->ed_object_id = $bluk_eqpt->per_code;
+                $expiry_date->edt_target_code = ExpiryTarget::PERSONNEL;
+                // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
+                foreach ($this->expiry_dates as $key => $value) {
+                    if (is_array($value)) {
+                        $value = (object)$value;
+                    }
+                    
+                    $value->edt_object_id = $bluk_eqpt->per_code;
+                    $value->ed_object_id = $bluk_eqpt->per_code;
+                    $expiry_date->ed_object_id = $bluk_eqpt->per_code;
+                    $expiry_dates[$value->edt_type_code] = $value;
+                }
+                // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+                if (!$expiry_date->update($expiry_dates)) {
+                    write_log("Failed to update expiry dates",
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
             }
         }
 

@@ -114,7 +114,7 @@ class EquipmentType extends CommonClass
         }
     }
 
-    public function compartments($etyp_id)
+    public function compartments($etyp_id = null)
     {
         Utilities::sanitize($this);
 

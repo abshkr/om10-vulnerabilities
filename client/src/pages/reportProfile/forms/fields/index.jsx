@@ -1,9 +1,8 @@
-import Source from "./source";
-import Name from "./name";
-import Type from "./type";
-import Description from "./description";
-import CloseOutReport from "./closeOutReport";
-import OnDemandReport from "./onDemandReport";
-import CloseOutBy from "./closeOutBy";
+import Source from './source';
+import Type from './type';
+import Name from './name';
+import Description from './description';
+import CloseOutReportBy from './closeOutBy';
+import Flags from './flags';
 
-export { Source, Name, Description, Type, CloseOutReport, OnDemandReport, CloseOutBy };
+export { Source, Type, Name, Description, CloseOutReportBy, Flags };

@@ -1,80 +1,83 @@
-import React, { Component } from "react";
-import auth from "../../auth";
-import { Page, Download, Container, DataTable, Filter } from "../../components";
-import { Select } from "antd";
-import { stockManagement } from "../../api";
-import search from "../../utils/search";
-import axios from "axios";
-import columns from "./columns";
-import "./productInventory.css";
+import React, { useCallback, useEffect, useState } from 'react';
 
-const units = ["Litres", "Cubic Metre", "Imperial Gallon", "U.S Gallon"];
+import _ from 'lodash';
+import axios from 'axios';
+import { notification, Select } from 'antd';
 
-class ProductInventory extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: null,
-      isLoading: true,
-      unit: "Litres",
-      value: ""
-    };
-  }
+import { Page, DataTable } from '../../components';
+import { stockManagement } from '../../api';
+import transform from './transform';
+import columns from './columns';
+import auth from '../../auth';
 
-  getProductInventory = () => {
-    this.setState({ isLoading: true });
-    axios.all([stockManagement.readProductInventory()]).then(
-      axios.spread(metering => {
-        this.setState({
-          isLoading: false,
-          data: metering.data.records
+const units = [
+  'Litres',
+  'Cubic Metre',
+  'Imperial Gallon',
+  'U.S Gallon',
+  'Imperial Barrel',
+  'U.S Barrel',
+];
+
+const ProductInventory = ({ configuration, t }) => {
+  const [data, setData] = useState([]);
+  const [isLoading, setLoading] = useState(true);
+  const [unit, setUnit] = useState('Litres');
+
+  const fetch = useCallback(() => {
+    axios
+      .all([stockManagement.readProductInventory()])
+      .then(
+        axios.spread(record => {
+          const payload = transform(record.data.records, unit);
+
+          setData(payload);
+          setLoading(false);
+        }),
+      )
+      .catch(errors => {
+        setLoading(false);
+
+        _.forEach(errors.response.data.errors, error => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
-      })
-    );
-  };
+      });
+  }, [unit]);
 
-  searchObjects = query => {
-    const { value } = query.target;
-    this.setState({
-      filtered: search(value, this.state.data),
-      value
-    });
-  };
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
-  handleUnitChange = unit => {
-    this.setState({
-      unit
-    });
-  };
+  const UnitChanger = (
+    <Select key="1" style={{ width: 200 }} defaultValue={unit} onChange={setUnit}>
+      {units.map(item => {
+        return (
+          <Select.Option key={item} value={item}>
+            {item}
+          </Select.Option>
+        );
+      })}
+    </Select>
+  );
 
-  componentDidMount() {
-    this.getProductInventory();
-  }
-
-  render() {
-    const { isLoading, data, value, filtered, unit } = this.state;
-    const results = !!filtered ? filtered : data;
-    return (
-      <div>
-        <Page page={"Stock Management"} name={"Product Inventory"} isLoading={isLoading} block={true}>
-          <Container>
-            <Filter value={value} search={this.searchObjects} />
-            <Select defaultValue={unit} style={{ width: 300, marginLeft: 5 }} onChange={this.handleUnitChange}>
-              {units.map((item, index) => {
-                return (
-                  <Select.Option key={index} value={item}>
-                    {item}
-                  </Select.Option>
-                );
-              })}
-            </Select>
-            <Download data={data} type={"Metering"} style={{ float: "right" }} />
-            <DataTable rowKey="base_code" columns={columns(results, unit)} data={results} isLoading={isLoading} scroll={300} click={this.showEdit} />
-          </Container>
-        </Page>
-      </div>
-    );
-  }
-}
+  return (
+    <Page
+      page={t('pageMenu.stockManagement')}
+      name={t('pageNames.productInventory')}
+      isLoading={isLoading}
+    >
+      <DataTable
+        columns={columns(configuration, t)}
+        data={data}
+        isLoading={isLoading}
+        t={t}
+        modifiers={[UnitChanger]}
+      />
+    </Page>
+  );
+};
 
 export default auth(ProductInventory);

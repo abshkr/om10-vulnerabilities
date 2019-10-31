@@ -1,23 +1,24 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-import { Page, Filter, DataTable, Download, Container } from '../../components';
-import { Button, Modal, notification } from 'antd';
+import _ from 'lodash';
+import { Modal, notification } from 'antd';
+import axios from 'axios';
+
+import { Page, DataTable } from '../../components';
 import { equipmentList } from '../../api';
-import { search } from '../../utils';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
-import axios from 'axios';
+import { authLevel } from '../../utils';
 
-const EquipmentList = ({ configuration, t }) => {
+const EquipmentList = ({ configuration, t, user }) => {
   const [data, setData] = useState([]);
-  const [value, setValue] = useState('');
   const [expiry, setExpiry] = useState([]);
-  const [resize, setResize] = useState(false);
-  const [filtered, setFiltered] = useState(null);
   const [isLoading, setLoading] = useState(true);
 
   const handleClick = object => {
+    const access = authLevel(user, 'HTML_EQUIPMENTLIST');
+
     Modal.info({
       title: !!object
         ? `${t('operations.editing')} (${object.eqpt_id} / ${object.eqpt_code})`
@@ -25,18 +26,13 @@ const EquipmentList = ({ configuration, t }) => {
       centered: true,
       width: '50vw',
       icon: !!object ? 'edit' : 'form',
-      content: <Forms value={object} refresh={fetch} t={t} expiry={expiry} data={data} />,
+      content: (
+        <Forms value={object} refresh={fetch} t={t} expiry={expiry} data={data} access={access} />
+      ),
       okButtonProps: {
-        style: { display: 'none' }
-      }
+        style: { display: 'none' },
+      },
     });
-  };
-
-  const handleSearch = query => {
-    const { value } = query.target;
-
-    setFiltered(search(value, data));
-    setValue(value);
   };
 
   const fetch = useCallback(() => {
@@ -44,70 +40,37 @@ const EquipmentList = ({ configuration, t }) => {
     axios
       .all([equipmentList.readEquipment(), equipmentList.readExpiry()])
       .then(
-        axios.spread((tankers, expiry) => {
-          setLoading(false);
-          setData(tankers.data.records);
+        axios.spread((equipment, expiry) => {
+          setData(equipment.data.records);
           setExpiry(expiry.data.records);
-        })
+          setLoading(false);
+        }),
       )
-      .catch(error => {
+      .catch(errors => {
         setLoading(false);
-        notification.error({
-          message: error.message,
-          description: t('descriptions.requestFailed')
+        _.forEach(errors.response.data.errors, error => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
-  }, [t]);
+  }, []);
 
   useEffect(() => {
     fetch();
   }, [fetch]);
 
-  const results = !!filtered ? filtered : data;
-  const fields = columns(results, t);
-
   return (
-    <Page
-      page={t('pageMenu.schedules')}
-      name={t('pageNames.equipmentList')}
-      isLoading={isLoading}
-      block={true}
-    >
-      <Container>
-        <Filter value={value} search={handleSearch} loading={isLoading} />
-        <Button
-          shape="round"
-          type="primary"
-          icon={resize ? 'shrink' : 'arrows-alt'}
-          style={{ float: 'right' }}
-          onClick={() => setResize(!resize)}
-          disabled={isLoading}
-        />
-        <Download
-          data={data}
-          type={'equipment_list'}
-          style={{ float: 'right', marginRight: 5 }}
-          loading={isLoading}
-        />
-        <Button
-          shape="round"
-          icon="plus"
-          type="primary"
-          style={{ float: 'right', marginRight: 5 }}
-          onClick={() => handleClick(null)}
-          disabled={isLoading}
-        >
-          {t('operations.create')}
-        </Button>
-        <DataTable
-          rowKey="eqpt_id"
-          resize={resize}
-          columns={fields}
-          data={results}
-          isLoading={isLoading}
-          click={handleClick}
-        />
-      </Container>
+    <Page page={t('pageMenu.schedules')} name={t('pageNames.equipmentList')} isLoading={isLoading}>
+      <DataTable
+        columns={columns(t)}
+        data={data}
+        isLoading={isLoading}
+        click={handleClick}
+        t={t}
+        create
+      />
     </Page>
   );
 };

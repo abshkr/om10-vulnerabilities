@@ -1,24 +1,18 @@
-import { generateOptions } from "../../utils";
-
-const columns = (data, configuration, t) => [
+const columns = t => [
   {
-    title: t("fields.areaId"),
-    dataIndex: "area_k",
-    key: "area_k",
-    align: "center",
-    sorter: (a, b) => a.area_k - b.area_k
+    headerName: t('fields.areaId'),
+    field: 'area_k',
+    sortable: true,
+    filter: 'FuzzyFilter',
+    resizable: true,
   },
   {
-    title: t("fields.areaName"),
-    dataIndex: "area_name",
-    key: "area_name",
-    align: "center",
-    sorter: (a, b) => {
-      return a.area_name.localeCompare(b.area_name);
-    },
-    filters: generateOptions(data, "area_name"),
-    onFilter: (value, record) => record.area_name.indexOf(value) === 0
-  }
+    headerName: t('fields.areaName'),
+    field: 'area_name',
+    sortable: true,
+    filter: 'FuzzyFilter',
+    resizable: true,
+  },
 ];
 
 export default columns;

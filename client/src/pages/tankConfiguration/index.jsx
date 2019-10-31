@@ -1,2 +1,3 @@
-import TankConfiguration from "./tankConfiguration";
+import TankConfiguration from './tankConfiguration';
+
 export default TankConfiguration;

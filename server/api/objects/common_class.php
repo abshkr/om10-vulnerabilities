@@ -314,6 +314,8 @@ class CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
             return false;
         }
 
@@ -378,6 +380,8 @@ class CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
             return false;
         }
 
@@ -397,6 +401,16 @@ class CommonClass
 
         oci_commit($this->conn);
         return true;
+    }
+
+    /**
+     * This function will be called inside utilities.php::create(). If a sub class
+     * needs some thing before create(), it implements this function.
+     * Refer to report_profile.php as a sample
+     *  */
+    public function pre_create() 
+    {
+
     }
 
     public function create()

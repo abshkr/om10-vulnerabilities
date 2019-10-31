@@ -268,7 +268,7 @@ class ExpiryDate extends CommonClass
 
             oci_bind_by_name($stmt, ':ed_type_code', $key);
             oci_bind_by_name($stmt, ':ed_exp_date', $value->ed_exp_date);
-            write_log($value->ed_exp_date, __FILE__, __LINE__);
+            // write_log($value->ed_exp_date, __FILE__, __LINE__);
             // write_log(sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
             //     $this->eqpt_title, $this->eqpt_code, $this->eqpt_owner,
             //     $this->eqpt_lock, $this->eqpt_empty_kg, $this->eqp_must_tare_in,

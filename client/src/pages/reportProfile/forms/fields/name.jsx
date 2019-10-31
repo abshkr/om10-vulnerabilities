@@ -1,26 +1,35 @@
-import React, { Component } from "react";
-import { Form, Input } from "antd";
+import React, { useEffect } from 'react';
+import { Form, Input } from 'antd';
 
-export default class Name extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const Name = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
 
+  useEffect(() => {
     if (!!value) {
-      setValue({
-        report_name: value.report_name
+      setFieldsValue({
+        report_name: value.report_name,
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  render() {
-    const { decorator } = this.props;
+  const validate = (rule, input, callback) => {
+    if (input === '' || !input) {
+      callback(`${t('validate.set')} ─ ${t('fields.name')}`);
+    }
 
-    return (
-      <Form.Item label="Name">
-        {decorator("report_name", {
-          rules: [{ required: true, message: "Please Enter a Report Name" }]
-        })(<Input />)}
-      </Form.Item>
-    );
-  }
-}
+    if (input && input.length > 80) {
+      callback(`${t('placeholder.maxCharacters')}: 80 ─ ${t('descriptions.maxCharacters')}`);
+    }
+    callback();
+  };
+
+  return (
+    <Form.Item label={t('fields.name')}>
+      {getFieldDecorator('report_name', {
+        rules: [{ required: true, validator: validate }],
+      })(<Input />)}
+    </Form.Item>
+  );
+};
+
+export default Name;

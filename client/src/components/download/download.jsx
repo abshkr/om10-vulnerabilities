@@ -1,17 +1,26 @@
-import React from "react";
-import { Button, notification } from "antd";
-import { CSVLink } from "react-csv";
+import React from 'react';
+import { Button, notification } from 'antd';
+import { CSVLink } from 'react-csv';
 
-const withDownload = () => {
-  notification.success({
-    message: "Generated Succesfully."
-  });
-};
+import transform from './transform';
 
-const Download = ({ data, type, style, loading }) => {
+const Download = ({ data, columns, style, loading, t }) => {
+  const payload = transform(data, columns);
+
   return (
-    <CSVLink data={!!data ? data : []} filename={`om5k_${type}.csv`}>
-      <Button shape="round" type="primary" icon="file-text" style={style} onClick={withDownload} loading={loading}>
+    <CSVLink data={payload} filename={`om5k_${window.location.pathname}.csv`}>
+      <Button
+        shape="round"
+        type="primary"
+        icon="file-text"
+        style={style}
+        onClick={() =>
+          notification.success({
+            message: 'Generated Succesfully.'
+          })
+        }
+        loading={loading}
+      >
         Export CSV
       </Button>
     </CSVLink>

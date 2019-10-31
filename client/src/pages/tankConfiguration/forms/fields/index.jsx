@@ -1,33 +1,23 @@
-import Product from "./product";
-import Density from "./density";
-import TankName from "./tankName";
-import TankCode from "./tankCode";
-import UserLLevel from "./userLLevel";
-import UserHLevel from "./userHLevel";
-import TankMaxFlow from "./tankMaxFlow";
-import ExcludeFromPID from "./excludeFromPID";
-import ExcludeFromPOS from "./excludeFromPOS";
-import ExcludeFromSMG from "./excludeFromSMG";
-import DailyVarianceVol from "./dailyVarianceVol";
-import MonthlyVarianceVol from "./montlyVarianceVol";
-import DailyVariancePercent from "./dailyVariancePercent";
-import MonthlyVariancePercent from "./monthlyVariancePercent";
-import ExcludeFromStockReports from "./excludeFromStockReports";
+import Name from './name';
+import Density from './density';
+import MontlhyVariance from './monthlyVariance';
+import DailyVariance from './dailyVariance';
+import Product from './product';
+import MaxFlow from './maxFlow';
+import Flags from './flags';
+import Code from './code';
+import UserHLevel from './userHLevel';
+import UserLLevel from './userLLevel';
 
 export {
-  TankCode,
+  Name,
+  Code,
   Product,
-  TankName,
   Density,
-  TankMaxFlow,
-  DailyVariancePercent,
-  DailyVarianceVol,
-  MonthlyVariancePercent,
-  MonthlyVarianceVol,
-  ExcludeFromPID,
-  ExcludeFromPOS,
-  ExcludeFromSMG,
-  ExcludeFromStockReports,
+  Flags,
+  DailyVariance,
+  MontlhyVariance,
+  MaxFlow,
+  UserHLevel,
   UserLLevel,
-  UserHLevel
 };

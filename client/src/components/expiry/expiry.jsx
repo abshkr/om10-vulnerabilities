@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+
+import { Table, Button, Popconfirm, Icon } from 'antd';
+import moment from 'moment';
+import _ from 'lodash';
+
 import Cell from './cell';
 import Row from './row';
-import _ from 'lodash';
-import moment from 'moment';
-import { Table, Button, Popconfirm, Icon } from 'antd';
 
 const Expiry = ({ form, value, t, types }) => {
   const [count, setCount] = useState(value ? value.expiry_dates.length : 3);
@@ -18,13 +20,13 @@ const Expiry = ({ form, value, t, types }) => {
 
     payload.splice(index, 1, {
       ...item,
-      ...row
+      ...row,
     });
 
     setData(payload);
 
     setFieldsValue({
-      expiry_dates: payload
+      expiry_dates: payload,
     });
   };
 
@@ -35,10 +37,20 @@ const Expiry = ({ form, value, t, types }) => {
       return uniqueExpiry.includes(value.edt_type_code);
     });
 
-    const payload = values[0];
+    const value = values[0];
 
-    setData([...data, payload]);
-    setCount(count + 1);
+    if (value.edt_def_exp_date === '') {
+      setData([...data, value]);
+      setCount(count + 1);
+    } else {
+      const payload = {
+        ...value,
+        ed_exp_date: value.edt_def_exp_date,
+      };
+
+      setData([...data, payload]);
+      setCount(count + 1);
+    }
   };
 
   const handleDelete = key => {
@@ -48,7 +60,7 @@ const Expiry = ({ form, value, t, types }) => {
     setData(source);
 
     setFieldsValue({
-      expiry_dates: source
+      expiry_dates: source,
     });
   };
 
@@ -59,7 +71,7 @@ const Expiry = ({ form, value, t, types }) => {
       key: 'edt_type_desc',
       width: 250,
 
-      editable: true
+      editable: true,
     },
     {
       title: t('fields.expiryDate'),
@@ -76,7 +88,7 @@ const Expiry = ({ form, value, t, types }) => {
             ? Intl.DateTimeFormat().format(moment(text, 'YYYY-MM-DD HH:mm:ss'))
             : t('placeholder.selectDate')}
         </span>
-      )
+      ),
     },
     {
       title: t('fields.enabled'),
@@ -88,7 +100,7 @@ const Expiry = ({ form, value, t, types }) => {
         <span>
           {text === '' ? t('placeholder.selectStatus') : <Icon type={text ? 'check' : 'close'} />}
         </span>
-      )
+      ),
     },
     {
       title: t('fields.operations'),
@@ -103,10 +115,9 @@ const Expiry = ({ form, value, t, types }) => {
           >
             {/*eslint-disable */}
             <a href="#">{t('operations.delete')}</a>
-            {/*eslint-enable */}
           </Popconfirm>
-        ) : null
-    }
+        ) : null,
+    },
   ];
 
   const columns = defaults.map(col => {
@@ -123,8 +134,8 @@ const Expiry = ({ form, value, t, types }) => {
         dataIndex: col.dataIndex,
         title: col.title,
         expiry: types,
-        handleSave: handleSave
-      })
+        handleSave: handleSave,
+      }),
     };
   });
 
@@ -149,8 +160,8 @@ const Expiry = ({ form, value, t, types }) => {
         components={{
           body: {
             row: Row,
-            cell: Cell
-          }
+            cell: Cell,
+          },
         }}
         rowClassName={() => 'editable-row'}
         bordered

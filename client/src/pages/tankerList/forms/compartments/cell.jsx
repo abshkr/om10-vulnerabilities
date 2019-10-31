@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import EditableContext from "./editableContext";
-import { Input, Form, Select } from "antd";
+import React, { Component } from 'react';
+import EditableContext from './editableContext';
+import { Input, Form, Select } from 'antd';
 
 export default class Cell extends Component {
   state = {
-    editing: false
+    editing: false,
   };
 
   toggleEdit = () => {
@@ -25,43 +25,42 @@ export default class Cell extends Component {
           this.toggleEdit();
           handleSave({
             ...record,
-            ...values
+            ...values,
           });
         });
       } else {
         this.setState({
-          editing: false
+          editing: false,
         });
       }
     } else {
       this.setState({
-        editing: false
+        editing: false,
       });
     }
   };
 
   renderCell = form => {
     this.form = form;
-    const { children, dataIndex } = this.props;
+    const { children, dataIndex, record } = this.props;
     const { editing } = this.state;
     const { Option } = Select;
 
-    if (dataIndex === "adj_cmpt_lock") {
+    if (dataIndex === 'adj_cmpt_lock') {
       return editing ? (
         <Form.Item style={{ margin: 0 }}>
-          {form.getFieldDecorator("adj_cmpt_lock")(
-            <Select
-              ref={node => (this.input = node)}
-              onPressEnter={value => this.save(value, dataIndex)}
-              onBlur={value => this.save(value, dataIndex)}
-            >
+          {form.getFieldDecorator('adj_cmpt_lock', {
+            valuePropName: 'checked',
+            initialValue: record.adj_cmpt_lock,
+          })(
+            <Select ref={node => (this.input = node)} onBlur={value => this.save(value, dataIndex)}>
               <Option key={0} value={true}>
                 Locked
               </Option>
               <Option key={1} value={false}>
                 Unlocked
               </Option>
-            </Select>
+            </Select>,
           )}
         </Form.Item>
       ) : (
@@ -81,7 +80,7 @@ export default class Cell extends Component {
               ref={node => (this.input = node)}
               onPressEnter={value => this.save(value, dataIndex)}
               onBlur={this.save}
-            />
+            />,
           )}
         </Form.Item>
       ) : (

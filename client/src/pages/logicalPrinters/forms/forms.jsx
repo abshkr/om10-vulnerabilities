@@ -1,167 +1,175 @@
-import React, { Component } from "react";
-import { Form, Button, Tabs, notification, Modal } from "antd";
-import axios from "axios";
-import { Company, Printer, Usage } from "./fields";
-import { logicalPrinters } from "../../../api";
+import React from 'react';
 
-class LogicalPrinterForm extends Component {
-  handleCreate = () => {
-    this.props.form.validateFields((err, values) => {
+import { Form, Button, Tabs, notification, Modal } from 'antd';
+import axios from 'axios';
+import _ from 'lodash';
+
+import { Company, Usage, Printer } from './fields';
+import { logicalPrinters } from '../../../api';
+
+const TabPane = Tabs.TabPane;
+
+const FormModal = ({ form, refresh, value, t, data }) => {
+  const handleCreate = () => {
+    form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([logicalPrinters.createLogicalPrinters(values)])
-          .then(
-            axios.spread(response => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: "Successfully Created.",
-                description: `You have created the Printer ${values.prt_printer}`
+        Modal.confirm({
+          title: t('prompts.create'),
+          okText: t('operations.yes'),
+          okType: 'primary',
+          cancelText: t('operations.no'),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([logicalPrinters.createLogicalPrinters(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
+
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t('messages.createSuccess'),
+                    description: `${t('descriptions.createSuccess')} ${values.prt_printer}`,
+                  });
+                }),
+              )
+              .catch(errors => {
+                _.forEach(errors.response.data.errors, error => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message,
+                  });
+                });
               });
-            })
-          )
-          .catch(function (error) {
-            notification.error({
-              message: error.message,
-              description: "Failed to create the Printer."
-            });
-          });
-      } else {
-        notification.error({
-          message: "Validation Failed.",
-          description: "Make sure all the fields meet the requirements."
+          },
         });
       }
     });
   };
 
-  handleUpdate = () => {
-    this.props.form.validateFields((err, values) => {
+  const handleUpdate = () => {
+    form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([logicalPrinters.updateLogicalPrinters(values)])
-          .then(
-            axios.spread(response => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: "Successfully Updated.",
-                description: `You have updated the Printer ${values.prt_printer}`
+        Modal.confirm({
+          title: t('prompts.update'),
+          okText: t('operations.yes'),
+          okType: 'primary',
+          cancelText: t('operations.no'),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([logicalPrinters.updateLogicalPrinters(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
+
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t('messages.updateSuccess'),
+                    description: `${t('descriptions.updateSuccess')} ${values.prt_printer}`,
+                  });
+                }),
+              )
+              .catch(errors => {
+                _.forEach(errors.response.data.errors, error => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message,
+                  });
+                });
               });
-            })
-          )
-          .catch(function (error) {
-            notification.error({
-              message: error.message,
-              description: "Failed to update the Printer."
-            });
-          });
-      } else {
-        notification.error({
-          message: "Validation Failed.",
-          description: "Make sure all the fields meet the requirements."
+          },
         });
       }
     });
   };
 
-  handleDelete = () => {
-    const { value } = this.props;
+  const handleDelete = () => {
     axios
       .all([logicalPrinters.deleteLogicalPrinters(value)])
       .then(
         axios.spread(response => {
-          this.props.refresh();
+          refresh();
+
           Modal.destroyAll();
           notification.success({
-            message: "Successfully Deleted.",
-            description: `You have deleted the Tank ${value.prt_printer}`
+            message: t('messages.deleteSuccess'),
+            description: `${t('descriptions.deleteSuccess')} ${value.prt_printer}`,
           });
-        })
+        }),
       )
-      .catch(function (error) {
-        notification.error({
-          message: error.message,
-          description: "Failed to delete the Tank."
+      .catch(errors => {
+        _.forEach(errors.response.data.errors, error => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
   };
 
-  showDeleteConfirm = () => {
+  const showDeleteConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to delete this Printer?",
-      okText: "Yes",
-      okType: "danger",
-      cancelText: "No",
+      title: t('prompts.delete'),
+      okText: t('operations.yes'),
+      okType: 'danger',
+      cancelText: t('operations.no'),
       centered: true,
-      onOk: this.handleDelete
+      onOk: handleDelete,
     });
   };
 
-  showUpdateConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to update this Printer?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      centered: true,
-      onOk: this.handleUpdate
-    });
-  };
+  return (
+    <div>
+      <Form>
+        <Tabs defaultActiveKey="1" animated={false}>
+          <TabPane
+            className="ant-tab-window"
+            tab={t('tabColumns.general')}
+            forceRender={true}
+            key="1"
+          >
+            <Company form={form} value={value} t={t} />
+            <Usage form={form} value={value} t={t} />
+            <Printer form={form} value={value} t={t} data={data} />
+          </TabPane>
+        </Tabs>
+      </Form>
 
-  showCreateConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to update this Printer?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      centered: true,
-      onOk: this.handleCreate
-    });
-  };
+      <Button
+        shape="round"
+        icon="close"
+        style={{ float: 'right' }}
+        onClick={() => Modal.destroyAll()}
+      >
+        {t('operations.cancel')}
+      </Button>
 
-  render() {
-    console.log(this.props);
+      <Button
+        shape="round"
+        type="primary"
+        icon={!!value ? 'edit' : 'plus'}
+        style={{ float: 'right', marginRight: 5 }}
+        onClick={!!value ? handleUpdate : handleCreate}
+      >
+        {!!value ? t('operations.update') : t('operations.create')}
+      </Button>
 
-    const { form, value } = this.props;
-    const { getFieldDecorator, setFieldsValue } = form;
-    const TabPane = Tabs.TabPane;
-    return (
-      <div>
-        <Form style={{ height: 420 }}>
-          <Tabs defaultActiveKey="1">
-            <TabPane tab="General" key="1">
-              <Company decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Usage decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-              <Printer decorator={getFieldDecorator} value={value} setValue={setFieldsValue} />
-            </TabPane>
-          </Tabs>
-        </Form>
-
-        <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
-          Cancel
-        </Button>
-
+      {!!value && (
         <Button
           shape="round"
-          type="primary"
-          icon={!!value ? "edit" : "plus"}
-          style={{ float: "right", marginRight: 5 }}
-          onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}
+          type="danger"
+          icon="delete"
+          style={{ float: 'right', marginRight: 5 }}
+          onClick={showDeleteConfirm}
         >
-          {!!value ? "Update" : "Create"}
+          {t('operations.delete')}
         </Button>
+      )}
+    </div>
+  );
+};
 
-        {!!value && (
-          <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={this.showDeleteConfirm}>
-            Delete
-          </Button>
-        )}
-      </div>
-    );
-  }
-}
-
-const Forms = Form.create()(LogicalPrinterForm);
+const Forms = Form.create()(FormModal);
 
 export default Forms;

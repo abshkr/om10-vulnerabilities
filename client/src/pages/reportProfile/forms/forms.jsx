@@ -1,232 +1,193 @@
-import React, { Component } from "react";
+import React from 'react';
 
-import axios from "axios";
-import { Form, Button, Tabs, notification, Modal } from "antd";
-import { reportProfile } from "../../../api";
-import {
-  Source,
-  Name,
-  Description,
-  Type,
-  CloseOutReport,
-  OnDemandReport,
-  CloseOutBy
-} from "./fields";
+import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
+import _ from 'lodash';
 
-class ReportProfileForm extends Component {
-  handleCreate = () => {
-    this.props.form.validateFields((err, values) => {
+import { reportProfile } from '../../../api';
+
+import axios from 'axios';
+import { Source, Type, Name, Description, CloseOutReportBy, Flags } from './fields';
+
+const TabPane = Tabs.TabPane;
+
+const FormModal = ({ form, refresh, value, t, data, access }) => {
+  const handleCreate = () => {
+    form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([reportProfile.createProfile(values)])
-          .then(
-            axios.spread(response => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: "Successfully Created.",
-                description: `You have created the Report Profile ${values.report_file}`
+        Modal.confirm({
+          title: t('prompts.create'),
+          okText: t('operations.yes'),
+          okType: 'primary',
+          cancelText: t('operations.no'),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([reportProfile.createProfile(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
+
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t('messages.createSuccess'),
+                    description: `${t('descriptions.createSuccess')} ${values.report_name}`,
+                  });
+                }),
+              )
+              .catch(errors => {
+                _.forEach(errors.response.data.errors, error => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message,
+                  });
+                });
               });
-            })
-          )
-          .catch(function(error) {
-            notification.error({
-              message: error.message,
-              description: "Failed to create the Report Profile."
-            });
-          });
-      } else {
-        notification.error({
-          message: "Validation Failed.",
-          description: "Make sure all the fields meet the requirements."
+          },
         });
       }
     });
   };
 
-  handleUpdate = () => {
-    this.props.form.validateFields((err, values) => {
+  const handleUpdate = () => {
+    form.validateFields((err, values) => {
       if (!err) {
-        axios
-          .all([reportProfile.updateProfile(values)])
-          .then(
-            axios.spread(response => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: "Successfully Updated.",
-                description: `You have updated the Report Profile ${values.report_file}`
+        Modal.confirm({
+          title: t('prompts.update'),
+          okText: t('operations.yes'),
+          okType: 'primary',
+          cancelText: t('operations.no'),
+          centered: true,
+          onOk: () => {
+            axios
+              .all([reportProfile.updateProfile(values)])
+              .then(
+                axios.spread(response => {
+                  refresh();
+
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t('messages.updateSuccess'),
+                    description: `${t('descriptions.updateSuccess')} ${values.report_name}`,
+                  });
+                }),
+              )
+              .catch(errors => {
+                _.forEach(errors.response.data.errors, error => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message,
+                  });
+                });
               });
-            })
-          )
-          .catch(function(error) {
-            notification.error({
-              message: error.message,
-              description: "Failed to update the Report Profile."
-            });
-          });
-      } else {
-        notification.error({
-          message: "Validation Failed.",
-          description: "Make sure all the fields meet the requirements."
+          },
         });
       }
     });
   };
 
-  handleDelete = () => {
-    const { value } = this.props;
+  const handleDelete = () => {
     axios
       .all([reportProfile.deleteProfile(value)])
       .then(
         axios.spread(response => {
-          this.props.refresh();
+          refresh();
+
           Modal.destroyAll();
           notification.success({
-            message: "Successfully Deleted.",
-            description: `You have deleted the Tank ${value.report_file}`
+            message: t('messages.deleteSuccess'),
+            description: `${t('descriptions.deleteSuccess')} ${value.report_name}`,
           });
-        })
+        }),
       )
-      .catch(error => {
-        notification.error({
-          message: error.message,
-          description: "Failed to delete the Tank."
+      .catch(errors => {
+        _.forEach(errors.response.data.errors, error => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
   };
 
-  showDeleteConfirm = () => {
+  const showDeleteConfirm = () => {
     Modal.confirm({
-      title: "Are you sure you want to delete this Report Configuration?",
-      okText: "Yes",
-      okType: "danger",
-      cancelText: "No",
+      title: t('prompts.delete'),
+      okText: t('operations.yes'),
+      okType: 'danger',
+      cancelText: t('operations.no'),
       centered: true,
-      onOk: this.handleDelete
+      onOk: handleDelete,
     });
   };
 
-  showUpdateConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to update this Report Configuration?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      centered: true,
-      onOk: this.handleUpdate
-    });
-  };
+  const { getFieldValue } = form;
 
-  showCreateConfirm = () => {
-    Modal.confirm({
-      title: "Are you sure you want to update this Report Configuration?",
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      centered: true,
-      onOk: this.handleCreate
-    });
-  };
-
-  render() {
-    const { form, value } = this.props;
-    const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
-
-    const TabPane = Tabs.TabPane;
-
-    return (
-      <div>
-        <Form style={{ height: "65vh" }}>
-          <Tabs defaultActiveKey="1">
-            <TabPane tab="General" key="1">
-              <Source
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-              />
-
-              <Name
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-              />
-
-              <Type
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-              />
-
-              <Description
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-              />
-
-              <CloseOutBy
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-              />
-
-              <OnDemandReport
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-              />
-
-              <CloseOutReport
-                decorator={getFieldDecorator}
-                value={value}
-                setValue={setFieldsValue}
-                getValue={getFieldValue}
-              />
-            </TabPane>
-          </Tabs>
-        </Form>
-
-        <Button
-          shape="round"
-          icon="close"
-          style={{ float: "right" }}
-          onClick={() => Modal.destroyAll()}
-        >
-          Cancel
-        </Button>
-
-        <Button
-          shape="round"
-          type="primary"
-          icon={!!value ? "edit" : "plus"}
-          style={{ float: "right", marginRight: 5 }}
-          onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}
-        >
-          {!!value ? "Update" : "Create"}
-        </Button>
-
-        {!!value && (
-          <Button
-            shape="round"
-            type="danger"
-            icon="delete"
-            style={{ float: "right", marginRight: 5 }}
-            onClick={this.showDeleteConfirm}
+  return (
+    <div>
+      <Form>
+        <Tabs defaultActiveKey="1" animated={false}>
+          <TabPane
+            className="ant-tab-window"
+            tab={t('tabColumns.general')}
+            forceRender={true}
+            key="1"
           >
-            Delete
-          </Button>
-        )}
-      </div>
-    );
-  }
-}
+            <Source form={form} value={value} t={t} />
+            <Type
+              form={form}
+              value={value}
+              t={t}
+              data={data}
+              source={getFieldValue('report_jasper_file')}
+            />
 
-const Forms = Form.create()(ReportProfileForm);
+            <Name form={form} value={value} t={t} />
+            <CloseOutReportBy form={form} value={value} t={t} />
+
+            <Description form={form} value={value} t={t} />
+
+            <Divider>{t('divider.flags')}</Divider>
+            <Flags form={form} value={value} t={t} />
+          </TabPane>
+        </Tabs>
+      </Form>
+
+      <Button
+        shape="round"
+        icon="close"
+        style={{ float: 'right' }}
+        onClick={() => Modal.destroyAll()}
+      >
+        {t('operations.cancel')}
+      </Button>
+
+      <Button
+        shape="round"
+        type="primary"
+        disabled={!!value ? !access.canUpdate : !access.canCreate}
+        icon={!!value ? 'edit' : 'plus'}
+        style={{ float: 'right', marginRight: 5 }}
+        onClick={!!value ? handleUpdate : handleCreate}
+      >
+        {!!value ? t('operations.update') : t('operations.create')}
+      </Button>
+
+      {!!value && (
+        <Button
+          shape="round"
+          type="danger"
+          icon="delete"
+          style={{ float: 'right', marginRight: 5 }}
+          onClick={showDeleteConfirm}
+          disabled={!access.canDelete}
+        >
+          {t('operations.delete')}
+        </Button>
+      )}
+    </div>
+  );
+};
+
+const Forms = Form.create()(FormModal);
 
 export default Forms;
