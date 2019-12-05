@@ -21,7 +21,7 @@ class MyDocument extends Document {
       <Html>
         <Head />
         <title>OMEGA 5000</title>
-        <link rel="shortcut icon" href="public/favicon.ico" />
+        <link rel="shortcut icon" href="/favicon.ico" />
         {styleTags}
         <body>
           <Main />

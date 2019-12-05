@@ -2,33 +2,32 @@ import "react-app-polyfill/stable";
 import "react-app-polyfill/ie11";
 
 import React from "react";
-import App from "next/app";
 import { Layout } from "antd";
-import { withTranslation } from "../../i18n";
+import App from "next/app";
 
-const { Content, Sider } = Layout;
+import { GlobalContainer } from "../styles";
+
+import "../localization/i18n";
+
+const { Content, Sider, Header } = Layout;
 
 class Omega extends App {
   render() {
-    const { Component, pageProps, auth, t } = this.props;
+    const { Component, pageProps } = this.props;
 
-    console.log(this.props);
-
-    if (auth) {
-      return (
-        <Layout style={{ minHeight: "100vh" }}>
-          <Sider collapsible collapsedWidth={80} defaultCollapsed></Sider>
-
+    return (
+      <GlobalContainer>
+        <Layout className="layout">
+          <Sider className="slider" collapsible width={250} defaultCollapsed />
           <Layout>
-            <Content>
-              <Component {...pageProps} translate={t} />
+            <Header className="header">test</Header>
+            <Content className="content">
+              <Component {...pageProps} />
             </Content>
           </Layout>
         </Layout>
-      );
-    }
-    return <Component {...pageProps} translate={t} />;
+      </GlobalContainer>
+    );
   }
 }
-
-export default withTranslation("common")(Omega);
+export default Omega;

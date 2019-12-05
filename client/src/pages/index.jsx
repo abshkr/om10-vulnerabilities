@@ -1,5 +1,8 @@
 import React from "react";
+import { Root } from "../modules";
 
-const Index = () => <div>test</div>;
+const Page = () => {
+  return <Root />;
+};
 
-export default Index;
+export default Page;

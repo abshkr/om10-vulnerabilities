@@ -1,3 +1,4 @@
-import { appWithTranslation, withTranslation } from "./localization";
+import en from "./en";
+import cn from "./cn";
 
-export { appWithTranslation, withTranslation };
+export { en, cn };
