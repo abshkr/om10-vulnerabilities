@@ -1,6 +1,11 @@
 import styled from "styled-components";
 
-const GlobalContainer = styled.div`
+const GlobalContainer = styled.body`
+  font-family: "Rubik", sans-serif;
+  margin: 0;
+  background-color: #f9f7f7;
+  font-weight: normal;
+
   & .layout {
     min-height: 100vh;
   }
