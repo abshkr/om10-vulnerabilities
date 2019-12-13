@@ -6,25 +6,32 @@ import { Layout } from "antd";
 import App from "next/app";
 
 import { GlobalContainer } from "../styles";
+import { NavBar, Navigation } from "../components";
 
 import "../localization/i18n";
-import "../styles/antd.less";
+import "../styles/index.less";
 
 const { Content, Sider, Header } = Layout;
 
 class Omega extends App {
   render() {
-    const { Component, pageProps } = this.props;
+    const { Component, pageProps, router } = this.props;
 
-    const auth = false;
+    const auth = router.route !== "/login";
 
     if (auth) {
       return (
         <GlobalContainer>
           <Layout className="layout">
-            <Sider collapsible width={250} defaultCollapsed />
+            <Sider collapsible width={250} defaultCollapsed>
+              <Navigation />
+            </Sider>
+
             <Layout>
-              <Header className="header">test</Header>
+              <Header className="header">
+                <NavBar />
+              </Header>
+
               <Content className="content">
                 <Component {...pageProps} />
               </Content>

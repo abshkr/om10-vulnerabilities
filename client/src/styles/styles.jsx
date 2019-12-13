@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const GlobalContainer = styled.body`
+const GlobalContainer = styled.div`
   font-family: "Rubik", sans-serif;
   margin: 0;
   background-color: #f9f7f7;
@@ -12,8 +12,9 @@ const GlobalContainer = styled.body`
 
   .header {
     background-color: white;
-    padding: 5px;
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
+    padding-left: 10px;
+    padding-right: 10px;
     z-index: 10;
     height: 50px;
   }

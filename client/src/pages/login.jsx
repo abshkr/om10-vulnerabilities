@@ -1,3 +1,3 @@
-import { Login } from "../modules";
+import Login from "../modules/login";
 
 export default Login;

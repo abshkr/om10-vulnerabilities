@@ -2,22 +2,31 @@ import styled from "styled-components";
 
 const LoginContainer = styled.div`
   height: 100vh;
-  max-height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: row-reverse;
+`;
+
+const LoginView = styled.div`
+  background: linear-gradient(90deg, #0055a5 0%, #000851 100%);
+  width: 66.66vw;
+
+  & p {
+    font-weight: bold;
+    padding-left: 5px;
+    padding-top: 5px;
+    color: white;
+  }
 `;
 
 const LoginModal = styled.div`
-  height: 300px;
-  width: 500px;
+  height: 100vh;
+  width: 33.33vw;
   background-color: white;
-  border-radius: 5px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+
   padding: 20px;
+  display: flex;
+  align-items: center;
+  align-content: space-between;
 
   & .ant-form {
     width: 100%;
@@ -28,10 +37,33 @@ const LoginModal = styled.div`
   }
 `;
 
-const LoginTitle = styled.h1`
+const LoginTitle = styled.div`
   font-size: 30px;
-  text-align: center;
-  color: #4c4c4c;
+  font-weight: bold;
+  color: #0055a5;
 `;
 
-export { LoginContainer, LoginModal, LoginTitle };
+const ForgotPasswordTitle = styled.div`
+  color: #0055a5;
+  width: 100%;
+  text-align: center;
+  margin-top: 5vh;
+  transition: 0.3s all;
+  font-weight: bold;
+
+  &:hover {
+    color: #2f9aff;
+  }
+
+  span {
+    cursor: pointer;
+  }
+`;
+
+export {
+  LoginContainer,
+  LoginModal,
+  LoginTitle,
+  ForgotPasswordTitle,
+  LoginView
+};

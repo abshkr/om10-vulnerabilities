@@ -1,8 +1,3 @@
-import React from "react";
-import { Root } from "../modules";
+import Root from "../modules/root";
 
-const Page = () => {
-  return <Root />;
-};
-
-export default Page;
+export default Root;

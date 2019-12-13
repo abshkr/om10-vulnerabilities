@@ -1,20 +1,36 @@
 import React from "react";
-import { LoginContainer, LoginModal, LoginTitle } from "./style";
 import { Form, Icon, Input, Button } from "antd";
+
+import {
+  LoginContainer,
+  LoginModal,
+  LoginTitle,
+  ForgotPasswordTitle,
+  LoginView
+} from "./style";
 
 const Fields = ({ form }) => {
   const { getFieldDecorator } = form;
 
+  const handleLogin = () => {
+    form.validateFields((err, values) => {
+      console.log(err, values);
+    });
+  };
+
   return (
     <Form>
       <LoginTitle>OMEGA 5000</LoginTitle>
+
+      <p>Please Login to Continue</p>
+
       <Form.Item>
         {getFieldDecorator("username", {
-          rules: [{ required: true, message: "Please input your username!" }]
+          rules: [{ required: true, message: "Please input your Username!" }]
         })(
           <Input
             prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />}
-            placeholder="Username"
+            placeholder="Omega Personnel Code"
           />
         )}
       </Form.Item>
@@ -31,9 +47,18 @@ const Fields = ({ form }) => {
         )}
       </Form.Item>
 
-      <Button className="login-button" shape="round" type="primary">
+      <Button
+        className="login-button"
+        shape="round"
+        type="primary"
+        onClick={handleLogin}
+      >
         Log in
       </Button>
+
+      <ForgotPasswordTitle>
+        <span>Forgot your Password?</span>
+      </ForgotPasswordTitle>
     </Form>
   );
 };
@@ -46,6 +71,9 @@ const Login = () => {
       <LoginModal>
         <LoginForm />
       </LoginModal>
+      <LoginView>
+        <p>9.10.0</p>
+      </LoginView>
     </LoginContainer>
   );
 };
