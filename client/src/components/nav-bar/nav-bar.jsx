@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Input, Icon, Dropdown, Menu, Avatar } from 'antd';
+import { Input, Icon, Dropdown, Menu, Avatar, Layout } from 'antd';
 
 import { NavBarContainer, SearchContainer, SearchResults } from './style';
 
 const { SubMenu } = Menu;
+const { Header } = Layout;
 
 const UserOverlay = (
   <Menu>
@@ -65,23 +66,25 @@ const NavBar = () => {
   const [query, setQuery] = useState('');
 
   return (
-    <NavBarContainer>
-      <Input placeholder="Search OMEGA" value={query} onChange={event => setQuery(event.target.value)} prefix={<Icon type="search" style={{ color: 'rgba(0,0,0,.25)' }} />} />
+    <Header className="header">
+      <NavBarContainer>
+        <Input placeholder="Search OMEGA" value={query} onChange={event => setQuery(event.target.value)} prefix={<Icon type="search" style={{ color: 'rgba(0,0,0,.25)' }} />} />
 
-      {query !== '' && (
-        <SearchContainer>
-          <SearchResults>{query}</SearchResults>
-        </SearchContainer>
-      )}
+        {query !== '' && (
+          <SearchContainer>
+            <SearchResults>{query}</SearchResults>
+          </SearchContainer>
+        )}
 
-      <Dropdown overlay={ContextOverlay} trigger={['click']}>
-        <Icon type="ellipsis" style={{ marginRight: 10 }} />
-      </Dropdown>
+        <Dropdown overlay={ContextOverlay} trigger={['click']}>
+          <Icon type="ellipsis" style={{ marginRight: 10 }} />
+        </Dropdown>
 
-      <Dropdown overlay={UserOverlay} trigger={['click']}>
-        <Avatar icon="user" />
-      </Dropdown>
-    </NavBarContainer>
+        <Dropdown overlay={UserOverlay} trigger={['click']}>
+          <Avatar icon="user" />
+        </Dropdown>
+      </NavBarContainer>
+    </Header>
   );
 };
 

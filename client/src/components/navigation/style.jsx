@@ -1,4 +1,20 @@
-import styled from 'styled-components';
+import styled from "styled-components";
+
+const MenuContainer = styled.div`
+  .ant-menu-dark,
+  .ant-menu-dark .ant-menu-sub {
+    font-weight: bold;
+  }
+
+  .ant-menu-item {
+    display: flex;
+    align-items: center;
+  }
+
+  .ant-menu-dark .ant-menu-item-selected .anticon + span {
+    font-weight: bold;
+  }
+`;
 
 const LogoContainer = styled.div`
   height: 46px;
@@ -13,4 +29,4 @@ const LogoContainer = styled.div`
   }
 `;
 
-export { LogoContainer };
+export { LogoContainer, MenuContainer };

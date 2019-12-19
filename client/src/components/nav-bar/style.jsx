@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 const NavBarContainer = styled.div`
   height: 50px;
@@ -40,15 +40,16 @@ const UserContainer = styled.div`
 
 const SearchContainer = styled.div`
   position: absolute;
-  height: 300px;
-  width: 30vw;
+  height: 40vh;
+  width: calc(100vw - 220px);
   top: 60px;
-  left: 110px;
+  left: 210px;
   background: white;
   padding: 0px;
   border-radius: 4px;
+
+  box-shadow: 0 39px 68px rgba(15, 17, 51, 0.08);
   opacity: ${props => props.opacity};
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
 `;
 
 const SearchResults = styled.div`

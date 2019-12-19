@@ -1,37 +1,52 @@
-import React from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { Layout } from 'antd';
+import React from "react";
+import { Provider } from "react-redux";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { createStore, applyMiddleware } from "redux";
+import reduxThunk from "redux-thunk";
 
-import { Navigation, NavBar } from '../components';
-import { GlobalContainer } from './style';
-import paths from './paths';
+import { Interface } from "../components";
+import reducers from "../reducers";
+import paths from "./paths";
 
-const { Content, Sider, Header } = Layout;
+/**
+ * @description
+ * Creating main redux store to authenticate our credentials
+ * This works along side the session store to authorize users.
+ */
+
+const store = createStore(
+  reducers,
+  {
+    auth: { authenticated: sessionStorage.getItem("token") }
+  },
+  applyMiddleware(reduxThunk)
+);
+
+/**
+ * @description
+ * Main Routes Class
+ * It provides all the routes to individual components.
+ * It also wrapped in a redux provider which gives each component auth information.
+ */
 
 const App = () => (
-  <BrowserRouter>
-    <GlobalContainer>
-      <Layout className="layout">
-        <Sider collapsible width={250} defaultCollapsed>
-          <Navigation />
-        </Sider>
-
-        <Layout>
-          <Header className="header">
-            <NavBar />
-          </Header>
-
-          <Content className="content">
-            <Switch>
-              {paths.map(item => {
-                return <Route exact key={item.path} path={item.path} component={item.component} />;
-              })}
-            </Switch>
-          </Content>
-        </Layout>
-      </Layout>
-    </GlobalContainer>
-  </BrowserRouter>
+  <Provider store={store}>
+    <BrowserRouter>
+      <Interface>
+        <Switch>
+          {paths.map(item => {
+            return (
+              <Route
+                key={item.path}
+                path={item.path}
+                component={item.component}
+              />
+            );
+          })}
+        </Switch>
+      </Interface>
+    </BrowserRouter>
+  </Provider>
 );
 
 export default App;
