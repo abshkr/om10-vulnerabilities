@@ -14,6 +14,11 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.061) !important;
 }
 
+.ag-root.ag-layout-normal,
+.ag-root.ag-layout-auto-height {
+  border-radius: 4px;
+}
+
 .filter-footer {
   display: flex;
   justify-content: space-between;
@@ -21,12 +26,13 @@
 
 .filter-header {
   margin-bottom: 5px;
-  font-family: 'Lato Bold', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
+  font-weight: bold;
   color: rgba(0, 0, 0, 0.54);
 }
 
 .ag-theme-balham * {
-  font-family: 'Lato', sans-serif;
+  font-family: "Open Sans", sans-serif;
 }
 
 .filter-checkbox {

@@ -34,16 +34,16 @@
   background-color: rgba(0, 0, 0, 0);
 }
 
+.ant-btn {
+  font-weight: 600;
+}
+
 .ant-btn-primary {
   background-color: #fff;
   border: 1px solid #43454a1f;
   color: #68a4ec;
   box-shadow: none;
   font-size: 14px !important;
-}
-
-.ant-btn-primary:hover {
-  background-color: #68a4ec;
 }
 
 .ant-btn-primary:active,

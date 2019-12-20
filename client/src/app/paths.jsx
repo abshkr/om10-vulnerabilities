@@ -1,6 +1,6 @@
 import Loadable from "react-loadable";
 
-import Loading from "../components/loading";
+import { Loading } from "../components";
 import { ROUTES } from "../constants";
 
 const paths = [
@@ -27,6 +27,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.LOGICAL_PRINTERS,
     component: Loadable({
@@ -34,6 +35,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.PHYSICAL_PRINTERS,
     component: Loadable({
@@ -49,6 +51,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.AREA,
     component: Loadable({
@@ -56,6 +59,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.TANK_INVENTORY,
     component: Loadable({
@@ -63,6 +67,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.SITE_BALANCE,
     component: Loadable({
@@ -70,6 +75,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.PRODUCT_INVENTORY,
     component: Loadable({
@@ -77,6 +83,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.BASE_PRODUCTS,
     component: Loadable({
@@ -84,6 +91,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.TANK_CONFIGURATION,
     component: Loadable({
@@ -99,6 +107,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.PERSONNEL_ON_SITE,
     component: Loadable({
@@ -106,6 +115,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.REPORT_CONFIGURATION,
     component: Loadable({
@@ -113,6 +123,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.REPORT_PROFILE,
     component: Loadable({
@@ -120,6 +131,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.TANKER_LIST,
     component: Loadable({
@@ -127,6 +139,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.CUSTOMER_CATEGORIES,
     component: Loadable({
@@ -134,6 +147,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.TIME_CODES,
     component: Loadable({
@@ -141,6 +155,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.HAZCHEM_CODES,
     component: Loadable({
@@ -156,6 +171,7 @@ const paths = [
       loading: Loading
     })
   },
+
   {
     path: ROUTES.ID_ASSIGNMENT,
     component: Loadable({

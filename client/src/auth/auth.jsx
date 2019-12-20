@@ -5,6 +5,7 @@ import { Spin, Icon } from "antd";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
 
+import { AuthContainer } from "./style";
 import { ROUTES, SETTINGS } from "../constants";
 import { service } from "../api";
 
@@ -39,14 +40,16 @@ export default Authenticated => {
     }, [history]);
 
     return (
-      <Spin
-        indicator={<Icon className="spinner" type="loading" />}
-        spinning={isLoading}
-      >
-        {!isLoading && (
-          <Authenticated t={t} configuration={configuration} user={user} />
-        )}
-      </Spin>
+      <AuthContainer>
+        <Spin
+          indicator={<Icon className="spinner" type="loading" />}
+          spinning={isLoading}
+        >
+          {!isLoading && (
+            <Authenticated t={t} configuration={configuration} user={user} />
+          )}
+        </Spin>
+      </AuthContainer>
     );
   };
 

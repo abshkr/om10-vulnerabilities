@@ -11,7 +11,6 @@ import paths from "./paths";
 /**
  * @description
  * Creating main redux store to authenticate our credentials
- * This works along side the session store to authorize users.
  */
 
 const store = createStore(
@@ -27,6 +26,7 @@ const store = createStore(
  * Main Routes Class
  * It provides all the routes to individual components.
  * It also wrapped in a redux provider which gives each component auth information.
+ * All modules are lazy loaded via the path array.
  */
 
 const App = () => (

@@ -20,7 +20,7 @@ const Navigation = () => {
   };
 
   return (
-    <Sider width={200}>
+    <Sider width={230} collapsible defaultCollapsed>
       <MenuContainer>
         <Menu
           onClick={handleNavigation}
@@ -126,10 +126,8 @@ const Navigation = () => {
               </span>
             }
           >
-            <Menu.Item key={ROUTES.JOURNAL}>
-              {" "}
-              {t("pageNames.journal")}
-            </Menu.Item>
+            <Menu.Item key={ROUTES.JOURNAL}>{t("pageNames.journal")}</Menu.Item>
+
             <Menu.Item key={ROUTES.REPORT_PROFILE}>
               {t("pageNames.reportProfile")}
             </Menu.Item>

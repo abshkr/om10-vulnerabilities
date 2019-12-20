@@ -41,15 +41,14 @@ const UserContainer = styled.div`
 const SearchContainer = styled.div`
   position: absolute;
   height: 40vh;
-  width: calc(100vw - 220px);
-  top: 60px;
-  left: 210px;
+  width: calc(100vw - 250px);
+  top: 65px;
+  left: 240px;
   background: white;
   padding: 0px;
   border-radius: 4px;
-
   box-shadow: 0 39px 68px rgba(15, 17, 51, 0.08);
-  opacity: ${props => props.opacity};
+  border: 1px solid ghostwhite;
 `;
 
 const SearchResults = styled.div`

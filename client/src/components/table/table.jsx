@@ -38,7 +38,6 @@ const Table = ({
   t,
   create,
   modifiers,
-  height,
   onEditingFinished
 }) => {
   const [value, setValue] = useState("");
@@ -89,12 +88,13 @@ const Table = ({
         icon="plus"
         disabled={!create}
         style={{ float: "right", marginRight: 5 }}
+        loading={isLoading}
         onClick={() => click(null)}
       >
         {t("operations.create")}
       </Button>
 
-      <div style={{ height: "82vh", marginTop: 5 }}>
+      <div style={{ height: "calc(100vh - 163px)", marginTop: 5 }}>
         <AgGridReact
           columnDefs={columns}
           rowData={data}
