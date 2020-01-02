@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import axios from "axios";
-import { Spin, Icon } from "antd";
-import { useTranslation } from "react-i18next";
-import { connect } from "react-redux";
+import axios from 'axios';
+import { Spin, Icon } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 
-import { AuthContainer } from "./style";
-import { ROUTES, SETTINGS } from "../constants";
-import { service } from "../api";
+import { AuthContainer } from './style';
+import { ROUTES, SETTINGS } from '../constants';
+import { service } from '../api';
 
 export default Authenticated => {
   const ComposedComponent = ({ history, auth }) => {
@@ -21,10 +21,7 @@ export default Authenticated => {
       const authenticate = () => {
         axios.all([service.user(), service.config()]).then(
           axios.spread((currentUser, config) => {
-            if (
-              !SETTINGS.IS_DEVELOPMENT &&
-              currentUser.data.records.length === 0
-            ) {
+            if (!SETTINGS.IS_DEVELOPMENT && currentUser.data.records.length === 0) {
               history.push(ROUTES.UNAUTHORIZED);
               setLoading(false);
             } else {
@@ -41,13 +38,8 @@ export default Authenticated => {
 
     return (
       <AuthContainer>
-        <Spin
-          indicator={<Icon className="spinner" type="loading" />}
-          spinning={isLoading}
-        >
-          {!isLoading && (
-            <Authenticated t={t} configuration={configuration} user={user} />
-          )}
+        <Spin indicator={<Icon className="spinner" type="loading" />} spinning={isLoading}>
+          {!isLoading && <Authenticated t={t} configuration={configuration} user={user} />}
         </Spin>
       </AuthContainer>
     );

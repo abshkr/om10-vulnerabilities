@@ -8,7 +8,7 @@ import Context from './context';
 
 export default class Cell extends Component {
   state = {
-    editing: false,
+    editing: false
   };
 
   toggleEdit = () => {
@@ -33,12 +33,12 @@ export default class Cell extends Component {
         this.toggleEdit();
         handleSave({
           ...record,
-          ...values,
+          ...values
         });
       });
     } else {
       this.setState({
-        editing: false,
+        editing: false
       });
     }
   };
@@ -71,15 +71,11 @@ export default class Cell extends Component {
                     {item.edt_type_desc}
                   </Option>
                 ))}
-            </Select>,
+            </Select>
           )}
         </Form.Item>
       ) : (
-        <div
-          className="editable-cell-value-wrap"
-          style={{ paddingRight: 24 }}
-          onClick={this.toggleEdit}
-        >
+        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
           {children}
         </div>
       );
@@ -90,14 +86,14 @@ export default class Cell extends Component {
         <Form.Item style={{ margin: 0 }}>
           {form.getFieldDecorator('ed_status', {
             valuePropName: 'checked',
-            initialValue: record.ed_status,
+            initialValue: record.ed_status
           })(
             <Switch
               ref={node => (this.input = node)}
               onChange={value => this.save(value, dataIndex)}
               checkedChildren={<Icon type="check" />}
               unCheckedChildren={<Icon type="close" />}
-            />,
+            />
           )}
         </Form.Item>
       );
@@ -110,24 +106,20 @@ export default class Cell extends Component {
             rules: [
               {
                 type: 'object',
-                required: true,
-              },
+                required: true
+              }
             ],
-            initialValue: moment(record.ed_exp_date, 'YYYY-MM-DD 00:00:00'),
+            initialValue: moment(record.ed_exp_date, 'YYYY-MM-DD 00:00:00')
           })(
             <DatePicker
               ref={node => (this.input = node)}
               onChange={value => this.save(value, dataIndex)}
               format="DD/MM/YYYY"
-            />,
+            />
           )}
         </Form.Item>
       ) : (
-        <div
-          className="editable-cell-value-wrap"
-          style={{ paddingRight: 24 }}
-          onClick={this.toggleEdit}
-        >
+        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
           {children}
         </div>
       );
@@ -139,15 +131,11 @@ export default class Cell extends Component {
               ref={node => (this.input = node)}
               onPressEnter={value => this.save(value, dataIndex)}
               onBlur={value => this.save(value, dataIndex)}
-            />,
+            />
           )}
         </Form.Item>
       ) : (
-        <div
-          className="editable-cell-value-wrap"
-          style={{ paddingRight: 24 }}
-          onClick={this.toggleEdit}
-        >
+        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
           {children}
         </div>
       );
@@ -155,21 +143,10 @@ export default class Cell extends Component {
   };
 
   render() {
-    const {
-      editable,
-      dataIndex,
-      title,
-      record,
-      index,
-      handleSave,
-      children,
-      ...restProps
-    } = this.props;
+    const { editable, dataIndex, title, record, index, handleSave, children, ...restProps } = this.props;
 
     return (
-      <td {...restProps}>
-        {editable ? <Context.Consumer>{this.renderCell}</Context.Consumer> : children}
-      </td>
+      <td {...restProps}>{editable ? <Context.Consumer>{this.renderCell}</Context.Consumer> : children}</td>
     );
   }
 }

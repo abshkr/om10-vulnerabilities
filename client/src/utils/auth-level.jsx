@@ -6,7 +6,7 @@ const authLevel = (user, page) => {
   return {
     canDelete: auth.priv_update === '1' && auth.priv_delete === '1',
     canUpdate: auth.priv_update === '1',
-    canCreate: auth.priv_create === '1',
+    canCreate: auth.priv_create === '1'
   };
 };
 

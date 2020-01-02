@@ -1,13 +1,13 @@
-import Loadable from "react-loadable";
+import Loadable from 'react-loadable';
 
-import { Loading } from "../components";
-import { ROUTES } from "../constants";
+import { Loading } from '../components';
+import { ROUTES } from '../constants';
 
 const paths = [
   {
     path: ROUTES.UNAUTHORIZED,
     component: Loadable({
-      loader: () => import("../pages/unauthorized"),
+      loader: () => import('../pages/unauthorized'),
       loading: Loading
     })
   },
@@ -15,7 +15,7 @@ const paths = [
   {
     path: ROUTES.EQUIPMENT_LIST,
     component: Loadable({
-      loader: () => import("../pages/equipment-list"),
+      loader: () => import('../pages/equipment-list'),
       loading: Loading
     })
   },
@@ -23,7 +23,7 @@ const paths = [
   {
     path: ROUTES.PERSONNEL,
     component: Loadable({
-      loader: () => import("../pages/personnel"),
+      loader: () => import('../pages/personnel'),
       loading: Loading
     })
   },
@@ -31,7 +31,7 @@ const paths = [
   {
     path: ROUTES.LOGICAL_PRINTERS,
     component: Loadable({
-      loader: () => import("../pages/logical-printers"),
+      loader: () => import('../pages/logical-printers'),
       loading: Loading
     })
   },
@@ -39,7 +39,7 @@ const paths = [
   {
     path: ROUTES.PHYSICAL_PRINTERS,
     component: Loadable({
-      loader: () => import("../pages/physical-printers"),
+      loader: () => import('../pages/physical-printers'),
       loading: Loading
     })
   },
@@ -47,7 +47,7 @@ const paths = [
   {
     path: ROUTES.METERING,
     component: Loadable({
-      loader: () => import("../pages/metering"),
+      loader: () => import('../pages/metering'),
       loading: Loading
     })
   },
@@ -55,7 +55,7 @@ const paths = [
   {
     path: ROUTES.AREA,
     component: Loadable({
-      loader: () => import("../pages/area"),
+      loader: () => import('../pages/area'),
       loading: Loading
     })
   },
@@ -63,7 +63,7 @@ const paths = [
   {
     path: ROUTES.TANK_INVENTORY,
     component: Loadable({
-      loader: () => import("../pages/tank-inventory"),
+      loader: () => import('../pages/tank-inventory'),
       loading: Loading
     })
   },
@@ -71,7 +71,7 @@ const paths = [
   {
     path: ROUTES.SITE_BALANCE,
     component: Loadable({
-      loader: () => import("../pages/site-balance"),
+      loader: () => import('../pages/site-balance'),
       loading: Loading
     })
   },
@@ -79,7 +79,7 @@ const paths = [
   {
     path: ROUTES.PRODUCT_INVENTORY,
     component: Loadable({
-      loader: () => import("../pages/product-inventory"),
+      loader: () => import('../pages/product-inventory'),
       loading: Loading
     })
   },
@@ -87,7 +87,7 @@ const paths = [
   {
     path: ROUTES.BASE_PRODUCTS,
     component: Loadable({
-      loader: () => import("../pages/base-products"),
+      loader: () => import('../pages/base-products'),
       loading: Loading
     })
   },
@@ -95,7 +95,7 @@ const paths = [
   {
     path: ROUTES.TANK_CONFIGURATION,
     component: Loadable({
-      loader: () => import("../pages/tank-configuration"),
+      loader: () => import('../pages/tank-configuration'),
       loading: Loading
     })
   },
@@ -103,7 +103,7 @@ const paths = [
   {
     path: ROUTES.JOURNAL,
     component: Loadable({
-      loader: () => import("../pages/journal"),
+      loader: () => import('../pages/journal'),
       loading: Loading
     })
   },
@@ -111,7 +111,7 @@ const paths = [
   {
     path: ROUTES.PERSONNEL_ON_SITE,
     component: Loadable({
-      loader: () => import("../pages/personnel-on-site"),
+      loader: () => import('../pages/personnel-on-site'),
       loading: Loading
     })
   },
@@ -119,7 +119,7 @@ const paths = [
   {
     path: ROUTES.REPORT_CONFIGURATION,
     component: Loadable({
-      loader: () => import("../pages/report-configuration"),
+      loader: () => import('../pages/report-configuration'),
       loading: Loading
     })
   },
@@ -127,7 +127,7 @@ const paths = [
   {
     path: ROUTES.REPORT_PROFILE,
     component: Loadable({
-      loader: () => import("../pages/report-profile"),
+      loader: () => import('../pages/report-profile'),
       loading: Loading
     })
   },
@@ -135,7 +135,7 @@ const paths = [
   {
     path: ROUTES.TANKER_LIST,
     component: Loadable({
-      loader: () => import("../pages/tanker-list"),
+      loader: () => import('../pages/tanker-list'),
       loading: Loading
     })
   },
@@ -143,7 +143,7 @@ const paths = [
   {
     path: ROUTES.CUSTOMER_CATEGORIES,
     component: Loadable({
-      loader: () => import("../pages/customer-categories"),
+      loader: () => import('../pages/customer-categories'),
       loading: Loading
     })
   },
@@ -151,7 +151,7 @@ const paths = [
   {
     path: ROUTES.TIME_CODES,
     component: Loadable({
-      loader: () => import("../pages/time-codes"),
+      loader: () => import('../pages/time-codes'),
       loading: Loading
     })
   },
@@ -159,7 +159,7 @@ const paths = [
   {
     path: ROUTES.HAZCHEM_CODES,
     component: Loadable({
-      loader: () => import("../pages/hazchem-codes"),
+      loader: () => import('../pages/hazchem-codes'),
       loading: Loading
     })
   },
@@ -167,7 +167,7 @@ const paths = [
   {
     path: ROUTES.ALLOCATIONS,
     component: Loadable({
-      loader: () => import("../pages/allocations"),
+      loader: () => import('../pages/allocations'),
       loading: Loading
     })
   },
@@ -175,7 +175,7 @@ const paths = [
   {
     path: ROUTES.ID_ASSIGNMENT,
     component: Loadable({
-      loader: () => import("../pages/id-assignment"),
+      loader: () => import('../pages/id-assignment'),
       loading: Loading
     })
   }

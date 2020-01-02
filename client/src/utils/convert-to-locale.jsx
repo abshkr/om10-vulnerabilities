@@ -6,7 +6,7 @@ const convertToLocale = value => {
     const date = Intl.DateTimeFormat().format(moment(value, SETTINGS.DATE_TIME_FORMAT));
 
     const time = Intl.DateTimeFormat('en', { timeStyle: 'medium' }).format(
-      moment(value, SETTINGS.DATE_TIME_FORMAT),
+      moment(value, SETTINGS.DATE_TIME_FORMAT)
     );
 
     const payload = `${date} ${time}`;

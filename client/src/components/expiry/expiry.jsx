@@ -20,13 +20,13 @@ const Expiry = ({ form, value, t, types }) => {
 
     payload.splice(index, 1, {
       ...item,
-      ...row,
+      ...row
     });
 
     setData(payload);
 
     setFieldsValue({
-      expiry_dates: payload,
+      expiry_dates: payload
     });
   };
 
@@ -45,7 +45,7 @@ const Expiry = ({ form, value, t, types }) => {
     } else {
       const payload = {
         ...value,
-        ed_exp_date: value.edt_def_exp_date,
+        ed_exp_date: value.edt_def_exp_date
       };
 
       setData([...data, payload]);
@@ -60,7 +60,7 @@ const Expiry = ({ form, value, t, types }) => {
     setData(source);
 
     setFieldsValue({
-      expiry_dates: source,
+      expiry_dates: source
     });
   };
 
@@ -71,7 +71,7 @@ const Expiry = ({ form, value, t, types }) => {
       key: 'edt_type_desc',
       width: 250,
 
-      editable: true,
+      editable: true
     },
     {
       title: t('fields.expiryDate'),
@@ -88,7 +88,7 @@ const Expiry = ({ form, value, t, types }) => {
             ? Intl.DateTimeFormat().format(moment(text, 'YYYY-MM-DD HH:mm:ss'))
             : t('placeholder.selectDate')}
         </span>
-      ),
+      )
     },
     {
       title: t('fields.enabled'),
@@ -97,10 +97,8 @@ const Expiry = ({ form, value, t, types }) => {
       align: 'center',
       editable: true,
       render: (text, record) => (
-        <span>
-          {text === '' ? t('placeholder.selectStatus') : <Icon type={text ? 'check' : 'close'} />}
-        </span>
-      ),
+        <span>{text === '' ? t('placeholder.selectStatus') : <Icon type={text ? 'check' : 'close'} />}</span>
+      )
     },
     {
       title: t('fields.operations'),
@@ -109,15 +107,12 @@ const Expiry = ({ form, value, t, types }) => {
       key: 'operation',
       render: (text, record) =>
         data.length >= 1 ? (
-          <Popconfirm
-            title={t('prompts.delete')}
-            onConfirm={() => handleDelete(record.edt_type_code)}
-          >
+          <Popconfirm title={t('prompts.delete')} onConfirm={() => handleDelete(record.edt_type_code)}>
             {/*eslint-disable */}
             <a href="#">{t('operations.delete')}</a>
           </Popconfirm>
-        ) : null,
-    },
+        ) : null
+    }
   ];
 
   const columns = defaults.map(col => {
@@ -134,8 +129,8 @@ const Expiry = ({ form, value, t, types }) => {
         dataIndex: col.dataIndex,
         title: col.title,
         expiry: types,
-        handleSave: handleSave,
-      }),
+        handleSave: handleSave
+      })
     };
   });
 
@@ -160,8 +155,8 @@ const Expiry = ({ form, value, t, types }) => {
         components={{
           body: {
             row: Row,
-            cell: Cell,
-          },
+            cell: Cell
+          }
         }}
         rowClassName={() => 'editable-row'}
         bordered

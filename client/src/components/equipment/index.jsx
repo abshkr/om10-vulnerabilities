@@ -1,2 +1,2 @@
-import Equipment from "./equipment";
+import Equipment from './equipment';
 export default Equipment;

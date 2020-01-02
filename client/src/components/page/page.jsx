@@ -1,11 +1,11 @@
-import React from "react";
-import { Helmet } from "react-helmet";
+import React from 'react';
+import { Helmet } from 'react-helmet';
 
-import "./page.css";
+import './page.css';
 
 const Page = ({ name, page, children }) => {
   return (
-    <div className="page">
+    <div>
       <Helmet>
         <meta charSet="utf-8" />
         <title>
@@ -13,7 +13,7 @@ const Page = ({ name, page, children }) => {
         </title>
       </Helmet>
 
-      <div>{children}</div>
+      <div className="page">{children}</div>
     </div>
   );
 };

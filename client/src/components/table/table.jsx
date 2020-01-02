@@ -1,23 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import { AgGridReact } from "ag-grid-react";
-import { Button } from "antd";
+import { AgGridReact } from 'ag-grid-react';
+import { Button } from 'antd';
 
-import { FuzzyFilter, MultiFilter, BooleanFilter } from "./filters";
+import { FuzzyFilter, MultiFilter, BooleanFilter } from './filters';
+import { BooleanRenderer, LockRenderer, DateRenderer, StatusRenderer } from './renderers';
+import { LoadingStatus } from './status';
+import { Search, Download } from '..';
 
-import {
-  BooleanRenderer,
-  LockRenderer,
-  DateRenderer,
-  StatusRenderer
-} from "./renderers";
-import { LoadingStatus } from "./status";
-import { Search, Download } from "..";
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-balham.css";
-
-import "./table.css";
+import './table.css';
 
 const components = {
   FuzzyFilter,
@@ -30,18 +24,9 @@ const components = {
   StatusRenderer
 };
 
-const Table = ({
-  data,
-  click,
-  columns,
-  isLoading,
-  t,
-  create,
-  modifiers,
-  onEditingFinished
-}) => {
-  const [value, setValue] = useState("");
-  const [api, setAPI] = useState("");
+const Table = ({ data, click, columns, isLoading, t, create, modifiers, onEditingFinished }) => {
+  const [value, setValue] = useState('');
+  const [api, setAPI] = useState('');
 
   const onGridReady = params => {
     setAPI(params.api);
@@ -56,7 +41,7 @@ const Table = ({
   }, [isLoading, api, data]);
 
   useEffect(() => {
-    const query = value === "" ? undefined : value;
+    const query = value === '' ? undefined : value;
 
     if (api) {
       api.setQuickFilter(query);
@@ -66,35 +51,29 @@ const Table = ({
   return (
     <div
       style={{
-        width: "100%"
+        width: '100%'
       }}
       className="ag-theme-balham"
     >
-      <Search value={value} search={setValue} loading={isLoading} />
+      <Search value={value} search={setValue} isLoading={isLoading} />
 
       {modifiers}
 
-      <Download
-        data={data}
-        style={{ float: "right" }}
-        loading={isLoading}
-        t={t}
-        columns={columns}
-      />
+      <Download data={data} style={{ float: 'right' }} loading={isLoading} t={t} columns={columns} />
 
       <Button
         shape="round"
         type="primary"
         icon="plus"
         disabled={!create}
-        style={{ float: "right", marginRight: 5 }}
+        style={{ float: 'right', marginRight: 5 }}
         loading={isLoading}
         onClick={() => click(null)}
       >
-        {t("operations.create")}
+        {t('operations.create')}
       </Button>
 
-      <div style={{ height: "calc(100vh - 163px)", marginTop: 5 }}>
+      <div style={{ height: 'calc(100vh - 163px)', marginTop: 5 }}>
         <AgGridReact
           columnDefs={columns}
           rowData={data}

@@ -1,5 +1,5 @@
-import axios from "axios";
-import { AUTHORIZED, UNAUTHORIZED } from "./types";
+import axios from 'axios';
+import { AUTHORIZED, UNAUTHORIZED } from './types';
 
 export const login = (formProps, callback) => async dispatch => {
   try {
@@ -11,26 +11,26 @@ export const login = (formProps, callback) => async dispatch => {
       .then(response => {
         if (response.status === 200) {
           dispatch({ type: AUTHORIZED, payload: response.data.token });
-          sessionStorage.setItem("token", response.data.token);
+          sessionStorage.setItem('token', response.data.token);
 
           callback();
         } else {
           dispatch({
             type: UNAUTHORIZED,
-            payload: "Invalid login credentials"
+            payload: 'Invalid login credentials'
           });
         }
       });
   } catch (e) {
-    dispatch({ type: UNAUTHORIZED, payload: "Invalid login credentials" });
+    dispatch({ type: UNAUTHORIZED, payload: 'Invalid login credentials' });
   }
 };
 
 export const signout = () => {
-  sessionStorage.removeItem("token");
+  sessionStorage.removeItem('token');
 
   return {
     type: AUTHORIZED,
-    payload: ""
+    payload: ''
   };
 };

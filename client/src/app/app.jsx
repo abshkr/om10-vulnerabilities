@@ -1,12 +1,12 @@
-import React from "react";
-import { Provider } from "react-redux";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { createStore, applyMiddleware } from "redux";
-import reduxThunk from "redux-thunk";
+import React from 'react';
+import { Provider } from 'react-redux';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { createStore, applyMiddleware } from 'redux';
+import reduxThunk from 'redux-thunk';
 
-import { Interface } from "../components";
-import reducers from "../reducers";
-import paths from "./paths";
+import { Interface } from '../components';
+import reducers from '../reducers';
+import paths from './paths';
 
 /**
  * @description
@@ -16,7 +16,7 @@ import paths from "./paths";
 const store = createStore(
   reducers,
   {
-    auth: { authenticated: sessionStorage.getItem("token") }
+    auth: { authenticated: sessionStorage.getItem('token') }
   },
   applyMiddleware(reduxThunk)
 );
@@ -35,13 +35,7 @@ const App = () => (
       <Interface>
         <Switch>
           {paths.map(item => {
-            return (
-              <Route
-                key={item.path}
-                path={item.path}
-                component={item.component}
-              />
-            );
+            return <Route key={item.path} path={item.path} component={item.component} />;
           })}
         </Switch>
       </Interface>

@@ -1,8 +1,8 @@
-import { AUTHORIZED, UNAUTHORIZED } from "../actions/types";
+import { AUTHORIZED, UNAUTHORIZED } from '../actions/types';
 
 const INITIAL_STATE = {
-  authenticated: "",
-  errorMessage: ""
+  authenticated: '',
+  errorMessage: ''
 };
 
 export default function(state = INITIAL_STATE, action) {

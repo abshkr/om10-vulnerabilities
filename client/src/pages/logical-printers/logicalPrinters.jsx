@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 
-import { Page, DataTable } from '../../components';
-import { Modal, notification } from 'antd';
-import { logicalPrinters } from '../../api';
-import _ from 'lodash';
+import { Page, DataTable } from "../../components";
+import { Modal, notification } from "antd";
+import { logicalPrinters } from "../../api";
+import _ from "lodash";
 
-import columns from './columns';
-import auth from '../../auth';
-import Forms from './forms';
-import axios from 'axios';
+import columns from "./columns";
+import auth from "../../auth";
+import Forms from "./forms";
+import axios from "axios";
 
 const LogicalPrinters = ({ configuration, t }) => {
   const [data, setData] = useState([]);
@@ -17,15 +17,15 @@ const LogicalPrinters = ({ configuration, t }) => {
   const handleClick = object => {
     Modal.info({
       title: !!object
-        ? `${t('operations.editing')} (${object.prt_printer})`
-        : `${t('operations.create')}`,
+        ? `${t("operations.editing")} (${object.prt_printer})`
+        : `${t("operations.create")}`,
       centered: true,
-      width: '50vw',
-      icon: !!object ? 'edit' : 'form',
+      width: "50vw",
+      icon: !!object ? "edit" : "form",
       content: <Forms value={object} refresh={fetch} t={t} data={data} />,
       okButtonProps: {
-        style: { display: 'none' },
-      },
+        style: { display: "none" }
+      }
     });
   };
 
@@ -37,14 +37,14 @@ const LogicalPrinters = ({ configuration, t }) => {
         axios.spread(records => {
           setData(records.data.records);
           setLoading(false);
-        }),
+        })
       )
       .catch(errors => {
         setLoading(false);
         _.forEach(errors.response.data.errors, error => {
           notification.error({
             message: error.type,
-            description: error.message,
+            description: error.message
           });
         });
       });
@@ -54,9 +54,12 @@ const LogicalPrinters = ({ configuration, t }) => {
     fetch();
   }, [fetch]);
 
-  console.log(isLoading);
   return (
-    <Page page={t('pageMenu.printers')} name={t('pageNames.logicalPrinters')} isLoading={isLoading}>
+    <Page
+      page={t("pageMenu.printers")}
+      name={t("pageNames.logicalPrinters")}
+      isLoading={isLoading}
+    >
       <DataTable
         columns={columns(configuration, t)}
         data={data}

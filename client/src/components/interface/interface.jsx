@@ -1,8 +1,8 @@
-import React from "react";
-import { Layout } from "antd";
+import React from 'react';
+import { Layout } from 'antd';
 
-import { InterfaceContainer } from "./style";
-import { NavBar, Navigation } from "..";
+import { InterfaceContainer } from './style';
+import { NavBar, Navigation } from '..';
 
 const { Content } = Layout;
 

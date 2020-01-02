@@ -1,2 +1,2 @@
-import Expiry from "./expiry";
+import Expiry from './expiry';
 export default Expiry;

@@ -1,2 +1,2 @@
-import Locked from "./locked";
+import Locked from './locked';
 export default Locked;

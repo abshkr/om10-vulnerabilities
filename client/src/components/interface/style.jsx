@@ -15,10 +15,9 @@ const InterfaceContainer = styled.div`
   }
 
   .content {
-    background-color: white;
-    padding-top: 10px;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding-top: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 `;
 

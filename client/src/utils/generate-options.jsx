@@ -6,7 +6,7 @@ const generateOptions = (data, key, context, text, value) => {
   _.map(_.uniqBy(data, key), function(item) {
     results.push({
       text: !!item[key] ? item[key] : 'N/A',
-      value: !!item[key] ? item[key] : 'null',
+      value: !!item[key] ? item[key] : 'null'
     });
   });
 

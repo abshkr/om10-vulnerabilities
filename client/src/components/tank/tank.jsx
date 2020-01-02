@@ -7,7 +7,7 @@ import './tank.css';
 const config = {
   maintainAspectRatio: false,
   legend: {
-    display: false,
+    display: false
   },
 
   layout: {
@@ -15,11 +15,11 @@ const config = {
       left: 45,
       right: 0,
       top: 50,
-      bottom: 5,
-    },
+      bottom: 5
+    }
   },
   tooltips: {
-    enabled: false,
+    enabled: false
   },
   scales: {
     xAxes: [
@@ -30,9 +30,9 @@ const config = {
         categoryPercentage: 0.9,
         barPercentage: 0.9,
         gridLines: {
-          display: false,
-        },
-      },
+          display: false
+        }
+      }
     ],
     yAxes: [
       {
@@ -44,14 +44,14 @@ const config = {
           stepSize: 100,
           callback: (value, index, values) => {
             return `${value}%`;
-          },
+          }
         },
         gridLines: {
-          display: false,
-        },
-      },
-    ],
-  },
+          display: false
+        }
+      }
+    ]
+  }
 };
 
 const Tank = ({ tank, handleClick }) => {
