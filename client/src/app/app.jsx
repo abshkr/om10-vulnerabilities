@@ -1,10 +1,11 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
 import reduxThunk from 'redux-thunk';
 
 import { Interface } from '../components';
+import { ROUTES } from '../constants';
 import reducers from '../reducers';
 import paths from './paths';
 
@@ -37,6 +38,7 @@ const App = () => (
           {paths.map(item => {
             return <Route key={item.path} path={item.path} component={item.component} />;
           })}
+          <Redirect path={ROUTES.WILD_CARD} to={ROUTES._404} />
         </Switch>
       </Interface>
     </BrowserRouter>

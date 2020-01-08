@@ -13,10 +13,6 @@ i18n
     fallbackLng: 'en',
     debug: SETTINGS.IS_DEVELOPMENT,
 
-    interpolation: {
-      escapeValue: false
-    },
-
     react: {
       useSuspense: false
     }

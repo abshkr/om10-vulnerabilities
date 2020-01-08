@@ -2,7 +2,6 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu, Layout, Icon } from 'antd';
-import _ from 'lodash';
 
 import { LogoContainer, MenuContainer } from './style';
 import { ROUTES } from '../../constants';
@@ -30,14 +29,14 @@ const Navigation = () => {
 
           <Menu.Item key={ROUTES.DASHBOARD}>
             <Icon type="fire" />
-            <span>{_.toUpper(t('pageMenu.dashboard'))}</span>
+            <span>{t('pageMenu.dashboard')}</span>
           </Menu.Item>
 
           <SubMenu
             title={
               <span>
                 <Icon type="clock-circle" />
-                <span>{_.toUpper(t('pageMenu.schedules'))}</span>
+                <span>{t('pageMenu.schedules')}</span>
               </span>
             }
           >
@@ -58,7 +57,7 @@ const Navigation = () => {
             title={
               <span>
                 <Icon type="monitor" />
-                <span>{_.toUpper(t('pageMenu.gantry'))}</span>
+                <span>{t('pageMenu.gantry')}</span>
               </span>
             }
           >
@@ -89,7 +88,7 @@ const Navigation = () => {
             title={
               <span>
                 <Icon type="file-done" />
-                <span>{_.toUpper(t('pageMenu.reports'))}</span>
+                <span>{t('pageMenu.reports')}</span>
               </span>
             }
           >
@@ -118,7 +117,7 @@ const Navigation = () => {
             title={
               <span>
                 <Icon type="file-protect" />
-                <span>{_.toUpper(t('pageMenu.accessControl'))}</span>
+                <span>{t('pageMenu.accessControl')}</span>
               </span>
             }
           >
@@ -145,7 +144,7 @@ const Navigation = () => {
             title={
               <span>
                 <Icon type="team" />
-                <span>{_.toUpper(t('pageMenu.customers'))}</span>
+                <span>{t('pageMenu.customers')}</span>
               </span>
             }
           >
@@ -174,7 +173,7 @@ const Navigation = () => {
             title={
               <span>
                 <Icon type="experiment" />
-                <span>{_.toUpper(t('pageMenu.stockManagement'))}</span>
+                <span>{t('pageMenu.stockManagement')}</span>
               </span>
             }
           >
@@ -197,7 +196,7 @@ const Navigation = () => {
             title={
               <span>
                 <Icon type="printer" />
-                <span>{_.toUpper(t('pageMenu.printerConfiguration'))}</span>
+                <span>{t('pageMenu.printerConfiguration')}</span>
               </span>
             }
           >
@@ -210,7 +209,7 @@ const Navigation = () => {
             title={
               <span>
                 <Icon type="cluster" />
-                <span>{_.toUpper(t('pageMenu.operations'))}</span>
+                <span>{t('pageMenu.operations')}</span>
               </span>
             }
           >
@@ -220,7 +219,7 @@ const Navigation = () => {
 
             <Menu.Item key={ROUTES.DRAWER_PRODUCT_ASSETS}>{t('pageNames.drawerProductAssets')}</Menu.Item>
 
-            <Menu.Item key={ROUTES.ADAPTIVE_FLOW_CONTROL}>{t('pageNames.logicalPrinters')}</Menu.Item>
+            <Menu.Item key={ROUTES.ADAPTIVE_FLOW_CONTROL}>{t('pageNames.adaptiveFlowControl')}</Menu.Item>
 
             <Menu.Item key={ROUTES.FSC_STATUS}>{t('pageNames.fscStatus')}</Menu.Item>
           </SubMenu>

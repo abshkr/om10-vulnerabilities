@@ -1,9 +1,11 @@
-export const ENTRY = '/';
-
+export const WILD_CARD = '*';
 export const ROOT = '/';
+
 export const DASHBOARD = '/dashboard';
-export const SIGN_IN = '/signin';
-export const SIGN_OUT = '/signout';
+export const UNAUTHORIZED = '/unauthorized';
+export const LOG_IN = '/login';
+export const LOG_OUT = '/logout';
+export const _404 = '/404';
 
 export const SITE_CONFIGURATION = '/site-configuration';
 export const USER_PROFILE = '/user-profile';
@@ -83,5 +85,3 @@ export const DRIVER_MESSAGING = '/driver-messaging';
 export const TANK_VIEW = '/tank-view';
 export const ADAPTIVE_FLOW_CONTROL = '/adaptive-flow-control';
 export const FSC_STATUS = '/fsc-status';
-
-export const UNAUTHORIZED = '/unauthorized';

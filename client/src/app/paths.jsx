@@ -5,6 +5,21 @@ import { ROUTES } from '../constants';
 
 const paths = [
   {
+    path: ROUTES.LOG_IN,
+    component: Loadable({
+      loader: () => import('../pages/login'),
+      loading: Loading
+    })
+  },
+  {
+    path: ROUTES.LOG_OUT,
+    component: Loadable({
+      loader: () => import('../pages/logout'),
+      loading: Loading
+    })
+  },
+
+  {
     path: ROUTES.UNAUTHORIZED,
     component: Loadable({
       loader: () => import('../pages/unauthorized'),

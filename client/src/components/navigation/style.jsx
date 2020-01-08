@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const MenuContainer = styled.div`
   .ant-menu-item {
@@ -16,6 +16,14 @@ const MenuContainer = styled.div`
   .ant-menu-inline .ant-menu-submenu-title {
     font-size: 13px;
     font-weight: 600;
+  }
+
+  .ant-menu-item:hover,
+  .ant-menu-item-active,
+  .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open,
+  .ant-menu-submenu-active,
+  .ant-menu-submenu-title:hover {
+    color: #68a4ec;
   }
 `;
 

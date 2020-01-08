@@ -171,3 +171,10 @@
   box-shadow: none;
   border-color: #68a4ec;
 }
+
+.ant-menu-vertical.ant-menu-sub .ant-menu-item,
+.ant-menu-vertical-left.ant-menu-sub .ant-menu-item,
+.ant-menu-vertical-right.ant-menu-sub .ant-menu-item {
+  font-size: 13px;
+  font-weight: 600;
+}

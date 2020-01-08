@@ -73,7 +73,7 @@ const Table = ({ data, click, columns, isLoading, t, create, modifiers, onEditin
         {t('operations.create')}
       </Button>
 
-      <div style={{ height: 'calc(100vh - 163px)', marginTop: 5 }}>
+      <div style={{ height: 'calc(100vh - 142px)', marginTop: 5 }}>
         <AgGridReact
           columnDefs={columns}
           rowData={data}

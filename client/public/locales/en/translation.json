@@ -262,7 +262,8 @@
     "inventoryRequests": "Inventory Requests",
     "tankView": "Tank View",
     "bayView": "Bay View",
-    "drawerProductAssets": "Drawer Product Assets"
+    "drawerProductAssets": "Drawer Product Assets",
+    "adaptiveFlowControl": "Adaptive Flow Control"
   },
 
   "operations": {

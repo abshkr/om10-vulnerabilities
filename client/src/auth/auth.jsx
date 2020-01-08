@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 
 import axios from 'axios';
 import { Spin, Icon } from 'antd';
-import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
-import { AuthContainer } from './style';
 import { ROUTES, SETTINGS } from '../constants';
+import { AuthContainer } from './style';
 import { service } from '../api';
 
 export default Authenticated => {
@@ -35,6 +35,12 @@ export default Authenticated => {
 
       authenticate();
     }, [history]);
+
+    useEffect(() => {
+      if (!auth) {
+        history.push(ROUTES.LOG_IN);
+      }
+    }, [history, auth]);
 
     return (
       <AuthContainer>
