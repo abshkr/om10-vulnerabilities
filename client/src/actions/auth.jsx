@@ -1,26 +1,10 @@
-import axios from 'axios';
 import { AUTHORIZED, UNAUTHORIZED } from './types';
 
-export const login = (formProps, callback) => async dispatch => {
+export const login = (values, callback) => async dispatch => {
   try {
-    axios
-      .post(`http://localhost:3000/api/user/login`, {
-        email: formProps.email,
-        password: formProps.password
-      })
-      .then(response => {
-        if (response.status === 200) {
-          dispatch({ type: AUTHORIZED, payload: response.data.token });
-          sessionStorage.setItem('token', response.data.token);
-
-          callback();
-        } else {
-          dispatch({
-            type: UNAUTHORIZED,
-            payload: 'Invalid login credentials'
-          });
-        }
-      });
+    dispatch({ type: AUTHORIZED, payload: `${values.code}${values.password}` });
+    sessionStorage.setItem('token', `${values.code}${values.password}`);
+    callback();
   } catch (e) {
     dispatch({ type: UNAUTHORIZED, payload: 'Invalid login credentials' });
   }
