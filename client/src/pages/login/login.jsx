@@ -1,24 +1,43 @@
-import React, { useEffect } from 'react';
-import { Form, Icon, Input, Button } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Form, Icon, Input, Button, notification } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet';
+import _ from 'lodash';
 
-import * as actions from '../../actions/auth';
 import { LoginContainer, FormContainer, LoginHeader, LoginSubtitle, LoginFooter, LoginIcons } from './style';
+import * as actions from '../../actions/auth';
 import { ROUTES } from '../../constants';
 
 const LoginForm = ({ form, handleLogin, auth }) => {
-  const { getFieldDecorator } = form;
+  const [isLoading, setLoading] = useState(false);
+  const history = useHistory();
 
-  let history = useHistory();
-
-  const handleSubmit = e => {
-    e.preventDefault();
-
+  const handleSubmit = () => {
     form.validateFields((err, values) => {
       if (!err) {
-        handleLogin(values, () => {
-          history.push(ROUTES.DASHBOARD);
+        setLoading(true);
+
+        handleLogin(values, response => {
+          if (response.status === 200) {
+            notification.success({
+              placement: 'bottomRight',
+              message: 'Login Successful.',
+              description: `You have logged in as ${values.code}`,
+              icon: <Icon type="smile" style={{ color: '#68a4ec' }} />
+            });
+
+            history.push(ROUTES.DASHBOARD);
+          } else {
+            setLoading(false);
+
+            notification.error({
+              placement: 'bottomRight',
+              message: 'Login Failed.',
+              description: _.capitalize(response.data.msg_desc),
+              icon: <Icon type="frown" style={{ color: '#ec6e68' }} />
+            });
+          }
         });
       }
     });
@@ -30,8 +49,14 @@ const LoginForm = ({ form, handleLogin, auth }) => {
     }
   }, [auth, history]);
 
+  const { getFieldDecorator } = form;
+
   return (
     <LoginContainer>
+      <Helmet>
+        <title>Login ─ Auth ─ OMEGA 5000</title>
+      </Helmet>
+
       <FormContainer>
         <LoginHeader>OMEGA 5000</LoginHeader>
         <LoginSubtitle>Please Login to Continue</LoginSubtitle>
@@ -60,7 +85,7 @@ const LoginForm = ({ form, handleLogin, auth }) => {
             )}
           </Form.Item>
 
-          <Button type="primary" onClick={handleSubmit}>
+          <Button type="primary" onClick={handleSubmit} loading={isLoading}>
             Log in
           </Button>
         </Form>
@@ -79,12 +104,12 @@ const LoginForm = ({ form, handleLogin, auth }) => {
 
 const Login = Form.create()(LoginForm);
 
-const AuthActionMap = dispatch => ({
+const mapActionsToProps = dispatch => ({
   handleLogin: (code, password) => dispatch(actions.login(code, password))
 });
 
-const AuthStoreMap = state => {
+const mapStateToProps = state => {
   return { auth: state.auth.authenticated };
 };
 
-export default connect(AuthStoreMap, AuthActionMap)(Login);
+export default connect(mapStateToProps, mapActionsToProps)(Login);

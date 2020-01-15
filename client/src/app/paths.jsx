@@ -1,198 +1,129 @@
-import Loadable from 'react-loadable';
-
-import { Loading } from '../components';
+import { lazy } from 'react';
 import { ROUTES } from '../constants';
 
 const paths = [
   {
     path: ROUTES.LOG_IN,
-    component: Loadable({
-      loader: () => import('../pages/login'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/login'))
   },
   {
     path: ROUTES.LOG_OUT,
-    component: Loadable({
-      loader: () => import('../pages/logout'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/logout'))
   },
 
   {
     path: ROUTES.UNAUTHORIZED,
-    component: Loadable({
-      loader: () => import('../pages/unauthorized'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/unauthorized'))
   },
 
   {
     path: ROUTES.EQUIPMENT_LIST,
-    component: Loadable({
-      loader: () => import('../pages/equipment-list'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/equipment-list'))
+  },
+
+  {
+    path: ROUTES.DASHBOARD,
+    component: lazy(() => import('../pages/dashboard'))
   },
 
   {
     path: ROUTES.PERSONNEL,
-    component: Loadable({
-      loader: () => import('../pages/personnel'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/personnel'))
   },
 
   {
     path: ROUTES.LOGICAL_PRINTERS,
-    component: Loadable({
-      loader: () => import('../pages/logical-printers'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/logical-printers'))
   },
 
   {
     path: ROUTES.PHYSICAL_PRINTERS,
-    component: Loadable({
-      loader: () => import('../pages/physical-printers'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/physical-printers'))
   },
 
   {
     path: ROUTES.METERING,
-    component: Loadable({
-      loader: () => import('../pages/metering'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/metering'))
   },
 
   {
     path: ROUTES.AREA,
-    component: Loadable({
-      loader: () => import('../pages/area'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/area'))
   },
 
   {
     path: ROUTES.TANK_INVENTORY,
-    component: Loadable({
-      loader: () => import('../pages/tank-inventory'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/tank-inventory'))
   },
 
   {
     path: ROUTES.SITE_BALANCE,
-    component: Loadable({
-      loader: () => import('../pages/site-balance'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/site-balance'))
   },
 
   {
     path: ROUTES.PRODUCT_INVENTORY,
-    component: Loadable({
-      loader: () => import('../pages/product-inventory'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/product-inventory'))
   },
 
   {
     path: ROUTES.BASE_PRODUCTS,
-    component: Loadable({
-      loader: () => import('../pages/base-products'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/base-products'))
   },
 
   {
     path: ROUTES.TANK_CONFIGURATION,
-    component: Loadable({
-      loader: () => import('../pages/tank-configuration'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/tank-configuration'))
   },
 
   {
     path: ROUTES.JOURNAL,
-    component: Loadable({
-      loader: () => import('../pages/journal'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/journal'))
   },
 
   {
     path: ROUTES.PERSONNEL_ON_SITE,
-    component: Loadable({
-      loader: () => import('../pages/personnel-on-site'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/personnel-on-site'))
   },
 
   {
     path: ROUTES.REPORT_CONFIGURATION,
-    component: Loadable({
-      loader: () => import('../pages/report-configuration'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/report-configuration'))
   },
 
   {
     path: ROUTES.REPORT_PROFILE,
-    component: Loadable({
-      loader: () => import('../pages/report-profile'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/report-profile'))
   },
 
   {
     path: ROUTES.TANKER_LIST,
-    component: Loadable({
-      loader: () => import('../pages/tanker-list'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/tanker-list'))
   },
 
   {
     path: ROUTES.CUSTOMER_CATEGORIES,
-    component: Loadable({
-      loader: () => import('../pages/customer-categories'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/customer-categories'))
   },
 
   {
     path: ROUTES.TIME_CODES,
-    component: Loadable({
-      loader: () => import('../pages/time-codes'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/time-codes'))
   },
 
   {
     path: ROUTES.HAZCHEM_CODES,
-    component: Loadable({
-      loader: () => import('../pages/hazchem-codes'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/hazchem-codes'))
   },
 
   {
     path: ROUTES.ALLOCATIONS,
-    component: Loadable({
-      loader: () => import('../pages/allocations'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/allocations'))
   },
 
   {
     path: ROUTES.ID_ASSIGNMENT,
-    component: Loadable({
-      loader: () => import('../pages/id-assignment'),
-      loading: Loading
-    })
+    component: lazy(() => import('../pages/id-assignment'))
   }
 ];
 
