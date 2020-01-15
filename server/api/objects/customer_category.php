@@ -3,22 +3,22 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once 'common_class.php';
 
-class CustomerCategory
+class CustomerCategory extends CommonClass
 {
-    // database connection and table name
-    private $conn;
+    protected $TABLE_NAME = 'CUSTOMER';
+
+    public $BOOLEAN_FIELDS = array(
+        
+    );
+
+    public $NUMBER_FIELDS = array(
+        "CATEGORY_COUNT",
+    );
 
     public $category_code;
     public $category_name;
-
-    public $desc = "customer category";
-
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
 
     // read personnel
     public function read()
@@ -36,7 +36,8 @@ class CustomerCategory
                 GROUP BY CUST_CATEGORY
                 ) CU
             WHERE
-                CG.CATEG_CODE = CU.CUST_CATEGORY(+)";
+                CG.CATEG_CODE = CU.CUST_CATEGORY(+)
+            ORDER BY CATEGORY_CODE";
 
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {

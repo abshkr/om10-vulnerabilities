@@ -48,9 +48,8 @@ class Database
     {
         $this->conn = oci_connect($this->username, $this->password, $this->db_name, 'AL32UTF8');
 
-        if (!($this->conn)) {
+        if (!$this->conn) {
             $e = oci_error();
-            // $this->logError($e);
             echo ("Connect DB failed:" . $e['message']);
             write_log("Connect DB failed:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
@@ -58,11 +57,20 @@ class Database
         //Set data format, otherwise data update will fail
         $query = "ALTER SESSION SET nls_date_format = 'YYYY-MM-DD HH24:MI:SS'";
         $stmt = oci_parse($this->conn, $query);
-        oci_execute($stmt);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
 
         $query = "ALTER SESSION SET nls_timestamp_format = 'YYYY-MM-DD HH24:MI:SS'";
         $stmt = oci_parse($this->conn, $query);
-        oci_execute($stmt);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        // write_log(sprintf("%s::%s() END", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
 
         return $this->conn;
     }
@@ -88,8 +96,8 @@ class Database
          * his testing env.
          */
         if (AUTH_CHECK &&
-            substr($_SERVER['HTTP_USER_AGENT'], 0, 7) != 'Postman' &&
-            !strpos($_SERVER['HTTP_REFERER'], 'localhost')) {
+            (isset($_SERVER['HTTP_USER_AGENT']) && substr($_SERVER['HTTP_USER_AGENT'], 0, 7) != 'Postman') &&
+            (isset($_SERVER['HTTP_REFERER']) && !strpos($_SERVER['HTTP_REFERER'], 'localhost'))) {
             if (JWT_AUTH) {
                 $token = check_token(get_http_token());
                 if (!$token) {

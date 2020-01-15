@@ -10,19 +10,36 @@ class Role extends CommonClass
     protected $TABLE_NAME = 'URBAC_ROLES';
     protected $primary_keys = array("role_id");
 
+    public $BOOLEAN_FIELDS = array(
+        "DOMAIN_OBJECT_ACTIVE" => 1,
+        "PRIV_UPDATE" => 1,
+        "PRIV_VIEW" => 1,
+        "PRIV_CREATE" => 1,
+        "PRIV_DELETE" => 1,
+        "PRIV_PROTECT" => 1
+    );
+    
     public function read()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
         $query = "
-        SELECT URBAC_ROLES.ROLE_ID, ROLE_CODE, ROLE_TEXT, ROLE_NOTE, ROLE_STATUS
-        FROM URBAC_ROLES, URBAC_USER_ROLES, URBAC_USERS
-        WHERE URBAC_USERS.USER_ID = URBAC_USER_ROLES.USER_ID
-            AND URBAC_ROLES.ROLE_ID = URBAC_USER_ROLES.ROLE_ID
-            AND URBAC_USERS.USER_CODE = :user_code";
+        SELECT 
+            ROLE_ID,
+            ROLE_CODE,
+            AUTH_LEVEL_NAME,
+            ROLE_NOTE,
+            ROLE_RANK,
+            ROLE_TYPE,
+            ROLE_STATUS,
+            RECORD_SWITCH,
+            RECORD_ORDER 
+        FROM URBAC_ROLES,
+            AUTH_LEVEL_TYP
+        WHERE ROLE_ID = AUTH_LEVEL_ID
+        ORDER BY ROLE_ID";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':user_code', $this->user_code);
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
@@ -75,7 +92,8 @@ class Role extends CommonClass
             return;
         }
 
-        Utilities::retrieve($result, $hook_item, $stmt);
+        //The last $method parameter need to be NonExistHook to prevent 
+        Utilities::retrieve($result, $this, $stmt, $method='NonExistHook');
         $hook_item['privilege'] = $result;
     }
 }

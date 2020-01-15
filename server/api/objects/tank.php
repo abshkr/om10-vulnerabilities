@@ -31,6 +31,7 @@ class Tank extends CommonClass
     public $NUMBER_FIELDS = array(
         "TANK_BCLASS_DENS_HI",
         "TANK_BCLASS_DENS_LO",
+        "TANK_MAX_LEVEL",
     );
 
     protected $primary_keys = array("tank_code");
@@ -112,6 +113,22 @@ class Tank extends CommonClass
 
         Utilities::echoRead($retrieve_count, $tank_max_flows, $desc = "");
         return $tank_max_flows;
+    }
+
+    public function simple_list()
+    {
+        Utilities::sanitize($this);
+
+        $query = "
+        SELECT TANK_CODE FROM GUI_TANKS ORDER BY TANK_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
     }
 
     //Because base cannot be too many, do not do limit

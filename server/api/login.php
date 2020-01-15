@@ -42,45 +42,45 @@ header("Content-Type: application/json; charset=UTF-8");
 
 // include database and object files
 include_once './config/database.php';
-include_once './config/log.php';
+include_once './shared/log.php';
 include_once './objects/personnel.php';
 include_once './config/setups.php';
 include_once './config/jwt.php';
 
-if (!isset($_GET["user"]) && !isset($_GET["password"])) {
-    $post_data = json_decode(file_get_contents("php://input"));
-    // print_r($post_data);
+// initialize object
+$object = new stdClass();
 
-    if (!isset($post_data->user)) {
-        echo json_encode(
-            array("message" => "User name not provided.")
-        );
-        return;
+$data = json_decode(file_get_contents("php://input"));
+if ($data) {
+    foreach ($data as $key => $value) {
+        $object->$key = $value;
     }
-
-    if (!isset($post_data->password)) {
-        echo json_encode(
-            array("message" => "Password not provided.")
-        );
-        return;
+} else {
+    // write_log(json_encode($_GET), __FILE__, __LINE__);
+    foreach ($_GET as $key => $value) {
+        $object->$key = $value;
     }
 }
 
+if (!isset($object->user) ||
+!isset($object->user)) {
+    echo json_encode(
+        array("message" => "Parameter (user or password) not provided.")
+    );
+    return;
+}
+
 $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/login.cgi';
-$clientip = $_SERVER['REMOTE_ADDR'];
-$langcode = isset($data->lang) ? isset($data->lang) : 'ENG';
+$object->clientip = $_SERVER['REMOTE_ADDR'];
+$object->langcode = isset($data->lang) ? isset($data->lang) : 'ENG';
 
-$usr = isset($_GET["user"]) ? $_GET["user"] : $post_data->user;
-$pwd = isset($_GET["password"]) ? $_GET["password"] : $post_data->password;
-
-//$url         = 'https://127.0.0.1/cgi-bin/en/login.cgi';
 $data = array(
-    'lang' => $langcode,
+    'lang' => $object->langcode,
     'oput' => 'XML',
     'lock' => 'N',
-    'usr' => $usr,
-    'pwd' => $pwd,
-    'clientip' => $clientip);
+    'usr' => $object->user,
+    'pwd' => $object->password,
+    'clientip' => $object->clientip);
 
 $options = array
     (
@@ -98,23 +98,30 @@ $xml = simplexml_load_string($result);
 $json = json_encode($xml);
 $array = json_decode($json, true);
 if ($array['MSG_DESC'] === 'SUCCESS') {
-    write_log("User Login. user:" . $usr, __FILE__, __LINE__, LogLevel::INFO);
+    write_log("User Login. user:" . $object->user, __FILE__, __LINE__, LogLevel::INFO);
 } else {
-    write_log("User Login failed. user:" . $usr, __FILE__, __LINE__, LogLevel::ERROR);
+    write_log("User Login failed. user:" . $object->user, __FILE__, __LINE__, LogLevel::ERROR);
 }
-
-$login_result = array(
-    'msg_code' => $array['MSG_CODE'],
-    'msg_desc' => $array['MSG_DESC'],
-    'user_status_flag' => $array['USER_DETAIL']['USER_STATUS_FLAG']);
 
 if ($array['MSG_CODE'] === "0") {
-    $login_result['user_session'] = $array['USER_DETAIL']['USER_SESSION'];
-    $login_result['site_code'] = $array['USER_DETAIL']['SITE_CODE'];
-    $login_result['user_passwd_exp'] = $array['USER_DETAIL']['USER_PASSWD_EXP'];
-    $login_result['token_type'] = 'bearer';
-    $login_result['access_token'] = get_token($usr, $array['USER_DETAIL']['USER_SESSION']);
+    $login_result = array();
+    $login_result['userid'] = $object->user;
+    $login_result['email'] = "";
+    $login_result['displayName'] = $object->user;
+    $login_result['token'] = get_token($object->user, $array['USER_DETAIL']['USER_SESSION']);
+    $login_result['refreshToken'] = get_token($object->user, $array['USER_DETAIL']['USER_SESSION'], $exp_seconds = 3600);
+    $login_result['expiresIn'] = 3600;
 
+    http_response_code(200);
+    echo json_encode($login_result, JSON_PRETTY_PRINT);
+} else {
+    http_response_code(400);
+    $login_result = array(
+        'msg_code' => $array['MSG_CODE'],
+        'msg_desc' => $array['MSG_DESC'],
+        'user_status_flag' => $array['USER_DETAIL']['USER_STATUS_FLAG']);
+    
+    echo json_encode($login_result, JSON_PRETTY_PRINT);
 }
 
-echo json_encode($login_result, JSON_PRETTY_PRINT);
+

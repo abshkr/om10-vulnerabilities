@@ -4,9 +4,9 @@ include_once '../shared/header.php';
 
 // include database and object files
 include_once '../config/database.php';
-include_once '../objects/role.php';
+include_once '../objects/cur_role.php';
 
-if (strpos($_SERVER['HTTP_REFERER'], 'localhost')) {
+if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'localhost')) {
     $psn = '9999';
 } else {
     $psn = Utilities::getCurrPsn();
@@ -20,4 +20,4 @@ if ($psn === "") {
     return;
 }
 
-Utilities::read('Role', $method = 'read', $filter = false, $params = array("user_code" => $psn));
+Utilities::read('CurRole', $method = 'read', $filter = false, $params = array("user_code" => $psn));

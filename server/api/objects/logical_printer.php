@@ -3,6 +3,8 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/company_service.php';
+include_once __DIR__ . '/../service/site_service.php';
 
 class LogicalPrinter
 {
@@ -28,6 +30,64 @@ class LogicalPrinter
         $this->prt_usage = '%';
         $this->prt_printer = '%';
         $this->prt_area = '%';
+    }
+
+    public function companys()
+    {
+        $site_service = new SiteService($this->conn);
+        if ($site_service->site_carrier_printer()) {
+            $query .= "
+                SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME FROM DUAL UNION
+                SELECT CMPY_CODE, CMPY_NAME
+                FROM GUI_COMPANYS
+                WHERE BITAND(CMPY_TYPE, POWER(2, 1)) != 0 OR BITAND(CMPY_TYPE, POWER(2, 2)) != 0
+                ORDER BY CMPY_NAME ASC";
+            // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+            $stmt = oci_parse($this->conn, $query);
+            if (oci_execute($stmt)) {
+                return $stmt;
+            } else {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return null;
+            }
+            
+        } else {
+            $company_service = new CompanyService($this->conn);
+            return $company_service->suppliers($plus_any = true);
+        }
+    }
+
+    public function printers()
+    {
+        $query = "
+            SELECT PRNTR, SYS_PRNTR
+            FROM PRINTER
+            ORDER BY PRNTR";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function usages()
+    {
+        $query = "
+            SELECT *
+            FROM PRINT_USE
+            ORDER BY USE_ID";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
     }
 
     // read personnel

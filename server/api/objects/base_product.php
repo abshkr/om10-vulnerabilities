@@ -32,7 +32,7 @@ class BaseProduct extends CommonClass
             SELECT BASE_CODE,
                 BASE_NAME
             FROM BASE_PRODS
-            ORDER BY BASE_CODE";
+            ORDER BY BASE_NAME";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             return $stmt;

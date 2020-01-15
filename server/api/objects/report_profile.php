@@ -102,7 +102,12 @@ class ReportProfile extends CommonClass
         }
     }
 
-    public function update_supplement()
+    protected function post_create()
+    {
+        return $this->post_update();
+    }
+
+    public function post_update()
     {
         $ondemand_flag = 0;
         if (isset($this->report_ondemand_flag) && $this->report_ondemand_flag == 1) {

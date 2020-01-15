@@ -1,4 +1,5 @@
 <?php
+include_once __DIR__ . '/../shared/log.php';
 
 class ExpiredException extends UnexpectedValueException
 {
@@ -107,11 +108,13 @@ class JWT
         }
         // Check the signature
         if (!static::verify("$headb64.$bodyb64", $sig, $key, $header->alg)) {
+            write_log(json_encode($payload), __FILE__, __LINE__, LogLevel::WARNING);
             throw new SignatureInvalidException('Signature verification failed');
         }
         // Check if the nbf if it is defined. This is the time that the
         // token can actually be used. If it's not yet that time, abort.
         if (isset($payload->nbf) && $payload->nbf > ($timestamp+static::$leeway)) {
+            write_log(json_encode($payload), __FILE__, __LINE__, LogLevel::WARNING);
             throw new BeforeValidException(
                 'Cannot handle token prior to ' . date(DateTime::ISO8601, $payload->nbf)
             );
@@ -120,12 +123,14 @@ class JWT
         // using tokens that have been created for later use (and haven't
         // correctly used the nbf claim).
         if (isset($payload->iat) && $payload->iat > ($timestamp+static::$leeway)) {
+            write_log(json_encode($payload), __FILE__, __LINE__, LogLevel::WARNING);
             throw new BeforeValidException(
                 'Cannot handle token prior to ' . date(DateTime::ISO8601, $payload->iat)
             );
         }
         // Check if this token has expired.
         if (isset($payload->exp) && ($timestamp-static::$leeway) >= $payload->exp) {
+            write_log(json_encode($payload), __FILE__, __LINE__, LogLevel::WARNING);
             throw new ExpiredException('Expired token');
         }
         return $payload;

@@ -49,15 +49,7 @@ class ExpiryDateType extends CommonClass
         Utilities::sanitize($this);
 
         $query = "
-            SELECT EDT_TARGET_CODE,
-                EDT_TYPE_CODE,
-                EDT_TYPE_DESC,
-                EDT_DEF_EXP_DATE,
-                EDT_DATE_FMT,
-                EDT_TIME_ENABLED,
-                EDT_STATUS,
-                EDT_REJECT,
-                EDT_DEFAULT
+            SELECT *
             FROM EXPIRY_DATE_TYPES
             WHERE EDT_TARGET_CODE LIKE :target_code
             ORDER BY EDT_TYPE_CODE";

@@ -75,9 +75,7 @@ class OMJournal
         Utilities::sanitize($this);
         // write_log(json_encode($this), __FILE__, __LINE__);
         if (!isset($this->start_date) || !isset($this->end_date)) {
-            $this->end_num = $this->get_max_seq();
-            $this->start_num = $this->end_num - 500;
-
+            //get journal in 5 min
             $query = "
             SELECT GEN_DATE,
                 REGION_CODE,
@@ -89,12 +87,10 @@ class OMJournal
                 SEQ,
                 JNL_CAT
             FROM GUI_SITE_JOURNAL
-            WHERE SEQ >= :start_num
-                AND SEQ <= :end_num
+            WHERE GEN_DATE >= SYSDATE - 5 / 1440
             ORDER BY GEN_DATE DESC";
             $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':start_num', $this->start_num);
-            oci_bind_by_name($stmt, ':end_num', $this->end_num);
+            // oci_bind_by_name($stmt, ':start_num', $this->start_num);
         } else {
             if (isset($this->types)) {
                 $tmp_arr = explode(':', $this->types);

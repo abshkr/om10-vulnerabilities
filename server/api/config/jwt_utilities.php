@@ -37,12 +37,16 @@ function get_http_token()
         // write_log($token, __FILE__, __LINE__);
     } else {
         if (!isset($_GET["token"])) {
-            write_log('JWT auth error: Authorization not set in http request',
-                __FILE__, __LINE__, LogLevel::ERROR);
-            return false;
+            $data = json_decode(file_get_contents("php://input"));
+            if (!isset($data["token"])) {
+                write_log('JWT auth error: Authorization not set in http request',
+                    __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+            $token = $data["token"];
+        } else {
+            $token = $_GET["token"];
         }
-
-        $token = $_GET["token"];
     }
 
     return $token;
@@ -61,16 +65,19 @@ function check_token($token)
             // $output['errors'] = '{"type": "unathenticated"}';
             return false;
         }
-    } catch (UnexpectedValueException $e) {
-        write_log('Caught exception: ' . $e->getMessage(), __FILE__, __LINE__, LogLevel::ERROR);
-        return false;
     } catch (ExpiredException $e) {
         write_log('Caught exception: ' . $e->getMessage(), __FILE__, __LINE__, LogLevel::ERROR);
+        throw $e;
         return false;
     } catch (SignatureInvalidException $e) {
         write_log('Caught exception: ' . $e->getMessage(), __FILE__, __LINE__, LogLevel::ERROR);
+        throw $e;
         return false;
-    }
+    } catch (UnexpectedValueException $e) {
+        write_log('Caught exception: ' . $e->getMessage(), __FILE__, __LINE__, LogLevel::ERROR);
+        throw $e;
+        return false;
+    } 
 
     return $payload;
 }

@@ -127,7 +127,7 @@ class Utilities
             //means it is handled inside $object->$method()
             return;
         } else if (!$stmt) {
-            // http_response_code(500);
+            // http_response_code(BOOLEAN_FIELDS500);
             http_response_code(200);
             echo "Internal error, check logs/php_rest_*.log file for details";
             return;
@@ -266,9 +266,9 @@ class Utilities
 
     public static function retrieve(&$result_array, $object, $stmt, $method = "read")
     {
-        // write_log(sprintf("%s::%s() START, class:%s, method:%s",
-        //     __CLASS__, __FUNCTION__, get_class($object), $method),
-        //     __FILE__, __LINE__);
+        write_log(sprintf("%s::%s() START, class:%s, method:%s",
+            __CLASS__, __FUNCTION__, is_object($object) ? get_class($object) : gettype($object), $method),
+            __FILE__, __LINE__);
 
         $num = 0;
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
@@ -277,7 +277,7 @@ class Utilities
             $base_item = array();
             foreach ($row as $key => $value) {
                 $lower_key = strtolower($key);
-                // write_log(sprintf("%s, %s", $lower_key, $key), __FILE__, __LINE__);
+                // write_log(sprintf("%s, %s=>%s", $lower_key, $key, $value), __FILE__, __LINE__);
                 if (isset($object->BOOLEAN_FIELDS) &&
                     array_key_exists($key, $object->BOOLEAN_FIELDS)) {
                     // write_log("getit", __FILE__, __LINE__);
@@ -383,6 +383,21 @@ class Utilities
                     '. Check logs/php_rest_*.log file for details."';
                 echo '}';
             }
+        } catch (DatabaseException $e) {
+            // http_response_code(422);
+            if (!isset($itemData)) {
+                if (HTTP_CODE_ENABLED) {
+                    http_response_code(500);
+                } else {
+                    http_response_code(200);
+                }
+
+                write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
+                $error = new ErrorSchema(500, "Database Error", $e->getMessage());
+                echo json_encode($error, JSON_PRETTY_PRINT);
+                return;
+            }
+            return false;
         } catch (IncompleteParameterException $e) {
             if (HTTP_CODE_ENABLED) {
                 http_response_code(400);
@@ -566,7 +581,7 @@ class Utilities
                 } else {
                     http_response_code(200);
                 }
-                
+
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
                 $error = new ErrorSchema(500, "Database Error", $e->getMessage());
                 echo json_encode($error, JSON_PRETTY_PRINT);
@@ -581,7 +596,7 @@ class Utilities
                 } else {
                     http_response_code(200);
                 }
-                
+
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
                 $error = new ErrorSchema(500, "Server Failed Error", $e->getMessage());
                 echo json_encode($error, JSON_PRETTY_PRINT);
@@ -620,7 +635,7 @@ class Utilities
                 } else {
                     http_response_code(200);
                 }
-                
+
                 write_log(sprintf("record (%s) does not not exist", $object->primiary_key_str()), __FILE__, __LINE__, LogLevel::ERROR);
                 $error = new ErrorSchema(400, "Bad Request", sprintf("record (%s) does not not exist", $object->primiary_key_str()));
                 echo json_encode($error, JSON_PRETTY_PRINT);
@@ -640,7 +655,7 @@ class Utilities
                 } else {
                     http_response_code(200);
                 }
-                
+
                 echo '{';
                 echo '"message": "Unable to delete ' .
                     $desc .

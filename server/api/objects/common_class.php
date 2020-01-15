@@ -14,7 +14,8 @@ class CommonClass
 
     /* descedant can set primary_keys explicitly, or can leave it to //
     be initialized by retrieve_primary_keys.
-    It is an array, all lower case
+    It is an array, all lower case.
+    If want to use map_view_files_to_table_fiels, must explicitly set primary_keys
      */
     protected $primary_keys = null;
 
@@ -50,11 +51,16 @@ class CommonClass
 
     /**
      * All the fields that should be treated as BOOLEAN in JSON
-     * Check tank.php as an example
+     * Check tank.php as an example.
+     * For the values in read_hook(), check cur_role.php::read_hook() for an example
      */
     public $BOOLEAN_FIELDS = null;
 
-    //All the fields that should be treated as number in JSON
+    //All the fields that should be treated as number in JSON. For example:
+    // array(
+    //     "TANK_BCLASS_DENS_HI",
+    //     "TANK_BCLASS_DENS_LO",
+    // );
     public $NUMBER_FIELDS = null;
 
     /*
@@ -126,7 +132,7 @@ class CommonClass
         $where_query = " WHERE ";
         foreach ($this->view_keys as $value) {
             if (isset($this->table_view_map[strtoupper($value)])) {
-                $value = strtolow($this->table_view_map[strtoupper($value)]);
+                $value = strtolower($this->table_view_map[strtoupper($value)]);
             }
             $where_query .= strtoupper($value) . " = :" . $value . " AND ";
         }
@@ -153,8 +159,8 @@ class CommonClass
         if (!isset($this->updatable_fields)) {
             $this->initial_updatable_fields();
         }
-        write_log(json_encode($this->updatable_fields), __FILE__, __LINE__, LogLevel::DEBUG);
-        write_log(json_encode($this), __FILE__, __LINE__, LogLevel::DEBUG);
+        // write_log(json_encode($this->updatable_fields), __FILE__, __LINE__, LogLevel::DEBUG);
+        // write_log(json_encode($this), __FILE__, __LINE__, LogLevel::DEBUG);
         $set_query = "";
         $to_update = array();
         if (isset($this->table_view_map)) {
@@ -246,7 +252,7 @@ class CommonClass
         return $stmt;
     }
 
-    //Descedant class need to implement this
+    //Descedant class need to implement this. allocation.php as a referece
     protected function delete_children()
     {
 
@@ -273,7 +279,7 @@ class CommonClass
      * Descendant can implement this function to do some update that
      * cannot be done in common way. Refer to report_profile as an example
      */
-    public function update_supplement()
+    protected function post_update()
     {
         return true;
     }
@@ -319,8 +325,8 @@ class CommonClass
             return false;
         }
 
-        if ($this->update_supplement() === false) {
-            write_log("Failed to execute update_supplement", __FILE__, __LINE__, LogLevel::ERROR);
+        if ($this->post_update() === false) {
+            write_log("Failed to execute post_update", __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -368,6 +374,8 @@ class CommonClass
 
         Utilities::sanitize($this);
 
+        $this->delete_children();
+
         $query = "DELETE FROM " . $this->TABLE_NAME . " " . $this->populate_primary_key_where();
         write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
 
@@ -408,11 +416,26 @@ class CommonClass
      * needs some thing before create(), it implements this function.
      * Refer to report_profile.php as a sample
      *  */
-    public function pre_create() 
+    public function pre_create()
     {
 
     }
 
+    protected function post_create()
+    {
+        return true;
+    }
+
+    /**
+     * How to use create() in descendents:
+     * 1# set $this->TABLE_NAME, maby in contructor. See open_order.php
+     * 2# If parameters are from VIEW_NAME, then need to set $this->table_view_map so that
+     * it can map view fields into table fields to insert into table.
+     * 3# if there is something to do before insert, do it in pre_create(), because
+     * utilitiies::create() will call pre_create() before create(). open_order.php has an example
+     * 3# if there is any thing cannot do previously, do it in post_create() in descendent
+     * 3# if there are children records, do it in insert_children() in descendent
+     */
     public function create()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -431,8 +454,14 @@ class CommonClass
             return false;
         }
 
-        if ($this->update_supplement() === false) {
-            write_log("Failed to execute update_supplement", __FILE__, __LINE__, LogLevel::ERROR);
+        if ($this->post_create() === false) {
+            write_log("Failed to execute post_create", __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        if (!$this->insert_children()) {
+            write_log("Failed to execute insert_children", __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
@@ -518,7 +547,7 @@ class CommonClass
     private function map_view_files_to_table_fiels()
     {
         // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-        //     __FILE__, __LINE__);
+        // __FILE__, __LINE__);
         // write_log(json_encode($this), __FILE__, __LINE__);
         if (!isset($this->primary_keys)) {
             return;

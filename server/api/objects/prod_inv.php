@@ -2,24 +2,18 @@
 
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
+include_once 'common_class.php';
 
-class ProdInv
+class ProdInv extends CommonClass
 {
-    // database connection and table name
-    private $conn;
+    protected $TABLE_NAME = 'TANKS';
 
-    public $base_code;
-    public $base_name;
-    public $netvol;
-    public $grossvol;
-    public $usablevol;
-    public $bookbalance;
-
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
+    public $NUMBER_FIELDS = array(
+        "NETVOL",
+        "GROSSVOL",
+        "USABLEVOL",
+        "BOOKBALANCE"
+    );
 
     // read personnel
     public function read()

@@ -16,6 +16,22 @@ class Personnel extends CommonClass
     protected $primary_keys = array("per_code");
     protected $TABLE_NAME = "PERSONNEL";
 
+    public function get_onsite()
+    {
+        $query = "
+            SELECT PER_CODE, PER_NAME, CMPY_NAME, AREA_NAME, PERL_ENTER_TIME 
+            FROM GUI_PERSONNEL, AREA_RC 
+            WHERE PER_CODE = PERL_PSN AND PERL_ARA <> 9999 AND PERL_ARA = AREA_K 
+            ORDER BY PER_NAME";
+
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            return null;
+        }
+    }
+
     // read personnel
     public function read()
     {
