@@ -11,24 +11,20 @@ import { Page, DataTable } from '../../components';
 
 const BaseProducts = ({ configuration, t }) => {
   const [data, setData] = useState([]);
-
-  const [filtered] = useState(null);
   const [isLoading, setLoading] = useState(true);
 
   const handleClick = object => {
     Modal.info({
-      title: !!object
+      title: object
         ? `${t('operations.editing')} (${object.base_code} / ${object.base_name})`
         : `${t('operations.create')}`,
       centered: true,
-      icon: !!object ? 'edit' : 'form',
+      icon: object ? 'edit' : 'form',
       width: '40vw',
-      content: (
-        <Forms refresh={fetch} value={object} t={t} data={data} configuration={configuration} />
-      ),
+      content: <Forms refresh={fetch} value={object} t={t} data={data} configuration={configuration} />,
       okButtonProps: {
-        style: { display: 'none' },
-      },
+        style: { display: 'none' }
+      }
     });
   };
 
@@ -40,13 +36,13 @@ const BaseProducts = ({ configuration, t }) => {
         axios.spread(response => {
           setLoading(false);
           setData(response.data.records);
-        }),
+        })
       )
       .catch(error => {
         setLoading(false);
         notification.error({
           message: error.message,
-          description: t('descriptions.requestFailed'),
+          description: t('descriptions.requestFailed')
         });
       });
   }, [t]);
@@ -55,17 +51,9 @@ const BaseProducts = ({ configuration, t }) => {
     fetch();
   }, [fetch]);
 
-  const results = !!filtered ? filtered : data;
-  const fields = columns(results, configuration, t);
-
   return (
-    <Page
-      page={t('pageMenu.schedules')}
-      name={t('pageNames.baseProducts')}
-      isLoading={isLoading}
-      block={true}
-    >
-      <DataTable columns={fields} data={results} isLoading={isLoading} click={handleClick} />
+    <Page page={t('pageMenu.schedules')} name={t('pageNames.baseProducts')} isLoading={isLoading}>
+      <DataTable columns={columns(t)} data={data} isLoading={isLoading} click={handleClick} t={t} />
     </Page>
   );
 };

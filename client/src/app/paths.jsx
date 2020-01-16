@@ -23,7 +23,7 @@ const paths = [
 
   {
     path: ROUTES.DASHBOARD,
-    component: lazy(() => import('../pages/dashboard'))
+    component: lazy(() => import('../pages/work-in-progress'))
   },
 
   {
@@ -124,6 +124,206 @@ const paths = [
   {
     path: ROUTES.ID_ASSIGNMENT,
     component: lazy(() => import('../pages/id-assignment'))
+  },
+
+  {
+    path: ROUTES.LOAD_SCHEDULES,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.TRANSACTION_LIST,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.SELF_FUEL_TRANSACTION_LIST,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.LOAD_BAYS,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.COMPANIES,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.TANK_GROUPS,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.DRAWER_PRODUCTS,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.PRODUCT_GROUPS,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.ALLOCATIONS,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.LOAD_METERS,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.COMPANY_BAY_MOVEMENT,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.ON_DEMAND_REPORTS,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.FOLIO_SUMMARY,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.FOLIO_SCHEDULLING,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.HOST_MESSAGING_INTERFACE,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.AUDITING_DATA,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.FOLIO_SCHEDULLING,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.ROLE_ACCESS_MANAGEMENT,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.EXPIRY_DATES,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.SITE_ACCESS_DEVICES,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.GATE_PERMISSION,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.GATE_CONTROL,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.CUSTOMERS,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.ORDER_LISTING,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.ADDRESSES,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.DELIVERY_LOCATIONS,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.PRICE_OFFSETS,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.CUSTOMER_PRICING,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.ORDER_PRODUCT_PRICING,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.PARTNERS,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.PARTNERSHIP,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.TANK_STATUS,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.PRODUCT_MOVEMENT,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.INVENTORY_REQUESTS,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.METER_DEVICES,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.TANK_VIEW,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.BAY_VIEW,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.DRAWER_PRODUCT_ASSETS,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.ADAPTIVE_FLOW_CONTROL,
+    component: lazy(() => import('../pages/work-in-progress'))
+  },
+
+  {
+    path: ROUTES.FSC_STATUS,
+    component: lazy(() => import('../pages/fsc-status'))
   }
 ];
 
