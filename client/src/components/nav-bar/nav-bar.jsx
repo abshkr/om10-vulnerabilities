@@ -84,7 +84,7 @@ const NavBar = () => {
         )}
 
         <Dropdown overlay={UserOverlay(history)} trigger={['click']}>
-          <Avatar icon="user" />
+          <Avatar src="https://avatars1.githubusercontent.com/u/20252138?s=460&v=4" />
         </Dropdown>
       </NavBarContainer>
     </Header>

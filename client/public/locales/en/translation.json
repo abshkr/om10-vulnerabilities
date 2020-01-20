@@ -281,7 +281,8 @@
     "copyToClipboard": "Copy to Clipboard",
     "changePassword": "Change Password",
     "filter": "Filter",
-    "reset": "Reset"
+    "reset": "Reset",
+    "refresh": "Refresh"
   },
 
   "tabColumns": {

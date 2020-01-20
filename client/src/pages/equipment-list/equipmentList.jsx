@@ -1,20 +1,21 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 import _ from 'lodash';
-import { Modal, notification } from 'antd';
+import { Modal, notification, Button } from 'antd';
 import axios from 'axios';
 
-import { Page, DataTable } from '../../components';
+import { Page, DataTable, Download } from '../../components';
 import { equipmentList } from '../../api';
+import { authLevel } from '../../utils';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
-import { authLevel } from '../../utils';
 
 const EquipmentList = ({ configuration, t, user }) => {
   const [data, setData] = useState([]);
   const [expiry, setExpiry] = useState([]);
   const [isLoading, setLoading] = useState(true);
+  const fields = columns(t);
 
   const handleClick = object => {
     const access = authLevel(user, 'HTML_EQUIPMENTLIST');
@@ -26,17 +27,16 @@ const EquipmentList = ({ configuration, t, user }) => {
       centered: true,
       width: '50vw',
       icon: !!object ? 'edit' : 'form',
-      content: (
-        <Forms value={object} refresh={fetch} t={t} expiry={expiry} data={data} access={access} />
-      ),
+      content: <Forms value={object} refresh={fetch} t={t} expiry={expiry} data={data} access={access} />,
       okButtonProps: {
-        style: { display: 'none' },
-      },
+        style: { display: 'none' }
+      }
     });
   };
 
   const fetch = useCallback(() => {
     setLoading(true);
+
     axios
       .all([equipmentList.readEquipment(), equipmentList.readExpiry()])
       .then(
@@ -44,14 +44,14 @@ const EquipmentList = ({ configuration, t, user }) => {
           setData(equipment.data.records);
           setExpiry(expiry.data.records);
           setLoading(false);
-        }),
+        })
       )
       .catch(errors => {
         setLoading(false);
         _.forEach(errors.response.data.errors, error => {
           notification.error({
             message: error.type,
-            description: error.message,
+            description: error.message
           });
         });
       });
@@ -61,16 +61,21 @@ const EquipmentList = ({ configuration, t, user }) => {
     fetch();
   }, [fetch]);
 
+  const modifiers = (
+    <>
+      <Button icon="sync" onClick={() => fetch()} loading={isLoading}>
+        {t('operations.refresh')}
+      </Button>
+      <Download data={data} isLoading={isLoading} columns={fields} />
+      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isLoading}>
+        {t('operations.create')}
+      </Button>
+    </>
+  );
+
   return (
-    <Page page={t('pageMenu.schedules')} name={t('pageNames.equipmentList')} isLoading={isLoading}>
-      <DataTable
-        columns={columns(t)}
-        data={data}
-        isLoading={isLoading}
-        click={handleClick}
-        t={t}
-        create
-      />
+    <Page page={t('pageMenu.schedules')} name={t('pageNames.equipmentList')} modifiers={modifiers}>
+      <DataTable columns={fields} data={data} isLoading={isLoading} t={t} />
     </Page>
   );
 };

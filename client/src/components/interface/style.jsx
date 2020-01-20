@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const InterfaceContainer = styled.div`
   & .layout {
@@ -18,6 +18,16 @@ const InterfaceContainer = styled.div`
     padding-top: 15px;
     padding-left: 10px;
     padding-right: 10px;
+  }
+
+  .ant-layout-footer {
+    height: 45px;
+    padding-top: 8px;
+    dispaly: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: none;
   }
 `;
 

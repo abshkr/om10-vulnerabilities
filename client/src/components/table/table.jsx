@@ -24,7 +24,7 @@ const components = {
   StatusRenderer
 };
 
-const Table = ({ data, click, columns, isLoading, t, create, modifiers, onEditingFinished }) => {
+const Table = ({ data, click, columns, isLoading, onEditingFinished }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
 
@@ -57,23 +57,7 @@ const Table = ({ data, click, columns, isLoading, t, create, modifiers, onEditin
     >
       <Search value={value} search={setValue} isLoading={isLoading} />
 
-      {modifiers}
-
-      <Download data={data} style={{ float: 'right' }} loading={isLoading} t={t} columns={columns} />
-
-      <Button
-        shape="round"
-        type="primary"
-        icon="plus"
-        disabled={!create}
-        style={{ float: 'right', marginRight: 5 }}
-        loading={isLoading}
-        onClick={() => click(null)}
-      >
-        {t('operations.create')}
-      </Button>
-
-      <div style={{ height: 'calc(100vh - 142px)', marginTop: 5 }}>
+      <div style={{ height: 'calc(100vh - 260px)', marginTop: 5 }}>
         <AgGridReact
           columnDefs={columns}
           rowData={data}
