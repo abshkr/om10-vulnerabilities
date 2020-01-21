@@ -1,21 +1,24 @@
 import React, { useEffect, useCallback, useState } from 'react';
 
 import axios from 'axios';
-import { Modal, notification } from 'antd';
+import { Modal, notification, Button } from 'antd';
 import _ from 'lodash';
 
 import columns from './columns';
 import Forms from './forms';
 
 import transform from './transform';
+
 import { tanks, baseProducts } from '../../api';
-import { Page, DataTable } from '../../components';
+import { Page, DataTable, Download } from '../../components';
 import { authLevel } from '../../utils';
 import auth from '../../auth';
 
 const TankConfiguration = ({ configuration, t, user }) => {
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true);
+
+  const fields = columns(configuration, t);
 
   const handleClick = object => {
     const access = authLevel(user, 'HTML_TANKCONFIGURATION');
@@ -38,29 +41,29 @@ const TankConfiguration = ({ configuration, t, user }) => {
         />
       ),
       okButtonProps: {
-        style: { display: 'none' },
-      },
+        style: { display: 'none' }
+      }
     });
   };
 
   const fetch = useCallback(() => {
     setLoading(true);
     axios
-      .all([tanks.readTank(), baseProducts.readBaseProduct()])
+      .all([tanks.readTanks(), baseProducts.readBaseProduct()])
       .then(
         axios.spread(tanks => {
           const transformed = transform(tanks.data.records);
 
           setData(transformed);
           setLoading(false);
-        }),
+        })
       )
       .catch(errors => {
         setLoading(false);
         _.forEach(errors.response.data.errors, error => {
           notification.error({
             message: error.type,
-            description: error.message,
+            description: error.message
           });
         });
       });
@@ -70,16 +73,21 @@ const TankConfiguration = ({ configuration, t, user }) => {
     fetch();
   }, [fetch]);
 
+  const modifiers = (
+    <>
+      <Button icon="sync" onClick={() => fetch()} loading={isLoading}>
+        {t('operations.refresh')}
+      </Button>
+      <Download data={data} isLoading={isLoading} columns={fields} />
+      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isLoading}>
+        {t('operations.create')}
+      </Button>
+    </>
+  );
+
   return (
-    <Page page={t('pageMenu.schedules')} name={t('pageNames.tankerList')}>
-      <DataTable
-        columns={columns(configuration, t)}
-        data={data}
-        isLoading={isLoading}
-        click={handleClick}
-        t={t}
-        create={true}
-      />
+    <Page page={t('pageMenu.schedules')} name={t('pageNames.tankConfiguration')} modifiers={modifiers}>
+      <DataTable columns={fields} data={data} isLoading={isLoading} onClick={handleClick} t={t} />
     </Page>
   );
 };

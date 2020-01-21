@@ -15,6 +15,7 @@ const EquipmentList = ({ configuration, t, user }) => {
   const [data, setData] = useState([]);
   const [expiry, setExpiry] = useState([]);
   const [isLoading, setLoading] = useState(true);
+
   const fields = columns(t);
 
   const handleClick = object => {
@@ -75,7 +76,7 @@ const EquipmentList = ({ configuration, t, user }) => {
 
   return (
     <Page page={t('pageMenu.schedules')} name={t('pageNames.equipmentList')} modifiers={modifiers}>
-      <DataTable columns={fields} data={data} isLoading={isLoading} t={t} />
+      <DataTable columns={fields} data={data} isLoading={isLoading} t={t} onClick={handleClick} />
     </Page>
   );
 };

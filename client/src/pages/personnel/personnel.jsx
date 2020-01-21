@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 import _ from 'lodash';
-import { Modal, notification } from 'antd';
+import { Modal, notification, Button } from 'antd';
 import axios from 'axios';
 
 import { authLevel } from '../../utils';
-import { Page, DataTable } from '../../components';
+import { Page, DataTable, Download } from '../../components';
 import { personnel } from '../../api';
 
 import auth from '../../auth';
@@ -17,6 +17,8 @@ const Personnel = ({ configuration, t, user }) => {
   const [expiry, setExpiry] = useState([]);
   const [isLoading, setLoading] = useState(true);
 
+  const fields = columns(t);
+
   const handleClick = object => {
     const access = authLevel(user, 'HTML_PERSONNEL');
 
@@ -27,12 +29,10 @@ const Personnel = ({ configuration, t, user }) => {
       centered: true,
       width: '50vw',
       icon: object ? 'edit' : 'form',
-      content: (
-        <Forms value={object} refresh={fetch} t={t} expiry={expiry} data={data} access={access} />
-      ),
+      content: <Forms value={object} refresh={fetch} t={t} expiry={expiry} data={data} access={access} />,
       okButtonProps: {
-        style: { display: 'none' },
-      },
+        style: { display: 'none' }
+      }
     });
   };
 
@@ -45,7 +45,7 @@ const Personnel = ({ configuration, t, user }) => {
           setExpiry(expiry.data.records);
           setData(personnel.data.records);
           setLoading(false);
-        }),
+        })
       )
       .catch(errors => {
         setLoading(false);
@@ -53,7 +53,7 @@ const Personnel = ({ configuration, t, user }) => {
         _.forEach(errors.response.data.errors, error => {
           notification.error({
             message: error.type,
-            description: error.message,
+            description: error.message
           });
         });
       });
@@ -63,16 +63,21 @@ const Personnel = ({ configuration, t, user }) => {
     fetch();
   }, [fetch]);
 
+  const modifiers = (
+    <>
+      <Button icon="sync" onClick={() => fetch()} loading={isLoading}>
+        {t('operations.refresh')}
+      </Button>
+      <Download data={data} isLoading={isLoading} columns={fields} />
+      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isLoading}>
+        {t('operations.create')}
+      </Button>
+    </>
+  );
+
   return (
-    <Page page={t('pageMenu.accessControl')} name={t('pageNames.personnel')} isLoading={isLoading}>
-      <DataTable
-        columns={columns(t)}
-        data={data}
-        isLoading={isLoading}
-        click={handleClick}
-        t={t}
-        create={true}
-      />
+    <Page page={t('pageMenu.accessControl')} name={t('pageNames.personnel')} modifiers={modifiers}>
+      <DataTable columns={fields} data={data} isLoading={isLoading} onClick={handleClick} t={t} />
     </Page>
   );
 };

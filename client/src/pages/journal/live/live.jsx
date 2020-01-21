@@ -15,13 +15,13 @@ const Live = ({ configuration, t }) => {
       .then(
         axios.spread(records => {
           setData(records.data.records);
-        }),
+        })
       )
       .catch(errors => {
         _.forEach(errors.response.data.errors, error => {
           notification.error({
             message: error.type,
-            description: error.message,
+            description: error.message
           });
         });
       });
@@ -35,15 +35,7 @@ const Live = ({ configuration, t }) => {
     return () => clearInterval(interval);
   }, [fetch]);
 
-  return (
-    <DataTable
-      columns={columns(configuration, t)}
-      isLoading={data.length === 0}
-      create={false}
-      data={data}
-      t={t}
-    />
-  );
+  return <DataTable columns={columns(configuration, t)} data={data} t={t} />;
 };
 
 export default Live;

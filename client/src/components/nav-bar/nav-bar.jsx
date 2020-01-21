@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { useTranslation } from 'react-i18next';
 import { Input, Icon, Dropdown, Menu, Avatar, Layout } from 'antd';
 import { useHistory } from 'react-router-dom';
 
@@ -10,7 +11,13 @@ const { SubMenu } = Menu;
 const { Header } = Layout;
 
 const UserOverlay = history => {
+  const { i18n } = useTranslation();
+
   const handleNavigation = event => {
+    if (event?.keyPath.includes('language')) {
+      i18n.changeLanguage(event.key);
+    }
+
     if (event?.key && event.key === ROUTES.LOG_OUT) {
       history.push(ROUTES.LOG_OUT);
     }
@@ -40,17 +47,23 @@ const UserOverlay = history => {
         <Menu.Item>Support</Menu.Item>
       </SubMenu>
 
+      <Menu.Item key="3">
+        <Icon type="book" />
+        Changelog
+      </Menu.Item>
+
       <Menu.Divider />
 
       <SubMenu
+        key="language"
         title={
           <span>
             <Icon type="global" /> Language
           </span>
         }
       >
-        <Menu.Item>English (EN)</Menu.Item>
-        <Menu.Item>Chinese (CN)</Menu.Item>
+        <Menu.Item key="en">English (EN)</Menu.Item>
+        <Menu.Item key="cn">Chinese (CN)</Menu.Item>
       </SubMenu>
 
       <Menu.Divider />

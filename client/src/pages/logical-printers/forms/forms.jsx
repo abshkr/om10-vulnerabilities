@@ -29,19 +29,19 @@ const FormModal = ({ form, refresh, value, t, data }) => {
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.createSuccess'),
-                    description: `${t('descriptions.createSuccess')} ${values.prt_printer}`,
+                    description: `${t('descriptions.createSuccess')} ${values.prt_printer}`
                   });
-                }),
+                })
               )
               .catch(errors => {
                 _.forEach(errors.response.data.errors, error => {
                   notification.error({
                     message: error.type,
-                    description: error.message,
+                    description: error.message
                   });
                 });
               });
-          },
+          }
         });
       }
     });
@@ -66,19 +66,19 @@ const FormModal = ({ form, refresh, value, t, data }) => {
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.updateSuccess'),
-                    description: `${t('descriptions.updateSuccess')} ${values.prt_printer}`,
+                    description: `${t('descriptions.updateSuccess')} ${values.prt_printer}`
                   });
-                }),
+                })
               )
               .catch(errors => {
                 _.forEach(errors.response.data.errors, error => {
                   notification.error({
                     message: error.type,
-                    description: error.message,
+                    description: error.message
                   });
                 });
               });
-          },
+          }
         });
       }
     });
@@ -94,15 +94,15 @@ const FormModal = ({ form, refresh, value, t, data }) => {
           Modal.destroyAll();
           notification.success({
             message: t('messages.deleteSuccess'),
-            description: `${t('descriptions.deleteSuccess')} ${value.prt_printer}`,
+            description: `${t('descriptions.deleteSuccess')} ${value.prt_printer}`
           });
-        }),
+        })
       )
       .catch(errors => {
         _.forEach(errors.response.data.errors, error => {
           notification.error({
             message: error.type,
-            description: error.message,
+            description: error.message
           });
         });
       });
@@ -115,7 +115,7 @@ const FormModal = ({ form, refresh, value, t, data }) => {
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
-      onOk: handleDelete,
+      onOk: handleDelete
     });
   };
 
@@ -127,7 +127,6 @@ const FormModal = ({ form, refresh, value, t, data }) => {
             className="ant-tab-window"
             style={{ height: '30vh' }}
             tab={t('tabColumns.general')}
-            forceRender={true}
             key="1"
           >
             <Company form={form} value={value} t={t} />
@@ -137,12 +136,7 @@ const FormModal = ({ form, refresh, value, t, data }) => {
         </Tabs>
       </Form>
 
-      <Button
-        shape="round"
-        icon="close"
-        style={{ float: 'right' }}
-        onClick={() => Modal.destroyAll()}
-      >
+      <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
         {t('operations.cancel')}
       </Button>
 

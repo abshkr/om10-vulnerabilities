@@ -16,7 +16,7 @@ const Interface = ({ auth, children }) => {
         <Layout>
           <NavBar />
           <Content className="content">{children}</Content>
-          <Footer>OMEGA 5000 </Footer>
+          <Footer>OMEGA 5000 (V9.10.0) </Footer>
         </Layout>
       </Layout>
     </InterfaceContainer>

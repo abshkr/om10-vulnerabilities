@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 import { AgGridReact } from 'ag-grid-react';
-import { Button } from 'antd';
 
 import { FuzzyFilter, MultiFilter, BooleanFilter } from './filters';
 import { BooleanRenderer, LockRenderer, DateRenderer, StatusRenderer } from './renderers';
 import { LoadingStatus } from './status';
-import { Search, Download } from '..';
+import { Search } from '..';
 
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
@@ -24,7 +23,7 @@ const components = {
   StatusRenderer
 };
 
-const Table = ({ data, click, columns, isLoading, onEditingFinished }) => {
+const Table = ({ data, onClick, columns, isLoading, onEditingFinished }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
 
@@ -63,7 +62,7 @@ const Table = ({ data, click, columns, isLoading, onEditingFinished }) => {
           rowData={data}
           onGridReady={onGridReady}
           frameworkComponents={components}
-          onRowDoubleClicked={value => click && click(value.data)}
+          onRowDoubleClicked={value => onClick && onClick(value.data)}
           loadingOverlayComponent="LoadingStatus"
           rowSelection="multiple"
           onCellEditingStopped={onEditingFinished}

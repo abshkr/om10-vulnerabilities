@@ -4,16 +4,7 @@ import _ from 'lodash';
 import axios from 'axios';
 import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
 
-import {
-  Name,
-  Code,
-  Product,
-  Density,
-  Flags,
-  DailyVariance,
-  MontlhyVariance,
-  MaxFlow,
-} from './fields';
+import { Name, Code, Product, Density, Flags, DailyVariance, MontlhyVariance, MaxFlow } from './fields';
 import { tanks } from '../../../api';
 
 const TabPane = Tabs.TabPane;
@@ -37,19 +28,19 @@ const FormModal = ({ form, refresh, value, t, data, access, configuration }) => 
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.createSuccess'),
-                    description: `${t('descriptions.createSuccess')} ${values.tank_code}`,
+                    description: `${t('descriptions.createSuccess')} ${values.tank_code}`
                   });
-                }),
+                })
               )
               .catch(errors => {
                 _.forEach(errors.response.data.errors, error => {
                   notification.error({
                     message: error.type,
-                    description: error.message,
+                    description: error.message
                   });
                 });
               });
-          },
+          }
         });
       }
     });
@@ -74,19 +65,19 @@ const FormModal = ({ form, refresh, value, t, data, access, configuration }) => 
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.updateSuccess'),
-                    description: `${t('descriptions.updateSuccess')} ${values.tank_code}`,
+                    description: `${t('descriptions.updateSuccess')} ${values.tank_code}`
                   });
-                }),
+                })
               )
               .catch(errors => {
                 _.forEach(errors.response.data.errors, error => {
                   notification.error({
                     message: error.type,
-                    description: error.message,
+                    description: error.message
                   });
                 });
               });
-          },
+          }
         });
       }
     });
@@ -102,15 +93,15 @@ const FormModal = ({ form, refresh, value, t, data, access, configuration }) => 
           Modal.destroyAll();
           notification.success({
             message: t('messages.deleteSuccess'),
-            description: `${t('descriptions.deleteSuccess')} ${value.tank_code}`,
+            description: `${t('descriptions.deleteSuccess')} ${value.tank_code}`
           });
-        }),
+        })
       )
       .catch(errors => {
         _.forEach(errors.response.data.errors, error => {
           notification.error({
             message: error.type,
-            description: error.message,
+            description: error.message
           });
         });
       });
@@ -123,7 +114,7 @@ const FormModal = ({ form, refresh, value, t, data, access, configuration }) => 
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
-      onOk: handleDelete,
+      onOk: handleDelete
     });
   };
 
@@ -131,12 +122,7 @@ const FormModal = ({ form, refresh, value, t, data, access, configuration }) => 
     <div>
       <Form>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.general')}
-            forceRender={true}
-            key="1"
-          >
+          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
             <Code form={form} value={value} t={t} data={data} />
             <Name form={form} value={value} t={t} />
             <Product form={form} value={value} t={t} />
@@ -148,7 +134,7 @@ const FormModal = ({ form, refresh, value, t, data, access, configuration }) => 
             <Flags form={form} value={value} t={t} />
           </TabPane>
 
-          {configuration.features.adaptiveFlowControl && (
+          {configuration?.features?.adaptiveFlowControl && (
             <TabPane className="ant-tab-window" tab={t('tabColumns.adaptiveFlow')} key="2">
               <MaxFlow form={form} value={value} t={t} />
             </TabPane>
@@ -156,12 +142,7 @@ const FormModal = ({ form, refresh, value, t, data, access, configuration }) => 
         </Tabs>
       </Form>
 
-      <Button
-        shape="round"
-        icon="close"
-        style={{ float: 'right' }}
-        onClick={() => Modal.destroyAll()}
-      >
+      <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
         {t('operations.cancel')}
       </Button>
 

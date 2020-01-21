@@ -10,14 +10,7 @@ import { Page, DataTable } from '../../components';
 import columns from './columns';
 import transform from './transform';
 
-const units = [
-  'Litres',
-  'Cubic Metre',
-  'Imperial Gallon',
-  'U.S Gallon',
-  'Imperial Barrel',
-  'U.S Barrel',
-];
+const units = ['Litres', 'Cubic Metre', 'Imperial Gallon', 'U.S Gallon', 'Imperial Barrel', 'U.S Barrel'];
 
 const SiteBalance = ({ configuration, t, user }) => {
   const [data, setData] = useState([]);
@@ -33,14 +26,14 @@ const SiteBalance = ({ configuration, t, user }) => {
 
           setData(payload);
           setLoading(false);
-        }),
+        })
       )
       .catch(errors => {
         setLoading(false);
         _.forEach(errors.response.data.errors, error => {
           notification.error({
             message: error.type,
-            description: error.message,
+            description: error.message
           });
         });
       });
@@ -50,7 +43,7 @@ const SiteBalance = ({ configuration, t, user }) => {
     fetch();
   }, [fetch]);
 
-  const UnitChanger = (
+  const modifiers = (
     <Select key="1" style={{ width: 200 }} defaultValue={unit} onChange={setUnit}>
       {units.map(item => {
         return (
@@ -63,18 +56,8 @@ const SiteBalance = ({ configuration, t, user }) => {
   );
 
   return (
-    <Page
-      page={t('pageMenu.stockManagement')}
-      name={t('pageNames.siteBalance')}
-      isLoading={isLoading}
-    >
-      <DataTable
-        columns={columns(t)}
-        data={data}
-        isLoading={isLoading}
-        t={t}
-        modifiers={[UnitChanger]}
-      />
+    <Page page={t('pageMenu.stockManagement')} name={t('pageNames.siteBalance')} modifiers={modifiers}>
+      <DataTable columns={columns(t)} data={data} isLoading={isLoading} t={t} />
     </Page>
   );
 };

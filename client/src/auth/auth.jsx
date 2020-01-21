@@ -1,32 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-import axios from 'axios';
 import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-
+import { useConfiguration } from '../hooks';
 import { AuthContainer } from './style';
-import { service } from '../api';
 
 export default Authenticated => {
-  const ComposedComponent = () => {
-    const [configuration, setConfiguration] = useState(null);
+  const ComposedComponent = ({ auth }) => {
+    const { config } = useConfiguration();
     const { t } = useTranslation();
-
-    useEffect(() => {
-      const authenticate = () => {
-        axios.all([service.config()]).then(
-          axios.spread(config => {
-            setConfiguration(config.data);
-          })
-        );
-      };
-
-      authenticate();
-    }, []);
 
     return (
       <AuthContainer>
-        <Authenticated t={t} configuration={configuration} user={null} />
+        <Authenticated t={t} configuration={config} user={null} />
       </AuthContainer>
     );
   };

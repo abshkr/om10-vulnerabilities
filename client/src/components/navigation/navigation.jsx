@@ -183,6 +183,8 @@ const Navigation = () => {
 
             <Menu.Item key={ROUTES.TANK_INVENTORY}>{t('pageNames.tankInventory')}</Menu.Item>
 
+            <Menu.Item key={ROUTES.PRODUCT_INVENTORY}>{t('pageNames.productInventory')}</Menu.Item>
+
             <Menu.Item key={ROUTES.TANK_STATUS}>{t('pageNames.tankStatus')}</Menu.Item>
 
             <Menu.Item key={ROUTES.PRODUCT_MOVEMENT}>{t('pageNames.productMovement')}</Menu.Item>

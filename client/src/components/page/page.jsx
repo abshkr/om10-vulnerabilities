@@ -4,7 +4,7 @@ import { PageHeader, Tag } from 'antd';
 
 import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } from './style';
 
-const Page = ({ name, page, children, modifiers }) => {
+const Page = ({ name, page, children, modifiers, icon }) => {
   const routes = [
     {
       path: 'index',
@@ -27,7 +27,10 @@ const Page = ({ name, page, children, modifiers }) => {
           title={name}
           subTitle="This is a subtitle"
           tags={<Tag color="blue">Running</Tag>}
-          avatar={{ src: 'https://avatars1.githubusercontent.com/u/8186664?s=460&v=4' }}
+          avatar={{
+            icon,
+            style: { color: '#68a4ec', backgroundColor: '#d1e3f9' }
+          }}
           breadcrumb={{ routes }}
         ></PageHeader>
 
@@ -35,7 +38,6 @@ const Page = ({ name, page, children, modifiers }) => {
       </PageHeaderContainer>
 
       <Helmet>
-        <meta charSet="utf-8" />
         <title>
           {name} ─ {page} ─ OMEGA 5000
         </title>

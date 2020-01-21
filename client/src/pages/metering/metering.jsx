@@ -10,14 +10,7 @@ import transform from './transform';
 import columns from './columns';
 import auth from '../../auth';
 
-const units = [
-  'Litres',
-  'Cubic Metre',
-  'Imperial Gallon',
-  'U.S Gallon',
-  'Imperial Barrel',
-  'U.S Barrel',
-];
+const units = ['Litres', 'Cubic Metre', 'Imperial Gallon', 'U.S Gallon', 'Imperial Barrel', 'U.S Barrel'];
 
 const Metering = ({ configuration, t }) => {
   const [data, setData] = useState([]);
@@ -33,14 +26,14 @@ const Metering = ({ configuration, t }) => {
 
           setData(payload);
           setLoading(false);
-        }),
+        })
       )
       .catch(errors => {
         setLoading(false);
         _.forEach(errors.response.data.errors, error => {
           notification.error({
             message: error.type,
-            description: error.message,
+            description: error.message
           });
         });
       });
@@ -50,7 +43,7 @@ const Metering = ({ configuration, t }) => {
     fetch();
   }, [fetch]);
 
-  const UnitChanger = (
+  const modifiers = (
     <Select key="1" style={{ width: 200 }} defaultValue={unit} onChange={setUnit}>
       {units.map(item => {
         return (
@@ -63,14 +56,8 @@ const Metering = ({ configuration, t }) => {
   );
 
   return (
-    <Page page={t('pageMenu.stockManagement')} name={t('pageNames.metering')} isLoading={isLoading}>
-      <DataTable
-        columns={columns(t, unit)}
-        data={data}
-        isLoading={isLoading}
-        t={t}
-        modifiers={[UnitChanger]}
-      />
+    <Page page={t('pageMenu.stockManagement')} name={t('pageNames.metering')} modifiers={modifiers}>
+      <DataTable columns={columns(t, unit)} data={data} isLoading={isLoading} t={t} />
     </Page>
   );
 };

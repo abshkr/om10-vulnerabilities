@@ -7,84 +7,84 @@ const columns = (configuration, t) => {
       field: 'tank_code',
       sortable: true,
       resizable: true,
-      filter: 'FuzzyFilter',
+      filter: 'FuzzyFilter'
     },
     {
       headerName: t('fields.name'),
       field: 'tank_name',
       sortable: true,
       resizable: true,
-      filter: 'FuzzyFilter',
+      filter: 'FuzzyFilter'
     },
     {
       headerName: t('fields.baseProductCode'),
       field: 'tank_base',
       sortable: true,
       resizable: true,
-      filter: 'FuzzyFilter',
+      filter: 'FuzzyFilter'
     },
     {
       headerName: t('fields.baseProductName'),
       field: 'tank_base_name',
       sortable: true,
       resizable: true,
-      filter: 'MultiFilter',
+      filter: 'MultiFilter'
     },
     {
       headerName: t('fields.productCategory'),
       field: 'tank_bclass_name',
       sortable: true,
       resizable: true,
-      filter: 'MultiFilter',
+      filter: 'MultiFilter'
     },
     {
       headerName: `${t('fields.density')} (${t('units.kgm3')})`,
       field: 'tank_density',
       sortable: true,
-      resizable: true,
+      resizable: true
     },
     {
       headerName: `${t('fields.dailyVarianceLimit')} (${t('units.volume')})`,
       field: 'tank_dtol_volume',
       sortable: true,
-      resizable: true,
+      resizable: true
     },
     {
       headerName: `${t('fields.dailyVarianceLimit')} (%)`,
       field: 'tank_dtol_percent',
       sortable: true,
-      resizable: true,
+      resizable: true
     },
     {
       headerName: `${t('fields.monthlyVarianceLimit')} (${t('units.kgm3')})`,
       field: 'tank_mtol_volume',
       sortable: true,
-      resizable: true,
+      resizable: true
     },
     {
       headerName: `${t('fields.monthlyVarianceLimit')} (%)`,
       field: 'tank_mtol_percent',
       sortable: true,
-      resizable: true,
+      resizable: true
     },
     {
       headerName: t('fields.adaptiveArmPriority'),
       field: 'tank_afc_priority',
       sortable: true,
-      resizable: true,
+      resizable: true
     },
 
     {
       headerName: t('fields.flowRate'),
       field: 'tank_max_flow',
       sortable: true,
-      resizable: true,
-    },
+      resizable: true
+    }
   ];
 
   const omitted = [];
 
-  if (!configuration.features.adaptiveFlowControl) {
+  if (!configuration?.features?.adaptiveFlowControl) {
     omitted.push('tank_afc_priority', 'tank_max_flow');
   }
 
@@ -94,4 +94,5 @@ const columns = (configuration, t) => {
 
   return payload;
 };
+
 export default columns;
