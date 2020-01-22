@@ -218,7 +218,7 @@ const paths = [
 
   {
     path: ROUTES.EXPIRY_DATES,
-    component: lazy(() => import('../pages/work-in-progress'))
+    component: lazy(() => import('../pages/expiry-dates'))
   },
 
   {
@@ -233,7 +233,7 @@ const paths = [
 
   {
     path: ROUTES.GATE_CONTROL,
-    component: lazy(() => import('../pages/work-in-progress'))
+    component: lazy(() => import('../pages/gate-control'))
   },
 
   {

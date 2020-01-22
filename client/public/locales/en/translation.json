@@ -31,10 +31,10 @@
     "totalFlowContribution": "Total Flow Contribution",
     "equipmentName": "Equipment Name",
     "baseDepot": "Base Depot",
-    "locked": "Locked?",
-    "active": "Active?",
-    "bayCheck": "Bay Check?",
-    "archived": "Archived?",
+    "locked": "Locked ?",
+    "active": "Active ?",
+    "bayCheck": "Bay Check ?",
+    "archived": "Archived ?",
     "lastModified": "Last Modified",
     "lastUsed": "Last Used",
     "equipmentType": "Equipment Type",
@@ -56,7 +56,7 @@
     "status": "Status",
     "typeDescription": "Type Description",
     "expiryDate": "Expiry Date",
-    "enabled": "Enabled?",
+    "enabled": "Enabled ?",
     "operations": "Operations",
     "activeTank": "Active Tank",
     "flowing": "Flowing",
@@ -186,7 +186,19 @@
     "drawer": "Drawer",
     "tankerCode": "Tanker Code",
     "tanker": "Tanker",
-    "equipment": "Equipment"
+    "equipment": "Equipment",
+    "gate": "Gate",
+    "deviceCode": "Device Code",
+    "deviceType": "Device Type",
+    "gateTimeCode": "Gate Timecode",
+    "gateUser": "Gate User",
+    "typeCode": "Type Code",
+    "rejectAuthorization": "Reject Authorization ?",
+    "default": "Default ?",
+    "defaultValue": "Default Value",
+    "dateTimeFormat": "Date Time Format",
+    "timeEnabled": "Time Enabled ?",
+    "totalChildRecords": "Total Child Records"
   },
 
   "pageMenu": {
@@ -282,7 +294,9 @@
     "changePassword": "Change Password",
     "filter": "Filter",
     "reset": "Reset",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "openGate": "Open Gate",
+    "openAllGates": "Open All Gates"
   },
 
   "tabColumns": {

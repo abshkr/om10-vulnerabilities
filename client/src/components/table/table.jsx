@@ -7,9 +7,6 @@ import { BooleanRenderer, LockRenderer, DateRenderer, StatusRenderer } from './r
 import { LoadingStatus } from './status';
 import { Search } from '..';
 
-import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-balham.css';
-
 import './table.css';
 
 const components = {
@@ -23,11 +20,18 @@ const components = {
   StatusRenderer
 };
 
-const Table = ({ data, onClick, columns, isLoading, onEditingFinished }) => {
+const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSelect, height }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
 
-  const onGridReady = params => {
+  const handleMultipleSelection = () => {
+    if (handleSelect) {
+      const payload = api.getSelectedRows();
+      handleSelect(payload);
+    }
+  };
+
+  const handleGridReady = params => {
     setAPI(params.api);
     params.api.sizeColumnsToFit();
   };
@@ -35,7 +39,7 @@ const Table = ({ data, onClick, columns, isLoading, onEditingFinished }) => {
   useEffect(() => {
     if (api) {
       isLoading ? api.showLoadingOverlay() : api.hideOverlay();
-      api.refreshCells();
+      api.refreshCells({ force: true });
     }
   }, [isLoading, api, data]);
 
@@ -56,16 +60,17 @@ const Table = ({ data, onClick, columns, isLoading, onEditingFinished }) => {
     >
       <Search value={value} search={setValue} isLoading={isLoading} />
 
-      <div style={{ height: 'calc(100vh - 260px)', marginTop: 5 }}>
+      <div style={{ height: `calc(100vh - 260px)`, marginTop: 5 }}>
         <AgGridReact
           columnDefs={columns}
           rowData={data}
-          onGridReady={onGridReady}
+          onGridReady={handleGridReady}
           frameworkComponents={components}
           onRowDoubleClicked={value => onClick && onClick(value.data)}
           loadingOverlayComponent="LoadingStatus"
           rowSelection="multiple"
           onCellEditingStopped={onEditingFinished}
+          onRowSelected={handleMultipleSelection}
         />
       </div>
     </div>
