@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import { getDateTimeFormat } from '../../utils';
 
-const Calendar = ({ handleChange, start, end }) => {
+const Calendar = ({ handleChange, start, end, disabled }) => {
   const dateString = getDateTimeFormat();
   const format = `${dateString} HH:mm`;
 
@@ -18,6 +18,7 @@ const Calendar = ({ handleChange, start, end }) => {
 
   return (
     <DatePicker.RangePicker
+      disabled={disabled}
       allowClear={false}
       disabledDate={disabledRange}
       style={{ marginLeft: 5 }}

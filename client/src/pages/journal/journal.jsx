@@ -1,21 +1,45 @@
 import React, { useState } from 'react';
 
+import moment from 'moment';
 import { Tabs, Radio } from 'antd';
 
 import Live from './live';
 import auth from '../../auth';
 import Historical from './historical';
-import { Page } from '../../components';
+import { Page, Calendar } from '../../components';
 import { JournalContainer } from './style';
+import { SETTINGS } from '../../constants';
 
 const Journal = ({ configuration, t }) => {
   const [selected, setSelected] = useState('1');
 
+  const [start, setStart] = useState(
+    moment()
+      .subtract(3, 'hour')
+      .format(SETTINGS.DATE_TIME_FORMAT)
+  );
+
+  const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
+
+  const setRange = (start, end) => {
+    setStart(start);
+    setEnd(end);
+  };
+
   const modifiers = (
-    <Radio.Group value={selected} buttonStyle="solid" onChange={val => setSelected(val.target.value)}>
-      <Radio.Button value="1"> {t('tabColumns.liveJournal')}</Radio.Button>
-      <Radio.Button value="2"> {t('tabColumns.historicalJournal')} </Radio.Button>
-    </Radio.Group>
+    <>
+      <Calendar handleChange={setRange} start={start} end={end} disabled={selected === '1'} />
+
+      <Radio.Group
+        style={{ marginLeft: 10 }}
+        value={selected}
+        buttonStyle="solid"
+        onChange={val => setSelected(val.target.value)}
+      >
+        <Radio.Button value="1"> {t('tabColumns.liveJournal')}</Radio.Button>
+        <Radio.Button value="2"> {t('tabColumns.historicalJournal')} </Radio.Button>
+      </Radio.Group>
+    </>
   );
 
   return (
@@ -26,7 +50,7 @@ const Journal = ({ configuration, t }) => {
             <Live configuration={configuration} t={t} />
           </Tabs.TabPane>
           <Tabs.TabPane tab={t('tabColumns.historicalJournal')} key="2">
-            <Historical configuration={configuration} t={t} />
+            <Historical configuration={configuration} t={t} start={start} end={end} />
           </Tabs.TabPane>
         </Tabs>
       </JournalContainer>

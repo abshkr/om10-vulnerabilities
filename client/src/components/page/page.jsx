@@ -25,8 +25,6 @@ const Page = ({ name, page, children, modifiers, icon }) => {
       <PageHeaderContainer>
         <PageHeader
           title={name}
-          subTitle="This is a subtitle"
-          tags={<Tag color="blue">Running</Tag>}
           avatar={{
             icon,
             style: { color: '#68a4ec', backgroundColor: '#d1e3f9' }

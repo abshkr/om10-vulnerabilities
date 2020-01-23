@@ -178,3 +178,17 @@
   font-size: 13px;
   font-weight: 600;
 }
+
+.ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  background: #68a4ec;
+  border-color: #68a4ec;
+}
+
+.ant-radio-button-wrapper:hover {
+  color: #68a4ec;
+}
+
+.ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover {
+  background: #5696e5;
+  border-color: #5696e5;
+}

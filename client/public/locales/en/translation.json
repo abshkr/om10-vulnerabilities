@@ -198,7 +198,8 @@
     "defaultValue": "Default Value",
     "dateTimeFormat": "Date Time Format",
     "timeEnabled": "Time Enabled ?",
-    "totalChildRecords": "Total Child Records"
+    "totalChildRecords": "Total Child Records",
+    "expiryDateTarget": "Expiry Date Target"
   },
 
   "pageMenu": {
@@ -331,7 +332,8 @@
 
   "divider": {
     "flags": "Flags",
-    "variances": "Variances"
+    "variances": "Variances",
+    "dateTime": "Date Time"
   },
 
   "descriptions": {
@@ -393,7 +395,8 @@
     "selectReportName": "Select Report Name",
     "selectCloseOutReportBy": "Select Closeout Report By",
     "selectSupplier": "Select Supplier",
-    "selectLockType": "Select Lock Type"
+    "selectLockType": "Select Lock Type",
+    "selectExpiryDateTarget": "Select Expiry Date Target"
   },
 
   "validate": {

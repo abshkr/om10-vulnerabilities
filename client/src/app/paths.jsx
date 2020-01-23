@@ -133,7 +133,7 @@ const paths = [
 
   {
     path: ROUTES.TRANSACTION_LIST,
-    component: lazy(() => import('../pages/work-in-progress'))
+    component: lazy(() => import('../pages/transaction-list'))
   },
 
   {

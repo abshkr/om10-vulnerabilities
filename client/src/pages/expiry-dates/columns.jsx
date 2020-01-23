@@ -1,71 +1,74 @@
 const columns = t => [
   {
     headerName: t('fields.type'),
-    field: 'hzcf_id',
-    filter: 'FuzzyFilter',
+    field: 'edt_target_code',
+    filter: 'MultiFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.typeCode'),
-    field: 'hzcf_id',
+    field: 'edt_type_code',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.typeDescription'),
-    field: 'hzcf_un_num',
+    field: 'edt_type_desc',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.enabled'),
-    field: 'hzcf_name',
-    filter: 'FuzzyFilter',
+    field: 'edt_status',
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.rejectAuthorization'),
-    field: 'hzcf_sub_risk',
-    filter: 'FuzzyFilter',
+    field: 'edt_reject',
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.default'),
-    field: 'hzcf_class',
-    filter: 'MultiFilter',
+    field: 'edt_default',
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.defaultValue'),
-    field: 'hzcf_hz_code',
-    filter: 'MultiFilter',
+    field: 'edt_def_exp_date',
+    cellRenderer: 'DateRenderer',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.dateTimeFormat'),
-    field: 'hzcf_emrg',
-    filter: 'MultiFilter',
+    field: 'edt_date_fmt',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.timeEnabled'),
-    field: 'hzcf_emrg',
-    filter: 'MultiFilter',
+    field: 'edt_time_enabled',
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.totalChildRecords'),
-    field: 'hzcf_emrg',
-    filter: 'MultiFilter',
+    field: 'child_count',
     sortable: true,
     resizable: true
   }

@@ -20,6 +20,8 @@ import * as hazchemCodes from './hazchem-codes';
 import * as fscStatus from './fsc';
 import * as allocations from './allocations';
 import * as idAssignment from './id-assignment';
+import * as EXPIRY_DATES from './expiry-dates';
+import * as TRANSACTION_LIST from './transaction-list';
 
 export {
   tanks,
@@ -44,4 +46,6 @@ export {
   fscStatus,
   allocations,
   idAssignment,
+  EXPIRY_DATES,
+  TRANSACTION_LIST
 };

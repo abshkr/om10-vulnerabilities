@@ -1,12 +1,15 @@
 import React from 'react';
 
-import { Form, Button, Tabs, Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { Form, Button, Tabs, Modal, Divider } from 'antd';
 
-import _ from 'lodash';
+import { ExpiryDateTarget, TypeCode, TypeDescription, DateTimeFormat, DefaultValue, Flags } from './fields';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, refresh, value, t, access }) => {
+const FormModal = ({ form, refresh, value, access, data }) => {
+  const { t } = useTranslation();
+
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
@@ -54,12 +57,21 @@ const FormModal = ({ form, refresh, value, t, access }) => {
     <div>
       <Form>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.general')}
-            forceRender={true}
-            key="1"
-          ></TabPane>
+          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
+            <ExpiryDateTarget form={form} value={value} />
+            <TypeCode form={form} value={value} data={data} />
+            <TypeDescription form={form} value={value} data={data} />
+
+            <Divider>{t('divider.flags')}</Divider>
+
+            <Flags form={form} value={value} />
+
+            <Divider>{t('divider.dateTime')}</Divider>
+
+            <DefaultValue form={form} value={value} />
+
+            <DateTimeFormat form={form} value={value} />
+          </TabPane>
         </Tabs>
       </Form>
 
@@ -75,10 +87,10 @@ const FormModal = ({ form, refresh, value, t, access }) => {
         disabled={value ? !access.canUpdate : !access.canCreate}
         onClick={value ? handleUpdate : handleCreate}
       >
-        {!!value ? t('operations.update') : t('operations.create')}
+        {value ? t('operations.update') : t('operations.create')}
       </Button>
 
-      {!!value && (
+      {value && (
         <Button
           shape="round"
           type="danger"
