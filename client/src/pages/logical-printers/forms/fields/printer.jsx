@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { logicalPrinters } from '../../../../api';
+import React, { useEffect } from 'react';
+
+import useSWR from 'swr';
+import { useTranslation } from 'react-i18next';
+
+import { LOGICAL_PRINTERS } from '../../../../api';
 import { Form, Select } from 'antd';
-import axios from 'axios';
 
-const Printer = ({ form, value, t }) => {
+const Printer = ({ form, value }) => {
+  const { t } = useTranslation();
+
+  const { data: payload, isValidating } = useSWR(LOGICAL_PRINTERS.PRINTERS);
+
   const { getFieldDecorator, setFieldsValue } = form;
-
-  const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
 
   const validate = (rule, input, callback) => {
     if (input === '' || !input) {
@@ -18,32 +22,20 @@ const Printer = ({ form, value, t }) => {
   };
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        prt_printer: value.prt_printer,
+        prt_printer: value.prt_printer
       });
     }
-
-    const getContext = () => {
-      axios.all([logicalPrinters.printers()]).then(
-        axios.spread(options => {
-          setOptions(options.data.records);
-          setLoading(false);
-        }),
-      );
-    };
-
-    setLoading(true);
-    getContext();
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item label={t('fields.printer')}>
       {getFieldDecorator('prt_printer', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(
         <Select
-          loading={isLoading}
+          loading={isValidating}
           showSearch
           optionFilterProp="children"
           placeholder={!value ? t('placeholder.selectPrinter') : null}
@@ -51,12 +43,12 @@ const Printer = ({ form, value, t }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {options.map((item, index) => (
+          {payload?.records.map((item, index) => (
             <Select.Option key={index} value={item.prntr}>
               {item.sys_prntr}
             </Select.Option>
           ))}
-        </Select>,
+        </Select>
       )}
     </Form.Item>
   );

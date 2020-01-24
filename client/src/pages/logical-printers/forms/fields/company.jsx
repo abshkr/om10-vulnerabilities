@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { logicalPrinters } from '../../../../api';
+import React, { useEffect } from 'react';
+
+import useSWR from 'swr';
+import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
-import axios from 'axios';
 
-const Company = ({ form, value, t }) => {
+import { LOGICAL_PRINTERS } from '../../../../api';
+
+const Company = ({ form, value }) => {
+  const { t } = useTranslation();
+
+  const { data: payload, isValidating } = useSWR(LOGICAL_PRINTERS.COMPANYS);
+
   const { getFieldDecorator, setFieldsValue } = form;
-
-  const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
 
   const validate = (rule, input, callback) => {
     if (input === '' || !input) {
@@ -18,32 +22,20 @@ const Company = ({ form, value, t }) => {
   };
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        prt_cmpy: value.prt_cmpy,
+        prt_cmpy: value.prt_cmpy
       });
     }
-
-    const getContext = () => {
-      axios.all([logicalPrinters.companys()]).then(
-        axios.spread(options => {
-          setOptions(options.data.records);
-          setLoading(false);
-        }),
-      );
-    };
-
-    setLoading(true);
-    getContext();
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item label={t('fields.company')}>
       {getFieldDecorator('prt_cmpy', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(
         <Select
-          loading={isLoading}
+          loading={isValidating}
           showSearch
           disabled={!!value}
           optionFilterProp="children"
@@ -52,12 +44,12 @@ const Company = ({ form, value, t }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {options.map((item, index) => (
+          {payload?.records.map((item, index) => (
             <Select.Option key={index} value={item.cmpy_code}>
               {item.cmpy_name}
             </Select.Option>
           ))}
-        </Select>,
+        </Select>
       )}
     </Form.Item>
   );

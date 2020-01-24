@@ -9,7 +9,7 @@ const Calendar = ({ handleChange, start, end, disabled }) => {
   const format = `${dateString} HH:mm`;
 
   const handleDateChange = dates => {
-    handleChange(dates[0].format('YYYY-MM-DD h:mm'), dates[1].format('YYYY-MM-DD h:mm'));
+    handleChange(dates[0].format('YYYY-MM-DD h:mm:ss'), dates[1].format('YYYY-MM-DD h:mm:ss'));
   };
 
   const disabledRange = current => {

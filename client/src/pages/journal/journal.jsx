@@ -2,15 +2,19 @@ import React, { useState } from 'react';
 
 import moment from 'moment';
 import { Tabs, Radio } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import Live from './live';
 import auth from '../../auth';
 import Historical from './historical';
+
 import { Page, Calendar } from '../../components';
 import { JournalContainer } from './style';
 import { SETTINGS } from '../../constants';
 
-const Journal = ({ configuration, t }) => {
+const Journal = () => {
+  const { t } = useTranslation();
+
   const [selected, setSelected] = useState('1');
 
   const [start, setStart] = useState(
@@ -47,10 +51,10 @@ const Journal = ({ configuration, t }) => {
       <JournalContainer>
         <Tabs activeKey={selected} defaultActiveKey="1" animated={false}>
           <Tabs.TabPane tab={t('tabColumns.liveJournal')} key="1">
-            <Live configuration={configuration} t={t} />
+            <Live t={t} />
           </Tabs.TabPane>
           <Tabs.TabPane tab={t('tabColumns.historicalJournal')} key="2">
-            <Historical configuration={configuration} t={t} start={start} end={end} />
+            <Historical t={t} start={start} end={end} />
           </Tabs.TabPane>
         </Tabs>
       </JournalContainer>

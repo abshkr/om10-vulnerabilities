@@ -1,15 +1,16 @@
 import React from 'react';
 
-import { Form, Button, Tabs, notification, Modal } from 'antd';
-import axios from 'axios';
-import _ from 'lodash';
+import { Form, Button, Tabs, Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import { Company, Usage, Printer } from './fields';
-import { logicalPrinters } from '../../../api';
+import auth from '../../../auth';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, refresh, value, t, data }) => {
+const FormModal = ({ form, value, data }) => {
+  const { t } = useTranslation();
+
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
@@ -19,29 +20,7 @@ const FormModal = ({ form, refresh, value, t, data }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([logicalPrinters.createLogicalPrinters(values)])
-              .then(
-                axios.spread(response => {
-                  refresh();
-
-                  Modal.destroyAll();
-                  notification.success({
-                    message: t('messages.createSuccess'),
-                    description: `${t('descriptions.createSuccess')} ${values.prt_printer}`
-                  });
-                })
-              )
-              .catch(errors => {
-                _.forEach(errors.response.data.errors, error => {
-                  notification.error({
-                    message: error.type,
-                    description: error.message
-                  });
-                });
-              });
-          }
+          onOk: () => {}
         });
       }
     });
@@ -56,57 +35,13 @@ const FormModal = ({ form, refresh, value, t, data }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([logicalPrinters.updateLogicalPrinters(values)])
-              .then(
-                axios.spread(response => {
-                  refresh();
-
-                  Modal.destroyAll();
-                  notification.success({
-                    message: t('messages.updateSuccess'),
-                    description: `${t('descriptions.updateSuccess')} ${values.prt_printer}`
-                  });
-                })
-              )
-              .catch(errors => {
-                _.forEach(errors.response.data.errors, error => {
-                  notification.error({
-                    message: error.type,
-                    description: error.message
-                  });
-                });
-              });
-          }
+          onOk: () => {}
         });
       }
     });
   };
 
-  const handleDelete = () => {
-    axios
-      .all([logicalPrinters.deleteLogicalPrinters(value)])
-      .then(
-        axios.spread(response => {
-          refresh();
-
-          Modal.destroyAll();
-          notification.success({
-            message: t('messages.deleteSuccess'),
-            description: `${t('descriptions.deleteSuccess')} ${value.prt_printer}`
-          });
-        })
-      )
-      .catch(errors => {
-        _.forEach(errors.response.data.errors, error => {
-          notification.error({
-            message: error.type,
-            description: error.message
-          });
-        });
-      });
-  };
+  const handleDelete = () => {};
 
   const showDeleteConfirm = () => {
     Modal.confirm({
@@ -129,9 +64,9 @@ const FormModal = ({ form, refresh, value, t, data }) => {
             tab={t('tabColumns.general')}
             key="1"
           >
-            <Company form={form} value={value} t={t} />
-            <Usage form={form} value={value} t={t} />
-            <Printer form={form} value={value} t={t} data={data} />
+            <Company form={form} value={value} />
+            <Usage form={form} value={value} />
+            <Printer form={form} value={value} />
           </TabPane>
         </Tabs>
       </Form>

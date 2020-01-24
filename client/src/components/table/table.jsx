@@ -57,7 +57,7 @@ const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSel
       }}
       className="ag-theme-balham"
     >
-      <Search value={value} search={setValue} isLoading={isLoading} />
+      <Search value={value} search={setValue} isLoading={isLoading && !data} />
 
       <div style={{ height: `calc(100vh - 260px)`, marginTop: 5 }}>
         <AgGridReact

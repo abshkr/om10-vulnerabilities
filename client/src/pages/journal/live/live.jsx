@@ -1,41 +1,14 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
-import _ from 'lodash';
+import React from 'react';
+import useSWR from 'swr';
+
 import columns from './columns';
-import { notification } from 'antd';
-import { journal } from '../../../api';
+import { JOURNAL } from '../../../api';
 import { DataTable } from '../../../components';
 
-const Live = ({ configuration, t }) => {
-  const [data, setData] = useState([]);
+const Live = ({ t }) => {
+  const { data: payload, isValidating } = useSWR(JOURNAL.READ, { refreshInterval: 1000 });
 
-  const fetch = useCallback(() => {
-    axios
-      .all([journal.readJournal()])
-      .then(
-        axios.spread(records => {
-          setData(records.data.records);
-        })
-      )
-      .catch(errors => {
-        _.forEach(errors.response.data.errors, error => {
-          notification.error({
-            message: error.type,
-            description: error.message
-          });
-        });
-      });
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetch();
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [fetch]);
-
-  return <DataTable columns={columns(configuration, t)} data={data} t={t} />;
+  return <DataTable columns={columns(t)} data={payload?.records} isLoading={isValidating} />;
 };
 
 export default Live;

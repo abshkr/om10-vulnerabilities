@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { logicalPrinters } from '../../../../api';
+import React, { useEffect } from 'react';
+
+import useSWR from 'swr';
+import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
-import axios from 'axios';
 
-const Usage = ({ form, value, t }) => {
+import { LOGICAL_PRINTERS } from '../../../../api';
+
+const Usage = ({ form, value }) => {
+  const { t } = useTranslation();
+
+  const { data: payload, isValidating } = useSWR(LOGICAL_PRINTERS.PRINTERS);
+
   const { getFieldDecorator, setFieldsValue } = form;
-
-  const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
 
   const validate = (rule, input, callback) => {
     if (input === '' || !input) {
@@ -18,32 +22,20 @@ const Usage = ({ form, value, t }) => {
   };
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        prt_usage_name: value.prt_usage_name,
+        prt_usage_name: value.prt_usage_name
       });
     }
-
-    const getContext = () => {
-      axios.all([logicalPrinters.usages()]).then(
-        axios.spread(options => {
-          setOptions(options.data.records);
-          setLoading(false);
-        }),
-      );
-    };
-
-    setLoading(true);
-    getContext();
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item label={t('fields.usage')}>
       {getFieldDecorator('prt_usage_name', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(
         <Select
-          loading={isLoading}
+          loading={isValidating}
           showSearch
           disabled={!!value}
           optionFilterProp="children"
@@ -52,12 +44,12 @@ const Usage = ({ form, value, t }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {options.map((item, index) => (
+          {payload?.records.map((item, index) => (
             <Select.Option key={index} value={item.use_id}>
               {item.use_name}
             </Select.Option>
           ))}
-        </Select>,
+        </Select>
       )}
     </Form.Item>
   );
