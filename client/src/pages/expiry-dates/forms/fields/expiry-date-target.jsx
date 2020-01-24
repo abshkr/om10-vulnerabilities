@@ -46,7 +46,7 @@ const ExpiryDateTarget = ({ form, value }) => {
         rules: [{ required: true, validator: validate }]
       })(
         <Select
-          disabled={value}
+          disabled={!!value}
           showSearch
           optionFilterProp="children"
           placeholder={!value ? t('placeholder.selectExpiryDateTarget') : null}

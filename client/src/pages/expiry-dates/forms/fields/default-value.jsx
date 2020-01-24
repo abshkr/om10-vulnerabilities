@@ -12,7 +12,8 @@ const DefaultValue = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        edt_def_exp_date: moment(value.edt_def_exp_date, SETTINGS.DATE_TIME_FORMAT)
+        edt_def_exp_date:
+          value.edt_def_exp_date === '' ? null : moment(value.edt_def_exp_date, SETTINGS.DATE_TIME_FORMAT)
       });
     }
   }, [value, setFieldsValue]);

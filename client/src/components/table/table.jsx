@@ -20,7 +20,7 @@ const components = {
   StatusRenderer
 };
 
-const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSelect, height }) => {
+const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSelect }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
 
@@ -38,8 +38,7 @@ const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSel
 
   useEffect(() => {
     if (api) {
-      isLoading ? api.showLoadingOverlay() : api.hideOverlay();
-      api.refreshCells({ force: true });
+      isLoading && !data ? api.showLoadingOverlay() : api.hideOverlay();
     }
   }, [isLoading, api, data]);
 

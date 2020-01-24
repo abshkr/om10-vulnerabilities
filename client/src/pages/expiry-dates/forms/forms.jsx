@@ -1,13 +1,17 @@
 import React from 'react';
 
+import axios from 'axios';
+import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Form, Button, Tabs, Modal, Divider } from 'antd';
+import { Form, Button, Tabs, Modal, Divider, notification } from 'antd';
+import _ from 'lodash';
 
 import { ExpiryDateTarget, TypeCode, TypeDescription, DateTimeFormat, DefaultValue, Flags } from './fields';
+import { EXPIRY_DATES } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, refresh, value, access, data }) => {
+const FormModal = ({ form, value, data }) => {
   const { t } = useTranslation();
 
   const handleCreate = () => {
@@ -19,7 +23,27 @@ const FormModal = ({ form, refresh, value, access, data }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {}
+          onOk: async () => {
+            await axios
+              .post(EXPIRY_DATES.CREATE, values)
+              .then(() => {
+                mutate(EXPIRY_DATES.READ);
+                Modal.destroyAll();
+
+                notification.success({
+                  message: t('messages.createSuccess'),
+                  description: `${t('descriptions.createSuccess')} `
+                });
+              })
+              .catch(errors => {
+                _.forEach(errors.response.data.errors, error => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message
+                  });
+                });
+              });
+          }
         });
       }
     });
@@ -34,13 +58,32 @@ const FormModal = ({ form, refresh, value, access, data }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {}
+          onOk: async () => {
+            await axios
+
+              .post(EXPIRY_DATES.UPDATE, values)
+              .then(() => {
+                mutate(EXPIRY_DATES.READ);
+                Modal.destroyAll();
+
+                notification.success({
+                  message: t('messages.updateSuccess'),
+                  description: `${t('descriptions.updateSuccess')}`
+                });
+              })
+              .catch(errors => {
+                _.forEach(errors.response.data.errors, error => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message
+                  });
+                });
+              });
+          }
         });
       }
     });
   };
-
-  const handleDelete = () => {};
 
   const showDeleteConfirm = () => {
     Modal.confirm({
@@ -49,7 +92,28 @@ const FormModal = ({ form, refresh, value, access, data }) => {
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
-      onOk: handleDelete
+      onOk: async () => {
+        await axios
+          .post(EXPIRY_DATES.DELETE, value)
+          .then(() => {
+            mutate(EXPIRY_DATES.READ);
+
+            Modal.destroyAll();
+
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`
+            });
+          })
+          .catch(errors => {
+            _.forEach(errors.response.data.errors, error => {
+              notification.error({
+                message: error.type,
+                description: error.message
+              });
+            });
+          });
+      }
     });
   };
 
@@ -75,16 +139,14 @@ const FormModal = ({ form, refresh, value, access, data }) => {
         </Tabs>
       </Form>
 
-      <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
+      <Button icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
         {t('operations.cancel')}
       </Button>
 
       <Button
-        shape="round"
         type="primary"
-        icon={!!value ? 'edit' : 'plus'}
+        icon={value ? 'edit' : 'plus'}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={value ? !access.canUpdate : !access.canCreate}
         onClick={value ? handleUpdate : handleCreate}
       >
         {value ? t('operations.update') : t('operations.create')}
@@ -92,12 +154,10 @@ const FormModal = ({ form, refresh, value, access, data }) => {
 
       {value && (
         <Button
-          shape="round"
           type="danger"
           icon="delete"
           style={{ float: 'right', marginRight: 5 }}
           onClick={showDeleteConfirm}
-          disabled={!access.canDelete}
         >
           {t('operations.delete')}
         </Button>

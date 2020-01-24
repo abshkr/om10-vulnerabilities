@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { createStore, applyMiddleware } from 'redux';
+
 import reduxThunk from 'redux-thunk';
 
 import { Interface, Loading } from '../components';

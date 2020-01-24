@@ -1,11 +1,11 @@
 import React from 'react';
 
+import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'antd';
 
 import { EXPIRY_DATES } from '../../api';
 import { Page, DataTable, Download } from '../../components';
-import { useAPI } from '../../hooks';
 
 import Forms from './forms';
 
@@ -13,8 +13,9 @@ import columns from './columns';
 import auth from '../../auth';
 
 const ExpiryDates = () => {
-  const { data, isLoading, refetch } = useAPI([EXPIRY_DATES.READ]);
   const { t } = useTranslation();
+
+  const { data: payload, isValidating, revalidate } = useSWR(EXPIRY_DATES.READ);
 
   const fields = columns(t);
 
@@ -28,7 +29,7 @@ const ExpiryDates = () => {
       centered: true,
       width: '50vw',
       icon: object ? 'edit' : 'form',
-      content: <Forms value={object} refetch={refetch} data={data} access={true} />,
+      content: <Forms value={object} data={payload?.records} access={true} />,
       okButtonProps: {
         style: { display: 'none' }
       }
@@ -37,11 +38,11 @@ const ExpiryDates = () => {
 
   const modifiers = (
     <>
-      <Button icon="sync" onClick={() => refetch()} loading={isLoading}>
+      <Button icon="sync" onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
-      <Download data={data} isLoading={isLoading} columns={fields} />
-      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isLoading}>
+      <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isValidating}>
         {t('operations.create')}
       </Button>
     </>
@@ -49,7 +50,7 @@ const ExpiryDates = () => {
 
   return (
     <Page page={t('pageMenu.accessControl')} name={t('pageNames.expiryDates')} modifiers={modifiers}>
-      <DataTable columns={fields} data={data?.[0].records} isLoading={isLoading} onClick={handleClick} />
+      <DataTable columns={fields} data={payload?.records} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );
 };

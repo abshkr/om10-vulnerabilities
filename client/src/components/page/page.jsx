@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { PageHeader, Tag } from 'antd';
+import { PageHeader } from 'antd';
 
 import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } from './style';
 

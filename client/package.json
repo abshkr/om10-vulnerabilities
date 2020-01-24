@@ -28,6 +28,7 @@
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
     "styled-components": "^5.0.0",
+    "swr": "^0.1.16",
     "typeface-open-sans": "0.0.75"
   },
   "scripts": {
