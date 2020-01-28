@@ -1,50 +1,56 @@
-import React, { Component } from "react";
-import { Form, Select } from "antd";
-import axios from "axios";
-import { baseProducts } from "../../../../api";
-export default class CorrectionMethod extends Component {
-  state = {
-    method: null
-  };
+import React, { useEffect, useState } from 'react';
 
-  componentDidMount() {
-    const { value, setValue } = this.props;
+import axios from 'axios';
+import { Form, Select } from 'antd';
+import { baseProducts } from '../../../../api';
 
-    axios.all([baseProducts.readBaseProductCorrectionMethods()]).then(
-      axios.spread(method => {
-        this.setState({
-          method: method.data.records
-        });
-      })
-    );
+const CorrectionMethod = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
 
-    if (!!value) {
-      setValue({
+  const [isLoading, setLoading] = useState(false);
+  const [options, setOptions] = useState([]);
+
+  useEffect(() => {
+    if (value) {
+      setFieldsValue({
         base_corr_mthd: value.base_corr_mthd
       });
     }
-  }
 
-  render() {
-    const { decorator } = this.props;
-    const { method } = this.state;
-    const { Option } = Select;
+    const getContext = () => {
+      axios.all([baseProducts.readBaseProductCorrectionMethods()]).then(
+        axios.spread(options => {
+          setOptions(options.data.records);
+          setLoading(false);
+        })
+      );
+    };
 
-    return (
-      <Form.Item label="Correction Method">
-        {decorator("base_corr_mthd", {
-          rules: [{ required: false }]
-        })(
-          <Select>
-            {!!method &&
-              method.map((item, index) => (
-                <Option key={index} value={item.compensation_id}>
-                  {item.compensation_name}
-                </Option>
-              ))}
-          </Select>
-        )}
-      </Form.Item>
-    );
-  }
-}
+    setLoading(true);
+    getContext();
+  }, [value, setFieldsValue]);
+
+  return (
+    <Form.Item label={t('fields.correctionMethod')}>
+      {getFieldDecorator('base_corr_mthd')(
+        <Select
+          loading={isLoading}
+          showSearch
+          optionFilterProp="children"
+          placeholder={!value ? t('placeholder.selectCorrectionMethod') : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {options.map((item, index) => (
+            <Select.Option key={index} value={item.compensation_id}>
+              {item.compensation_name}
+            </Select.Option>
+          ))}
+        </Select>
+      )}
+    </Form.Item>
+  );
+};
+
+export default CorrectionMethod;

@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Form, Input } from "antd";
+import React, { useEffect } from 'react';
+import { Form, Input } from 'antd';
 
 const Name = ({ form, value, t, data }) => {
   const { getFieldDecorator, setFieldsValue } = form;
@@ -13,21 +13,21 @@ const Name = ({ form, value, t, data }) => {
   }, [value, setFieldsValue]);
 
   const validate = (rule, input, callback) => {
-    if (input === "" || !input) {
-      callback(`${t("validate.set")} ─ ${t("fields.name")}`);
+    if (input === '' || !input) {
+      callback(`${t('validate.set')} ─ ${t('fields.name')}`);
     }
 
     if (input && input.length > 40) {
-      callback(`${t("placeholder.maxCharacters")}: 40 ─ ${t("descriptions.maxCharacters")}`);
+      callback(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
     callback();
   };
 
   return (
-    <Form.Item label={t("fields.name")}>
-      {getFieldDecorator("base_name", {
+    <Form.Item label={t('fields.name')}>
+      {getFieldDecorator('base_name', {
         rules: [{ required: true, validator: validate }]
-      })(<Input disabled={!!value} />)}
+      })(<Input />)}
     </Form.Item>
   );
 };

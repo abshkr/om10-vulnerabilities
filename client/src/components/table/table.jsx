@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 
 import { FuzzyFilter, MultiFilter, BooleanFilter } from './filters';
-import { BooleanRenderer, LockRenderer, DateRenderer, StatusRenderer } from './renderers';
+import { BooleanRenderer, LockRenderer, DateRenderer, StatusRenderer, TagRenderer } from './renderers';
 import { LoadingStatus } from './status';
 import { Search } from '..';
 
@@ -17,7 +17,8 @@ const components = {
   LockRenderer,
   DateRenderer,
   LoadingStatus,
-  StatusRenderer
+  StatusRenderer,
+  TagRenderer
 };
 
 const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSelect }) => {

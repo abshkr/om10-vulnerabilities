@@ -1,51 +1,53 @@
-import React, { Component } from "react";
-import { Form, Select } from "antd";
-import { baseProducts } from "../../../../api";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import { Form, Select } from 'antd';
+import { baseProducts } from '../../../../api';
+import axios from 'axios';
 
-export default class RefSpecTemp extends Component {
-  state = {
-    ref: null
-  };
+const RefSpecTemp = ({ form, value, t }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
 
-  componentDidMount() {
-    const { value, setValue } = this.props;
+  const [isLoading, setLoading] = useState(false);
+  const [options, setOptions] = useState([]);
 
-    axios.all([baseProducts.readBaseProductRefTemp()]).then(
-      axios.spread(ref => {
-        this.setState({
-          ref: ref.data.records
-        });
-      })
-    );
+  useEffect(() => {
+    setFieldsValue({
+      base_ref_temp_spec: value ? value.base_ref_temp_spec : '1'
+    });
 
-    if (!!value) {
-      setValue({
-        base_ref_temp_spec: value.base_ref_temp_spec
-      });
-    }
-  }
+    const getContext = () => {
+      axios.all([baseProducts.readBaseProductRefTemp()]).then(
+        axios.spread(options => {
+          setOptions(options.data.records);
+          setLoading(false);
+        })
+      );
+    };
 
-  render() {
-    const { decorator } = this.props;
-    const { ref } = this.state;
-    const { Option } = Select;
+    setLoading(true);
+    getContext();
+  }, [value, setFieldsValue]);
 
-    return (
-      <Form.Item label="Reference Temperature Specification">
-        {decorator("base_ref_temp_spec", {
-          rules: [{ required: false }]
-        })(
-          <Select>
-            {!!ref &&
-              ref.map((item, index) => (
-                <Option key={index} value={item.ref_temp_spec_id}>
-                  {item.ref_temp_spec_name}
-                </Option>
-              ))}
-          </Select>
-        )}
-      </Form.Item>
-    );
-  }
-}
+  return (
+    <Form.Item label={t('fields.refTempSpec')}>
+      {getFieldDecorator('base_ref_temp_spec')(
+        <Select
+          loading={isLoading}
+          showSearch
+          optionFilterProp="children"
+          placeholder={!value ? t('placeholder.selectRefTempSpec') : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {options.map((item, index) => (
+            <Select.Option key={index} value={item.ref_temp_spec_id}>
+              {item.ref_temp_spec_name}
+            </Select.Option>
+          ))}
+        </Select>
+      )}
+    </Form.Item>
+  );
+};
+
+export default RefSpecTemp;

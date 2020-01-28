@@ -312,7 +312,8 @@
     "resetPassword": "Reset Password",
     "liveJournal": "Live Journal",
     "historicalJournal": "Historical Journal",
-    "allocationPeriod": "Allocation Period"
+    "allocationPeriod": "Allocation Period",
+    "product": "Product"
   },
 
   "messages": {
@@ -396,7 +397,9 @@
     "selectCloseOutReportBy": "Select Closeout Report By",
     "selectSupplier": "Select Supplier",
     "selectLockType": "Select Lock Type",
-    "selectExpiryDateTarget": "Select Expiry Date Target"
+    "selectExpiryDateTarget": "Select Expiry Date Target",
+    "selectRefTempSpec": "Select Ref Temp Spec",
+    "selectCorrectionMethod": "Select Correction Method"
   },
 
   "validate": {

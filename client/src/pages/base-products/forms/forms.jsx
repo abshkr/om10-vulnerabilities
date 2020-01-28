@@ -1,8 +1,21 @@
 import React from 'react';
 
-import { Code, Name, Classification, Group } from './fields';
+import {
+  Code,
+  Name,
+  Classification,
+  Group,
+  Color,
+  AdaptiveArmPriority,
+  AdaptiveFlowControl,
+  DensityRange,
+  CorrectionMethod,
+  RefSpecTemp,
+  HotTempFlag
+} from './fields';
+
 import { Form, Button, Tabs, notification, Modal } from 'antd';
-import { tankerList } from '../../../api';
+import { baseProducts } from '../../../api';
 import axios from 'axios';
 
 const TabPane = Tabs.TabPane;
@@ -17,9 +30,9 @@ const FormModal = ({ form, refresh, value, t, data, configuration }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([tankerList.create(values)])
+          onOk: async () => {
+            await axios
+              .all([baseProducts.createBaseProduct(values)])
               .then(
                 axios.spread(response => {
                   refresh();
@@ -52,9 +65,9 @@ const FormModal = ({ form, refresh, value, t, data, configuration }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([tankerList.update(values)])
+          onOk: async () => {
+            await axios
+              .all([baseProducts.updateBaseProduct(values)])
               .then(
                 axios.spread(response => {
                   refresh();
@@ -80,7 +93,7 @@ const FormModal = ({ form, refresh, value, t, data, configuration }) => {
 
   const handleDelete = () => {
     axios
-      .all([tankerList.deleteTanker(value)])
+      .all([baseProducts.deleteBaseProduct(value)])
       .then(
         axios.spread(response => {
           refresh();
@@ -88,7 +101,7 @@ const FormModal = ({ form, refresh, value, t, data, configuration }) => {
           Modal.destroyAll();
           notification.success({
             message: t('messages.deleteSuccess'),
-            description: `${t('descriptions.deleteSuccess')} ${value.prt_printer}`
+            description: `${t('descriptions.deleteSuccess')}`
           });
         })
       )
@@ -107,7 +120,7 @@ const FormModal = ({ form, refresh, value, t, data, configuration }) => {
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
-      onOk: handleDelete
+      onOk: async () => await handleDelete
     });
   };
 
@@ -120,12 +133,25 @@ const FormModal = ({ form, refresh, value, t, data, configuration }) => {
             <Name form={form} value={value} t={t} data={data} />
             <Classification form={form} value={value} t={t} data={data} />
             <Group form={form} value={value} t={t} data={data} />
+            <Color form={form} value={value} t={t} data={data} />
+            <DensityRange form={form} value={value} t={t} data={data} />
           </TabPane>
 
-          {configuration.features.hotLitreCalculation && (
-            <TabPane className="ant-tab-window" tab={t('tabColumns.hotLitre')} forceRender={true} key="2">
-              <Code form={form} value={value} t={t} data={data} />
-              <Name form={form} value={value} t={t} data={data} />
+          <TabPane className="ant-tab-window" tab={t('tabColumns.product')} forceRender={true} key="2">
+            <RefSpecTemp form={form} value={value} t={t} data={data} />
+            <CorrectionMethod form={form} value={value} t={t} data={data} />
+            <HotTempFlag
+              form={form}
+              value={value}
+              t={t}
+              enabled={configuration?.features?.hotLitreCalculation}
+            />
+          </TabPane>
+
+          {configuration?.features?.adaptiveFlowControl && (
+            <TabPane className="ant-tab-window" tab={t('tabColumns.adaptiveFlow')} forceRender={true} key="3">
+              <AdaptiveArmPriority form={form} value={value} t={t} data={data} />
+              <AdaptiveFlowControl form={form} value={value} t={t} data={data} />
             </TabPane>
           )}
         </Tabs>

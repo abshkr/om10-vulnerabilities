@@ -1,43 +1,41 @@
-import React, { Component } from "react";
-import { Form, Select } from "antd";
+import React, { useEffect } from 'react';
+import { Form, Select } from 'antd';
 
-export default class HotTempFlag extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+const HotTempFlag = ({ form, value, enabled }) => {
+  const { getFieldDecorator, setFieldsValue } = form;
 
-    if (!!value) {
-      setValue({
+  const flags = [
+    {
+      value: '0',
+      name: 'Disabled'
+    },
+    {
+      value: '1',
+      name: 'Enabled'
+    }
+  ];
+
+  useEffect(() => {
+    if (value) {
+      setFieldsValue({
         base_limit_preset_ht: value.base_limit_preset_ht
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  render() {
-    const { decorator } = this.props;
-    const { Option } = Select;
-    const flags = [
-      {
-        value: "0",
-        name: "Disabled"
-      },
-      {
-        value: "1",
-        name: "Enabled"
-      }
-    ];
+  return (
+    <Form.Item label="Limit Preset Mass Quantity to Capacity">
+      {getFieldDecorator('base_limit_preset_ht')(
+        <Select disabled={!enabled}>
+          {flags.map((item, index) => (
+            <Select.Option key={index} value={item.value}>
+              {item.name}
+            </Select.Option>
+          ))}
+        </Select>
+      )}
+    </Form.Item>
+  );
+};
 
-    return (
-      <Form.Item label="Limit Preset Mass Quantity to Capacity">
-        {decorator("base_limit_preset_ht")(
-          <Select>
-            {flags.map((item, index) => (
-              <Option key={index} value={item.value}>
-                {item.name}
-              </Option>
-            ))}
-          </Select>
-        )}
-      </Form.Item>
-    );
-  }
-}
+export default HotTempFlag;

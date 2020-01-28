@@ -4,7 +4,8 @@ const columns = t => [
     field: 'base_code',
     sortable: true,
     filter: 'FuzzyFilter',
-    resizable: true
+    resizable: true,
+    pinned: 'left'
   },
   {
     headerName: t('fields.name'),
@@ -18,7 +19,8 @@ const columns = t => [
     field: 'base_color',
     sortable: true,
     filter: 'FuzzyFilter',
-    resizable: true
+    resizable: true,
+    cellRenderer: 'TagRenderer'
   },
   {
     headerName: t('fields.classId'),
@@ -31,7 +33,7 @@ const columns = t => [
     headerName: t('fields.classification'),
     field: 'base_class_desc',
     sortable: true,
-    filter: 'FuzzyFilter',
+    filter: 'MultiFilter',
     resizable: true
   },
   {
@@ -45,21 +47,20 @@ const columns = t => [
     headerName: t('fields.group'),
     field: 'base_group_name',
     sortable: true,
-    filter: 'FuzzyFilter',
+    filter: 'MultiFilter',
     resizable: true
   },
   {
     headerName: t('fields.isAdditive'),
     field: 'base_adtv',
     sortable: true,
-    filter: 'FuzzyFilter',
-    resizable: true
+    resizable: true,
+    cellRenderer: 'BooleanRenderer'
   },
   {
     headerName: t('fields.numberOfTanks'),
     field: 'base_tank_count',
     sortable: true,
-    filter: 'FuzzyFilter',
     resizable: true
   },
   {
@@ -73,28 +74,45 @@ const columns = t => [
     headerName: t('fields.baseClassMinDensity'),
     field: 'base_class_dens_lo',
     sortable: true,
-    filter: 'FuzzyFilter',
     resizable: true
   },
   {
     headerName: t('fields.baseClassMaxDensity'),
     field: 'base_class_dens_hi',
     sortable: true,
-    filter: 'FuzzyFilter',
     resizable: true
   },
   {
     headerName: t('fields.baseClassMinTemp'),
     field: 'base_class_temp_lo',
     sortable: true,
-    filter: 'FuzzyFilter',
     resizable: true
   },
   {
     headerName: t('fields.baseClassMaxTemp'),
     field: 'base_class_temp_hi',
     sortable: true,
-    filter: 'FuzzyFilter',
+    resizable: true
+  },
+  {
+    headerName: t('fields.correctionMethod'),
+    field: 'base_corr_mthd_name',
+    sortable: true,
+    filter: 'MultiFilter',
+    resizable: true
+  },
+  {
+    headerName: t('fields.refTempSpec'),
+    field: 'base_ref_temp_spec_name',
+    sortable: true,
+    filter: 'MultiFilter',
+    resizable: true
+  },
+  {
+    headerName: t('fields.hotTempFlag'),
+    field: 'base_limit_preset_ht',
+    sortable: true,
+    filter: 'MultiFilter',
     resizable: true
   }
 ];

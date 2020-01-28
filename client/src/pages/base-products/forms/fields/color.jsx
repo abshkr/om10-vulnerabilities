@@ -1,24 +1,33 @@
-import React, { Component } from "react";
-import { Form } from "antd";
-import { CompactPicker } from "react-color";
+import React, { useEffect } from 'react';
+import { Form } from 'antd';
+import { SliderPicker } from 'react-color';
 
-export default class BaseProductColor extends Component {
-  componentWillUnmount() {
-    const { value, reset } = this.props;
-    if (!!value) {
-      reset();
+const BaseProductColor = ({ form, value }) => {
+  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+
+  getFieldDecorator('base_color');
+
+  const color = getFieldValue('base_color');
+
+  const handleColorChange = value => {
+    setFieldsValue({
+      base_color: value?.hex
+    });
+  };
+
+  useEffect(() => {
+    if (value) {
+      setFieldsValue({
+        base_color: value.base_color
+      });
     }
-  }
+  }, [value, setFieldsValue, getFieldDecorator]);
 
-  render() {
-    const { change, value, color } = this.props;
+  return (
+    <Form.Item label="Base Product Color">
+      <SliderPicker color={color} onChangeComplete={handleColorChange} />
+    </Form.Item>
+  );
+};
 
-    return (
-      <div style={{ height: 200 }}>
-        <Form.Item label="Base Product Color">
-          <CompactPicker color={!!color ? color : value.base_color} onChangeComplete={value => change(value.hex)} />
-        </Form.Item>
-      </div>
-    );
-  }
-}
+export default BaseProductColor;

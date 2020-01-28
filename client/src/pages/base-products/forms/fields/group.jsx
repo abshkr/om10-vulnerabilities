@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-import axios from "axios";
-import { Form, Select } from "antd";
-import { baseProducts } from "../../../../api";
+import axios from 'axios';
+import { Form, Select } from 'antd';
+import { baseProducts } from '../../../../api';
 
 const Group = ({ form, value, t }) => {
   const { getFieldDecorator, setFieldsValue } = form;
@@ -31,15 +31,16 @@ const Group = ({ form, value, t }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t("fields.group")}>
-      {getFieldDecorator("base_prod_group")(
+    <Form.Item label={t('fields.group')}>
+      {getFieldDecorator('base_prod_group')(
         <Select
           loading={isLoading}
-          disabled={!!value}
           showSearch
           optionFilterProp="children"
-          placeholder={!value ? t("placeholder.selectGroup") : null}
-          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          placeholder={!value ? t('placeholder.selectGroup') : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
         >
           {options.map((item, index) => (
             <Select.Option key={index} value={item.pgr_code}>
