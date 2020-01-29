@@ -1,66 +1,47 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React from 'react';
 
-import axios from 'axios';
-import { Modal, notification } from 'antd';
+import { Button } from 'antd';
+import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
 
-import { Page, DataTable } from '../../components';
-import { area } from '../../api';
+import { Page, DataTable, FormModal, Download } from '../../components';
+import { AREA } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 
-const Area = ({ configuration, t }) => {
-  const [data, setData] = useState([]);
-  const [isLoading, setLoading] = useState(true);
+const Area = () => {
+  const { t } = useTranslation();
 
-  const handleClick = object => {
-    Modal.info({
-      title: !!object
-        ? `${t('operations.editing')} (${object.area_k} / ${object.area_name})`
-        : `${t('operations.create')}`,
-      centered: true,
-      icon: !!object ? 'edit' : 'form',
-      width: '40vw',
-      content: <Forms refresh={fetch} value={object} t={t} data={data} />,
-      okButtonProps: {
-        style: { display: 'none' },
-      },
+  const { data: payload, isValidating, revalidate } = useSWR(AREA.READ);
+
+  const fields = columns(t);
+
+  const handleClick = value => {
+    FormModal({
+      value,
+      form: <Forms value={value} data={payload} />,
+      id: 'test',
+      name: 'test',
+      t
     });
   };
 
-  const fetch = useCallback(() => {
-    setLoading(true);
-    axios
-      .all([area.readArea()])
-      .then(
-        axios.spread(response => {
-          setLoading(false);
-          setData(response.data.records);
-        }),
-      )
-      .catch(error => {
-        setLoading(false);
-        notification.error({
-          message: error.message,
-          description: t('descriptions.requestFailed'),
-        });
-      });
-  }, [t]);
-
-  useEffect(() => {
-    fetch();
-  }, [fetch]);
+  const modifiers = (
+    <>
+      <Button icon="sync" onClick={() => revalidate()} loading={isValidating}>
+        {t('operations.refresh')}
+      </Button>
+      <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isValidating}>
+        {t('operations.create')}
+      </Button>
+    </>
+  );
 
   return (
-    <Page page={t('pageMenu.accessControl')} name={t('pageNames.area')} isLoading={isLoading}>
-      <DataTable
-        t={t}
-        columns={columns(t)}
-        data={data}
-        isLoading={isLoading}
-        click={handleClick}
-        create
-      />
+    <Page page={t('pageMenu.accessControl')} name={t('pageNames.area')} modifiers={modifiers}>
+      <DataTable columns={fields} data={payload?.records} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );
 };

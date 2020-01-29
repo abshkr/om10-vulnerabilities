@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import axios from 'axios';
 import { Form, Select } from 'antd';
-import { baseProducts } from '../../../../api';
+import { BASE_PRODUCTS } from '../../../../api';
 
 const CorrectionMethod = ({ form, value, t }) => {
   const { getFieldDecorator, setFieldsValue } = form;
@@ -18,7 +18,7 @@ const CorrectionMethod = ({ form, value, t }) => {
     }
 
     const getContext = () => {
-      axios.all([baseProducts.readBaseProductCorrectionMethods()]).then(
+      axios.all([BASE_PRODUCTS.readBaseProductCorrectionMethods()]).then(
         axios.spread(options => {
           setOptions(options.data.records);
           setLoading(false);

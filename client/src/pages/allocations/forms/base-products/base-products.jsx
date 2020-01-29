@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { notification } from 'antd';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
-import _ from 'lodash';
 
 import columns from './columns';
-import { allocations } from '../../../../api';
+import { ALLOCATIONS } from '../../../../api';
+
 import { DataTable } from '../../../../components';
 
-const BaseProducts = ({ form, t, value }) => {
+const BaseProducts = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true);
 
@@ -17,21 +19,15 @@ const BaseProducts = ({ form, t, value }) => {
     setLoading(true);
 
     axios
-      .all([allocations.items(value)])
+      .post(ALLOCATIONS.ITEMS, value)
       .then(
         axios.spread(payload => {
           setData(payload.data.records);
           setLoading(false);
-        }),
+        })
       )
       .catch(errors => {
         setLoading(false);
-        _.forEach(errors.response.data.errors, error => {
-          notification.error({
-            message: error.type,
-            description: error.message,
-          });
-        });
       });
   }, [value]);
 
@@ -43,7 +39,7 @@ const BaseProducts = ({ form, t, value }) => {
     setData(payload);
 
     setFieldsValue({
-      alloc_items: payload,
+      alloc_items: payload
     });
   };
 
@@ -59,8 +55,8 @@ const BaseProducts = ({ form, t, value }) => {
       data={data}
       isLoading={isLoading}
       t={t}
-      height="37vh"
       onEditingFinished={handleEdit}
+      height={350}
     />
   );
 };

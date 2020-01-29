@@ -1,17 +1,4 @@
-import axios from 'axios';
-
-export function updateArea(payload) {
-  return axios.post(`/api/pages/area/update.php`, payload);
-}
-
-export function createArea(payload) {
-  return axios.post(`/api/pages/area/create.php`, payload);
-}
-
-export function deleteArea(payload) {
-  return axios.post(`/api/pages/area/delete.php`, payload);
-}
-
-export function readArea() {
-  return axios.get(`/api/pages/area/read.php`);
-}
+export const READ = '/api/pages/area/read.php';
+export const CREATE = '/api/pages/area/create.php';
+export const UPDATE = '/api/pages/area/update.php';
+export const DELETE = '/api/pages/area/delete.php';

@@ -213,7 +213,7 @@ const paths = [
 
   {
     path: ROUTES.ROLE_ACCESS_MANAGEMENT,
-    component: lazy(() => import('../pages/work-in-progress'))
+    component: lazy(() => import('../pages/role-access-management'))
   },
 
   {
@@ -318,7 +318,7 @@ const paths = [
 
   {
     path: ROUTES.ADAPTIVE_FLOW_CONTROL,
-    component: lazy(() => import('../pages/work-in-progress'))
+    component: lazy(() => import('../pages/adaptive-flow-control'))
   },
 
   {

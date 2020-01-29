@@ -10,6 +10,7 @@ import Tank from './tank';
 import Search from './search';
 import NavBar from './nav-bar';
 import Interface from './interface';
+import FormModal from './form-modal';
 
 export {
   Expiry,
@@ -23,5 +24,6 @@ export {
   Tank,
   Search,
   NavBar,
-  Interface
+  Interface,
+  FormModal
 };

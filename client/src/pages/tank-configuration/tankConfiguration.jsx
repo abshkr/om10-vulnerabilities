@@ -9,7 +9,7 @@ import Forms from './forms';
 
 import transform from './transform';
 
-import { tanks, baseProducts } from '../../api';
+import { tanks, BASE_PRODUCTS } from '../../api';
 import { Page, DataTable, Download } from '../../components';
 import { authLevel } from '../../utils';
 import auth from '../../auth';
@@ -49,7 +49,7 @@ const TankConfiguration = ({ configuration, t, user }) => {
   const fetch = useCallback(() => {
     setLoading(true);
     axios
-      .all([tanks.readTanks(), baseProducts.readBaseProduct()])
+      .all([tanks.readTanks(), BASE_PRODUCTS.readBaseProduct()])
       .then(
         axios.spread(tanks => {
           const transformed = transform(tanks.data.records);

@@ -4,7 +4,6 @@ import { Form, Button, Tabs, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { Company, Usage, Printer } from './fields';
-import auth from '../../../auth';
 
 const TabPane = Tabs.TabPane;
 

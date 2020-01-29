@@ -1,72 +1,53 @@
 import React, { useState, useEffect } from 'react';
 
-import _ from 'lodash';
-import axios from 'axios';
 import { Table } from 'antd';
+import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
 
-import auth from '../../auth';
-import columns from './columns';
-import FlowRates from './flow-rates';
+import { BASE_PRODUCTS, ADAPTIVE_FLOW_CONTROL } from '../../api';
+import { Page } from '../../components';
+
 import generator from './generator';
-import search from '../../utils/search';
+import FlowRates from './flow-rates';
 
-import { baseProducts, adaptiveFlow } from '../../api';
-import { Page, Search, Container } from '../../components';
+import columns from './columns';
+import auth from '../../auth';
 
 import './adaptive-flow-control.css';
 
-const AdaptiveFlowControl = ({ configuration, t }) => {
+const AdaptiveFlowControl = () => {
+  const { t } = useTranslation();
   const [data, setData] = useState([]);
-  const [value, setValue] = useState('');
-  const [totalFlow, setTotalFLow] = useState(0);
-  const [isLoading, setLoading] = useState(true);
-  const [filtered, setFiltered] = useState(null);
 
-  const handleSearch = value => {
-    setFiltered(search(value, data));
-    setValue(value);
-  };
+  const { data: baseProducts } = useSWR(BASE_PRODUCTS.READ, { refreshInterval: 1000 });
+  const { data: flowRate } = useSWR(ADAPTIVE_FLOW_CONTROL.READ, { refreshInterval: 1000 });
+  const { data: currentRate } = useSWR(ADAPTIVE_FLOW_CONTROL.CURRENT_FLOW, { refreshInterval: 1000 });
+
+  const isLoading = !baseProducts || !flowRate || !currentRate;
 
   useEffect(() => {
-    const fetch = setInterval(() => {
-      axios
-        .all([
-          baseProducts.readBaseProduct(),
-          adaptiveFlow.readFlowRate(),
-          adaptiveFlow.readTankCurrentFlow(),
-        ])
-        .then(
-          axios.spread((baseProducts, flowRate, currentFlow) => {
-            setLoading(false);
-            setTotalFLow(_.sumBy(flowRate.data, 'current_flow_rate'));
-            setData(generator(baseProducts.data.records, flowRate.data.records, currentFlow.data));
-          }),
-        );
-    }, 1000);
-    return () => clearInterval(fetch);
-  }, []);
-
-  const results = filtered ? filtered : data;
+    if (!isLoading) {
+      const payload = generator(baseProducts?.records, flowRate?.records, currentRate);
+      setData(payload);
+    }
+  }, [isLoading, flowRate, currentRate, baseProducts]);
 
   return (
     <Page page={t('pageMenu.operations')} name={t('pageNames.adaptiveFlow')} block={true}>
-      <Container>
-        <Search value={value} search={handleSearch} />
-        <Table
-          size="middle"
-          dataSource={results}
-          rowKey="baseCode"
-          bordered
-          loading={isLoading}
-          columns={columns(results, t)}
-          expandedRowRender={tank => FlowRates(tank, t)}
-          footer={() => (
-            <span style={{ textAlign: 'center' }}>
-              {t('descriptions.totalFlow')}: {totalFlow} {t('units.lpm')}{' '}
-            </span>
-          )}
-        />
-      </Container>
+      <Table
+        size="middle"
+        dataSource={data}
+        rowKey="baseCode"
+        bordered
+        loading={false}
+        columns={columns(data, t)}
+        expandedRowRender={tank => FlowRates(tank, t)}
+        footer={() => (
+          <span style={{ textAlign: 'center' }}>
+            {t('descriptions.totalFlow')}: {0} {t('units.lpm')}{' '}
+          </span>
+        )}
+      />
     </Page>
   );
 };

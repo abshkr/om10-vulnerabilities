@@ -1,27 +1,18 @@
 import React, { Suspense } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
-import { createStore, applyMiddleware } from 'redux';
-
-import reduxThunk from 'redux-thunk';
 
 import { Interface, Loading } from '../components';
 import { ROUTES } from '../constants';
-import reducers from '../reducers';
+
 import paths from './paths';
+
+import { authStore } from '../stores';
 
 /**
  * @description
  * Creating main redux store to authenticate our credentials
  */
-
-const store = createStore(
-  reducers,
-  {
-    auth: { authenticated: sessionStorage.getItem('token') }
-  },
-  applyMiddleware(reduxThunk)
-);
 
 /**
  * @description
@@ -32,7 +23,7 @@ const store = createStore(
  */
 
 const App = () => (
-  <Provider store={store}>
+  <Provider store={authStore}>
     <BrowserRouter>
       <Interface>
         <Suspense fallback={<Loading />}>

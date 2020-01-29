@@ -1,16 +1,20 @@
 import React from 'react';
 
-import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
-import axios from 'axios';
 import _ from 'lodash';
+import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
+import { mutate } from 'swr';
 
 import { Type, Company, Supplier, LockType } from './fields';
 import BaseProducts from './base-products';
-import { allocations } from '../../../api';
+import { ALLOCATIONS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, refresh, value, t, data, access }) => {
+const FormModal = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
@@ -20,29 +24,27 @@ const FormModal = ({ form, refresh, value, t, data, access }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([allocations.create(values)])
-              .then(
-                axios.spread(response => {
-                  refresh();
+          onOk: async () => {
+            await axios
+              .post(ALLOCATIONS.CREATE, values)
+              .then(() => {
+                mutate(ALLOCATIONS.READ);
+                Modal.destroyAll();
 
-                  Modal.destroyAll();
-                  notification.success({
-                    message: t('messages.createSuccess'),
-                    description: `${t('descriptions.createSuccess')} ${values.eqpt_code}`,
-                  });
-                }),
-              )
+                notification.success({
+                  message: t('messages.createSuccess'),
+                  description: `${t('descriptions.createSuccess')} `
+                });
+              })
               .catch(errors => {
                 _.forEach(errors.response.data.errors, error => {
                   notification.error({
                     message: error.type,
-                    description: error.message,
+                    description: error.message
                   });
                 });
               });
-          },
+          }
         });
       }
     });
@@ -57,56 +59,31 @@ const FormModal = ({ form, refresh, value, t, data, access }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([allocations.update(values)])
-              .then(
-                axios.spread(response => {
-                  refresh();
+          onOk: async () => {
+            await axios
 
-                  Modal.destroyAll();
-                  notification.success({
-                    message: t('messages.updateSuccess'),
-                    description: `${t('descriptions.updateSuccess')} ${values.eqpt_code}`,
-                  });
-                }),
-              )
+              .post(ALLOCATIONS.UPDATE, values)
+              .then(() => {
+                mutate(ALLOCATIONS.READ);
+                Modal.destroyAll();
+
+                notification.success({
+                  message: t('messages.updateSuccess'),
+                  description: `${t('descriptions.updateSuccess')}`
+                });
+              })
               .catch(errors => {
                 _.forEach(errors.response.data.errors, error => {
                   notification.error({
                     message: error.type,
-                    description: error.message,
+                    description: error.message
                   });
                 });
               });
-          },
+          }
         });
       }
     });
-  };
-
-  const handleDelete = () => {
-    axios
-      .all([allocations.remove(value)])
-      .then(
-        axios.spread(response => {
-          refresh();
-
-          Modal.destroyAll();
-          notification.success({
-            message: t('messages.deleteSuccess'),
-            description: `${t('descriptions.deleteSuccess')} ${value.eqpt_code}`,
-          });
-        }),
-      )
-      .catch(errors => {
-        _.forEach(errors.response.data.errors, error => {
-          notification.error({
-            message: error.type,
-            description: error.message,
-          });
-        });
-      });
   };
 
   const showDeleteConfirm = () => {
@@ -116,7 +93,28 @@ const FormModal = ({ form, refresh, value, t, data, access }) => {
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
-      onOk: handleDelete,
+      onOk: async () => {
+        await axios
+          .post(ALLOCATIONS.DELETE, value)
+          .then(() => {
+            mutate(ALLOCATIONS.READ);
+
+            Modal.destroyAll();
+
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`
+            });
+          })
+          .catch(errors => {
+            _.forEach(errors.response.data.errors, error => {
+              notification.error({
+                message: error.type,
+                description: error.message
+              });
+            });
+          });
+      }
     });
   };
 
@@ -124,20 +122,15 @@ const FormModal = ({ form, refresh, value, t, data, access }) => {
     <div>
       <Form>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.general')}
-            forceRender={true}
-            key="1"
-          >
+          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
             <div style={{ display: 'flex', height: '100%' }}>
               <div style={{ width: '25%' }}>
-                <Type form={form} value={value} t={t} />
-                <Company form={form} value={value} t={t} />
-                <Supplier form={form} value={value} t={t} />
-                <LockType form={form} value={value} t={t} />
+                <Type form={form} value={value} />
+                <Company form={form} value={value} />
+                <Supplier form={form} value={value} />
+                <LockType form={form} value={value} />
 
-                {!!value && (
+                {value && (
                   <Button type="primary" icon="reload" style={{ width: '100%', marginTop: 20 }}>
                     {t('operations.reset')}
                   </Button>
@@ -163,12 +156,7 @@ const FormModal = ({ form, refresh, value, t, data, access }) => {
         </Tabs>
       </Form>
 
-      <Button
-        shape="round"
-        icon="close"
-        style={{ float: 'right' }}
-        onClick={() => Modal.destroyAll()}
-      >
+      <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
         {t('operations.cancel')}
       </Button>
 
@@ -177,7 +165,6 @@ const FormModal = ({ form, refresh, value, t, data, access }) => {
         type="primary"
         icon={!!value ? 'edit' : 'plus'}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={!!value ? !access.canUpdate : !access.canCreate}
         onClick={!!value ? handleUpdate : handleCreate}
       >
         {!!value ? t('operations.update') : t('operations.create')}
@@ -190,7 +177,6 @@ const FormModal = ({ form, refresh, value, t, data, access }) => {
           icon="delete"
           style={{ float: 'right', marginRight: 5 }}
           onClick={showDeleteConfirm}
-          disabled={!access.canDelete}
         >
           {t('operations.delete')}
         </Button>

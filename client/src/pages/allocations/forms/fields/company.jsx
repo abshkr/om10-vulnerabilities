@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
-import { allocations } from '../../../../api';
+import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
-import axios from 'axios';
+import useSWR from 'swr';
 
-const Company = ({ form, value, t }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+import { ALLOCATIONS } from '../../../../api';
 
-  const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
+const Company = ({ form, value }) => {
+  const { t } = useTranslation();
+
+  const { data: options, isValidating } = useSWR(ALLOCATIONS.CUSTOMERS);
 
   const validate = (rule, input, callback) => {
     if (input === '' || !input) {
@@ -18,33 +19,23 @@ const Company = ({ form, value, t }) => {
     callback();
   };
 
+  const { getFieldDecorator, setFieldsValue } = form;
+
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        alloc_cmpycode: value.alloc_cmpycode,
+        alloc_cmpycode: value.alloc_cmpycode
       });
     }
-
-    const getContext = () => {
-      axios.all([allocations.customers()]).then(
-        axios.spread(options => {
-          setOptions(options.data.records);
-          setLoading(false);
-        }),
-      );
-    };
-
-    setLoading(true);
-    getContext();
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item label={t('fields.company')}>
       {getFieldDecorator('alloc_cmpycode', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(
         <Select
-          loading={isLoading}
+          loading={isValidating}
           disabled={!!value}
           showSearch
           optionFilterProp="children"
@@ -53,12 +44,12 @@ const Company = ({ form, value, t }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {options.map((item, index) => (
+          {options?.records.map((item, index) => (
             <Select.Option key={index} value={item.cmpy_code}>
               {item.cmpy_name}
             </Select.Option>
           ))}
-        </Select>,
+        </Select>
       )}
     </Form.Item>
   );

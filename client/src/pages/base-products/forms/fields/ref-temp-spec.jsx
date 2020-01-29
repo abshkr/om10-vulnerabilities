@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Select } from 'antd';
-import { baseProducts } from '../../../../api';
+import { BASE_PRODUCTS } from '../../../../api';
 import axios from 'axios';
 
 const RefSpecTemp = ({ form, value, t }) => {
@@ -15,7 +15,7 @@ const RefSpecTemp = ({ form, value, t }) => {
     });
 
     const getContext = () => {
-      axios.all([baseProducts.readBaseProductRefTemp()]).then(
+      axios.all([BASE_PRODUCTS.readBaseProductRefTemp()]).then(
         axios.spread(options => {
           setOptions(options.data.records);
           setLoading(false);

@@ -5,28 +5,25 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { Page, DataTable, Download, FormModal } from '../../components';
-import { ALLOCATIONS } from '../../api';
-
-import Forms from './forms';
+import { ROLE_ACCESS_MANAGEMENT } from '../../api';
 
 import columns from './columns';
 import auth from '../../auth';
 
-const Allocations = () => {
+const RoleAccessManagement = () => {
   const { t } = useTranslation();
 
-  const { data: payload, isValidating, revalidate } = useSWR(ALLOCATIONS.READ);
+  const { data: payload, isValidating, revalidate } = useSWR(ROLE_ACCESS_MANAGEMENT.READ);
 
   const fields = columns(t);
 
   const handleClick = value => {
     FormModal({
       value,
-      form: <Forms value={value} data={payload} />,
+      form: <div />,
       id: 'test',
       name: 'test',
-      t,
-      width: '90vw'
+      t
     });
   };
 
@@ -43,10 +40,10 @@ const Allocations = () => {
   );
 
   return (
-    <Page page={t('pageMenu.gantry')} name={t('pageNames.allocations')} modifiers={modifiers}>
+    <Page page={t('pageMenu.accessControl')} name={t('pageNames.roleAccessManagement')} modifiers={modifiers}>
       <DataTable columns={fields} data={payload?.records} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );
 };
 
-export default auth(Allocations);
+export default auth(RoleAccessManagement);

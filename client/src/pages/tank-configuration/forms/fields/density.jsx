@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { baseProducts } from '../../../../api';
+import { BASE_PRODUCTS } from '../../../../api';
 import { Form, Input } from 'antd';
 import axios from 'axios';
 import _ from 'lodash';
@@ -37,7 +37,7 @@ const Density = ({ form, value, t, product }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tank_density: value.tank_density,
+        tank_density: value.tank_density
       });
     }
   }, [value, setFieldsValue]);
@@ -45,7 +45,7 @@ const Density = ({ form, value, t, product }) => {
   useEffect(() => {
     if (product) {
       const getContext = () => {
-        axios.all([baseProducts.readBaseProduct()]).then(
+        axios.all([BASE_PRODUCTS.readBaseProduct()]).then(
           axios.spread(products => {
             const match = _.find(products.data.records, base => {
               return base.base_code === product;
@@ -57,7 +57,7 @@ const Density = ({ form, value, t, product }) => {
             }
 
             setLoading(false);
-          }),
+          })
         );
       };
       setLoading(true);
@@ -71,7 +71,7 @@ const Density = ({ form, value, t, product }) => {
   return (
     <Form.Item label={t('fields.density')}>
       {getFieldDecorator('tank_density', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(<Input disabled={disabled} addonAfter={affix} />)}
     </Form.Item>
   );

@@ -15,7 +15,7 @@ import {
 } from './fields';
 
 import { Form, Button, Tabs, notification, Modal } from 'antd';
-import { baseProducts } from '../../../api';
+import { BASE_PRODUCTS } from '../../../api';
 import axios from 'axios';
 
 const TabPane = Tabs.TabPane;
@@ -32,7 +32,7 @@ const FormModal = ({ form, refresh, value, t, data, configuration }) => {
           centered: true,
           onOk: async () => {
             await axios
-              .all([baseProducts.createBaseProduct(values)])
+              .all([BASE_PRODUCTS.createBaseProduct(values)])
               .then(
                 axios.spread(response => {
                   refresh();
@@ -67,7 +67,7 @@ const FormModal = ({ form, refresh, value, t, data, configuration }) => {
           centered: true,
           onOk: async () => {
             await axios
-              .all([baseProducts.updateBaseProduct(values)])
+              .all([BASE_PRODUCTS.updateBaseProduct(values)])
               .then(
                 axios.spread(response => {
                   refresh();
@@ -93,7 +93,7 @@ const FormModal = ({ form, refresh, value, t, data, configuration }) => {
 
   const handleDelete = () => {
     axios
-      .all([baseProducts.deleteBaseProduct(value)])
+      .all([BASE_PRODUCTS.deleteBaseProduct(value)])
       .then(
         axios.spread(response => {
           refresh();

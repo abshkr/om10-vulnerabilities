@@ -5,7 +5,7 @@ import Forms from './forms';
 import auth from '../../auth';
 import columns from './columns';
 
-import { baseProducts } from '../../api';
+import { BASE_PRODUCTS } from '../../api';
 import { Modal, notification, Button } from 'antd';
 import { Page, DataTable, Download } from '../../components';
 
@@ -33,7 +33,7 @@ const BaseProducts = ({ configuration, t }) => {
   const fetch = useCallback(() => {
     setLoading(true);
     axios
-      .all([baseProducts.readBaseProduct()])
+      .all([BASE_PRODUCTS.readBaseProduct()])
       .then(
         axios.spread(response => {
           setLoading(false);

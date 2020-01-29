@@ -24,6 +24,15 @@ export const login = (values, callback) => async dispatch => {
   }
 };
 
+export const update = () => async dispatch => {
+  const rand = Math.random()
+    .toString(36)
+    .substring(7);
+
+  dispatch({ type: AUTHORIZED, payload: rand });
+  sessionStorage.setItem('token', rand);
+};
+
 export const signout = () => {
   sessionStorage.removeItem('token');
 

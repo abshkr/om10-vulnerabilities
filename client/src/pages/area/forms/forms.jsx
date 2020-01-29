@@ -1,37 +1,43 @@
-import React from "react";
-import axios from "axios";
-import { area } from "../../../api";
-import { Area, AreaName } from "./fields";
-import { Form, Button, Tabs, notification, Modal } from "antd";
+import React from 'react';
+import axios from 'axios';
 
-const FormModal = ({ form, refresh, value, t, data }) => {
+import { useTranslation } from 'react-i18next';
+import { mutate } from 'swr';
+
+import { AREA } from '../../../api';
+import { Area, AreaName } from './fields';
+import { Form, Button, Tabs, notification, Modal } from 'antd';
+
+const FormModal = ({ form, value, data }) => {
+  const { t } = useTranslation();
+
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
         Modal.confirm({
-          title: t("prompts.create"),
-          okText: t("operations.yes"),
-          okType: "primary",
-          cancelText: t("operations.no"),
+          title: t('prompts.create'),
+          okText: t('operations.yes'),
+          okType: 'primary',
+          cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([area.createArea(values)])
+          onOk: async () => {
+            await axios
+              .post(AREA.CREATE)
               .then(
                 axios.spread(response => {
-                  refresh();
+                  mutate(AREA.READ);
 
                   Modal.destroyAll();
                   notification.success({
-                    message: t("messages.createSuccess"),
-                    description: t("messages.createSuccess")
+                    message: t('messages.createSuccess'),
+                    description: t('messages.createSuccess')
                   });
                 })
               )
               .catch(error => {
                 notification.error({
                   message: error.message,
-                  description: t("messages.createFailed")
+                  description: t('descriptions.createFailed')
                 });
               });
           }
@@ -44,29 +50,29 @@ const FormModal = ({ form, refresh, value, t, data }) => {
     form.validateFields((err, values) => {
       if (!err) {
         Modal.confirm({
-          title: t("prompts.update"),
-          okText: t("operations.yes"),
-          okType: "primary",
-          cancelText: t("operations.no"),
+          title: t('prompts.update'),
+          okText: t('operations.yes'),
+          okType: 'primary',
+          cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([area.updateArea(values)])
+          onOk: async () => {
+            await axios
+              .post(AREA.UPDATE)
               .then(
                 axios.spread(response => {
-                  refresh();
+                  mutate(AREA.READ);
 
                   Modal.destroyAll();
                   notification.success({
-                    message: t("messages.updateSuccess"),
-                    description: t("messages.updateSuccess")
+                    message: t('messages.updateSuccess'),
+                    description: t('messages.updateSuccess')
                   });
                 })
               )
               .catch(error => {
                 notification.error({
                   message: error.message,
-                  description: t("messages.updateFailed")
+                  description: t('descriptions.updateFailed')
                 });
               });
           }
@@ -75,36 +81,33 @@ const FormModal = ({ form, refresh, value, t, data }) => {
     });
   };
 
-  const handleDelete = () => {
-    axios
-      .all([area.deleteArea(value)])
-      .then(
-        axios.spread(response => {
-          refresh();
-
-          Modal.destroyAll();
-          notification.success({
-            message: t("messages.deleteSuccess"),
-            description: `${t("descriptions.deleteSuccess")} ${value.prt_printer}`
-          });
-        })
-      )
-      .catch(error => {
-        notification.error({
-          message: error.message,
-          description: t("descriptions.deleteFailed")
-        });
-      });
-  };
-
   const showDeleteConfirm = () => {
     Modal.confirm({
-      title: t("prompts.delete"),
-      okText: t("operations.yes"),
-      okType: "danger",
-      cancelText: t("operations.no"),
+      title: t('prompts.delete'),
+      okText: t('operations.yes'),
+      okType: 'danger',
+      cancelText: t('operations.no'),
       centered: true,
-      onOk: handleDelete
+      onOk: async () => {
+        await axios
+          .post(AREA.DELETE)
+          .then(
+            axios.spread(response => {
+              mutate(AREA.READ);
+              Modal.destroyAll();
+              notification.success({
+                message: t('messages.deleteSuccess'),
+                description: `${t('descriptions.deleteSuccess')}`
+              });
+            })
+          )
+          .catch(error => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.deleteFailed')
+            });
+          });
+      }
     });
   };
 
@@ -112,7 +115,7 @@ const FormModal = ({ form, refresh, value, t, data }) => {
 
   return (
     <div>
-      <Form style={{ height: "30vh" }}>
+      <Form style={{ height: '30vh' }}>
         <Tabs defaultActiveKey="1">
           <TabPane tab="General" key="1">
             <Area form={form} value={value} t={t} data={data} />
@@ -121,23 +124,29 @@ const FormModal = ({ form, refresh, value, t, data }) => {
         </Tabs>
       </Form>
 
-      <Button shape="round" icon="close" style={{ float: "right" }} onClick={() => Modal.destroyAll()}>
-        {t("operations.cancel")}
+      <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
+        {t('operations.cancel')}
       </Button>
 
       <Button
         shape="round"
         type="primary"
-        icon={!!value ? "edit" : "plus"}
-        style={{ float: "right", marginRight: 5 }}
+        icon={!!value ? 'edit' : 'plus'}
+        style={{ float: 'right', marginRight: 5 }}
         onClick={!!value ? handleUpdate : handleCreate}
       >
-        {!!value ? t("operations.update") : t("operations.create")}
+        {!!value ? t('operations.update') : t('operations.create')}
       </Button>
 
       {!!value && (
-        <Button shape="round" type="danger" icon="delete" style={{ float: "right", marginRight: 5 }} onClick={showDeleteConfirm}>
-          {t("operations.delete")}
+        <Button
+          shape="round"
+          type="danger"
+          icon="delete"
+          style={{ float: 'right', marginRight: 5 }}
+          onClick={showDeleteConfirm}
+        >
+          {t('operations.delete')}
         </Button>
       )}
     </div>

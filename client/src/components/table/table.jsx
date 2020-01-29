@@ -21,7 +21,7 @@ const components = {
   TagRenderer
 };
 
-const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSelect }) => {
+const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSelect, height }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
 
@@ -60,7 +60,7 @@ const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSel
     >
       <Search value={value} search={setValue} isLoading={isLoading && !data} />
 
-      <div style={{ height: `calc(100vh - 260px)`, marginTop: 5 }}>
+      <div style={{ height: `calc(100vh - ${height || 260}px)`, marginTop: 5 }}>
         <AgGridReact
           columnDefs={columns}
           rowData={data}
