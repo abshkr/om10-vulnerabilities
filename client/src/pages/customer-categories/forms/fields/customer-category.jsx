@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { equipmentList } from '../../../../api';
 import { Form, Select } from 'antd';
 import axios from 'axios';
 
-const CustomerCategory = ({ form, value, t }) => {
+const CustomerCategory = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const { getFieldDecorator, setFieldsValue } = form;
 
   const [isLoading, setLoading] = useState(false);
@@ -12,7 +16,7 @@ const CustomerCategory = ({ form, value, t }) => {
   useEffect(() => {
     if (!!value) {
       setFieldsValue({
-        category_count: value.category_count,
+        category_count: value.category_count
       });
     }
 
@@ -21,7 +25,7 @@ const CustomerCategory = ({ form, value, t }) => {
         axios.spread(options => {
           setOptions(options.data.records);
           setLoading(false);
-        }),
+        })
       );
     };
 
@@ -46,7 +50,7 @@ const CustomerCategory = ({ form, value, t }) => {
               {item.ld_type_text}
             </Select.Option>
           ))}
-        </Select>,
+        </Select>
       )}
     </Form.Item>
   );

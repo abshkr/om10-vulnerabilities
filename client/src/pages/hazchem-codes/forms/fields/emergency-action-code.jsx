@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-const EmergencyActionCode = ({ form, value, t }) => {
+const EmergencyActionCode = ({ form, value }) => {
+  const { t } = useTranslation();
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        hzcf_hz_code: value.hzcf_hz_code,
+        hzcf_hz_code: value.hzcf_hz_code
       });
     }
   }, [value, setFieldsValue]);
@@ -26,7 +28,7 @@ const EmergencyActionCode = ({ form, value, t }) => {
   return (
     <Form.Item label={t('fields.emergencyActionCode')}>
       {getFieldDecorator('hzcf_hz_code', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(<Input />)}
     </Form.Item>
   );

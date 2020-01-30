@@ -1,43 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
+import useSWR from 'swr';
 import { Badge } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import auth from '../../auth';
 import columns from './columns';
-import { fscStatus } from '../../api';
+import { FSC_STATUS } from '../../api';
 import { Page, DataTable } from '../../components';
 import generator from './generator';
 
-const FSCStatus = ({ configuration, t }) => {
-  const [data, setData] = useState([]);
-  const [isLoading, setLoading] = useState(true);
-  const [isMaster, setMaster] = useState(false);
+const FSCStatus = () => {
+  const { t } = useTranslation();
 
-  useEffect(() => {
-    const fetch = setInterval(() => {
-      axios.all([fscStatus.heartbeat(), fscStatus.batch(), fscStatus.which()]).then(
-        axios.spread((heartbeat, batch, which) => {
-          const payload = generator(heartbeat.data.records, batch.data.records);
-          setData(payload);
-          setMaster(which.data.is_master);
-          setLoading(false);
-        }),
-      );
-    }, 1000);
-    return () => clearInterval(fetch);
-  }, []);
+  const { data: heartbeat, isValidating } = useSWR(FSC_STATUS.HEARTBEAT, { refreshInterval: 1000 });
+  const { data: batch } = useSWR(FSC_STATUS.BATCH, { refreshInterval: 1000 });
+  const { data: which } = useSWR(FSC_STATUS.WHICH, { refreshInterval: 1000 });
 
-  //const Node = <div className="fsc-node">{`Current Mode: ${isMaster ? 'Master' : 'Slave'}`}</div>;
-  const Node = (
-    <Badge
-      count={`Current Mode: ${isMaster ? 'Master' : 'Slave'}`}
-      style={{ backgroundColor: isMaster ? '#52c41a' : '#fbb120', marginTop: -3 }}
-    />
+  const data = generator(heartbeat?.records, batch?.records);
+  const fields = columns(t);
+
+  const modifiers = (
+    <>
+      <Badge
+        count={`Current Mode: ${which?.isMaster ? 'Master' : 'Slave'}`}
+        style={{ backgroundColor: which?.isMaster ? '#52c41a' : '#fbb120', marginTop: -3 }}
+      />
+    </>
   );
 
   return (
-    <Page page={t('pageMenu.operations')} name={t('pageNames.fscStatus')}>
-      <DataTable modifiers={[Node]} columns={columns(t)} data={data} t={t} isLoading={isLoading} />
+    <Page page={t('pageMenu.operations')} name={t('pageNames.fscStatus')} modifiers={modifiers}>
+      <DataTable columns={fields} data={data} isLoading={isValidating} />
     </Page>
   );
 };

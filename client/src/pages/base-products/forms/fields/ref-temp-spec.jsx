@@ -1,37 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Form, Select } from 'antd';
-import { BASE_PRODUCTS } from '../../../../api';
-import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
 
-const RefSpecTemp = ({ form, value, t }) => {
+import { BASE_PRODUCTS } from '../../../../api';
+
+const RefSpecTemp = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const { getFieldDecorator, setFieldsValue } = form;
 
-  const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
+  const { data: options, isValidating } = useSWR(BASE_PRODUCTS.REF_TEMP);
 
   useEffect(() => {
     setFieldsValue({
       base_ref_temp_spec: value ? value.base_ref_temp_spec : '1'
     });
-
-    const getContext = () => {
-      axios.all([BASE_PRODUCTS.readBaseProductRefTemp()]).then(
-        axios.spread(options => {
-          setOptions(options.data.records);
-          setLoading(false);
-        })
-      );
-    };
-
-    setLoading(true);
-    getContext();
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item label={t('fields.refTempSpec')}>
       {getFieldDecorator('base_ref_temp_spec')(
         <Select
-          loading={isLoading}
+          loading={isValidating}
           showSearch
           optionFilterProp="children"
           placeholder={!value ? t('placeholder.selectRefTempSpec') : null}
@@ -39,7 +30,7 @@ const RefSpecTemp = ({ form, value, t }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {options.map((item, index) => (
+          {options?.records.map((item, index) => (
             <Select.Option key={index} value={item.ref_temp_spec_id}>
               {item.ref_temp_spec_name}
             </Select.Option>

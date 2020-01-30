@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Form, Select } from 'antd';
 
-const HotTempFlag = ({ form, value, enabled }) => {
+const HotTempFlag = ({ form, value, config }) => {
   const { getFieldDecorator, setFieldsValue } = form;
 
   const flags = [
@@ -26,7 +26,7 @@ const HotTempFlag = ({ form, value, enabled }) => {
   return (
     <Form.Item label="Limit Preset Mass Quantity to Capacity">
       {getFieldDecorator('base_limit_preset_ht')(
-        <Select disabled={!enabled}>
+        <Select disabled={!config?.features?.hotLitreCalculation}>
           {flags.map((item, index) => (
             <Select.Option key={index} value={item.value}>
               {item.name}

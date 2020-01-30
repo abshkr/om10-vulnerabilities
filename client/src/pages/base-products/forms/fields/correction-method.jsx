@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
-import axios from 'axios';
 import { Form, Select } from 'antd';
+import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
+
 import { BASE_PRODUCTS } from '../../../../api';
 
-const CorrectionMethod = ({ form, value, t }) => {
+const CorrectionMethod = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const { getFieldDecorator, setFieldsValue } = form;
 
-  const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
+  const { data: options, isValidating } = useSWR(BASE_PRODUCTS.CORRECTION_METHOD);
 
   useEffect(() => {
     if (value) {
@@ -16,25 +19,13 @@ const CorrectionMethod = ({ form, value, t }) => {
         base_corr_mthd: value.base_corr_mthd
       });
     }
-
-    const getContext = () => {
-      axios.all([BASE_PRODUCTS.readBaseProductCorrectionMethods()]).then(
-        axios.spread(options => {
-          setOptions(options.data.records);
-          setLoading(false);
-        })
-      );
-    };
-
-    setLoading(true);
-    getContext();
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item label={t('fields.correctionMethod')}>
       {getFieldDecorator('base_corr_mthd')(
         <Select
-          loading={isLoading}
+          loading={isValidating}
           showSearch
           optionFilterProp="children"
           placeholder={!value ? t('placeholder.selectCorrectionMethod') : null}
@@ -42,7 +33,7 @@ const CorrectionMethod = ({ form, value, t }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {options.map((item, index) => (
+          {options?.records.map((item, index) => (
             <Select.Option key={index} value={item.compensation_id}>
               {item.compensation_name}
             </Select.Option>

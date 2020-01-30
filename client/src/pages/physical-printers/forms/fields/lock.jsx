@@ -1,44 +1,29 @@
-import React, { Component } from "react";
-import { Form, Select } from "antd";
+import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Form, Checkbox } from 'antd';
 
-const options = [
-  {
-    value: "Y",
-    key: "Locked"
-  },
-  {
-    value: "N",
-    key: "Unlocked"
-  }
-];
+const Lock = ({ form, value }) => {
+  const { t } = useTranslation();
 
-export default class Lock extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
+  const { getFieldDecorator, setFieldsValue } = form;
 
-    if (!!value) {
-      setValue({
-        prntr_lock: value.prntr_lock
+  useEffect(() => {
+    if (value) {
+      setFieldsValue({
+        prntr_lock: value.prntr_lock === 'Y'
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  render() {
-    const { decorator } = this.props;
-    const { Option } = Select;
-
-    return (
-      <Form.Item label="Status">
-        {decorator("prntr_lock")(
-          <Select>
-            {options.map((item, index) => (
-              <Option key={index} value={item.value}>
-                {item.key}
-              </Option>
-            ))}
-          </Select>
-        )}
+  return (
+    <div>
+      <Form.Item>
+        {getFieldDecorator('prntr_lock', {
+          valuePropName: 'checked'
+        })(<Checkbox>{t('fields.locked')}</Checkbox>)}
       </Form.Item>
-    );
-  }
-}
+    </div>
+  );
+};
+
+export default Lock;

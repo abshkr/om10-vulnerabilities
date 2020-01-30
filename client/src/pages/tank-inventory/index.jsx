@@ -1,2 +1,2 @@
-import TankInventory from "./tankInventory";
+import TankInventory from './tank-inventory';
 export default TankInventory;

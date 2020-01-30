@@ -23,7 +23,7 @@ const paths = [
 
   {
     path: ROUTES.DASHBOARD,
-    component: lazy(() => import('../pages/work-in-progress'))
+    component: lazy(() => import('../pages/dashboard'))
   },
 
   {

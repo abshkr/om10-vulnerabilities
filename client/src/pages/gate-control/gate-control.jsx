@@ -5,7 +5,7 @@ import axios from 'axios';
 import _ from 'lodash';
 
 import { Page, DataTable } from '../../components';
-import { hazchemCodes } from '../../api';
+import { HAZCHEM_CODES } from '../../api';
 
 import columns from './columns';
 import auth from '../../auth';
@@ -21,7 +21,7 @@ const GateControl = ({ t }) => {
     setLoading(true);
 
     axios
-      .all([hazchemCodes.read()])
+      .all([HAZCHEM_CODES.read()])
       .then(
         axios.spread(records => {
           setData([

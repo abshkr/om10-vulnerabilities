@@ -199,7 +199,9 @@
     "dateTimeFormat": "Date Time Format",
     "timeEnabled": "Time Enabled ?",
     "totalChildRecords": "Total Child Records",
-    "expiryDateTarget": "Expiry Date Target"
+    "expiryDateTarget": "Expiry Date Target",
+    "sysPrinter": "System / Physical Printer",
+    "logicalPrinter": "Logical Printer"
   },
 
   "pageMenu": {
@@ -399,7 +401,8 @@
     "selectLockType": "Select Lock Type",
     "selectExpiryDateTarget": "Select Expiry Date Target",
     "selectRefTempSpec": "Select Ref Temp Spec",
-    "selectCorrectionMethod": "Select Correction Method"
+    "selectCorrectionMethod": "Select Correction Method",
+    "selectAreaLocation": "Select Area Location"
   },
 
   "validate": {

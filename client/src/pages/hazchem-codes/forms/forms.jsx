@@ -1,9 +1,12 @@
 import React from 'react';
 
+import { useTranslation } from 'react-i18next';
 import { Form, Button, Tabs, notification, Modal } from 'antd';
+import { mutate } from 'swr';
 import axios from 'axios';
 
-import { hazchemCodes } from '../../../api';
+import { HAZCHEM_CODES } from '../../../api';
+
 import {
   Id,
   SubsidiaryRisk,
@@ -13,12 +16,14 @@ import {
   TechnicalName,
   PackagingGroup,
   UNNumber,
-  Class,
+  Class
 } from './fields';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, refresh, value, t, data }) => {
+const FormModal = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
@@ -28,27 +33,27 @@ const FormModal = ({ form, refresh, value, t, data }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([hazchemCodes.create(values)])
+          onOk: async () => {
+            await axios
+              .post(HAZCHEM_CODES.CREATE, values)
               .then(
                 axios.spread(response => {
-                  refresh();
+                  mutate(HAZCHEM_CODES.READ);
 
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.createSuccess'),
-                    description: t('messages.createSuccess'),
+                    description: t('messages.createSuccess')
                   });
-                }),
+                })
               )
               .catch(error => {
                 notification.error({
                   message: error.message,
-                  description: t('messages.createFailed'),
+                  description: t('messages.createFailed')
                 });
               });
-          },
+          }
         });
       }
     });
@@ -63,52 +68,30 @@ const FormModal = ({ form, refresh, value, t, data }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([hazchemCodes.update(values)])
+          onOk: async () => {
+            await axios
+              .post(HAZCHEM_CODES.UPDATE, values)
               .then(
                 axios.spread(response => {
-                  refresh();
+                  mutate(HAZCHEM_CODES.READ);
 
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.updateSuccess'),
-                    description: t('messages.updateSuccess'),
+                    description: t('messages.updateSuccess')
                   });
-                }),
+                })
               )
               .catch(error => {
                 notification.error({
                   message: error.message,
-                  description: t('messages.updateFailed'),
+                  description: t('descriptions.updateFailed')
                 });
               });
-          },
+          }
         });
       }
     });
-  };
-
-  const handleDelete = () => {
-    axios
-      .all([hazchemCodes.remove(value)])
-      .then(
-        axios.spread(response => {
-          refresh();
-
-          Modal.destroyAll();
-          notification.success({
-            message: t('messages.deleteSuccess'),
-            description: `${t('descriptions.deleteSuccess')} ${value.prt_printer}`,
-          });
-        }),
-      )
-      .catch(error => {
-        notification.error({
-          message: error.message,
-          description: t('descriptions.deleteFailed'),
-        });
-      });
   };
 
   const showDeleteConfirm = () => {
@@ -118,7 +101,27 @@ const FormModal = ({ form, refresh, value, t, data }) => {
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
-      onOk: handleDelete,
+      onOk: async () => {
+        await axios
+          .post(HAZCHEM_CODES.DELETE, value)
+          .then(
+            axios.spread(response => {
+              mutate(HAZCHEM_CODES.READ);
+
+              Modal.destroyAll();
+              notification.success({
+                message: t('messages.deleteSuccess'),
+                description: `${t('descriptions.deleteSuccess')}`
+              });
+            })
+          )
+          .catch(error => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.deleteFailed')
+            });
+          });
+      }
     });
   };
 
@@ -126,45 +129,35 @@ const FormModal = ({ form, refresh, value, t, data }) => {
     <div>
       <Form>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.general')}
-            forceRender={true}
-            key="1"
-          >
-            <Id form={form} value={value} t={t} data={data} />
-            <SubsidiaryRisk form={form} value={value} t={t} />
-            <Class form={form} value={value} t={t} />
-            <EmergencyProcedureGuide form={form} value={value} t={t} />
-            <EmergencyActionCode form={form} value={value} t={t} />
-            <PackagingMethod form={form} value={value} t={t} />
-            <TechnicalName form={form} value={value} t={t} e />
-            <PackagingGroup form={form} value={value} t={t} />
-            <UNNumber form={form} value={value} t={t} />
+          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
+            <Id form={form} value={value} />
+            <SubsidiaryRisk form={form} value={value} />
+            <Class form={form} value={value} />
+            <EmergencyProcedureGuide form={form} value={value} />
+            <EmergencyActionCode form={form} value={value} />
+            <PackagingMethod form={form} value={value} />
+            <TechnicalName form={form} value={value} />
+            <PackagingGroup form={form} value={value} />
+            <UNNumber form={form} value={value} />
           </TabPane>
         </Tabs>
       </Form>
 
-      <Button
-        shape="round"
-        icon="close"
-        style={{ float: 'right' }}
-        onClick={() => Modal.destroyAll()}
-      >
+      <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
         {t('operations.cancel')}
       </Button>
 
       <Button
         shape="round"
         type="primary"
-        icon={!!value ? 'edit' : 'plus'}
+        icon={value ? 'edit' : 'plus'}
         style={{ float: 'right', marginRight: 5 }}
-        onClick={!!value ? handleUpdate : handleCreate}
+        onClick={value ? handleUpdate : handleCreate}
       >
-        {!!value ? t('operations.update') : t('operations.create')}
+        {value ? t('operations.update') : t('operations.create')}
       </Button>
 
-      {!!value && (
+      {value && (
         <Button
           shape="round"
           type="danger"

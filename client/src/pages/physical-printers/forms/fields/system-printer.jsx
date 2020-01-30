@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react';
-import { Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { Form, Input } from 'antd';
 
-const Name = ({ form, value }) => {
+const SystemPrinter = ({ form, value }) => {
   const { t } = useTranslation();
 
   const { getFieldDecorator, setFieldsValue } = form;
 
   const validate = (rule, input, callback) => {
     if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.name')}`);
+      callback(`${t('validate.set')} ─ ${t('fields.sysPrinter')}`);
     }
 
-    if (input && input.length > 40) {
-      callback(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && input.length > 30) {
+      callback(`${t('placeholder.maxCharacters')}: 30 ─ ${t('descriptions.maxCharacters')}`);
     }
     callback();
   };
@@ -21,18 +21,18 @@ const Name = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        base_name: value.base_name
+        sys_prntr: value.sys_prntr
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.name')}>
-      {getFieldDecorator('base_name', {
+    <Form.Item label={t('fields.sysPrinter')}>
+      {getFieldDecorator('sys_prntr', {
         rules: [{ required: true, validator: validate }]
       })(<Input />)}
     </Form.Item>
   );
 };
 
-export default Name;
+export default SystemPrinter;

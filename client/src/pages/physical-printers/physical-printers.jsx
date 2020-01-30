@@ -1,20 +1,18 @@
 import React from 'react';
-
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import useSWR from 'swr';
 
 import { Page, DataTable, Download, FormModal } from '../../components';
-import { BASE_PRODUCTS } from '../../api';
-
+import { PHYSICAL_PRINTERS } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 
-const BaseProducts = () => {
+const PhysicalPrinters = () => {
   const { t } = useTranslation();
 
-  const { data: payload, isValidating, revalidate } = useSWR(BASE_PRODUCTS.READ);
+  const { data: payload, isValidating, revalidate } = useSWR(PHYSICAL_PRINTERS.READ);
 
   const fields = columns(t);
 
@@ -22,8 +20,8 @@ const BaseProducts = () => {
     FormModal({
       value,
       form: <Forms value={value} />,
-      id: 'test',
-      name: 'test',
+      id: value?.prntr,
+      name: value?.sys_prntr,
       t
     });
   };
@@ -41,10 +39,10 @@ const BaseProducts = () => {
   );
 
   return (
-    <Page page={t('pageMenu.schedules')} name={t('pageNames.baseProducts')} modifiers={modifiers}>
+    <Page page={t('pageMenu.printers')} name={t('pageNames.physicalPrinters')} modifiers={modifiers}>
       <DataTable columns={fields} data={payload?.records} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );
 };
 
-export default auth(BaseProducts);
+export default auth(PhysicalPrinters);

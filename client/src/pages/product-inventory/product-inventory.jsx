@@ -9,11 +9,11 @@ import transform from './transform';
 import columns from './columns';
 import auth from '../../auth';
 
-const Metering = () => {
+const ProductInventory = () => {
   const [unit, setUnit] = useState('Litres');
 
   const { t } = useTranslation();
-  const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.METERING);
+  const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.PRODUCT_INVENTORY);
 
   const fields = columns(t);
   const payload = transform(data?.records, unit);
@@ -36,15 +36,15 @@ const Metering = () => {
         {t('operations.refresh')}
       </Button>
 
-      <Download data={payload} isLoading={isValidating} columns={fields} />
+      <Download data={payload?.records} isLoading={isValidating} columns={fields} />
     </>
   );
 
   return (
-    <Page page={t('pageMenu.stockManagement')} name={t('pageNames.metering')} modifiers={modifiers}>
+    <Page page={t('pageMenu.stockManagement')} name={t('pageNames.productInventory')} modifiers={modifiers}>
       <DataTable columns={fields} data={payload} isLoading={isValidating} />
     </Page>
   );
 };
 
-export default auth(Metering);
+export default auth(ProductInventory);

@@ -9,11 +9,15 @@ import { LOGICAL_PRINTERS } from '../../../../api';
 const Usage = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { data: payload, isValidating } = useSWR(LOGICAL_PRINTERS.PRINTERS);
+  const { data: options, isValidating } = useSWR(LOGICAL_PRINTERS.USAGES);
 
   const { getFieldDecorator, setFieldsValue } = form;
 
   const validate = (rule, input, callback) => {
+    if (input === '' || !input) {
+      callback(`${t('validate.select')} ─ ${t('fields.usage')}`);
+    }
+
     if (input === '' || !input) {
       callback(`${t('validate.select')} ─ ${t('fields.usage')}`);
     }
@@ -44,7 +48,7 @@ const Usage = ({ form, value }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {payload?.records.map((item, index) => (
+          {options?.records.map((item, index) => (
             <Select.Option key={index} value={item.use_id}>
               {item.use_name}
             </Select.Option>

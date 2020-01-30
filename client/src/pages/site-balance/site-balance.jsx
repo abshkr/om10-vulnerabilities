@@ -9,11 +9,11 @@ import transform from './transform';
 import columns from './columns';
 import auth from '../../auth';
 
-const Metering = () => {
+const SiteBalance = () => {
   const [unit, setUnit] = useState('Litres');
 
   const { t } = useTranslation();
-  const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.METERING);
+  const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.SITE_BALANCE);
 
   const fields = columns(t);
   const payload = transform(data?.records, unit);
@@ -41,10 +41,10 @@ const Metering = () => {
   );
 
   return (
-    <Page page={t('pageMenu.stockManagement')} name={t('pageNames.metering')} modifiers={modifiers}>
+    <Page page={t('pageMenu.stockManagement')} name={t('pageNames.siteBalance')} modifiers={modifiers}>
       <DataTable columns={fields} data={payload} isLoading={isValidating} />
     </Page>
   );
 };
 
-export default auth(Metering);
+export default auth(SiteBalance);

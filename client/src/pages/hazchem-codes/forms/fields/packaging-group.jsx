@@ -1,13 +1,16 @@
 import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
 
-const PackagingGroup = ({ form, value, t }) => {
+import { useTranslation } from 'react-i18next';
+
+const PackagingGroup = ({ form, value }) => {
+  const { t } = useTranslation();
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        hzcf_pack_group: value.hzcf_pack_group,
+        hzcf_pack_group: value.hzcf_pack_group
       });
     }
   }, [value, setFieldsValue]);
@@ -26,7 +29,7 @@ const PackagingGroup = ({ form, value, t }) => {
   return (
     <Form.Item label={t('fields.packagingGroup')}>
       {getFieldDecorator('hzcf_pack_group', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(<Input />)}
     </Form.Item>
   );

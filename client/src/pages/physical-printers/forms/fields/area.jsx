@@ -1,49 +1,47 @@
-import React, { Component } from "react";
-import { Form, Select } from "antd";
-import { physicalPrinters } from "../../../../api";
-import axios from "axios";
+import React, { useEffect } from 'react';
 
-export default class Area extends Component {
-  state = {
-    area: null
-  };
+import useSWR from 'swr';
+import { useTranslation } from 'react-i18next';
+import { Form, Select } from 'antd';
 
-  componentDidMount() {
-    const { value, setValue } = this.props;
+import { PHYSICAL_PRINTERS } from '../../../../api';
 
-    axios.all([physicalPrinters.readPrinterAreas()]).then(
-      axios.spread(area => {
-        this.setState({
-          area: area.data.records
-        });
-      })
-    );
+const Area = ({ form, value }) => {
+  const { t } = useTranslation();
 
-    if (!!value) {
-      setValue({
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  const { data: options, isValidating } = useSWR(PHYSICAL_PRINTERS.AREAS);
+
+  useEffect(() => {
+    if (value) {
+      setFieldsValue({
         prntr_area: value.prntr_area
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  render() {
-    const { decorator } = this.props;
-    const { area } = this.state;
-    const { Option } = Select;
+  return (
+    <Form.Item label={t('fields.areaLocation')}>
+      {getFieldDecorator('prntr_area')(
+        <Select
+          loading={isValidating}
+          showSearch
+          optionFilterProp="children"
+          placeholder={!value ? t('placeholder.selectAreaLocation') : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {options?.records.map((item, index) => (
+            <Select.Option key={index} value={item.area_k}>
+              {item.area_k} - {item.area_name}
+            </Select.Option>
+          ))}
+        </Select>
+      )}
+    </Form.Item>
+  );
+};
 
-    return (
-      <Form.Item label="Area">
-        {decorator("prntr_area")(
-          <Select>
-            {!!area &&
-              area.map((item, index) => (
-                <Option key={index} value={item.area_k}>
-                  {item.area_k} - {item.area_name}
-                </Option>
-              ))}
-          </Select>
-        )}
-      </Form.Item>
-    );
-  }
-}
+export default Area;

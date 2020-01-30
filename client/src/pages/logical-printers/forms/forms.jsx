@@ -1,13 +1,16 @@
 import React from 'react';
 
-import { Form, Button, Tabs, Modal } from 'antd';
+import { Form, Button, Tabs, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { mutate } from 'swr';
+import axios from 'axios';
 
 import { Company, Usage, Printer } from './fields';
+import { LOGICAL_PRINTERS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, value, data }) => {
+const FormModal = ({ form, value }) => {
   const { t } = useTranslation();
 
   const handleCreate = () => {
@@ -19,7 +22,26 @@ const FormModal = ({ form, value, data }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {}
+          onOk: async () => {
+            await axios
+              .post(LOGICAL_PRINTERS.CREATE, values)
+              .then(
+                axios.spread(response => {
+                  mutate(LOGICAL_PRINTERS.READ);
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t('messages.createSuccess'),
+                    description: t('messages.createSuccess')
+                  });
+                })
+              )
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t('messages.createFailed')
+                });
+              });
+          }
         });
       }
     });
@@ -34,13 +56,31 @@ const FormModal = ({ form, value, data }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {}
+          onOk: async () => {
+            await axios
+              .post(LOGICAL_PRINTERS.UPDATE, values)
+              .then(
+                axios.spread(response => {
+                  mutate(LOGICAL_PRINTERS.READ);
+
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t('messages.updateSuccess'),
+                    description: t('messages.updateSuccess')
+                  });
+                })
+              )
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t('descriptions.updateFailed')
+                });
+              });
+          }
         });
       }
     });
   };
-
-  const handleDelete = () => {};
 
   const showDeleteConfirm = () => {
     Modal.confirm({
@@ -49,7 +89,26 @@ const FormModal = ({ form, value, data }) => {
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
-      onOk: handleDelete
+      onOk: async () => {
+        await axios
+          .post(LOGICAL_PRINTERS.DELETE, value)
+          .then(
+            axios.spread(response => {
+              mutate(LOGICAL_PRINTERS.READ);
+              Modal.destroyAll();
+              notification.success({
+                message: t('messages.deleteSuccess'),
+                description: `${t('descriptions.deleteSuccess')}`
+              });
+            })
+          )
+          .catch(error => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.deleteFailed')
+            });
+          });
+      }
     });
   };
 
@@ -77,14 +136,14 @@ const FormModal = ({ form, value, data }) => {
       <Button
         shape="round"
         type="primary"
-        icon={!!value ? 'edit' : 'plus'}
+        icon={value ? 'edit' : 'plus'}
         style={{ float: 'right', marginRight: 5 }}
-        onClick={!!value ? handleUpdate : handleCreate}
+        onClick={value ? handleUpdate : handleCreate}
       >
-        {!!value ? t('operations.update') : t('operations.create')}
+        {value ? t('operations.update') : t('operations.create')}
       </Button>
 
-      {!!value && (
+      {value && (
         <Button
           shape="round"
           type="danger"

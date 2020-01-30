@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-const UNNumber = ({ form, value, t }) => {
+const UNNumber = ({ form, value }) => {
+  const { t } = useTranslation();
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        hzcf_un_num: value.hzcf_un_num,
+        hzcf_un_num: value.hzcf_un_num
       });
     }
   }, [value, setFieldsValue]);
@@ -26,7 +28,7 @@ const UNNumber = ({ form, value, t }) => {
   return (
     <Form.Item label={t('fields.unNumber')}>
       {getFieldDecorator('hzcf_un_num', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(<Input />)}
     </Form.Item>
   );

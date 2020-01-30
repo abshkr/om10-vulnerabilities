@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 
-const EmergencyProcedureGuide = ({ form, value, t }) => {
+const EmergencyProcedureGuide = ({ form, value }) => {
+  const { t } = useTranslation();
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        hzcf_emrg: value.hzcf_emrg,
+        hzcf_emrg: value.hzcf_emrg
       });
     }
   }, [value, setFieldsValue]);
@@ -26,7 +28,7 @@ const EmergencyProcedureGuide = ({ form, value, t }) => {
   return (
     <Form.Item label={t('fields.emergencyProcedureGuide')}>
       {getFieldDecorator('hzcf_emrg', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(<Input />)}
     </Form.Item>
   );

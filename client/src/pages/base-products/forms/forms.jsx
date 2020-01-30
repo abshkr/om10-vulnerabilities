@@ -1,26 +1,34 @@
 import React from 'react';
 
+import useSWR, { mutate } from 'swr';
+import { useTranslation } from 'react-i18next';
+import { Form, Button, Tabs, notification, Modal } from 'antd';
+
+import axios from 'axios';
+
 import {
   Code,
   Name,
   Classification,
   Group,
   Color,
+  DensityRange,
   AdaptiveArmPriority,
   AdaptiveFlowControl,
-  DensityRange,
-  CorrectionMethod,
   RefSpecTemp,
+  CorrectionMethod,
   HotTempFlag
 } from './fields';
 
-import { Form, Button, Tabs, notification, Modal } from 'antd';
-import { BASE_PRODUCTS } from '../../../api';
-import axios from 'axios';
+import { COMMON, BASE_PRODUCTS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, refresh, value, t, data, configuration }) => {
+const FormModal = ({ form, value }) => {
+  const { t } = useTranslation();
+
+  const { data: config, isValidating } = useSWR(COMMON.CONFIG);
+
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
@@ -32,11 +40,10 @@ const FormModal = ({ form, refresh, value, t, data, configuration }) => {
           centered: true,
           onOk: async () => {
             await axios
-              .all([BASE_PRODUCTS.createBaseProduct(values)])
+              .post(BASE_PRODUCTS.CREATE, values)
               .then(
                 axios.spread(response => {
-                  refresh();
-
+                  mutate(BASE_PRODUCTS.READ);
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.createSuccess'),
@@ -67,10 +74,10 @@ const FormModal = ({ form, refresh, value, t, data, configuration }) => {
           centered: true,
           onOk: async () => {
             await axios
-              .all([BASE_PRODUCTS.updateBaseProduct(values)])
+              .post(BASE_PRODUCTS.UPDATE, values)
               .then(
                 axios.spread(response => {
-                  refresh();
+                  mutate(BASE_PRODUCTS.READ);
 
                   Modal.destroyAll();
                   notification.success({
@@ -82,35 +89,13 @@ const FormModal = ({ form, refresh, value, t, data, configuration }) => {
               .catch(error => {
                 notification.error({
                   message: error.message,
-                  description: t('messages.updateFailed')
+                  description: t('descriptions.updateFailed')
                 });
               });
           }
         });
       }
     });
-  };
-
-  const handleDelete = () => {
-    axios
-      .all([BASE_PRODUCTS.deleteBaseProduct(value)])
-      .then(
-        axios.spread(response => {
-          refresh();
-
-          Modal.destroyAll();
-          notification.success({
-            message: t('messages.deleteSuccess'),
-            description: `${t('descriptions.deleteSuccess')}`
-          });
-        })
-      )
-      .catch(error => {
-        notification.error({
-          message: error.message,
-          description: t('descriptions.deleteFailed')
-        });
-      });
   };
 
   const showDeleteConfirm = () => {
@@ -120,7 +105,26 @@ const FormModal = ({ form, refresh, value, t, data, configuration }) => {
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
-      onOk: async () => await handleDelete
+      onOk: async () => {
+        await axios
+          .post(BASE_PRODUCTS.DELETE, value)
+          .then(
+            axios.spread(response => {
+              mutate(BASE_PRODUCTS.READ);
+              Modal.destroyAll();
+              notification.success({
+                message: t('messages.deleteSuccess'),
+                description: `${t('descriptions.deleteSuccess')}`
+              });
+            })
+          )
+          .catch(error => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.deleteFailed')
+            });
+          });
+      }
     });
   };
 
@@ -129,55 +133,58 @@ const FormModal = ({ form, refresh, value, t, data, configuration }) => {
       <Form>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
-            <Code form={form} value={value} t={t} data={data} />
-            <Name form={form} value={value} t={t} data={data} />
-            <Classification form={form} value={value} t={t} data={data} />
-            <Group form={form} value={value} t={t} data={data} />
-            <Color form={form} value={value} t={t} data={data} />
-            <DensityRange form={form} value={value} t={t} data={data} />
+            <Code form={form} value={value} />
+            <Name form={form} value={value} />
+            <Classification form={form} value={value} />
+            <Group form={form} value={value} />
+            <Color form={form} value={value} />
+            <DensityRange form={form} value={value} />
           </TabPane>
 
           <TabPane className="ant-tab-window" tab={t('tabColumns.product')} forceRender={true} key="2">
-            <RefSpecTemp form={form} value={value} t={t} data={data} />
-            <CorrectionMethod form={form} value={value} t={t} data={data} />
-            <HotTempFlag
-              form={form}
-              value={value}
-              t={t}
-              enabled={configuration?.features?.hotLitreCalculation}
-            />
+            <RefSpecTemp form={form} value={value} />
+            <CorrectionMethod form={form} value={value} />
+            <HotTempFlag form={form} value={value} config={config} />
           </TabPane>
 
-          {configuration?.features?.adaptiveFlowControl && (
+          {config?.features?.adaptiveFlowControl && (
             <TabPane className="ant-tab-window" tab={t('tabColumns.adaptiveFlow')} forceRender={true} key="3">
-              <AdaptiveArmPriority form={form} value={value} t={t} data={data} />
-              <AdaptiveFlowControl form={form} value={value} t={t} data={data} />
+              <AdaptiveArmPriority form={form} value={value} />
+              <AdaptiveFlowControl form={form} value={value} />
             </TabPane>
           )}
         </Tabs>
       </Form>
 
-      <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
+      <Button
+        shape="round"
+        icon="close"
+        style={{ float: 'right' }}
+        onClick={() => Modal.destroyAll()}
+        loading={isValidating}
+      >
         {t('operations.cancel')}
       </Button>
 
       <Button
         shape="round"
         type="primary"
-        icon={!!value ? 'edit' : 'plus'}
+        icon={value ? 'edit' : 'plus'}
         style={{ float: 'right', marginRight: 5 }}
-        onClick={!!value ? handleUpdate : handleCreate}
+        onClick={value ? handleUpdate : handleCreate}
+        loading={isValidating}
       >
-        {!!value ? t('operations.update') : t('operations.create')}
+        {value ? t('operations.update') : t('operations.create')}
       </Button>
 
-      {!!value && (
+      {value && (
         <Button
           shape="round"
           type="danger"
           icon="delete"
           style={{ float: 'right', marginRight: 5 }}
           onClick={showDeleteConfirm}
+          loading={isValidating}
         >
           {t('operations.delete')}
         </Button>

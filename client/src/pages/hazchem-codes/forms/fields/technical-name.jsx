@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-const TechnicalName = ({ form, value, t }) => {
+const TechnicalName = ({ form, value }) => {
+  const { t } = useTranslation();
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        hzcf_name: value.hzcf_name,
+        hzcf_name: value.hzcf_name
       });
     }
   }, [value, setFieldsValue]);
@@ -26,7 +28,7 @@ const TechnicalName = ({ form, value, t }) => {
   return (
     <Form.Item label={t('fields.technicalName')}>
       {getFieldDecorator('hzcf_name', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(<Input />)}
     </Form.Item>
   );

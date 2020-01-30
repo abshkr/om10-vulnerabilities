@@ -1,25 +1,55 @@
-import React, { Component } from "react";
-import { Form, Input } from "antd";
+import React, { useEffect } from 'react';
 
-export default class Printer extends Component {
-  componentDidMount() {
-    const { value, setValue } = this.props;
-    if (!!value) {
-      setValue({
+import useSWR from 'swr';
+import { useTranslation } from 'react-i18next';
+import { Form, Input } from 'antd';
+import _ from 'lodash';
+
+import { PHYSICAL_PRINTERS } from '../../../../api';
+
+const Printer = ({ form, value }) => {
+  const { t } = useTranslation();
+
+  const { getFieldDecorator, setFieldsValue } = form;
+
+  const { data: physicalPrinters, isValidating } = useSWR(PHYSICAL_PRINTERS.READ);
+
+  useEffect(() => {
+    if (value) {
+      setFieldsValue({
         prntr: value.prntr
       });
     }
-  }
+  }, [value, setFieldsValue]);
 
-  render() {
-    const { decorator } = this.props;
+  const validate = (rule, input, callback) => {
+    const match = _.find(physicalPrinters?.records, ['prntr', input]);
 
-    return (
-      <Form.Item label="Logical Printer">
-        {decorator("prntr", {
-          rules: [{ required: true, message: "Please Select A Logical Printer" }]
-        })(<Input />)}
-      </Form.Item>
-    );
-  }
-}
+    if (input === '' || !input) {
+      callback(`${t('validate.set')} ─ ${t('fields.code')}`);
+    }
+
+    if (input && !!match && !value) {
+      callback(t('descriptions.alreadyExists'));
+    }
+
+    if (input && input.charAt(0).toLowerCase() !== 'p') {
+      callback(t('descriptions.characterMustStart'));
+    }
+
+    if (input && input.length > 10) {
+      callback(`${t('placeholder.maxCharacters')}: 10 ─ ${t('descriptions.maxCharacters')}`);
+    }
+    callback();
+  };
+
+  return (
+    <Form.Item label={t('fields.logicalPrinter')}>
+      {getFieldDecorator('prntr', {
+        rules: [{ required: true, validator: validate }]
+      })(<Input disabled={!!value || isValidating} />)}
+    </Form.Item>
+  );
+};
+
+export default Printer;

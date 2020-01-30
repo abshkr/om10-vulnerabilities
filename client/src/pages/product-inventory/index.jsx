@@ -1,2 +1,2 @@
-import ProductInventory from "./productInventory";
+import ProductInventory from './product-inventory';
 export default ProductInventory;

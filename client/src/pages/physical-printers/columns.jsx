@@ -1,38 +1,39 @@
 const columns = t => [
   {
-    headerName: 'Logical Printer',
+    headerName: t('fields.logicalPrinter'),
     field: 'prntr',
     sortable: true,
-    filter: 'fuzzySearch',
+    filter: 'FuzzyFilter',
     resizable: true
   },
   {
-    headerName: 'System / Physical Printer',
+    headerName: t('fields.systemPrinter'),
     field: 'sys_prntr',
     sortable: true,
-    filter: 'fuzzySearch',
+    filter: 'FuzzyFilter',
     resizable: true
   },
   {
-    headerName: 'Lock',
+    headerName: t('fields.locked'),
     field: 'prntr_lock',
     sortable: true,
-    filter: true,
-    resizable: true
+    resizable: true,
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer'
   },
   {
-    headerName: 'Area Id',
+    headerName: t('fields.areaId'),
     field: 'prntr_area',
     sortable: true,
-    filter: true,
-    resizable: true
+    resizable: true,
+    filter: 'FuzzyFilter'
   },
   {
-    headerName: 'Area Location',
+    headerName: t('fields.areaLocation'),
     field: 'area_name',
     sortable: true,
     resizable: true,
-    filter: 'multiSelect'
+    filter: 'MultiFilter'
   }
 ];
 

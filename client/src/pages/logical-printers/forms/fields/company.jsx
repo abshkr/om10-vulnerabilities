@@ -9,7 +9,7 @@ import { LOGICAL_PRINTERS } from '../../../../api';
 const Company = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { data: payload, isValidating } = useSWR(LOGICAL_PRINTERS.COMPANYS);
+  const { data: options, isValidating } = useSWR(LOGICAL_PRINTERS.COMPANYS);
 
   const { getFieldDecorator, setFieldsValue } = form;
 
@@ -44,7 +44,7 @@ const Company = ({ form, value }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {payload?.records.map((item, index) => (
+          {options?.records.map((item, index) => (
             <Select.Option key={index} value={item.cmpy_code}>
               {item.cmpy_name}
             </Select.Option>

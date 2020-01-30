@@ -1,2 +1,2 @@
-import PhysicalPrinters from "./physicalPrinters";
+import PhysicalPrinters from './physical-printers';
 export default PhysicalPrinters;

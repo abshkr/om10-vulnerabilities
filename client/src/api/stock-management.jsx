@@ -1,17 +1,4 @@
-import axios from 'axios';
-
-export function readMetering() {
-  return axios.get(`/api/pages/metering/read.php?mass_unit=kg&vol_unit=litre`);
-}
-
-export function readSiteBalance() {
-  return axios.get(`/api/pages/site_bal/read.php?unit=LITRES`);
-}
-
-export function readTankInventory() {
-  return axios.get(`/api/pages/tank_inv/read.php`);
-}
-
-export function readProductInventory() {
-  return axios.get(`/api/pages/prod_inv/read.php?unit=LITRES`);
-}
+export const METERING = '/api/pages/metering/read.php';
+export const SITE_BALANCE = '/api/pages/site_bal/read.php';
+export const TANK_INVENTORY = '/api/pages/tank_inv/read.php';
+export const PRODUCT_INVENTORY = '/api/pages/prod_inv/read.php';

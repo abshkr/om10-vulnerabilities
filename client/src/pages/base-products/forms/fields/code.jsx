@@ -1,9 +1,18 @@
 import React, { useEffect } from 'react';
+
+import useSWR from 'swr';
+import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 import _ from 'lodash';
 
-const Code = ({ form, value, t, data }) => {
+import { BASE_PRODUCTS } from '../../../../api';
+
+const Code = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const { getFieldDecorator, setFieldsValue } = form;
+
+  const { data: baseProducts, isValidating } = useSWR(BASE_PRODUCTS.READ);
 
   useEffect(() => {
     if (value) {
@@ -14,7 +23,7 @@ const Code = ({ form, value, t, data }) => {
   }, [value, setFieldsValue]);
 
   const validate = (rule, input, callback) => {
-    const match = _.find(data, ['base_code', input]);
+    const match = _.find(baseProducts?.records, ['base_code', input]);
 
     if (input === '' || !input) {
       callback(`${t('validate.set')} ─ ${t('fields.code')}`);
@@ -34,7 +43,7 @@ const Code = ({ form, value, t, data }) => {
     <Form.Item label={t('fields.code')}>
       {getFieldDecorator('base_code', {
         rules: [{ required: true, validator: validate }]
-      })(<Input disabled={!!value} />)}
+      })(<Input disabled={!!value || isValidating} />)}
     </Form.Item>
   );
 };

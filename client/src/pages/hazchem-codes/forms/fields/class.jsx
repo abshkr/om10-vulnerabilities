@@ -1,13 +1,16 @@
 import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-const Class = ({ form, value, t }) => {
+const Class = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        hzcf_class: value.hzcf_class,
+        hzcf_class: value.hzcf_class
       });
     }
   }, [value, setFieldsValue]);
@@ -26,7 +29,7 @@ const Class = ({ form, value, t }) => {
   return (
     <Form.Item label={t('fields.class')}>
       {getFieldDecorator('hzcf_class', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(<Input />)}
     </Form.Item>
   );

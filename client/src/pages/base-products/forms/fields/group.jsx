@@ -1,40 +1,30 @@
-import React, { useEffect, useState } from 'react';
-
-import axios from 'axios';
+import React, { useEffect } from 'react';
+import useSWR from 'swr';
+import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
+
 import { BASE_PRODUCTS } from '../../../../api';
 
-const Group = ({ form, value, t }) => {
+const Group = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const { getFieldDecorator, setFieldsValue } = form;
 
-  const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
+  const { data: options, isValidating } = useSWR(BASE_PRODUCTS.PRODUCT_GROUPS);
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         base_prod_group: value.base_prod_group
       });
     }
-
-    const getContext = () => {
-      axios.all([BASE_PRODUCTS.readBaseProductGroups()]).then(
-        axios.spread(options => {
-          setOptions(options.data.records);
-          setLoading(false);
-        })
-      );
-    };
-
-    setLoading(true);
-    getContext();
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item label={t('fields.group')}>
       {getFieldDecorator('base_prod_group')(
         <Select
-          loading={isLoading}
+          loading={isValidating}
           showSearch
           optionFilterProp="children"
           placeholder={!value ? t('placeholder.selectGroup') : null}
@@ -42,7 +32,7 @@ const Group = ({ form, value, t }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {options.map((item, index) => (
+          {options?.records.map((item, index) => (
             <Select.Option key={index} value={item.pgr_code}>
               {item.pgr_text}
             </Select.Option>

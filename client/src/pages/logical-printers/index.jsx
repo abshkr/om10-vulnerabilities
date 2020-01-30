@@ -1,2 +1,2 @@
-import LogicalPrinters from "./logicalPrinters";
+import LogicalPrinters from './logical-printers';
 export default LogicalPrinters;

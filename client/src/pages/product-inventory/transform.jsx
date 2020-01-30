@@ -2,14 +2,18 @@ import _ from 'lodash';
 import { unitConverter } from '../../utils';
 
 const transform = (data, unit) => {
-  const payload = _.map(data, object => {
-    console.log(unitConverter(object.bookbalance));
-    object.bookbalance = unitConverter(object.bookbalance, unit);
-    object.grossvol = unitConverter(object.grossvol, unit);
-    object.netvol = unitConverter(object.netvol, unit);
-    object.usablevol = unitConverter(object.usablevol, unit);
+  const payload = [];
 
-    return object;
+  _.forEach(data, object => {
+    const entry = {
+      ...object,
+      bookbalance: unitConverter(object.bookbalance, unit),
+      grossvol: unitConverter(object.grossvol, unit),
+      netvol: unitConverter(object.netvol, unit),
+      usablevol: unitConverter(object.usablevol, unit)
+    };
+
+    payload.push(entry);
   });
 
   return payload;

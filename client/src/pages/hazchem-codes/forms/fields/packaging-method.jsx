@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-const PackagingMethod = ({ form, value, t }) => {
+const PackagingMethod = ({ form, value }) => {
+  const { t } = useTranslation();
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        hzcf_pack_method: value.hzcf_pack_method,
+        hzcf_pack_method: value.hzcf_pack_method
       });
     }
   }, [value, setFieldsValue]);
@@ -26,7 +28,7 @@ const PackagingMethod = ({ form, value, t }) => {
   return (
     <Form.Item label={t('fields.packagingMethod')}>
       {getFieldDecorator('hzcf_pack_method', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(<Input />)}
     </Form.Item>
   );

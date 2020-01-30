@@ -1,2 +1,2 @@
-import HazchemCodes from './hazchemCodes';
+import HazchemCodes from './hazchem-codes';
 export default HazchemCodes;
