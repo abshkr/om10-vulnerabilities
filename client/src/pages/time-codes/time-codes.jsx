@@ -1,65 +1,47 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 
-import { Page, DataTable } from '../../components';
-import { Modal, notification } from 'antd';
-import { timeCodes } from '../../api';
+import useSWR from 'swr';
+import { Button } from 'antd';
+import { useTranslation } from 'react-i18next';
+
+import { Page, DataTable, Download, FormModal } from '../../components';
+import { TIME_CODES } from '../../api';
+
 import columns from './columns';
 import auth from '../../auth';
 
-import axios from 'axios';
+const TimeCodes = () => {
+  const { t } = useTranslation();
 
-const TimeCodes = ({ configuration, t }) => {
-  const [data, setData] = useState([]);
-  const [isLoading, setLoading] = useState(true);
+  const { data: payload, isValidating, revalidate } = useSWR(TIME_CODES.READ);
 
-  const handleClick = object => {
-    Modal.info({
-      title: !!object
-        ? `${t('operations.editing')} (${object.category_code})`
-        : `${t('operations.create')}`,
-      centered: true,
-      width: '50vw',
-      icon: !!object ? 'edit' : 'form',
-      content: <div value={object} refresh={fetch} t={t} data={data} />,
-      okButtonProps: {
-        style: { display: 'none' },
-      },
+  const fields = columns(t);
+
+  const handleClick = value => {
+    FormModal({
+      value,
+      form: <div />,
+      id: 'test',
+      name: 'test',
+      t
     });
   };
 
-  const fetch = useCallback(() => {
-    setLoading(true);
-    axios
-      .all([timeCodes.read()])
-      .then(
-        axios.spread(records => {
-          setData(records.data.records);
-          setLoading(false);
-        }),
-      )
-      .catch(error => {
-        setLoading(false);
-        notification.error({
-          message: error.message,
-          description: t('descriptions.requestFailed'),
-        });
-      });
-  }, [t]);
-
-  useEffect(() => {
-    fetch();
-  }, [fetch]);
+  const modifiers = (
+    <>
+      <Button icon="sync" onClick={() => revalidate()} loading={isValidating}>
+        {t('operations.refresh')}
+      </Button>
+      <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isValidating}>
+        {t('operations.create')}
+      </Button>
+    </>
+  );
 
   return (
-    <Page page={t('pageMenu.accessControl')} name={t('pageNames.timeCodes')} isLoading={isLoading}>
-      <DataTable
-        columns={columns(configuration, t)}
-        data={data}
-        isLoading={isLoading}
-        click={handleClick}
-        t={t}
-        create={true}
-      />
+    <Page page={t('pageMenu.accessControl')} name={t('pageNames.timeCodes')} modifiers={modifiers}>
+      <DataTable columns={fields} data={payload?.records} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );
 };

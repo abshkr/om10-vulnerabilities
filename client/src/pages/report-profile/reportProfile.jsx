@@ -1,74 +1,39 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React from 'react';
 
-import _ from 'lodash';
-import axios from 'axios';
-import { Modal, notification, Button } from 'antd';
+import useSWR from 'swr';
+import { Button } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-import { Page, DataTable, Download } from '../../components';
-import { reportProfile } from '../../api';
-import { authLevel } from '../../utils';
-import transform from './transform';
+import { Page, DataTable, Download, FormModal } from '../../components';
+import { TIME_CODES } from '../../api';
+
 import columns from './columns';
 import auth from '../../auth';
-import Forms from './forms';
 
-const ReportProfile = ({ configuration, t, user }) => {
-  const [data, setData] = useState([]);
-  const [isLoading, setLoading] = useState(true);
+const ReportProfile = () => {
+  const { t } = useTranslation();
+
+  const { data: payload, isValidating, revalidate } = useSWR(TIME_CODES.READ);
 
   const fields = columns(t);
 
-  const handleClick = object => {
-    const access = authLevel(user, 'HTML_REPOPROFILE');
-
-    Modal.info({
-      title: object
-        ? `${t('operations.editing')} (${object.report_name} / ${object.report_type_name})`
-        : `${t('operations.create')}`,
-      centered: true,
-      width: '50vw',
-      icon: object ? 'edit' : 'form',
-      content: <Forms value={object} refresh={fetch} t={t} data={data} access={access} />,
-      okButtonProps: {
-        style: { display: 'none' }
-      }
+  const handleClick = value => {
+    FormModal({
+      value,
+      form: <div />,
+      id: 'test',
+      name: 'test',
+      t
     });
   };
 
-  const fetch = useCallback(() => {
-    setLoading(true);
-    axios
-      .all([reportProfile.readProfile()])
-      .then(
-        axios.spread(data => {
-          const transformed = transform(data.data.records);
-
-          setData(transformed);
-          setLoading(false);
-        })
-      )
-      .catch(errors => {
-        setLoading(false);
-        _.forEach(errors.response.data.errors, error => {
-          notification.error({
-            message: error.type,
-            description: error.message
-          });
-        });
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch();
-  }, [fetch]);
-
   const modifiers = (
     <>
-      <Button icon="sync" onClick={() => fetch()} loading={isLoading}>
+      <Button icon="sync" onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
-      <Download data={data} isLoading={isLoading} columns={fields} />
-      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isLoading}>
+      <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isValidating}>
         {t('operations.create')}
       </Button>
     </>
@@ -76,7 +41,7 @@ const ReportProfile = ({ configuration, t, user }) => {
 
   return (
     <Page page={t('pageMenu.reports')} name={t('pageNames.reportProfile')} modifiers={modifiers}>
-      <DataTable columns={fields} data={data} isLoading={isLoading} onClick={handleClick} t={t} />
+      <DataTable columns={fields} data={payload?.records} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );
 };

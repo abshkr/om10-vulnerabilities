@@ -6,9 +6,9 @@ import * as equipmentList from './equipment-list';
 import * as reportConfiguration from './report-configuration';
 import * as reportProfile from './report-profile';
 import * as tankerList from './tanker-list';
-import * as timeCodes from './time-codes';
 import * as idAssignment from './id-assignment';
 
+import * as TIME_CODES from './time-codes';
 import * as HAZCHEM_CODES from './hazchem-codes';
 import * as LOGICAL_PRINTERS from './logical-printers';
 import * as EXPIRY_DATES from './expiry-dates';
@@ -34,7 +34,7 @@ export {
   reportConfiguration,
   reportProfile,
   tankerList,
-  timeCodes,
+  TIME_CODES,
   HAZCHEM_CODES,
   idAssignment,
   EXPIRY_DATES,

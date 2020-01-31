@@ -123,8 +123,8 @@ const FormModal = ({ form, value, data }) => {
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
             <ExpiryDateTarget form={form} value={value} />
-            <TypeCode form={form} value={value} data={data} />
-            <TypeDescription form={form} value={value} data={data} />
+            <TypeCode form={form} value={value} />
+            <TypeDescription form={form} value={value} />
 
             <Divider>{t('divider.flags')}</Divider>
 

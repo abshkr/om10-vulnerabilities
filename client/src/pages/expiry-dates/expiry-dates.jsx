@@ -2,10 +2,10 @@ import React from 'react';
 
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'antd';
+import { Button } from 'antd';
 
 import { EXPIRY_DATES } from '../../api';
-import { Page, DataTable, Download } from '../../components';
+import { Page, DataTable, Download, FormModal } from '../../components';
 
 import Forms from './forms';
 
@@ -19,20 +19,13 @@ const ExpiryDates = () => {
 
   const fields = columns(t);
 
-  const handleClick = object => {
-    Modal.info({
-      title: object
-        ? `${t('operations.editing')} (${object.edt_target_code} / ${object.edt_type_desc}) - Child Records ${
-            object.child_count
-          }`
-        : `${t('operations.create')}`,
-      centered: true,
-      width: '50vw',
-      icon: object ? 'edit' : 'form',
-      content: <Forms value={object} data={payload?.records} access={true} />,
-      okButtonProps: {
-        style: { display: 'none' }
-      }
+  const handleClick = value => {
+    FormModal({
+      value,
+      form: <Forms value={value} />,
+      id: value?.edt_target_code,
+      name: value?.edt_type_desc,
+      t
     });
   };
 

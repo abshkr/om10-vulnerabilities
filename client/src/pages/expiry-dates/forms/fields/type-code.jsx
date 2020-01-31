@@ -1,9 +1,14 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
+import useSWR from 'swr';
 import _ from 'lodash';
 
-const TypeCode = ({ form, value, data }) => {
+import { EXPIRY_DATES } from '../../../../api';
+
+const TypeCode = ({ form, value }) => {
+  const { data, isValidating } = useSWR(EXPIRY_DATES.READ);
+
   const { getFieldDecorator, setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -17,7 +22,9 @@ const TypeCode = ({ form, value, data }) => {
   }, [value, setFieldsValue]);
 
   const validate = (rule, input, callback) => {
-    const match = _.find(data?.[0].records, ['edt_type_code', input]);
+    const match = _.find(data?.records, record => {
+      return record.edt_type_code.toLowerCase() === input.toLowerCase();
+    });
 
     if (input === '' || !input) {
       callback(`${t('validate.set')} ─ ${t('fields.typeCode')}`);
@@ -37,7 +44,7 @@ const TypeCode = ({ form, value, data }) => {
     <Form.Item label={t('fields.typeCode')}>
       {getFieldDecorator('edt_type_code', {
         rules: [{ required: true, validator: validate }]
-      })(<Input disabled={!!value} />)}
+      })(<Input disabled={!!value || isValidating} />)}
     </Form.Item>
   );
 };
