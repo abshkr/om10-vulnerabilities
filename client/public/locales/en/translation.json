@@ -201,7 +201,14 @@
     "totalChildRecords": "Total Child Records",
     "expiryDateTarget": "Expiry Date Target",
     "sysPrinter": "System / Physical Printer",
-    "logicalPrinter": "Logical Printer"
+    "logicalPrinter": "Logical Printer",
+    "roleId": "Role Id",
+    "roleName": "Role Name",
+    "menuItem": "Menu Item",
+    "view": "View",
+    "update": "Update",
+    "create": "Create",
+    "delete": "Delete"
   },
 
   "pageMenu": {

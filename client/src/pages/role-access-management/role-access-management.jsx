@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { Page, DataTable, Download, FormModal } from '../../components';
 import { ROLE_ACCESS_MANAGEMENT } from '../../api';
 
+import Forms from './forms';
+
 import columns from './columns';
 import auth from '../../auth';
 
@@ -20,10 +22,11 @@ const RoleAccessManagement = () => {
   const handleClick = value => {
     FormModal({
       value,
-      form: <div />,
-      id: 'test',
-      name: 'test',
-      t
+      form: <Forms value={value} />,
+      id: value?.role_code,
+      name: value?.auth_level_name,
+      t,
+      width: '80vw'
     });
   };
 

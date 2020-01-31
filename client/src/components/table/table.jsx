@@ -71,6 +71,7 @@ const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSel
           rowSelection="multiple"
           onCellEditingStopped={onEditingFinished}
           onRowSelected={handleMultipleSelection}
+          animateRows={true}
         />
       </div>
     </div>
