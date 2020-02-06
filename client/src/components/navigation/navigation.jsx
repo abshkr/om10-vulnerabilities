@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/accessible-emoji */
+
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -40,11 +42,11 @@ const Navigation = () => {
               </span>
             }
           >
-            <Menu.Item key={ROUTES.LOAD_SCHEDULES}>{t('pageNames.loadSchedules')}</Menu.Item>
+            <Menu.Item key={ROUTES.LOAD_SCHEDULES}>{t('pageNames.loadSchedules')} </Menu.Item>
 
-            <Menu.Item key={ROUTES.EQUIPMENT_LIST}>{t('pageNames.equipmentList')}</Menu.Item>
+            <Menu.Item key={ROUTES.EQUIPMENT_LIST}>{t('pageNames.equipmentList')} ✔️</Menu.Item>
 
-            <Menu.Item key={ROUTES.TANKER_LIST}>{t('pageNames.tankerList')}</Menu.Item>
+            <Menu.Item key={ROUTES.TANKER_LIST}>{t('pageNames.tankerList')} ✔️</Menu.Item>
 
             <Menu.Item key={ROUTES.TRANSACTION_LIST}>{t('pageNames.transactionList')}</Menu.Item>
 
@@ -67,17 +69,17 @@ const Navigation = () => {
 
             <Menu.Item key={ROUTES.TANK_GROUPS}>{t('pageNames.tankGroups')}</Menu.Item>
 
-            <Menu.Item key={ROUTES.BASE_PRODUCTS}>{t('pageNames.baseProducts')}</Menu.Item>
+            <Menu.Item key={ROUTES.BASE_PRODUCTS}>{t('pageNames.baseProducts')} ✔️</Menu.Item>
 
             <Menu.Item key={ROUTES.DRAWER_PRODUCTS}>{t('pageNames.drawerProducts')}</Menu.Item>
 
-            <Menu.Item key={ROUTES.TANK_CONFIGURATION}>{t('pageNames.tankConfiguration')}</Menu.Item>
+            <Menu.Item key={ROUTES.TANK_CONFIGURATION}>{t('pageNames.tankConfiguration')} ✔️</Menu.Item>
 
             <Menu.Item key={ROUTES.PRODUCT_GROUPS}>{t('pageNames.productGroups')}</Menu.Item>
 
             <Menu.Item key={ROUTES.ALLOCATIONS}>{t('pageNames.allocations')}</Menu.Item>
 
-            <Menu.Item key={ROUTES.HAZCHEM_CODES}>{t('pageNames.hazchemCodes')}</Menu.Item>
+            <Menu.Item key={ROUTES.HAZCHEM_CODES}>{t('pageNames.hazchemCodes')} ✔️</Menu.Item>
 
             <Menu.Item key={ROUTES.LOAD_METERS}>{t('pageNames.loadMeters')}</Menu.Item>
 
@@ -92,17 +94,17 @@ const Navigation = () => {
               </span>
             }
           >
-            <Menu.Item key={ROUTES.JOURNAL}>{t('pageNames.journal')}</Menu.Item>
+            <Menu.Item key={ROUTES.JOURNAL}>{t('pageNames.journal')} ✔️</Menu.Item>
 
-            <Menu.Item key={ROUTES.REPORT_PROFILE}>{t('pageNames.reportProfile')}</Menu.Item>
+            <Menu.Item key={ROUTES.REPORT_PROFILE}>{t('pageNames.reportProfile')} ✔️</Menu.Item>
 
             <Menu.Item key={ROUTES.ON_DEMAND_REPORTS}>{t('pageNames.onDemandReports')}</Menu.Item>
 
-            <Menu.Item key={ROUTES.REPORT_CONFIGURATION}>{t('pageNames.reportConfiguration')}</Menu.Item>
+            <Menu.Item key={ROUTES.REPORT_CONFIGURATION}>{t('pageNames.reportConfiguration')} ✔️</Menu.Item>
 
-            <Menu.Item key={ROUTES.PERSONNEL_ON_SITE}>{t('pageNames.personnelOnSite')}</Menu.Item>
+            <Menu.Item key={ROUTES.PERSONNEL_ON_SITE}>{t('pageNames.personnelOnSite')} ✔️</Menu.Item>
 
-            <Menu.Item key={ROUTES.FOLIO_SUMMARY}>{t('pageNames.folioSummary')}</Menu.Item>
+            <Menu.Item key={ROUTES.FOLIO_SUMMARY}>{t('pageNames.folioSummary')} ✔️</Menu.Item>
 
             <Menu.Item key={ROUTES.FOLIO_SCHEDULLING}>{t('pageNames.folioScheduling')}</Menu.Item>
 
@@ -123,7 +125,7 @@ const Navigation = () => {
           >
             <Menu.Item key={ROUTES.ID_ASSIGNMENT}>{t('pageNames.idAssignment')}</Menu.Item>
 
-            <Menu.Item key={ROUTES.PERSONNEL}>{t('pageNames.personnel')}</Menu.Item>
+            <Menu.Item key={ROUTES.PERSONNEL}>{t('pageNames.personnel')} ✔️</Menu.Item>
 
             <Menu.Item key={ROUTES.ROLE_ACCESS_MANAGEMENT}>{t('pageNames.roleAccessManagement')}</Menu.Item>
 
@@ -177,13 +179,13 @@ const Navigation = () => {
               </span>
             }
           >
-            <Menu.Item key={ROUTES.METERING}>{t('pageNames.metering')}</Menu.Item>
+            <Menu.Item key={ROUTES.METERING}>{t('pageNames.metering')} ✔️</Menu.Item>
 
-            <Menu.Item key={ROUTES.SITE_BALANCE}>{t('pageNames.siteBalance')}</Menu.Item>
+            <Menu.Item key={ROUTES.SITE_BALANCE}>{t('pageNames.siteBalance')} ✔️</Menu.Item>
 
-            <Menu.Item key={ROUTES.TANK_INVENTORY}>{t('pageNames.tankInventory')}</Menu.Item>
+            <Menu.Item key={ROUTES.TANK_INVENTORY}>{t('pageNames.tankInventory')} ✔️</Menu.Item>
 
-            <Menu.Item key={ROUTES.PRODUCT_INVENTORY}>{t('pageNames.productInventory')}</Menu.Item>
+            <Menu.Item key={ROUTES.PRODUCT_INVENTORY}>{t('pageNames.productInventory')} ✔️</Menu.Item>
 
             <Menu.Item key={ROUTES.TANK_STATUS}>{t('pageNames.tankStatus')}</Menu.Item>
 
@@ -202,9 +204,9 @@ const Navigation = () => {
               </span>
             }
           >
-            <Menu.Item key={ROUTES.PHYSICAL_PRINTERS}>{t('pageNames.physicalPrinters')}</Menu.Item>
+            <Menu.Item key={ROUTES.PHYSICAL_PRINTERS}>{t('pageNames.physicalPrinters')} ✔️</Menu.Item>
 
-            <Menu.Item key={ROUTES.LOGICAL_PRINTERS}>{t('pageNames.logicalPrinters')}</Menu.Item>
+            <Menu.Item key={ROUTES.LOGICAL_PRINTERS}>{t('pageNames.logicalPrinters')} ✔️</Menu.Item>
           </SubMenu>
 
           <SubMenu
@@ -221,9 +223,9 @@ const Navigation = () => {
 
             <Menu.Item key={ROUTES.DRAWER_PRODUCT_ASSETS}>{t('pageNames.drawerProductAssets')}</Menu.Item>
 
-            <Menu.Item key={ROUTES.ADAPTIVE_FLOW_CONTROL}>{t('pageNames.adaptiveFlowControl')}</Menu.Item>
+            <Menu.Item key={ROUTES.ADAPTIVE_FLOW_CONTROL}>{t('pageNames.adaptiveFlowControl')} ✔️</Menu.Item>
 
-            <Menu.Item key={ROUTES.FSC_STATUS}>{t('pageNames.fscStatus')}</Menu.Item>
+            <Menu.Item key={ROUTES.FSC_STATUS}>{t('pageNames.fscStatus')} ✔️</Menu.Item>
           </SubMenu>
         </Menu>
       </MenuContainer>

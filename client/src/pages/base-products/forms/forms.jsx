@@ -157,7 +157,6 @@ const FormModal = ({ form, value }) => {
       </Form>
 
       <Button
-        shape="round"
         icon="close"
         style={{ float: 'right' }}
         onClick={() => Modal.destroyAll()}
@@ -167,7 +166,6 @@ const FormModal = ({ form, value }) => {
       </Button>
 
       <Button
-        shape="round"
         type="primary"
         icon={value ? 'edit' : 'plus'}
         style={{ float: 'right', marginRight: 5 }}
@@ -179,7 +177,6 @@ const FormModal = ({ form, value }) => {
 
       {value && (
         <Button
-          shape="round"
           type="danger"
           icon="delete"
           style={{ float: 'right', marginRight: 5 }}

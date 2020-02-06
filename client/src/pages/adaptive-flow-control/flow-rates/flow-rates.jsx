@@ -2,10 +2,11 @@ import React from 'react';
 import { Table } from 'antd';
 import _ from 'lodash';
 import columns from './columns';
+import { AdaptiveFlowSummary } from '../styles';
 
 const summary = (arms, tank, t) => {
   return (
-    <div className="flow-rate-summary">
+    <AdaptiveFlowSummary>
       <p>
         <span>{t('descriptions.tankMaxFlowRate')}: </span>
         {tank.max.toFixed(2)} {t('units.lpm')}
@@ -18,7 +19,7 @@ const summary = (arms, tank, t) => {
         <span>{t('descriptions.flowContribution')}: </span>
         {_.sumBy(arms, 'flow_contribution').toFixed(2)} {t('units.lpm')}
       </p>
-    </div>
+    </AdaptiveFlowSummary>
   );
 };
 
@@ -31,7 +32,6 @@ const FlowRates = (tank, t) => {
       pagination={false}
       title={arms => summary(arms, tank, t)}
       rowKey="baa_code"
-      className="nested-table"
     />
   );
 };

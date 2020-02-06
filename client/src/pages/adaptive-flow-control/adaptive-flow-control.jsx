@@ -7,13 +7,13 @@ import useSWR from 'swr';
 import { BASE_PRODUCTS, ADAPTIVE_FLOW_CONTROL } from '../../api';
 import { Page } from '../../components';
 
+import { AdaptiveFlowFooter } from './styles';
+
 import generator from './generator';
 import FlowRates from './flow-rates';
 
 import columns from './columns';
 import auth from '../../auth';
-
-import './adaptive-flow-control.css';
 
 const AdaptiveFlowControl = () => {
   const { t } = useTranslation();
@@ -43,9 +43,9 @@ const AdaptiveFlowControl = () => {
         columns={columns(data, t)}
         expandedRowRender={tank => FlowRates(tank, t)}
         footer={() => (
-          <span style={{ textAlign: 'center' }}>
+          <AdaptiveFlowFooter>
             {t('descriptions.totalFlow')}: {0} {t('units.lpm')}{' '}
-          </span>
+          </AdaptiveFlowFooter>
         )}
       />
     </Page>

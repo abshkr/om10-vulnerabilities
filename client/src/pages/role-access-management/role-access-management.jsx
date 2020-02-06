@@ -26,7 +26,7 @@ const RoleAccessManagement = () => {
       id: value?.role_code,
       name: value?.auth_level_name,
       t,
-      width: '80vw'
+      width: '30vw'
     });
   };
 
