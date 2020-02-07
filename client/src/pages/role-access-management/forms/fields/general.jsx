@@ -31,6 +31,177 @@ const General = ({ form, value }) => {
           </Select>
         )}
       </Form.Item>
+
+      <Form.Item label="Schedules">
+        {getFieldDecorator('DASHBOARD')(
+          <Select
+            showSearch
+            optionFilterProp="children"
+            mode="multiple"
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {options.map(item => (
+              <Select.Option key={item.value} value={item.value}>
+                {item.label}
+              </Select.Option>
+            ))}
+          </Select>
+        )}
+      </Form.Item>
+
+      <Form.Item label="Gantry">
+        {getFieldDecorator('DASHBOARD')(
+          <Select
+            showSearch
+            optionFilterProp="children"
+            mode="multiple"
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {options.map(item => (
+              <Select.Option key={item.value} value={item.value}>
+                {item.label}
+              </Select.Option>
+            ))}
+          </Select>
+        )}
+      </Form.Item>
+
+      <Form.Item label="Reports">
+        {getFieldDecorator('DASHBOARD')(
+          <Select
+            showSearch
+            optionFilterProp="children"
+            mode="multiple"
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {options.map(item => (
+              <Select.Option key={item.value} value={item.value}>
+                {item.label}
+              </Select.Option>
+            ))}
+          </Select>
+        )}
+      </Form.Item>
+
+      <Form.Item label="Access Control">
+        {getFieldDecorator('DASHBOARD')(
+          <Select
+            showSearch
+            optionFilterProp="children"
+            mode="multiple"
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {options.map(item => (
+              <Select.Option key={item.value} value={item.value}>
+                {item.label}
+              </Select.Option>
+            ))}
+          </Select>
+        )}
+      </Form.Item>
+
+      <Form.Item label="Customers">
+        {getFieldDecorator('DASHBOARD')(
+          <Select
+            showSearch
+            optionFilterProp="children"
+            mode="multiple"
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {options.map(item => (
+              <Select.Option key={item.value} value={item.value}>
+                {item.label}
+              </Select.Option>
+            ))}
+          </Select>
+        )}
+      </Form.Item>
+
+      <Form.Item label="Stock Management">
+        {getFieldDecorator('DASHBOARD')(
+          <Select
+            showSearch
+            optionFilterProp="children"
+            mode="multiple"
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {options.map(item => (
+              <Select.Option key={item.value} value={item.value}>
+                {item.label}
+              </Select.Option>
+            ))}
+          </Select>
+        )}
+      </Form.Item>
+
+      <Form.Item label="Printer Configuration">
+        {getFieldDecorator('DASHBOARD')(
+          <Select
+            showSearch
+            optionFilterProp="children"
+            mode="multiple"
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {options.map(item => (
+              <Select.Option key={item.value} value={item.value}>
+                {item.label}
+              </Select.Option>
+            ))}
+          </Select>
+        )}
+      </Form.Item>
+
+      <Form.Item label="Stock Reconcilliation">
+        {getFieldDecorator('DASHBOARD')(
+          <Select
+            showSearch
+            optionFilterProp="children"
+            mode="multiple"
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {options.map(item => (
+              <Select.Option key={item.value} value={item.value}>
+                {item.label}
+              </Select.Option>
+            ))}
+          </Select>
+        )}
+      </Form.Item>
+
+      <Form.Item label="Stock Reconcilliation">
+        {getFieldDecorator('DASHBOARD')(
+          <Select
+            showSearch
+            optionFilterProp="children"
+            mode="multiple"
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {options.map(item => (
+              <Select.Option key={item.value} value={item.value}>
+                {item.label}
+              </Select.Option>
+            ))}
+          </Select>
+        )}
+      </Form.Item>
     </div>
   );
 };
