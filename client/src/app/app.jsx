@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
-
+import { GlobalStyleProvider, AntdStyleProvider } from '../styles';
 import { Interface, Loading } from '../components';
 import { ROUTES } from '../constants';
 
@@ -26,6 +26,8 @@ const App = () => (
   <Provider store={authStore}>
     <BrowserRouter>
       <Interface>
+        <GlobalStyleProvider />
+        <AntdStyleProvider />
         <Suspense fallback={<Loading />}>
           <Switch>
             {paths.map(item => {

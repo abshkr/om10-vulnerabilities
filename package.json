@@ -1,0 +1,14 @@
+{
+  "name": "omega",
+  "version": "9.10.0",
+  "description": "OMEGA Frontend & API",
+  "scripts": {
+    "install": "cd client && npm install",
+    "start": "cd client && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://code.diamondkey.com:23443/scm/om5k/frontend.git"
+  },
+  "author": "Diamondkey International"
+}

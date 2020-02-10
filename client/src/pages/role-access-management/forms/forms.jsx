@@ -3,6 +3,7 @@ import React from 'react';
 import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Button, Tabs, notification, Modal } from 'antd';
+import _ from 'lodash';
 
 import axios from 'axios';
 import { ROLE_ACCESS_MANAGEMENT } from '../../../api';
@@ -10,6 +11,14 @@ import { ROLE_ACCESS_MANAGEMENT } from '../../../api';
 import { General } from './fields';
 
 const TabPane = Tabs.TabPane;
+
+const options = [
+  { value: '1', label: 'Read', index: 'priv_view' },
+  { value: '2', label: 'Create', index: 'priv_create' },
+  { value: '3', label: 'Update', index: 'priv_update' },
+  { value: '4', label: 'Delete', index: 'priv_delete' },
+  { value: '5', label: 'Protected', index: 'priv_protect' }
+];
 
 const FormModal = ({ form, value }) => {
   const { t } = useTranslation();
@@ -58,26 +67,22 @@ const FormModal = ({ form, value }) => {
           cancelText: t('operations.no'),
           centered: true,
           onOk: async () => {
-            console.log(values);
-            // await axios
-            //   .post(ROLE_ACCESS_MANAGEMENT.UPDATE, values)
-            //   .then(
-            //     axios.spread(response => {
-            //       mutate(ROLE_ACCESS_MANAGEMENT.READ);
+            const privileges = [];
+            const payload = values?.privilege;
 
-            //       Modal.destroyAll();
-            //       notification.success({
-            //         message: t('messages.updateSuccess'),
-            //         description: t('messages.updateSuccess')
-            //       });
-            //     })
-            //   )
-            //   .catch(error => {
-            //     notification.error({
-            //       message: error.message,
-            //       description: t('descriptions.updateFailed')
-            //     });
-            //   });
+            _.forEach(payload, (object, index) => {
+              if (object) {
+                let entry = value.privilege[index];
+
+                entry.priv_view = object.includes('1');
+                entry.priv_create = object.includes('2');
+                entry.priv_update = object.includes('3');
+                entry.priv_delete = object.includes('4');
+                entry.priv_protect = object.includes('5');
+
+                privileges.push(entry);
+              }
+            });
           }
         });
       }
@@ -119,17 +124,16 @@ const FormModal = ({ form, value }) => {
       <Form>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
-            <General form={form} value={value} />
+            <General form={form} value={value} options={options} />
           </TabPane>
         </Tabs>
       </Form>
 
-      <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
+      <Button icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
         {t('operations.cancel')}
       </Button>
 
       <Button
-        shape="round"
         type="primary"
         icon={value ? 'edit' : 'plus'}
         style={{ float: 'right', marginRight: 5 }}
@@ -140,7 +144,6 @@ const FormModal = ({ form, value }) => {
 
       {value && (
         <Button
-          shape="round"
           type="danger"
           icon="delete"
           style={{ float: 'right', marginRight: 5 }}
