@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
@@ -7,8 +7,7 @@ import _ from 'lodash';
 
 import axios from 'axios';
 import { ROLE_ACCESS_MANAGEMENT } from '../../../api';
-
-import { General } from './fields';
+import Menu from './menu';
 
 const TabPane = Tabs.TabPane;
 
@@ -21,6 +20,8 @@ const options = [
 ];
 
 const FormModal = ({ form, value }) => {
+  const [menuItems, setMenuItems] = useState([]);
+
   const { t } = useTranslation();
 
   const handleCreate = () => {
@@ -67,22 +68,7 @@ const FormModal = ({ form, value }) => {
           cancelText: t('operations.no'),
           centered: true,
           onOk: async () => {
-            const privileges = [];
-            const payload = values?.privilege;
-
-            _.forEach(payload, (object, index) => {
-              if (object) {
-                let entry = value.privilege[index];
-
-                entry.priv_view = object.includes('1');
-                entry.priv_create = object.includes('2');
-                entry.priv_update = object.includes('3');
-                entry.priv_delete = object.includes('4');
-                entry.priv_protect = object.includes('5');
-
-                privileges.push(entry);
-              }
-            });
+            console.log(values);
           }
         });
       }
@@ -119,13 +105,36 @@ const FormModal = ({ form, value }) => {
     });
   };
 
+  useEffect(() => {
+    const payload = [];
+
+    const uniqueItems = ['general', ..._.uniq(_.map(value?.privilege, 'domain_text'))];
+
+    _.forEach(uniqueItems, item => {
+      payload.push({
+        name: item,
+        nodes: _.filter(value?.privilege, entry => {
+          if (item === 'general') {
+            return entry.domain_text === entry.object_text;
+          }
+
+          return entry.domain_text === item;
+        })
+      });
+    });
+
+    setMenuItems(payload);
+  }, [value]);
+
   return (
     <div>
       <Form>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
-            <General form={form} value={value} options={options} />
-          </TabPane>
+          {menuItems.map(item => (
+            <TabPane className="ant-tab-window" tab={t(`pageMenu.${item.name}`)} key={item.name}>
+              <Menu title={item.name} form={form} value={value} options={options} nodes={item.nodes} />
+            </TabPane>
+          ))}
         </Tabs>
       </Form>
 

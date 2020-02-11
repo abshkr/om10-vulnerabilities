@@ -212,6 +212,7 @@
   },
 
   "pageMenu": {
+    "general": "General",
     "dashboard": "Dashboard",
     "schedules": "Schedules",
     "operations": "Operations",
@@ -221,7 +222,8 @@
     "printers": "Printers",
     "stockManagement": "Stock Management",
     "customers": "Customers",
-    "printerConfiguration": "Printer Configuration"
+    "printerConfiguration": "Printer Configuration",
+    "stockReconciliation": "Stock Reconciliation"
   },
 
   "pageNames": {
