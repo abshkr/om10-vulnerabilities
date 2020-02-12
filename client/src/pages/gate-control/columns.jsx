@@ -1,7 +1,7 @@
 const columns = t => [
   {
     headerName: t('fields.gate'),
-    field: 'hzcf_id',
+    field: 'gate_k',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -11,42 +11,35 @@ const columns = t => [
   },
   {
     headerName: t('fields.deviceCode'),
-    field: 'hzcf_un_num',
+    field: 'gate_dvce',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.deviceType'),
-    field: 'hzcf_name',
+    field: 'krdc_type',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.area'),
-    field: 'hzcf_sub_risk',
+    field: 'area_k',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.areaName'),
-    field: 'hzcf_class',
+    field: 'area_name',
     filter: 'MultiFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.gateTimeCode'),
-    field: 'hzcf_hz_code',
-    filter: 'MultiFilter',
-    sortable: true,
-    resizable: true
-  },
-  {
-    headerName: t('fields.gateUser'),
-    field: 'hzcf_emrg',
+    field: 'g_tcd',
     filter: 'MultiFilter',
     sortable: true,
     resizable: true

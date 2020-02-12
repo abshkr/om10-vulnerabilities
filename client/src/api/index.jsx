@@ -8,6 +8,7 @@ import * as reportProfile from './report-profile';
 import * as tankerList from './tanker-list';
 import * as idAssignment from './id-assignment';
 
+import * as GATE_CONTROL from './gate-control';
 import * as TIME_CODES from './time-codes';
 import * as HAZCHEM_CODES from './hazchem-codes';
 import * as LOGICAL_PRINTERS from './logical-printers';
@@ -51,5 +52,6 @@ export {
   STOCK_MANAGEMENT,
   PHYSICAL_PRINTERS,
   PERSONNEL_ON_SITE,
-  FSC_STATUS
+  FSC_STATUS,
+  GATE_CONTROL
 };

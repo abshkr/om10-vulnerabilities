@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Checkbox, Input } from 'antd';
+import { Form, Checkbox } from 'antd';
 import _ from 'lodash';
 
-const General = ({ form, value, options, nodes }) => {
+const Generic = ({ form, value, options, nodes }) => {
   const { t } = useTranslation();
 
   const { getFieldDecorator, setFieldsValue } = form;
@@ -51,7 +51,7 @@ const General = ({ form, value, options, nodes }) => {
   return (
     <div>
       {nodes.map(item => (
-        <Form.Item label={t(`pageMenu.${item.object_text}`)} key={item.object_id}>
+        <Form.Item label={t(`pageNames.${item.object_text}`)} key={item.object_id}>
           {getFieldDecorator(`privilege.${item.object_text}`)(
             <Checkbox.Group
               style={{ flexDirection: 'row', marginBottom: 0, justifyContent: 'space-between' }}
@@ -64,4 +64,4 @@ const General = ({ form, value, options, nodes }) => {
   );
 };
 
-export default General;
+export default Generic;
