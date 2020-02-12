@@ -4,6 +4,7 @@ import { AgGridReact } from 'ag-grid-react';
 
 import { FuzzyFilter, MultiFilter, BooleanFilter } from './filters';
 import { BooleanRenderer, LockRenderer, DateRenderer, StatusRenderer, TagRenderer } from './renderers';
+import { NumericEditor } from './editors';
 import { LoadingStatus } from './status';
 import { Search } from '..';
 
@@ -18,7 +19,8 @@ const components = {
   DateRenderer,
   LoadingStatus,
   StatusRenderer,
-  TagRenderer
+  TagRenderer,
+  NumericEditor
 };
 
 const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSelect, height }) => {
@@ -60,7 +62,7 @@ const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSel
     >
       <Search value={value} search={setValue} isLoading={isLoading && !data} />
 
-      <div style={{ height: `calc(100vh - ${height || 260}px)`, marginTop: 5 }}>
+      <div style={{ height: `calc(100vh - ${height || '260px'})`, marginTop: 5 }}>
         <AgGridReact
           columnDefs={columns}
           rowData={data}

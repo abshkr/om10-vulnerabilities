@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Checkbox, Input } from 'antd';
+import { Form, Checkbox } from 'antd';
 import _ from 'lodash';
 
 const General = ({ form, value, options, nodes }) => {

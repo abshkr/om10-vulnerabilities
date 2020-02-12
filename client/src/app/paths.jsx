@@ -188,7 +188,7 @@ const paths = [
 
   {
     path: ROUTES.FOLIO_SUMMARY,
-    component: lazy(() => import('../pages/work-in-progress'))
+    component: lazy(() => import('../pages/folio-summary'))
   },
 
   {

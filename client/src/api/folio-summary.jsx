@@ -1,45 +1,15 @@
-import axios from 'axios';
+export const READ = '/api/pages/folio/read.php';
+export const REPORTS = '/api/pages/folio/get_reports.php';
+export const TANKS = '/api/pages/folio/get_tanks.php';
+export const METERS = '/api/pages/folio/get_meters.php';
 
-export function readFolioSummary() {
-  return axios.get(`/api/pages/folio/read.php`);
-}
+export const UPDATE_METERS = '/api/pages/folio/update_meter.php';
+export const UPDATE_TANKS = '/api/pages/folio/update_tank.php';
+export const CREATE_REPORTS = '/api/pages/folio/create_reports.php';
+export const SAVE_TANKS = '/api/pages/folio/save_to_tanks.php';
 
-export function readFolioTanks(id) {
-  return axios.get(`/api/pages/folio/get_tanks.php?closeout_nr=${id}`);
-}
+export const CREATE_PDS = '/api/pages/folio/pds.php';
+export const MANUAL_CLOSE = '/api/pages/folio/manual_close.php';
+export const CALCULATE = '/api/pages/folio/calc_vcf.php';
 
-export function readFolioMeters(id) {
-  return axios.get(`/api/pages/folio/get_meters.php?closeout_nr=${id}`);
-}
-
-export function readFolioReports(id) {
-  return axios.get(`/api/pages/folio/get_reports.php?closeout_nr=${id}`);
-}
-
-export function createPDS() {
-  return axios.get(`/api/pages/folio/pds.php`);
-}
-
-export function closeFolio() {
-  return axios.get(`/api/pages/folio/manual_close.php`);
-}
-
-export function openFolioReports(id, report) {
-  return `/api/pages/folio/report_gateway.php?report=${id}/${report}`;
-}
-
-export function regenerateReports(id) {
-  return axios.get(`/api/pages/folio/create_reports.php?closeout_nr=${id}`);
-}
-
-export function calculateTanks(payload) {
-  return axios.post(`/api/pages/folio/calc_tank_vcfs.php`, payload);
-}
-
-export function updateMeter(payload) {
-  return axios.post(`/api/pages/folio/update_meters.php`, payload);
-}
-
-export function updateTank(payload) {
-  return axios.post(`/api/pages/folio/update_tanks.php`, payload);
-}
+export const OPEN_REPORT = '/api/pages/folio/report_gateway.php';
