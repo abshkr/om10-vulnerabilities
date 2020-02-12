@@ -31,14 +31,14 @@ const FormModal = ({ form, value }) => {
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.createSuccess'),
-                    description: t('messages.createSuccess')
+                    description: t('descriptions.createSuccess')
                   });
                 })
               )
               .catch(error => {
                 notification.error({
                   message: error.message,
-                  description: t('messages.createFailed')
+                  description: t('descriptions.createFailed')
                 });
               });
           }
@@ -66,7 +66,7 @@ const FormModal = ({ form, value }) => {
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.updateSuccess'),
-                    description: t('messages.updateSuccess')
+                    description: t('descriptions.updateSuccess')
                   });
                 })
               )
@@ -134,7 +134,6 @@ const FormModal = ({ form, value }) => {
       </Button>
 
       <Button
-        shape="round"
         type="primary"
         icon={value ? 'edit' : 'plus'}
         style={{ float: 'right', marginRight: 5 }}
@@ -145,7 +144,6 @@ const FormModal = ({ form, value }) => {
 
       {value && (
         <Button
-          shape="round"
           type="danger"
           icon="delete"
           style={{ float: 'right', marginRight: 5 }}

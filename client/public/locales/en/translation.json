@@ -383,7 +383,8 @@
     "valueTooHigh": "Value Too High. ",
     "invalidDecimals": "Invalid Decimal Places.",
     "compartmentCopy": "Note: Select from above to copy its compartment settings.",
-    "emailDescription": "Multiple Email Addresses are allowed and seperated by either ':' or ';'"
+    "emailDescription": "Multiple Email Addresses are allowed and seperated by either ':' or ';'",
+    "characterMustStart": "Character Must Start with a "
   },
 
   "placeholder": {

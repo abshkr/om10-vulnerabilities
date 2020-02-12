@@ -17,7 +17,7 @@ export default Authenticated => {
       if (!token) {
         history.push(ROUTES.LOG_IN);
       }
-    }, [token]);
+    }, [token, history]);
 
     return (
       <SWRConfig

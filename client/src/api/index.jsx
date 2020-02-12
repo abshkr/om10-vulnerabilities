@@ -1,6 +1,5 @@
 import * as tanks from './tanks';
 
-import * as folioSummary from './folio-summary';
 import * as personnel from './personnel';
 import * as equipmentList from './equipment-list';
 import * as reportConfiguration from './report-configuration';
@@ -8,6 +7,8 @@ import * as reportProfile from './report-profile';
 import * as tankerList from './tanker-list';
 import * as idAssignment from './id-assignment';
 
+import * as FOLIO_SUMMARY from './folio-summary';
+import * as PERSONNEL from './personnel';
 import * as GATE_CONTROL from './gate-control';
 import * as TIME_CODES from './time-codes';
 import * as HAZCHEM_CODES from './hazchem-codes';
@@ -29,7 +30,6 @@ import * as FSC_STATUS from './fsc-status';
 
 export {
   tanks,
-  folioSummary,
   personnel,
   equipmentList,
   reportConfiguration,
@@ -53,5 +53,7 @@ export {
   PHYSICAL_PRINTERS,
   PERSONNEL_ON_SITE,
   FSC_STATUS,
-  GATE_CONTROL
+  GATE_CONTROL,
+  PERSONNEL,
+  FOLIO_SUMMARY
 };
