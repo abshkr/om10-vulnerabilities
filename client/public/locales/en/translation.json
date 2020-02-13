@@ -209,8 +209,7 @@
     "update": "Update",
     "create": "Create",
     "delete": "Delete",
-    "totalChildRecords": "Total Child Records",
-    "expiryDateTarget": "Expiry Date Target",
+
     "folioName": "Folio Name",
     "openingDate": "Opening Date",
     "freezeDate": "Freezing Date",
@@ -348,7 +347,9 @@
     "calculate": "Calculate",
     "download": "Download",
     "saveToTanks": "Save To Tanks",
-    "saveToFolio": "Save To Folio"
+    "saveToFolio": "Save To Folio",
+    "tagLookUp": "Tag Lookup",
+    "search": "Search"
   },
 
   "tabColumns": {
@@ -390,7 +391,8 @@
     "update": "Are you sure you want to update this record?",
     "delete": "Are you sure you want to delete this record?",
     "calculate": "Are you sure you want to calculate the selected records?",
-    "save": "Are you sure you want to save the selected records?"
+    "save": "Are you sure you want to save the selected records?",
+    "iButtonLookUp": "I-Button Look up"
   },
 
   "divider": {
@@ -433,7 +435,8 @@
     "saveSuccess": "You have saved the values successfully.",
     "saveFailed": "Failed to save the values successfully.",
     "saveToFolioWarning": "These changes will not be reflected in the Tanks. Please Save To Tanks if you want to apply the changes to Tanks.",
-    "saveToTanksWarning": "These changes will not be reflected in the Folio. Please Save To Folio if you want to apply the changes to Folio."
+    "saveToTanksWarning": "These changes will not be reflected in the Folio. Please Save To Folio if you want to apply the changes to Folio.",
+    "iButtonLookUp": " Please highlight the text box and scan I-button on card reader then press Enter after you see the tag read."
   },
 
   "placeholder": {

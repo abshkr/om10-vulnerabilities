@@ -23,7 +23,7 @@ const components = {
   NumericEditor
 };
 
-const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSelect, height }) => {
+const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSelect, height, search }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
 
@@ -52,6 +52,12 @@ const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSel
       api.setQuickFilter(query);
     }
   }, [value, api]);
+
+  useEffect(() => {
+    if (search) {
+      setValue(search);
+    }
+  }, [search]);
 
   return (
     <div

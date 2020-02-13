@@ -5,8 +5,8 @@ import * as equipmentList from './equipment-list';
 import * as reportConfiguration from './report-configuration';
 import * as reportProfile from './report-profile';
 import * as tankerList from './tanker-list';
-import * as idAssignment from './id-assignment';
 
+import * as ID_ASSIGNMENT from './id-assignment';
 import * as FOLIO_SUMMARY from './folio-summary';
 import * as PERSONNEL from './personnel';
 import * as GATE_CONTROL from './gate-control';
@@ -37,7 +37,7 @@ export {
   tankerList,
   TIME_CODES,
   HAZCHEM_CODES,
-  idAssignment,
+  ID_ASSIGNMENT,
   EXPIRY_DATES,
   TRANSACTION_LIST,
   LOGICAL_PRINTERS,

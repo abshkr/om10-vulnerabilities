@@ -124,10 +124,6 @@ const AntdStyleProvider = createGlobalStyle`
     border-color: #68a4ec;
   }
   
-  .ant-modal-confirm-btns .ant-btn {
-    border-radius: 32px !important;
-  }
-  
   .ant-calendar-ok-btn {
     color: white !important;
   }

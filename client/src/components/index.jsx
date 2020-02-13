@@ -11,6 +11,7 @@ import Search from './search';
 import NavBar from './nav-bar';
 import Interface from './interface';
 import FormModal from './form-modal';
+import IButton from './i-button';
 
 export {
   Expiry,
@@ -25,5 +26,6 @@ export {
   Search,
   NavBar,
   Interface,
-  FormModal
+  FormModal,
+  IButton
 };

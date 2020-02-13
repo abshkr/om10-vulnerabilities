@@ -1,68 +1,66 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 
-import { Modal, notification } from 'antd';
-import axios from 'axios';
-import _ from 'lodash';
+import useSWR from 'swr';
+import { Button } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-import { Page, DataTable } from '../../components';
-import { idAssignment } from '../../api';
+import Forms from './forms';
+import { Page, DataTable, Download, IButton, FormModal } from '../../components';
+import { ID_ASSIGNMENT } from '../../api';
 
 import columns from './columns';
 import auth from '../../auth';
 
-const IdAssignment = ({ configuration, t }) => {
-  const [data, setData] = useState([]);
-  const [isLoading, setLoading] = useState(true);
+const IdAssignment = () => {
+  const [search, setSearch] = useState('');
 
-  const handleClick = object => {
-    Modal.info({
-      title: !!object
-        ? `${t('operations.editing')} (${object.hzcf_id} / ${object.hzcf_name})`
-        : `${t('operations.create')}`,
-      centered: true,
-      width: '50vw',
-      icon: !!object ? 'edit' : 'form',
-      content: <div value={object} refresh={fetch} t={t} data={data} />,
-      okButtonProps: {
-        style: { display: 'none' },
-      },
+  const { t } = useTranslation();
+
+  const { data: payload, isValidating, revalidate } = useSWR(ID_ASSIGNMENT.READ);
+
+  const fields = columns(t);
+
+  const handleClick = value => {
+    FormModal({
+      value,
+      form: <Forms value={value} />,
+      id: value?.kya_key_no,
+      name: value?.kya_key_issuer,
+      t
     });
   };
 
-  const fetch = useCallback(() => {
-    setLoading(true);
-    axios
-      .all([idAssignment.read()])
-      .then(
-        axios.spread(records => {
-          setData(records.data.records);
-          setLoading(false);
-        }),
-      )
-      .catch(errors => {
-        setLoading(false);
-        _.forEach(errors.response.data.errors, error => {
-          notification.error({
-            message: error.type,
-            description: error.message,
-          });
-        });
-      });
-  }, []);
+  const handleTagLookUp = () => {
+    IButton({
+      setSearch,
+      t
+    });
+  };
 
-  useEffect(() => {
-    fetch();
-  }, [fetch]);
+  const modifiers = (
+    <>
+      <Button icon="security-scan" onClick={() => handleTagLookUp()}>
+        {t('operations.tagLookUp')}
+      </Button>
+
+      <Button icon="sync" onClick={() => revalidate()} loading={isValidating}>
+        {t('operations.refresh')}
+      </Button>
+      <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isValidating}>
+        {t('operations.create')}
+      </Button>
+    </>
+  );
 
   return (
-    <Page page={t('pageMenu.gantry')} name={t('pageNames.hazchemCodes')} isLoading={isLoading}>
+    <Page page={t('pageMenu.accessControl')} name={t('pageNames.idAssignment')} modifiers={modifiers}>
       <DataTable
-        columns={columns(t)}
-        data={data}
-        isLoading={isLoading}
-        click={handleClick}
-        t={t}
-        create
+        columns={fields}
+        data={payload?.records}
+        isLoading={isValidating}
+        onClick={handleClick}
+        search={search}
       />
     </Page>
   );
