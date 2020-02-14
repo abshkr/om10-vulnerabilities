@@ -13,7 +13,9 @@ const LoginForm = ({ form, handleLogin, auth }) => {
   const [isLoading, setLoading] = useState(false);
   const history = useHistory();
 
-  const handleSubmit = () => {
+  const handleSubmit = e => {
+    e.preventDefault();
+
     form.validateFields((err, values) => {
       if (!err) {
         setLoading(true);
@@ -61,7 +63,7 @@ const LoginForm = ({ form, handleLogin, auth }) => {
         <LoginHeader>OMEGA 5000</LoginHeader>
         <LoginSubtitle>Please Login to Continue</LoginSubtitle>
 
-        <Form>
+        <Form onSubmit={handleSubmit}>
           <Form.Item>
             {getFieldDecorator('code', {
               rules: [{ required: true, message: 'Please Input Your Omega Personnel Code!' }]
@@ -85,9 +87,11 @@ const LoginForm = ({ form, handleLogin, auth }) => {
             )}
           </Form.Item>
 
-          <Button type="primary" onClick={handleSubmit} loading={isLoading}>
-            Log in
-          </Button>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={isLoading}>
+              Log in
+            </Button>
+          </Form.Item>
         </Form>
       </FormContainer>
 

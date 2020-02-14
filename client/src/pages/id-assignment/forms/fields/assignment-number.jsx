@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Form, InputNumber } from 'antd';
+import { Form, Input } from 'antd';
 import _ from 'lodash';
 
 import { ID_ASSIGNMENT } from '../../../../api';
@@ -24,6 +24,9 @@ const AssignmentNumber = ({ form, value }) => {
 
   const validate = (rule, input, callback) => {
     const match = _.find(idAssignments?.records, ['kya_key_no', _.toString(input)]);
+    const convert = _.toNumber(input);
+
+    console.log(convert);
 
     if (input === '' || !input) {
       callback(`${t('validate.set')} ─ ${t('fields.assignmentNo')}`);
@@ -43,7 +46,7 @@ const AssignmentNumber = ({ form, value }) => {
     <Form.Item label={t('fields.assignmentNo')}>
       {getFieldDecorator('kya_key_no', {
         rules: [{ required: true, validator: validate }]
-      })(<InputNumber min={0} style={{ width: '100%' }} disabled={!!value || isValidating} />)}
+      })(<Input disabled={!!value || isValidating} />)}
     </Form.Item>
   );
 };

@@ -3,12 +3,34 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Button, Tabs, Modal } from 'antd';
 
-import { AssignmentNumber, Issuer, AssignmentType, PhysicalType } from './fields';
+import {
+  AssignmentNumber,
+  Issuer,
+  AssignmentType,
+  PhysicalType,
+  PhysicalTagText,
+  TimeCode,
+  Flags,
+  Pin,
+  Employer,
+  Role,
+  Personnel,
+  Drawer,
+  Supplier,
+  Carrier,
+  Tanker,
+  EquipmentCarrier,
+  TransportEquipment
+} from './fields';
 
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ form, value }) => {
   const { t } = useTranslation();
+
+  const { getFieldValue } = form;
+
+  const type = getFieldValue('kya_type');
 
   const handleCreate = () => {
     form.validateFields((err, values) => {
@@ -58,8 +80,64 @@ const FormModal = ({ form, value }) => {
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
             <AssignmentNumber form={form} value={value} />
             <Issuer form={form} value={value} />
-            <AssignmentType form={form} value={value} />
             <PhysicalType form={form} value={value} />
+            <PhysicalTagText form={form} value={value} />
+            <TimeCode form={form} value={value} />
+            <Pin form={form} value={value} />
+            <Flags form={form} value={value} />
+          </TabPane>
+
+          <TabPane className="ant-tab-window" tab={t('tabColumns.assignments')} forceRender={true} key="2">
+            <AssignmentType form={form} value={value} />
+
+            {['1', '3', '5'].includes(type) && (
+              <>
+                <Employer form={form} value={value} />
+              </>
+            )}
+
+            {['1', '3', '5'].includes(type) && (
+              <>
+                <Role form={form} value={value} />
+              </>
+            )}
+
+            {['3', '5'].includes(type) && (
+              <>
+                <Personnel form={form} value={value} />
+              </>
+            )}
+
+            {['3', '5'].includes(type) && (
+              <>
+                <Drawer form={form} value={value} />
+              </>
+            )}
+
+            {['1', '3', '5'].includes(type) && (
+              <>
+                <Supplier form={form} value={value} />
+              </>
+            )}
+
+            {['4', '5'].includes(type) && (
+              <>
+                <Carrier form={form} value={value} />
+              </>
+            )}
+
+            {['4', '5'].includes(type) && (
+              <>
+                <Tanker form={form} value={value} />
+              </>
+            )}
+
+            {['8', '9'].includes(type) && (
+              <>
+                <EquipmentCarrier form={form} value={value} />
+                <TransportEquipment form={form} value={value} />
+              </>
+            )}
           </TabPane>
         </Tabs>
       </Form>

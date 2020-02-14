@@ -8,7 +8,7 @@ const Flags = ({ form, value, t }) => {
     if (value) {
       setFieldsValue({
         report_closeout_flag: value.report_closeout_flag,
-        report_ondemand_flag: value.report_ondemand_flag,
+        report_ondemand_flag: value.report_ondemand_flag
       });
     }
   }, [value, setFieldsValue]);
@@ -17,13 +17,13 @@ const Flags = ({ form, value, t }) => {
     <div>
       <Form.Item>
         {getFieldDecorator('report_closeout_flag', {
-          valuePropName: 'checked',
+          valuePropName: 'checked'
         })(<Checkbox>{t('fields.closeOutReport')}</Checkbox>)}
       </Form.Item>
 
       <Form.Item>
         {getFieldDecorator('report_ondemand_flag', {
-          valuePropName: 'checked',
+          valuePropName: 'checked'
         })(<Checkbox>{t('fields.onDemandReport')}</Checkbox>)}
       </Form.Item>
     </div>

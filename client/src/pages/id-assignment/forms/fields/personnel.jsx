@@ -6,16 +6,16 @@ import { Form, Select } from 'antd';
 
 import { ID_ASSIGNMENT } from '../../../../api';
 
-const AssignmentType = ({ form, value }) => {
+const Personnel = ({ form, value }) => {
   const { t } = useTranslation();
 
   const { getFieldDecorator, setFieldsValue } = form;
 
-  const { data: options, isValidating } = useSWR(ID_ASSIGNMENT.ASSIGNMENT_TYPES);
+  const { data: options, isValidating } = useSWR(ID_ASSIGNMENT.PSN);
 
   const validate = (rule, input, callback) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.assignmentType')}`);
+      callback(`${t('validate.select')} ─ ${t('fields.personnel')}`);
     }
 
     callback();
@@ -24,28 +24,28 @@ const AssignmentType = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_type: value.kya_type
+        kya_psnl_name: value.kya_psnl_name
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.assignmentType')}>
-      {getFieldDecorator('kya_type', {
+    <Form.Item label={t('fields.personnel')}>
+      {getFieldDecorator('kya_psnl_name', {
         rules: [{ required: true, validator: validate }]
       })(
         <Select
           loading={isValidating}
           showSearch
           optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectAssignmentType') : null}
+          placeholder={!value ? t('placeholder.selectPersonnel') : null}
           filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
           {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.type_id}>
-              {item.type_name}
+            <Select.Option key={index} value={item.role_id}>
+              {item.role_name}
             </Select.Option>
           ))}
         </Select>
@@ -54,4 +54,4 @@ const AssignmentType = ({ form, value }) => {
   );
 };
 
-export default AssignmentType;
+export default Personnel;

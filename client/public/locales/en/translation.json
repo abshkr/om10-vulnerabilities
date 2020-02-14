@@ -209,7 +209,6 @@
     "update": "Update",
     "create": "Create",
     "delete": "Delete",
-
     "folioName": "Folio Name",
     "openingDate": "Opening Date",
     "freezeDate": "Freezing Date",
@@ -228,7 +227,9 @@
     "closingCorrected": "Closing Corrected",
     "closingTemp": "Closing Temp",
     "closingDensity": "Closing Density",
-    "calculate": "Calc ?"
+    "calculate": "Calc ?",
+    "resetPin": "Reset PIN",
+    "removePin": "Remove PIN"
   },
 
   "pageMenu": {
@@ -368,7 +369,8 @@
     "product": "Product",
     "reports": "Reports",
     "meters": "Meters",
-    "tanks": "Tanks"
+    "tanks": "Tanks",
+    "assignments": "Assignments"
   },
 
   "messages": {
