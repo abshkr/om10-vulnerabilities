@@ -229,7 +229,9 @@
     "closingDensity": "Closing Density",
     "calculate": "Calc ?",
     "resetPin": "Reset PIN",
-    "removePin": "Remove PIN"
+    "removePin": "Remove PIN",
+    "equipmentCarrier": "Equipment Carrier",
+    "transportEquipment": "Transport Equipment"
   },
 
   "pageMenu": {
@@ -478,7 +480,15 @@
     "selectExpiryDateTarget": "Select Expiry Date Target",
     "selectRefTempSpec": "Select Ref Temp Spec",
     "selectCorrectionMethod": "Select Correction Method",
-    "selectAreaLocation": "Select Area Location"
+    "selectAreaLocation": "Select Area Location",
+    "selectIssuer": "Select Issuer",
+    "selectPhysicalType": "Select Physical Type",
+    "selectAssignmentType": "Select Assignment Type",
+    "selectPersonnel": "Select Personnel",
+    "selectDrawer": "Select Drawer",
+    "selectTanker": "Select Tanker",
+    "selectEquipmentCarrier": "Select Equipment Carrier",
+    "selectTransportEquipment": "Select Transport Equipment"
   },
 
   "validate": {

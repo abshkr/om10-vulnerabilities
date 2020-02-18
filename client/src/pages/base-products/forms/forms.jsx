@@ -1,10 +1,8 @@
 import React from 'react';
-
+import axios from 'axios';
 import useSWR, { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Button, Tabs, notification, Modal } from 'antd';
-
-import axios from 'axios';
 
 import {
   Code,

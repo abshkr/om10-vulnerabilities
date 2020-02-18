@@ -35,6 +35,7 @@ const AssignmentType = ({ form, value }) => {
         rules: [{ required: true, validator: validate }]
       })(
         <Select
+          disabled={!!value}
           loading={isValidating}
           showSearch
           optionFilterProp="children"

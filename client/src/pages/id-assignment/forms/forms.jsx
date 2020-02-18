@@ -1,7 +1,8 @@
 import React from 'react';
-
+import axios from 'axios';
+import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Form, Button, Tabs, Modal } from 'antd';
+import { Form, Button, Tabs, Modal, notification } from 'antd';
 
 import {
   AssignmentNumber,
@@ -11,7 +12,6 @@ import {
   PhysicalTagText,
   TimeCode,
   Flags,
-  Pin,
   Employer,
   Role,
   Personnel,
@@ -22,6 +22,7 @@ import {
   EquipmentCarrier,
   TransportEquipment
 } from './fields';
+import { ID_ASSIGNMENT } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -41,7 +42,26 @@ const FormModal = ({ form, value }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: async () => {}
+          onOk: async () => {
+            await axios
+              .post(ID_ASSIGNMENT.CREATE, values)
+              .then(
+                axios.spread(response => {
+                  mutate(ID_ASSIGNMENT.READ);
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t('messages.createSuccess'),
+                    description: t('descriptions.createSuccess')
+                  });
+                })
+              )
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t('descriptions.createFailed')
+                });
+              });
+          }
         });
       }
     });
@@ -56,7 +76,26 @@ const FormModal = ({ form, value }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: async () => {}
+          onOk: async () => {
+            await axios
+              .post(ID_ASSIGNMENT.UPDATE, values)
+              .then(
+                axios.spread(response => {
+                  mutate(ID_ASSIGNMENT.READ);
+                  Modal.destroyAll();
+                  notification.success({
+                    message: t('messages.updateSuccess'),
+                    description: t('descriptions.updateSuccess')
+                  });
+                })
+              )
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t('descriptions.updateFailed')
+                });
+              });
+          }
         });
       }
     });
@@ -69,7 +108,26 @@ const FormModal = ({ form, value }) => {
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
-      onOk: async () => {}
+      onOk: async () => {
+        await axios
+          .post(ID_ASSIGNMENT.DELETE, value)
+          .then(
+            axios.spread(response => {
+              mutate(ID_ASSIGNMENT.READ);
+              Modal.destroyAll();
+              notification.success({
+                message: t('messages.deleteSuccess'),
+                description: t('descriptions.deleteSuccess')
+              });
+            })
+          )
+          .catch(error => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.deleteFailed')
+            });
+          });
+      }
     });
   };
 
@@ -83,7 +141,6 @@ const FormModal = ({ form, value }) => {
             <PhysicalType form={form} value={value} />
             <PhysicalTagText form={form} value={value} />
             <TimeCode form={form} value={value} />
-            <Pin form={form} value={value} />
             <Flags form={form} value={value} />
           </TabPane>
 
@@ -102,7 +159,7 @@ const FormModal = ({ form, value }) => {
               </>
             )}
 
-            {['3', '5'].includes(type) && (
+            {['1', '3', '5'].includes(type) && (
               <>
                 <Personnel form={form} value={value} />
               </>
@@ -114,7 +171,7 @@ const FormModal = ({ form, value }) => {
               </>
             )}
 
-            {['1', '3', '5'].includes(type) && (
+            {['3', '5'].includes(type) && (
               <>
                 <Supplier form={form} value={value} />
               </>

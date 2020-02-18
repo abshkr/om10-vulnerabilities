@@ -10,8 +10,8 @@ const Flags = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        report_closeout_flag: value.report_closeout_flag,
-        report_ondemand_flag: value.report_ondemand_flag
+        kya_lock: value.kya_lock,
+        kya_adhoc: value.kya_adhoc
       });
     }
   }, [value, setFieldsValue]);
@@ -21,25 +21,25 @@ const Flags = ({ form, value }) => {
       <Divider>{t('divider.flags')}</Divider>
       <div style={{ display: 'flex' }}>
         <Form.Item>
-          {getFieldDecorator('report_closeout_flag', {
+          {getFieldDecorator('kya_lock', {
             valuePropName: 'checked'
           })(<Checkbox>{t('fields.locked')}</Checkbox>)}
         </Form.Item>
 
         <Form.Item>
-          {getFieldDecorator('report_ondemand_flag', {
+          {getFieldDecorator('kya_adhoc', {
             valuePropName: 'checked'
           })(<Checkbox>{t('fields.adhoc')}</Checkbox>)}
         </Form.Item>
 
         <Form.Item>
-          {getFieldDecorator('report_ondemand_flag', {
+          {getFieldDecorator('reset_pin', {
             valuePropName: 'checked'
           })(<Checkbox>{t('fields.resetPin')}</Checkbox>)}
         </Form.Item>
 
         <Form.Item>
-          {getFieldDecorator('report_ondemand_flag', {
+          {getFieldDecorator('remove_pin', {
             valuePropName: 'checked'
           })(<Checkbox>{t('fields.removePin')}</Checkbox>)}
         </Form.Item>

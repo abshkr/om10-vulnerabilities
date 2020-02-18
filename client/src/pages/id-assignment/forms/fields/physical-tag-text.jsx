@@ -47,7 +47,7 @@ const PhysicalTagText = ({ form, value }) => {
     >
       {getFieldDecorator('kya_txt', {
         rules: [{ required: true, validator: validate }]
-      })(<Input style={{ width: '100%' }} disabled={!!value || isValidating} />)}
+      })(<Input style={{ width: '100%' }} disabled={isValidating} />)}
     </Form.Item>
   );
 };
