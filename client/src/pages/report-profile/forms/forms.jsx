@@ -1,16 +1,18 @@
 import React from 'react';
 
 import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
-import _ from 'lodash';
-
-import { reportProfile } from '../../../api';
-
+import { useTranslation } from 'react-i18next';
+import { mutate } from 'swr';
 import axios from 'axios';
+
 import { Source, Type, Name, Description, CloseOutReportBy, Flags } from './fields';
+import { REPORT_PROFILE } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, refresh, value, t, data, access }) => {
+const FormModal = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
@@ -20,29 +22,26 @@ const FormModal = ({ form, refresh, value, t, data, access }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([reportProfile.createProfile(values)])
+          onOk: async () => {
+            await axios
+              .post(REPORT_PROFILE.CREATE, values)
               .then(
                 axios.spread(response => {
-                  refresh();
-
+                  mutate(REPORT_PROFILE.READ);
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.createSuccess'),
-                    description: `${t('descriptions.createSuccess')} ${values.report_name}`,
+                    description: t('descriptions.createSuccess')
                   });
-                }),
+                })
               )
-              .catch(errors => {
-                _.forEach(errors.response.data.errors, error => {
-                  notification.error({
-                    message: error.type,
-                    description: error.message,
-                  });
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t('messages.createFailed')
                 });
               });
-          },
+          }
         });
       }
     });
@@ -57,56 +56,30 @@ const FormModal = ({ form, refresh, value, t, data, access }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([reportProfile.updateProfile(values)])
+          onOk: async () => {
+            await axios
+              .post(REPORT_PROFILE.UPDATE, values)
               .then(
                 axios.spread(response => {
-                  refresh();
+                  mutate(REPORT_PROFILE.READ);
 
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.updateSuccess'),
-                    description: `${t('descriptions.updateSuccess')} ${values.report_name}`,
+                    description: t('descriptions.updateSuccess')
                   });
-                }),
+                })
               )
-              .catch(errors => {
-                _.forEach(errors.response.data.errors, error => {
-                  notification.error({
-                    message: error.type,
-                    description: error.message,
-                  });
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t('descriptions.updateFailed')
                 });
               });
-          },
+          }
         });
       }
     });
-  };
-
-  const handleDelete = () => {
-    axios
-      .all([reportProfile.deleteProfile(value)])
-      .then(
-        axios.spread(response => {
-          refresh();
-
-          Modal.destroyAll();
-          notification.success({
-            message: t('messages.deleteSuccess'),
-            description: `${t('descriptions.deleteSuccess')} ${value.report_name}`,
-          });
-        }),
-      )
-      .catch(errors => {
-        _.forEach(errors.response.data.errors, error => {
-          notification.error({
-            message: error.type,
-            description: error.message,
-          });
-        });
-      });
   };
 
   const showDeleteConfirm = () => {
@@ -116,70 +89,64 @@ const FormModal = ({ form, refresh, value, t, data, access }) => {
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
-      onOk: handleDelete,
+      onOk: async () => {
+        await axios
+          .post(REPORT_PROFILE.DELETE, value)
+          .then(
+            axios.spread(response => {
+              mutate(REPORT_PROFILE.READ);
+              Modal.destroyAll();
+              notification.success({
+                message: t('messages.deleteSuccess'),
+                description: `${t('descriptions.deleteSuccess')}`
+              });
+            })
+          )
+          .catch(error => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.deleteFailed')
+            });
+          });
+      }
     });
   };
-
-  const { getFieldValue } = form;
 
   return (
     <div>
       <Form>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.general')}
-            forceRender={true}
-            key="1"
-          >
-            <Source form={form} value={value} t={t} />
-            <Type
-              form={form}
-              value={value}
-              t={t}
-              data={data}
-              source={getFieldValue('report_jasper_file')}
-            />
-
-            <Name form={form} value={value} t={t} />
-            <CloseOutReportBy form={form} value={value} t={t} />
-
-            <Description form={form} value={value} t={t} />
-
+          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
+            <Source form={form} value={value} />
+            <Type form={form} value={value} />
+            <Name form={form} value={value} />
+            <CloseOutReportBy form={form} value={value} />
+            <Description form={form} value={value} />
             <Divider>{t('divider.flags')}</Divider>
-            <Flags form={form} value={value} t={t} />
+            <Flags form={form} value={value} />
           </TabPane>
         </Tabs>
       </Form>
 
-      <Button
-        shape="round"
-        icon="close"
-        style={{ float: 'right' }}
-        onClick={() => Modal.destroyAll()}
-      >
+      <Button icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
         {t('operations.cancel')}
       </Button>
 
       <Button
-        shape="round"
         type="primary"
-        disabled={!!value ? !access.canUpdate : !access.canCreate}
-        icon={!!value ? 'edit' : 'plus'}
+        icon={value ? 'edit' : 'plus'}
         style={{ float: 'right', marginRight: 5 }}
-        onClick={!!value ? handleUpdate : handleCreate}
+        onClick={value ? handleUpdate : handleCreate}
       >
-        {!!value ? t('operations.update') : t('operations.create')}
+        {value ? t('operations.update') : t('operations.create')}
       </Button>
 
-      {!!value && (
+      {value && (
         <Button
-          shape="round"
           type="danger"
           icon="delete"
           style={{ float: 'right', marginRight: 5 }}
           onClick={showDeleteConfirm}
-          disabled={!access.canDelete}
         >
           {t('operations.delete')}
         </Button>

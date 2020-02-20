@@ -1,18 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
-import axios from 'axios';
+import useSWR from 'swr';
 import _ from 'lodash';
 
-import { reportConfiguration } from '../../../../api';
+import { REPORT_CONFIGURATION } from '../../../../api';
 
-const Name = ({ form, value, t, data, source }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+const Name = ({ form, value }) => {
+  const { t } = useTranslation();
 
-  const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
+  const { data: options, isValidating } = useSWR(REPORT_CONFIGURATION.REPORTS);
+  const { data } = useSWR(REPORT_CONFIGURATION.READ);
+
+  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+
+  const source = getFieldValue('report_cmpycode');
 
   const validate = (rule, input, callback) => {
-    const match = _.find(data, value => {
+    const match = _.find(data?.records, value => {
       return value.report_cmpycode === source && value.report_file === input;
     });
 
@@ -28,29 +33,17 @@ const Name = ({ form, value, t, data, source }) => {
   };
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        report_file: value.report_file,
+        report_file: value.report_file
       });
     }
-
-    const getContext = () => {
-      axios.all([reportConfiguration.readReports()]).then(
-        axios.spread(options => {
-          setOptions(options.data.records);
-          setLoading(false);
-        }),
-      );
-    };
-
-    setLoading(true);
-    getContext();
   }, [value, setFieldsValue]);
 
   useEffect(() => {
     if (!value) {
       setFieldsValue({
-        report_file: undefined,
+        report_file: undefined
       });
     }
   }, [source, setFieldsValue, value]);
@@ -58,10 +51,10 @@ const Name = ({ form, value, t, data, source }) => {
   return (
     <Form.Item label={t('fields.reportName')}>
       {getFieldDecorator('report_file', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(
         <Select
-          loading={isLoading}
+          loading={isValidating}
           disabled={!!value}
           showSearch
           optionFilterProp="children"
@@ -70,12 +63,12 @@ const Name = ({ form, value, t, data, source }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {options.map(item => (
+          {options?.records.map(item => (
             <Select.Option key={item.report_file} value={item.report_file}>
               {item.report_name}
             </Select.Option>
           ))}
-        </Select>,
+        </Select>
       )}
     </Form.Item>
   );

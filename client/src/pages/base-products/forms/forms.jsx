@@ -45,7 +45,7 @@ const FormModal = ({ form, value }) => {
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.createSuccess'),
-                    description: t('messages.createSuccess')
+                    description: t('descriptions.createSuccess')
                   });
                 })
               )
@@ -80,7 +80,7 @@ const FormModal = ({ form, value }) => {
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.updateSuccess'),
-                    description: t('messages.updateSuccess')
+                    description: t('descriptions.updateSuccess')
                   });
                 })
               )

@@ -1,2 +1,3 @@
-import ReportProfile from "./reportProfile";
+import ReportProfile from './report-profile';
+
 export default ReportProfile;

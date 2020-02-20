@@ -1,8 +1,13 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 
-const Email = ({ form, value, t, enabled }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+const Email = ({ form, value }) => {
+  const { t } = useTranslation();
+
+  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+
+  const enabled = getFieldValue('report_canemail') && getFieldValue('report_enabled');
 
   const validate = (rule, input, callback) => {
     // eslint-disable-next-line
@@ -20,9 +25,9 @@ const Email = ({ form, value, t, enabled }) => {
   };
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        report_cmpyemail: value.report_cmpyemail,
+        report_cmpyemail: value.report_cmpyemail
       });
     }
   }, [value, setFieldsValue]);
@@ -30,7 +35,7 @@ const Email = ({ form, value, t, enabled }) => {
   return (
     <Form.Item label={t('fields.email')} help={t('descriptions.emailDescription')}>
       {getFieldDecorator('report_cmpyemail', {
-        rules: [{ required: enabled, validator: validate }],
+        rules: [{ required: enabled, validator: validate }]
       })(<Input disabled={!enabled} />)}
     </Form.Item>
   );

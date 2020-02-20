@@ -1,31 +1,40 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
+import useSWR from 'swr';
 import _ from 'lodash';
 
-const Type = ({ form, value, t, data, source }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+import { REPORT_PROFILE } from '../../../../api';
 
-  const options = [
-    {
-      key: 'None',
-      value: 'N',
-    },
-    {
-      key: 'Daily',
-      value: 'D',
-    },
-    {
-      key: 'Weekly',
-      value: 'W',
-    },
-    {
-      key: 'Monthly',
-      value: 'M',
-    },
-  ];
+const options = [
+  {
+    key: 'None',
+    value: 'N'
+  },
+  {
+    key: 'Daily',
+    value: 'D'
+  },
+  {
+    key: 'Weekly',
+    value: 'W'
+  },
+  {
+    key: 'Monthly',
+    value: 'M'
+  }
+];
+
+const Type = ({ form, value }) => {
+  const { t } = useTranslation();
+  const { data } = useSWR(REPORT_PROFILE.READ);
+
+  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+
+  const source = getFieldValue('report_jasper_file');
 
   const validate = (rule, input, callback) => {
-    const match = _.find(data, value => {
+    const match = _.find(data?.records, value => {
       return value.report_jasper_file === source && value.report_type === input;
     });
 
@@ -41,9 +50,9 @@ const Type = ({ form, value, t, data, source }) => {
   };
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        report_type: value.report_type,
+        report_type: value.report_type
       });
     }
   }, [value, setFieldsValue]);
@@ -51,7 +60,7 @@ const Type = ({ form, value, t, data, source }) => {
   useEffect(() => {
     if (!value) {
       setFieldsValue({
-        report_type: undefined,
+        report_type: undefined
       });
     }
   }, [source, setFieldsValue, value]);
@@ -59,7 +68,7 @@ const Type = ({ form, value, t, data, source }) => {
   return (
     <Form.Item label={t('fields.type')}>
       {getFieldDecorator('report_type', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(
         <Select
           disabled={!!value}
@@ -75,7 +84,7 @@ const Type = ({ form, value, t, data, source }) => {
               {item.key}
             </Select.Option>
           ))}
-        </Select>,
+        </Select>
       )}
     </Form.Item>
   );

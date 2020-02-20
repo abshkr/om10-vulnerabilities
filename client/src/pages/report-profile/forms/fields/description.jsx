@@ -1,13 +1,16 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 
-const Description = ({ form, value, t }) => {
+const Description = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        report_desc: value.report_desc,
+        report_desc: value.report_desc
       });
     }
   }, [value, setFieldsValue]);
@@ -22,7 +25,7 @@ const Description = ({ form, value, t }) => {
   return (
     <Form.Item label={t('fields.description')}>
       {getFieldDecorator('report_desc', {
-        rules: [{ required: false, validator: validate }],
+        rules: [{ required: false, validator: validate }]
       })(<Input />)}
     </Form.Item>
   );

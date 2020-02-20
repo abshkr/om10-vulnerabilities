@@ -1,18 +1,21 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 
-const CloseOutReportBy = ({ form, value, t }) => {
+const CloseOutReportBy = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const { getFieldDecorator, setFieldsValue } = form;
 
   const options = [
     {
       key: 'Date Range [Start/End Date]',
-      value: false,
+      value: false
     },
     {
       key: 'Folio Range [Start/End Folio Number]',
-      value: true,
-    },
+      value: true
+    }
   ];
 
   const validate = (rule, input, callback) => {
@@ -24,9 +27,9 @@ const CloseOutReportBy = ({ form, value, t }) => {
   };
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        report_closeout_flag2: value.report_closeout_flag2,
+        report_closeout_flag2: value.report_closeout_flag2
       });
     }
   }, [value, setFieldsValue]);
@@ -34,7 +37,7 @@ const CloseOutReportBy = ({ form, value, t }) => {
   return (
     <Form.Item label={t('fields.closeOutReportBy')}>
       {getFieldDecorator('report_closeout_flag2', {
-        rules: [{ required: true, validator: validate }],
+        rules: [{ required: true, validator: validate }]
       })(
         <Select
           showSearch
@@ -49,7 +52,7 @@ const CloseOutReportBy = ({ form, value, t }) => {
               {item.key}
             </Select.Option>
           ))}
-        </Select>,
+        </Select>
       )}
     </Form.Item>
   );

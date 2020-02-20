@@ -2,10 +2,11 @@ import * as tanks from './tanks';
 
 import * as personnel from './personnel';
 import * as equipmentList from './equipment-list';
-import * as reportConfiguration from './report-configuration';
 import * as reportProfile from './report-profile';
 import * as tankerList from './tanker-list';
 
+import * as REPORT_PROFILE from './report-profile';
+import * as REPORT_CONFIGURATION from './report-configuration';
 import * as ID_ASSIGNMENT from './id-assignment';
 import * as FOLIO_SUMMARY from './folio-summary';
 import * as PERSONNEL from './personnel';
@@ -32,7 +33,6 @@ export {
   tanks,
   personnel,
   equipmentList,
-  reportConfiguration,
   reportProfile,
   tankerList,
   TIME_CODES,
@@ -55,5 +55,7 @@ export {
   FSC_STATUS,
   GATE_CONTROL,
   PERSONNEL,
-  FOLIO_SUMMARY
+  FOLIO_SUMMARY,
+  REPORT_CONFIGURATION,
+  REPORT_PROFILE
 };

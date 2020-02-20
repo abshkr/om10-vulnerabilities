@@ -1,15 +1,18 @@
 import React from 'react';
 
 import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { mutate } from 'swr';
 import axios from 'axios';
-import _ from 'lodash';
 
-import { reportConfiguration } from '../../../api';
+import { REPORT_CONFIGURATION } from '../../../api';
 import { Company, Name, Email, Flags } from './fields';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, refresh, value, t, data, access }) => {
+const FormModal = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
@@ -19,29 +22,26 @@ const FormModal = ({ form, refresh, value, t, data, access }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([reportConfiguration.createConfiguration(values)])
+          onOk: async () => {
+            await axios
+              .post(REPORT_CONFIGURATION.CREATE, values)
               .then(
                 axios.spread(response => {
-                  refresh();
-
+                  mutate(REPORT_CONFIGURATION.READ);
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.createSuccess'),
-                    description: `${t('descriptions.createSuccess')} ${values.report_file}`,
+                    description: t('descriptions.createSuccess')
                   });
-                }),
+                })
               )
-              .catch(errors => {
-                _.forEach(errors.response.data.errors, error => {
-                  notification.error({
-                    message: error.type,
-                    description: error.message,
-                  });
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t('messages.createFailed')
                 });
               });
-          },
+          }
         });
       }
     });
@@ -56,56 +56,30 @@ const FormModal = ({ form, refresh, value, t, data, access }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([reportConfiguration.updateConfiguration(values)])
+          onOk: async () => {
+            await axios
+              .post(REPORT_CONFIGURATION.UPDATE, values)
               .then(
                 axios.spread(response => {
-                  refresh();
+                  mutate(REPORT_CONFIGURATION.READ);
 
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.updateSuccess'),
-                    description: `${t('descriptions.updateSuccess')} ${values.report_file}`,
+                    description: t('descriptions.updateSuccess')
                   });
-                }),
+                })
               )
-              .catch(errors => {
-                _.forEach(errors.response.data.errors, error => {
-                  notification.error({
-                    message: error.type,
-                    description: error.message,
-                  });
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t('descriptions.updateFailed')
                 });
               });
-          },
+          }
         });
       }
     });
-  };
-
-  const handleDelete = () => {
-    axios
-      .all([reportConfiguration.deleteConfiguration(value)])
-      .then(
-        axios.spread(response => {
-          refresh();
-
-          Modal.destroyAll();
-          notification.success({
-            message: t('messages.deleteSuccess'),
-            description: `${t('descriptions.deleteSuccess')} ${value.report_file}`,
-          });
-        }),
-      )
-      .catch(errors => {
-        _.forEach(errors.response.data.errors, error => {
-          notification.error({
-            message: error.type,
-            description: error.message,
-          });
-        });
-      });
   };
 
   const showDeleteConfirm = () => {
@@ -115,76 +89,62 @@ const FormModal = ({ form, refresh, value, t, data, access }) => {
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
-      onOk: handleDelete,
+      onOk: async () => {
+        await axios
+          .post(REPORT_CONFIGURATION.DELETE, value)
+          .then(
+            axios.spread(response => {
+              mutate(REPORT_CONFIGURATION.READ);
+              Modal.destroyAll();
+              notification.success({
+                message: t('messages.deleteSuccess'),
+                description: `${t('descriptions.deleteSuccess')}`
+              });
+            })
+          )
+          .catch(error => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.deleteFailed')
+            });
+          });
+      }
     });
   };
-
-  const { getFieldValue } = form;
 
   return (
     <div>
       <Form>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.general')}
-            forceRender={true}
-            key="1"
-          >
-            <Company form={form} value={value} t={t} />
-            <Name
-              form={form}
-              value={value}
-              t={t}
-              data={data}
-              source={getFieldValue('report_cmpycode')}
-            />
-            <Email
-              form={form}
-              value={value}
-              t={t}
-              enabled={getFieldValue('report_canemail') && getFieldValue('report_enabled')}
-            />
+          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} key="1">
+            <Company form={form} value={value} />
+            <Name form={form} value={value} />
+            <Email form={form} value={value} />
             <Divider>{t('divider.flags')}</Divider>
-            <Flags
-              form={form}
-              value={value}
-              t={t}
-              enabled={getFieldValue('report_enabled')}
-              canEmail={getFieldValue('report_canemail')}
-            />
+            <Flags form={form} value={value} />
           </TabPane>
         </Tabs>
       </Form>
 
-      <Button
-        shape="round"
-        icon="close"
-        style={{ float: 'right' }}
-        onClick={() => Modal.destroyAll()}
-      >
+      <Button icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
         {t('operations.cancel')}
       </Button>
 
       <Button
-        shape="round"
         type="primary"
-        disabled={!!value ? !access.canUpdate : !access.canCreate}
-        icon={!!value ? 'edit' : 'plus'}
+        icon={value ? 'edit' : 'plus'}
         style={{ float: 'right', marginRight: 5 }}
-        onClick={!!value ? handleUpdate : handleCreate}
+        onClick={value ? handleUpdate : handleCreate}
       >
-        {!!value ? t('operations.update') : t('operations.create')}
+        {value ? t('operations.update') : t('operations.create')}
       </Button>
 
-      {!!value && (
+      {value && (
         <Button
-          shape="round"
           type="danger"
           icon="delete"
           style={{ float: 'right', marginRight: 5 }}
           onClick={showDeleteConfirm}
-          disabled={!access.canDelete}
         >
           {t('operations.delete')}
         </Button>

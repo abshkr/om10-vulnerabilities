@@ -1,2 +1,3 @@
-import ReportConfiguration from "./reportConfiguration";
+import ReportConfiguration from './report-configuration';
+
 export default ReportConfiguration;

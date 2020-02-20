@@ -1,28 +1,29 @@
 import React from 'react';
 
-import useSWR from 'swr';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
 
 import { Page, DataTable, Download, FormModal } from '../../components';
-import { TIME_CODES } from '../../api';
+import { REPORT_CONFIGURATION } from '../../api';
 
 import columns from './columns';
 import auth from '../../auth';
+import Forms from './forms';
 
-const ReportProfile = () => {
+const ReportConfiguration = () => {
   const { t } = useTranslation();
 
-  const { data: payload, isValidating, revalidate } = useSWR(TIME_CODES.READ);
+  const { data: payload, isValidating, revalidate } = useSWR(REPORT_CONFIGURATION.READ);
 
   const fields = columns(t);
 
   const handleClick = value => {
     FormModal({
       value,
-      form: <div />,
-      id: 'test',
-      name: 'test',
+      form: <Forms value={value} />,
+      id: value?.report_cmpyname,
+      name: value?.report_cmpycode,
       t
     });
   };
@@ -40,10 +41,10 @@ const ReportProfile = () => {
   );
 
   return (
-    <Page page={t('pageMenu.reports')} name={t('pageNames.reportProfile')} modifiers={modifiers}>
+    <Page page={t('pageMenu.reports')} name={t('pageNames.reportConfiguration')} modifiers={modifiers}>
       <DataTable columns={fields} data={payload?.records} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );
 };
 
-export default auth(ReportProfile);
+export default auth(ReportConfiguration);
