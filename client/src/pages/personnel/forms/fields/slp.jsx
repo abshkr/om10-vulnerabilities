@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { Form, Input, Tooltip, Icon } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-const SLP = ({ form, value, t }) => {
+const SLP = ({ form, value }) => {
+  const { t } = useTranslation();
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         slp_id: value.slp_id
       });
@@ -28,12 +30,7 @@ const SLP = ({ form, value, t }) => {
           disabled
           addonAfter={
             <Tooltip title="This functionality is not available at this stage.">
-              <Icon
-                type="info-circle"
-                theme="twoTone"
-                twoToneColor="#68a4ec"
-                style={{ fontSize: 16 }}
-              />
+              <Icon type="info-circle" theme="twoTone" twoToneColor="#68a4ec" style={{ fontSize: 16 }} />
             </Tooltip>
           }
         />

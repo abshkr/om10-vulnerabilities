@@ -1,55 +1,47 @@
-import React, { useState, useEffect } from "react";
-import { personnel } from "../../../../api";
-import { Form, Select } from "antd";
-import axios from "axios";
+import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Form, Select } from 'antd';
+import useSWR from 'swr';
 
-const Employer = ({ form, value, t }) => {
+import { PERSONNEL } from '../../../../api';
+
+const Employer = ({ form, value }) => {
+  const { t } = useTranslation();
+  const { data: options, isValidating } = useSWR(PERSONNEL.EMPLOYERS);
+
   const { getFieldDecorator, setFieldsValue } = form;
 
-  const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
-
   const validate = (rule, input, callback) => {
-    if (input === "" || !input) {
-      callback(`${t("validate.select")} ─ ${t("fields.employer")}`);
+    if (input === '' || !input) {
+      callback(`${t('validate.select')} ─ ${t('fields.employer')}`);
     }
 
     callback();
   };
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         per_cmpy: value.per_cmpy
       });
     }
-
-    const getContext = () => {
-      axios.all([personnel.readPersonnelEmployers()]).then(
-        axios.spread(options => {
-          setOptions(options.data.records);
-          setLoading(false);
-        })
-      );
-    };
-
-    setLoading(true);
-    getContext();
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t("fields.employer")}>
-      {getFieldDecorator("per_cmpy", {
+    <Form.Item label={t('fields.employer')}>
+      {getFieldDecorator('per_cmpy', {
         rules: [{ required: true, validator: validate }]
       })(
         <Select
-          loading={isLoading}
+          loading={isValidating}
           showSearch
           optionFilterProp="children"
-          placeholder={!value ? t("placeholder.selectEmployer") : null}
-          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          placeholder={!value ? t('placeholder.selectEmployer') : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
         >
-          {options.map((item, index) => (
+          {options?.records.map((item, index) => (
             <Select.Option key={index} value={item.cmpy_code}>
               {item.cmpy_name}
             </Select.Option>

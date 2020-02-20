@@ -1,25 +1,27 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
 import { Form, Select, Checkbox, Divider } from 'antd';
-import { personnel } from '../../../../api';
-import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
 import _ from 'lodash';
 
-const Lock = ({ form, value, t }) => {
-  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+import { PERSONNEL } from '../../../../api';
 
-  const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
+const Lock = ({ form, value }) => {
+  const { t } = useTranslation();
+  const { data, isValidating } = useSWR(PERSONNEL.AREAS);
+
+  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
 
   const choices = [
     {
       key: 'Yes',
-      value: 'Y',
+      value: 'Y'
     },
     {
       key: 'No',
-      value: 'N',
-    },
+      value: 'N'
+    }
   ];
 
   const handleAreaConversion = useCallback(values => {
@@ -28,7 +30,7 @@ const Lock = ({ form, value, t }) => {
     _.forEach(values, object => {
       payload.push({
         label: object.area_name,
-        value: object.area_k,
+        value: object.area_k
       });
     });
 
@@ -36,29 +38,19 @@ const Lock = ({ form, value, t }) => {
   }, []);
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         per_lock: value.per_lock,
-        area_accesses: value.area_accesses,
+        area_accesses: value.area_accesses
       });
     } else {
       setFieldsValue({
-        per_lock: 'N',
+        per_lock: 'N'
       });
     }
-
-    const getContext = () => {
-      axios.all([personnel.readPersonnelAreas()]).then(
-        axios.spread(options => {
-          setOptions(handleAreaConversion(options.data.records));
-          setLoading(false);
-        }),
-      );
-    };
-
-    setLoading(true);
-    getContext();
   }, [value, setFieldsValue, handleAreaConversion]);
+
+  const options = handleAreaConversion(data?.records);
 
   return (
     <div className="personnel-lock">
@@ -70,7 +62,7 @@ const Lock = ({ form, value, t }) => {
                 {item.key}
               </Select.Option>
             ))}
-          </Select>,
+          </Select>
         )}
       </Form.Item>
       <Divider />
@@ -78,9 +70,9 @@ const Lock = ({ form, value, t }) => {
         {getFieldDecorator('area_accesses')(
           <Checkbox.Group
             style={{ display: 'flex', flexDirection: 'column' }}
-            disabled={getFieldValue('per_lock') === 'Y' || isLoading}
+            disabled={getFieldValue('per_lock') === 'Y' || isValidating}
             options={options}
-          />,
+          />
         )}
       </Form.Item>
     </div>

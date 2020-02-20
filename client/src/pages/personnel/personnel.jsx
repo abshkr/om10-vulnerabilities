@@ -1,75 +1,40 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 
-import _ from 'lodash';
-import { Modal, notification, Button } from 'antd';
-import axios from 'axios';
+import { Button } from 'antd';
+import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
 
-import { authLevel } from '../../utils';
-import { Page, DataTable, Download } from '../../components';
-import { personnel } from '../../api';
+import { Page, DataTable, Download, FormModal } from '../../components';
+import { PERSONNEL } from '../../api';
 
-import auth from '../../auth';
 import columns from './columns';
+import auth from '../../auth';
 import Forms from './forms';
 
-const Personnel = ({ configuration, t, user }) => {
-  const [data, setData] = useState([]);
-  const [expiry, setExpiry] = useState([]);
-  const [isLoading, setLoading] = useState(true);
+const Personnel = () => {
+  const { t } = useTranslation();
+
+  const { data: payload, isValidating, revalidate } = useSWR(PERSONNEL.READ);
 
   const fields = columns(t);
 
-  const handleClick = object => {
-    const access = authLevel(user, 'HTML_PERSONNEL');
-
-    Modal.info({
-      title: object
-        ? `${t('operations.editing')} (${object.per_code} / ${object.per_name})`
-        : `${t('operations.create')}`,
-      centered: true,
-      width: '50vw',
-      icon: object ? 'edit' : 'form',
-      content: <Forms value={object} refresh={fetch} t={t} expiry={expiry} data={data} access={access} />,
-      okButtonProps: {
-        style: { display: 'none' }
-      }
+  const handleClick = value => {
+    FormModal({
+      value,
+      form: <Forms value={value} />,
+      id: value?.per_code,
+      name: value?.per_name,
+      t
     });
   };
 
-  const fetch = useCallback(() => {
-    setLoading(true);
-    axios
-      .all([personnel.readPersonnel(), personnel.readPersonnelExpiryTypes()])
-      .then(
-        axios.spread((personnel, expiry) => {
-          setExpiry(expiry.data.records);
-          setData(personnel.data.records);
-          setLoading(false);
-        })
-      )
-      .catch(errors => {
-        setLoading(false);
-
-        _.forEach(errors.response.data.errors, error => {
-          notification.error({
-            message: error.type,
-            description: error.message
-          });
-        });
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch();
-  }, [fetch]);
-
   const modifiers = (
     <>
-      <Button icon="sync" onClick={() => fetch()} loading={isLoading}>
+      <Button icon="sync" onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
-      <Download data={data} isLoading={isLoading} columns={fields} />
-      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isLoading}>
+      <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isValidating}>
         {t('operations.create')}
       </Button>
     </>
@@ -77,7 +42,7 @@ const Personnel = ({ configuration, t, user }) => {
 
   return (
     <Page page={t('pageMenu.accessControl')} name={t('pageNames.personnel')} modifiers={modifiers}>
-      <DataTable columns={fields} data={data} isLoading={isLoading} onClick={handleClick} t={t} />
+      <DataTable columns={fields} data={payload?.records} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );
 };

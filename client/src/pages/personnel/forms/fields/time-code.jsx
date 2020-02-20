@@ -5,15 +5,15 @@ import useSWR from 'swr';
 
 import { PERSONNEL } from '../../../../api';
 
-const Role = ({ form, value }) => {
+const TimeCode = ({ form, value }) => {
   const { t } = useTranslation();
-  const { data: options, isValidating } = useSWR(PERSONNEL.ROLES);
+  const { data: options, isValidating } = useSWR(PERSONNEL.TIME_CODES);
 
   const { getFieldDecorator, setFieldsValue } = form;
 
   const validate = (rule, input, callback) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.role')}`);
+      callback(`${t('validate.select')} ─ ${t('fields.timeCode')}`);
     }
 
     callback();
@@ -22,28 +22,28 @@ const Role = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        per_auth: value.per_auth
+        pt_timecd: value.pt_timecd
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.role')}>
-      {getFieldDecorator('per_auth', {
+    <Form.Item label={t('fields.timeCode')}>
+      {getFieldDecorator('pt_timecd', {
         rules: [{ required: true, validator: validate }]
       })(
         <Select
           loading={isValidating}
           showSearch
           optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectRole') : null}
+          placeholder={!value ? t('placeholder.selectTimeCode') : null}
           filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
           {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.role_id}>
-              {item.auth_level_name}
+            <Select.Option key={index} value={item.tcd_title}>
+              {item.tcd_title}
             </Select.Option>
           ))}
         </Select>
@@ -52,4 +52,4 @@ const Role = ({ form, value }) => {
   );
 };
 
-export default Role;
+export default TimeCode;

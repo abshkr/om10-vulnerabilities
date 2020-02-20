@@ -1,12 +1,19 @@
-import React, { useEffect } from "react";
-import { Form, Input } from "antd";
-import _ from "lodash";
+import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Form, Input } from 'antd';
+import useSWR from 'swr';
+import _ from 'lodash';
 
-const Code = ({ form, value, t, data }) => {
+import { PERSONNEL } from '../../../../api';
+
+const Code = ({ form, value }) => {
+  const { t } = useTranslation();
+  const { data, isValidating } = useSWR(PERSONNEL.READ);
+
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         per_code: value.per_code
       });
@@ -14,27 +21,27 @@ const Code = ({ form, value, t, data }) => {
   }, [value, setFieldsValue]);
 
   const validate = (rule, input, callback) => {
-    const match = _.find(data, ["per_code", input]);
+    const match = _.find(data?.records, ['per_code', input]);
 
-    if (input === "" || !input) {
-      callback(`${t("validate.set")} ─ ${t("fields.code")}`);
+    if (input === '' || !input) {
+      callback(`${t('validate.set')} ─ ${t('fields.code')}`);
     }
 
     if (input && !!match && !value) {
-      callback(t("descriptions.alreadyExists"));
+      callback(t('descriptions.alreadyExists'));
     }
 
     if (input && input.length > 12) {
-      callback(`${t("placeholder.maxCharacters")}: 12 ─ ${t("descriptions.maxCharacters")}`);
+      callback(`${t('placeholder.maxCharacters')}: 12 ─ ${t('descriptions.maxCharacters')}`);
     }
     callback();
   };
 
   return (
-    <Form.Item label={t("fields.code")}>
-      {getFieldDecorator("per_code", {
+    <Form.Item label={t('fields.code')}>
+      {getFieldDecorator('per_code', {
         rules: [{ required: true, validator: validate }]
-      })(<Input disabled={!!value} />)}
+      })(<Input disabled={!!value || isValidating} />)}
     </Form.Item>
   );
 };

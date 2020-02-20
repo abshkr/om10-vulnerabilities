@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 
-const Status = ({ form, value, t }) => {
+const Status = ({ form, value }) => {
+  const { t } = useTranslation();
   const { getFieldDecorator, setFieldsValue } = form;
 
   const [options] = useState([
@@ -20,7 +22,7 @@ const Status = ({ form, value, t }) => {
   ]);
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         user_status_flag: value.user_status_flag
       });

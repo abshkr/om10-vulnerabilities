@@ -12,6 +12,8 @@ import NavBar from './nav-bar';
 import Interface from './interface';
 import FormModal from './form-modal';
 import IButton from './i-button';
+import CheckList from './check-list';
+import PasswordReset from './password-reset';
 
 export {
   Expiry,
@@ -27,5 +29,7 @@ export {
   NavBar,
   Interface,
   FormModal,
-  IButton
+  IButton,
+  CheckList,
+  PasswordReset
 };

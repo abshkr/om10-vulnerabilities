@@ -1,8 +1,10 @@
 import React from 'react';
-import columns from './columns';
 import { Table } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-const BulkEdit = ({ form, matches, t }) => {
+const CheckList = ({ form, matches, rowKey, columns }) => {
+  const { t } = useTranslation();
+
   const { getFieldDecorator, setFieldsValue } = form;
 
   getFieldDecorator('bulk_edit');
@@ -20,17 +22,15 @@ const BulkEdit = ({ form, matches, t }) => {
       <Table
         size="small"
         bordered
-        title={() => (
-          <span style={{ textAlign: 'center' }}>{t('descriptions.expiryDateTable')}</span>
-        )}
-        rowKey="per_code"
+        title={() => <span style={{ textAlign: 'center' }}>{t('descriptions.expiryDateTable')}</span>}
+        rowKey={rowKey}
         pagination={false}
         rowSelection={rowSelection}
-        columns={columns(t)}
+        columns={columns}
         dataSource={matches}
       />
     </div>
   );
 };
 
-export default BulkEdit;
+export default CheckList;

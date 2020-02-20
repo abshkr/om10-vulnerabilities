@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { Input, Button, Modal, notification, Form } from 'antd';
-import { personnel } from '../../../../api';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import _ from 'lodash';
 
-const PasswordReset = ({ value, t }) => {
+import { PERSONNEL } from '../../api';
+
+const PasswordReset = ({ value }) => {
+  const { t } = useTranslation();
+
   const [password, setPassword] = useState(_.times(7, () => _.random(35).toString(36)).join(''));
 
   const randomize = () => {
@@ -12,30 +16,24 @@ const PasswordReset = ({ value, t }) => {
   };
 
   const handleSubmit = () => {
-    if (!!value) {
+    if (value) {
       const user = value.per_code;
-      const hashed = {
-        lang: 'EN',
-        user,
-        psw: password,
-      };
 
-      axios.all([personnel.updatePersonnelPassword(hashed.user, hashed.psw)]).then(
-        axios.spread(response => {
+      axios
+        .post(`${PERSONNEL.UPDATE_PASSWORD}?per_code=${user}&password=${password}`)
+        .then(response => {
           Modal.destroyAll();
-          if (response.data.result === 0) {
-            notification.success({
-              message: t('messages.updateSuccess'),
-              description: response.data.message,
-            });
-          } else {
-            notification.error({
-              message: t('messages.updateFailed'),
-              description: response.data.message,
-            });
-          }
-        }),
-      );
+          notification.success({
+            message: t('messages.updateSuccess'),
+            description: response.data.message
+          });
+        })
+        .catch(error => {
+          notification.error({
+            message: t('messages.updateFailed'),
+            description: error.data.message
+          });
+        });
     }
   };
 
@@ -51,7 +49,7 @@ const PasswordReset = ({ value, t }) => {
   return (
     <div>
       <Form.Item label={t('fields.user')}>
-        <Input value={!!value && value.per_code} disabled />
+        <Input value={value?.per_code} disabled />
       </Form.Item>
 
       <Form.Item label={t('fields.password')}>
@@ -59,13 +57,7 @@ const PasswordReset = ({ value, t }) => {
       </Form.Item>
 
       <div style={{ marginTop: 30, display: 'flex', justifyContent: 'space-around' }}>
-        <Button
-          icon="wallet"
-          shape="round"
-          type="default"
-          onClick={randomize}
-          style={{ marginRight: 5 }}
-        >
+        <Button icon="wallet" shape="round" type="default" onClick={randomize} style={{ marginRight: 5 }}>
           {t('operations.randomize')}
         </Button>
         <Button icon="copy" shape="round" type="dashed" onClick={copy} style={{ marginRight: 5 }}>

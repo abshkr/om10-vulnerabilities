@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
 
 import { Table, Button, Popconfirm, Icon } from 'antd';
+import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import _ from 'lodash';
 
 import Cell from './cell';
 import Row from './row';
+import useSWR from 'swr';
 
-const Expiry = ({ form, value, t, types }) => {
+const Expiry = ({ form, value, type }) => {
+  const { t } = useTranslation();
+  const { data: payload, isValidating } = useSWR(type);
+
   const [count, setCount] = useState(value ? value.expiry_dates.length : 3);
-  const [data, setData] = useState(!!value ? value.expiry_dates : []);
+  const [data, setData] = useState(value ? value.expiry_dates : []);
+
   const { getFieldDecorator, setFieldsValue } = form;
 
   const handleSave = row => {
@@ -33,7 +39,7 @@ const Expiry = ({ form, value, t, types }) => {
   const handleAdd = () => {
     const uniqueExpiry = _.uniq(_.map(data, 'edt_type_code'));
 
-    const values = _.reject(types, value => {
+    const values = _.reject(payload?.records, value => {
       return uniqueExpiry.includes(value.edt_type_code);
     });
 
@@ -128,7 +134,7 @@ const Expiry = ({ form, value, t, types }) => {
         editable: col.editable,
         dataIndex: col.dataIndex,
         title: col.title,
-        expiry: types,
+        expiry: payload?.records,
         handleSave: handleSave
       })
     };
@@ -144,7 +150,7 @@ const Expiry = ({ form, value, t, types }) => {
         onClick={handleAdd}
         type="primary"
         style={{ marginBottom: 16 }}
-        disabled={data.length === types.length}
+        disabled={data.length === payload?.records.length}
       >
         {t('operations.addNewExpiry')}
       </Button>
@@ -158,6 +164,7 @@ const Expiry = ({ form, value, t, types }) => {
             cell: Cell
           }
         }}
+        loading={isValidating}
         rowClassName={() => 'editable-row'}
         bordered
         dataSource={data}

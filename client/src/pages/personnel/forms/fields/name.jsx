@@ -1,11 +1,13 @@
-import React, { useEffect } from "react";
-import { Form, Input } from "antd";
+import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Form, Input } from 'antd';
 
-const Name = ({ form, value, t }) => {
+const Name = ({ form, value }) => {
+  const { t } = useTranslation();
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         per_name: value.per_name
       });
@@ -13,19 +15,19 @@ const Name = ({ form, value, t }) => {
   }, [value, setFieldsValue]);
 
   const validate = (rule, input, callback) => {
-    if (input === "" || !input) {
-      callback(`${t("validate.set")} ─ ${t("fields.name")}`);
+    if (input === '' || !input) {
+      callback(`${t('validate.set')} ─ ${t('fields.name')}`);
     }
 
     if (input && input.length > 100) {
-      callback(`${t("placeholder.maxCharacters")}: 100 ─ ${t("descriptions.maxCharacters")}`);
+      callback(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
     }
     callback();
   };
 
   return (
-    <Form.Item label={t("fields.name")}>
-      {getFieldDecorator("per_name", {
+    <Form.Item label={t('fields.name')}>
+      {getFieldDecorator('per_name', {
         rules: [{ required: true, validator: validate }]
       })(<Input />)}
     </Form.Item>

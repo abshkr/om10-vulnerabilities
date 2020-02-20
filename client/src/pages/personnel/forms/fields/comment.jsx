@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 
-const DriverLicense = ({ form, value, t }) => {
+const DriverLicense = ({ form, value }) => {
+  const { t } = useTranslation();
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        per_comments: value.per_comments,
+        per_comments: value.per_comments
       });
     }
   }, [value, setFieldsValue]);
@@ -22,7 +24,7 @@ const DriverLicense = ({ form, value, t }) => {
   return (
     <Form.Item label={t('fields.comments')}>
       {getFieldDecorator('per_comments', {
-        rules: [{ required: false, validator: validate }],
+        rules: [{ required: false, validator: validate }]
       })(<Input.TextArea />)}
     </Form.Item>
   );

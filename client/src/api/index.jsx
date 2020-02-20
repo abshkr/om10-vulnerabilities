@@ -2,7 +2,6 @@ import * as tanks from './tanks';
 
 import * as personnel from './personnel';
 import * as equipmentList from './equipment-list';
-import * as reportProfile from './report-profile';
 import * as tankerList from './tanker-list';
 
 import * as REPORT_PROFILE from './report-profile';
@@ -33,7 +32,6 @@ export {
   tanks,
   personnel,
   equipmentList,
-  reportProfile,
   tankerList,
   TIME_CODES,
   HAZCHEM_CODES,

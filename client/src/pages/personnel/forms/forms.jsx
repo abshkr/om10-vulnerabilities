@@ -1,7 +1,10 @@
 import React from 'react';
-
 import { Form, Button, Tabs, notification, Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
+import useSWR, { mutate } from 'swr';
+import axios from 'axios';
 import _ from 'lodash';
+
 import {
   Employer,
   Code,
@@ -14,17 +17,22 @@ import {
   DriverLicence,
   Status,
   Comment,
-  Lock,
+  Lock
 } from './fields';
-import { Expiry } from '../../../components';
-import PasswordReset from './passwordReset';
-import { personnel } from '../../../api';
-import BulkEdit from './bulkEdit';
-import axios from 'axios';
+
+import { CheckList, PasswordReset, Expiry } from '../../../components';
+import { PERSONNEL } from '../../../api';
+import columns from './columns';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
+const FormModal = ({ form, value }) => {
+  const { t } = useTranslation();
+
+  const { data: payload } = useSWR(PERSONNEL.READ);
+
+  const fields = columns(t);
+
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
@@ -34,136 +42,72 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([personnel.createPersonnel(values)])
+          onOk: async () => {
+            await axios
+              .post(PERSONNEL.CREATE, values)
               .then(
                 axios.spread(response => {
-                  refresh();
-
+                  mutate(PERSONNEL.READ);
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.createSuccess'),
-                    description: `${t('descriptions.createSuccess')} ${values.per_code}`,
+                    description: t('descriptions.createSuccess')
                   });
-                }),
+                })
               )
-              .catch(errors => {
-                _.forEach(errors.response.data.errors, error => {
-                  notification.error({
-                    message: error.type,
-                    description: error.message,
-                  });
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t('messages.createFailed')
                 });
               });
-          },
+          }
         });
       }
     });
   };
 
   const handleUpdate = () => {
-    const matches = _.filter(data, object => {
+    const matches = _.filter(payload?.records, object => {
       return (
-        object.per_name === value.per_name &&
-        object.per_code !== value.per_code &&
-        object.per_name !== ''
+        object.per_name === value.per_name && object.per_code !== value.per_code && object.per_name !== ''
       );
     });
 
-    if (matches.length > 0) {
-      Modal.confirm({
-        title: 'We found other records with similar data.',
-        okText: 'Apply',
-        okType: 'primary',
-        content: <BulkEdit form={form} t={t} matches={matches} />,
-        cancelText: t('operations.no'),
-        centered: true,
-        onOk: () =>
-          form.validateFields((err, values) => {
-            axios
-              .all([personnel.updatePersonnel(values)])
-              .then(
-                axios.spread(response => {
-                  refresh();
+    Modal.confirm({
+      title: matches.length > 0 ? 'We found other records with similar data.' : t('prompts.update'),
+      okText: matches.length > 0 ? 'Apply' : t('operations.yes'),
+      okType: 'primary',
+      content:
+        matches.length > 0 ? (
+          <CheckList form={form} matches={matches} columns={fields} rowKey="per_code" />
+        ) : null,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await form.validateFields((err, values) => {
+          axios
+            .post(PERSONNEL.UPDATE, values)
+            .then(
+              axios.spread(response => {
+                mutate(PERSONNEL.READ);
 
-                  Modal.destroyAll();
-                  notification.success({
-                    message: t('messages.updateSuccess'),
-                    description: `${t('descriptions.updateSuccess')} ${values.per_code}`,
-                  });
-                }),
-              )
-              .catch(errors => {
-                _.forEach(errors.response.data.errors, error => {
-                  notification.error({
-                    message: error.type,
-                    description: error.message,
-                  });
+                Modal.destroyAll();
+                notification.success({
+                  message: t('messages.updateSuccess'),
+                  description: t('descriptions.updateSuccess')
                 });
+              })
+            )
+            .catch(error => {
+              notification.error({
+                message: error.message,
+                description: t('descriptions.updateFailed')
               });
-          }),
-      });
-    } else {
-      form.validateFields((err, values) => {
-        if (!err) {
-          Modal.confirm({
-            title: t('prompts.update'),
-            okText: t('operations.yes'),
-            okType: 'primary',
-            cancelText: t('operations.no'),
-            centered: true,
-            onOk: () => {
-              axios
-                .all([personnel.updatePersonnel(values)])
-                .then(
-                  axios.spread(response => {
-                    refresh();
-
-                    Modal.destroyAll();
-                    notification.success({
-                      message: t('messages.updateSuccess'),
-                      description: `${t('descriptions.updateSuccess')} ${values.per_code}`,
-                    });
-                  }),
-                )
-                .catch(errors => {
-                  _.forEach(errors.response.data.errors, error => {
-                    notification.error({
-                      message: error.type,
-                      description: error.message,
-                    });
-                  });
-                });
-            },
-          });
-        }
-      });
-    }
-  };
-
-  const handleDelete = () => {
-    axios
-      .all([personnel.deletePersonnel(value)])
-      .then(
-        axios.spread(response => {
-          refresh();
-
-          Modal.destroyAll();
-          notification.success({
-            message: t('messages.deleteSuccess'),
-            description: `${t('descriptions.deleteSuccess')} ${value.per_code}`,
-          });
-        }),
-      )
-      .catch(errors => {
-        _.forEach(errors.response.data.errors, error => {
-          notification.error({
-            message: error.type,
-            description: error.message,
-          });
+            });
         });
-      });
+      }
+    });
   };
 
   const showDeleteConfirm = () => {
@@ -173,7 +117,26 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
-      onOk: handleDelete,
+      onOk: async () => {
+        await axios
+          .post(PERSONNEL.DELETE, value)
+          .then(
+            axios.spread(response => {
+              mutate(PERSONNEL.READ);
+              Modal.destroyAll();
+              notification.success({
+                message: t('messages.deleteSuccess'),
+                description: `${t('descriptions.deleteSuccess')}`
+              });
+            })
+          )
+          .catch(error => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.deleteFailed')
+            });
+          });
+      }
     });
   };
 
@@ -181,40 +144,25 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
     <div>
       <Form>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.general')}
-            forceRender={true}
-            key="1"
-          >
-            <Employer form={form} value={value} t={t} />
-            <Code form={form} value={value} t={t} data={data} />
-            <Name form={form} value={value} t={t} />
-            <SLP form={form} value={value} t={t} />
-            <Department form={form} value={value} t={t} />
-            <Email form={form} value={value} t={t} />
-            <Role form={form} value={value} t={t} />
-            <TimeCode form={form} value={value} t={t} />
-            <DriverLicence form={form} value={value} t={t} />
-            <Status form={form} value={value} t={t} />
-            <Comment form={form} value={value} t={t} />
+          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
+            <Employer form={form} value={value} />
+            <Code form={form} value={value} />
+            <Name form={form} value={value} />
+            <SLP form={form} value={value} />
+            <Department form={form} value={value} />
+            <Email form={form} value={value} />
+            <Role form={form} value={value} />
+            <TimeCode form={form} value={value} />
+            <DriverLicence form={form} value={value} />
+            <Status form={form} value={value} />
+            <Comment form={form} value={value} />
           </TabPane>
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.expiryDates')}
-            forceRender={true}
-            key="2"
-          >
-            <Expiry form={form} value={value} t={t} types={expiry} />
+          <TabPane className="ant-tab-window" tab={t('tabColumns.expiryDates')} forceRender={true} key="2">
+            <Expiry form={form} value={value} type={PERSONNEL.EXPIRY_TYPES} />
           </TabPane>
 
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.areaAccess')}
-            forceRender={true}
-            key="3"
-          >
-            <Lock form={form} value={value} t={t} />
+          <TabPane className="ant-tab-window" tab={t('tabColumns.areaAccess')} forceRender={true} key="3">
+            <Lock form={form} value={value} />
           </TabPane>
 
           <TabPane
@@ -224,39 +172,30 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
             key="4"
             disabled={!value}
           >
-            <PasswordReset value={value} t={t} />
+            <PasswordReset value={value} />
           </TabPane>
         </Tabs>
       </Form>
 
-      <Button
-        shape="round"
-        icon="close"
-        style={{ float: 'right' }}
-        onClick={() => Modal.destroyAll()}
-      >
+      <Button icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
         {t('operations.cancel')}
       </Button>
 
       <Button
-        shape="round"
         type="primary"
-        disabled={!!value ? !access.canUpdate : !access.canCreate}
-        icon={!!value ? 'edit' : 'plus'}
+        icon={value ? 'edit' : 'plus'}
         style={{ float: 'right', marginRight: 5 }}
-        onClick={!!value ? handleUpdate : handleCreate}
+        onClick={value ? handleUpdate : handleCreate}
       >
-        {!!value ? t('operations.update') : t('operations.create')}
+        {value ? t('operations.update') : t('operations.create')}
       </Button>
 
-      {!!value && (
+      {value && (
         <Button
-          shape="round"
           type="danger"
           icon="delete"
           style={{ float: 'right', marginRight: 5 }}
           onClick={showDeleteConfirm}
-          disabled={!access.canDelete}
         >
           {t('operations.delete')}
         </Button>
