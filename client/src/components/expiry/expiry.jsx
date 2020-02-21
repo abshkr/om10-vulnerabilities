@@ -18,6 +18,8 @@ const Expiry = ({ form, value, type }) => {
 
   const { getFieldDecorator, setFieldsValue } = form;
 
+  getFieldDecorator('expiry_dates');
+
   const handleSave = row => {
     const payload = [...data];
 
@@ -139,8 +141,6 @@ const Expiry = ({ form, value, type }) => {
       })
     };
   });
-
-  getFieldDecorator('expiry_dates');
 
   return (
     <div>

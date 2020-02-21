@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Table, Select } from 'antd';
+import axios from 'axios';
+import _ from 'lodash';
+
 import { Equipment } from '../../../../components';
 import { equipmentList } from '../../../../api';
-import { Table, Select } from 'antd';
 import columns from './columns';
-import axios from 'axios';
 import Cell from './cell';
 import Row from './row';
-import _ from 'lodash';
 
 const Compartments = ({ form, value, t, equipment, values }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -28,36 +29,34 @@ const Compartments = ({ form, value, t, equipment, values }) => {
           setTypes(types.data.records);
           setIsLoading(false);
           setFieldsValue({ compartments: compartments.data.records });
-        }),
+        })
       );
     },
-    [setFieldsValue],
+    [setFieldsValue]
   );
 
   const fetchByEquipment = useCallback(
     id => {
       setIsLoading(true);
 
-      axios
-        .all([equipmentList.readCompartmentEquipment(id), equipmentList.readEquipmentTypes()])
-        .then(
-          axios.spread((compartments, types) => {
-            setData(compartments.data.records);
-            setTypes(types.data.records);
-            setIsLoading(false);
-            setFieldsValue({ compartments: compartments.data.records });
-          }),
-        );
+      axios.all([equipmentList.readCompartmentEquipment(id), equipmentList.readEquipmentTypes()]).then(
+        axios.spread((compartments, types) => {
+          setData(compartments.data.records);
+          setTypes(types.data.records);
+          setIsLoading(false);
+          setFieldsValue({ compartments: compartments.data.records });
+        })
+      );
     },
-    [setFieldsValue],
+    [setFieldsValue]
   );
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       fetch(value.eqpt_id);
       setSelect(value.eqpt_code);
     } else {
-      if (!!equipment) {
+      if (equipment) {
         fetchByEquipment(equipment);
       }
     }
@@ -73,12 +72,12 @@ const Compartments = ({ form, value, t, equipment, values }) => {
     setData(payload);
 
     setFieldsValue({
-      compartments: payload,
+      compartments: payload
     });
   };
 
   const handleImage = () => {
-    const etp = !!value ? value.eqpt_etp : equipment;
+    const etp = value ? value.eqpt_etp : equipment;
     const type = _.find(types, ['etyp_id', etp]);
     const image = type ? type.image : null;
 
@@ -86,8 +85,8 @@ const Compartments = ({ form, value, t, equipment, values }) => {
   };
 
   const handleOptions = () => {
-    const fit = !!value ? ['eqpt_etp_title', value.eqpt_etp_title] : ['eqpt_etp', equipment];
-    const options = !!_.filter(values, fit) ? _.filter(values, fit) : [];
+    const fit = value ? ['eqpt_etp_title', value.eqpt_etp_title] : ['eqpt_etp', equipment];
+    const options = _.filter(values, fit) ? _.filter(values, fit) : [];
     return options;
   };
 
@@ -109,8 +108,8 @@ const Compartments = ({ form, value, t, equipment, values }) => {
         editable: col.editable,
         dataIndex: col.dataIndex,
         title: col.title,
-        handleSave: save,
-      }),
+        handleSave: save
+      })
     };
   });
 
@@ -140,9 +139,7 @@ const Compartments = ({ form, value, t, equipment, values }) => {
           </Select.Option>
         ))}
       </Select>
-      <div style={{ textAlign: 'center', marginBottom: 10 }}>
-        {t('descriptions.compartmentCopy')}
-      </div>
+      <div style={{ textAlign: 'center', marginBottom: 10 }}>{t('descriptions.compartmentCopy')}</div>
       <Table
         size="middle"
         rowKey="cmpt_no"
@@ -150,8 +147,8 @@ const Compartments = ({ form, value, t, equipment, values }) => {
         components={{
           body: {
             row: Row,
-            cell: Cell,
-          },
+            cell: Cell
+          }
         }}
         scroll={{ y: '35vh' }}
         rowClassName={() => 'editable-row'}

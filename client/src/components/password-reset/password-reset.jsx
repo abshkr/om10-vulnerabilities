@@ -57,13 +57,13 @@ const PasswordReset = ({ value }) => {
       </Form.Item>
 
       <div style={{ marginTop: 30, display: 'flex', justifyContent: 'space-around' }}>
-        <Button icon="wallet" shape="round" type="default" onClick={randomize} style={{ marginRight: 5 }}>
+        <Button icon="wallet" type="default" onClick={randomize} style={{ marginRight: 5 }}>
           {t('operations.randomize')}
         </Button>
-        <Button icon="copy" shape="round" type="dashed" onClick={copy} style={{ marginRight: 5 }}>
+        <Button icon="copy" type="dashed" onClick={copy} style={{ marginRight: 5 }}>
           {t('operations.copyToClipboard')}
         </Button>
-        <Button icon="check" shape="round" type="primary" onClick={handleSubmit}>
+        <Button icon="check" type="primary" onClick={handleSubmit}>
           {t('operations.changePassword')}
         </Button>
       </div>

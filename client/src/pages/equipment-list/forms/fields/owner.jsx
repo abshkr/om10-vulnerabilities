@@ -1,33 +1,22 @@
-import React, { useState, useEffect } from 'react';
-
-import { equipmentList } from '../../../../api';
+import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
-import axios from 'axios';
+import useSWR from 'swr';
 
-const Owner = ({ form, value, t }) => {
+import { EQUIPMENT_LIST } from '../../../../api';
+
+const Owner = ({ form, value }) => {
+  const { t } = useTranslation();
+  const { data: options, isValidating } = useSWR(EQUIPMENT_LIST.OWNERS);
+
   const { getFieldDecorator, setFieldsValue } = form;
 
-  const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
-
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         eqpt_owner: value.eqpt_owner
       });
     }
-
-    const getContext = () => {
-      axios.all([equipmentList.readOwners()]).then(
-        axios.spread(options => {
-          setOptions(options.data.records);
-          setLoading(false);
-        })
-      );
-    };
-
-    setLoading(true);
-    getContext();
   }, [value, setFieldsValue]);
 
   const validate = (rule, input, callback) => {
@@ -44,7 +33,7 @@ const Owner = ({ form, value, t }) => {
         rules: [{ required: true, validator: validate }]
       })(
         <Select
-          loading={isLoading}
+          loading={isValidating}
           disabled={!!value}
           showSearch
           optionFilterProp="children"
@@ -53,7 +42,7 @@ const Owner = ({ form, value, t }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {options.map((item, index) => (
+          {options?.records.map((item, index) => (
             <Select.Option key={index} value={item.cmpy_code}>
               {item.cmpy_name}
             </Select.Option>

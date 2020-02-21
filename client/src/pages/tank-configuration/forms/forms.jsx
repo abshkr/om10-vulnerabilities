@@ -1,15 +1,17 @@
 import React from 'react';
-
-import _ from 'lodash';
-import axios from 'axios';
 import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { mutate } from 'swr';
+import axios from 'axios';
 
 import { Name, Code, Product, Density, Flags, DailyVariance, MontlhyVariance, MaxFlow } from './fields';
-import { tanks } from '../../../api';
+import { TANKS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, refresh, value, t, data, access, configuration }) => {
+const FormModal = ({ form, value, configuration }) => {
+  const { t } = useTranslation();
+
   const handleCreate = () => {
     form.validateFields((err, values) => {
       if (!err) {
@@ -19,25 +21,23 @@ const FormModal = ({ form, refresh, value, t, data, access, configuration }) => 
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([tanks.createTank(values)])
+          onOk: async () => {
+            await axios
+              .post(TANKS.CREATE, values)
               .then(
                 axios.spread(response => {
-                  refresh();
+                  mutate(TANKS.READ);
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.createSuccess'),
-                    description: `${t('descriptions.createSuccess')} ${values.tank_code}`
+                    description: t('descriptions.createSuccess')
                   });
                 })
               )
-              .catch(errors => {
-                _.forEach(errors.response.data.errors, error => {
-                  notification.error({
-                    message: error.type,
-                    description: error.message
-                  });
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t('messages.createFailed')
                 });
               });
           }
@@ -55,56 +55,29 @@ const FormModal = ({ form, refresh, value, t, data, access, configuration }) => 
           okType: 'primary',
           cancelText: t('operations.no'),
           centered: true,
-          onOk: () => {
-            axios
-              .all([tanks.updateTank(values)])
+          onOk: async () => {
+            await axios
+              .post(TANKS.UPDATE, value)
               .then(
                 axios.spread(response => {
-                  refresh();
-
+                  mutate(TANKS.READ);
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.updateSuccess'),
-                    description: `${t('descriptions.updateSuccess')} ${values.tank_code}`
+                    description: `${t('descriptions.updateSuccess')}`
                   });
                 })
               )
-              .catch(errors => {
-                _.forEach(errors.response.data.errors, error => {
-                  notification.error({
-                    message: error.type,
-                    description: error.message
-                  });
+              .catch(error => {
+                notification.error({
+                  message: error.message,
+                  description: t('descriptions.updateFailed')
                 });
               });
           }
         });
       }
     });
-  };
-
-  const handleDelete = () => {
-    axios
-      .all([tanks.deleteTank(value)])
-      .then(
-        axios.spread(response => {
-          refresh();
-
-          Modal.destroyAll();
-          notification.success({
-            message: t('messages.deleteSuccess'),
-            description: `${t('descriptions.deleteSuccess')} ${value.tank_code}`
-          });
-        })
-      )
-      .catch(errors => {
-        _.forEach(errors.response.data.errors, error => {
-          notification.error({
-            message: error.type,
-            description: error.message
-          });
-        });
-      });
   };
 
   const showDeleteConfirm = () => {
@@ -114,7 +87,26 @@ const FormModal = ({ form, refresh, value, t, data, access, configuration }) => 
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
-      onOk: handleDelete
+      onOk: async () => {
+        await axios
+          .post(TANKS.DELETE, value)
+          .then(
+            axios.spread(response => {
+              mutate(TANKS.READ);
+              Modal.destroyAll();
+              notification.success({
+                message: t('messages.deleteSuccess'),
+                description: `${t('descriptions.deleteSuccess')}`
+              });
+            })
+          )
+          .catch(error => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.deleteFailed')
+            });
+          });
+      }
     });
   };
 
@@ -123,48 +115,44 @@ const FormModal = ({ form, refresh, value, t, data, access, configuration }) => 
       <Form>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
-            <Code form={form} value={value} t={t} data={data} />
-            <Name form={form} value={value} t={t} />
-            <Product form={form} value={value} t={t} />
-            <Density form={form} value={value} t={t} product={form.getFieldValue('tank_base')} />
+            <Code form={form} value={value} />
+            <Name form={form} value={value} />
+            <Product form={form} value={value} />
+            <Density form={form} value={value} />
             <Divider>{t('divider.variances')}</Divider>
-            <DailyVariance form={form} value={value} t={t} />
-            <MontlhyVariance form={form} value={value} t={t} />
+            <DailyVariance form={form} value={value} />
+            <MontlhyVariance form={form} value={value} />
             <Divider>{t('divider.flags')}</Divider>
-            <Flags form={form} value={value} t={t} />
+            <Flags form={form} value={value} />
           </TabPane>
 
           {configuration?.features?.adaptiveFlowControl && (
             <TabPane className="ant-tab-window" tab={t('tabColumns.adaptiveFlow')} key="2">
-              <MaxFlow form={form} value={value} t={t} />
+              <MaxFlow form={form} value={value} />
             </TabPane>
           )}
         </Tabs>
       </Form>
 
-      <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
+      <Button icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
         {t('operations.cancel')}
       </Button>
 
       <Button
-        shape="round"
         type="primary"
-        icon={!!value ? 'edit' : 'plus'}
+        icon={value ? 'edit' : 'plus'}
         style={{ float: 'right', marginRight: 5 }}
-        onClick={!!value ? handleUpdate : handleCreate}
-        disabled={!!value ? !access.canUpdate : !access.canCreate}
+        onClick={value ? handleUpdate : handleCreate}
       >
-        {!!value ? t('operations.update') : t('operations.create')}
+        {value ? t('operations.update') : t('operations.create')}
       </Button>
 
-      {!!value && (
+      {value && (
         <Button
-          shape="round"
           type="danger"
           icon="delete"
           style={{ float: 'right', marginRight: 5 }}
           onClick={showDeleteConfirm}
-          disabled={!access.canDelete}
         >
           {t('operations.delete')}
         </Button>

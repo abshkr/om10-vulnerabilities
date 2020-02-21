@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { equipmentList } from '../../../../api';
+import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
-import axios from 'axios';
+import useSWR from 'swr';
 
-const EquipmentType = ({ form, value, t }) => {
+import { EQUIPMENT_LIST } from '../../../../api';
+
+const EquipmentType = ({ form, value }) => {
+  const { t } = useTranslation();
+  const { data: options, isValidating } = useSWR(EQUIPMENT_LIST.AREAS);
+
   const { getFieldDecorator, setFieldsValue } = form;
-
-  const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
 
   const validate = (rule, input, callback) => {
     if (input === '' || !input) {
@@ -18,23 +20,11 @@ const EquipmentType = ({ form, value, t }) => {
   };
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         eqpt_area: value.eqpt_area
       });
     }
-
-    const getContext = () => {
-      axios.all([equipmentList.readAreas()]).then(
-        axios.spread(options => {
-          setOptions(options.data.records);
-          setLoading(false);
-        })
-      );
-    };
-
-    setLoading(true);
-    getContext();
   }, [value, setFieldsValue]);
 
   return (
@@ -43,7 +33,7 @@ const EquipmentType = ({ form, value, t }) => {
         rules: [{ required: true, validator: validate }]
       })(
         <Select
-          loading={isLoading}
+          loading={isValidating}
           showSearch
           optionFilterProp="children"
           placeholder={!value ? t('placeholder.selectArea') : null}
@@ -51,7 +41,7 @@ const EquipmentType = ({ form, value, t }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {options.map((item, index) => (
+          {options?.records.map((item, index) => (
             <Select.Option key={index} value={item.area_k}>
               {item.area_name}
             </Select.Option>

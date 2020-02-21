@@ -1,20 +1,29 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
+import useSWR from 'swr';
 import _ from 'lodash';
 
-const Code = ({ form, value, t, data }) => {
+import { TANKS } from '../../../../api';
+
+const Code = ({ form, value }) => {
+  const { t } = useTranslation();
+  const { data: payload, isValidating } = useSWR(TANKS.READ);
+
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tank_code: value.tank_code,
+        tank_code: value.tank_code
       });
     }
   }, [value, setFieldsValue]);
 
   const validate = (rule, input, callback) => {
-    const match = _.find(data, ['tank_code', input]);
+    const match = _.find(payload?.records, object => {
+      return object.tank_code.toLowerCase() === input.toLowerCase();
+    });
 
     if (input && match && !value) {
       callback(t('descriptions.alreadyExists'));
@@ -33,8 +42,8 @@ const Code = ({ form, value, t, data }) => {
   return (
     <Form.Item label={t('fields.code')}>
       {getFieldDecorator('tank_code', {
-        rules: [{ required: true, validator: validate }],
-      })(<Input disabled={!!value} />)}
+        rules: [{ required: true, validator: validate }]
+      })(<Input disabled={!!value || isValidating} />)}
     </Form.Item>
   );
 };

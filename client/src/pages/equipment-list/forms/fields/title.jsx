@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 
-const Title = ({ form, value, t }) => {
+const Title = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         eqpt_title: value.eqpt_title
       });

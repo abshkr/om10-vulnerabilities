@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react';
-import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
+import _ from 'lodash';
 
-const MontlhyVariance = ({ form, value, t }) => {
+const MontlhyVariance = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const { getFieldDecorator, setFieldsValue } = form;
 
   const handlePercentageValidation = (rule, input, callback) => {
@@ -37,7 +40,7 @@ const MontlhyVariance = ({ form, value, t }) => {
     if (value) {
       setFieldsValue({
         tank_mtol_percent: value.tank_mtol_percent,
-        tank_mtol_volume: value.tank_mtol_volume,
+        tank_mtol_volume: value.tank_mtol_volume
       });
     }
   }, [value, setFieldsValue]);
@@ -52,9 +55,9 @@ const MontlhyVariance = ({ form, value, t }) => {
           initialValue: 0,
           rules: [
             {
-              validator: handlePercentageValidation,
-            },
-          ],
+              validator: handlePercentageValidation
+            }
+          ]
         })(<Input />)}
       </Form.Item>
 
@@ -66,9 +69,9 @@ const MontlhyVariance = ({ form, value, t }) => {
           initialValue: 0,
           rules: [
             {
-              validator: handleVolumeValidation,
-            },
-          ],
+              validator: handleVolumeValidation
+            }
+          ]
         })(<Input addonAfter="Litres" />)}
       </Form.Item>
     </div>

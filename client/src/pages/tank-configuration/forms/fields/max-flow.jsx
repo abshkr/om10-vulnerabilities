@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 import _ from 'lodash';
 
-const MaxFlow = ({ form, value, t }) => {
+const MaxFlow = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
@@ -36,9 +39,9 @@ const MaxFlow = ({ form, value, t }) => {
         {getFieldDecorator('tank_max_flow.0.tank_level', {
           rules: [
             {
-              validator: handleValidation,
-            },
-          ],
+              validator: handleValidation
+            }
+          ]
         })(<Input addonBefore={t('fields.tankLevel')} />)}
       </Form.Item>
 
@@ -46,9 +49,9 @@ const MaxFlow = ({ form, value, t }) => {
         {getFieldDecorator('tank_max_flow.0.flow_rate', {
           rules: [
             {
-              validator: handleValidation,
-            },
-          ],
+              validator: handleValidation
+            }
+          ]
         })(<Input addonBefore={t('fields.flowRate')} />)}
       </Form.Item>
 
@@ -56,9 +59,9 @@ const MaxFlow = ({ form, value, t }) => {
         {getFieldDecorator('tank_max_flow.1.tank_level', {
           rules: [
             {
-              validator: handleValidation,
-            },
-          ],
+              validator: handleValidation
+            }
+          ]
         })(<Input addonBefore={t('fields.tankLevel')} />)}
       </Form.Item>
 
@@ -66,9 +69,9 @@ const MaxFlow = ({ form, value, t }) => {
         {getFieldDecorator('tank_max_flow.1.flow_rate', {
           rules: [
             {
-              validator: handleValidation,
-            },
-          ],
+              validator: handleValidation
+            }
+          ]
         })(<Input addonBefore={t('fields.flowRate')} />)}
       </Form.Item>
 
@@ -76,9 +79,9 @@ const MaxFlow = ({ form, value, t }) => {
         {getFieldDecorator('tank_max_flow.2.tank_level', {
           rules: [
             {
-              validator: handleValidation,
-            },
-          ],
+              validator: handleValidation
+            }
+          ]
         })(<Input addonBefore={t('fields.tankLevel')} />)}
       </Form.Item>
 
@@ -86,9 +89,9 @@ const MaxFlow = ({ form, value, t }) => {
         {getFieldDecorator('tank_max_flow.2.flow_rate', {
           rules: [
             {
-              validator: handleValidation,
-            },
-          ],
+              validator: handleValidation
+            }
+          ]
         })(<Input addonBefore={t('fields.flowRate')} />)}
       </Form.Item>
 
@@ -96,9 +99,9 @@ const MaxFlow = ({ form, value, t }) => {
         {getFieldDecorator('tank_max_flow.3.tank_level', {
           rules: [
             {
-              validator: handleValidation,
-            },
-          ],
+              validator: handleValidation
+            }
+          ]
         })(<Input addonBefore={t('fields.tankLevel')} />)}
       </Form.Item>
 
@@ -106,9 +109,9 @@ const MaxFlow = ({ form, value, t }) => {
         {getFieldDecorator('tank_max_flow.3.flow_rate', {
           rules: [
             {
-              validator: handleValidation,
-            },
-          ],
+              validator: handleValidation
+            }
+          ]
         })(<Input addonBefore={t('fields.flowRate')} />)}
       </Form.Item>
     </div>

@@ -1,2 +1,2 @@
-import EquipmentList from "./equipmentList";
+import EquipmentList from './equipment-list';
 export default EquipmentList;

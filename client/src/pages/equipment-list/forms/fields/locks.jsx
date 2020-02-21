@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Checkbox } from 'antd';
 
-const Locks = ({ form, value, t }) => {
+const Locks = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         eqpt_lock: value.eqpt_lock,
         eqp_must_tare_in: value.eqp_must_tare_in

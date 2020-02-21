@@ -1,9 +1,9 @@
 import Name from './name';
 import Density from './density';
-import MontlhyVariance from './monthlyVariance';
-import DailyVariance from './dailyVariance';
+import MontlhyVariance from './monthly-variance';
+import DailyVariance from './daily-variance';
 import Product from './product';
-import MaxFlow from './maxFlow';
+import MaxFlow from './max-flow';
 import Flags from './flags';
 import Code from './code';
 import UserHLevel from './userHLevel';
@@ -21,5 +21,5 @@ export {
   MaxFlow,
   UserHLevel,
   UserLLevel,
-  MaxLevel,
+  MaxLevel
 };

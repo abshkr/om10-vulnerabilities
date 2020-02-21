@@ -1,9 +1,7 @@
-import * as tanks from './tanks';
-
-import * as personnel from './personnel';
 import * as equipmentList from './equipment-list';
 import * as tankerList from './tanker-list';
 
+import * as EQUIPMENT_LIST from './equipment-list';
 import * as REPORT_PROFILE from './report-profile';
 import * as REPORT_CONFIGURATION from './report-configuration';
 import * as ID_ASSIGNMENT from './id-assignment';
@@ -27,12 +25,13 @@ import * as STOCK_MANAGEMENT from './stock-management';
 import * as PHYSICAL_PRINTERS from './physical-printers';
 import * as PERSONNEL_ON_SITE from './personnel-on-site';
 import * as FSC_STATUS from './fsc-status';
+import * as TANKS from './tanks';
 
 export {
-  tanks,
-  personnel,
   equipmentList,
   tankerList,
+  EQUIPMENT_LIST,
+  TANKS,
   TIME_CODES,
   HAZCHEM_CODES,
   ID_ASSIGNMENT,

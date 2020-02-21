@@ -1,13 +1,16 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 
-const PullingLimit = ({ form, value, t }) => {
+const PullingLimit = ({ form, value }) => {
+  const { t } = useTranslation();
+
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        eqpt_max_gross: value.eqpt_max_gross,
+        eqpt_max_gross: value.eqpt_max_gross
       });
     }
   }, [value, setFieldsValue]);
@@ -22,7 +25,7 @@ const PullingLimit = ({ form, value, t }) => {
   return (
     <Form.Item label={`${t('fields.pullingLimit')} (Kg)`}>
       {getFieldDecorator('eqpt_max_gross', {
-        rules: [{ required: false, validator: validate }],
+        rules: [{ required: false, validator: validate }]
       })(<InputNumber min={0} />)}
     </Form.Item>
   );

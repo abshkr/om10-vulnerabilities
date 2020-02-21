@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { equipmentList } from '../../../../api';
+import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
-import axios from 'axios';
+import useSWR from 'swr';
 
-const LoadType = ({ form, value, t }) => {
+import { EQUIPMENT_LIST } from '../../../../api';
+
+const LoadType = ({ form, value }) => {
+  const { t } = useTranslation();
+  const { data: options, isValidating } = useSWR(EQUIPMENT_LIST.LOAD_TYPES);
+
   const { getFieldDecorator, setFieldsValue } = form;
-
-  const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
 
   const validate = (rule, input, callback) => {
     if (input === '' || !input) {
@@ -18,23 +20,11 @@ const LoadType = ({ form, value, t }) => {
   };
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         eqpt_load_type: value.eqpt_load_type
       });
     }
-
-    const getContext = () => {
-      axios.all([equipmentList.readLoadTypes()]).then(
-        axios.spread(options => {
-          setOptions(options.data.records);
-          setLoading(false);
-        })
-      );
-    };
-
-    setLoading(true);
-    getContext();
   }, [value, setFieldsValue]);
 
   return (
@@ -43,7 +33,7 @@ const LoadType = ({ form, value, t }) => {
         rules: [{ required: true, validator: validate }]
       })(
         <Select
-          loading={isLoading}
+          loading={isValidating}
           showSearch
           optionFilterProp="children"
           placeholder={!value ? t('placeholder.selectLoadType') : null}
@@ -51,7 +41,7 @@ const LoadType = ({ form, value, t }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {options.map((item, index) => (
+          {options?.records.map((item, index) => (
             <Select.Option key={index} value={item.ld_type_code}>
               {item.ld_type_text}
             </Select.Option>

@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { BASE_PRODUCTS } from '../../../../api';
+import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
-import axios from 'axios';
+import useSWR from 'swr';
 import _ from 'lodash';
 
-const Density = ({ form, value, t, product }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+import { BASE_PRODUCTS } from '../../../../api';
 
-  const [isLoading, setLoading] = useState(false);
-  const [high, setHigh] = useState(0);
+const Density = ({ form, value }) => {
+  const { t } = useTranslation();
+  const { data: payload, isValidating } = useSWR(BASE_PRODUCTS.READ);
+
   const [low, setLow] = useState(0);
+  const [high, setHigh] = useState(0);
+
+  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+
+  const product = getFieldValue('tank_base');
 
   const validate = (rule, input, callback) => {
     const decimals = new RegExp('^[0-9]+(.[0-9]{1,3})?$');
@@ -43,30 +49,20 @@ const Density = ({ form, value, t, product }) => {
   }, [value, setFieldsValue]);
 
   useEffect(() => {
-    if (product) {
-      const getContext = () => {
-        axios.all([BASE_PRODUCTS.readBaseProduct()]).then(
-          axios.spread(products => {
-            const match = _.find(products.data.records, base => {
-              return base.base_code === product;
-            });
+    if (payload) {
+      const base = _.find(payload?.records, record => {
+        return record.base_code === product;
+      });
 
-            if (match) {
-              setLow(_.toInteger(match.base_class_dens_lo));
-              setHigh(_.toInteger(match.base_class_dens_hi));
-            }
-
-            setLoading(false);
-          })
-        );
-      };
-      setLoading(true);
-      getContext();
+      if (base) {
+        setLow(base.base_class_dens_lo);
+        setHigh(base.base_class_dens_hi);
+      }
     }
-  }, [product]);
+  }, [payload, getFieldValue, product]);
 
-  const affix = isLoading ? t('messages.calculating') : `${low} - ${high} ${t('units.kgm3')}`;
-  const disabled = isLoading || !product;
+  const affix = isValidating ? t('messages.calculating') : `${low} - ${high} ${t('units.kgm3')}`;
+  const disabled = isValidating || !product;
 
   return (
     <Form.Item label={t('fields.density')}>
