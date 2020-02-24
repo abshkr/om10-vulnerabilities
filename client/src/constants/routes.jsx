@@ -74,7 +74,7 @@ export const METER_DEVICES = '/meter-devices';
 export const LOGICAL_PRINTERS = '/logical-printers';
 export const PHYSICAL_PRINTERS = '/physical-printers';
 
-export const MOVEMENT_NOTIFICATIONS = '/movement-notifications';
+export const MOVEMENT_NOMINATIONS = '/movement-nominations';
 export const MOVEMENT_REASONS = '/movement-reasons';
 export const MANUAL_TRANSACTIONS = '/manual-transactions';
 export const SPECIAL_MOVEMENTS = '/special-movements';

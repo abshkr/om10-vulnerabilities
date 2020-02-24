@@ -231,7 +231,14 @@
     "resetPin": "Reset PIN",
     "removePin": "Remove PIN",
     "equipmentCarrier": "Equipment Carrier",
-    "transportEquipment": "Transport Equipment"
+    "transportEquipment": "Transport Equipment",
+    "movementNumber": "Movement Number",
+    "nominationKey": "Nomination Key",
+    "movementDateAndTime": "Movement Date & Time",
+    "movementType": "Movement Type",
+    "reasonCode": "Reason Code",
+    "movementStatus": "Movement Status",
+    "lastModifiedUser": "Last Modified By"
   },
 
   "pageMenu": {
@@ -322,7 +329,11 @@
     "tankView": "Tank View",
     "bayView": "Bay View",
     "drawerProductAssets": "Drawer Product Assets",
-    "adaptiveFlowControl": "Adaptive Flow Control"
+    "adaptiveFlowControl": "Adaptive Flow Control",
+    "movementNominations": "Movement Nominations",
+    "movementReasons": "Movement Reasons",
+    "manualTransactions": "Manual Transactions",
+    "specialMovements": "Special Movements"
   },
 
   "operations": {

@@ -212,6 +212,23 @@ const Navigation = () => {
           <SubMenu
             title={
               <span>
+                <Icon type="deployment-unit" />
+                <span>{t('pageMenu.stockReconciliation')}</span>
+              </span>
+            }
+          >
+            <Menu.Item key={ROUTES.MOVEMENT_NOMINATIONS}>{t('pageNames.movementNominations')}</Menu.Item>
+
+            <Menu.Item key={ROUTES.MOVEMENT_REASONS}>{t('pageNames.movementReasons')}</Menu.Item>
+
+            <Menu.Item key={ROUTES.MANUAL_TRANSACTIONS}>{t('pageNames.manualTransactions')}</Menu.Item>
+
+            <Menu.Item key={ROUTES.SPECIAL_MOVEMENTS}>{t('pageNames.specialMovements')}</Menu.Item>
+          </SubMenu>
+
+          <SubMenu
+            title={
+              <span>
                 <Icon type="cluster" />
                 <span>{t('pageMenu.operations')}</span>
               </span>

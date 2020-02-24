@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { SWRConfig } from 'swr';
 import { connect } from 'react-redux';
-import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
 import { ROUTES } from '../constants';
@@ -10,7 +9,6 @@ import { fetcher } from '../utils';
 
 export default Authenticated => {
   const ComposedComponent = ({ token }) => {
-    const { t } = useTranslation();
     const history = useHistory();
 
     useEffect(() => {
@@ -27,7 +25,7 @@ export default Authenticated => {
         }}
       >
         <AuthContainer>
-          <Authenticated t={t} />
+          <Authenticated />
         </AuthContainer>
       </SWRConfig>
     );

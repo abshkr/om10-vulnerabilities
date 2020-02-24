@@ -25,6 +25,7 @@ import * as PHYSICAL_PRINTERS from './physical-printers';
 import * as PERSONNEL_ON_SITE from './personnel-on-site';
 import * as FSC_STATUS from './fsc-status';
 import * as TANKS from './tanks';
+import * as SPECIAL_MOVEMENTS from './special-movements';
 
 export {
   tankerList,
@@ -52,5 +53,6 @@ export {
   PERSONNEL,
   FOLIO_SUMMARY,
   REPORT_CONFIGURATION,
-  REPORT_PROFILE
+  REPORT_PROFILE,
+  SPECIAL_MOVEMENTS
 };
