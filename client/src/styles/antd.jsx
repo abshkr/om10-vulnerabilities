@@ -7,7 +7,7 @@ const AntdStyleProvider = createGlobalStyle`
     padding-right: 20px;
     padding-bottom: 20px;
     margin-bottom: 3px;
-    }
+  }
   
   .ant-form-item label {
     font-weight: 450;

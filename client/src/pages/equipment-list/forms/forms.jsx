@@ -178,10 +178,10 @@ const FormModal = ({ form, value }) => {
             <Comments form={form} value={value} />
           </TabPane>
 
-          {/* <TabPane className="ant-tab-window" tab={t('tabColumns.compartments')} forceRender={true} key="3">
-            <EquipmentType form={form} value={value} t={t} />
+          <TabPane className="ant-tab-window" tab={t('tabColumns.compartments')} forceRender={true} key="3">
+            <EquipmentType form={form} value={value} />
             <Compartments form={form} value={value} />
-          </TabPane> */}
+          </TabPane>
           <TabPane className="ant-tab-window" tab={t('tabColumns.expiryDates')} forceRender={true} key="4">
             <Expiry form={form} value={value} type={EQUIPMENT_LIST.EXPIRY} />
           </TabPane>

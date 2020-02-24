@@ -1,4 +1,3 @@
-import * as equipmentList from './equipment-list';
 import * as tankerList from './tanker-list';
 
 import * as EQUIPMENT_LIST from './equipment-list';
@@ -28,7 +27,6 @@ import * as FSC_STATUS from './fsc-status';
 import * as TANKS from './tanks';
 
 export {
-  equipmentList,
   tankerList,
   EQUIPMENT_LIST,
   TANKS,

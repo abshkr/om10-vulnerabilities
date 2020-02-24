@@ -1,16 +1,19 @@
 import React from 'react';
 import { Card } from 'antd';
+import { EquipmentImage } from './style';
 
-import './equipment.css';
+const Equipment = ({ image, isLoading }) => {
+  if (image) {
+    return (
+      <Card style={{ marginTop: 5 }} size="small" loading={isLoading}>
+        <EquipmentImage>
+          <img src={`/images/${image}.png`} alt="equipment" />
+        </EquipmentImage>
+      </Card>
+    );
+  }
 
-const Equipment = ({ value }) => {
-  return (
-    <Card style={{ marginTop: 5 }} size="small" loading={!value}>
-      <div className="equipment-icon">
-        <img src={`/images/${value ? value.toLowerCase() : ''}.png`} alt="equipment" />
-      </div>
-    </Card>
-  );
+  return null;
 };
 
 export default Equipment;

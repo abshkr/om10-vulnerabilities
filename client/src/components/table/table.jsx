@@ -68,7 +68,7 @@ const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSel
     >
       <Search value={value} search={setValue} isLoading={isLoading && !data} />
 
-      <div style={{ height: `calc(100vh - ${height || '260px'})`, marginTop: 5 }}>
+      <div style={{ height: `calc(100vh - ${height || '27vh'})`, marginTop: 5 }}>
         <AgGridReact
           columnDefs={columns}
           rowData={data}
