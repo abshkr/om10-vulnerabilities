@@ -2,6 +2,7 @@ import 'react-app-polyfill/stable';
 import 'react-app-polyfill/ie11';
 
 import 'typeface-open-sans';
+import 'typeface-bungee';
 
 import React from 'react';
 import ReactDOM from 'react-dom';

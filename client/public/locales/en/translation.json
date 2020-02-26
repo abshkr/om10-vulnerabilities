@@ -238,7 +238,12 @@
     "movementType": "Movement Type",
     "reasonCode": "Reason Code",
     "movementStatus": "Movement Status",
-    "lastModifiedUser": "Last Modified By"
+    "terminal": "Terminal",
+    "nominationNumber": "Nomination Number",
+    "nominationSource": "Nomination Source",
+    "nominationStatus": "Nomination Status",
+    "effectiveFrom": "Effective From",
+    "expiredAfter": "Expired After"
   },
 
   "pageMenu": {

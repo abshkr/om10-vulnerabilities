@@ -307,6 +307,11 @@ const paths = [
   },
 
   {
+    path: ROUTES.MOVEMENT_NOMINATIONS,
+    component: lazy(() => import('../pages/movement-nominations'))
+  },
+
+  {
     path: ROUTES.TANK_VIEW,
     component: lazy(() => import('../pages/work-in-progress'))
   },

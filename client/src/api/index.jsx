@@ -26,6 +26,7 @@ import * as PERSONNEL_ON_SITE from './personnel-on-site';
 import * as FSC_STATUS from './fsc-status';
 import * as TANKS from './tanks';
 import * as SPECIAL_MOVEMENTS from './special-movements';
+import * as MOVEMENT_NOMIATIONS from './movement-nominations';
 
 export {
   tankerList,
@@ -54,5 +55,6 @@ export {
   FOLIO_SUMMARY,
   REPORT_CONFIGURATION,
   REPORT_PROFILE,
-  SPECIAL_MOVEMENTS
+  SPECIAL_MOVEMENTS,
+  MOVEMENT_NOMIATIONS
 };

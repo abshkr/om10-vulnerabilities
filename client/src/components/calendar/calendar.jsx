@@ -26,6 +26,7 @@ const Calendar = ({ handleChange, start, end, disabled }) => {
       format={format}
       defaultValue={[moment(start, 'YYYY-MM-DD HH:mm:ss'), moment(end, 'YYYY-MM-DD HH:mm:ss')]}
       onOk={dates => handleDateChange(dates)}
+      separator="→"
     />
   );
 };

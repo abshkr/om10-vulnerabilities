@@ -1,11 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Icon, Input, Button, notification } from 'antd';
+import { Form, Icon, Input, Button, notification, Divider } from 'antd';
+
 import { useHistory } from 'react-router-dom';
+import Particles from 'react-particles-js';
+
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import _ from 'lodash';
 
-import { LoginContainer, FormContainer, LoginHeader, LoginSubtitle, LoginFooter, LoginIcons } from './style';
+import {
+  LoginContainer,
+  FormContainer,
+  LoginSubtitle,
+  LoginFooter,
+  LoginFooterLogo,
+  GraphicContainer,
+  FormBlock,
+  LoginTitle
+} from './style';
+
 import * as actions from '../../actions/auth';
 import { ROUTES } from '../../constants';
 
@@ -60,10 +73,101 @@ const LoginForm = ({ form, handleLogin, auth }) => {
       </Helmet>
 
       <FormContainer>
-        <LoginHeader>OMEGA 5000</LoginHeader>
-        <LoginSubtitle>Please Login to Continue</LoginSubtitle>
+        <FormBlock>
+          <LoginTitle>
+            <span>OMEGA</span> 5000
+          </LoginTitle>
+          <LoginSubtitle>Login to your account</LoginSubtitle>
+          <Form onSubmit={handleSubmit}>
+            <Form.Item>
+              {getFieldDecorator('code', {
+                rules: [{ required: true, message: 'Please Input Your Omega Personnel Code!' }]
+              })(
+                <Input
+                  prefix={<Icon type="idcard" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  placeholder="Omega Personnel Code"
+                />
+              )}
+            </Form.Item>
 
-        <Form onSubmit={handleSubmit}>
+            <Form.Item>
+              {getFieldDecorator('password', {
+                rules: [{ required: true, message: 'Please Input Your Password!' }]
+              })(
+                <Input
+                  prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  type="password"
+                  placeholder="Password"
+                />
+              )}
+            </Form.Item>
+
+            <Form.Item>
+              <Button size="large" type="primary" htmlType="submit" loading={isLoading}>
+                Log in
+              </Button>
+            </Form.Item>
+          </Form>
+        </FormBlock>
+
+        <LoginFooter>
+          <Divider style={{ marginBottom: 12 }} />
+          <LoginFooterLogo>
+            <img src="/images/dki_big.png" alt="Diamondkey International" />
+          </LoginFooterLogo>
+        </LoginFooter>
+      </FormContainer>
+
+      <GraphicContainer>
+        <Particles
+          height="95vh"
+          params={{
+            particles: {
+              shape: {
+                type: 'triangle'
+              },
+              number: {
+                value: 80
+              },
+              color: {
+                value: '#68a4ec'
+              },
+              size: {
+                value: 3
+              },
+              line_linked: {
+                enable: true,
+                color: '#bbbbbb'
+              }
+            },
+            interactivity: {
+              events: {
+                onhover: {
+                  enable: true,
+                  mode: 'grab'
+                }
+              }
+            }
+          }}
+        />
+      </GraphicContainer>
+    </LoginContainer>
+  );
+};
+
+const Login = Form.create()(LoginForm);
+
+const mapActionsToProps = dispatch => ({
+  handleLogin: (code, password) => dispatch(actions.login(code, password))
+});
+
+const mapStateToProps = state => {
+  return { auth: state.auth.authenticated };
+};
+
+export default connect(mapStateToProps, mapActionsToProps)(Login);
+
+/* <Form onSubmit={handleSubmit}>
           <Form.Item>
             {getFieldDecorator('code', {
               rules: [{ required: true, message: 'Please Input Your Omega Personnel Code!' }]
@@ -93,27 +197,18 @@ const LoginForm = ({ form, handleLogin, auth }) => {
             </Button>
           </Form.Item>
         </Form>
-      </FormContainer>
 
-      <LoginFooter>
-        <LoginIcons>
-          <Icon type="message" />
-          <Icon type="info-circle" />
-          <Icon type="smile" />
-        </LoginIcons>
-      </LoginFooter>
-    </LoginContainer>
-  );
-};
+        <Divider style={{ margin: 12 }} />
 
-const Login = Form.create()(LoginForm);
+        <LoginLinks>
+          <a>Support</a>
+          <a>About (EULA)</a>
+          <a>Help</a>
+        </LoginLinks>
 
-const mapActionsToProps = dispatch => ({
-  handleLogin: (code, password) => dispatch(actions.login(code, password))
-});
-
-const mapStateToProps = state => {
-  return { auth: state.auth.authenticated };
-};
-
-export default connect(mapStateToProps, mapActionsToProps)(Login);
+        <LoginFooter>
+          <Divider style={{ margin: 12 }} />
+          <LoginFooterLogo>
+            <img src="/images/dki_big.png" alt="Diamondkey International" />
+          </LoginFooterLogo>
+        </LoginFooter> */
