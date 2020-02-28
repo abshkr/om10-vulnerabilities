@@ -243,7 +243,34 @@
     "nominationSource": "Nomination Source",
     "nominationStatus": "Nomination Status",
     "effectiveFrom": "Effective From",
-    "expiredAfter": "Expired After"
+    "expiredAfter": "Expired After",
+    "tpp": "TPP",
+    "vehicle": "Vehicle",
+    "transportMode": "Transport Mode",
+    "transportSystem": "Transport System",
+    "line": "Line",
+    "itemId": "Item Id",
+    "nominationType": "Nomination Type",
+    "itemKey": "Item Key",
+    "itemStatus": "Item Status",
+    "productQuantity": "Product Quantity",
+    "fromPlant": "From Plant",
+    "fromSupplier": "From Supplier",
+    "fromProduct": "From Product",
+    "fromTank": "From Tank",
+    "fromStoreLocationCompany": "From Store Location Company",
+    "fromDescription": "From Description",
+    "fromSecondDescription": "From Second Description",
+    "toPlant": "To Plant",
+    "toSupplier": "To Supplier",
+    "toProduct": "To Product",
+    "toTank": "To Tank",
+    "toStoreLocationCompany": "To Store Location Company",
+    "toDescription": "To Description",
+    "toSecondDescription": "To Second Description",
+    "quantityScheduled": "Quantity Scheduled",
+    "quantityMoved": "Quantity Moved",
+    "select": ""
   },
 
   "pageMenu": {
@@ -368,7 +395,12 @@
     "saveToTanks": "Save To Tanks",
     "saveToFolio": "Save To Folio",
     "tagLookUp": "Tag Lookup",
-    "search": "Search"
+    "search": "Search",
+    "makeTransaction": "Make Transaction",
+    "viewTransaction": "View Transaction",
+    "viewSchedule": "View Schedule",
+    "addLineItem": "Add Line Item",
+    "deleteLineItem": "Delete Line Item"
   },
 
   "tabColumns": {
@@ -388,7 +420,8 @@
     "reports": "Reports",
     "meters": "Meters",
     "tanks": "Tanks",
-    "assignments": "Assignments"
+    "assignments": "Assignments",
+    "items": "Items"
   },
 
   "messages": {
@@ -504,7 +537,14 @@
     "selectDrawer": "Select Drawer",
     "selectTanker": "Select Tanker",
     "selectEquipmentCarrier": "Select Equipment Carrier",
-    "selectTransportEquipment": "Select Transport Equipment"
+    "selectTransportEquipment": "Select Transport Equipment",
+    "selectVehicle": "Select Vehicle",
+    "setTPPCode": "Set TPP Code",
+    "setTPPDescription": "Set TPP Description",
+    "setTransportMode": "Set Transport Mode",
+    "setTransportModeDescription": "Set Transport Mode Description",
+    "setTransportSystem": "Set Transport Systen",
+    "setComments": "Set Comments"
   },
 
   "validate": {

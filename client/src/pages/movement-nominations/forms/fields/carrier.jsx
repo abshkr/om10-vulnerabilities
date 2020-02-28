@@ -14,7 +14,7 @@ const Carrier = ({ form, value }) => {
   const { data: options, isValidating } = useSWR(MOVEMENT_NOMIATIONS.CARRIERS);
 
   useEffect(() => {
-    if (value) {
+    if (value && value.mv_carrier !== '') {
       setFieldsValue({
         mv_carrier: value.mv_carrier
       });
@@ -28,7 +28,7 @@ const Carrier = ({ form, value }) => {
           loading={isValidating}
           showSearch
           optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectCarrier') : null}
+          placeholder={t('placeholder.selectCarrier')}
           filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }

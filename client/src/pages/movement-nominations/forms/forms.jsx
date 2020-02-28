@@ -1,11 +1,27 @@
 import React from 'react';
 
-import { Form, Button, Tabs, notification, Modal } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
 
-import { NominationKey, NominationNumber, NominationSource, Supplier, Carrier, Vehicle, TPP } from './fields';
+import {
+  NominationKey,
+  NominationNumber,
+  NominationSource,
+  Supplier,
+  Carrier,
+  Vehicle,
+  TPP,
+  TransportMode,
+  TransportSystem,
+  Comments,
+  EffectiveFrom,
+  ExpiredAfter
+} from './fields';
+
+import Items from './items';
+
 import { REPORT_PROFILE } from '../../../api';
 
 const TabPane = Tabs.TabPane;
@@ -123,7 +139,17 @@ const FormModal = ({ form, value }) => {
             <Supplier form={form} value={value} />
             <Carrier form={form} value={value} />
             <Vehicle form={form} value={value} />
+            <Divider />
+            <EffectiveFrom form={form} value={value} />
+            <ExpiredAfter form={form} value={value} />
+            <Divider />
             <TPP form={form} value={value} />
+            <TransportMode form={form} value={value} />
+            <TransportSystem form={form} value={value} />
+            <Comments form={form} value={value} />
+          </TabPane>
+          <TabPane className="ant-tab-window" tab={t('tabColumns.items')} forceRender={true} key="2">
+            <Items form={form} value={value} />
           </TabPane>
         </Tabs>
       </Form>
@@ -151,6 +177,18 @@ const FormModal = ({ form, value }) => {
           {t('operations.delete')}
         </Button>
       )}
+
+      <Button icon="carry-out" style={{ marginRight: 5 }}>
+        {t('operations.makeTransaction')}
+      </Button>
+
+      <Button icon="eye" style={{ marginRight: 5 }}>
+        {t('operations.viewTransaction')}
+      </Button>
+
+      <Button icon="eye" style={{ marginRight: 5 }}>
+        {t('operations.viewSchedule')}
+      </Button>
     </div>
   );
 };

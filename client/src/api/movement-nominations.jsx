@@ -8,7 +8,7 @@ export const STATUS = '/api/pages/movement/nomination_status.php';
 export const TYPES = '/api/pages/movement/nomination_types.php';
 export const SOURCES = '/api/pages/movement/nomination_sources.php';
 export const PLANTS = '/api/pages/movement/plants.php';
-
+export const ITEMS = '/api/pages/movement/nomination_items.php';
 export const TRANSACTIONS = '/api/pages/movement/transactions.php';
 export const SCHEDULES = '/api/pages/movement/schedules.php';
 export const BOL = '/api/pages/movement/view_bol.php';

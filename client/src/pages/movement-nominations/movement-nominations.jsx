@@ -37,7 +37,7 @@ const MovementNominations = () => {
       form: <Forms value={value} />,
       id: value?.mv_id,
       name: value?.mv_key,
-      width: '80vw',
+      width: '90vw',
       t
     });
   };

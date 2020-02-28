@@ -17,6 +17,15 @@ export default Authenticated => {
       }
     }, [token, history]);
 
+    useEffect(() => {
+      const interval = setInterval(() => {
+        const token = sessionStorage.getItem('token');
+
+        console.log(token);
+      }, 1000);
+      return () => clearInterval(interval);
+    }, []);
+
     return (
       <SWRConfig
         value={{

@@ -11,15 +11,22 @@ const TPP = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tpp: value.tpp
+        mv_tppoint: value.mv_tppoint,
+        mv_tpp_text: value.mv_tpp_text
       });
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item label={t('fields.tpp')} labelCol="">
-      {getFieldDecorator('mv_number')(<Input />)}
-      {getFieldDecorator('mv_number')(<Input />)}
+      <span>
+        {getFieldDecorator('mv_tppoint')(
+          <Input placeholder={t('placeholder.setTPPCode')} style={{ width: '29.5%', marginRight: '0.5%' }} />
+        )}
+        {getFieldDecorator('mv_tpp_text')(
+          <Input placeholder={t('placeholder.setTPPDescription')} style={{ width: '70%' }} />
+        )}
+      </span>
     </Form.Item>
   );
 };

@@ -35,9 +35,8 @@ const Vehicle = ({ form, value }) => {
         <Select
           loading={isValidating}
           showSearch
-          disabled={!carrier}
           optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectVehicle') : null}
+          placeholder={t('placeholder.selectVehicle')}
           filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }

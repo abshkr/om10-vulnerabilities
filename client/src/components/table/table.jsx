@@ -3,7 +3,16 @@ import React, { useState, useEffect } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 
 import { FuzzyFilter, MultiFilter, BooleanFilter } from './filters';
-import { BooleanRenderer, LockRenderer, DateRenderer, StatusRenderer, TagRenderer } from './renderers';
+
+import {
+  BooleanRenderer,
+  LockRenderer,
+  DateRenderer,
+  StatusRenderer,
+  TagRenderer,
+  NullRenderer
+} from './renderers';
+
 import { NumericEditor } from './editors';
 import { LoadingStatus } from './status';
 import { Search } from '..';
@@ -20,10 +29,22 @@ const components = {
   LoadingStatus,
   StatusRenderer,
   TagRenderer,
-  NumericEditor
+  NumericEditor,
+  NullRenderer
 };
 
-const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSelect, height, search }) => {
+const Table = ({
+  data,
+  onClick,
+  columns,
+  isLoading,
+  onEditingFinished,
+  handleSelect,
+  height,
+  search,
+  selectionMode,
+  apiContext
+}) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
 
@@ -36,6 +57,11 @@ const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSel
 
   const handleGridReady = params => {
     setAPI(params.api);
+
+    if (apiContext) {
+      apiContext(params.api);
+    }
+
     params.api.sizeColumnsToFit();
   };
 
@@ -76,7 +102,7 @@ const Table = ({ data, onClick, columns, isLoading, onEditingFinished, handleSel
           frameworkComponents={components}
           onRowDoubleClicked={value => onClick && onClick(value.data)}
           loadingOverlayComponent="LoadingStatus"
-          rowSelection="multiple"
+          rowSelection={selectionMode || 'multiple'}
           onCellEditingStopped={onEditingFinished}
           onRowSelected={handleMultipleSelection}
           animateRows={true}
