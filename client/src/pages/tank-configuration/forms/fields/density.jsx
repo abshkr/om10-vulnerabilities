@@ -13,31 +13,31 @@ const Density = ({ form, value }) => {
   const [low, setLow] = useState(0);
   const [high, setHigh] = useState(0);
 
-  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+  const { setFieldsValue, getFieldValue } = form;
 
   const product = getFieldValue('tank_base');
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     const decimals = new RegExp('^[0-9]+(.[0-9]{1,3})?$');
     const validDecimals = decimals.exec(input);
 
     if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.density')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.density')}`);
     }
 
     if (input && !validDecimals) {
-      callback(`${t('placeholder.maxPlaces')}: 3 ─ ${t('descriptions.invalidDecimals')}`);
+      return Promise.reject(`${t('placeholder.maxPlaces')}: 3 ─ ${t('descriptions.invalidDecimals')}`);
     }
 
     if (_.toInteger(input) < _.toInteger(low)) {
-      callback(`${t('placeholder.limit')}: ${low} ─ ${t('descriptions.valueTooLow')}`);
+      return Promise.reject(`${t('placeholder.limit')}: ${low} ─ ${t('descriptions.valueTooLow')}`);
     }
 
     if (_.toInteger(input) > _.toInteger(high)) {
-      callback(`${t('placeholder.limit')}: ${high} ─ ${t('descriptions.valueTooHigh')}`);
+      return Promise.reject(`${t('placeholder.limit')}: ${high} ─ ${t('descriptions.valueTooHigh')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -65,10 +65,12 @@ const Density = ({ form, value }) => {
   const disabled = isValidating || !product;
 
   return (
-    <Form.Item label={t('fields.density')}>
-      {getFieldDecorator('tank_density', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input disabled={disabled} addonAfter={affix} />)}
+    <Form.Item
+      name="tank_density"
+      label={t('fields.density')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Input disabled={disabled} addonAfter={affix} />
     </Form.Item>
   );
 };

@@ -9,9 +9,9 @@ import { PERSONNEL } from '../../../../api';
 
 const Lock = ({ form, value }) => {
   const { t } = useTranslation();
-  const { data, isValidating } = useSWR(PERSONNEL.AREAS);
+  const { data } = useSWR(PERSONNEL.AREAS);
 
-  const { setFieldsValue, getFieldValue } = form;
+  const { setFieldsValue } = form;
 
   const choices = [
     {
@@ -65,11 +65,7 @@ const Lock = ({ form, value }) => {
       </Form.Item>
       <Divider />
       <Form.Item name="area_accesses" label="">
-        <Checkbox.Group
-          style={{ display: 'flex', flexDirection: 'column' }}
-          disabled={getFieldValue('per_lock') === 'Y' || isValidating}
-          options={options}
-        />
+        <Checkbox.Group style={{ display: 'flex', flexDirection: 'column' }} options={options} />
       </Form.Item>
     </div>
   );

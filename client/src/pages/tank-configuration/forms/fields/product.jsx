@@ -9,14 +9,14 @@ const Product = ({ form, value }) => {
   const { t } = useTranslation();
   const { data: options, isValidating } = useSWR(TANKS.BASE_LIST);
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.baseProductName')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.baseProductName')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -28,26 +28,26 @@ const Product = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.baseProductName')}>
-      {getFieldDecorator('tank_base', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectBaseProduct') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.base_code}>
-              {item.base_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="tank_base"
+      label={t('fields.baseProductName')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectBaseProduct') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.base_code}>
+            {item.base_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

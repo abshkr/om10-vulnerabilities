@@ -9,14 +9,14 @@ const Role = ({ form, value }) => {
   const { t } = useTranslation();
   const { data: options, isValidating } = useSWR(PERSONNEL.ROLES);
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.role')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.role')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -28,26 +28,22 @@ const Role = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.role')}>
-      {getFieldDecorator('per_auth', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectRole') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.role_id}>
-              {item.auth_level_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item name="per_auth" label={t('fields.role')} rules={[{ required: true, validator: validate }]}>
+      <Select
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectRole') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.role_id}>
+            {item.role_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

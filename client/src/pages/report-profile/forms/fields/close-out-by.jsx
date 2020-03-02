@@ -5,7 +5,7 @@ import { Form, Select } from 'antd';
 const CloseOutReportBy = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const options = [
     {
@@ -20,10 +20,10 @@ const CloseOutReportBy = ({ form, value }) => {
 
   const validate = (rule, input, callback) => {
     if (input === '' || input === undefined) {
-      callback(`${t('validate.select')} ─ ${t('fields.closeOutReportBy')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.closeOutReportBy')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -35,25 +35,25 @@ const CloseOutReportBy = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.closeOutReportBy')}>
-      {getFieldDecorator('report_closeout_flag2', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          showSearch
-          optionFilterProp="children"
-          placeholder={t('placeholder.selectCloseOutReportBy')}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options.map(item => (
-            <Select.Option key={item.value} value={item.value}>
-              {item.key}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="report_closeout_flag2"
+      label={t('fields.closeOutReportBy')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        showSearch
+        optionFilterProp="children"
+        placeholder={t('placeholder.selectCloseOutReportBy')}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options.map(item => (
+          <Select.Option key={item.value} value={item.value}>
+            {item.key}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

@@ -5,7 +5,7 @@ import { Form, Checkbox } from 'antd';
 const Flags = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -18,16 +18,12 @@ const Flags = ({ form, value }) => {
 
   return (
     <div>
-      <Form.Item>
-        {getFieldDecorator('report_closeout_flag', {
-          valuePropName: 'checked'
-        })(<Checkbox>{t('fields.closeOutReport')}</Checkbox>)}
+      <Form.Item name="report_closeout_flag" valuePropName="checked">
+        <Checkbox>{t('fields.closeOutReport')}</Checkbox>
       </Form.Item>
 
-      <Form.Item>
-        {getFieldDecorator('report_ondemand_flag', {
-          valuePropName: 'checked'
-        })(<Checkbox>{t('fields.onDemandReport')}</Checkbox>)}
+      <Form.Item name="report_ondemand_flag" valuePropName="checked">
+        <Checkbox>{t('fields.onDemandReport')}</Checkbox>
       </Form.Item>
     </div>
   );

@@ -9,14 +9,14 @@ const Employer = ({ form, value }) => {
   const { t } = useTranslation();
   const { data: options, isValidating } = useSWR(PERSONNEL.EMPLOYERS);
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const validate = (rule, input, callback) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.employer')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.employer')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -28,26 +28,26 @@ const Employer = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.employer')}>
-      {getFieldDecorator('per_cmpy', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectEmployer') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.cmpy_code}>
-              {item.cmpy_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="per_cmpy"
+      label={t('fields.employer')}
+      rules={[{ required: false, validator: validate }]}
+    >
+      <Select
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectEmployer') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.cmpy_code}>
+            {item.cmpy_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

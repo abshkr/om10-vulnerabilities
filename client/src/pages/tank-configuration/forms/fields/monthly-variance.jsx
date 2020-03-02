@@ -6,34 +6,34 @@ import _ from 'lodash';
 const MontlhyVariance = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
-  const handlePercentageValidation = (rule, input, callback) => {
+  const handlePercentageValidation = (rule, input) => {
     if (input && !_.isInteger(parseInt(input))) {
-      callback(`${t('placeholder.wrongType')}: ${t('types.integer')}`);
+      return Promise.reject(`${t('placeholder.wrongType')}: ${t('types.integer')}`);
     }
 
     if (input && parseInt(input) < -100) {
-      callback(`${t('placeholder.limit')}: ${-100} ─ ${t('descriptions.valueTooLow')}`);
+      return Promise.reject(`${t('placeholder.limit')}: ${-100} ─ ${t('descriptions.valueTooLow')}`);
     }
 
     if (input && parseInt(input) > 100) {
-      callback(`${t('placeholder.limit')}: ${100} ─ ${t('descriptions.valueTooHigh')}`);
+      return Promise.reject(`${t('placeholder.limit')}: ${100} ─ ${t('descriptions.valueTooHigh')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
-  const handleVolumeValidation = (rule, input, callback) => {
+  const handleVolumeValidation = (rule, input) => {
     if (input && !_.isInteger(parseInt(input))) {
-      callback(`${t('placeholder.wrongType')}: ${t('types.integer')}`);
+      return Promise.reject(`${t('placeholder.wrongType')}: ${t('types.integer')}`);
     }
 
     if (input && input.length > 126) {
-      callback(`${t('placeholder.maxCharacters')}: 126 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 126 ─ ${t('descriptions.maxCharacters')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -48,31 +48,29 @@ const MontlhyVariance = ({ form, value }) => {
   return (
     <div style={{ display: 'flex' }}>
       <Form.Item
+        name="tank_mtol_percent"
         label={`${t('fields.monthlyVarianceLimit')} (%)`}
         style={{ flex: '1 1 auto', marginRight: 5, width: 300 }}
+        rules={[
+          {
+            validator: handlePercentageValidation
+          }
+        ]}
       >
-        {getFieldDecorator('tank_mtol_percent', {
-          initialValue: 0,
-          rules: [
-            {
-              validator: handlePercentageValidation
-            }
-          ]
-        })(<Input />)}
+        <Input />
       </Form.Item>
 
       <Form.Item
+        name="tank_mtol_volume"
         label={`${t('fields.monthlyVarianceLimit')} (${t('units.volume')})`}
         style={{ flex: '1 1 auto', marginLeft: 5, width: 300 }}
+        rules={[
+          {
+            validator: handleVolumeValidation
+          }
+        ]}
       >
-        {getFieldDecorator('tank_mtol_volume', {
-          initialValue: 0,
-          rules: [
-            {
-              validator: handleVolumeValidation
-            }
-          ]
-        })(<Input addonAfter="Litres" />)}
+        <Input addonAfter="Litres" />
       </Form.Item>
     </div>
   );

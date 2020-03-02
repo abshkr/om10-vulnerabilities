@@ -1,2 +1,3 @@
-import personnelOnsite from "./personnelOnsite";
-export default personnelOnsite;
+import PersonnelOnsite from './personnel-on-site';
+
+export default PersonnelOnsite;

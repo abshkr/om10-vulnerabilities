@@ -4,7 +4,8 @@ import { Form, Input } from 'antd';
 
 const DriverLicense = ({ form, value }) => {
   const { t } = useTranslation();
-  const { getFieldDecorator, setFieldsValue } = form;
+
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -16,16 +17,19 @@ const DriverLicense = ({ form, value }) => {
 
   const validate = (rule, input, callback) => {
     if (input && input.length > 4000) {
-      callback(`${t('placeholder.maxCharacters')}: 4000 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 4000 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={t('fields.comments')}>
-      {getFieldDecorator('per_comments', {
-        rules: [{ required: false, validator: validate }]
-      })(<Input.TextArea />)}
+    <Form.Item
+      name="per_comments"
+      label={t('fields.comments')}
+      rules={[{ required: false, validator: validate }]}
+    >
+      <Input.TextArea />
     </Form.Item>
   );
 };

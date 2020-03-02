@@ -21,31 +21,33 @@ const MaxFlow = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const handleValidation = (rule, input, callback) => {
+  const handleValidation = (rule, input) => {
     if (input && !_.isInteger(parseInt(input))) {
-      callback(`${t('placeholder.wrongType')}: ${t('types.integer')}`);
+      return Promise.reject(`${t('placeholder.wrongType')}: ${t('types.integer')}`);
     }
 
     if (input && input.length > 126) {
-      callback(`${t('placeholder.maxCharacters')}: 126 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 126 ─ ${t('descriptions.maxCharacters')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   return (
     <div>
-      <Form.Item label={`${t('fields.flowContributionStage')}: 1`}>
-        {getFieldDecorator('tank_max_flow.0.tank_level', {
-          rules: [
-            {
-              validator: handleValidation
-            }
-          ]
-        })(<Input addonBefore={t('fields.tankLevel')} />)}
+      <Form.Item
+        name="tank_max_flow.0.tank_level"
+        label={`${t('fields.flowContributionStage')}: 1`}
+        rules={[
+          {
+            validator: handleValidation
+          }
+        ]}
+      >
+        <Input addonBefore={t('fields.tankLevel')} />
       </Form.Item>
 
-      <Form.Item>
+      <Form.Item name="tank_max_flow.0.flow_rate">
         {getFieldDecorator('tank_max_flow.0.flow_rate', {
           rules: [
             {

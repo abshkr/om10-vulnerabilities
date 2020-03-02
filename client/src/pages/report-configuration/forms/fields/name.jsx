@@ -12,24 +12,24 @@ const Name = ({ form, value }) => {
   const { data: options, isValidating } = useSWR(REPORT_CONFIGURATION.REPORTS);
   const { data } = useSWR(REPORT_CONFIGURATION.READ);
 
-  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+  const { setFieldsValue, getFieldValue } = form;
 
   const source = getFieldValue('report_cmpycode');
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     const match = _.find(data?.records, value => {
       return value.report_cmpycode === source && value.report_file === input;
     });
 
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.reportName')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.reportName')}`);
     }
 
     if (!!match & !value) {
-      callback(t('descriptions.alreadyExists'));
+      return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -49,27 +49,27 @@ const Name = ({ form, value }) => {
   }, [source, setFieldsValue, value]);
 
   return (
-    <Form.Item label={t('fields.reportName')}>
-      {getFieldDecorator('report_file', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          disabled={!!value}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectReportName') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map(item => (
-            <Select.Option key={item.report_file} value={item.report_file}>
-              {item.report_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="report_file"
+      label={t('fields.reportName')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        loading={isValidating}
+        disabled={!!value}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectReportName') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map(item => (
+          <Select.Option key={item.report_file} value={item.report_file}>
+            {item.report_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

@@ -4,7 +4,8 @@ import { Form, Checkbox } from 'antd';
 
 const Flags = ({ form, value }) => {
   const { t } = useTranslation();
-  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+
+  const { setFieldsValue, getFieldValue } = form;
 
   const enabled = getFieldValue('report_enabled');
   const canEmail = getFieldValue('report_canemail');
@@ -32,28 +33,20 @@ const Flags = ({ form, value }) => {
 
   return (
     <div>
-      <Form.Item>
-        {getFieldDecorator('report_enabled', { valuePropName: 'checked' })(
-          <Checkbox>{t('fields.enableReportForCompany')}</Checkbox>
-        )}
+      <Form.Item name="report_enabled" valuePropName="checked">
+        <Checkbox>{t('fields.enableReportForCompany')}</Checkbox>
       </Form.Item>
 
-      <Form.Item>
-        {getFieldDecorator('report_active', { valuePropName: 'checked' })(
-          <Checkbox disabled={!enabled}>{t('fields.companyCanActivateReportUsage')}</Checkbox>
-        )}
+      <Form.Item name="report_active" valuePropName="checked">
+        <Checkbox disabled={!enabled}>{t('fields.companyCanActivateReportUsage')}</Checkbox>
       </Form.Item>
 
-      <Form.Item>
-        {getFieldDecorator('report_canprint', { valuePropName: 'checked' })(
-          <Checkbox disabled={!enabled}>{t('fields.companyCanReceiveReportByPrinting')}</Checkbox>
-        )}
+      <Form.Item name="report_canprint" valuePropName="checked">
+        <Checkbox disabled={!enabled}>{t('fields.companyCanReceiveReportByPrinting')}</Checkbox>
       </Form.Item>
 
-      <Form.Item>
-        {getFieldDecorator('report_canemail', { valuePropName: 'checked' })(
-          <Checkbox disabled={!enabled && !canEmail}>{t('fields.companyCanReceiveReportByEmail')}</Checkbox>
-        )}
+      <Form.Item name="report_canemail" valuePropName="checked">
+        <Checkbox disabled={!enabled && !canEmail}>{t('fields.companyCanReceiveReportByEmail')}</Checkbox>
       </Form.Item>
     </div>
   );

@@ -4,7 +4,8 @@ import { Form, Input } from 'antd';
 
 const Department = ({ form, value }) => {
   const { t } = useTranslation();
-  const { getFieldDecorator, setFieldsValue } = form;
+
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -16,16 +17,18 @@ const Department = ({ form, value }) => {
 
   const validate = (rule, input, callback) => {
     if (input && input.length > 16) {
-      callback(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={t('fields.department')}>
-      {getFieldDecorator('per_department', {
-        rules: [{ required: false, validator: validate }]
-      })(<Input />)}
+    <Form.Item
+      name="per_department"
+      label={t('fields.department')}
+      rules={[{ required: false, validator: validate }]}
+    >
+      <Input />
     </Form.Item>
   );
 };

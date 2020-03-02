@@ -3,6 +3,7 @@ import React from 'react';
 import useSWR from 'swr';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { SyncOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download } from '../../components';
 import { PERSONNEL_ON_SITE } from '../../api';
@@ -18,7 +19,7 @@ const PersonnelOnSite = () => {
 
   const modifiers = (
     <>
-      <Button icon="sync" onClick={() => revalidate()} loading={isValidating}>
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />

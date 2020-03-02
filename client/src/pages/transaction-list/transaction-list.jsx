@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
+import { SyncOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, Calendar } from '../../components';
 import { TRANSACTION_LIST } from '../../api';
@@ -37,7 +38,7 @@ const TransactionList = () => {
     <>
       <Calendar handleChange={setRange} start={start} end={end} />
 
-      <Button icon="sync" loading={isValidating} onClick={revalidate}>
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
       <Download data={transactions?.records} isLoading={isValidating} columns={fields} />

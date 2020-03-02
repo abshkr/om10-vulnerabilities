@@ -9,14 +9,14 @@ const Source = ({ form, value }) => {
   const { t } = useTranslation();
   const { data: options, isValidating } = useSWR(REPORT_PROFILE.REPORTS);
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const validate = (rule, input, callback) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.source')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.source')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -28,30 +28,28 @@ const Source = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  getFieldDecorator('report_file', { rules: [{ required: !!value }] });
-
   return (
-    <Form.Item label={t('fields.source')}>
-      {getFieldDecorator('report_jasper_file', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          disabled={!!value}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectSource') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map(item => (
-            <Select.Option key={item} value={item}>
-              {item}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="report_jasper_file"
+      label={t('fields.source')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        loading={isValidating}
+        disabled={!!value}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectSource') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map(item => (
+          <Select.Option key={item} value={item}>
+            {item}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

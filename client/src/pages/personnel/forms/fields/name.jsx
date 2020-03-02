@@ -4,7 +4,8 @@ import { Form, Input } from 'antd';
 
 const Name = ({ form, value }) => {
   const { t } = useTranslation();
-  const { getFieldDecorator, setFieldsValue } = form;
+
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -14,22 +15,21 @@ const Name = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.name')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.name')}`);
     }
 
     if (input && input.length > 100) {
-      callback(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={t('fields.name')}>
-      {getFieldDecorator('per_name', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input />)}
+    <Form.Item name="per_name" label={t('fields.name')} rules={[{ required: true, validator: validate }]}>
+      <Input />
     </Form.Item>
   );
 };

@@ -125,7 +125,7 @@ const FormModal = ({ value }) => {
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
-            {/* <Employer form={form} value={value} />
+            <Employer form={form} value={value} />
             <Code form={form} value={value} />
             <Name form={form} value={value} />
             <SLP form={form} value={value} />
@@ -135,7 +135,7 @@ const FormModal = ({ value }) => {
             <TimeCode form={form} value={value} />
             <DriverLicence form={form} value={value} />
             <Status form={form} value={value} />
-            <Comment form={form} value={value} /> */}
+            <Comment form={form} value={value} />
           </TabPane>
           <TabPane className="ant-tab-window" tab={t('tabColumns.expiryDates')} forceRender={true} key="2">
             <Expiry form={form} value={value} type={PERSONNEL.EXPIRY_TYPES} />

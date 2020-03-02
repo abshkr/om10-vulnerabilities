@@ -10,7 +10,7 @@ const Code = ({ form, value }) => {
   const { t } = useTranslation();
   const { data: payload, isValidating } = useSWR(TANKS.READ);
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -26,24 +26,23 @@ const Code = ({ form, value }) => {
     });
 
     if (input && match && !value) {
-      callback(t('descriptions.alreadyExists'));
+      return Promise.reject(t('descriptions.alreadyExists'));
     }
 
     if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.code')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
     }
 
     if (input && input.length > 6) {
-      callback(`${t('placeholder.maxCharacters')}: 6 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 6 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={t('fields.code')}>
-      {getFieldDecorator('tank_code', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input disabled={!!value || isValidating} />)}
+    <Form.Item name="tank_code" label={t('fields.code')} rules={[{ required: true, validator: validate }]}>
+      <Input disabled={!!value || isValidating} />
     </Form.Item>
   );
 };

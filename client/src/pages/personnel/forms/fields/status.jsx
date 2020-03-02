@@ -4,7 +4,8 @@ import { Form, Select } from 'antd';
 
 const Status = ({ form, value }) => {
   const { t } = useTranslation();
-  const { getFieldDecorator, setFieldsValue } = form;
+
+  const { setFieldsValue } = form;
 
   const [options] = useState([
     {
@@ -30,25 +31,21 @@ const Status = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.status')}>
-      {getFieldDecorator('user_status_flag', {
-        rules: [{ required: false }]
-      })(
-        <Select
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectStatus') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options.map((item, index) => (
-            <Select.Option key={index} value={item.key} disabled={item.key !== '2'}>
-              {item.value}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item name="user_status_flag" label={t('fields.status')}>
+      <Select
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectStatus') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options.map((item, index) => (
+          <Select.Option key={index} value={item.key} disabled={item.key !== '2'}>
+            {item.value}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

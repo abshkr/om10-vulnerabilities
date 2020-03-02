@@ -9,14 +9,14 @@ const TimeCode = ({ form, value }) => {
   const { t } = useTranslation();
   const { data: options, isValidating } = useSWR(PERSONNEL.TIME_CODES);
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.timeCode')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.timeCode')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -28,26 +28,26 @@ const TimeCode = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.timeCode')}>
-      {getFieldDecorator('pt_timecd', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectTimeCode') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.tcd_title}>
-              {item.tcd_title}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="pt_timecd"
+      label={t('fields.timeCode')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectTimeCode') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.tcd_title}>
+            {item.tcd_title}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };
