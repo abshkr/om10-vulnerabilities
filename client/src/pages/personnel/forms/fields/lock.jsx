@@ -11,7 +11,7 @@ const Lock = ({ form, value }) => {
   const { t } = useTranslation();
   const { data, isValidating } = useSWR(PERSONNEL.AREAS);
 
-  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
+  const { setFieldsValue, getFieldValue } = form;
 
   const choices = [
     {
@@ -54,26 +54,22 @@ const Lock = ({ form, value }) => {
 
   return (
     <div className="personnel-lock">
-      <Form.Item label={t('fields.lockOut')}>
-        {getFieldDecorator('per_lock')(
-          <Select>
-            {choices.map((item, index) => (
-              <Select.Option key={index} value={item.value}>
-                {item.key}
-              </Select.Option>
-            ))}
-          </Select>
-        )}
+      <Form.Item name="per_lcok" label={t('fields.lockOut')}>
+        <Select>
+          {choices.map((item, index) => (
+            <Select.Option key={index} value={item.value}>
+              {item.key}
+            </Select.Option>
+          ))}
+        </Select>
       </Form.Item>
       <Divider />
-      <Form.Item label="">
-        {getFieldDecorator('area_accesses')(
-          <Checkbox.Group
-            style={{ display: 'flex', flexDirection: 'column' }}
-            disabled={getFieldValue('per_lock') === 'Y' || isValidating}
-            options={options}
-          />
-        )}
+      <Form.Item name="area_accesses" label="">
+        <Checkbox.Group
+          style={{ display: 'flex', flexDirection: 'column' }}
+          disabled={getFieldValue('per_lock') === 'Y' || isValidating}
+          options={options}
+        />
       </Form.Item>
     </div>
   );

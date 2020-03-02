@@ -1,13 +1,11 @@
 import React from 'react';
-import { Table } from 'antd';
+import { Table, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 const CheckList = ({ form, matches, rowKey, columns }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
-
-  getFieldDecorator('bulk_edit');
+  const { setFieldsValue } = form;
 
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -18,7 +16,7 @@ const CheckList = ({ form, matches, rowKey, columns }) => {
   };
 
   return (
-    <div style={{ marginTop: 10 }}>
+    <Form.Item name="bulk_edit">
       <Table
         size="small"
         bordered
@@ -29,7 +27,7 @@ const CheckList = ({ form, matches, rowKey, columns }) => {
         columns={columns}
         dataSource={matches}
       />
-    </div>
+    </Form.Item>
   );
 };
 

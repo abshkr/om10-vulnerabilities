@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import { Table, Button, Popconfirm } from 'antd';
+import { Table, Button, Popconfirm, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import _ from 'lodash';
@@ -16,9 +16,7 @@ const Expiry = ({ form, value, type }) => {
   const [count, setCount] = useState(value ? value.expiry_dates.length : 3);
   const [data, setData] = useState(value ? value.expiry_dates : []);
 
-  const { getFieldDecorator, setFieldsValue } = form;
-
-  getFieldDecorator('expiry_dates');
+  const { setFieldsValue } = form;
 
   const handleSave = row => {
     const payload = [...data];
@@ -145,7 +143,7 @@ const Expiry = ({ form, value, type }) => {
   });
 
   return (
-    <div>
+    <Form.Item name="expiry_dates">
       <Button
         shape="round"
         icon="calendar"
@@ -173,7 +171,7 @@ const Expiry = ({ form, value, type }) => {
         columns={columns}
         pagination={false}
       />
-    </div>
+    </Form.Item>
   );
 };
 

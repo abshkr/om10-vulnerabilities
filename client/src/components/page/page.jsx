@@ -25,6 +25,7 @@ const Page = ({ name, page, children, modifiers, icon }) => {
       <PageHeaderContainer>
         <PageHeader
           title={name}
+          style={{ width: '30vw' }}
           avatar={{
             icon,
             style: { color: '#68a4ec', backgroundColor: '#d1e3f9' }

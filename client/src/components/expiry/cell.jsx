@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import { Input, Form, Select, DatePicker, Switch } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import moment from 'moment';
 import _ from 'lodash';
 
 import Context from './context';
@@ -46,7 +45,7 @@ export default class Cell extends Component {
 
   renderCell = form => {
     this.form = form;
-    const { children, dataIndex, data, expiry, record } = this.props;
+    const { children, dataIndex, data, expiry } = this.props;
     const { editing } = this.state;
     const { Option } = Select;
 
@@ -54,26 +53,20 @@ export default class Cell extends Component {
 
     if (dataIndex === 'edt_type_desc') {
       return editing ? (
-        <Form.Item style={{ margin: 0 }}>
-          {form.getFieldDecorator(dataIndex)(
-            <Select
-              loading={expiry.length === 0}
-              ref={node => (this.input = node)}
-              onPressEnter={value => this.save(value, dataIndex)}
-              onBlur={value => this.save(value, dataIndex)}
-            >
-              {!!expiry &&
-                expiry.map((item, index) => (
-                  <Option
-                    key={index}
-                    value={item.edt_type_desc}
-                    disabled={unique.includes(item.edt_type_desc)}
-                  >
-                    {item.edt_type_desc}
-                  </Option>
-                ))}
-            </Select>
-          )}
+        <Form.Item name="edt_type_desc" style={{ margin: 0 }}>
+          <Select
+            loading={expiry.length === 0}
+            ref={node => (this.input = node)}
+            onPressEnter={value => this.save(value, dataIndex)}
+            onBlur={value => this.save(value, dataIndex)}
+          >
+            {!!expiry &&
+              expiry.map((item, index) => (
+                <Option key={index} value={item.edt_type_desc} disabled={unique.includes(item.edt_type_desc)}>
+                  {item.edt_type_desc}
+                </Option>
+              ))}
+          </Select>
         </Form.Item>
       ) : (
         <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
@@ -84,40 +77,34 @@ export default class Cell extends Component {
 
     if (dataIndex === 'ed_status') {
       return (
-        <Form.Item style={{ margin: 0 }}>
-          {form.getFieldDecorator('ed_status', {
-            valuePropName: 'checked',
-            initialValue: record.ed_status
-          })(
-            <Switch
-              ref={node => (this.input = node)}
-              onChange={value => this.save(value, dataIndex)}
-              checkedChildren={<CheckOutlined />}
-              unCheckedChildren={<CloseOutlined />}
-            />
-          )}
+        <Form.Item name="ed_status" style={{ margin: 0 }} valuePropName="checked">
+          <Switch
+            ref={node => (this.input = node)}
+            onChange={value => this.save(value, dataIndex)}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+          />
         </Form.Item>
       );
     }
 
     if (dataIndex === 'ed_exp_date') {
       return editing ? (
-        <Form.Item style={{ margin: 0 }}>
-          {form.getFieldDecorator('ed_exp_date', {
-            rules: [
-              {
-                type: 'object',
-                required: true
-              }
-            ],
-            initialValue: moment(record.ed_exp_date, 'YYYY-MM-DD 00:00:00')
-          })(
-            <DatePicker
-              ref={node => (this.input = node)}
-              onChange={value => this.save(value, dataIndex)}
-              format="DD/MM/YYYY"
-            />
-          )}
+        <Form.Item
+          name="ed_exp_date"
+          style={{ margin: 0 }}
+          rules={[
+            {
+              type: 'object',
+              required: true
+            }
+          ]}
+        >
+          <DatePicker
+            ref={node => (this.input = node)}
+            onChange={value => this.save(value, dataIndex)}
+            format="DD/MM/YYYY"
+          />
         </Form.Item>
       ) : (
         <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>

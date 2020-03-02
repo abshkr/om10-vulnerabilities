@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from 'react';
+import { useEffect } from 'react';
 
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -16,7 +16,7 @@ const Logout = ({ signout, idle }) => {
     history.push(ROUTES.LOG_IN);
   }, [history, idle, signout]);
 
-  return <Fragment />;
+  return null;
 };
 
 export default connect(null, actions)(Logout);
