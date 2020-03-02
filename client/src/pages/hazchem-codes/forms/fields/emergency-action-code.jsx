@@ -4,7 +4,20 @@ import { useTranslation } from 'react-i18next';
 
 const EmergencyActionCode = ({ form, value }) => {
   const { t } = useTranslation();
-  const { getFieldDecorator, setFieldsValue } = form;
+
+  const { setFieldsValue } = form;
+
+  const validate = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.emergencyActionCode')}`);
+    }
+
+    if (input && input.length > 20) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
 
   useEffect(() => {
     if (value) {
@@ -14,22 +27,13 @@ const EmergencyActionCode = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
-    if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.emergencyActionCode')}`);
-    }
-
-    if (input && input.length > 20) {
-      callback(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
-    }
-    callback();
-  };
-
   return (
-    <Form.Item label={t('fields.emergencyActionCode')}>
-      {getFieldDecorator('hzcf_hz_code', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input />)}
+    <Form.Item
+      name="hzcf_hz_code"
+      label={t('fields.emergencyActionCode')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Input />
     </Form.Item>
   );
 };

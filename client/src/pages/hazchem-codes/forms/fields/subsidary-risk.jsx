@@ -4,7 +4,19 @@ import { useTranslation } from 'react-i18next';
 
 const SubsidiaryRisk = ({ form, value }) => {
   const { t } = useTranslation();
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
+
+  const validate = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.subsidiaryRisk')}`);
+    }
+
+    if (input && input.length > 20) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
 
   useEffect(() => {
     if (value) {
@@ -14,22 +26,13 @@ const SubsidiaryRisk = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
-    if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.subsidiaryRisk')}`);
-    }
-
-    if (input && input.length > 20) {
-      callback(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
-    }
-    callback();
-  };
-
   return (
-    <Form.Item label={t('fields.subsidiaryRisk')}>
-      {getFieldDecorator('hzcf_sub_risk', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input />)}
+    <Form.Item
+      name="hzcf_sub_risk"
+      label={t('fields.subsidiaryRisk')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Input />
     </Form.Item>
   );
 };

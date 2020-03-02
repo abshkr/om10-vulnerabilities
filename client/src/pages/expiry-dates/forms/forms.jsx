@@ -4,7 +4,14 @@ import axios from 'axios';
 import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Button, Tabs, Modal, Divider, notification } from 'antd';
-import _ from 'lodash';
+
+import {
+  EditOutlined,
+  PlusOutlined,
+  CloseOutlined,
+  DeleteOutlined,
+  QuestionCircleOutlined
+} from '@ant-design/icons';
 
 import { ExpiryDateTarget, TypeCode, TypeDescription, DateTimeFormat, DefaultValue, Flags } from './fields';
 import { EXPIRY_DATES } from '../../../api';
@@ -15,78 +22,42 @@ const FormModal = ({ value }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
-  const handleCreate = () => {
-    form.validateFields((err, values) => {
-      if (!err) {
-        Modal.confirm({
-          title: t('prompts.create'),
-          okText: t('operations.yes'),
-          okType: 'primary',
-          cancelText: t('operations.no'),
-          centered: true,
-          onOk: async () => {
-            await axios
-              .post(EXPIRY_DATES.CREATE, values)
-              .then(() => {
-                mutate(EXPIRY_DATES.READ);
-                Modal.destroyAll();
+  const IS_CREATING = !value;
 
-                notification.success({
-                  message: t('messages.createSuccess'),
-                  description: `${t('descriptions.createSuccess')} `
-                });
-              })
-              .catch(errors => {
-                _.forEach(errors.response.data.errors, error => {
-                  notification.error({
-                    message: error.type,
-                    description: error.message
-                  });
-                });
+  const onFinish = values => {
+    Modal.confirm({
+      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(IS_CREATING ? EXPIRY_DATES.CREATE : EXPIRY_DATES.UPDATE, values)
+          .then(
+            axios.spread(response => {
+              Modal.destroyAll();
+
+              mutate(EXPIRY_DATES.READ);
+
+              notification.success({
+                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
               });
-          }
-        });
+            })
+          )
+          .catch(error => {
+            notification.error({
+              message: error.message,
+              description: IS_CREATING ? t('descriptions.createFailed') : t('messages.updateSuccess')
+            });
+          });
       }
     });
   };
 
-  const handleUpdate = () => {
-    form.validateFields((err, values) => {
-      if (!err) {
-        Modal.confirm({
-          title: t('prompts.update'),
-          okText: t('operations.yes'),
-          okType: 'primary',
-          cancelText: t('operations.no'),
-          centered: true,
-          onOk: async () => {
-            await axios
-
-              .post(EXPIRY_DATES.UPDATE, values)
-              .then(() => {
-                mutate(EXPIRY_DATES.READ);
-                Modal.destroyAll();
-
-                notification.success({
-                  message: t('messages.updateSuccess'),
-                  description: `${t('descriptions.updateSuccess')}`
-                });
-              })
-              .catch(errors => {
-                _.forEach(errors.response.data.errors, error => {
-                  notification.error({
-                    message: error.type,
-                    description: error.message
-                  });
-                });
-              });
-          }
-        });
-      }
-    });
-  };
-
-  const showDeleteConfirm = () => {
+  const onDelete = () => {
     Modal.confirm({
       title: t('prompts.delete'),
       okText: t('operations.yes'),
@@ -96,22 +67,20 @@ const FormModal = ({ value }) => {
       onOk: async () => {
         await axios
           .post(EXPIRY_DATES.DELETE, value)
-          .then(() => {
-            mutate(EXPIRY_DATES.READ);
-
-            Modal.destroyAll();
-
-            notification.success({
-              message: t('messages.deleteSuccess'),
-              description: `${t('descriptions.deleteSuccess')}`
-            });
-          })
-          .catch(errors => {
-            _.forEach(errors.response.data.errors, error => {
-              notification.error({
-                message: error.type,
-                description: error.message
+          .then(
+            axios.spread(response => {
+              mutate(EXPIRY_DATES.READ);
+              Modal.destroyAll();
+              notification.success({
+                message: t('messages.deleteSuccess'),
+                description: `${t('descriptions.deleteSuccess')}`
               });
+            })
+          )
+          .catch(error => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.deleteFailed')
             });
           });
       }
@@ -120,9 +89,9 @@ const FormModal = ({ value }) => {
 
   return (
     <div>
-      <Form>
+      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
+          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} key="1">
             <ExpiryDateTarget form={form} value={value} />
             <TypeCode form={form} value={value} />
             <TypeDescription form={form} value={value} />
@@ -138,31 +107,38 @@ const FormModal = ({ value }) => {
             <DateTimeFormat form={form} value={value} />
           </TabPane>
         </Tabs>
+
+        <Form.Item>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => Modal.destroyAll()}
+          >
+            {t('operations.cancel')}
+          </Button>
+
+          <Button
+            type="primary"
+            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            htmlType="submit"
+            style={{ float: 'right', marginRight: 5 }}
+          >
+            {IS_CREATING ? t('operations.create') : t('operations.update')}
+          </Button>
+
+          {!IS_CREATING && (
+            <Button
+              type="danger"
+              icon={<DeleteOutlined />}
+              style={{ float: 'right', marginRight: 5 }}
+              onClick={onDelete}
+            >
+              {t('operations.delete')}
+            </Button>
+          )}
+        </Form.Item>
       </Form>
-
-      <Button icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
-        {t('operations.cancel')}
-      </Button>
-
-      <Button
-        type="primary"
-        icon={value ? 'edit' : 'plus'}
-        style={{ float: 'right', marginRight: 5 }}
-        onClick={value ? handleUpdate : handleCreate}
-      >
-        {value ? t('operations.update') : t('operations.create')}
-      </Button>
-
-      {value && (
-        <Button
-          type="danger"
-          icon="delete"
-          style={{ float: 'right', marginRight: 5 }}
-          onClick={showDeleteConfirm}
-        >
-          {t('operations.delete')}
-        </Button>
-      )}
     </div>
   );
 };

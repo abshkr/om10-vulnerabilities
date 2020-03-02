@@ -7,15 +7,6 @@ const AntdStyleProvider = createGlobalStyle`
     overflow-y: auto;
   }
   
-  .ant-form-item label {
-    font-weight: 450;
-    margin-bottom: 0px !important;
-  }
-
-  .ant-modal-confirm .ant-modal-body {
-    padding-bottom: 0px !important;
-  }
-
   .ant-btn-primary.disabled,
   .ant-btn-primary[disabled],
   .ant-btn-primary.disabled:hover,
@@ -66,12 +57,6 @@ const AntdStyleProvider = createGlobalStyle`
   .ant-btn-primary:focus {
     background-color: #68a4ec;
     border: 1px solid #43454a1f;
-  }
-  
-  .ant-notification-notice {
-    margin-right: 32px;
-    box-shadow: 0px 0px 20px 1px rgba(0, 0, 0, 0.06);
-    border: 1px solid #68a3ec28;
   }
   
   .ant-notification-notice-message {
@@ -126,10 +111,7 @@ const AntdStyleProvider = createGlobalStyle`
     border-color: #68a4ec;
   }
   
-  .ant-calendar-ok-btn {
-    color: white !important;
-  }
-  
+
   .ant-switch-checked {
     background-color: #68a4ec;
   }
@@ -138,17 +120,9 @@ const AntdStyleProvider = createGlobalStyle`
     margin-top: 15px !important;
   }
   
-  .anticon {
-    vertical-align: -2px !important;
-  }
-  
   .ant-checkbox-group {
     display: flex;
     flex-direction: column;
-  }
-  
-  .ant-tabs .ant-tabs-left-content {
-    padding-bottom: 20px !important;
   }
   
   .ant-btn:hover,
@@ -176,13 +150,6 @@ const AntdStyleProvider = createGlobalStyle`
   .ant-input:hover {
     box-shadow: none;
     border-color: #68a4ec;
-  }
-  
-  .ant-menu-vertical.ant-menu-sub .ant-menu-item,
-  .ant-menu-vertical-left.ant-menu-sub .ant-menu-item,
-  .ant-menu-vertical-right.ant-menu-sub .ant-menu-item {
-    font-size: 13px;
-    font-weight: 600;
   }
   
   .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {

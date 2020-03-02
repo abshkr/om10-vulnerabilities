@@ -5,7 +5,19 @@ import { Form, Input } from 'antd';
 const Name = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
+
+  const validate = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.name')}`);
+    }
+
+    if (input && input.length > 100) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
 
   useEffect(() => {
     if (value) {
@@ -15,22 +27,13 @@ const Name = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
-    if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.name')}`);
-    }
-
-    if (input && input.length > 100) {
-      callback(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
-    }
-    callback();
-  };
-
   return (
-    <Form.Item label={t('fields.name')}>
-      {getFieldDecorator('category_name', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input />)}
+    <Form.Item
+      name="category_name"
+      label={t('fields.name')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Input />
     </Form.Item>
   );
 };

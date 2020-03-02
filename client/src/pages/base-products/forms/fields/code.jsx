@@ -10,7 +10,7 @@ import { BASE_PRODUCTS } from '../../../../api';
 const Code = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { data: baseProducts, isValidating } = useSWR(BASE_PRODUCTS.READ);
 
@@ -22,28 +22,27 @@ const Code = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     const match = _.find(baseProducts?.records, ['base_code', input]);
 
-    if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.code')}`);
+    if (!!match && !value) {
+      return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    if (input && !!match && !value) {
-      callback(t('descriptions.alreadyExists'));
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
     }
 
     if (input && input.length > 20) {
-      callback(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={t('fields.code')}>
-      {getFieldDecorator('base_code', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input disabled={!!value || isValidating} />)}
+    <Form.Item name="base_code" label={t('fields.code')} rules={[{ required: true, validator: validate }]}>
+      <Input disabled={!!value || isValidating} />
     </Form.Item>
   );
 };

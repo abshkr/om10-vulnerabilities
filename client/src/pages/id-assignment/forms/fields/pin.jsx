@@ -5,7 +5,7 @@ import { Form, InputNumber } from 'antd';
 const Pin = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -16,10 +16,8 @@ const Pin = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.pin')}>
-      {getFieldDecorator('kya_pin')(
-        <InputNumber min={0} max={4} style={{ width: '100%' }} disabled={!!value} />
-      )}
+    <Form.Item name="kya_pin" label={t('fields.pin')}>
+      <InputNumber min={0} max={4} style={{ width: '100%' }} disabled={!!value} />
     </Form.Item>
   );
 };

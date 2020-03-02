@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { notification, Button } from 'antd';
+import { SafetyCertificateOutlined, ReconciliationOutlined } from '@ant-design/icons';
 
 import Forms from './forms';
 import auth from '../../auth';
@@ -76,7 +77,7 @@ const FolioSummary = ({ user }) => {
     <>
       <Button
         type="primary"
-        icon="safety-certificate"
+        icon={<SafetyCertificateOutlined />}
         onClick={() => closeFolio(null)}
         style={{ float: 'right', marginRight: 5 }}
       >
@@ -85,7 +86,7 @@ const FolioSummary = ({ user }) => {
 
       <Button
         type="primary"
-        icon="reconciliation"
+        icon={<ReconciliationOutlined />}
         onClick={() => createPDS()}
         style={{ float: 'right', marginRight: 5 }}
       >

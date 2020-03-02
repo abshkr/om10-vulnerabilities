@@ -3,9 +3,7 @@ import { Form } from 'antd';
 import { SliderPicker } from 'react-color';
 
 const BaseProductColor = ({ form, value }) => {
-  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
-
-  getFieldDecorator('base_color');
+  const { setFieldsValue, getFieldValue } = form;
 
   const color = getFieldValue('base_color');
 
@@ -21,10 +19,10 @@ const BaseProductColor = ({ form, value }) => {
         base_color: value.base_color
       });
     }
-  }, [value, setFieldsValue, getFieldDecorator]);
+  }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label="Base Product Color">
+    <Form.Item name="base_color" label="Base Product Color">
       <SliderPicker color={color} onChangeComplete={handleColorChange} />
     </Form.Item>
   );

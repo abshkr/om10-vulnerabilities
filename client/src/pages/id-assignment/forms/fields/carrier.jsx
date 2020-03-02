@@ -6,19 +6,19 @@ import { Form, Select } from 'antd';
 
 import { ID_ASSIGNMENT } from '../../../../api';
 
-const Carrier = ({ form, value }) => {
+const Carrier = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(ID_ASSIGNMENT.CARRIERS);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.carrier')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.carrier')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -30,26 +30,27 @@ const Carrier = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.carrier')}>
-      {getFieldDecorator('kya_tnkr_cmpy', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectCarrier') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.cmpy_code}>
-              {item.cmpy_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="kya_tnkr_cmpy"
+      label={t('fields.carrier')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        loading={isValidating}
+        showSearch
+        onChange={onChange}
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectCarrier') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.cmpy_code}>
+            {item.cmpy_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

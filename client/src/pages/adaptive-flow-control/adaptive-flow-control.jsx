@@ -35,7 +35,7 @@ const AdaptiveFlowControl = () => {
   return (
     <Page page={t('pageMenu.operations')} name={t('pageNames.adaptiveFlow')} block={true}>
       <Table
-        size="middle"
+        size="small"
         dataSource={data}
         rowKey="baseCode"
         bordered

@@ -4,6 +4,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import { Modal, Button, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { EditOutlined, SaveOutlined, RedoOutlined, CloseOutlined } from '@ant-design/icons';
 import { FOLIO_SUMMARY } from '../../../../api';
 import { DataTable } from '../../../../components';
 
@@ -180,14 +181,19 @@ const Tanks = ({ id, enabled, access }) => {
         apiContext={setAPI}
       />
       <div className="operations">
-        <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
+        <Button
+          shape="round"
+          icon={<CloseOutlined />}
+          style={{ float: 'right' }}
+          onClick={() => Modal.destroyAll()}
+        >
           {t('operations.cancel')}
         </Button>
 
         <Button
           shape="round"
           type="primary"
-          icon="redo"
+          icon={<RedoOutlined />}
           style={{ float: 'right', marginRight: 5 }}
           onClick={calculate}
           disabled={!enabled}
@@ -198,7 +204,7 @@ const Tanks = ({ id, enabled, access }) => {
         <Button
           shape="round"
           type="primary"
-          icon="save"
+          icon={<SaveOutlined />}
           style={{ float: 'right', marginRight: 5 }}
           onClick={save}
           disabled={!enabled || !access.canUpdate}
@@ -209,7 +215,7 @@ const Tanks = ({ id, enabled, access }) => {
         <Button
           shape="round"
           type="primary"
-          icon="edit"
+          icon={<EditOutlined />}
           style={{ float: 'right', marginRight: 5 }}
           onClick={saveToFolio}
           disabled={!enabled || !access.canUpdate}

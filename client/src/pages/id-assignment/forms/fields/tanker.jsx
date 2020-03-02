@@ -6,23 +6,21 @@ import { Form, Select } from 'antd';
 
 import { ID_ASSIGNMENT } from '../../../../api';
 
-const Tanker = ({ form, value }) => {
+const Tanker = ({ form, value, carrier }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
-
-  const carrier = getFieldValue('kya_tnkr_cmpy');
+  const { setFieldsValue } = form;
 
   const { data: options, isValidating, revalidate } = useSWR(
     `${ID_ASSIGNMENT.TANKERS}?tnkr_owner=${carrier}`
   );
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.tanker')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.tanker')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -44,27 +42,23 @@ const Tanker = ({ form, value }) => {
   }, [carrier, revalidate, setFieldsValue, value]);
 
   return (
-    <Form.Item label={t('fields.tanker')}>
-      {getFieldDecorator('kya_tanker', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          disabled={!carrier}
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectTanker') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.tnkr_code}>
-              {item.tnkr_desc}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item name="kya_tanker" label={t('fields.tanker')} rules={[{ required: true, validator: validate }]}>
+      <Select
+        disabled={!carrier}
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectTanker') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.tnkr_code}>
+            {item.tnkr_desc}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

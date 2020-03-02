@@ -88,7 +88,7 @@ const FormModal = ({ value }) => {
 
   return (
     <div>
-      <Form scro layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" style={{ height: '40vh' }}>
           <TabPane tab={t('tabColumns.general')} key="1">
             <SystemPrinter form={form} value={value} />

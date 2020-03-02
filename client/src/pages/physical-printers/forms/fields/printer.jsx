@@ -14,22 +14,22 @@ const Printer = ({ form, value }) => {
 
   const { data: physicalPrinters, isValidating } = useSWR(PHYSICAL_PRINTERS.READ);
 
-  const validate = (rule, input) => {
-    const match = _.find(physicalPrinters?.records, ['prntr', input]);
+  const validate = (rule, value) => {
+    const match = _.find(physicalPrinters?.records, ['prntr', value]);
 
-    if (input === '' || !input) {
+    if (value === '' || !value) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
     }
 
-    if (input && !!match && !value) {
+    if (value && !!match && !value) {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    if (input && input.charAt(0).toLowerCase() !== 'p') {
+    if (value && value.charAt(0).toLowerCase() !== 'p') {
       return Promise.reject(`${t('descriptions.characterMustStart')} P`);
     }
 
-    if (input && input.length > 10) {
+    if (value && value.length > 10) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 10 ─ ${t('descriptions.maxCharacters')}`);
     }
 

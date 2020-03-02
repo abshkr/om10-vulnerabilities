@@ -8,7 +8,7 @@ import { BASE_PRODUCTS } from '../../../../api';
 const RefSpecTemp = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(BASE_PRODUCTS.REF_TEMP);
 
@@ -19,24 +19,22 @@ const RefSpecTemp = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.refTempSpec')}>
-      {getFieldDecorator('base_ref_temp_spec')(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectRefTempSpec') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.ref_temp_spec_id}>
-              {item.ref_temp_spec_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item name="base_ref_temp_spec" label={t('fields.refTempSpec')}>
+      <Select
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectRefTempSpec') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.ref_temp_spec_id}>
+            {item.ref_temp_spec_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

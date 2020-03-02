@@ -4,7 +4,20 @@ import { useTranslation } from 'react-i18next';
 
 const UNNumber = ({ form, value }) => {
   const { t } = useTranslation();
-  const { getFieldDecorator, setFieldsValue } = form;
+
+  const { setFieldsValue } = form;
+
+  const validate = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.unNumber')}`);
+    }
+
+    if (input && input.length > 20) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
 
   useEffect(() => {
     if (value) {
@@ -14,22 +27,13 @@ const UNNumber = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
-    if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.unNumber')}`);
-    }
-
-    if (input && input.length > 20) {
-      callback(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
-    }
-    callback();
-  };
-
   return (
-    <Form.Item label={t('fields.unNumber')}>
-      {getFieldDecorator('hzcf_un_num', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input />)}
+    <Form.Item
+      name="hzcf_un_num"
+      label={t('fields.unNumber')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Input />
     </Form.Item>
   );
 };

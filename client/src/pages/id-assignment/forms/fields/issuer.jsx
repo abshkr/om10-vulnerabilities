@@ -9,16 +9,16 @@ import { ID_ASSIGNMENT } from '../../../../api';
 const Issuer = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(ID_ASSIGNMENT.ISSUER);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.issuer')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.issuer')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -30,27 +30,27 @@ const Issuer = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.issuer')}>
-      {getFieldDecorator('kya_issuer_name', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          disabled={!!value}
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectIssuer') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.cmpy_code}>
-              {item.cmpy_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="kya_issuer_name"
+      label={t('fields.issuer')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        disabled={!!value}
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectIssuer') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.cmpy_code}>
+            {item.cmpy_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

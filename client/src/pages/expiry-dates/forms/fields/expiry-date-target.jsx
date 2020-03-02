@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 
 const ExpiryDateTarget = ({ form, value }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { t } = useTranslation();
 
@@ -24,12 +24,12 @@ const ExpiryDateTarget = ({ form, value }) => {
     }
   ];
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.expiryDateTarget')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.expiryDateTarget')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -41,26 +41,26 @@ const ExpiryDateTarget = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.expiryDateTarget')}>
-      {getFieldDecorator('edt_target_code', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          disabled={!!value}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectExpiryDateTarget') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options.map((item, index) => (
-            <Select.Option key={index} value={item.id}>
-              {item.title}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="edt_target_code"
+      label={t('fields.expiryDateTarget')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        disabled={!!value}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectExpiryDateTarget') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options.map((item, index) => (
+          <Select.Option key={index} value={item.id}>
+            {item.title}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

@@ -5,17 +5,18 @@ import { useTranslation } from 'react-i18next';
 const Name = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.name')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.name')}`);
     }
 
     if (input && input.length > 40) {
-      callback(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -27,10 +28,8 @@ const Name = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.name')}>
-      {getFieldDecorator('base_name', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input />)}
+    <Form.Item name="base_name" label={t('fields.name')} rules={[{ required: true, validator: validate }]}>
+      <Input />
     </Form.Item>
   );
 };

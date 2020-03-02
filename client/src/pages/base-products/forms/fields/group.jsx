@@ -8,7 +8,7 @@ import { BASE_PRODUCTS } from '../../../../api';
 const Group = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(BASE_PRODUCTS.PRODUCT_GROUPS);
 
@@ -21,24 +21,22 @@ const Group = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.group')}>
-      {getFieldDecorator('base_prod_group')(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectGroup') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.pgr_code}>
-              {item.pgr_text}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item name="base_prod_group" label={t('fields.group')}>
+      <Select
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectGroup') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.pgr_code}>
+            {item.pgr_text}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

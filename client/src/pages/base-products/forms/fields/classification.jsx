@@ -9,16 +9,16 @@ import { BASE_PRODUCTS } from '../../../../api';
 const Classification = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(BASE_PRODUCTS.CLASSIFICATIONS);
 
-  const validate = (rule, input, callback) => {
-    if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.classification')}`);
+  const validate = (rule, value) => {
+    if (value === '' || !value) {
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.classification')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -30,26 +30,26 @@ const Classification = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.classification')}>
-      {getFieldDecorator('base_cat', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectClassification') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.bclass_no}>
-              {item.bclass_desc}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="base_cat"
+      label={t('fields.classification')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectClassification') : null}
+        filterOption={(value, option) =>
+          option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.bclass_no}>
+            {item.bclass_desc}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

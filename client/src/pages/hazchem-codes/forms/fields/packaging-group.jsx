@@ -5,7 +5,19 @@ import { useTranslation } from 'react-i18next';
 
 const PackagingGroup = ({ form, value }) => {
   const { t } = useTranslation();
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
+
+  const validate = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.packagingGroup')}`);
+    }
+
+    if (input && input.length > 20) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
 
   useEffect(() => {
     if (value) {
@@ -15,22 +27,13 @@ const PackagingGroup = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
-    if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.packagingGroup')}`);
-    }
-
-    if (input && input.length > 20) {
-      callback(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
-    }
-    callback();
-  };
-
   return (
-    <Form.Item label={t('fields.packagingGroup')}>
-      {getFieldDecorator('hzcf_pack_group', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input />)}
+    <Form.Item
+      name="hzcf_pack_group"
+      label={t('fields.packagingGroup')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Input />
     </Form.Item>
   );
 };

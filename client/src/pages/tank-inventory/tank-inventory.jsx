@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Select, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
-
+import { SyncOutlined } from '@ant-design/icons';
 import { Page, DataTable, Download } from '../../components';
 import { STOCK_MANAGEMENT } from '../../api';
 import transform from './transform';
@@ -32,7 +32,7 @@ const TankInventory = () => {
         })}
       </Select>
 
-      <Button icon="sync" onClick={() => revalidate()} loading={isValidating}>
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
       <Download data={payload} isLoading={isValidating} columns={fields} />

@@ -6,7 +6,7 @@ export default class AdaptiveFlowControl extends Component {
     const { value, form } = this.props;
     const { setFieldsValue } = form;
 
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         afc_enabled: value.afc_enabled
       });

@@ -9,9 +9,29 @@ import { EXPIRY_DATES } from '../../../../api';
 const TypeCode = ({ form, value }) => {
   const { data, isValidating } = useSWR(EXPIRY_DATES.READ);
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { t } = useTranslation();
+
+  const validate = (rule, input) => {
+    const match = _.find(data?.records, record => {
+      return record.edt_type_code.toLowerCase() === input?.toLowerCase();
+    });
+
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.typeCode')}`);
+    }
+
+    if (input && match && !value) {
+      return Promise.reject(t('descriptions.alreadyExists'));
+    }
+
+    if (input && input.length > 32) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 32 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
 
   useEffect(() => {
     if (value) {
@@ -21,30 +41,13 @@ const TypeCode = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
-    const match = _.find(data?.records, record => {
-      return record.edt_type_code.toLowerCase() === input.toLowerCase();
-    });
-
-    if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.typeCode')}`);
-    }
-
-    if (input && match && !value) {
-      callback(t('descriptions.alreadyExists'));
-    }
-
-    if (input && input.length > 32) {
-      callback(`${t('placeholder.maxCharacters')}: 32 ─ ${t('descriptions.maxCharacters')}`);
-    }
-    callback();
-  };
-
   return (
-    <Form.Item label={t('fields.typeCode')}>
-      {getFieldDecorator('edt_type_code', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input disabled={!!value || isValidating} />)}
+    <Form.Item
+      name="edt_type_code"
+      label={t('fields.typeCode')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Input disabled={!!value || isValidating} />
     </Form.Item>
   );
 };

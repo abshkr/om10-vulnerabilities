@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import { notification } from 'antd';
+
 import { SWRConfig } from 'swr';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -10,6 +12,14 @@ import { fetcher } from '../utils';
 export default Authenticated => {
   const ComposedComponent = ({ token }) => {
     const history = useHistory();
+
+    const onError = error => {
+      notification.error({
+        message: 'Error Fetching Data for This View.',
+        description: error?.message,
+        key: error?.message
+      });
+    };
 
     useEffect(() => {
       if (!token) {
@@ -28,7 +38,9 @@ export default Authenticated => {
       <SWRConfig
         value={{
           refreshInterval: 0,
-          fetcher
+          fetcher,
+          onError,
+          errorRetryCount: 3
         }}
       >
         <AuthContainer>

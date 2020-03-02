@@ -9,16 +9,16 @@ import { TIME_CODES } from '../../../../api';
 const TimeCode = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(TIME_CODES.READ);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.timeCode')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.timeCode')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -38,26 +38,26 @@ const TimeCode = ({ form, value }) => {
   }, [value, options, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.timeCode')}>
-      {getFieldDecorator('kya_timecode', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectTimeCode') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.tcd_title}>
-              {item.tcd_title}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="kya_timecode"
+      label={t('fields.timeCode')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectTimeCode') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.tcd_title}>
+            {item.tcd_title}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

@@ -3,9 +3,21 @@ import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 
 const TypeDescription = ({ form, value }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { t } = useTranslation();
+
+  const validate = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.typeDescription')}`);
+    }
+
+    if (input && input.length > 128) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 128 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
 
   useEffect(() => {
     if (value) {
@@ -15,22 +27,13 @@ const TypeDescription = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
-    if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.typeDescription')}`);
-    }
-
-    if (input && input.length > 128) {
-      callback(`${t('placeholder.maxCharacters')}: 128 ─ ${t('descriptions.maxCharacters')}`);
-    }
-    callback();
-  };
-
   return (
-    <Form.Item label={t('fields.typeDescription')}>
-      {getFieldDecorator('edt_type_desc', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input />)}
+    <Form.Item
+      name="edt_type_desc"
+      label={t('fields.typeDescription')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Input />
     </Form.Item>
   );
 };

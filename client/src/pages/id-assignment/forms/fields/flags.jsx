@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 const Flags = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -20,28 +20,20 @@ const Flags = ({ form, value }) => {
     <div>
       <Divider>{t('divider.flags')}</Divider>
       <div style={{ display: 'flex' }}>
-        <Form.Item>
-          {getFieldDecorator('kya_lock', {
-            valuePropName: 'checked'
-          })(<Checkbox>{t('fields.locked')}</Checkbox>)}
+        <Form.Item name="kya_lock">
+          <Checkbox>{t('fields.locked')}</Checkbox>
         </Form.Item>
 
-        <Form.Item>
-          {getFieldDecorator('kya_adhoc', {
-            valuePropName: 'checked'
-          })(<Checkbox>{t('fields.adhoc')}</Checkbox>)}
+        <Form.Item name="kya_adhoc" valuePropName="checked">
+          <Checkbox>{t('fields.adhoc')}</Checkbox>
         </Form.Item>
 
-        <Form.Item>
-          {getFieldDecorator('reset_pin', {
-            valuePropName: 'checked'
-          })(<Checkbox>{t('fields.resetPin')}</Checkbox>)}
+        <Form.Item name="reset_pin" valuePropName="checked">
+          <Checkbox>{t('fields.resetPin')}</Checkbox>
         </Form.Item>
 
-        <Form.Item>
-          {getFieldDecorator('remove_pin', {
-            valuePropName: 'checked'
-          })(<Checkbox>{t('fields.removePin')}</Checkbox>)}
+        <Form.Item name="remove_pin" valuePropName="checked">
+          <Checkbox>{t('fields.removePin')}</Checkbox>
         </Form.Item>
       </div>
     </div>

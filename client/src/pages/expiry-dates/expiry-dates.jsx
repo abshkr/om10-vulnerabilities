@@ -1,8 +1,9 @@
 import React from 'react';
 
 import useSWR from 'swr';
-import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { EXPIRY_DATES } from '../../api';
 import { Page, DataTable, Download, FormModal } from '../../components';
@@ -31,11 +32,11 @@ const ExpiryDates = () => {
 
   const modifiers = (
     <>
-      <Button icon="sync" onClick={() => revalidate()} loading={isValidating}>
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isValidating}>
+      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
         {t('operations.create')}
       </Button>
     </>

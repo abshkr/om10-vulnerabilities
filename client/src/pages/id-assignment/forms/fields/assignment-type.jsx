@@ -6,19 +6,19 @@ import { Form, Select } from 'antd';
 
 import { ID_ASSIGNMENT } from '../../../../api';
 
-const AssignmentType = ({ form, value }) => {
+const AssignmentType = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(ID_ASSIGNMENT.ASSIGNMENT_TYPES);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.assignmentType')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.assignmentType')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -30,27 +30,28 @@ const AssignmentType = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.assignmentType')}>
-      {getFieldDecorator('kya_type', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          disabled={!!value}
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectAssignmentType') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.type_id}>
-              {item.type_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="kya_type"
+      label={t('fields.assignmentType')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        disabled={!!value}
+        loading={isValidating}
+        showSearch
+        onChange={onChange}
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectAssignmentType') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.type_id}>
+            {item.type_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

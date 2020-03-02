@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import useSWR from 'swr';
 import axios from 'axios';
+import { RedoOutlined, CloseOutlined } from '@ant-design/icons';
+
 import { Modal, Button, List, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { FOLIO_SUMMARY } from '../../../../api';
@@ -50,14 +52,19 @@ const Reports = ({ id, enabled }) => {
       />
 
       <div className="operations">
-        <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
+        <Button
+          shape="round"
+          icon={<CloseOutlined />}
+          style={{ float: 'right' }}
+          onClick={() => Modal.destroyAll()}
+        >
           {t('operations.cancel')}
         </Button>
 
         <Button
           shape="round"
           type="primary"
-          icon={'redo'}
+          icon={<RedoOutlined />}
           style={{ float: 'right', marginRight: 5 }}
           loading={isRegenerating}
           disabled={!enabled}

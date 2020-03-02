@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { SyncOutlined, UnlockOutlined } from '@ant-design/icons';
 import { Button, notification } from 'antd';
 import useSWR, { mutate } from 'swr';
 import axios from 'axios';
@@ -41,12 +42,12 @@ const GateControl = () => {
 
   const modifiers = (
     <>
-      <Button icon="sync" onClick={() => revalidate()} loading={isValidating}>
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
       <Button
         type="primary"
-        icon="unlock"
+        icon={<UnlockOutlined />}
         loading={isValidating}
         disabled={selected.length === 0}
         onClick={handleGateOpening}

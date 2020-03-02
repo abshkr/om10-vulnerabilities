@@ -8,8 +8,28 @@ import { HAZCHEM_CODES } from '../../../../api';
 
 const Id = ({ form, value }) => {
   const { t } = useTranslation();
-  const { getFieldDecorator, setFieldsValue } = form;
+
+  const { setFieldsValue } = form;
+
   const { data: payload, isValidating } = useSWR(HAZCHEM_CODES.READ);
+
+  const validate = (rule, input) => {
+    const match = _.find(payload?.records, ['hzcf_id', input]);
+
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.id')}`);
+    }
+
+    if (input && !!match && !value) {
+      return Promise.reject(t('descriptions.alreadyExists'));
+    }
+
+    if (input && input.length > 20) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
 
   useEffect(() => {
     if (value) {
@@ -19,28 +39,9 @@ const Id = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
-    const match = _.find(payload?.records, ['hzcf_id', input]);
-
-    if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.id')}`);
-    }
-
-    if (input && !!match && !value) {
-      callback(t('descriptions.alreadyExists'));
-    }
-
-    if (input && input.length > 20) {
-      callback(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
-    }
-    callback();
-  };
-
   return (
-    <Form.Item label={t('fields.id')}>
-      {getFieldDecorator('hzcf_id', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input disabled={!!value || isValidating} />)}
+    <Form.Item name="hzcf_id" label={t('fields.id')} rules={[{ required: true, validator: validate }]}>
+      <Input disabled={!!value || isValidating} />
     </Form.Item>
   );
 };

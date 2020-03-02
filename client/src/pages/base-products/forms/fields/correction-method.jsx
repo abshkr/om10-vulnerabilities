@@ -9,7 +9,7 @@ import { BASE_PRODUCTS } from '../../../../api';
 const CorrectionMethod = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(BASE_PRODUCTS.CORRECTION_METHOD);
 
@@ -22,24 +22,22 @@ const CorrectionMethod = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.correctionMethod')}>
-      {getFieldDecorator('base_corr_mthd')(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectCorrectionMethod') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.compensation_id}>
-              {item.compensation_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item name="base_corr_mthd" label={t('fields.correctionMethod')}>
+      <Select
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectCorrectionMethod') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.compensation_id}>
+            {item.compensation_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };
