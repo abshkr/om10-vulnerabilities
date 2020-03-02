@@ -11,8 +11,9 @@ import { EXPIRY_DATES } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, value, data }) => {
+const FormModal = ({ value }) => {
   const { t } = useTranslation();
+  const [form] = Form.useForm();
 
   const handleCreate = () => {
     form.validateFields((err, values) => {
@@ -166,6 +167,4 @@ const FormModal = ({ form, value, data }) => {
   );
 };
 
-const Forms = Form.create()(FormModal);
-
-export default Forms;
+export default FormModal;

@@ -1,5 +1,13 @@
 import React from 'react';
 
+import {
+  EditOutlined,
+  PlusOutlined,
+  CloseOutlined,
+  DeleteOutlined,
+  QuestionCircleOutlined
+} from '@ant-design/icons';
+
 import { Form, Button, Tabs, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
@@ -10,79 +18,45 @@ import { LOGICAL_PRINTERS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, value }) => {
+const FormModal = ({ value }) => {
   const { t } = useTranslation();
+  const [form] = Form.useForm();
 
-  const handleCreate = () => {
-    form.validateFields((err, values) => {
-      if (!err) {
-        Modal.confirm({
-          title: t('prompts.create'),
-          okText: t('operations.yes'),
-          okType: 'primary',
-          cancelText: t('operations.no'),
-          centered: true,
-          onOk: async () => {
-            await axios
-              .post(LOGICAL_PRINTERS.CREATE, values)
-              .then(
-                axios.spread(response => {
-                  mutate(LOGICAL_PRINTERS.READ);
-                  Modal.destroyAll();
-                  notification.success({
-                    message: t('messages.createSuccess'),
-                    description: t('descriptions.createSuccess')
-                  });
-                })
-              )
-              .catch(error => {
-                notification.error({
-                  message: error.message,
-                  description: t('descriptions.createFailed')
-                });
+  const IS_CREATING = !value;
+
+  const onFinish = values => {
+    Modal.confirm({
+      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(IS_CREATING ? LOGICAL_PRINTERS.CREATE : LOGICAL_PRINTERS.UPDATE, values)
+          .then(
+            axios.spread(response => {
+              Modal.destroyAll();
+
+              mutate(LOGICAL_PRINTERS.READ);
+              notification.success({
+                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
               });
-          }
-        });
+            })
+          )
+          .catch(error => {
+            notification.error({
+              message: error.message,
+              description: IS_CREATING ? t('descriptions.createFailed') : t('messages.updateSuccess')
+            });
+          });
       }
     });
   };
 
-  const handleUpdate = () => {
-    form.validateFields((err, values) => {
-      if (!err) {
-        Modal.confirm({
-          title: t('prompts.update'),
-          okText: t('operations.yes'),
-          okType: 'primary',
-          cancelText: t('operations.no'),
-          centered: true,
-          onOk: async () => {
-            await axios
-              .post(LOGICAL_PRINTERS.UPDATE, values)
-              .then(
-                axios.spread(response => {
-                  mutate(LOGICAL_PRINTERS.READ);
-
-                  Modal.destroyAll();
-                  notification.success({
-                    message: t('messages.updateSuccess'),
-                    description: t('descriptions.updateSuccess')
-                  });
-                })
-              )
-              .catch(error => {
-                notification.error({
-                  message: error.message,
-                  description: t('descriptions.updateFailed')
-                });
-              });
-          }
-        });
-      }
-    });
-  };
-
-  const showDeleteConfirm = () => {
+  const onDelete = () => {
     Modal.confirm({
       title: t('prompts.delete'),
       okText: t('operations.yes'),
@@ -114,48 +88,48 @@ const FormModal = ({ form, value }) => {
 
   return (
     <div>
-      <Form>
-        <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane
-            className="ant-tab-window"
-            style={{ height: '30vh' }}
-            tab={t('tabColumns.general')}
-            key="1"
-          >
+      <Form scro layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+        <Tabs defaultActiveKey="1" style={{ height: '40vh' }}>
+          <TabPane tab={t('tabColumns.general')} key="1">
             <Company form={form} value={value} />
             <Usage form={form} value={value} />
             <Printer form={form} value={value} />
           </TabPane>
         </Tabs>
+
+        <Form.Item>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => Modal.destroyAll()}
+          >
+            {t('operations.cancel')}
+          </Button>
+
+          <Button
+            type="primary"
+            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            htmlType="submit"
+            style={{ float: 'right', marginRight: 5 }}
+          >
+            {IS_CREATING ? t('operations.create') : t('operations.update')}
+          </Button>
+
+          {!IS_CREATING && (
+            <Button
+              type="danger"
+              icon={<DeleteOutlined />}
+              style={{ float: 'right', marginRight: 5 }}
+              onClick={onDelete}
+            >
+              {t('operations.delete')}
+            </Button>
+          )}
+        </Form.Item>
       </Form>
-
-      <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
-        {t('operations.cancel')}
-      </Button>
-
-      <Button
-        type="primary"
-        icon={value ? 'edit' : 'plus'}
-        style={{ float: 'right', marginRight: 5 }}
-        onClick={value ? handleUpdate : handleCreate}
-      >
-        {value ? t('operations.update') : t('operations.create')}
-      </Button>
-
-      {value && (
-        <Button
-          type="danger"
-          icon="delete"
-          style={{ float: 'right', marginRight: 5 }}
-          onClick={showDeleteConfirm}
-        >
-          {t('operations.delete')}
-        </Button>
-      )}
     </div>
   );
 };
 
-const Forms = Form.create()(FormModal);
-
-export default Forms;
+export default FormModal;

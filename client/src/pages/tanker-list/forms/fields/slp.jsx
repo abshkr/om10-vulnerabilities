@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
-import { Form, Input, Icon, Tooltip } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Form, Input, Tooltip } from 'antd';
 
 const SLP = ({ form, value, t }) => {
   const { getFieldDecorator, setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         slp_id: value.slp_id
       });
@@ -28,12 +29,7 @@ const SLP = ({ form, value, t }) => {
           disabled
           addonAfter={
             <Tooltip title="This functionality is not available at this stage.">
-              <Icon
-                type="info-circle"
-                theme="twoTone"
-                twoToneColor="#68a4ec"
-                style={{ fontSize: 16 }}
-              />
+              <InfoCircleOutlined style={{ fontSize: 16 }} />
             </Tooltip>
           }
         />

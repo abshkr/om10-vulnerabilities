@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const NavBarContainer = styled.div`
   height: 50px;
@@ -6,15 +6,15 @@ const NavBarContainer = styled.div`
   align-items: center;
   border-radius: none;
 
-  & .ant-input {
+  & .ant-input-affix-wrapper {
     border: none;
   }
 
-  .ant-input:hover {
+  .ant-input-affix-wrapper {
     border: none;
   }
 
-  .ant-input:focus {
+  .ant-input-affix-wrapper {
     border: none;
     box-shadow: none;
   }

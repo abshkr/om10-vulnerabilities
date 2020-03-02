@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Form, Input, Tooltip, Icon } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Form, Input, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 const SLP = ({ form, value }) => {
@@ -30,7 +31,7 @@ const SLP = ({ form, value }) => {
           disabled
           addonAfter={
             <Tooltip title="This functionality is not available at this stage.">
-              <Icon type="info-circle" theme="twoTone" twoToneColor="#68a4ec" style={{ fontSize: 16 }} />
+              <InfoCircleOutlined style={{ fontSize: 16 }} />
             </Tooltip>
           }
         />

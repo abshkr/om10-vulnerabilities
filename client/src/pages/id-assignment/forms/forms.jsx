@@ -26,8 +26,9 @@ import { ID_ASSIGNMENT } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, value }) => {
+const FormModal = ({ value }) => {
   const { t } = useTranslation();
+  const [form] = Form.useForm();
 
   const { getFieldValue } = form;
 
@@ -226,6 +227,4 @@ const FormModal = ({ form, value }) => {
   );
 };
 
-const Forms = Form.create()(FormModal);
-
-export default Forms;
+export default FormModal;

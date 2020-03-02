@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { Input, Icon, Dropdown, Menu, Avatar, Layout } from 'antd';
+import { Input, Dropdown, Menu, Avatar, Layout } from 'antd';
 import { useHistory } from 'react-router-dom';
+
+import {
+  AlertOutlined,
+  SettingOutlined,
+  FlagOutlined,
+  BookOutlined,
+  GlobalOutlined,
+  PoweroffOutlined,
+  SearchOutlined
+} from '@ant-design/icons';
 
 import { NavBarContainer, SearchContainer, SearchResults } from './style';
 import { ROUTES } from '../../constants';
@@ -26,19 +36,19 @@ const UserOverlay = history => {
   return (
     <Menu style={{ width: 200 }} onClick={handleNavigation}>
       <Menu.Item key="1">
-        <Icon type="alert" />
+        <AlertOutlined />
         Events
       </Menu.Item>
 
       <Menu.Item key="2">
-        <Icon type="setting" />
+        <SettingOutlined />
         Settings
       </Menu.Item>
 
       <SubMenu
         title={
           <span>
-            <Icon type="flag" /> System
+            <FlagOutlined /> System
           </span>
         }
       >
@@ -48,7 +58,7 @@ const UserOverlay = history => {
       </SubMenu>
 
       <Menu.Item key="3">
-        <Icon type="book" />
+        <BookOutlined />
         Changelog
       </Menu.Item>
 
@@ -58,7 +68,7 @@ const UserOverlay = history => {
         key="language"
         title={
           <span>
-            <Icon type="global" /> Language
+            <GlobalOutlined /> Language
           </span>
         }
       >
@@ -69,7 +79,7 @@ const UserOverlay = history => {
       <Menu.Divider />
 
       <Menu.Item key={ROUTES.LOG_OUT}>
-        <Icon type="poweroff" />
+        <PoweroffOutlined />
         Log Out
       </Menu.Item>
     </Menu>
@@ -86,8 +96,9 @@ const NavBar = () => {
         <Input
           placeholder="Search OMEGA"
           value={query}
+          bo
           onChange={event => setQuery(event.target.value)}
-          prefix={<Icon type="search" style={{ color: 'rgba(0,0,0,.25)' }} />}
+          prefix={<SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
         />
 
         {query !== '' && (

@@ -1,7 +1,8 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Button } from 'antd';
 import useSWR from 'swr';
+import { Button } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, FormModal } from '../../components';
 import { PHYSICAL_PRINTERS } from '../../api';
@@ -28,11 +29,11 @@ const PhysicalPrinters = () => {
 
   const modifiers = (
     <>
-      <Button icon="sync" onClick={() => revalidate()} loading={isValidating}>
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isValidating}>
+      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
         {t('operations.create')}
       </Button>
     </>

@@ -1,19 +1,21 @@
 import { createGlobalStyle } from 'styled-components';
 
 const AntdStyleProvider = createGlobalStyle`
+
   .ant-tab-window {
     height: 70vh;
     overflow-y: auto;
-    padding-right: 20px;
-    padding-bottom: 20px;
-    margin-bottom: 3px;
   }
   
   .ant-form-item label {
     font-weight: 450;
     margin-bottom: 0px !important;
   }
-  
+
+  .ant-modal-confirm .ant-modal-body {
+    padding-bottom: 0px !important;
+  }
+
   .ant-btn-primary.disabled,
   .ant-btn-primary[disabled],
   .ant-btn-primary.disabled:hover,
@@ -77,9 +79,9 @@ const AntdStyleProvider = createGlobalStyle`
   }
   
   .ant-form-item {
-    margin-bottom: 0px !important;
+    margin-bottom: 10px !important;
   }
-  
+    
   .ant-modal-confirm .ant-modal-body {
     padding: 20px !important;
     padding-top: 20px !important;

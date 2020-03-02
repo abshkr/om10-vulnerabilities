@@ -5,17 +5,18 @@ import { Form, Input } from 'antd';
 const SystemPrinter = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
-  const validate = (rule, input, callback) => {
-    if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.sysPrinter')}`);
+  const validate = (rule, value) => {
+    if (value === '' || !value) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.sysPrinter')}`);
     }
 
-    if (input && input.length > 30) {
-      callback(`${t('placeholder.maxCharacters')}: 30 ─ ${t('descriptions.maxCharacters')}`);
+    if (value && value.length > 30) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 30 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -27,10 +28,12 @@ const SystemPrinter = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.sysPrinter')}>
-      {getFieldDecorator('sys_prntr', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input />)}
+    <Form.Item
+      name="sys_prntr"
+      label={t('fields.sysPrinter')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Input />
     </Form.Item>
   );
 };

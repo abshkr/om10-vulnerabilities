@@ -10,9 +10,31 @@ import { PHYSICAL_PRINTERS } from '../../../../api';
 const Printer = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { data: physicalPrinters, isValidating } = useSWR(PHYSICAL_PRINTERS.READ);
+
+  const validate = (rule, input) => {
+    const match = _.find(physicalPrinters?.records, ['prntr', input]);
+
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
+    }
+
+    if (input && !!match && !value) {
+      return Promise.reject(t('descriptions.alreadyExists'));
+    }
+
+    if (input && input.charAt(0).toLowerCase() !== 'p') {
+      return Promise.reject(`${t('descriptions.characterMustStart')} P`);
+    }
+
+    if (input && input.length > 10) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 10 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
 
   useEffect(() => {
     if (value) {
@@ -22,32 +44,13 @@ const Printer = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
-    const match = _.find(physicalPrinters?.records, ['prntr', input]);
-
-    if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.code')}`);
-    }
-
-    if (input && !!match && !value) {
-      callback(t('descriptions.alreadyExists'));
-    }
-
-    if (input && input.charAt(0).toLowerCase() !== 'p') {
-      callback(t('descriptions.characterMustStart'));
-    }
-
-    if (input && input.length > 10) {
-      callback(`${t('placeholder.maxCharacters')}: 10 ─ ${t('descriptions.maxCharacters')}`);
-    }
-    callback();
-  };
-
   return (
-    <Form.Item label={t('fields.logicalPrinter')}>
-      {getFieldDecorator('prntr', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input disabled={!!value || isValidating} />)}
+    <Form.Item
+      name="prntr"
+      label={t('fields.logicalPrinter')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Input disabled={!!value || isValidating} />
     </Form.Item>
   );
 };

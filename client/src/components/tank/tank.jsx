@@ -1,6 +1,7 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
-import { Badge, Icon, Tooltip } from 'antd';
+import { Badge, Tooltip } from 'antd';
+import { SyncOutlined } from '@ant-design/icons';
 import logo from './img.png';
 import './tank.css';
 
@@ -92,7 +93,7 @@ const Tank = ({ tank, handleClick }) => {
 
       <div className="tank-auto">
         <Tooltip title={tank.automatic ? 'Gauging Method: Automatic' : 'Gauaging Method: Manual'}>
-          <Icon type="sync" spin={tank.automatic} />
+          <SyncOutlined spin={tank.automatic} />
         </Tooltip>
       </div>
 

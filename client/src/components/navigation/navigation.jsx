@@ -3,7 +3,20 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, Layout, Icon } from 'antd';
+import { Menu, Layout } from 'antd';
+
+import {
+  FireOutlined,
+  ClockCircleOutlined,
+  MonitorOutlined,
+  FileDoneOutlined,
+  FileProtectOutlined,
+  TeamOutlined,
+  ExperimentOutlined,
+  PrinterOutlined,
+  DeploymentUnitOutlined,
+  ClusterOutlined
+} from '@ant-design/icons';
 
 import { LogoContainer, MenuContainer } from './style';
 import { ROUTES } from '../../constants';
@@ -30,14 +43,14 @@ const Navigation = () => {
           </LogoContainer>
 
           <Menu.Item key={ROUTES.DASHBOARD}>
-            <Icon type="fire" />
+            <FireOutlined />
             <span>{t('pageMenu.dashboard')}</span>
           </Menu.Item>
 
           <SubMenu
             title={
               <span>
-                <Icon type="clock-circle" />
+                <ClockCircleOutlined />
                 <span>{t('pageMenu.schedules')}</span>
               </span>
             }
@@ -58,7 +71,7 @@ const Navigation = () => {
           <SubMenu
             title={
               <span>
-                <Icon type="monitor" />
+                <MonitorOutlined />
                 <span>{t('pageMenu.gantry')}</span>
               </span>
             }
@@ -89,7 +102,7 @@ const Navigation = () => {
           <SubMenu
             title={
               <span>
-                <Icon type="file-done" />
+                <FileDoneOutlined />
                 <span>{t('pageMenu.reports')}</span>
               </span>
             }
@@ -118,7 +131,7 @@ const Navigation = () => {
           <SubMenu
             title={
               <span>
-                <Icon type="file-protect" />
+                <FileProtectOutlined />
                 <span>{t('pageMenu.accessControl')}</span>
               </span>
             }
@@ -145,7 +158,7 @@ const Navigation = () => {
           <SubMenu
             title={
               <span>
-                <Icon type="team" />
+                <TeamOutlined />
                 <span>{t('pageMenu.customers')}</span>
               </span>
             }
@@ -174,7 +187,7 @@ const Navigation = () => {
           <SubMenu
             title={
               <span>
-                <Icon type="experiment" />
+                <ExperimentOutlined />
                 <span>{t('pageMenu.stockManagement')}</span>
               </span>
             }
@@ -199,7 +212,7 @@ const Navigation = () => {
           <SubMenu
             title={
               <span>
-                <Icon type="printer" />
+                <PrinterOutlined />
                 <span>{t('pageMenu.printerConfiguration')}</span>
               </span>
             }
@@ -212,7 +225,7 @@ const Navigation = () => {
           <SubMenu
             title={
               <span>
-                <Icon type="deployment-unit" />
+                <DeploymentUnitOutlined />
                 <span>{t('pageMenu.stockReconciliation')}</span>
               </span>
             }
@@ -229,7 +242,7 @@ const Navigation = () => {
           <SubMenu
             title={
               <span>
-                <Icon type="cluster" />
+                <ClusterOutlined />
                 <span>{t('pageMenu.operations')}</span>
               </span>
             }

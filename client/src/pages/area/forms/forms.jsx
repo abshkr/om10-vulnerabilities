@@ -8,8 +8,9 @@ import { AREA } from '../../../api';
 import { Area, AreaName } from './fields';
 import { Form, Button, Tabs, notification, Modal } from 'antd';
 
-const FormModal = ({ form, value, data }) => {
+const FormModal = ({ value, data }) => {
   const { t } = useTranslation();
+  const [form] = Form.useForm();
 
   const handleCreate = () => {
     form.validateFields((err, values) => {
@@ -153,6 +154,4 @@ const FormModal = ({ form, value, data }) => {
   );
 };
 
-const Forms = Form.create()(FormModal);
-
-export default Forms;
+export default FormModal;

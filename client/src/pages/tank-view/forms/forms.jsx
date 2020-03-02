@@ -13,7 +13,7 @@ import {
   Density,
   DailyVariance,
   MontlhyVariance,
-  Flags,
+  Flags
 } from '../../../pages/tank-configuration/forms/fields';
 
 import TankForm from './tank-form';
@@ -30,20 +30,20 @@ class TankConfigurationForm extends Component {
               Modal.destroyAll();
               notification.success({
                 message: 'Successfully Created.',
-                description: `You have Created the Tank ${values.tank_code}`,
+                description: `You have Created the Tank ${values.tank_code}`
               });
-            }),
+            })
           )
           .catch(error => {
             notification.error({
               message: error.message,
-              description: 'Failed to create the Tank.',
+              description: 'Failed to create the Tank.'
             });
           });
       } else {
         notification.error({
           message: 'Validation Failed.',
-          description: 'Make sure all the fields meet the requirements.',
+          description: 'Make sure all the fields meet the requirements.'
         });
       }
     });
@@ -60,20 +60,20 @@ class TankConfigurationForm extends Component {
               Modal.destroyAll();
               notification.success({
                 message: 'Successfully Updated.',
-                description: `You have updated the Tank ${values.tank_code}`,
+                description: `You have updated the Tank ${values.tank_code}`
               });
-            }),
+            })
           )
           .catch(error => {
             notification.error({
               message: error.message,
-              description: 'Failed to update the Tank.',
+              description: 'Failed to update the Tank.'
             });
           });
       } else {
         notification.error({
           message: 'Validation Failed.',
-          description: 'Make sure all the fields meet the requirements.',
+          description: 'Make sure all the fields meet the requirements.'
         });
       }
     });
@@ -86,7 +86,7 @@ class TankConfigurationForm extends Component {
       okType: 'primary',
       cancelText: 'No',
       centered: true,
-      onOk: this.handleUpdate,
+      onOk: this.handleUpdate
     });
   };
 
@@ -97,7 +97,7 @@ class TankConfigurationForm extends Component {
       okType: 'primary',
       cancelText: 'No',
       centered: true,
-      onOk: this.handleCreate,
+      onOk: this.handleCreate
     });
   };
 
@@ -196,12 +196,7 @@ class TankConfigurationForm extends Component {
           </Tabs>
         </Form>
 
-        <Button
-          shape="round"
-          icon="close"
-          style={{ float: 'right' }}
-          onClick={() => Modal.destroyAll()}
-        >
+        <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
           Cancel
         </Button>
 
@@ -219,6 +214,4 @@ class TankConfigurationForm extends Component {
   }
 }
 
-const Forms = Form.create()(TankConfigurationForm);
-
-export default Forms;
+export default TankConfigurationForm;

@@ -10,8 +10,9 @@ import { Company, Name, Email, Flags } from './fields';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, value }) => {
+const FormModal = ({ value }) => {
   const { t } = useTranslation();
+  const [form] = Form.useForm();
 
   const handleCreate = () => {
     form.validateFields((err, values) => {
@@ -153,6 +154,4 @@ const FormModal = ({ form, value }) => {
   );
 };
 
-const Forms = Form.create()(FormModal);
-
-export default Forms;
+export default FormModal;

@@ -5,7 +5,7 @@ import { Form, Checkbox } from 'antd';
 const Lock = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -17,10 +17,8 @@ const Lock = ({ form, value }) => {
 
   return (
     <div>
-      <Form.Item>
-        {getFieldDecorator('prntr_lock', {
-          valuePropName: 'checked'
-        })(<Checkbox>{t('fields.locked')}</Checkbox>)}
+      <Form.Item name="prntr_lock">
+        <Checkbox>{t('fields.locked')}</Checkbox>
       </Form.Item>
     </div>
   );

@@ -26,9 +26,9 @@ import columns from './columns';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, value }) => {
+const FormModal = ({ value }) => {
   const { t } = useTranslation();
-
+  const [form] = Form.useForm();
   const { data: payload } = useSWR(PERSONNEL.READ);
 
   const fields = columns(t);
@@ -204,6 +204,4 @@ const FormModal = ({ form, value }) => {
   );
 };
 
-const Forms = Form.create()(FormModal);
-
-export default Forms;
+export default FormModal;

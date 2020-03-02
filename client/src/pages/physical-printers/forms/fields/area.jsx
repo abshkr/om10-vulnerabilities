@@ -9,7 +9,7 @@ import { PHYSICAL_PRINTERS } from '../../../../api';
 const Area = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(PHYSICAL_PRINTERS.AREAS);
 
@@ -22,24 +22,22 @@ const Area = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.areaLocation')}>
-      {getFieldDecorator('prntr_area')(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectAreaLocation') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.area_k}>
-              {item.area_k} - {item.area_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item name="prntr_area" label={t('fields.areaLocation')}>
+      <Select
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectAreaLocation') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.area_k}>
+            {item.area_k} - {item.area_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

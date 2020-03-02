@@ -21,7 +21,7 @@ import {
   LastDepot,
   CurrentDepot,
   Locks,
-  SLP,
+  SLP
 } from './fields';
 import axios from 'axios';
 import Compartments from './compartments';
@@ -29,7 +29,9 @@ import { Expiry } from '../../../components';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
+const FormModal = ({ refresh, value, t, expiry, data, access }) => {
+  const [form] = Form.useForm();
+
   const { getFieldValue } = form;
 
   const handleCreate = () => {
@@ -51,15 +53,15 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
                     Modal.destroyAll();
                     notification.success({
                       message: t('messages.createSuccess'),
-                      description: `${t('descriptions.createSuccess')} ${values.tnkr_code}`,
+                      description: `${t('descriptions.createSuccess')} ${values.tnkr_code}`
                     });
-                  }),
+                  })
                 )
                 .catch(errors => {
                   _.forEach(errors.response.data.errors, error => {
                     notification.error({
                       message: error.type,
-                      description: error.message,
+                      description: error.message
                     });
                   });
                 });
@@ -81,22 +83,22 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
                         Modal.destroyAll();
                         notification.success({
                           message: t('messages.createSuccess'),
-                          description: `${t('descriptions.createSuccess')} ${values.tnkr_code}`,
+                          description: `${t('descriptions.createSuccess')} ${values.tnkr_code}`
                         });
-                      }),
+                      })
                     )
                     .catch(errors => {
                       _.forEach(errors.response.data.errors, error => {
                         notification.error({
                           message: error.type,
-                          description: error.message,
+                          description: error.message
                         });
                       });
                     });
-                },
+                }
               });
             }
-          },
+          }
         });
       }
     });
@@ -130,19 +132,19 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
                   Modal.destroyAll();
                   notification.success({
                     message: t('messages.updateSuccess'),
-                    description: `${t('descriptions.updateSuccess')} ${values.tnkr_code}`,
+                    description: `${t('descriptions.updateSuccess')} ${values.tnkr_code}`
                   });
-                }),
+                })
               )
               .catch(errors => {
                 _.forEach(errors.response.data.errors, error => {
                   notification.error({
                     message: error.type,
-                    description: error.message,
+                    description: error.message
                   });
                 });
               });
-          }),
+          })
       });
     } else {
       form.validateFields((err, values) => {
@@ -163,19 +165,19 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
                     Modal.destroyAll();
                     notification.success({
                       message: t('messages.updateSuccess'),
-                      description: `${t('descriptions.updateSuccess')} ${values.tnkr_code}`,
+                      description: `${t('descriptions.updateSuccess')} ${values.tnkr_code}`
                     });
-                  }),
+                  })
                 )
                 .catch(errors => {
                   _.forEach(errors.response.data.errors, error => {
                     notification.error({
                       message: error.type,
-                      description: error.message,
+                      description: error.message
                     });
                   });
                 });
-            },
+            }
           });
         }
       });
@@ -192,15 +194,15 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
           Modal.destroyAll();
           notification.success({
             message: t('messages.deleteSuccess'),
-            description: `${t('descriptions.deleteSuccess')} ${value.tnkr_code}`,
+            description: `${t('descriptions.deleteSuccess')} ${value.tnkr_code}`
           });
-        }),
+        })
       )
       .catch(errors => {
         _.forEach(errors.response.data.errors, error => {
           notification.error({
             message: error.type,
-            description: error.message,
+            description: error.message
           });
         });
       });
@@ -216,15 +218,15 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
           Modal.destroyAll();
           notification.success({
             message: t('messages.unlockSuccess'),
-            description: `${t('descriptions.unlockSuccess')} ${value.tnkr_code}`,
+            description: `${t('descriptions.unlockSuccess')} ${value.tnkr_code}`
           });
-        }),
+        })
       )
       .catch(errors => {
         _.forEach(errors.response.data.errors, error => {
           notification.error({
             message: error.type,
-            description: error.message,
+            description: error.message
           });
         });
       });
@@ -237,7 +239,7 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
-      onOk: handleDelete,
+      onOk: handleDelete
     });
   };
 
@@ -247,12 +249,7 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
     <div>
       <Form>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.general')}
-            forceRender={true}
-            key="1"
-          >
+          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
             <Depot form={form} value={value} t={t} />
             <Owner form={form} value={value} t={t} />
             <Code form={form} value={value} t={t} data={data} />
@@ -263,12 +260,7 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
             <Locks form={form} value={value} t={t} />
             <Comments form={form} value={value} t={t} />
           </TabPane>
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.tanker')}
-            forceRender={true}
-            key="2"
-          >
+          <TabPane className="ant-tab-window" tab={t('tabColumns.tanker')} forceRender={true} key="2">
             <EquipmentType form={form} value={value} t={t} />
             <Carrier form={form} value={value} t={t} />
             <TankerPrompt form={form} value={value} t={t} />
@@ -287,23 +279,13 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
           >
             <Compartments form={form} value={value} t={t} equipment={equipment} />
           </TabPane>
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.expiryDates')}
-            forceRender={true}
-            key="4"
-          >
+          <TabPane className="ant-tab-window" tab={t('tabColumns.expiryDates')} forceRender={true} key="4">
             <Expiry form={form} value={value} t={t} types={expiry} />
           </TabPane>
         </Tabs>
       </Form>
 
-      <Button
-        shape="round"
-        icon="close"
-        style={{ float: 'right' }}
-        onClick={() => Modal.destroyAll()}
-      >
+      <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
         {t('operations.cancel')}
       </Button>
 
@@ -347,6 +329,4 @@ const FormModal = ({ form, refresh, value, t, expiry, data, access }) => {
   );
 };
 
-const Forms = Form.create()(FormModal);
-
-export default Forms;
+export default FormModal;

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
-import { Input, Form, Select, DatePicker, Switch, Icon } from 'antd';
+import { Input, Form, Select, DatePicker, Switch } from 'antd';
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
 
@@ -91,8 +92,8 @@ export default class Cell extends Component {
             <Switch
               ref={node => (this.input = node)}
               onChange={value => this.save(value, dataIndex)}
-              checkedChildren={<Icon type="check" />}
-              unCheckedChildren={<Icon type="close" />}
+              checkedChildren={<CheckOutlined />}
+              unCheckedChildren={<CloseOutlined />}
             />
           )}
         </Form.Item>

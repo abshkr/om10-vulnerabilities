@@ -19,9 +19,9 @@ const options = [
   { value: '5', label: 'Protected', index: 'priv_protect' }
 ];
 
-const FormModal = ({ form, value }) => {
+const FormModal = ({ value }) => {
   const [menuItems, setMenuItems] = useState([]);
-
+  const [form] = Form.useForm();
   const { t } = useTranslation();
 
   const handleCreate = () => {
@@ -165,6 +165,4 @@ const FormModal = ({ form, value }) => {
   );
 };
 
-const Forms = Form.create()(FormModal);
-
-export default Forms;
+export default FormModal;

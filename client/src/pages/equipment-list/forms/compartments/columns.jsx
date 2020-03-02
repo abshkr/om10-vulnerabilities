@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from 'antd';
+import { LockOutlined, UnlockOutlined } from '@ant-design/icons';
 
 const columns = t => [
   {
@@ -39,11 +39,7 @@ const columns = t => [
     width: 120,
     editable: true,
     align: 'center',
-    render: text => (
-      <span>
-        <Icon type={text ? 'lock' : 'unlock'} />
-      </span>
-    )
+    render: text => <span>{text ? <LockOutlined /> : <UnlockOutlined />}</span>
   }
 ];
 

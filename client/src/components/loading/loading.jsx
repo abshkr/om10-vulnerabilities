@@ -1,8 +1,9 @@
 import React from 'react';
-import { Spin, Icon } from 'antd';
+import { Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import { LoadingContainer } from './style';
 
-const Spinner = <Icon type="loading" style={{ fontSize: 24, color: '#68a4ec' }} spin />;
+const Spinner = <LoadingOutlined style={{ fontSize: 24, color: '#68a4ec' }} spin />;
 
 const Loading = () => (
   <LoadingContainer>

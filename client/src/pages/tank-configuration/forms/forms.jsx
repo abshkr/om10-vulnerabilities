@@ -9,8 +9,9 @@ import { TANKS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ form, value, configuration }) => {
+const FormModal = ({ value, configuration }) => {
   const { t } = useTranslation();
+  const [form] = Form.useForm();
 
   const handleCreate = () => {
     form.validateFields((err, values) => {
@@ -161,6 +162,4 @@ const FormModal = ({ form, value, configuration }) => {
   );
 };
 
-const Forms = Form.create()(FormModal);
-
-export default Forms;
+export default FormModal;

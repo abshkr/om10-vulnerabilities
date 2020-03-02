@@ -1,15 +1,17 @@
 import React from 'react';
+import { EditOutlined, FormOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
-
 import { SWRConfig } from 'swr';
+
 import { fetcher } from '../../utils';
 
 const FormModal = ({ value, form, id, name, t, width }) => {
   Modal.info({
+    className: 'form-container',
     title: value ? `${t('operations.editing')} (${id} / ${name})` : `${t('operations.create')}`,
     centered: true,
     width: width || '50vw',
-    icon: value ? 'edit' : 'form',
+    icon: value ? <EditOutlined /> : <FormOutlined />,
     content: (
       <SWRConfig
         value={{

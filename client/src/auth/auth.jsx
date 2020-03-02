@@ -19,9 +19,7 @@ export default Authenticated => {
 
     useEffect(() => {
       const interval = setInterval(() => {
-        const token = sessionStorage.getItem('token');
-
-        console.log(token);
+        sessionStorage.getItem('token');
       }, 1000);
       return () => clearInterval(interval);
     }, []);

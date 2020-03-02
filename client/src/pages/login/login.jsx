@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Icon, Input, Button, notification, Divider } from 'antd';
+import { SmileOutlined, FrownOutlined, IdcardOutlined, LockOutlined } from '@ant-design/icons';
+import { Form, Input, Button, notification, Divider } from 'antd';
 
 import { useHistory } from 'react-router-dom';
 import Particles from 'react-particles-js';
@@ -20,39 +21,35 @@ import {
 } from './style';
 
 import * as actions from '../../actions/auth';
+
 import { ROUTES } from '../../constants';
 
-const LoginForm = ({ form, handleLogin, auth }) => {
+const Login = ({ handleLogin, auth }) => {
   const [isLoading, setLoading] = useState(false);
+
   const history = useHistory();
 
-  const handleSubmit = e => {
-    e.preventDefault();
+  const handleSubmit = values => {
+    setLoading(true);
 
-    form.validateFields((err, values) => {
-      if (!err) {
-        setLoading(true);
+    handleLogin(values, response => {
+      if (response.status === 200) {
+        notification.success({
+          placement: 'bottomRight',
+          message: 'Login Successful.',
+          description: `You have logged in as ${values.code}`,
+          icon: <SmileOutlined style={{ color: '#68a4ec' }} />
+        });
 
-        handleLogin(values, response => {
-          if (response.status === 200) {
-            notification.success({
-              placement: 'bottomRight',
-              message: 'Login Successful.',
-              description: `You have logged in as ${values.code}`,
-              icon: <Icon type="smile" style={{ color: '#68a4ec' }} />
-            });
+        history.push(ROUTES.DASHBOARD);
+      } else {
+        setLoading(false);
 
-            history.push(ROUTES.DASHBOARD);
-          } else {
-            setLoading(false);
-
-            notification.error({
-              placement: 'bottomRight',
-              message: 'Login Failed.',
-              description: _.capitalize(response.data.msg_desc),
-              icon: <Icon type="frown" style={{ color: '#ec6e68' }} />
-            });
-          }
+        notification.error({
+          placement: 'bottomRight',
+          message: 'Login Failed.',
+          description: _.capitalize(response.data.msg_desc),
+          icon: <FrownOutlined style={{ color: '#ec6e68' }} />
         });
       }
     });
@@ -63,8 +60,6 @@ const LoginForm = ({ form, handleLogin, auth }) => {
       history.push(ROUTES.DASHBOARD);
     }
   }, [auth, history]);
-
-  const { getFieldDecorator } = form;
 
   return (
     <LoginContainer>
@@ -77,29 +72,27 @@ const LoginForm = ({ form, handleLogin, auth }) => {
           <LoginTitle>
             <span>OMEGA</span> 5000
           </LoginTitle>
+
           <LoginSubtitle>Login to your account</LoginSubtitle>
-          <Form onSubmit={handleSubmit}>
-            <Form.Item>
-              {getFieldDecorator('code', {
-                rules: [{ required: true, message: 'Please Input Your Omega Personnel Code!' }]
-              })(
-                <Input
-                  prefix={<Icon type="idcard" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                  placeholder="Omega Personnel Code"
-                />
-              )}
+
+          <Form onFinish={handleSubmit}>
+            <Form.Item
+              name="code"
+              rules={[{ required: true, message: 'Please Input Your Omega Personnel Code!' }]}
+            >
+              <Input
+                style={{ marginBottom: 5 }}
+                prefix={<IdcardOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                placeholder="Omega Personnel Code"
+              />
             </Form.Item>
 
-            <Form.Item>
-              {getFieldDecorator('password', {
-                rules: [{ required: true, message: 'Please Input Your Password!' }]
-              })(
-                <Input
-                  prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                  type="password"
-                  placeholder="Password"
-                />
-              )}
+            <Form.Item name="password" rules={[{ required: true, message: 'Please Input Your Password!' }]}>
+              <Input
+                prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                type="password"
+                placeholder="Password"
+              />
             </Form.Item>
 
             <Form.Item>
@@ -112,6 +105,7 @@ const LoginForm = ({ form, handleLogin, auth }) => {
 
         <LoginFooter>
           <Divider style={{ marginBottom: 12 }} />
+
           <LoginFooterLogo>
             <img src="/images/dki_big.png" alt="Diamondkey International" />
           </LoginFooterLogo>
@@ -155,8 +149,6 @@ const LoginForm = ({ form, handleLogin, auth }) => {
   );
 };
 
-const Login = Form.create()(LoginForm);
-
 const mapActionsToProps = dispatch => ({
   handleLogin: (code, password) => dispatch(actions.login(code, password))
 });
@@ -166,49 +158,3 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(Login);
-
-/* <Form onSubmit={handleSubmit}>
-          <Form.Item>
-            {getFieldDecorator('code', {
-              rules: [{ required: true, message: 'Please Input Your Omega Personnel Code!' }]
-            })(
-              <Input
-                prefix={<Icon type="idcard" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                placeholder="Omega Personnel Code"
-              />
-            )}
-          </Form.Item>
-
-          <Form.Item>
-            {getFieldDecorator('password', {
-              rules: [{ required: true, message: 'Please Input Your Password!' }]
-            })(
-              <Input
-                prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                type="password"
-                placeholder="Password"
-              />
-            )}
-          </Form.Item>
-
-          <Form.Item>
-            <Button type="primary" htmlType="submit" loading={isLoading}>
-              Log in
-            </Button>
-          </Form.Item>
-        </Form>
-
-        <Divider style={{ margin: 12 }} />
-
-        <LoginLinks>
-          <a>Support</a>
-          <a>About (EULA)</a>
-          <a>Help</a>
-        </LoginLinks>
-
-        <LoginFooter>
-          <Divider style={{ margin: 12 }} />
-          <LoginFooterLogo>
-            <img src="/images/dki_big.png" alt="Diamondkey International" />
-          </LoginFooterLogo>
-        </LoginFooter> */

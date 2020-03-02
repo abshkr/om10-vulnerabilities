@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-
-import { Table, Button, Popconfirm, Icon } from 'antd';
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { Table, Button, Popconfirm } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import _ from 'lodash';
@@ -105,7 +105,9 @@ const Expiry = ({ form, value, type }) => {
       align: 'center',
       editable: true,
       render: (text, record) => (
-        <span>{text === '' ? t('placeholder.selectStatus') : <Icon type={text ? 'check' : 'close'} />}</span>
+        <span>
+          {text === '' ? t('placeholder.selectStatus') : text ? <CheckOutlined /> : <CloseOutlined />}
+        </span>
       )
     },
     {

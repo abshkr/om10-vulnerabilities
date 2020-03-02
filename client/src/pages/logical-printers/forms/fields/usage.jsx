@@ -11,50 +11,48 @@ const Usage = ({ form, value }) => {
 
   const { data: options, isValidating } = useSWR(LOGICAL_PRINTERS.USAGES);
 
-  const { getFieldDecorator, setFieldsValue } = form;
-
-  const validate = (rule, input, callback) => {
-    if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.usage')}`);
+  const validate = (rule, value) => {
+    if (value === '' || !value) {
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.usage')}`);
     }
 
-    if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.usage')}`);
+    if (value === '' || !value) {
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.usage')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
     if (value) {
-      setFieldsValue({
+      form.setFieldsValue({
         prt_usage_name: value.prt_usage_name
       });
     }
-  }, [value, setFieldsValue]);
+  }, [value, form]);
 
   return (
-    <Form.Item label={t('fields.usage')}>
-      {getFieldDecorator('prt_usage_name', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          showSearch
-          disabled={!!value}
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectUsage') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.use_id}>
-              {item.use_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="prt_usage_name"
+      label={t('fields.usage')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        loading={isValidating}
+        showSearch
+        disabled={!!value}
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectUsage') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.use_id}>
+            {item.use_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

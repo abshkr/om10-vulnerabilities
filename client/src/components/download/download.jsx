@@ -1,4 +1,5 @@
 import React from 'react';
+import { FileTextOutlined } from '@ant-design/icons';
 import { Button, notification } from 'antd';
 import { CSVLink } from 'react-csv';
 
@@ -10,7 +11,7 @@ const Download = ({ data, columns, isLoading }) => {
   return (
     <CSVLink data={payload} filename={`om5k_${window.location.pathname}.csv`}>
       <Button
-        icon="file-text"
+        icon={<FileTextOutlined />}
         onClick={() =>
           notification.success({
             message: 'Generated Succesfully.'
