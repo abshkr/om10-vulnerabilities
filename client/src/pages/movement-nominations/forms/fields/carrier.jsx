@@ -9,7 +9,7 @@ import { MOVEMENT_NOMIATIONS } from '../../../../api';
 const Carrier = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(MOVEMENT_NOMIATIONS.CARRIERS);
 
@@ -22,24 +22,22 @@ const Carrier = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.carrier')}>
-      {getFieldDecorator('mv_carrier')(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={t('placeholder.selectCarrier')}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.cmpy_code}>
-              {item.cmpy_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item name="mv_carrier" label={t('fields.carrier')}>
+      <Select
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={t('placeholder.selectCarrier')}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.cmpy_code}>
+            {item.cmpy_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

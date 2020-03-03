@@ -6,7 +6,7 @@ import { Form, Input } from 'antd';
 const NominationNumber = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -16,18 +16,21 @@ const NominationNumber = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input && input.length > 20) {
-      callback(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={t('fields.nominationNumber')}>
-      {getFieldDecorator('mv_number', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input disabled={!!value} />)}
+    <Form.Item
+      name="mv_number"
+      label={t('fields.nominationNumber')}
+      rules={[{ required: false, validator: validate }]}
+    >
+      <Input disabled={!!value} />
     </Form.Item>
   );
 };

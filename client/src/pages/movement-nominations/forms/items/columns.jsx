@@ -15,7 +15,8 @@ const columns = t => [
     sortable: true,
     resizable: true,
     width: 70,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
+    pinned: 'left'
   },
   {
     headerName: t('fields.itemId'),
@@ -24,17 +25,10 @@ const columns = t => [
     sortable: true,
     resizable: true,
     width: 90,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
+    pinned: 'left'
   },
-  {
-    headerName: t('fields.locked'),
-    field: 'mvitm_type',
-    filter: 'FuzzyFilter',
-    sortable: true,
-    resizable: true,
-    width: 90,
-    suppressSizeToFit: true
-  },
+
   {
     headerName: t('fields.nominationType'),
     field: 'mvitm_type_name',
@@ -219,6 +213,7 @@ const columns = t => [
     sortable: true,
     resizable: true,
     width: 100,
+
     suppressSizeToFit: true
   }
 ];

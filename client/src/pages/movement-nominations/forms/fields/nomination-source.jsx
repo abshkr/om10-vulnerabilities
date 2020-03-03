@@ -9,16 +9,16 @@ import { MOVEMENT_NOMIATIONS } from '../../../../api';
 const NominationSource = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(MOVEMENT_NOMIATIONS.SOURCES);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.nominationSource')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.nominationSource')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -30,27 +30,27 @@ const NominationSource = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.nominationSource')}>
-      {getFieldDecorator('mv_srctype', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          disabled={!!value}
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectNominationSource') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.movsource_type_id}>
-              {item.movsource_type_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="mv_srctype"
+      label={t('fields.nominationSource')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        disabled={!!value}
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectNominationSource') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.movsource_type_id}>
+            {item.movsource_type_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

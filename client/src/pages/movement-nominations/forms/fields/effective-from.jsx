@@ -5,7 +5,7 @@ import { Form, DatePicker } from 'antd';
 import { SETTINGS } from '../../../../constants';
 
 const EffectiveFrom = ({ form, value }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { t } = useTranslation();
 
@@ -19,8 +19,8 @@ const EffectiveFrom = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.effectiveFrom')}>
-      {getFieldDecorator('mv_dtim_effect')(<DatePicker showTime />)}
+    <Form.Item name="mv_dtim_effect" label={t('fields.effectiveFrom')}>
+      <DatePicker showTime />
     </Form.Item>
   );
 };

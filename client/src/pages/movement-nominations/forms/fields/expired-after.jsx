@@ -5,7 +5,7 @@ import { Form, DatePicker } from 'antd';
 import { SETTINGS } from '../../../../constants';
 
 const ExpiredAfter = ({ form, value }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const { t } = useTranslation();
 
@@ -19,8 +19,8 @@ const ExpiredAfter = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.expiredAfter')}>
-      {getFieldDecorator('mv_dtim_expiry')(<DatePicker showTime />)}
+    <Form.Item name="mv_dtim_expiry" label={t('fields.expiredAfter')}>
+      <DatePicker showTime />
     </Form.Item>
   );
 };

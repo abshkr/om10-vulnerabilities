@@ -6,7 +6,7 @@ import { Form, Input } from 'antd';
 const TPP = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -18,16 +18,15 @@ const TPP = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.tpp')} labelCol="">
-      <span>
-        {getFieldDecorator('mv_tppoint')(
-          <Input placeholder={t('placeholder.setTPPCode')} style={{ width: '29.5%', marginRight: '0.5%' }} />
-        )}
-        {getFieldDecorator('mv_tpp_text')(
-          <Input placeholder={t('placeholder.setTPPDescription')} style={{ width: '70%' }} />
-        )}
-      </span>
-    </Form.Item>
+    <>
+      <Form.Item name="mv_tppoint" label={t('fields.tpp')}>
+        <Input placeholder={t('placeholder.setTPPCode')} style={{ width: '29.5%', marginRight: '0.5%' }} />
+      </Form.Item>
+
+      <Form.Item name="mv_tpp_text">
+        <Input placeholder={t('placeholder.setTPPDescription')} style={{ width: '70%' }} />
+      </Form.Item>
+    </>
   );
 };
 

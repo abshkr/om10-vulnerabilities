@@ -13,6 +13,7 @@ export const TRANSACTIONS = '/api/pages/movement/transactions.php';
 export const SCHEDULES = '/api/pages/movement/schedules.php';
 export const BOL = '/api/pages/movement/view_bol.php';
 export const REPORT = '/api/pages/movement/view_loadreport.php';
+export const UNITS = '/api/pages/movement/unit_types.php';
 
 export const PRINT_BOL = '/api/pages/movement/print_bol.php';
 export const PRINT_REPORT = '/api/pages/movement/print_loadreport.php';

@@ -13,13 +13,13 @@ import {
   NullRenderer
 } from './renderers';
 
-import { NumericEditor } from './editors';
+import { NumericEditor, SelectEditor } from './editors';
 import { LoadingStatus } from './status';
 import { Search } from '..';
 
 import './table.css';
 
-const components = {
+const defaultComponents = {
   FuzzyFilter,
   MultiFilter,
   BooleanFilter,
@@ -29,8 +29,9 @@ const components = {
   LoadingStatus,
   StatusRenderer,
   TagRenderer,
+  NullRenderer,
   NumericEditor,
-  NullRenderer
+  SelectEditor
 };
 
 const Table = ({
@@ -99,7 +100,7 @@ const Table = ({
           columnDefs={columns}
           rowData={data}
           onGridReady={handleGridReady}
-          frameworkComponents={components}
+          frameworkComponents={defaultComponents}
           onRowDoubleClicked={value => onClick && onClick(value.data)}
           loadingOverlayComponent="LoadingStatus"
           rowSelection={selectionMode || 'multiple'}

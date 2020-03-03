@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import moment from 'moment';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, FormModal, Calendar } from '../../components';
 import { MOVEMENT_NOMIATIONS } from '../../api';
@@ -50,11 +51,11 @@ const MovementNominations = () => {
   const modifiers = (
     <>
       <Calendar handleChange={setRange} start={start} end={end} />
-      <Button icon="sync" onClick={() => revalidate()} loading={isValidating}>
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
-      <Download data={data} isLoading={isValidating} columns={fields} />
-      <Button type="primary" icon="plus" onClick={() => handleClick(null)} loading={isValidating}>
+      <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
         {t('operations.create')}
       </Button>
     </>

@@ -44,11 +44,19 @@ export default class NumericEditor extends Component {
   }
 
   componentDidMount() {
-    this.refs.input.addEventListener('keydown', this.onKeyDown);
+    const { data } = this.props;
+
+    if (data?.editable) {
+      this.refs.input.addEventListener('keydown', this.onKeyDown);
+    }
   }
 
   componentWillUnmount() {
-    this.refs.input.removeEventListener('keydown', this.onKeyDown);
+    const { data } = this.props;
+
+    if (data?.editable) {
+      this.refs.input.removeEventListener('keydown', this.onKeyDown);
+    }
   }
 
   afterGuiAttached() {
@@ -74,7 +82,8 @@ export default class NumericEditor extends Component {
   }
 
   isCancelBeforeStart() {
-    return this.cancelBeforeStart;
+    const { data } = this.props;
+    return this.cancelBeforeStart || !data?.editable;
   }
 
   isCancelAfterEnd() {

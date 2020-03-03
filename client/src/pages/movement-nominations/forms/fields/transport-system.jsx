@@ -6,7 +6,7 @@ import { Form, Input } from 'antd';
 const TransportSystem = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -18,10 +18,8 @@ const TransportSystem = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.transportSystem')} labelCol="">
-      <span>
-        {getFieldDecorator('mv_tpmode')(<Input placeholder={t('placeholder.setTransportSystem')} />)}
-      </span>
+    <Form.Item name="mv_tpmode" label={t('fields.transportSystem')} labelCol="">
+      <Input placeholder={t('placeholder.setTransportSystem')} />
     </Form.Item>
   );
 };

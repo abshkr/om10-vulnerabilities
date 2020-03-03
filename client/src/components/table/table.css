@@ -6,17 +6,8 @@
   padding: 10px;
 }
 
-.ag-theme-balham .ag-menu {
-  border-radius: 0px !important;
-}
-
 .ag-theme-balham.ag-popup > div:not(.ag-tooltip-custom) {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.061) !important;
-}
-
-.ag-root.ag-layout-normal,
-.ag-root.ag-layout-auto-height {
-  border-radius: 4px;
 }
 
 .filter-footer {
