@@ -13,14 +13,6 @@ const Supplier = ({ form, value }) => {
 
   const { data: options, isValidating } = useSWR(MOVEMENT_NOMIATIONS.SUPPLIERS);
 
-  const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.supplier')}`);
-    }
-
-    return Promise.resolve();
-  };
-
   useEffect(() => {
     if (value && value.mv_supplier !== '') {
       setFieldsValue({
@@ -30,11 +22,7 @@ const Supplier = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item
-      name="mv_supplier"
-      label={t('fields.supplier')}
-      rules={[{ required: true, validator: validate }]}
-    >
+    <Form.Item name="mv_supplier" label={t('fields.supplier')}>
       <Select
         loading={isValidating}
         showSearch
