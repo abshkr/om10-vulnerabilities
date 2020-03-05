@@ -400,7 +400,8 @@
     "viewTransaction": "View Transaction",
     "viewSchedule": "View Schedule",
     "addLineItem": "Add Line Item",
-    "deleteLineItem": "Delete Line Item"
+    "deleteLineItem": "Delete Line Item",
+    "lockItem": "Lock Item"
   },
 
   "tabColumns": {

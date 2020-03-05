@@ -19,15 +19,13 @@ const MovementNominations = () => {
 
   const [start, setStart] = useState(
     moment()
-      .subtract(60, 'days')
+      .subtract(5, 'years')
       .format(SETTINGS.DATE_TIME_FORMAT)
   );
 
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
 
-  const { data: payload, isValidating, revalidate } = useSWR(
-    `${MOVEMENT_NOMIATIONS.READ}?start_date=${start}&end_date=${end}`
-  );
+  const { data: payload, isValidating, revalidate } = useSWR(`${MOVEMENT_NOMIATIONS.READ}`);
 
   const fields = columns(t);
   const data = payload?.records;

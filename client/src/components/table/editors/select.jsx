@@ -10,12 +10,6 @@ export default class SelectEditor extends Component {
     };
   }
 
-  isCancelBeforeStart() {
-    const { data } = this.props;
-
-    return !data?.editable;
-  }
-
   getValue() {
     return this.state.value;
   }
@@ -33,7 +27,7 @@ export default class SelectEditor extends Component {
     const { values } = this.props;
 
     return (
-      <Select value={this.state.value} size="small" onChange={this.onClick}>
+      <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick}>
         {values?.map(item => (
           <Select.Option key={item} value={item}>
             {item}
