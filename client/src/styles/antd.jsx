@@ -2,9 +2,12 @@ import { createGlobalStyle } from 'styled-components';
 
 const AntdStyleProvider = createGlobalStyle`
 
+
   .ant-tab-window {
     height: 70vh;
     overflow-y: auto;
+    padding-right: 10px;
+    margin-bottom: 10px;
   }
   
   .ant-btn-primary.disabled,

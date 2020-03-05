@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import useSWR, { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Form, Button, Tabs, notification, Modal } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
 
 import {
   EditOutlined,
@@ -111,9 +111,7 @@ const FormModal = ({ value }) => {
             <Group form={form} value={value} />
             <Color form={form} value={value} />
             <DensityRange form={form} value={value} />
-          </TabPane>
-
-          <TabPane className="ant-tab-window" tab={t('tabColumns.product')} forceRender={true} key="2">
+            <Divider>{t('tabColumns.product')}</Divider>
             <RefSpecTemp form={form} value={value} />
             <CorrectionMethod form={form} value={value} />
             <HotTempFlag form={form} value={value} config={config} />
