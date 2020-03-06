@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
 export default class BooleanRenderer extends Component {
   render() {
     const { value } = this.props;
+
     return (
       <div className="cell-icon">
         {value ? (
-          <CheckOutlined style={{ fontSize: 18, color: value ? '#52c41a' : '#ec6e68' }} />
+          <CheckCircleOutlined style={{ fontSize: 16, color: '#52c41a' }} />
         ) : (
-          <CloseOutlined style={{ fontSize: 18, color: value ? '#52c41a' : '#ec6e68' }} />
+          <CloseCircleOutlined style={{ fontSize: 18, color: '#ec6e68' }} />
         )}
       </div>
     );
