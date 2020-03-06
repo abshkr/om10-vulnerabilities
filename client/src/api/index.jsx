@@ -1,5 +1,6 @@
 import * as tankerList from './tanker-list';
 
+import * as AUTH from './auth';
 import * as EQUIPMENT_LIST from './equipment-list';
 import * as REPORT_PROFILE from './report-profile';
 import * as REPORT_CONFIGURATION from './report-configuration';
@@ -29,6 +30,7 @@ import * as SPECIAL_MOVEMENTS from './special-movements';
 import * as MOVEMENT_NOMIATIONS from './movement-nominations';
 
 export {
+  AUTH,
   tankerList,
   EQUIPMENT_LIST,
   TANKS,

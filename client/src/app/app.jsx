@@ -1,13 +1,15 @@
 import React, { Suspense } from 'react';
+
+import useSWR from 'swr';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+
 import { GlobalStyleProvider, AntdStyleProvider } from '../styles';
 import { Interface, Loading } from '../components';
-import { ROUTES } from '../constants';
-
-import paths from './paths';
-
 import { authStore } from '../stores';
+import { ROUTES } from '../constants';
+import { AUTH } from '../api';
+import paths from './paths';
 
 /**
  * @description
@@ -22,23 +24,25 @@ import { authStore } from '../stores';
  * All modules are lazy loaded via the path array.
  */
 
-const App = () => (
-  <Provider store={authStore}>
-    <BrowserRouter>
-      <Interface>
-        <GlobalStyleProvider />
-        <AntdStyleProvider />
-        <Suspense fallback={<Loading />}>
-          <Switch>
-            {paths.map(item => {
-              return <Route key={item.path} path={item.path} component={item.component} />;
-            })}
-            <Redirect path={ROUTES.ROOT} to={ROUTES.LOG_IN} />
-          </Switch>
-        </Suspense>
-      </Interface>
-    </BrowserRouter>
-  </Provider>
-);
+const App = () => {
+  return (
+    <Provider store={authStore}>
+      <BrowserRouter>
+        <Interface>
+          <GlobalStyleProvider />
+          <AntdStyleProvider />
+          <Suspense fallback={<Loading />}>
+            <Switch>
+              {paths.map(item => {
+                return <Route key={item.path} path={item.path} component={item.component} />;
+              })}
+              <Redirect path={ROUTES.ROOT} to={ROUTES.LOG_IN} />
+            </Switch>
+          </Suspense>
+        </Interface>
+      </BrowserRouter>
+    </Provider>
+  );
+};
 
 export default App;

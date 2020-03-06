@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { notification } from 'antd';
 
 import { SWRConfig } from 'swr';
+import { notification } from 'antd';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -26,13 +26,6 @@ export default Authenticated => {
         history.push(ROUTES.LOG_IN);
       }
     }, [token, history]);
-
-    useEffect(() => {
-      const interval = setInterval(() => {
-        sessionStorage.getItem('token');
-      }, 1000);
-      return () => clearInterval(interval);
-    }, []);
 
     return (
       <SWRConfig

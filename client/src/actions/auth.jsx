@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { AUTHORIZED, UNAUTHORIZED } from './types';
+import { AUTH } from '../api';
 
 export const login = (values, callback) => async dispatch => {
   try {
     axios
-      .post('/api/login.php', {
+      .post(AUTH.LOGIN, {
         user: values.code,
         password: values.password
       })
@@ -24,17 +25,17 @@ export const login = (values, callback) => async dispatch => {
   }
 };
 
-export const update = () => async dispatch => {
-  const rand = Math.random()
-    .toString(36)
-    .substring(7);
-
-  dispatch({ type: AUTHORIZED, payload: rand });
-  sessionStorage.setItem('token', rand);
-};
-
 export const signout = () => {
-  sessionStorage.removeItem('token');
+  axios
+    .post(AUTH.LOGOUT, {
+      token: sessionStorage.getItem('token')
+    })
+    .then(reponse => {
+      sessionStorage.removeItem('token');
+    })
+    .catch(error => {
+      sessionStorage.removeItem('token');
+    });
 
   return {
     type: AUTHORIZED,
