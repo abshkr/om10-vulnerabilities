@@ -1,6 +1,5 @@
 import React, { Suspense } from 'react';
 
-import useSWR from 'swr';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
@@ -8,7 +7,6 @@ import { GlobalStyleProvider, AntdStyleProvider } from '../styles';
 import { Interface, Loading } from '../components';
 import { authStore } from '../stores';
 import { ROUTES } from '../constants';
-import { AUTH } from '../api';
 import paths from './paths';
 
 /**
