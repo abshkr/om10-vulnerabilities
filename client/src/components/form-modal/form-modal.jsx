@@ -1,7 +1,7 @@
 import React from 'react';
-import { EditOutlined, FormOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
 import { SWRConfig } from 'swr';
+import { EditOutlined, FormOutlined } from '@ant-design/icons';
 
 import { fetcher } from '../../utils';
 

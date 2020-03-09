@@ -28,6 +28,7 @@ import * as FSC_STATUS from './fsc-status';
 import * as TANKS from './tanks';
 import * as SPECIAL_MOVEMENTS from './special-movements';
 import * as MOVEMENT_NOMIATIONS from './movement-nominations';
+import * as LOAD_SCHEDULES from './load-schedules';
 
 export {
   AUTH,
@@ -58,5 +59,6 @@ export {
   REPORT_CONFIGURATION,
   REPORT_PROFILE,
   SPECIAL_MOVEMENTS,
-  MOVEMENT_NOMIATIONS
+  MOVEMENT_NOMIATIONS,
+  LOAD_SCHEDULES
 };

@@ -12,6 +12,5 @@ const GlobalStyleProvider = createGlobalStyle`
   }
 
 
-
 `;
 export default GlobalStyleProvider;

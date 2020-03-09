@@ -128,7 +128,7 @@ const paths = [
 
   {
     path: ROUTES.LOAD_SCHEDULES,
-    component: lazy(() => import('../pages/work-in-progress'))
+    component: lazy(() => import('../pages/load-schedules'))
   },
 
   {

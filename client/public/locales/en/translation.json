@@ -270,7 +270,24 @@
     "toSecondDescription": "To Second Description",
     "quantityScheduled": "Quantity Scheduled",
     "quantityMoved": "Quantity Moved",
-    "select": ""
+    "select": "Select",
+    "transactionNumber": "Transaction Number",
+    "tripNumber": "Trip Number",
+    "loadId": "Load Id",
+    "operator": "Operator",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "date": "Date",
+    "loadStart": "Load Start",
+    "loadEnd": "Load End",
+    "ambient": "Ambient",
+    "standard": "Standard",
+    "postedOn": "Posted On",
+    "alternateQuantity": "Alternate Quantity",
+    "alternateUnit": "Alternate Unit",
+    "tripType": "Trip Type",
+    "unload": "Unload",
+    "reversed": "Reversed"
   },
 
   "pageMenu": {
@@ -365,7 +382,9 @@
     "movementNominations": "Movement Nominations",
     "movementReasons": "Movement Reasons",
     "manualTransactions": "Manual Transactions",
-    "specialMovements": "Special Movements"
+    "specialMovements": "Special Movements",
+    "transactionListbyNomination": "Transaction List By Nomination",
+    "loadSchedulesFromNomination": "Load Schedules By Nomination"
   },
 
   "operations": {
@@ -403,7 +422,9 @@
     "deleteLineItem": "Delete Line Item",
     "lockItem": "Lock Item",
     "selectAllTimes": "Select All Times",
-    "deselectAllTimes": "Deselect All Times"
+    "deselectAllTimes": "Deselect All Times",
+    "returnToTransactionList": "Return to Transaction List",
+    "returnToLoadSchedules": "Return to Load Schedules"
   },
 
   "tabColumns": {
@@ -547,7 +568,8 @@
     "setTransportMode": "Set Transport Mode",
     "setTransportModeDescription": "Set Transport Mode Description",
     "setTransportSystem": "Set Transport Systen",
-    "setComments": "Set Comments"
+    "setComments": "Set Comments",
+    "selectNominationSource": "Select Nomination Source"
   },
 
   "validate": {

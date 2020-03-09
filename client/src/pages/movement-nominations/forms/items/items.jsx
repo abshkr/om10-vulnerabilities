@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { Button, Form } from 'antd';
 import useSWR from 'swr';
 
-import { MOVEMENT_NOMIATIONS } from '../../../../api';
+import { ROUTES } from '../../../../constants';
 import { DataTable } from '../../../../components';
+import { MOVEMENT_NOMIATIONS } from '../../../../api';
 
 import columns from './columns';
 
@@ -146,19 +147,46 @@ const Items = ({ setTableAPIContext, value }) => {
         {t('operations.deleteLineItem')}
       </Button>
 
-      <Button icon={<CarryOutOutlined />} style={{ float: 'right', marginRight: 5 }} disabled={disabled}>
+      <Button
+        type="primary"
+        icon={<CarryOutOutlined />}
+        style={{ float: 'right', marginRight: 5 }}
+        disabled={disabled}
+      >
         {t('operations.makeTransaction')}
       </Button>
 
-      <Button icon={<EyeOutlined />} style={{ float: 'right', marginRight: 5 }} disabled={canModifyFurther}>
+      <Button
+        type="primary"
+        icon={<EyeOutlined />}
+        style={{ float: 'right', marginRight: 5 }}
+        disabled={canModifyFurther}
+        onClick={() =>
+          window.open(
+            `${ROUTES.TRANSACTION_LIST}?mv_id=${value?.mv_id}&line_id=${selected[0]?.mvitm_line_id}`,
+            '_blank'
+          )
+        }
+      >
         {t('operations.viewTransaction')}
       </Button>
 
-      <Button icon={<EyeOutlined />} style={{ float: 'right', marginRight: 5 }} disabled={canModifyFurther}>
+      <Button
+        type="primary"
+        icon={<EyeOutlined />}
+        style={{ float: 'right', marginRight: 5 }}
+        disabled={canModifyFurther}
+        onClick={() => window.open(`${ROUTES.LOAD_SCHEDULES}?mv_key=${value?.mv_key}`, '_blank')}
+      >
         {t('operations.viewSchedule')}
       </Button>
 
-      <Button icon={<LockOutlined />} style={{ float: 'right', marginRight: 5 }} disabled={canModifyFurther}>
+      <Button
+        type="primary"
+        icon={<LockOutlined />}
+        style={{ float: 'right', marginRight: 5 }}
+        disabled={canModifyFurther}
+      >
         {t('operations.lockItem')}
       </Button>
 
