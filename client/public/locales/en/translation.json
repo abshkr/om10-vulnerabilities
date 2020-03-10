@@ -287,7 +287,18 @@
     "alternateUnit": "Alternate Unit",
     "tripType": "Trip Type",
     "unload": "Unload",
-    "reversed": "Reversed"
+    "reversed": "Reversed",
+    "transfer": "Transfer",
+    "bayArm": "Bay Arm",
+    "trailerCode": "Trailer Code",
+    "temp": "Temperature",
+    "api": "API",
+    "meters": "Meters",
+    "meter": "Meter",
+    "openingAmbient": "Opening Ambient",
+    "openingCorrected": "Opening Corrected",
+    "openingMass": "Opening Mass",
+    "baseProducts": "Base Products"
   },
 
   "pageMenu": {

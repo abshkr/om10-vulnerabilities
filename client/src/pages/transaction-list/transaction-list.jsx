@@ -8,12 +8,13 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, CaretLeftOutlined } from '@ant-design/icons';
 
-import { useQuery } from '../../hooks';
-import { Page, DataTable, Download, Calendar } from '../../components';
+import { Page, DataTable, Download, Calendar, FormModal } from '../../components';
 import { TRANSACTION_LIST, MOVEMENT_NOMIATIONS } from '../../api';
 import { SETTINGS, ROUTES } from '../../constants';
-import auth from '../../auth';
+import { useQuery } from '../../hooks';
 import columns from './columns';
+import auth from '../../auth';
+import Forms from './forms';
 
 const TransactionList = () => {
   let history = useHistory();
@@ -24,6 +25,7 @@ const TransactionList = () => {
   const { data: transactions, isValidating, revalidate } = useSWR(TRANSACTION_LIST.READ);
 
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [start, setStart] = useState(
     moment()
@@ -33,7 +35,8 @@ const TransactionList = () => {
 
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
 
-  const isFromNomination = params?.mv_id;
+  const isFromNomination = params?.mv_id && params?.line_id;
+  const isLoading = loading || isValidating;
   const fields = columns(t);
 
   const setRange = (start, end) => {
@@ -42,24 +45,37 @@ const TransactionList = () => {
     revalidate();
   };
 
+  const handleClick = value => {
+    FormModal({
+      value,
+      form: <Forms value={value} isFromNomination={isFromNomination} />,
+      id: value?.trsa_id,
+      name: value?.trsa_trip,
+      t,
+      width: '90vw'
+    });
+  };
+
   useEffect(() => {
-    if (params?.mv_id) {
-      axios
-        .get(MOVEMENT_NOMIATIONS.TRANSACTIONS, { params })
-        .then(response => setData(response.data.records));
+    if (isFromNomination) {
+      setLoading(true);
+      axios.get(MOVEMENT_NOMIATIONS.TRANSACTIONS, { params }).then(response => {
+        setData(response.data.records);
+        setLoading(false);
+      });
     } else {
       setData(transactions?.records);
     }
-  }, [transactions, params, history]);
+  }, [transactions, isFromNomination, history, params]);
 
   const modifiers = (
     <>
-      <Calendar handleChange={setRange} start={start} end={end} />
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
+      {!isFromNomination && <Calendar handleChange={setRange} start={start} end={end} />}
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
 
-      <Download data={data} isLoading={isValidating} columns={fields} />
+      <Download data={data} isLoading={isLoading} columns={fields} />
 
       {isFromNomination && (
         <Button icon={<CaretLeftOutlined />} onClick={() => history.push(ROUTES.TRANSACTION_LIST)}>
@@ -72,10 +88,13 @@ const TransactionList = () => {
   return (
     <Page
       page={t('pageMenu.schedules')}
-      name={isFromNomination ? t('pageNames.transactionListbyNomination') : t('pageNames.transactionList')}
+      name={
+        isFromNomination ? `${t('pageNames.transactionListbyNomination')}` : t('pageNames.transactionList')
+      }
       modifiers={modifiers}
+      description={isFromNomination && `For Movement Id ${params?.mv_id} and Line Item ${params?.line_id}`}
     >
-      <DataTable columns={fields} data={data} isLoading={isValidating} />
+      <DataTable columns={fields} data={data} isLoading={isLoading} onClick={handleClick} />
     </Page>
   );
 };

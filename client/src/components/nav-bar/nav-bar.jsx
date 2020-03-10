@@ -8,7 +8,6 @@ import {
   AlertOutlined,
   SettingOutlined,
   FlagOutlined,
-  BookOutlined,
   GlobalOutlined,
   PoweroffOutlined,
   SearchOutlined
@@ -20,26 +19,9 @@ import { ROUTES } from '../../constants';
 const { SubMenu } = Menu;
 const { Header } = Layout;
 
-const UserOverlay = history => {
-  const { i18n } = useTranslation();
-
-  const handleNavigation = event => {
-    if (event?.keyPath.includes('language')) {
-      i18n.changeLanguage(event.key);
-    }
-
-    if (event?.key && event.key === ROUTES.LOG_OUT) {
-      history.push(ROUTES.LOG_OUT);
-    }
-  };
-
+const user = handleNavigation => {
   return (
     <Menu style={{ width: 200 }} onClick={handleNavigation}>
-      <Menu.Item key="1">
-        <AlertOutlined />
-        Events
-      </Menu.Item>
-
       <Menu.Item key="2">
         <SettingOutlined />
         Settings
@@ -57,25 +39,6 @@ const UserOverlay = history => {
         <Menu.Item>Support</Menu.Item>
       </SubMenu>
 
-      <Menu.Item key="3">
-        <BookOutlined />
-        Changelog
-      </Menu.Item>
-
-      <Menu.Divider />
-
-      <SubMenu
-        key="language"
-        title={
-          <span>
-            <GlobalOutlined /> Language
-          </span>
-        }
-      >
-        <Menu.Item key="en">English (EN)</Menu.Item>
-        <Menu.Item key="cn">Chinese (CN)</Menu.Item>
-      </SubMenu>
-
       <Menu.Divider />
 
       <Menu.Item key={ROUTES.LOG_OUT}>
@@ -86,9 +49,31 @@ const UserOverlay = history => {
   );
 };
 
+const language = handleNavigation => {
+  return (
+    <Menu style={{ width: 200 }} onClick={handleNavigation}>
+      <Menu.Item key="language-en">English (EN)</Menu.Item>
+      <Menu.Item key="language-cn">Chinese (CN)</Menu.Item>
+    </Menu>
+  );
+};
+
 const NavBar = () => {
   const [query, setQuery] = useState('');
+
+  const { i18n } = useTranslation();
+
   let history = useHistory();
+
+  const handleNavigation = event => {
+    if (event?.keyPath.includes('language')) {
+      i18n.changeLanguage(event.key);
+    }
+
+    if (event?.key && event.key === ROUTES.LOG_OUT) {
+      history.push(ROUTES.LOG_OUT);
+    }
+  };
 
   return (
     <Header className="header">
@@ -107,7 +92,15 @@ const NavBar = () => {
           </SearchContainer>
         )}
 
-        <Dropdown overlay={UserOverlay(history)} trigger={['click']}>
+        <Dropdown overlay={language(handleNavigation)} trigger={['click']}>
+          <GlobalOutlined style={{ fontSize: 20, marginRight: 20, color: '#b4b8ce' }} />
+        </Dropdown>
+
+        <Dropdown overlay={user(handleNavigation)} trigger={['click']}>
+          <AlertOutlined style={{ fontSize: 20, marginRight: 20, color: '#b4b8ce' }} />
+        </Dropdown>
+
+        <Dropdown overlay={user(handleNavigation)} trigger={['click']}>
           <Avatar src="https://avatars1.githubusercontent.com/u/20252138?s=460&v=4" />
         </Dropdown>
       </NavBarContainer>

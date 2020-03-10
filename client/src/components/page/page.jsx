@@ -4,7 +4,7 @@ import { PageHeader } from 'antd';
 
 import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } from './style';
 
-const Page = ({ name, page, children, modifiers, icon }) => {
+const Page = ({ name, page, children, modifiers, icon, description }) => {
   const routes = [
     {
       path: 'index',
@@ -30,6 +30,7 @@ const Page = ({ name, page, children, modifiers, icon }) => {
             icon,
             style: { color: '#68a4ec', backgroundColor: '#d1e3f9' }
           }}
+          subTitle={description}
           breadcrumb={{ routes }}
         ></PageHeader>
 

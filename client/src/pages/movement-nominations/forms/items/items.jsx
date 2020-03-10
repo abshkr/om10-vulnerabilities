@@ -151,7 +151,7 @@ const Items = ({ setTableAPIContext, value }) => {
         type="primary"
         icon={<CarryOutOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={disabled}
+        disabled={disabled || !canModifyFurther}
       >
         {t('operations.makeTransaction')}
       </Button>
