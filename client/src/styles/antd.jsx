@@ -114,7 +114,6 @@ const AntdStyleProvider = createGlobalStyle`
     border-color: #68a4ec;
   }
   
-
   .ant-switch-checked {
     background-color: #68a4ec;
   }

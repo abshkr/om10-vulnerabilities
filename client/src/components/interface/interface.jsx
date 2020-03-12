@@ -6,7 +6,7 @@ import { Layout } from 'antd';
 import { InterfaceContainer } from './style';
 import { NavBar, Navigation } from '..';
 
-const { Content, Footer, Sider } = Layout;
+const { Content, Sider } = Layout;
 
 const Interface = ({ auth, children }) => {
   return auth ? (
@@ -18,7 +18,6 @@ const Interface = ({ auth, children }) => {
         <Layout>
           <NavBar />
           <Content className="content">{children}</Content>
-          <Footer>OMEGA 5000 (V9.10.0) </Footer>
         </Layout>
       </Layout>
     </InterfaceContainer>

@@ -5,29 +5,20 @@ const InterfaceContainer = styled.div`
     min-height: 100vh;
   }
 
-  .header {
+  .ant-layout-header {
     background-color: white;
-    box-shadow: 0 4px 5px rgba(15, 17, 51, 0.08);
+    box-shadow: 0 0 40px 0 rgba(82, 63, 105, 0.1);
     padding-left: 0px;
-    padding-right: 10px;
-    z-index: 10;
+    z-index: 1;
     height: 50px;
+    position: fixed;
+    width: 100%;
   }
 
-  .content {
-    padding-top: 15px;
+  .ant-layout-content {
+    padding-top: 65px;
     padding-left: 10px;
     padding-right: 10px;
-  }
-
-  .ant-layout-footer {
-    height: 45px;
-    padding-top: 8px;
-    dispaly: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background: none;
   }
 `;
 

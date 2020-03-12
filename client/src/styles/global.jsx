@@ -2,7 +2,7 @@ import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyleProvider = createGlobalStyle`
   body {
-        font-family: 'Open Sans', sans-serif;
+        font-family: 'Poppins', sans-serif;
         background-color: white;
         margin: 0px;
     }

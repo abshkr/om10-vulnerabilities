@@ -4,7 +4,6 @@ const NavBarContainer = styled.div`
   height: 50px;
   display: flex;
   align-items: center;
-  border-radius: none;
 
   & .ant-input-affix-wrapper {
     border: none;
@@ -18,24 +17,6 @@ const NavBarContainer = styled.div`
     border: none;
     box-shadow: none;
   }
-
-  .ant-avatar {
-    cursor: pointer;
-    transition: 0.5s all;
-  }
-
-  .ant-avatar:hover {
-    background: #0055a5;
-  }
-`;
-
-const UserContainer = styled.div`
-  height: 50px;
-  width: 45px;
-  display: flex;
-  align-items: center;
-  margin-top: 0px;
-  flex-direction: row-reverse;
 `;
 
 const SearchContainer = styled.div`
@@ -57,4 +38,15 @@ const SearchResults = styled.div`
   line-height: 1.5;
 `;
 
-export { NavBarContainer, UserContainer, SearchContainer, SearchResults };
+const NavExtras = styled.div`
+  position: fixed;
+  right: 15px;
+  top: -3px;
+
+  & .anticon {
+    color: #68a4ec;
+    font-size: 25px;
+  }
+`;
+
+export { NavBarContainer, SearchContainer, SearchResults, NavExtras };

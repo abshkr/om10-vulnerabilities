@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useSWR from 'swr';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -15,12 +15,14 @@ const PhysicalPrinters = () => {
 
   const { data: payload, isValidating, revalidate } = useSWR(PHYSICAL_PRINTERS.READ);
 
+  const [tableAPI, setTableAPI] = useState(null);
+
   const fields = columns(t);
 
   const handleClick = value => {
     FormModal({
       value,
-      form: <Forms value={value} />,
+      form: <Forms value={value} tableAPI={tableAPI} />,
       id: value?.prntr,
       name: value?.sys_prntr,
       t
@@ -41,7 +43,13 @@ const PhysicalPrinters = () => {
 
   return (
     <Page page={t('pageMenu.printers')} name={t('pageNames.physicalPrinters')} modifiers={modifiers}>
-      <DataTable columns={fields} data={payload?.records} isLoading={isValidating} onClick={handleClick} />
+      <DataTable
+        columns={fields}
+        data={payload?.records}
+        isLoading={isValidating}
+        onClick={handleClick}
+        apiContext={setTableAPI}
+      />
     </Page>
   );
 };

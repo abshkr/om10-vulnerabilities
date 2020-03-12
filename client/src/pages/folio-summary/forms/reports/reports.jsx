@@ -3,66 +3,51 @@ import useSWR from 'swr';
 import axios from 'axios';
 import { RedoOutlined, CloseOutlined } from '@ant-design/icons';
 
-import { Modal, Button, List, message } from 'antd';
+import { Modal, Button, Table, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { FOLIO_SUMMARY } from '../../../../api';
+import generator from './generator';
+import columns from './columns';
 
 const Reports = ({ id, enabled }) => {
   const { t } = useTranslation();
 
   const [isRegenerating, setRegenerate] = useState(false);
 
-  const { data: payload, isValidating } = useSWR(`${FOLIO_SUMMARY.REPORTS}?closeout_nr=${id}`);
+  const { data } = useSWR(`${FOLIO_SUMMARY.REPORTS}?closeout_nr=${id}`);
 
   const regenerate = useCallback(() => {
     setRegenerate(true);
 
-    const key = 'regenerate';
-
-    message.loading({ content: t('messages.regenerating'), key });
+    message.loading({ content: t('messages.regenerating'), id });
 
     axios.post(`${FOLIO_SUMMARY.CREATE_REPORTS}?closeout_nr=${id}`).then(
       axios.spread(response => {
-        message.success({ content: t('messages.regeneratingComplete'), key });
+        message.success({ content: t('messages.regeneratingComplete'), id });
         setRegenerate(false);
       })
     );
   }, [id, t]);
 
+  const payload = generator(id, data?.records);
+  const fields = columns(t);
+
   return (
     <div>
-      <List
+      <Table
         size="small"
-        loading={isValidating}
-        dataSource={payload?.records}
-        renderItem={item => (
-          <List.Item
-            actions={[
-              <a
-                href={() => window.open(`${FOLIO_SUMMARY.OPEN_REPORT}?report=${id}/${item}`)}
-                onClick={() => window.open(`${FOLIO_SUMMARY.OPEN_REPORT}?report=${id}/${item}`)}
-              >
-                {t('operations.download')}
-              </a>
-            ]}
-          >
-            <List.Item.Meta title={item} />
-          </List.Item>
-        )}
+        dataSource={payload}
+        columns={fields}
+        scroll={{ y: '30vw' }}
+        pagination={{ pageSize: 50 }}
       />
 
       <div className="operations">
-        <Button
-          shape="round"
-          icon={<CloseOutlined />}
-          style={{ float: 'right' }}
-          onClick={() => Modal.destroyAll()}
-        >
+        <Button icon={<CloseOutlined />} style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
           {t('operations.cancel')}
         </Button>
 
         <Button
-          shape="round"
           type="primary"
           icon={<RedoOutlined />}
           style={{ float: 'right', marginRight: 5 }}

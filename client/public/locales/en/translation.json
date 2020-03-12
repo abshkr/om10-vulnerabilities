@@ -298,7 +298,8 @@
     "openingAmbient": "Opening Ambient",
     "openingCorrected": "Opening Corrected",
     "openingMass": "Opening Mass",
-    "baseProducts": "Base Products"
+    "baseProducts": "Base Products",
+    "action": "Action"
   },
 
   "pageMenu": {

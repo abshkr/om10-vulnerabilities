@@ -9,7 +9,7 @@ const MenuContainer = styled.div`
   .ant-menu-vertical-left .ant-menu-submenu-title,
   .ant-menu-vertical-right .ant-menu-submenu-title,
   .ant-menu-inline .ant-menu-submenu-title {
-    font-weight: 600;
+    font-weight: 400;
   }
 
   .ant-menu-item:hover,

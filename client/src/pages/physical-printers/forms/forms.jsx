@@ -18,7 +18,7 @@ import { PHYSICAL_PRINTERS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value }) => {
+const FormModal = ({ value, tableAPI }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -38,6 +38,10 @@ const FormModal = ({ value }) => {
           .then(
             axios.spread(response => {
               Modal.destroyAll();
+
+              IS_CREATING
+                ? tableAPI.updateRowData({ add: [values] })
+                : tableAPI.updateRowData({ update: [values] });
 
               mutate(PHYSICAL_PRINTERS.READ);
               notification.success({
@@ -68,6 +72,8 @@ const FormModal = ({ value }) => {
           .post(PHYSICAL_PRINTERS.DELETE, value)
           .then(
             axios.spread(response => {
+              tableAPI.updateRowData({ remove: [value] });
+
               mutate(PHYSICAL_PRINTERS.READ);
               Modal.destroyAll();
               notification.success({

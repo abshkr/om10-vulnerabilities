@@ -67,17 +67,11 @@ const Meters = ({ id, enabled, access }) => {
         onEditingFinished={onEditingFinished}
       />
       <div className="operations">
-        <Button
-          shape="round"
-          icon={<CloseOutlined />}
-          style={{ float: 'right' }}
-          onClick={() => Modal.destroyAll()}
-        >
+        <Button icon={<CloseOutlined />} style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
           {t('operations.cancel')}
         </Button>
 
         <Button
-          shape="round"
           type="primary"
           icon={<EditOutlined />}
           style={{ float: 'right', marginRight: 5 }}

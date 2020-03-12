@@ -6,6 +6,8 @@ import convertToLocale from './convert-to-locale';
 import getDateTimeFormat from './get-date-time-format';
 import objectToQuery from './object-to-query';
 import fetcher from './fetcher';
+import hexToRGB from './hex-to-rbg';
+import stickyTabs from './sticky-tabs';
 
 export {
   search,
@@ -15,5 +17,7 @@ export {
   authLevel,
   getDateTimeFormat,
   objectToQuery,
-  fetcher
+  fetcher,
+  hexToRGB,
+  stickyTabs
 };

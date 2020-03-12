@@ -14,6 +14,7 @@ import FormModal from './form-modal';
 import IButton from './i-button';
 import CheckList from './check-list';
 import PasswordReset from './password-reset';
+import SideDrawer from './side-drawer';
 
 export {
   Expiry,
@@ -31,5 +32,6 @@ export {
   FormModal,
   IButton,
   CheckList,
-  PasswordReset
+  PasswordReset,
+  SideDrawer
 };
