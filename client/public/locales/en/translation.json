@@ -299,7 +299,24 @@
     "openingCorrected": "Opening Corrected",
     "openingMass": "Opening Mass",
     "baseProducts": "Base Products",
-    "action": "Action"
+    "action": "Action",
+    "nominationItem": "Nomination Item",
+    "equipmentCompartment": "Equipment Compartment",
+    "scheduled": "Scheduled",
+    "loaded": "Loaded",
+    "preload": "Preload",
+    "originalMovementType": "Original Movement Type",
+    "originalReasonCode": "Original Reason Code",
+    "reversalMovementType": "Reversal Movement Type",
+    "reversalReasonCode": "Reversal Reason Code",
+    "fromPlantSupplier": "From Plant Supplier",
+    "toPlantSupplier": "To Plant Supplier",
+    "observedQuantity": "Observed Quantity",
+    "standardQuantity": "Standard Quantity",
+    "observedMass": "Observed Mass",
+    "observedTemperature": "Observed Temperature",
+    "standardDensity": "Standard Density",
+    "unit": "Unit"
   },
 
   "pageMenu": {
@@ -436,7 +453,13 @@
     "selectAllTimes": "Select All Times",
     "deselectAllTimes": "Deselect All Times",
     "returnToTransactionList": "Return to Transaction List",
-    "returnToLoadSchedules": "Return to Load Schedules"
+    "returnToLoadSchedules": "Return to Load Schedules",
+    "loadReport": "Load Report",
+    "reverseTransactions": "Reverse Transactions",
+    "printBOL": "Print BOL",
+    "viewBOL": "View BOL",
+    "reverse": "Reverse",
+    "submit": "Submit"
   },
 
   "tabColumns": {
@@ -457,7 +480,8 @@
     "meters": "Meters",
     "tanks": "Tanks",
     "assignments": "Assignments",
-    "items": "Items"
+    "items": "Items",
+    "nominationSchedule": "Nomination Schedule"
   },
 
   "messages": {
@@ -472,7 +496,9 @@
     "regenerating": "A request to regenerate the report has been sent",
     "regeneratingComplete": "Regeneration Complete!",
     "calculateSuccess": "Successfully Calculated.",
-    "saveSuccess": "Successfully Saved."
+    "saveSuccess": "Successfully Saved.",
+    "reverseSuccess": "Successfully Reversed.",
+    "printBOLSuccess": "Sucessfully Printed the BOL"
   },
 
   "prompts": {
@@ -481,13 +507,17 @@
     "delete": "Are you sure you want to delete this record?",
     "calculate": "Are you sure you want to calculate the selected records?",
     "save": "Are you sure you want to save the selected records?",
-    "iButtonLookUp": "I-Button Look up"
+    "iButtonLookUp": "I-Button Look up",
+    "reverseTransaction": "Are you sure you want to reverse this Transaction?",
+    "printBOL": "Are you sure you want to print this BOL?"
   },
 
   "divider": {
     "flags": "Flags",
     "variances": "Variances",
-    "dateTime": "Date Time"
+    "dateTime": "Date Time",
+    "directions": "Directions",
+    "calculation": "Calculation"
   },
 
   "descriptions": {
@@ -525,7 +555,11 @@
     "saveFailed": "Failed to save the values successfully.",
     "saveToFolioWarning": "These changes will not be reflected in the Tanks. Please Save To Tanks if you want to apply the changes to Tanks.",
     "saveToTanksWarning": "These changes will not be reflected in the Folio. Please Save To Folio if you want to apply the changes to Folio.",
-    "iButtonLookUp": " Please highlight the text box and scan I-button on card reader then press Enter after you see the tag read."
+    "iButtonLookUp": " Please highlight the text box and scan I-button on card reader then press Enter after you see the tag read.",
+    "reverseSuccess": "You have reversed the Transaction",
+    "reverseFailed": "Failed to reverse the Transaction.",
+    "printBOLSuccess": "You have Printed the BOL",
+    "printBOLFailed": "Failed to reverse the BOL."
   },
 
   "placeholder": {
@@ -581,7 +615,15 @@
     "setTransportModeDescription": "Set Transport Mode Description",
     "setTransportSystem": "Set Transport Systen",
     "setComments": "Set Comments",
-    "selectNominationSource": "Select Nomination Source"
+    "selectNominationSource": "Select Nomination Source",
+    "selectMovementType": "Select Movement Type",
+    "selectReasonCode": "Select Reason Code",
+    "selectFromPlantSupplier": "Select From Plant Supplier",
+    "selectFromTank": "Select From Tank",
+    "selectToPlantSupplier": "Select To Plant Supplier",
+    "selectToTank": "Select To Tank",
+    "selectFromProduct": "Select From Product",
+    "selectToProduct": "Select To Product"
   },
 
   "validate": {

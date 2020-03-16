@@ -11,9 +11,7 @@ import { SPECIAL_MOVEMENTS } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
 
-import Forms from './forms';
-
-const SpecialMovements = () => {
+const MovementReasons = () => {
   const { t } = useTranslation();
 
   const { data: payload, isValidating, revalidate } = useSWR(SPECIAL_MOVEMENTS.READ);
@@ -24,7 +22,7 @@ const SpecialMovements = () => {
   const handleClick = value => {
     FormModal({
       value,
-      form: <Forms value={value} />,
+      form: <div value={value} />,
       id: value?.mlitm_id,
       name: value?.mlitm_mov_key,
       t
@@ -46,7 +44,7 @@ const SpecialMovements = () => {
   return (
     <Page
       page={t('pageMenu.stockReconciliation')}
-      name={t('pageNames.specialMovements')}
+      name={t('pageNames.movementReasons')}
       modifiers={modifiers}
     >
       <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
@@ -54,4 +52,4 @@ const SpecialMovements = () => {
   );
 };
 
-export default auth(SpecialMovements);
+export default auth(MovementReasons);

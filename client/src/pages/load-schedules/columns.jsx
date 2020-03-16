@@ -1,25 +1,25 @@
-const columns = (isFromNomination, t) => [
+const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.source'),
     field: 'mv_id',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: isFromNomination
+    hide: IS_NOMINATION
   },
   {
     headerName: t('fields.tripNumber'),
-    field: 'mv_terminal',
-    filter: 'MultiFilter',
+    field: 'shls_trip_no',
     sortable: true,
     resizable: true,
     width: 120,
     suppressSizeToFit: true,
-    hide: !isFromNomination
+    hide: !IS_NOMINATION,
+    pinned: 'left'
   },
   {
     headerName: t('fields.loadId'),
-    field: 'mv_oper_change',
+    field: 'shlsload_load_id',
     sortable: true,
     resizable: true,
     width: 70,
@@ -31,20 +31,21 @@ const columns = (isFromNomination, t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: isFromNomination
+    hide: IS_NOMINATION
   },
   {
     headerName: t('fields.date'),
-    field: 'mv_number',
+    field: 'shls_caldate',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
+    cellRenderer: 'DateRenderer'
   },
   {
     headerName: t('fields.status'),
-    field: 'mv_srctype_name',
+    field: 'shls_status',
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
@@ -57,11 +58,11 @@ const columns = (isFromNomination, t) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    hide: isFromNomination
+    hide: IS_NOMINATION
   },
   {
     headerName: t('fields.carrier'),
-    field: 'mv_dtim_effect',
+    field: 'carrier',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -70,11 +71,11 @@ const columns = (isFromNomination, t) => [
   },
   {
     headerName: t('fields.vehicle'),
-    field: 'mv_dtim_effect',
+    field: 'tnkr_code',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: !isFromNomination,
+    hide: !IS_NOMINATION,
     width: 120,
     suppressSizeToFit: true
   },
@@ -84,25 +85,25 @@ const columns = (isFromNomination, t) => [
     field: 'mv_dtim_expiry',
     sortable: true,
     resizable: true,
-    hide: isFromNomination
+    hide: IS_NOMINATION
   },
   {
     headerName: t('fields.tankerName'),
     field: 'mv_dtim_create',
     sortable: true,
     resizable: true,
-    hide: isFromNomination
+    hide: IS_NOMINATION
   },
   {
     headerName: t('fields.supplierCode'),
     field: 'mv_dtim_change',
     sortable: true,
     resizable: true,
-    hide: isFromNomination
+    hide: IS_NOMINATION
   },
   {
     headerName: t('fields.supplier'),
-    field: 'mv_oper_change',
+    field: 'drawer_name',
     sortable: true,
     resizable: true,
     width: 120,
@@ -110,11 +111,11 @@ const columns = (isFromNomination, t) => [
   },
   {
     headerName: t('fields.nominationKey'),
-    field: 'mv_dtim_effect',
+    field: 'mv_key',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: !isFromNomination,
+    hide: !IS_NOMINATION,
     width: 120,
     suppressSizeToFit: true
   },
@@ -123,116 +124,119 @@ const columns = (isFromNomination, t) => [
     field: 'mv_oper_change',
     sortable: true,
     resizable: true,
-    hide: isFromNomination
+    hide: IS_NOMINATION
   },
   {
     headerName: t('fields.orderNumber'),
     field: 'mv_oper_change',
     sortable: true,
     resizable: true,
-    hide: isFromNomination
+    hide: IS_NOMINATION
   },
   {
     headerName: t('fields.customerCode'),
     field: 'mv_oper_change',
     sortable: true,
     resizable: true,
-    hide: isFromNomination
+    hide: IS_NOMINATION
   },
 
   {
     headerName: t('fields.loadStart'),
-    field: 'mv_oper_change',
+    field: 'shls_ld_start',
     sortable: true,
     resizable: true,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
+    cellRenderer: 'DateRenderer'
   },
   {
     headerName: t('fields.loadEnd'),
-    field: 'mv_oper_change',
+    field: 'shls_ld_end',
     sortable: true,
     resizable: true,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
+    cellRenderer: 'DateRenderer'
   },
 
   {
     headerName: t('fields.product'),
-    field: 'mv_oper_change',
+    field: 'trsf_product',
     sortable: true,
     resizable: true,
-    hide: !isFromNomination,
+    hide: !IS_NOMINATION,
     width: 120,
     suppressSizeToFit: true
   },
 
   {
     headerName: t('fields.ambient'),
-    field: 'mv_oper_change',
+    field: 'trsf_qty_amb',
     sortable: true,
     resizable: true,
-    hide: !isFromNomination,
+    hide: !IS_NOMINATION,
     width: 120,
     suppressSizeToFit: true
   },
 
   {
     headerName: t('fields.standard'),
-    field: 'mv_oper_change',
+    field: 'trsf_qty_cor',
     sortable: true,
     resizable: true,
-    hide: !isFromNomination,
+    hide: !IS_NOMINATION,
     width: 120,
     suppressSizeToFit: true
   },
 
   {
     headerName: t('fields.mass'),
-    field: 'mv_oper_change',
+    field: 'trsf_load_kg',
     sortable: true,
     resizable: true,
-    hide: !isFromNomination,
+    hide: !IS_NOMINATION,
     width: 120,
     suppressSizeToFit: true
   },
 
   {
     headerName: t('fields.postedOn'),
-    field: 'mv_oper_change',
+    field: 'dt_posted',
     sortable: true,
     resizable: true,
-    hide: !isFromNomination,
+    hide: !IS_NOMINATION,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
+    cellRenderer: 'DateRenderer'
   },
 
   {
     headerName: t('fields.alternateQuantity'),
-    field: 'mv_oper_change',
+    field: 'trsa_alt_qty',
     sortable: true,
     resizable: true,
-    hide: !isFromNomination,
+    hide: !IS_NOMINATION,
     width: 120,
     suppressSizeToFit: true
   },
 
   {
     headerName: t('fields.alternateUnit'),
-    field: 'mv_oper_change',
+    field: 'trsa_alt_unt',
     sortable: true,
     resizable: true,
-    hide: !isFromNomination,
+    hide: !IS_NOMINATION,
     width: 120,
     suppressSizeToFit: true
   },
 
   {
     headerName: t('fields.tripType'),
-    field: 'mv_oper_change',
+    field: 'ld_type',
     sortable: true,
     resizable: true,
-    hide: !isFromNomination,
+    hide: !IS_NOMINATION,
     width: 120,
     suppressSizeToFit: true
   },
@@ -247,7 +251,7 @@ const columns = (isFromNomination, t) => [
   },
   {
     headerName: t('fields.reversed'),
-    field: 'mv_oper_change',
+    field: 'load_reverse_flag',
     sortable: true,
     resizable: true,
     width: 120,
@@ -258,14 +262,14 @@ const columns = (isFromNomination, t) => [
     field: 'mv_oper_change',
     sortable: true,
     resizable: true,
-    hide: isFromNomination
+    hide: IS_NOMINATION
   },
   {
     headerName: t('fields.supplierOrigin'),
     field: 'mv_oper_change',
     sortable: true,
     resizable: true,
-    hide: isFromNomination
+    hide: IS_NOMINATION
   },
   {
     headerName: t('fields.lastModifiedBy'),
@@ -280,21 +284,22 @@ const columns = (isFromNomination, t) => [
     field: 'mv_oper_change',
     sortable: true,
     resizable: true,
-    hide: isFromNomination
+    hide: IS_NOMINATION,
+    cellRenderer: 'DateRenderer'
   },
   {
     headerName: t('fields.soldTo'),
     field: 'mv_oper_change',
     sortable: true,
     resizable: true,
-    hide: isFromNomination
+    hide: IS_NOMINATION
   },
   {
     headerName: t('fields.shipTo'),
     field: 'mv_oper_change',
     sortable: true,
     resizable: true,
-    hide: isFromNomination
+    hide: IS_NOMINATION
   }
 ];
 

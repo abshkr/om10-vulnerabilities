@@ -11,6 +11,7 @@ export const PLANTS = '/api/pages/movement/plants.php';
 export const ITEMS = '/api/pages/movement/nomination_items.php';
 export const TRANSACTIONS = '/api/pages/movement/transactions.php';
 export const SCHEDULES = '/api/pages/movement/schedules.php';
+export const SCHEDULE_ITEMS = '/api/pages/movement/schedule_items.php';
 export const BOL = '/api/pages/movement/view_bol.php';
 export const REPORT = '/api/pages/movement/view_loadreport.php';
 export const UNITS = '/api/pages/movement/unit_types.php';

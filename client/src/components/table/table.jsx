@@ -34,6 +34,8 @@ const defaultComponents = {
   SelectEditor
 };
 
+const defaultColumnDef = {};
+
 const Table = ({
   data,
   onClick,
@@ -104,6 +106,7 @@ const Table = ({
           onRowDoubleClicked={value => onClick && onClick(value.data)}
           loadingOverlayComponent="LoadingStatus"
           rowSelection={selectionMode || 'multiple'}
+          defaultColDef={defaultColumnDef}
           onCellEditingStopped={onEditingFinished}
           onRowSelected={handleMultipleSelection}
           animateRows={true}

@@ -16,42 +16,43 @@ const columns = t => [
   {
     headerName: t('fields.movementDateAndTime'),
     field: 'mlitm_dtim_start',
+    cellRenderer: 'DateRenderer',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.movementType'),
-    field: 'role_note',
-    filter: 'mlitm_type_name',
+    field: 'mlitm_type_name',
+    filter: 'MultiFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.reasonCode'),
-    field: 'role_note',
-    filter: 'FuzzyFilter',
+    field: 'mlitm_reason',
+    filter: 'MultiFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.movementStatus'),
     field: 'mv_status_name',
-    filter: 'FuzzyFilter',
+    filter: 'MultiFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.lastModified'),
     field: 'mlitm_dtim_posted',
-    filter: 'FuzzyFilter',
+    cellRenderer: 'DateRenderer',
     sortable: true,
     resizable: true
   },
   {
-    headerName: t('fields.lastModifiedUser'),
+    headerName: t('fields.lastModifiedBy'),
     field: 'mlitm_oper_posted',
-    filter: 'FuzzyFilter',
+    filter: 'MultiFilter',
     sortable: true,
     resizable: true
   }

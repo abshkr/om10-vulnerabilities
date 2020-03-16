@@ -312,6 +312,11 @@ const paths = [
   },
 
   {
+    path: ROUTES.MOVEMENT_REASONS,
+    component: lazy(() => import('../pages/movement-reasons'))
+  },
+
+  {
     path: ROUTES.TANK_VIEW,
     component: lazy(() => import('../pages/work-in-progress'))
   },

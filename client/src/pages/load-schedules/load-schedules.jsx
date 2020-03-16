@@ -14,6 +14,7 @@ import { SETTINGS, ROUTES } from '../../constants';
 import { useQuery } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
+import Forms from './forms';
 
 const LoadSchedules = () => {
   let history = useHistory();
@@ -32,15 +33,17 @@ const LoadSchedules = () => {
 
   const { data: schedules, isValidating, revalidate } = useSWR(`${LOAD_SCHEDULES.READ}`);
 
-  const isFromNomination = params?.mv_key;
+  const IS_NOMINATION = params?.mv_key;
 
-  const fields = columns(isFromNomination, t);
+  const fields = columns(IS_NOMINATION, t);
 
   const handleClick = value => {
     FormModal({
       value,
-      form: <div value={value} />,
+      form: <Forms value={value} IS_NOMINATION={IS_NOMINATION} />,
       width: '90vw',
+      id: IS_NOMINATION || value?.shls_trip_no,
+      name: value?.shlsload_load_id,
       t
     });
   };
@@ -61,12 +64,14 @@ const LoadSchedules = () => {
   const modifiers = (
     <>
       <Calendar handleChange={setRange} start={start} end={end} />
+
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
+
       <Download data={data} isLoading={isValidating} columns={fields} />
 
-      {!isFromNomination && (
+      {!IS_NOMINATION && (
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -77,8 +82,8 @@ const LoadSchedules = () => {
         </Button>
       )}
 
-      {isFromNomination && (
-        <Button icon={<CaretLeftOutlined />} onClick={() => history.push(ROUTES.TRANSACTION_LIST)}>
+      {IS_NOMINATION && (
+        <Button icon={<CaretLeftOutlined />} onClick={() => history.push(ROUTES.LOAD_SCHEDULES)}>
           {t('operations.returnToLoadSchedules')}
         </Button>
       )}
@@ -88,7 +93,7 @@ const LoadSchedules = () => {
   return (
     <Page
       page={t('pageMenu.schedules')}
-      name={isFromNomination ? t('pageNames.loadSchedulesFromNomination') : t('pageNames.loadSchedules')}
+      name={IS_NOMINATION ? t('pageNames.loadSchedulesFromNomination') : t('pageNames.loadSchedules')}
       modifiers={modifiers}
     >
       <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />

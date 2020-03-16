@@ -17,7 +17,7 @@ const Download = ({ data, columns, isLoading }) => {
             message: 'Generated Succesfully.'
           })
         }
-        loading={isLoading}
+        disabled={isLoading}
       >
         Export CSV
       </Button>

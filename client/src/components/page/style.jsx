@@ -27,11 +27,11 @@ const PageHeaderExtras = styled.div`
 `;
 
 const PageInjector = styled.div`
+  border: 1px solid #d9d9d9;
   padding: 10px;
   background: ${props => (props.isBlank ? 'none' : '#fff')};
-  border-radius: 4px;
-  box-shadow: ${props =>
-    props.isBlank ? 'none' : '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'};
+  border-radius: 2px;
+  box-shadow: ${props => (props.isBlank ? 'none' : '0 2px 0 rgba(0, 0, 0, 0.015)')};
 `;
 
 export { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras };

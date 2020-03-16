@@ -31,18 +31,27 @@ const PhysicalPrinters = () => {
 
   const modifiers = (
     <>
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} disabled={isValidating}>
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => handleClick(null)}
+        disabled={isValidating}
+      >
         {t('operations.create')}
       </Button>
     </>
   );
 
   return (
-    <Page page={t('pageMenu.printers')} name={t('pageNames.physicalPrinters')} modifiers={modifiers}>
+    <Page
+      page={t('pageMenu.printerConfiguration')}
+      name={t('pageNames.physicalPrinters')}
+      modifiers={modifiers}
+    >
       <DataTable
         columns={fields}
         data={payload?.records}

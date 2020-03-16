@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  QuestionCircleOutlined,
+  CloseOutlined
+} from '@ant-design/icons';
 
 import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -178,6 +184,15 @@ const FormModal = ({ value }) => {
         </Tabs>
 
         <Form.Item>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => Modal.destroyAll()}
+          >
+            {t('operations.cancel')}
+          </Button>
+
           <Button
             type="primary"
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
