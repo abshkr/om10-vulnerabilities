@@ -139,7 +139,7 @@ const FormModal = ({ value }) => {
 
             <Comments form={form} value={value} type={type} disabled={DISABLED} />
 
-            <Divider>{t('divider.directions')}</Divider>
+            {(TO.includes(type) || FROM.includes(type)) && <Divider>{t('divider.directions')}</Divider>}
 
             {TO.includes(type) && <To form={form} value={value} />}
 
