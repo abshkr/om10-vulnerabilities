@@ -23,6 +23,14 @@ const MovementType = ({ form, value, onChange, disabled }) => {
     onChange(value);
   };
 
+  const validate = (rule, value) => {
+    if (value === '' || !value) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.movementType')}`);
+    }
+
+    return Promise.resolve();
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -34,7 +42,11 @@ const MovementType = ({ form, value, onChange, disabled }) => {
   }, [value, setFieldsValue, onChange]);
 
   return (
-    <Form.Item name="mlitm_type" label={t('fields.movementType')}>
+    <Form.Item
+      name="mlitm_type"
+      label={t('fields.movementType')}
+      rules={[{ required: true, validator: validate }]}
+    >
       <Select
         loading={isValidating}
         showSearch

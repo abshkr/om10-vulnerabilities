@@ -21,6 +21,14 @@ const ReasonCode = ({ form, value, type, disabled }) => {
 
   const IS_DISABLED = disabled || !type;
 
+  const validate = (rule, value) => {
+    if (value === '' || !value) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.reasonCode')}`);
+    }
+
+    return Promise.resolve();
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -30,7 +38,11 @@ const ReasonCode = ({ form, value, type, disabled }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="mlitm_reason_code" label={t('fields.reasonCode')}>
+    <Form.Item
+      name="mlitm_reason_code"
+      label={t('fields.reasonCode')}
+      rules={[{ required: true, validator: validate }]}
+    >
       <Select
         loading={isValidating}
         showSearch

@@ -481,7 +481,8 @@
     "tanks": "Tanks",
     "assignments": "Assignments",
     "items": "Items",
-    "nominationSchedule": "Nomination Schedule"
+    "nominationSchedule": "Nomination Schedule",
+    "calculate": "Calculate"
   },
 
   "messages": {

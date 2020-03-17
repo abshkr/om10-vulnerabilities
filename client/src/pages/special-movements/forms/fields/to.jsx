@@ -1,14 +1,124 @@
-import React, { useEffect } from 'react';
-
-import useSWR from 'swr';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
+import axios from 'axios';
 
-const To = () => {
+import { SPECIAL_MOVEMENTS } from '../../../../api';
+
+const To = ({ form, value, disabled }) => {
   const { t } = useTranslation();
 
-  const IS_DISABLED = false;
+  const { setFieldsValue } = form;
 
+  const [suppliers, setSuppliers] = useState([]);
+  const [tanks, setTanks] = useState([]);
+  const [products, setProducts] = useState([]);
+
+  const [isLoading, setLoading] = useState(false);
+
+  const [supplier, setSupplier] = useState(undefined);
+  const [tank, setTank] = useState(undefined);
+
+  const IS_DISABLED = disabled;
+
+  const getSuppliers = useCallback(() => {
+    setLoading(true);
+
+    axios
+      .get(SPECIAL_MOVEMENTS.SUPPLIERS)
+      .then(response => {
+        setSuppliers(response.data.records);
+        setLoading(false);
+      })
+      .catch(errors => {
+        setLoading(false);
+      });
+  }, []);
+
+  const getTanks = useCallback(id => {
+    setLoading(true);
+
+    axios
+      .get(SPECIAL_MOVEMENTS.TANKS, {
+        params: {
+          supplier: id
+        }
+      })
+      .then(response => {
+        setTanks(response.data.records);
+        setLoading(false);
+      })
+      .catch(errors => {
+        setLoading(false);
+      });
+  }, []);
+
+  const getProducts = useCallback(
+    id => {
+      setLoading(true);
+
+      axios
+        .get(SPECIAL_MOVEMENTS.PRODUCTS, {
+          params: {
+            tank_code: id
+          }
+        })
+        .then(response => {
+          setProducts(response.data.records);
+          setLoading(false);
+
+          if (response.data.records.length > 0) {
+            setFieldsValue({
+              mlitm_prodcode_to: response.data.records[0]?.tank_base
+            });
+          }
+        })
+        .catch(errors => {
+          setLoading(false);
+        });
+    },
+    [setFieldsValue]
+  );
+
+  const onSupplierChange = value => {
+    setSupplier(value);
+    setTank(undefined);
+
+    getTanks(value);
+
+    setFieldsValue({
+      mlitm_tankcode_to: undefined,
+      mlitm_prodcode_to: undefined
+    });
+  };
+
+  const onTankChange = value => {
+    setTank(value);
+    getProducts(value);
+  };
+
+  useEffect(() => {
+    if (value) {
+      const prodCompany = value.mlitm_prodcmpy_to === '' ? undefined : value.mlitm_prodcmpy_to;
+      const tankCode = value.mlitm_tankcode_to === '' ? undefined : value.mlitm_tankcode_to;
+      const prodCode = value.mlitm_prodcode_to === '' ? undefined : value.mlitm_prodcode_to;
+
+      setSupplier(prodCompany);
+      setTank(tankCode);
+
+      setFieldsValue({
+        mlitm_prodcmpy_to: prodCompany,
+        mlitm_tankcode_to: tankCode,
+        mlitm_prodcode_to: prodCode
+      });
+    }
+  }, [value, setFieldsValue]);
+
+  useEffect(() => {
+    getSuppliers();
+  }, [getSuppliers]);
+
+  console.log(supplier, tank);
   return (
     <div style={{ display: 'flex' }}>
       <Form.Item
@@ -18,6 +128,8 @@ const To = () => {
       >
         <Select
           showSearch
+          loading={isLoading}
+          onChange={onSupplierChange}
           disabled={IS_DISABLED}
           optionFilterProp="children"
           placeholder={t('placeholder.selectToPlantSupplier')}
@@ -25,7 +137,7 @@ const To = () => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {[]?.records?.map((item, index) => (
+          {suppliers.map((item, index) => (
             <Select.Option key={index} value={item.cmpy_code}>
               {item.cmpy_code} - {item.cmpy_name}
             </Select.Option>
@@ -40,16 +152,18 @@ const To = () => {
       >
         <Select
           showSearch
-          disabled={IS_DISABLED}
+          loading={isLoading}
+          onChange={onTankChange}
+          disabled={IS_DISABLED || !supplier}
           optionFilterProp="children"
           placeholder={t('placeholder.selectToTank')}
           filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {[]?.records?.map((item, index) => (
-            <Select.Option key={index} value={item.cmpy_code}>
-              {item.cmpy_code} - {item.cmpy_name}
+          {tanks.map((item, index) => (
+            <Select.Option key={index} value={item.tank_code}>
+              {item.tank_code} - {item.tank_name}
             </Select.Option>
           ))}
         </Select>
@@ -58,16 +172,17 @@ const To = () => {
       <Form.Item name="mlitm_prodcode_to" label={t('fields.toProduct')} style={{ width: '100%' }}>
         <Select
           showSearch
-          disabled={IS_DISABLED}
+          loading={isLoading}
+          disabled={IS_DISABLED || !tank}
           optionFilterProp="children"
           placeholder={t('placeholder.selectToProduct')}
           filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {[]?.records?.map((item, index) => (
-            <Select.Option key={index} value={item.cmpy_code}>
-              {item.cmpy_code} - {item.cmpy_name}
+          {products.map((item, index) => (
+            <Select.Option key={index} value={item.tank_base}>
+              {item.tank_base}
             </Select.Option>
           ))}
         </Select>

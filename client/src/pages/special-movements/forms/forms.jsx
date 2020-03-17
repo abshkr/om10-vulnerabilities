@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import {
   EditOutlined,
@@ -27,6 +27,7 @@ const FormModal = ({ value }) => {
   const [form] = Form.useForm();
 
   const [type, setType] = useState(null);
+  const [tab, setTab] = useState('1');
 
   const IS_CREATING = !value;
   const DISABLED = value?.mlitm_status === '5';
@@ -129,7 +130,7 @@ const FormModal = ({ value }) => {
   return (
     <div>
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-        <Tabs defaultActiveKey="1" animated={false}>
+        <Tabs defaultActiveKey={tab} onChange={setTab} animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
             <MovementType form={form} value={value} onChange={setType} disabled={DISABLED} />
 
@@ -139,14 +140,13 @@ const FormModal = ({ value }) => {
 
             <Comments form={form} value={value} type={type} disabled={DISABLED} />
 
-            {(TO.includes(type) || FROM.includes(type)) && <Divider>{t('divider.directions')}</Divider>}
+            {type && <Divider>{t('divider.directions')}</Divider>}
 
-            {TO.includes(type) && <To form={form} value={value} />}
+            {FROM.includes(type) && <From form={form} value={value} disabled={DISABLED} />}
 
-            {FROM.includes(type) && <From form={form} value={value} />}
-
-            <Divider>{t('divider.calculation')}</Divider>
-
+            {TO.includes(type) && <To form={form} value={value} disabled={DISABLED} />}
+          </TabPane>
+          <TabPane className="ant-tab-window" tab={t('tabColumns.calculate')} forceRender={true} key="2">
             <Calculate form={form} value={value} type={type} disabled={DISABLED} />
           </TabPane>
         </Tabs>
@@ -154,7 +154,7 @@ const FormModal = ({ value }) => {
         <Form.Item>
           <Button
             htmlType="button"
-            disabled={DISABLED}
+            disabled={DISABLED || tab === '1'}
             icon={<CalculatorOutlined />}
             style={{ marginRight: 5 }}
             onClick={onCalculate}
@@ -162,9 +162,11 @@ const FormModal = ({ value }) => {
             {t('operations.calculate')}
           </Button>
 
-          <Button disabled={!DISABLED} htmlType="button" onClick={onReverse} icon={<ReloadOutlined />}>
-            {t('operations.reverse')}
-          </Button>
+          {DISABLED && (
+            <Button htmlType="button" onClick={onReverse} icon={<ReloadOutlined />}>
+              {t('operations.reverse')}
+            </Button>
+          )}
 
           <Button
             htmlType="button"
