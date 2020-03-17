@@ -316,7 +316,9 @@
     "observedMass": "Observed Mass",
     "observedTemperature": "Observed Temperature",
     "standardDensity": "Standard Density",
-    "unit": "Unit"
+    "unit": "Unit",
+    "businessProcess": "Business Process",
+    "sendToHost": "Send to Host ?"
   },
 
   "pageMenu": {

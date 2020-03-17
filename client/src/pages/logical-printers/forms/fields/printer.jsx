@@ -44,7 +44,7 @@ const Printer = ({ form, value }) => {
     <Form.Item
       name="prt_printer"
       label={t('fields.printer')}
-      ruled={[{ required: true, validator: validate }]}
+      rules={[{ required: true, validator: validate }]}
     >
       <Select
         loading={isValidating}

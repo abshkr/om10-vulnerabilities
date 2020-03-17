@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   EditOutlined,
@@ -13,14 +13,16 @@ import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
 
-import { SystemPrinter, Printer, Area, Lock } from './fields';
-import { PHYSICAL_PRINTERS } from '../../../api';
+import { Type, BusinessProcess, SendToHost, MovementReason } from './fields';
+import { MOVEMENT_REASONS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, tableAPI }) => {
+const FormModal = ({ value }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+
+  const [send, setSend] = useState(false);
 
   const IS_CREATING = !value;
 
@@ -34,16 +36,12 @@ const FormModal = ({ value, tableAPI }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(IS_CREATING ? PHYSICAL_PRINTERS.CREATE : PHYSICAL_PRINTERS.UPDATE, values)
+          .post(IS_CREATING ? MOVEMENT_REASONS.CREATE : MOVEMENT_REASONS.UPDATE, values)
           .then(
             axios.spread(response => {
               Modal.destroyAll();
 
-              IS_CREATING
-                ? tableAPI.updateRowData({ add: [values] })
-                : tableAPI.updateRowData({ update: [values] });
-
-              mutate(PHYSICAL_PRINTERS.READ);
+              mutate(MOVEMENT_REASONS.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
@@ -69,12 +67,10 @@ const FormModal = ({ value, tableAPI }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(PHYSICAL_PRINTERS.DELETE, value)
+          .post(MOVEMENT_REASONS.DELETE, value)
           .then(
             axios.spread(response => {
-              tableAPI.updateRowData({ remove: [value] });
-
-              mutate(PHYSICAL_PRINTERS.READ);
+              mutate(MOVEMENT_REASONS.READ);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
@@ -97,10 +93,10 @@ const FormModal = ({ value, tableAPI }) => {
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <SystemPrinter form={form} value={value} />
-            <Printer form={form} value={value} />
-            <Area form={form} value={value} />
-            <Lock form={form} value={value} />
+            <SendToHost form={form} onChange={setSend} value={value} />
+            <Type form={form} value={value} />
+            <BusinessProcess form={form} value={value} />
+            <MovementReason form={form} value={value} send={send} />
           </TabPane>
         </Tabs>
 

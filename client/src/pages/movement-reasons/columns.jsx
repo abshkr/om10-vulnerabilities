@@ -1,49 +1,49 @@
 const columns = t => [
   {
     headerName: t('fields.description'),
-    field: 'mlitm_id',
+    field: 'mr_action',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.type'),
-    field: 'mlitm_mov_key',
+    field: 'mr_type_name',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.originalMovementType'),
-    field: 'mlitm_dtim_start',
+    field: 'mr_mov_type_ori',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.originalReasonCode'),
-    field: 'role_note',
-    filter: 'mlitm_type_name',
+    field: 'mr_reason_code_ori',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.reversalMovementType'),
-    field: 'role_note',
+    field: 'mr_mov_type_rev',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.reversalReasonCode'),
-    field: 'mv_status_name',
+    field: 'mr_reason_code_rev',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.status'),
-    field: 'mlitm_dtim_posted',
+    field: 'mr_flag',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
