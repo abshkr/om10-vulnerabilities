@@ -30,6 +30,7 @@ import * as SPECIAL_MOVEMENTS from './special-movements';
 import * as MOVEMENT_NOMIATIONS from './movement-nominations';
 import * as LOAD_SCHEDULES from './load-schedules';
 import * as MOVEMENT_REASONS from './movement-reasons';
+import * as METER_DEVICES from './meter-devices';
 
 export {
   AUTH,
@@ -62,5 +63,6 @@ export {
   SPECIAL_MOVEMENTS,
   MOVEMENT_NOMIATIONS,
   LOAD_SCHEDULES,
-  MOVEMENT_REASONS
+  MOVEMENT_REASONS,
+  METER_DEVICES
 };

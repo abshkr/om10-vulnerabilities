@@ -298,7 +298,7 @@ const paths = [
 
   {
     path: ROUTES.METER_DEVICES,
-    component: lazy(() => import('../pages/work-in-progress'))
+    component: lazy(() => import('../pages/meter-devices'))
   },
 
   {

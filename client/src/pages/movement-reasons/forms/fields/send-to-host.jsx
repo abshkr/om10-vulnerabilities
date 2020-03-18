@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Form, Checkbox } from 'antd';
 
 const SendToHost = ({ form, value, onChange }) => {
+  const { setFieldsValue } = form;
+
   const { t } = useTranslation();
 
   const handleCheck = e => {
@@ -13,11 +15,11 @@ const SendToHost = ({ form, value, onChange }) => {
     if (value) {
       onChange(true);
 
-      form.setFieldsValue({
+      setFieldsValue({
         send_to_host: true
       });
     }
-  }, [value, onChange]);
+  }, [value, onChange, setFieldsValue]);
 
   return (
     <Form.Item name="send_to_host" valuePropName="checked">

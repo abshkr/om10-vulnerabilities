@@ -6,6 +6,10 @@ const MovementReason = ({ form, value, send }) => {
   const { t } = useTranslation();
 
   const validate = (rule, value) => {
+    if (send && !value) {
+      return Promise.reject(`${t('validate.set')}`);
+    }
+
     return Promise.resolve();
   };
 
@@ -28,7 +32,7 @@ const MovementReason = ({ form, value, send }) => {
             <Form.Item
               name="mr_mov_type_ori"
               label={t('fields.originalMovementType')}
-              rules={[{ required: false, validator: validate }]}
+              rules={[{ required: send, validator: validate }]}
             >
               <InputNumber min={-999} max={999} style={{ width: '100%' }} />
             </Form.Item>
@@ -38,7 +42,7 @@ const MovementReason = ({ form, value, send }) => {
             <Form.Item
               name="mr_reason_code_ori"
               label={t('fields.originalReasonCode')}
-              rules={[{ required: false, validator: validate }]}
+              rules={[{ required: send, validator: validate }]}
             >
               <InputNumber min={-999} max={999} style={{ width: '100%' }} />
             </Form.Item>
@@ -48,7 +52,7 @@ const MovementReason = ({ form, value, send }) => {
             <Form.Item
               name="mr_mov_type_rev"
               label={t('fields.reversalMovementType')}
-              rules={[{ required: false, validator: validate }]}
+              rules={[{ required: send, validator: validate }]}
             >
               <InputNumber min={-999} max={999} style={{ width: '100%' }} />
             </Form.Item>
@@ -58,7 +62,7 @@ const MovementReason = ({ form, value, send }) => {
             <Form.Item
               name="mr_reason_code_rev"
               label={t('fields.reversalReasonCode')}
-              rules={[{ required: false, validator: validate }]}
+              rules={[{ required: send, validator: validate }]}
             >
               <InputNumber min={-999} max={999} style={{ width: '100%' }} />
             </Form.Item>

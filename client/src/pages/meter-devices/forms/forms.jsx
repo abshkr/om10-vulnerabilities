@@ -13,16 +13,13 @@ import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
 
-import { Type, BusinessProcess, SendToHost, MovementReason } from './fields';
-import { MOVEMENT_REASONS } from '../../../api';
+import { METER_DEVICES } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-
-  const [send, setSend] = useState(false);
 
   const IS_CREATING = !value;
 
@@ -36,12 +33,12 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(IS_CREATING ? MOVEMENT_REASONS.CREATE : MOVEMENT_REASONS.UPDATE, values)
+          .post(IS_CREATING ? METER_DEVICES.CREATE : METER_DEVICES.UPDATE, values)
           .then(
             axios.spread(response => {
               Modal.destroyAll();
 
-              mutate(MOVEMENT_REASONS.READ);
+              mutate(METER_DEVICES.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
@@ -67,10 +64,10 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(MOVEMENT_REASONS.DELETE, value)
+          .post(METER_DEVICES.DELETE, value)
           .then(
             axios.spread(response => {
-              mutate(MOVEMENT_REASONS.READ);
+              mutate(METER_DEVICES.READ);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
@@ -92,12 +89,7 @@ const FormModal = ({ value }) => {
     <div>
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1">
-          <TabPane tab={t('tabColumns.general')} key="1" style={{ height: '50vh' }}>
-            <SendToHost form={form} onChange={setSend} value={value} />
-            <Type form={form} value={value} />
-            <BusinessProcess form={form} value={value} />
-            <MovementReason form={form} value={value} send={send} />
-          </TabPane>
+          <TabPane tab={t('tabColumns.general')} key="1" style={{ height: '50vh' }}></TabPane>
         </Tabs>
 
         <Form.Item>
