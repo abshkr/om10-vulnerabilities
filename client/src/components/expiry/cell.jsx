@@ -1,95 +1,88 @@
-import React, { Component } from 'react';
-
-import { Input, Form, Select, DatePicker, Switch } from 'antd';
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import React, { useState, useRef, useContext, useEffect } from 'react';
+import { Form, Select, DatePicker, Checkbox } from 'antd';
 import _ from 'lodash';
 
 import Context from './context';
 
-export default class Cell extends Component {
-  state = {
-    editing: false
+const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, expiry, ...restProps }) => {
+  const form = useContext(Context);
+  const inputRef = useRef();
+
+  const [editing, setEditing] = useState(false);
+
+  const { setFieldsValue } = form;
+
+  const onEdit = () => {
+    setEditing(!editing);
   };
 
-  toggleEdit = () => {
-    const editing = !this.state.editing;
-    this.setState({ editing }, () => {
-      if (editing) {
-        this.input.focus();
-      }
-    });
+  const save = async e => {
+    const values = await form.validateFields();
+
+    if (dataIndex === 'ed_exp_date') {
+      values.ed_exp_date = values?.ed_exp_date?.format('YYYY-MM-DD 00:00:00');
+    }
+
+    if (!values?.ed_status) {
+      values.ed_status = false;
+    }
+
+    onEdit();
+
+    handleSave({ ...record, ...values });
   };
 
-  save = (value, index) => {
-    if (value !== undefined) {
-      const { record, handleSave } = this.props;
+  useEffect(() => {
+    if (editing) {
+      inputRef.current.focus();
+    }
+  }, [editing]);
 
-      if (index === 'ed_exp_date') {
-        value = !!value && value.format('YYYY-MM-DD 00:00:00');
-      }
-
-      this.form.validateFields((error, values) => {
-        values[index] = value;
-        this.toggleEdit();
-        handleSave({
-          ...record,
-          ...values
-        });
-      });
-    } else {
-      this.setState({
-        editing: false
+  useEffect(() => {
+    if (record) {
+      setFieldsValue({
+        ed_status: record.ed_status
       });
     }
-  };
+  }, [record, setFieldsValue]);
 
-  renderCell = form => {
-    this.form = form;
-    const { children, dataIndex, data, expiry } = this.props;
-    const { editing } = this.state;
-    const { Option } = Select;
+  const unique = _.uniq(_.map(data, 'edt_type_desc'));
 
-    const unique = _.uniq(_.map(data, 'edt_type_desc'));
+  let childNode = children;
 
+  if (editable) {
     if (dataIndex === 'edt_type_desc') {
-      return editing ? (
+      childNode = editing ? (
         <Form.Item name="edt_type_desc" style={{ margin: 0 }}>
-          <Select
-            loading={expiry.length === 0}
-            ref={node => (this.input = node)}
-            onPressEnter={value => this.save(value, dataIndex)}
-            onBlur={value => this.save(value, dataIndex)}
-          >
-            {!!expiry &&
-              expiry.map((item, index) => (
-                <Option key={index} value={item.edt_type_desc} disabled={unique.includes(item.edt_type_desc)}>
-                  {item.edt_type_desc}
-                </Option>
-              ))}
+          <Select loading={expiry.length === 0} ref={inputRef} onChange={save}>
+            {expiry?.map((item, index) => (
+              <Select.Option
+                key={index}
+                value={item.edt_type_desc}
+                disabled={unique.includes(item.edt_type_desc)}
+              >
+                {item.edt_type_desc}
+              </Select.Option>
+            ))}
           </Select>
         </Form.Item>
       ) : (
-        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
+        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={onEdit}>
           {children}
         </div>
       );
     }
 
     if (dataIndex === 'ed_status') {
-      return (
+      childNode = (
         <Form.Item name="ed_status" style={{ margin: 0 }} valuePropName="checked">
-          <Switch
-            ref={node => (this.input = node)}
-            onChange={value => this.save(value, dataIndex)}
-            checkedChildren={<CheckOutlined />}
-            unCheckedChildren={<CloseOutlined />}
-          />
+          <Checkbox ref={inputRef} onChange={save} />
         </Form.Item>
       );
     }
 
     if (dataIndex === 'ed_exp_date') {
-      return editing ? (
+      childNode = editing ? (
         <Form.Item
           name="ed_exp_date"
           style={{ margin: 0 }}
@@ -100,41 +93,17 @@ export default class Cell extends Component {
             }
           ]}
         >
-          <DatePicker
-            ref={node => (this.input = node)}
-            onChange={value => this.save(value, dataIndex)}
-            format="DD/MM/YYYY"
-          />
+          <DatePicker ref={inputRef} onChange={save} format="DD/MM/YYYY" />
         </Form.Item>
       ) : (
-        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
-          {children}
-        </div>
-      );
-    } else {
-      return editing ? (
-        <Form.Item style={{ margin: 0 }}>
-          {form.getFieldDecorator(dataIndex)(
-            <Input
-              ref={node => (this.input = node)}
-              onPressEnter={value => this.save(value, dataIndex)}
-              onBlur={value => this.save(value, dataIndex)}
-            />
-          )}
-        </Form.Item>
-      ) : (
-        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={this.toggleEdit}>
+        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={onEdit}>
           {children}
         </div>
       );
     }
-  };
-
-  render() {
-    const { editable, dataIndex, title, record, index, handleSave, children, ...restProps } = this.props;
-
-    return (
-      <td {...restProps}>{editable ? <Context.Consumer>{this.renderCell}</Context.Consumer> : children}</td>
-    );
   }
-}
+
+  return <td {...restProps}>{childNode}</td>;
+};
+
+export default Cell;

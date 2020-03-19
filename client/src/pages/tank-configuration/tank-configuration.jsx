@@ -8,6 +8,7 @@ import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 import { Page, DataTable, Download, FormModal } from '../../components';
 import { TANKS, COMMON } from '../../api';
 
+import generator from './generator';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
@@ -19,6 +20,7 @@ const TankConfiguration = () => {
   const { data: configuration } = useSWR(COMMON.CONFIG);
 
   const fields = columns(configuration, t);
+  const data = generator(payload?.records);
 
   const handleClick = value => {
     FormModal({
@@ -35,7 +37,7 @@ const TankConfiguration = () => {
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
-      <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+      <Download data={data} isLoading={isValidating} columns={fields} />
       <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
         {t('operations.create')}
       </Button>
@@ -44,7 +46,7 @@ const TankConfiguration = () => {
 
   return (
     <Page page={t('pageMenu.gantry')} name={t('pageNames.tankConfiguration')} modifiers={modifiers}>
-      <DataTable columns={fields} data={payload?.records} isLoading={isValidating} onClick={handleClick} />
+      <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );
 };

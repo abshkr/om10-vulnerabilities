@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 
-import { Form, Select, Checkbox, Divider } from 'antd';
+import { Form, Checkbox, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -12,17 +12,6 @@ const Lock = ({ form, value }) => {
   const { data } = useSWR(PERSONNEL.AREAS);
 
   const { setFieldsValue } = form;
-
-  const choices = [
-    {
-      key: 'Yes',
-      value: 'Y'
-    },
-    {
-      key: 'No',
-      value: 'N'
-    }
-  ];
 
   const handleAreaConversion = useCallback(values => {
     const payload = [];
@@ -45,23 +34,17 @@ const Lock = ({ form, value }) => {
       });
     } else {
       setFieldsValue({
-        per_lock: 'N'
+        per_lock: false
       });
     }
-  }, [value, setFieldsValue, handleAreaConversion]);
+  }, [value, setFieldsValue]);
 
   const options = handleAreaConversion(data?.records);
 
   return (
     <div className="personnel-lock">
-      <Form.Item name="per_lcok" label={t('fields.lockOut')}>
-        <Select>
-          {choices.map((item, index) => (
-            <Select.Option key={index} value={item.value}>
-              {item.key}
-            </Select.Option>
-          ))}
-        </Select>
+      <Form.Item name="per_lock" label="Area Access Control" valuePropName="checked">
+        <Checkbox>{t('fields.lockOut')}</Checkbox>
       </Form.Item>
       <Divider />
       <Form.Item name="area_accesses" label="">

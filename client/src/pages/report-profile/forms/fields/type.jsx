@@ -25,13 +25,11 @@ const options = [
   }
 ];
 
-const Type = ({ form, value }) => {
+const Type = ({ form, value, source }) => {
   const { t } = useTranslation();
   const { data } = useSWR(REPORT_PROFILE.READ);
 
-  const { setFieldsValue, getFieldValue } = form;
-
-  const source = getFieldValue('report_jasper_file');
+  const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
     const match = _.find(data?.records, value => {

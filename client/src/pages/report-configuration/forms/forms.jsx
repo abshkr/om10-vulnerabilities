@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   EditOutlined,
@@ -21,6 +21,10 @@ const TabPane = Tabs.TabPane;
 const FormModal = ({ value }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+
+  const [company, setCompany] = useState(undefined);
+  const [enabled, setEnabled] = useState(undefined);
+  const [canEmail, setCanEmail] = useState(undefined);
 
   const IS_CREATING = !value;
 
@@ -49,7 +53,7 @@ const FormModal = ({ value }) => {
           .catch(error => {
             notification.error({
               message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('messages.updateSuccess')
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
             });
           });
       }
@@ -91,11 +95,18 @@ const FormModal = ({ value }) => {
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} key="1">
-            <Company form={form} value={value} />
-            <Name form={form} value={value} />
-            <Email form={form} value={value} />
+            <Company form={form} value={value} onChange={setCompany} />
+            <Name form={form} value={value} company={company} />
+            <Email form={form} value={value} enabled={enabled} canEmail={canEmail} />
             <Divider>{t('divider.flags')}</Divider>
-            <Flags form={form} value={value} />
+            <Flags
+              form={form}
+              value={value}
+              onCanEmailChange={setCanEmail}
+              onEnabledChange={setEnabled}
+              enabled={enabled}
+              canEmail={canEmail}
+            />
           </TabPane>
         </Tabs>
 

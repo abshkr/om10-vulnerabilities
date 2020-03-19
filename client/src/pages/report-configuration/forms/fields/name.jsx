@@ -6,19 +6,17 @@ import _ from 'lodash';
 
 import { REPORT_CONFIGURATION } from '../../../../api';
 
-const Name = ({ form, value }) => {
+const Name = ({ form, value, company }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(REPORT_CONFIGURATION.REPORTS);
   const { data } = useSWR(REPORT_CONFIGURATION.READ);
 
-  const { setFieldsValue, getFieldValue } = form;
-
-  const source = getFieldValue('report_cmpycode');
+  const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
     const match = _.find(data?.records, value => {
-      return value.report_cmpycode === source && value.report_file === input;
+      return value.report_cmpycode === company && value.report_file === input;
     });
 
     if (input === '' || !input) {
@@ -46,7 +44,7 @@ const Name = ({ form, value }) => {
         report_file: undefined
       });
     }
-  }, [source, setFieldsValue, value]);
+  }, [company, setFieldsValue, value]);
 
   return (
     <Form.Item

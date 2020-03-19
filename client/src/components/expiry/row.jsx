@@ -6,9 +6,11 @@ const EditableRow = ({ index, ...props }) => {
   const [form] = Form.useForm();
 
   return (
-    <Context.Provider value={form}>
-      <tr {...props} />
-    </Context.Provider>
+    <Form form={form} component={false}>
+      <Context.Provider value={form}>
+        <tr {...props} />
+      </Context.Provider>
+    </Form>
   );
 };
 

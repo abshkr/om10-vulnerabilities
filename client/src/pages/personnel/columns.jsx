@@ -30,7 +30,7 @@ const columns = t => {
     },
     {
       headerName: t('fields.role'),
-      field: 'role_name',
+      field: 'per_auth_role',
       sortable: true,
       resizable: true,
       filter: 'MultiFilter'
@@ -47,7 +47,8 @@ const columns = t => {
       field: 'per_lock',
       sortable: true,
       resizable: true,
-      filter: 'MultiFilter'
+      filter: 'BooleanFilter',
+      cellRenderer: 'BooleanRenderer'
     },
     {
       headerName: t('fields.status'),

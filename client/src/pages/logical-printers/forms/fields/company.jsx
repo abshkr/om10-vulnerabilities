@@ -6,10 +6,12 @@ import { Form, Select } from 'antd';
 
 import { LOGICAL_PRINTERS } from '../../../../api';
 
-const Company = ({ form, value }) => {
+const Company = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(LOGICAL_PRINTERS.COMPANYS);
+
+  const { setFieldsValue } = form;
 
   const validate = (rule, value) => {
     if (value === '' || !value) {
@@ -21,17 +23,20 @@ const Company = ({ form, value }) => {
 
   useEffect(() => {
     if (value) {
-      form.setFieldsValue({
+      setFieldsValue({
         prt_cmpy: value.prt_cmpy
       });
+
+      onChange(value.prt_cmpy);
     }
-  }, [value, form]);
+  }, [value, setFieldsValue, onChange]);
 
   return (
     <Form.Item name="prt_cmpy" label={t('fields.company')} rules={[{ required: true, validator: validate }]}>
       <Select
         loading={isValidating}
         showSearch
+        onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCompany') : null}

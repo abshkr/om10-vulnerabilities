@@ -11,7 +11,7 @@ const Employer = ({ form, value }) => {
 
   const { setFieldsValue } = form;
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.employer')}`);
     }
@@ -28,11 +28,7 @@ const Employer = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item
-      name="per_cmpy"
-      label={t('fields.employer')}
-      rules={[{ required: false, validator: validate }]}
-    >
+    <Form.Item name="per_cmpy" label={t('fields.employer')} rules={[{ required: true, validator: validate }]}>
       <Select
         loading={isValidating}
         showSearch

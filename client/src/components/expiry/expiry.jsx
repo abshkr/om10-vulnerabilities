@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined, CalendarOutlined } from '@ant-design/icons';
 import { Table, Button, Popconfirm, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
@@ -11,7 +11,7 @@ import useSWR from 'swr';
 
 const Expiry = ({ form, value, type }) => {
   const { t } = useTranslation();
-  const { data: payload, isValidating } = useSWR(type);
+  const { data: payload } = useSWR(type);
 
   const [count, setCount] = useState(value ? value.expiry_dates.length : 3);
   const [data, setData] = useState(value ? value.expiry_dates : []);
@@ -90,9 +90,7 @@ const Expiry = ({ form, value, type }) => {
         <span>
           {text === ''
             ? t('placeholder.selectDate')
-            : !!text
-            ? Intl.DateTimeFormat().format(moment(text, 'YYYY-MM-DD HH:mm:ss'))
-            : t('placeholder.selectDate')}
+            : moment(text, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')}
         </span>
       )
     },
@@ -145,8 +143,7 @@ const Expiry = ({ form, value, type }) => {
   return (
     <Form.Item name="expiry_dates">
       <Button
-        shape="round"
-        icon="calendar"
+        icon={<CalendarOutlined />}
         onClick={handleAdd}
         type="primary"
         style={{ marginBottom: 16 }}
@@ -164,7 +161,6 @@ const Expiry = ({ form, value, type }) => {
             cell: Cell
           }
         }}
-        loading={isValidating}
         rowClassName={() => 'editable-row'}
         bordered
         dataSource={data}

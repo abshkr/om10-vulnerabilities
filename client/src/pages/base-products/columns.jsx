@@ -26,7 +26,7 @@ const columns = t => [
     headerName: t('fields.classId'),
     field: 'base_cat',
     sortable: true,
-    filter: 'FuzzyFilter',
+    filter: 'MultiFilter',
     resizable: true
   },
   {
@@ -55,7 +55,8 @@ const columns = t => [
     field: 'base_adtv',
     sortable: true,
     resizable: true,
-    cellRenderer: 'BooleanRenderer'
+    cellRenderer: 'BooleanRenderer',
+    filter: 'MultiFilter'
   },
   {
     headerName: t('fields.numberOfTanks'),
@@ -112,8 +113,9 @@ const columns = t => [
     headerName: t('fields.hotTempFlag'),
     field: 'base_limit_preset_ht',
     sortable: true,
-    filter: 'MultiFilter',
-    resizable: true
+    filter: 'BooleanFilter',
+    resizable: true,
+    cellRenderer: 'BooleanRenderer'
   }
 ];
 

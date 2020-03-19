@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   EditOutlined,
@@ -23,6 +23,9 @@ const FormModal = ({ value }) => {
   const [form] = Form.useForm();
 
   const IS_CREATING = !value;
+
+  const [company, setCompany] = useState(undefined);
+  const [usage, setUsage] = useState(undefined);
 
   const onFinish = values => {
     Modal.confirm({
@@ -49,7 +52,7 @@ const FormModal = ({ value }) => {
           .catch(error => {
             notification.error({
               message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('messages.updateSuccess')
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
             });
           });
       }
@@ -91,9 +94,9 @@ const FormModal = ({ value }) => {
       <Form scro layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" style={{ height: '40vh' }}>
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Company form={form} value={value} />
-            <Usage form={form} value={value} />
-            <Printer form={form} value={value} />
+            <Company form={form} value={value} onChange={setCompany} />
+            <Usage form={form} value={value} onChange={setUsage} />
+            <Printer form={form} value={value} company={company} usage={usage} />
           </TabPane>
         </Tabs>
 

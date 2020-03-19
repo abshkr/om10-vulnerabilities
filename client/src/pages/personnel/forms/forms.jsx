@@ -83,7 +83,7 @@ const FormModal = ({ value }) => {
           .catch(error => {
             notification.error({
               message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('messages.updateSuccess')
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
             });
           });
       }
@@ -126,14 +126,19 @@ const FormModal = ({ value }) => {
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
             <Employer form={form} value={value} />
+
             <Code form={form} value={value} />
             <Name form={form} value={value} />
-            <SLP form={form} value={value} />
-            <Department form={form} value={value} />
-            <Email form={form} value={value} />
+
             <Role form={form} value={value} />
             <TimeCode form={form} value={value} />
+
+            <SLP form={form} value={value} />
+            <Department form={form} value={value} />
+
+            <Email form={form} value={value} />
             <DriverLicence form={form} value={value} />
+
             <Status form={form} value={value} />
             <Comment form={form} value={value} />
           </TabPane>

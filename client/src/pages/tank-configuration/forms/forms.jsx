@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   EditOutlined,
@@ -21,6 +21,8 @@ const TabPane = Tabs.TabPane;
 const FormModal = ({ value }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+
+  const [product, setProduct] = useState(undefined);
 
   const IS_CREATING = !value;
 
@@ -49,7 +51,7 @@ const FormModal = ({ value }) => {
           .catch(error => {
             notification.error({
               message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('messages.updateSuccess')
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
             });
           });
       }
@@ -93,8 +95,8 @@ const FormModal = ({ value }) => {
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
             <Code form={form} value={value} />
             <Name form={form} value={value} />
-            <Product form={form} value={value} />
-            <Density form={form} value={value} />
+            <Product form={form} value={value} onChange={setProduct} />
+            <Density form={form} value={value} product={product} />
             <Divider>{t('divider.variances')}</Divider>
             <DailyVariance form={form} value={value} />
             <MontlhyVariance form={form} value={value} />

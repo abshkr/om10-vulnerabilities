@@ -2,13 +2,10 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Checkbox } from 'antd';
 
-const Flags = ({ form, value }) => {
+const Flags = ({ form, value, onCanEmailChange, onEnabledChange, enabled, canEmail }) => {
   const { t } = useTranslation();
 
-  const { setFieldsValue, getFieldValue } = form;
-
-  const enabled = getFieldValue('report_enabled');
-  const canEmail = getFieldValue('report_canemail');
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -18,8 +15,11 @@ const Flags = ({ form, value }) => {
         report_canemail: value.report_canemail,
         report_canprint: value.report_canprint
       });
+
+      onEnabledChange(value.report_enabled);
+      onCanEmailChange(value.report_canprint);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onEnabledChange, onCanEmailChange]);
 
   useEffect(() => {
     if (!enabled) {
@@ -34,7 +34,9 @@ const Flags = ({ form, value }) => {
   return (
     <div>
       <Form.Item name="report_enabled" valuePropName="checked">
-        <Checkbox>{t('fields.enableReportForCompany')}</Checkbox>
+        <Checkbox onChange={query => onEnabledChange(query.target.checked)}>
+          {t('fields.enableReportForCompany')}
+        </Checkbox>
       </Form.Item>
 
       <Form.Item name="report_active" valuePropName="checked">
@@ -46,7 +48,9 @@ const Flags = ({ form, value }) => {
       </Form.Item>
 
       <Form.Item name="report_canemail" valuePropName="checked">
-        <Checkbox disabled={!enabled && !canEmail}>{t('fields.companyCanReceiveReportByEmail')}</Checkbox>
+        <Checkbox onChange={query => onCanEmailChange(query.target.checked)} disabled={!enabled && !canEmail}>
+          {t('fields.companyCanReceiveReportByEmail')}
+        </Checkbox>
       </Form.Item>
     </div>
   );

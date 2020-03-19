@@ -14,23 +14,31 @@ const Printer = ({ form, value }) => {
 
   const { data: physicalPrinters, isValidating } = useSWR(PHYSICAL_PRINTERS.READ);
 
-  const validate = (rule, value) => {
-    const match = _.find(physicalPrinters?.records, ['prntr', value]);
+  const validate = (rule, input) => {
+    const match = _.find(physicalPrinters?.records, object => {
+      const result = object.prntr.toLowerCase() === input?.toLowerCase();
 
-    if (value === '' || !value) {
+      return result;
+    });
+
+    if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
     }
 
-    if (value && !!match && !value) {
+    if (!value & !!match) {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    if (value && value.charAt(0).toLowerCase() !== 'p') {
+    if (input && input.charAt(0).toLowerCase() !== 'p') {
       return Promise.reject(`${t('descriptions.characterMustStart')} P`);
     }
 
-    if (value && value.length > 10) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 10 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && _.isNaN(_.toNumber(input.substr(1).toLowerCase()))) {
+      return Promise.reject(`${t('placeholder.wrongType')} ─ ${t('descriptions.mustBeInteger')}`);
+    }
+
+    if (input && input.length > 3) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 3 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();

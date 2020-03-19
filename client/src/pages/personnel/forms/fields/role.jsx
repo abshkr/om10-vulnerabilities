@@ -40,7 +40,7 @@ const Role = ({ form, value }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.role_id}>
-            {item.role_name}
+            {item.auth_level_name}
           </Select.Option>
         ))}
       </Select>

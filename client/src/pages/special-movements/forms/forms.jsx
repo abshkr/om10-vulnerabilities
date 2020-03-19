@@ -60,7 +60,7 @@ const FormModal = ({ value }) => {
           .catch(error => {
             notification.error({
               message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('messages.updateSuccess')
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
             });
           });
       }
@@ -145,8 +145,9 @@ const FormModal = ({ value }) => {
             {FROM.includes(type) && <From form={form} value={value} disabled={DISABLED} />}
 
             {TO.includes(type) && <To form={form} value={value} disabled={DISABLED} />}
-          </TabPane>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.calculate')} forceRender={true} key="2">
+
+            <Divider>{t('divider.calculation')}</Divider>
+
             <Calculate form={form} value={value} type={type} disabled={DISABLED} />
           </TabPane>
         </Tabs>
@@ -154,7 +155,6 @@ const FormModal = ({ value }) => {
         <Form.Item>
           <Button
             htmlType="button"
-            disabled={DISABLED || tab === '1'}
             icon={<CalculatorOutlined />}
             style={{ marginRight: 5 }}
             onClick={onCalculate}

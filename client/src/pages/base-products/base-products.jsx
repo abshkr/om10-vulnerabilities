@@ -8,6 +8,7 @@ import useSWR from 'swr';
 import { Page, DataTable, Download, FormModal } from '../../components';
 import { BASE_PRODUCTS } from '../../api';
 
+import generator from './generator';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
@@ -18,6 +19,7 @@ const BaseProducts = () => {
   const { data: payload, isValidating, revalidate } = useSWR(BASE_PRODUCTS.READ);
 
   const fields = columns(t);
+  const data = generator(payload?.records);
 
   const handleClick = value => {
     FormModal({
@@ -34,7 +36,7 @@ const BaseProducts = () => {
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
-      <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+      <Download data={data} isLoading={isValidating} columns={fields} />
       <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
         {t('operations.create')}
       </Button>
@@ -43,7 +45,7 @@ const BaseProducts = () => {
 
   return (
     <Page page={t('pageMenu.schedules')} name={t('pageNames.baseProducts')} modifiers={modifiers}>
-      <DataTable columns={fields} data={payload?.records} isLoading={isValidating} onClick={handleClick} />
+      <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );
 };

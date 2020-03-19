@@ -6,26 +6,24 @@ import _ from 'lodash';
 import { LOGICAL_PRINTERS } from '../../../../api';
 import { Form, Select } from 'antd';
 
-const Printer = ({ form, value }) => {
+const Printer = ({ form, value, company, usage }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(LOGICAL_PRINTERS.PRINTERS);
   const { data: logicalPrinters } = useSWR(LOGICAL_PRINTERS.READ);
 
-  const { setFieldsValue, getFieldsValue } = form;
+  const { setFieldsValue } = form;
 
-  const matches = getFieldsValue(['prt_usage_name', 'prt_printer']);
-
-  const validate = (rule, value) => {
-    const match = _.find(logicalPrinters?.records, value => {
-      return value.prt_usage_name === matches.prt_usage_name && value.prt_printer === matches.prt_printer;
+  const validate = (rule, input) => {
+    const match = _.find(logicalPrinters?.records, object => {
+      return object.prt_usage === usage && object.prt_printer === input && object.prt_cmpy === company;
     });
 
-    if (value && !!match && !value) {
+    if (input && !!match && !value) {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    if (value === '' || !value) {
+    if (input === '' && !value) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.printer')}`);
     }
 

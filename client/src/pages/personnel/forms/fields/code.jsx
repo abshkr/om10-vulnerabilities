@@ -20,8 +20,12 @@ const Code = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
-    const match = _.find(data?.records, ['per_code', input]);
+  const validate = (rule, input) => {
+    const match = _.find(data?.records, object => {
+      const result = object.per_code.toLowerCase() === input?.toLowerCase();
+
+      return result;
+    });
 
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);

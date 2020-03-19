@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { TANKS } from '../../../../api';
 
-const Product = ({ form, value }) => {
+const Product = ({ form, value, onChange }) => {
   const { t } = useTranslation();
   const { data: options, isValidating } = useSWR(TANKS.BASE_LIST);
 
@@ -24,8 +24,10 @@ const Product = ({ form, value }) => {
       setFieldsValue({
         tank_base: value.tank_base
       });
+
+      onChange(value.tank_base);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 
   return (
     <Form.Item
@@ -36,6 +38,7 @@ const Product = ({ form, value }) => {
       <Select
         loading={isValidating}
         showSearch
+        onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectBaseProduct') : null}
         filterOption={(input, option) =>

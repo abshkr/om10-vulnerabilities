@@ -17,7 +17,7 @@ const Lock = ({ form, value }) => {
 
   return (
     <div>
-      <Form.Item name="prntr_lock">
+      <Form.Item name="prntr_lock" valuePropName="checked">
         <Checkbox>{t('fields.locked')}</Checkbox>
       </Form.Item>
     </div>

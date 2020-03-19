@@ -27,6 +27,14 @@ const Calculate = ({ form, value, disabled, type }) => {
     }
   }, [value, setFieldsValue]);
 
+  useEffect(() => {
+    if (!value) {
+      setFieldsValue({
+        unit: 'BB6'
+      });
+    }
+  }, [value, setFieldsValue]);
+
   return (
     <div>
       <Form.Item name="mlitm_qty_amb" label={t('fields.observedQuantity')}>

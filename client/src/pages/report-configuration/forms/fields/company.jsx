@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { REPORT_CONFIGURATION } from '../../../../api';
 
-const Company = ({ form, value }) => {
+const Company = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -25,8 +25,10 @@ const Company = ({ form, value }) => {
       setFieldsValue({
         report_cmpycode: value.report_cmpycode
       });
+
+      onChange(value.report_cmpycode);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 
   return (
     <Form.Item
@@ -38,6 +40,7 @@ const Company = ({ form, value }) => {
         loading={isValidating}
         disabled={!!value}
         showSearch
+        onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCompany') : null}
         filterOption={(input, option) =>

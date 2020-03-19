@@ -5,13 +5,13 @@ import useSWR from 'swr';
 
 import { REPORT_PROFILE } from '../../../../api';
 
-const Source = ({ form, value }) => {
+const Source = ({ form, value, onChange }) => {
   const { t } = useTranslation();
   const { data: options, isValidating } = useSWR(REPORT_PROFILE.REPORTS);
 
   const { setFieldsValue } = form;
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.source')}`);
     }
@@ -22,8 +22,7 @@ const Source = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        report_jasper_file: value.report_jasper_file,
-        report_file: value.report_file
+        report_jasper_file: value.report_jasper_file
       });
     }
   }, [value, setFieldsValue]);
@@ -38,6 +37,7 @@ const Source = ({ form, value }) => {
         loading={isValidating}
         disabled={!!value}
         showSearch
+        onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectSource') : null}
         filterOption={(input, option) =>

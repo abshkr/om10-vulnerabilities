@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   EditOutlined,
@@ -22,9 +22,15 @@ const FormModal = ({ value }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
+  const [source, setSource] = useState(undefined);
+
   const IS_CREATING = !value;
 
   const onFinish = values => {
+    if (!IS_CREATING) {
+      values.report_file = value.report_file;
+    }
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -49,7 +55,7 @@ const FormModal = ({ value }) => {
           .catch(error => {
             notification.error({
               message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('messages.updateSuccess')
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
             });
           });
       }
@@ -91,8 +97,8 @@ const FormModal = ({ value }) => {
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
-            <Source form={form} value={value} />
-            <Type form={form} value={value} />
+            <Source form={form} value={value} onChange={setSource} />
+            <Type form={form} value={value} source={source} />
             <Name form={form} value={value} />
             <CloseOutReportBy form={form} value={value} />
             <Description form={form} value={value} />

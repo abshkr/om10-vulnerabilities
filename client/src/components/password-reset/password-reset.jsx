@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Input, Button, Modal, notification, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
+
+import { WalletOutlined, CopyOutlined, CheckOutlined } from '@ant-design/icons';
+
 import axios from 'axios';
 import _ from 'lodash';
 
@@ -47,7 +50,7 @@ const PasswordReset = ({ value }) => {
   };
 
   return (
-    <div>
+    <>
       <Form.Item label={t('fields.user')}>
         <Input value={value?.per_code} disabled />
       </Form.Item>
@@ -57,17 +60,17 @@ const PasswordReset = ({ value }) => {
       </Form.Item>
 
       <div style={{ marginTop: 30, display: 'flex', justifyContent: 'space-around' }}>
-        <Button icon="wallet" type="default" onClick={randomize} style={{ marginRight: 5 }}>
+        <Button icon={<WalletOutlined />} type="default" onClick={randomize} style={{ marginRight: 5 }}>
           {t('operations.randomize')}
         </Button>
-        <Button icon="copy" type="dashed" onClick={copy} style={{ marginRight: 5 }}>
+        <Button icon={<CopyOutlined />} type="dashed" onClick={copy} style={{ marginRight: 5 }}>
           {t('operations.copyToClipboard')}
         </Button>
-        <Button icon="check" type="primary" onClick={handleSubmit}>
+        <Button icon={<CheckOutlined />} type="primary" onClick={handleSubmit}>
           {t('operations.changePassword')}
         </Button>
       </div>
-    </div>
+    </>
   );
 };
 

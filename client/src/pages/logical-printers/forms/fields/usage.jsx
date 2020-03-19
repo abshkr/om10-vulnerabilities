@@ -6,16 +6,14 @@ import { Form, Select } from 'antd';
 
 import { LOGICAL_PRINTERS } from '../../../../api';
 
-const Usage = ({ form, value }) => {
+const Usage = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(LOGICAL_PRINTERS.USAGES);
 
-  const validate = (rule, value) => {
-    if (value === '' || !value) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.usage')}`);
-    }
+  const { setFieldsValue } = form;
 
+  const validate = (rule, value) => {
     if (value === '' || !value) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.usage')}`);
     }
@@ -25,11 +23,13 @@ const Usage = ({ form, value }) => {
 
   useEffect(() => {
     if (value) {
-      form.setFieldsValue({
+      setFieldsValue({
         prt_usage_name: value.prt_usage_name
       });
+
+      onChange(value.prt_usage_name);
     }
-  }, [value, form]);
+  }, [value, setFieldsValue, onChange]);
 
   return (
     <Form.Item
@@ -40,6 +40,7 @@ const Usage = ({ form, value }) => {
       <Select
         loading={isValidating}
         showSearch
+        onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectUsage') : null}

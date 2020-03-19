@@ -6,16 +6,14 @@ import _ from 'lodash';
 
 import { BASE_PRODUCTS } from '../../../../api';
 
-const Density = ({ form, value }) => {
+const Density = ({ form, value, product }) => {
   const { t } = useTranslation();
   const { data: payload, isValidating } = useSWR(BASE_PRODUCTS.READ);
 
   const [low, setLow] = useState(0);
   const [high, setHigh] = useState(0);
 
-  const { setFieldsValue, getFieldValue } = form;
-
-  const product = getFieldValue('tank_base');
+  const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
     const decimals = new RegExp('^[0-9]+(.[0-9]{1,3})?$');
@@ -59,7 +57,7 @@ const Density = ({ form, value }) => {
         setHigh(base.base_class_dens_hi);
       }
     }
-  }, [payload, getFieldValue, product]);
+  }, [payload, product]);
 
   const affix = isValidating ? t('messages.calculating') : `${low} - ${high} ${t('units.kgm3')}`;
   const disabled = isValidating || !product;
