@@ -27,7 +27,7 @@ const PageHeaderExtras = styled.div`
 `;
 
 const PageInjector = styled.div`
-  border: 1px solid #d9d9d9;
+  border: ${props => (props.isBlank ? 'none' : '1px solid #d9d9d9')};
   padding: 10px;
   background: ${props => (props.isBlank ? 'none' : '#fff')};
   border-radius: 2px;
