@@ -16,6 +16,8 @@ import {
 import { ExpiryDateTarget, TypeCode, TypeDescription, DateTimeFormat, DefaultValue, Flags } from './fields';
 import { EXPIRY_DATES } from '../../../api';
 
+import { SETTINGS } from '../../../constants';
+
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value }) => {
@@ -25,6 +27,8 @@ const FormModal = ({ value }) => {
   const IS_CREATING = !value;
 
   const onFinish = values => {
+    values.edt_def_exp_date = values?.edt_def_exp_date?.format(SETTINGS.DATE_TIME_FORMAT);
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),

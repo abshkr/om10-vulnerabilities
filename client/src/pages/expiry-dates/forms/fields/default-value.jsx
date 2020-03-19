@@ -16,12 +16,16 @@ const DefaultValue = ({ form, value }) => {
         edt_def_exp_date:
           value.edt_def_exp_date === '' ? null : moment(value.edt_def_exp_date, SETTINGS.DATE_TIME_FORMAT)
       });
+    } else {
+      setFieldsValue({
+        edt_def_exp_date: moment()
+      });
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item name="edt_def_exp_date" label={t('fields.defaultValue')}>
-      <DatePicker showTime />
+      <DatePicker format="DD/MM/YYYY" />
     </Form.Item>
   );
 };
