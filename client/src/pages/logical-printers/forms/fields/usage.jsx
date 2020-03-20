@@ -24,19 +24,15 @@ const Usage = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        prt_usage_name: value.prt_usage_name
+        prt_usage: value.prt_usage
       });
 
-      onChange(value.prt_usage_name);
+      onChange(value.prt_usage);
     }
   }, [value, setFieldsValue, onChange]);
 
   return (
-    <Form.Item
-      name="prt_usage_name"
-      label={t('fields.usage')}
-      rules={[{ required: true, validator: validate }]}
-    >
+    <Form.Item name="prt_usage" label={t('fields.usage')} rules={[{ required: true, validator: validate }]}>
       <Select
         loading={isValidating}
         showSearch

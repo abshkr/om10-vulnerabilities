@@ -24,14 +24,14 @@ const PhysicalType = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_phys_name: value.kya_phys_name
+        kya_phys_type: value.kya_phys_type
       });
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item
-      name="kya_phys_name"
+      name="kya_phys_type"
       label={t('fields.physicalType')}
       rules={[{ required: true, validator: validate }]}
     >
