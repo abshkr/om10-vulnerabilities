@@ -1,49 +1,70 @@
 const columns = t => [
   {
-    headerName: t('fields.description'),
-    field: 'mr_action',
-    filter: 'FuzzyFilter',
-    sortable: true,
-    resizable: true
-  },
-  {
     headerName: t('fields.type'),
-    field: 'mr_type_name',
+    field: 'mtd_type_name',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
-    headerName: t('fields.originalMovementType'),
-    field: 'mr_mov_type_ori',
+    headerName: t('fields.address'),
+    field: 'mtd_address',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
-    headerName: t('fields.originalReasonCode'),
-    field: 'mr_reason_code_ori',
+    headerName: t('fields.code'),
+    field: 'mtd_code',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
-    headerName: t('fields.reversalMovementType'),
-    field: 'mr_mov_type_rev',
+    headerName: t('fields.source'),
+    field: 'src_name',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
-    headerName: t('fields.reversalReasonCode'),
-    field: 'mr_reason_code_rev',
+    headerName: t('fields.unit'),
+    field: 'mtd_src_type',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
-    headerName: t('fields.status'),
-    field: 'mr_flag',
+    headerName: t('fields.receiving'),
+    field: 'dst_name',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true
+  },
+  {
+    headerName: t('fields.receivingUnit'),
+    field: 'mtd_dst_type',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true
+  },
+  {
+    headerName: t('fields.ambient'),
+    field: 'mtd_amb',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true
+  },
+  {
+    headerName: t('fields.corrected'),
+    field: 'mtd_cor',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true
+  },
+  {
+    headerName: t('fields.poll'),
+    field: 'mtd_poll',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true

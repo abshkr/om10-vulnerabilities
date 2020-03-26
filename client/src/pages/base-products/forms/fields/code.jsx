@@ -23,7 +23,9 @@ const Code = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
-    const match = _.find(baseProducts?.records, ['base_code', input]);
+    const match = _.find(baseProducts?.records, record => {
+      return record.base_code.toLowerCase() === input?.toLowerCase();
+    });
 
     if (!!match && !value) {
       return Promise.reject(t('descriptions.alreadyExists'));
@@ -33,8 +35,8 @@ const Code = ({ form, value }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
     }
 
-    if (input && input.length > 20) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && input.length > 10) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 10 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();

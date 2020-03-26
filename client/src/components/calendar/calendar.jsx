@@ -7,12 +7,10 @@ import { getDateTimeFormat } from '../../utils';
 const { RangePicker } = DatePicker;
 
 const Calendar = ({ handleChange, start, end, disabled }) => {
-  const dateString = getDateTimeFormat();
-
-  const format = `${dateString} HH:mm`;
+  const format = getDateTimeFormat();
 
   const handleDateChange = dates => {
-    handleChange(dates[0].format('YYYY-MM-DD h:mm:ss'), dates[1].format('YYYY-MM-DD h:mm:ss'));
+    handleChange(dates[0].format('YYYY-MM-DD HH:mm:ss'), dates[1].format('YYYY-MM-DD HH:mm:ss'));
   };
 
   return (

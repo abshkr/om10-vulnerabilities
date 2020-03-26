@@ -20,7 +20,7 @@ const Code = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     const match = _.find(payload?.records, object => {
       return object.tank_code.toLowerCase() === input.toLowerCase();
     });
@@ -33,8 +33,8 @@ const Code = ({ form, value }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
     }
 
-    if (input && input.length > 6) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 6 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && input.length > 12) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 12 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();

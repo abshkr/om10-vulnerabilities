@@ -27,6 +27,11 @@ const FormModal = ({ value }) => {
   const IS_CREATING = !value;
 
   const onFinish = values => {
+    // Attaching the Id to the Updated Object
+    if (!IS_CREATING) {
+      values.mr_id = value?.mr_id;
+    }
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),

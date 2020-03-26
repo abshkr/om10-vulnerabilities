@@ -1,19 +1,16 @@
 import React, { useEffect } from 'react';
-import { Form, Input } from 'antd';
-import { useTranslation } from 'react-i18next';
 
-const TechnicalName = ({ form, value }) => {
+import { useTranslation } from 'react-i18next';
+import { Form, InputNumber } from 'antd';
+
+const Address = ({ form, value }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.technicalName')}`);
-    }
-
-    if (input && input.length > 80) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 80 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.address')}`);
     }
 
     return Promise.resolve();
@@ -22,20 +19,20 @@ const TechnicalName = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        hzcf_name: value.hzcf_name
+        mtd_address: value.mtd_address
       });
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item
-      name="hzcf_name"
-      label={t('fields.technicalName')}
+      name="mtd_address"
+      label={`${t('fields.address')} (0-9)`}
       rules={[{ required: true, validator: validate }]}
     >
-      <Input />
+      <InputNumber disabled={!!value} min={0} max={9} style={{ width: '100%' }} />
     </Form.Item>
   );
 };
 
-export default TechnicalName;
+export default Address;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import useSWR, { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +31,8 @@ import { COMMON, BASE_PRODUCTS } from '../../../api';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value }) => {
+  const [classification, setClassification] = useState(undefined);
+
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -107,10 +109,15 @@ const FormModal = ({ value }) => {
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
             <Code form={form} value={value} />
             <Name form={form} value={value} />
-            <Classification form={form} value={value} />
+            <Classification
+              form={form}
+              value={value}
+              onChange={setClassification}
+              classification={classification}
+            />
             <Group form={form} value={value} />
             <Color form={form} value={value} />
-            <DensityRange form={form} value={value} />
+            <DensityRange form={form} value={value} classification={classification} />
             <Divider>{t('tabColumns.product')}</Divider>
             <RefSpecTemp form={form} value={value} />
             <CorrectionMethod form={form} value={value} />

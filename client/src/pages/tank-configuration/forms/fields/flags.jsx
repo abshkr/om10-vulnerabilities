@@ -10,7 +10,7 @@ const Flags = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tank_exc_pid: value.tank_density,
+        tank_exc_pid: value.tank_exc_pid,
         tank_exc_pds: value.tank_exc_pds,
         tank_exc_spmv: value.tank_exc_spmv,
         tank_exc_stckrpt: value.tank_exc_stckrpt

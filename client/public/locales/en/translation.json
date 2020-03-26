@@ -130,8 +130,8 @@
     "source": "Source",
     "description": "Description",
     "onDemandReport": "On Demand Report",
-    "closeOutReport": "Close Out Report",
-    "closeOutReportBy": "Close Out Report By",
+    "closeOutReport": "Closeout Report",
+    "closeOutReportBy": "Closeout Report By",
     "canBePrinted": "Can Be Printed?",
     "canBeEmailed": "Can Be Emailed?",
     "reportName": "Report Name",
@@ -318,7 +318,13 @@
     "standardDensity": "Standard Density",
     "unit": "Unit",
     "businessProcess": "Business Process",
-    "sendToHost": "Send to Host ?"
+    "sendToHost": "Send to Host ?",
+    "address": "Address",
+    "receiving": "Receiving",
+    "receivingUnit": "Receiving Unit",
+    "corrected": "Corrected",
+    "poll": "Poll",
+    "sourceUnit": "Source Unit"
   },
 
   "pageMenu": {
@@ -626,7 +632,9 @@
     "selectToPlantSupplier": "Select To Plant Supplier",
     "selectToTank": "Select To Tank",
     "selectFromProduct": "Select From Product",
-    "selectToProduct": "Select To Product"
+    "selectToProduct": "Select To Product",
+    "selectReceiving": "Select Receiving",
+    "selectUnit": "Select Unit"
   },
 
   "validate": {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   EditOutlined,
@@ -8,6 +8,7 @@ import {
   QuestionCircleOutlined
 } from '@ant-design/icons';
 
+import { Type, Code, SourceUnit, ReceivingUnit, Address, Source, Receiving, Poll } from './fields';
 import { Form, Button, Tabs, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
@@ -21,9 +22,13 @@ const FormModal = ({ value }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
+  const [source, setSource] = useState(undefined);
+  const [receiving, setReceiving] = useState(undefined);
+
   const IS_CREATING = !value;
 
   const onFinish = values => {
+    console.log(values);
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -39,6 +44,7 @@ const FormModal = ({ value }) => {
               Modal.destroyAll();
 
               mutate(METER_DEVICES.READ);
+
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
@@ -68,7 +74,9 @@ const FormModal = ({ value }) => {
           .then(
             axios.spread(response => {
               mutate(METER_DEVICES.READ);
+
               Modal.destroyAll();
+
               notification.success({
                 message: t('messages.deleteSuccess'),
                 description: `${t('descriptions.deleteSuccess')}`
@@ -89,7 +97,16 @@ const FormModal = ({ value }) => {
     <div>
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1">
-          <TabPane tab={t('tabColumns.general')} key="1" style={{ height: '50vh' }}></TabPane>
+          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} key="1">
+            <Type form={form} value={value} />
+            <Code form={form} value={value} />
+            <Source form={form} value={value} onChange={setSource} />
+            <SourceUnit form={form} value={value} source={source} />
+            <Receiving form={form} value={value} onChange={setReceiving} />
+            <ReceivingUnit form={form} value={value} receiving={receiving} />
+            <Address form={form} value={value} />
+            <Poll form={form} value={value} />
+          </TabPane>
         </Tabs>
 
         <Form.Item>

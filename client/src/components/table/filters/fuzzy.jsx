@@ -5,7 +5,7 @@ export default class FuzzyFilter extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: '',
+      text: ''
     };
   }
 
@@ -29,18 +29,22 @@ export default class FuzzyFilter extends Component {
   };
 
   onChange = event => {
-    let newValue = event.target.value;
+    let newValue = event?.target?.value || '';
     if (this.state.text !== newValue) {
       this.setState(
         {
-          text: newValue,
+          text: newValue
         },
         () => {
           this.props.filterChangedCallback();
-        },
+        }
       );
     }
   };
+
+  setModel(model) {
+    this.onChange('');
+  }
 
   render() {
     const { colDef } = this.props;

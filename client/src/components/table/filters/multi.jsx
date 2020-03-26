@@ -9,6 +9,7 @@ export default class MultiFilter extends Component {
     this.state = {
       query: '',
       keys: [],
+      checkedList: []
     };
   }
 
@@ -36,19 +37,24 @@ export default class MultiFilter extends Component {
       this.setState(
         {
           query: payload,
+          checkedList: values
         },
         () => {
           this.props.filterChangedCallback();
-        },
+        }
       );
     }
   };
+
+  setModel(model) {
+    this.onChange([]);
+  }
 
   componentDidMount() {
     const { colDef, agGridReact } = this.props;
 
     this.setState({
-      keys: _.uniq(_.map(agGridReact.props.rowData, colDef.field)),
+      keys: _.uniq(_.map(agGridReact.props.rowData, colDef.field))
     });
   }
 
@@ -61,7 +67,11 @@ export default class MultiFilter extends Component {
         <div className="filter-header">Filter By {colDef.headerName}</div>
         <Divider style={{ marginTop: 10, marginBottom: 7 }} />
         <div className="filter-checkbox">
-          <Checkbox.Group options={keys} onChange={this.onChange}></Checkbox.Group>
+          <Checkbox.Group
+            options={keys}
+            value={this.state.checkedList}
+            onChange={this.onChange}
+          ></Checkbox.Group>
         </div>
       </div>
     );

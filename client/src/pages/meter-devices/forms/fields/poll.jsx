@@ -1,19 +1,16 @@
 import React, { useEffect } from 'react';
-import { Form, Input } from 'antd';
-import { useTranslation } from 'react-i18next';
 
-const TechnicalName = ({ form, value }) => {
+import { useTranslation } from 'react-i18next';
+import { Form, InputNumber } from 'antd';
+
+const Poll = ({ form, value }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.technicalName')}`);
-    }
-
-    if (input && input.length > 80) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 80 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.poll')}`);
     }
 
     return Promise.resolve();
@@ -22,20 +19,20 @@ const TechnicalName = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        hzcf_name: value.hzcf_name
+        mtd_poll: value.mtd_poll
       });
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item
-      name="hzcf_name"
-      label={t('fields.technicalName')}
+      name="mtd_poll"
+      label={`${t('fields.poll')} (10-9999)`}
       rules={[{ required: true, validator: validate }]}
     >
-      <Input />
+      <InputNumber min={10} max={9999} style={{ width: '100%', marginBottom: 10 }} />
     </Form.Item>
   );
 };
 
-export default TechnicalName;
+export default Poll;

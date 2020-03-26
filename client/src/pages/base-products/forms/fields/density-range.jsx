@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { Form, InputNumber } from 'antd';
+import { Form, InputNumber, Row, Col } from 'antd';
+import _ from 'lodash';
 
-const DensityRange = ({ form, value }) => {
+const DensityRange = ({ form, value, classification }) => {
   const { setFieldsValue } = form;
 
   useEffect(() => {
@@ -13,27 +14,34 @@ const DensityRange = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
+  useEffect(() => {
+    if (classification) {
+      setFieldsValue({
+        base_dens_lo: classification.bclass_dens_lo,
+        base_dens_hi: classification.bclass_dens_hi
+      });
+    }
+  }, [setFieldsValue, classification]);
+
+  const low = classification ? _.toNumber(classification?.bclass_dens_lo) : '';
+  const high = classification ? _.toNumber(classification?.bclass_dens_hi) : '';
+
   return (
-    <Form.Item
-      name="base_dens_lo"
-      label={`Density Range ${value ? `(${value.base_class_dens_lo} - ${value.base_class_dens_hi})` : ''}`}
-    >
-      <strong>Low:</strong>
+    <>
+      <Row gutter={24}>
+        <Col span={12}>
+          <Form.Item name="base_dens_lo" label={`Low Density ${classification ? `(${low} - ${high})` : ''}`}>
+            <InputNumber min={low} max={high} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
 
-      <InputNumber
-        min={0}
-        max={value?.base_class_dens_lo}
-        style={{ width: 150, marginLeft: 5, marginRight: 5 }}
-      />
-
-      <strong>High:</strong>
-
-      <InputNumber
-        min={value?.base_class_dens_lo}
-        max={value?.base_class_dens_hi}
-        style={{ width: 150, marginLeft: 5 }}
-      />
-    </Form.Item>
+        <Col span={12}>
+          <Form.Item name="base_dens_hi" label={`High Density ${classification ? `(${low} - ${high})` : ''}`}>
+            <InputNumber min={low} max={high} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+      </Row>
+    </>
   );
 };
 

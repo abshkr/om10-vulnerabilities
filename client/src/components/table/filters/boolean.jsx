@@ -5,7 +5,8 @@ export default class BooleanFilter extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: ''
+      text: '',
+      checkedList: []
     };
   }
 
@@ -28,7 +29,8 @@ export default class BooleanFilter extends Component {
 
       this.setState(
         {
-          text: payload
+          text: payload,
+          checkedList: values
         },
         () => {
           this.props.filterChangedCallback();
@@ -36,6 +38,10 @@ export default class BooleanFilter extends Component {
       );
     }
   };
+
+  setModel(model) {
+    this.onChange([]);
+  }
 
   render() {
     const { colDef } = this.props;
@@ -49,7 +55,7 @@ export default class BooleanFilter extends Component {
       <div className="search-tab">
         <div className="filter-header">Filter By {colDef.headerName}</div>
         <Divider style={{ marginTop: 10, marginBottom: 7 }} />
-        <Checkbox.Group options={options} onChange={this.onChange} />
+        <Checkbox.Group options={options} value={this.state.checkedList} onChange={this.onChange} />
       </div>
     );
   }

@@ -37,7 +37,7 @@ const BaseProductColor = ({ form, value }) => {
   return (
     <div>
       <Form.Item name="base_color" label="Base Product Color">
-        <Button color={color} onClick={handleVisiblity} style={{ borderColor: color }}>
+        <Button color={color} onClick={handleVisiblity} style={{ background: color }} block>
           Currently Set to {color}
         </Button>
       </Form.Item>

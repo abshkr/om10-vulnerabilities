@@ -12,8 +12,8 @@ const Name = ({ form, value }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.name')}`);
     }
 
-    if (input && input.length > 40) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && input.length > 20) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();

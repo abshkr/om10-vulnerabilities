@@ -23,8 +23,8 @@ const MeterDevices = () => {
     FormModal({
       value,
       form: <Forms value={value} />,
-      id: value?.mr_id,
-      name: value?.mr_type_name,
+      id: value?.mtd_code,
+      name: value?.mtd_type_name,
       t
     });
   };
