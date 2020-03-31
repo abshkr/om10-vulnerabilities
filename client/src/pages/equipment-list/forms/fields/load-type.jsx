@@ -9,14 +9,14 @@ const LoadType = ({ form, value }) => {
   const { t } = useTranslation();
   const { data: options, isValidating } = useSWR(EQUIPMENT_LIST.LOAD_TYPES);
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.loadType')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.loadType')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -28,26 +28,26 @@ const LoadType = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.loadType')}>
-      {getFieldDecorator('eqpt_load_type', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectLoadType') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.ld_type_code}>
-              {item.ld_type_text}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="eqpt_load_type"
+      label={t('fields.loadType')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectLoadType') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.ld_type_code}>
+            {item.ld_type_text}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

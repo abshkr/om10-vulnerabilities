@@ -5,7 +5,7 @@ import axios from 'axios';
 
 import { SPECIAL_MOVEMENTS } from '../../../../api';
 
-const To = ({ form, value, disabled }) => {
+const To = ({ type, onChange, form, value, disabled }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -93,6 +93,10 @@ const To = ({ form, value, disabled }) => {
   };
 
   const onTankChange = value => {
+    if (type === '0') {
+      onChange(value);
+    }
+
     setTank(value);
     getProducts(value);
   };
@@ -106,19 +110,22 @@ const To = ({ form, value, disabled }) => {
       setSupplier(prodCompany);
       setTank(tankCode);
 
+      if (type === '0') {
+        onChange(tankCode);
+      }
+
       setFieldsValue({
         mlitm_prodcmpy_to: prodCompany,
         mlitm_tankcode_to: tankCode,
         mlitm_prodcode_to: prodCode
       });
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, type, onChange]);
 
   useEffect(() => {
     getSuppliers();
   }, [getSuppliers]);
 
-  console.log(supplier, tank);
   return (
     <div style={{ display: 'flex' }}>
       <Form.Item

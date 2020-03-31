@@ -5,7 +5,7 @@ import { Form, Checkbox } from 'antd';
 const Locks = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -17,15 +17,15 @@ const Locks = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item style={{ marginTop: 5 }}>
-      {getFieldDecorator('eqpt_lock', {
-        valuePropName: 'checked'
-      })(<Checkbox> {t('fields.locked')} </Checkbox>)}
+    <div style={{ display: 'flex' }}>
+      <Form.Item name="eqpt_lock" style={{ marginTop: 5 }} valuePropName="checked">
+        <Checkbox> {t('fields.locked')} </Checkbox>
+      </Form.Item>
 
-      {getFieldDecorator('eqp_must_tare_in', {
-        valuePropName: 'checked'
-      })(<Checkbox> {t('fields.mustTareIn')} </Checkbox>)}
-    </Form.Item>
+      <Form.Item name="eqp_must_tare_in" style={{ marginTop: 5 }} valuePropName="checked">
+        <Checkbox> {t('fields.mustTareIn')} </Checkbox>
+      </Form.Item>
+    </div>
   );
 };
 

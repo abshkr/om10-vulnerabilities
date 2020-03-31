@@ -7,9 +7,10 @@ import { EQUIPMENT_LIST } from '../../../../api';
 
 const EquipmentType = ({ form, value }) => {
   const { t } = useTranslation();
+
   const { data: options, isValidating } = useSWR(EQUIPMENT_LIST.AREAS);
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const validate = (rule, input, callback) => {
     if (input === '' || !input) {
@@ -28,26 +29,22 @@ const EquipmentType = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.area')}>
-      {getFieldDecorator('eqpt_area', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectArea') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.area_k}>
-              {item.area_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item name="eqpt_area" label={t('fields.area')} rules={[{ required: true, validator: validate }]}>
+      <Select
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectArea') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.area_k}>
+            {item.area_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

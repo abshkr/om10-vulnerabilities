@@ -168,6 +168,9 @@ const AntdStyleProvider = createGlobalStyle`
     border-color: #5696e5;
   }
   
+  .ant-select-disabled.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+    color: black !important;
+  }
   
 `;
 export default AntdStyleProvider;

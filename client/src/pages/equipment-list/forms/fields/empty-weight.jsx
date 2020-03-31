@@ -5,7 +5,7 @@ import { Form, InputNumber } from 'antd';
 const EmptyWeight = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -15,18 +15,20 @@ const EmptyWeight = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input && input.length > 126) {
-      callback(`${t('placeholder.maxCharacters')}: 126 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 126 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={`${t('fields.emptyWeight')} (Kg)`}>
-      {getFieldDecorator('eqpt_empty_kg', {
-        rules: [{ required: false, validator: validate }]
-      })(<InputNumber min={0} />)}
+    <Form.Item
+      name="eqpt_empty_kg"
+      label={`${t('fields.emptyWeight')} (Kg)`}
+      rules={[{ required: false, validator: validate }]}
+    >
+      <InputNumber min={0} />
     </Form.Item>
   );
 };

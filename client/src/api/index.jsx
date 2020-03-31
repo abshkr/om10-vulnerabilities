@@ -31,6 +31,8 @@ import * as MOVEMENT_NOMIATIONS from './movement-nominations';
 import * as LOAD_SCHEDULES from './load-schedules';
 import * as MOVEMENT_REASONS from './movement-reasons';
 import * as METER_DEVICES from './meter-devices';
+import * as SITE_ACCESS_DEVICES from './site-access-devices';
+import * as MANUAL_TRANSACTIONS from './manual-transactions';
 
 export {
   AUTH,
@@ -64,5 +66,7 @@ export {
   MOVEMENT_NOMIATIONS,
   LOAD_SCHEDULES,
   MOVEMENT_REASONS,
-  METER_DEVICES
+  METER_DEVICES,
+  SITE_ACCESS_DEVICES,
+  MANUAL_TRANSACTIONS
 };

@@ -10,7 +10,7 @@ const Code = ({ form, value }) => {
   const { t } = useTranslation();
   const { data, isValidating } = useSWR(EQUIPMENT_LIST.READ);
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -24,24 +24,23 @@ const Code = ({ form, value }) => {
     const match = _.find(data?.records, ['eqpt_code', input]);
 
     if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.code')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
     }
 
     if (input && !!match && !value) {
-      callback(t('descriptions.alreadyExists'));
+      return Promise.reject(t('descriptions.alreadyExists'));
     }
 
     if (input && input.length > 40) {
-      callback(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={t('fields.code')}>
-      {getFieldDecorator('eqpt_code', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input disabled={!!value || isValidating} />)}
+    <Form.Item name="eqpt_code" label={t('fields.code')} rules={[{ required: true, validator: validate }]}>
+      <Input disabled={!!value || isValidating} />
     </Form.Item>
   );
 };

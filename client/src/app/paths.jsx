@@ -148,7 +148,7 @@ const paths = [
 
   {
     path: ROUTES.COMPANIES,
-    component: lazy(() => import('../pages/work-in-progress'))
+    component: lazy(() => import('../pages/companies'))
   },
 
   {
@@ -223,7 +223,7 @@ const paths = [
 
   {
     path: ROUTES.SITE_ACCESS_DEVICES,
-    component: lazy(() => import('../pages/work-in-progress'))
+    component: lazy(() => import('../pages/site-access-devices'))
   },
 
   {
@@ -309,6 +309,11 @@ const paths = [
   {
     path: ROUTES.MOVEMENT_NOMINATIONS,
     component: lazy(() => import('../pages/movement-nominations'))
+  },
+
+  {
+    path: ROUTES.MANUAL_TRANSACTIONS,
+    component: lazy(() => import('../pages/manual-transactions'))
   },
 
   {

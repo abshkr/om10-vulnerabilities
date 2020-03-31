@@ -5,7 +5,7 @@ import { Form, Input } from 'antd';
 const Id = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -16,10 +16,8 @@ const Id = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t('fields.id')}>
-      {getFieldDecorator('eqpt_id', {
-        rules: [{ required: false }]
-      })(<Input disabled />)}
+    <Form.Item name="eqpt_id" label={t('fields.id')}>
+      <Input disabled />
     </Form.Item>
   );
 };

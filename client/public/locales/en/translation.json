@@ -324,7 +324,26 @@
     "receivingUnit": "Receiving Unit",
     "corrected": "Corrected",
     "poll": "Poll",
-    "sourceUnit": "Source Unit"
+    "sourceUnit": "Source Unit",
+    "transactionType": "Transaction Type",
+    "orderNumber": "Order Number",
+    "customer": "Customer",
+    "driver": "Driver",
+    "loadSecurityInformation": "Load Security Information",
+    "deliverNumber": "Deliver Number",
+    "equipmentId": "Equipment Id",
+    "compartmentNumber": "Compartment Number",
+    "drawerCode": "Drawer Code",
+    "drawerProduct": "Drawer Product",
+    "massQuantity": "Mass Quantity",
+    "devicePort": "Device Port",
+    "deviceAreaCode": "Device Area Code",
+    "deviceAreaName": "Device Area Name",
+    "lockout": "Lockout",
+    "pinPassword": "Pin/Password",
+    "deviceSecurity": "Device Security",
+    "authLevelName": "Auth Level Name",
+    "accessType": "Access Type"
   },
 
   "pageMenu": {
@@ -467,7 +486,13 @@
     "printBOL": "Print BOL",
     "viewBOL": "View BOL",
     "reverse": "Reverse",
-    "submit": "Submit"
+    "submit": "Submit",
+    "load": "Load",
+    "save": "Save",
+    "clear": "Clear",
+    "deleteTransfer": "Delete Transfer",
+    "calculateDrawer": "Calculate Drawer",
+    "getTankDensities": "Get Tank Densities"
   },
 
   "tabColumns": {
@@ -490,7 +515,10 @@
     "assignments": "Assignments",
     "items": "Items",
     "nominationSchedule": "Nomination Schedule",
-    "calculate": "Calculate"
+    "calculate": "Calculate",
+    "transferDetails": "Transfer Details",
+    "cumulativeBaseProduct": "Cumulative Base Product Quantities",
+    "cumulativeMeterTotals": "Cumulative Meter Totals"
   },
 
   "messages": {
@@ -507,7 +535,10 @@
     "calculateSuccess": "Successfully Calculated.",
     "saveSuccess": "Successfully Saved.",
     "reverseSuccess": "Successfully Reversed.",
-    "printBOLSuccess": "Sucessfully Printed the BOL"
+    "printBOLSuccess": "Sucessfully Printed the BOL",
+    "submitSuccess": "Successfully Submitted.",
+    "submitFailed": "Submit Failed.",
+    "movementReverseSuccess": "Successfully Reversed."
   },
 
   "prompts": {
@@ -518,7 +549,9 @@
     "save": "Are you sure you want to save the selected records?",
     "iButtonLookUp": "I-Button Look up",
     "reverseTransaction": "Are you sure you want to reverse this Transaction?",
-    "printBOL": "Are you sure you want to print this BOL?"
+    "printBOL": "Are you sure you want to print this BOL?",
+    "submit": "Are you sure you want to submit this record?",
+    "onReverse": "Are you sure you want to reverse this record?"
   },
 
   "divider": {
@@ -526,7 +559,10 @@
     "variances": "Variances",
     "dateTime": "Date Time",
     "directions": "Directions",
-    "calculation": "Calculation"
+    "calculation": "Calculation",
+    "drawerProductTransfer": "Drawer Product Transfer Details",
+    "baseProducts": "Base Products",
+    "meters": "Meters"
   },
 
   "descriptions": {
@@ -568,7 +604,11 @@
     "reverseSuccess": "You have reversed the Transaction",
     "reverseFailed": "Failed to reverse the Transaction.",
     "printBOLSuccess": "You have Printed the BOL",
-    "printBOLFailed": "Failed to reverse the BOL."
+    "printBOLFailed": "Failed to reverse the BOL.",
+    "submitFailed": "Failed to Submit.",
+    "submitSuccess": "You have submitted the record.",
+    "movementReverseSuccess": "You have reversed the record.",
+    "movementReverseFailed": "Failed to revese the record."
   },
 
   "placeholder": {

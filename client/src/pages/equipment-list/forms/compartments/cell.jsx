@@ -1,120 +1,71 @@
-import React, { Component } from "react";
-import EditableContext from "./editableContext";
-import { Input, Form, Select } from "antd";
+import React, { useState, useRef, useContext, useEffect } from 'react';
+import { Form, Select, Input } from 'antd';
 
-export default class Cell extends Component {
-  state = {
-    editing: false
+import Context from './context';
+
+const { Option } = Select;
+
+const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, ...restProps }) => {
+  const form = useContext(Context);
+  const inputRef = useRef();
+
+  const [editing, setEditing] = useState(false);
+
+  const onEdit = () => {
+    setEditing(!editing);
   };
 
-  toggleEdit = () => {
-    const editing = !this.state.editing;
-    this.setState({ editing }, () => {
-      if (editing) {
-        this.input.focus();
-      }
-    });
+  const save = async e => {
+    let values = await form.validateFields();
+
+    values = values.sfl === undefined ? 0 : values.sfl;
+    values = values.safefill === undefined ? 0 : values.safefill;
+
+    onEdit();
+
+    handleSave({ ...record, ...values });
   };
 
-  save = (value, index) => {
-    if (!!index) {
-      if (value !== undefined) {
-        const { record, handleSave } = this.props;
-
-        this.form.validateFields((error, values) => {
-          this.toggleEdit();
-          handleSave({
-            ...record,
-            ...values
-          });
-        });
-      } else {
-        this.setState({
-          editing: false
-        });
-      }
-    } else {
-      this.setState({
-        editing: false
-      });
+  useEffect(() => {
+    if (editing) {
+      inputRef.current.focus();
     }
-  };
+  }, [editing]);
 
-  renderCell = form => {
-    this.form = form;
-    const { children, dataIndex } = this.props;
-    const { editing } = this.state;
-    const { Option } = Select;
+  let childNode = children;
 
-    if (dataIndex === "adj_cmpt_lock") {
-      return editing ? (
-        <Form.Item style={{ margin: 0 }}>
-          {form.getFieldDecorator("adj_cmpt_lock")(
-            <Select
-              ref={node => (this.input = node)}
-              onPressEnter={value => this.save(value, dataIndex)}
-              onBlur={value => this.save(value, dataIndex)}
-            >
-              <Option key={0} value={true}>
-                Locked
-              </Option>
-              <Option key={1} value={false}>
-                Unlocked
-              </Option>
-            </Select>
-          )}
+  if (editable) {
+    if (dataIndex === 'adj_cmpt_lock') {
+      childNode = editing ? (
+        <Form.Item name="adj_cmpt_lock" style={{ margin: 0 }}>
+          <Select ref={inputRef} onChange={save} onPressEnter={save} onBlur={save}>
+            <Option key={0} value={true}>
+              Locked
+            </Option>
+            <Option key={1} value={false}>
+              Unlocked
+            </Option>
+          </Select>
         </Form.Item>
       ) : (
-        <div
-          className="editable-cell-value-wrap"
-          style={{ paddingRight: 24 }}
-          onClick={this.toggleEdit}
-        >
+        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={onEdit}>
           {children}
         </div>
       );
     } else {
-      return editing ? (
-        <Form.Item style={{ margin: 0 }}>
-          {form.getFieldDecorator(dataIndex)(
-            <Input
-              ref={node => (this.input = node)}
-              onPressEnter={value => this.save(value, dataIndex)}
-              onBlur={this.save}
-            />
-          )}
+      childNode = editing ? (
+        <Form.Item name={dataIndex} style={{ margin: 0 }}>
+          <Input ref={inputRef} onPressEnter={save} onBlur={save} />
         </Form.Item>
       ) : (
-        <div
-          className="editable-cell-value-wrap"
-          style={{ paddingRight: 24 }}
-          onClick={this.toggleEdit}
-        >
+        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={onEdit}>
           {children}
         </div>
       );
     }
-  };
-
-  render() {
-    const {
-      editable,
-      dataIndex,
-      title,
-      record,
-      index,
-      handleSave,
-      children,
-      ...restProps
-    } = this.props;
-    return (
-      <td {...restProps}>
-        {editable ? (
-          <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>
-        ) : (
-          children
-        )}
-      </td>
-    );
   }
-}
+
+  return <td {...restProps}>{childNode}</td>;
+};
+
+export default Cell;

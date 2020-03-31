@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, Select } from 'antd';
+import { Table, Select, Form } from 'antd';
 import axios from 'axios';
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -11,7 +11,7 @@ import columns from './columns';
 import Cell from './cell';
 import Row from './row';
 
-const Compartments = ({ form, value }) => {
+const Compartments = ({ form, value, equipment }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -20,11 +20,7 @@ const Compartments = ({ form, value }) => {
   const [isLoading, setLoading] = useState(true);
   const [selected, setSelected] = useState(value?.eqpt_code || null);
 
-  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
-
-  const equipment = getFieldValue('eqpt_etp');
-
-  getFieldDecorator('compartments');
+  const { setFieldsValue } = form;
 
   const { data: payload } = useSWR(EQUIPMENT_LIST.READ);
   const { data: types, isValidating: typesLoading } = useSWR(EQUIPMENT_LIST.TYPES);
@@ -120,7 +116,7 @@ const Compartments = ({ form, value }) => {
 
   if (equipment) {
     return (
-      <div>
+      <Form.Item name="compartments">
         <Equipment image={image} isLoading={typesLoading} />
 
         <Select
@@ -160,7 +156,7 @@ const Compartments = ({ form, value }) => {
           columns={fields}
           pagination={false}
         />
-      </div>
+      </Form.Item>
     );
   }
 

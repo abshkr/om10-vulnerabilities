@@ -9,7 +9,7 @@ const columns = t => [
   {
     headerName: t('fields.type'),
     field: 'mr_type_name',
-    filter: 'FuzzyFilter',
+    filter: 'MultiFilter',
     sortable: true,
     resizable: true
   },
@@ -44,7 +44,8 @@ const columns = t => [
   {
     headerName: t('fields.status'),
     field: 'mr_flag',
-    filter: 'FuzzyFilter',
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
     sortable: true,
     resizable: true
   }

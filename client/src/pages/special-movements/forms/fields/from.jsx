@@ -5,7 +5,7 @@ import axios from 'axios';
 
 import { SPECIAL_MOVEMENTS } from '../../../../api';
 
-const From = ({ form, value, disabled }) => {
+const From = ({ onChange, form, value, disabled }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -95,6 +95,8 @@ const From = ({ form, value, disabled }) => {
   const onTankChange = value => {
     setTank(value);
     getProducts(value);
+
+    onChange(value);
   };
 
   useEffect(() => {
@@ -105,6 +107,7 @@ const From = ({ form, value, disabled }) => {
 
       setSupplier(prodCompany);
       setTank(tankCode);
+      onChange(tankCode);
 
       setFieldsValue({
         mlitm_prodcmpy: prodCompany,
@@ -112,7 +115,7 @@ const From = ({ form, value, disabled }) => {
         mlitm_prodcode: prodCode
       });
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 
   useEffect(() => {
     getSuppliers();

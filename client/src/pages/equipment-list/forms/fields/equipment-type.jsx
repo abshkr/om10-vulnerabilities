@@ -5,18 +5,18 @@ import useSWR from 'swr';
 
 import { EQUIPMENT_LIST } from '../../../../api';
 
-const EquipmentType = ({ form, value }) => {
+const EquipmentType = ({ form, value, onChange }) => {
   const { t } = useTranslation();
   const { data: options, isValidating } = useSWR(EQUIPMENT_LIST.TYPES);
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.equipmentType')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.equipmentType')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
@@ -24,31 +24,34 @@ const EquipmentType = ({ form, value }) => {
       setFieldsValue({
         eqpt_etp: value.eqpt_etp
       });
+
+      onChange(value.eqpt_etp);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 
   return (
-    <Form.Item label={t('fields.equipmentType')}>
-      {getFieldDecorator('eqpt_etp', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          disabled={!!value}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectEquipmentType') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.etyp_id}>
-              {item.etyp_title}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="eqpt_etp"
+      label={t('fields.equipmentType')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        loading={isValidating}
+        disabled={!!value}
+        showSearch
+        onChange={onChange}
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectEquipmentType') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.etyp_id}>
+            {item.etyp_title}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

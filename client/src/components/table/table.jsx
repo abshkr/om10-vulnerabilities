@@ -48,7 +48,8 @@ const Table = ({
   height,
   search,
   selectionMode,
-  apiContext
+  apiContext,
+  extra
 }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
@@ -108,6 +109,8 @@ const Table = ({
       <Button icon={<ClearOutlined />} style={{ float: 'right' }} onClick={onFilterClear}>
         Clear Filters
       </Button>
+
+      <div style={{ float: 'right' }}>{extra}</div>
 
       <div style={{ height: `calc(100vh - ${height || '27vh'})`, marginTop: 5 }}>
         <AgGridReact

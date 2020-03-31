@@ -11,7 +11,7 @@ const Type = ({ form, value }) => {
 
   const { setFieldsValue } = form;
 
-  const { data: options, isValidating } = useSWR(METER_DEVICES.SOURCE_TYPES);
+  const { data: options, isValidating } = useSWR(METER_DEVICES.TYPES);
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
@@ -42,8 +42,8 @@ const Type = ({ form, value }) => {
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.pmv_id}>
-            {item.pmv_name}
+          <Select.Option key={index} value={item.mtd_id}>
+            {item.mtd_name}
           </Select.Option>
         ))}
       </Select>

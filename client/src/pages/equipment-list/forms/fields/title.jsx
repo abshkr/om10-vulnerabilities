@@ -5,7 +5,7 @@ import { Form, Input } from 'antd';
 const Title = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -15,22 +15,21 @@ const Title = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.set')} ─ ${t('fields.title')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.title')}`);
     }
 
     if (input && input.length > 40) {
-      callback(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={t('fields.title')}>
-      {getFieldDecorator('eqpt_title', {
-        rules: [{ required: true, validator: validate }]
-      })(<Input />)}
+    <Form.Item name="eqpt_title" label={t('fields.title')} rules={[{ required: true, validator: validate }]}>
+      <Input />
     </Form.Item>
   );
 };
