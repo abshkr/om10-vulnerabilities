@@ -168,9 +168,29 @@ const AntdStyleProvider = createGlobalStyle`
     border-color: #5696e5;
   }
   
-  .ant-select-disabled.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
-    color: black !important;
+
+  .ant-layout-sider {
+    background: #040d17
+  }
+
+  .ant-menu-dark, .ant-menu-dark .ant-menu-sub {
+    background: #040d17
+  }
+
+  .ant-layout-sider-trigger {
+    background: #010b15
+  }
+
+  .ant-card {
+    border: 2px solid #edf2f9
   }
   
+  .ant-page-header-heading-title {
+    color: #040d17 !important;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 0px;
+    padding-right: 5px;
+
+  }
 `;
 export default AntdStyleProvider;

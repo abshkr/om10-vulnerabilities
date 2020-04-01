@@ -343,7 +343,8 @@
     "pinPassword": "Pin/Password",
     "deviceSecurity": "Device Security",
     "authLevelName": "Auth Level Name",
-    "accessType": "Access Type"
+    "accessType": "Access Type",
+    "productClass": "Product Class"
   },
 
   "pageMenu": {
@@ -358,7 +359,8 @@
     "stockManagement": "Stock Management",
     "customers": "Customers",
     "printerConfiguration": "Printer Configuration",
-    "stockReconciliation": "Stock Reconciliation"
+    "stockReconciliation": "Stock Reconciliation",
+    "user": "User"
   },
 
   "pageNames": {
@@ -440,7 +442,9 @@
     "manualTransactions": "Manual Transactions",
     "specialMovements": "Special Movements",
     "transactionListbyNomination": "Transaction List By Nomination",
-    "loadSchedulesFromNomination": "Load Schedules By Nomination"
+    "loadSchedulesFromNomination": "Load Schedules By Nomination",
+    "siteConfiguration": "Site Configuration",
+    "logOut": "Log Out"
   },
 
   "operations": {
@@ -674,7 +678,12 @@
     "selectFromProduct": "Select From Product",
     "selectToProduct": "Select To Product",
     "selectReceiving": "Select Receiving",
-    "selectUnit": "Select Unit"
+    "selectUnit": "Select Unit",
+    "selectCustomer": "Select Customer",
+    "selectOrderNumber": "Select Order Number",
+    "selectTripNumber": "Select Trip Number",
+    "selectCarriers": "Select Carriers",
+    "selectDriver": "Select Driver"
   },
 
   "validate": {

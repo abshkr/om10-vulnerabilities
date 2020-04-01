@@ -1,40 +1,42 @@
-import React, { useEffect } from "react";
-import { Form, Input } from "antd";
-import _ from "lodash";
+import React, { useEffect } from 'react';
+import { Form, Input } from 'antd';
+import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 
-const Code = ({ form, value, t, data }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+const Code = ({ form, value, data }) => {
+  const { t } = useTranslation();
+
+  const { setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         tnkr_code: value.tnkr_code
       });
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
-    const match = _.find(data, ["tnkr_code", input]);
+  const validate = (rule, input) => {
+    const match = _.find(data, ['tnkr_code', input]);
 
-    if (input === "" || !input) {
-      callback(`${t("validate.set")} ─ ${t("fields.code")}`);
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
     }
 
     if (input && !!match && !value) {
-      callback(t("descriptions.alreadyExists"));
+      return Promise.reject(t('descriptions.alreadyExists'));
     }
 
     if (input && input.length > 40) {
-      callback(`${t("placeholder.maxCharacters")}: 40 ─ ${t("descriptions.maxCharacters")}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={t("fields.code")}>
-      {getFieldDecorator("tnkr_code", {
-        rules: [{ required: true, validator: validate }]
-      })(<Input disabled={!!value} />)}
+    <Form.Item name="tnkr_code" label={t('fields.code')} rules={[{ required: true, validator: validate }]}>
+      <Input disabled={!!value} />
     </Form.Item>
   );
 };

@@ -15,6 +15,8 @@ const MovementTime = ({ form, value, type, disabled }) => {
   const FORMAT = getDateTimeFormat();
   const IS_DISABLED = disabled || !type;
 
+  // Please Use Server Time
+
   useEffect(() => {
     if (value) {
       setFieldsValue({

@@ -1,5 +1,4 @@
-import * as tankerList from './tanker-list';
-
+import * as TANKER_LIST from './tanker-list';
 import * as AUTH from './auth';
 import * as EQUIPMENT_LIST from './equipment-list';
 import * as REPORT_PROFILE from './report-profile';
@@ -36,7 +35,6 @@ import * as MANUAL_TRANSACTIONS from './manual-transactions';
 
 export {
   AUTH,
-  tankerList,
   EQUIPMENT_LIST,
   TANKS,
   TIME_CODES,
@@ -68,5 +66,6 @@ export {
   MOVEMENT_REASONS,
   METER_DEVICES,
   SITE_ACCESS_DEVICES,
-  MANUAL_TRANSACTIONS
+  MANUAL_TRANSACTIONS,
+  TANKER_LIST
 };

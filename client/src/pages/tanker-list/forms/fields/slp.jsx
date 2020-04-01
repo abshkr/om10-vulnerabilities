@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Form, Input, Tooltip } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-const SLP = ({ form, value, t }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+const SLP = ({ form, value }) => {
+  const { t } = useTranslation();
+
+  const { setFieldsValue } = form;
 
   useEffect(() => {
     if (value) {
@@ -13,27 +16,24 @@ const SLP = ({ form, value, t }) => {
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input && input.length > 40) {
-      callback(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={t('fields.slp')}>
-      {getFieldDecorator('slp_id', {
-        rules: [{ required: false, validator: validate }]
-      })(
-        <Input
-          disabled
-          addonAfter={
-            <Tooltip title="This functionality is not available at this stage.">
-              <InfoCircleOutlined style={{ fontSize: 16 }} />
-            </Tooltip>
-          }
-        />
-      )}
+    <Form.Item name="slp_id" label={t('fields.slp')} rules={[{ required: false, validator: validate }]}>
+      <Input
+        disabled
+        addonAfter={
+          <Tooltip title="This functionality is not available at this stage.">
+            <InfoCircleOutlined style={{ fontSize: 16 }} />
+          </Tooltip>
+        }
+      />
     </Form.Item>
   );
 };

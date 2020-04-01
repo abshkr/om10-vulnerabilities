@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckOutlined, CloseOutlined, CalendarOutlined } from '@ant-design/icons';
+import { CalendarOutlined } from '@ant-design/icons';
 import { Table, Button, Popconfirm, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
@@ -76,7 +76,6 @@ const Expiry = ({ form, value, type }) => {
       dataIndex: 'edt_type_desc',
       key: 'edt_type_desc',
       width: 250,
-
       editable: true
     },
     {
@@ -86,25 +85,22 @@ const Expiry = ({ form, value, type }) => {
       width: 300,
       align: 'center',
       editable: true,
-      render: (text, record) => (
-        <span>
-          {text === ''
-            ? t('placeholder.selectDate')
-            : moment(text, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')}
-        </span>
-      )
+      render: (text, record) => {
+        return (
+          <span>
+            {text === '' || text === undefined
+              ? t('placeholder.selectDate')
+              : moment(text, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')}
+          </span>
+        );
+      }
     },
     {
       title: t('fields.enabled'),
       dataIndex: 'ed_status',
       key: 'ed_status',
       align: 'center',
-      editable: true,
-      render: (text, record) => (
-        <span>
-          {text === '' ? t('placeholder.selectStatus') : text ? <CheckOutlined /> : <CloseOutlined />}
-        </span>
-      )
+      editable: true
     },
     {
       title: t('fields.operations'),

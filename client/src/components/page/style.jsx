@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 
 const PageContainer = styled.div`
-  margin-bottom: 50px;
   & .ant-page-header {
     padding-top: 0px;
     padding-left: 5px;
@@ -32,7 +31,8 @@ const PageInjector = styled.div`
   padding: 10px;
   background: ${props => (props.isBlank ? 'none' : '#fff')};
   border-radius: 2px;
-  box-shadow: ${props => (props.isBlank ? 'none' : '0 2px 0 rgba(0, 0, 0, 0.015)')};
+  box-shadow: ${props =>
+    props.isBlank ? 'none' : '0 2px 0 rgba(54,45,89,0.15), 0 0 100px rgba(54,45,89,0.2)'};
 `;
 
 export { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras };

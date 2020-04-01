@@ -26,8 +26,10 @@ const Employer = ({ form, value, onChange }) => {
       setFieldsValue({
         kya_psnl_cmpy: value.kya_psnl_cmpy
       });
+
+      onChange(value.kya_psnl_cmpy);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 
   return (
     <Form.Item

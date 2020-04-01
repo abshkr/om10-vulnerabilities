@@ -1,61 +1,53 @@
-import React, { useState, useEffect } from "react";
-import { tankerList } from "../../../../api";
-import { Form, Select } from "antd";
-import axios from "axios";
+import React, { useEffect } from 'react';
+import { TANKER_LIST } from '../../../../api';
+import useSWR from 'swr';
+import { Form, Select } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-const Carrier = ({ form, value, t }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+const Carrier = ({ form, value }) => {
+  const { t } = useTranslation();
 
-  const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
+  const { setFieldsValue } = form;
 
-  const validate = (rule, input, callback) => {
-    if (input === "" || !input) {
-      callback(`${t("validate.select")} ─ ${t("fields.carrier")}`);
+  const { data: options, isValidating } = useSWR(TANKER_LIST.CARRIERS);
+
+  const validate = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.carrier')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         tnkr_carrier: value.tnkr_carrier
       });
     }
-
-    const getContext = () => {
-      axios.all([tankerList.carriers()]).then(
-        axios.spread(options => {
-          setOptions(options.data.records);
-          setLoading(false);
-        })
-      );
-    };
-
-    setLoading(true);
-    getContext();
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item label={t("fields.carrier")}>
-      {getFieldDecorator("tnkr_carrier", {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isLoading}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t("placeholder.selectCarrier") : null}
-          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-        >
-          {options.map((item, index) => (
-            <Select.Option key={index} value={item.cmpy_code}>
-              {item.cmpy_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="tnkr_carrier"
+      label={t('fields.carrier')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectCarrier') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records?.map((item, index) => (
+          <Select.Option key={index} value={item.cmpy_code}>
+            {item.cmpy_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

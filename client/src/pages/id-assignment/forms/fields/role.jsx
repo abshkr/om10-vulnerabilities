@@ -26,8 +26,10 @@ const Role = ({ form, value, onChange }) => {
       setFieldsValue({
         kya_role: value.kya_role
       });
+
+      onChange(value.kya_role);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 
   return (
     <Form.Item name="kya_role" label={t('fields.role')} rules={[{ required: true, validator: validate }]}>

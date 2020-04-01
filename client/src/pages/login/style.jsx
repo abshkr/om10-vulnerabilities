@@ -22,30 +22,26 @@ const FormContainer = styled.div`
 `;
 
 const LoginHeader = styled.div`
-  font-size: 40px;
-  font-weight: bolder;
-  text-align: center;
-  color: #68a4ec;
-
-  & span {
-    font-size: 13px;
-  }
+  font-size: 14px;
+  font-weight: bold;
+  color: #040d17;
+  margin-top: -10px;
 `;
 
 const LoginTitle = styled.div`
   font-family: 'Bungee';
   font-size: 30px;
-  margin-bottom: 10px;
-
+  color: #040d17;
   & span {
-    color: #68a4ec;
+    color: #4164e3;
   }
 `;
 
 const LoginSubtitle = styled.div`
   font-size: 14px;
+  margin-top: 15px;
   margin-bottom: 10px;
-  font-weight: bold;
+  font-weight: 300;
 `;
 
 const LoginFooter = styled.div`
@@ -74,6 +70,20 @@ const LoginLinks = styled.div`
 
 const GraphicContainer = styled.div`
   width: 66.6%;
+  height: 100vh;
+
+  & .ant-carousel {
+    background: #4164e3;
+    height: 100vh;
+  }
+
+  .image {
+    height: 90vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 `;
 
 const FormBlock = styled.div`

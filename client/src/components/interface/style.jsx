@@ -19,6 +19,7 @@ const InterfaceContainer = styled.div`
     padding-top: 65px;
     padding-left: 10px;
     padding-right: 10px;
+    background: #f9fbfd;
   }
 `;
 

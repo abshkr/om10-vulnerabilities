@@ -9,90 +9,24 @@ import auth from '../../auth';
 
 const columns = [
   {
-    title: 'Name',
+    title: 'Bay Number',
     dataIndex: 'name',
     key: 'name'
   },
   {
-    title: 'Age',
+    title: 'Number of Unloads',
     dataIndex: 'age',
     key: 'age'
   },
   {
-    title: 'Address',
+    title: 'Total Products',
     dataIndex: 'address',
     key: 'address'
   },
   {
-    title: 'Tags',
+    title: 'Average Quantity / Load',
     key: 'tags',
     dataIndex: 'tags'
-  }
-];
-
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer']
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser']
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher']
-  },
-  {
-    key: '4',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher']
-  },
-  {
-    key: '5',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher']
-  },
-  {
-    key: '6',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher']
-  },
-  {
-    key: '7',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher']
-  },
-  {
-    key: '8',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher']
-  },
-  {
-    key: '9',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher']
   }
 ];
 
@@ -133,14 +67,8 @@ const Dashboard = () => {
           </Col>
 
           <Col span={12}>
-            <Card title="Current Folios" bordered={false} actions={[<div>test</div>]}>
-              <Table
-                size="small"
-                columns={columns}
-                dataSource={data}
-                pagination={false}
-                scroll={{ y: 220 }}
-              />
+            <Card title="Current Folios" bordered={false}>
+              <Table size="small" columns={columns} dataSource={[]} pagination={false} scroll={{ y: 280 }} />
             </Card>
           </Col>
         </Row>

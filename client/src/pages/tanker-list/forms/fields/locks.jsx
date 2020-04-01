@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react';
 import { Form, Checkbox } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-const Locks = ({ form, value, t }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+const Locks = ({ form, value }) => {
+  const { t } = useTranslation();
+
+  const { setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         tnkr_lock: value.tnkr_lock,
         tnkr_active: value.tnkr_active,
@@ -16,23 +19,23 @@ const Locks = ({ form, value, t }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item style={{ marginTop: 10 }}>
-      {getFieldDecorator('tnkr_lock', {
-        valuePropName: 'checked'
-      })(<Checkbox> {t('fields.locked')} </Checkbox>)}
+    <div style={{ display: 'flex' }}>
+      <Form.Item name="tnkr_lock" style={{ marginTop: 10 }} valuePropName="checked">
+        <Checkbox> {t('fields.locked')} </Checkbox>
+      </Form.Item>
 
-      {getFieldDecorator('tnkr_active', {
-        valuePropName: 'checked'
-      })(<Checkbox> {t('fields.active')} </Checkbox>)}
+      <Form.Item name="tnkr_active" style={{ marginTop: 10 }} valuePropName="checked">
+        <Checkbox> {t('fields.active')} </Checkbox>
+      </Form.Item>
 
-      {getFieldDecorator('tnkr_bay_loop_ch', {
-        valuePropName: 'checked'
-      })(<Checkbox> {t('fields.bayCheck')} </Checkbox>)}
+      <Form.Item name="tnkr_bay_loop_ch" style={{ marginTop: 10 }} valuePropName="checked">
+        <Checkbox> {t('fields.bayCheck')} </Checkbox>
+      </Form.Item>
 
-      {getFieldDecorator('tnkr_archive', {
-        valuePropName: 'checked'
-      })(<Checkbox>{t('fields.archived')} </Checkbox>)}
-    </Form.Item>
+      <Form.Item name="tnkr_archive" style={{ marginTop: 10 }} valuePropName="checked">
+        <Checkbox> {t('fields.archived')} </Checkbox>
+      </Form.Item>
+    </div>
   );
 };
 

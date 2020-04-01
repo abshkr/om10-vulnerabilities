@@ -26,8 +26,10 @@ const AssignmentType = ({ form, value, onChange }) => {
       setFieldsValue({
         kya_type: value.kya_type
       });
+
+      onChange(value.kya_type);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 
   return (
     <Form.Item

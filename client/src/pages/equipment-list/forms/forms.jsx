@@ -5,10 +5,11 @@ import {
   PlusOutlined,
   CloseOutlined,
   DeleteOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
+  UnlockOutlined
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import axios from 'axios';
@@ -51,7 +52,9 @@ const FormModal = ({ value }) => {
     if (!IS_CREATING) {
       matches = _.filter(payload?.records, object => {
         return (
-          object.per_name === value.per_name && object.per_code !== value.per_code && object.per_name !== ''
+          object.eqpt_title === value.eqpt_title &&
+          object.eqpt_code !== value.eqpt_code &&
+          object.eqpt_title !== ''
         );
       });
     }
@@ -65,7 +68,7 @@ const FormModal = ({ value }) => {
       centered: true,
       content:
         matches.length > 0 ? (
-          <CheckList form={form} matches={matches} columns={fields} rowKey="per_code" />
+          <CheckList form={form} matches={matches} columns={fields} rowKey="eqpt_code" />
         ) : null,
       onOk: async () => {
         await axios
@@ -93,7 +96,7 @@ const FormModal = ({ value }) => {
 
   const onUnlock = () => {
     axios
-      .post(`${EQUIPMENT_LIST.DELETE}?eqpt_id=${value.eqpt_id}`)
+      .post(`${EQUIPMENT_LIST.TOGGLE_LOCKS}?eqpt_id=${value.eqpt_id}`)
       .then(response => {
         mutate(EQUIPMENT_LIST.READ);
 
@@ -158,12 +161,12 @@ const FormModal = ({ value }) => {
           <PullingLimit form={form} value={value} />
 
           <Comments form={form} value={value} />
-        </TabPane>
+          <Divider>Compartments</Divider>
 
-        <TabPane className="ant-tab-window" tab={t('tabColumns.compartments')} forceRender={true} key="3">
           <EquipmentType form={form} value={value} onChange={setEquipment} />
           <Compartments form={form} value={value} equipment={equipment} />
         </TabPane>
+
         <TabPane className="ant-tab-window" tab={t('tabColumns.expiryDates')} forceRender={true} key="4">
           <Expiry form={form} value={value} type={EQUIPMENT_LIST.EXPIRY} />
         </TabPane>
@@ -189,7 +192,12 @@ const FormModal = ({ value }) => {
         </Button>
 
         {!IS_CREATING && (
-          <Button type="dashed" icon="unlock" style={{ float: 'right', marginRight: 5 }} onClick={onUnlock}>
+          <Button
+            type="dashed"
+            icon={<UnlockOutlined />}
+            style={{ float: 'right', marginRight: 5 }}
+            onClick={onUnlock}
+          >
             {t('operations.unlockAll')}
           </Button>
         )}

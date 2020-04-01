@@ -24,13 +24,17 @@ const Issuer = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_issuer: value.kya_issuer
+        kya_key_issuer: value.kya_key_issuer
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="kya_issuer" label={t('fields.issuer')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item
+      name="kya_key_issuer"
+      label={t('fields.issuer')}
+      rules={[{ required: true, validator: validate }]}
+    >
       <Select
         disabled={!!value}
         loading={isValidating}

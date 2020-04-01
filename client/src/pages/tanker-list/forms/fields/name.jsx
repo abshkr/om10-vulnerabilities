@@ -1,33 +1,31 @@
-import React, { useEffect } from "react";
-import { Form, Input } from "antd";
+import React, { useEffect } from 'react';
+import { Form, Input } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-const Name = ({ form, value, t }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+const Name = ({ form, value }) => {
+  const { t } = useTranslation();
+
+  const { setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         tnkr_name: value.tnkr_name
       });
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input && input.length > 40) {
-      callback(
-        `${t("placeholder.maxCharacters")}: 40 ─ ${t(
-          "descriptions.maxCharacters"
-        )}`
-      );
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={t("fields.name")}>
-      {getFieldDecorator("tnkr_name", {
-        rules: [{ required: false, validator: validate }]
-      })(<Input />)}
+    <Form.Item name="tnkr_name" label={t('fields.name')} rules={[{ required: false, validator: validate }]}>
+      <Input />
     </Form.Item>
   );
 };

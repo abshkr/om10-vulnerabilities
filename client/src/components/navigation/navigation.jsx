@@ -15,7 +15,8 @@ import {
   ExperimentOutlined,
   PrinterOutlined,
   DeploymentUnitOutlined,
-  ClusterOutlined
+  ClusterOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 
 import { LogoContainer, MenuContainer } from './style';
@@ -140,21 +141,21 @@ const Navigation = () => {
             </span>
           }
         >
-          <Menu.Item key={ROUTES.ID_ASSIGNMENT}>{t('pageNames.idAssignment')}</Menu.Item>
+          <Menu.Item key={ROUTES.ID_ASSIGNMENT}>{t('pageNames.idAssignment')} ✔️</Menu.Item>
 
           <Menu.Item key={ROUTES.PERSONNEL}>{t('pageNames.personnel')} ✔️</Menu.Item>
 
           <Menu.Item key={ROUTES.ROLE_ACCESS_MANAGEMENT}>{t('pageNames.roleAccessManagement')}</Menu.Item>
 
-          <Menu.Item key={ROUTES.EXPIRY_DATES}>{t('pageNames.expiryDates')}</Menu.Item>
+          <Menu.Item key={ROUTES.EXPIRY_DATES}>{t('pageNames.expiryDates')} ✔️</Menu.Item>
 
           <Menu.Item key={ROUTES.AREA}>{t('pageNames.area')}</Menu.Item>
 
-          <Menu.Item key={ROUTES.SITE_ACCESS_DEVICES}>{t('pageNames.siteAccessDevices')}</Menu.Item>
+          <Menu.Item key={ROUTES.SITE_ACCESS_DEVICES}>{t('pageNames.siteAccessDevices')} ✔️</Menu.Item>
 
           <Menu.Item key={ROUTES.GATE_PERMISSION}>{t('pageNames.gatePermission')}</Menu.Item>
 
-          <Menu.Item key={ROUTES.GATE_CONTROL}>{t('pageNames.gateControl')}</Menu.Item>
+          <Menu.Item key={ROUTES.GATE_CONTROL}>{t('pageNames.gateControl')} ✔️</Menu.Item>
 
           <Menu.Item key={ROUTES.TIME_CODES}>{t('pageNames.timeCodes')}</Menu.Item>
         </SubMenu>
@@ -210,7 +211,7 @@ const Navigation = () => {
 
           <Menu.Item key={ROUTES.INVENTORY_REQUESTS}>{t('pageNames.inventoryRequests')}</Menu.Item>
 
-          <Menu.Item key={ROUTES.METER_DEVICES}>{t('pageNames.meterDevices')}</Menu.Item>
+          <Menu.Item key={ROUTES.METER_DEVICES}>{t('pageNames.meterDevices')} ✔️</Menu.Item>
         </SubMenu>
 
         <SubMenu
@@ -236,11 +237,11 @@ const Navigation = () => {
         >
           <Menu.Item key={ROUTES.MOVEMENT_NOMINATIONS}>{t('pageNames.movementNominations')}</Menu.Item>
 
-          <Menu.Item key={ROUTES.MOVEMENT_REASONS}>{t('pageNames.movementReasons')}</Menu.Item>
+          <Menu.Item key={ROUTES.MOVEMENT_REASONS}>{t('pageNames.movementReasons')} ✔️</Menu.Item>
 
           <Menu.Item key={ROUTES.MANUAL_TRANSACTIONS}>{t('pageNames.manualTransactions')}</Menu.Item>
 
-          <Menu.Item key={ROUTES.SPECIAL_MOVEMENTS}>{t('pageNames.specialMovements')}</Menu.Item>
+          <Menu.Item key={ROUTES.SPECIAL_MOVEMENTS}>{t('pageNames.specialMovements')} ✔️</Menu.Item>
         </SubMenu>
 
         <SubMenu
@@ -260,6 +261,21 @@ const Navigation = () => {
           <Menu.Item key={ROUTES.ADAPTIVE_FLOW_CONTROL}>{t('pageNames.adaptiveFlowControl')} ✔️</Menu.Item>
 
           <Menu.Item key={ROUTES.FSC_STATUS}>{t('pageNames.fscStatus')} ✔️</Menu.Item>
+        </SubMenu>
+
+        <SubMenu
+          title={
+            <span>
+              <UserOutlined />
+              <span>{t('pageMenu.user')}</span>
+            </span>
+          }
+        >
+          <Menu.Item key={ROUTES.USER_PROFILE}>{t('pageNames.profile')}</Menu.Item>
+
+          <Menu.Item key={ROUTES.SITE_CONFIGURATION}>{t('pageNames.siteConfiguration')}</Menu.Item>
+
+          <Menu.Item key={ROUTES.LOG_OUT}>{t('pageNames.logOut')}</Menu.Item>
         </SubMenu>
       </Menu>
     </MenuContainer>

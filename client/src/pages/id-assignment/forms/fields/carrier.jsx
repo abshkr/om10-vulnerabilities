@@ -26,8 +26,10 @@ const Carrier = ({ form, value, onChange }) => {
       setFieldsValue({
         kya_tnkr_cmpy: value.kya_tnkr_cmpy
       });
+
+      onChange(value.kya_tnkr_cmpy);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 
   return (
     <Form.Item

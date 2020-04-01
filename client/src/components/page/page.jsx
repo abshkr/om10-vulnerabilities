@@ -1,11 +1,15 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { PageHeader } from 'antd';
+import useSWR from 'swr';
 import _ from 'lodash';
+import { AUTH } from '../../api';
 
 import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } from './style';
 
-const Page = ({ name, page, children, modifiers, icon, description, isBlank }) => {
+const Page = ({ name, page, children, modifiers, description, isBlank }) => {
+  const { data: payload } = useSWR(AUTH.PERMISSIONS);
+
   const routes = [
     {
       path: 'index',
@@ -23,16 +27,13 @@ const Page = ({ name, page, children, modifiers, icon, description, isBlank }) =
 
   const filtered = name ? routes : _.reject(routes, ['path', 'second']);
 
+  console.log(payload);
   return (
     <PageContainer>
       <PageHeaderContainer>
         <PageHeader
           title={name || page}
           style={{ width: '30vw' }}
-          avatar={{
-            icon,
-            style: { color: '#68a4ec', backgroundColor: '#d1e3f9' }
-          }}
           subTitle={description}
           breadcrumb={{ routes: filtered }}
         ></PageHeader>

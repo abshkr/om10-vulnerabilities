@@ -1,33 +1,30 @@
-import React, { useEffect } from "react";
-import { Form, InputNumber } from "antd";
+import React, { useEffect } from 'react';
+import { Form, InputNumber } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-const Pin = ({ form, value, t }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+const Pin = ({ form, value }) => {
+  const { t } = useTranslation();
+
+  const { setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
         tnkr_pin: value.tnkr_pin
       });
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input && input.length > 40) {
-      callback(
-        `${t("placeholder.maxCharacters")}: 40 ─ ${t(
-          "descriptions.maxCharacters"
-        )}`
-      );
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
-    callback();
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={t("fields.pin")}>
-      {getFieldDecorator("tnkr_pin", {
-        rules: [{ required: false, validator: validate }]
-      })(<InputNumber />)}
+    <Form.Item name="tnkr_pin" label={t('fields.pin')} rules={[{ required: false, validator: validate }]}>
+      <InputNumber />
     </Form.Item>
   );
 };

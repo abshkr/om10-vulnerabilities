@@ -8,7 +8,7 @@ const paths = [
   },
   {
     path: ROUTES.LOG_OUT,
-    component: lazy(() => import('../pages/logout'))
+    component: lazy(() => import('../pages/log-out'))
   },
 
   {

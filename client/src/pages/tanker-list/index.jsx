@@ -1,2 +1,2 @@
-import TankerList from "./tankerList";
+import TankerList from './tanker-list';
 export default TankerList;

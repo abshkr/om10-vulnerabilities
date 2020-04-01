@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { SmileOutlined, FrownOutlined, IdcardOutlined, LockOutlined } from '@ant-design/icons';
-import { Form, Input, Button, notification, Divider } from 'antd';
+import { Form, Input, Button, notification, Divider, Carousel } from 'antd';
 
 import { useHistory } from 'react-router-dom';
-import Particles from 'react-particles-js';
 
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
@@ -17,7 +16,8 @@ import {
   LoginFooterLogo,
   GraphicContainer,
   FormBlock,
-  LoginTitle
+  LoginTitle,
+  LoginHeader
 } from './style';
 
 import * as actions from '../../actions/auth';
@@ -73,6 +73,7 @@ const Login = ({ handleLogin, auth }) => {
             <span>OMEGA</span> 5000
           </LoginTitle>
 
+          <LoginHeader>Terminal Automation At Your Fingertips</LoginHeader>
           <LoginSubtitle>Login to your account</LoginSubtitle>
 
           <Form onFinish={handleSubmit}>
@@ -113,37 +114,29 @@ const Login = ({ handleLogin, auth }) => {
       </FormContainer>
 
       <GraphicContainer>
-        <Particles
-          height="95vh"
-          params={{
-            particles: {
-              shape: {
-                type: 'triangle'
-              },
-              number: {
-                value: 80
-              },
-              color: {
-                value: '#68a4ec'
-              },
-              size: {
-                value: 3
-              },
-              line_linked: {
-                enable: true,
-                color: '#bbbbbb'
-              }
-            },
-            interactivity: {
-              events: {
-                onhover: {
-                  enable: true,
-                  mode: 'grab'
-                }
-              }
-            }
-          }}
-        />
+        <Carousel autoplay dotPosition="bottom">
+          <div>
+            <div className="image">
+              <img src="/svg/oil_truck.svg" />
+            </div>
+          </div>
+          <div>
+            <div className="image">
+              <img src="/svg/map_pointer.svg" />
+            </div>
+            >
+          </div>
+          <div>
+            <div className="image">
+              <img src="/svg/cargo_ship_one.svg" />
+            </div>
+          </div>
+          <div>
+            <div className="image">
+              <img src="/svg/seo.svg" />
+            </div>
+          </div>
+        </Carousel>
       </GraphicContainer>
     </LoginContainer>
   );

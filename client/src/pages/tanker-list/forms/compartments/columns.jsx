@@ -1,6 +1,3 @@
-import React from 'react';
-import { LockOutlined, UnlockOutlined } from '@ant-design/icons';
-
 const columns = t => [
   {
     title: t('fields.compartment'),
@@ -14,7 +11,7 @@ const columns = t => [
     dataIndex: 'safefill',
     key: 'safefill',
     align: 'center',
-    width: 120
+    width: 100
   },
   {
     title: t('fields.safeFillUnit'),
@@ -28,7 +25,7 @@ const columns = t => [
     dataIndex: 'sfl',
     key: 'sfl',
     align: 'center',
-    width: 120
+    width: 100
   },
   {
     title: t('fields.locked'),
@@ -36,8 +33,7 @@ const columns = t => [
     key: 'adj_cmpt_lock',
     editable: true,
     align: 'center',
-    width: 120,
-    render: text => <span>{text ? <LockOutlined /> : <UnlockOutlined />}</span>
+    width: 100
   }
 ];
 

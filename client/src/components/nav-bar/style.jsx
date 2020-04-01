@@ -4,7 +4,7 @@ const NavBarContainer = styled.div`
   height: 50px;
   display: flex;
   align-items: center;
-
+  border-bottom: 1px solid #e3ebf6;
   & .ant-input-affix-wrapper {
     border: none;
   }

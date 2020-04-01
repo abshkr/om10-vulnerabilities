@@ -41,7 +41,9 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
   useEffect(() => {
     if (record) {
       setFieldsValue({
-        ed_status: record.ed_status
+        edt_type_desc: record.edt_type_desc,
+        ed_status: record.ed_status,
+        ed_exp_date: record.ed_exp_date
       });
     }
   }, [record, setFieldsValue]);

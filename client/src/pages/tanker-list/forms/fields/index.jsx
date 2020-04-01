@@ -2,19 +2,20 @@ import Depot from './depot';
 import Owner from './owner';
 import Code from './code';
 import Name from './name';
-import EquipmentType from './equipmentType';
+import EquipmentType from './equipment-type';
 import Carrier from './carrier';
-import TotalTrips from './totalTrips';
-import LastTrip from './lastTrip';
+import TotalTrips from './total-trips';
+import LastTrip from './last-trip';
 import Comments from './comments';
-import TankerPrompt from './tankerPrompt';
+import TankerPrompt from './tanker-prompt';
 import Pin from './pin';
-import MaxKg from './maxKg';
+import MaxKg from './max-kg';
 import Destination from './destination';
-import LastDepot from './lastDepot';
-import CurrentDepot from './currentDepot';
+import LastDepot from './last-depot';
+import CurrentDepot from './current-depot';
 import Locks from './locks';
 import SLP from './slp';
+
 export {
   Depot,
   Owner,

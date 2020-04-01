@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from 'antd';
+import { Button, Spin } from 'antd';
 import { AgGridReact } from 'ag-grid-react';
 
 import { FuzzyFilter, MultiFilter, BooleanFilter } from './filters';
@@ -13,7 +13,7 @@ import {
   NullRenderer
 } from './renderers';
 
-import { ClearOutlined } from '@ant-design/icons';
+import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
 
 import { NumericEditor, SelectEditor } from './editors';
 import { LoadingStatus } from './status';
@@ -78,12 +78,6 @@ const Table = ({
   };
 
   useEffect(() => {
-    if (api) {
-      isLoading && !data ? api.showLoadingOverlay() : api.hideOverlay();
-    }
-  }, [isLoading, api, data]);
-
-  useEffect(() => {
     const query = value === '' ? undefined : value;
 
     if (api) {
@@ -97,37 +91,55 @@ const Table = ({
     }
   }, [search]);
 
-  return (
-    <div
+  const icon = (
+    <LoadingOutlined
       style={{
-        width: '100%'
+        fontSize: 24,
+        color: '#68a4ec'
       }}
-      className="ag-theme-balham"
+    />
+  );
+
+  return (
+    <Spin
+      spinning={isLoading}
+      style={{
+        width: '100%',
+        minHeight: height || '100%'
+      }}
+      indicator={icon}
     >
-      <Search value={value} search={setValue} isLoading={isLoading && !data} />
+      <div
+        style={{
+          width: '100%'
+        }}
+        className="ag-theme-balham"
+      >
+        <Search value={value} search={setValue} isLoading={isLoading && !data} />
 
-      <Button icon={<ClearOutlined />} style={{ float: 'right' }} onClick={onFilterClear}>
-        Clear Filters
-      </Button>
+        <Button icon={<ClearOutlined />} style={{ float: 'right' }} onClick={onFilterClear}>
+          Clear Filters
+        </Button>
 
-      <div style={{ float: 'right' }}>{extra}</div>
+        <div style={{ float: 'right' }}>{extra}</div>
 
-      <div style={{ height: `calc(100vh - ${height || '27vh'})`, marginTop: 5 }}>
-        <AgGridReact
-          columnDefs={columns}
-          rowData={data}
-          onGridReady={handleGridReady}
-          frameworkComponents={defaultComponents}
-          onRowDoubleClicked={value => onClick && onClick(value.data)}
-          loadingOverlayComponent="LoadingStatus"
-          rowSelection={selectionMode || 'multiple'}
-          defaultColDef={defaultColumnDef}
-          onCellEditingStopped={onEditingFinished}
-          onRowSelected={handleMultipleSelection}
-          animateRows={true}
-        />
+        <div style={{ height: `calc(100vh - ${height || '27vh'})`, marginTop: 5 }}>
+          <AgGridReact
+            columnDefs={columns}
+            rowData={data}
+            onGridReady={handleGridReady}
+            frameworkComponents={defaultComponents}
+            onRowDoubleClicked={value => onClick && onClick(value.data)}
+            loadingOverlayComponent="LoadingStatus"
+            rowSelection={selectionMode || 'multiple'}
+            defaultColDef={defaultColumnDef}
+            onCellEditingStopped={onEditingFinished}
+            onRowSelected={handleMultipleSelection}
+            animateRows={true}
+          />
+        </div>
       </div>
-    </div>
+    </Spin>
   );
 };
 
