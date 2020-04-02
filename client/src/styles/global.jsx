@@ -8,7 +8,7 @@ const GlobalStyleProvider = createGlobalStyle`
     }
   
   a {
-    color: #68a4ec !important;
+    color: ${props => props.primary} !important;
   }
 
   .editable-cell {

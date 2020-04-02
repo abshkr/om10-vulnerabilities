@@ -25,7 +25,7 @@ class TankView extends Component {
       value: '',
       isLoading: true,
       sorter: 'tank_code',
-      order: 'asc',
+      order: 'asc'
     };
   }
 
@@ -57,14 +57,14 @@ class TankView extends Component {
         />
       ),
       okButtonProps: {
-        style: { display: 'none' },
-      },
+        style: { display: 'none' }
+      }
     });
   };
 
   handleSearch = value => {
     this.setState({
-      value,
+      value
     });
   };
 
@@ -75,23 +75,23 @@ class TankView extends Component {
       axios.spread(tanks => {
         this.setState({
           data: _.orderBy(tanks.data.records, [sorter], [order]),
-          isLoading: false,
+          isLoading: false
         });
-      }),
+      })
     );
   };
 
   handleSorting = value => {
     this.setState({
       sorter: value,
-      isLoading: true,
+      isLoading: true
     });
   };
 
   handleSortOrder = value => {
     this.setState({
       order: value,
-      isLoading: true,
+      isLoading: true
     });
   };
 
@@ -114,15 +114,11 @@ class TankView extends Component {
       <Page page="Operations" name="Tank View">
         <Spin
           spinning={isLoading}
-          indicator={<Icon type="loading" style={{ fontSize: 24, color: '#68a4ec' }} spin />}
+          indicator={<Icon type="loading" style={{ fontSize: 24, color: '#4164e3' }} spin />}
         >
           <Search value={value} search={this.handleSearch} />
 
-          <Select
-            value={sorter}
-            style={{ width: 190, marginRight: 5 }}
-            onChange={this.handleSorting}
-          >
+          <Select value={sorter} style={{ width: 190, marginRight: 5 }} onChange={this.handleSorting}>
             <Select.Option value="tank_base_name">Sort By Product Name</Select.Option>
             <Select.Option value="tank_group">Sort By Group</Select.Option>
             <Select.Option value="tank_name">Sort By Tank Name</Select.Option>

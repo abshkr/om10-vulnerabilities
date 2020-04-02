@@ -6,7 +6,7 @@ const { TabPane } = Tabs;
 const { Option } = Select;
 
 const SideDrawer = ({ visible, handleClose }) => {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   const onLanguageChange = value => {
     localStorage.setItem('lang', value);

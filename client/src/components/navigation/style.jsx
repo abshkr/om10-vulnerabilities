@@ -17,7 +17,7 @@ const MenuContainer = styled.div`
   .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open,
   .ant-menu-submenu-active,
   .ant-menu-submenu-title:hover {
-    color: #68a4ec;
+    color: #4164e3;
   }
 `;
 

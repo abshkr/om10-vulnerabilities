@@ -10,7 +10,7 @@ const Lock = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        prntr_lock: value.prntr_lock === 'Y'
+        prntr_lock: value.prntr_lock
       });
     }
   }, [value, setFieldsValue]);

@@ -10,6 +10,14 @@ const DefaultValue = ({ form, value }) => {
 
   const { t } = useTranslation();
 
+  const onChange = value => {
+    if (!value) {
+      setFieldsValue({
+        edt_def_exp_date: ''
+      });
+    }
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -25,7 +33,7 @@ const DefaultValue = ({ form, value }) => {
 
   return (
     <Form.Item name="edt_def_exp_date" label={t('fields.defaultValue')}>
-      <DatePicker format="DD/MM/YYYY" />
+      <DatePicker format="DD/MM/YYYY HH:mm" showTime={{ format: 'HH:mm' }} onChange={onChange} />
     </Form.Item>
   );
 };

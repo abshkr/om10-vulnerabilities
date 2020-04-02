@@ -13,7 +13,7 @@ const columns = (data, t) => [
       <span>
         <Tag color="green">{tank}</Tag>
       </span>
-    ),
+    )
   },
   {
     title: t('fields.baseProductCode'),
@@ -22,7 +22,7 @@ const columns = (data, t) => [
     width: 200,
     align: 'center',
     // eslint-disable-next-line
-    render: text => <a>{text}</a>,
+    render: text => <a>{text}</a>
   },
   {
     title: t('fields.baseProductName'),
@@ -31,7 +31,7 @@ const columns = (data, t) => [
     width: 250,
     align: 'center',
     filters: generateOptions(data, 'baseName'),
-    onFilter: (value, record) => record.baseName.indexOf(value) === 0,
+    onFilter: (value, record) => record.baseName.indexOf(value) === 0
   },
   {
     title: t('fields.armPriority'),
@@ -40,14 +40,14 @@ const columns = (data, t) => [
     align: 'center',
     filters: generateOptions(data, 'armPriority'),
     width: 250,
-    onFilter: (value, record) => record.armPriority.indexOf(value) === 0,
+    onFilter: (value, record) => record.armPriority.indexOf(value) === 0
   },
   {
     title: t('fields.tankLevel'),
     dataIndex: 'level',
     key: 'level',
     width: 250,
-    align: 'center',
+    align: 'center'
   },
   {
     title: t('fields.currentFlowRate'),
@@ -59,7 +59,7 @@ const columns = (data, t) => [
       <span>
         {value} {t('units.lpm')}
       </span>
-    ),
+    )
   },
   {
     title: t('fields.totalFlowContribution'),
@@ -70,13 +70,13 @@ const columns = (data, t) => [
       <div style={{ display: 'flex', flexDirection: 'column', width: '95%' }}>
         <Progress
           percent={percent}
-          strokeColor={percent > 100 ? '#ec6e68' : '#68a4ec'}
+          strokeColor={percent > 100 ? '#ec6e68' : '#4164e3'}
           strokeWidth={6}
           status={percent > 100 ? 'exception' : 'active'}
         />
       </div>
-    ),
-  },
+    )
+  }
 ];
 
 export default columns;

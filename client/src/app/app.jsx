@@ -27,8 +27,8 @@ const App = () => {
     <Provider store={authStore}>
       <BrowserRouter>
         <Interface>
-          <GlobalStyleProvider />
-          <AntdStyleProvider />
+          <GlobalStyleProvider primary="#4164e3" />
+          <AntdStyleProvider primary="#4164e3" />
           <Suspense fallback={<Loading />}>
             <Switch>
               {paths.map(item => {

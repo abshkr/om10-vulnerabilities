@@ -13,7 +13,7 @@ export const LABEL_COLOR = '#36393f';
 export const LABEL_POINT_STYLE = true;
 
 export const DEFAULT_COLORS = [
-  '#68A4EC',
+  '#4164e3',
   '#dd7e6b',
   '#f9cb9c',
   '#ffe599',

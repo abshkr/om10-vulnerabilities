@@ -17,12 +17,12 @@ const Flags = ({ form, value, onCanEmailChange, onEnabledChange, enabled, canEma
       });
 
       onEnabledChange(value.report_enabled);
-      onCanEmailChange(value.report_canprint);
+      onCanEmailChange(value.report_canemail);
     }
   }, [value, setFieldsValue, onEnabledChange, onCanEmailChange]);
 
   useEffect(() => {
-    if (!enabled) {
+    if (enabled === false) {
       setFieldsValue({
         report_active: false,
         report_canemail: false,

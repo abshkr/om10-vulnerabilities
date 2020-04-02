@@ -7,7 +7,7 @@ const data = {
   datasets: [
     {
       data: [798, 500],
-      backgroundColor: ['#68A4EC', '#e2eefb'],
+      backgroundColor: ['#4164e3', '#e2eefb'],
       hoverBackgroundColor: ['#688eec', '#e2eefb'],
       hoverBorderColor: ['#688eec', '#e2eefb']
     }

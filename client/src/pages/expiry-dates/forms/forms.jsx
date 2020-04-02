@@ -3,7 +3,7 @@ import React from 'react';
 import axios from 'axios';
 import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Form, Button, Tabs, Modal, Divider, notification } from 'antd';
+import { Form, Button, Tabs, Modal, Divider, notification, Tooltip } from 'antd';
 
 import {
   EditOutlined,
@@ -27,7 +27,9 @@ const FormModal = ({ value }) => {
   const IS_CREATING = !value;
 
   const onFinish = values => {
-    values.edt_def_exp_date = values?.edt_def_exp_date?.format(SETTINGS.DATE_TIME_FORMAT);
+    if (values?.edt_def_exp_date !== '') {
+      values.edt_def_exp_date = values?.edt_def_exp_date?.format(SETTINGS.DATE_TIME_FORMAT);
+    }
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -132,14 +134,17 @@ const FormModal = ({ value }) => {
           </Button>
 
           {!IS_CREATING && (
-            <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={onDelete}
-            >
-              {t('operations.delete')}
-            </Button>
+            <Tooltip title={value?.child_count > 0 && 'Disabled Due to the Existence of Child Records.'}>
+              <Button
+                type="danger"
+                icon={<DeleteOutlined />}
+                style={{ float: 'right', marginRight: 5 }}
+                onClick={onDelete}
+                disabled={value?.child_count > 0}
+              >
+                {t('operations.delete')}
+              </Button>
+            </Tooltip>
           )}
         </Form.Item>
       </Form>

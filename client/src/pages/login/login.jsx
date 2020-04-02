@@ -38,7 +38,7 @@ const Login = ({ handleLogin, auth }) => {
           placement: 'bottomRight',
           message: 'Login Successful.',
           description: `You have logged in as ${values.code}`,
-          icon: <SmileOutlined style={{ color: '#68a4ec' }} />
+          icon: <SmileOutlined style={{ color: '#4164e3' }} />
         });
 
         history.push(ROUTES.DASHBOARD);
@@ -117,23 +117,22 @@ const Login = ({ handleLogin, auth }) => {
         <Carousel autoplay dotPosition="bottom">
           <div>
             <div className="image">
-              <img src="/svg/oil_truck.svg" />
+              <img src="/svg/oil_truck.svg" alt="oil_tanker" />
             </div>
           </div>
           <div>
             <div className="image">
-              <img src="/svg/map_pointer.svg" />
-            </div>
-            >
-          </div>
-          <div>
-            <div className="image">
-              <img src="/svg/cargo_ship_one.svg" />
+              <img src="/svg/calender.svg" alt="calender" />
             </div>
           </div>
           <div>
             <div className="image">
-              <img src="/svg/seo.svg" />
+              <img src="/svg/cargo_ship_one.svg" alt="cargo_ship" />
+            </div>
+          </div>
+          <div>
+            <div className="image">
+              <img src="/svg/seo.svg" alt="seo" />
             </div>
           </div>
         </Carousel>

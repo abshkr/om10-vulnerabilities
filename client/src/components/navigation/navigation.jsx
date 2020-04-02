@@ -241,7 +241,7 @@ const Navigation = () => {
 
           <Menu.Item key={ROUTES.MANUAL_TRANSACTIONS}>{t('pageNames.manualTransactions')}</Menu.Item>
 
-          <Menu.Item key={ROUTES.SPECIAL_MOVEMENTS}>{t('pageNames.specialMovements')} ✔️</Menu.Item>
+          <Menu.Item key={ROUTES.SPECIAL_MOVEMENTS}>{t('pageNames.specialMovements')} </Menu.Item>
         </SubMenu>
 
         <SubMenu

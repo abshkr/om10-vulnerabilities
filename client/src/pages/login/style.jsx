@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const LoginContainer = styled.div`
   height: 100vh;
-  background-color: #fdfdfd;
+  background-color: #4164e3;
   display: flex;
 `;
 
