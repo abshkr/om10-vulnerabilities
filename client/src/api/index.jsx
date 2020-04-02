@@ -32,6 +32,7 @@ import * as MOVEMENT_REASONS from './movement-reasons';
 import * as METER_DEVICES from './meter-devices';
 import * as SITE_ACCESS_DEVICES from './site-access-devices';
 import * as MANUAL_TRANSACTIONS from './manual-transactions';
+import * as GATE_PERMISSION from './gate-permission';
 
 export {
   AUTH,
@@ -67,5 +68,6 @@ export {
   METER_DEVICES,
   SITE_ACCESS_DEVICES,
   MANUAL_TRANSACTIONS,
-  TANKER_LIST
+  TANKER_LIST,
+  GATE_PERMISSION
 };

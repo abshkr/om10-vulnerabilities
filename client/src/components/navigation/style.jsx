@@ -1,23 +1,17 @@
 import styled from 'styled-components';
 
 const MenuContainer = styled.div`
-  .ant-menu-vertical .ant-menu-item,
-  .ant-menu-vertical-left .ant-menu-item,
-  .ant-menu-vertical-right .ant-menu-item,
-  .ant-menu-inline .ant-menu-item,
-  .ant-menu-vertical .ant-menu-submenu-title,
-  .ant-menu-vertical-left .ant-menu-submenu-title,
-  .ant-menu-vertical-right .ant-menu-submenu-title,
-  .ant-menu-inline .ant-menu-submenu-title {
-    font-weight: 550;
-  }
-
-  .ant-menu-item:hover,
-  .ant-menu-item-active,
-  .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open,
-  .ant-menu-submenu-active,
-  .ant-menu-submenu-title:hover {
-    color: #4164e3;
+  .ant-menu-inline-collapsed > .ant-menu-item .anticon,
+  .ant-menu-inline-collapsed > .ant-menu-item-group > .ant-menu-item-group-list > .ant-menu-item .anticon,
+  .ant-menu-inline-collapsed
+    > .ant-menu-item-group
+    > .ant-menu-item-group-list
+    > .ant-menu-submenu
+    > .ant-menu-submenu-title
+    .anticon,
+  .ant-menu-inline-collapsed > .ant-menu-submenu > .ant-menu-submenu-title .anticon {
+    font-size: 19px !important;
+    margin-left: -5px;
   }
 `;
 

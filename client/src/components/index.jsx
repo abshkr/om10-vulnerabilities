@@ -15,6 +15,7 @@ import IButton from './i-button';
 import CheckList from './check-list';
 import PasswordReset from './password-reset';
 import SideDrawer from './side-drawer';
+import Icons from './icons';
 
 export {
   Expiry,
@@ -33,5 +34,6 @@ export {
   IButton,
   CheckList,
   PasswordReset,
-  SideDrawer
+  SideDrawer,
+  Icons
 };

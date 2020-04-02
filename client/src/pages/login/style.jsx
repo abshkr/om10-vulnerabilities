@@ -7,7 +7,7 @@ const LoginContainer = styled.div`
 `;
 
 const FormContainer = styled.div`
-  width: 33.3%;
+  width: 33.3vw;
   border: 1px solid #e2eefb;
   background-color: white;
   height: 100vh;
@@ -68,8 +68,25 @@ const LoginLinks = styled.div`
   padding-right: 20px;
 `;
 
+const SliderContainer = styled.div`
+  height: 90vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  align-content: center;
+  text-align: center;
+  color: white;
+
+  & h3 {
+    color: white;
+    font-weight: 600px;
+  }
+`;
+
 const GraphicContainer = styled.div`
-  width: 66.6%;
+  width: 66vw;
   height: 100vh;
 
   & .ant-carousel {
@@ -77,12 +94,14 @@ const GraphicContainer = styled.div`
     height: 100vh;
   }
 
-  .image {
-    height: 90vh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .ant-carousel .slick-slide {
+    text-align: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  & .ant-carousel .slick-dots-bottom {
+    right: 38px;
   }
 `;
 
@@ -102,5 +121,6 @@ export {
   LoginFooterLogo,
   GraphicContainer,
   FormBlock,
-  LoginTitle
+  LoginTitle,
+  SliderContainer
 };

@@ -50,6 +50,7 @@ const AntdStyleProvider = createGlobalStyle`
     font-size: 14px !important;
   }
   
+
   .ant-btn-primary:active,
   .ant-btn-primary.active {
     background-color: ${props => props.primary};

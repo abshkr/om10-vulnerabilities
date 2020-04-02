@@ -344,7 +344,17 @@
     "deviceSecurity": "Device Security",
     "authLevelName": "Auth Level Name",
     "accessType": "Access Type",
-    "productClass": "Product Class"
+    "productClass": "Product Class",
+    "permissionId": "Permission Id",
+    "permissionName": "Permission Name",
+    "deviceLockout": "Device Lockout",
+    "devicePinPassword": "Device Pin Password",
+    "rules": "Rules",
+    "permissionRuleId": "Permission Rule Id",
+    "permissionRuleClass": "Permission Rule Class",
+    "authorityType": "Authority Type",
+    "firstRule": "First Rule?",
+    "expiryCheck": "Expiry Check?"
   },
 
   "pageMenu": {
@@ -496,7 +506,8 @@
     "clear": "Clear",
     "deleteTransfer": "Delete Transfer",
     "calculateDrawer": "Calculate Drawer",
-    "getTankDensities": "Get Tank Densities"
+    "getTankDensities": "Get Tank Densities",
+    "addPermissions": "Add Permissions"
   },
 
   "tabColumns": {
@@ -522,7 +533,8 @@
     "calculate": "Calculate",
     "transferDetails": "Transfer Details",
     "cumulativeBaseProduct": "Cumulative Base Product Quantities",
-    "cumulativeMeterTotals": "Cumulative Meter Totals"
+    "cumulativeMeterTotals": "Cumulative Meter Totals",
+    "rules": "Rules"
   },
 
   "messages": {

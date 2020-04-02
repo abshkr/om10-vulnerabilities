@@ -228,7 +228,7 @@ const paths = [
 
   {
     path: ROUTES.GATE_PERMISSION,
-    component: lazy(() => import('../pages/work-in-progress'))
+    component: lazy(() => import('../pages/gate-permission'))
   },
 
   {

@@ -17,7 +17,8 @@ import {
   GraphicContainer,
   FormBlock,
   LoginTitle,
-  LoginHeader
+  LoginHeader,
+  SliderContainer
 } from './style';
 
 import * as actions from '../../actions/auth';
@@ -115,26 +116,45 @@ const Login = ({ handleLogin, auth }) => {
 
       <GraphicContainer>
         <Carousel autoplay dotPosition="bottom">
-          <div>
-            <div className="image">
+          <>
+            <SliderContainer>
               <img src="/svg/oil_truck.svg" alt="oil_tanker" />
-            </div>
-          </div>
-          <div>
-            <div className="image">
+              <div>
+                <h3>Customize Your Equipment</h3>
+                <p>With OMEGA you can manage and create Equipment with a few clicks.</p>
+              </div>
+            </SliderContainer>
+          </>
+          <>
+            <SliderContainer>
               <img src="/svg/calender.svg" alt="calender" />
-            </div>
-          </div>
-          <div>
-            <div className="image">
+              <div>
+                <h3>Scheduling</h3>
+                <p>Schedule your Loads ahead of time to improve efficiency with OMEGA. </p>
+              </div>
+            </SliderContainer>
+          </>
+          <>
+            <SliderContainer>
               <img src="/svg/cargo_ship_one.svg" alt="cargo_ship" />
-            </div>
-          </div>
-          <div>
-            <div className="image">
+              <div>
+                <h3>Inventory Management</h3>
+                <p>Scale your ability to manage multiple inventories using bulk editing in OMEGA.</p>
+              </div>
+            </SliderContainer>
+          </>
+          <>
+            <SliderContainer>
               <img src="/svg/seo.svg" alt="seo" />
-            </div>
-          </div>
+              <div>
+                <h3>Detailed Reporting</h3>
+                <p>
+                  OMEGA allows the generation of complex reports to help you understand the detailed workings
+                  of your Terminal
+                </p>
+              </div>
+            </SliderContainer>
+          </>
         </Carousel>
       </GraphicContainer>
     </LoginContainer>

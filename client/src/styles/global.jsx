@@ -26,5 +26,9 @@ const GlobalStyleProvider = createGlobalStyle`
     padding: 4px 11px;
   }
 
+  .ag-theme-balham .ag-row-selected {
+      background-color: #0776ff42;
+  }
+
 `;
 export default GlobalStyleProvider;

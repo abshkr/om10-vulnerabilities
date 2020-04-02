@@ -3,7 +3,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu } from 'antd';
+import { Menu, Modal } from 'antd';
 import useSWR from 'swr';
 import {
   FireOutlined,
@@ -16,7 +16,8 @@ import {
   PrinterOutlined,
   DeploymentUnitOutlined,
   ClusterOutlined,
-  UserOutlined
+  UserOutlined,
+  ExclamationCircleOutlined
 } from '@ant-design/icons';
 
 import { LogoContainer, MenuContainer } from './style';
@@ -24,6 +25,7 @@ import { ROUTES } from '../../constants';
 import { AUTH } from '../../api';
 import Loading from '../loading';
 
+const { confirm } = Modal;
 const { SubMenu } = Menu;
 
 const Navigation = () => {
@@ -33,7 +35,17 @@ const Navigation = () => {
   const { isValidating: isLoading } = useSWR(AUTH.PERMISSIONS, { refreshInterval: 0 });
 
   const handleNavigation = event => {
-    if (event?.key) {
+    if (event?.key === ROUTES.LOG_OUT) {
+      confirm({
+        title: 'Are you sure want to Log Out?',
+        icon: <ExclamationCircleOutlined />,
+        okText: 'Log Out',
+        centered: true,
+        okType: 'danger',
+        cancelText: 'Cancel',
+        onOk: () => history.push(event.key)
+      });
+    } else {
       history.push(event.key);
     }
   };
