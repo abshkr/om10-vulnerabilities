@@ -10,7 +10,7 @@ import {
   DateRenderer,
   StatusRenderer,
   TagRenderer,
-  NullRenderer
+  NullRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -33,7 +33,7 @@ const defaultComponents = {
   TagRenderer,
   NullRenderer,
   NumericEditor,
-  SelectEditor
+  SelectEditor,
 };
 
 const defaultColumnDef = {};
@@ -49,7 +49,7 @@ const Table = ({
   search,
   selectionMode,
   apiContext,
-  extra
+  extra,
 }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
@@ -61,7 +61,7 @@ const Table = ({
     }
   };
 
-  const handleGridReady = params => {
+  const handleGridReady = (params) => {
     setAPI(params.api);
 
     if (apiContext) {
@@ -95,7 +95,7 @@ const Table = ({
     <LoadingOutlined
       style={{
         fontSize: 24,
-        color: '#4164e3'
+        color: '#4164e3',
       }}
     />
   );
@@ -105,37 +105,38 @@ const Table = ({
       spinning={isLoading}
       style={{
         width: '100%',
-        minHeight: height || '100%'
+        minHeight: height || '100%',
       }}
       indicator={icon}
     >
       <div
         style={{
-          width: '100%'
+          width: '100%',
         }}
         className="ag-theme-balham"
       >
         <Search value={value} search={setValue} isLoading={isLoading && !data} />
 
-        <Button icon={<ClearOutlined />} style={{ float: 'right' }} onClick={onFilterClear}>
+        <Button icon={<ClearOutlined />} style={{ float: 'right', marginLeft: 10 }} onClick={onFilterClear}>
           Clear Filters
         </Button>
 
         <div style={{ float: 'right' }}>{extra}</div>
 
-        <div style={{ height: `calc(100vh - ${height || '27vh'})`, marginTop: 5 }}>
+        <div style={{ height: `calc(100vh - ${height || '255px'})`, marginTop: 5 }}>
           <AgGridReact
             columnDefs={columns}
             rowData={data}
             onGridReady={handleGridReady}
             frameworkComponents={defaultComponents}
-            onRowDoubleClicked={value => onClick && onClick(value.data)}
+            onRowDoubleClicked={(value) => onClick && onClick(value.data)}
             loadingOverlayComponent="LoadingStatus"
             rowSelection={selectionMode || 'multiple'}
             defaultColDef={defaultColumnDef}
             onCellEditingStopped={onEditingFinished}
             onRowSelected={handleMultipleSelection}
             animateRows={true}
+            enableCellTextSelection={true}
           />
         </div>
       </div>

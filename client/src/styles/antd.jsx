@@ -4,7 +4,7 @@ const AntdStyleProvider = createGlobalStyle`
 
 
   .ant-tab-window {
-    height: 70vh;
+    height: calc(85vh - 200px);
     overflow-y: auto;
     padding-right: 10px;
     margin-bottom: 10px;
@@ -45,7 +45,7 @@ const AntdStyleProvider = createGlobalStyle`
   .ant-btn-primary {
     background-color: #fff;
     border: 1px solid #43454a1f;
-    color: ${props => props.primary};
+    color: ${(props) => props.primary};
     box-shadow: none;
     font-size: 14px !important;
   }
@@ -53,13 +53,13 @@ const AntdStyleProvider = createGlobalStyle`
 
   .ant-btn-primary:active,
   .ant-btn-primary.active {
-    background-color: ${props => props.primary};
+    background-color: ${(props) => props.primary};
     border: 1px solid #43454a1f;
   }
   
   .ant-btn-primary:hover,
   .ant-btn-primary:focus {
-    background-color: ${props => props.primary};
+    background-color: ${(props) => props.primary};
     border: 1px solid #43454a1f;
   }
   
@@ -70,57 +70,52 @@ const AntdStyleProvider = createGlobalStyle`
   .ant-form-item {
     margin-bottom: 10px !important;
   }
-    
-  .ant-modal-confirm .ant-modal-body {
-    padding: 20px !important;
-    padding-top: 20px !important;
-  }
-  
+
   .ant-modal-confirm-body .ant-modal-confirm-content {
     margin-left: 0px !important;
   }
   
   .ant-tabs-nav .ant-tabs-tab:hover {
-    color: ${props => props.primary};
+    color: ${(props) => props.primary};
   }
   
   .ant-tabs-nav .ant-tabs-tab-active {
-    color: ${props => props.primary};
+    color: ${(props) => props.primary};
   }
   
   .ant-tabs-ink-bar {
-    background-color: ${props => props.primary};
+    background-color: ${(props) => props.primary};
   }
   
   .ant-checkbox-checked::after {
-    border-color: ${props => props.primary};
+    border-color: ${(props) => props.primary};
   }
   
   .ant-checkbox-checked .ant-checkbox-inner {
-    border-color: ${props => props.primary};
-    background-color: ${props => props.primary};
+    border-color: ${(props) => props.primary};
+    background-color: ${(props) => props.primary};
   }
   
   .ant-checkbox-wrapper:hover .ant-checkbox-inner,
   .ant-checkbox:hover .ant-checkbox-inner,
   .ant-checkbox-input:focus + .ant-checkbox-inner {
-    border-color: ${props => props.primary};
+    border-color: ${(props) => props.primary};
   }
   
   .ant-modal-confirm-info .ant-modal-confirm-body > .anticon {
-    color: ${props => props.primary};
+    color: ${(props) => props.primary};
   }
   
   .ant-pagination-item-active {
-    border-color: ${props => props.primary};
+    border-color: ${(props) => props.primary};
   }
   
   .ant-switch-checked {
-    background-color: ${props => props.primary};
+    background-color: ${(props) => props.primary};
   }
   
   .ant-modal-confirm .ant-modal-confirm-btns {
-    margin-top: 15px !important;
+    margin-top: 0px !important;
   }
   
   .ant-checkbox-group {
@@ -130,8 +125,8 @@ const AntdStyleProvider = createGlobalStyle`
   
   .ant-btn:hover,
   .ant-btn:focus {
-    color: ${props => props.primary};
-    border-color: ${props => props.primary};
+    color: ${(props) => props.primary};
+    border-color: ${(props) => props.primary};
   }
   
   .ant-btn-primary:hover,
@@ -147,21 +142,21 @@ const AntdStyleProvider = createGlobalStyle`
   
   .ant-input:focus {
     box-shadow: none;
-    border-color: ${props => props.primary};
+    border-color: ${(props) => props.primary};
   }
   
   .ant-input:hover {
     box-shadow: none;
-    border-color: ${props => props.primary};
+    border-color: ${(props) => props.primary};
   }
   
   .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
-    background: ${props => props.primary};
-    border-color: ${props => props.primary};
+    background: ${(props) => props.primary};
+    border-color: ${(props) => props.primary};
   }
   
   .ant-radio-button-wrapper:hover {
-    color: ${props => props.primary};
+    color: ${(props) => props.primary};
   }
   
   .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover {

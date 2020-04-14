@@ -19,13 +19,13 @@ const Personnel = () => {
 
   const fields = columns(t);
 
-  const handleClick = value => {
+  const handleClick = (value) => {
     FormModal({
       value,
       form: <Forms value={value} />,
       id: value?.per_code,
       name: value?.per_name,
-      t
+      t,
     });
   };
 

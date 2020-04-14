@@ -8,7 +8,7 @@ import {
   CloseOutlined,
   CalculatorOutlined,
   ReloadOutlined,
-  SaveOutlined
+  SaveOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, notification, Modal, Divider, message } from 'antd';
@@ -37,7 +37,7 @@ const FormModal = ({ value }) => {
   const FROM = ['1', '2'];
   const TO = ['0', '2'];
 
-  const onFinish = values => {
+  const onFinish = (values) => {
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -51,23 +51,23 @@ const FormModal = ({ value }) => {
         await axios
           .post(IS_CREATING ? SPECIAL_MOVEMENTS.CREATE : SPECIAL_MOVEMENTS.UPDATE, values)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               Modal.destroyAll();
 
               mutate(SPECIAL_MOVEMENTS.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.createSuccess')
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.createSuccess'),
               });
             })
           )
-          .catch(error => {
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
             });
           });
-      }
+      },
     });
   };
 
@@ -83,22 +83,22 @@ const FormModal = ({ value }) => {
         await axios
           .post(SPECIAL_MOVEMENTS.DELETE, value)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               mutate(SPECIAL_MOVEMENTS.READ);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`
+                description: `${t('descriptions.deleteSuccess')}`,
               });
             })
           )
-          .catch(error => {
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: t('descriptions.deleteFailed')
+              description: t('descriptions.deleteFailed'),
             });
           });
-      }
+      },
     });
   };
 
@@ -113,20 +113,28 @@ const FormModal = ({ value }) => {
       onOk: async () => {
         try {
           const values = await form.validateFields();
-          await axios.post(SPECIAL_MOVEMENTS.CALCULATE, values).then(response => {
-            form.setFieldsValue({
-              mlitm_qty_amb: response?.data?.real_litre,
-              mlitm_qty_cor: response?.data?.real_litre15,
-              mlitm_qty_kg: response?.data?.real_kg
+          await axios
+            .post(SPECIAL_MOVEMENTS.CALCULATE, {
+              frm_baseCd: values.mlitm_prodcode_to,
+              frm_which_type: 'LT',
+              frm_real_amount: values.mlitm_qty_amb,
+              frm_real_temp: values.mlitm_temp_amb,
+              frm_real_dens: values.mlitm_dens_cor,
+            })
+            .then((response) => {
+              form.setFieldsValue({
+                mlitm_qty_amb: response?.data?.real_litre,
+                mlitm_qty_cor: response?.data?.real_litre15,
+                mlitm_qty_kg: response?.data?.real_kg,
+              });
             });
-          });
         } catch (error) {
           message.error({
             key: 'calc',
-            content: t('descriptions.validationFailed')
+            content: t('descriptions.validationFailed'),
           });
         }
-      }
+      },
     });
   };
 
@@ -145,29 +153,29 @@ const FormModal = ({ value }) => {
           await axios
             .post(SPECIAL_MOVEMENTS.SUBMIT, values)
             .then(
-              axios.spread(response => {
+              axios.spread((response) => {
                 Modal.destroyAll();
 
                 mutate(SPECIAL_MOVEMENTS.READ);
                 notification.success({
                   message: t('messages.submitSuccess'),
-                  description: t('descriptions.submitSuccess')
+                  description: t('descriptions.submitSuccess'),
                 });
               })
             )
-            .catch(error => {
+            .catch((error) => {
               notification.error({
                 message: error.message,
-                description: t('descriptions.submitFailed')
+                description: t('descriptions.submitFailed'),
               });
             });
         } catch (error) {
           message.error({
             key: 'submit',
-            content: t('descriptions.validationFailed')
+            content: t('descriptions.validationFailed'),
           });
         }
-      }
+      },
     });
   };
 
@@ -183,23 +191,23 @@ const FormModal = ({ value }) => {
         await axios
           .post(SPECIAL_MOVEMENTS.REVERSE, value)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               mutate(SPECIAL_MOVEMENTS.READ);
 
               Modal.destroyAll();
               notification.success({
                 message: t('messages.movementReverseSuccess'),
-                description: `${t('descriptions.movementReverseSuccess')}`
+                description: `${t('descriptions.movementReverseSuccess')}`,
               });
             })
           )
-          .catch(error => {
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: t('descriptions.movementReverseFailed')
+              description: t('descriptions.movementReverseFailed'),
             });
           });
-      }
+      },
     });
   };
 

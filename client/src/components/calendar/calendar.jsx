@@ -9,7 +9,7 @@ const { RangePicker } = DatePicker;
 const Calendar = ({ handleChange, start, end, disabled }) => {
   const format = getDateTimeFormat();
 
-  const handleDateChange = dates => {
+  const handleDateChange = (dates) => {
     handleChange(dates[0].format('YYYY-MM-DD HH:mm:ss'), dates[1].format('YYYY-MM-DD HH:mm:ss'));
   };
 
@@ -20,7 +20,14 @@ const Calendar = ({ handleChange, start, end, disabled }) => {
       showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
       format={format}
       defaultValue={[moment(start, 'YYYY-MM-DD HH:mm:ss'), moment(end, 'YYYY-MM-DD HH:mm:ss')]}
-      onOk={dates => handleDateChange(dates)}
+      onChange={(dates) => handleDateChange(dates)}
+      onOk={(dates) => handleDateChange(dates)}
+      ranges={{
+        Today: [moment(), moment()],
+        'This Week': [moment().startOf('week'), moment().endOf('week')],
+        'This Month': [moment().startOf('month'), moment().endOf('month')],
+        'This Year': [moment().startOf('year'), moment().endOf('year')],
+      }}
     />
   );
 };

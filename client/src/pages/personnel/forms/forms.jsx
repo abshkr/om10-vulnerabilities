@@ -10,7 +10,7 @@ import {
   PlusOutlined,
   CloseOutlined,
   DeleteOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 
 import {
@@ -25,7 +25,7 @@ import {
   DriverLicence,
   Status,
   Comment,
-  Lock
+  Lock,
 } from './fields';
 
 import { CheckList, PasswordReset, Expiry } from '../../../components';
@@ -44,11 +44,11 @@ const FormModal = ({ value }) => {
 
   const IS_CREATING = !value;
 
-  const onFinish = values => {
+  const onFinish = (values) => {
     let matches = [];
 
     if (!IS_CREATING) {
-      matches = _.filter(payload?.records, object => {
+      matches = _.filter(payload?.records, (object) => {
         return (
           object.per_name === value.per_name && object.per_code !== value.per_code && object.per_name !== ''
         );
@@ -70,23 +70,23 @@ const FormModal = ({ value }) => {
         await axios
           .post(IS_CREATING ? PERSONNEL.CREATE : PERSONNEL.UPDATE, values)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               Modal.destroyAll();
 
               mutate(PERSONNEL.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
               });
             })
           )
-          .catch(error => {
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
             });
           });
-      }
+      },
     });
   };
 
@@ -101,98 +101,96 @@ const FormModal = ({ value }) => {
         await axios
           .post(PERSONNEL.DELETE, value)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               mutate(PERSONNEL.READ);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`
+                description: `${t('descriptions.deleteSuccess')}`,
               });
             })
           )
-          .catch(error => {
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: t('descriptions.deleteFailed')
+              description: t('descriptions.deleteFailed'),
             });
           });
-      }
+      },
     });
   };
 
   return (
-    <div>
-      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-        <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
-            <Employer form={form} value={value} />
+    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+      <Tabs defaultActiveKey="1" animated={false}>
+        <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
+          <Employer form={form} value={value} />
 
-            <Code form={form} value={value} />
-            <Name form={form} value={value} />
+          <Code form={form} value={value} />
+          <Name form={form} value={value} />
 
-            <Role form={form} value={value} />
-            <TimeCode form={form} value={value} />
+          <Role form={form} value={value} />
+          <TimeCode form={form} value={value} />
 
-            <SLP form={form} value={value} />
-            <Department form={form} value={value} />
+          <SLP form={form} value={value} />
+          <Department form={form} value={value} />
 
-            <Email form={form} value={value} />
-            <DriverLicence form={form} value={value} />
+          <Email form={form} value={value} />
+          <DriverLicence form={form} value={value} />
 
-            <Status form={form} value={value} />
-            <Comment form={form} value={value} />
-          </TabPane>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.expiryDates')} forceRender={true} key="2">
-            <Expiry form={form} value={value} type={PERSONNEL.EXPIRY_TYPES} />
-          </TabPane>
+          <Status form={form} value={value} />
+          <Comment form={form} value={value} />
+        </TabPane>
+        <TabPane className="ant-tab-window" tab={t('tabColumns.expiryDates')} forceRender={true} key="2">
+          <Expiry form={form} value={value} type={PERSONNEL.EXPIRY_TYPES} />
+        </TabPane>
 
-          <TabPane className="ant-tab-window" tab={t('tabColumns.areaAccess')} forceRender={true} key="3">
-            <Lock form={form} value={value} />
-          </TabPane>
+        <TabPane className="ant-tab-window" tab={t('tabColumns.areaAccess')} forceRender={true} key="3">
+          <Lock form={form} value={value} />
+        </TabPane>
 
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.resetPassword')}
-            forceRender={true}
-            key="4"
-            disabled={!value}
-          >
-            <PasswordReset value={value} />
-          </TabPane>
-        </Tabs>
+        <TabPane
+          className="ant-tab-window"
+          tab={t('tabColumns.resetPassword')}
+          forceRender={true}
+          key="4"
+          disabled={!value}
+        >
+          <PasswordReset value={value} />
+        </TabPane>
+      </Tabs>
 
-        <Form.Item>
+      <Form.Item style={{ marginBottom: -20 }}>
+        <Button
+          htmlType="button"
+          icon={<CloseOutlined />}
+          style={{ float: 'right' }}
+          onClick={() => Modal.destroyAll()}
+        >
+          {t('operations.cancel')}
+        </Button>
+
+        <Button
+          type="primary"
+          icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+          htmlType="submit"
+          style={{ float: 'right', marginRight: 5 }}
+        >
+          {IS_CREATING ? t('operations.create') : t('operations.update')}
+        </Button>
+
+        {!IS_CREATING && (
           <Button
-            htmlType="button"
-            icon={<CloseOutlined />}
-            style={{ float: 'right' }}
-            onClick={() => Modal.destroyAll()}
-          >
-            {t('operations.cancel')}
-          </Button>
-
-          <Button
-            type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-            htmlType="submit"
+            type="danger"
+            icon={<DeleteOutlined />}
             style={{ float: 'right', marginRight: 5 }}
+            onClick={onDelete}
           >
-            {IS_CREATING ? t('operations.create') : t('operations.update')}
+            {t('operations.delete')}
           </Button>
-
-          {!IS_CREATING && (
-            <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={onDelete}
-            >
-              {t('operations.delete')}
-            </Button>
-          )}
-        </Form.Item>
-      </Form>
-    </div>
+        )}
+      </Form.Item>
+    </Form>
   );
 };
 

@@ -33,6 +33,8 @@ import * as METER_DEVICES from './meter-devices';
 import * as SITE_ACCESS_DEVICES from './site-access-devices';
 import * as MANUAL_TRANSACTIONS from './manual-transactions';
 import * as GATE_PERMISSION from './gate-permission';
+import * as ON_DEMAND_REPORTS from './on-demand-reports';
+import * as INVENTORY_REQUESTS from './inventory-requests';
 
 export {
   AUTH,
@@ -69,5 +71,7 @@ export {
   SITE_ACCESS_DEVICES,
   MANUAL_TRANSACTIONS,
   TANKER_LIST,
-  GATE_PERMISSION
+  GATE_PERMISSION,
+  ON_DEMAND_REPORTS,
+  INVENTORY_REQUESTS,
 };

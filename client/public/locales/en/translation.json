@@ -354,7 +354,16 @@
     "permissionRuleClass": "Permission Rule Class",
     "authorityType": "Authority Type",
     "firstRule": "First Rule?",
-    "expiryCheck": "Expiry Check?"
+    "expiryCheck": "Expiry Check?",
+    "gates": "Gates",
+    "report": "Report",
+    "closeOutDetails": "Closeout Details",
+    "closeOutRange": "Closeout Range",
+    "fromCloseOutId": "From Closeout Id",
+    "toCloseOutId": "To Closeout Id",
+    "openingTime": "Opening Time",
+    "closingTime": "Closing Time",
+    "reportOutput": "Report Output"
   },
 
   "pageMenu": {
@@ -507,7 +516,8 @@
     "deleteTransfer": "Delete Transfer",
     "calculateDrawer": "Calculate Drawer",
     "getTankDensities": "Get Tank Densities",
-    "addPermissions": "Add Permissions"
+    "addPermissions": "Add Permissions",
+    "generateReport": "Generate Report"
   },
 
   "tabColumns": {
@@ -534,7 +544,10 @@
     "transferDetails": "Transfer Details",
     "cumulativeBaseProduct": "Cumulative Base Product Quantities",
     "cumulativeMeterTotals": "Cumulative Meter Totals",
-    "rules": "Rules"
+    "rules": "Rules",
+    "gates": "Gates",
+    "requests": "Requests",
+    "tankSelection": "Tank Selection"
   },
 
   "messages": {
@@ -554,7 +567,8 @@
     "printBOLSuccess": "Sucessfully Printed the BOL",
     "submitSuccess": "Successfully Submitted.",
     "submitFailed": "Submit Failed.",
-    "movementReverseSuccess": "Successfully Reversed."
+    "movementReverseSuccess": "Successfully Reversed.",
+    "reportGenerationSuccessful": "Successfully Generated Report."
   },
 
   "prompts": {
@@ -624,7 +638,9 @@
     "submitFailed": "Failed to Submit.",
     "submitSuccess": "You have submitted the record.",
     "movementReverseSuccess": "You have reversed the record.",
-    "movementReverseFailed": "Failed to revese the record."
+    "movementReverseFailed": "Failed to revese the record.",
+    "reportGenerationSuccessful": "You have created the report.",
+    "reportGenerationFailed": "Failed to create the report."
   },
 
   "placeholder": {
@@ -695,7 +711,8 @@
     "selectOrderNumber": "Select Order Number",
     "selectTripNumber": "Select Trip Number",
     "selectCarriers": "Select Carriers",
-    "selectDriver": "Select Driver"
+    "selectDriver": "Select Driver",
+    "selectReport": "Select Report"
   },
 
   "validate": {

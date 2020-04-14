@@ -1,45 +1,46 @@
-import React, { useEffect } from "react";
-import { Form, Input } from "antd";
-import _ from "lodash";
+import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Form, Input } from 'antd';
+import _ from 'lodash';
 
-const Area = ({ form, value, t, data }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+const Area = ({ form, value, data }) => {
+  const { t } = useTranslation();
+
+  const { setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        area_k: value.area_k
+        area_k: value.area_k,
       });
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input, callback) => {
-    const match = _.find(data, ["area_k", input]);
+  const validate = (rule, input) => {
+    const match = _.find(data, ['area_k', input]);
 
-    if (input === "" || !input) {
-      callback(`${t("validate.set")} ─ ${t("fields.areaId")}`);
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.areaId')}`);
     }
 
     if (input && !!match && !value) {
-      callback(t("descriptions.alreadyExists"));
+      return Promise.reject(t('descriptions.alreadyExists'));
     }
 
     if (input && input.length > 4) {
-      callback(`${t("placeholder.maxCharacters")}: 4 ─ ${t("descriptions.maxCharacters")}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 4 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     if (input && !_.isInteger(parseInt(input))) {
-      callback(`${t("placeholder.wrongType")} ─ ${t("descriptions.mustBeInteger")}`);
+      return Promise.reject(`${t('placeholder.wrongType')} ─ ${t('descriptions.mustBeInteger')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={t("fields.areaId")}>
-      {getFieldDecorator("area_k", {
-        rules: [{ required: true, validator: validate }]
-      })(<Input disabled={!!value} />)}
+    <Form.Item name="area_k" label={t('fields.areaId')} rules={[{ required: true, validator: validate }]}>
+      <Input disabled={!!value} />
     </Form.Item>
   );
 };

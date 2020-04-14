@@ -17,16 +17,16 @@ const Calculate = ({ form, value, disabled, type, tank }) => {
 
   const IS_DISALBED = disabled || !type || isLoading;
 
-  const getLimit = useCallback(tank => {
+  const getLimit = useCallback((tank) => {
     setLoading(true);
 
     axios
       .get(SPECIAL_MOVEMENTS.PRODUCTS, {
         params: {
-          tank_code: tank
-        }
+          tank_code: tank,
+        },
       })
-      .then(response => {
+      .then((response) => {
         if (response?.data?.records?.length > 0) {
           setLimit(response.data.records[0]);
           setLoading(false);
@@ -34,7 +34,7 @@ const Calculate = ({ form, value, disabled, type, tank }) => {
 
         setLoading(false);
       })
-      .catch(errors => {
+      .catch((errors) => {
         setLoading(false);
       });
   }, []);
@@ -46,7 +46,7 @@ const Calculate = ({ form, value, disabled, type, tank }) => {
         mlitm_qty_cor: value?.mlitm_qty_cor,
         mlitm_qty_kg: value?.mlitm_qty_kg,
         mlitm_temp_amb: value?.mlitm_temp_amb,
-        mlitm_dens_cor: value?.mlitm_dens_cor
+        mlitm_dens_cor: value?.mlitm_dens_cor,
       });
     }
   }, [value, setFieldsValue]);
@@ -54,7 +54,7 @@ const Calculate = ({ form, value, disabled, type, tank }) => {
   useEffect(() => {
     if (!value) {
       setFieldsValue({
-        unit: 'BB6'
+        unit: 'BB6',
       });
     }
   }, [value, setFieldsValue]);
@@ -81,7 +81,7 @@ const Calculate = ({ form, value, disabled, type, tank }) => {
 
       <Form.Item
         name="mlitm_temp_amb"
-        label={`${t('fields.observedTemperature')} [${limit && `${limit.temp_lo} - ${limit.temp_hi}`}]`}
+        label={`${t('fields.observedTemperature')} [${limit ? `${limit.temp_lo} - ${limit.temp_hi}` : ''}]`}
       >
         <InputNumber
           min={limit?.temp_lo}
@@ -93,7 +93,7 @@ const Calculate = ({ form, value, disabled, type, tank }) => {
 
       <Form.Item
         name="mlitm_dens_cor"
-        label={`${t('fields.standardDensity')} [${limit && `${limit.density_lo} - ${limit.density_hi}`}]`}
+        label={`${t('fields.standardDensity')} [${limit ? `${limit.density_lo} - ${limit.density_hi}` : ''}]`}
       >
         <InputNumber
           min={limit?.density_lo}

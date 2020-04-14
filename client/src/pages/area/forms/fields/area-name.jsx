@@ -1,34 +1,39 @@
-import React, { useEffect } from "react";
-import { Form, Input } from "antd";
+import React, { useEffect } from 'react';
+import { Form, Input } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-const AreaName = ({ form, value, t, data }) => {
-  const { getFieldDecorator, setFieldsValue } = form;
+const AreaName = ({ form, value }) => {
+  const { t } = useTranslation();
+
+  const { setFieldsValue } = form;
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        area_name: value.area_name
+        area_name: value.area_name,
       });
     }
   }, [value, setFieldsValue]);
 
   const validate = (rule, input, callback) => {
-    if (input === "" || !input) {
-      callback(`${t("validate.set")} ─ ${t("fields.areaName")}`);
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.areaName')}`);
     }
 
     if (input && input.length > 40) {
-      callback(`${t("placeholder.maxCharacters")}: 40 ─ ${t("descriptions.maxCharacters")}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
 
-    callback();
+    return Promise.resolve();
   };
 
   return (
-    <Form.Item label={t("fields.areaName")}>
-      {getFieldDecorator("area_name", {
-        rules: [{ required: true, validator: validate }]
-      })(<Input />)}
+    <Form.Item
+      name="area_name"
+      label={t('fields.areaName')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Input />
     </Form.Item>
   );
 };

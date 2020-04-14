@@ -21,6 +21,13 @@ const ManualTransactions = () => {
 
   const [type, setType] = useState(undefined);
 
+  const [trips, setTrips] = useState(null);
+  const [tankers, setTankers] = useState(null);
+  const [orders, setOrders] = useState(null);
+
+  const [customers, setCustomers] = useState(null);
+  const [selecteSupplier, setSelectedSupplier] = useState(null);
+
   const onSumit = async () => {
     try {
       const values = await form.validateFields();
@@ -39,7 +46,7 @@ const ManualTransactions = () => {
       cancelText: 'No',
       onOk: async () => {
         await form.resetFields();
-      }
+      },
     });
   };
 
@@ -62,7 +69,21 @@ const ManualTransactions = () => {
       modifiers={modifiers}
     >
       <Form layout="vertical" form={form} scrollToFirstError>
-        <Forms form={form} type={type} setType={setType} />
+        <Forms
+          form={form}
+          type={type}
+          setType={setType}
+          trips={trips}
+          setTrips={setTrips}
+          tankers={tankers}
+          setTankers={setTankers}
+          orders={orders}
+          setOrders={setOrders}
+          customers={customers}
+          setCustomers={setCustomers}
+          selecteSupplier={selecteSupplier}
+          setSelectedSupplier={setSelectedSupplier}
+        />
 
         <Divider>{t('divider.drawerProductTransfer')}</Divider>
 

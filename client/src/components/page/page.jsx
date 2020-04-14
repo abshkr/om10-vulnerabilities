@@ -13,21 +13,20 @@ const Page = ({ name, page, children, modifiers, description, isBlank }) => {
   const routes = [
     {
       path: 'index',
-      breadcrumbName: 'OMEGA 5000'
+      breadcrumbName: 'OMEGA 5000',
     },
     {
       path: 'first',
-      breadcrumbName: page
+      breadcrumbName: page,
     },
     {
       path: 'second',
-      breadcrumbName: name
-    }
+      breadcrumbName: name,
+    },
   ];
 
   const filtered = name ? routes : _.reject(routes, ['path', 'second']);
 
-  console.log(payload);
   return (
     <PageContainer>
       <PageHeaderContainer>

@@ -27,11 +27,12 @@ const PageHeaderExtras = styled.div`
 `;
 
 const PageInjector = styled.div`
-  border: ${props => (props.isBlank ? 'none' : '1px solid #d9d9d9')};
+  border: ${(props) => (props.isBlank ? 'none' : '1px solid #d9d9d9')};
   padding: 10px;
-  background: ${props => (props.isBlank ? 'none' : '#fff')};
+  background: ${(props) => (props.isBlank ? 'none' : '#fff')};
   border-radius: 2px;
-  box-shadow: ${props =>
+  margin-bottom: 15px;
+  box-shadow: ${(props) =>
     props.isBlank ? 'none' : '0 2px 0 rgba(54,45,89,0.15), 0 0 100px rgba(54,45,89,0.2)'};
 `;
 

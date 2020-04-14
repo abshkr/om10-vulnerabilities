@@ -10,7 +10,21 @@ import { getDateTimeFormat } from '../../../utils';
 
 const { Option } = Select;
 
-const Forms = ({ form, type, setType }) => {
+const Forms = ({
+  form,
+  type,
+  setType,
+  trips,
+  setTrips,
+  tankers,
+  setTankers,
+  orders,
+  setOrders,
+  customers,
+  setCustomers,
+  selecteSupplier,
+  setSelectedSupplier,
+}) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -19,32 +33,25 @@ const Forms = ({ form, type, setType }) => {
   const { data: drivers, isValidating: driversLoading } = useSWR(MANUAL_TRANSACTIONS.DRIVERS);
   const { data: carriers, isValidating: carriersLoading } = useSWR(MANUAL_TRANSACTIONS.CARRIERS);
 
-  const [trips, setTrips] = useState(null);
-  const [tankers, setTankers] = useState(null);
-  const [orders, setOrders] = useState(null);
-
-  const [customers, setCustomers] = useState(null);
-  const [selecteSupplier, setSelectedSupplier] = useState(null);
-
-  const getTripsBySupplier = async supplier => {
+  const getTripsBySupplier = async (supplier) => {
     const results = await axios.get(`${MANUAL_TRANSACTIONS.TRIPS}?supplier=${supplier}`);
 
     return results?.data;
   };
 
-  const getCustomersBySupplier = async supplier => {
+  const getCustomersBySupplier = async (supplier) => {
     const results = await axios.get(`${MANUAL_TRANSACTIONS.CUSTOMERS}?supplier=${supplier}`);
 
     return results?.data;
   };
 
-  const getTankersByCarrier = async carrier => {
+  const getTankersByCarrier = async (carrier) => {
     const results = await axios.get(`${MANUAL_TRANSACTIONS.TANKERS}?tnkr_carrier=${carrier}`);
 
     return results?.data;
   };
 
-  const getOrdersByCustomer = async customer => {
+  const getOrdersByCustomer = async (customer) => {
     const results = await axios.get(
       `${MANUAL_TRANSACTIONS.ORDERS}?supplier=${selecteSupplier}&customer=${customer}`
     );
@@ -52,7 +59,7 @@ const Forms = ({ form, type, setType }) => {
     return results?.data;
   };
 
-  const getTankerAndCarrierByTrip = async trip => {
+  const getTankerAndCarrierByTrip = async (trip) => {
     const results = await axios.get(
       `${MANUAL_TRANSACTIONS.CARRIER_AND_TANKER}?supplier=${selecteSupplier}&trip_no=${trip}`
     );
@@ -66,11 +73,11 @@ const Forms = ({ form, type, setType }) => {
     setFieldsValue({
       tanker: value?.tnkr_code,
       carrier: value?.carrier,
-      driver: drivers?.records[0].per_code
+      driver: drivers?.records[0].per_code,
     });
   };
 
-  const handleSupplierSelect = async supplier => {
+  const handleSupplierSelect = async (supplier) => {
     const trips = await getTripsBySupplier(supplier);
     const suppliers = await getCustomersBySupplier(supplier);
 
@@ -79,7 +86,7 @@ const Forms = ({ form, type, setType }) => {
     setSelectedSupplier(supplier);
   };
 
-  const handleTypeSelect = type => {
+  const handleTypeSelect = (type) => {
     setType(type);
 
     setFieldsValue({
@@ -89,11 +96,11 @@ const Forms = ({ form, type, setType }) => {
       carrier: undefined,
       driver: undefined,
       customer: undefined,
-      order_no: undefined
+      order_no: undefined,
     });
   };
 
-  const handleCustomerSelect = async customer => {
+  const handleCustomerSelect = async (customer) => {
     const orders = await getOrdersByCustomer(customer);
 
     setOrders(orders);
@@ -102,7 +109,7 @@ const Forms = ({ form, type, setType }) => {
   useEffect(() => {
     setFieldsValue({
       start_date: moment(),
-      end_date: moment()
+      end_date: moment(),
     });
   }, [setFieldsValue]);
 
@@ -169,31 +176,6 @@ const Forms = ({ form, type, setType }) => {
 
         <Col span={4}>
           <Form.Item
-            name="order_no"
-            label={t('fields.orderNumber')}
-            rules={[{ required: type === 'open_order' }]}
-          >
-            <Select
-              loading={driversLoading}
-              showSearch
-              disabled={type !== 'open_order'}
-              optionFilterProp="children"
-              placeholder={t('placeholder.selectOrderNumber')}
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {orders?.records?.map((item, index) => (
-                <Select.Option key={index} value={item.order_cust_no}>
-                  {item.order_cust_no}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
-
-        <Col span={4}>
-          <Form.Item
             name="trip_no"
             label={t('fields.tripNumber')}
             rules={[{ required: type === 'schedule' }]}
@@ -211,6 +193,31 @@ const Forms = ({ form, type, setType }) => {
               {trips?.records?.map((item, index) => (
                 <Select.Option key={index} value={item.shls_trip_no}>
                   {item.shls_trip_no}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col span={4}>
+          <Form.Item
+            name="order_no"
+            label={t('fields.orderNumber')}
+            rules={[{ required: type === 'open_order' }]}
+          >
+            <Select
+              loading={driversLoading}
+              showSearch
+              disabled={type !== 'open_order'}
+              optionFilterProp="children"
+              placeholder={t('placeholder.selectOrderNumber')}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {orders?.records?.map((item, index) => (
+                <Select.Option key={index} value={item.order_cust_no}>
+                  {item.order_cust_no}
                 </Select.Option>
               ))}
             </Select>

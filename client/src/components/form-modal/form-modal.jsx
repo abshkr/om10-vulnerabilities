@@ -16,15 +16,15 @@ const FormModal = ({ value, form, id, name, t, width }) => {
       <SWRConfig
         value={{
           refreshInterval: 0,
-          fetcher
+          fetcher,
         }}
       >
         {form}
       </SWRConfig>
     ),
     okButtonProps: {
-      style: { display: 'none' }
-    }
+      style: { display: 'none' },
+    },
   });
 
   return null;
