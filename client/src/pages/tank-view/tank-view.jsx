@@ -25,11 +25,11 @@ class TankView extends Component {
       value: '',
       isLoading: true,
       sorter: 'tank_code',
-      order: 'asc'
+      order: 'asc',
     };
   }
 
-  handleClick = object => {
+  handleClick = (object) => {
     const { configuration, t } = this.props;
     const { data } = this.state;
 
@@ -57,14 +57,14 @@ class TankView extends Component {
         />
       ),
       okButtonProps: {
-        style: { display: 'none' }
-      }
+        style: { display: 'none' },
+      },
     });
   };
 
-  handleSearch = value => {
+  handleSearch = (value) => {
     this.setState({
-      value
+      value,
     });
   };
 
@@ -72,26 +72,26 @@ class TankView extends Component {
     const { sorter, order } = this.state;
 
     axios.all([tanks.readTanks()]).then(
-      axios.spread(tanks => {
+      axios.spread((tanks) => {
         this.setState({
           data: _.orderBy(tanks.data.records, [sorter], [order]),
-          isLoading: false
+          isLoading: false,
         });
       })
     );
   };
 
-  handleSorting = value => {
+  handleSorting = (value) => {
     this.setState({
       sorter: value,
-      isLoading: true
+      isLoading: true,
     });
   };
 
-  handleSortOrder = value => {
+  handleSortOrder = (value) => {
     this.setState({
       order: value,
-      isLoading: true
+      isLoading: true,
     });
   };
 
@@ -114,7 +114,7 @@ class TankView extends Component {
       <Page page="Operations" name="Tank View">
         <Spin
           spinning={isLoading}
-          indicator={<Icon type="loading" style={{ fontSize: 24, color: '#4164e3' }} spin />}
+          indicator={<Icon type="loading" style={{ fontSize: 24, color: '#0054A4' }} spin />}
         >
           <Search value={value} search={this.handleSearch} />
 

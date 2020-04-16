@@ -44,7 +44,7 @@ const NavExtras = styled.div`
   top: -3px;
 
   & .anticon {
-    color: #4164e3;
+    color: #0054a4;
     font-size: 25px;
   }
 `;

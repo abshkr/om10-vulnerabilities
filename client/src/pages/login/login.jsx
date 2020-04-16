@@ -18,7 +18,7 @@ import {
   FormBlock,
   LoginTitle,
   LoginHeader,
-  SliderContainer
+  SliderContainer,
 } from './style';
 
 import * as actions from '../../actions/auth';
@@ -30,19 +30,18 @@ const Login = ({ handleLogin, auth }) => {
 
   const history = useHistory();
 
-  const handleSubmit = values => {
+  const handleSubmit = (values) => {
     setLoading(true);
 
-    handleLogin(values, response => {
+    handleLogin(values, (response) => {
       if (response.status === 200) {
+        history.push(ROUTES.DASHBOARD);
         notification.success({
           placement: 'bottomRight',
           message: 'Login Successful.',
           description: `You have logged in as ${values.code}`,
-          icon: <SmileOutlined style={{ color: '#4164e3' }} />
+          icon: <SmileOutlined style={{ color: '#0054A4' }} />,
         });
-
-        history.push(ROUTES.DASHBOARD);
       } else {
         setLoading(false);
 
@@ -50,7 +49,7 @@ const Login = ({ handleLogin, auth }) => {
           placement: 'bottomRight',
           message: 'Login Failed.',
           description: _.capitalize(response.data.msg_desc),
-          icon: <FrownOutlined style={{ color: '#ec6e68' }} />
+          icon: <FrownOutlined style={{ color: '#ec6e68' }} />,
         });
       }
     });
@@ -71,21 +70,18 @@ const Login = ({ handleLogin, auth }) => {
       <FormContainer>
         <FormBlock>
           <LoginTitle>
-            <span>OMEGA</span> 5000
+            <img src="/images/omega.png" alt="OMEGA 5000" />
           </LoginTitle>
 
           <LoginHeader>Terminal Automation At Your Fingertips</LoginHeader>
           <LoginSubtitle>Login to your account</LoginSubtitle>
 
           <Form onFinish={handleSubmit}>
-            <Form.Item
-              name="code"
-              rules={[{ required: true, message: 'Please Input Your Omega Personnel Code!' }]}
-            >
+            <Form.Item name="code" rules={[{ required: true, message: 'Please Input Your Omega User!' }]}>
               <Input
                 style={{ marginBottom: 5 }}
                 prefix={<IdcardOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                placeholder="Omega Personnel Code"
+                placeholder="Omega User"
               />
             </Form.Item>
 
@@ -161,11 +157,11 @@ const Login = ({ handleLogin, auth }) => {
   );
 };
 
-const mapActionsToProps = dispatch => ({
-  handleLogin: (code, password) => dispatch(actions.login(code, password))
+const mapActionsToProps = (dispatch) => ({
+  handleLogin: (code, password) => dispatch(actions.login(code, password)),
 });
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return { auth: state.auth.authenticated };
 };
 

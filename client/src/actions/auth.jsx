@@ -2,20 +2,20 @@ import axios from 'axios';
 import { AUTHORIZED, UNAUTHORIZED } from './types';
 import { AUTH } from '../api';
 
-export const login = (values, callback) => async dispatch => {
+export const login = (values, callback) => async (dispatch) => {
   try {
     axios
       .post(AUTH.LOGIN, {
         user: values.code,
-        password: values.password
+        password: values.password,
       })
-      .then(response => {
+      .then((response) => {
         dispatch({ type: AUTHORIZED, payload: response.data.token });
         sessionStorage.setItem('token', response.data.token);
 
         callback(response);
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch({ type: UNAUTHORIZED, payload: 'Invalid login credentials' });
 
         callback(error.response);
@@ -28,17 +28,17 @@ export const login = (values, callback) => async dispatch => {
 export const signout = () => {
   axios
     .post(AUTH.LOGOUT, {
-      token: sessionStorage.getItem('token')
+      token: sessionStorage.getItem('token'),
     })
-    .then(reponse => {
+    .then((reponse) => {
       sessionStorage.removeItem('token');
     })
-    .catch(error => {
+    .catch((error) => {
       sessionStorage.removeItem('token');
     });
 
   return {
     type: AUTHORIZED,
-    payload: ''
+    payload: '',
   };
 };

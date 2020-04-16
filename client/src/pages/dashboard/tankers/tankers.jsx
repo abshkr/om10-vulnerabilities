@@ -7,11 +7,11 @@ const data = {
   datasets: [
     {
       data: [798, 500],
-      backgroundColor: ['#4164e3', '#e2eefb'],
+      backgroundColor: ['#0054A4', '#e2eefb'],
       hoverBackgroundColor: ['#688eec', '#e2eefb'],
-      hoverBorderColor: ['#688eec', '#e2eefb']
-    }
-  ]
+      hoverBorderColor: ['#688eec', '#e2eefb'],
+    },
+  ],
 };
 
 const Tankers = () => {

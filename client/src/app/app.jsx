@@ -27,11 +27,11 @@ const App = () => {
     <Provider store={authStore}>
       <BrowserRouter>
         <Interface>
-          <GlobalStyleProvider primary="#4164e3" />
-          <AntdStyleProvider primary="#4164e3" />
+          <GlobalStyleProvider primary="#0054A4" />
+          <AntdStyleProvider primary="#0054A4" />
           <Suspense fallback={<Loading />}>
             <Switch>
-              {paths.map(item => {
+              {paths.map((item) => {
                 return <Route key={item.path} path={item.path} component={item.component} />;
               })}
               <Redirect path={ROUTES.ROOT} to={ROUTES.LOG_IN} />

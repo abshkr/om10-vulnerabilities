@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const LoginContainer = styled.div`
   height: 100vh;
-  background-color: #4164e3;
+  background-color: #0054a4;
   display: flex;
 `;
 
@@ -26,15 +26,14 @@ const LoginHeader = styled.div`
   font-weight: bold;
   color: #040d17;
   margin-top: -10px;
+  text-align: center;
 `;
 
 const LoginTitle = styled.div`
-  font-family: 'Bungee';
-  font-size: 30px;
-  color: #040d17;
-  & span {
-    color: #4164e3;
-  }
+  display: flex;
+  justify-content: center;
+  padding-bottom: 30px;
+  margin-top: -10vh;
 `;
 
 const LoginSubtitle = styled.div`
@@ -53,7 +52,6 @@ const LoginFooter = styled.div`
 `;
 
 const LoginFooterLogo = styled.div`
-  filter: grayscale(80%);
   transform: scale(0.4);
   display: flex;
   justify-content: center;
@@ -90,7 +88,7 @@ const GraphicContainer = styled.div`
   height: 100vh;
 
   & .ant-carousel {
-    background: #4164e3;
+    background: #0054a4;
     height: 100vh;
   }
 
@@ -122,5 +120,5 @@ export {
   GraphicContainer,
   FormBlock,
   LoginTitle,
-  SliderContainer
+  SliderContainer,
 };

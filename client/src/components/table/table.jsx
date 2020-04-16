@@ -95,7 +95,7 @@ const Table = ({
     <LoadingOutlined
       style={{
         fontSize: 24,
-        color: '#4164e3',
+        color: '#0054A4',
       }}
     />
   );

@@ -13,7 +13,7 @@ export const LABEL_COLOR = '#36393f';
 export const LABEL_POINT_STYLE = true;
 
 export const DEFAULT_COLORS = [
-  '#4164e3',
+  '#0054A4',
   '#dd7e6b',
   '#f9cb9c',
   '#ffe599',
@@ -36,10 +36,10 @@ export const DEFAULT_COLORS = [
   '#EB865A',
   '#3EB66F',
   '#004EB6',
-  '#8F97FF'
+  '#8F97FF',
 ];
 
-const HOVER_DEFAULT_COLORS = DEFAULT_COLORS.map(color => {
+const HOVER_DEFAULT_COLORS = DEFAULT_COLORS.map((color) => {
   return hexToRGB(color, 0.8);
 });
 
