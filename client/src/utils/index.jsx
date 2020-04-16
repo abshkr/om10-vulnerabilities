@@ -15,5 +15,5 @@ export {
   authLevel,
   getDateTimeFormat,
   fetcher,
-  hexToRGB
+  hexToRGB,
 };
