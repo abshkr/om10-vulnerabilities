@@ -6,7 +6,7 @@ export default class SelectEditor extends Component {
     super(props);
 
     this.state = {
-      value: this.props.value
+      value: this.props.value,
     };
   }
 
@@ -14,10 +14,10 @@ export default class SelectEditor extends Component {
     return this.state.value;
   }
 
-  onClick = value => {
+  onClick = (value) => {
     this.setState(
       {
-        value
+        value,
       },
       () => this.props.api.stopEditing()
     );
@@ -28,7 +28,7 @@ export default class SelectEditor extends Component {
 
     return (
       <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick}>
-        {values?.map(item => (
+        {values?.map((item) => (
           <Select.Option key={item} value={item}>
             {item}
           </Select.Option>

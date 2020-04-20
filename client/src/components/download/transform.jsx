@@ -1,11 +1,16 @@
 import _ from 'lodash';
 
 const transform = (data, columns) => {
-  const collection = _.map(data, value => {
-    const fields = _.uniq(_.map(columns, 'field'));
-    const payload = _.pick(value, fields);
+  const collection = [];
 
-    return payload;
+  _.forEach(data, (element) => {
+    const record = {};
+
+    _.forEach(columns, (column) => {
+      record[column.headerName] = element[column.field];
+    });
+
+    collection.push(record);
   });
 
   return collection;

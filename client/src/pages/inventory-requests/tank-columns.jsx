@@ -13,7 +13,10 @@ const columns = (t) => {
       filter: 'BooleanFilter',
       sortable: true,
       resizable: true,
-      cellRenderer: 'BooleanRenderer',
+      cellRenderer: 'NullRenderer',
+      suppressSizeToFit: true,
+      checkboxSelection: true,
+      headerCheckboxSelection: true,
     },
     {
       headerName: t('fields.adhoc'),
@@ -22,6 +25,7 @@ const columns = (t) => {
       resizable: true,
       filter: 'BooleanFilter',
       cellRenderer: 'BooleanRenderer',
+      suppressSizeToFit: true,
     },
   ];
 };

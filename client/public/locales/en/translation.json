@@ -363,7 +363,21 @@
     "toCloseOutId": "To Closeout Id",
     "openingTime": "Opening Time",
     "closingTime": "Closing Time",
-    "reportOutput": "Report Output"
+    "reportOutput": "Report Output",
+    "tank": "Tank",
+    "inventoryRequired": "Inventory Required",
+    "all": "All",
+    "depot": "Depot",
+    "dayOfWeek": "Day Of Week",
+    "selectAllTanks": "Select All Tanks",
+    "state": "State",
+    "batch": "Batch",
+    "progress": "Progress",
+    "sourceType": "Source Type",
+    "openingStandardVolume": "Opening Standard Volume",
+    "destinationType": "Destination Type",
+    "destinationUnit": "Destination Unit",
+    "quantity": "Quantity"
   },
 
   "pageMenu": {
@@ -450,7 +464,7 @@
     "partnership": "Partnership",
     "meterDevices": "Meter Devices",
     "tankStatus": "Tank Status",
-    "productMovement": "Product Movement",
+    "productMovements": "Product Movements",
     "inventoryRequests": "Inventory Requests",
     "tankView": "Tank View",
     "bayView": "Bay View",

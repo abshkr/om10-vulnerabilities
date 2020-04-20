@@ -11,11 +11,12 @@ import {
   StatusRenderer,
   TagRenderer,
   NullRenderer,
+  ProgressRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
 
-import { NumericEditor, SelectEditor } from './editors';
+import { NumericEditor, SelectEditor, BooleanEditor } from './editors';
 import { LoadingStatus } from './status';
 import { Search } from '..';
 
@@ -30,10 +31,12 @@ const defaultComponents = {
   DateRenderer,
   LoadingStatus,
   StatusRenderer,
+  ProgressRenderer,
   TagRenderer,
   NullRenderer,
   NumericEditor,
   SelectEditor,
+  BooleanEditor,
 };
 
 const defaultColumnDef = {};

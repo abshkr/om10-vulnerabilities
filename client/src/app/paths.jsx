@@ -288,7 +288,7 @@ const paths = [
 
   {
     path: ROUTES.PRODUCT_MOVEMENT,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/product-movements')),
   },
 
   {

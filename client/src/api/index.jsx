@@ -35,6 +35,7 @@ import * as MANUAL_TRANSACTIONS from './manual-transactions';
 import * as GATE_PERMISSION from './gate-permission';
 import * as ON_DEMAND_REPORTS from './on-demand-reports';
 import * as INVENTORY_REQUESTS from './inventory-requests';
+import * as PRODUCT_MOVEMENTS from './product-movements';
 
 export {
   AUTH,
@@ -74,4 +75,5 @@ export {
   GATE_PERMISSION,
   ON_DEMAND_REPORTS,
   INVENTORY_REQUESTS,
+  PRODUCT_MOVEMENTS,
 };

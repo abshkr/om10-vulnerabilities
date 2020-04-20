@@ -34,8 +34,9 @@ const Login = ({ handleLogin, auth }) => {
     setLoading(true);
 
     handleLogin(values, (response) => {
-      if (response.status === 200) {
+      if (response?.data?.token) {
         history.push(ROUTES.DASHBOARD);
+
         notification.success({
           placement: 'bottomRight',
           message: 'Login Successful.',

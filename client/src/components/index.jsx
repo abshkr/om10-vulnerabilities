@@ -16,6 +16,7 @@ import CheckList from './check-list';
 import PasswordReset from './password-reset';
 import SideDrawer from './side-drawer';
 import Icons from './icons';
+import Footer from './footer';
 
 export {
   Expiry,
@@ -35,5 +36,6 @@ export {
   CheckList,
   PasswordReset,
   SideDrawer,
-  Icons
+  Icons,
+  Footer,
 };

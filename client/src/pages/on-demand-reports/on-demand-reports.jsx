@@ -148,7 +148,7 @@ const OnDemandReports = () => {
             columns={fields}
             data={closeouts?.records}
             isLoading={false}
-            height="75vh"
+            height="80vh"
             extra={extra}
             handleSelect={onCloseOutSelect}
           />

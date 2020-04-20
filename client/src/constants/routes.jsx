@@ -67,7 +67,7 @@ export const SITE_BALANCE = '/site-balance';
 export const TANK_INVENTORY = '/tank-inventory';
 export const PRODUCT_INVENTORY = '/product-inventory';
 export const TANK_STATUS = '/tank-status';
-export const PRODUCT_MOVEMENT = '/product-movement';
+export const PRODUCT_MOVEMENTS = '/product-movements';
 export const INVENTORY_REQUESTS = '/inventory-requests';
 export const METER_DEVICES = '/meter-devices';
 

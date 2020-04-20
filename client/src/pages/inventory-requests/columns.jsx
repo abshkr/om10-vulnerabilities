@@ -23,13 +23,13 @@ const columns = (t) => {
     },
     {
       headerName: t('fields.time'),
-      field: 'cmpy_name',
+      field: 'time',
       sortable: true,
       resizable: true,
     },
     {
       headerName: t('fields.dayOfWeek'),
-      field: 'per_auth_role',
+      field: 'day_of_week',
       sortable: true,
       resizable: true,
       filter: 'MultiFilter',

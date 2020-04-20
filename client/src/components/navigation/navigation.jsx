@@ -17,7 +17,7 @@ import {
   DeploymentUnitOutlined,
   ClusterOutlined,
   UserOutlined,
-  ExclamationCircleOutlined
+  ExclamationCircleOutlined,
 } from '@ant-design/icons';
 
 import { LogoContainer, MenuContainer } from './style';
@@ -34,7 +34,7 @@ const Navigation = () => {
 
   const { isValidating: isLoading } = useSWR(AUTH.PERMISSIONS, { refreshInterval: 0 });
 
-  const handleNavigation = event => {
+  const handleNavigation = (event) => {
     if (event?.key === ROUTES.LOG_OUT) {
       confirm({
         title: 'Are you sure want to Log Out?',
@@ -43,7 +43,7 @@ const Navigation = () => {
         centered: true,
         okType: 'danger',
         cancelText: 'Cancel',
-        onOk: () => history.push(event.key)
+        onOk: () => history.push(event.key),
       });
     } else {
       history.push(event.key);
@@ -219,7 +219,7 @@ const Navigation = () => {
 
           <Menu.Item key={ROUTES.TANK_STATUS}>{t('pageNames.tankStatus')}</Menu.Item>
 
-          <Menu.Item key={ROUTES.PRODUCT_MOVEMENT}>{t('pageNames.productMovement')}</Menu.Item>
+          <Menu.Item key={ROUTES.PRODUCT_MOVEMENT}>{t('pageNames.productMovements')}</Menu.Item>
 
           <Menu.Item key={ROUTES.INVENTORY_REQUESTS}>{t('pageNames.inventoryRequests')}</Menu.Item>
 

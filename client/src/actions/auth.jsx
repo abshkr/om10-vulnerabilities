@@ -10,14 +10,19 @@ export const login = (values, callback) => async (dispatch) => {
         password: values.password,
       })
       .then((response) => {
-        dispatch({ type: AUTHORIZED, payload: response.data.token });
-        sessionStorage.setItem('token', response.data.token);
+        const token = response.data.token;
 
+        if (token) {
+          console.log('test');
+          dispatch({ type: AUTHORIZED, payload: response.data.token });
+
+          sessionStorage.setItem('token', response.data.token);
+        }
+
+        dispatch({ type: UNAUTHORIZED, payload: 'Invalid login credentials' });
         callback(response);
       })
       .catch((error) => {
-        dispatch({ type: UNAUTHORIZED, payload: 'Invalid login credentials' });
-
         callback(error.response);
       });
   } catch (e) {

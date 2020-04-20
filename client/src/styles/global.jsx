@@ -8,7 +8,7 @@ const GlobalStyleProvider = createGlobalStyle`
     }
   
   a {
-    color: ${props => props.primary} !important;
+    color: ${(props) => props.primary} !important;
   }
 
   .editable-cell {
@@ -29,6 +29,8 @@ const GlobalStyleProvider = createGlobalStyle`
   .ag-theme-balham .ag-row-selected {
       background-color: #0776ff42;
   }
+
+
 
 `;
 export default GlobalStyleProvider;

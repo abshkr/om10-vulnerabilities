@@ -14,7 +14,7 @@ const Download = ({ data, columns, isLoading }) => {
         icon={<FileTextOutlined />}
         onClick={() =>
           notification.success({
-            message: 'Generated Succesfully.'
+            message: 'Generated Succesfully.',
           })
         }
         disabled={isLoading}

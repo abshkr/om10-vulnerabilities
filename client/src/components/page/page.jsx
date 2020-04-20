@@ -5,6 +5,8 @@ import useSWR from 'swr';
 import _ from 'lodash';
 import { AUTH } from '../../api';
 
+import { Footer } from '..';
+
 import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } from './style';
 
 const Page = ({ name, page, children, modifiers, description, isBlank }) => {
@@ -45,6 +47,7 @@ const Page = ({ name, page, children, modifiers, description, isBlank }) => {
       </Helmet>
 
       <PageInjector isBlank={isBlank}>{children}</PageInjector>
+      <Footer />
     </PageContainer>
   );
 };
