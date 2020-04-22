@@ -51,6 +51,8 @@ const OnDemandReports = () => {
       .then((response) => {
         setLoading(false);
 
+        window.open(response?.data?.filepath, '_blank');
+
         notification.success({
           message: t('messages.reportGenerationSuccessful'),
           description: t('descriptions.reportGenerationSuccessful'),

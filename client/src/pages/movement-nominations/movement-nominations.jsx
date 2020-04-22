@@ -17,11 +17,7 @@ import Forms from './forms';
 const MovementNominations = () => {
   const { t } = useTranslation();
 
-  const [start, setStart] = useState(
-    moment()
-      .subtract(5, 'years')
-      .format(SETTINGS.DATE_TIME_FORMAT)
-  );
+  const [start, setStart] = useState(moment().subtract(5, 'years').format(SETTINGS.DATE_TIME_FORMAT));
 
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
 
@@ -30,14 +26,14 @@ const MovementNominations = () => {
   const fields = columns(t);
   const data = payload?.records;
 
-  const handleClick = value => {
+  const handleClick = (value) => {
     FormModal({
       value,
       form: <Forms value={value} />,
       id: value?.mv_id,
       name: value?.mv_key,
       width: '90vw',
-      t
+      t,
     });
   };
 

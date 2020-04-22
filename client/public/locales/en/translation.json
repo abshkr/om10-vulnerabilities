@@ -377,7 +377,32 @@
     "openingStandardVolume": "Opening Standard Volume",
     "destinationType": "Destination Type",
     "destinationUnit": "Destination Unit",
-    "quantity": "Quantity"
+    "quantity": "Quantity",
+    "recordId": "Record Id",
+    "siteId": "Site Id",
+    "referenceNumber": "Reference Number",
+    "transactionDate": "Transaction Date",
+    "productId": "Product Id",
+    "ambientQuantity": "Ambient Quantity",
+    "iButton": "I Button",
+    "userId": "User Id",
+    "armId": "Arm Id",
+    "bayId": "Bay Id",
+    "tankId": "Tank Id",
+    "odometer": "Odometer",
+    "fileName": "File Name",
+    "failedCount": "Failed Count",
+    "companyName": "Company Name",
+    "plantCode": "Plant Code",
+    "aoiNumber": "AOI Number",
+    "siteManager": "Site Manager",
+    "host": "Host",
+    "bayCode": "Bay Code",
+    "bayType": "Bay Type",
+    "movementDetailType": "Movement Detail Type",
+    "productMovementNew": "New (Automatic)",
+    "productMovementComplete": "Complete (Manual)",
+    "unitType": "Unit Type"
   },
 
   "pageMenu": {
@@ -531,7 +556,9 @@
     "calculateDrawer": "Calculate Drawer",
     "getTankDensities": "Get Tank Densities",
     "addPermissions": "Add Permissions",
-    "generateReport": "Generate Report"
+    "generateReport": "Generate Report",
+    "halt": "Halt",
+    "start": "Start"
   },
 
   "tabColumns": {
@@ -582,7 +609,9 @@
     "submitSuccess": "Successfully Submitted.",
     "submitFailed": "Submit Failed.",
     "movementReverseSuccess": "Successfully Reversed.",
-    "reportGenerationSuccessful": "Successfully Generated Report."
+    "reportGenerationSuccessful": "Successfully Generated Report.",
+    "haltSuccess": "Successfully Halted.",
+    "startSuccess": "Successfully Started."
   },
 
   "prompts": {
@@ -595,7 +624,8 @@
     "reverseTransaction": "Are you sure you want to reverse this Transaction?",
     "printBOL": "Are you sure you want to print this BOL?",
     "submit": "Are you sure you want to submit this record?",
-    "onReverse": "Are you sure you want to reverse this record?"
+    "onReverse": "Are you sure you want to reverse this record?",
+    "halt": "Are you sure you want to halt?"
   },
 
   "divider": {
@@ -654,7 +684,11 @@
     "movementReverseSuccess": "You have reversed the record.",
     "movementReverseFailed": "Failed to revese the record.",
     "reportGenerationSuccessful": "You have created the report.",
-    "reportGenerationFailed": "Failed to create the report."
+    "reportGenerationFailed": "Failed to create the report.",
+    "haltSuccess": "You have halted the record. ",
+    "startSuccess": "You have started the record. ",
+    "haltFailed": "Failed to Halt the Process",
+    "startFailed": "Failed to Start the Process."
   },
 
   "placeholder": {
@@ -726,7 +760,10 @@
     "selectTripNumber": "Select Trip Number",
     "selectCarriers": "Select Carriers",
     "selectDriver": "Select Driver",
-    "selectReport": "Select Report"
+    "selectReport": "Select Report",
+    "selectClass": "Select Class",
+    "selectSourceType": "Select Source Type",
+    "selectDestinationType": "Select Destination Type"
   },
 
   "validate": {

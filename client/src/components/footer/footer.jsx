@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
-import { FooterContainer } from './style';
+
+import { FooterContainer, StatusContainer } from './style';
+import { Badge } from 'antd';
 
 const Footer = () => {
   const [time, setTime] = useState(null);
@@ -15,9 +17,16 @@ const Footer = () => {
   }, []);
 
   return (
-    <FooterContainer>
-      Server Time: <span>{time || 'Loading...'}</span>
-    </FooterContainer>
+    <>
+      <FooterContainer>
+        Server Time: <span>{time || 'Loading...'}</span>
+      </FooterContainer>
+      <StatusContainer>
+        <Badge style={{ marginRight: 10 }} status="success" text="Fully Functional" />
+        <Badge style={{ marginRight: 10 }} status="warning" text="Partially Functional" />
+        <Badge style={{ marginRight: 10 }} status="error" text="Unavailable" />
+      </StatusContainer>
+    </>
   );
 };
 

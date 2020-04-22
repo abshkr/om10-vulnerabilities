@@ -10,4 +10,11 @@ const FooterContainer = styled.div`
   }
 `;
 
-export { FooterContainer };
+const StatusContainer = styled.div`
+  position: fixed;
+  right: 5px;
+  display: flex;
+  justify-content: space-between;
+`;
+
+export { StatusContainer, FooterContainer };

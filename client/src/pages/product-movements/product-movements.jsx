@@ -10,18 +10,19 @@ import generator from './generator';
 import columns from './columns';
 import auth from '../../auth';
 
+import Forms from './forms';
+
 const ProductMovements = () => {
   const { t } = useTranslation();
 
   const { data: payload, isValidating, revalidate } = useSWR(PRODUCT_MOVEMENTS.READ);
-
   const fields = columns(t);
   const data = generator(payload?.records);
 
   const handleClick = (value) => {
     FormModal({
       value,
-      form: <div value={value} />,
+      form: <Forms value={value} />,
       id: value?.pmv_number,
       name: value?.pmv_prdctlnk,
       t,
@@ -46,8 +47,8 @@ const ProductMovements = () => {
         columns={fields}
         data={data}
         isLoading={isValidating}
-        onClick={handleClick}
         selectionMode="single"
+        onClick={handleClick}
       />
     </Page>
   );

@@ -36,6 +36,11 @@ import * as GATE_PERMISSION from './gate-permission';
 import * as ON_DEMAND_REPORTS from './on-demand-reports';
 import * as INVENTORY_REQUESTS from './inventory-requests';
 import * as PRODUCT_MOVEMENTS from './product-movements';
+import * as SELF_FUEL_TRANSACTION_LIST from './self-fuel-transaction-list';
+import * as COMPANIES from './companies';
+import * as COMPANY_BAY_MOVEMENT from './company-bay-movement';
+import * as PRODUCT_GROUPS from './product-groups';
+import * as LOAD_METERS from './load-meters';
 
 export {
   AUTH,
@@ -76,4 +81,9 @@ export {
   ON_DEMAND_REPORTS,
   INVENTORY_REQUESTS,
   PRODUCT_MOVEMENTS,
+  SELF_FUEL_TRANSACTION_LIST,
+  COMPANIES,
+  COMPANY_BAY_MOVEMENT,
+  PRODUCT_GROUPS,
+  LOAD_METERS,
 };

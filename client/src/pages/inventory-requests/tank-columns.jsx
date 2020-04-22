@@ -15,8 +15,6 @@ const columns = (t) => {
       resizable: true,
       cellRenderer: 'NullRenderer',
       suppressSizeToFit: true,
-      checkboxSelection: true,
-      headerCheckboxSelection: true,
     },
     {
       headerName: t('fields.adhoc'),

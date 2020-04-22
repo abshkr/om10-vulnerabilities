@@ -138,7 +138,7 @@ const paths = [
 
   {
     path: ROUTES.SELF_FUEL_TRANSACTION_LIST,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/self-fuel-transaction-list')),
   },
 
   {
@@ -163,7 +163,7 @@ const paths = [
 
   {
     path: ROUTES.PRODUCT_GROUPS,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/product-groups')),
   },
 
   {
@@ -173,12 +173,12 @@ const paths = [
 
   {
     path: ROUTES.LOAD_METERS,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/load-meters')),
   },
 
   {
     path: ROUTES.COMPANY_BAY_MOVEMENT,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/company-bay-movement')),
   },
 
   {
@@ -287,7 +287,7 @@ const paths = [
   },
 
   {
-    path: ROUTES.PRODUCT_MOVEMENT,
+    path: ROUTES.PRODUCT_MOVEMENTS,
     component: lazy(() => import('../pages/product-movements')),
   },
 

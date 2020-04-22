@@ -1,53 +1,96 @@
-const columns = t => [
+const columns = (t) => [
   {
-    headerName: t('fields.description'),
-    field: 'mr_action',
+    headerName: t('fields.companyCode'),
+    field: 'cmpy_code',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
-    headerName: t('fields.type'),
-    field: 'mr_type_name',
+    headerName: t('fields.companyName'),
+    field: 'cmpy_name',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
-    headerName: t('fields.originalMovementType'),
-    field: 'mr_mov_type_ori',
+    headerName: t('fields.plantCode'),
+    field: 'cmpy_plant',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
-    headerName: t('fields.originalReasonCode'),
-    field: 'mr_reason_code_ori',
-    filter: 'FuzzyFilter',
+    headerName: t('fields.aoiNumber'),
+    field: 'cmpy_aoi',
+    filter: 'BooleanFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
-    headerName: t('fields.reversalMovementType'),
-    field: 'mr_mov_type_rev',
-    filter: 'FuzzyFilter',
+    headerName: t('fields.siteManager'),
+    field: 'site_manager',
+    filter: 'BooleanFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
   },
   {
-    headerName: t('fields.reversalReasonCode'),
-    field: 'mr_reason_code_rev',
-    filter: 'FuzzyFilter',
+    headerName: t('fields.supplier'),
+    field: 'supplier',
+    filter: 'BooleanFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
   },
   {
-    headerName: t('fields.status'),
-    field: 'mr_flag',
-    filter: 'FuzzyFilter',
+    headerName: t('fields.carrier'),
+    field: 'carrier',
+    filter: 'BooleanFilter',
     sortable: true,
-    resizable: true
-  }
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+  },
+  {
+    headerName: t('fields.customer'),
+    field: 'customer',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+  },
+  {
+    headerName: t('fields.drawer'),
+    field: 'drawer',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+  },
+  {
+    headerName: t('fields.issuer'),
+    field: 'issuer',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+  },
+  {
+    headerName: t('fields.employer'),
+    field: 'employer',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+  },
+  {
+    headerName: t('fields.host'),
+    field: 'host',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+  },
 ];
 
 export default columns;
