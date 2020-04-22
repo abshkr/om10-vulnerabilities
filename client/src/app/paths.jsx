@@ -243,7 +243,7 @@ const paths = [
 
   {
     path: ROUTES.ORDER_LISTING,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/order-listings')),
   },
 
   {

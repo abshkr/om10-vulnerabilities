@@ -13,6 +13,7 @@ const FooterContainer = styled.div`
 const StatusContainer = styled.div`
   position: fixed;
   right: 5px;
+  bottom: 5px;
   display: flex;
   justify-content: space-between;
 `;

@@ -283,7 +283,7 @@ const Navigation = () => {
             <Badge status="success" /> {t('pageNames.productInventory')}
           </Menu.Item>
           <Menu.Item key={ROUTES.TANK_STATUS}>
-            <Badge status="warning" /> {t('pageNames.tankStatus')}
+            <Badge status="error" /> {t('pageNames.tankStatus')}
           </Menu.Item>
           <Menu.Item key={ROUTES.PRODUCT_MOVEMENTS}>
             <Badge status="success" /> {t('pageNames.productMovements')}

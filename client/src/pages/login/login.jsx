@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { SmileOutlined, FrownOutlined, IdcardOutlined, LockOutlined } from '@ant-design/icons';
-import { Form, Input, Button, notification, Divider, Carousel } from 'antd';
+import { Form, Input, Button, notification, Divider, Carousel, Modal } from 'antd';
 
 import { useHistory } from 'react-router-dom';
 
@@ -19,11 +19,12 @@ import {
   LoginTitle,
   LoginHeader,
   SliderContainer,
+  Version,
 } from './style';
 
 import * as actions from '../../actions/auth';
 
-import { ROUTES } from '../../constants';
+import { ROUTES, SETTINGS } from '../../constants';
 
 const Login = ({ handleLogin, auth }) => {
   const [isLoading, setLoading] = useState(false);
@@ -56,6 +57,27 @@ const Login = ({ handleLogin, auth }) => {
     });
   };
 
+  const onHelp = () => {
+    Modal.info({
+      title: 'Customer Care Support Centre - 24 x 7',
+      content: (
+        <div>
+          <p>International: +61 3 9730 8883</p>
+          <p>Within Australia: 03 9730 8883</p>
+          <p>Toll Free (Australia Only): 1800 333 319</p>
+          <p>Email: support@diamondkey.com</p>
+          <p>Facsimile: +61 3 9764 9601</p>
+          <Divider />
+          <h3>Help</h3>
+          <a href="/om5000/docs/manual.pdf">Click Here</a>
+          <Divider />
+          <h3>About (EULA)</h3>
+          <a href="/om5000/docs/eula.pdf">Click Here</a>
+        </div>
+      ),
+    });
+  };
+
   useEffect(() => {
     if (auth) {
       history.push(ROUTES.DASHBOARD);
@@ -67,6 +89,8 @@ const Login = ({ handleLogin, auth }) => {
       <Helmet>
         <title>Login ─ Auth ─ OMEGA 5000</title>
       </Helmet>
+
+      <Version>Version: {SETTINGS.VERSION}</Version>
 
       <FormContainer>
         <FormBlock>
@@ -94,7 +118,13 @@ const Login = ({ handleLogin, auth }) => {
               />
             </Form.Item>
 
-            <Form.Item>
+            <Form.Item
+              extra={
+                <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13 }}>
+                  Having Trouble? <a onClick={onHelp}>Click Here For More Options</a>
+                </div>
+              }
+            >
               <Button size="large" type="primary" htmlType="submit" loading={isLoading}>
                 Log in
               </Button>

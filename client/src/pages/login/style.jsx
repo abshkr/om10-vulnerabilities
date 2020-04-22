@@ -100,6 +100,7 @@ const GraphicContainer = styled.div`
 
   & .ant-carousel .slick-dots-bottom {
     right: 38px;
+    top: 50px;
   }
 `;
 
@@ -107,6 +108,14 @@ const FormBlock = styled.div`
   width: 100%;
   padding-left: 15%;
   padding-right: 15%;
+`;
+
+const Version = styled.div`
+  position: absolute;
+  right: 0;
+  font-weight: 500;
+  color: white;
+  margin-right: 5px;
 `;
 
 export {
@@ -121,4 +130,5 @@ export {
   FormBlock,
   LoginTitle,
   SliderContainer,
+  Version,
 };

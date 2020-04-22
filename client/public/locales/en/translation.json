@@ -402,7 +402,16 @@
     "movementDetailType": "Movement Detail Type",
     "productMovementNew": "New (Automatic)",
     "productMovementComplete": "Complete (Manual)",
-    "unitType": "Unit Type"
+    "unitType": "Unit Type",
+    "customerOrderNumber": "Customer Order Number",
+    "orderStatus": "Order Status",
+    "orderTime": "Order Time",
+    "deliveryLocation": "Delivery Location",
+    "referenceCode": "Reference Code",
+    "deliveryTime": "Delivery Time",
+    "approved": "Approved?",
+    "soldTo": "Sold To",
+    "shipTo": "Ship To"
   },
 
   "pageMenu": {
