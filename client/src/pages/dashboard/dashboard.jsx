@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Col, Row, Table } from 'antd';
+import { Card, Col, Row, Table, Tabs } from 'antd';
 
 import { DashboardContainer } from './styles';
 import { Page } from '../../components';
@@ -11,23 +11,23 @@ const columns = [
   {
     title: 'Bay Number',
     dataIndex: 'name',
-    key: 'name'
+    key: 'name',
   },
   {
     title: 'Number of Unloads',
     dataIndex: 'age',
-    key: 'age'
+    key: 'age',
   },
   {
     title: 'Total Products',
     dataIndex: 'address',
-    key: 'address'
+    key: 'address',
   },
   {
     title: 'Average Quantity / Load',
     key: 'tags',
-    dataIndex: 'tags'
-  }
+    dataIndex: 'tags',
+  },
 ];
 
 const Dashboard = () => {
@@ -36,42 +36,54 @@ const Dashboard = () => {
   return (
     <Page page={t('pageMenu.dashboard')} isBlank={true}>
       <DashboardContainer>
-        <Row gutter={[16, 16]}>
-          <Col span={8}>
-            <Card title="Tankers" bordered={false}>
-              <Tankers />
-            </Card>
-          </Col>
-          <Col span={8}>
-            <Card title="Personnel" bordered={false}>
-              <Tankers />
-            </Card>
-          </Col>
-          <Col span={8}>
-            <Card title="Id Assignment" bordered={false}>
-              <Tankers />
-            </Card>
-          </Col>
-        </Row>
+        <Tabs defaultActiveKey="1" style={{ marginTop: -20 }}>
+          <Tabs.TabPane tab="Overview" key="1">
+            <Row gutter={[16, 16]}>
+              <Col span={8}>
+                <Card title="Tankers" bordered={false}>
+                  <Tankers />
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card title="Personnel" bordered={false}>
+                  <Tankers />
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card title="Id Assignment" bordered={false}>
+                  <Tankers />
+                </Card>
+              </Col>
+            </Row>
 
-        <Row gutter={[16, 16]}>
-          <Col span={6}>
-            <Card title="Tanker Movement" bordered={false}>
-              Card content
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card title="Transaction Ids" bordered={false}>
-              Card content
-            </Card>
-          </Col>
+            <Row gutter={[16, 16]}>
+              <Col span={6}>
+                <Card title="Tanker Movement" bordered={false}>
+                  Card content
+                </Card>
+              </Col>
+              <Col span={6}>
+                <Card title="Transaction Ids" bordered={false}>
+                  Card content
+                </Card>
+              </Col>
 
-          <Col span={12}>
-            <Card title="Current Folios" bordered={false}>
-              <Table size="small" columns={columns} dataSource={[]} pagination={false} scroll={{ y: 280 }} />
-            </Card>
-          </Col>
-        </Row>
+              <Col span={12}>
+                <Card title="Current Folios" bordered={false}>
+                  <Table
+                    size="small"
+                    columns={columns}
+                    dataSource={[]}
+                    pagination={false}
+                    scroll={{ y: 280 }}
+                  />
+                </Card>
+              </Col>
+            </Row>
+          </Tabs.TabPane>
+
+          <Tabs.TabPane tab="System Status" key="2"></Tabs.TabPane>
+        </Tabs>
       </DashboardContainer>
     </Page>
   );

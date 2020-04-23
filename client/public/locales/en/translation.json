@@ -1,4 +1,16 @@
 {
+  "generic": {
+    "generic": "Customer Care Support Centre - 24 x 7",
+    "international": "International",
+    "withinAustralia": "Within Australia",
+    "tollFree": "Toll Free (Australia Only)",
+    "email": "Email",
+    "facsimile": "Facsimile",
+    "help": "Help",
+    "about": "About (EULA)",
+    "loginHeader": "Terminal Automation At Your Fingertips"
+  },
+
   "fields": {
     "bay": "Bay",
     "arm": "Arm",

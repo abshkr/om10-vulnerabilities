@@ -45,7 +45,6 @@ const Table = ({
   data,
   onClick,
   columns,
-  isLoading,
   onEditingFinished,
   handleSelect,
   height,
@@ -56,6 +55,8 @@ const Table = ({
 }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
+
+  const isLoading = !data;
 
   const handleMultipleSelection = () => {
     if (handleSelect) {

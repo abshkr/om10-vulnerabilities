@@ -8,6 +8,7 @@ export const login = (values, callback) => async (dispatch) => {
       .post(AUTH.LOGIN, {
         user: values.code,
         password: values.password,
+        lang: values.language,
       })
       .then((response) => {
         const token = response.data.token;

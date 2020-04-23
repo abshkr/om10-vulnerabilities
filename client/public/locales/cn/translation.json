@@ -1,4 +1,8 @@
 {
+  "generic": {
+    "loginHeader": "testest"
+  },
+
   "fields": {
     "bay": "发油台",
     "arm": "鹤管",

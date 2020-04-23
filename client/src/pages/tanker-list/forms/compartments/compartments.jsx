@@ -17,19 +17,19 @@ const Compartments = ({ form, value, equipment }) => {
 
   const { setFieldsValue } = form;
 
-  const fetch = useCallback(id => {
+  const fetch = useCallback((id) => {
     setIsLoading(true);
 
-    axios.get(`${TANKER_LIST.COMPOSITION}?tnkr_code=${id}`).then(response => {
+    axios.get(`${TANKER_LIST.COMPOSITION}?tnkr_code=${id}`).then((response) => {
       setdata(response.data.records);
       setIsLoading(false);
     });
   }, []);
 
-  const fetchComposition = useCallback(id => {
+  const fetchComposition = useCallback((id) => {
     setIsLoading(true);
 
-    axios.get(`${TANKER_LIST.TYPE_COMPOSITION}?etyp_id=${id}`).then(response => {
+    axios.get(`${TANKER_LIST.TYPE_COMPOSITION}?etyp_id=${id}`).then((response) => {
       setdata(response.data.records);
       setIsLoading(false);
     });
@@ -45,17 +45,17 @@ const Compartments = ({ form, value, equipment }) => {
     }
   }, [value, fetch, equipment, fetchComposition]);
 
-  const save = row => {
+  const save = (row) => {
     const payload = [...data];
 
     if (value) {
       let composition = _.find(payload, ['eqpt_code', row.eqpt_code]);
 
-      const compartmentIndex = _.findIndex(composition.compartments, object => {
+      const compartmentIndex = _.findIndex(composition.compartments, (object) => {
         return object.cmpt_no === row.cmpt_no;
       });
 
-      const compositionIndex = _.findIndex(payload, object => {
+      const compositionIndex = _.findIndex(payload, (object) => {
         return object.eqpt_code === row.eqpt_code;
       });
 
@@ -66,18 +66,18 @@ const Compartments = ({ form, value, equipment }) => {
       setdata(payload);
 
       setFieldsValue({
-        tnkr_equips: _.map(payload, value => {
+        tnkr_equips: _.map(payload, (value) => {
           return _.omit(value, ['eqpt_list']);
-        })
+        }),
       });
     } else {
       let composition = _.find(payload, ['eqpt_code', row.eqpt_code]);
 
-      const compartmentIndex = _.findIndex(composition.compartments, object => {
+      const compartmentIndex = _.findIndex(composition.compartments, (object) => {
         return object.cmpt_no === row.cmpt_no;
       });
 
-      const compositionIndex = _.findIndex(payload, object => {
+      const compositionIndex = _.findIndex(payload, (object) => {
         return object.eqpt_code === row.eqpt_code;
       });
 
@@ -88,15 +88,15 @@ const Compartments = ({ form, value, equipment }) => {
       setdata(payload);
 
       setFieldsValue({
-        tnkr_equips: _.map(payload, value => {
+        tnkr_equips: _.map(payload, (value) => {
           return _.omit(value, ['eqpt_list']);
-        })
+        }),
       });
     }
   };
 
   const changeType = (tanker, code) => {
-    axios.get(`${TANKER_LIST.COMPARTMENT}?eqpt_id=${code}`).then(response => {
+    axios.get(`${TANKER_LIST.COMPARTMENT}?eqpt_id=${code}`).then((response) => {
       const payload = [...data];
 
       const index = _.findIndex(payload, ['etyp_id', tanker.etyp_id]);
@@ -112,28 +112,28 @@ const Compartments = ({ form, value, equipment }) => {
       setdata(payload);
 
       setFieldsValue({
-        tnkr_equips: _.map(payload, value => {
+        tnkr_equips: _.map(payload, (value) => {
           return _.omit(value, ['eqpt_list']);
-        })
+        }),
       });
     });
   };
 
-  const fields = columns(t).map(col => {
+  const fields = columns(t).map((col) => {
     if (!col.editable) {
       return col;
     }
 
     return {
       ...col,
-      onCell: record => ({
+      onCell: (record) => ({
         record,
         data: data,
         editable: col.editable,
         dataIndex: col.dataIndex,
         title: col.title,
-        handleSave: save
-      })
+        handleSave: save,
+      }),
     };
   });
 
@@ -141,7 +141,7 @@ const Compartments = ({ form, value, equipment }) => {
     <Form.Item
       name="tnkr_equips"
       style={{
-        width: 'inherit'
+        width: 'inherit',
       }}
     >
       {data.length === 0 && (
@@ -152,8 +152,8 @@ const Compartments = ({ form, value, equipment }) => {
           components={{
             body: {
               row: Row,
-              cell: Cell
-            }
+              cell: Cell,
+            },
           }}
           style={{ marginBottom: 5 }}
           scroll={{ y: '25vh' }}
@@ -167,9 +167,9 @@ const Compartments = ({ form, value, equipment }) => {
       <div style={{ display: 'flex', overflowX: 'scroll', width: '76.5vw' }}>
         {data.map((item, index) => (
           <div key={index} style={{ marginRight: 10 }}>
-            <Equipment image={item.image} isLoading={isLoading} />
+            <Equipment image={_.toLower(item.image)} isLoading={isLoading} />
             <Select
-              onChange={value => changeType(item, value)}
+              onChange={(value) => changeType(item, value)}
               placeholder={item.eqpt_code || 'Select Equipment'}
               style={{ marginBottom: 10, marginTop: 10 }}
               disabled={item.eqpt_list.length === 0}
@@ -195,8 +195,8 @@ const Compartments = ({ form, value, equipment }) => {
                 components={{
                   body: {
                     row: Row,
-                    cell: Cell
-                  }
+                    cell: Cell,
+                  },
                 }}
                 style={{ marginBottom: 5, width: '30vw' }}
                 scroll={{ y: '25vh' }}

@@ -19,6 +19,10 @@ const FormContainer = styled.div`
     margin-top: 10px;
     width: 100%;
   }
+
+  & .ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+    padding-left: 0px !important;
+  }
 `;
 
 const LoginHeader = styled.div`

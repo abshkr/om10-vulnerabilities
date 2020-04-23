@@ -1,29 +1,16 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 
 import React from 'react';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu, Modal, Badge } from 'antd';
 import useSWR from 'swr';
-import {
-  FireOutlined,
-  ClockCircleOutlined,
-  MonitorOutlined,
-  FileDoneOutlined,
-  FileProtectOutlined,
-  TeamOutlined,
-  ExperimentOutlined,
-  PrinterOutlined,
-  DeploymentUnitOutlined,
-  ClusterOutlined,
-  UserOutlined,
-  ExclamationCircleOutlined,
-} from '@ant-design/icons';
 
 import { LogoContainer, MenuContainer } from './style';
 import { ROUTES } from '../../constants';
 import { AUTH } from '../../api';
-import Loading from '../loading';
+import { Icons, Loading } from '..';
 
 const { confirm } = Modal;
 const { SubMenu } = Menu;
@@ -62,16 +49,16 @@ const Navigation = () => {
         </LogoContainer>
 
         <Menu.Item key={ROUTES.DASHBOARD}>
-          <FireOutlined />
+          <Icons type="dashboard" />
           <span>{t('pageMenu.dashboard')}</span>
         </Menu.Item>
 
         <SubMenu
           title={
-            <span>
-              <ClockCircleOutlined />
+            <>
+              <Icons type="schedules" />
               <span>{t('pageMenu.schedules')}</span>
-            </span>
+            </>
           }
         >
           <Menu.Item key={ROUTES.LOAD_SCHEDULES}>
@@ -97,10 +84,10 @@ const Navigation = () => {
 
         <SubMenu
           title={
-            <span>
-              <MonitorOutlined />
+            <>
+              <Icons type="gantry" />
               <span>{t('pageMenu.gantry')}</span>
-            </span>
+            </>
           }
         >
           <Menu.Item key={ROUTES.LOAD_BAYS}>
@@ -150,10 +137,10 @@ const Navigation = () => {
 
         <SubMenu
           title={
-            <span>
-              <FileDoneOutlined />
+            <>
+              <Icons type="reports" />
               <span>{t('pageMenu.reports')}</span>
-            </span>
+            </>
           }
         >
           <Menu.Item key={ROUTES.JOURNAL}>
@@ -187,10 +174,10 @@ const Navigation = () => {
 
         <SubMenu
           title={
-            <span>
-              <FileProtectOutlined />
+            <>
+              <Icons type="accessControl" />
               <span>{t('pageMenu.accessControl')}</span>
-            </span>
+            </>
           }
         >
           <Menu.Item key={ROUTES.ID_ASSIGNMENT}>
@@ -224,10 +211,10 @@ const Navigation = () => {
 
         <SubMenu
           title={
-            <span>
-              <TeamOutlined />
+            <>
+              <Icons type="customers" />
               <span>{t('pageMenu.customers')}</span>
-            </span>
+            </>
           }
         >
           <Menu.Item key={ROUTES.CUSTOMERS}>
@@ -264,10 +251,10 @@ const Navigation = () => {
 
         <SubMenu
           title={
-            <span>
-              <ExperimentOutlined />
+            <>
+              <Icons type="stockManagement" />
               <span>{t('pageMenu.stockManagement')}</span>
-            </span>
+            </>
           }
         >
           <Menu.Item key={ROUTES.METERING}>
@@ -298,10 +285,10 @@ const Navigation = () => {
 
         <SubMenu
           title={
-            <span>
-              <PrinterOutlined />
+            <>
+              <Icons type="printerConfiguration" />
               <span>{t('pageMenu.printerConfiguration')}</span>
-            </span>
+            </>
           }
         >
           <Menu.Item key={ROUTES.PHYSICAL_PRINTERS}>
@@ -315,10 +302,10 @@ const Navigation = () => {
 
         <SubMenu
           title={
-            <span>
-              <DeploymentUnitOutlined />
+            <>
+              <Icons type="stockReconciliation" />
               <span>{t('pageMenu.stockReconciliation')}</span>
-            </span>
+            </>
           }
         >
           <Menu.Item key={ROUTES.MOVEMENT_NOMINATIONS}>
@@ -344,10 +331,10 @@ const Navigation = () => {
 
         <SubMenu
           title={
-            <span>
-              <ClusterOutlined />
+            <>
+              <Icons type="operations" />
               <span>{t('pageMenu.operations')}</span>
-            </span>
+            </>
           }
         >
           <Menu.Item key={ROUTES.TANK_VIEW}>
@@ -378,10 +365,10 @@ const Navigation = () => {
 
         <SubMenu
           title={
-            <span>
-              <UserOutlined />
+            <>
+              <Icons type="user" />
               <span>{t('pageMenu.user')}</span>
-            </span>
+            </>
           }
         >
           <Menu.Item key={ROUTES.USER_PROFILE}>

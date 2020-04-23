@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { SmileOutlined, FrownOutlined, IdcardOutlined, LockOutlined } from '@ant-design/icons';
-import { Form, Input, Button, notification, Divider, Carousel, Modal } from 'antd';
+import { Form, Input, Button, notification, Divider, Carousel, Modal, Select } from 'antd';
 
 import { useHistory } from 'react-router-dom';
-
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import _ from 'lodash';
@@ -27,9 +27,15 @@ import * as actions from '../../actions/auth';
 import { ROUTES, SETTINGS } from '../../constants';
 
 const Login = ({ handleLogin, auth }) => {
+  const { i18n, t } = useTranslation();
+
   const [isLoading, setLoading] = useState(false);
 
   const history = useHistory();
+
+  const handleLanguage = (value) => {
+    i18n.changeLanguage(value);
+  };
 
   const handleSubmit = (values) => {
     setLoading(true);
@@ -101,7 +107,7 @@ const Login = ({ handleLogin, auth }) => {
           <LoginHeader>Terminal Automation At Your Fingertips</LoginHeader>
           <LoginSubtitle>Login to your account</LoginSubtitle>
 
-          <Form onFinish={handleSubmit}>
+          <Form onFinish={handleSubmit} initialValues={{ language: 'en' }}>
             <Form.Item name="code" rules={[{ required: true, message: 'Please Input Your Omega User!' }]}>
               <Input
                 style={{ marginBottom: 5 }}
@@ -120,8 +126,23 @@ const Login = ({ handleLogin, auth }) => {
 
             <Form.Item
               extra={
-                <div style={{ textAlign: 'center', marginTop: 10, fontSize: 13 }}>
-                  Having Trouble? <a onClick={onHelp}>Click Here For More Options</a>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <div style={{ marginTop: 5 }}>
+                    <Form.Item name="language">
+                      <Select
+                        style={{ fontSize: 13, width: 78, color: '#0054a4' }}
+                        onChange={handleLanguage}
+                        bordered={false}
+                      >
+                        <Select.Option value="en">English</Select.Option>
+                        <Select.Option value="cn">中文</Select.Option>
+                      </Select>
+                    </Form.Item>
+                  </div>
+
+                  <div style={{ textAlign: 'left', marginTop: 10, fontSize: 13 }}>
+                    Having Trouble? <a onClick={onHelp}>Click Here For More Options</a>
+                  </div>
                 </div>
               }
             >
