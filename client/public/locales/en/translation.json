@@ -428,7 +428,7 @@
 
   "pageMenu": {
     "general": "General",
-    "dashboard": "Dashboard",
+    "dashboard": "Home",
     "schedules": "Schedules",
     "operations": "Operations",
     "accessControl": "Access Control",
@@ -444,7 +444,7 @@
 
   "pageNames": {
     "general": "General",
-    "dashboard": "Dashboard",
+    "dashboard": "Home",
     "schedules": "Schedules",
     "operations": "Operations",
     "accessControl": "Access Control",
