@@ -5,7 +5,7 @@ import {
   PlusOutlined,
   CloseOutlined,
   DeleteOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
@@ -26,7 +26,7 @@ const FormModal = ({ value }) => {
 
   const IS_CREATING = !value;
 
-  const onFinish = values => {
+  const onFinish = (values) => {
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -38,23 +38,23 @@ const FormModal = ({ value }) => {
         await axios
           .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, values)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               Modal.destroyAll();
 
               mutate(TANKS.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
               });
             })
           )
-          .catch(error => {
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
             });
           });
-      }
+      },
     });
   };
 
@@ -69,22 +69,22 @@ const FormModal = ({ value }) => {
         await axios
           .post(TANKS.DELETE, value)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               mutate(TANKS.READ);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`
+                description: `${t('descriptions.deleteSuccess')}`,
               });
             })
           )
-          .catch(error => {
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: t('descriptions.deleteFailed')
+              description: t('descriptions.deleteFailed'),
             });
           });
-      }
+      },
     });
   };
 

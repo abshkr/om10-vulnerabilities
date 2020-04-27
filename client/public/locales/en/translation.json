@@ -1,6 +1,6 @@
 {
   "generic": {
-    "generic": "Customer Care Support Centre - 24 x 7",
+    "helpHeader": "Customer Care Support Centre - 24 x 7",
     "international": "International",
     "withinAustralia": "Within Australia",
     "tollFree": "Toll Free (Australia Only)",
@@ -8,10 +8,15 @@
     "facsimile": "Facsimile",
     "help": "Help",
     "about": "About (EULA)",
-    "loginHeader": "Terminal Automation At Your Fingertips"
+    "loginHeader": "Terminal Automation At Your Fingertips",
+    "title": "Login - Authentication",
+    "version": "Version",
+    "login": "Login to your account",
+    "havingTrouble": "Having Trouble?"
   },
 
   "fields": {
+    "omegaUser": "OMEGA User",
     "bay": "Bay",
     "arm": "Arm",
     "code": "Code",
@@ -423,10 +428,47 @@
     "deliveryTime": "Delivery Time",
     "approved": "Approved?",
     "soldTo": "Sold To",
-    "shipTo": "Ship To"
+    "shipTo": "Ship To",
+    "atgStatus": "ATG Status",
+    "inUse": "In Use?",
+    "tankName": "Tank Name",
+    "productLevel": "Product Level",
+    "levelAlarmState": "Level Alarm State",
+    "gaugingMethod": "Gauging Method",
+    "ambientVolume": "Ambient Volume",
+    "liquidMass": "Liquid Mass",
+    "ullage": "Ullage",
+    "tankGroup": "Tank Group",
+    "atgManualUpdated": "ATG Manual Updated",
+    "sulphur": "Sulphur",
+    "flashPoint": "Flash Point",
+    "tankStatus": "Tank Status",
+    "hhLevel": "HH Level",
+    "hLevel": "H Level",
+    "lLevel": "L Level",
+    "llLevel": "LL Level",
+    "userHLevel": "User H Level",
+    "userLLevel": "User LL Level",
+    "hhState": "HH State",
+    "hState": "H State",
+    "lState": "L State",
+    "llState": "LL State",
+    "userHState": "User H State",
+    "userLState": "User L State",
+    "identifierForGauge": "Identifier For Gauge",
+    "interfaceType": "Interface Type",
+    "auxilary": "Auxilary",
+    "channel": "Channel",
+    "instance": "Instance",
+    "pollInterval": "Poll Interval",
+    "registerOffset": "Register Offset",
+    "expCoeff": "Exp.Coeff",
+    "level": "Level",
+    "terminalCode": "Terminal Code"
   },
 
   "pageMenu": {
+    "home": "Home",
     "general": "General",
     "dashboard": "Home",
     "schedules": "Schedules",
@@ -523,7 +565,8 @@
     "transactionListbyNomination": "Transaction List By Nomination",
     "loadSchedulesFromNomination": "Load Schedules By Nomination",
     "siteConfiguration": "Site Configuration",
-    "logOut": "Log Out"
+    "logOut": "Log Out",
+    "tankStrapping": "Tank Strapping"
   },
 
   "operations": {
@@ -579,7 +622,14 @@
     "addPermissions": "Add Permissions",
     "generateReport": "Generate Report",
     "halt": "Halt",
-    "start": "Start"
+    "start": "Start",
+    "logIn": "Log In",
+    "clickHere": "Click Here",
+    "calculateDensity": "Calculate Density",
+    "calculateDensityByLevel": "Calculate Density By Level",
+    "calculateQuantity": "Calculate Quantity",
+    "calculateQuantityByLevel": "Calcuate Quantity By Level",
+    "tankStrapping": "Show Tank Strapping"
   },
 
   "tabColumns": {
@@ -609,7 +659,10 @@
     "rules": "Rules",
     "gates": "Gates",
     "requests": "Requests",
-    "tankSelection": "Tank Selection"
+    "tankSelection": "Tank Selection",
+    "gauging": "Gauging",
+    "calculations": "Calculations",
+    "levels": "Levels"
   },
 
   "messages": {
@@ -632,7 +685,15 @@
     "movementReverseSuccess": "Successfully Reversed.",
     "reportGenerationSuccessful": "Successfully Generated Report.",
     "haltSuccess": "Successfully Halted.",
-    "startSuccess": "Successfully Started."
+    "startSuccess": "Successfully Started.",
+    "cuztomizeLanding": "Customize Your Equipment",
+    "scheduling": "Scheduling",
+    "inventoryManagement": "Inventory Management",
+    "detailedReporting": "Detailed Reporting",
+    "inputOmegaUser": "Please Input Your Omega User",
+    "inputOmegaPassword": "Please Input Your Password",
+    "loginSuccess": "Successfully Logged In.",
+    "loginFailed": "Failed To Login."
   },
 
   "prompts": {
@@ -706,10 +767,15 @@
     "movementReverseFailed": "Failed to revese the record.",
     "reportGenerationSuccessful": "You have created the report.",
     "reportGenerationFailed": "Failed to create the report.",
+    "loginSuccess": "You have logged in as: ",
     "haltSuccess": "You have halted the record. ",
     "startSuccess": "You have started the record. ",
     "haltFailed": "Failed to Halt the Process",
-    "startFailed": "Failed to Start the Process."
+    "startFailed": "Failed to Start the Process.",
+    "cuztomizeLanding": "With OMEGA you can manage and create Equipment with a few clicks",
+    "scheduling": "Schedule your Loads ahead of time to improve efficiency with OMEGA.",
+    "inventoryManagement": "Scale your ability to manage multiple inventories using bulk editing in OMEGA.",
+    "detailedReporting": "OMEGA allows the generation of complex reports to help you understand the detailed workings of your Terminal."
   },
 
   "placeholder": {
@@ -796,7 +862,9 @@
     "lpm": "LPM",
     "celsius": "°C",
     "kgm3": "kg/m3",
-    "volume": "Volume"
+    "volume": "Volume",
+    "litres": "Litres",
+    "mm": "mm"
   },
 
   "types": {

@@ -269,9 +269,15 @@ const Navigation = () => {
           <Menu.Item key={ROUTES.PRODUCT_INVENTORY}>
             <Badge status="success" /> {t('pageNames.productInventory')}
           </Menu.Item>
+
           <Menu.Item key={ROUTES.TANK_STATUS}>
             <Badge status="error" /> {t('pageNames.tankStatus')}
           </Menu.Item>
+
+          <Menu.Item key={ROUTES.TANK_STRAPPING}>
+            <Badge status="error" /> {t('pageNames.tankStrapping')}
+          </Menu.Item>
+
           <Menu.Item key={ROUTES.PRODUCT_MOVEMENTS}>
             <Badge status="success" /> {t('pageNames.productMovements')}
           </Menu.Item>
@@ -284,6 +290,8 @@ const Navigation = () => {
         </SubMenu>
 
         <SubMenu
+          onTitleClick={handleNavigation}
+          key={ROUTES.PRINTER_CONFIGURATION}
           title={
             <>
               <Icons type="printerConfiguration" />

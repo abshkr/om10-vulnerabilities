@@ -7,6 +7,8 @@ export const LOG_IN = '/login';
 export const LOG_OUT = '/logout';
 export const _404 = '/404';
 
+export const PRINTER_CONFIGURATION = '/printer-configuration';
+
 export const SITE_CONFIGURATION = '/site-configuration';
 export const USER_PROFILE = '/user-profile';
 export const ABOUT = '/about';
@@ -70,6 +72,7 @@ export const TANK_STATUS = '/tank-status';
 export const PRODUCT_MOVEMENTS = '/product-movements';
 export const INVENTORY_REQUESTS = '/inventory-requests';
 export const METER_DEVICES = '/meter-devices';
+export const TANK_STRAPPING = '/tank-strapping';
 
 export const LOGICAL_PRINTERS = '/logical-printers';
 export const PHYSICAL_PRINTERS = '/physical-printers';

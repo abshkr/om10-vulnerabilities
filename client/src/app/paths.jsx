@@ -282,11 +282,6 @@ const paths = [
   },
 
   {
-    path: ROUTES.TANK_STATUS,
-    component: lazy(() => import('../pages/work-in-progress')),
-  },
-
-  {
     path: ROUTES.PRODUCT_MOVEMENTS,
     component: lazy(() => import('../pages/product-movements')),
   },
@@ -322,6 +317,16 @@ const paths = [
   },
 
   {
+    path: ROUTES.TANK_STATUS,
+    component: lazy(() => import('../pages/tank-status')),
+  },
+
+  {
+    path: ROUTES.TANK_STRAPPING,
+    component: lazy(() => import('../pages/tank-strapping')),
+  },
+
+  {
     path: ROUTES.TANK_VIEW,
     component: lazy(() => import('../pages/work-in-progress')),
   },
@@ -344,6 +349,11 @@ const paths = [
   {
     path: ROUTES.FSC_STATUS,
     component: lazy(() => import('../pages/fsc-status')),
+  },
+
+  {
+    path: ROUTES.PRINTER_CONFIGURATION,
+    component: lazy(() => import('../pages/printer-configuration')),
   },
 ];
 

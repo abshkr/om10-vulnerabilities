@@ -7,6 +7,8 @@ import getDateTimeFormat from './get-date-time-format';
 import fetcher from './fetcher';
 import hexToRGB from './hex-to-rbg';
 
+import * as VCFManager from './vcf-manager';
+
 export {
   search,
   generateOptions,
@@ -16,4 +18,5 @@ export {
   getDateTimeFormat,
   fetcher,
   hexToRGB,
+  VCFManager,
 };

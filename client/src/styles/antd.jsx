@@ -9,7 +9,13 @@ const AntdStyleProvider = createGlobalStyle`
     padding-right: 10px;
     margin-bottom: 10px;
   }
-  
+
+  .ant-tab-window-no-margin {
+    height: calc(85vh - 200px);
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+
   .ant-btn-primary.disabled,
   .ant-btn-primary[disabled],
   .ant-btn-primary.disabled:hover,

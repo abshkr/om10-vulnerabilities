@@ -42,6 +42,8 @@ import * as COMPANY_BAY_MOVEMENT from './company-bay-movement';
 import * as PRODUCT_GROUPS from './product-groups';
 import * as LOAD_METERS from './load-meters';
 import * as ORDER_LISTINGS from './order-listings';
+import * as TANK_STATUS from './tank-status';
+import * as TANK_STRAPPING from './tank-strapping';
 
 export {
   AUTH,
@@ -88,4 +90,6 @@ export {
   PRODUCT_GROUPS,
   LOAD_METERS,
   ORDER_LISTINGS,
+  TANK_STATUS,
+  TANK_STRAPPING,
 };

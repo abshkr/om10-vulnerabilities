@@ -14,8 +14,8 @@ i18n
     debug: SETTINGS.IS_DEVELOPMENT,
 
     react: {
-      useSuspense: false
-    }
+      useSuspense: false,
+    },
   });
 
 export default i18n;

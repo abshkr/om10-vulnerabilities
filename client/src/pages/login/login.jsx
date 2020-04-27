@@ -46,8 +46,8 @@ const Login = ({ handleLogin, auth }) => {
 
         notification.success({
           placement: 'bottomRight',
-          message: 'Login Successful.',
-          description: `You have logged in as ${values.code}`,
+          message: t('messages.loginSuccess'),
+          description: `${t('descriptions.loginSuccess')} ${values.code}`,
           icon: <SmileOutlined style={{ color: '#0054A4' }} />,
         });
       } else {
@@ -55,7 +55,7 @@ const Login = ({ handleLogin, auth }) => {
 
         notification.error({
           placement: 'bottomRight',
-          message: 'Login Failed.',
+          message: t('messages.loginFailed'),
           description: _.capitalize(response.data.msg_desc),
           icon: <FrownOutlined style={{ color: '#ec6e68' }} />,
         });
@@ -65,20 +65,30 @@ const Login = ({ handleLogin, auth }) => {
 
   const onHelp = () => {
     Modal.info({
-      title: 'Customer Care Support Centre - 24 x 7',
+      title: t('generic.helpHeader'),
       content: (
         <div>
-          <p>International: +61 3 9730 8883</p>
-          <p>Within Australia: 03 9730 8883</p>
-          <p>Toll Free (Australia Only): 1800 333 319</p>
-          <p>Email: support@diamondkey.com</p>
-          <p>Facsimile: +61 3 9764 9601</p>
+          <p>
+            <strong>{t('generic.international')}: </strong> +61 3 9730 8883
+          </p>
+          <p>
+            <strong>{t('generic.withinAustralia')}: </strong> 03 9730 8883
+          </p>
+          <p>
+            <strong>{t('generic.tollFree')}: </strong> 1800 333 319
+          </p>
+          <p>
+            <strong>{t('generic.email')}: </strong> support@diamondkey.com
+          </p>
+          <p>
+            <strong>{t('generic.facsimile')}: </strong> +61 3 9764 9601
+          </p>
           <Divider />
-          <h3>Help</h3>
-          <a href="/om5000/docs/manual.pdf">Click Here</a>
+          <h3>{t('generic.help')}</h3>
+          <a href="/om5000/docs/manual.pdf">{t('operations.clickHere')}</a>
           <Divider />
-          <h3>About (EULA)</h3>
-          <a href="/om5000/docs/eula.pdf">Click Here</a>
+          <h3>{t('generic.about')}</h3>
+          <a href="/om5000/docs/eula.pdf">{t('operations.clickHere')}</a>
         </div>
       ),
     });
@@ -93,10 +103,12 @@ const Login = ({ handleLogin, auth }) => {
   return (
     <LoginContainer>
       <Helmet>
-        <title>Login ─ Auth ─ OMEGA 5000</title>
+        <title>{t('generic.title')} ─ OMEGA 5000</title>
       </Helmet>
 
-      <Version>Version: {SETTINGS.VERSION}</Version>
+      <Version>
+        {t('generic.version')}: {SETTINGS.VERSION}
+      </Version>
 
       <FormContainer>
         <FormBlock>
@@ -104,23 +116,26 @@ const Login = ({ handleLogin, auth }) => {
             <img src="/images/omega.png" alt="OMEGA 5000" />
           </LoginTitle>
 
-          <LoginHeader>Terminal Automation At Your Fingertips</LoginHeader>
-          <LoginSubtitle>Login to your account</LoginSubtitle>
+          <LoginHeader>{t('generic.loginHeader')}</LoginHeader>
+          <LoginSubtitle>{t('generic.login')}</LoginSubtitle>
 
-          <Form onFinish={handleSubmit} initialValues={{ language: 'en' }}>
-            <Form.Item name="code" rules={[{ required: true, message: 'Please Input Your Omega User!' }]}>
+          <Form onFinish={handleSubmit} initialValues={{ language: i18n.language || 'en' }}>
+            <Form.Item name="code" rules={[{ required: true, message: t('messages.inputOmegaUser') }]}>
               <Input
                 style={{ marginBottom: 5 }}
                 prefix={<IdcardOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                placeholder="Omega User"
+                placeholder={t('fields.omegaUser')}
               />
             </Form.Item>
 
-            <Form.Item name="password" rules={[{ required: true, message: 'Please Input Your Password!' }]}>
+            <Form.Item
+              name="password"
+              rules={[{ required: true, message: t('messages.inputOmegaPassword') }]}
+            >
               <Input
                 prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                 type="password"
-                placeholder="Password"
+                placeholder={t('fields.password')}
               />
             </Form.Item>
 
@@ -141,13 +156,13 @@ const Login = ({ handleLogin, auth }) => {
                   </div>
 
                   <div style={{ textAlign: 'left', marginTop: 10, fontSize: 13 }}>
-                    Having Trouble? <a onClick={onHelp}>Click Here For More Options</a>
+                    {t('generic.havingTrouble')} <a onClick={onHelp}>{t('operations.clickHere')}</a>
                   </div>
                 </div>
               }
             >
               <Button size="large" type="primary" htmlType="submit" loading={isLoading}>
-                Log in
+                {t('operations.logIn')}
               </Button>
             </Form.Item>
           </Form>
@@ -168,8 +183,8 @@ const Login = ({ handleLogin, auth }) => {
             <SliderContainer>
               <img src="/svg/oil_truck.svg" alt="oil_tanker" />
               <div>
-                <h3>Customize Your Equipment</h3>
-                <p>With OMEGA you can manage and create Equipment with a few clicks.</p>
+                <h3>{t('messages.cuztomizeLanding')}</h3>
+                <p>{t('descriptions.cuztomizeLanding')}</p>
               </div>
             </SliderContainer>
           </>
@@ -177,8 +192,8 @@ const Login = ({ handleLogin, auth }) => {
             <SliderContainer>
               <img src="/svg/calender.svg" alt="calender" />
               <div>
-                <h3>Scheduling</h3>
-                <p>Schedule your Loads ahead of time to improve efficiency with OMEGA. </p>
+                <h3>{t('messages.scheduling')}</h3>
+                <p>{t('descriptions.scheduling')}</p>
               </div>
             </SliderContainer>
           </>
@@ -186,8 +201,8 @@ const Login = ({ handleLogin, auth }) => {
             <SliderContainer>
               <img src="/svg/cargo_ship_one.svg" alt="cargo_ship" />
               <div>
-                <h3>Inventory Management</h3>
-                <p>Scale your ability to manage multiple inventories using bulk editing in OMEGA.</p>
+                <h3>{t('messages.inventoryManagement')}</h3>
+                <p>{t('descriptions.inventoryManagement')}</p>
               </div>
             </SliderContainer>
           </>
@@ -195,11 +210,8 @@ const Login = ({ handleLogin, auth }) => {
             <SliderContainer>
               <img src="/svg/seo.svg" alt="seo" />
               <div>
-                <h3>Detailed Reporting</h3>
-                <p>
-                  OMEGA allows the generation of complex reports to help you understand the detailed workings
-                  of your Terminal
-                </p>
+                <h3>{t('messages.detailedReporting')}</h3>
+                <p>{t('descriptions.detailedReporting')}</p>
               </div>
             </SliderContainer>
           </>
