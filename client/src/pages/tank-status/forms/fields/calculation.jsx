@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 
-const Calculation = ({ form, value }) => {
+const Calculation = ({ form, value, range }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -23,6 +23,7 @@ const Calculation = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
+  console.log(range);
   return (
     <>
       <Form.Item
@@ -45,18 +46,12 @@ const Calculation = ({ form, value }) => {
         <InputNumber min={value.tank_base_dens_lo} max={value.tank_base_dens_hi} style={{ width: '100%' }} />
       </Form.Item>
 
-      <Form.Item name="tank_api" label={t('fields.api')}>
-        <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
+      <Form.Item name="tank_api" label={`${t('fields.api')} (${range.low} - ${range.high})`}>
+        <InputNumber min={range.low} max={range.high} style={{ width: '100%' }} />
       </Form.Item>
 
-      <Form.Item name="tank_prod_lvl" label={t('fields.productLevel')}>
-        <InputNumber
-          min={0}
-          max={999999999}
-          style={{ width: '100%' }}
-          formatter={(value) => `${value} mm`}
-          parser={(value) => value.replace(' mm', '')}
-        />
+      <Form.Item name="tank_prod_lvl" label={`${t('fields.productLevel')} (mm)`}>
+        <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
       </Form.Item>
 
       <Form.Item name="tank_prod_c_of_e" label={t('fields.expCoeff')}>
@@ -68,33 +63,15 @@ const Calculation = ({ form, value }) => {
       </Form.Item>
 
       <Form.Item name="tank_amb_vol" label={t('fields.ambientVolume')}>
-        <InputNumber
-          min={0}
-          max={999999999}
-          style={{ width: '100%' }}
-          formatter={(value) => `${value} Litres`}
-          parser={(value) => value.replace(' Litres', '')}
-        />
+        <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
       </Form.Item>
 
       <Form.Item name="tank_cor_vol" label={t('fields.standardVolume')}>
-        <InputNumber
-          min={0}
-          max={999999999}
-          style={{ width: '100%' }}
-          formatter={(value) => `${value} Litres`}
-          parser={(value) => value.replace(' Litres', '')}
-        />
+        <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
       </Form.Item>
 
       <Form.Item name="tank_liquid_kg" label={t('fields.liquidMass')}>
-        <InputNumber
-          min={0}
-          max={999999999}
-          style={{ width: '100%' }}
-          formatter={(value) => `${value} kg`}
-          parser={(value) => value.replace(' kg', '')}
-        />
+        <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
       </Form.Item>
     </>
   );

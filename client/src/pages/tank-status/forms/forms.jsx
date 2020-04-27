@@ -8,7 +8,7 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Radio } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import axios from 'axios';
@@ -64,7 +64,7 @@ const FormModal = ({ value }) => {
     });
   };
 
-  const handleDensityType = () => {
+  const handleDensityType = (type) => {
     const { tank_15_density, tank_density, tank_api } = form.getFieldsValue([
       'tank_15_density',
       'tank_density',
@@ -75,7 +75,7 @@ const FormModal = ({ value }) => {
       reference: _.toNumber(envrionment?.VSM_COMPENSATION_PT) || 15,
     };
 
-    if (tank_15_density && tank_15_density.length !== 0 && tank_15_density !== '0') {
+    if (type === 'D15C') {
       const converted = _.toNumber(tank_15_density);
       const valid = _.isNumber(converted);
 
@@ -83,7 +83,7 @@ const FormModal = ({ value }) => {
         payload.value = converted;
         payload.type = 'D15C';
       }
-    } else if (tank_density && tank_density.length !== 0 && tank_density !== '0') {
+    } else if (type === 'D30C') {
       const converted = _.toNumber(tank_density);
       const valid = _.isNumber(converted);
 
@@ -91,7 +91,7 @@ const FormModal = ({ value }) => {
         payload.value = converted;
         payload.type = 'D30C';
       }
-    } else if (tank_api && tank_api.length !== 0 && tank_api !== '0') {
+    } else if (type === 'A60F') {
       const converted = _.toNumber(tank_api);
       const valid = _.isNumber(converted);
 
@@ -112,73 +112,112 @@ const FormModal = ({ value }) => {
     return payload;
   };
 
-  const onCalculateByDensity = () => {
-    const baseClass = value?.tank_base_class;
-    const payload = handleDensityType();
+  const handleAPIRange = (low, high) => {
+    if (low && high) {
+      const end = VCFManager.api(low);
+      const start = VCFManager.api(high);
 
-    if (baseClass !== '6') {
-      if (payload?.type === 'D15C') {
-        const densityAtXC = VCFManager.densityAtXC(payload.value, payload.reference);
-        const densityAt60F = VCFManager.densityAt60F(payload.value, payload.reference, 'C');
-        const api = VCFManager.api(densityAt60F);
-
-        form.setFieldsValue({
-          tank_density: densityAtXC.toFixed(3),
-          tank_api: api.toFixed(3),
-        });
-      }
-
-      if (payload?.type === 'D30C') {
-        const density15C = VCFManager.density15CFromXC(payload.value, payload.reference, 3);
-        const densityAt60F = VCFManager.densityAt60F(density15C);
-        const api = VCFManager.api(densityAt60F);
-
-        form.setFieldsValue({
-          tank_15_density: density15C.toFixed(3),
-          tank_api: api.toFixed(3),
-        });
-      }
-
-      if (payload?.type === 'A60F') {
-        const densityAt15C = VCFManager.densityAt15C(payload.value);
-        const densityAtXC = VCFManager.densityAtXC(densityAt15C, payload.reference);
-
-        form.setFieldsValue({
-          tank_density: densityAtXC.toFixed(3),
-          tank_15_density: densityAt15C.toFixed(3),
-        });
-      }
+      return {
+        low: _.round(start, 2),
+        high: _.round(end, 2),
+      };
     } else {
-      if (payload?.type === 'D15C') {
-        const density = payload.value;
-        const densityAt60F = VCFManager.densityAt60F(density);
-        const api = VCFManager.api(densityAt60F);
-
-        form.setFieldsValue({
-          tank_density: density.toFixed(3),
-          tank_api: api.toFixed(3),
-        });
-      }
-
-      if (payload?.type === 'D30C') {
-        const density = payload.value;
-        const densityAt60F = VCFManager.densityAt60F(density);
-        const api = VCFManager.api(densityAt60F);
-
-        form.setFieldsValue({
-          tank_15_density: density.toFixed(3),
-          tank_api: api.toFixed(3),
-        });
-      }
-
-      if (payload?.type === 'A60F') {
-        const density = VCFManager.densityAt60F(payload.value);
-
-        form.setFieldsValue({
-          tank_15_density: density.toFixed(3),
-        });
-      }
+      return {
+        low: 0,
+        high: 85,
+      };
     }
+  };
+
+  const onCalculateByDensity = () => {
+    Modal.confirm({
+      title: t('prompts.calculate'),
+      okText: t('operations.calculate'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      content: (
+        <Form form={form} initialValues={{ type: 'D15C' }}>
+          <Form.Item name="type">
+            <Radio.Group style={{ width: '25vw', marginBottom: 15, marginTop: 5 }}>
+              <Radio value="D15C">Use Standard</Radio>
+              <Radio value="D30C">Use Corrected</Radio>
+              <Radio value="A60F">Use API</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Form>
+      ),
+      onOk: () => {
+        const base = value?.tank_base_class;
+        const type = form.getFieldValue('type');
+        const payload = handleDensityType(type);
+
+        if (base !== '6') {
+          if (payload.type === 'D15C') {
+            const densityAtXC = VCFManager.densityAtXC(payload.value, payload.reference);
+            const densityAt60F = VCFManager.densityAt60F(payload.value, payload.reference, 'C');
+            const api = VCFManager.api(densityAt60F);
+
+            form.setFieldsValue({
+              tank_density: densityAtXC.toFixed(3),
+              tank_api: api.toFixed(3),
+            });
+          }
+
+          if (payload.type === 'D30C') {
+            const density15C = VCFManager.density15CFromXC(payload.value, payload.reference, 3);
+            const densityAt60F = VCFManager.densityAt60F(density15C);
+            const api = VCFManager.api(densityAt60F);
+
+            form.setFieldsValue({
+              tank_15_density: density15C.toFixed(3),
+              tank_api: api.toFixed(3),
+            });
+          }
+
+          if (payload.type === 'A60F') {
+            const densityAt15C = VCFManager.densityAt15C(payload.value);
+            const densityAtXC = VCFManager.densityAtXC(densityAt15C, payload.reference);
+
+            form.setFieldsValue({
+              tank_density: densityAtXC.toFixed(3),
+              tank_15_density: densityAt15C.toFixed(3),
+            });
+          }
+        } else {
+          if (payload.type === 'D15C') {
+            const density = payload.value;
+            const densityAt60F = VCFManager.densityAt60F(density);
+            const api = VCFManager.api(densityAt60F);
+
+            form.setFieldsValue({
+              tank_density: density.toFixed(3),
+              tank_api: api.toFixed(3),
+            });
+          }
+
+          if (payload.type === 'D30C') {
+            const density = payload.value;
+            const densityAt60F = VCFManager.densityAt60F(density);
+            const api = VCFManager.api(densityAt60F);
+
+            form.setFieldsValue({
+              tank_15_density: density.toFixed(3),
+              tank_api: api.toFixed(3),
+            });
+          }
+
+          if (payload.type === 'A60F') {
+            const density = VCFManager.densityAt60F(payload.value);
+
+            form.setFieldsValue({
+              tank_15_density: density.toFixed(3),
+            });
+          }
+        }
+      },
+    });
   };
 
   const onCalculateByLevel = () => {
@@ -206,9 +245,9 @@ const FormModal = ({ value }) => {
           .post(TANK_STATUS.CALCULATE_QUANTITY, values)
           .then((response) => {
             setFieldsValue({
-              tank_amb_vol: response?.data?.REAL_LITRE,
-              tank_cor_vol: response?.data?.REAL_LITRE15,
-              tank_liquid_kg: response?.data?.REAL_KG,
+              tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
+              tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
+              tank_liquid_kg: _.round(response?.data?.REAL_KG, 2),
             });
             notification.success({
               message: t('messages.calculateSuccess'),
@@ -253,9 +292,9 @@ const FormModal = ({ value }) => {
           .post(TANK_STATUS.CALCULATE_QUANTITY, values)
           .then((response) => {
             setFieldsValue({
-              tank_amb_vol: response?.data?.REAL_LITRE,
-              tank_cor_vol: response?.data?.REAL_LITRE15,
-              tank_liquid_kg: response?.data?.REAL_KG,
+              tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
+              tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
+              tank_liquid_kg: _.round(response?.data?.REAL_KG, 2),
             });
 
             notification.success({
@@ -273,6 +312,8 @@ const FormModal = ({ value }) => {
       },
     });
   };
+
+  const range = handleAPIRange(value?.tank_base_dens_lo, value?.tank_base_dens_hi);
 
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
@@ -292,7 +333,7 @@ const FormModal = ({ value }) => {
           forceRender={true}
           key="2"
         >
-          <Calculation form={form} value={value} />
+          <Calculation form={form} value={value} range={range} />
         </TabPane>
 
         <TabPane

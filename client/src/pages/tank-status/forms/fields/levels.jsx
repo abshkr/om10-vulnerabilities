@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, InputNumber, Divider } from 'antd';
+import { Form, InputNumber } from 'antd';
 
 const Levels = ({ form, value }) => {
   const { t } = useTranslation();

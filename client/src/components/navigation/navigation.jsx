@@ -271,11 +271,11 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANK_STATUS}>
-            <Badge status="error" /> {t('pageNames.tankStatus')}
+            <Badge status="warning" /> {t('pageNames.tankStatus')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANK_STRAPPING}>
-            <Badge status="error" /> {t('pageNames.tankStrapping')}
+            <Badge status="warning" /> {t('pageNames.tankStrapping')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.PRODUCT_MOVEMENTS}>
