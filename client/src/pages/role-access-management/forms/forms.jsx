@@ -32,11 +32,11 @@ const FormModal = ({ value }) => {
 
     const payload = {
       ...value,
-      ...values,
+      auth_level_name: values.auth_level_name,
+      role_note: values.role_note,
       privilege,
     };
 
-    console.log(payload);
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -46,7 +46,7 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(IS_CREATING ? ROLE_ACCESS_MANAGEMENT.CREATE : ROLE_ACCESS_MANAGEMENT.UPDATE, values)
+          .post(IS_CREATING ? ROLE_ACCESS_MANAGEMENT.CREATE : ROLE_ACCESS_MANAGEMENT.UPDATE, payload)
           .then(
             axios.spread((response) => {
               Modal.destroyAll();
