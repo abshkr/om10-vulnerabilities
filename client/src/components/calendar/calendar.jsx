@@ -22,6 +22,7 @@ const Calendar = ({ handleChange, start, end, disabled }) => {
       defaultValue={[moment(start, 'YYYY-MM-DD HH:mm:ss'), moment(end, 'YYYY-MM-DD HH:mm:ss')]}
       onChange={(dates) => handleDateChange(dates)}
       onOk={(dates) => handleDateChange(dates)}
+      onPanelChange={(value) => console.log(value)}
       ranges={{
         Today: [moment(), moment()],
         'This Week': [moment().startOf('week'), moment().endOf('week')],

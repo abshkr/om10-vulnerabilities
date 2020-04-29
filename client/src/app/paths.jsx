@@ -203,7 +203,7 @@ const paths = [
 
   {
     path: ROUTES.AUDITING_DATA,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/auditing-data')),
   },
 
   {

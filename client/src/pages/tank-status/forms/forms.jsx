@@ -6,6 +6,7 @@ import {
   CloseOutlined,
   RedoOutlined,
   QuestionCircleOutlined,
+  ControlOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, notification, Modal, Radio } from 'antd';
@@ -18,6 +19,7 @@ import { Gauging, General, Calculation, Levels } from './fields';
 
 import { TANKS, TANK_STATUS, AUTH } from '../../../api';
 import { VCFManager } from '../../../utils';
+import { ROUTES } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
@@ -31,6 +33,7 @@ const FormModal = ({ value }) => {
 
   const IS_CREATING = !value;
   const CAN_CALCULATE = tab === '2';
+  const SHOW_STRAPPING = tab === '1';
 
   const onFinish = (values) => {
     Modal.confirm({
@@ -47,7 +50,7 @@ const FormModal = ({ value }) => {
             axios.spread((response) => {
               Modal.destroyAll();
 
-              mutate(TANKS.READ);
+              mutate(TANK_STATUS.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
@@ -369,6 +372,14 @@ const FormModal = ({ value }) => {
           {IS_CREATING ? t('operations.create') : t('operations.update')}
         </Button>
 
+        {SHOW_STRAPPING && (
+          <Button
+            icon={<ControlOutlined />}
+            onClick={() => window.open(`${ROUTES.TANK_STRAPPING}?tank_code=${value?.tank_code}`, '_blank')}
+          >
+            {t('operations.tankStrapping')}
+          </Button>
+        )}
         {CAN_CALCULATE && (
           <>
             <Button

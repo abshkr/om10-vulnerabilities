@@ -156,7 +156,10 @@ const Login = ({ handleLogin, auth }) => {
                   </div>
 
                   <div style={{ textAlign: 'left', marginTop: 10, fontSize: 13 }}>
-                    {t('generic.havingTrouble')} <a onClick={onHelp}>{t('operations.clickHere')}</a>
+                    {t('generic.havingTrouble')}{' '}
+                    <a href="foo" onClick={onHelp}>
+                      {t('operations.clickHere')}
+                    </a>
                   </div>
                 </div>
               }

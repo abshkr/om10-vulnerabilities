@@ -32,6 +32,8 @@ const Navigation = () => {
         cancelText: 'Cancel',
         onOk: () => history.push(event.key),
       });
+    } else if (event?.key === ROUTES.BAY_VIEW) {
+      window.open('/scadaviews/bayview/index.html#/overview', '_blank');
     } else {
       history.push(event.key);
     }
@@ -78,7 +80,7 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.SELF_FUEL_TRANSACTION_LIST}>
-            <Badge status="warning" /> {t('pageNames.selfFuelTransactionList')}
+            <Badge status="success" /> {t('pageNames.selfFuelTransactionList')}
           </Menu.Item>
         </SubMenu>
 
@@ -168,7 +170,7 @@ const Navigation = () => {
             <Badge status="error" /> {t('pageNames.hostMessagingInterface')}
           </Menu.Item>
           <Menu.Item key={ROUTES.AUDITING_DATA}>
-            <Badge status="error" /> {t('pageNames.auditingData')}
+            <Badge status="success" /> {t('pageNames.auditingData')}
           </Menu.Item>
         </SubMenu>
 
@@ -271,11 +273,11 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANK_STATUS}>
-            <Badge status="warning" /> {t('pageNames.tankStatus')}
+            <Badge status="success" /> {t('pageNames.tankStatus')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANK_STRAPPING}>
-            <Badge status="warning" /> {t('pageNames.tankStrapping')}
+            <Badge status="success" /> {t('pageNames.tankStrapping')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.PRODUCT_MOVEMENTS}>
@@ -351,7 +353,7 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.BAY_VIEW}>
-            <Badge status="error" />
+            <Badge status="success" />
             {t('pageNames.bayView')}
           </Menu.Item>
 

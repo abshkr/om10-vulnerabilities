@@ -13,6 +13,8 @@ import { useQuery } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
+import Forms from './forms';
+
 const TankStrapping = () => {
   const [tank, setTank] = useState(null);
   const [tanks, setTanks] = useState([]);
@@ -29,7 +31,7 @@ const TankStrapping = () => {
   const handleClick = (value) => {
     FormModal({
       value,
-      form: <div value={value} />,
+      form: <Forms value={value} />,
       id: value?.strap_height,
       name: value?.strap_volume,
       t,

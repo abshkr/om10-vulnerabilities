@@ -464,7 +464,16 @@
     "registerOffset": "Register Offset",
     "expCoeff": "Exp.Coeff",
     "level": "Level",
-    "terminalCode": "Terminal Code"
+    "terminalCode": "Terminal Code",
+    "dateTime": "Date Time",
+    "recordKey": "Record Key",
+    "category": "Category",
+    "valueBefore": "Value Before",
+    "valueAfter": "Value After",
+    "locationId": "Location Id",
+    "column": "Column",
+    "table": "Table",
+    "primaryKey": "Primary Key"
   },
 
   "pageMenu": {

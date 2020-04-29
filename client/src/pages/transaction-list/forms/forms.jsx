@@ -28,7 +28,7 @@ const Forms = ({ value, isFromNomination }) => {
 
   useEffect(() => {
     if (tableContextAPI) {
-      tableContextAPI.forEachNodeAfterFilter(node => {
+      tableContextAPI.forEachNodeAfterFilter((node) => {
         if (node.id === '0') {
           node.setSelected(true);
         }
@@ -62,19 +62,19 @@ const Forms = ({ value, isFromNomination }) => {
 
   return (
     <Tabs defaultActiveKey="1" animated={false}>
-      <TabPane tab={t('tabColumns.general')} key="1">
+      <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.transactionProductDetail')} key="1">
         <DataTable
           columns={transferFields}
           data={data}
-          height="70vh"
+          height="42vh"
           selectionMode="single"
           handleSelect={setSelected}
           apiContext={setTableContextAPI}
         />
+      </TabPane>
 
-        <div style={{ marginTop: 10 }}>
-          <DataTable columns={detailFields} data={details} height="70vh" />
-        </div>
+      <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.meterDetail')} key="2">
+        <DataTable columns={detailFields} data={details} height="42vh" />
       </TabPane>
     </Tabs>
   );

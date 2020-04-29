@@ -12,6 +12,7 @@ import {
   TagRenderer,
   NullRenderer,
   ProgressRenderer,
+  ATGRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -32,6 +33,7 @@ const defaultComponents = {
   LoadingStatus,
   StatusRenderer,
   ProgressRenderer,
+  ATGRenderer,
   TagRenderer,
   NullRenderer,
   NumericEditor,

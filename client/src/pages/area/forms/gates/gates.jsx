@@ -125,22 +125,23 @@ const Gates = ({ form, value }) => {
         const editable = isEditing(record);
         return editable ? (
           <span>
-            <a
-              href="javascript:;"
+            <Button
+              type="link"
               onClick={() => save(record.key)}
               style={{
                 marginRight: 8,
               }}
             >
               Save
-            </a>
+            </Button>
             <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <a>Cancel</a>
+              Cancel
             </Popconfirm>
           </span>
         ) : (
           <span>
-            <a
+            <Button
+              type="link"
               style={{
                 marginRight: 8,
               }}
@@ -148,10 +149,10 @@ const Gates = ({ form, value }) => {
               onClick={() => edit(record)}
             >
               Edit
-            </a>
+            </Button>
 
             <Popconfirm title="Sure to delete?" onConfirm={() => onDelete(record)}>
-              <a>Delete</a>
+              Delete
             </Popconfirm>
           </span>
         );

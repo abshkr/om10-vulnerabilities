@@ -24,7 +24,6 @@ const FormModal = ({ value }) => {
 
   const IS_CREATING = !value;
   const CAN_DELETE = value?.pmv_status_name === 'NEW';
-  const IS_COMPLETE = value?.pmv_status_name === 'COMPLETE';
 
   const onFinish = (values) => {
     Modal.confirm({

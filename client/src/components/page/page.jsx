@@ -1,17 +1,12 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { PageHeader } from 'antd';
-import useSWR from 'swr';
 import _ from 'lodash';
-import { AUTH } from '../../api';
-
-import { Footer } from '..';
 
 import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } from './style';
+import { Footer } from '..';
 
 const Page = ({ name, page, children, modifiers, description, isBlank }) => {
-  const { data: payload } = useSWR(AUTH.PERMISSIONS);
-
   const routes = [
     {
       path: 'index',

@@ -6,7 +6,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-
+    cellRenderer: 'ATGRenderer',
     suppressSizeToFit: true,
   },
   {
@@ -16,6 +16,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 120,
+    cellRenderer: 'BooleanRenderer',
     suppressSizeToFit: true,
   },
   {

@@ -177,6 +177,10 @@ const AntdStyleProvider = createGlobalStyle`
 
   .ant-menu-dark, .ant-menu-dark .ant-menu-sub {
     background: #040d17
+  } 
+
+  .ant-menu.ant-menu-dark, .ant-menu-dark .ant-menu-sub {
+    background: #040d17
   }
 
   .ant-layout-sider-trigger {
@@ -194,5 +198,23 @@ const AntdStyleProvider = createGlobalStyle`
     padding-right: 5px;
 
   }
+
+  .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected {
+    background-color: #0054A4;
+  }
+
+  .ant-picker {
+    box-shadow: 0px 0px 20px 1px rgba(0, 0, 0, 0.082);
+    padding-top: 6px;
+  }
+
+ .ant-picker-input > input {
+    text-align: center;
+    .ant-picker-cell-in-view.ant-picker-cell-in-range::before {
+      background: none;
+    }
+  }
+
+  
 `;
 export default AntdStyleProvider;

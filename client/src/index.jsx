@@ -2,7 +2,6 @@ import 'react-app-polyfill/stable';
 import 'react-app-polyfill/ie11';
 
 import 'typeface-poppins';
-import 'typeface-bungee';
 
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';

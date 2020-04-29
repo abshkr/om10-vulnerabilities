@@ -5,6 +5,7 @@ import StatusRenderer from './status';
 import TagRenderer from './tag';
 import NullRenderer from './null';
 import ProgressRenderer from './progress';
+import ATGRenderer from './atg';
 
 export {
   BooleanRenderer,
@@ -14,4 +15,5 @@ export {
   TagRenderer,
   NullRenderer,
   ProgressRenderer,
+  ATGRenderer,
 };

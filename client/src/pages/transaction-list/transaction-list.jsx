@@ -22,18 +22,16 @@ const TransactionList = () => {
   const { params } = useQuery(['mv_id', 'line_id']);
   const { t } = useTranslation();
 
-  const { data: transactions, isValidating, revalidate } = useSWR(TRANSACTION_LIST.READ);
-
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const [start, setStart] = useState(
-    moment()
-      .subtract(3, 'years')
-      .format(SETTINGS.DATE_TIME_FORMAT)
-  );
+  const [start, setStart] = useState(moment().subtract(3, 'years').format(SETTINGS.DATE_TIME_FORMAT));
 
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
+
+  const { data: transactions, isValidating, revalidate } = useSWR(
+    `${TRANSACTION_LIST.READ}?start_date=${start}&end_date=${end}`
+  );
 
   const isFromNomination = params?.mv_id && params?.line_id;
   const isLoading = loading || isValidating;
@@ -45,21 +43,21 @@ const TransactionList = () => {
     revalidate();
   };
 
-  const handleClick = value => {
+  const handleClick = (value) => {
     FormModal({
       value,
       form: <Forms value={value} isFromNomination={isFromNomination} />,
       id: value?.trsa_id,
       name: value?.trsa_trip,
       t,
-      width: '90vw'
+      width: '90vw',
     });
   };
 
   useEffect(() => {
     if (isFromNomination) {
       setLoading(true);
-      axios.get(MOVEMENT_NOMIATIONS.TRANSACTIONS, { params }).then(response => {
+      axios.get(MOVEMENT_NOMIATIONS.TRANSACTIONS, { params }).then((response) => {
         setData(response.data.records);
         setLoading(false);
       });

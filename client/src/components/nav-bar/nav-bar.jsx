@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-import { Input, Layout, Button } from 'antd';
 import { SearchOutlined, AppstoreOutlined } from '@ant-design/icons';
+import { Input, Layout, Button } from 'antd';
 
 import { NavBarContainer, SearchContainer, SearchResults, NavExtras } from './style';
 import { SideDrawer } from '..';
@@ -25,7 +25,7 @@ const NavBar = () => {
         <Input
           placeholder="Search OMEGA"
           value={query}
-          onChange={event => setQuery(event.target.value)}
+          onChange={(event) => setQuery(event.target.value)}
           prefix={<SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
           style={{ width: '70vw' }}
         />
