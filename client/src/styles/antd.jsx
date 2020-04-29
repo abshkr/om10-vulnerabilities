@@ -204,7 +204,6 @@ const AntdStyleProvider = createGlobalStyle`
   }
 
   .ant-picker {
-    box-shadow: 0px 0px 20px 1px rgba(0, 0, 0, 0.082);
     padding-top: 6px;
   }
 
@@ -215,6 +214,8 @@ const AntdStyleProvider = createGlobalStyle`
     }
   }
 
-  
+  .ant-tabs .ant-tabs-left-bar .ant-tabs-tab, .ant-tabs .ant-tabs-right-bar .ant-tabs-tab {
+    text-align: right;
+  }
 `;
 export default AntdStyleProvider;

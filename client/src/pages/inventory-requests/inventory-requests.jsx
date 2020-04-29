@@ -5,7 +5,13 @@ import useSWR, { mutate } from 'swr';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Button, Tabs, notification, Modal } from 'antd';
-import { SyncOutlined, PlusOutlined, CheckOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import {
+  SyncOutlined,
+  PlusOutlined,
+  CheckOutlined,
+  QuestionCircleOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
 
 import { Page, DataTable, Download, FormModal } from '../../components';
 import { INVENTORY_REQUESTS } from '../../api';
@@ -24,7 +30,7 @@ const InventoryRequests = () => {
   const { data: requests, isValidating: requestsLoading, revalidate } = useSWR(INVENTORY_REQUESTS.READ);
   const { data: tanks, isValidating: tanksLoading } = useSWR(INVENTORY_REQUESTS.TANKS);
 
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState([]);
   const [api, setAPI] = useState(null);
   const [tab, setTab] = useState('1');
 
@@ -33,6 +39,9 @@ const InventoryRequests = () => {
   const tanksData = tanks?.records;
   const tankFields = tankColumns(t);
   const fields = columns(t);
+
+  const CAN_SET_REQUIRED = tab === '2';
+  const IS_REQUIRED = selected.length > 0 && selected[0]?.tank_inv_needed;
 
   const handleClick = (value) => {
     FormModal({
@@ -45,14 +54,10 @@ const InventoryRequests = () => {
   };
 
   const onTankUpdate = () => {
-    const payload = [];
-
-    _.forEach(selected, (tank) => {
-      payload.push({
-        ...tank,
-        tank_inv_needed: true,
-      });
-    });
+    const value = {
+      ...selected[0],
+      tank_inv_needed: !IS_REQUIRED,
+    };
 
     Modal.confirm({
       title: t('prompts.update'),
@@ -63,9 +68,9 @@ const InventoryRequests = () => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(INVENTORY_REQUESTS.UPDATE_TANKS, payload)
+          .post(INVENTORY_REQUESTS.UPDATE_TANKS, value)
           .then(() => {
-            mutate(INVENTORY_REQUESTS.READ);
+            mutate(INVENTORY_REQUESTS.TANKS);
 
             notification.success({
               message: t('messages.updateSuccess'),
@@ -93,14 +98,23 @@ const InventoryRequests = () => {
         columns={tab === '1' ? fields : tankFields}
       />
 
-      <Button
-        type="primary"
-        icon={tab === '1' ? <PlusOutlined /> : <CheckOutlined />}
-        onClick={() => (tab === '1' ? handleClick(null) : onTankUpdate())}
-        loading={isLoading}
-      >
-        {tab === '1' ? t('operations.create') : t('operations.update')}
-      </Button>
+      {!CAN_SET_REQUIRED && (
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isLoading}>
+          {t('operations.create')}
+        </Button>
+      )}
+
+      {CAN_SET_REQUIRED && (
+        <Button
+          type="primary"
+          disabled={selected.length === 0}
+          icon={IS_REQUIRED ? <CloseOutlined /> : <CheckOutlined />}
+          onClick={onTankUpdate}
+          loading={isLoading}
+        >
+          {IS_REQUIRED ? 'Not Required' : 'Required'}
+        </Button>
+      )}
     </>
   );
 
@@ -147,6 +161,7 @@ const InventoryRequests = () => {
             height="320px"
             apiContext={setAPI}
             handleSelect={setSelected}
+            selectionMode="single"
           />
         </TabPane>
       </Tabs>

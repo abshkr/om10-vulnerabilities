@@ -71,12 +71,16 @@ const Navigation = () => {
             <Badge status="success" /> {t('pageNames.equipmentList')}
           </Menu.Item>
 
+          <Menu.Item key={ROUTES.EQUIPMENT_TYPES}>
+            <Badge status="error" /> {t('pageNames.equipmentTypes')}
+          </Menu.Item>
+
           <Menu.Item key={ROUTES.TANKER_LIST}>
             <Badge status="success" /> {t('pageNames.tankerList')}{' '}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TRANSACTION_LIST}>
-            <Badge status="warning" /> {t('pageNames.transactionList')}
+            <Badge status="success" /> {t('pageNames.transactionList')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.SELF_FUEL_TRANSACTION_LIST}>

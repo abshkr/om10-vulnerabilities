@@ -638,7 +638,8 @@
     "calculateDensityByLevel": "Calculate Density By Level",
     "calculateQuantity": "Calculate Quantity",
     "calculateQuantityByLevel": "Calcuate Quantity By Level",
-    "tankStrapping": "Show Tank Strapping"
+    "tankStrapping": "Show Tank Strapping",
+    "closeTransaction": "Close Transaction"
   },
 
   "tabColumns": {
@@ -671,7 +672,8 @@
     "tankSelection": "Tank Selection",
     "gauging": "Gauging",
     "calculations": "Calculations",
-    "levels": "Levels"
+    "levels": "Levels",
+    "all": "All"
   },
 
   "messages": {
@@ -702,7 +704,8 @@
     "inputOmegaUser": "Please Input Your Omega User",
     "inputOmegaPassword": "Please Input Your Password",
     "loginSuccess": "Successfully Logged In.",
-    "loginFailed": "Failed To Login."
+    "loginFailed": "Failed To Login.",
+    "cancelSuccess": "Successfully Cancelled."
   },
 
   "prompts": {
@@ -716,7 +719,8 @@
     "printBOL": "Are you sure you want to print this BOL?",
     "submit": "Are you sure you want to submit this record?",
     "onReverse": "Are you sure you want to reverse this record?",
-    "halt": "Are you sure you want to halt?"
+    "halt": "Are you sure you want to halt?",
+    "cancel": "Are you sure you want to cancel?"
   },
 
   "divider": {
@@ -736,9 +740,11 @@
     "createFailed": "Failed to create the record.",
     "updateFailed": "Failed to update the record.",
     "deleteFailed": "Failed to delete the record.",
+    "cancelFailed": "Failed you cancel the record.",
     "createSuccess": "You have created the record: ",
     "updateSuccess": "You have updated the record: ",
     "deleteSuccess": "You have deleted the record: ",
+    "cancelSuccess": "You have cancelled the record: ",
     "expiryDateTable": "Apply the Expiry Dates to the following Records.",
     "alreadyExists": "This value already exists. Please Try Another.",
     "maxCharacters": "This character count is too high.",

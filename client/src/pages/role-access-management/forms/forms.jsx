@@ -12,9 +12,10 @@ import { Form, Button, Tabs, notification, Modal, Checkbox, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
+
 import { setter, generator } from './generator';
 
-import { REPORT_CONFIGURATION } from '../../../api';
+import { ROLE_ACCESS_MANAGEMENT } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -27,37 +28,44 @@ const FormModal = ({ value }) => {
   const IS_CREATING = !value;
 
   const onFinish = (values) => {
-    const payload = generator(value.privilege, values);
-    console.log(payload);
-    // Modal.confirm({
-    //   title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
-    //   okText: IS_CREATING ? t('operations.create') : t('operations.update'),
-    //   okType: 'primary',
-    //   icon: <QuestionCircleOutlined />,
-    //   cancelText: t('operations.no'),
-    //   centered: true,
-    //   onOk: async () => {
-    //     await axios
-    //       .post(IS_CREATING ? REPORT_CONFIGURATION.CREATE : REPORT_CONFIGURATION.UPDATE, values)
-    //       .then(
-    //         axios.spread((response) => {
-    //           Modal.destroyAll();
+    const privilege = IS_CREATING ? [] : generator(value.privilege, values);
 
-    //           mutate(REPORT_CONFIGURATION.READ);
-    //           notification.success({
-    //             message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-    //             description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-    //           });
-    //         })
-    //       )
-    //       .catch((error) => {
-    //         notification.error({
-    //           message: error.message,
-    //           description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
-    //         });
-    //       });
-    //   },
-    // });
+    const payload = {
+      ...value,
+      ...values,
+      privilege,
+    };
+
+    console.log(payload);
+    Modal.confirm({
+      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(IS_CREATING ? ROLE_ACCESS_MANAGEMENT.CREATE : ROLE_ACCESS_MANAGEMENT.UPDATE, values)
+          .then(
+            axios.spread((response) => {
+              Modal.destroyAll();
+
+              mutate(ROLE_ACCESS_MANAGEMENT.READ);
+              notification.success({
+                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+              });
+            })
+          )
+          .catch((error) => {
+            notification.error({
+              message: error.message,
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
+            });
+          });
+      },
+    });
   };
 
   const onDelete = () => {
@@ -69,10 +77,10 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(REPORT_CONFIGURATION.DELETE, value)
+          .post(ROLE_ACCESS_MANAGEMENT.DELETE, value)
           .then(
             axios.spread((response) => {
-              mutate(REPORT_CONFIGURATION.READ);
+              mutate(ROLE_ACCESS_MANAGEMENT.READ);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
@@ -110,7 +118,7 @@ const FormModal = ({ value }) => {
     return (
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane tab={t('tabColumns.general')} key="1">
+          <TabPane tab={t('tabColumns.general')} key="1" forceRender>
             <Form.Item name="auth_level_name" label={t('fields.roleName')}>
               <Input />
             </Form.Item>
@@ -146,16 +154,18 @@ const FormModal = ({ value }) => {
 
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-      <Tabs defaultActiveKey="1" animated={false} tabPosition="left">
-        <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.general')} key="1">
+      <Tabs defaultActiveKey="0" animated={false} tabPosition="left">
+        <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.general')} key="0">
           <Form.Item name="auth_level_name" label={t('fields.roleName')}>
-            <Input />
+            <Input disabled={!!value} />
           </Form.Item>
 
           <Form.Item name="role_note" label={t('fields.comments')}>
             <Input.TextArea options={options} style={{ flexDirection: 'row' }} />
           </Form.Item>
+        </TabPane>
 
+        <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.all')} key="1">
           <Form.Item name="MENU_HOME" label={t('pageMenu.home')}>
             <Checkbox.Group options={options} style={{ flexDirection: 'row' }} />
           </Form.Item>

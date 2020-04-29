@@ -7,7 +7,7 @@ const generator = (data) => {
 
   _.forEach(data, (element) => {
     const date = moment(element.tkrq_due, SETTINGS.DATE_TIME_FORMAT);
-    console.log(date);
+
     payload.push({
       ...element,
       time: date.format('HH:mm'),

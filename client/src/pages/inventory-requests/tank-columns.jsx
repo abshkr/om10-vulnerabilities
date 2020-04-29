@@ -6,6 +6,7 @@ const columns = (t) => {
       filter: 'MultiFilter',
       sortable: true,
       resizable: true,
+      checkboxSelection: true,
     },
     {
       headerName: t('fields.inventoryRequired'),
@@ -13,7 +14,7 @@ const columns = (t) => {
       filter: 'BooleanFilter',
       sortable: true,
       resizable: true,
-      cellRenderer: 'NullRenderer',
+      cellRenderer: 'BooleanRenderer',
       suppressSizeToFit: true,
     },
     {

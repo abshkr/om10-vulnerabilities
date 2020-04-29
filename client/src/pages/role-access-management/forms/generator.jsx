@@ -1,13 +1,26 @@
 import _ from 'lodash';
 
 const generator = (data, values) => {
-  console.log(data, values);
-  return [];
+  const payload = [];
+
+  _.forEach(data, (element) => {
+    const changed = values[element.object_text];
+
+    if (changed) {
+      element.priv_create = changed.includes('Create');
+      element.priv_delete = changed.includes('Delete');
+      element.priv_protect = changed.includes('Password');
+      element.priv_update = changed.includes('Update');
+      element.priv_view = changed.includes('View');
+    }
+
+    payload.push(element);
+  });
+
+  return payload;
 };
 
 const setter = (data) => {
-  console.log(_.uniq(_.map(data, 'object_text')));
-
   const payload = {};
 
   _.forEach(data, (element) => {
