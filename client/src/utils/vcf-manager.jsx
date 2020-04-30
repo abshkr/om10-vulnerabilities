@@ -1,4 +1,5 @@
 import { message } from 'antd';
+import _ from 'lodash';
 
 const getVCF = (table, density, temperature) => {
   let vcf = 1;
@@ -113,14 +114,13 @@ export const massInAir = (observed, density) => {
 };
 
 export const temperatureC2F = (temperature) => {
-  const payload = (9.0 / 5.0) * temperature + 32.0;
+  const payload = _.round((9.0 / 5.0) * temperature + 32.0, 2);
 
   return payload;
 };
 
 export const temperatureF2C = (temperature) => {
-  const payload = ((temperature - 32.0) * 5.0) / 9.0;
-
+  const payload = _.round(((temperature - 32.0) * 5.0) / 9.0, 2);
   return payload;
 };
 

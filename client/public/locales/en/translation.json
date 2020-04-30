@@ -473,7 +473,8 @@
     "locationId": "Location Id",
     "column": "Column",
     "table": "Table",
-    "primaryKey": "Primary Key"
+    "primaryKey": "Primary Key",
+    "referenceTemperature": "Reference Temperature"
   },
 
   "pageMenu": {
@@ -870,7 +871,11 @@
 
   "validate": {
     "set": "This Field is Required. Please Set",
-    "select": "This Field is Required. Please Select"
+    "select": "This Field is Required. Please Select",
+    "wrongType": "Incorrect Type",
+    "mustBeNumber": "Must Be Number",
+    "outOfRange": "Value Out of Range",
+    "mustBeBetween": "Must Be Between"
   },
 
   "units": {
@@ -879,7 +884,8 @@
     "kgm3": "kg/m3",
     "volume": "Volume",
     "litres": "Litres",
-    "mm": "mm"
+    "mm": "mm",
+    "sulphur": "wt%"
   },
 
   "types": {

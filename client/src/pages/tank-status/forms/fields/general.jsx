@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { TANK_STATUS } from '../../../../api';
 
-const General = ({ form, value }) => {
+const General = ({ form, value, refTempC, refTempF }) => {
   const { t } = useTranslation();
 
   const { data: areas, isValidating: areasLoading } = useSWR(TANK_STATUS.AREAS);
@@ -89,15 +89,19 @@ const General = ({ form, value }) => {
 
       <Divider />
 
+      <Form.Item label={t('fields.referenceTemperature')}>
+        <Input disabled style={{ width: '100%' }} value={`${refTempC}°C / ${refTempF}°F`} />
+      </Form.Item>
+
       <Form.Item name="tank_ullage" label={t('fields.ullage')}>
         <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
       </Form.Item>
 
-      <Form.Item name="tank_sulphur" label={t('fields.sulphur')}>
+      <Form.Item name="tank_sulphur" label={`${t('fields.sulphur')} (${t('units.sulphur')})`}>
         <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
       </Form.Item>
 
-      <Form.Item name="tank_flashpoint" label={t('fields.flashPoint')}>
+      <Form.Item name="tank_flashpoint" label={`${t('fields.flashPoint')} (${t('units.celsius')})`}>
         <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
       </Form.Item>
     </>

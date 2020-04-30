@@ -1,8 +1,10 @@
 import React, { Suspense } from 'react';
-import { ConfigProvider } from 'antd';
-import { Provider } from 'react-redux';
+
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
+import { useTranslation } from 'react-i18next';
+import { ConfigProvider } from 'antd';
+import { Provider } from 'react-redux';
 import en from 'antd/es/locale/en_GB';
 import cn from 'antd/es/locale/zh_CN';
 
@@ -11,7 +13,6 @@ import { Interface, Loading } from '../components';
 import { authStore } from '../stores';
 import { ROUTES } from '../constants';
 import paths from './paths';
-import { useTranslation } from 'react-i18next';
 
 /**
  * @description

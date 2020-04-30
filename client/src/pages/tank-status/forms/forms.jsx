@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   EditOutlined,
@@ -30,12 +30,25 @@ const FormModal = ({ value }) => {
   const { data: envrionment } = useSWR(AUTH.ENVIRONMENT);
 
   const [tab, setTab] = useState('1');
+  const [refTempC, setRefTempC] = useState('');
+  const [refTempF, setRefTempF] = useState('');
 
   const IS_CREATING = !value;
   const CAN_CALCULATE = tab === '2';
   const SHOW_STRAPPING = tab === '1';
 
   const onFinish = (values) => {
+    const payload = _.omit(
+      {
+        ...values,
+        tank_temp:
+          values.tank_temp.tank_temp_unit === 'degC'
+            ? values.tank_temp
+            : VCFManager.temperatureF2C(values.tank_temp),
+      },
+      ['tank_temp_unit']
+    );
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -45,7 +58,7 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, values)
+          .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, payload)
           .then(
             axios.spread((response) => {
               Modal.destroyAll();
@@ -65,6 +78,18 @@ const FormModal = ({ value }) => {
           });
       },
     });
+  };
+
+  const handleRefTemperature = (temperature, unit) => {
+    if (unit === 0) {
+      setRefTempC(temperature);
+      const temp = VCFManager.temperatureC2F(temperature);
+      setRefTempF(temp);
+    } else {
+      setRefTempF(temperature);
+      const temp = VCFManager.temperatureF2C(temperature);
+      setRefTempC(temp);
+    }
   };
 
   const handleDensityType = (type) => {
@@ -316,6 +341,12 @@ const FormModal = ({ value }) => {
     });
   };
 
+  useEffect(() => {
+    if (envrionment) {
+      handleRefTemperature(envrionment.VSM_COMPENSATION_PT, 0);
+    }
+  }, [envrionment]);
+
   const range = handleAPIRange(value?.tank_base_dens_lo, value?.tank_base_dens_hi);
 
   return (
@@ -327,7 +358,7 @@ const FormModal = ({ value }) => {
           forceRender={true}
           key="1"
         >
-          <General form={form} value={value} />
+          <General form={form} value={value} refTempC={refTempC} refTempF={refTempF} />
         </TabPane>
 
         <TabPane
@@ -336,7 +367,7 @@ const FormModal = ({ value }) => {
           forceRender={true}
           key="2"
         >
-          <Calculation form={form} value={value} range={range} />
+          <Calculation form={form} value={value} range={range} envrionment={envrionment} />
         </TabPane>
 
         <TabPane

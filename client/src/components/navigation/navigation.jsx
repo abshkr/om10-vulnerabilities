@@ -238,15 +238,6 @@ const Navigation = () => {
           <Menu.Item key={ROUTES.DELIVERY_LOCATIONS}>
             <Badge status="error" /> {t('pageNames.deliveryLocations')}
           </Menu.Item>
-          <Menu.Item key={ROUTES.PRICE_OFFSETS}>
-            <Badge status="error" /> {t('pageNames.priceOffsets')}
-          </Menu.Item>
-          <Menu.Item key={ROUTES.CUSTOMER_PRICING}>
-            <Badge status="error" /> {t('pageNames.customerPricing')}
-          </Menu.Item>
-          <Menu.Item key={ROUTES.ORDER_PRODUCT_PRICING}>
-            <Badge status="error" /> {t('pageNames.orderProductPricing')}
-          </Menu.Item>
           <Menu.Item key={ROUTES.PARTNERS}>
             <Badge status="error" /> {t('pageNames.partners')}
           </Menu.Item>
