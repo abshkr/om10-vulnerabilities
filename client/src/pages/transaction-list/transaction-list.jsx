@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 import axios from 'axios';
 import moment from 'moment';
-import { Button, notification, Modal } from 'antd';
+import { Button } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, CaretLeftOutlined, CloseOutlined, WarningOutlined } from '@ant-design/icons';
+import { SyncOutlined, CaretLeftOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, Calendar, FormModal } from '../../components';
 import { TRANSACTION_LIST, MOVEMENT_NOMIATIONS } from '../../api';
@@ -24,7 +24,6 @@ const TransactionList = () => {
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState([]);
 
   const [start, setStart] = useState(moment().subtract(3, 'years').format(SETTINGS.DATE_TIME_FORMAT));
 
@@ -47,7 +46,7 @@ const TransactionList = () => {
   const handleClick = (value) => {
     FormModal({
       value,
-      form: <Forms value={value} isFromNomination={isFromNomination} />,
+      form: <Forms value={value} isFromNomination={isFromNomination} start={start} end={end} />,
       id: value?.trsa_id,
       name: value?.trsa_trip,
       t,
@@ -55,45 +54,6 @@ const TransactionList = () => {
     });
   };
 
-  const onClose = () => {
-    const payloadId = selected[0]?.trsa_id;
-
-    setLoading(true);
-
-    Modal.confirm({
-      title: t('prompts.cancel'),
-      okText: t('operations.cancel'),
-      okType: 'danger',
-      icon: <WarningOutlined />,
-      cancelText: t('operations.no'),
-      centered: true,
-      onOk: async () => {
-        await axios
-          .post(TRANSACTION_LIST.CANCEL_TRANSACTION, {
-            trsa_id: payloadId,
-          })
-          .then(
-            axios.spread((response) => {
-              mutate(`${TRANSACTION_LIST.READ}?start_date=${start}&end_date=${end}`);
-              notification.success({
-                message: t('messages.cancelSuccess'),
-                description: t('descriptions.cancelSuccess'),
-              });
-            })
-          )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.cancelFailed'),
-            });
-          })
-          .finally(() => {
-            setSelected([]);
-            setLoading(false);
-          });
-      },
-    });
-  };
   useEffect(() => {
     if (isFromNomination) {
       setLoading(true);
@@ -120,16 +80,6 @@ const TransactionList = () => {
           {t('operations.returnToTransactionList')}
         </Button>
       )}
-
-      <Button
-        type="primary"
-        icon={<CloseOutlined />}
-        loading={isLoading}
-        disabled={selected.length === 0 || selected[0]?.trsa_ed_dmy !== ''}
-        onClick={onClose}
-      >
-        {t('operations.closeTransaction')}
-      </Button>
     </>
   );
 
@@ -142,14 +92,7 @@ const TransactionList = () => {
       modifiers={modifiers}
       description={isFromNomination && `For Movement Id ${params?.mv_id} and Line Item ${params?.line_id}`}
     >
-      <DataTable
-        columns={fields}
-        data={data}
-        isLoading={isLoading}
-        onClick={handleClick}
-        selectionMode="single"
-        handleSelect={setSelected}
-      />
+      <DataTable columns={fields} data={data} isLoading={isLoading} onClick={handleClick} />
     </Page>
   );
 };

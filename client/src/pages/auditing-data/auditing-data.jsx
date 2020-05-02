@@ -15,7 +15,7 @@ import auth from '../../auth';
 const AuditingData = () => {
   const { t } = useTranslation();
 
-  const [start, setStart] = useState(moment().subtract(3, 'years').format(SETTINGS.DATE_TIME_FORMAT));
+  const [start, setStart] = useState(moment().subtract(3, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
 

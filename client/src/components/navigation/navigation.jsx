@@ -133,11 +133,11 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.LOAD_METERS}>
-            <Badge status="error" /> {t('pageNames.loadMeters')}
+            <Badge status="success" /> {t('pageNames.loadMeters')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.COMPANY_BAY_MOVEMENT}>
-            <Badge status="warning" /> {t('pageNames.companyBayMovement')}
+            <Badge status="success" /> {t('pageNames.companyBayMovement')}
           </Menu.Item>
         </SubMenu>
 

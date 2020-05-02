@@ -10,6 +10,8 @@ import { LOAD_METERS } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
 
+import Forms from './forms';
+
 const LoadMeters = () => {
   const { t } = useTranslation();
 
@@ -21,9 +23,9 @@ const LoadMeters = () => {
   const handleClick = (value) => {
     FormModal({
       value,
-      form: <div value={value} />,
-      id: value?.bacl_bay_code,
-      name: value?.bacl_bay_type_name,
+      form: <Forms value={value} />,
+      id: value?.bam_code,
+      name: value?.bam_name,
       t,
     });
   };

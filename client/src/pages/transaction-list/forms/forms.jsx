@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+
+import { WarningOutlined, CloseOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Tabs } from 'antd';
+import { Tabs, Modal, notification, Button } from 'antd';
 import _ from 'lodash';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
+import axios from 'axios';
 
 import { TRANSACTION_LIST } from '../../../api';
 import transferColumns from './transfer-columns';
@@ -11,14 +14,9 @@ import detailColumns from './detail.columns';
 
 const TabPane = Tabs.TabPane;
 
-const Forms = ({ value, isFromNomination }) => {
-  const { data: transfer, isValidating: transferLoading } = useSWR(
-    `${TRANSACTION_LIST.TRANSFER}?trsa_id=${value?.trsa_id}`
-  );
-
-  const { data: meters, isValidating: meterLoading } = useSWR(
-    `${TRANSACTION_LIST.METER}?trsa_id=${value?.trsa_id}`
-  );
+const Forms = ({ value, isFromNomination, start, end }) => {
+  const { data: transfer } = useSWR(`${TRANSACTION_LIST.TRANSFER}?trsa_id=${value?.trsa_id}`);
+  const { data: meters } = useSWR(`${TRANSACTION_LIST.METER}?trsa_id=${value?.trsa_id}`);
 
   const { t } = useTranslation();
 
@@ -26,6 +24,7 @@ const Forms = ({ value, isFromNomination }) => {
   const [selected, setSelected] = useState([]);
   const [tableContextAPI, setTableContextAPI] = useState(null);
   const [details, setDetails] = useState([]);
+  const [isLoading, setLoading] = useState(false);
 
   const transferFields = transferColumns(isFromNomination, t);
   const detailFields = detailColumns(isFromNomination, t);
@@ -73,6 +72,43 @@ const Forms = ({ value, isFromNomination }) => {
   const transferData = isFromNomination ? data : transfer?.records;
   const meterData = isFromNomination ? details : meters?.records;
 
+  const onClose = () => {
+    Modal.confirm({
+      title: t('prompts.closeTransaction'),
+      okText: t('operations.close'),
+      okType: 'danger',
+      icon: <WarningOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        setLoading(true);
+        await axios
+          .post(TRANSACTION_LIST.CANCEL_TRANSACTION, {
+            trsa_id: value.trsa_id,
+          })
+          .then(
+            axios.spread((response) => {
+              mutate(`${TRANSACTION_LIST.READ}?start_date=${start}&end_date=${end}`);
+              notification.success({
+                message: t('messages.closeSuccess'),
+                description: t('descriptions.closeSuccess'),
+              });
+            })
+          )
+          .catch((error) => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.closeFailed'),
+            });
+          })
+          .finally(() => {
+            setSelected([]);
+            setLoading(false);
+          });
+      },
+    });
+  };
+
   return (
     <Tabs defaultActiveKey="1" animated={false}>
       <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.transactionProductDetail')} key="1">
@@ -89,6 +125,28 @@ const Forms = ({ value, isFromNomination }) => {
       <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.meterDetail')} key="2">
         <DataTable columns={detailFields} data={meterData} height="42vh" />
       </TabPane>
+
+      <>
+        <Button
+          type="danger"
+          icon={<WarningOutlined />}
+          style={{ marginRight: 5, float: 'right' }}
+          onClick={onClose}
+          disabled={value.trsa_ed_dmy !== ''}
+          loading={isLoading}
+        >
+          {t('operations.closeTransaction')}
+        </Button>
+
+        <Button
+          htmlType="button"
+          icon={<CloseOutlined />}
+          style={{ marginRight: 5, float: 'right' }}
+          onClick={() => Modal.destroyAll()}
+        >
+          {t('operations.cancel')}
+        </Button>
+      </>
     </Tabs>
   );
 };

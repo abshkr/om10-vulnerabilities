@@ -474,7 +474,24 @@
     "column": "Column",
     "table": "Table",
     "primaryKey": "Primary Key",
-    "referenceTemperature": "Reference Temperature"
+    "referenceTemperature": "Reference Temperature",
+    "meterUsage": "Meter Usage",
+    "meterType": "Meter Type",
+    "meterQuantityType": "Meter Quantity Type",
+    "meterName": "Meter Name",
+    "minimumFlow": "Minimum Flow",
+    "maximumFlow": "Maximum Flow",
+    "kFactor": "K Factor",
+    "unitId": "Unit Id",
+    "numberOfDrawerProducts": "Number Of Drawer Products",
+    "messageId": "Message Id",
+    "messageName": "Message Name",
+    "requireWholeLoadToBeCompliant": "Require Whole Load to Be Compliant",
+    "messageDetails": "Message Details",
+    "messageLocaleCode": "Message Locale Code",
+    "messageLocale": "Message Locale",
+    "productGroupCode": "Product Group Code",
+    "productGroupDescription": "Product Group Description"
   },
 
   "pageMenu": {
@@ -640,7 +657,8 @@
     "calculateQuantity": "Calculate Quantity",
     "calculateQuantityByLevel": "Calcuate Quantity By Level",
     "tankStrapping": "Show Tank Strapping",
-    "closeTransaction": "Close Transaction"
+    "closeTransaction": "Close Transaction",
+    "close": "Close"
   },
 
   "tabColumns": {
@@ -674,7 +692,12 @@
     "gauging": "Gauging",
     "calculations": "Calculations",
     "levels": "Levels",
-    "all": "All"
+    "all": "All",
+    "transactionProductDetail": "Transaction Product Detail",
+    "meterDetail": "Meter Detail",
+    "groups": "Groups",
+    "messages": "Messages",
+    "messageGroups": "Message Groups"
   },
 
   "messages": {
@@ -706,7 +729,8 @@
     "inputOmegaPassword": "Please Input Your Password",
     "loginSuccess": "Successfully Logged In.",
     "loginFailed": "Failed To Login.",
-    "cancelSuccess": "Successfully Cancelled."
+    "cancelSuccess": "Successfully Cancelled.",
+    "closeSuccess": "Successfully Closed."
   },
 
   "prompts": {
@@ -721,7 +745,8 @@
     "submit": "Are you sure you want to submit this record?",
     "onReverse": "Are you sure you want to reverse this record?",
     "halt": "Are you sure you want to halt?",
-    "cancel": "Are you sure you want to cancel?"
+    "cancel": "Are you sure you want to cancel?",
+    "closeTransaction": "Are you sure you want to Close this Transaction?"
   },
 
   "divider": {
@@ -791,7 +816,9 @@
     "cuztomizeLanding": "With OMEGA you can manage and create Equipment with a few clicks",
     "scheduling": "Schedule your Loads ahead of time to improve efficiency with OMEGA.",
     "inventoryManagement": "Scale your ability to manage multiple inventories using bulk editing in OMEGA.",
-    "detailedReporting": "OMEGA allows the generation of complex reports to help you understand the detailed workings of your Terminal."
+    "detailedReporting": "OMEGA allows the generation of complex reports to help you understand the detailed workings of your Terminal.",
+    "closeSuccess": "You have closed the Transaction:",
+    "closeFailed": "You have closed the Transaction:"
   },
 
   "placeholder": {
@@ -866,7 +893,8 @@
     "selectReport": "Select Report",
     "selectClass": "Select Class",
     "selectSourceType": "Select Source Type",
-    "selectDestinationType": "Select Destination Type"
+    "selectDestinationType": "Select Destination Type",
+    "selectBay": "Select Bay"
   },
 
   "validate": {

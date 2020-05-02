@@ -5,7 +5,6 @@ const columns = (t) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    checkboxSelection: true,
   },
   {
     headerName: t('fields.transactionNumber'),

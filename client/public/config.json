@@ -1,11 +1,11 @@
 {
   "DEFAULT": {
-    "TIMEOUT": 1800000
+    "TIMEOUT": 1800000,
+    "RANGE": "30"
   },
 
-  "features": {
-    "adaptiveFlowControl": false,
-    "hotLitreCalculation": false,
-    "tankView": false
+  "FEATURES": {
+    "ADAPTIVE_FLOW_CONTROL": false,
+    "HOT_LITRE_CALCULATION": false
   }
 }

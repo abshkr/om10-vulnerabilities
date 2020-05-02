@@ -1,1 +1,1 @@
-export const READ = '';
+export const READ = '/api/pages/audit/read.php';

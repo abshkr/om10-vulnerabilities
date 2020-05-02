@@ -10,6 +10,8 @@ import { COMPANY_BAY_MOVEMENT } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
 
+import Forms from './forms';
+
 const CompanyBayMovement = () => {
   const { t } = useTranslation();
 
@@ -21,7 +23,7 @@ const CompanyBayMovement = () => {
   const handleClick = (value) => {
     FormModal({
       value,
-      form: <div value={value} />,
+      form: <Forms value={value} />,
       id: value?.bacl_bay_code,
       name: value?.bacl_bay_type_name,
       t,
