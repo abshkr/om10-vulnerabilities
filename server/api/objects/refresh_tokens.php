@@ -29,7 +29,7 @@ class RefreshTokens
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':refresh_token', $this->token_str);
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("Delete refresh token failed:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
@@ -47,7 +47,7 @@ class RefreshTokens
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':refresh_token', $this->token_str);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return ($row['TOTAL_ROWS'] > 0);
         }
@@ -73,7 +73,7 @@ class RefreshTokens
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         oci_bind_by_name($stmt, ':refresh_token', $this->token_str);
 
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             write_log("Create refresh token failed:" .
                 oci_error($stmt)['message'], __FILE__, __LINE__);
             return false;

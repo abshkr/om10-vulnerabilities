@@ -2,15 +2,21 @@
 
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/exceptions.php';
+include_once __DIR__ . '/../shared/journal.php';
 
 class CommonClass
 {
     // database connection and table name
     protected $conn;
 
+    //Reponse uses it, like "message": "FolioOverride created."
+    public $desc = null;
+
     //before update/insert, if to check manndatory (not nullable) fields
     protected $check_mandatory = true;
     protected $mandatory_fields = null;
+
+    protected $commit_mode = OCI_COMMIT_ON_SUCCESS;
 
     /* descedant can set primary_keys explicitly, or can leave it to //
     be initialized by retrieve_primary_keys.
@@ -18,6 +24,7 @@ class CommonClass
     If want to use map_view_files_to_table_fiels, must explicitly set primary_keys
      */
     protected $primary_keys = null;
+    protected $record_str = null;
 
     /**
      * Sometimes when TABLE_NAME != VIEW_NAME, use primary_keys as update
@@ -122,12 +129,18 @@ class CommonClass
 
     private function view_primary_key_where()
     {
+        if ($this->TABLE_NAME == $this->VIEW_NAME) {
+            return $this->populate_primary_key_where();
+        }
+
         if (!isset($this->view_keys)) {
             $this->view_keys = $this->primary_keys;
             if (!isset($this->view_keys)) {
                 return "";
             }
         }
+
+        // write_log(json_encode($this->view_keys), __FILE__, __LINE__);
 
         $where_query = " WHERE ";
         foreach ($this->view_keys as $value) {
@@ -180,13 +193,14 @@ class CommonClass
             }
         }
         $set_query = rtrim($set_query, ', ');
-        if (count($set_query) <= 0) {
+        // write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
+        if (strlen($set_query) <= 0) {
             write_log("Nothing to update", __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
 
         $query = "UPDATE " . $this->TABLE_NAME . " SET " . $set_query . $this->populate_primary_key_where();
-        write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
+        // write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
         $stmt = oci_parse($this->conn, $query);
 
         foreach ($this->primary_keys as $value) {
@@ -236,7 +250,7 @@ class CommonClass
         }
 
         $query = "INSERT INTO " . $this->TABLE_NAME . $fields_query . " VALUES " . $para_query;
-        write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
+        // write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
         $stmt = oci_parse($this->conn, $query);
 
         foreach ($this->primary_keys as $value) {
@@ -261,7 +275,7 @@ class CommonClass
     //Descedant class need to implement this
     protected function insert_children()
     {
-
+        return true;
     }
 
     //Descedant class need to implement this
@@ -284,13 +298,21 @@ class CommonClass
         return true;
     }
 
+    /**
+     * Descendant can implement this function to do some update that
+     * cannot be done in common way. Refer to company as an example
+     */
+    protected function post_delete()
+    {
+        return true;
+    }
+
+
+    /* Sample: https://{{server_ip}}/api/pages/expiry_types/update.php 
+    By calling prepare_update(), it only updates the fields that are passed in*/
     public function update()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-        write_log(json_encode($this), __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
+        $this->commit_mode = OCI_NO_AUTO_COMMIT;
 
         $query = "
             SELECT * FROM " . $this->VIEW_NAME . $this->view_primary_key_where();
@@ -306,7 +328,7 @@ class CommonClass
             }
             oci_bind_by_name($stmt, ':' . $value, $this->$value);
         }
-        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
             $e = oci_error($stmt);
@@ -315,8 +337,9 @@ class CommonClass
 
         $stmt = $this->prepare_update();
         if (!$stmt) {
-            return false;
-        } else if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            //Do not return because it might have children. Example: tank_group 
+            // return false;
+        } else if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -353,7 +376,7 @@ class CommonClass
         $module = $this->VIEW_NAME;
         $record = $jnl_data[2];
         foreach ($this as $key => $value) {
-            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
+            if (array_key_exists(strtoupper($key), $row) && $value != $row[strtoupper($key)] &&
                 !$journal->valueChange(
                     $module, $record, strtoupper($key), $row[strtoupper($key)], $value)) {
                 oci_rollback($this->conn);
@@ -369,27 +392,31 @@ class CommonClass
 
     public function delete()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
+        $this->commit_mode = OCI_NO_AUTO_COMMIT;
 
-        Utilities::sanitize($this);
-
+        $this->check_deletable();
         $this->delete_children();
 
         $query = "DELETE FROM " . $this->TABLE_NAME . " " . $this->populate_primary_key_where();
-        write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
-
+        // write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
+        
         $stmt = oci_parse($this->conn, $query);
         foreach ($this->primary_keys as $value) {
             // write_log(sprintf("%s:%s", $value, $this->$value), __FILE__, __LINE__, LogLevel::DEBUG);
             oci_bind_by_name($stmt, ':' . $value, $this->$value);
         }
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
 
             throw new DatabaseException($e['message']);
+            return false;
+        }
+
+        if ($this->post_delete() === false) {
+            write_log("Failed to execute post_delete", __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
             return false;
         }
 
@@ -412,16 +439,31 @@ class CommonClass
     }
 
     /**
+     * This function will be called inside utilities.php::update(). If a sub class
+     * needs some thing before update(), it implements this function.
+     * Refer to report_profile.php as a sample
+     *  */
+    public function pre_update()
+    {
+
+    }
+
+    /**
      * This function will be called inside utilities.php::create(). If a sub class
      * needs some thing before create(), it implements this function.
      * Refer to report_profile.php as a sample
      *  */
     public function pre_create()
     {
-
+        return true;
     }
 
     protected function post_create()
+    {
+        return true;
+    }
+
+    public function pre_delete()
     {
         return true;
     }
@@ -444,10 +486,12 @@ class CommonClass
 
         Utilities::sanitize($this);
 
+        $this->commit_mode = OCI_NO_AUTO_COMMIT;
+
         $stmt = $this->prepare_insert();
         if (!$stmt) {
             return false;
-        } else if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+        } else if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -480,16 +524,16 @@ class CommonClass
             return false;
         }
 
-        $module = $this->VIEW_NAME;
-        $record = $jnl_data[2];
-        foreach ($this as $key => $value) {
-            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
-                !$journal->valueChange(
-                    $module, $record, strtoupper($key), $row[strtoupper($key)], $value)) {
-                oci_rollback($this->conn);
-                return false;
-            }
-        }
+        // $module = $this->VIEW_NAME;
+        // $record = $jnl_data[2];
+        // foreach ($this as $key => $value) {
+        //     if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
+        //         !$journal->valueChange(
+        //             $module, $record, strtoupper($key), $row[strtoupper($key)], $value)) {
+        //         oci_rollback($this->conn);
+        //         return false;
+        //     }
+        // }
 
         oci_commit($this->conn);
         return true;
@@ -505,8 +549,9 @@ class CommonClass
             SELECT COLUMN_NAME
             FROM USER_TAB_COLS
             WHERE TABLE_NAME = '" . $this->TABLE_NAME . "'";
+        
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
                 if (!in_array(strtolower($row['COLUMN_NAME']), $this->primary_keys)) {
                     // if (isset($this->table_view_map[$row['COLUMN_NAME']])) {
@@ -532,6 +577,10 @@ class CommonClass
 
     public function primiary_key_str()
     {
+        if (isset($this->record_str)) {
+            return $this->record_str;
+        }
+
         if (!isset($this->primary_keys)) {
             return "";
         }
@@ -547,9 +596,10 @@ class CommonClass
     private function map_view_files_to_table_fiels()
     {
         // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-        // __FILE__, __LINE__);
+        //     __FILE__, __LINE__);
         // write_log(json_encode($this), __FILE__, __LINE__);
         if (!isset($this->primary_keys)) {
+            write_log("primary_keys not set", __FILE__, __LINE__);
             return;
         }
 
@@ -567,28 +617,37 @@ class CommonClass
     }
 
     /**
+     * Descendant can overwrite this function. If not deletable, throw an exception
+    */
+    protected function check_deletable()
+    {
+        
+    }
+
+    /**
      * Check if the record that is to be updated is in db
      * return true: exist; false: not exist
-     *
+     * Once descendant override this function, it needs to explicitly set primary_keys
      */
     public function check_existence()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
 
         if ($this->TABLE_NAME === null) {
             return true;
         }
 
-        if (isset($this->TABLE_NAME) &&
-            isset($this->VIEW_NAME) &&
-            $this->TABLE_NAME !== $this->VIEW_NAME) {
-            $this->map_view_files_to_table_fiels();
-        }
-
         if (!isset($this->primary_keys)) {
             $this->retrieve_primary_keys();
         }
+
+        // if (isset($this->TABLE_NAME) &&
+        //     isset($this->VIEW_NAME) &&
+        //     $this->TABLE_NAME !== $this->VIEW_NAME) {
+        //     $this->map_view_files_to_table_fiels();
+        // }
+        $this->map_view_files_to_table_fiels();
 
         if (count($this->primary_keys) <= 0) {
             write_log($this->TABLE_NAME . " does not have primary key", __FILE__, __LINE__);
@@ -621,11 +680,11 @@ class CommonClass
                     json_encode($this->primary_keys));
             }
         }
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             if (intval($row['CN']) <= 0) {
-                write_log(sprintf("record (%s) does not exist", $this->primiary_key_str()),
-                    __FILE__, __LINE__, LogLevel::INFO);
+                // write_log(sprintf("record (%s) does not exist", $this->primiary_key_str()),
+                //     __FILE__, __LINE__, LogLevel::INFO);
                 return false;
             }
             return true;
@@ -682,7 +741,7 @@ class CommonClass
                 AND CONS.CONSTRAINT_NAME = COLS.CONSTRAINT_NAME
                 AND CONS.OWNER = COLS.OWNER";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
                 if (!isset($this->PRIMIRAY_KEY_EXCLUSIONS) || !in_array($row['COLUMN_NAME'], $this->PRIMIRAY_KEY_EXCLUSIONS)) {
                     array_push($this->primary_keys, strtolower($row['COLUMN_NAME']));
@@ -706,7 +765,7 @@ class CommonClass
             WHERE TABLE_NAME = '" . $this->TABLE_NAME . "' AND NULLABLE = 'N'
                 AND DATA_DEFAULT IS NULL";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
                 if (!isset($this->PRIMIRAY_KEY_EXCLUSIONS) || !in_array($row['COLUMN_NAME'], $this->PRIMIRAY_KEY_EXCLUSIONS)) {
                     array_push($this->mandatory_fields, strtolower($row['COLUMN_NAME']));

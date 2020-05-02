@@ -40,7 +40,7 @@ class Equipment extends CommonClass
                   AND TRANSP_EQUIP.EQPT_ID = :eqpt_id";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':eqpt_id', $eqpt_id);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -52,8 +52,6 @@ class Equipment extends CommonClass
 
     public function compartments()
     {
-        Utilities::sanitize($this);
-
         $query = "
             SELECT EQPT_CODE,
                 EQPT_ETP,
@@ -70,7 +68,7 @@ class Equipment extends CommonClass
             ORDER BY CMPT_NO";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -81,10 +79,6 @@ class Equipment extends CommonClass
 
     public function unlockAllCmpts($eqpt)
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "
             UPDATE SFILL_ADJUST
             SET ADJ_CMPT_LOCK = 0
@@ -92,7 +86,7 @@ class Equipment extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':eqpt', $eqpt);
 
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
@@ -114,10 +108,6 @@ class Equipment extends CommonClass
 
     public function toggleLocks($eqpt)
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "
             UPDATE SFILL_ADJUST
             SET ADJ_CMPT_LOCK = 1 - NVL(ADJ_CMPT_LOCK, 0)
@@ -125,7 +115,7 @@ class Equipment extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':eqpt', $eqpt);
 
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
@@ -147,10 +137,6 @@ class Equipment extends CommonClass
 
     public function toggleLock($eqpt, $cmpt)
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $old_value = null;
         $query = "
             SELECT NVL(ADJ_CMPT_LOCK, 0) ADJ_CMPT_LOCK
@@ -159,7 +145,7 @@ class Equipment extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':eqpt', $eqpt);
         oci_bind_by_name($stmt, ':cmpt', $cmpt);
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
@@ -176,7 +162,7 @@ class Equipment extends CommonClass
         oci_bind_by_name($stmt, ':eqpt', $eqpt);
         oci_bind_by_name($stmt, ':cmpt', $cmpt);
 
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
@@ -202,7 +188,7 @@ class Equipment extends CommonClass
             SELECT COUNT(*) CN
             FROM GUI_EQUIPMENT_LIST";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -229,14 +215,10 @@ class Equipment extends CommonClass
 
     public function read()
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
         if (!isset($this->end_num)) {
             $this->start_num = 1;
             $this->end_num = $this->count();
         }
-
-        Utilities::sanitize($this);
 
         $query = "
             SELECT EQPT_ID,
@@ -281,7 +263,7 @@ class Equipment extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':start_num', $this->start_num);
         oci_bind_by_name($stmt, ':end_num', $this->end_num);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -315,7 +297,7 @@ class Equipment extends CommonClass
         if (isset($eqpt_etp)) {
             oci_bind_by_name($stmt, ':eqpt_etp', $eqpt_etp);
         }
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -395,7 +377,7 @@ class Equipment extends CommonClass
         }
         oci_bind_by_name($stmt, ':start_num', $this->start_num);
         oci_bind_by_name($stmt, ':end_num', $this->end_num);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -408,7 +390,7 @@ class Equipment extends CommonClass
     {
         $query = "SELECT * FROM EQUIP_LIST_LD_TYPE_LOOKUP ORDER BY LD_TYPE_ID";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -528,11 +510,6 @@ class Equipment extends CommonClass
 
     public function update()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "
             SELECT *
             FROM TRANSP_EQUIP
@@ -721,13 +698,6 @@ class Equipment extends CommonClass
 
     public function create()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-
-        write_log(json_encode($this), __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $this->eqpt_id = 1;
         $query = "
             SELECT NVL(MAX(EQPT_ID), 0) + 1 NEWID
@@ -877,11 +847,6 @@ class Equipment extends CommonClass
 
     public function delete()
     {
-        write_log(sprintf("%s::%s() START. eqpt_id:%d", __CLASS__, __FUNCTION__, $this->eqpt_id),
-            __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-        
         $query = "
             SELECT NVL(MAX(TC_TANKER), 'NULL') TC_TANKER
             FROM TNKR_EQUIP

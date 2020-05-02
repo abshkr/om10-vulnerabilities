@@ -13,11 +13,24 @@ class TimeCode extends CommonClass
 
     protected $primary_keys = array("tcd_title");
 
+    public function read_brief()
+    {
+        $query = "SELECT TCD_TITLE
+            FROM TIMECODE
+            ORDER BY TCD_TITLE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     // read personnel
     public function read()
     {
-        Utilities::sanitize($this);
-
         if (isset($this->tcd_title)) {
             $query = "
             SELECT TCD_TITLE,
@@ -49,7 +62,7 @@ class TimeCode extends CommonClass
         if (isset($this->tcd_title)) {
             oci_bind_by_name($stmt, ':tcd_title', $this->tcd_title);
         }
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);

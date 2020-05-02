@@ -54,12 +54,83 @@ class Company extends CommonClass
         "CMPY_MOVEMENTS_REV" => "Y",
         "SEND_TO_PRINTER" => "Y",
         "DEFAULT_FLAG" => "Y",
+        "CMPY_ADD_PROMPT" => "Y",
+        "CMPY_CHECK_LICEN" => "Y",
+        "CMPY_WGH_AUTO_FL" => "Y"
     );
 
-    public function bol_templates()
+    public function pre_create()
     {
-        $serv = new CompanyService($this->conn, $this->cmpy_code);
-        return $serv->bol_templates();
+        if (!isset($this->cmpy_trip_strt)) {
+            $this->cmpy_trip_strt = 1;
+        }
+        if (!isset($this->cmpy_trip_end)) {
+            $this->cmpy_trip_end = 999999999;
+        }
+        if (!isset($this->cmpy_ord_strt)) {
+            $this->cmpy_ord_strt = 1;
+        }
+        if (!isset($this->cmpy_ord_end)) {
+            $this->cmpy_ord_end = 999999999;
+        }
+    }
+
+    protected function post_delete()
+    {
+        $query = "DELETE FROM COMPANY_CONFIG WHERE CMPY_CODE = :cmpy_code";
+        
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function post_update()
+    {
+        if (isset($this->company_configs)) {
+            foreach($this->company_configs as $config) {
+                $query = "SELECT COUNT(*) CN FROM COMPANY_CONFIG
+                    WHERE CONFIG_KEY = :config_key AND CMPY_CODE = :cmpy_code";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
+                oci_bind_by_name($stmt, ':config_key', $config->confic_key);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+
+                $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+                if ($row['CN'] > 0) {
+                    // write_log("Update COMPANY_CONFIG.", __FILE__, __LINE__, LogLevel::ERROR);
+                    $query = "UPDATE COMPANY_CONFIG
+                        SET CONFIG_VALUE = :config_value
+                        WHERE CONFIG_KEY = :config_key AND CMPY_CODE = :cmpy_code";
+                } else {
+                    // write_log("Insert COMPANY_CONFIG.", __FILE__, __LINE__, LogLevel::ERROR);
+                    $query = "INSERT INTO COMPANY_CONFIG (CMPY_CODE, CONFIG_KEY, CONFIG_VALUE) 
+                        VALUES (:cmpy_code, :config_key, :config_value)";
+                }
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
+                oci_bind_by_name($stmt, ':config_key', $config->config_key);
+                oci_bind_by_name($stmt, ':config_value', $config->config_value);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public function read()
@@ -67,7 +138,7 @@ class Company extends CommonClass
         $query = "
             SELECT * FROM " . $this->VIEW_NAME . " ORDER BY CMPY_CODE";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -75,6 +146,36 @@ class Company extends CommonClass
             return null;
         }
     }
+
+    // public function read_hook(&$hook_item)
+    // {
+    //     write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+    //         __FILE__, __LINE__);
+
+    //     $result = array();
+    //     $hook_item['company_configs'] = $result;
+    //     // write_log(json_encode($hook_item), __FILE__, __LINE__);
+
+    //     if (!array_key_exists('cmpy_code', $hook_item)) {
+    //         write_log("hook_item does not have cmpy_code item, cannot do read_hook",
+    //             __FILE__, __LINE__, LogLevel::ERROR);
+    //         return;
+    //     }
+
+    //     $query = "
+    //         SELECT * FROM COMPANY_CONFIG 
+    //         WHERE CMPY_CODE = :cmpy_code";
+    //     $stmt = oci_parse($this->conn, $query);
+    //     oci_bind_by_name($stmt, ':cmpy_code', $hook_item['cmpy_code']);
+    //     if (!oci_execute($stmt, $this->commit_mode)) {
+    //         $e = oci_error($stmt);
+    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         return;
+    //     }
+
+    //     Utilities::retrieve($result, $this, $stmt, $method=__FUNCTION__);
+    //     $hook_item['company_configs'] = $result;
+    // }
 
     public function document_printers()
     {
@@ -88,7 +189,7 @@ class Company extends CommonClass
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -109,7 +210,7 @@ class Company extends CommonClass
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -127,10 +228,9 @@ class Company extends CommonClass
                 AND (P.CMPY IN (:cmpy_code, 'ANY') OR (P.CMPY IS NULL))
                 AND U.PRNF_USE = 'INSTRUCT'
                 AND PRNTR = CMP.CMPY_BOL_VP_NAME(+)";
-
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -146,11 +246,9 @@ class Company extends CommonClass
         $query = "
             SELECT * FROM COMPANY_CONFIG
             WHERE CMPY_CODE = :cmpy_code";
-
         $stmt = oci_parse($this->conn, $query);
-        $this->cmpy_code = '0003';
         oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -170,7 +268,7 @@ class Company extends CommonClass
             ORDER BY CMPY_NAME ASC";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -189,7 +287,7 @@ class Company extends CommonClass
             ORDER BY CMPY_NAME ASC";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -208,7 +306,7 @@ class Company extends CommonClass
             ORDER BY CMPY_NAME ASC";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -236,7 +334,7 @@ class Company extends CommonClass
             $this->supplier = '-1';
         }
         oci_bind_by_name($stmt, ':supplier', $this->supplier);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             return null;
@@ -254,7 +352,7 @@ class Company extends CommonClass
             ORDER BY CMPY_CODE";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             return null;
@@ -271,7 +369,7 @@ class Company extends CommonClass
             ORDER BY CMPY_NAME ASC";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -289,7 +387,7 @@ class Company extends CommonClass
             ORDER BY CMPY_NAME ASC";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);

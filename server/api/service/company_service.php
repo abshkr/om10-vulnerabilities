@@ -19,43 +19,6 @@ class CompanyService
         }
     }
 
-    public function bol_templates()
-    {
-        $query = "
-            SELECT BOL_DN_TEMPLATE.TEMPLATE_CODE, 
-                BOL_DN_TEMPLATE.TEMPLATE_NAME, 
-                BOL_DN_TEMPLATE.TEMPLATE_TYPE, 
-                DECODE(BOL_DN_TEMPLATE.TEMPLATE_TYPE, 0, 'INVALID',
-                    1, 'BOL TEMPLATE',
-                    2, 'DELIVERY NOTE TEMPLATE',
-                    3, 'BILL OF UNLADING TEMPLATE',
-                    4, 'LPG BOL TEMPLATE',
-                    'INVALID') TEMPLATE_TYPE_DESC,
-                BOL_DN_TEMPLATE.FILE_NAME, LOCALE, 
-                BOL_DN_TEMPLATE.DESCRIPTION,
-                TEMPLATE_N_CMPY.CMPY_CODE, 
-                DEFAULT_FLAG, 
-                STATUS, 
-                EMAIL, 
-                COPIES, 
-                FOOTERS, 
-                WARNING_PERCENT, 
-                WARNING_QTY, 
-                SEND_TO_PRINTER
-            FROM BOL_DN_TEMPLATE, TEMPLATE_N_CMPY
-            WHERE BOL_DN_TEMPLATE.TEMPLATE_CODE = TEMPLATE_N_CMPY.TEMPLATE_CODE
-                AND TEMPLATE_N_CMPY.CMPY_CODE = :cmpy_code";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
-        if (oci_execute($stmt)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
-
     public function next_cust_ordno()
     {
         $order_range = $this->get_order_range();
@@ -319,6 +282,42 @@ class CompanyService
             ORDER BY CMPY_NAME ASC";
         // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
         $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function plants()
+    {
+        $query = "
+            SELECT DISTINCT CMPY_PLANT
+            FROM GUI_COMPANYS
+            WHERE CMPY_PLANT IS NOT NULL
+            ORDER BY CMPY_PLANT ";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function companys_by_role($cmpy_role_id)
+    {
+        $query = "
+            SELECT CMPY_CODE, CMPY_NAME
+            FROM GUI_COMPANYS
+            WHERE BITAND(CMPY_TYPE, POWER(2, :role_id)) != 0
+            ORDER BY CMPY_NAME ASC";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':role_id', $cmpy_role_id);
         if (oci_execute($stmt)) {
             return $stmt;
         } else {

@@ -3,11 +3,12 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once 'common_class.php';
 
-class OMJournal
+class OMJournal extends CommonClass
 {
-    // database connection and table name
-    private $conn;
+    protected $TABLE_NAME = 'GUI_SITE_JOURNAL';
+    protected $VIEW_NAME = 'GUI_SITE_JOURNAL';
 
     public $gen_date;
     public $region_code;
@@ -22,20 +23,13 @@ class OMJournal
     public $start_num;
     public $end_num;
 
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-        $this->region_code = 'ENG';
-    }
-
     public function get_max_seq()
     {
         $query = "
             SELECT NVL(MAX(SEQ), 0) AS MAX_SEQ
             FROM GUI_SITE_JOURNAL WHERE GEN_DATE > SYSDATE - 1";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return $row['MAX_SEQ'];
         } else {
@@ -47,8 +41,6 @@ class OMJournal
 
     public function types()
     {
-        Utilities::sanitize($this);
-
         $query = "
             SELECT ENUM_TMM, MSG_LOOKUP.MESSAGE
             FROM ENUMITEM
@@ -60,7 +52,7 @@ class OMJournal
                 AND MSG_LOOKUP.LANG_ID = :region_code))";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':region_code', $this->region_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -72,10 +64,9 @@ class OMJournal
     // read personnel
     public function read()
     {
-        Utilities::sanitize($this);
         // write_log(json_encode($this), __FILE__, __LINE__);
         if (!isset($this->start_date) || !isset($this->end_date)) {
-            //get journal in 5 min
+            //get journal in 30 min
             $query = "
             SELECT GEN_DATE,
                 REGION_CODE,
@@ -87,7 +78,7 @@ class OMJournal
                 SEQ,
                 JNL_CAT
             FROM GUI_SITE_JOURNAL
-            WHERE GEN_DATE >= SYSDATE - 5 / 1440
+            WHERE GEN_DATE >= SYSDATE - 30 / 1440
             ORDER BY GEN_DATE DESC";
             $stmt = oci_parse($this->conn, $query);
             // oci_bind_by_name($stmt, ':start_num', $this->start_num);
@@ -117,8 +108,8 @@ class OMJournal
                 SEQ,
                 JNL_CAT
             FROM GUI_SITE_JOURNAL
-            WHERE GEN_DATE >= TO_DATE(:start_date, 'yyyy-mm-dd hh24:mi')
-                AND GEN_DATE <= TO_DATE(:end_date, 'yyyy-mm-dd hh24:mi')";
+            WHERE GEN_DATE >= TO_DATE(:start_date, 'yyyy-mm-dd hh24:mi:ss')
+                AND GEN_DATE <= TO_DATE(:end_date, 'yyyy-mm-dd hh24:mi:ss')";
             if (isset($types_str)) {
                 $query .= " AND MSG_EVENT IN (" . $types_str . ")";
             }
@@ -143,7 +134,7 @@ class OMJournal
             }
         }
 
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -186,7 +177,7 @@ class OMJournal
         oci_bind_by_name($stmt, ':end_date', $end_date);
         oci_bind_by_name($stmt, ':region_code', $this->region_code);
         oci_bind_by_name($stmt, ':target_str', $target_str);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return $row['CN'];
         } else {

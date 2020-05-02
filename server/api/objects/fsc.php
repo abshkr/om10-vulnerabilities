@@ -13,7 +13,7 @@ class FSC extends CommonClass
         $query = "
             SELECT NODE_ID, HEARTBEAT_TIME FROM SYM_NODE_HOST";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -27,7 +27,7 @@ class FSC extends CommonClass
         $query = "
             SELECT NODE_ID, BATCH_TO_SEND_COUNT, BATCH_IN_ERROR_COUNT FROM SYM_NODE";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);

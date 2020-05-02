@@ -35,6 +35,12 @@ class MeterDevice extends CommonClass
         return $serv->prod_movement_types();
     }
 
+    public function types()
+    {
+        $serv = new EnumService($this->conn);
+        return $serv->meter_device_types();
+    }
+
     // read personnel
     public function read()
     {
@@ -58,7 +64,7 @@ class MeterDevice extends CommonClass
             AND METERTD.MTD_DST_CODE = DST.PMV_ID
         ORDER BY MTD_CODE";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return $stmt;

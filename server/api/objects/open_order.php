@@ -56,7 +56,7 @@ class OpenOrder extends CommonClass
             FROM " . $this->VIEW_NAME . "
             ORDER BY ORDER_SYS_NO";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -72,7 +72,7 @@ class OpenOrder extends CommonClass
             FROM TRANSPORT_TYP
             ORDER BY TRANSPORT_ID";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -88,7 +88,7 @@ class OpenOrder extends CommonClass
             FROM DELV_LOCATION
             ORDER BY DLV_CODE";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -153,7 +153,7 @@ class OpenOrder extends CommonClass
         if (isset($this->items)) {
             $lineno = 1;
             foreach ($this->items as $value) {
-                write_log(json_encode($value), __FILE__, __LINE__);
+                // write_log(json_encode($value), __FILE__, __LINE__);
                 $query = "INSERT INTO OPRODMTD (
                     OPROD_SCHEDULED,
                     OPROD_LOADED,
@@ -306,7 +306,7 @@ class OpenOrder extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':supplier', $this->order_supp_code);
         oci_bind_by_name($stmt, ':partner_type', $partner_type);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -339,7 +339,7 @@ class OpenOrder extends CommonClass
             WHERE ORDER_NO = :order_sys_no";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':order_sys_no', $this->order_sys_no);
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
@@ -383,7 +383,7 @@ class OpenOrder extends CommonClass
             WHERE ORDER_NO = :order_sys_no";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':order_sys_no', $this->order_sys_no);
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
@@ -448,7 +448,7 @@ class OpenOrder extends CommonClass
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':order_sys_no', $this->order_sys_no);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);

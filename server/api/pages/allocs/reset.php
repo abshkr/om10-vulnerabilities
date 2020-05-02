@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/allocation.php';
 
-Utilities::update('Allocation', $method='reset');
+Utilities::update('Allocation', $method = 'reset');

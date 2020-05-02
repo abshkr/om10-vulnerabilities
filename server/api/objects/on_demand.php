@@ -4,14 +4,25 @@ include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../config/setups.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/closeout_service.php';
+include_once 'common_class.php';
 
-class OndemandReport
+class OndemandReport extends CommonClass
 {
-    // database connection and table name
-    private $conn;
-    // private $table_name = "GUI_PERSONNEL";
+    protected $TABLE_NAME = 'GUI_REPORT_PROFILE';
     private $curr_cmpy = null;
     private $is_manager = true;
+
+    public $BOOLEAN_FIELDS = array(
+        "FOLIO_NUMBER_PARAMETERS" => 1,
+    );
+
+    public $NUMBER_FIELDS = array(
+        "closeout_nr",
+        "MVITM_QTY_SCHD",
+        "MVITM_QTY_MOVE",
+        "MVITM_QTY_DELV"
+    );
 
     // constructor with $db as database connection
     public function __construct($db)
@@ -37,7 +48,7 @@ class OndemandReport
 
                     $stmt = oci_parse($this->conn, $query);
                     oci_bind_by_name($stmt, ':curr_per', $token->per_code);
-                    if (oci_execute($stmt)) {
+                    if (oci_execute($stmt, $this->commit_mode)) {
                         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
                         $this->curr_cmpy = $row['PER_CMPY'];
                         $this->is_manager = $row['IS_MANAGER'];
@@ -63,12 +74,49 @@ class OndemandReport
         }
     }
 
+    public function create_report()
+    {
+        write_log(__METHOD__ . " START." . __FILE__, __LINE__);
+
+        if (!isset($this->company)) {
+            $this->company = "";
+        }
+        
+        $query_string = "output=" . $this->output . "&company=" . $this->company .
+            "&report=" . $this->report;
+        if (isset($this->start_date)) {
+            $query_string = $query_string . "&startdate=" . rawurlencode(strip_tags($this->start_date));
+        }
+        if (isset($this->end_date)) {
+            $query_string = $query_string . "&enddate=" . rawurlencode(strip_tags($this->end_date));
+        }
+ 
+        $cgi_result = Utilities::http_cgi_invoke("cgi-bin/en/rpt_adm/jasper_reports.cgi", $query_string);
+        $xml = simplexml_load_string($cgi_result);
+        // echo json_encode($xml, JSON_PRETTY_PRINT);
+        $json = json_encode($xml);
+        $array = json_decode($json, TRUE);
+        if ($array['result'] === 'OK') {
+            write_log("Jasper report created. report:" . $array['report'] . ", created:" . $array['filepath'], __FILE__, __LINE__, LogLevel::INFO);
+            $jasper_result = array(
+                'result' => $array['result'],
+                'filepath' => JASPERREPORT_DIR . $array['filepath']);
+
+            echo json_encode($jasper_result, JSON_PRETTY_PRINT);
+        } else {
+            write_log("Jasper report creation failed. report:" . $array['report'] . ", created:" . $array['filepath'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, "Bad Request", "Failed to call jasper_reports.cgi");
+            echo json_encode($error, JSON_PRETTY_PRINT);
+        }
+
+        return array();
+    }
+
     // get all suppliers
     public function suppliers()
     {
         write_log(__METHOD__ . " START. is_manager:" . $this->is_manager, __FILE__, __LINE__);
-        Utilities::sanitize($this);
-
+        
         if ($this->is_manager) {
             $query = "
                 SELECT DISTINCT CMPY_CODE,
@@ -91,7 +139,7 @@ class OndemandReport
             oci_bind_by_name($stmt, ':curr_cmpy', $this->curr_cmpy);
         }
 
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             return null;
@@ -110,7 +158,7 @@ class OndemandReport
             ORDER BY CMPY_CODE";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             return null;
@@ -121,8 +169,6 @@ class OndemandReport
     public function carriers()
     {
         write_log(__METHOD__ . " START. is_manager:" . $this->is_manager, __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
 
         if ($this->is_manager) {
             $query = "
@@ -148,7 +194,7 @@ class OndemandReport
             oci_bind_by_name($stmt, ':curr_cmpy', $this->curr_cmpy);
         }
 
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             return null;
@@ -167,7 +213,7 @@ class OndemandReport
             ORDER BY CMPY_CODE";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             return null;
@@ -177,20 +223,20 @@ class OndemandReport
     // get all reports of supplier
     public function reports()
     {
-        Utilities::sanitize($this);
-
         $query = "
             SELECT ONDEMAND_TITLE,
                 REPORT_FILES.RPT_FILE,
-                JASPER_FILE
+                JASPER_FILE,
+                IS_CLOSEOUT_REPORT FOLIO_NUMBER_PARAMETERS
             FROM REPORT_FILES, REPORT_CMPY
             WHERE REPORT_FILES.RPT_FILE = REPORT_CMPY.RPT_FILE
                 AND RPT_CMPY = :cmpy_code
+                AND BITAND(ONDEMAND_FLAG, 1) = 1
             ORDER BY ONDEMAND_TITLE";
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             return null;
@@ -200,8 +246,6 @@ class OndemandReport
     // get all parameters of report
     public function parameters()
     {
-        Utilities::sanitize($this);
-
         $query = "
             SELECT DECODE(ARGUMENT_NAME,
                 'CMPY_CODE', 'SUPP_CODE',
@@ -213,7 +257,7 @@ class OndemandReport
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':jasper_file', $this->jasper_file);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             return null;
@@ -223,43 +267,11 @@ class OndemandReport
     // get all reports of supplier
     public function closeout_nrs()
     {
-        Utilities::sanitize($this);
-
+        $serv = new CloseoutService($this->conn);
         if (isset($this->start_date) && isset($this->end_date)) {
-            $query = "
-            SELECT CLOSEOUT_NR,
-                CLOSEOUT_DATE END_DATE,
-                PREV_CLOSEOUT_DATE START_DATE,
-                DECODE(STATUS,
-                    0, 'OPEN',
-                    1, 'FROZEN',
-                    2, 'CLOSE') STATUS
-            FROM CLOSEOUTS
-            WHERE CLOSEOUT_DATE > :start_date
-                AND CLOSEOUT_DATE < :end_date
-            ORDER BY CLOSEOUT_NR DESC";
-
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':start_date', $this->start_date);
-            oci_bind_by_name($stmt, ':end_date', $this->end_date);
-        } else {
-            $query = "
-            SELECT CLOSEOUT_NR,
-                PREV_CLOSEOUT_DATE START_DATE,
-                CLOSEOUT_DATE END_DATE,
-                DECODE(STATUS,
-                    0, 'OPEN',
-                    1, 'FROZEN',
-                    2, 'CLOSE') STATUS
-            FROM CLOSEOUTS
-            ORDER BY CLOSEOUT_NR DESC";
-            $stmt = oci_parse($this->conn, $query);
+            return $serv->closeout_nrs($this->start_date, $this->end_date);
         }
-
-        if (oci_execute($stmt)) {
-            return $stmt;
-        } else {
-            return null;
-        }
+        
+        return $serv->closeout_nrs();
     }
 }

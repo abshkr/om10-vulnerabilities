@@ -46,6 +46,7 @@ include_once './shared/log.php';
 include_once './objects/personnel.php';
 include_once './config/setups.php';
 include_once './config/jwt.php';
+include_once '/shared/utilities.php';
 
 // initialize object
 $object = new stdClass();
@@ -104,6 +105,8 @@ if ($array['MSG_DESC'] === 'SUCCESS') {
 }
 
 if ($array['MSG_CODE'] === "0") {
+    Utilities::clean_rusty_files((isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omega') . '/logs');
+
     $login_result = array();
     $login_result['userid'] = $object->user;
     $login_result['email'] = "";

@@ -34,16 +34,15 @@ class ReportProfile extends CommonClass
         "REPORT_CLOSEOUT_FLAG2" => 1,
         "REPORT_ONDEMAND_FLAG" => 1,
         "REPORT_CLOSEOUT_FLAG" => 1,
+        "REPORT_ADDITIVE_FLAG" => 1
     );
-
+    
     public function read()
     {
-        Utilities::sanitize($this);
-
         $query = "
             SELECT * FROM " . $this->VIEW_NAME . " ORDER BY REPORT_NAME";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -124,7 +123,7 @@ class ReportProfile extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':ondemand_flag', $ondemand_flag);
         oci_bind_by_name($stmt, ':rpt_file', $this->rpt_file);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return true;
         } else {
             $e = oci_error($stmt);

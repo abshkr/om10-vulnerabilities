@@ -18,7 +18,7 @@ class MovementReason extends CommonClass
     );
 
     public $BOOLEAN_FIELDS = array(
-        
+        "MR_FLAG" => 1
     );
 
     public function types()
@@ -29,9 +29,6 @@ class MovementReason extends CommonClass
     
     public function read()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-
         $query = "
             SELECT MR_ID,
                 MR_ACTION,
@@ -51,12 +48,58 @@ class MovementReason extends CommonClass
             ORDER BY MR_ID
         ";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function pre_create()
+    {
+        $query = "SELECT NVL(MAX(MR_ID), 0) + 1 MR_ID FROM MOV_REASONS";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $this->mr_id = $row['MR_ID'];
+    }
+
+    public function check_existence()
+    {
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
+            
+        if (isset($this->mr_action)) {
+            $query = "SELECT COUNT(*) CN FROM MOV_REASONS
+                WHERE MR_ACTION = :mr_action";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':mr_action', $this->mr_action);
+            if (oci_execute($stmt, $this->commit_mode)) {
+                $this->record_str = sprintf("mr_action:%s", $this->mr_action);
+                
+                $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+                if ($row['CN'] > 0) {
+                    return true;
+                }
+
+                return false;
+                
+            } else {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        } else if (isset($this->mr_id)) {
+            return parent::check_existence();
+        }
+
+        return false;
     }
 }

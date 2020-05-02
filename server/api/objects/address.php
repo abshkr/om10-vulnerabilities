@@ -18,7 +18,7 @@ class Address extends CommonClass
             AND LANG_ID = 'ENG'
         ORDER BY ENUM_NO";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -45,7 +45,7 @@ class Address extends CommonClass
         WHERE LINE_TYPES.ENUM_NO(+) = DB_ADDR_LINE_TYPE
         ORDER BY DB_ADDR_LINE_ID, DB_ADDRLINE_NO";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -56,10 +56,19 @@ class Address extends CommonClass
 
     public function read_brief()
     {
-        $query = "
-            SELECT * FROM DB_ADDRESS ORDER BY DB_ADDRESS_KEY";
+        $query = "SELECT DB_ADDRESS.DB_ADDRESS_KEY,
+                DB_ADDRESS_KEY || '[' || NVL(DL.DB_ADDR_TEXT, ' ') || ']' ADDRESS_TEXT
+            FROM DB_ADDRESS,
+                (
+                    SELECT DB_ADDR_LINE_ID, 
+                        NVL(LISTAGG(DB_ADDR_LINE, ', ') WITHIN GROUP (ORDER BY DB_ADDRLINE_NO), ' ') DB_ADDR_TEXT
+					FROM DB_ADDRESS_LINE
+					GROUP BY DB_ADDR_LINE_ID
+                ) DL
+            WHERE DB_ADDRESS_KEY = DL.DB_ADDR_LINE_ID(+)
+            ORDER BY DB_ADDRESS_KEY";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);

@@ -26,9 +26,6 @@ class Customer extends CommonClass
     
     public function read()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-
         $query = "
         SELECT 
             CU.CUST_ACCT CUST_ACCOUNT,
@@ -119,7 +116,7 @@ class Customer extends CommonClass
             AND CU.CUST_ACCT = DC.DLC_CUSTOMER(+)
         ORDER BY CUST_ACCT";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);

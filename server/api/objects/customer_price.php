@@ -38,7 +38,7 @@ class CustomerPrice extends CommonClass
             ORDER BY PROD_CMPY, PROD_CODE";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);

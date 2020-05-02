@@ -96,20 +96,24 @@ class Database
          * his testing env.
          */
         if (AUTH_CHECK &&
-            (isset($_SERVER['HTTP_USER_AGENT']) && substr($_SERVER['HTTP_USER_AGENT'], 0, 7) != 'Postman') &&
-            (isset($_SERVER['HTTP_REFERER']) && !strpos($_SERVER['HTTP_REFERER'], 'localhost'))) {
+            (isset($_SERVER['HTTP_USER_AGENT']) && substr($_SERVER['HTTP_USER_AGENT'], 0, 7) != 'Postman')) {
+            if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'localhost')) {
+                // write_log("localhotst", __FILE__, __LINE__);
+                return $this->conn;
+            }
+
             if (JWT_AUTH) {
-                $token = check_token(get_http_token());
-                if (!$token) {
+                $pay_load = check_token(get_http_token());
+                if (!$pay_load) {
                     write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
                     throw new UnauthException('Authentication check failed, cannot continue');
                 } else {
                     if (INVALIDATE_TOKEN_ENABLED &&
-                        !$this->checkSessionStatus($token->per_code, $token->sess_id)) {
+                        !$this->checkSessionStatus($pay_load->per_code, $pay_load->sess_id)) {
                         write_log(
                             sprintf(
                                 "Token already invalidated, cannot continue. per_code:%s, sess_id:%s",
-                                $token->per_code, $token->sess_id),
+                                $pay_load->per_code, $pay_load->sess_id),
                             __FILE__, __LINE__, LogLevel::ERROR);
                         throw new UnauthException('Token already invalidated, cannot continue');
                     }
@@ -144,11 +148,35 @@ class Database
         }
     }
 
+    public function invalidate_token($per_code, $sess_id)
+    {
+        write_log(sprintf("%s::%s() START. per_code:%s, sess_id:%s", 
+            __CLASS__, __FUNCTION__, $per_code, $sess_id), __FILE__, __LINE__);
+        
+        $query = "
+            DELETE FROM HTTP_SESSION_TRACE
+            WHERE PER_CODE = :per_code AND SESS_ID = :sess_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $per_code);
+        oci_bind_by_name($stmt, ':sess_id', $sess_id);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        return true;
+    }
+
     /* The reason $_SESSION['SESSION'] and $_SESSION['PERCODE'] can be used here is because
     the old AMF php code is still using. In SecureAuth.php, the function login() sets all the
     _SESSION variables. */
     private function getSessionStatus($class = null, $method = null)
     {
+        // write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__), 
+        //     __FILE__, __LINE__);
+
         if (!isset($_SESSION)) {
             session_start();
         }
@@ -159,9 +187,9 @@ class Database
 
             // write_log("sess_id:" . $_SESSION['SESSION'] . ", per_code:" . $_SESSION['PERCODE'],
             //     __FILE__, __LINE__);
-            write_log(sprintf("sess_id:%s, per_code:%s, class:%s, method:%s",
-                $_SESSION['SESSION'], $_SESSION['PERCODE'], $class, $method),
-                __FILE__, __LINE__);
+            // write_log(sprintf("sess_id:%s, per_code:%s, class:%s, method:%s",
+            //     $_SESSION['SESSION'], $_SESSION['PERCODE'], $class, $method),
+            //     __FILE__, __LINE__);
 
             // write_log("get session. sess_id:" . $sess_id . " per_code:" . $per_code,
             //     __FILE__, __LINE__);

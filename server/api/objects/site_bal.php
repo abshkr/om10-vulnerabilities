@@ -2,31 +2,12 @@
 
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
+include_once 'common_class.php';
 
-class SiteBal
+class SiteBal extends CommonClass
 {
-    // database connection and table name
-    private $conn;
+    protected $TABLE_NAME = 'TANKS';
 
-    public $tankcode;
-    public $productcode;
-    public $productname;
-    public $tank_density;
-    public $openingstock;
-    public $receiptsvol;
-    public $accnttot;
-    public $transfervol;
-    public $bookbalance;
-    public $closingstock;
-    public $gainloss;
-
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
-
-    // read personnel
     public function read()
     {
         $query = "
@@ -46,7 +27,7 @@ class SiteBal
             WHERE BP.BASE_CODE = T.TANK_BASE
             ORDER BY TANKCODE";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return $stmt;

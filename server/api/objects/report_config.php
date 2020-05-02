@@ -35,12 +35,10 @@ class ReportConfig extends CommonClass
 
     public function read()
     {
-        Utilities::sanitize($this);
-
         $query = "
             SELECT * FROM " . $this->VIEW_NAME . " ORDER BY REPORT_CMPYCODE, REPORT_FILE";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -56,7 +54,7 @@ class ReportConfig extends CommonClass
             FROM COMPANYS
             ORDER BY DECODE(CMPY_CODE, 'ANY', 0, 1), CMPY_CODE";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -70,7 +68,7 @@ class ReportConfig extends CommonClass
         $query = "
             SELECT * FROM GUI_REPORT_PROFILE ORDER BY REPORT_NAME";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);

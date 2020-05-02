@@ -8,4 +8,3 @@ include_once '../../objects/physical_printer.php';
  
 // get database connection
 Utilities::update('PhysicalPrinter');
-

@@ -51,6 +51,22 @@ class SiteService
         return $default;
     }
 
+    public function site_config($config_key, $default)
+    {
+        $query = "SELECT NVL(MAX(CONFIG_VALUE), :default)
+            FROM SITE_CONFIG WHERE CONFIG_KEY = :config_key";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':default', $default);
+        oci_bind_by_name($stmt, ':config_key', $config_key);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        return $stmt;
+    }
+
     public function site_carrier_printer()
     {
         $config_value = $this->site_config_boolean('SITE_CARRIER_PRINTER', 'N');

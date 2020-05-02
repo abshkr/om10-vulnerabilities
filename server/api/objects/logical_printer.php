@@ -5,32 +5,26 @@ include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/../service/company_service.php';
 include_once __DIR__ . '/../service/site_service.php';
+include_once 'common_class.php';
 
-class LogicalPrinter
+//Old php: amfphp LogicalPrinterService
+class LogicalPrinter extends CommonClass
 {
-    // database connection and table name
-    private $conn;
-
-    public $prt_cmpy;
-    public $prt_cmpy_name;
-    public $prt_usage;
-    public $prt_usage_name;
-    public $prt_printer;
-    public $sys_printer;
-    public $prt_area;
-    public $area_name;
-
     public $desc = "logical printer";
 
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-        $this->prt_cmpy = '%';
-        $this->prt_usage = '%';
-        $this->prt_printer = '%';
-        $this->prt_area = '%';
-    }
+    protected $VIEW_NAME = "PRNTR_CMPY_USAGE";
+    protected $TABLE_NAME = "PRNTR_CMPY_USAGE";
+
+    protected $primary_keys = array(    
+        "cmpy",
+        "usage"
+    );
+
+    protected $table_view_map = array(
+        "CMPY" => "PRT_CMPY",
+        "USAGE" => "PRT_USAGE",
+        "PRNTR" => "PRT_PRINTER"
+    );
 
     public function companys()
     {
@@ -44,7 +38,7 @@ class LogicalPrinter
                 ORDER BY CMPY_NAME ASC";
             // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
             $stmt = oci_parse($this->conn, $query);
-            if (oci_execute($stmt)) {
+            if (oci_execute($stmt, $this->commit_mode)) {
                 return $stmt;
             } else {
                 $e = oci_error($stmt);
@@ -65,7 +59,7 @@ class LogicalPrinter
             FROM PRINTER
             ORDER BY PRNTR";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -81,7 +75,7 @@ class LogicalPrinter
             FROM PRINT_USE
             ORDER BY USE_ID";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -93,8 +87,6 @@ class LogicalPrinter
     // read personnel
     public function read()
     {
-        Utilities::sanitize($this);
-
         $query = "
             SELECT
                 DECODE(PCU.CMPY, NULL, 'ANY', PCU.CMPY) AS PRT_CMPY,
@@ -125,166 +117,14 @@ class LogicalPrinter
                 AND A.ENUMTYPENAME = 'PRN_USE'
                 AND P.PRNTR = PCU.PRNTR
                 AND P.PRNTR_AREA = AR.AREA_K(+)
-                AND PCU.CMPY LIKE :prt_cmpy
-                AND TO_CHAR(PCU.USAGE) LIKE :prt_usage
-                AND TO_CHAR(PCU.PRNTR) LIKE :prt_printer
-                AND TO_CHAR(P.PRNTR_AREA) LIKE :prt_area
             ORDER BY PCU.CMPY, PCU.USAGE";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':prt_cmpy', $this->prt_cmpy);
-        oci_bind_by_name($stmt, ':prt_usage', $this->prt_usage);
-        oci_bind_by_name($stmt, ':prt_printer', $this->prt_printer);
-        oci_bind_by_name($stmt, ':prt_area', $this->prt_area);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
-    }
-
-    public function create()
-    {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
-        $query = "INSERT INTO PRNTR_CMPY_USAGE (
-            CMPY,
-            USAGE,
-            PRNTR)
-            VALUES (
-            :prt_cmpy,
-            :prt_usage,
-            :prt_printer
-            )";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':prt_cmpy', $this->prt_cmpy);
-        oci_bind_by_name($stmt, ':prt_usage', $this->prt_usage);
-        oci_bind_by_name($stmt, ':prt_printer', $this->prt_printer);
-
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return false;
-        }
-
-        $journal = new Journal($this->conn, false);
-        $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "logicl printer";
-        $jnl_data[2] = sprintf("[cmpy:%s, usage:%s, printer:%s]",
-            $this->prt_cmpy, $this->prt_usage, $this->prt_printer);
-
-        if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        oci_commit($this->conn);
-        return true;
-    }
-
-    public function delete()
-    {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        $query = "DELETE FROM PRNTR_CMPY_USAGE
-            WHERE CMPY = :prt_cmpy
-                AND USAGE = :prt_usage
-                AND PRNTR = :prt_printer";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':prt_cmpy', $this->prt_cmpy);
-        oci_bind_by_name($stmt, ':prt_usage', $this->prt_usage);
-        oci_bind_by_name($stmt, ':prt_printer', $this->prt_printer);
-
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return false;
-        }
-
-        $journal = new Journal($this->conn, $autocommit = false);
-        $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "customer category";
-        $jnl_data[1] = "logicl printer";
-        $jnl_data[2] = sprintf("[cmpy:%s, usage:%s, printer:%s]",
-            $this->prt_cmpy, $this->prt_usage, $this->prt_printer);
-
-        if (!$journal->jnlLogEvent(
-            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        oci_commit($this->conn);
-
-        return true;
-    }
-
-    public function update()
-    {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-        // write_log(json_encode($this), __FILE__, __LINE__);
-        Utilities::sanitize($this);
-
-        $query = "
-            SELECT PRNTR
-            FROM PRNTR_CMPY_USAGE
-            WHERE CMPY = :prt_cmpy AND USAGE = :prt_usage";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':prt_cmpy', $this->prt_cmpy);
-        oci_bind_by_name($stmt, ':prt_usage', $this->prt_usage);
-        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-            // write_log(json_encode($row), __FILE__, __LINE__);
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-        }
-
-        $query = "UPDATE PRNTR_CMPY_USAGE
-            SET PRNTR = :prt_printer
-            WHERE CMPY = :prt_cmpy AND USAGE = :prt_usage";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':prt_cmpy', $this->prt_cmpy);
-        oci_bind_by_name($stmt, ':prt_usage', $this->prt_usage);
-        oci_bind_by_name($stmt, ':prt_printer', $this->prt_printer);
-
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return false;
-        }
-
-        $journal = new Journal($this->conn, false);
-        $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "logicl printer";
-        $jnl_data[2] = sprintf("[cmpy:%s, usage:%s, printer:%s]",
-            $this->prt_cmpy, $this->prt_usage, $this->prt_printer);
-
-        if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        $module = "logical printer";
-        $record = sprintf("cmpy:%s, usage:%s",
-            $this->prt_cmpy, $this->prt_usage);
-        if ($row['PRNTR'] != $this->prt_printer &&
-            !$journal->valueChange(
-                $module, $record, "printer", $row['PRNTR'], $this->prt_printer)) {
-            return false;
-        }
-
-        return true;
     }
 }

@@ -3,35 +3,22 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once 'common_class.php';
 
-class CorrectionMethod
+class CorrectionMethod extends CommonClass
 {
-    // database connection and table name
-    private $conn;
-
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
+    protected $TABLE_NAME = 'COMPENSATION_MTHD';
 
     //Because base cannot be too many, do not do limit
     public function read()
     {
-        // if (!isset($this->end_num)) {
-        //     $this->start_num = 1;
-        //     $this->end_num = $this->count();
-        // }
-
-        Utilities::sanitize($this);
-
         $query = "
             SELECT COMPENSATION_ID,
                 COMPENSATION_NAME
             FROM COMPENSATION_MTHD
             ORDER BY COMPENSATION_ID";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);

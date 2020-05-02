@@ -4,17 +4,122 @@ include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/../config/setups.php';
+include_once __DIR__ . '/../service/enum_service.php';
+include_once __DIR__ . '/../service/site_service.php';
 include_once 'common_class.php';
 
+/**
+ * Old PHP: amf TankService.php
+ * GUI_TANKS has too many columns, some of them are not used. Here are the main columns and its frontend display:
+ * tank_code:
+ * tank_name:
+ * tank_terminal:
+ * tank_base: base product, not editable on tank status screen
+ * tank_drv_type: interface type
+ * tank_drv_aux: auxiliary
+ * tank_identifier: identifier for gauge
+ * tank_location: area
+ * tank_outflow_ope:  
+ * tank_inflow_open:
+ * tank_adhoc_ivrq: 
+ * tank_inv_needed: 
+ * tank_dipping_on:
+ * tank_leakdtct_on: leak detection
+ * tank_alarmed: 
+ * tank_poll_gap: poll interval
+ * tank_prod_lvl: product level
+ * tank_address: register offset
+ * tank_no_sbt: 
+ * tank_versno: 
+ * tank_pakscan_act: 
+ * tank_alarm_state: level alarm state
+ * tank_lvl_alarm: 
+ * tank_gaugingmthd: gauging method
+ * tank_instance: instance
+ * tank_channel: channel
+ * tank_sbt_ty: 
+ * tank_eth_content:
+ * tank_ltr_close:
+ * tank_kg_close:
+ * tank_close_dens: 
+ * tank_rptvcfclose:
+ * tank_inflow_rate:
+ * tank_spare_fld1:
+ * tank_spare_fld2:
+ * tank_pump_vol: 
+ * tank_res:
+ * tank_amb_vol: amb volume
+ * tank_cor_vol: std volume
+ * tank_vapour_kg: 
+ * tank_liquid_kg: liquid mass
+ * tank_water:
+ * tank_water_lvl:
+ * tank_ullage: ullage
+ * tank_api:
+ * tank_prod_c_of_e:
+ * tank_60_86_vcf:
+ * tank_density: density
+ * tank_temp: observed temperature
+ * tank_rptvcf: 
+ * tank_amb_density:
+ * tank_dtol_volume: 
+ * tank_dtol_percent: 
+ * tank_mtol_volume: 
+ * tank_mtol_percent: 
+ * tank_date: 
+ * tank_group: 
+ * tank_15_density: standard density,
+ * tank_active: 
+ * tank_atg_manchg: 2020-01-27 13:33:53,
+ * tank_atg_status: 
+ * tank_sulphur: sulphur (wt%) in percent
+ * tank_flashpoint: flash point
+ * tank_status:
+ * tank_status_name: In Service - Not used,
+ * tank_hh_level: HH
+ * tank_h_level: H
+ * tank_l_level: L
+ * tank_ll_level: LL
+ * tank_uh_level: user H
+ * tank_ul_level: user L
+ * tank_max_level: 
+ * tank_max_capacity: 
+ * tank_exc_pid: Set to Y to exclude this tank from PID Message
+ * tank_exc_pds: Set to Y to exclude this tank from PDS Message
+ * tank_exc_spmv: Set to Y to exclude this tank from Special Movement Message
+ * tank_exc_stckrpt: Set to Y to exclude this tank from Stock Reports
+ * tank_viscosity: 
+ * tank_batch_no: 
+ * flow_rate: 
+ */
 class TankStatus extends CommonClass
 {
     protected $TABLE_NAME = 'TANKS';
+    protected $VIEW_NAME = 'GUI_TANKS';
+
+    protected $primary_keys = array(
+        "tank_code",
+        "tank_terminal"
+    );
+
+    protected $table_view_map = array(
+        "TANK_DAILY_TOL_VOL" => "TANK_DTOL_VOLUME",
+        "TANK_DAILY_TOL_PERCENT" => "TANK_DTOL_PERCENT",
+        "TANK_MONTHLY_TOL_VOL" => "TANK_MTOL_VOLUME",
+        "TANK_MONTHLY_TOL_PERCENT" => "TANK_MTOL_PERCENT",
+    );
 
     public $BOOLEAN_FIELDS = array(
         "TANK_ADHOC_IVRQ" => "Y",
         "TANK_INV_NEEDED" => "Y",
         "TANK_DIPPING_ON" => "Y",
         "TANK_LEAKDTCT_ON" => "Y",
+        "TANK_ACTIVE" => 1,
+        "TANK_ATG_STATUS" => 1,
+        "TANK_EXC_PID" => 'Y',
+        "TANK_EXC_PDS" => 'Y',
+        "TANK_EXC_SPMV" => 'Y',
+        "TANK_EXC_STCKRPT" => 'Y',
     );
 
     public $NUMBER_FIELDS = array(
@@ -36,36 +141,43 @@ class TankStatus extends CommonClass
         "TANK_LTR_CLOSE",
         "TANK_KG_CLOSE",
         "TANK_AMB_DENSITY",
+        "TANK_AMB_VOL",
+        "TANK_COR_VOL",
+        "TANK_PROD_LVL",
+        "TANK_TEMP",
+        "TANK_RCPTS",
+        "TANK_TRFS",
+        "TANK_NO_SBT",
+        "TANK_VERSNO",
+        "TANK_PAKSCAN_ACT",
+        "TANK_ALARM_STATE",
+        "TANK_15_DENSITY",
+        "TANK_SULPHUR",
+        "TANK_FLASHPOINT",
+        "TANK_HH_LEVEL",
+        "TANK_H_LEVEL",
+        "TANK_L_LEVEL",
+        "TANK_LL_LEVEL",
+        "TANK_UH_LEVEL",
+        "TANK_UL_LEVEL",
     );
     
     public function status_types()
     {
-        $query = "
-            SELECT TANK_STATUS_ID, TANK_STATUS_CODE, TANK_STATUS_NAME
-            FROM TANK_STATUS_TYP
-            ORDER BY TANK_STATUS_ID";
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
+        $serv = new EnumService($this->conn);
+        return $serv->tank_status_types();
+    }
+
+    public function prod_categories()
+    {
+        $serv = new EnumService($this->conn);
+        return $serv->prod_categories();
     }
 
     public function gauge_methods()
     {
-        $query = "
-           SELECT * FROM GAUGE_METHOD_TYP ORDER BY GAUGE_METHOD_ID ";
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
+        $serv = new EnumService($this->conn);
+        return $serv->gauge_methods();
     }
 
     /*
@@ -77,8 +189,6 @@ class TankStatus extends CommonClass
      */
     public function calc_tank_qty_by_level()
     {
-        $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/calcvcf.cgi';
-
         $ref_density = 0;
         if (isset($this->tank_15_density) && $this->tank_15_density > 0) {
             $ref_density = $this->tank_15_density;
@@ -86,29 +196,55 @@ class TankStatus extends CommonClass
             $ref_density = $this->tank_density;
         }
 
-        $data = array(
-            'frm_baseCd' => $this->tank_base,
-            'frm_which_type' => $this->tank_qty_type,
-            'frm_real_amount' => $this->tank_qty_amount,
-            'frm_real_temp' => $this->tank_temp,
-            'frm_real_dens' => $ref_density,
-            'frm_tank_trm' => $this->tank_terminal,
-            'frm_tank_cd' => $this->tank_code,
-            'frm_strap_height_mm' => $this->tank_prod_lvl);
+        $serv = new SiteService($this->conn);
+        $site_code = $serv->site_code();
 
-        $options = array
-            (
-            'http' => array
-            (
-                'header' => "Content-type: text/xml\r\n",
-                'method' => 'POST',
-                'content' => http_build_query($data),
-            ),
-        );
-        $context = stream_context_create($options);
-        $result = file_get_contents($url, false, $context);
-        $xml = simplexml_load_string($result);
+        $query_string = "frm_baseCd=" . $this->tank_base . 
+            "&frm_which_type=" . $this->tank_qty_type .
+            "&frm_real_amount=" . $this->tank_qty_amount .
+            "&frm_real_temp=" . $this->tank_temp .
+            "&frm_real_dens=" . $ref_density .
+            "&frm_tank_trm=" . $site_code .
+            "&frm_tank_cd=" . $this->tank_code .
+            "&frm_strap_height_mm=" . $this->tank_prod_lvl;
+
+        $res = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi", $query_string);
+        $xml = simplexml_load_string($res);
         echo json_encode($xml, JSON_PRETTY_PRINT);
+        return array();
+
+        // $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/calcvcf.cgi';
+
+        // $ref_density = 0;
+        // if (isset($this->tank_15_density) && $this->tank_15_density > 0) {
+        //     $ref_density = $this->tank_15_density;
+        // } else {
+        //     $ref_density = $this->tank_density;
+        // }
+
+        // $data = array(
+        //     'frm_baseCd' => $this->tank_base,
+        //     'frm_which_type' => $this->tank_qty_type,
+        //     'frm_real_amount' => $this->tank_qty_amount,
+        //     'frm_real_temp' => $this->tank_temp,
+        //     'frm_real_dens' => $ref_density,
+        //     'frm_tank_trm' => $this->tank_terminal,
+        //     'frm_tank_cd' => $this->tank_code,
+        //     'frm_strap_height_mm' => $this->tank_prod_lvl);
+
+        // $options = array
+        //     (
+        //     'http' => array
+        //     (
+        //         'header' => "Content-type: text/xml\r\n",
+        //         'method' => 'POST',
+        //         'content' => http_build_query($data),
+        //     ),
+        // );
+        // $context = stream_context_create($options);
+        // $result = file_get_contents($url, false, $context);
+        // $xml = simplexml_load_string($result);
+        // echo json_encode($xml, JSON_PRETTY_PRINT);
     }
 
     /*
@@ -120,8 +256,6 @@ class TankStatus extends CommonClass
      */
     public function calc_tank_qty()
     {
-        $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/calcvcf.cgi';
-
         $ref_density = 0;
         if (isset($this->tank_15_density) && $this->tank_15_density > 0) {
             $ref_density = $this->tank_15_density;
@@ -129,42 +263,23 @@ class TankStatus extends CommonClass
             $ref_density = $this->tank_density;
         }
 
-        $data = array(
-            'frm_baseCd' => $this->tank_base,
-            'frm_which_type' => $this->tank_qty_type,
-            'frm_real_amount' => $this->tank_qty_amount,
-            'frm_real_temp' => $this->tank_temp,
-            'frm_real_dens' => $ref_density);
+        $query_string = "frm_baseCd=" . $this->tank_base . 
+            "&frm_which_type=" . $this->tank_qty_type .
+            "&frm_real_amount=" . $this->tank_qty_amount .
+            "&frm_real_temp=" . $this->tank_temp .
+            "&frm_real_dens=" . $ref_density;
 
-        $options = array
-            (
-            'http' => array
-            (
-                'header' => "Content-type: text/xml\r\n",
-                'method' => 'POST',
-                'content' => http_build_query($data),
-            ),
-        );
-        $context = stream_context_create($options);
-        $result = file_get_contents($url, false, $context);
-        $xml = simplexml_load_string($result);
+        $res = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi", $query_string);
+        $xml = simplexml_load_string($res);
         echo json_encode($xml, JSON_PRETTY_PRINT);
+        return array();
     }
 
     //Because base cannot be too many, do not do limit
     //Old sample from amf TankService.php::getPaged():
-    // "tank_code":"ST 3","tank_name":"ST 3","tank_terminal":"TGI","tank_sitename":"Shell TanjungGelang","tank_base":"220008581","tank_base_name":"Nemo 2016","tank_base_group":null,"tank_base_class":"6","tank_bclass_name":"Additive","tank_base_tunit":"0","tank_base_rpttemp":"0","tank_bclass_dens_lo":"1","tank_bclass_dens_hi":"2000","tank_bclass_vcf_alg":"3","tank_bclass_temp_lo":"-20","tank_bclass_temp_hi":"200","tank_drv_type":null,"tank_drv_aux":null,"tank_identifier":null,"tank_location":null,"tank_outflow_ope":null,"tank_inflow_open":null,"tank_adhoc_ivrq":null,"tank_inv_needed":null,"tank_dipping_on":"N","tank_leakdtct_on":null,"tank_alarmed":null,"tank_poll_gap":"0","tank_prod_lvl":"0","tank_address":"0","tank_rcpts":"0","tank_trfs":"93526","tank_no_sbt":"0","tank_versno":"0","tank_pakscan_act":"0","tank_alarm_state":null,"tank_lvl_alarm":"0","tank_lvlalarm_desc":"OK - NORMAL","tank_gaugingmthd":"0","tank_gaugingmthd_desc":"MANUAL","tank_instance":"0","tank_channel":"0","tank_sbt_ty":"0","tank_eth_content":"0","tank_ltr_close":"0","tank_kg_close":"0","tank_close_dens":"980","tank_rptvcfclose":"1","tank_inflow_rate":"0","tank_spare_fld1":null,"tank_spare_fld2":null,"tank_rcpt_vol":"0","tank_trf_vol":"0","tank_rcpt_kg":"0","tank_trf_kg":"0","tank_pump_vol":"0","tank_res":"0","tank_amb_vol":"0","tank_cor_vol":"0","tank_vapour_kg":"0","tank_liquid_kg":"0","tank_water":"0","tank_water_lvl":"0","tank_ullage":"0","tank_api":"12.8","tank_prod_c_of_e":"0","tank_60_86_vcf":"0","tank_density":"980","tank_temp":"0","tank_rptvcf":".0001","tank_amb_density":"0","tank_dtol_volume":"0","tank_dtol_percent":"0","tank_mtol_volume":"0","tank_mtol_percent":"0","tank_date":null,"tank_group":null,"tank_15_density":"980","tank_base_ref_temp":null,"tank_base_ref_tunt":null,"tank_base_corr_mthd":"1","tank_base_ref_temp_spec":"1","tank_base_limit_preset_ht":null,"tank_base_dens_lo":"1","tank_base_dens_hi":"2000","tank_base_color":null,"tank_active":"1","tank_atg_manchg":"2018-11-01 17:12:56:61976","tank_atg_status":null,"tank_sulphur":null,"tank_flashpoint":null,"tank_status":"0","tank_status_name":"In Service - Not used","tank_hh_level":null,"tank_h_level":null,"tank_l_level":null,"tank_ll_level":null,"tank_uh_level":null,"tank_ul_level":null,"tank_hh_state":"-1","tank_h_state":"-1","tank_l_state":"-1","tank_ll_state":"-1","tank_uh_state":"-1","tank_ul_state":"-1"
     public function read()
     {
-        write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         if (isset($this->tank_code)) {
-            write_log(sprintf("tank_code:%s", $this->tank_code),
-                __FILE__, __LINE__);
-
             $query = "
                 SELECT GUI_TANKS.*, FLOW_RATE
                 FROM GUI_TANKS, TANK_MAX_FLOW
@@ -181,7 +296,7 @@ class TankStatus extends CommonClass
                     AND TANK_PROD_LVL = TANK_LEVEL(+)";
             $stmt = oci_parse($this->conn, $query);
         }
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -192,11 +307,6 @@ class TankStatus extends CommonClass
 
     public function create()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "
             INSERT INTO TANKS (
                 TANK_CODE,
@@ -363,13 +473,22 @@ class TankStatus extends CommonClass
         return true;
     }
 
+    public function post_update()
+    {
+        $query = "UPDATE TANKS SET TANK_ATG_MANCHG = SYSDATE WHERE TANK_CODE = :tank_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
     public function updateStatus()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         //Old data
         $query = "
             SELECT * FROM GUI_TANKS
@@ -535,11 +654,6 @@ class TankStatus extends CommonClass
 
     public function updateGauge()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         //Old data
         $query = "
             SELECT * FROM GUI_TANKS
@@ -648,11 +762,6 @@ class TankStatus extends CommonClass
 
     public function delete()
     {
-        write_log(sprintf("%s::%s() START. tank_code:%s", __CLASS__, __FUNCTION__, $this->tank_code),
-            __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "
             DELETE TGRLINK
             WHERE TGR_TKLK_TANKCODE = :tank_code";

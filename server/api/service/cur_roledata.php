@@ -20,4 +20,5 @@ if ($psn === "") {
     return;
 }
 
-Utilities::read('CurRole', $method = 'read', $filter = false, $params = array("user_code" => $psn));
+Utilities::read('CurRole', $method = 'read', $filter = false, 
+    $params = array("user_code" => $psn, "lang" => Utilities::getCurrLang()));

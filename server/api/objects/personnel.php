@@ -16,6 +16,32 @@ class Personnel extends CommonClass
     protected $primary_keys = array("per_code");
     protected $TABLE_NAME = "PERSONNEL";
 
+    public $BOOLEAN_FIELDS = array(
+        "CMPY_AUTO_LD" => "Y",
+        "PER_LOCK" => "Y",
+        "CMPY_TKR_CFG" => "Y",
+        "CMPY_ENABLE_EXPD" => "Y",
+        "CMPY_MOD_DRAWER" => "Y",
+        "CMPY_MUST_SEALNO" => "Y",
+        "CMPY_BAY_LOOP_CH" => "Y",
+        "CMPY_ORD_CARRIER" => "Y",
+        "CMPY_WIPE_ORDETS" => "Y",
+        "CMPY_WGH_COMPLET" => "Y",
+        "CMPY_WGH_AUTO_FL" => "Y",
+        "CMPY_HOST_DOCS" => "Y",
+        "CMPY_LOG_LD_DEL" => "Y",
+        "CMPY_AUTO_RECONC" => "Y",
+        "CMPY_FLAG_1" => "Y",
+        "CMPY_FLAG_2" => "Y",
+        "CMPY_FLAG_3" => "Y",
+        "CMPY_COMMS_OK" => "Y",
+        "CMPY_ADD_PROMPT" => "Y",
+        "CMPY_TKR_ACTIVAT" => "Y",
+        "CMPY_BLTOL_FLAG" => 1,
+        "CMPY_LDTOL_FLAG" => 1,
+        "CMPY_REQ_PIN_FLAG" => 1,
+    );
+
     public function get_onsite()
     {
         $query = "
@@ -25,7 +51,7 @@ class Personnel extends CommonClass
             ORDER BY PER_NAME";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             return null;
@@ -35,14 +61,10 @@ class Personnel extends CommonClass
     // read personnel
     public function read()
     {
-        $query = "
-            SELECT *
-            FROM
-                " . $this->VIEW_NAME . "
-            ORDER BY PER_CODE";
+        $query = "SELECT * FROM " . $this->VIEW_NAME . " ORDER BY PER_CODE";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             return null;
@@ -77,7 +99,7 @@ class Personnel extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':perm_psn', $this->per_code);
         // write_log(sprintf(" %s", $this->per_code), __FILE__, __LINE__);
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return;
@@ -98,7 +120,7 @@ class Personnel extends CommonClass
             ORDER BY AREA_K";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':perm_psn', $this->per_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -110,10 +132,6 @@ class Personnel extends CommonClass
     // pure php function
     public function create()
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         // query to insert record
         //'a1qhH6yu9Tjg.', // encryption of default pw '12345'
         $query = "INSERT INTO PERSONNEL
@@ -330,18 +348,14 @@ class Personnel extends CommonClass
     //it is called in Utilities::read() so it must print its own output
     public function update_password()
     {
-        write_log(__CLASS__ . ":::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $result = array();
         $result["records"] = array();
 
-        $query = "
-        SELECT CONFIG_VALUE VAL FROM SITE_CONFIG
-        WHERE CONFIG_KEY='URBAC_PWD_REUSE'";
+        $query = "SELECT CONFIG_VALUE VAL 
+            FROM SITE_CONFIG
+            WHERE CONFIG_KEY = 'URBAC_PWD_REUSE'";
         $stmt = oci_parse($this->conn, $query);
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             $result["result"] = -1;
@@ -353,14 +367,13 @@ class Personnel extends CommonClass
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         $reuse = $row['VAL'];
 
-        $query = "
-        SELECT PWDTRACE_PWD
-        FROM URBAC_PWD_TRACES, URBAC_USERS
-        WHERE PWDTRACE_USERID = USER_ID AND USER_CODE = :per_code
-        ORDER BY PWDTRACE_LAST_CHG DESC";
+        $query = "SELECT PWDTRACE_PWD
+            FROM URBAC_PWD_TRACES, URBAC_USERS
+            WHERE PWDTRACE_USERID = USER_ID AND USER_CODE = :per_code
+            ORDER BY PWDTRACE_LAST_CHG DESC";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             $result["result"] = -1;
@@ -731,10 +744,6 @@ class Personnel extends CommonClass
 
     public function delete()
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         //store procedure DELETE_PERSONNEL also checks if this personnel has been
         //used by trip. If so, it will not physically delete it.
         $query = "
@@ -791,7 +800,7 @@ class Personnel extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
 
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             // extract(array_change_key_case($row);
             $this->per_code = $row['PER_CODE'];
@@ -880,7 +889,7 @@ class Personnel extends CommonClass
         $keyword = "%{$keyword}%";
         oci_bind_by_name($stmt, ':per_code', $keyword);
         oci_bind_by_name($stmt, ':per_name', $keyword);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             return null;
@@ -908,7 +917,7 @@ class Personnel extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':start_index', $from_record_num, -1, SQLT_INT);
         oci_bind_by_name($stmt, ':end_index', $to_record_num, -1, SQLT_INT);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             return null;
@@ -921,7 +930,7 @@ class Personnel extends CommonClass
         $query = "SELECT COUNT(*) TOTAL_ROWS FROM " . $this->VIEW_NAME . "";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return $row['TOTAL_ROWS'];
         }

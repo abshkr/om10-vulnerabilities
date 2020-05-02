@@ -67,8 +67,11 @@ function check_token($token)
         }
     } catch (ExpiredException $e) {
         write_log('Caught exception: ' . $e->getMessage(), __FILE__, __LINE__, LogLevel::ERROR);
-        throw $e;
-        return false;
+        if (EXPIRY_TOKEN_ENABLED) {
+            throw $e;
+            return false;
+        }
+        return true;
     } catch (SignatureInvalidException $e) {
         write_log('Caught exception: ' . $e->getMessage(), __FILE__, __LINE__, LogLevel::ERROR);
         throw $e;
@@ -77,7 +80,7 @@ function check_token($token)
         write_log('Caught exception: ' . $e->getMessage(), __FILE__, __LINE__, LogLevel::ERROR);
         throw $e;
         return false;
-    } 
+    }
 
     return $payload;
 }

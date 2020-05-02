@@ -65,6 +65,8 @@ class Journal
         "EXPIRY_DATE_PERSONNEL" => "personnel expiry",
         "GUI_ACCESS_KEYS" => "id assignment",
         "BASE_PRODS" => "base product",
+        "EXPIRY_DATE_TYPES" => "expiry date type",
+        "URBAC_ROLE_DOMAINS_PRIVILEGES" => "role access privilege"
     );
 
     //Mainly fields in table
@@ -180,6 +182,28 @@ class Journal
             "BASE_LIMIT_PRESET_HT" => "limit_preset_ht",
             "BASE_REF_TEMP_SPEC" => "ref temp spec",
         ),
+        "EXPIRY_DATE_TYPES" => array(
+            "EDT_TIME_ENABLED" => "enabled",
+            "EDT_STATUS" => "status",
+            "EDT_REJECT" => "reject authorization",
+            "EDT_DEFAULT" => "default flag",
+            "EDT_TYPE_DESC" => "type description",
+            "EDT_DEF_EXP_DATE" => "default value",
+        ),
+        "PRMSSN_RC" => array (
+            "PRMSSN_NAME" => "permission name",
+            "RULE_CASE" => "permission rule class",
+            "RULE_ETYP" => "equipment type",
+            "RULE_AUTH" => "authority type",
+            "RULE_EXPIRY_CHECK" => "expiry check"
+        ),
+        "URBAC_ROLE_DOMAINS_PRIVILEGES" => array(
+            "PRIV_VIEW" => "view privilege",
+            "PRIV_CREATE" => "create privilege",
+            "PRIV_UPDATE" => "update privilege",
+            "PRIV_DELETE" => "delete privilege",
+            "PRIV_PROTECT" => "password",
+        )
     );
 
     //Fields that do not count in valueChange.

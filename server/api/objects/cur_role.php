@@ -21,18 +21,16 @@ class CurRole extends CommonClass
 
     public function read()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-
         $query = "
-        SELECT URBAC_ROLES.ROLE_ID, ROLE_CODE, ROLE_TEXT, ROLE_NOTE, ROLE_STATUS
-        FROM URBAC_ROLES, URBAC_USER_ROLES, URBAC_USERS
-        WHERE URBAC_USERS.USER_ID = URBAC_USER_ROLES.USER_ID
-            AND URBAC_ROLES.ROLE_ID = URBAC_USER_ROLES.ROLE_ID
-            AND URBAC_USERS.USER_CODE = :user_code";
+            SELECT USER_CODE, :lang LANG, URBAC_ROLES.ROLE_ID, ROLE_CODE, ROLE_TEXT, ROLE_NOTE, ROLE_STATUS
+            FROM URBAC_ROLES, URBAC_USER_ROLES, URBAC_USERS
+            WHERE URBAC_USERS.USER_ID = URBAC_USER_ROLES.USER_ID
+                AND URBAC_ROLES.ROLE_ID = URBAC_USER_ROLES.ROLE_ID
+                AND URBAC_USERS.USER_CODE = :user_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':user_code', $this->user_code);
-        if (oci_execute($stmt)) {
+        oci_bind_by_name($stmt, ':lang', $this->lang);
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -78,7 +76,7 @@ class CurRole extends CommonClass
         ORDER BY DOMAIN_ID, OBJECT_ID";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':role_id', $hook_item['role_id']);
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return;

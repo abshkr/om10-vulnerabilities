@@ -3,6 +3,8 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/company_service.php';
+include_once __DIR__ . '/../service/base_service.php';
 include_once 'common_class.php';
 
 class Product extends CommonClass
@@ -24,6 +26,14 @@ class Product extends CommonClass
         "PROD_LDTOL_NTOL"
     );
 
+    protected $table_view_map = array(
+        "PROD_CMPY" => "PROD_CMPYCODE",
+        "PROD_PROD_GROUP" => "PROD_GROUP",
+        "PROD_TXT_COLOUR" => "PROD_TEXTCOLOR",
+        "PROD_BACK_COLOUR" => "PROD_BACKCOLOR",
+        "PROD_RPT_TEMP" => "PROD_RPTTEMP",
+    );
+
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = array(
         "PROD_LDTOL_FLAG" => 1,
@@ -33,6 +43,8 @@ class Product extends CommonClass
         "PITEM_ADTV_FLAG" => 1,
         "PITEM_HOT_MAIN" => "Y",
         "PITEM_HOT_CHECK" => 1,
+        "PROD_IS_COMPLIANT" => 1,
+        "PROD_IS_LOCKED" => 1,
     );
     
     //Because base cannot be too many, do not do limit
@@ -41,13 +53,209 @@ class Product extends CommonClass
         $query = "
             SELECT * FROM " . $this->VIEW_NAME . " ORDER BY PROD_CODE";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    protected function retrieve_children_data()
+    {
+        $query = "
+            SELECT * FROM GUI_PRODUCT_ITEMS 
+            WHERE PITEM_PROD_CODE = :prod_code
+                AND PITEM_CMPY_CODE = :prod_cmpy
+            ORDER BY PITEM_BASE_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':prod_code', $this->prod_code);
+        oci_bind_by_name($stmt, ':prod_cmpy', $this->prod_cmpy);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        $tank_max_flows = array();
+        while ($flow_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $tank_max_flows[$flow_row['PITEM_BASE_CODE']] = $flow_row;
+            // array_push($tank_max_flows, $base_item);
+        }
+
+        // write_log(json_encode($tank_max_flows), __FILE__, __LINE__);
+        return $tank_max_flows;
+    }
+
+    protected function journal_children_change($journal, $old, $new)
+    {
+        $module = "product ratio";
+        foreach ($old as $item_key => $item_array) {
+            if (isset($new[$item_key])) {
+                foreach ($item_array as $field => $value) {
+                    if ($new[$item_key][$field] != $value) {
+                        $record = sprintf("product:%s, cmpy:%s, base:%s",
+                            $this->prod_code, $this->prod_cmpy, $item_key);
+                        $journal->valueChange($module, $record, $field, $value, $new[$item_key][$field]);
+                    }
+                }
+            }
+
+             if (!isset($new[$item_key])) {
+                $jnl_data[0] = Utilities::getCurrPsn();
+                $jnl_data[1] = $module;
+                $jnl_data[2] = $record = sprintf("product:%s, cmpy:%s", $this->prod_code, $this->prod_cmpy);
+                $jnl_data[3] = sprintf("base product:%s", $item_key);
+
+                if (!$journal->jnlLogEvent(
+                    Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'],
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+
+        //In new but not in old.
+        foreach ($new as $item_key => $item_array) {
+            if (!isset($old[$item_key])) {
+                $jnl_data[0] = Utilities::getCurrPsn();
+                $jnl_data[1] = $module;
+                $jnl_data[2] = $record = sprintf("product:%s, cmpy:%s", $this->prod_code, $this->prod_cmpy);
+                $jnl_data[3] = sprintf("base product:%s", $item_key);
+
+                if (!$journal->jnlLogEvent(
+                    Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'],
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+    }
+
+    protected function delete_children()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $query = "
+            DELETE FROM RATIOS
+            WHERE RAT_PROD_PRODCODE = :rat_prod_prodcode
+                AND RAT_PROD_PRODCMPY = :rat_prod_prodcmpy";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':rat_prod_prodcode', $this->prod_code);
+            oci_bind_by_name($stmt, ':rat_prod_prodcmpy', $this->prod_cmpy);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+            return false;
+        }
+
+        $query = "
+            DELETE FROM HZ_LINK
+            WHERE HZLNK_SP_PRODCODE = :rat_prod_prodcode
+                AND HZLNK_SP_PRODCMPY = :rat_prod_prodcmpy";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':rat_prod_prodcode', $this->prod_code);
+        oci_bind_by_name($stmt, ':rat_prod_prodcmpy', $this->prod_cmpy);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function insert_children()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (!isset($this->bases)) {
+            return true;
+        }
+        
+        foreach ($this->bases as $value) {
+            // write_log(json_encode($value), __FILE__, __LINE__);
+            $query = "INSERT INTO RATIOS (
+                RATIO_BASE,
+                RAT_PROD_PRODCODE,
+                RAT_PROD_PRODCMPY,
+                RATIO_VALUE,
+                RAT_BLTOL_FLAG,
+                RAT_BLTOL_PTOL,
+                RAT_BLTOL_NTOL,
+                RAT_HOT_MAIN)
+            VALUES (
+                :ratio_base,
+                :rat_prod_prodcode,
+                :rat_prod_prodcmpy,
+                :ratio_value,
+                :rat_bltol_flag,
+                :rat_bltol_ptol,
+                :rat_bltol_ntol,
+                :rat_hot_main
+            )";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':ratio_base', $value->pitem_base_code);
+            oci_bind_by_name($stmt, ':rat_prod_prodcode', $this->prod_code);
+            oci_bind_by_name($stmt, ':rat_prod_prodcmpy', $this->prod_cmpy);
+            oci_bind_by_name($stmt, ':ratio_value', $value->pitem_ratio_value);
+            oci_bind_by_name($stmt, ':rat_bltol_flag', $value->pitem_bltol_flag);
+            oci_bind_by_name($stmt, ':rat_bltol_ptol', $value->pitem_bltol_ptol);
+            oci_bind_by_name($stmt, ':rat_bltol_ntol', $value->pitem_bltol_ntol);
+            oci_bind_by_name($stmt, ':rat_hot_main', $value->pitem_hot_main);
+
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
+
+        $query = "INSERT INTO HZ_LINK (HZLNK_SP_PRODCMPY, HZLNK_SP_PRODCODE, HZ_LINK_ID)
+            VALUES (:hzlnk_sp_prodcmpy, :hzlnk_sp_prodcode, :hz_link_id)";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':hzlnk_sp_prodcode', $this->prod_code);
+        oci_bind_by_name($stmt, ':hzlnk_sp_prodcmpy', $this->prod_cmpy);
+        oci_bind_by_name($stmt, ':hz_link_id', $this->prod_hazid);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public function drawers()
+    {
+        $serv = new CompanyService($this->conn);
+        return $serv->drawers(false);
+    }
+
+    public function base_products()
+    {
+        $serv = new BaseService($this->conn);
+        return $serv->read_brief();
     }
 
     public function prod_ratios()
@@ -60,7 +268,7 @@ class Product extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':prod_code', $this->prod_code);
         oci_bind_by_name($stmt, ':prod_cmpy', $this->prod_cmpycode);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -75,7 +283,7 @@ class Product extends CommonClass
             SELECT * FROM GENERIC_PROD 
             ORDER BY GEN_PROD_CODE";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);

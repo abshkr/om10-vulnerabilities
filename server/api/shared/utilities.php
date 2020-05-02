@@ -2,18 +2,8 @@
 
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../config/database.php';
-
-class ErrorSchema
-{
-    public function __construct($code, $type, $msg)
-    {
-        $this->errors = array();
-        $this->errors[0] = new stdClass();
-        $this->errors[0]->code = $code;
-        $this->errors[0]->type = $type;
-        $this->errors[0]->message = $msg;
-    }
-}
+include_once __DIR__ . '/common.php';
+include_once __DIR__ . '/access_check.php';
 
 class Utilities
 {
@@ -37,6 +27,21 @@ class Utilities
     //     "TANK_EXC_STCKRPT" => "Y",
     // );
 
+    public static function clean_rusty_files($folder, $seconds = 15552000 /* 6 month*/)
+    {
+        $cdir = scandir($folder);
+        foreach ($cdir as $key => $value) {
+            if (in_array($value, array(".", ".."))) {
+                continue;
+            }
+            if (time() - filemtime($folder . '/' . $value) > $seconds) {
+                unlink($folder . '/' . $value);
+                write_log(sprintf("File removed: %s", $folder . '/' . $value),
+                    __FILE__, __LINE__);
+            }
+        }
+    }
+
     public static function sanitize($obj)
     {
         $class = get_class($obj);
@@ -49,22 +54,54 @@ class Utilities
         }
     }
 
-    public static function http_cgi_invoke($cgi)
+    public static function http_get_cgi($cgi)
     {
-        session_start();
-
         $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/" . $cgi . "?";
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            foreach ($_POST as $key => $value) {
-                $url .= $key . "=" . rawurlencode(strip_tags($value)) . "&";
-            }
-        } else {
-            foreach ($_GET as $key => $value) {
-                $url .= $key . "=" . rawurlencode(strip_tags($value)) . "&";
+    
+        foreach ($_GET as $key => $value)
+        {
+            $url .= $key . "=". rawurlencode(strip_tags($value)) . "&";
+        }
+        //$url = substr($url, 0, -1);
+        if (!JWT_AUTH)
+        {
+            session_start();
+            if (isset($_SESSION["SESSION"])) {
+                $url .= "sess_id=" . $_SESSION["SESSION"];
             }
         }
+        //echo file_get_contents($url);
+        return file_get_contents($url);
+    }
 
-        $url .= "sess_id=" . $_SESSION["SESSION"];
+    public static function http_cgi_invoke($cgi, $query_string = null)
+    {
+        if (!isset($_SESSION)) { 
+            session_start(); 
+        } 
+
+        $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/" . $cgi . "?";
+        if ($query_string) {
+            $url .= $query_string . "&";
+        } else {
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                foreach ($_POST as $key => $value) {
+                    $url .= $key . "=" . rawurlencode(strip_tags($value)) . "&";
+                }
+            } else {
+                foreach ($_GET as $key => $value) {
+                    $url .= $key . "=" . rawurlencode(strip_tags($value)) . "&";
+                }
+            }
+        }
+        
+        if (isset($_SESSION["SESSION"])) {
+            $url .= "sess_id=" . $_SESSION["SESSION"];
+        } else {
+            // $url .= "sess_id=LgMvAqIIpPfN";
+            $url = rtrim($url, '&');
+        }
+
         write_log(sprintf("%s::%s(), url:%s", __CLASS__, __FUNCTION__, $url),
             __FILE__, __LINE__);
 
@@ -86,6 +123,10 @@ class Utilities
      */
     public static function read($class, $method = 'read', $filter = false, $params = null)
     {
+        write_log(sprintf("%s::%s() START, class:%s, method:%s",
+            __CLASS__, __FUNCTION__, $class, $method),
+            __FILE__, __LINE__);
+
         $database = new Database();
         $db = null;
 
@@ -93,9 +134,15 @@ class Utilities
         try {
             $db = $database->getConnection($class, $method);
         } catch (UnauthException $e) {
-            // http_response_code(401);
-            http_response_code(200);
-            echo 'Caught exception: ', $e->getMessage();
+            $error = new EchoSchema(401, sprintf("Caught exception: %s", $e->getMessage()));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $access_check = new AccessCheck($db);
+        if (!$access_check->check($class, $method, self::getCurrPsn())) {
+            $error = new EchoSchema(400, "Current user does not have privilege");
+            echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
 
@@ -122,14 +169,15 @@ class Utilities
             }
         }
 
+        self::sanitize($object);
+        
         $stmt = $object->$method();
         if (is_array($stmt)) {
             //means it is handled inside $object->$method()
             return;
         } else if (!$stmt) {
-            // http_response_code(BOOLEAN_FIELDS500);
-            http_response_code(200);
-            echo "Internal error, check logs/php_rest_*.log file for details";
+            $error = new EchoSchema(500, "Internal error, check logs/php_rest_*.log file for details");
+            echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
 
@@ -145,10 +193,12 @@ class Utilities
 
         /**
          * For read_decorate, it can change the result from read(), check
-         * report_profile.php read_decorate for example
+         * report_profile.php read_decorate for example.
+         * Other decorator sample: load_bay.php::details_decorate
          */
-        if (method_exists($object, "read_decorate")) {
-            $object->read_decorate($result["records"]);
+        $decorator = $method . "_decorate";
+        if (method_exists($object, $decorator)) {
+            $object->$decorator($result["records"]);
         }
 
         http_response_code(200);
@@ -252,12 +302,10 @@ class Utilities
         }
         // $result["result_count"] = $num;
 
+        http_response_code(200);
         if ($num > 0) {
-            http_response_code(200);
             echo json_encode($result, JSON_PRETTY_PRINT);
         } else {
-            // http_response_code(404);
-            http_response_code(200);
             echo json_encode(
                 array("message" => "No record found.")
             );
@@ -266,9 +314,9 @@ class Utilities
 
     public static function retrieve(&$result_array, $object, $stmt, $method = "read")
     {
-        write_log(sprintf("%s::%s() START, class:%s, method:%s",
-            __CLASS__, __FUNCTION__, is_object($object) ? get_class($object) : gettype($object), $method),
-            __FILE__, __LINE__);
+        // write_log(sprintf("%s::%s() START, class:%s, method:%s",
+        //     __CLASS__, __FUNCTION__, is_object($object) ? get_class($object) : gettype($object), $method),
+        //     __FILE__, __LINE__);
 
         $num = 0;
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
@@ -312,11 +360,19 @@ class Utilities
 
     public static function create($class, $method = 'create')
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        write_log(sprintf("%s::%s() START, class:%s, method:%s",
+            __CLASS__, __FUNCTION__, $class, $method),
             __FILE__, __LINE__);
 
         $database = new Database();
         $db = $database->getConnection($class, $method);
+
+        $access_check = new AccessCheck($db);
+        if (!$access_check->check($class, $method, self::getCurrPsn())) {
+            $error = new EchoSchema(400, "Current user does not have privilege");
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
 
         $object = new $class($db);
         $desc = (isset($object->desc) ? $object->desc : $class);
@@ -327,16 +383,19 @@ class Utilities
         if ($data) {
             foreach ($data as $key => $value) {
                 $object->$key = $value;
-                self::handleBoolean($class, $object, $key, $value);
+                self::handleBoolean($object, $object, $key, $value);
             }
         } else {
             // write_log(json_encode($_GET), __FILE__, __LINE__);
             foreach ($_GET as $key => $value) {
                 $object->$key = $value;
-                self::handleBoolean($class, $object, $key, $value);
+                self::handleBoolean($object, $object, $key, $value);
             }
         }
 
+        self::sanitize($object);
+        write_log(json_encode(($object)), __FILE__, __LINE__);
+        
         if (method_exists($object, "pre_create")) {
             $object->pre_create();
         }
@@ -347,112 +406,111 @@ class Utilities
                 $object->mandatory_fields_check();
             }
         } catch (NullableException $e) {
-            if (HTTP_CODE_ENABLED) {
-                http_response_code(400);
-            } else {
-                http_response_code(200);
-            }
-            echo '{';
-            echo '"detail": "Caught exception: ', $e->getMessage() . '"';
-            echo '}';
+            write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, sprintf("Caught exception: %s", $e->getMessage()));
+            echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
 
         if ($object->check_exists && method_exists($object, "check_existence")) {
             if ($object->check_existence()) {
-                if (HTTP_CODE_ENABLED) {
-                    http_response_code(400);
-                } else {
-                    http_response_code(200);
-                }
-                $error = new ErrorSchema(400, "Bad Request", sprintf("record (%s) already exist", $object->primiary_key_str()));
+                $record_str = strlen($object->primiary_key_str()) > 0 ? " (" . $object->primiary_key_str() . ") ": " ";
+                $error = new EchoSchema(400, sprintf("record%salready exist", $record_str));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
         }
-
+            
         try {
             if ($object->$method()) {
                 echo '{';
                 echo '"message": "' . $desc . ' created."';
                 echo '}';
             } else {
-                echo '{';
-                echo '"message": "Unable to create ' .
-                    $desc .
-                    '. Check logs/php_rest_*.log file for details."';
-                echo '}';
+                $error = new EchoSchema(500, 
+                sprintf("Unable to create %s . Check logs/php_rest_*.log file for details.", $desc));
+                echo json_encode($error, JSON_PRETTY_PRINT);
             }
         } catch (DatabaseException $e) {
-            // http_response_code(422);
             if (!isset($itemData)) {
-                if (HTTP_CODE_ENABLED) {
-                    http_response_code(500);
-                } else {
-                    http_response_code(200);
-                }
-
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-                $error = new ErrorSchema(500, "Database Error", $e->getMessage());
+                $error = new EchoSchema(500, "Database Error", $e->getMessage());
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
             return false;
         } catch (IncompleteParameterException $e) {
-            if (HTTP_CODE_ENABLED) {
-                http_response_code(400);
-            } else {
-                http_response_code(200);
-            }
-            $error = new ErrorSchema(400, "Bad Request", $e->getMessage());
+            $error = new EchoSchema(400, "Bad Request: " . $e->getMessage());
             echo json_encode($error, JSON_PRETTY_PRINT);
         }
     }
 
-    private static function handleBoolean($class, $object, $key, $value)
+    /**
+     * class_object: for example,  GatePermission
+     * item_oject: for example, rules
+           GatePermission sample:
+               {
+                    "prmssn_id": "1",
+                    "prmssn_name": "ENTRY update",
+                    "prmssn_case": "DEFAULT_PERSONNEL",
+                    "prmssn_auth": "999",
+                    "prmssn_adv_pin_pass": false,
+                    "rules": [
+                        {
+                            "rule_id": "1",
+                            "rule_parent": 1,
+                            "rule_expiry_check": false
+                        },
+                        {
+                            "rule_id": "1002",
+                            "rule_parent": 1,
+                            "rule_expiry_check": false
+                        }
+                    ]
+                }
+    */
+    private static function handleBoolean($class_object, $item_object, $key, $value)
     {
         $upper_key = strtoupper($key);
         // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
         // write_log(sprintf("%s, %s", strtoupper($class), $upper_key), __FILE__, __LINE__);
 
-        if (isset($object->BOOLEAN_FIELDS) &&
-            array_key_exists($upper_key, $object->BOOLEAN_FIELDS)) {
-            if ($object->BOOLEAN_FIELDS[$upper_key] === 'Y') {
+        if (isset($class_object->BOOLEAN_FIELDS) &&
+            array_key_exists($upper_key, $class_object->BOOLEAN_FIELDS)) {
+            if ($class_object->BOOLEAN_FIELDS[$upper_key] === 'Y') {
                 if ($value) {
-                    $object->{$key} = 'Y';
+                    $item_object->{$key} = 'Y';
                 } else {
-                    $object->{$key} = 'N';
+                    $item_object->{$key} = 'N';
                 }
 
-            } else if ($object->BOOLEAN_FIELDS[$upper_key] === 'T') {
+            } else if ($class_object->BOOLEAN_FIELDS[$upper_key] === 'T') {
                 if ($value) {
-                    $object->{$key} = 'T';
+                    $item_object->{$key} = 'T';
                 } else {
-                    $object->{$key} = 'F';
+                    $item_object->{$key} = 'F';
                 }
 
-            } else if ($object->BOOLEAN_FIELDS[$upper_key] === '1') {
+            } else if ($class_object->BOOLEAN_FIELDS[$upper_key] === 1) {
                 if ($value) {
-                    $object->{$key} = 1;
+                    $item_object->{$key} = 1;
                 } else {
-                    $object->{$key} = 0;
+                    $item_object->{$key} = 0;
                 }
 
             }
         }
     }
 
-    //Loop to update for an array
+    //Loop to update for an array. sample: pages/folio/update_meters.php
     public static function updateArray($class, $method = 'update')
     {
         //Get data from POST
         $data = json_decode(file_get_contents("php://input"));
         foreach ($data as $item) {
             if (self::update($class, $method, $item) === false) {
-                http_response_code(500);
-                echo '{';
-                echo '"message": "Unable to update. Check logs/php_rest_*.log file for details."';
-                echo '}';
+                $error = new EchoSchema(500, "Unable to update. Check logs/php_rest_*.log file for details.");
+                echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
         }
@@ -468,8 +526,19 @@ class Utilities
     //do not echo if it success, just return true or false.
     public static function update($class, $method = 'update', $itemData = null)
     {
+        write_log(sprintf("%s::%s() START, class:%s, method:%s",
+            __CLASS__, __FUNCTION__, $class, $method),
+            __FILE__, __LINE__);
+
         $database = new Database();
         $db = $database->getConnection($class, $method);
+
+        $access_check = new AccessCheck($db);
+        if (!$access_check->check($class, $method, self::getCurrPsn())) {
+            $error = new EchoSchema(400, "Current user does not have privilege");
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
 
         $object = new $class($db);
         $desc = (isset($object->desc) ? $object->desc : $class);
@@ -487,32 +556,37 @@ class Utilities
             // write_log(json_encode($data), __FILE__, __LINE__);
             foreach ($data as $key => $value) {
                 // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
+                if (is_array($value)) {
+                    foreach ($value as $sub_object) {
+                        foreach ($sub_object as $sub_key => $sub_value) {
+                            // write_log(sprintf("%s => %s", $sub_key, $sub_value), __FILE__, __LINE__);
+                            self::handleBoolean($object, $sub_object, $sub_key, $sub_value);
+                        }
+                    }
+                }
                 $object->$key = $value;
-                self::handleBoolean($class, $object, $key, $value);
+                self::handleBoolean($object, $object, $key, $value);
             }
         } else {
             // write_log(json_encode($_GET), __FILE__, __LINE__);
             foreach ($_GET as $key => $value) {
                 $object->$key = $value;
-                self::handleBoolean($class, $object, $key, $value);
+                self::handleBoolean($object, $object, $key, $value);
             }
+        }
+
+        if (method_exists($object, "pre_update")) {
+            $object->pre_update();
         }
 
         try {
             if (method_exists($object, "mandatory_fields_check")) {
                 $object->mandatory_fields_check();
             }
-
         } catch (NullableException $e) {
-            // http_response_code(422);
             if (!isset($itemData)) {
-                if (HTTP_CODE_ENABLED) {
-                    http_response_code(500);
-                } else {
-                    http_response_code(200);
-                }
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-                $error = new ErrorSchema(400, "Bad Request", sprintf("Caught exception: %s", $e->getMessage()));
+                $error = new EchoSchema(400, "Bad Request: " . sprintf("Caught exception: %s", $e->getMessage()));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
@@ -523,29 +597,16 @@ class Utilities
         // write_log(json_encode($object), __FILE__, __LINE__, LogLevel::DEBUG);
         if (method_exists($object, "check_existence")) {
             if (!$object->check_existence()) {
-                if (HTTP_CODE_ENABLED) {
-                    http_response_code(500);
-                } else {
-                    http_response_code(200);
-                }
-
-                // echo '{';
-                // echo '"errors": [';
-                // echo '   {';
-                // echo '    "code": 500,';
-                // echo '    "type": "ServerFailedError",';
-                // echo '    "message": "' . sprintf("record (%s) does not not exist", $object->primiary_key_str()) . '"';
-                // echo '   }';
-                // echo ']';
-                // echo '}';
-                write_log(sprintf("record (%s) does not not exist", $object->primiary_key_str()), __FILE__, __LINE__, LogLevel::ERROR);
-                $error = new ErrorSchema(400, "Bad Request", sprintf("record (%s) does not not exist", $object->primiary_key_str()));
+                $record_str = strlen($object->primiary_key_str()) > 0 ? " (" . $object->primiary_key_str() . ") ": " ";
+                write_log(sprintf("record%sdoes not not exist", $record_str), __FILE__, __LINE__, LogLevel::ERROR);
+                $error = new EchoSchema(400, sprintf("record%sdoes not not exist", $record_str));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
         }
 
-        Utilities::sanitize($object);
+        self::sanitize($object);
+        write_log(json_encode(($object)), __FILE__, __LINE__);
 
         try {
             if ($object->$method()) {
@@ -553,7 +614,12 @@ class Utilities
                     http_response_code(200);
                     echo '{';
                     if (method_exists($object, 'primiary_key_str')) {
-                        echo '"message": "' . $desc . ' (' . $object->primiary_key_str() . ') updated. "';
+                        if (strlen($object->primiary_key_str()) > 0) {
+                            echo '"message": "' . $desc . ' (' . $object->primiary_key_str() . ') updated. "';
+                        } else {
+                            echo '"message": "' . $desc . ' updated. "';
+                        }
+                        
                     } else {
                         echo '"message": "' . $desc . ' updated. "';
                     }
@@ -563,42 +629,25 @@ class Utilities
                 return true;
             } else {
                 if (!isset($itemData)) {
-                    http_response_code(500);
-                    echo '{';
-                    echo '"message": "Unable to update ' .
-                        $desc .
-                        '. Check logs/php_rest_*.log file for details."';
-                    echo '}';
+                    $error = new EchoSchema(500, 
+                        sprintf("Unable to update %s . Check logs/php_rest_*.log file for details.", $desc));
+                    echo json_encode($error, JSON_PRETTY_PRINT);
                     return;
                 }
                 return false;
             }
         } catch (DatabaseException $e) {
-            // http_response_code(422);
             if (!isset($itemData)) {
-                if (HTTP_CODE_ENABLED) {
-                    http_response_code(500);
-                } else {
-                    http_response_code(200);
-                }
-
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-                $error = new ErrorSchema(500, "Database Error", $e->getMessage());
+                $error = new EchoSchema(500, "Database Error: " . $e->getMessage());
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
             return false;
         } catch (Exception $e) {
-            // http_response_code(422);
             if (!isset($itemData)) {
-                if (HTTP_CODE_ENABLED) {
-                    http_response_code(500);
-                } else {
-                    http_response_code(200);
-                }
-
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-                $error = new ErrorSchema(500, "Server Failed Error", $e->getMessage());
+                $error = new EchoSchema(500, "Server Failed Error: " . $e->getMessage());
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
@@ -608,8 +657,19 @@ class Utilities
 
     public static function delete($class, $method = 'delete')
     {
+        write_log(sprintf("%s::%s() START, class:%s, method:%s",
+            __CLASS__, __FUNCTION__, $class, $method),
+            __FILE__, __LINE__);
+
         $database = new Database();
         $db = $database->getConnection($class, $method);
+
+        $access_check = new AccessCheck($db);
+        if (!$access_check->check($class, $method, self::getCurrPsn())) {
+            $error = new EchoSchema(400, "Current user does not have privilege");
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
 
         $object = new $class($db);
         $desc = (isset($object->desc) ? $object->desc : $class);
@@ -630,57 +690,39 @@ class Utilities
         // write_log(json_encode($object), __FILE__, __LINE__);
         if (method_exists($object, "check_existence")) {
             if (!$object->check_existence()) {
-                if (HTTP_CODE_ENABLED) {
-                    http_response_code(400);
-                } else {
-                    http_response_code(200);
-                }
-
                 write_log(sprintf("record (%s) does not not exist", $object->primiary_key_str()), __FILE__, __LINE__, LogLevel::ERROR);
-                $error = new ErrorSchema(400, "Bad Request", sprintf("record (%s) does not not exist", $object->primiary_key_str()));
+                $error = new EchoSchema(400, sprintf("Record (%s) does not not exist", $object->primiary_key_str()));
                 echo json_encode($error, JSON_PRETTY_PRINT);
 
                 return;
             }
         }
 
+        self::sanitize($object);
+        write_log(json_encode(($object)), __FILE__, __LINE__);
+
+        if (method_exists($object, "pre_delete")) {
+            $object->pre_delete();
+        }
+
         try {
             if ($object->$method()) {
+                http_response_code(200);
                 echo '{';
                 echo '"message": "' . $desc . ' deleted."';
                 echo '}';
             } else {
-                if (HTTP_CODE_ENABLED) {
-                    http_response_code(500);
-                } else {
-                    http_response_code(200);
-                }
-
-                echo '{';
-                echo '"message": "Unable to delete ' .
-                    $desc .
-                    '. Check logs/php_rest_*.log file for details."';
-                echo '}';
+                $error = new EchoSchema(500, 
+                    sprintf("Unable to delete %s . Check logs/php_rest_*.log file for details.", $desc));
+                echo json_encode($error, JSON_PRETTY_PRINT);
             }
         } catch (DatabaseException $e) {
-            if (HTTP_CODE_ENABLED) {
-                http_response_code(500);
-            } else {
-                http_response_code(200);
-            }
-
             write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new ErrorSchema(500, "Database Error", $e->getMessage());
+            $error = new EchoSchema(500, "Database Error: " . $e->getMessage());
             echo json_encode($error, JSON_PRETTY_PRINT);
         } catch (Exception $e) {
-            if (HTTP_CODE_ENABLED) {
-                http_response_code(500);
-            } else {
-                http_response_code(200);
-            }
-
             write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new ErrorSchema(500, "Server Failed Error", $e->getMessage());
+            $error = new EchoSchema(500, "Server Failed Error: " . $e->getMessage());
             echo json_encode($error, JSON_PRETTY_PRINT);
         }
     }
@@ -706,6 +748,18 @@ class Utilities
             return $_SESSION['PERCODE'];
         }
         return "";
+    }
+
+    public static function getCurrLang()
+    {
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
+        if (isset($_SESSION['LANGUAGE'])) {
+            return $_SESSION['LANGUAGE'];
+        }
+        return "ENG";
     }
 
     public static function getCurrentSession()

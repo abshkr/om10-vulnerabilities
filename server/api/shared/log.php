@@ -27,8 +27,14 @@ abstract class LogLevel
 // }
 
 date_default_timezone_set('UTC');
-$log_file = (isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omega') .
-'/logs/php_rest_' . date('Ymd') . '.log';
+
+if (strpos(PHP_OS, 'WIN') !== false) { 
+    $log_file = "C:\\Workshop\\DKI\GIT\\frontend\\server\\logs\\api.log";
+} else {
+    $log_file = (isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omega') .
+        '/logs/php_rest_' . date('Ymd') . '.log';
+}
+
 
 // ini_set('display_errors', 1);
 // error_reporting(E_ALL);

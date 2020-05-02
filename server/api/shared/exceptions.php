@@ -12,6 +12,12 @@ class IncompleteParameterException extends Exception
 class NonexistentException extends Exception
 {}
 
+class Bay999Exception extends Exception
+{}
+
+class UndeletableException extends Exception
+{}
+
 class DatabaseException extends Exception
 {
     public function __construct($message)
@@ -24,3 +30,4 @@ class DatabaseException extends Exception
         }
     }
 }
+

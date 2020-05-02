@@ -3,48 +3,12 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/role_service.php';
+include_once 'common_class.php';
 
-class IDAssignment
+class IDAssignment extends CommonClass
 {
-    // database connection and table name
-    private $conn;
-
-    public $kya_key_no = '-1';
-    public $kya_key_issuer = '-1';
-    public $kya_issuer_name = '-1';
-    public $kya_type = '-1';
-    public $kya_type_name = '-1';
-    public $kya_phys_type = '-1';
-    public $kya_phys_name = '-1';
-    public $kya_timecode = '-1';
-    public $kya_lock = '-1';
-    public $kya_adhoc = '-1';
-    public $kya_txt = '-1';
-    public $kya_key_created = '-1';
-    public $kya_pin = '-1';
-    public $kya_personnel = '-1';
-    public $kya_psnl_name = '-1';
-    public $kya_psnl_cmpy = '-1';
-    public $kya_psnl_cmpy_name = '-1';
-    public $kya_role = '-1';
-    public $kya_role_name = '-1';
-    public $kya_drawer = '-1';
-    public $kya_draw_name = '-1';
-    public $kya_supplier = '-1';
-    public $kya_supp_name = '-1';
-    public $kya_tanker = '-1';
-    public $kya_tnkr_name = '-1';
-    public $kya_tnkr_desc = '-1';
-    public $kya_tnkr_cmpy = '-1';
-    public $kya_tnkr_cmpy_name = '-1';
-    public $kya_equipment = '-1';
-    public $kya_eqpt_name = '-1';
-    public $kya_eqpt_desc = '-1';
-    public $kya_eqpt_cmpy = '-1';
-    public $kya_eqpt_cmpy_name = '-1';
-    public $kya_etyp_name = '-1';
-    public $kya_cust_ordno = '-1';
-    public $kya_cust_name = '-1';
+    protected $TABLE_NAME = 'ACCESS_KEYS';
 
     public $kya_sp_supplier = '-1';
 
@@ -54,11 +18,14 @@ class IDAssignment
     public $start_num = 1;
     public $end_num = null;
 
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
+    public $BOOLEAN_FIELDS = array(
+        "KYA_LOCK" => "Y",
+        "KYA_ADHOC" => "Y"
+    );
+
+    public $NUMBER_FIELDS = array(
+        
+    );
 
     public function count()
     {
@@ -66,7 +33,7 @@ class IDAssignment
             SELECT COUNT(*) CN
             FROM GUI_ACCESS_KEYS";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -83,7 +50,7 @@ class IDAssignment
             FROM GUI_ACCESS_KEYS
             ";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -100,8 +67,6 @@ class IDAssignment
             $this->end_num = $this->count();
         }
 
-        Utilities::sanitize($this);
-
         $query = "
             SELECT KYA_KEY_NO,
                 KYA_KEY_ISSUER,
@@ -114,17 +79,15 @@ class IDAssignment
                 KYA_LOCK,
                 KYA_ADHOC,
                 KYA_TXT,
-                DECODE(KYA_KEY_CREATED, NULL, '',
-                    TO_CHAR(KYA_KEY_CREATED, 'YYYY-MM-DD')) KYA_KEY_CREATED,
+                KYA_KEY_CREATED,
                 KYA_PIN,
-                DECODE(KYA_PIN_CHANGED, NULL, '',
-                    TO_CHAR(KYA_PIN_CHANGED, 'YYYY-MM-DD')) KYA_PIN_CHANGED,
-                NVL(KYA_PERSONNEL, '') KYA_PERSONNEL,
-                NVL(KYA_PSNL_NAME, '') KYA_PSNL_NAME,
+                KYA_PIN_CHANGED,
+                KYA_PERSONNEL KYA_PERSONNEL,
+                KYA_PSNL_NAME KYA_PSNL_NAME,
                 KYA_PSNL_CMPY,
                 KYA_PSNL_CMPY_NAME,
-                NVL(KYA_ROLE, '') KYA_ROLE,
-                NVL(KYA_ROLE_NAME, '') KYA_ROLE_NAME,
+                KYA_ROLE,
+                KYA_ROLE_NAME KYA_ROLE_NAME,
                 KYA_DRAWER,
                 KYA_DRAW_NAME,
                 KYA_SUPPLIER,
@@ -169,7 +132,7 @@ class IDAssignment
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':start_num', $this->start_num);
         oci_bind_by_name($stmt, ':end_num', $this->end_num);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -188,7 +151,7 @@ class IDAssignment
             WHERE TNKR_OWNER LIKE :tnkr_owner";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_owner', $tnkr_owner);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -200,8 +163,6 @@ class IDAssignment
 
     public function tankers()
     {
-        Utilities::sanitize($this);
-
         $query = "
             SELECT TNKR_CODE,
                 TNKR_NAME,
@@ -224,7 +185,7 @@ class IDAssignment
         }
 
         oci_bind_by_name($stmt, ':tnkr_owner', $this->tnkr_owner);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -254,7 +215,7 @@ class IDAssignment
         if (isset($owner)) {
             oci_bind_by_name($stmt, ':owner', $owner);
         }
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -266,8 +227,6 @@ class IDAssignment
 
     public function schedulables()
     {
-        Utilities::sanitize($this);
-
         $query = "
             SELECT EL.EQPT_ID,
                 EL.EQPT_CODE,
@@ -293,7 +252,7 @@ class IDAssignment
         if (isset($this->owner)) {
             oci_bind_by_name($stmt, ':owner', $this->owner);
         }
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -323,7 +282,7 @@ class IDAssignment
         if (isset($owner)) {
             oci_bind_by_name($stmt, ':owner', $owner);
         }
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -335,8 +294,6 @@ class IDAssignment
 
     public function non_schedulables()
     {
-        Utilities::sanitize($this);
-
         $query = "
             SELECT EL.EQPT_ID,
                 EL.EQPT_CODE,
@@ -362,7 +319,7 @@ class IDAssignment
         if (isset($this->owner)) {
             oci_bind_by_name($stmt, ':owner', $this->owner);
         }
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -380,7 +337,7 @@ class IDAssignment
             WHERE KEY_ID IN (1,3,4,5,8,9)
             ORDER BY KEY_ID";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -403,7 +360,7 @@ class IDAssignment
         oci_bind_by_name($stmt, ':kya_tanker', $tanker);
         oci_bind_by_name($stmt, ':kya_personnel', $personnel);
         oci_bind_by_name($stmt, ':kya_txt', $tag);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -415,19 +372,21 @@ class IDAssignment
 
     public function roles()
     {
-        $query = "
-            SELECT AUTH_LEVEL_ID ROLE_ID,
-                AUTH_LEVEL_NAME ROLE_NAME
-            FROM AUTH_LEVEL_TYP
-            ORDER BY AUTH_LEVEL_ID";
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
+        $serv = new RoleService($this->conn);
+        return $serv->dropdown_role_types($include_any = false);
+        // $query = "
+        //     SELECT AUTH_LEVEL_ID ROLE_ID,
+        //         AUTH_LEVEL_NAME ROLE_NAME
+        //     FROM AUTH_LEVEL_TYP
+        //     ORDER BY AUTH_LEVEL_ID";
+        // $stmt = oci_parse($this->conn, $query);
+        // if (oci_execute($stmt, $this->commit_mode)) {
+        //     return $stmt;
+        // } else {
+        //     $e = oci_error($stmt);
+        //     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     return null;
+        // }
     }
 
     public function physicalTypes()
@@ -438,7 +397,7 @@ class IDAssignment
             FROM KEY_PHYS_TYP
             ORDER BY KEY_PHYS_ID";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -468,7 +427,7 @@ class IDAssignment
             oci_bind_by_name($stmt, ':employer', $employer);
         }
         oci_bind_by_name($stmt, ':role', $role);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -480,8 +439,6 @@ class IDAssignment
 
     public function lookupPersonnel()
     {
-        Utilities::sanitize($this);
-
         $query = "
             SELECT PER_CODE,
                 PER_NAME,
@@ -511,7 +468,7 @@ class IDAssignment
             oci_bind_by_name($stmt, ':role', $this->role);
         }
 
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -603,7 +560,7 @@ class IDAssignment
         oci_bind_by_name($stmt, ':kya_txt', $tag);
         oci_bind_by_name($stmt, ':start_num', $this->start_num);
         oci_bind_by_name($stmt, ':end_num', $this->end_num);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -669,10 +626,6 @@ class IDAssignment
 
     public function create()
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $curr_psn = Utilities::getCurrPsn();
 
         $query = "
@@ -789,10 +742,6 @@ class IDAssignment
 
     public function update()
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $journal = new Journal($this->conn, false);
 
         $module = "ID Assignment";
@@ -1089,5 +1038,27 @@ class IDAssignment
 
         oci_commit($this->conn);
         return true;
+    }
+
+    public function personnel_by_role()
+    {
+        $query = "
+            SELECT 
+                PER_CODE,
+                PER_NAME
+            FROM PERSONNEL
+            WHERE PER_AUTH = :per_auth AND PER_CMPY = :per_cmpy
+                AND PER_CODE != '8888'
+            ORDER BY PER_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_auth', $this->kya_role);
+        oci_bind_by_name($stmt, ':per_cmpy', $this->kya_psnl_cmpy);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
     }
 }

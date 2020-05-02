@@ -7,12 +7,40 @@ class EnumService
     public function __construct($db, $auto_commit = false)
     {
         $this->conn = $db;
-        $this->auto_commit = $auto_commit;
-
-        if ($this->auto_commit) {
+        
+        if ($auto_commit) {
             $this->commit_mode = OCI_COMMIT_ON_SUCCESS;
         } else {
             $this->commit_mode = OCI_NO_AUTO_COMMIT;
+        }
+    }
+
+    public function prod_categories()
+    {
+        $query = "SELECT * FROM BCLASS_TYP ORDER BY BCLASS_ID";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function tank_status_types()
+    {
+        $query = "
+            SELECT TANK_STATUS_ID, TANK_STATUS_CODE, TANK_STATUS_NAME
+            FROM TANK_STATUS_TYP
+            ORDER BY TANK_STATUS_ID";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
         }
     }
 
@@ -22,6 +50,23 @@ class EnumService
             SELECT *
             FROM RQ_PERIOD_TYP
             ORDER BY RQ_PERIOD_ID";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function meter_device_types()
+    {
+        $query = "
+            SELECT *
+            FROM MTD_TYP
+            ORDER BY MTD_ID";
         // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
@@ -50,6 +95,40 @@ class EnumService
         }
     }
 
+    public function meter_usages()
+    {
+        $query = "
+            SELECT *
+            FROM BAM_USAGE_TYP
+            ORDER BY BAM_USAGE_ID";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function meter_types()
+    {
+        $query = "
+            SELECT *
+            FROM BA_METER_TYP
+            ORDER BY BA_METER_ID";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function inv_request_types()
     {
         $query = "
@@ -57,6 +136,19 @@ class EnumService
             FROM RQ_TYP
             ORDER BY RQ_ID";
         // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function gauge_methods()
+    {
+        $query = "SELECT * FROM GAUGE_METHOD_TYP ORDER BY GAUGE_METHOD_ID ";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
             return $stmt;
@@ -90,6 +182,23 @@ class EnumService
             SELECT *
             FROM PMV_TYP
             ORDER BY PMV_ID";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function prod_movement_states()
+    {
+        $query = "
+            SELECT *
+            FROM PMV_STATE_TYP
+            ORDER BY PMV_STATE_ID";
         // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {

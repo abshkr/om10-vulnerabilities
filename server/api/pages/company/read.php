@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/company.php';
 
-Utilities::read('Company', $method = 'read', $filter = true);
+Utilities::read('Company');

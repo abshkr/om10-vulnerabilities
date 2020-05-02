@@ -44,7 +44,7 @@ class Tanker extends CommonClass
             SELECT COUNT(*) CN
             FROM GUI_TANKERS";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -97,8 +97,6 @@ class Tanker extends CommonClass
             $this->end_num = $this->count();
         }
 
-        Utilities::sanitize($this);
-
         $query = "
             SELECT *
             FROM
@@ -116,7 +114,7 @@ class Tanker extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':start_num', $this->start_num);
         oci_bind_by_name($stmt, ':end_num', $this->end_num);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -135,7 +133,7 @@ class Tanker extends CommonClass
             ORDER BY CMPY_NAME ASC";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -170,7 +168,7 @@ class Tanker extends CommonClass
         if (isset($this->tnkr_etp)) {
             oci_bind_by_name($stmt, ':tnkr_etp', $this->tnkr_etp);
         }
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -262,7 +260,7 @@ class Tanker extends CommonClass
         }
         oci_bind_by_name($stmt, ':start_num', $this->start_num);
         oci_bind_by_name($stmt, ':end_num', $this->end_num);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -281,7 +279,7 @@ class Tanker extends CommonClass
             WHERE TC_TANKER = :tnkr_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -338,7 +336,7 @@ class Tanker extends CommonClass
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -357,7 +355,7 @@ class Tanker extends CommonClass
                   AND TC_TANKER = :tnkr_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -378,7 +376,7 @@ class Tanker extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
 
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
@@ -419,7 +417,7 @@ class Tanker extends CommonClass
             ORDER BY TNKR_CMPT_NO";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -430,18 +428,12 @@ class Tanker extends CommonClass
 
     public function create($eqpts = null)
     {
-        write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code),
-            __FILE__, __LINE__);
-        // write_log(json_encode($this), __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $term_code = null;
         $query = "
             SELECT TERM_CODE
             FROM TERMINAL";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             $term_code = $row['TERM_CODE'];
         } else {
@@ -686,7 +678,7 @@ class Tanker extends CommonClass
             WHERE TNKR_CODE = :tnkr_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             $tnkr_owner = $row['TNKR_OWNER'];
             if (strtoupper($row['TNKR_ACTIVE']) == 'Y') {
@@ -763,11 +755,6 @@ class Tanker extends CommonClass
 
     public function update($eqpts = null)
     {
-        write_log(sprintf("%s::%s() START. tnkr_code:%s", __CLASS__, __FUNCTION__, $this->tnkr_code),
-            __FILE__, __LINE__);
-        // write_log(json_encode($this), __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         
@@ -777,7 +764,7 @@ class Tanker extends CommonClass
             WHERE TNKR_CODE = :tnkr_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $old_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
             $e = oci_error($stmt);
@@ -793,7 +780,7 @@ class Tanker extends CommonClass
             ORDER BY TC_SEQNO";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $tnkr_equips_rows = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
             $e = oci_error($stmt);
@@ -1038,7 +1025,7 @@ class Tanker extends CommonClass
             ORDER BY TC_SEQNO";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $tnkr_equips_rows2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
             $e = oci_error($stmt);

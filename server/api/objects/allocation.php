@@ -10,6 +10,7 @@ class Allocation extends CommonClass
     protected $TABLE_NAME = 'LOCKAL';
     protected $VIEW_NAME = 'GUI_ALLOCATIONS';
     protected $primary_keys = array("lockatyp_at_type", "lockatyp_at_cmpy", "lockal_supl");
+    
     protected $table_view_map = array(
         "LOCKATYP_AT_TYPE" => "ALLOC_TYPE",
         "LOCKATYP_AT_CMPY" => "ALLOC_CMPYCODE",
@@ -17,6 +18,7 @@ class Allocation extends CommonClass
         "LOCKAL_LOCK" => "ALLOC_LOCK",
         "LOCKAL_PERIOD" => "ALLOC_PERIOD",
     );
+
     public $NUMBER_FIELDS = array(
         "AITEM_QTYLIMIT",
         "AITEM_QTYUSED",
@@ -104,10 +106,6 @@ class Allocation extends CommonClass
 
     public function reset()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-        Utilities::sanitize($this);
-
         $query = "UPDATE ALLOCS
         SET ALLOC_LEFT = ALLOC_LIMIT
         WHERE ALL_ATKY_AT_TYPE = :alloc_type
@@ -119,7 +117,7 @@ class Allocation extends CommonClass
         oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
         oci_bind_by_name($stmt, ':alloc_cmpycode', $this->alloc_cmpycode);
 
-        if (!oci_execute($stmt)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
@@ -161,9 +159,9 @@ class Allocation extends CommonClass
             __FILE__, __LINE__);
 
         if (!isset($this->allocs)) {
-            return;
+            return true;
         }
-
+        
         foreach ($this->allocs as $value) {
             // write_log(json_encode($value), __FILE__, __LINE__);
             $query = "INSERT INTO ALLOCS (
@@ -226,6 +224,8 @@ class Allocation extends CommonClass
             return false;
         }
 
+        return true;
+
         // $query = "
         //     DELETE FROM ALLOC_TYPE
         //     WHERE AT_TYPE = :alloc_type
@@ -250,7 +250,7 @@ class Allocation extends CommonClass
             FROM " . $this->VIEW_NAME . "
             ORDER BY ALLOC_TYPE DESC";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -266,7 +266,7 @@ class Allocation extends CommonClass
             FROM ALLOCATIONCHECK
             ORDER BY ACHECK_TYPE";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -282,7 +282,7 @@ class Allocation extends CommonClass
             FROM ALLOC_PERIOD_TYP
             ORDER BY ALLOC_PERIOD_ID";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -298,7 +298,7 @@ class Allocation extends CommonClass
             FROM ALLOC_LOCK_TYP
             ORDER BY ALLOC_LOCK_ID";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -356,7 +356,7 @@ class Allocation extends CommonClass
         oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
         oci_bind_by_name($stmt, ':alloc_cmpy', $this->alloc_cmpycode);
         oci_bind_by_name($stmt, ':alloc_supp', $this->alloc_suppcode);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);

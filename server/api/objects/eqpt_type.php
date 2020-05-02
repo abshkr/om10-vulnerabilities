@@ -3,8 +3,10 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/eqpt_service.php';
 include_once 'common_class.php';
 
+//Old code: EquipmentTypes.class.php
 class EquipmentType extends CommonClass
 {
     protected $TABLE_NAME = "EQUIP_TYPES";
@@ -33,7 +35,7 @@ class EquipmentType extends CommonClass
             WHERE EQPT_ETP = :eqpt_etp ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':eqpt_etp', $eqpt_etp);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -52,7 +54,7 @@ class EquipmentType extends CommonClass
             WHERE ECNCT_ETYP = :eqpt_etp ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':eqpt_etp', $eqpt_etp);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -64,8 +66,6 @@ class EquipmentType extends CommonClass
 
     public function basicInfo($etyp_id)
     {
-        Utilities::sanitize($this);
-
         $query = "
             SELECT ETYP_ID,
                 ETYP_TITLE,
@@ -78,7 +78,7 @@ class EquipmentType extends CommonClass
                 WHERE ETYP_ID = :etyp_id";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':etyp_id', $etyp_id);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -87,10 +87,8 @@ class EquipmentType extends CommonClass
         }
     }
 
-    public function composition($etyp_id)
+    public function composition()
     {
-        Utilities::sanitize($this);
-
         $query = "
             SELECT NVL(EQC_SUB_ITEM, ETYP_ID) ETYP_ID,
                 ETYP_TITLE,
@@ -104,8 +102,8 @@ class EquipmentType extends CommonClass
             WHERE ECNCT_ETYP (+)= ETYP_ID AND ETYP_ID = :etyp_id
             ORDER BY EQC_COUNT";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':etyp_id', $etyp_id);
-        if (oci_execute($stmt)) {
+        oci_bind_by_name($stmt, ':etyp_id', $this->etyp_id);
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -114,15 +112,47 @@ class EquipmentType extends CommonClass
         }
     }
 
-    public function compartments($etyp_id = null)
+    public function composition_hook(&$hook_item)
     {
-        Utilities::sanitize($this);
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
+
+        $result = array();
+        $hook_item['compartments'] = $result;
+
+        if (!array_key_exists('etyp_id', $hook_item)) {
+            write_log("hook_item does not have etyp_id item, cannot do composition_hook",
+                __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
 
         $query = "
             SELECT CMPT_NO,
                 DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS,
-                CMPT_CAPACIT SAFEFILL,
-                CMPT_CAPACIT SFL,
+                CMPT_CAPACIT,
+                COMPARTMENT.CMPT_ETYP ETYP_ID
+            FROM COMPARTMENT
+            WHERE COMPARTMENT.CMPT_ETYP = :etyp_id
+            ORDER BY CMPT_NO";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':etyp_id', $hook_item['etyp_id']);
+        
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        Utilities::retrieve($result, $this, $stmt, $method = __FUNCTION__);
+        $hook_item['compartments'] = $result;
+    }
+
+    public function compartments($etyp_id = null)
+    {
+        $query = "
+            SELECT CMPT_NO,
+                DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS,
+                CMPT_CAPACIT,
                 COMPARTMENT.CMPT_ETYP ETYP_ID
             FROM COMPARTMENT
             WHERE COMPARTMENT.CMPT_ETYP = :etyp_id
@@ -134,7 +164,7 @@ class EquipmentType extends CommonClass
             oci_bind_by_name($stmt, ':etyp_id', $this->etyp_id);
         }
 
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -145,8 +175,6 @@ class EquipmentType extends CommonClass
 
     public function equipments($eqpt_etp)
     {
-        Utilities::sanitize($this);
-
         $query = "
             SELECT EQPT_ID,
                 EQPT_CODE,
@@ -159,7 +187,7 @@ class EquipmentType extends CommonClass
             ORDER BY EQPT_CODE";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':eqpt_etp', $eqpt_etp);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -184,7 +212,7 @@ class EquipmentType extends CommonClass
             oci_bind_by_name($stmt, ':cmptnu', $cmptnu);
         }
 
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return (int) $row['CN'];
         } else {
@@ -215,7 +243,7 @@ class EquipmentType extends CommonClass
             AND ETYP_ID = :etyp_id";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':etyp_id', $etyp_id);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             return $row['IMAGE'];
         } else {
@@ -229,7 +257,6 @@ class EquipmentType extends CommonClass
     only be non-combine, but for tanker, the type can be non-combine or combine */
     public function read()
     {
-        Utilities::sanitize($this);
         $this->etyp_title = isset($this->etyp_title) ? '%' . $this->etyp_title . '%' : '%';
 
         $query = "
@@ -253,7 +280,7 @@ class EquipmentType extends CommonClass
             WHERE EQP_CONNECT.ECNCT_ETYP = EQUIP_TYPES_VW.ETYP_ID
                 AND EQC_COUNT = 1) FIRST_SUB_ITEM
         WHERE FIRST_SUB_ITEM.ECNCT_ETYP(+) = EQUIP_TYPES_VW.ETYP_ID
-            AND ETYP_TITLE like :etyp_title ";
+            AND ETYP_TITLE like :etyp_title";
 
         if (isset($this->cmptnu)) {
             $query = $query . " AND CMPTNU = :cmptnu ";
@@ -265,13 +292,190 @@ class EquipmentType extends CommonClass
         if (isset($this->cmptnu)) {
             oci_bind_by_name($stmt, ':cmptnu', $this->cmptnu);
         }
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    //Overwrite super class, because it has its own create
+    public function mandatory_fields_check()
+    {
+        if (!isset($this->etyp_title)) {
+            return false;
+        };
+
+        return true;
+    }
+
+    public function check_existence()
+    {
+        if (isset($this->etyp_title)) {
+            $query = "SELECT COUNT(*) CN
+                FROM EQUIP_TYPES_VW
+                WHERE ETYP_TITLE = :etyp_title";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':etyp_title', $this->etyp_title);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return;
+            }
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            if ($row['CN'] >= 1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        if (isset($this->etyp_id)) {
+            $query = "SELECT COUNT(*) CN
+                FROM EQUIP_TYPES_VW
+                WHERE ETYP_ID = :etyp_id";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':etyp_id', $this->etyp_id);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return;
+            }
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            if ($row['CN'] >= 1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    //sess_id=LWWRTniwSbdD&canBreak=0&eqpNm=CW&sched=n&op=17&rigid=n&etyp_category=P&callerTyp=flex
+    public function create()
+    {
+        $etyp_schedul = (isset($this->etyp_schedul) && $this->etyp_schedul ? "y" : "n");
+        $etyp_isrigid = (isset($this->etyp_isrigid) && $this->etyp_isrigid ? "y" : "n");
+        $is_combo = (isset($this->composition) && count($this->composition) > 0) ? 1 : 0;
+
+        $query_string = "canBreak=" . $is_combo . 
+            "&eqpNm=" . $this->etyp_title . 
+            "&sched=" . $etyp_schedul . 
+            "&rigid=" . $etyp_isrigid . 
+            "&etyp_category=" . $this->etyp_category . 
+            "&op=17&callerTyp=flex";
+        $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/equip_types.cgi", $query_string);
+        
+        if (!(strpos($res, "var op=27;") !== false)) {
+            // $error = new EchoSchema(500,"Failed to delete equipment type");
+            // echo json_encode($error, JSON_PRETTY_PRINT);
+            write_log(sprintf("CGI returns %s", $res), __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+            
+        }
+    
+        if (isset($this->compartments) && count($this->compartments) > 0) {
+            $this->etyp_id = null;
+            if (preg_match("/(var eqpCd=)(\d+)(;)/", $res, $out)) {
+                $this->etyp_id = $out[2];
+            }
+
+            if (!isset($this->etyp_id)) {
+                write_log("Failed to get equipment type id. res: " . $res, __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+
+            write_log("Adding compartments ...", __FILE__, __LINE__);
+            $query_string = "canBreak=" . $is_combo . 
+                "&sched=" . $etyp_schedul . 
+                "&eqpCd=" . $this->etyp_id . 
+                "&cmpts=" . count($this->compartments) . 
+                "&op=15";
+
+            $i = 0;
+            foreach ($this->compartments as $compartment) {
+                $query_string .= sprintf("&cmpt%d=%d&cmptFill%d=%d&unit=%s", 
+                    $i, $i, $i, $compartment->cmpt_capacit, $compartment->cmpt_units);
+                $i += 1;
+            }
+
+            $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/equip_types.cgi", $query_string);
+            
+            if (!(strpos($res, "var op=27;") !== false)) {
+                write_log(sprintf("CGI returns %s", $res), __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+                
+            }
+        } else if (isset($this->composition) && count($this->composition) > 0) {
+            $this->etyp_id = null;
+            if (preg_match("/(var eqpCd=)(\d+)(;)/", $res, $out)) {
+                $this->etyp_id = $out[2];
+            }
+
+            if (!isset($this->etyp_id)) {
+                write_log("Failed to get equipment type id. res: " . $res, __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+
+            write_log("Adding composition ...", __FILE__, __LINE__);
+            $basic_string = "canBreak=1" . 
+                "&sched=" . $etyp_schedul . 
+                "&eqpCd=" . $this->etyp_id . 
+                "&op=13";
+
+            foreach ($this->composition as $sub_etyp) {
+                $query_string = $basic_string . sprintf("&subEtyp=%d", $sub_etyp->etyp_id);
+                $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/equip_types.cgi", $query_string);
+            
+                if (!(strpos($res, "var op=27;") !== false)) {
+                    write_log(sprintf("CGI returns %s", $res), __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public function delete()
+    {
+        //sess_id=LWWRTniwSbdD&eqpCd=40&canBreak=0&noOfcompts=0&op=18&callerTyp=flex
+        if (!isset($this->etyp_id)) {
+            // $error = new EchoSchema(400, "parameter missing: etyp_id not provided");
+            // echo json_encode($error, JSON_PRETTY_PRINT);
+            write_log("parameter missing: etyp_id not provided", __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $query = "SELECT COUNT(*) CN FROM EQP_CONNECT WHERE ECNCT_ETYP = :etyp_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':etyp_id', $this->etyp_id);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ($row['CN'] >= 1) {
+            $can_break = 1;
+        } else {
+            $can_break = 0;
+        }
+        
+        $query_string = "eqpCd=" . $this->etyp_id . "&canBreak=" . $can_break . 
+            "&noOfcompts=0&op=18&callerTyp=flex";
+
+        $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/equip_types.cgi", $query_string);
+        
+        if (strpos($res, "var op=28;") !== false) {
+            // $error = new EchoSchema(500, "Failed to delete equipment type");
+            // echo json_encode($error, JSON_PRETTY_PRINT);
+            return true;
+        }
+    
+        write_log(sprintf("CGI returns %s", $res), __FILE__, __LINE__, LogLevel::ERROR);
+        return false;
     }
 
     /* Only display non-combine equpment type. because for equipment, the type can
@@ -316,7 +520,7 @@ class EquipmentType extends CommonClass
         if (isset($this->cmptnu)) {
             oci_bind_by_name($stmt, ':cmptnu', $this->cmptnu);
         }
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -356,12 +560,18 @@ class EquipmentType extends CommonClass
             oci_bind_by_name($stmt, ':cmptnu', $this->cmptnu);
         }
 
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function dropdown_eqpt_types()
+    {
+        $serv = new EqptService($this->conn);
+        return $serv->dropdown_eqpt_types();
     }
 }

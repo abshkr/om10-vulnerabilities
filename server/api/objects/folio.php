@@ -3,7 +3,9 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/strap_service.php';
 include_once 'common_class.php';
+include_once 'tank_status.php';
 
 class FolioMeter extends CommonClass
 {
@@ -12,6 +14,32 @@ class FolioMeter extends CommonClass
 
     protected $primary_keys = array("closeout_nr",
         "meter_code");
+
+    public function post_update()
+    {
+        $next_folio = $this->closeout_nr + 1;
+
+        $query = "
+            UPDATE " . $this->TABLE_NAME . " SET OPEN_MASS_TOT = :open_mass_tot,
+                OPEN_STD_TOT = :open_std_tot,
+                OPEN_AMB_TOT = :open_amb_tot
+            WHERE CLOSEOUT_NR = :closeout_nr
+                AND METER_CODE = :meter_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':open_mass_tot', $this->close_mass_tot);
+        oci_bind_by_name($stmt, ':open_std_tot', $this->close_std_tot);
+        oci_bind_by_name($stmt, ':open_amb_tot', $this->close_amb_tot);
+        oci_bind_by_name($stmt, ':closeout_nr', $next_folio);
+        oci_bind_by_name($stmt, ':meter_code', $this->meter_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return true;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+    }
 }
 
 class FolioTank extends CommonClass
@@ -21,13 +49,47 @@ class FolioTank extends CommonClass
 
     protected $primary_keys = array("closeout_nr",
         "tank_code");
+
+    protected $table_view_map = array(
+        "TANK_LEVEL" => "TANK_PROD_LVL"
+    );
+
+    public function post_update()
+    {
+        $next_folio = $this->closeout_nr + 1;
+
+        $query = "
+            UPDATE " . $this->TABLE_NAME . " SET OPEN_MASS_TOT = :open_mass_tot,
+                OPEN_DENSITY = :open_density,
+                OPEN_STD_TOT = :open_std_tot,
+                OPEN_AMB_TOT = :open_amb_tot,
+                OPEN_TEMP = :open_temp
+            WHERE CLOSEOUT_NR = :closeout_nr
+                AND TANK_CODE = :tank_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':open_mass_tot', $this->close_mass_tot);
+        oci_bind_by_name($stmt, ':open_std_tot', $this->close_std_tot);
+        oci_bind_by_name($stmt, ':open_density', $this->close_density);
+        oci_bind_by_name($stmt, ':open_amb_tot', $this->close_amb_tot);
+        oci_bind_by_name($stmt, ':open_temp', $this->close_temp);
+        oci_bind_by_name($stmt, ':closeout_nr', $next_folio);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return true;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+    }
 }
 
 class Folio extends CommonClass
 {
     protected $TABLE_NAME = 'CLOSEOUTS';
     protected $VIEW_NAME = 'CLOSEOUTS';
-
+     
     public $NUMBER_FIELDS = array(
         "CLOSEOUT_NR",
         "STATUS",
@@ -58,6 +120,10 @@ class Folio extends CommonClass
         "BCLASS_DENS_HI",
         "BCLASS_VCF_ALG",
         "TANK_DENSITY",
+        // "TANK_PROD_LVL",
+        "CLOSE_STD_TOT",
+        "CLOSE_MASS_TOT",
+        "CLOSE_AMB_TOT"
     );
 
     public function manual_close()
@@ -95,9 +161,9 @@ class Folio extends CommonClass
     //calculates an array of vcf
     public function calc_vcfs()
     {
-        Utilities::sanitize($this);
-
-        session_start();
+        if (!isset($_SESSION)) {
+            session_start();
+        }
 
         $vcf_response = array();
         foreach ($this as $key => $value) {
@@ -132,9 +198,9 @@ class Folio extends CommonClass
 
             $item = new stdClass();
             $item->real_cvf = $real_cvf;
-            $item->real_litre = $real_litre;
-            $item->real_litre15 = $real_litre15;
-            $item->real_kg = $real_kg;
+            $item->real_litre = intval($real_litre);
+            $item->real_litre15 = intval($real_litre15);
+            $item->real_kg = intval($real_kg);
 
             array_push($vcf_response, $item);
         }
@@ -162,37 +228,28 @@ class Folio extends CommonClass
 
     public function calc_vcf()
     {
-        Utilities::sanitize($this);
-
         $cgi_response = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi");
         write_log(json_encode($cgi_response), __FILE__, __LINE__);
 
-        $result = array();
-        $result["records"] = array();
+        $real_cvf = Utilities::get_cgi_xml_value($cgi_response, 'REAL_VCF');
+        $real_litre = Utilities::get_cgi_xml_value($cgi_response, 'REAL_LITRE');
+        $real_litre15 = Utilities::get_cgi_xml_value($cgi_response, 'REAL_LITRE15');
+        $real_kg = Utilities::get_cgi_xml_value($cgi_response, 'REAL_KG');
+        
+        $item = new stdClass();
+        $item->real_cvf = $real_cvf;
+        $item->real_litre = $real_litre;
+        $item->real_litre15 = $real_litre15;
+        $item->real_kg = $real_kg;
 
-        http_response_code(200);
-        if (strpos($cgi_response, "<Result>0<")) {
-            $result["result"] = 0;
-            $result["message"] = "PDS message sent";
-        } else {
-            $result["result"] = -1;
-            $result["message"] = $cgi_response;
-        }
+        echo json_encode($item, JSON_PRETTY_PRINT);
 
-        echo json_encode($result, JSON_PRETTY_PRINT);
-
-        return $result;
+        return array();
     }
 
     public function calc_tank_vcfs()
     {
-        Utilities::sanitize($this);
-
-        write_log(json_encode($this), __FILE__, __LINE__);
-
-        if (!isset($_SESSION)) {
-            session_start();
-        }
+        $lang = Utilities::getCurrLang();
 
         $vcf_response = array();
         $calc_in_trouble = 0;
@@ -207,10 +264,59 @@ class Folio extends CommonClass
             $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/cgi-bin/en/calcvcf.cgi?";
             if (!isset($value->frm_which_type)) {
                 //ReactJS only set frm_which_type if somebody changed something.
-                array_push($vcf_response, $value);
-                continue;
+                write_log("frm_which_type not set, assume LT", __FILE__, __LINE__);
+                $value->frm_which_type = "LT";
+                // array_push($vcf_response, $value);
+                // continue;
             }
             $url .= "frm_which_type=" . rawurlencode(strip_tags($value->frm_which_type)) . "&";
+
+            if (!isset($value->tank_prod_lvl)) {
+                write_log(sprintf("tank %s tank_prod_lvl not set, use close_amb_tot directly", $value->tank_code), __FILE__, __LINE__);
+                if (!isset($value->close_amb_tot)) {
+                    write_log(sprintf("both tank_prod_lvl and close_amb_tot not set, skip this calculation. tank:%s", $value->tank_code), 
+                        __FILE__, __LINE__, LogLevel::WARNING);
+                    $calc_in_trouble += 1;
+
+                    if ($lang == 'CHN') {
+                        $err_msg = sprintf("油罐液位和盘点总量(视量)均未设置，无法计算. 油罐:%s", 
+                            $value->tank_code);
+                    } else {
+                        $err_msg = sprintf("both tank_prod_lvl and close_amb_tot not set, skip this calculation. tank:%s", 
+                            $value->tank_code);
+                    }
+                    
+                    array_push($desc_array, $err_msg);
+                    array_push($vcf_response, $value);
+                    continue;
+                } 
+            } else {
+                $strap_service = new StrapService($this->conn);
+                $strap_vol = $strap_service->get_amb($value->tank_code, $value->tank_prod_lvl);
+                if ($strap_vol <= 0) {
+                    if ($value->close_amb_tot <= 0) {
+                        write_log(sprintf("Tank %s: failed to get ambient liter from strap", $value->tank_code), 
+                            __FILE__, __LINE__, LogLevel::WARNING);
+                        $calc_in_trouble += 1;
+                        if ($lang == 'CHN') {
+                            $err_msg = sprintf("盘点总量(视量)均未设置. 油罐:%s", 
+                                $value->tank_code);
+                        } else {
+                            $err_msg = sprintf("Cannot get ambient liter from strap. tank:%s", $value->tank_code);
+                        }
+
+                        array_push($desc_array, $err_msg);
+                        array_push($vcf_response, $value);
+                        continue;
+                    } else {
+                        write_log("Failed to get ambient liter from strap, use close_amb_tot instead", 
+                            __FILE__, __LINE__, LogLevel::WARNING);
+                    }
+                } else {
+                    $value->close_amb_tot = $strap_vol;
+                }
+            }
+
             if ($value->frm_which_type === "KG") {
                 $amount = $value->close_mass_tot;
             } else if ($value->frm_which_type === "L15") {
@@ -240,9 +346,19 @@ class Folio extends CommonClass
             if (Utilities::get_cgi_xml_value($result, 'MSG_CODE') > 0) {
                 $calc_in_trouble += 1;
                 $msg = Utilities::get_cgi_xml_value($result, 'MSG_DESC');
-                $identifier = sprintf("base: %s, temp:%f, density:%f, from:%s, quantity:%d",
-                    $value->tank_base, $value->close_temp, $value->close_density, $value->frm_which_type, $amount);
-                array_push($desc_array, $msg . "; " . $identifier);
+
+                if ($lang == 'CHN') {
+                    $err_msg = sprintf("VCF计算错误. 油罐:%s", 
+                        $value->tank_code);
+                } else {
+                    $err_msg = sprintf("%s. tank:%s", $msg, $value->tank_code);
+                }
+
+                write_log(sprintf("%s, tank:%s, base: %s, temp:%f, density:%f, from:%s, quantity:%d", 
+                    $msg, $value->tank_code, $value->tank_base, $value->close_temp, $value->close_density, 
+                        $value->frm_which_type, $amount), __FILE__, __LINE__);
+                
+                array_push($desc_array, $err_msg);
             }
 
             $real_cvf = Utilities::get_cgi_xml_value($result, 'REAL_VCF');
@@ -252,9 +368,9 @@ class Folio extends CommonClass
 
             if ($real_cvf !== "") {
                 $value->real_cvf = $real_cvf;
-                $value->close_mass_tot = $real_kg;
-                $value->close_std_tot = $real_litre15;
-                $value->close_amb_tot = $real_litre;
+                $value->close_mass_tot = round($real_kg);
+                $value->close_std_tot = round($real_litre15);
+                $value->close_amb_tot = round($real_litre);
             }
 
             array_push($vcf_response, $value);
@@ -274,8 +390,6 @@ class Folio extends CommonClass
 
     public function pds()
     {
-        Utilities::sanitize($this);
-
         $cgi_response = Utilities::http_cgi_invoke("cgi-bin/en/pds.cgi");
         write_log(json_encode($cgi_response), __FILE__, __LINE__);
 
@@ -298,9 +412,6 @@ class Folio extends CommonClass
 
     public function read()
     {
-        Utilities::sanitize($this);
-        // write_log(json_encode($this), __FILE__, __LINE__);
-
         $query = "
             SELECT CLOSEOUT_NR,
                 CLOSEOUT_DATE,
@@ -315,8 +426,8 @@ class Folio extends CommonClass
                 CLOSEOUT_NAME
              FROM " . $this->VIEW_NAME;
         if (isset($this->start_date) && isset($this->end_date)) {
-            $query .= " WHERE CLOSEOUT_DATE >= :start_date
-                AND CLOSEOUT_DATE < :end_date ";
+            $query .= " WHERE PREV_CLOSEOUT_DATE >= :start_date
+                AND PREV_CLOSEOUT_DATE < :end_date ";
         }
         $query .= " ORDER BY CLOSEOUT_NR DESC";
         $stmt = oci_parse($this->conn, $query);
@@ -324,7 +435,7 @@ class Folio extends CommonClass
             oci_bind_by_name($stmt, ':start_date', $this->start_date);
             oci_bind_by_name($stmt, ':end_date', $this->end_date);
         }
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -335,12 +446,12 @@ class Folio extends CommonClass
 
     public function get_tanks()
     {
-        Utilities::sanitize($this);
-        // write_log(json_encode($this), __FILE__, __LINE__);
-
         $query = "
         SELECT CLOSEOUT_TANK.*,
             TANKS.TANK_BASE,
+            TANK_LEVEL TANK_PROD_LVL,
+            TANKS.TANK_GAUGINGMTHD,
+            GAUGE_METHOD_NAME TANK_GAUGINGMTHD_DESC,
             BASE_PRODS.BASE_NAME,
             BASECLASS.BCLASS_DESC,
             BASECLASS.BCLASS_NO,
@@ -348,16 +459,18 @@ class Folio extends CommonClass
             BASECLASS.BCLASS_DENS_HI,
             BASECLASS.BCLASS_VCF_ALG,
             TANKS.TANK_DENSITY
-        FROM CLOSEOUT_TANK, TANKS, BASE_PRODS, BASECLASS
+        FROM CLOSEOUT_TANK, TANKS, BASE_PRODS, BASECLASS, GAUGE_METHOD_TYP
         WHERE CLOSEOUT_TANK.TANK_CODE = TANKS.TANK_CODE
             AND TANKS.TANK_BASE = BASE_PRODS.BASE_CODE
             AND BASE_PRODS.BASE_CAT = BASECLASS.BCLASS_NO
+            AND TANK_GAUGINGMTHD = GAUGE_METHOD_ID(+)
             AND CLOSEOUT_TANK.CLOSEOUT_NR = :closeout_nr
-        ORDER BY BASECLASS.BCLASS_DESC";
+        ORDER BY BASECLASS.BCLASS_DESC
+        ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
 
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -368,9 +481,6 @@ class Folio extends CommonClass
 
     public function get_meters()
     {
-        Utilities::sanitize($this);
-        // write_log(json_encode($this), __FILE__, __LINE__);
-
         $query = "
             SELECT DISTINCT CLOSEOUT_METER.*,
                 BA_METERS.BAM_QTY_TYPE,
@@ -389,7 +499,7 @@ class Folio extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
 
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -400,11 +510,9 @@ class Folio extends CommonClass
 
     public function create_reports()
     {
-        Utilities::sanitize($this);
-
         $query = "SELECT SITE_CODE FROM SITE";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             $site_code = $row['SITE_CODE'];
         } else {
@@ -439,7 +547,7 @@ class Folio extends CommonClass
             WHERE CLOSEOUT_NR = :closeout_nr";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             $status = intval($row['STATUS']);
         } else {
@@ -473,11 +581,9 @@ class Folio extends CommonClass
 
     public function get_reports()
     {
-        Utilities::sanitize($this);
-
         $query = "SELECT SITE_CODE FROM SITE";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             $site_code = $row['SITE_CODE'];
         } else {
@@ -533,5 +639,65 @@ class Folio extends CommonClass
         }
 
         return $reports;
+    }
+
+    public function save_to_tanks()
+    {
+        write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
+
+        if (!isset($this->folio_tanks)) {
+            $error = new EchoSchema(400, "parameter missing: folio_tanks not provided");
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return array();
+        }
+
+        foreach ($this->folio_tanks as $value) {
+            $tank_staus = new TankStatus($this->conn);
+            if (!isset($value->tank_code)) {
+                write_log(sprintf("tank_code not provide, skip."), __FILE__, __LINE__, LogLevel::WARNING);
+                write_log(json_encode($value), __FILE__, __LINE__, LogLevel::WARNING);
+                continue;
+            } else {
+                $tank_staus->tank_code = $value->tank_code;
+            }
+
+            if (!isset($value->tank_terminal)) {
+                write_log(sprintf("tank_terminal not provide, skip."), __FILE__, __LINE__, LogLevel::WARNING);
+                write_log(json_encode($value), __FILE__, __LINE__, LogLevel::WARNING);
+                continue;
+            } else {
+                $tank_staus->tank_terminal = $value->tank_terminal;
+            }
+            
+            if (isset($value->close_amb_tot)) {
+                $tank_staus->tank_amb_vol = $value->close_amb_tot;
+            }
+            if (isset($value->close_std_tot)) {
+                $tank_staus->tank_cor_vol = $value->close_std_tot;
+            }
+            if (isset($value->close_mass_tot)) {
+                $tank_staus->tank_liquid_kg = $value->close_mass_tot;
+            }
+            if (isset($value->close_temp)) {
+                $tank_staus->tank_temp = $value->close_temp;
+            }
+            if (isset($value->close_density)) {
+                $tank_staus->tank_density = $value->close_density;
+            }
+            if (isset($value->tank_prod_lvl)) {
+                $tank_staus->tank_prod_lvl = $value->tank_prod_lvl;
+            }
+            if (!$tank_staus->update()) {
+                return false;
+            }
+        }
+
+        http_response_code(200);
+        $result = new EchoSchema(200, "Data saved to tanks.");
+        echo json_encode($result, JSON_PRETTY_PRINT);
+
+        return array();
     }
 }

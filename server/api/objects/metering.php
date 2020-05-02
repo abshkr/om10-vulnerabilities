@@ -3,24 +3,17 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once 'common_class.php';
 
-class Metering
+class Metering extends CommonClass
 {
-    // database connection and table name
-    private $conn;
-
-    public $metercode;
-    public $metertype;
-    public $metertypename;
-    public $observedvolume;
-    public $standardvolume;
-    public $mass;
-
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
+    protected $TABLE_NAME = 'BA_METERS';
+    
+    public $NUMBER_FIELDS = array(
+        "OBSERVEDVOLUME",
+        "STANDARDVOLUME",
+        "MASS"
+    );
 
     // read personnel
     // select * from BA_METER_TYP;
@@ -32,20 +25,19 @@ class Metering
     //           3 MASS
     public function read()
     {
-        Utilities::sanitize($this);
         $query = "
-            SELECT BAM_CODE MeterCode,
-                BAM_TYPE MeterType,
-                BA_METER_TYP.BA_METER_NAME MeterTypeName,
-                BAM_LAST_ATOTAL ObservedVolume,
-                BAM_LAST_CTOTAL StandardVolume,
-                BAM_LAST_MTOTAL Mass
+            SELECT BAM_CODE METERCODE,
+                BAM_TYPE METERTYPE,
+                BA_METER_TYP.BA_METER_NAME METERTYPENAME,
+                BAM_LAST_ATOTAL OBSERVEDVOLUME,
+                BAM_LAST_CTOTAL STANDARDVOLUME,
+                BAM_LAST_MTOTAL MASS
             FROM BA_METERS, BA_METER_TYP
             WHERE BA_METERS.BAM_TYPE = BA_METER_TYP.BA_METER_ID
                 AND BA_METERS.BAM_CODE != 'NONE'
             ORDER BY BAM_CODE";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return $stmt;

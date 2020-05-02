@@ -143,7 +143,7 @@ class DelvLocation extends CommonClass
             ORDER BY DELV_CODE";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -155,10 +155,6 @@ class DelvLocation extends CommonClass
     // pure php function
     public function create()
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "INSERT INTO CST_PRCE_CATEGOR
                 (CATEG_CODE,
                 CATEG_DESCRIPT)
@@ -193,10 +189,6 @@ class DelvLocation extends CommonClass
 
     public function update()
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "
             SELECT CATEG_CODE CATEGORY_CODE,
                 CATEG_DESCRIPT CATEGORY_NAME
@@ -254,12 +246,6 @@ class DelvLocation extends CommonClass
 
     public function delete()
     {
-        write_log(
-            sprintf("%s::%s START. categ_code:%s", __CLASS__, __FUNCTION__, $this->category_code),
-            __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "DELETE FROM CST_PRCE_CATEGOR
                 WHERE CATEG_CODE = :categ_code";
         $stmt = oci_parse($this->conn, $query);

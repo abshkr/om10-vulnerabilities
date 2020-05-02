@@ -28,86 +28,81 @@ class Transaction extends CommonClass
         "IS_INJECTOR" => "Y"
     );
 
-    protected function retrieve_children_data()
-    {
-        $query = "SELECT * FROM GUI_ALLOCATION_ITEMS
-            WHERE AITEM_TYPE = :aitem_type
-                AND AITEM_CMPYCODE = :aitem_cmpycode
-                AND AITEM_SUPPCODE = :aitem_suppcode";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':aitem_type', $this->alloc_type);
-        oci_bind_by_name($stmt, ':aitem_cmpycode', $this->alloc_cmpycode);
-        oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
-
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-
-        $tank_max_flows = array();
-        while ($flow_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
-            $tank_max_flows[$flow_row['AITEM_PRODCODE']] = $flow_row;
-            // array_push($tank_max_flows, $base_item);
-        }
-
-        // write_log(json_encode($tank_max_flows), __FILE__, __LINE__);
-        return $tank_max_flows;
-    }
-
-    protected function journal_children_change($journal, $old, $new)
-    {
-        $module = "allocation products";
-        foreach ($old as $prod => $alloc_item) {
-            if (isset($new[$prod]) &&
-                $alloc_item['AITEM_QTYLIMIT'] != $new[$prod]['AITEM_QTYLIMIT']) {
-                $record = sprintf("alloc type:%s, cmpy:%s, supp:%s, prod:%s",
-                    $this->alloc_type, $this->alloc_cmpycode, $this->alloc_suppcode, $prod);
-                $journal->valueChange($module, $record, "quantity allocated", $alloc_item['AITEM_QTYLIMIT'], $new[$prod]['AITEM_QTYLIMIT']);
-            }
-
-            if (!isset($new[$prod])) {
-                $jnl_data[0] = Utilities::getCurrPsn();
-                $jnl_data[1] = $module;
-                $jnl_data[2] = sprintf("alloc type:%s, cmpy:%s, supp:%s",
-                    $this->alloc_type, $this->alloc_cmpycode, $this->alloc_suppcode);
-                $jnl_data[3] = sprintf("product:%s", $prod);
-
-                if (!$journal->jnlLogEvent(
-                    Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-                    $e = oci_error($stmt);
-                    write_log("DB error:" . $e['message'],
-                        __FILE__, __LINE__, LogLevel::ERROR);
-                    oci_rollback($this->conn);
-                    return false;
-                }
-            }
-        }
-
-        //In new but not in old.
-        foreach ($new as $prod => $alloc_item) {
-            if (!isset($old[$prod])) {
-                $jnl_data[0] = Utilities::getCurrPsn();
-                $jnl_data[1] = $module;
-                $jnl_data[2] = sprintf("alloc type:%s, cmpy:%s, supp:%s",
-                    $this->alloc_type, $this->alloc_cmpycode, $this->alloc_suppcode);
-                $jnl_data[3] = sprintf("product:%s", $prod);
-
-                if (!$journal->jnlLogEvent(
-                    Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-                    $e = oci_error($stmt);
-                    write_log("DB error:" . $e['message'],
-                        __FILE__, __LINE__, LogLevel::ERROR);
-                    oci_rollback($this->conn);
-                    return false;
-                }
-            }
-        }
-    }
-
+    //SCRIPT_NAME: /cgi-bin/en/load_scheds/trans_cur_list.cgi
+    //REQUEST: sess_id=&cmpy_typ_id=-1&cmpyCd=-1&tankTerm=P251&bay_code=BAY999&op=13&trans_id=9000880&tk=Generic+Nom+Vol&callerTyp=flex
     public function close_trsa()
     {
+        if (!isset($this->trsa_id)) {
+            $error = new EchoSchema(400, "parameter missing: trsa_id not provided");
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return array();
+        }
 
+        $this->commit_mode = OCI_NO_AUTO_COMMIT;
+
+        $query = "SELECT COUNT(*) CN FROM TRANSACTIONS WHERE TRSA_ID = :trsa_id ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trsa_id', $this->trsa_id);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ($row['CN'] <= 0) {
+            $error = new EchoSchema(500, "Transaction does not exist");
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return array();;
+        }
+
+        $query = "SELECT COUNT(*) CN FROM TRANSACTIONS
+            WHERE TRSA_ID = :trsa_id AND TRSA_ED_DMY IS NOT NULL";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trsa_id', $this->trsa_id);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ($row['CN'] > 0) {
+            $error = new EchoSchema(500, "Transaction is already ended");
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return array();;
+        }
+
+        $query = "UPDATE TRANSACTIONS
+            SET TRSA_ED_DMY = SYSDATE
+            WHERE TRSA_ID = :trsa_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trsa_id', $this->trsa_id);
+
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $journal = new Journal($this->conn, false);
+        $jnl_data[0] = sprintf("User %s ended transaction %d", Utilities::getCurrPsn(), $this->trsa_id);
+        if (!$journal->jnlLogEvent(Lookup::TMM_TEXT_ONLY, $jnl_data,
+            JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+
+            $error = new EchoSchema(500, "Failed to write journal");
+            echo json_encode($error, JSON_PRETTY_PRINT);
+
+            oci_rollback($this->conn);
+            
+            return array();
+        }
+
+        oci_commit($this->conn);
+
+        $error = new EchoSchema(200, sprintf("Transaction %s ended", $this->trsa_id));
+        echo json_encode($error, JSON_PRETTY_PRINT);
+        return array();
     }
 
     public function get_meter_details()
@@ -119,7 +114,7 @@ class Transaction extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':trsa_id', $this->trsa_id);
         
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -140,7 +135,7 @@ class Transaction extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':trsa_id', $this->trsa_id);
         
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -153,9 +148,9 @@ class Transaction extends CommonClass
     {
         if (!isset($this->start_date)) {
             $query = "
-            SELECT * FROM " . $this->VIEW_NAME . "
-            WHERE TRSA_ST_DMY > TO_CHAR(SYSDATE - 7, 'YYYY-MM-DD HH24:MI:SS')
-            ORDER BY TRSA_ST_DMY DESC";
+                SELECT * FROM " . $this->VIEW_NAME . "
+                WHERE TRSA_ST_DMY > TO_CHAR(SYSDATE - 7, 'YYYY-MM-DD HH24:MI:SS')
+                ORDER BY TRSA_ST_DMY DESC";
             $stmt = oci_parse($this->conn, $query);
         
         } else {
@@ -168,7 +163,7 @@ class Transaction extends CommonClass
             oci_bind_by_name($stmt, ':end_date', $this->end_date);
         }
         
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -177,109 +172,103 @@ class Transaction extends CommonClass
         }
     }
 
-    public function types()
-    {
-        $query = "
-            SELECT *
-            FROM ALLOCATIONCHECK
-            ORDER BY ACHECK_TYPE";
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
+    // public function read_hook(&$hook_item)
+    // {
+    //     write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+    //         __FILE__, __LINE__);
 
-    public function period_types()
-    {
-        $query = "
-            SELECT *
-            FROM ALLOC_PERIOD_TYP
-            ORDER BY ALLOC_PERIOD_ID";
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
+    //     $result = array();
+    //     $hook_item['transfers'] = $result;
+    //     // write_log(json_encode($hook_item), __FILE__, __LINE__);
 
-    public function lock_types()
-    {
-        $query = "
-            SELECT *
-            FROM ALLOC_LOCK_TYP
-            ORDER BY ALLOC_LOCK_ID";
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
+    //     if (!array_key_exists('trsa_id', $hook_item)) {
+    //         write_log("hook_item does not have trsa_id item, cannot do transactions_hook",
+    //             __FILE__, __LINE__, LogLevel::ERROR);
+    //         return;
+    //     }
 
-    public function items()
-    {
-        $query = "
-        SELECT NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
-            NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
-            NVL(AITEM_CMPYCODE, ALLOC_CMPYCODE) AITEM_CMPYCODE,
-            NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
-            NVL(AITEM_PRODCODE, PROD_CODE) AITEM_PRODCODE,
-            NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
-            NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
-            NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
-            NVL(AITEM_QTYLIMIT, 0) AITEM_QTYLIMIT,
-            NVL(AITEM_QTYUSED, 0) AITEM_QTYUSED,
-            NVL(AITEM_QTYLEFT, 0) AITEM_QTYLEFT,
-            NVL(AITEM_PRODUNIT, AITEM_PRODUNIT) AITEM_PRODUNIT,
-            NVL(AITEM_UNITNAME, AITEM_UNITNAME) AITEM_UNITNAME,
-            NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
-        FROM
-        (
-            SELECT PROD_CODE,
-                PROD_CMPY,
-                PROD_NAME,
-                ALLOC_TYPE,
-                ALLOC_TYPENAME,
-                ALLOC_CMPYCODE,
-                ALLOC_CMPYNAME,
-                ALLOC_SUPPCODE,
-                ALLOC_SUPPNAME,
-                ALLOC_LOCK,
-                ALLOC_LOCKNAME,
-                ALLOC_PERIOD
-            FROM PRODUCTS, GUI_ALLOCATIONS
-            WHERE PRODUCTS.PROD_CMPY = GUI_ALLOCATIONS.ALLOC_SUPPCODE
-                AND ALLOC_TYPE = :alloc_type
-                AND ALLOC_CMPYCODE = :alloc_cmpy
-                AND ALLOC_SUPPCODE = :alloc_supp
-        ) ALL_PRODS,
-        GUI_ALLOCATION_ITEMS
-        WHERE ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
-            AND ALL_PRODS.PROD_CMPY = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
-            AND ALL_PRODS.ALLOC_TYPE = GUI_ALLOCATION_ITEMS.AITEM_TYPE(+)
-            AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
-            AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
-        ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
-        ";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
-        oci_bind_by_name($stmt, ':alloc_cmpy', $this->alloc_cmpycode);
-        oci_bind_by_name($stmt, ':alloc_supp', $this->alloc_suppcode);
-        if (oci_execute($stmt)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
+    //     $query = "
+    //         SELECT * FROM GUI_TRANSACTION_DETAILS 
+    //         WHERE TRSFTRID_TRSA_ID = :trsa_id
+    //         ORDER BY TRSFTRID_TRSA_ID
+    //     ";
+    //     $stmt = oci_parse($this->conn, $query);
+    //     oci_bind_by_name($stmt, ':trsa_id', $hook_item['trsa_id']);
+    //     if (!oci_execute($stmt, $this->commit_mode)) {
+    //         $e = oci_error($stmt);
+    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         return;
+    //     }
+
+    //     Utilities::retrieve($result, $this, $stmt, $method=__FUNCTION__);
+    //     $hook_item['transfers'] = $result;
+    // }
+
+    // public function read_hook_hook(&$hook_item)
+    // {
+    //     write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+    //         __FILE__, __LINE__);
+
+    //     $result = array();
+    //     $hook_item['base_prods'] = $result;
+    //     // write_log(json_encode($hook_item), __FILE__, __LINE__);
+
+    //     if (!array_key_exists('trsf_id', $hook_item)) {
+    //         write_log("hook_item does not have mv_id item, cannot do transactions_hook",
+    //             __FILE__, __LINE__, LogLevel::ERROR);
+    //         return;
+    //     }
+
+    //     $query = "
+    //         SELECT TRANBASE.TRSB_CVL, TRANBASE.TRSB_AVL, TRANBASE.TRSB_TMP, TRANBASE.TRSB_DNS, TRANBASE.TRSB_TMP_F, 
+    //             TRANBASE.TRSB_API, TRANBASE.TRSB_TK_TANKCODE, TRANBASE.TRSB_KG, TRANBASE.TRSB_UNT, BASE_PRODS.BASE_CODE, 
+    //             BASE_PRODS.BASE_NAME , BASE_PRODS.BASE_CAT
+    //         FROM TRANBASE, BASE_PRODS
+    //         WHERE BASE_PRODS.BASE_CODE = TRANBASE.TRSB_BS AND 
+    //             TRANBASE.TRSB_ID_TRSF_ID = :trsf_id
+    //         ORDER BY BASE_PRODS.BASE_CAT DESC
+    //     ";
+    //     $stmt = oci_parse($this->conn, $query);
+    //     oci_bind_by_name($stmt, ':trsf_id', $hook_item['trsf_id']);
+    //     if (!oci_execute($stmt, $this->commit_mode)) {
+    //         $e = oci_error($stmt);
+    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         return;
+    //     }
+
+    //     //The last $method parameter need to be NonExistHook to prevent 
+    //     Utilities::retrieve($result, $this, $stmt, $method='NonExistHook');
+    //     $hook_item['base_prods'] = $result;
+
+    //     //Another hook
+    //     $result = array();
+    //     $hook_item['meters'] = $result;
+        
+    //     $query = "
+    //         SELECT MIN(TRSB_OPN_AMB) TRSB_OPN_AMB,
+    //             MIN(TRSB_OPN_COR) TRSB_OPN_COR,
+    //             MIN(TRSB_OPN_KG) TRSB_OPN_KG,
+    //             MAX(TRSB_CLS_AMB) TRSB_CLS_AMB, 
+    //             MAX(TRSB_CLS_COR) TRSB_CLS_COR,
+    //             MAX(TRSB_CLS_KG) TRSB_CLS_KG,
+    //             TRSB_METER,
+    //             TRSB_ID_TRSF_ID
+    //         FROM TRANBASE
+    //         WHERE TRSB_ID_TRSF_ID = :trsf_id
+    //             AND TRSB_INJECTOR IS NULL
+    //         GROUP BY TRSB_METER, TRSB_ID_TRSF_ID
+    //         ORDER BY TRSB_METER
+    //     ";
+    //     $stmt = oci_parse($this->conn, $query);
+    //     oci_bind_by_name($stmt, ':trsf_id', $hook_item['trsf_id']);
+    //     if (!oci_execute($stmt, $this->commit_mode)) {
+    //         $e = oci_error($stmt);
+    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         return;
+    //     }
+
+    //     //The last $method parameter need to be NonExistHook to prevent 
+    //     Utilities::retrieve($result, $this, $stmt, $method='NonExistHook');
+    //     $hook_item['meters'] = $result;
+    // }
 }

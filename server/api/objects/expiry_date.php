@@ -16,8 +16,6 @@ class ExpiryDate extends CommonClass
 
     public function update($expiry_dates = null)
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-        Utilities::sanitize($this);
         // write_log(json_encode($this), __FILE__, __LINE__);
         write_log(json_encode($expiry_dates), __FILE__, __LINE__);
         $query = "
@@ -185,10 +183,6 @@ class ExpiryDate extends CommonClass
 
     public function delete()
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-        // write_log(json_encode($this), __FILE__, __LINE__);
-        Utilities::sanitize($this);
-
         $query = "
             DELETE FROM EXPIRY_DATE_DETAILS
             WHERE ED_TARGET_CODE = :ed_target_code
@@ -211,10 +205,6 @@ class ExpiryDate extends CommonClass
     //the records where ED_EXP_DATE IS NULL.
     public function create($expiry_dates = null)
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-        // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
-        // write_log(json_encode($this), __FILE__, __LINE__);
-        Utilities::sanitize($this);
         $query = "
             INSERT INTO EXPIRY_DATE_DETAILS (
                 ED_TARGET_CODE,
@@ -314,9 +304,6 @@ class ExpiryDate extends CommonClass
      */
     public function read()
     {
-        Utilities::sanitize($this);
-        // write_log($this->ed_target_code, __FILE__, __LINE__, LogLevel::ERROR);
-        // write_log($this->ed_object_id, __FILE__, __LINE__, LogLevel::ERROR);
         $query = "
             SELECT EDT_TARGET_CODE,
                 EDT_TYPE_CODE,
@@ -352,7 +339,7 @@ class ExpiryDate extends CommonClass
         oci_bind_by_name($stmt, ':ed_target_code', $this->ed_target_code);
         oci_bind_by_name($stmt, ':ed_object_id', $this->ed_object_id);
 
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -377,7 +364,7 @@ class ExpiryDate extends CommonClass
     //     $stmt = oci_parse($this->conn, $query);
     //     oci_bind_by_name($stmt, ':target_code', $this->target_code);
     //     oci_bind_by_name($stmt, ':obj_code', $this->obj_code);
-    //     if (oci_execute($stmt)) {
+    //     if (oci_execute($stmt, $this->commit_mode)) {
     //         return $stmt;
     //     } else {
     //         $e = oci_error($stmt); write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);

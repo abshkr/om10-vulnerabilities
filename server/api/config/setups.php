@@ -7,6 +7,9 @@ define('ENABLE_DEBUG_LOG', true);
 //0: All debug; 1: info and above; 2: warning and above
 define('DEBUG_LEVEL', 0);
 
+//Check privilege of current user for read/create/update/delete
+define('PRIVILEGE_CHECK', false);
+
 //Set it to true, php will return different http code.
 //In dev env, set to false, because we use localhost to call 10.1.10.66, and it will be
 //blocked by CORS if we use different http code.
@@ -39,16 +42,26 @@ define('URL_PROTOCOL', 'https://');
 
 define('JWT_SECRET', 'dki_jwt');
 
-//if it is trun, store $token['sess_id'] in db, and when check token
+//if it is true, store $token['sess_id'] in db, and when check token
 //also check if $token['sess_id'] is in db. Because when logout, $token['sess_id']
 //will be delete from db, so it invalidate this token
 define('INVALIDATE_TOKEN_ENABLED', false);
 
+//If it is false, when token is expired, do not reject 
+define('EXPIRY_TOKEN_ENABLED', false);
+
 define('JASPERREPORT_DIR', 'reports/');
+
+//HST host message folder
+define('HST_INCOMING_FOLDER', '/usr/omega/data/gsap/archive/');
+define('HST_OUTGOING_FOLDER', '/usr/omega/data/gsap/archive/out/');
 
 //salt to call crypt
 //Use "a1" because the old C functin used "a1", just for back-compatible
 define('ENCTYPED_SALT', 'a1\0');
+
+// If API_F == "YES", use API_F message definition, otherwise use the old style
+define("API_F", "NO");
 
 if (DISPLAY_ALL_ERROS) {
     ini_set('display_errors', 1);

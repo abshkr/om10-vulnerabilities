@@ -2,5 +2,5 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 
-$strJsonFileContents = file_get_contents("../html/config.json");
+$strJsonFileContents = file_get_contents("config.json");
 echo $strJsonFileContents;

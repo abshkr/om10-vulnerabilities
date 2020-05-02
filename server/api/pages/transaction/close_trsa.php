@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/transaction.php';
 
-Utilities::update('Transaction', $method='close_trsa');
+Utilities::read('Transaction', $method = 'close_trsa', $filter = true);

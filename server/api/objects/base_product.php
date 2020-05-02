@@ -16,6 +16,8 @@ class BaseProduct extends CommonClass
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = array(
         "AFC_ENABLED" => "Y",
+        "BASE_ADTV" => 1,
+        "BASE_LIMIT_PRESET_HT" => 1
     );
 
     //Give a simple list of base product
@@ -34,7 +36,7 @@ class BaseProduct extends CommonClass
             FROM BASE_PRODS
             ORDER BY BASE_NAME";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -52,8 +54,6 @@ class BaseProduct extends CommonClass
         //     $this->start_num = 1;
         //     $this->end_num = $this->count();
         // }
-
-        Utilities::sanitize($this);
 
         $query = "
             SELECT
@@ -127,7 +127,7 @@ class BaseProduct extends CommonClass
                 AND BP.BASE_CORR_MTHD = CM.COMPENSATION_ID(+)
                 AND BP.BASE_REF_TEMP_SPEC = RTS.REF_TEMP_SPEC_ID(+)";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -138,11 +138,6 @@ class BaseProduct extends CommonClass
 
     public function create()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "
             INSERT INTO BASE_PRODS (
                 BASE_COLOR,
@@ -279,9 +274,6 @@ class BaseProduct extends CommonClass
 
     public function update()
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-
         $query = "
             SELECT *
             FROM BASE_PRODS
@@ -369,11 +361,6 @@ class BaseProduct extends CommonClass
 
     public function delete()
     {
-        write_log(sprintf("%s::%s() START. base_code:%s", __CLASS__, __FUNCTION__, $this->base_code),
-            __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "
             DELETE FROM RATIOS
             WHERE RATIO_BASE = :base_code

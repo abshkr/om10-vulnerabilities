@@ -26,7 +26,7 @@ class TankMaxFlow extends CommonClass
         if (isset($this->tank_code)) {
             oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
         }
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -37,10 +37,6 @@ class TankMaxFlow extends CommonClass
 
     public function create()
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $this->id = 0;
 
         $query = "
@@ -98,10 +94,6 @@ class TankMaxFlow extends CommonClass
 
     public function delete()
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "DELETE FROM TANK_MAX_FLOW
             WHERE ID = :id";
         $stmt = oci_parse($this->conn, $query);
@@ -134,10 +126,6 @@ class TankMaxFlow extends CommonClass
 
     public function update()
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "
         SELECT *
         FROM TANK_MAX_FLOW

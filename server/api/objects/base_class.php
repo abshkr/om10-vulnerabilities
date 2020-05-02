@@ -3,18 +3,19 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once 'common_class.php';
 
-class BaseClass
+class BaseClass extends CommonClass
 {
-    // database connection and table name
-    private $conn;
+    protected $TABLE_NAME = 'BASECLASS';
 
-    // constructor with $db as database connection
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
-
+    public $NUMBER_FIELDS = array(
+        "BCLASS_DENS_LO",
+        "BCLASS_DENS_HI",
+        "BCLASS_TEMP_LO",
+        "BCLASS_TEMP_HI",
+    );
+    
     //Because base cannot be too many, do not do limit
     public function read()
     {
@@ -22,8 +23,6 @@ class BaseClass
         //     $this->start_num = 1;
         //     $this->end_num = $this->count();
         // }
-
-        Utilities::sanitize($this);
 
         $query = "
             SELECT
@@ -39,7 +38,7 @@ class BaseClass
                 AND BCLASS_NO = BCLASS_ID(+)
             ORDER BY BCLASS_NO";
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);

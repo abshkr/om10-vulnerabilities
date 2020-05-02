@@ -38,7 +38,7 @@ class FlowRate extends CommonClass
             ORDER BY FLOW_RATES.TANK_CODE, BAA_CODE, BAM_CODE";
 
         $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt)) {
+        if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
@@ -49,10 +49,6 @@ class FlowRate extends CommonClass
 
     public function create()
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "INSERT INTO FLOW_RATES (
                 TANK_CODE,
                 BAD_PHYSCODE,
@@ -114,10 +110,6 @@ class FlowRate extends CommonClass
 
     public function delete()
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "DELETE FROM FLOW_RATES
             WHERE BAM_CODE = :bam_code";
         $stmt = oci_parse($this->conn, $query);
@@ -149,10 +141,6 @@ class FlowRate extends CommonClass
 
     public function update()
     {
-        write_log(__CLASS__ . "::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-
-        Utilities::sanitize($this);
-
         $query = "
         SELECT *
         FROM FLOW_RATES
