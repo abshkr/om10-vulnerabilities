@@ -3,7 +3,6 @@ import moment from 'moment';
 
 import { FooterContainer, StatusContainer } from './style';
 import { Badge } from 'antd';
-import { SETTINGS } from '../../constants';
 
 const Footer = () => {
   const [time, setTime] = useState(null);
@@ -20,7 +19,7 @@ const Footer = () => {
   return (
     <>
       <FooterContainer>
-        <span>Version: {SETTINGS.VERSION}</span> ─ Server Time: <span>{time || 'Loading...'}</span>
+        Server Time: <span>{time || 'Loading...'}</span>
       </FooterContainer>
       <StatusContainer>
         <Badge style={{ marginLeft: 10, marginRight: 10 }} status="success" text="Fully Functional" />

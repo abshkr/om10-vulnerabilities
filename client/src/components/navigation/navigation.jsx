@@ -4,11 +4,11 @@ import React from 'react';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, Modal, Badge } from 'antd';
+import { Menu, Modal, Badge, Tooltip } from 'antd';
 import useSWR from 'swr';
 
 import { LogoContainer, MenuContainer } from './style';
-import { ROUTES } from '../../constants';
+import { ROUTES, SETTINGS } from '../../constants';
 import { AUTH } from '../../api';
 import { Icons, Loading } from '..';
 
@@ -47,7 +47,13 @@ const Navigation = () => {
     <MenuContainer>
       <Menu onClick={handleNavigation} defaultSelectedKeys={[ROUTES.DASHBOARD]} theme="dark">
         <LogoContainer>
-          <img src="/images/dki_small.png" alt="logo" />
+          <Tooltip
+            placement="right"
+            title={`${t('generic.version')} ${SETTINGS.VERSION}`}
+            align={{ offset: [28, 0] }}
+          >
+            <img src="/images/dki_small.png" alt="logo" />
+          </Tooltip>
         </LogoContainer>
 
         <Menu.Item key={ROUTES.DASHBOARD}>

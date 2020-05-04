@@ -98,6 +98,18 @@ const FormModal = ({ value }) => {
     });
   };
 
+  const validate = (rule, input) => {
+    if (input === '' || !input) {
+      if (rule.field === 'auth_level_name') {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.roleName')}`);
+      } else {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.comments')}`);
+      }
+    }
+
+    return Promise.resolve();
+  };
+
   useEffect(() => {
     if (!IS_CREATING) {
       const set = setter(value.privilege);
@@ -119,11 +131,19 @@ const FormModal = ({ value }) => {
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane tab={t('tabColumns.general')} key="1" forceRender>
-            <Form.Item name="auth_level_name" label={t('fields.roleName')}>
+            <Form.Item
+              name="auth_level_name"
+              label={t('fields.roleName')}
+              rules={[{ required: true, validator: validate }]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item name="role_note" label={t('fields.comments')}>
+            <Form.Item
+              name="role_note"
+              label={t('fields.comments')}
+              rules={[{ required: true, validator: validate }]}
+            >
               <Input.TextArea options={options} style={{ flexDirection: 'row' }} />
             </Form.Item>
           </TabPane>
@@ -156,11 +176,19 @@ const FormModal = ({ value }) => {
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
       <Tabs defaultActiveKey="0" animated={false} tabPosition="left">
         <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.general')} key="0">
-          <Form.Item name="auth_level_name" label={t('fields.roleName')}>
+          <Form.Item
+            name="auth_level_name"
+            label={t('fields.roleName')}
+            rules={[{ required: true, validator: validate }]}
+          >
             <Input disabled={!!value} />
           </Form.Item>
 
-          <Form.Item name="role_note" label={t('fields.comments')}>
+          <Form.Item
+            name="role_note"
+            label={t('fields.comments')}
+            rules={[{ required: true, validator: validate }]}
+          >
             <Input.TextArea options={options} style={{ flexDirection: 'row' }} />
           </Form.Item>
         </TabPane>
@@ -303,7 +331,7 @@ const FormModal = ({ value }) => {
             <Checkbox.Group options={options} style={{ flexDirection: 'row' }} />
           </Form.Item>
 
-          <Form.Item name="M_REPOCONFIGURATION" label={t('pageNames.onDemandReports')}>
+          <Form.Item name="M_JASPERREPORTS" label={t('pageNames.onDemandReports')}>
             <Checkbox.Group options={options} style={{ flexDirection: 'row' }} />
           </Form.Item>
 

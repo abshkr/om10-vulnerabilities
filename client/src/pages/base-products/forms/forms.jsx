@@ -3,13 +3,14 @@ import axios from 'axios';
 import useSWR, { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
+import _ from 'lodash';
 
 import {
   EditOutlined,
   PlusOutlined,
   CloseOutlined,
   DeleteOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 
 import {
@@ -23,7 +24,7 @@ import {
   AdaptiveFlowControl,
   RefSpecTemp,
   CorrectionMethod,
-  HotTempFlag
+  HotTempFlag,
 } from './fields';
 
 import { COMMON, BASE_PRODUCTS } from '../../../api';
@@ -36,11 +37,23 @@ const FormModal = ({ value }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
-  const { data: config } = useSWR(COMMON.CONFIG);
+  const { data: features } = useSWR(COMMON.FEATURES);
 
   const IS_CREATING = !value;
 
-  const onFinish = values => {
+  const HAS_ADAPTIVE_FLOW = _.find(features?.records, (record) => {
+    return record.feature_code === 'ADAPTIVE_FLOW' && record.feature_flag;
+  });
+
+  const HAS_HOT_PRODUCT = _.find(features?.records, (record) => {
+    return record.feature_code === 'HOT_PRODUCT_BITUMEN' && record.feature_flag;
+  });
+
+  const HAS_DENSITY_RANGE = _.find(features?.records, (record) => {
+    return record.feature_code === 'BASE_PROD__DENS_RANGE' && record.feature_flag;
+  });
+
+  const onFinish = (values) => {
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -52,23 +65,23 @@ const FormModal = ({ value }) => {
         await axios
           .post(IS_CREATING ? BASE_PRODUCTS.CREATE : BASE_PRODUCTS.UPDATE, values)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               Modal.destroyAll();
 
               mutate(BASE_PRODUCTS.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
               });
             })
           )
-          .catch(error => {
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
             });
           });
-      }
+      },
     });
   };
 
@@ -83,87 +96,96 @@ const FormModal = ({ value }) => {
         await axios
           .post(BASE_PRODUCTS.DELETE, value)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               mutate(BASE_PRODUCTS.READ);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`
+                description: `${t('descriptions.deleteSuccess')}`,
               });
             })
           )
-          .catch(error => {
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: t('descriptions.deleteFailed')
+              description: t('descriptions.deleteFailed'),
             });
           });
-      }
+      },
     });
   };
 
   return (
-    <div>
-      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-        <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
-            <Code form={form} value={value} />
-            <Name form={form} value={value} />
-            <Classification
-              form={form}
-              value={value}
-              onChange={setClassification}
-              classification={classification}
-            />
-            <Group form={form} value={value} />
-            <Color form={form} value={value} />
-            <DensityRange form={form} value={value} classification={classification} />
-            <Divider>{t('tabColumns.product')}</Divider>
-            <RefSpecTemp form={form} value={value} />
-            <CorrectionMethod form={form} value={value} />
-            <HotTempFlag form={form} value={value} config={config} />
+    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+      <Tabs defaultActiveKey="1" animated={false}>
+        <TabPane
+          className={HAS_HOT_PRODUCT ? 'ant-tab-window' : null}
+          tab={t('tabColumns.general')}
+          forceRender={true}
+          key="1"
+        >
+          <Code form={form} value={value} />
+          <Name form={form} value={value} />
+          <Classification
+            form={form}
+            value={value}
+            onChange={setClassification}
+            classification={classification}
+          />
+          <Group form={form} value={value} />
+          <Color form={form} value={value} />
+
+          {HAS_DENSITY_RANGE && <DensityRange form={form} value={value} classification={classification} />}
+
+          {HAS_HOT_PRODUCT && (
+            <>
+              <Divider>{t('tabColumns.product')}</Divider>
+              <RefSpecTemp form={form} value={value} />
+              <CorrectionMethod form={form} value={value} />
+              <HotTempFlag form={form} value={value} />
+            </>
+          )}
+        </TabPane>
+
+        {HAS_ADAPTIVE_FLOW && (
+          <TabPane className="ant-tab-window" tab={t('tabColumns.adaptiveFlow')} forceRender={true} key="3">
+            <AdaptiveArmPriority form={form} value={value} />
+            <AdaptiveFlowControl form={form} value={value} />
           </TabPane>
+        )}
+      </Tabs>
 
-          {config?.features?.adaptiveFlowControl && (
-            <TabPane className="ant-tab-window" tab={t('tabColumns.adaptiveFlow')} forceRender={true} key="3">
-              <AdaptiveArmPriority form={form} value={value} />
-              <AdaptiveFlowControl form={form} value={value} />
-            </TabPane>
-          )}
-        </Tabs>
+      <Form.Item>
+        <Button
+          htmlType="button"
+          icon={<CloseOutlined />}
+          style={{ float: 'right' }}
+          onClick={() => Modal.destroyAll()}
+        >
+          {t('operations.cancel')}
+        </Button>
 
-        <Form.Item>
+        <Button
+          type="primary"
+          icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+          htmlType="submit"
+          style={{ float: 'right', marginRight: 5 }}
+        >
+          {IS_CREATING ? t('operations.create') : t('operations.update')}
+        </Button>
+
+        {!IS_CREATING && (
           <Button
-            htmlType="button"
-            icon={<CloseOutlined />}
-            style={{ float: 'right' }}
-            onClick={() => Modal.destroyAll()}
-          >
-            {t('operations.cancel')}
-          </Button>
-
-          <Button
-            type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-            htmlType="submit"
+            type="danger"
+            icon={<DeleteOutlined />}
             style={{ float: 'right', marginRight: 5 }}
+            onClick={onDelete}
           >
-            {IS_CREATING ? t('operations.create') : t('operations.update')}
+            {t('operations.delete')}
           </Button>
-
-          {!IS_CREATING && (
-            <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={onDelete}
-            >
-              {t('operations.delete')}
-            </Button>
-          )}
-        </Form.Item>
-      </Form>
-    </div>
+        )}
+      </Form.Item>
+    </Form>
   );
 };
 

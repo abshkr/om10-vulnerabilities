@@ -9,7 +9,7 @@ const DensityRange = ({ form, value, classification }) => {
     if (value) {
       setFieldsValue({
         base_dens_lo: value.base_dens_lo,
-        base_dens_hi: value.base_dens_hi
+        base_dens_hi: value.base_dens_hi,
       });
     }
   }, [value, setFieldsValue]);
@@ -18,7 +18,7 @@ const DensityRange = ({ form, value, classification }) => {
     if (classification) {
       setFieldsValue({
         base_dens_lo: classification.bclass_dens_lo,
-        base_dens_hi: classification.bclass_dens_hi
+        base_dens_hi: classification.bclass_dens_hi,
       });
     }
   }, [setFieldsValue, classification]);
@@ -28,7 +28,7 @@ const DensityRange = ({ form, value, classification }) => {
 
   return (
     <>
-      <Row gutter={24}>
+      <Row gutter={[12, 12]}>
         <Col span={12}>
           <Form.Item name="base_dens_lo" label={`Low Density ${classification ? `(${low} - ${high})` : ''}`}>
             <InputNumber min={low} max={high} style={{ width: '100%' }} />

@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } from './style';
 import { Footer } from '..';
 
-const Page = ({ name, page, children, modifiers, description, isBlank }) => {
+const Page = ({ name, page, children, modifiers, description, isBlank, noHeader }) => {
   const routes = [
     {
       path: 'index',
@@ -26,16 +26,18 @@ const Page = ({ name, page, children, modifiers, description, isBlank }) => {
 
   return (
     <PageContainer>
-      <PageHeaderContainer>
-        <PageHeader
-          title={name || page}
-          style={{ width: '30vw' }}
-          subTitle={description}
-          breadcrumb={{ routes: filtered }}
-        ></PageHeader>
+      {!noHeader && (
+        <PageHeaderContainer>
+          <PageHeader
+            title={name || page}
+            style={{ width: '30vw' }}
+            subTitle={description}
+            breadcrumb={{ routes: filtered }}
+          ></PageHeader>
 
-        <PageHeaderExtras>{modifiers}</PageHeaderExtras>
-      </PageHeaderContainer>
+          <PageHeaderExtras>{modifiers}</PageHeaderExtras>
+        </PageHeaderContainer>
+      )}
 
       <Helmet>
         <title>{name ? `${name} ─ ${page} ─ OMEGA 5000` : `${page} ─ OMEGA 5000`}</title>

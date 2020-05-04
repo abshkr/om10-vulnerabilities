@@ -88,6 +88,7 @@ const Forms = ({ value, isFromNomination, start, end }) => {
           })
           .then(
             axios.spread((response) => {
+              Modal.destroyAll();
               mutate(`${TRANSACTION_LIST.READ}?start_date=${start}&end_date=${end}`);
               notification.success({
                 message: t('messages.closeSuccess'),

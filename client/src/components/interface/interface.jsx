@@ -26,7 +26,7 @@ const Interface = ({ auth, children }) => {
   );
 };
 
-const AuthStoreMap = state => {
+const AuthStoreMap = (state) => {
   return { auth: state.auth.authenticated };
 };
 
