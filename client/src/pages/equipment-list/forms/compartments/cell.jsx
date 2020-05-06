@@ -1,5 +1,6 @@
 import React, { useState, useRef, useContext, useEffect } from 'react';
-import { Form, Checkbox, Input } from 'antd';
+import { Form, Checkbox, InputNumber, message } from 'antd';
+import _ from 'lodash';
 
 import Context from './context';
 
@@ -15,12 +16,25 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
     setEditing(!editing);
   };
 
-  const save = async e => {
+  const save = async (e) => {
     let values = await form.validateFields();
 
-    onEdit();
+    const max = values?.sfl ? values?.sfl : record?.sfl;
 
-    handleSave({ ...record, ...values });
+    if (values?.safefill) {
+      if (_.toNumber(values?.safefill) <= max) {
+        onEdit();
+
+        handleSave({ ...record, ...values });
+      } else {
+        onEdit();
+        message.error('Safefill Cannot be higher than capacity');
+      }
+    } else {
+      onEdit();
+
+      handleSave({ ...record, ...values });
+    }
   };
 
   useEffect(() => {
@@ -32,7 +46,7 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
   useEffect(() => {
     if (record) {
       setFieldsValue({
-        adj_cmpt_lock: record.adj_cmpt_lock
+        adj_cmpt_lock: record.adj_cmpt_lock,
       });
     }
   }, [record, setFieldsValue]);
@@ -49,7 +63,7 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
     } else {
       childNode = editing ? (
         <Form.Item name={dataIndex} style={{ margin: 0 }}>
-          <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+          <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} style={{ width: '100%' }} />
         </Form.Item>
       ) : (
         <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={onEdit}>

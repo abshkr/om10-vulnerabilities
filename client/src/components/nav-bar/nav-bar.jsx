@@ -103,7 +103,7 @@ const NavBar = () => {
           options={options}
           onSelect={onSelect}
           onSearch={onSearch}
-          style={{ width: '70vw', marginLeft: 10 }}
+          style={{ width: 420, marginLeft: 20 }}
         >
           <Input.Search size="large" placeholder="Search OMEGA" />
         </AutoComplete>

@@ -12,6 +12,7 @@ import { Form, Button, Tabs, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
+import { ProductGroup, Message } from './fields';
 
 import { PRODUCT_GROUPS } from '../../../api';
 
@@ -33,15 +34,18 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(IS_CREATING ? PRODUCT_GROUPS.CREATE : PRODUCT_GROUPS.UPDATE, values)
+          .post(
+            IS_CREATING ? PRODUCT_GROUPS.CREATE_COMPLIANCE_GROUP : PRODUCT_GROUPS.UPDATE_COMPLIANCE_GROUP,
+            values
+          )
           .then(
             axios.spread((response) => {
               Modal.destroyAll();
 
-              mutate(PRODUCT_GROUPS.READ);
+              mutate(PRODUCT_GROUPS.READ_MESSAGE_GROUPS);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
               });
             })
           )
@@ -64,10 +68,10 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(PRODUCT_GROUPS.DELETE, value)
+          .post(PRODUCT_GROUPS.DELETE_COMPLIANCE_GROUP, value)
           .then(
             axios.spread((response) => {
-              mutate(PRODUCT_GROUPS.READ);
+              mutate(PRODUCT_GROUPS.READ_MESSAGE_GROUPS);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
@@ -88,7 +92,10 @@ const FormModal = ({ value }) => {
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
       <Tabs defaultActiveKey="1">
-        <TabPane tab={t('tabColumns.general')} key="1" className="ant-tab-window"></TabPane>
+        <TabPane tab={t('tabColumns.general')} key="1">
+          <ProductGroup form={form} value={value} />
+          <Message form={form} value={value} />
+        </TabPane>
       </Tabs>
 
       <Form.Item>

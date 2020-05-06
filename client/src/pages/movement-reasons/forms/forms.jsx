@@ -5,7 +5,7 @@ import {
   PlusOutlined,
   CloseOutlined,
   DeleteOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification } from 'antd';
@@ -18,7 +18,7 @@ import { MOVEMENT_REASONS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value }) => {
+const FormModal = ({ value, length }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -26,7 +26,7 @@ const FormModal = ({ value }) => {
 
   const IS_CREATING = !value;
 
-  const onFinish = values => {
+  const onFinish = (values) => {
     // Attaching the Id to the Updated Object
     if (!IS_CREATING) {
       values.mr_id = value?.mr_id;
@@ -43,23 +43,23 @@ const FormModal = ({ value }) => {
         await axios
           .post(IS_CREATING ? MOVEMENT_REASONS.CREATE : MOVEMENT_REASONS.UPDATE, values)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               Modal.destroyAll();
 
               mutate(MOVEMENT_REASONS.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
               });
             })
           )
-          .catch(error => {
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
             });
           });
-      }
+      },
     });
   };
 
@@ -74,22 +74,22 @@ const FormModal = ({ value }) => {
         await axios
           .post(MOVEMENT_REASONS.DELETE, value)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               mutate(MOVEMENT_REASONS.READ);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`
+                description: `${t('descriptions.deleteSuccess')}`,
               });
             })
           )
-          .catch(error => {
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: t('descriptions.deleteFailed')
+              description: t('descriptions.deleteFailed'),
             });
           });
-      }
+      },
     });
   };
 
@@ -98,6 +98,7 @@ const FormModal = ({ value }) => {
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1" style={{ height: '50vh' }}>
+            {IS_CREATING && <p>ID: {length + 1}</p>}
             <SendToHost form={form} onChange={setSend} value={value} />
             <Type form={form} value={value} />
             <BusinessProcess form={form} value={value} />

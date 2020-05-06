@@ -11,6 +11,8 @@ import columns from './columns';
 import auth from '../../auth';
 
 import GroupForm from './groups-form';
+import MessageGroupForm from './message-group-form';
+import MessageForm from './messages-form';
 
 const ProductGroups = () => {
   const [endpoint, setEndpoint] = useState(PRODUCT_GROUPS.READ_GROUPS);
@@ -31,6 +33,22 @@ const ProductGroups = () => {
         name: value?.pgr_description,
         t,
       });
+    } else if (endpoint === PRODUCT_GROUPS.READ_MESSAGES) {
+      FormModal({
+        value,
+        form: <MessageForm value={value} />,
+        id: value?.cm_msg_id,
+        name: value?.cm_msg_name,
+        t,
+      });
+    } else {
+      FormModal({
+        value,
+        form: <MessageGroupForm value={value} />,
+        id: value?.cpm_msg_id,
+        name: value?.cm_msg_name,
+        t,
+      });
     }
   };
 
@@ -49,7 +67,7 @@ const ProductGroups = () => {
   return (
     <Page page={t('pageMenu.gantry')} name={t('pageNames.productGroups')} modifiers={modifiers}>
       <Tabs defaultActiveKey={PRODUCT_GROUPS.READ_GROUPS} onChange={setEndpoint} animated={false}>
-        <Tabs.TabPane tab={t('tabColumns.groups')} key={PRODUCT_GROUPS.READ_GROUPS}>
+        <Tabs.TabPane tab={t('tabColumns.groups')} key={PRODUCT_GROUPS.READ_GROUPS} forceRender>
           <DataTable
             columns={fields}
             data={data}
@@ -59,7 +77,7 @@ const ProductGroups = () => {
           />
         </Tabs.TabPane>
 
-        <Tabs.TabPane tab={t('tabColumns.messages')} key={PRODUCT_GROUPS.READ_MESSAGES}>
+        <Tabs.TabPane tab={t('tabColumns.messages')} key={PRODUCT_GROUPS.READ_MESSAGES} forceRender>
           <DataTable
             columns={fields}
             data={data}
@@ -69,7 +87,11 @@ const ProductGroups = () => {
           />
         </Tabs.TabPane>
 
-        <Tabs.TabPane tab={t('tabColumns.messageGroups')} key={PRODUCT_GROUPS.READ_MESSAGE_GROUPS}>
+        <Tabs.TabPane
+          tab={t('tabColumns.messageGroups')}
+          key={PRODUCT_GROUPS.READ_MESSAGE_GROUPS}
+          forceRender
+        >
           <DataTable
             columns={fields}
             data={data}

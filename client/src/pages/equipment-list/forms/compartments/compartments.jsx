@@ -5,13 +5,12 @@ import axios from 'axios';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { Equipment } from '../../../../components';
 import { EQUIPMENT_LIST } from '../../../../api';
 import columns from './columns';
 import Cell from './cell';
 import Row from './row';
 
-const Compartments = ({ form, value, equipment }) => {
+const Compartments = ({ form, value, equipment, onChange }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -26,10 +25,10 @@ const Compartments = ({ form, value, equipment }) => {
   const { data: types, isValidating: typesLoading } = useSWR(EQUIPMENT_LIST.TYPES);
 
   const fetchByCompartment = useCallback(
-    id => {
+    (id) => {
       setLoading(true);
 
-      axios.get(`${EQUIPMENT_LIST.COMPARTMENTS}?eqpt_id=${id}`).then(response => {
+      axios.get(`${EQUIPMENT_LIST.COMPARTMENTS}?eqpt_id=${id}`).then((response) => {
         setData(response.data.records);
         setFieldsValue({ compartments: response.data.records });
         setLoading(false);
@@ -39,10 +38,10 @@ const Compartments = ({ form, value, equipment }) => {
   );
 
   const fetchByEquipment = useCallback(
-    id => {
+    (id) => {
       setLoading(true);
 
-      axios.get(`${EQUIPMENT_LIST.COMPARTMENT_EQUIPMENT}?etyp_id=${id}`).then(response => {
+      axios.get(`${EQUIPMENT_LIST.COMPARTMENT_EQUIPMENT}?etyp_id=${id}`).then((response) => {
         setData(response.data.records);
         setFieldsValue({ compartments: response.data.records });
         setLoading(false);
@@ -51,21 +50,21 @@ const Compartments = ({ form, value, equipment }) => {
     [setFieldsValue]
   );
 
-  const save = row => {
+  const save = (row) => {
     let payload = [...data];
 
-    const index = payload.findIndex(item => item.cmpt_no === row.cmpt_no);
+    const index = payload.findIndex((item) => item.cmpt_no === row.cmpt_no);
 
     payload.splice(index, 1, row);
 
     setData(payload);
 
     setFieldsValue({
-      compartments: payload
+      compartments: payload,
     });
   };
 
-  const handleEquipmentSelect = value => {
+  const handleEquipmentSelect = (value) => {
     fetchByCompartment(value);
     setSelected(value);
   };
@@ -84,7 +83,8 @@ const Compartments = ({ form, value, equipment }) => {
     const image = type?.image?.toLowerCase() || null;
 
     setImage(image);
-  }, [value, types, equipment]);
+    onChange(image);
+  }, [value, types, equipment, onChange]);
 
   useEffect(() => {
     if (value) {
@@ -96,29 +96,27 @@ const Compartments = ({ form, value, equipment }) => {
     }
   }, [value, equipment, fetchByEquipment, fetchByCompartment]);
 
-  const fields = columns(t).map(col => {
+  const fields = columns(t).map((col) => {
     if (!col.editable) {
       return col;
     }
 
     return {
       ...col,
-      onCell: record => ({
+      onCell: (record) => ({
         record,
         data: data,
         editable: col.editable,
         dataIndex: col.dataIndex,
         title: col.title,
-        handleSave: save
-      })
+        handleSave: save,
+      }),
     };
   });
 
   if (equipment) {
     return (
       <Form.Item name="compartments">
-        <Equipment image={image} isLoading={typesLoading} />
-
         <Select
           placeholder="Please Select"
           style={{ marginBottom: 10, marginTop: 10 }}
@@ -140,14 +138,14 @@ const Compartments = ({ form, value, equipment }) => {
         </Select>
         <div style={{ textAlign: 'center', marginBottom: 10 }}>{t('descriptions.compartmentCopy')}</div>
         <Table
-          size="middle"
+          size="small"
           rowKey="cmpt_no"
           loading={isLoading}
           components={{
             body: {
               row: Row,
-              cell: Cell
-            }
+              cell: Cell,
+            },
           }}
           scroll={{ y: '30vh' }}
           rowClassName={() => 'editable-row'}

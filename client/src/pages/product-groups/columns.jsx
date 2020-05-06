@@ -52,6 +52,7 @@ const columns = (endpoint, t) => {
         filter: 'FuzzyFilter',
         sortable: true,
         resizable: true,
+        suppressSizeToFit: true,
       },
       {
         headerName: t('fields.messageName'),
@@ -59,6 +60,7 @@ const columns = (endpoint, t) => {
         filter: 'FuzzyFilter',
         sortable: true,
         resizable: true,
+        suppressSizeToFit: true,
       },
       {
         headerName: t('fields.requireWholeLoadToBeCompliant'),
@@ -67,6 +69,7 @@ const columns = (endpoint, t) => {
         sortable: true,
         resizable: true,
         cellRenderer: 'BooleanRenderer',
+        suppressSizeToFit: true,
       },
       {
         headerName: t('fields.messageDetails'),
@@ -74,6 +77,7 @@ const columns = (endpoint, t) => {
         filter: 'FuzzyFilter',
         sortable: true,
         resizable: true,
+        suppressSizeToFit: true,
       },
 
       {
@@ -82,6 +86,7 @@ const columns = (endpoint, t) => {
         filter: 'FuzzyFilter',
         sortable: true,
         resizable: true,
+        suppressSizeToFit: true,
       },
 
       {
@@ -100,6 +105,7 @@ const columns = (endpoint, t) => {
         filter: 'FuzzyFilter',
         sortable: true,
         resizable: true,
+        suppressSizeToFit: true,
       },
       {
         headerName: t('fields.productGroupDescription'),
@@ -107,6 +113,7 @@ const columns = (endpoint, t) => {
         filter: 'FuzzyFilter',
         sortable: true,
         resizable: true,
+        suppressSizeToFit: true,
       },
       {
         headerName: t('fields.messageId'),
@@ -114,6 +121,7 @@ const columns = (endpoint, t) => {
         filter: 'FuzzyFilter',
         sortable: true,
         resizable: true,
+        suppressSizeToFit: true,
       },
       {
         headerName: t('fields.messageName'),
@@ -121,6 +129,7 @@ const columns = (endpoint, t) => {
         filter: 'FuzzyFilter',
         sortable: true,
         resizable: true,
+        suppressSizeToFit: true,
       },
 
       {
@@ -130,6 +139,7 @@ const columns = (endpoint, t) => {
         sortable: true,
         resizable: true,
         cellRenderer: 'BooleanRenderer',
+        suppressSizeToFit: true,
       },
 
       {
@@ -138,6 +148,7 @@ const columns = (endpoint, t) => {
         filter: 'FuzzyFilter',
         sortable: true,
         resizable: true,
+        suppressSizeToFit: true,
       },
 
       {
@@ -146,6 +157,7 @@ const columns = (endpoint, t) => {
         filter: 'FuzzyFilter',
         sortable: true,
         resizable: true,
+        suppressSizeToFit: true,
       },
 
       {

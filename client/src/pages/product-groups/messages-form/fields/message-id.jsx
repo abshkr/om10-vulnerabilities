@@ -4,10 +4,10 @@ import { Form, Input } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { LOAD_METERS } from '../../../../api';
+import { PRODUCT_GROUPS } from '../../../../api';
 
-const Code = ({ form, value }) => {
-  const { data, isValidating } = useSWR(LOAD_METERS.READ);
+const MessageId = ({ form, value }) => {
+  const { data, isValidating } = useSWR(PRODUCT_GROUPS.READ_MESSAGES);
 
   const { setFieldsValue } = form;
 
@@ -15,19 +15,19 @@ const Code = ({ form, value }) => {
 
   const validate = (rule, input) => {
     const match = _.find(data?.records, (record) => {
-      return record.bam_code.toLowerCase() === input?.toLowerCase();
+      return record.cm_msg_id.toLowerCase() === input?.toLowerCase();
     });
 
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.meterCode')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.messageId')}`);
     }
 
     if (input && match && !value) {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    if (input && input.length > 32) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 32 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && input.length > 16) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();
@@ -36,15 +36,15 @@ const Code = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        bam_code: value.bam_code,
+        cm_msg_id: value.cm_msg_id,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item
-      name="bam_code"
-      label={t('fields.meterCode')}
+      name="cm_msg_id"
+      label={t('fields.messageId')}
       rules={[{ required: true, validator: validate }]}
     >
       <Input disabled={!!value || isValidating} />
@@ -52,4 +52,4 @@ const Code = ({ form, value }) => {
   );
 };
 
-export default Code;
+export default MessageId;

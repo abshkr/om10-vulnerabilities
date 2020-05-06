@@ -10,7 +10,7 @@ const PullingLimit = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        eqpt_max_gross: value.eqpt_max_gross
+        eqpt_max_gross: value.eqpt_max_gross,
       });
     }
   }, [value, setFieldsValue]);
@@ -29,7 +29,7 @@ const PullingLimit = ({ form, value }) => {
       label={`${t('fields.pullingLimit')} (Kg)`}
       rules={[{ required: false, validator: validate }]}
     >
-      <InputNumber min={0} />
+      <InputNumber min={0} style={{ width: '100%' }} />
     </Form.Item>
   );
 };

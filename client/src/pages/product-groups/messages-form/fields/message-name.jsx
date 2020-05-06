@@ -1,29 +1,15 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
-import useSWR from 'swr';
-import _ from 'lodash';
 
-import { LOAD_METERS } from '../../../../api';
-
-const Code = ({ form, value }) => {
-  const { data, isValidating } = useSWR(LOAD_METERS.READ);
-
+const MessageName = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
 
   const validate = (rule, input) => {
-    const match = _.find(data?.records, (record) => {
-      return record.bam_code.toLowerCase() === input?.toLowerCase();
-    });
-
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.meterCode')}`);
-    }
-
-    if (input && match && !value) {
-      return Promise.reject(t('descriptions.alreadyExists'));
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.messageName')}`);
     }
 
     if (input && input.length > 32) {
@@ -36,20 +22,20 @@ const Code = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        bam_code: value.bam_code,
+        cm_msg_name: value.cm_msg_name,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item
-      name="bam_code"
-      label={t('fields.meterCode')}
+      name="cm_msg_name"
+      label={t('fields.messageName')}
       rules={[{ required: true, validator: validate }]}
     >
-      <Input disabled={!!value || isValidating} />
+      <Input />
     </Form.Item>
   );
 };
 
-export default Code;
+export default MessageName;

@@ -4,18 +4,18 @@ import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 
-import { LOAD_METERS } from '../../../../api';
+import { PRODUCT_GROUPS } from '../../../../api';
 
-const Type = ({ form, value }) => {
+const Unit = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(LOAD_METERS.TYPES);
+  const { data: options, isValidating } = useSWR(PRODUCT_GROUPS.UNITS);
 
   const { setFieldsValue } = form;
 
   const validate = (rule, value) => {
     if (value === '' || !value) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.meterType')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.unit')}`);
     }
 
     return Promise.resolve();
@@ -24,30 +24,25 @@ const Type = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        bam_type: value.bam_type,
+        pgr_unit: value.pgr_unit,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item
-      name="bam_type"
-      label={t('fields.meterType')}
-      rules={[{ required: true, validator: validate }]}
-    >
+    <Form.Item name="pgr_unit" label={t('fields.unit')} rules={[{ required: true, validator: validate }]}>
       <Select
         loading={isValidating}
         showSearch
-        disabled={!!value}
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectType') : null}
+        placeholder={!value ? t('placeholder.selectUnit') : null}
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.ba_meter_id}>
-            {item.ba_meter_name}
+          <Select.Option key={index} value={item.unit_id}>
+            {item.description}
           </Select.Option>
         ))}
       </Select>
@@ -55,4 +50,4 @@ const Type = ({ form, value }) => {
   );
 };
 
-export default Type;
+export default Unit;

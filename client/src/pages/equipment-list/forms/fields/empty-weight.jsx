@@ -10,7 +10,7 @@ const EmptyWeight = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        eqpt_empty_kg: value.eqpt_empty_kg
+        eqpt_empty_kg: value.eqpt_empty_kg,
       });
     }
   }, [value, setFieldsValue]);
@@ -28,7 +28,7 @@ const EmptyWeight = ({ form, value }) => {
       label={`${t('fields.emptyWeight')} (Kg)`}
       rules={[{ required: false, validator: validate }]}
     >
-      <InputNumber min={0} />
+      <InputNumber min={0} style={{ width: '100%' }} />
     </Form.Item>
   );
 };

@@ -174,7 +174,7 @@ const FormModal = ({ value }) => {
 
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-      <Tabs defaultActiveKey="0" animated={false} tabPosition="left">
+      <Tabs defaultActiveKey="0" animated={false} tabPosition="top">
         <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.general')} key="0">
           <Form.Item
             name="auth_level_name"

@@ -3,6 +3,7 @@ import { Form, Select, DatePicker, Checkbox } from 'antd';
 import _ from 'lodash';
 
 import Context from './context';
+import moment from 'moment';
 
 const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, expiry, ...restProps }) => {
   const form = useContext(Context);
@@ -16,7 +17,7 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
     setEditing(!editing);
   };
 
-  const save = async e => {
+  const save = async (e) => {
     const values = await form.validateFields();
 
     if (dataIndex === 'ed_exp_date') {
@@ -43,7 +44,6 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
       setFieldsValue({
         edt_type_desc: record.edt_type_desc,
         ed_status: record.ed_status,
-        ed_exp_date: record.ed_exp_date
       });
     }
   }, [record, setFieldsValue]);
@@ -91,8 +91,8 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
           rules={[
             {
               type: 'object',
-              required: true
-            }
+              required: true,
+            },
           ]}
         >
           <DatePicker ref={inputRef} onChange={save} format="DD/MM/YYYY" />

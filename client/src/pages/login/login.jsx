@@ -25,11 +25,15 @@ import {
 import * as actions from '../../actions/auth';
 
 import { ROUTES, SETTINGS } from '../../constants';
+import { Icons } from '../../components/';
 
 const Login = ({ handleLogin, auth }) => {
+  const remainingAttempts = 10;
+
   const { i18n, t } = useTranslation();
 
   const [isLoading, setLoading] = useState(false);
+  const [attempts, setAttempts] = useState(remainingAttempts);
 
   const history = useHistory();
 
@@ -52,7 +56,7 @@ const Login = ({ handleLogin, auth }) => {
         });
       } else {
         setLoading(false);
-
+        setAttempts(attempts - 1);
         notification.error({
           placement: 'bottomRight',
           message: t('messages.loginFailed'),
@@ -145,12 +149,16 @@ const Login = ({ handleLogin, auth }) => {
                   <div style={{ marginTop: 5 }}>
                     <Form.Item name="language">
                       <Select
-                        style={{ fontSize: 13, width: 78, color: '#0054a4' }}
+                        style={{ fontSize: 13, width: 100, color: '#0054a4' }}
                         onChange={handleLanguage}
                         bordered={false}
                       >
-                        <Select.Option value="en">English</Select.Option>
-                        <Select.Option value="cn">中文</Select.Option>
+                        <Select.Option value="en">
+                          <Icons type="en" scale={1.5} /> English
+                        </Select.Option>
+                        <Select.Option value="cn">
+                          <Icons type="cn" scale={1.5} /> 中文
+                        </Select.Option>
                       </Select>
                     </Form.Item>
                   </div>
@@ -161,8 +169,17 @@ const Login = ({ handleLogin, auth }) => {
                 </div>
               }
             >
-              <Button size="large" type="primary" htmlType="submit" loading={isLoading}>
-                {t('operations.logIn')}
+              <div style={{ textAlign: 'center', color: 'red' }}>
+                {attempts < remainingAttempts ? `You have ${attempts} attempts left.` : ``}
+              </div>
+              <Button
+                size="large"
+                type="primary"
+                htmlType="submit"
+                loading={isLoading}
+                disabled={attempts === 0}
+              >
+                {attempts === 0 ? t('operations.locked') : t('operations.logIn')}
               </Button>
             </Form.Item>
           </Form>

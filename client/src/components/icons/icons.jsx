@@ -13,6 +13,9 @@ import { ReactComponent as Printer } from './printer.svg';
 import { ReactComponent as StockRecon } from './scale.svg';
 import { ReactComponent as Operations } from './operations.svg';
 import { ReactComponent as User } from './user.svg';
+import { ReactComponent as Australia } from './au.svg';
+import { ReactComponent as China } from './cn.svg';
+import { ReactComponent as England } from './en.svg';
 
 const matrix = {
   gantry: Gantry,
@@ -26,8 +29,20 @@ const matrix = {
   stockReconciliation: StockRecon,
   operations: Operations,
   user: User,
+  au: Australia,
+  cn: China,
+  en: England,
 };
 
-const Icons = (props) => <Icon component={matrix[props.type]} {...props} style={{ transform: 'scale(2)' }} />;
+const Icons = (props) => (
+  <Icon
+    component={matrix[props.type]}
+    {...props}
+    style={{
+      transform: props.scale ? `'scale(${props.scale})'` : 'scale(3.3)',
+      fontSize: props.size || null,
+    }}
+  />
+);
 
 export default Icons;

@@ -34,7 +34,7 @@ export default (Authenticated) => {
       if (isIdle) {
         history.push(ROUTES.LOG_OUT);
       }
-    }, [isIdle]);
+    }, [isIdle, history]);
 
     return (
       <SWRConfig

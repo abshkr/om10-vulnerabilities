@@ -9,7 +9,7 @@ const Name = ({ form, value }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.meterName')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.name')}`);
     }
 
     if (input && input.length > 32) {
@@ -22,15 +22,15 @@ const Name = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        bam_name: value.bam_name,
+        pgr_description: value.pgr_description,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item
-      name="bam_name"
-      label={t('fields.meterName')}
+      name="pgr_description"
+      label={t('fields.name')}
       rules={[{ required: true, validator: validate }]}
     >
       <Input />

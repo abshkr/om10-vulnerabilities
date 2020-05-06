@@ -4,10 +4,10 @@ import { Form, Input } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { LOAD_METERS } from '../../../../api';
+import { PRODUCT_GROUPS } from '../../../../api';
 
 const Code = ({ form, value }) => {
-  const { data, isValidating } = useSWR(LOAD_METERS.READ);
+  const { data, isValidating } = useSWR(PRODUCT_GROUPS.READ_GROUPS);
 
   const { setFieldsValue } = form;
 
@@ -15,11 +15,11 @@ const Code = ({ form, value }) => {
 
   const validate = (rule, input) => {
     const match = _.find(data?.records, (record) => {
-      return record.bam_code.toLowerCase() === input?.toLowerCase();
+      return record.pgr_code.toLowerCase() === input?.toLowerCase();
     });
 
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.meterCode')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
     }
 
     if (input && match && !value) {
@@ -36,17 +36,13 @@ const Code = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        bam_code: value.bam_code,
+        pgr_code: value.pgr_code,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item
-      name="bam_code"
-      label={t('fields.meterCode')}
-      rules={[{ required: true, validator: validate }]}
-    >
+    <Form.Item name="pgr_code" label={t('fields.code')} rules={[{ required: true, validator: validate }]}>
       <Input disabled={!!value || isValidating} />
     </Form.Item>
   );

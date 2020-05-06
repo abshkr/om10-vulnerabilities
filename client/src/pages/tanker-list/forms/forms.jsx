@@ -6,7 +6,7 @@ import {
   CloseOutlined,
   DeleteOutlined,
   QuestionCircleOutlined,
-  UnlockOutlined
+  UnlockOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
@@ -32,7 +32,7 @@ import {
   LastDepot,
   CurrentDepot,
   Locks,
-  SLP
+  SLP,
 } from './fields';
 import { TANKER_LIST } from '../../../api';
 import Compartments from './compartments';
@@ -51,11 +51,11 @@ const FormModal = ({ value }) => {
   const fields = columns(t);
   const IS_CREATING = !value;
 
-  const onFinish = values => {
+  const onFinish = (values) => {
     let matches = [];
 
     if (!IS_CREATING) {
-      matches = _.filter(payload?.records, object => {
+      matches = _.filter(payload?.records, (object) => {
         return (
           object.tnkr_name === value.tnkr_name &&
           object.tnkr_code !== value.tnkr_code &&
@@ -79,43 +79,43 @@ const FormModal = ({ value }) => {
         await axios
           .post(IS_CREATING ? TANKER_LIST.CREATE : TANKER_LIST.UPDATE, values)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               Modal.destroyAll();
 
               mutate(TANKER_LIST.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
               });
             })
           )
-          .catch(error => {
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
             });
           });
-      }
+      },
     });
   };
 
   const onUnlock = () => {
     axios
       .post(`${TANKER_LIST.TOGGLE_LOCKS}?tnkr_code=${value.tnkr_code}`)
-      .then(response => {
+      .then((response) => {
         mutate(TANKER_LIST.READ);
 
         Modal.destroyAll();
         notification.success({
           message: t('messages.unlockSuccess'),
-          description: `${t('descriptions.unlockSuccess')}`
+          description: `${t('descriptions.unlockSuccess')}`,
         });
       })
 
-      .catch(error => {
+      .catch((error) => {
         notification.error({
           message: error.message,
-          description: t('descriptions.unlockFailed')
+          description: t('descriptions.unlockFailed'),
         });
       });
   };
@@ -131,33 +131,32 @@ const FormModal = ({ value }) => {
         await axios
           .post(TANKER_LIST.DELETE, value)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               mutate(TANKER_LIST.READ);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`
+                description: `${t('descriptions.deleteSuccess')}`,
               });
             })
           )
-          .catch(error => {
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: t('descriptions.deleteFailed')
+              description: t('descriptions.deleteFailed'),
             });
           });
-      }
+      },
     });
   };
 
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
       <Tabs defaultActiveKey="1" animated={false}>
-        <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
+        <TabPane className="ant-tab-window" tab={t('tabColumns.identification')} forceRender={true} key="1">
           <Depot form={form} value={value} />
           <Owner form={form} value={value} />
           <Code form={form} value={value} />
-          <EquipmentType form={form} value={value} onChange={setEquipment} />
           <Carrier form={form} value={value} />
           <Name form={form} value={value} />
           <TotalTrips form={form} value={value} />
@@ -171,12 +170,24 @@ const FormModal = ({ value }) => {
           <CurrentDepot form={form} value={value} />
           <Locks form={form} value={value} />
           <SLP form={form} value={value} />
+        </TabPane>
 
-          <Divider>Compartments</Divider>
+        <TabPane
+          className="ant-tab-window-no-margin"
+          tab={t('tabColumns.configuration')}
+          forceRender={true}
+          key="3"
+        >
+          <EquipmentType form={form} value={value} onChange={setEquipment} />
           <Compartments form={form} value={value} equipment={equipment} />
         </TabPane>
 
-        <TabPane className="ant-tab-window" tab={t('tabColumns.expiryDates')} forceRender={true} key="4">
+        <TabPane
+          className="ant-tab-window-no-margin"
+          tab={t('tabColumns.expiryDates')}
+          forceRender={true}
+          key="4"
+        >
           <Expiry form={form} value={value} type={TANKER_LIST.EXPIRY} />
         </TabPane>
       </Tabs>

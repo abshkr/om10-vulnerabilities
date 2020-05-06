@@ -138,12 +138,7 @@ const Compartments = ({ form, value, equipment }) => {
   });
 
   return (
-    <Form.Item
-      name="tnkr_equips"
-      style={{
-        width: 'inherit',
-      }}
-    >
+    <Form.Item name="tnkr_equips">
       {data.length === 0 && (
         <Table
           size="middle"
@@ -164,14 +159,14 @@ const Compartments = ({ form, value, equipment }) => {
           pagination={false}
         />
       )}
-      <div style={{ display: 'flex', overflowX: 'scroll', width: '76.5vw' }}>
+      <div style={{ display: 'flex' }}>
         {data.map((item, index) => (
           <div key={index} style={{ marginRight: 10 }}>
             <Equipment image={_.toLower(item.image)} isLoading={isLoading} />
             <Select
               onChange={(value) => changeType(item, value)}
               placeholder={item.eqpt_code || 'Select Equipment'}
-              style={{ marginBottom: 10, marginTop: 10 }}
+              style={{ marginBottom: 10, marginTop: 30 }}
               disabled={item.eqpt_list.length === 0}
               showSearch
               optionFilterProp="children"
@@ -189,7 +184,7 @@ const Compartments = ({ form, value, equipment }) => {
 
             {item.compartments.length !== 0 && (
               <Table
-                size="middle"
+                size="small"
                 rowKey="cmpt_no"
                 loading={isLoading}
                 components={{
@@ -199,7 +194,7 @@ const Compartments = ({ form, value, equipment }) => {
                   },
                 }}
                 style={{ marginBottom: 5, width: '30vw' }}
-                scroll={{ y: '25vh' }}
+                scroll={{ y: '35vh' }}
                 rowClassName={() => 'editable-row'}
                 bordered
                 dataSource={item.compartments}

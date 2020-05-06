@@ -45,10 +45,12 @@ import * as ORDER_LISTINGS from './order-listings';
 import * as TANK_STATUS from './tank-status';
 import * as TANK_STRAPPING from './tank-strapping';
 import * as AUDITING_DATA from './auditing-data';
+import * as PARTNERSHIP from './partnership';
 
 export {
   AUTH,
   EQUIPMENT_LIST,
+  PARTNERSHIP,
   TANKS,
   TIME_CODES,
   HAZCHEM_CODES,

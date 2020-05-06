@@ -26,7 +26,7 @@ const RoleAccessManagement = () => {
       form: <Forms value={value} />,
       id: value?.role_code,
       name: value?.auth_level_name,
-      width: '50vw',
+      width: '60vw',
       t,
     });
   };

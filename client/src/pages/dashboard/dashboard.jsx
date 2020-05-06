@@ -3,23 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { Card, Col, Row, Tabs, Statistic, Table } from 'antd';
 
 import { DashboardContainer } from './styles';
-import { Page, Chart } from '../../components';
+import { Page, Chart, Icons } from '../../components';
 import auth from '../../auth';
 
 const Dashboard = () => {
   const { t } = useTranslation();
 
-  const assignment = {
-    labels: ['Available', 'Used'],
-    datasets: [
-      {
-        data: [798, 500],
-        backgroundColor: ['#66a61e', '#e7298a'],
-        hoverBackgroundColor: ['#66a61e', '#e7298a'],
-        hoverBorderColor: ['#66a61e', '#e7298a'],
-      },
-    ],
-  };
+  const colors = ['#0054a4', '#f79043', '#edc3b2', '#24b55e', '#f94646'];
 
   const throughput = {
     labels: ['Folio Type'],
@@ -27,33 +17,33 @@ const Dashboard = () => {
       {
         label: 'Last Week',
         data: [8220],
-        backgroundColor: ['#666666'],
-        hoverBackgroundColor: ['#666666'],
-        hoverBorderColor: ['#666666'],
+        backgroundColor: ['#52a5dd'],
+        hoverBackgroundColor: ['#52a5dd'],
+        hoverBorderColor: ['#52a5dd'],
       },
 
       {
         label: 'Current Week',
         data: [2101],
-        backgroundColor: ['#a6761d'],
-        hoverBackgroundColor: ['#a6761d'],
-        hoverBorderColor: ['#a6761d'],
+        backgroundColor: ['#f79043'],
+        hoverBackgroundColor: ['#f79043'],
+        hoverBorderColor: ['#f79043'],
       },
 
       {
         label: 'Previous Folio',
         data: [1521],
-        backgroundColor: ['#e6ab02'],
-        hoverBackgroundColor: ['#e6ab02'],
-        hoverBorderColor: ['#e6ab02'],
+        backgroundColor: ['#edc3b2'],
+        hoverBackgroundColor: ['#edc3b2'],
+        hoverBorderColor: ['#edc3b2'],
       },
 
       {
         label: 'Current Folio',
         data: [720],
-        backgroundColor: ['#66a61e'],
-        hoverBackgroundColor: ['#66a61e'],
-        hoverBorderColor: ['#66a61e'],
+        backgroundColor: ['#24b55e'],
+        hoverBackgroundColor: ['#24b55e'],
+        hoverBorderColor: ['#24b55e'],
       },
     ],
   };
@@ -64,41 +54,41 @@ const Dashboard = () => {
       {
         label: 'ULP',
         data: [15200],
-        backgroundColor: ['#666666'],
-        hoverBackgroundColor: ['#666666'],
-        hoverBorderColor: ['#666666'],
+        backgroundColor: ['#52a5dd'],
+        hoverBackgroundColor: ['#52a5dd'],
+        hoverBorderColor: ['#52a5dd'],
       },
 
       {
         label: 'ULG',
         data: [14221],
-        backgroundColor: ['#a6761d'],
-        hoverBackgroundColor: ['#a6761d'],
-        hoverBorderColor: ['#a6761d'],
+        backgroundColor: ['#f79043'],
+        hoverBackgroundColor: ['#f79043'],
+        hoverBorderColor: ['#f79043'],
       },
 
       {
         label: 'Jet-A1',
         data: [8430],
-        backgroundColor: ['#e6ab02'],
-        hoverBackgroundColor: ['#e6ab02'],
-        hoverBorderColor: ['#e6ab02'],
+        backgroundColor: ['#edc3b2'],
+        hoverBackgroundColor: ['#edc3b2'],
+        hoverBorderColor: ['#edc3b2'],
       },
 
       {
         label: 'Nemo 2015',
         data: [4329],
-        backgroundColor: ['#66a61e'],
-        hoverBackgroundColor: ['#66a61e'],
-        hoverBorderColor: ['#66a61e'],
+        backgroundColor: ['#24b55e'],
+        hoverBackgroundColor: ['#24b55e'],
+        hoverBorderColor: ['#24b55e'],
       },
 
       {
         label: 'Nemo 6114',
         data: [3012],
-        backgroundColor: ['#e7298a'],
-        hoverBackgroundColor: ['#e7298a'],
-        hoverBorderColor: ['#e7298a'],
+        backgroundColor: ['#f94646'],
+        hoverBackgroundColor: ['#f94646'],
+        hoverBorderColor: ['#f94646'],
       },
     ],
   };
@@ -109,53 +99,66 @@ const Dashboard = () => {
       {
         label: 'RON 97',
         data: [230],
-        backgroundColor: ['#666666'],
-        hoverBackgroundColor: ['#666666'],
-        hoverBorderColor: ['#666666'],
+        backgroundColor: ['#52a5dd'],
+        hoverBackgroundColor: ['#52a5dd'],
+        hoverBorderColor: ['#52a5dd'],
       },
 
       {
         label: 'RON 95',
         data: [400],
-        backgroundColor: ['#a6761d'],
-        hoverBackgroundColor: ['#a6761d'],
-        hoverBorderColor: ['#a6761d'],
+        backgroundColor: ['#f79043'],
+        hoverBackgroundColor: ['#f79043'],
+        hoverBorderColor: ['#f79043'],
       },
 
       {
         label: 'V-POWER',
         data: [150],
-        backgroundColor: ['#e6ab02'],
-        hoverBackgroundColor: ['#e6ab02'],
-        hoverBorderColor: ['#e6ab02'],
+        backgroundColor: ['#edc3b2'],
+        hoverBackgroundColor: ['#edc3b2'],
+        hoverBorderColor: ['#edc3b2'],
       },
 
       {
         label: 'Diesel',
         data: [290],
-        backgroundColor: ['#66a61e'],
-        hoverBackgroundColor: ['#66a61e'],
-        hoverBorderColor: ['#66a61e'],
+        backgroundColor: ['#24b55e'],
+        hoverBackgroundColor: ['#24b55e'],
+        hoverBorderColor: ['#24b55e'],
       },
 
       {
         label: 'Jet-A1',
         data: [195],
-        backgroundColor: ['#e7298a'],
-        hoverBackgroundColor: ['#e7298a'],
-        hoverBorderColor: ['#e7298a'],
+        backgroundColor: ['#f94646'],
+        hoverBackgroundColor: ['#f94646'],
+        hoverBorderColor: ['#f94646'],
       },
     ],
   };
 
   const yearlyThroughput = {
-    labels: ['Jan', 'Feb', 'March', 'Apr', 'May', 'June', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    labels: [
+      'Week 8',
+      'Week 9',
+      'Week 10',
+      'Week 11',
+      'Week 12',
+      'Week 13',
+      'Week 14',
+      'Week 15',
+      'Week 16',
+      'Week 17',
+      'Week 18',
+      'Week 19',
+    ],
     datasets: [
       {
         label: 'RON 97',
         data: [...Array(12)].map(() => Math.floor(Math.random() * 600)),
-        borderColor: ['#666666'],
-        hoverBorderColor: ['#666666'],
+        borderColor: ['#52a5dd'],
+        hoverBorderColor: ['#52a5dd'],
         borderWidth: 0.98,
         fill: false,
       },
@@ -163,8 +166,8 @@ const Dashboard = () => {
       {
         label: 'RON 95',
         data: [...Array(12)].map(() => Math.floor(Math.random() * 600)),
-        borderColor: ['#a6761d'],
-        hoverBorderColor: ['#a6761d'],
+        borderColor: ['#f79043'],
+        hoverBorderColor: ['#f79043'],
         borderWidth: 0.98,
         fill: false,
       },
@@ -172,8 +175,8 @@ const Dashboard = () => {
       {
         label: 'V-POWER',
         data: [...Array(12)].map(() => Math.floor(Math.random() * 600)),
-        borderColor: ['#e6ab02'],
-        hoverBorderColor: ['#e6ab02'],
+        borderColor: ['#edc3b2'],
+        hoverBorderColor: ['#edc3b2'],
         borderWidth: 0.98,
         fill: false,
       },
@@ -181,8 +184,8 @@ const Dashboard = () => {
       {
         label: 'Diesel',
         data: [...Array(12)].map(() => Math.floor(Math.random() * 600)),
-        borderColor: ['#66a61e'],
-        hoverBorderColor: ['#66a61e'],
+        borderColor: ['#24b55e'],
+        hoverBorderColor: ['#24b55e'],
         borderWidth: 0.98,
         fill: false,
       },
@@ -190,8 +193,8 @@ const Dashboard = () => {
       {
         label: 'Jet-A1',
         data: [...Array(12)].map(() => Math.floor(Math.random() * 600)),
-        borderColor: ['#e7298a'],
-        hoverBorderColor: ['#e7298a'],
+        borderColor: ['#f94646'],
+        hoverBorderColor: ['#f94646'],
         borderWidth: 0.98,
         fill: false,
       },
@@ -300,7 +303,7 @@ const Dashboard = () => {
 
   const currentFolioColumns = [
     {
-      title: 'Bay Number',
+      title: 'Bay',
       dataIndex: 'name',
       key: 'name',
     },
@@ -365,31 +368,41 @@ const Dashboard = () => {
           <Tabs.TabPane tab="Home" key="0">
             <Row gutter={[16, 16]}>
               <Col span={8}>
-                <Card title="Tankers">
-                  <Statistic title="Total / Active" value={802} suffix="/ 798" />
+                <Card title="Tankers" hoverable size="small">
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Statistic title="Total / Active" value={802} suffix="/ 798" />
+                    <img src="/svg/truck.svg" />
+                  </div>
                 </Card>
               </Col>
               <Col span={8}>
-                <Card title="Personnel">
-                  <Statistic title="Total / Active" value={45} suffix="/ 38" />
+                <Card title="Personnel" hoverable size="small">
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Statistic title="Total / Active" value={45} suffix="/ 38" />
+                    <Icons type="id" scale={1} size={86} />
+                    <img src="/svg/people.svg" />
+                  </div>
                 </Card>
               </Col>
 
               <Col span={8}>
-                <Card title="Id Assignment [0.03]%">
-                  <Statistic title="Available / Used" value={4000} suffix="/ 1" />
+                <Card title="Id Assignment [0.03]%" hoverable size="small">
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Statistic title="Available / Used" value={4000} suffix="/ 1" />
+                    <Icons type="people" scale={1} size={86} />
+                    <img src="/svg/id.svg" />
+                  </div>
                 </Card>
               </Col>
             </Row>
 
             <Row gutter={[16, 16]}>
-              <Col span={16}>
-                <Card bodyStyle={{ padding: 5 }} title="Current Folio" size="small">
+              <Col span={8}>
+                <Card title="Current Folio" hoverable size="small">
                   <Table
                     dataSource={currentFolioData}
                     columns={currentFolioColumns}
                     bordered
-                    scroll={{ y: 508 }}
                     pagination={false}
                     size="small"
                   />
@@ -397,35 +410,26 @@ const Dashboard = () => {
               </Col>
 
               <Col span={8}>
-                <Row gutter={[16, 16]}>
-                  <Col span={24}>
-                    <Card bodyStyle={{ padding: 5 }} title="Tanker Movement" size="small">
-                      <Table
-                        dataSource={currentFolioData}
-                        columns={tankerMovementColumns}
-                        bordered
-                        scroll={{ y: 200 }}
-                        pagination={false}
-                        size="small"
-                      />
-                    </Card>
-                  </Col>
-                </Row>
+                <Card title="Tanker Movement" hoverable size="small">
+                  <Table
+                    dataSource={currentFolioData}
+                    columns={tankerMovementColumns}
+                    bordered
+                    pagination={false}
+                    size="small"
+                  />
+                </Card>
+              </Col>
 
-                <Row gutter={[16, 16]}>
-                  <Col span={24}>
-                    <Card bodyStyle={{ padding: 5 }} title="Transaction Ids" size="small">
-                      <Table
-                        dataSource={currentFolioData}
-                        columns={transactionColumns}
-                        bordered
-                        scroll={{ y: 200 }}
-                        pagination={false}
-                        size="small"
-                      />
-                    </Card>
-                  </Col>
-                </Row>
+              <Col span={8}>
+                <Card title="Transaction Ids" hoverable size="small">
+                  <Table
+                    dataSource={currentFolioData}
+                    columns={transactionColumns}
+                    pagination={false}
+                    size="small"
+                  />
+                </Card>
               </Col>
             </Row>
           </Tabs.TabPane>
@@ -433,12 +437,12 @@ const Dashboard = () => {
           <Tabs.TabPane tab="Overview" key="1">
             <Row gutter={[16, 16]}>
               <Col span={12}>
-                <Card title="Total Throughput (m3)">
+                <Card title="Total Throughput (m3)" hoverable size="small">
                   <Chart type="bar" height={100} data={throughput} />
                 </Card>
               </Col>
               <Col span={12}>
-                <Card title="Product Storage (m3)">
+                <Card title="Product Storage (m3)" hoverable size="small">
                   <Chart type="bar" height={100} data={storage} />
                 </Card>
               </Col>
@@ -446,12 +450,12 @@ const Dashboard = () => {
 
             <Row gutter={[16, 16]}>
               <Col span={12}>
-                <Card title="Current Folio Throughput (m3)">
+                <Card title="Current Folio Throughput (m3)" hoverable size="small">
                   <Chart type="bar" height={100} data={folio} />
                 </Card>
               </Col>
               <Col span={12}>
-                <Card title="Yearly Throughput (m3)">
+                <Card title="Weekly Throughput (m3)" hoverable size="small">
                   <Chart type="line" height={100} data={yearlyThroughput} />
                 </Card>
               </Col>

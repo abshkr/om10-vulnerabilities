@@ -491,7 +491,18 @@
     "messageLocaleCode": "Message Locale Code",
     "messageLocale": "Message Locale",
     "productGroupCode": "Product Group Code",
-    "productGroupDescription": "Product Group Description"
+    "productGroupDescription": "Product Group Description",
+    "message": "Message",
+    "productGroup": "Product Group",
+    "customerAccount": "Customer Account",
+    "customerName": "Customer Name",
+    "partnerId": "Partner Id",
+    "partnerCode": "Partner Code",
+    "partnerName": "Partner Name",
+    "partnerTypeCode": "Partner Type Code",
+    "partnerType": "Partner Type",
+    "partnerAddressCode": "Partner Address Code",
+    "partnerAddress": "Partner Address"
   },
 
   "pageMenu": {
@@ -593,7 +604,8 @@
     "loadSchedulesFromNomination": "Load Schedules By Nomination",
     "siteConfiguration": "Site Configuration",
     "logOut": "Log Out",
-    "tankStrapping": "Tank Strapping"
+    "tankStrapping": "Tank Strapping",
+    "keyReaderDevices": "Key Reader Devices"
   },
 
   "operations": {
@@ -658,7 +670,8 @@
     "calculateQuantityByLevel": "Calcuate Quantity By Level",
     "tankStrapping": "Show Tank Strapping",
     "closeTransaction": "Close Transaction",
-    "close": "Close"
+    "close": "Close",
+    "locked": "Locked"
   },
 
   "tabColumns": {
@@ -697,7 +710,10 @@
     "meterDetail": "Meter Detail",
     "groups": "Groups",
     "messages": "Messages",
-    "messageGroups": "Message Groups"
+    "messageGroups": "Message Groups",
+    "identification": "Identification",
+    "equipmentAndSafefill": "Equipment and Safefill",
+    "configuration": "Configuration"
   },
 
   "messages": {

@@ -127,7 +127,7 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.PRODUCT_GROUPS}>
-            <Badge status="error" /> {t('pageNames.productGroups')}
+            <Badge status="success" /> {t('pageNames.productGroups')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ALLOCATIONS}>

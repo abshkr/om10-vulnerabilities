@@ -22,7 +22,7 @@ const EquipmentType = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        eqpt_etp: value.eqpt_etp
+        eqpt_etp: value.eqpt_etp,
       });
 
       onChange(value.eqpt_etp);
@@ -48,7 +48,7 @@ const EquipmentType = ({ form, value, onChange }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.etyp_id}>
-            {item.etyp_title}
+            {`${item.etyp_title} / Compartments: ${item.cmptnu} `}
           </Select.Option>
         ))}
       </Select>

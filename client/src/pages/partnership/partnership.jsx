@@ -6,15 +6,15 @@ import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, FormModal } from '../../components';
-import { MOVEMENT_REASONS } from '../../api';
+import { PARTNERSHIP } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 
-const MovementReasons = () => {
+const Partnership = () => {
   const { t } = useTranslation();
 
-  const { data: payload, isValidating, revalidate } = useSWR(MOVEMENT_REASONS.READ);
+  const { data: payload, isValidating, revalidate } = useSWR(PARTNERSHIP.READ);
 
   const fields = columns(t);
   const data = payload?.records;
@@ -23,8 +23,8 @@ const MovementReasons = () => {
     FormModal({
       value,
       form: <Forms value={value} length={payload?.records?.length} />,
-      id: value?.mr_id,
-      name: value?.mr_type_name,
+      id: value?.partner_cmpy_code,
+      name: value?.partner_cmpy_name,
       t,
     });
   };
@@ -42,14 +42,10 @@ const MovementReasons = () => {
   );
 
   return (
-    <Page
-      page={t('pageMenu.stockReconciliation')}
-      name={t('pageNames.movementReasons')}
-      modifiers={modifiers}
-    >
+    <Page page={t('pageMenu.customers')} name={t('pageNames.partnership')} modifiers={modifiers}>
       <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );
 };
 
-export default auth(MovementReasons);
+export default auth(Partnership);

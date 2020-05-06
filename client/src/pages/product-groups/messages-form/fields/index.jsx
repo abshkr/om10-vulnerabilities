@@ -1,8 +1,6 @@
-import Usage from './usage';
-import Type from './type';
-import QuantityType from './quantity-type';
-import Code from './code';
-import Name from './name';
-import Flow from './flow';
+import MessageName from './message-name';
+import MessageId from './message-id';
+import MessageDetails from './message-details';
+import MessageLocale from './message-locale';
 
-export { Usage, Type, QuantityType, Code, Name, Flow };
+export { MessageName, MessageId, MessageDetails, MessageLocale };

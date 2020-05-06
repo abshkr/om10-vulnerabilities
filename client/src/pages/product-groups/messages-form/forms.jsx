@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
 
+import { MessageName, MessageId, MessageDetails, MessageLocale } from './fields';
 import { PRODUCT_GROUPS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
@@ -33,12 +34,12 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(IS_CREATING ? PRODUCT_GROUPS.CREATE : PRODUCT_GROUPS.UPDATE, values)
+          .post(IS_CREATING ? PRODUCT_GROUPS.CREATE_COMPLIANCE : PRODUCT_GROUPS.UPDATE_COMPLIANCE, values)
           .then(
             axios.spread((response) => {
               Modal.destroyAll();
 
-              mutate(PRODUCT_GROUPS.READ);
+              mutate(PRODUCT_GROUPS.READ_MESSAGES);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
@@ -64,10 +65,10 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(PRODUCT_GROUPS.DELETE, value)
+          .post(PRODUCT_GROUPS.DELETE_COMPLIANCE, value)
           .then(
             axios.spread((response) => {
-              mutate(PRODUCT_GROUPS.READ);
+              mutate(PRODUCT_GROUPS.READ_MESSAGES);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
@@ -88,7 +89,12 @@ const FormModal = ({ value }) => {
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
       <Tabs defaultActiveKey="1">
-        <TabPane tab={t('tabColumns.general')} key="1" className="ant-tab-window"></TabPane>
+        <TabPane tab={t('tabColumns.general')} key="1">
+          <MessageId form={form} value={value} />
+          <MessageName form={form} value={value} />
+          <MessageLocale form={form} value={value} />
+          <MessageDetails form={form} value={value} />
+        </TabPane>
       </Tabs>
 
       <Form.Item>

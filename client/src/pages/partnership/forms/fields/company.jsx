@@ -1,21 +1,21 @@
 import React, { useEffect } from 'react';
 
 import useSWR from 'swr';
-import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
+import { useTranslation } from 'react-i18next';
 
-import { LOAD_METERS } from '../../../../api';
+import { PARTNERSHIP } from '../../../../api';
 
-const Type = ({ form, value }) => {
+const Company = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(LOAD_METERS.TYPES);
+  const { data: options, isValidating } = useSWR(PARTNERSHIP.SUPPLIERS);
 
   const { setFieldsValue } = form;
 
   const validate = (rule, value) => {
     if (value === '' || !value) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.meterType')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.company')}`);
     }
 
     return Promise.resolve();
@@ -24,30 +24,40 @@ const Type = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        bam_type: value.bam_type,
+        partner_cmpy_code: value.partner_cmpy_code,
       });
+
+      onChange(value.partner_cmpy_code);
     }
   }, [value, setFieldsValue]);
 
+  const handleChange = (value) => {
+    setFieldsValue({
+      partner_cust_acct: undefined,
+      partner: undefined,
+    });
+
+    onChange(value);
+  };
   return (
     <Form.Item
-      name="bam_type"
-      label={t('fields.meterType')}
+      name="partner_cmpy_code"
+      label={t('fields.company')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select
         loading={isValidating}
         showSearch
-        disabled={!!value}
+        onChange={handleChange}
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectType') : null}
+        placeholder={!value ? t('placeholder.selectCompany') : null}
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.ba_meter_id}>
-            {item.ba_meter_name}
+          <Select.Option key={index} value={item.cmpy_code}>
+            {item.cmpy_name}
           </Select.Option>
         ))}
       </Select>
@@ -55,4 +65,4 @@ const Type = ({ form, value }) => {
   );
 };
 
-export default Type;
+export default Company;

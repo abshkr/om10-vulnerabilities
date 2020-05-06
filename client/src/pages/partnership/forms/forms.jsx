@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   EditOutlined,
@@ -13,47 +13,50 @@ import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
 
-import { Code, Name, Unit } from './fields';
-import { PRODUCT_GROUPS } from '../../../api';
+import { Company, Customer, Partner } from './fields';
+import { PARTNERSHIP } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value }) => {
+const FormModal = ({ value, length }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+
+  const [company, setCompany] = useState(undefined);
 
   const IS_CREATING = !value;
 
   const onFinish = (values) => {
-    Modal.confirm({
-      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
-      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
-      okType: 'primary',
-      icon: <QuestionCircleOutlined />,
-      cancelText: t('operations.no'),
-      centered: true,
-      onOk: async () => {
-        await axios
-          .post(IS_CREATING ? PRODUCT_GROUPS.CREATE : PRODUCT_GROUPS.UPDATE, values)
-          .then(
-            axios.spread((response) => {
-              Modal.destroyAll();
+    console.log(values);
+    // Modal.confirm({
+    //   title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+    //   okText: IS_CREATING ? t('operations.create') : t('operations.update'),
+    //   okType: 'primary',
+    //   icon: <QuestionCircleOutlined />,
+    //   cancelText: t('operations.no'),
+    //   centered: true,
+    //   onOk: async () => {
+    //     await axios
+    //       .post(IS_CREATING ? PARTNERSHIP.UPDATE : PARTNERSHIP.UPDATE, values)
+    //       .then(
+    //         axios.spread((response) => {
+    //           Modal.destroyAll();
 
-              mutate(PRODUCT_GROUPS.READ_GROUPS);
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-              });
-            })
-          )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
-            });
-          });
-      },
-    });
+    //           mutate(PARTNERSHIP.READ);
+    //           notification.success({
+    //             message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+    //             description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
+    //           });
+    //         })
+    //       )
+    //       .catch((error) => {
+    //         notification.error({
+    //           message: error.message,
+    //           description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
+    //         });
+    //       });
+    //   },
+    // });
   };
 
   const onDelete = () => {
@@ -65,10 +68,10 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(PRODUCT_GROUPS.DELETE, value)
+          .post(PARTNERSHIP.UPDATE, value)
           .then(
             axios.spread((response) => {
-              mutate(PRODUCT_GROUPS.READ_GROUPS);
+              mutate(PARTNERSHIP.READ);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
@@ -90,9 +93,9 @@ const FormModal = ({ value }) => {
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
       <Tabs defaultActiveKey="1">
         <TabPane tab={t('tabColumns.general')} key="1">
-          <Code form={form} value={value} />
-          <Name form={form} value={value} />
-          <Unit form={form} value={value} />
+          <Company form={form} value={value} onChange={setCompany} />
+          <Customer form={form} value={value} company={company} />
+          <Partner form={form} value={value} company={company} />
         </TabPane>
       </Tabs>
 

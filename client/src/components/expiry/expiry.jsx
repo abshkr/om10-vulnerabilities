@@ -18,28 +18,28 @@ const Expiry = ({ form, value, type }) => {
 
   const { setFieldsValue } = form;
 
-  const handleSave = row => {
+  const handleSave = (row) => {
     const payload = [...data];
 
-    const index = payload.findIndex(item => row.edt_type_code === item.edt_type_code);
+    const index = payload.findIndex((item) => row.edt_type_code === item.edt_type_code);
     const item = payload[index];
 
     payload.splice(index, 1, {
       ...item,
-      ...row
+      ...row,
     });
 
     setData(payload);
 
     setFieldsValue({
-      expiry_dates: payload
+      expiry_dates: payload,
     });
   };
 
   const handleAdd = () => {
     const uniqueExpiry = _.uniq(_.map(data, 'edt_type_code'));
 
-    const values = _.reject(payload?.records, value => {
+    const values = _.reject(payload?.records, (value) => {
       return uniqueExpiry.includes(value.edt_type_code);
     });
 
@@ -51,7 +51,7 @@ const Expiry = ({ form, value, type }) => {
     } else {
       const payload = {
         ...value,
-        ed_exp_date: value.edt_def_exp_date
+        ed_exp_date: value.edt_def_exp_date,
       };
 
       setData([...data, payload]);
@@ -59,14 +59,14 @@ const Expiry = ({ form, value, type }) => {
     }
   };
 
-  const handleDelete = key => {
+  const handleDelete = (key) => {
     const payload = [...data];
-    const source = payload.filter(item => item.edt_type_code !== key);
+    const source = payload.filter((item) => item.edt_type_code !== key);
 
     setData(source);
 
     setFieldsValue({
-      expiry_dates: source
+      expiry_dates: source,
     });
   };
 
@@ -76,7 +76,7 @@ const Expiry = ({ form, value, type }) => {
       dataIndex: 'edt_type_desc',
       key: 'edt_type_desc',
       width: 250,
-      editable: true
+      editable: true,
     },
     {
       title: t('fields.expiryDate'),
@@ -93,14 +93,14 @@ const Expiry = ({ form, value, type }) => {
               : moment(text, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')}
           </span>
         );
-      }
+      },
     },
     {
       title: t('fields.enabled'),
       dataIndex: 'ed_status',
       key: 'ed_status',
       align: 'center',
-      editable: true
+      editable: true,
     },
     {
       title: t('fields.operations'),
@@ -113,26 +113,26 @@ const Expiry = ({ form, value, type }) => {
             {/*eslint-disable */}
             <a href="#">{t('operations.delete')}</a>
           </Popconfirm>
-        ) : null
-    }
+        ) : null,
+    },
   ];
 
-  const columns = defaults.map(col => {
+  const columns = defaults.map((col) => {
     if (!col.editable) {
       return col;
     }
 
     return {
       ...col,
-      onCell: record => ({
+      onCell: (record) => ({
         record,
         data: data,
         editable: col.editable,
         dataIndex: col.dataIndex,
         title: col.title,
         expiry: payload?.records,
-        handleSave: handleSave
-      })
+        handleSave: handleSave,
+      }),
     };
   });
 
@@ -154,8 +154,8 @@ const Expiry = ({ form, value, type }) => {
         components={{
           body: {
             row: Row,
-            cell: Cell
-          }
+            cell: Cell,
+          },
         }}
         rowClassName={() => 'editable-row'}
         bordered
