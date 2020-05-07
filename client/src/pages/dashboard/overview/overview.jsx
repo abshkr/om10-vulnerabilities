@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Col, Row } from 'antd';
 import { useTranslation } from 'react-i18next';
+import ReactApexChart from 'react-apexcharts';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -11,95 +12,151 @@ const Overview = () => {
   const { t } = useTranslation();
   const { data: payload } = useSWR(DASHBOARD.OVERVIEW);
 
-  const [weekly, setWeekly] = useState({});
+  const [weeklySeries, setWeeklySeries] = useState([]);
+  const [weeklyOptions, setWeeklyOptions] = useState({});
 
-  const data = payload?.records[0] || {};
+  const [storageSeries, setStorageSeries] = useState([]);
+  const [storageOptions, setStorageOptions] = useState({});
 
-  const isLoading = !payload;
-
-  const colors = ['#0054a4', '#f79043', '#edc3b2', '#24b55e', '#f94646'];
-
-  const throughput = () => {};
-
-  const storage = () => {
-    const set = [];
-
-    _.forEach(data?.storage, (store, index) => {
-      const payload = {
-        label: store.tank_base,
-        data: [store.sum_amb],
-        backgroundColor: colors[index],
-        hoverBackgroundColor: colors[index],
-        hoverBorderColor: colors[index],
-      };
-
-      set.push(payload);
-    });
-
-    return {
-      labels: ['Product'],
-      datasets: set,
-    };
-  };
-
-  const folio = () => {
-    const set = [];
-
-    _.forEach(data?.folio_throughput, (store, index) => {
-      const payload = {
-        label: store.tank_base,
-        data: [store.sum_amb],
-        backgroundColor: colors[index],
-        hoverBackgroundColor: colors[index],
-        hoverBorderColor: colors[index],
-      };
-
-      set.push(payload);
-    });
-
-    return {
-      labels: ['Product'],
-      datasets: set,
-    };
-  };
+  const [folioSeries, setFolioSeries] = useState([]);
+  const [folioOptions, setFolioOptions] = useState({});
 
   useEffect(() => {
-    const payload = [];
+    const entry = payload?.records && payload?.records[0];
+    const series = [];
 
-    const weeks = _.uniq(_.map(data?.weekly_throughput, 'wk'));
+    if (entry?.weekly_throughput) {
+      const bases = _.uniq(_.map(entry?.weekly_throughput, 'base_name'));
+      const dates = _.uniq(_.map(entry?.weekly_throughput, 'wk'));
 
-    _.forEach(weeks, (week) => {
-      const byWeek = _.filter(data?.weekly_throughput, ['wk', week]);
-      const instance = {};
+      for (let index = 0; index < bases.length; index++) {
+        const base = bases[index];
+        const points = [];
 
-      _.forEach(byWeek, (entry) => {
-        instance[entry.trsf_base_p] = entry.qty_amb;
-      });
+        _.forEach(dates, (date) => {
+          const match = _.find(entry?.weekly_throughput, (object) => {
+            return object.wk === date && object.base_name === base;
+          });
 
-      console.log(instance);
-      payload.push({
-        label: Object.keys(instance),
-        data: Object.values(instance),
-      });
-    });
+          if (match) {
+            points.push(_.toNumber(match.qty_amb));
+          } else {
+            points.push(0);
+          }
+        });
 
-    setWeekly({
-      labels: weeks,
-      datasets: payload,
-    });
-  }, [data]);
+        series.push({
+          name: base,
+          data: points,
+        });
+      }
+
+      const options = {
+        chart: {
+          zoom: {
+            enabled: false,
+          },
+        },
+        labels: dates,
+      };
+
+      setWeeklyOptions(options);
+      setWeeklySeries(series);
+    }
+  }, [payload]);
+
+  useEffect(() => {
+    const entry = payload?.records && payload?.records[0];
+
+    if (entry?.storage) {
+      const payload = {};
+
+      for (let index = 0; index < entry?.storage.length; index++) {
+        const base = entry?.storage[index];
+        payload[base.base_name] = _.toNumber(base.qty_cor);
+      }
+
+      const options = {
+        chart: {
+          zoom: {
+            enabled: false,
+          },
+        },
+
+        plotOptions: {
+          bar: {
+            horizontal: true,
+          },
+        },
+        dataLabels: {
+          enabled: false,
+        },
+        labels: Object.keys(payload),
+      };
+
+      const series = [
+        {
+          data: Object.values(payload),
+        },
+      ];
+
+      setStorageOptions(options);
+      setStorageSeries(series);
+    }
+  }, [payload]);
+
+  useEffect(() => {
+    const entry = payload?.records && payload?.records[0];
+
+    if (entry?.folio_throughput) {
+      const payload = {};
+
+      for (let index = 0; index < entry?.folio_throughput.length; index++) {
+        const base = entry?.folio_throughput[index];
+        payload[base.base_name] = _.toNumber(base.qty_cmb);
+      }
+
+      const options = {
+        chart: {
+          zoom: {
+            enabled: false,
+          },
+        },
+
+        plotOptions: {
+          bar: {
+            horizontal: true,
+          },
+        },
+        dataLabels: {
+          enabled: false,
+        },
+        labels: Object.keys(payload),
+      };
+
+      const series = [
+        {
+          data: Object.values(payload),
+        },
+      ];
+
+      setFolioOptions(options);
+      setFolioSeries(series);
+    }
+  }, [payload]);
 
   return (
     <>
       <Row gutter={[16, 16]}>
         <Col span={12}>
-          <Card title="Daily Throughput Totals (m3)" hoverable size="small">
-            <Chart type="bar" height={100} data={throughput()} />
+          <Card title="Daily Throughput Totals (m3)" hoverable size="small" loading={!payload}>
+            <ReactApexChart options={weeklyOptions} series={weeklySeries} type="line" height={300} />
           </Card>
         </Col>
+
         <Col span={12}>
-          <Card title="Product Storage (m3)" hoverable size="small">
-            <Chart type="bar" height={100} data={storage()} />
+          <Card title="Base Product Storage (m3)" hoverable size="small">
+            <ReactApexChart options={storageOptions} series={storageSeries} type="bar" height={300} />
           </Card>
         </Col>
       </Row>
@@ -107,12 +164,13 @@ const Overview = () => {
       <Row gutter={[16, 16]}>
         <Col span={12}>
           <Card title="Current Folio Throughput (m3)" hoverable size="small">
-            <Chart type="bar" height={100} data={folio()} />
+            <ReactApexChart options={folioOptions} series={folioSeries} type="bar" height={300} />
           </Card>
         </Col>
+
         <Col span={12}>
           <Card title="Weekly Throughput (m3)" hoverable size="small">
-            <Chart type="line" height={100} data={weekly} />
+            <ReactApexChart options={weeklyOptions} series={weeklySeries} type="line" height={300} />
           </Card>
         </Col>
       </Row>

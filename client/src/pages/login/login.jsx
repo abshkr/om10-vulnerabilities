@@ -34,6 +34,7 @@ const Login = ({ handleLogin, auth }) => {
 
   const [isLoading, setLoading] = useState(false);
   const [attempts, setAttempts] = useState(remainingAttempts);
+  const [status, setStatus] = useState(1);
 
   const history = useHistory();
 
@@ -58,6 +59,8 @@ const Login = ({ handleLogin, auth }) => {
         setLoading(false);
         const attempt =
           _.toNumber(response?.data.attempt_left) < 0 ? 0 : _.toNumber(response?.data.attempt_left);
+
+        setStatus(_.toNumber(response?.data.user_status_flag));
 
         setAttempts(attempt);
         notification.error({
@@ -173,16 +176,16 @@ const Login = ({ handleLogin, auth }) => {
               }
             >
               <div style={{ textAlign: 'center', color: 'red' }}>
-                {attempts < remainingAttempts ? `You have ${attempts} attempts left.` : ``}
+                {attempts < remainingAttempts && status === 2 ? `You have ${attempts} attempts left.` : ``}
               </div>
               <Button
                 size="large"
                 type="primary"
                 htmlType="submit"
                 loading={isLoading}
-                disabled={attempts === 0}
+                disabled={status === 2}
               >
-                {attempts === 0 ? t('operations.locked') : t('operations.logIn')}
+                {status === 2 ? t('operations.locked') : t('operations.logIn')}
               </Button>
             </Form.Item>
           </Form>
