@@ -273,7 +273,7 @@ const paths = [
 
   {
     path: ROUTES.PARTNERS,
-    component: lazy(() => import('../pages/partnership')),
+    component: lazy(() => import('../pages/partners')),
   },
 
   {

@@ -17,6 +17,7 @@ const config = {
     labels: {
       fontColor: CHART_CONFIG.LABEL_COLOR,
       fontFamily: CHART_CONFIG.FONT_FAMILY,
+      usePointStyle: true,
     },
   },
 };

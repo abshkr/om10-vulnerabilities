@@ -502,7 +502,15 @@
     "partnerTypeCode": "Partner Type Code",
     "partnerType": "Partner Type",
     "partnerAddressCode": "Partner Address Code",
-    "partnerAddress": "Partner Address"
+    "partnerAddress": "Partner Address",
+    "bayNumber": "Bay Number",
+    "numberOfUnloads": "Number of Unloads",
+    "totalProducts": "Total Products",
+    "averageQuantityLoad": "Average Quantity Load",
+    "baysLoads": "Bay Loads",
+    "percentage": "Percentage",
+    "maxId": "Max Id",
+    "totalTransactions": "Total Transactions"
   },
 
   "pageMenu": {

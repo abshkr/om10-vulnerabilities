@@ -46,11 +46,15 @@ import * as TANK_STATUS from './tank-status';
 import * as TANK_STRAPPING from './tank-strapping';
 import * as AUDITING_DATA from './auditing-data';
 import * as PARTNERSHIP from './partnership';
+import * as PARTNERS from './partners';
+import * as DASHBOARD from './dashboard';
 
 export {
   AUTH,
   EQUIPMENT_LIST,
+  DASHBOARD,
   PARTNERSHIP,
+  PARTNERS,
   TANKS,
   TIME_CODES,
   HAZCHEM_CODES,

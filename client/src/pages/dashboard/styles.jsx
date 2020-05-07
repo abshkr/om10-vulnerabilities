@@ -14,6 +14,11 @@ const DashboardContainer = styled.div`
     color: white;
   }
 
+  .ant-statistic-content {
+    font-weight: bold;
+    font-size: 36px;
+  }
+
   .ant-card-head {
     background: #fafafa;
     color: rgb(0, 84, 164);

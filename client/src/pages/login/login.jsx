@@ -56,7 +56,10 @@ const Login = ({ handleLogin, auth }) => {
         });
       } else {
         setLoading(false);
-        setAttempts(attempts - 1);
+        const attempt =
+          _.toNumber(response?.data.attempt_left) < 0 ? 0 : _.toNumber(response?.data.attempt_left);
+
+        setAttempts(attempt);
         notification.error({
           placement: 'bottomRight',
           message: t('messages.loginFailed'),

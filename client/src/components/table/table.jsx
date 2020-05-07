@@ -54,6 +54,7 @@ const Table = ({
   selectionMode,
   apiContext,
   extra,
+  minimal,
 }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
@@ -121,11 +122,19 @@ const Table = ({
         }}
         className="ag-theme-balham"
       >
-        <Search value={value} search={setValue} isLoading={isLoading && !data} />
+        {!minimal && (
+          <>
+            <Search value={value} search={setValue} isLoading={isLoading && !data} />
 
-        <Button icon={<ClearOutlined />} style={{ float: 'right', marginLeft: 10 }} onClick={onFilterClear}>
-          Clear Filters
-        </Button>
+            <Button
+              icon={<ClearOutlined />}
+              style={{ float: 'right', marginLeft: 10 }}
+              onClick={onFilterClear}
+            >
+              Clear Filters
+            </Button>
+          </>
+        )}
 
         <div style={{ float: 'right' }}>{extra}</div>
 
