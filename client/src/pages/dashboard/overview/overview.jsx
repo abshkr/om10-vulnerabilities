@@ -155,7 +155,7 @@ const Overview = () => {
         </Col>
 
         <Col span={12}>
-          <Card title="Base Product Storage (m3)" hoverable size="small">
+          <Card title="Base Product Storage (m3)" hoverable size="small" loading={!payload}>
             <ReactApexChart options={storageOptions} series={storageSeries} type="bar" height={300} />
           </Card>
         </Col>
@@ -163,13 +163,13 @@ const Overview = () => {
 
       <Row gutter={[16, 16]}>
         <Col span={12}>
-          <Card title="Current Folio Throughput (m3)" hoverable size="small">
+          <Card title="Current Folio Throughput (m3)" hoverable size="small" loading={!payload}>
             <ReactApexChart options={folioOptions} series={folioSeries} type="bar" height={300} />
           </Card>
         </Col>
 
         <Col span={12}>
-          <Card title="Weekly Throughput (m3)" hoverable size="small">
+          <Card title="Weekly Throughput (m3)" hoverable size="small" loading={!payload}>
             <ReactApexChart options={weeklyOptions} series={weeklySeries} type="line" height={300} />
           </Card>
         </Col>
