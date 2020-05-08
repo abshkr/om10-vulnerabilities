@@ -28,12 +28,10 @@ import { ROUTES, SETTINGS } from '../../constants';
 import { Icons } from '../../components/';
 
 const Login = ({ handleLogin, auth }) => {
-  const remainingAttempts = 10;
-
   const { i18n, t } = useTranslation();
 
   const [isLoading, setLoading] = useState(false);
-  const [attempts, setAttempts] = useState(remainingAttempts);
+  const [attempts, setAttempts] = useState(null);
   const [status, setStatus] = useState(1);
 
   const history = useHistory();
@@ -110,6 +108,7 @@ const Login = ({ handleLogin, auth }) => {
     }
   }, [auth, history]);
 
+  console.log(attempts);
   return (
     <LoginContainer>
       <Helmet>
@@ -176,16 +175,16 @@ const Login = ({ handleLogin, auth }) => {
               }
             >
               <div style={{ textAlign: 'center', color: 'red' }}>
-                {attempts < remainingAttempts && status === 2 ? `You have ${attempts} attempts left.` : ``}
+                {attempts !== null ? `You have ${attempts} attempts left.` : ``}
               </div>
               <Button
                 size="large"
                 type="primary"
                 htmlType="submit"
                 loading={isLoading}
-                disabled={status === 2}
+                disabled={status === 2 || attempts < 0}
               >
-                {status === 2 ? t('operations.locked') : t('operations.logIn')}
+                {status === 2 || attempts < 0 ? t('operations.locked') : t('operations.logIn')}
               </Button>
             </Form.Item>
           </Form>
