@@ -6,15 +6,16 @@ import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, FormModal } from '../../components';
-import { PARTNERS } from '../../api';
+import { KEY_READER_DEVICES } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
+
 import Forms from './forms';
 
-const Partners = () => {
+const KeyReaderDevices = () => {
   const { t } = useTranslation();
 
-  const { data: payload, isValidating, revalidate } = useSWR(PARTNERS.READ);
+  const { data: payload, isValidating, revalidate } = useSWR(KEY_READER_DEVICES.READ);
 
   const fields = columns(t);
   const data = payload?.records;
@@ -23,8 +24,8 @@ const Partners = () => {
     FormModal({
       value,
       form: <Forms value={value} />,
-      id: value?.prtnr_seq,
-      name: value?.prtnr_cmpy_name,
+      id: value?.adv_code,
+      name: value?.dev_type,
       t,
     });
   };
@@ -42,10 +43,10 @@ const Partners = () => {
   );
 
   return (
-    <Page page={t('pageMenu.customers')} name={t('pageNames.partners')} modifiers={modifiers}>
+    <Page page={t('pageMenu.accessControl')} name={t('pageNames.keyReaderDevices')} modifiers={modifiers}>
       <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );
 };
 
-export default auth(Partners);
+export default auth(KeyReaderDevices);

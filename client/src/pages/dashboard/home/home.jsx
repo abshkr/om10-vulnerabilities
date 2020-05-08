@@ -11,7 +11,7 @@ const Home = () => {
   const { t } = useTranslation();
   const { data: payload } = useSWR(DASHBOARD.HOME);
 
-  const data = payload?.records[0] || {};
+  const data = payload?.records ? payload?.records[0] : {};
 
   const isLoading = !payload;
 

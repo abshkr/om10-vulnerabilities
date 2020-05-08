@@ -6,15 +6,17 @@ import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, FormModal } from '../../components';
-import { PARTNERS } from '../../api';
+import { TANK_GROUPS } from '../../api';
+
 import columns from './columns';
 import auth from '../../auth';
+
 import Forms from './forms';
 
-const Partners = () => {
+const TankGroups = () => {
   const { t } = useTranslation();
 
-  const { data: payload, isValidating, revalidate } = useSWR(PARTNERS.READ);
+  const { data: payload, isValidating, revalidate } = useSWR(TANK_GROUPS.READ);
 
   const fields = columns(t);
   const data = payload?.records;
@@ -23,8 +25,8 @@ const Partners = () => {
     FormModal({
       value,
       form: <Forms value={value} />,
-      id: value?.prtnr_seq,
-      name: value?.prtnr_cmpy_name,
+      id: value?.mlitm_id,
+      name: value?.mlitm_mov_key,
       t,
     });
   };
@@ -42,10 +44,10 @@ const Partners = () => {
   );
 
   return (
-    <Page page={t('pageMenu.customers')} name={t('pageNames.partners')} modifiers={modifiers}>
+    <Page page={t('pageMenu.gantry')} name={t('pageNames.tankGroups')} modifiers={modifiers}>
       <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );
 };
 
-export default auth(Partners);
+export default auth(TankGroups);

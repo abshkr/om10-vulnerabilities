@@ -57,6 +57,11 @@ const paths = [
   },
 
   {
+    path: ROUTES.KEY_READER_DEVICES,
+    component: lazy(() => import('../pages/key-reader-devices')),
+  },
+
+  {
     path: ROUTES.SITE_BALANCE,
     component: lazy(() => import('../pages/site-balance')),
   },
@@ -153,7 +158,7 @@ const paths = [
 
   {
     path: ROUTES.TANK_GROUPS,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/tank-groups')),
   },
 
   {

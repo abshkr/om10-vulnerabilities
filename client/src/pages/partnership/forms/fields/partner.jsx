@@ -46,9 +46,7 @@ const Partner = ({ form, value, company }) => {
 
     _.forEach(options?.records, (record) => {
       if (values.includes(record.prtnr_name1)) {
-        console.log(record);
         payload.push({
-          partner_cmpy_code: record.prtnr_cmpy,
           partner_seq: record.prtnr_seq,
         });
       }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import {
   EditOutlined,
@@ -8,26 +8,68 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Select, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import useSWR, { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 
-import { Company, Customer, Partner } from './fields';
-import { PARTNERSHIP } from '../../../api';
+import { PARTNERS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, length }) => {
+const FormModal = ({ value }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
-  const [company, setCompany] = useState(undefined);
-
   const IS_CREATING = !value;
 
+  const { data: suppliers, isValidating: suppliersLoading } = useSWR(PARTNERS.SUPPLIERS);
+  const { data: addresses, isValidating: addressLoading } = useSWR(PARTNERS.ADDRESSES);
+  const { data: types, isValidating: typeLoading } = useSWR(PARTNERS.PARTNER_TYPE);
+  const { data: payload, isValidating: readLoading } = useSWR(PARTNERS.READ);
+
+  const isLoading = suppliersLoading || typeLoading || addressLoading || readLoading;
+
+  const validate = (rule, input) => {
+    const map = {
+      prtnr_code: t('fields.partnerCode'),
+      prtnr_cmpy: t('fields.company'),
+      prtnr_type: t('fields.partnerType'),
+      prtnr_name1: t('fields.partnerName'),
+      prtnr_addr: t('fields.partnerAddress'),
+    };
+
+    const action = {
+      prtnr_code: t('validate.set'),
+      prtnr_cmpy: t('validate.select'),
+      prtnr_type: t('validate.select'),
+      prtnr_name1: t('validate.select'),
+      prtnr_addr: t('validate.select'),
+    };
+
+    if (rule.field === 'prtnr_code') {
+      const match = _.find(payload?.records, (record) => {
+        return record?.prtnr_code === input;
+      });
+
+      if (!!match && !value) {
+        return Promise.reject(t('descriptions.alreadyExists'));
+      }
+    }
+
+    if (input === '' || !input) {
+      return Promise.reject(`${action[rule.field]} ─ ${map[rule.field]}`);
+    }
+
+    return Promise.resolve();
+  };
+
   const onFinish = (values) => {
+    if (!IS_CREATING) {
+      values.prtnr_seq = value.prtnr_seq;
+    }
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -37,12 +79,12 @@ const FormModal = ({ value, length }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(IS_CREATING ? PARTNERSHIP.UPDATE : PARTNERSHIP.UPDATE, _.omit(values, ['partner']))
+          .post(IS_CREATING ? PARTNERS.CREATE : PARTNERS.UPDATE, values)
           .then(
             axios.spread((response) => {
               Modal.destroyAll();
 
-              mutate(PARTNERSHIP.READ);
+              mutate(PARTNERS.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
@@ -68,10 +110,10 @@ const FormModal = ({ value, length }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(PARTNERSHIP.UPDATE, value)
+          .post(PARTNERS.DELETE, value)
           .then(
             axios.spread((response) => {
-              mutate(PARTNERSHIP.READ);
+              mutate(PARTNERS.READ);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
@@ -90,12 +132,108 @@ const FormModal = ({ value, length }) => {
   };
 
   return (
-    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError initialValues={value}>
       <Tabs defaultActiveKey="1">
         <TabPane tab={t('tabColumns.general')} key="1">
-          <Company form={form} value={value} onChange={setCompany} />
-          <Customer form={form} value={value} company={company} />
-          <Partner form={form} value={value} company={company} />
+          <Form.Item
+            name="prtnr_code"
+            label={t('fields.partnerCode')}
+            rules={[{ required: true, validator: validate }]}
+          >
+            <Input disabled={!!value} />
+          </Form.Item>
+
+          <Form.Item
+            name="prtnr_cmpy"
+            label={t('fields.company')}
+            rules={[{ required: true, validator: validate }]}
+          >
+            <Select
+              loading={isLoading}
+              showSearch
+              optionFilterProp="children"
+              placeholder={!value ? t('placeholder.selectCompany') : null}
+              disabled={!!value}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {suppliers?.records.map((item, index) => (
+                <Select.Option key={index} value={item.cmpy_code}>
+                  {item.cmpy_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="prtnr_type"
+            label={t('fields.partnerType')}
+            rules={[{ required: true, validator: validate }]}
+          >
+            <Select
+              loading={isLoading}
+              showSearch
+              optionFilterProp="children"
+              placeholder={!value ? t('placeholder.selectType') : null}
+              disabled={!!value}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {types?.records.map((item, index) => (
+                <Select.Option key={index} value={item.partner_type_code}>
+                  {item.partner_type_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="prtnr_name1"
+            label={t('fields.partnerName')}
+            rules={[{ required: true, validator: validate }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item name="prtnr_name2">
+            <Input />
+          </Form.Item>
+
+          <Form.Item name="prtnr_name3">
+            <Input />
+          </Form.Item>
+
+          <Form.Item name="prtnr_name4">
+            <Input />
+          </Form.Item>
+
+          <Form.Item name="prtnr_name5">
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="prtnr_addr"
+            label={t('fields.partnerAddress')}
+            rules={[{ required: true, validator: validate }]}
+          >
+            <Select
+              loading={isLoading}
+              showSearch
+              optionFilterProp="children"
+              placeholder={!value ? t('placeholder.selectAddress') : null}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {addresses?.records.map((item, index) => (
+                <Select.Option key={index} value={item.db_address_key}>
+                  {item.address_text}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
         </TabPane>
       </Tabs>
 

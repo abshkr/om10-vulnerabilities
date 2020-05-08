@@ -199,6 +199,9 @@ const AntdStyleProvider = createGlobalStyle`
 
   }
 
+  .ant-page-header-compact .ant-page-header-heading {
+    margin-top: 0px;
+  }
   .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected {
     background-color: #0054A4;
   }

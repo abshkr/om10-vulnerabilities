@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   EditOutlined,
@@ -8,14 +8,15 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Input, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import useSWR, { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 
-import { Company, Customer, Partner } from './fields';
-import { PARTNERSHIP } from '../../../api';
+import { TANK_GROUPS } from '../../../api';
+import { DataTable } from '../../../components';
+import columns from './columns';
 
 const TabPane = Tabs.TabPane;
 
@@ -23,9 +24,15 @@ const FormModal = ({ value }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
-  const [company, setCompany] = useState(undefined);
+  const [tankData, setTankData] = useState([]);
+  const [tanks, setTanks] = useState([]);
+  const [selected, setSelected] = useState(null);
+
+  const { data: items } = useSWR(TANK_GROUPS.ITEMS);
 
   const IS_CREATING = !value;
+
+  const fields = columns(t);
 
   const onFinish = (values) => {
     Modal.confirm({
@@ -37,12 +44,12 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(PARTNERSHIP.UPDATE, _.omit(values, ['partner']))
+          .post(IS_CREATING ? TANK_GROUPS.CREATE : TANK_GROUPS.UPDATE, values)
           .then(
             axios.spread((response) => {
               Modal.destroyAll();
 
-              mutate(PARTNERSHIP.READ);
+              mutate(TANK_GROUPS.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
@@ -68,14 +75,10 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(PARTNERSHIP.UPDATE, {
-            partner_cust_acct: value.partner_cust_acct,
-            partner_cmpy_code: value.partner_cmpy_code,
-            partners: [],
-          })
+          .post(TANK_GROUPS.DELETE, value)
           .then(
             axios.spread((response) => {
-              mutate(PARTNERSHIP.READ);
+              mutate(TANK_GROUPS.READ);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
@@ -93,13 +96,68 @@ const FormModal = ({ value }) => {
     });
   };
 
+  const handleTankChange = (value) => {
+    const base = _.find(items?.records, ['tank_code', value[0]]);
+
+    if (base?.tank_basecode) {
+      const payload = _.filter(items?.records, ['tank_basecode', base?.tank_basecode]);
+
+      setTanks(payload);
+
+      const chosen = _.filter();
+    } else {
+      setTanks(items?.records);
+    }
+  };
+
+  useEffect(() => {
+    if (value) {
+      const payload = _.filter(items?.records, ['tank_basecode', value.tgr_basecode]);
+
+      setTanks(payload);
+    } else {
+      setTanks(items?.records || []);
+    }
+  }, [value, items]);
+
+  useEffect(() => {
+    if (value) {
+      form.setFieldsValue({
+        tgr_tanklist: value.tgr_tanklist.trim().split(', '),
+      });
+    }
+  }, [value]);
+
   return (
-    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-      <Tabs defaultActiveKey="1">
-        <TabPane tab={t('tabColumns.general')} key="1">
-          <Company form={form} value={value} onChange={setCompany} />
-          <Customer form={form} value={value} company={company} />
-          <Partner form={form} value={value} company={company} />
+    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError initialValues={value}>
+      <Tabs defaultActiveKey="1" animated={false}>
+        <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
+          <Form.Item name="tgr_name" label={t('fields.groupName')}>
+            <Input disabled={!!value} />
+          </Form.Item>
+
+          <Form.Item name="tgr_tanklist">
+            <Select
+              showSearch
+              onChange={handleTankChange}
+              mode="multiple"
+              optionFilterProp="children"
+              placeholder={!value ? t('placeholder.selectBaseProduct') : null}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {tanks.map((item, index) => (
+                <Select.Option key={index} value={item.tank_code}>
+                  {`${t('fields.baseProductCode')}: ${item.tank_basecode} - ${t('fields.tankCode')}: ${
+                    item.tank_code
+                  }`}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <DataTable height="60vh" data={tankData} columns={fields} minimal />
         </TabPane>
       </Tabs>
 

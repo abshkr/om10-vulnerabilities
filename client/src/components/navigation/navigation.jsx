@@ -111,7 +111,7 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANK_GROUPS}>
-            <Badge status="error" /> {t('pageNames.tankGroups')}
+            <Badge status="warning" /> {t('pageNames.tankGroups')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.BASE_PRODUCTS}>
@@ -210,6 +210,11 @@ const Navigation = () => {
           <Menu.Item key={ROUTES.SITE_ACCESS_DEVICES}>
             <Badge status="success" /> {t('pageNames.siteAccessDevices')}
           </Menu.Item>
+
+          <Menu.Item key={ROUTES.KEY_READER_DEVICES}>
+            <Badge status="success" /> {t('pageNames.keyReaderDevices')}
+          </Menu.Item>
+
           <Menu.Item key={ROUTES.GATE_PERMISSION}>
             <Badge status="warning" /> {t('pageNames.gatePermission')}
           </Menu.Item>
@@ -245,10 +250,10 @@ const Navigation = () => {
             <Badge status="error" /> {t('pageNames.deliveryLocations')}
           </Menu.Item>
           <Menu.Item key={ROUTES.PARTNERS}>
-            <Badge status="error" /> {t('pageNames.partners')}
+            <Badge status="success" /> {t('pageNames.partners')}
           </Menu.Item>
           <Menu.Item key={ROUTES.PARTNERSHIP}>
-            <Badge status="error" /> {t('pageNames.partnership')}
+            <Badge status="warning" /> {t('pageNames.partnership')}
           </Menu.Item>
         </SubMenu>
 

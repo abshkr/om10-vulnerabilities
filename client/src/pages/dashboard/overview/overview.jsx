@@ -5,12 +5,14 @@ import ReactApexChart from 'react-apexcharts';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { Chart } from '../../../components';
 import { DASHBOARD } from '../../../api';
 
 const Overview = () => {
   const { t } = useTranslation();
   const { data: payload } = useSWR(DASHBOARD.OVERVIEW);
+
+  const [dailySeries, setDailySeries] = useState([]);
+  const [dailyOptions, setDailyOptions] = useState({});
 
   const [weeklySeries, setWeeklySeries] = useState([]);
   const [weeklyOptions, setWeeklyOptions] = useState({});
@@ -145,12 +147,52 @@ const Overview = () => {
     }
   }, [payload]);
 
+  useEffect(() => {
+    const entry = payload?.records && payload?.records[0];
+
+    if (entry?.throughput) {
+      const payload = {};
+
+      for (let index = 0; index < entry?.throughput.length; index++) {
+        const base = entry?.throughput[index];
+        payload[base.base_name] = _.toNumber(base.qty_cmb);
+      }
+
+      const options = {
+        chart: {
+          zoom: {
+            enabled: false,
+          },
+        },
+
+        plotOptions: {
+          bar: {
+            horizontal: true,
+          },
+        },
+        dataLabels: {
+          enabled: false,
+        },
+        labels: Object.keys(payload),
+      };
+
+      const series = [
+        {
+          data: Object.values(payload),
+        },
+      ];
+
+      setDailyOptions(options);
+      setDailySeries(series);
+    }
+  }, [payload]);
+
   return (
     <>
       <Row gutter={[16, 16]}>
         <Col span={12}>
           <Card title="Daily Throughput Totals (m3)" hoverable size="small" loading={!payload}>
-            <ReactApexChart options={weeklyOptions} series={weeklySeries} type="line" height={300} />
+            <ReactApexChart options={dailyOptions} series={dailySeries} type="line" height={300} />
           </Card>
         </Col>
 

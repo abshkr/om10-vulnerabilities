@@ -1,13 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Col, Row, Tabs } from 'antd';
+import { Tabs } from 'antd';
 
 import { DashboardContainer } from './styles';
-import { Page, Chart } from '../../components';
+import { Page } from '../../components';
 import auth from '../../auth';
 
 import Home from './home';
 import Overview from './overview';
+import ReleaseNotes from './release-notes';
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -22,6 +23,10 @@ const Dashboard = () => {
 
           <Tabs.TabPane tab="Overview" key="1">
             <Overview />
+          </Tabs.TabPane>
+
+          <Tabs.TabPane tab="Release Notes" key="3">
+            <ReleaseNotes />
           </Tabs.TabPane>
         </Tabs>
       </DashboardContainer>

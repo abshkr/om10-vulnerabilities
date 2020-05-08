@@ -510,7 +510,9 @@
     "baysLoads": "Bay Loads",
     "percentage": "Percentage",
     "maxId": "Max Id",
-    "totalTransactions": "Total Transactions"
+    "totalTransactions": "Total Transactions",
+    "use": "Use",
+    "partner": "Partner"
   },
 
   "pageMenu": {
@@ -527,7 +529,8 @@
     "customers": "Customers",
     "printerConfiguration": "Printer Configuration",
     "stockReconciliation": "Stock Reconciliation",
-    "user": "User"
+    "user": "User",
+    "stock": "Stock"
   },
 
   "pageNames": {
@@ -563,7 +566,7 @@
     "hazchemCodes": "Hazchem Codes",
     "fscStatus": "FSC Status",
     "allocations": "Allocations",
-    "loadSchedules": "Load Schuedules",
+    "loadSchedules": "Load Schedules",
     "transactionList": "Transaction List",
     "selfFuelTransactionList": "Self Fuel Transaction List",
     "loadBays": "Load Bays",
@@ -918,7 +921,9 @@
     "selectClass": "Select Class",
     "selectSourceType": "Select Source Type",
     "selectDestinationType": "Select Destination Type",
-    "selectBay": "Select Bay"
+    "selectBay": "Select Bay",
+    "selectUse": "Select Use",
+    "selectPartner": "Select Partner"
   },
 
   "validate": {

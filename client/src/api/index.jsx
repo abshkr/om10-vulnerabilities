@@ -48,6 +48,8 @@ import * as AUDITING_DATA from './auditing-data';
 import * as PARTNERSHIP from './partnership';
 import * as PARTNERS from './partners';
 import * as DASHBOARD from './dashboard';
+import * as TANK_GROUPS from './tank-groups';
+import * as KEY_READER_DEVICES from './key-reader-devices';
 
 export {
   AUTH,
@@ -64,6 +66,7 @@ export {
   LOGICAL_PRINTERS,
   ROLE_ACCESS_MANAGEMENT,
   ADAPTIVE_FLOW_CONTROL,
+  KEY_READER_DEVICES,
   COMMON,
   AREA,
   JOURNAL,
@@ -100,4 +103,5 @@ export {
   TANK_STATUS,
   TANK_STRAPPING,
   AUDITING_DATA,
+  TANK_GROUPS,
 };

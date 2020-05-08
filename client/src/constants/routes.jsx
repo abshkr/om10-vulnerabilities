@@ -52,6 +52,7 @@ export const SITE_ACCESS_DEVICES = '/site-access-devices';
 export const GATE_PERMISSION = '/gate-permission';
 export const GATE_CONTROL = '/gate-control';
 export const TIME_CODES = '/time-codes';
+export const KEY_READER_DEVICES = '/key-reader-devices';
 
 export const CUSTOMERS = '/customers';
 export const ORDER_LISTING = '/order-listing';

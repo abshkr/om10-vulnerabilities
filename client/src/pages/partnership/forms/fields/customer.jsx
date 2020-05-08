@@ -13,6 +13,14 @@ const Customer = ({ form, value, company }) => {
 
   const { setFieldsValue } = form;
 
+  const validate = (rule, value) => {
+    if (value === '' || !value) {
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.customer')}`);
+    }
+
+    return Promise.resolve();
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -22,7 +30,11 @@ const Customer = ({ form, value, company }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="partner_cust_acct" label={t('fields.customer')}>
+    <Form.Item
+      name="partner_cust_acct"
+      label={t('fields.customer')}
+      rules={[{ required: true, validator: validate }]}
+    >
       <Select
         loading={isValidating}
         showSearch

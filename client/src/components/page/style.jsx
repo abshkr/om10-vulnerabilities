@@ -5,6 +5,7 @@ const PageContainer = styled.div`
     padding-top: 0px;
     padding-left: 5px;
     padding-right: 0px;
+    padding-bottom: 3px;
     width: 35vw !important;
   }
 
@@ -28,7 +29,7 @@ const PageHeaderExtras = styled.div`
 
 const PageInjector = styled.div`
   border: ${(props) => (props.isBlank ? 'none' : '1px solid #d9d9d9')};
-  padding: 10px;
+  padding: ${(props) => (props.isBlank ? 'none' : '10px')};
   background: ${(props) => (props.isBlank ? 'none' : '#fff')};
   border-radius: 2px;
   margin-bottom: 15px;

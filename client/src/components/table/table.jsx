@@ -138,7 +138,7 @@ const Table = ({
 
         <div style={{ float: 'right' }}>{extra}</div>
 
-        <div style={{ height: `calc(100vh - ${height || '255px'})`, marginTop: 5 }}>
+        <div style={{ height: `calc(100vh - ${height || '300px'})`, marginTop: 5 }}>
           <AgGridReact
             columnDefs={columns}
             rowData={data}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import {
   EditOutlined,
@@ -14,16 +14,15 @@ import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 
-import { Company, Customer, Partner } from './fields';
-import { PARTNERSHIP } from '../../../api';
+import { Code, Type, Use } from './fields';
+
+import { KEY_READER_DEVICES } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-
-  const [company, setCompany] = useState(undefined);
 
   const IS_CREATING = !value;
 
@@ -37,12 +36,12 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(PARTNERSHIP.UPDATE, _.omit(values, ['partner']))
+          .post(IS_CREATING ? KEY_READER_DEVICES.CREATE : KEY_READER_DEVICES.UPDATE, values)
           .then(
             axios.spread((response) => {
               Modal.destroyAll();
 
-              mutate(PARTNERSHIP.READ);
+              mutate(KEY_READER_DEVICES.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
@@ -68,14 +67,10 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(PARTNERSHIP.UPDATE, {
-            partner_cust_acct: value.partner_cust_acct,
-            partner_cmpy_code: value.partner_cmpy_code,
-            partners: [],
-          })
+          .post(KEY_READER_DEVICES.DELETE, value)
           .then(
             axios.spread((response) => {
-              mutate(PARTNERSHIP.READ);
+              mutate(KEY_READER_DEVICES.READ);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
@@ -94,12 +89,12 @@ const FormModal = ({ value }) => {
   };
 
   return (
-    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError initialValues={value}>
       <Tabs defaultActiveKey="1">
         <TabPane tab={t('tabColumns.general')} key="1">
-          <Company form={form} value={value} onChange={setCompany} />
-          <Customer form={form} value={value} company={company} />
-          <Partner form={form} value={value} company={company} />
+          <Code form={form} value={value} />
+          <Type form={form} value={value} />
+          <Use form={form} value={value} />
         </TabPane>
       </Tabs>
 
@@ -118,6 +113,7 @@ const FormModal = ({ value }) => {
           icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
           htmlType="submit"
           style={{ float: 'right', marginRight: 5 }}
+          disabled={!IS_CREATING}
         >
           {IS_CREATING ? t('operations.create') : t('operations.update')}
         </Button>
