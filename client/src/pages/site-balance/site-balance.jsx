@@ -24,7 +24,7 @@ const SiteBalance = () => {
   const modifiers = (
     <>
       <Select key="1" style={{ width: 200 }} defaultValue={unit} onChange={setUnit}>
-        {units.map(item => {
+        {units.map((item) => {
           return (
             <Select.Option key={item} value={item}>
               {item}

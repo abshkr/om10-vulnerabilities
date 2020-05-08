@@ -33,17 +33,7 @@ const data = [
         <>
           <Divider>🐞 Bug Fixes</Divider>
 
-          <p>- span</p>
-
-          <p>- span</p>
-          <p>- span</p>
-          <p>- span</p>
-          <p>- span</p>
-          <p>- span</p>
-
-          <p>- span</p>
-          <p>- span</p>
-          <p>- span</p>
+          <p> Please Refer to all the tasks marked "To Be Tested" on JIRA.</p>
         </>
       </>
     ),
