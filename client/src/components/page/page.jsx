@@ -1,12 +1,14 @@
 import React from 'react';
+
 import { Helmet } from 'react-helmet';
 import { PageHeader } from 'antd';
 import _ from 'lodash';
 
 import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } from './style';
+
 import { Footer } from '..';
 
-const Page = ({ name, page, children, modifiers, description, isBlank, noHeader }) => {
+const Page = ({ name, page, children, modifiers, description, isBlank, noHeader, isLoading }) => {
   const routes = [
     {
       path: 'index',

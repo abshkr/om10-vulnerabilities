@@ -1,10 +1,9 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 
 import React from 'react';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, Modal, Badge, Tooltip } from 'antd';
+import { Menu, Badge, Tooltip } from 'antd';
 import useSWR from 'swr';
 
 import { LogoContainer, MenuContainer } from './style';
@@ -12,7 +11,6 @@ import { ROUTES, SETTINGS } from '../../constants';
 import { AUTH } from '../../api';
 import { Icons, Loading } from '..';
 
-const { confirm } = Modal;
 const { SubMenu } = Menu;
 
 const Navigation = () => {
@@ -22,21 +20,7 @@ const Navigation = () => {
   const { isValidating: isLoading } = useSWR(AUTH.PERMISSIONS, { refreshInterval: 0 });
 
   const handleNavigation = (event) => {
-    if (event?.key === ROUTES.LOG_OUT) {
-      confirm({
-        title: 'Are you sure want to Log Out?',
-        icon: <ExclamationCircleOutlined />,
-        okText: 'Log Out',
-        centered: true,
-        okType: 'danger',
-        cancelText: 'Cancel',
-        onOk: () => history.push(event.key),
-      });
-    } else if (event?.key === ROUTES.BAY_VIEW) {
-      window.open('/scadaviews/bayview/index.html#/overview', '_blank');
-    } else {
-      history.push(event.key);
-    }
+    history.push(event.key);
   };
 
   if (isLoading) {
@@ -45,7 +29,7 @@ const Navigation = () => {
 
   return (
     <MenuContainer>
-      <Menu onClick={handleNavigation} defaultSelectedKeys={[ROUTES.DASHBOARD]} theme="dark">
+      <Menu onClick={handleNavigation} defaultSelectedKeys={[ROUTES.HOME]} theme="dark">
         <LogoContainer>
           <Tooltip
             placement="right"
@@ -56,7 +40,7 @@ const Navigation = () => {
           </Tooltip>
         </LogoContainer>
 
-        <Menu.Item key={ROUTES.DASHBOARD}>
+        <Menu.Item key={ROUTES.HOME}>
           <Icons type="dashboard" />
           <span>{t('pageMenu.dashboard')}</span>
         </Menu.Item>
@@ -376,30 +360,6 @@ const Navigation = () => {
           <Menu.Item key={ROUTES.FSC_STATUS}>
             <Badge status="success" />
             {t('pageNames.fscStatus')}
-          </Menu.Item>
-        </SubMenu>
-
-        <SubMenu
-          title={
-            <>
-              <Icons type="user" />
-              <span>{t('pageMenu.user')}</span>
-            </>
-          }
-        >
-          <Menu.Item key={ROUTES.USER_PROFILE}>
-            <Badge status="error" />
-            {t('pageNames.profile')}
-          </Menu.Item>
-
-          <Menu.Item key={ROUTES.SITE_CONFIGURATION}>
-            <Badge status="error" />
-            {t('pageNames.siteConfiguration')}
-          </Menu.Item>
-
-          <Menu.Item key={ROUTES.LOG_OUT}>
-            <Badge status="success" />
-            {t('pageNames.logOut')}
           </Menu.Item>
         </SubMenu>
       </Menu>

@@ -8,7 +8,7 @@ const data = [
     content: (
       <>
         <>
-          <Divider>⚡️ Features</Divider>
+          <Divider>Features</Divider>
 
           <p>- Partners Screen Completion</p>
           <p>- Key Reader Devices Completion</p>
@@ -19,7 +19,7 @@ const data = [
         </>
 
         <>
-          <Divider>🌟 Enhancements</Divider>
+          <Divider>Enhancements</Divider>
 
           <p>- Release Notes Tabs Added</p>
 
@@ -31,7 +31,7 @@ const data = [
         </>
 
         <>
-          <Divider>🐞 Bug Fixes</Divider>
+          <Divider>Bug Fixes</Divider>
 
           <p> Please Refer to all the tasks marked "To Be Tested" on JIRA.</p>
         </>

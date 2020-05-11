@@ -12,7 +12,6 @@ import { Form, Button, Tabs, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
-import _ from 'lodash';
 
 import { Code, Type, Use } from './fields';
 

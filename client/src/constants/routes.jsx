@@ -1,18 +1,17 @@
 export const WILD_CARD = '*';
 export const ROOT = '/';
 
-export const DASHBOARD = '/dashboard';
+export const HOME = '/home';
 export const UNAUTHORIZED = '/unauthorized';
 export const LOG_IN = '/login';
 export const LOG_OUT = '/logout';
 export const _404 = '/404';
 
-export const PRINTER_CONFIGURATION = '/printer-configuration';
+export const EULA = '/eula.pdf';
+export const MANUAL = '/manual.pdf';
 
-export const SITE_CONFIGURATION = '/site-configuration';
-export const USER_PROFILE = '/user-profile';
-export const ABOUT = '/about';
-export const HELP = '/help';
+export const SETTINGS = '/settings';
+export const CONFIGURATION = '/configuration';
 
 export const LOAD_SCHEDULES = '/load-schedules';
 export const EQUIPMENT_TYPES = '/equipment-types';

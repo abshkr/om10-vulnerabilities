@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 
 import { GATE_PERMISSION } from '../../../../api';
-import _ from 'lodash';
 
 import Cell from './cell';
 import Row from './row';
@@ -22,13 +21,13 @@ const Rules = ({ form, value }) => {
 
   const { setFieldsValue } = form;
 
-  const handleSave = row => {
+  const handleSave = (row) => {
     const payload = [...data];
 
     setData(payload);
 
     setFieldsValue({
-      rules: payload
+      rules: payload,
     });
   };
 
@@ -44,20 +43,20 @@ const Rules = ({ form, value }) => {
       rule_first: data.length === 0,
       rule_parent: '',
       rule_expiry_check: false,
-      is_new: true
+      is_new: true,
     };
 
     setData([...data, payload]);
   };
 
-  const handleDelete = key => {
+  const handleDelete = (key) => {
     const payload = [...data];
-    const source = payload.filter(item => item.rule_id !== key);
+    const source = payload.filter((item) => item.rule_id !== key);
 
     setData(source);
 
     setFieldsValue({
-      rules: source
+      rules: source,
     });
   };
 
@@ -67,7 +66,7 @@ const Rules = ({ form, value }) => {
       dataIndex: 'rule_id',
       key: 'rule_id',
       width: 200,
-      align: 'center'
+      align: 'center',
     },
     {
       title: t('fields.permissionRuleClass'),
@@ -75,7 +74,7 @@ const Rules = ({ form, value }) => {
       key: 'rule_casename',
       width: 200,
       align: 'center',
-      editable: true
+      editable: true,
     },
     {
       title: t('fields.equipmentType'),
@@ -83,7 +82,7 @@ const Rules = ({ form, value }) => {
       key: 'rule_etypname',
       align: 'center',
       editable: true,
-      width: 180
+      width: 180,
     },
 
     {
@@ -92,7 +91,7 @@ const Rules = ({ form, value }) => {
       key: 'rule_authname',
       align: 'center',
       editable: true,
-      width: 200
+      width: 200,
     },
 
     {
@@ -100,7 +99,7 @@ const Rules = ({ form, value }) => {
       dataIndex: 'rule_first',
       key: 'rule_first',
       align: 'center',
-      editable: true
+      editable: true,
     },
 
     {
@@ -108,7 +107,7 @@ const Rules = ({ form, value }) => {
       dataIndex: 'rule_expiry_check',
       key: 'rule_expiry_check',
       align: 'center',
-      editable: true
+      editable: true,
     },
 
     {
@@ -122,18 +121,18 @@ const Rules = ({ form, value }) => {
             {/*eslint-disable */}
             <a href="#">{t('operations.delete')}</a>
           </Popconfirm>
-        ) : null
-    }
+        ) : null,
+    },
   ];
 
-  const columns = defaults.map(col => {
+  const columns = defaults.map((col) => {
     if (!col.editable) {
       return col;
     }
 
     return {
       ...col,
-      onCell: record => ({
+      onCell: (record) => ({
         record,
         data: data,
         editable: col.editable,
@@ -142,8 +141,8 @@ const Rules = ({ form, value }) => {
         handleSave: handleSave,
         roles,
         cases,
-        types
-      })
+        types,
+      }),
     };
   });
 
@@ -166,8 +165,8 @@ const Rules = ({ form, value }) => {
         components={{
           body: {
             row: Row,
-            cell: Cell
-          }
+            cell: Cell,
+          },
         }}
         rowClassName={() => 'editable-row'}
         bordered

@@ -27,13 +27,15 @@ export default class SelectEditor extends Component {
     const { values } = this.props;
 
     return (
-      <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick}>
-        {values?.map((item) => (
-          <Select.Option key={item} value={item}>
-            {item}
-          </Select.Option>
-        ))}
-      </Select>
+      <div style={{ display: 'flex' }}>
+        <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick} bordered={false}>
+          {values?.map((item) => (
+            <Select.Option key={item} value={item}>
+              {item}
+            </Select.Option>
+          ))}
+        </Select>
+      </div>
     );
   }
 }

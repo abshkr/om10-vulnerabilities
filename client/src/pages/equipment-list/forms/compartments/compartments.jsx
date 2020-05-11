@@ -14,7 +14,6 @@ const Compartments = ({ form, value, equipment, onChange }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
-  const [image, setImage] = useState(null);
   const [options, setOptions] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [selected, setSelected] = useState(value?.eqpt_code || null);
@@ -22,7 +21,7 @@ const Compartments = ({ form, value, equipment, onChange }) => {
   const { setFieldsValue } = form;
 
   const { data: payload } = useSWR(EQUIPMENT_LIST.READ);
-  const { data: types, isValidating: typesLoading } = useSWR(EQUIPMENT_LIST.TYPES);
+  const { data: types } = useSWR(EQUIPMENT_LIST.TYPES);
 
   const fetchByCompartment = useCallback(
     (id) => {
@@ -82,7 +81,6 @@ const Compartments = ({ form, value, equipment, onChange }) => {
     const type = _.find(types?.records, ['etyp_id', etp]);
     const image = type?.image?.toLowerCase() || null;
 
-    setImage(image);
     onChange(image);
   }, [value, types, equipment, onChange]);
 

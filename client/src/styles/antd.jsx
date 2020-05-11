@@ -10,6 +10,13 @@ const AntdStyleProvider = createGlobalStyle`
     margin-bottom: 10px;
   }
 
+  .ant-drawer-form {
+    height: calc(50vh - 210px);
+    overflow-y: auto;
+    padding-right: 10px;
+    margin-bottom: 10px;
+  }
+
   .ant-tab-window-no-margin {
     height: calc(85vh - 200px);
     overflow-y: auto;

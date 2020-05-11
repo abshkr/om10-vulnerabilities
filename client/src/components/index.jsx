@@ -18,6 +18,7 @@ import SideDrawer from './side-drawer';
 import Icons from './icons';
 import Footer from './footer';
 import Chart from './chart';
+import Events from './events';
 
 export {
   Expiry,
@@ -40,4 +41,5 @@ export {
   Icons,
   Footer,
   Chart,
+  Events,
 };

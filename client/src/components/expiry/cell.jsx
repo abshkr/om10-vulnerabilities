@@ -3,7 +3,6 @@ import { Form, Select, DatePicker, Checkbox } from 'antd';
 import _ from 'lodash';
 
 import Context from './context';
-import moment from 'moment';
 
 const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, expiry, ...restProps }) => {
   const form = useContext(Context);

@@ -22,7 +22,7 @@ const paths = [
   },
 
   {
-    path: ROUTES.DASHBOARD,
+    path: ROUTES.HOME,
     component: lazy(() => import('../pages/dashboard')),
   },
 
@@ -262,21 +262,6 @@ const paths = [
   },
 
   {
-    path: ROUTES.PRICE_OFFSETS,
-    component: lazy(() => import('../pages/work-in-progress')),
-  },
-
-  {
-    path: ROUTES.CUSTOMER_PRICING,
-    component: lazy(() => import('../pages/work-in-progress')),
-  },
-
-  {
-    path: ROUTES.ORDER_PRODUCT_PRICING,
-    component: lazy(() => import('../pages/work-in-progress')),
-  },
-
-  {
     path: ROUTES.PARTNERS,
     component: lazy(() => import('../pages/partners')),
   },
@@ -357,8 +342,8 @@ const paths = [
   },
 
   {
-    path: ROUTES.PRINTER_CONFIGURATION,
-    component: lazy(() => import('../pages/printer-configuration')),
+    path: ROUTES.SETTINGS,
+    component: lazy(() => import('../pages/settings')),
   },
 ];
 

@@ -120,7 +120,7 @@ const FormModal = ({ value }) => {
         auth_level_name: value?.auth_level_name,
       });
     }
-  }, [setter, value, IS_CREATING, setFieldsValue]);
+  }, [value, IS_CREATING, setFieldsValue]);
 
   const options = ['View', 'Update', 'Create', 'Delete', 'Password'];
   const loadScheduleOptions = [...options, 'Schedule Product'];

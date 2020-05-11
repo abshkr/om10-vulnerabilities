@@ -1,6 +1,5 @@
 import React, { useState, useRef, useContext, useEffect } from 'react';
 import { Form, Select, DatePicker, Checkbox } from 'antd';
-import _ from 'lodash';
 
 import Context from './context';
 
@@ -28,7 +27,7 @@ const Cell = ({
     setEditing(!editing);
   };
 
-  const save = async e => {
+  const save = async (e) => {
     const values = await form.validateFields();
 
     onEdit();
@@ -48,7 +47,7 @@ const Cell = ({
         rule_case: record.rule_case,
         rule_expiry_check: record.rule_expiry_check,
         rule_first: record.rule_first,
-        rule_auth: record.rule_auth
+        rule_auth: record.rule_auth,
       });
     }
   }, [record, setFieldsValue]);
@@ -125,8 +124,8 @@ const Cell = ({
           rules={[
             {
               type: 'object',
-              required: true
-            }
+              required: true,
+            },
           ]}
         >
           <DatePicker ref={inputRef} onChange={save} format="DD/MM/YYYY" />

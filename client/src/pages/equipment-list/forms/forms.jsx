@@ -22,7 +22,6 @@ import {
   Owner,
   Code,
   Title,
-  Id,
   EquipmentType,
   Area,
   LoadType,

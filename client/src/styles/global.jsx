@@ -30,6 +30,15 @@ const GlobalStyleProvider = createGlobalStyle`
       background-color: #0776ff42;
   }
 
+  .ag-theme-balham .ag-cell.ag-cell-inline-editing {
+    display: flex;
+    align-items: center;
+  }
+
+  .ag-react-container {
+    width: 100%;
+  }
+
 
 
 `;

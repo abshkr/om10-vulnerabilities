@@ -9,7 +9,7 @@ import {
   UnlockOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
+import { Form, Button, Tabs, notification, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import axios from 'axios';

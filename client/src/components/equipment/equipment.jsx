@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from 'antd';
+
 import { EquipmentImage } from './style';
 
 const Equipment = ({ image, isLoading }) => {

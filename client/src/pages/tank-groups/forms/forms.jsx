@@ -24,12 +24,11 @@ const FormModal = ({ value }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
-  const [tankData, setTankData] = useState([]);
   const [tanks, setTanks] = useState([]);
-  const [selected, setSelected] = useState(null);
 
   const { data: items } = useSWR(TANK_GROUPS.ITEMS);
 
+  const { setFieldsValue } = form;
   const IS_CREATING = !value;
 
   const fields = columns(t);
@@ -103,8 +102,6 @@ const FormModal = ({ value }) => {
       const payload = _.filter(items?.records, ['tank_basecode', base?.tank_basecode]);
 
       setTanks(payload);
-
-      const chosen = _.filter();
     } else {
       setTanks(items?.records);
     }
@@ -122,11 +119,11 @@ const FormModal = ({ value }) => {
 
   useEffect(() => {
     if (value) {
-      form.setFieldsValue({
+      setFieldsValue({
         tgr_tanklist: value.tgr_tanklist.trim().split(', '),
       });
     }
-  }, [value]);
+  }, [value, setFieldsValue]);
 
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError initialValues={value}>
@@ -157,7 +154,7 @@ const FormModal = ({ value }) => {
             </Select>
           </Form.Item>
 
-          <DataTable height="60vh" data={tankData} columns={fields} minimal />
+          <DataTable height="60vh" data={[]} columns={fields} minimal />
         </TabPane>
       </Tabs>
 

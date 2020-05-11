@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Col, Row } from 'antd';
-import { useTranslation } from 'react-i18next';
+
 import ReactApexChart from 'react-apexcharts';
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -8,7 +8,6 @@ import _ from 'lodash';
 import { DASHBOARD } from '../../../api';
 
 const Overview = () => {
-  const { t } = useTranslation();
   const { data: payload } = useSWR(DASHBOARD.OVERVIEW);
 
   const [dailySeries, setDailySeries] = useState([]);

@@ -55,6 +55,7 @@ const Table = ({
   apiContext,
   extra,
   minimal,
+  components,
 }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
@@ -143,7 +144,7 @@ const Table = ({
             columnDefs={columns}
             rowData={data}
             onGridReady={handleGridReady}
-            frameworkComponents={defaultComponents}
+            frameworkComponents={{ ...defaultComponents, ...components }}
             onRowDoubleClicked={(value) => onClick && onClick(value.data)}
             loadingOverlayComponent="LoadingStatus"
             rowSelection={selectionMode || 'multiple'}

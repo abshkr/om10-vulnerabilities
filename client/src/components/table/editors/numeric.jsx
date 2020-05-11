@@ -39,7 +39,7 @@ export default class NumericEditor extends Component {
 
     return {
       value: startValue,
-      highlightAllOnFocus
+      highlightAllOnFocus,
     };
   }
 
@@ -67,7 +67,7 @@ export default class NumericEditor extends Component {
       eInput.select();
 
       this.setState({
-        highlightAllOnFocus: false
+        highlightAllOnFocus: false,
       });
     } else {
       const length = eInput.value ? eInput.value.length : 0;
@@ -83,7 +83,7 @@ export default class NumericEditor extends Component {
 
   isCancelBeforeStart() {
     const { data } = this.props;
-    return this.cancelBeforeStart || !data?.editable;
+    return this.cancelBeforeStart || data?.editable;
   }
 
   isCancelAfterEnd() {
@@ -102,7 +102,7 @@ export default class NumericEditor extends Component {
       if (payload) {
         notification.error({
           message: `${colDef.headerName} out of range!`,
-          description: `Please keep the values between ${min} ⟶ ${max}`
+          description: `Please keep the values between ${min} ⟶ ${max}`,
         });
       }
 

@@ -45,7 +45,7 @@ const Login = ({ handleLogin, auth }) => {
 
     handleLogin(values, (response) => {
       if (response?.data?.token) {
-        history.push(ROUTES.DASHBOARD);
+        history.push(ROUTES.HOME);
 
         notification.success({
           placement: 'bottomRight',
@@ -104,11 +104,10 @@ const Login = ({ handleLogin, auth }) => {
 
   useEffect(() => {
     if (auth) {
-      history.push(ROUTES.DASHBOARD);
+      history.push(ROUTES.HOME);
     }
   }, [auth, history]);
 
-  console.log(attempts);
   return (
     <LoginContainer>
       <Helmet>
@@ -169,6 +168,7 @@ const Login = ({ handleLogin, auth }) => {
                   </div>
 
                   <div style={{ textAlign: 'left', marginTop: 10, fontSize: 13 }}>
+                    {/* eslint-disable-next-line */}
                     {t('generic.havingTrouble')} <a onClick={onHelp}>{t('operations.clickHere')}</a>
                   </div>
                 </div>

@@ -1,4 +1,4 @@
-const columns = t => [
+const columns = (t) => [
   {
     headerName: t('fields.tankCode'),
     field: 'tank_code',
@@ -77,7 +77,10 @@ const columns = t => [
     resizable: true,
     width: 100,
     editable: true,
-    cellEditor: 'NumericEditor',
+    cellEditor: 'SelectEditor',
+    cellEditorParams: {
+      values: ['123', '555', 'test'],
+    },
   },
 
   {

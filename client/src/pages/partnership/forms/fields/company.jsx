@@ -29,7 +29,7 @@ const Company = ({ form, value, onChange }) => {
 
       onChange(value.partner_cmpy_code);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 
   const handleChange = (value) => {
     setFieldsValue({

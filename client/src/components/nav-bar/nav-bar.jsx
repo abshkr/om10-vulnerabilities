@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import {
-  BellOutlined,
   StarOutlined,
   SettingOutlined,
   QuestionCircleOutlined,
   UserOutlined,
+  PoweroffOutlined,
+  ExclamationCircleOutlined,
+  TrademarkCircleOutlined,
 } from '@ant-design/icons';
-import { Layout, AutoComplete, Button, Badge, Input, Menu, Dropdown, List } from 'antd';
+import { Layout, AutoComplete, Button, Input, Dropdown, Modal } from 'antd';
 import { useHistory } from 'react-router-dom';
 
 import { NavBarContainer } from './style';
 import { ROUTES } from '../../constants';
+import { Events } from '..';
+
 const { Header } = Layout;
 
 const mockVal = (str, repeat = 1) => ({
@@ -20,7 +24,6 @@ const mockVal = (str, repeat = 1) => ({
 const NavBar = () => {
   let history = useHistory();
 
-  const [value, setValue] = useState('');
   const [options, setOptions] = useState([]);
 
   const onSearch = (searchText) => {
@@ -31,62 +34,17 @@ const NavBar = () => {
     console.log('onSelect', data);
   };
 
-  const favourites = (
-    <Menu onClick={(value) => history.push(value.key)}>
-      <Menu.Item key={ROUTES.TANK_CONFIGURATION}>
-        <StarOutlined />
-        Tank Configuration
-      </Menu.Item>
-      <Menu.Item key={ROUTES.PHYSICAL_PRINTERS}>
-        <StarOutlined />
-        Physical Printers
-      </Menu.Item>
-      <Menu.Item key={ROUTES.BASE_PRODUCTS}>
-        <StarOutlined />
-        Base Products
-      </Menu.Item>
-    </Menu>
-  );
-
-  const settings = (
-    <Menu>
-      <Menu.Item key="1">Site Configuration</Menu.Item>
-      <Menu.Item key="2">Feature Configuration</Menu.Item>
-    </Menu>
-  );
-
-  const data = [
-    {
-      title: 'Error On Bay 04. Please Check The Journal For More Information',
-    },
-    {
-      title: 'Error On Bay 04. Please Check The Journal For More Information',
-    },
-    {
-      title: 'Error On Bay 04. Please Check The Journal For More Information',
-    },
-    {
-      title: 'Error On Bay 04. Please Check The Journal For More Information',
-    },
-    {
-      title: 'Error On Bay 04. Please Check The Journal For More Information',
-    },
-  ];
-
-  const events = (
-    <Menu>
-      <List
-        style={{ padding: 10, paddingTop: 0, paddingBottom: 0 }}
-        itemLayout="horizontal"
-        dataSource={data}
-        renderItem={(item) => (
-          <List.Item>
-            <List.Item.Meta title={<a>Omega Event Detected</a>} description={item.title} />
-          </List.Item>
-        )}
-      />
-    </Menu>
-  );
+  const onLogOut = () => {
+    Modal.confirm({
+      title: 'Are you sure want to Log Out?',
+      icon: <ExclamationCircleOutlined />,
+      okText: 'Log Out',
+      centered: true,
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: () => history.push(ROUTES.LOG_OUT),
+    });
+  };
 
   return (
     <Header
@@ -109,31 +67,56 @@ const NavBar = () => {
         </AutoComplete>
 
         <div style={{ position: 'fixed', right: 15 }}>
-          <Dropdown overlay={events} trigger={['click']}>
-            <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
-              <Badge count={5} offset={[10, -5]}>
-                <BellOutlined style={{ transform: 'scale(1.5)' }} />
-              </Badge>
-            </Button>
-          </Dropdown>
+          <Events />
 
-          <Dropdown overlay={favourites} trigger={['click']}>
+          <Dropdown overlay={null} trigger={['click']}>
             <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
               <StarOutlined style={{ transform: 'scale(1.5)' }} />
             </Button>
           </Dropdown>
 
-          <Dropdown overlay={settings} trigger={['click']}>
-            <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
-              <SettingOutlined style={{ transform: 'scale(1.5)' }} />
-            </Button>
-          </Dropdown>
+          <Button
+            type="primary"
+            size="large"
+            shape="circle"
+            style={{ marginRight: 7 }}
+            onClick={() => history.push(ROUTES.CONFIGURATION)}
+          >
+            <SettingOutlined style={{ transform: 'scale(1.5)' }} />
+          </Button>
 
-          <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
+          <Button
+            type="primary"
+            size="large"
+            shape="circle"
+            style={{ marginRight: 7 }}
+            onClick={() => window.open(ROUTES.MANUAL, '_blank')}
+          >
             <QuestionCircleOutlined style={{ transform: 'scale(1.5)' }} />
           </Button>
-          <Button type="primary" size="large" shape="circle">
+
+          <Button
+            type="primary"
+            size="large"
+            shape="circle"
+            style={{ marginRight: 7 }}
+            onClick={() => window.open(ROUTES.EULA, '_blank')}
+          >
+            <TrademarkCircleOutlined style={{ transform: 'scale(1.5)' }} />
+          </Button>
+
+          <Button
+            type="primary"
+            size="large"
+            shape="circle"
+            style={{ marginRight: 7 }}
+            onClick={() => history.push(ROUTES.SETTINGS)}
+          >
             <UserOutlined style={{ transform: 'scale(1.5)' }} />
+          </Button>
+
+          <Button type="primary" size="large" shape="circle" onClick={onLogOut}>
+            <PoweroffOutlined style={{ transform: 'scale(1.5)' }} />
           </Button>
         </div>
       </NavBarContainer>

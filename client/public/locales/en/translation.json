@@ -530,7 +530,8 @@
     "printerConfiguration": "Printer Configuration",
     "stockReconciliation": "Stock Reconciliation",
     "user": "User",
-    "stock": "Stock"
+    "stock": "Stock",
+    "settings": "Settings"
   },
 
   "pageNames": {
