@@ -14,7 +14,7 @@ const Dashboard = () => {
   const { t } = useTranslation();
 
   return (
-    <Page page={t('pageMenu.dashboard')} isBlank noHeader>
+    <Page page={t('pageMenu.dashboard')} minimal noHeader>
       <DashboardContainer>
         <Tabs type="card" defaultActiveKey="0">
           <Tabs.TabPane tab="Home" key="0">
