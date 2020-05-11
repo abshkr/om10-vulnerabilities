@@ -6,8 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
 import { mutate } from 'swr';
 
-import { Type, Company, Supplier, LockType } from './fields';
-import BaseProducts from './base-products';
 import { ALLOCATIONS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
@@ -35,18 +33,18 @@ const FormModal = ({ value }) => {
 
                 notification.success({
                   message: t('messages.createSuccess'),
-                  description: `${t('descriptions.createSuccess')} `
+                  description: `${t('descriptions.createSuccess')} `,
                 });
               })
-              .catch(errors => {
-                _.forEach(errors.response.data.errors, error => {
+              .catch((errors) => {
+                _.forEach(errors.response.data.errors, (error) => {
                   notification.error({
                     message: error.type,
-                    description: error.message
+                    description: error.message,
                   });
                 });
               });
-          }
+          },
         });
       }
     });
@@ -71,18 +69,18 @@ const FormModal = ({ value }) => {
 
                 notification.success({
                   message: t('messages.updateSuccess'),
-                  description: `${t('descriptions.updateSuccess')}`
+                  description: `${t('descriptions.updateSuccess')}`,
                 });
               })
-              .catch(errors => {
-                _.forEach(errors.response.data.errors, error => {
+              .catch((errors) => {
+                _.forEach(errors.response.data.errors, (error) => {
                   notification.error({
                     message: error.type,
-                    description: error.message
+                    description: error.message,
                   });
                 });
               });
-          }
+          },
         });
       }
     });
@@ -105,18 +103,18 @@ const FormModal = ({ value }) => {
 
             notification.success({
               message: t('messages.deleteSuccess'),
-              description: `${t('descriptions.deleteSuccess')}`
+              description: `${t('descriptions.deleteSuccess')}`,
             });
           })
-          .catch(errors => {
-            _.forEach(errors.response.data.errors, error => {
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
               notification.error({
                 message: error.type,
-                description: error.message
+                description: error.message,
               });
             });
           });
-      }
+      },
     });
   };
 
@@ -127,10 +125,10 @@ const FormModal = ({ value }) => {
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
             <div style={{ display: 'flex', height: '100%' }}>
               <div style={{ width: '25%' }}>
-                <Type form={form} value={value} />
+                {/* <Type form={form} value={value} />
                 <Company form={form} value={value} />
                 <Supplier form={form} value={value} />
-                <LockType form={form} value={value} />
+                <LockType form={form} value={value} /> */}
 
                 {value && (
                   <Button type="primary" icon="reload" style={{ width: '100%', marginTop: 20 }}>
@@ -143,9 +141,7 @@ const FormModal = ({ value }) => {
                 <Divider type="vertical" style={{ height: '100%' }} />
               </div>
 
-              <div style={{ width: '75%' }}>
-                <BaseProducts form={form} value={value} t={t} />
-              </div>
+              <div style={{ width: '75%' }}>{/* <BaseProducts form={form} value={value} t={t} /> */}</div>
             </div>
           </TabPane>
 

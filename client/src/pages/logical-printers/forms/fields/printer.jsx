@@ -14,7 +14,7 @@ const Printer = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    if (input === '' && !value) {
+    if (input === '' || !value) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.printer')}`);
     }
 

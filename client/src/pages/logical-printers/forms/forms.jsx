@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
@@ -99,12 +99,13 @@ const FormModal = ({ value, visible, handleFormState }) => {
 
   return (
     <Drawer
-      bodyStyle={{ paddingLeft: 10, paddingRight: 10, paddingTop: 0, overflowY: 'hidden' }}
+      bodyStyle={{ paddingTop: 5 }}
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
-      placement="bottom"
+      placement="right"
+      width="30vw"
       visible={visible}
       footer={
         <>
@@ -133,19 +134,11 @@ const FormModal = ({ value, visible, handleFormState }) => {
       <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Row gutter={[16, 16]}>
-              <Col span={8}>
-                <Company form={form} value={value} onChange={setCompany} />
-              </Col>
+            <Company form={form} value={value} onChange={setCompany} />
 
-              <Col span={8}>
-                <Usage form={form} value={value} company={company} />
-              </Col>
+            <Usage form={form} value={value} company={company} />
 
-              <Col span={8}>
-                <Printer form={form} value={value} />
-              </Col>
-            </Row>
+            <Printer form={form} value={value} />
           </TabPane>
         </Tabs>
       </Form>

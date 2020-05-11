@@ -22,11 +22,7 @@ const LoadSchedules = () => {
   const { params } = useQuery(['mv_key']);
   const { t } = useTranslation();
 
-  const [start, setStart] = useState(
-    moment()
-      .subtract(5, 'years')
-      .format(SETTINGS.DATE_TIME_FORMAT)
-  );
+  const [start, setStart] = useState(moment().subtract(5, 'years').format(SETTINGS.DATE_TIME_FORMAT));
 
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
   const [data, setData] = useState([]);
@@ -37,14 +33,14 @@ const LoadSchedules = () => {
 
   const fields = columns(IS_NOMINATION, t);
 
-  const handleClick = value => {
+  const handleClick = (value) => {
     FormModal({
       value,
       form: <Forms value={value} IS_NOMINATION={IS_NOMINATION} />,
       width: '90vw',
       id: IS_NOMINATION || value?.shls_trip_no,
       name: value?.shlsload_load_id,
-      t
+      t,
     });
   };
 
@@ -55,7 +51,7 @@ const LoadSchedules = () => {
 
   useEffect(() => {
     if (params?.mv_key) {
-      axios.get(MOVEMENT_NOMIATIONS.SCHEDULES, { params }).then(response => setData(response.data.records));
+      axios.get(MOVEMENT_NOMIATIONS.SCHEDULES, { params }).then((response) => setData(response.data.records));
     } else {
       setData(schedules?.records);
     }
@@ -96,7 +92,7 @@ const LoadSchedules = () => {
       name={IS_NOMINATION ? t('pageNames.loadSchedulesFromNomination') : t('pageNames.loadSchedules')}
       modifiers={modifiers}
     >
-      <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
+      <DataTable columns={fields} data={data} onClick={handleClick} />
     </Page>
   );
 };

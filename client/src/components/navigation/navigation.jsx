@@ -282,7 +282,6 @@ const Navigation = () => {
         </SubMenu>
 
         <SubMenu
-          onTitleClick={handleNavigation}
           key={ROUTES.PRINTER_CONFIGURATION}
           title={
             <>
@@ -345,11 +344,6 @@ const Navigation = () => {
           <Menu.Item key={ROUTES.BAY_VIEW}>
             <Badge status="success" />
             {t('pageNames.bayView')}
-          </Menu.Item>
-
-          <Menu.Item key={ROUTES.DRAWER_PRODUCT_ASSETS}>
-            <Badge status="error" />
-            {t('pageNames.drawerProductAssets')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ADAPTIVE_FLOW_CONTROL}>

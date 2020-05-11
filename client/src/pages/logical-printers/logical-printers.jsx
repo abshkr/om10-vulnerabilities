@@ -18,6 +18,7 @@ const LogicalPrinters = () => {
   const [selected, setSelected] = useState(null);
 
   const { t } = useTranslation();
+
   const auth = useAuth('M_LOGICALPRINTERS');
 
   const { data: payload, isValidating, revalidate } = useSWR(LOGICAL_PRINTERS.READ);
@@ -26,6 +27,7 @@ const LogicalPrinters = () => {
     setVisible(visibility);
     setSelected(value);
   };
+
   const fields = columns(t);
 
   const data = payload?.records;
@@ -56,8 +58,6 @@ const LogicalPrinters = () => {
 
   return (
     <Page page={page} name={name} modifiers={modifiers} auth={auth}>
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
-
       <DataTable
         data={data}
         columns={fields}
@@ -66,6 +66,7 @@ const LogicalPrinters = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
     </Page>
   );
 };

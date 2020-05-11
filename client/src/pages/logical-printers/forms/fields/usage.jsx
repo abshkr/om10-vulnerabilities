@@ -24,7 +24,7 @@ const Usage = ({ form, value, company }) => {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    if (input === '' && !value) {
+    if (input === '' || !value) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.usage')}`);
     }
 

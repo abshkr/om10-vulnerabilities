@@ -15,7 +15,7 @@ const Interface = ({ auth, children }) => {
         <Sider width={250} collapsible defaultCollapsed>
           <Navigation />
         </Sider>
-        <Layout>
+        <Layout className="omega">
           <NavBar />
           <Content className="content">{children}</Content>
         </Layout>

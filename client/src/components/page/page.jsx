@@ -8,7 +8,7 @@ import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } fr
 
 import { Footer } from '..';
 
-const Page = ({ name, page, children, modifiers, description, isBlank, noHeader, isLoading }) => {
+const Page = ({ name, page, children, modifiers, description, minimal, noHeader, isLoading }) => {
   const routes = [
     {
       path: 'index',
@@ -45,7 +45,9 @@ const Page = ({ name, page, children, modifiers, description, isBlank, noHeader,
         <title>{name ? `${name} ─ ${page} ─ OMEGA 5000` : `${page} ─ OMEGA 5000`}</title>
       </Helmet>
 
-      <PageInjector isBlank={isBlank}>{children}</PageInjector>
+      <PageInjector minimal={minimal}>
+        <div className="main-container">{children}</div>
+      </PageInjector>
       <Footer />
     </PageContainer>
   );

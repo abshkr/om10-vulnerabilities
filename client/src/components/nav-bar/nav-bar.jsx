@@ -6,7 +6,7 @@ import {
   UserOutlined,
   PoweroffOutlined,
   ExclamationCircleOutlined,
-  TrademarkCircleOutlined,
+  CopyrightOutlined,
 } from '@ant-design/icons';
 import { Layout, AutoComplete, Button, Input, Dropdown, Modal } from 'antd';
 import { useHistory } from 'react-router-dom';
@@ -102,7 +102,7 @@ const NavBar = () => {
             style={{ marginRight: 7 }}
             onClick={() => window.open(ROUTES.EULA, '_blank')}
           >
-            <TrademarkCircleOutlined style={{ transform: 'scale(1.5)' }} />
+            <CopyrightOutlined style={{ transform: 'scale(1.5)' }} />
           </Button>
 
           <Button
