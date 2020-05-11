@@ -345,6 +345,11 @@ const paths = [
     path: ROUTES.SETTINGS,
     component: lazy(() => import('../pages/settings')),
   },
+
+  {
+    path: ROUTES.CONFIGURATION,
+    component: lazy(() => import('../pages/configuration')),
+  },
 ];
 
 export default paths;

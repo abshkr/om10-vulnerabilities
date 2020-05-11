@@ -50,6 +50,7 @@ import * as PARTNERS from './partners';
 import * as DASHBOARD from './dashboard';
 import * as TANK_GROUPS from './tank-groups';
 import * as KEY_READER_DEVICES from './key-reader-devices';
+import * as SITE_CONFIGURATION from './site-configuration';
 
 export {
   AUTH,
@@ -104,4 +105,5 @@ export {
   TANK_STRAPPING,
   AUDITING_DATA,
   TANK_GROUPS,
+  SITE_CONFIGURATION,
 };

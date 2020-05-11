@@ -512,7 +512,10 @@
     "maxId": "Max Id",
     "totalTransactions": "Total Transactions",
     "use": "Use",
-    "partner": "Partner"
+    "partner": "Partner",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "currentPassword": "Current Password"
   },
 
   "pageMenu": {
@@ -531,7 +534,8 @@
     "stockReconciliation": "Stock Reconciliation",
     "user": "User",
     "stock": "Stock",
-    "settings": "Settings"
+    "settings": "Settings",
+    "configuration": "Configuration"
   },
 
   "pageNames": {
@@ -725,7 +729,12 @@
     "messageGroups": "Message Groups",
     "identification": "Identification",
     "equipmentAndSafefill": "Equipment and Safefill",
-    "configuration": "Configuration"
+    "configuration": "Configuration",
+    "screenAccess": "Screen Access",
+    "driverPin": "Driver Pin",
+    "closeoutOptions": "Closeout Options",
+    "terminalLocations": "Terminal Locations",
+    "features": "Features"
   },
 
   "messages": {
@@ -846,7 +855,11 @@
     "inventoryManagement": "Scale your ability to manage multiple inventories using bulk editing in OMEGA.",
     "detailedReporting": "OMEGA allows the generation of complex reports to help you understand the detailed workings of your Terminal.",
     "closeSuccess": "You have closed the Transaction:",
-    "closeFailed": "You have closed the Transaction:"
+    "closeFailed": "You have closed the Transaction:",
+    "passwordDoesntMatch": "Confirm Password Does Not Match. Please Check Again.",
+    "changeYourPassword": "Change Your Password",
+    "pleaseEnterYourNewPassword": "Please Enter Your New Password",
+    "changeUseProfile": "Change User Profile"
   },
 
   "placeholder": {
