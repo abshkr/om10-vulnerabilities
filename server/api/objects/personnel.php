@@ -345,12 +345,39 @@ class Personnel extends CommonClass
         return $enctyped;
     }
 
-    //it is called in Utilities::read() so it must print its own output
+    public function check_password()
+    {
+        if (!isset($this->per_code)) {
+            $this->per_code = Utilities::getCurrPsn();
+        }
+        $encrypted = $this->ecrypt_password($this->password);
+
+        $query = "SELECT COUNT(*) CN 
+            FROM URBAC_USERS
+            WHERE USER_CODE = :per_code AND USER_PASSWORD = :encrypted";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        oci_bind_by_name($stmt, ':encrypted', $encrypted);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("database storage error:%s", $e['message'])));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ($row['CN'] > 0) {
+            $error = new EchoSchema(200, response("__PASS__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+        } else {
+            $error = new EchoSchema(500, response("__INVALID_PASSWORD__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+        }
+    }
+
     public function update_password()
     {
-        $result = array();
-        $result["records"] = array();
-
         $query = "SELECT CONFIG_VALUE VAL 
             FROM SITE_CONFIG
             WHERE CONFIG_KEY = 'URBAC_PWD_REUSE'";
@@ -358,10 +385,9 @@ class Personnel extends CommonClass
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            $result["result"] = -1;
-            $result["message"] = sprintf("database storage error:%s", $e['message']);
-            echo json_encode($result, JSON_PRETTY_PRINT);
-            return $result;
+            $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("database storage error:%s", $e['message'])));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
         }
 
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
@@ -376,10 +402,9 @@ class Personnel extends CommonClass
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            $result["result"] = -1;
-            $result["message"] = sprintf("database storage error:%s", $e['message']);
-            echo json_encode($result, JSON_PRETTY_PRINT);
-            return $result;
+            $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("database storage error:%s", $e['message'])));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
         }
 
         $encrypted = $this->ecrypt_password($this->password);
@@ -390,31 +415,26 @@ class Personnel extends CommonClass
 
             $password_hist = $row['PWDTRACE_PWD'];
             if ($encrypted === $password_hist) {
-                $result["result"] = -2;
-                $result["message"] = sprintf("cannot change to this password because it is recently used");
-                write_log($result["message"], __FILE__, __LINE__, LogLevel::ERROR);
-                echo json_encode($result, JSON_PRETTY_PRINT);
-                return $result;
+                write_log("Cannot change to this password because it is recently used", __FILE__, __LINE__, LogLevel::ERROR);
+                $error = new EchoSchema(500, response("__PWD_RECENTLY_USED__"));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+                return;
             }
 
             $reuse -= 1;
         }
 
-        $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/cgi-bin/en/atm/resetpassword.cgi?usr=" . $this->per_code .
-        "&new_pwd=" . $this->password;
-        if (isset($_SESSION['SESSION'])) {
-            $url .= "&sess_id=" . $_SESSION['SESSION'];
-        }
-        write_log(sprintf("%s::%s(), url:%s", __CLASS__, __FUNCTION__, $url),
-            __FILE__, __LINE__);
-        $cgi_response = @file_get_contents($url);
+        $query_string = "usr=" . rawurlencode(strip_tags($this->per_code)) . 
+            "&old_pwd=" . rawurlencode(strip_tags($this->old_password)) . 
+            "&new_pwd=" . rawurlencode(strip_tags($this->password));
+        $cgi_response = Utilities::http_cgi_invoke("cgi-bin/en/atm/resetpassword.cgi", $query_string);
+        // write_log($cgi_response, __FILE__, __LINE__);
         if ($cgi_response === false) {
             $e = error_get_last();
             write_log($e['message'], __FILE__, __LINE__);
-            $result["result"] = -3;
-            $result["message"] = sprintf("failed to invoke cgi:%s", $e['message']);
-            echo json_encode($result, JSON_PRETTY_PRINT);
-            return $result;
+            $error = new EchoSchema(500, response("__CGI_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
         }
 
         // write_log(json_encode($cgi_response), __FILE__, __LINE__);
@@ -424,27 +444,75 @@ class Personnel extends CommonClass
         $result = array();
         $result["records"] = array();
         if ($cgi_ret == 0) {
-            $result["result"] = 0;
-            $result["message"] = sprintf("password of user %s has been updated", $this->per_code);
-            // $journal = new Journal($this->conn, false);
-            // $jnl_data[0] = sprintf("cannot change to this password because it is recently used");
-            // $journal->jnlLogEvent(
-            //     Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT);
-            // oci_commit($this->conn);
+            $error = new EchoSchema(500, response("__PWD_UPDATED__", 
+                sprintf("Password of user %s has been updated", $this->per_code)));
+            echo json_encode($error, JSON_PRETTY_PRINT);
         } else {
-            $result["result"] = $cgi_ret;
-            $result["message"] = sprintf("failed to update password of user %s. err: %s",
-                $this->per_code, $cgi_desc);
-            write_log($result["message"], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(500, response("__PWD_UPDATE_FAILED__", 
+                sprintf("Failed to update password of user %s. err: %s", $this->per_code, $cgi_desc)));
+            echo json_encode($error, JSON_PRETTY_PRINT);
         }
-        echo json_encode($result, JSON_PRETTY_PRINT);
-        return $result;
+    }
+
+    public function update_dep()
+    {
+        if (!isset($this->per_code)) {
+            $this->per_code = Utilities::getCurrPsn();
+        }
+
+        //Old data
+        $query = "SELECT PER_DEPARTMENT FROM GUI_PERSONNEL
+            WHERE PER_CODE = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $old_dep = $row['PER_DEPARTMENT'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(500, response("__UPDATE_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if ($this->per_department == $old_dep){
+            $error = new EchoSchema(200, response("__UPDATE_SUCCEEDED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $query = "
+            UPDATE PERSONNEL SET PER_DEPARTMENT = :dep
+            WHERE PER_CODE = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':dep', $this->per_department);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            
+            $error = new EchoSchema(500, response("__UPDATE_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $journal = new Journal($this->conn, true);
+        $jnl_data[0] = Utilities::getCurrPsn();
+        $jnl_data[1] = "PERSONNEL";
+        $jnl_data[2] = $this->per_code;
+
+        $module = "GUI_PERSONNEL";
+        $record = sprintf("code:%s", $this->per_code);
+        $journal->valueChange($module, $record, "department", $old_dep, $this->per_department);
+
+        $error = new EchoSchema(200, response("__UPDATE_SUCCEEDED__"));
+        echo json_encode($error, JSON_PRETTY_PRINT);
     }
 
     public function update()
     {
-        write_log(__CLASS__ . ":::" . __FUNCTION__ . "() START", __FILE__, __LINE__);
-        // write_log(json_encode($this), __FILE__, __LINE__);
+        write_log(json_encode($this), __FILE__, __LINE__);
 
         //Old data
         $query = "

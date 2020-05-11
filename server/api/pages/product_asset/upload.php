@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/product_asset.php';
 
-Utilities::read('ProductAsset', $method = 'upload', $filter = true);
+Utilities::exec('ProductAsset', $method = 'upload', $filter = true);

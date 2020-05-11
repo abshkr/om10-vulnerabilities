@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/movement.php';
 
-Utilities::read('Movement', "submit", $filter = true);
+Utilities::exec('Movement', "submit", $filter = true);

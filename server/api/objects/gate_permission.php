@@ -361,22 +361,23 @@ class GatePermission extends CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
 
-            $error = new EchoSchema(400, sprintf("failed to delete rule id %s. err: %s", $this->rule_id, $e['message']));
+            $error = new EchoSchema(400, response("__DELETE_FAILED__", 
+                sprintf("failed to delete rule id %s. err: %s", $this->rule_id, $e['message'])));
             echo json_encode($error, JSON_PRETTY_PRINT);
             oci_rollback($this->conn);
 
-            return array();
+            return;
         } else {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             if ($row['CN'] <= 0) {
                 write_log(sprintf("permission rule %d not found", $this->rule_id), LogLevel::WARNING);
 
-                $error = new EchoSchema(400, "Bad Request", sprintf("permission rule %d not found", $this->rule_id));
+                $error = new EchoSchema(400, response("__NOT_EXIST__", sprintf("permission rule %d not found", $this->rule_id)));
                 echo json_encode($error, JSON_PRETTY_PRINT);
 
                 oci_rollback($this->conn);
 
-                return array(); //Return array to prevent read
+                return; 
             }
         }
 
@@ -388,12 +389,12 @@ class GatePermission extends CommonClass
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(500, "Database Error: " . $e->getMessage());
+            $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", "Database Error: " . $e->getMessage()));
             echo json_encode($error, JSON_PRETTY_PRINT);
 
             oci_rollback($this->conn);
 
-            return array();
+            return;
         } else {
             $result = array();
             $result["result"] = 0;
@@ -411,14 +412,13 @@ class GatePermission extends CommonClass
                 write_log("DB error:" . $e['message'],
                     __FILE__, __LINE__, LogLevel::ERROR);
                 oci_rollback($this->conn);
-                return false;
+                return;
             }
 
             oci_commit($this->conn);
         }
 
         echo json_encode($result, JSON_PRETTY_PRINT);
-        return $result; //Return array to prevent read
     }
 
     public function rule_cases()

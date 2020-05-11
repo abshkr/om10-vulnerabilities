@@ -8,4 +8,4 @@ include_once '../../objects/feature.php';
 
 // echo file_get_contents("../../config/FeatureSettings.json");
 
-Utilities::read('Feature', $method = 'read', $filter = true);
+Utilities::exec('Feature', $method = 'read', $filter = true);

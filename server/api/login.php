@@ -46,7 +46,7 @@ include_once './shared/log.php';
 include_once './objects/personnel.php';
 include_once './config/setups.php';
 include_once './config/jwt.php';
-include_once '/shared/utilities.php';
+include_once './shared/utilities.php';
 
 // initialize object
 $object = new stdClass();
@@ -98,6 +98,7 @@ $xml = simplexml_load_string($result);
 // echo json_encode($xml, JSON_PRETTY_PRINT);
 $json = json_encode($xml);
 $array = json_decode($json, true);
+// write_log(json_encode($array), __FILE__, __LINE__);
 if ($array['MSG_DESC'] === 'SUCCESS') {
     write_log("User Login. user:" . $object->user, __FILE__, __LINE__, LogLevel::INFO);
 } else {
@@ -115,6 +116,21 @@ if ($array['MSG_CODE'] === "0") {
     $login_result['refreshToken'] = get_token($object->user, $array['USER_DETAIL']['USER_SESSION'], $exp_seconds = 3600);
     $login_result['expiresIn'] = 3600;
 
+    //Some old screens like bay view still need session
+    if (!isset($_SESSION)) {
+        session_start();
+    }
+    
+    $_SESSION['SESSION'] = $array['USER_DETAIL']['USER_SESSION'];
+    $_SESSION['MANAGER'] = $array['USER_DETAIL']['ISMANAGER_CMPY'];
+    $_SESSION['LANGUAGE'] = $array['USER_DETAIL']['USER_LANG'];
+    $_SESSION['COMPANY'] = $array['USER_DETAIL']['USER_CMPY'];
+    $_SESSION['SITECODE'] = $array['USER_DETAIL']['SITE_CODE'];
+    $_SESSION['PERCODE'] = $object->user;
+    $_SESSION['PERNAME'] = $array['USER_DETAIL']['USER_NAME'];
+    $_SESSION['CLIENTIP'] = $array['USER_DETAIL']['USER_CLIENTIP'];
+    session_regenerate_id(true);
+
     http_response_code(200);
     echo json_encode($login_result, JSON_PRETTY_PRINT);
 } else {
@@ -122,6 +138,8 @@ if ($array['MSG_CODE'] === "0") {
     $login_result = array(
         'msg_code' => $array['MSG_CODE'],
         'msg_desc' => $array['MSG_DESC'],
+        'attempt_left' => (isset($array['USER_DETAIL']['USER_ATTEMPT_LEFT']) ? $array['USER_DETAIL']['USER_ATTEMPT_LEFT'] : 0),
+        // 'attempt_left' => $array['USER_DETAIL']['USER_ATTEMPT_LEFT'],
         'user_status_flag' => $array['USER_DETAIL']['USER_STATUS_FLAG']);
     
     echo json_encode($login_result, JSON_PRETTY_PRINT);

@@ -1188,15 +1188,15 @@ class Movement extends CommonClass
     {
         // tankTerm=C860&supp=1565102&tripNo=900000027&rpt_type=0&ftsize=16&forms=1&rows=1&transdoc=BOL
         if (!isset($this->trip_no)) {
-            $error = new EchoSchema(400, "parameter missing: trip_no not provided");
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: trip_no not provided"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         if (!isset($this->supplier)) {
-            $error = new EchoSchema(400, "parameter missing: supplier not provided");
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: supplier not provided"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         $serv = new SiteService($this->conn);
@@ -1210,9 +1210,9 @@ class Movement extends CommonClass
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/bill_of_lading_popup.cgi", $query_string);
         if (strpos($res, "redirectToLoginPage") !== false) {
-            $error = new EchoSchema(400, "Not valid session");
+            $error = new EchoSchema(400, response("__INVALID_SESSION__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         /**
@@ -1225,22 +1225,21 @@ class Movement extends CommonClass
         $new_res = str_replace("embed src='", "embed src='../../../phpwrapper/", $res);
         
         echo $new_res;
-        return array();
     }
 
     public function print_bol()
     {
         // tankTerm=C860&supp=1565102&tripNo=900000026&tanker=11&op=18&transdoc=BOL
         if (!isset($this->trip_no)) {
-            $error = new EchoSchema(400, "parameter missing: trip_no not provided");
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: trip_no not provided"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         if (!isset($this->supplier)) {
-            $error = new EchoSchema(400, "parameter missing: supplier not provided");
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: supplier not provided"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         $serv = new SiteService($this->conn);
@@ -1254,38 +1253,37 @@ class Movement extends CommonClass
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/bill_of_lading.cgi", $query_string);
         if (strpos($res, "redirectToLoginPage") !== false) {
-            $error = new EchoSchema(400, "Not valid session");
+            $error = new EchoSchema(400, response("__INVALID_SESSION__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         } else {
             if (strpos($res, "op=28")) {
-                $error = new EchoSchema(200, "Bill of Lading printed");
+                $error = new EchoSchema(200, response("__BOL_PRINTED__"));
                 echo json_encode($error, JSON_PRETTY_PRINT);
-                return array();
+                return;
             } else {
-                $error = new EchoSchema(500, "CGI failure, check logs/php_rest_*.log file for details");
+                $error = new EchoSchema(500, response("__CGI_FAILED__"));
                 echo json_encode($error, JSON_PRETTY_PRINT);
-                return array();
+                return;
             }
         }
         
         echo $res;
-        return array();
     }
 
     public function view_loadreport()
     {
         // bill_of_lading_popup.php?tankTerm=C860&supp=1565102&tripNo=900000026&rpt_type=1&ftsize=15&forms=1&rows=1
         if (!isset($this->trip_no)) {
-            $error = new EchoSchema(400, "parameter missing: trip_no not provided");
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: trip_no not provided"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         if (!isset($this->supplier)) {
-            $error = new EchoSchema(400, "parameter missing: supplier not provided");
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: supplier not provided"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         $serv = new SiteService($this->conn);
@@ -1295,9 +1293,9 @@ class Movement extends CommonClass
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/bill_of_lading_popup.cgi", $query_string);
         if (strpos($res, "redirectToLoginPage") !== false) {
-            $error = new EchoSchema(400, "Not valid session");
+            $error = new EchoSchema(400, response("__INVALID_SESSION__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
         
         /**
@@ -1310,22 +1308,21 @@ class Movement extends CommonClass
         $new_res = str_replace("embed src='", "embed src='../../../phpwrapper/", $res);
         
         echo $new_res;
-        return array();
     }
 
     public function print_loadreport()
     {
         //bill_of_lading.php?&rpt_type=1&tankTerm=C860&supp=1565102&tripNo=900000026&tanker=11&op=18
         if (!isset($this->trip_no)) {
-            $error = new EchoSchema(400, "parameter missing: trip_no not provided");
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: trip_no not provided"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         if (!isset($this->supplier)) {
-            $error = new EchoSchema(400, "parameter missing: supplier not provided");
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: supplier not provided"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         $serv = new SiteService($this->conn);
@@ -1335,23 +1332,22 @@ class Movement extends CommonClass
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/bill_of_lading.cgi", $query_string);
         if (strpos($res, "redirectToLoginPage") !== false) {
-            $error = new EchoSchema(400, "Not valid session");
+            $error = new EchoSchema(400, response("__INVALID_SESSION__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         } else {
             if (strpos($res, "op=28")) {
-                $error = new EchoSchema(200, "Bill of Lading printed");
+                $error = new EchoSchema(200, response("__LOAD_REPORT_PRINTED__"));
                 echo json_encode($error, JSON_PRETTY_PRINT);
-                return array();
+                return;
             } else {
-                $error = new EchoSchema(500, "CGI failure, check logs/php_rest_*.log file for details");
+                $error = new EchoSchema(500, response("__CGI_FAILED__"));
                 echo json_encode($error, JSON_PRETTY_PRINT);
-                return array();
+                return;
             }
         }
         
         echo $res;
-        return array();
     }
 
     public function reverse()
@@ -1362,19 +1358,18 @@ class Movement extends CommonClass
         $error_msg = null;
         if (!$serv->reverse_trip($error_msg)) {
             if ($error_msg) {
-                $error = new EchoSchema(500, "Internal Error: " . $error_msg);
+                $error = new EchoSchema(500, response("__SCHEDULE_REVERSE_FAILED__", "Reverse failed: " . $error_msg));
             } else {
-                $error = new EchoSchema(500, "Internal error, check logs/php_rest_*.log file for details");
+                $error = new EchoSchema(500, response("__SCHEDULE_REVERSE_FAILED__"));
             }
             
             echo json_encode($error, JSON_PRETTY_PRINT);
             write_log("reverse_trip failed", __FILE__, __LINE__, LogLevel::ERROR);
-            return array();
+            return;
         }
 
-        $error = new EchoSchema(200, "Schedule reversed");
+        $error = new EchoSchema(200, response("__SCHEDULE_REVERSED__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
-        return array();
     }
 
     /**
@@ -1422,14 +1417,13 @@ class Movement extends CommonClass
         
         $error_msg = null;
         if ($serv->submit($error_msg)) {
-            $result = new EchoSchema(200, sprintf("Manual transaction for nomination %d submitted", $this->mvitm_item_id));
+            $result = new EchoSchema(200, response("__MANUAL_TRANS_SUBMITTED__",
+                sprintf("Manual transaction for nomination %d submitted", $this->mvitm_item_id)));
             echo json_encode($result, JSON_PRETTY_PRINT);
         } else {
-            $result = new EchoSchema(500, 
-                "Failed to submit manual transaction for nomination, error message: " . $error_msg);
+            $result = new EchoSchema(500, response("__MANUAL_TRANS_FAILED__",
+                "Failed to submit manual transaction for nomination, error message: " . $error_msg));
             echo json_encode($result, JSON_PRETTY_PRINT);
         }
-        
-        return array();
     }
 }

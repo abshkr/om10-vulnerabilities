@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/gate.php';
 
-Utilities::read($class = "Gate", $method = 'open_gates', $filter = true);
+Utilities::exec($class = "Gate", $method = 'open_gates', $filter = true);

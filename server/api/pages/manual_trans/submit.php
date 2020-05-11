@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/manual_trans.php';
 
-Utilities::read('ManualTrans', "submit", $filter = true);
+Utilities::exec('ManualTrans', "submit", $filter = true);

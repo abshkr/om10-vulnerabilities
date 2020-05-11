@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/schedule.php';
 
-Utilities::read('Schedule', "next_trip_no", $filter = true);
+Utilities::exec('Schedule', "next_trip_no", $filter = true);

@@ -325,19 +325,20 @@ class ManualTrans extends CommonClass
         if ($serv->do_create($error_msg)) {
             if (isset($this->order_cust_no)) {
                 $result = new EchoSchema(200, 
-                    sprintf("Manual transaction (open order:%d) submitted", $this->order_cust_no));
+                    response("__MANUAL_TRANS_SUBMITTED__",
+                    sprintf("Manual transaction (open order:%d) submitted", $this->order_cust_no)));
             } else {
                 $result = new EchoSchema(200, 
-                    sprintf("Manual transaction (load number:%d, supplier:%s) submitted", $this->trip_no, $this->supplier));
+                    response("__MANUAL_TRANS_SUBMITTED__",
+                    sprintf("Manual transaction (load number:%d, supplier:%s) submitted", $this->trip_no, $this->supplier)));
             }
             
             echo json_encode($result, JSON_PRETTY_PRINT);
         } else {
-            $result = new EchoSchema(500, "Failed to submit manual transaction, error message: " . $error_msg);
+            $result = new EchoSchema(500, response("__MANUAL_TRANS_FAILED__",
+                "Failed to submit manual transaction, error message: " . $error_msg));
             echo json_encode($result, JSON_PRETTY_PRINT);
         }
-
-        return array();
     }
 
     public function get_base_details()

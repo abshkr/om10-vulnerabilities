@@ -130,6 +130,7 @@ class CommonClass
     private function view_primary_key_where()
     {
         if ($this->TABLE_NAME == $this->VIEW_NAME) {
+            $this->view_keys = $this->primary_keys;
             return $this->populate_primary_key_where();
         }
 
@@ -195,7 +196,7 @@ class CommonClass
         $set_query = rtrim($set_query, ', ');
         // write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
         if (strlen($set_query) <= 0) {
-            write_log("Nothing to update", __FILE__, __LINE__, LogLevel::ERROR);
+            write_log("Nothing to update", __FILE__, __LINE__, LogLevel::WARNING);
             return null;
         }
 
@@ -318,18 +319,29 @@ class CommonClass
             SELECT * FROM " . $this->VIEW_NAME . $this->view_primary_key_where();
         // write_log(sprintf("query:%s", $query), __FILE__, __LINE__, LogLevel::DEBUG);
         $stmt = oci_parse($this->conn, $query);
-        foreach ($this->primary_keys as $value) {
-            // write_log(sprintf("%s:%s", $value, $this->$value), __FILE__, __LINE__, LogLevel::DEBUG);
-            if (isset($this->TABLE_NAME) &&
-                isset($this->VIEW_NAME) &&
-                $this->TABLE_NAME !== $this->VIEW_NAME &&
-                isset($this->table_view_map[strtoupper($value)])) {
-                $value = strtolower($this->table_view_map[strtoupper($value)]);
-            }
-            oci_bind_by_name($stmt, ':' . $value, $this->$value);
+        // write_log(json_encode($this->view_keys), __FILE__, __LINE__, LogLevel::DEBUG);
+        foreach ($this->view_keys as $view_key) {
+            // write_log(sprintf("%s", $view_key), __FILE__, __LINE__, LogLevel::DEBUG);
+            // if (isset($this->TABLE_NAME) &&
+            //     isset($this->VIEW_NAME) &&
+            //     $this->TABLE_NAME !== $this->VIEW_NAME &&
+            //     isset($this->table_view_map[strtoupper($value)])) {
+            //     $value = strtolower($this->table_view_map[strtoupper($value)]);
+            // }
+            // if (array_key_exists(strtoupper($value), $this->table_view_map)) {
+            //     $value = strtolower($this->table_view_map[strtoupper($value)]);
+            // }
+            
+            // write_log(sprintf("%s:%s", $view_key, $this->$view_key), __FILE__, __LINE__, LogLevel::DEBUG);
+            oci_bind_by_name($stmt, ':' . $view_key, $this->$view_key);
         }
         if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            if ($row == false) {
+                $row = array();
+            }
+            // write_log(json_encode($row), __FILE__, __LINE__, LogLevel::DEBUG);
+            // write_log(json_encode($this), __FILE__, __LINE__, LogLevel::DEBUG);
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -593,6 +605,11 @@ class CommonClass
         return ltrim($primey_key_record, ", ");
     }
 
+    public function common_prep()
+    {
+        $this->map_view_files_to_table_fiels();
+    }
+
     private function map_view_files_to_table_fiels()
     {
         // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -647,8 +664,7 @@ class CommonClass
         //     $this->TABLE_NAME !== $this->VIEW_NAME) {
         //     $this->map_view_files_to_table_fiels();
         // }
-        $this->map_view_files_to_table_fiels();
-
+        
         if (count($this->primary_keys) <= 0) {
             write_log($this->TABLE_NAME . " does not have primary key", __FILE__, __LINE__);
             return true;

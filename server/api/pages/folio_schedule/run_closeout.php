@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/folio_setting.php';
 
-Utilities::read('FolioSetting', $method = 'freeze_closeout', $filter = true);
+Utilities::exec('FolioSetting', $method = 'freeze_closeout', $filter = true);

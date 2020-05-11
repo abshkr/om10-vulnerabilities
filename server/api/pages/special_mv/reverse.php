@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/special_movement.php';
 
-Utilities::read('SpecialMovement', $method = "reverse", $filter = true);
+Utilities::exec('SpecialMovement', $method = "reverse", $filter = true);

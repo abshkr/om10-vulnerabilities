@@ -228,7 +228,12 @@ class Folio extends CommonClass
 
     public function calc_vcf()
     {
-        $cgi_response = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi");
+        $query = "frm_baseCd=" . $this->frm_baseCd . 
+            "&frm_which_type=" . $this->frm_which_type . 
+            "&frm_real_amount=" . $this->frm_real_amount . 
+            "&frm_real_temp=" . $this->frm_real_temp . 
+            "&frm_real_dens=" . $this->frm_real_dens;
+        $cgi_response = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi", $query);
         write_log(json_encode($cgi_response), __FILE__, __LINE__);
 
         $real_cvf = Utilities::get_cgi_xml_value($cgi_response, 'REAL_VCF');
@@ -243,14 +248,10 @@ class Folio extends CommonClass
         $item->real_kg = $real_kg;
 
         echo json_encode($item, JSON_PRETTY_PRINT);
-
-        return array();
     }
 
     public function calc_tank_vcfs()
     {
-        $lang = Utilities::getCurrLang();
-
         $vcf_response = array();
         $calc_in_trouble = 0;
         $desc_array = array();
@@ -278,13 +279,7 @@ class Folio extends CommonClass
                         __FILE__, __LINE__, LogLevel::WARNING);
                     $calc_in_trouble += 1;
 
-                    if ($lang == 'CHN') {
-                        $err_msg = sprintf("油罐液位和盘点总量(视量)均未设置，无法计算. 油罐:%s", 
-                            $value->tank_code);
-                    } else {
-                        $err_msg = sprintf("both tank_prod_lvl and close_amb_tot not set, skip this calculation. tank:%s", 
-                            $value->tank_code);
-                    }
+                    $err_msg = response("__VCF_TANKLVL_AMB_NOT_SET__", null, array($value->tank_code));
                     
                     array_push($desc_array, $err_msg);
                     array_push($vcf_response, $value);
@@ -298,13 +293,8 @@ class Folio extends CommonClass
                         write_log(sprintf("Tank %s: failed to get ambient liter from strap", $value->tank_code), 
                             __FILE__, __LINE__, LogLevel::WARNING);
                         $calc_in_trouble += 1;
-                        if ($lang == 'CHN') {
-                            $err_msg = sprintf("盘点总量(视量)均未设置. 油罐:%s", 
-                                $value->tank_code);
-                        } else {
-                            $err_msg = sprintf("Cannot get ambient liter from strap. tank:%s", $value->tank_code);
-                        }
-
+                        $err_msg = response("__VCF_CANNOT_GET_AMB_FROM_STRAP__", null, array($value->tank_code));
+                        
                         array_push($desc_array, $err_msg);
                         array_push($vcf_response, $value);
                         continue;
@@ -346,13 +336,7 @@ class Folio extends CommonClass
             if (Utilities::get_cgi_xml_value($result, 'MSG_CODE') > 0) {
                 $calc_in_trouble += 1;
                 $msg = Utilities::get_cgi_xml_value($result, 'MSG_DESC');
-
-                if ($lang == 'CHN') {
-                    $err_msg = sprintf("VCF计算错误. 油罐:%s", 
-                        $value->tank_code);
-                } else {
-                    $err_msg = sprintf("%s. tank:%s", $msg, $value->tank_code);
-                }
+                $err_msg = response("__VCF_FAILED__", sprintf("%s. tank:%s", $msg, $value->tank_code), array($value->tank_code));
 
                 write_log(sprintf("%s, tank:%s, base: %s, temp:%f, density:%f, from:%s, quantity:%d", 
                     $msg, $value->tank_code, $value->tank_base, $value->close_temp, $value->close_density, 
@@ -384,8 +368,6 @@ class Folio extends CommonClass
         $restReponse->desc = $desc_array;
         $restReponse->data = $vcf_response;
         echo json_encode($restReponse, JSON_PRETTY_PRINT);
-        //return an arrary to stop caller to do follow-up work
-        return $vcf_response;
     }
 
     public function pds()
@@ -399,10 +381,10 @@ class Folio extends CommonClass
         http_response_code(200);
         if (strpos($cgi_response, "<Result>0<")) {
             $result["result"] = 0;
-            $result["message"] = "PDS message sent";
+            $result["message"] = response("__PDS_SENT__");
         } else {
             $result["result"] = -1;
-            $result["message"] = $cgi_response;
+            $result["message"] = response("__CGI_FAILED__", $cgi_response);
         }
 
         echo json_encode($result, JSON_PRETTY_PRINT);
@@ -612,7 +594,7 @@ class Folio extends CommonClass
         if (!file_exists($folder)) {
             write_log("folder " . $folder . " does not exist",
                 __FILE__, __LINE__, LogLevel::ERROR);
-            $result["message"] = "folio folder does not exist.";
+            $result["message"] = response("__FOLDER_NOT_EXIST__", "folio folder does not exist.");
             echo json_encode($result, JSON_PRETTY_PRINT);
             return $result;
         }
@@ -634,7 +616,7 @@ class Folio extends CommonClass
         if ($count > 0) {
             echo json_encode($result, JSON_PRETTY_PRINT);
         } else {
-            $result["message"] = "No record found.";
+            $result["message"] = response("__NO_RECORD_FOUND__");
             echo json_encode($result, JSON_PRETTY_PRINT);
         }
 
@@ -643,14 +625,14 @@ class Folio extends CommonClass
 
     public function save_to_tanks()
     {
-        write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-        // write_log(json_encode($this), __FILE__, __LINE__);
+        // write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
+        write_log(json_encode($this), __FILE__, __LINE__);
 
         if (!isset($this->folio_tanks)) {
             $error = new EchoSchema(400, "parameter missing: folio_tanks not provided");
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         foreach ($this->folio_tanks as $value) {
@@ -695,9 +677,7 @@ class Folio extends CommonClass
         }
 
         http_response_code(200);
-        $result = new EchoSchema(200, "Data saved to tanks.");
+        $result = new EchoSchema(200, response("__SAVE_SUCCEEDED__", "Data saved to tanks."));
         echo json_encode($result, JSON_PRETTY_PRINT);
-
-        return array();
     }
 }

@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/load_bay.php';
 
-Utilities::read('LoadBay', $method = 'remove_locks', $filter = true);
+Utilities::exec('LoadBay', $method = 'remove_locks', $filter = true);

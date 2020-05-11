@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/arm_additive.php';
 
-Utilities::read('ArmAdditive', $method = 'mod_inj', $filter = true);
+Utilities::exec('ArmAdditive', $method = 'mod_inj', $filter = true);

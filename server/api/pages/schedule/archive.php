@@ -6,4 +6,4 @@ include_once '../../shared/pdf_header.php';
 include_once '../../config/database.php';
 include_once '../../objects/schedule.php';
 
-Utilities::read('Schedule', "archive", $filter = true);
+Utilities::exec('Schedule', "archive", $filter = true);

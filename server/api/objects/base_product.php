@@ -3,6 +3,7 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/enum_service.php';
 include_once 'common_class.php';
 
 class BaseProduct extends CommonClass
@@ -43,6 +44,12 @@ class BaseProduct extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function corr_mthds()
+    {
+        $serv = new EnumService($this->conn);
+        return $serv->corr_mthds();
     }
 
     //Because base cannot be too many, do not do limit

@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/folio.php';
 
-Utilities::read('Folio', "calc_tank_vcfs", $filter = true);
+Utilities::exec('Folio', "calc_tank_vcfs", $filter = true);

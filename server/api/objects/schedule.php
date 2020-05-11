@@ -82,7 +82,6 @@ class Schedule extends CommonClass
 
         http_response_code(200);
         echo json_encode($result, JSON_PRETTY_PRINT);
-        return array(); //Return array to prevent caller doing extra work
     }
 
     public function unit_types()
@@ -125,15 +124,15 @@ class Schedule extends CommonClass
     {
         //tankTerm=P251&supp=5860106&tripNo=600000040&rpt_type=0&ftsize=16&forms=1&rows=1&sess_id=QKohSpbjlpwF
         if (!isset($this->trip_no)) {
-            $error = new EchoSchema(400, "parameter missing: trip_no not provided");
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: trip_no not provided"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         if (!isset($this->supplier)) {
-            $error = new EchoSchema(400, "parameter missing: supplier not provided");
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: supplier not provided"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         $serv = new SiteService($this->conn);
@@ -143,13 +142,12 @@ class Schedule extends CommonClass
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/drv_instr_popup.cgi", $query_string);
         if (strpos($res, "redirectToLoginPage") !== false) {
-            $error = new EchoSchema(400, "Not valid session");
+            $error = new EchoSchema(400, response("__INVALID_SESSION__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         echo $res;
-        return array();
     }
 
     //Old code: TransactionsService.php::reverseTransactions()
@@ -160,20 +158,15 @@ class Schedule extends CommonClass
         $serv->set_property('trip_no', $this->trip_no);
         $error_msg = null;
         if (!$serv->reverse_trip($error_msg)) {
-            if ($error_msg) {
-                $error = new EchoSchema(500, $error_msg);
-            } else {
-                $error = new EchoSchema(500, "Internal error, check logs/php_rest_*.log file for details");
-            }
+            $error = new EchoSchema(500, response("__INTERNAL_ERROR__", $error_msg));
             
             echo json_encode($error, JSON_PRETTY_PRINT);
             write_log("reverse_trip failed", __FILE__, __LINE__, LogLevel::ERROR);
-            return array();
+            return;
         }
 
-        $error = new EchoSchema(200, "Schedule reversed");
+        $error = new EchoSchema(200, response("__SCHEDULE_REVERSED__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
-        return array();
     }
 
     //Old code: TransactionsService.php::reverseTransactions() 
@@ -185,20 +178,15 @@ class Schedule extends CommonClass
         $serv->set_property('trip_no', $this->trip_no);
         $error_msg = null;
         if (!$serv->archive_trip($error_msg)) {
-            if ($error_msg) {
-                $error = new EchoSchema(500, $error_msg);
-            } else {
-                $error = new EchoSchema(500, "Internal error, check logs/php_rest_*.log file for details");
-            }
+            $error = new EchoSchema(500, response("__INTERNAL_ERROR__", $error_msg));
             
             echo json_encode($error, JSON_PRETTY_PRINT);
             write_log("Archive failed", __FILE__, __LINE__, LogLevel::ERROR);
-            return array();
+            return;
         }
 
         $error = new EchoSchema(200, "Schedule archived");
         echo json_encode($error, JSON_PRETTY_PRINT);
-        return array();
     }
 
     //tankTerm=P251&supp=5860106&tripNo=600000040&op=18&sess_id=QKohSpbjlpwF
@@ -207,13 +195,13 @@ class Schedule extends CommonClass
         if (!isset($this->trip_no)) {
             $error = new EchoSchema(400, "parameter missing: trip_no not provided");
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         if (!isset($this->supplier)) {
             $error = new EchoSchema(400, "parameter missing: supplier not provided");
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         $serv = new SiteService($this->conn);
@@ -223,13 +211,12 @@ class Schedule extends CommonClass
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/drv_instr.cgi", $query_string);
         if (strpos($res, "redirectToLoginPage") !== false) {
-            $error = new EchoSchema(400, "Not valid session");
+            $error = new EchoSchema(400, response("__INVALID_SESSION__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         echo $res;
-        return array();
     }
 
     public function search()
@@ -328,16 +315,16 @@ class Schedule extends CommonClass
 
         $serv = new SiteService($this->conn);
         $site_code = $serv->site_code();
-        $query_string = "tankTerm=" . $site_code . 
-            "&sched_type=" . $this->shls_ld_type .
-            "&tripNo=" . $this->shls_trip_no . 
-            "&carr=" . $this->carrier_code . 
-            "&tanker=" . $this->tnkr_code . 
-            "&date=" . urlencode($this->shls_caldate) . 
-            "&shift=" . $this->shls_shift . 
-            "&priority=" . $this->shls_priority . 
-            "&tripExpirDteTime=" . urlencode($this->shls_exp2) . 
-            "&supp=" . $this->supplier_code . 
+        $query_string = "tankTerm=" . rawurlencode(strip_tags($site_code)) . 
+            "&sched_type=" . rawurlencode(strip_tags($this->shls_ld_type)) .
+            "&tripNo=" . rawurlencode(strip_tags($this->shls_trip_no)) . 
+            "&carr=" . rawurlencode(strip_tags($this->carrier_code)) . 
+            "&tanker=" . rawurlencode(strip_tags($this->tnkr_code)) . 
+            "&date=" . rawurlencode(strip_tags($this->shls_caldate)) . 
+            "&shift=" . rawurlencode(strip_tags($this->shls_shift)) . 
+            "&priority=" . rawurlencode(strip_tags($this->shls_priority)) . 
+            "&tripExpirDteTime=" . rawurlencode(strip_tags($this->shls_exp2)) . 
+            "&supp=" . rawurlencode(strip_tags($this->supplier_code)) . 
             "&op=" . strval($op) . "&cmd=" . $cmd;
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/load_scheds.cgi", $query_string);
@@ -345,29 +332,32 @@ class Schedule extends CommonClass
 
         $op_response = $op + 10;
         if (strpos($res, "var op=" . strval($op_response) . ";") === false) {
-            throw new DatabaseException("load_scheds CGI error");
+            // throw new DatabaseException("load_scheds CGI error");
+            write_log("load_scheds CGI error", __FILE__, __LINE__, LogLevel::ERROR);
+            throw new DatabaseException(response("__CGI_FAILED__"));
         }
 
         if (isset($this->compartments)) {
             foreach ($this->compartments as $compartment) {
-                $query_string = "tankTerm=" . $site_code . 
-                    "&sched_type=" . $this->shls_ld_type .
-                    "&prod=" . $compartment->prod_code . 
-                    "&unit=" . $compartment->unit_code . 
-                    "&sched=" . $compartment->qty_scheduled . 
+                $query_string = "tankTerm=" . rawurlencode(strip_tags($site_code)) . 
+                    "&sched_type=" . rawurlencode(strip_tags($this->shls_ld_type)) .
+                    "&prod=" . rawurlencode(strip_tags($compartment->prod_code)) . 
+                    "&unit=" . rawurlencode(strip_tags($compartment->unit_code)) . 
+                    "&sched=" . rawurlencode(strip_tags($compartment->qty_scheduled)) . 
                     "&order=&bay_armCd=-1" .  
-                    "&supp=" . $this->supplier_code . 
-                    "&tripNo=" . $this->shls_trip_no . 
-                    "&tanker=" . $this->tnkr_code . 
-                    "&drawer=" . $this->drawer_code . 
-                    "&cmptID=" . $compartment->compartment . 
-                    "&tlrcmpt=" . $compartment->compartment . 
+                    "&supp=" . rawurlencode(strip_tags($this->supplier_code)) . 
+                    "&tripNo=" . rawurlencode(strip_tags($this->shls_trip_no)) . 
+                    "&tanker=" . rawurlencode(strip_tags($this->tnkr_code)) . 
+                    "&drawer=" . rawurlencode(strip_tags($this->drawer_code)) . 
+                    "&cmptID=" . rawurlencode(strip_tags($compartment->compartment)) . 
+                    "&tlrcmpt=" . rawurlencode(strip_tags($compartment->compartment)) . 
                     "&op=17&cmd=MOD";
     
                 $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/load_spec_compt.cgi", $query_string);
                 // write_log($res, __FILE__, __LINE__);
                 if (strpos($res, "Success!") === false) {
-                    throw new DatabaseException("load_spec_compt CGI error");
+                    write_log("load_spec_compt CGI error", __FILE__, __LINE__, LogLevel::ERROR);
+                    throw new DatabaseException(response("__CGI_FAILED__"));
                 }
     
                 $this->update_cmpt_delvinfo($compartment);
@@ -376,39 +366,41 @@ class Schedule extends CommonClass
         
         if (isset($this->products)) {
             foreach ($this->products as $product) {
-                $query_string = "tankTerm=" . $site_code . 
-                    "&sched_type=" . $this->shls_ld_type .
-                    "&prod=" . $product->prod_code . 
-                    "&unit=" . $product->unit_code . 
-                    "&sched=" . $product->qty_scheduled . 
-                    "&supp=" . $this->supplier_code . 
-                    "&tripNo=" . $this->shls_trip_no . 
-                    "&tanker=" . $this->tnkr_code . 
-                    "&drawer=" . $this->drawer_code . 
+                $query_string = "tankTerm=" . rawurlencode(strip_tags($site_code)) . 
+                    "&sched_type=" . rawurlencode(strip_tags($this->shls_ld_type)) .
+                    "&prod=" . rawurlencode(strip_tags($product->prod_code)) . 
+                    "&unit=" . rawurlencode(strip_tags($product->unit_code)) . 
+                    "&sched=" . rawurlencode(strip_tags($product->qty_scheduled)) . 
+                    "&supp=" . rawurlencode(strip_tags($this->supplier_code)) . 
+                    "&tripNo=" . rawurlencode(strip_tags($this->shls_trip_no)) . 
+                    "&tanker=" . rawurlencode(strip_tags($this->tnkr_code)) . 
+                    "&drawer=" . rawurlencode(strip_tags($this->drawer_code)) . 
                     "&op=" . strval($op) . "&cmd=" . $cmd;
     
                 $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/load_spec_prod.cgi", $query_string);
                 if ($cmd == "ADD") {
                     if (strpos($res, "Success!") === false) {
-                        throw new DatabaseException("load_spec_prod CGI error");
+                        write_log("load_spec_prod CGI error", __FILE__, __LINE__, LogLevel::ERROR);
+                        throw new DatabaseException(response("__CGI_FAILED__"));
                     }
                 } else {
                     if (strpos($res, "var op=27;") === false) {
                         //If does not success, very likely this is a new product, try add
-                        $query_string = "tankTerm=" . $site_code . 
-                            "&sched_type=" . $this->shls_ld_type .
-                            "&prod=" . $product->prod_code . 
-                            "&unit=" . $product->unit_code . 
-                            "&sched=" . $product->qty_scheduled . 
-                            "&supp=" . $this->supplier_code . 
-                            "&tripNo=" . $this->shls_trip_no . 
-                            "&tanker=" . $this->tnkr_code . 
-                            "&drawer=" . $this->drawer_code . 
+                        $query_string = "tankTerm=" . rawurlencode(strip_tags($site_code)) . 
+                            "&sched_type=" . rawurlencode(strip_tags($this->shls_ld_type)) .
+                            "&prod=" . rawurlencode(strip_tags($product->prod_code)) . 
+                            "&unit=" . rawurlencode(strip_tags($product->unit_code)) . 
+                            "&sched=" . rawurlencode(strip_tags($product->qty_scheduled)) . 
+                            "&supp=" . rawurlencode(strip_tags($this->supplier_code)) . 
+                            "&tripNo=" . rawurlencode(strip_tags($this->shls_trip_no)) . 
+                            "&tanker=" . rawurlencode(strip_tags($this->tnkr_code)) . 
+                            "&drawer=" . rawurlencode(strip_tags($this->drawer_code)) . 
                             "&op=18&cmd=ADD";
             
                         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/load_spec_prod.cgi", $query_string);
                         if (strpos($res, "Success!") === false) {
-                            throw new DatabaseException("load_spec_prod CGI error");
+                            write_log("load_spec_prod CGI error", __FILE__, __LINE__, LogLevel::ERROR);
+                            throw new DatabaseException(response("__CGI_FAILED__"));
                         }
                     }
                 }

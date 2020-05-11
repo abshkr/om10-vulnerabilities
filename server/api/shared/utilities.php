@@ -4,6 +4,7 @@ include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../config/database.php';
 include_once __DIR__ . '/common.php';
 include_once __DIR__ . '/access_check.php';
+include_once __DIR__ . '/response.php';
 
 class Utilities
 {
@@ -84,6 +85,13 @@ class Utilities
         if ($query_string) {
             $url .= $query_string . "&";
         } else {
+            /**
+             * If $query_string is null, and if this http_cgi_invoke is called inside
+             * Utilities::read, then this part never works because all the POST data
+             * has been read in read(). If it is using GET it is fine.
+             * Conclusion: for POST, caller of http_cgi_invoke() should always prepare
+             * $query_string parameter
+             */
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 foreach ($_POST as $key => $value) {
                     $url .= $key . "=" . rawurlencode(strip_tags($value)) . "&";
@@ -115,12 +123,6 @@ class Utilities
         return $result;
     }
 
-    /**
-     * params can be an array, like array (
-     * "target_code" => "TRANSP_EQUIP"
-     * );
-     * See pages\equipment\expiry_types.php for reference
-     */
     public static function read($class, $method = 'read', $filter = false, $params = null)
     {
         write_log(sprintf("%s::%s() START, class:%s, method:%s",
@@ -134,14 +136,14 @@ class Utilities
         try {
             $db = $database->getConnection($class, $method);
         } catch (UnauthException $e) {
-            $error = new EchoSchema(401, sprintf("Caught exception: %s", $e->getMessage()));
+            $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
 
         $access_check = new AccessCheck($db);
         if (!$access_check->check($class, $method, self::getCurrPsn())) {
-            $error = new EchoSchema(400, "Current user does not have privilege");
+            $error = new EchoSchema(400, response("__INVALID_PRIV__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
@@ -149,6 +151,7 @@ class Utilities
         $object = new $class($db);
 
         if ($filter) {
+            //Prior to PHP 5.6, a stream opened with php://input could only be read once
             $data = json_decode(file_get_contents("php://input"));
             // write_log(json_encode($data), __FILE__, __LINE__);
             if ($data) {
@@ -176,7 +179,7 @@ class Utilities
             //means it is handled inside $object->$method()
             return;
         } else if (!$stmt) {
-            $error = new EchoSchema(500, "Internal error, check logs/php_rest_*.log file for details");
+            $error = new EchoSchema(500, response("__INTERNAL_ERROR__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
@@ -205,9 +208,70 @@ class Utilities
         if ($num > 0) {
             echo json_encode($result, JSON_PRETTY_PRINT);
         } else {
-            $result["message"] = "No record found.";
-            echo json_encode($result, JSON_PRETTY_PRINT);
+            $result["message"] = response("__NO_RECORD_FOUND__");
+            echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         }
+    }
+
+    /**
+     * Identical to read(), the difference is it does not continue after calling $object->$method()
+     */
+    public static function exec($class, $method = 'read', $filter = false, $params = null)
+    {
+        write_log(sprintf("%s::%s() START, class:%s, method:%s",
+            __CLASS__, __FUNCTION__, $class, $method),
+            __FILE__, __LINE__);
+
+        $database = new Database();
+        $db = null;
+
+        // initialize object
+        try {
+            $db = $database->getConnection($class, $method);
+        } catch (UnauthException $e) {
+            $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $access_check = new AccessCheck($db);
+        if (!$access_check->check($class, $method, self::getCurrPsn())) {
+            $error = new EchoSchema(400, response("__INVALID_PRIV__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $object = new $class($db);
+
+        if ($filter) {
+            //Prior to PHP 5.6, a stream opened with php://input could only be read once
+            $data = json_decode(file_get_contents("php://input"));
+            // write_log(json_encode($data), __FILE__, __LINE__);
+            if ($data) {
+                foreach ($data as $key => $value) {
+                    $object->$key = $value;
+                }
+            } else {
+                // write_log(json_encode($_GET), __FILE__, __LINE__);
+                foreach ($_GET as $key => $value) {
+                    $object->$key = $value;
+                }
+            }
+        }
+
+        if ($params) {
+            foreach ($params as $prop => $value) {
+                $object->$prop = $value;
+            }
+        }
+
+        self::sanitize($object);
+
+        if (method_exists($object, "common_prep")) {
+            $object->common_prep();
+        }
+        
+        return $object->$method();
     }
 
     public static function count($class, $method = 'count', $filter = false)
@@ -307,7 +371,7 @@ class Utilities
             echo json_encode($result, JSON_PRETTY_PRINT);
         } else {
             echo json_encode(
-                array("message" => "No record found.")
+                array("message" => response("__NO_RECORD_FOUND__"))
             );
         }
     }
@@ -369,7 +433,7 @@ class Utilities
 
         $access_check = new AccessCheck($db);
         if (!$access_check->check($class, $method, self::getCurrPsn())) {
-            $error = new EchoSchema(400, "Current user does not have privilege");
+            $error = new EchoSchema(400, response("__INVALID_PRIV__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
@@ -395,6 +459,10 @@ class Utilities
 
         self::sanitize($object);
         write_log(json_encode(($object)), __FILE__, __LINE__);
+
+        if (method_exists($object, "common_prep")) {
+            $object->common_prep();
+        }
         
         if (method_exists($object, "pre_create")) {
             $object->pre_create();
@@ -407,7 +475,8 @@ class Utilities
             }
         } catch (NullableException $e) {
             write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(400, sprintf("Caught exception: %s", $e->getMessage()));
+            // $error = new EchoSchema(400, sprintf("Caught exception: %s", $e->getMessage()));
+            $error = new EchoSchema(400, response("__GENERAL_EXCEPTION__", sprintf("Caught exception: %s", $e->getMessage())));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
@@ -415,7 +484,8 @@ class Utilities
         if ($object->check_exists && method_exists($object, "check_existence")) {
             if ($object->check_existence()) {
                 $record_str = strlen($object->primiary_key_str()) > 0 ? " (" . $object->primiary_key_str() . ") ": " ";
-                $error = new EchoSchema(400, sprintf("record%salready exist", $record_str));
+                // $error = new EchoSchema(400, sprintf("record%salready exist", $record_str));
+                $error = new EchoSchema(400, response("__ALREADY_EXIST__", sprintf("record%salready exist", $record_str)));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
@@ -427,20 +497,23 @@ class Utilities
                 echo '"message": "' . $desc . ' created."';
                 echo '}';
             } else {
-                $error = new EchoSchema(500, 
-                sprintf("Unable to create %s . Check logs/php_rest_*.log file for details.", $desc));
+                // $error = new EchoSchema(500, 
+                // sprintf("Unable to create %s . Check logs/php_rest_*.log file for details.", $desc));
+                $error = new EchoSchema(500, response("__CREATE_FAILED__", 
+                    sprintf("Unable to create %s . Check logs/php_rest_*.log file for details.", $desc)));
                 echo json_encode($error, JSON_PRETTY_PRINT);
             }
         } catch (DatabaseException $e) {
             if (!isset($itemData)) {
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-                $error = new EchoSchema(500, "Database Error", $e->getMessage());
+                $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("Database Error: %s", $e->getMessage())));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
             return false;
         } catch (IncompleteParameterException $e) {
-            $error = new EchoSchema(400, "Bad Request: " . $e->getMessage());
+            // $error = new EchoSchema(400, "Bad Request: " . $e->getMessage());
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "Bad Request: " . $e->getMessage()));
             echo json_encode($error, JSON_PRETTY_PRINT);
         }
     }
@@ -509,7 +582,7 @@ class Utilities
         $data = json_decode(file_get_contents("php://input"));
         foreach ($data as $item) {
             if (self::update($class, $method, $item) === false) {
-                $error = new EchoSchema(500, "Unable to update. Check logs/php_rest_*.log file for details.");
+                $error = new EchoSchema(500, response("__UPDATE_FAILED__"));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
@@ -517,7 +590,7 @@ class Utilities
 
         http_response_code(200);
         echo '{';
-        echo '"message": "Successfully updated. "';
+        echo '"message": "' . response("__UPDATE_SUCCEEDED__").  '"';
         echo '}';
         return;
     }
@@ -535,7 +608,7 @@ class Utilities
 
         $access_check = new AccessCheck($db);
         if (!$access_check->check($class, $method, self::getCurrPsn())) {
-            $error = new EchoSchema(400, "Current user does not have privilege");
+            $error = new EchoSchema(400, response("__INVALID_PRIV__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
@@ -575,6 +648,10 @@ class Utilities
             }
         }
 
+        if (method_exists($object, "common_prep")) {
+            $object->common_prep();
+        }
+
         if (method_exists($object, "pre_update")) {
             $object->pre_update();
         }
@@ -586,7 +663,7 @@ class Utilities
         } catch (NullableException $e) {
             if (!isset($itemData)) {
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-                $error = new EchoSchema(400, "Bad Request: " . sprintf("Caught exception: %s", $e->getMessage()));
+                $error = new EchoSchema(400, response("__GENERAL_EXCEPTION__", sprintf("Caught exception: %s", $e->getMessage())));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
@@ -599,7 +676,8 @@ class Utilities
             if (!$object->check_existence()) {
                 $record_str = strlen($object->primiary_key_str()) > 0 ? " (" . $object->primiary_key_str() . ") ": " ";
                 write_log(sprintf("record%sdoes not not exist", $record_str), __FILE__, __LINE__, LogLevel::ERROR);
-                $error = new EchoSchema(400, sprintf("record%sdoes not not exist", $record_str));
+                // $error = new EchoSchema(400, sprintf("record%sdoes not not exist", $record_str));
+                $error = new EchoSchema(400, response("__NOT_EXIST__", sprintf("record%sdoes not not exist", $record_str)));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
@@ -615,13 +693,16 @@ class Utilities
                     echo '{';
                     if (method_exists($object, 'primiary_key_str')) {
                         if (strlen($object->primiary_key_str()) > 0) {
-                            echo '"message": "' . $desc . ' (' . $object->primiary_key_str() . ') updated. "';
+                            // echo '"message": "' . $desc . ' (' . $object->primiary_key_str() . ') updated. "';
+                            echo '"message": "' . response("__UPDATE_SUCCEEDED__", 
+                                sprintf("%s (%s) updated", $desc, $object->primiary_key_str())) . '"';
                         } else {
-                            echo '"message": "' . $desc . ' updated. "';
+                            echo '"message": "' . response("__UPDATE_SUCCEEDED__", $desc . ' updated') . '"';
                         }
                         
                     } else {
-                        echo '"message": "' . $desc . ' updated. "';
+                        // echo '"message": "' . $desc . ' updated. "';
+                        echo '"message": "' . response("__UPDATE_SUCCEEDED__", $desc . ' updated') . '"';
                     }
                     echo '}';
                     return;
@@ -629,8 +710,8 @@ class Utilities
                 return true;
             } else {
                 if (!isset($itemData)) {
-                    $error = new EchoSchema(500, 
-                        sprintf("Unable to update %s . Check logs/php_rest_*.log file for details.", $desc));
+                    $error = new EchoSchema(500, response("__UPDATE_FAILED__",
+                        sprintf("Unable to update %s . Check logs/php_rest_*.log file for details.", $desc)));
                     echo json_encode($error, JSON_PRETTY_PRINT);
                     return;
                 }
@@ -639,7 +720,7 @@ class Utilities
         } catch (DatabaseException $e) {
             if (!isset($itemData)) {
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-                $error = new EchoSchema(500, "Database Error: " . $e->getMessage());
+                $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", "Database Error: " . $e->getMessage()));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
@@ -647,7 +728,7 @@ class Utilities
         } catch (Exception $e) {
             if (!isset($itemData)) {
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-                $error = new EchoSchema(500, "Server Failed Error: " . $e->getMessage());
+                $error = new EchoSchema(500, response("__GENERAL_EXCEPTION__", "Server Failed Error: " . $e->getMessage()));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
@@ -666,7 +747,7 @@ class Utilities
 
         $access_check = new AccessCheck($db);
         if (!$access_check->check($class, $method, self::getCurrPsn())) {
-            $error = new EchoSchema(400, "Current user does not have privilege");
+            $error = new EchoSchema(400, reponse("__INVALID_PRIV__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
@@ -687,11 +768,16 @@ class Utilities
             }
         }
 
+        if (method_exists($object, "common_prep")) {
+            $object->common_prep();
+        }
+
         // write_log(json_encode($object), __FILE__, __LINE__);
         if (method_exists($object, "check_existence")) {
             if (!$object->check_existence()) {
                 write_log(sprintf("record (%s) does not not exist", $object->primiary_key_str()), __FILE__, __LINE__, LogLevel::ERROR);
-                $error = new EchoSchema(400, sprintf("Record (%s) does not not exist", $object->primiary_key_str()));
+                $error = new EchoSchema(400, response("__NOT_EXIST__", 
+                    sprintf("Record (%s) does not not exist", $object->primiary_key_str())));
                 echo json_encode($error, JSON_PRETTY_PRINT);
 
                 return;
@@ -709,20 +795,20 @@ class Utilities
             if ($object->$method()) {
                 http_response_code(200);
                 echo '{';
-                echo '"message": "' . $desc . ' deleted."';
+                echo '"message": "' . response("__DELETE_SUCCEEDED__", $desc . ' deleted') . '"';
                 echo '}';
             } else {
-                $error = new EchoSchema(500, 
-                    sprintf("Unable to delete %s . Check logs/php_rest_*.log file for details.", $desc));
+                $error = new EchoSchema(500, response("__DELETE_FAILED__", 
+                    sprintf("Unable to delete %s . Check logs/php_rest_*.log file for details.", $desc)));
                 echo json_encode($error, JSON_PRETTY_PRINT);
             }
         } catch (DatabaseException $e) {
             write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(500, "Database Error: " . $e->getMessage());
+            $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", "Database Error: " . $e->getMessage()));
             echo json_encode($error, JSON_PRETTY_PRINT);
         } catch (Exception $e) {
             write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(500, "Server Failed Error: " . $e->getMessage());
+            $error = new EchoSchema(500, response("__GENERAL_EXCEPTION__", "Server Failed Error: " . $e->getMessage()));
             echo json_encode($error, JSON_PRETTY_PRINT);
         }
     }
@@ -733,7 +819,7 @@ class Utilities
         if ($retrieve_count > 0) {
             echo json_encode($result, JSON_PRETTY_PRINT);
         } else {
-            $result["message"] = "No record found.";
+            $result["message"] = response("__NO_RECORD_FOUND__");
             echo json_encode($result, JSON_PRETTY_PRINT);
         }
     }

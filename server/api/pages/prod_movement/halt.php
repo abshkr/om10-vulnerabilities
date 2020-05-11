@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/prod_movement.php';
 
-Utilities::read('ProdMovement', $method="halt", $filter=true);
+Utilities::exec('ProdMovement', $method="halt", $filter=true);

@@ -61,20 +61,18 @@ class Gate extends CommonClass
     {
         write_log(json_encode($this), __FILE__, __LINE__);
 
-        $query_string = "op=16&pg=0&gate=" . $this->gate_k . "&area=" .$this->area_k;
+        $query_string = "op=16&pg=0&gate=" . rawurlencode(strip_tags($this->gate_k)) 
+            . "&area=" . rawurlencode(strip_tags($this->area_k));
         $res = Utilities::http_cgi_invoke("cgi-bin/en/access_ctrl/gate.cgi", $query_string);
         // write_log($res, __FILE__, __LINE__);
         if (strpos($res, 'statusBar') === false) {
-            $error = new EchoSchema(500, "CGI invocation error, check logs/php_rest_*.log file for details");
+            $error = new EchoSchema(500, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-
-            return array(); //Return array to prevent further process
         } else {
             $result = array();
             $result["result"] = 0;
-            $result["message"] = sprintf("gate %s/%s opened", $this->gate_k, $this->area_k);
+            $result["message"] = response("__GATE_OPENED__", sprintf("gate %s/%s opened", $this->gate_k, $this->area_k));
             echo json_encode($result, JSON_PRETTY_PRINT);
-            return $result; //Return array to prevent read
         }
     }
 
@@ -87,7 +85,8 @@ class Gate extends CommonClass
 
         $result = true;
         foreach ($this->gates as $key => $value) {
-            $query_string = "op=16&pg=0&gate=" . $value->gate_k . "&area=" .$value->area_k;
+            $query_string = "op=16&pg=0&gate=" . 
+                rawurlencode(strip_tags($value->gate_k)) . "&area=" . rawurlencode(strip_tags($value->area_k));
             $res = Utilities::http_cgi_invoke("cgi-bin/en/access_ctrl/gate.cgi", $query_string);
             // write_log($res, __FILE__, __LINE__);
             if (strpos($res, 'statusBar') === false) {
@@ -96,16 +95,13 @@ class Gate extends CommonClass
         }
 
         if ($result) {
-            $error = new EchoSchema(500, "CGI invocation error, check logs/php_rest_*.log file for details");
+            $error = new EchoSchema(500, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-
-            return array(); //Return array to prevent further process
         } else {
             $result = array();
             $result["result"] = 0;
             $result["message"] = "All gates opened";
             echo json_encode($result, JSON_PRETTY_PRINT);
-            return $result; //Return array to prevent read
         }
     }
 }

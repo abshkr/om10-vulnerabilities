@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/tank_status.php';
 
-Utilities::read('TankStatus', $method = 'calc_tank_qty', $filter = true);
+Utilities::exec('TankStatus', $method = 'calc_tank_qty', $filter = true);

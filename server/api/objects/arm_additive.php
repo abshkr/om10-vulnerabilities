@@ -72,32 +72,29 @@ class ArmAdditive extends CommonClass
         write_log(json_encode($this), __FILE__, __LINE__);
 
         if (!isset($this->inj_seq)) {
-            $error = new EchoSchema(400, "Parameter missing");
+            write_log("inj_seq not set", __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-
-            return array(); //Return array to prevent further process
+            return;
         }
 
-        $query_string = "inj_nr=" . $this->inj_seq . 
-            "&inj_vol=" . $this->bai_volume .
-            "&mtr=" . $this->meter_code .
-            "&tank=" . $this->tank_code .
-            "&bay=" . $this->bay_code .
-            "&arm=" . $this->arm_code .
+        $query_string = "inj_nr=" . rawurlencode(strip_tags($this->inj_seq)) . 
+            "&inj_vol=" . rawurlencode(strip_tags($this->bai_volume)) .
+            "&mtr=" . rawurlencode(strip_tags($this->meter_code)) .
+            "&tank=" . rawurlencode(strip_tags($this->tank_code)) .
+            "&bay=" . rawurlencode(strip_tags($this->bay_code)) .
+            "&arm=" . rawurlencode(strip_tags($this->arm_code)) .
             "&cmd=ADD";
         $res = Utilities::http_cgi_invoke("cgi-bin/en/gantry/armadditives_mod.cgi", $query_string);
         // write_log($res, __FILE__, __LINE__);
         if (strpos($res, 'Operation Succeeded')) {
             $result = array();
             $result["result"] = 0;
-            $result["message"] = "New additive added";
+            $result["message"] = response("__ADD_SUCCEEDED__", "New additive added");
             echo json_encode($result, JSON_PRETTY_PRINT);
-            return array(); //Return array to prevent read
         } else {
-            $error = new EchoSchema(500, "CGI invocation error, check logs/php_rest_*.log file for details");
+            $error = new EchoSchema(500, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-
-            return array(); //Return array to prevent further process
         }
     }
 
@@ -108,18 +105,19 @@ class ArmAdditive extends CommonClass
         write_log(json_encode($this), __FILE__, __LINE__);
 
         if (!isset($this->inj_seq)) {
-            $error = new EchoSchema(400, "Parameter missing");
+            write_log("inj_seq not set", __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
 
-            return array(); //Return array to prevent further process
+            return;
         }
 
-        $query_string = "inj_nr=" . $this->inj_seq . 
-            "&inj_vol=" . $this->bai_volume .
-            "&mtr=" . $this->meter_code .
-            "&tank=" . $this->tank_code .
-            "&bay=" . $this->bay_code .
-            "&arm=" . $this->arm_code .
+        $query_string = "inj_nr=" . rawurlencode(strip_tags($this->inj_seq)) . 
+            "&inj_vol=" . rawurlencode(strip_tags($this->bai_volume)) .
+            "&mtr=" . rawurlencode(strip_tags($this->meter_code)) .
+            "&tank=" . rawurlencode(strip_tags($this->tank_code)) .
+            "&bay=" . rawurlencode(strip_tags($this->bay_code)) .
+            "&arm=" . rawurlencode(strip_tags($this->arm_code)) .
             "&cmd=MOD";
         $res = Utilities::http_cgi_invoke("cgi-bin/en/gantry/armadditives_mod.cgi", $query_string);
         // write_log($res, __FILE__, __LINE__);
@@ -128,12 +126,9 @@ class ArmAdditive extends CommonClass
             $result["result"] = 0;
             $result["message"] = "Additive modified";
             echo json_encode($result, JSON_PRETTY_PRINT);
-            return array(); //Return array to prevent read
         } else {
-            $error = new EchoSchema(500, "CGI invocation error, check logs/php_rest_*.log file for details");
+            $error = new EchoSchema(500, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-
-            return array(); //Return array to prevent further process
         }
     }
 
@@ -144,18 +139,19 @@ class ArmAdditive extends CommonClass
         write_log(json_encode($this), __FILE__, __LINE__);
 
         if (!isset($this->inj_seq)) {
-            $error = new EchoSchema(400, "Parameter missing");
+            write_log("inj_seq not set", __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
 
-            return array(); //Return array to prevent further process
+            return;
         }
 
-        $query_string = "inj_nr=" . $this->inj_seq . 
-            "&inj_vol=" . $this->bai_volume .
-            "&mtr=" . $this->meter_code .
-            "&tank=" . $this->tank_code .
-            "&bay=" . $this->bay_code .
-            "&arm=" . $this->arm_code .
+        $query_string = "inj_nr=" . rawurlencode(strip_tags($this->inj_seq)) . 
+            "&inj_vol=" . rawurlencode(strip_tags($this->bai_volume)) .
+            "&mtr=" . rawurlencode(strip_tags($this->meter_code)) .
+            "&tank=" . rawurlencode(strip_tags($this->tank_code)) .
+            "&bay=" . rawurlencode(strip_tags($this->bay_code)) .
+            "&arm=" . rawurlencode(strip_tags($this->arm_code)) .
             "&cmd=DEL";
         $res = Utilities::http_cgi_invoke("cgi-bin/en/gantry/armadditives_mod.cgi", $query_string);
         // write_log($res, __FILE__, __LINE__);
@@ -164,12 +160,9 @@ class ArmAdditive extends CommonClass
             $result["result"] = 0;
             $result["message"] = "Additive deleted";
             echo json_encode($result, JSON_PRETTY_PRINT);
-            return array(); //Return array to prevent read
         } else {
-            $error = new EchoSchema(500, "CGI invocation error, check logs/php_rest_*.log file for details");
+            $error = new EchoSchema(500, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-
-            return array(); //Return array to prevent further process
         }
     }
 

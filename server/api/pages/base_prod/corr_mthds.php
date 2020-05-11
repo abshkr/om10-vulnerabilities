@@ -4,6 +4,6 @@ include_once '../../shared/header.php';
 
 // include database and object files
 include_once '../../config/database.php';
-include_once '../../objects/correction_method.php';
+include_once '../../objects/base_product.php';
 
-Utilities::read('CorrectionMethod');
+Utilities::read('BaseProduct', "corr_mthds");

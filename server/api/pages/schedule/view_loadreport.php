@@ -6,4 +6,4 @@ include_once '../../shared/pdf_header.php';
 include_once '../../config/database.php';
 include_once '../../objects/movement.php';
 
-Utilities::read('Movement', "view_loadreport", $filter = true);
+Utilities::exec('Movement', "view_loadreport", $filter = true);

@@ -68,12 +68,12 @@ class FolioSetting extends CommonClass
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(400, "DB error:" . $e['message']);
+            $error = new EchoSchema(400, response("__DATABASE_EXCEPTION__", "DB error:" . $e['message']));
             echo json_encode($error, JSON_PRETTY_PRINT);
 
             oci_rollback($this->conn);
 
-            return array();
+            return;
         }
 
         $journal = new Journal($this->conn, false);
@@ -83,19 +83,18 @@ class FolioSetting extends CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
 
-            $error = new EchoSchema(500, "Failed to write journal");
+            $error = new EchoSchema(500, response("__JOURNAL_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
 
             oci_rollback($this->conn);
             
-            return array();
+            return;
         }
 
         oci_commit($this->conn);
 
-        $error = new EchoSchema(200, "Manual closeout freeze triggered");
+        $error = new EchoSchema(200, response("__CLOSEOUT_FREEZE__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
-        return array();
     }
 
     public function close_closeout()
@@ -113,12 +112,12 @@ class FolioSetting extends CommonClass
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(500, "DB error:" . $e['message']);
+            $error = new EchoSchema(400, response("__DATABASE_EXCEPTION__", "DB error:" . $e['message']));
             echo json_encode($error, JSON_PRETTY_PRINT);
 
             oci_rollback($this->conn);
 
-            return array();
+            return;
         }
 
         $query = "UPDATE CLOSEOUT_TANK 
@@ -130,10 +129,10 @@ class FolioSetting extends CommonClass
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(400, "DB error:" . $e['message']);
+            $error = new EchoSchema(400, response("__DATABASE_EXCEPTION__", "DB error:" . $e['message']));
             echo json_encode($error, JSON_PRETTY_PRINT);
             oci_rollback($this->conn);
-            return array();
+            return;
         }
 
         $query = "UPDATE CLOSEOUT_METER 
@@ -145,10 +144,10 @@ class FolioSetting extends CommonClass
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(400, "DB error:" . $e['message']);
+            $error = new EchoSchema(400, response("__DATABASE_EXCEPTION__", "DB error:" . $e['message']));
             echo json_encode($error, JSON_PRETTY_PRINT);
             oci_rollback($this->conn);
-            return array();
+            return;
         }
 
         $journal = new Journal($this->conn, false);
@@ -158,18 +157,17 @@ class FolioSetting extends CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
 
-            $error = new EchoSchema(500, "Failed to write journal");
+            $error = new EchoSchema(500, response("__JOURNAL_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
 
             oci_rollback($this->conn);
             
-            return array();
+            return;
         }
 
         oci_commit($this->conn);
 
-        $error = new EchoSchema(200, "Manual closeout freeze triggered");
+        $error = new EchoSchema(200, response("__CLOSEOUT_CLOSE__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
-        return array();
     }
 }

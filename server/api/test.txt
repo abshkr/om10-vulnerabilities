@@ -1,16 +1,45 @@
 TODO:
 
-Role access: desc
-Audit 
-Reset password
 Meter Curve in load bay meters
 
 
 //--------------------------------------------------------- Genrel PHPs ---------------------------------------------------------//
-https://10.1.10.66/api/config/getenv.php
+https://10.1.10.66/api/session/getenv.php
+https://10.1.10.66/api/session/alarms.php
+https://10.1.10.66/api/session/sys_date.php
+https://10.1.10.66/api/session/person_setups.php
+https://{{server_ip}}/api/session/change_cur_dep.php
+{
+    "per_code": "9999",
+    "per_department": "DEP2"
+}
+https://{{server_ip}}/api/session/check_password.php
+{
+    "per_code": "9999",
+    "password": "12345"
+}
+https://{{server_ip}}/api/session/change_person_setups.php	//Set up user's favariate. 
+[
+    {
+        "config_key": "Sample_Key",
+        "config_value": "new"
+    },
+    {
+        "config_key": "Sample_Key2",
+        "config_value": "2345"
+    },
+    {
+        "config_key": "Sample_Key3",
+        "config_value": "23456"
+    }
+]
+https://10.1.10.66/api/session/session.php
+https://10.1.10.66/api/session/get_token.php?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6Ijk5OTkiLCJleHAiOjE1NzkwNDUzOTksInNlc3NfaWQiOiJnWXFZS1B1emdOS1MifQ.C4g4QgRP4cBdezA756ERgup789edUY73_ac7pVuwlNw
+https://10.1.10.66/api/session/invalidate_token.php?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6Ijk5OTkiLCJleHAiOjE1ODAyNjU5NzEsInNlc3NfaWQiOiJ5ekxnbnBNS0pVWUkifQ.tuU7tqi9DB5YsENor04Y8QWhB4EQkAv5s6GbnGA07bY
+https://10.1.10.66/api/session/cur_roledata.php
+
 https://10.1.10.66/api/config.php
 
-https://10.1.10.66/api/service/cur_roledata.php
 
 https://10.1.10.66/api/login.php
 {
@@ -18,14 +47,11 @@ https://10.1.10.66/api/login.php
     "password":"12345"
 }
 
-https://10.1.10.66/api/config/get_token.php?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6Ijk5OTkiLCJleHAiOjE1NzkwNDUzOTksInNlc3NfaWQiOiJnWXFZS1B1emdOS1MifQ.C4g4QgRP4cBdezA756ERgup789edUY73_ac7pVuwlNw
-https://10.1.10.66/api/config/invalidate_token.php?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6Ijk5OTkiLCJleHAiOjE1ODAyNjU5NzEsInNlc3NfaWQiOiJ5ekxnbnBNS0pVWUkifQ.tuU7tqi9DB5YsENor04Y8QWhB4EQkAv5s6GbnGA07bY
+//Dashboard
+https://10.1.10.66/api/pages/dashboard/widget_data.php
+https://10.1.10.66/api/pages/dashboard/overview_data.php
+https://10.1.10.66/api/pages/dashboard/system_data.php
 
-//This is the sample of all the php code
-https://10.1.10.66/api/pages/cust_cat/read.php
-https://10.1.10.66/api/pages/cust_cat/create.php?category_code=cat1&category_name=testname
-https://10.1.10.66/api/pages/cust_cat/update.php?category_code=cat1&category_name=testname3
-https://10.1.10.66/api/pages/cust_cat/delete.php?category_code=cat1&category_name=testname3
 
 
 
@@ -718,6 +744,14 @@ https://{{server_ip}}/api/pages/company/delete.php?cmpy_code=1234321
 
 //Tank Groups
 https://10.1.10.66/api/pages/tank_group/read.php
+https://10.1.10.66/api/pages/tank_group/available_tanks.php
+https://10.1.10.66/api/pages/tank_group/group_items.php?tgr_name=test_group
+https://{{server_ip}}/api/pages/tank_group/activate_tank.php
+{
+    "tgr_name": "test_group",
+    "tgr_tankcode": "403404",
+    "old_active": "DPLJET"
+}
 https://10.1.10.66/api/pages/tank_group/tank_items.php
 https://{{server_ip}}/api/pages/tank_group/create.php
 {
@@ -1410,7 +1444,12 @@ https://10.1.10.66/api/pages/idassignment/delete.php?kya_key_no=11111&kya_key_is
 
 //Personnel
 https://10.1.10.66/api/pages/personnel/read.php
-https://10.1.10.66/api/pages/personnel/update_password.php?per_code=02066C&password=7e64fc124a0630f478617e9b51e64f4b43606ed84049ef72e3906f976c205974
+https://10.1.10.66/api/pages/personnel/update_password.php
+{
+    "per_code": "DKI",
+    "old_password": "12345",
+    "password": "23456"
+}
 https://10.1.10.66/api/pages/personnel/read_one.php?per_code=cw3
 https://10.1.10.66/api/pages/personnel/search.php?s=cw
 https://10.1.10.66/api/pages/personnel/read_page.php?page=2
@@ -1894,6 +1933,10 @@ https://10.1.10.66/api/pages/address/line_types.php
 
 //Customer Categories
 https://10.1.10.66/api/pages/customer_category/read.php
+https://10.1.10.66/api/pages/customer_category/create.php?category_code=cat1&category_name=testname
+https://10.1.10.66/api/pages/customer_category/update.php?category_code=cat1&category_name=testname3
+https://10.1.10.66/api/pages/customer_category/delete.php?category_code=cat1&category_name=testname3
+
 
 //Delivery Locations
 https://10.1.10.66/api/pages/delv_location/read.php
@@ -1949,13 +1992,12 @@ https://10.1.10.66/api/pages/partnership/partners.php?supplier=5860106
 https://{{server_ip}}/api/pages/partnership/update.php    //There is no create, delete; all by this update
 {
     "partner_cust_acct": "11626230",
+    "partner_cmpy_code": "5860106",
     "partners": [
         {
-            "partner_cmpy_code": "5860106",
             "partner_seq": "3"
         },
-		{
-            "partner_cmpy_code": "5860106",
+        {
             "partner_seq": "4"
         }
     ]
@@ -2780,7 +2822,14 @@ https://10.1.10.66/api/pages/special_mv/mv_status.php
 https://10.1.10.66/api/pages/special_mv/mv_types.php
 https://10.1.10.66/api/pages/special_mv/mv_reasons.php?mr_type=T
 https://10.1.10.66/api/pages/special_mv/reverse.php?mlitm_id=62
-https://10.1.10.66/api/pages/special_mv/calc_vcf.php?frm_baseCd=400009868&frm_which_type=LT&frm_real_amount=6000&frm_real_temp=33&frm_real_dens=890
+https://10.1.10.66/api/pages/special_mv/calc_vcf.php
+{
+    "frm_baseCd": "400009868",
+    "frm_which_type": "LT",
+    "frm_real_amount": 6000,
+    "frm_real_temp": 33,
+    "frm_real_dens": 890
+}
 https://10.1.10.66/api/pages/special_mv/submit.php?mlitm_id=69
 
 //------------------------------------------------------- Operations ---------------------------------------------------------//

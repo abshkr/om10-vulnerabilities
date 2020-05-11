@@ -88,7 +88,7 @@ class KeyReader extends CommonClass
             __FILE__, __LINE__);
         
         $op = 401;
-        $query_string = "selDevCode=" . $this->adv_code . "&op=" . $op;
+        $query_string = "selDevCode=" . rawurlencode(strip_tags($this->adv_code)) . "&op=" . $op;
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/access_ctrl/krdcfg.cgi", $query_string);
         // write_log($res, __FILE__, __LINE__);
@@ -122,9 +122,9 @@ class KeyReader extends CommonClass
             __FILE__, __LINE__);
         
         $op = 202;
-        $query_string = "selDevCode=" . $this->adv_code . 
-            "&selDevType=" . $this->krdc_type . 
-            "&selDevUse=" . $this->krdc_use . 
+        $query_string = "selDevCode=" . rawurlencode(strip_tags($this->adv_code)) . 
+            "&selDevType=" . rawurlencode(strip_tags($this->krdc_type)) . 
+            "&selDevUse=" . rawurlencode(strip_tags($this->krdc_use)) . 
             "&op=" . $op;
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/access_ctrl/krdcfg.cgi", $query_string);

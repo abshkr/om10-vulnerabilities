@@ -69,8 +69,9 @@ if (DISPLAY_ALL_ERROS) {
 }
 
 //php5.3
-if (phpversion() < "5.4") {
+if (version_compare(PHP_VERSION, '5.4', '<')) {
     define('JSON_PRETTY_PRINT', 0);
+    define('JSON_UNESCAPED_UNICODE', 0);
 
     function http_response_code($code = null)
     {

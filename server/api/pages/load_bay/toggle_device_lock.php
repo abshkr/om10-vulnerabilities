@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/load_bay.php';
 
-Utilities::read('LoadBay', $method = 'toggle_device_lock', $filter = true);
+Utilities::exec('LoadBay', $method = 'toggle_device_lock', $filter = true);

@@ -56,6 +56,11 @@ $context = stream_context_create($options);
 $result = file_get_contents($url, false, $context);
 // print_r($result);
 
+if (isset($_SESSION)) {
+    session_unset();
+    session_destroy();
+}
+
 echo json_encode(
     array("message" => "Log out finishes.")
 );

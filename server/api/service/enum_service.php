@@ -28,6 +28,23 @@ class EnumService
         }
     }
 
+    public function corr_mthds()
+    {
+        $query = "
+            SELECT COMPENSATION_ID,
+                COMPENSATION_NAME
+            FROM COMPENSATION_MTHD
+            ORDER BY COMPENSATION_ID";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function tank_status_types()
     {
         $query = "

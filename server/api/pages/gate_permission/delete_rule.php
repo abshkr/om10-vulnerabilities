@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/gate_permission.php';
 
-Utilities::read($class = 'GatePermission', $method = 'delete_rule', $filter = true);
+Utilities::exec($class = 'GatePermission', $method = 'delete_rule', $filter = true);

@@ -366,31 +366,17 @@ class LoadBay extends CommonClass
     {
         write_log(json_encode($this), __FILE__, __LINE__);
 
-        $query_string = "op=&bay=" . $this->ba_code . 
-            "&ba_name=" . $this->bad_name .
-            "&dev_cde=" . $this->bad_physcode .
-            "&arm_cde0=" . $this->baa_code . "&cmd=ALL";
+        $query_string = "op=&bay=" . rawurlencode(strip_tags($this->ba_code)) . 
+            "&ba_name=" . rawurlencode(strip_tags($this->bad_name)) .
+            "&dev_cde=" . rawurlencode(strip_tags($this->bad_physcode)) .
+            "&arm_cde0=" . rawurlencode(strip_tags($this->baa_code)) . "&cmd=ALL";
         $res = Utilities::http_cgi_invoke("cgi-bin/en/gantry/loadbays_locks.cgi", $query_string);
-        // write_log($res, __FILE__, __LINE__);
-        // if (strpos($res, 'statusBar') === false) {
-        //     $error = new EchoSchema(500, "CGI invocation error, check logs/php_rest_*.log file for details");
-        //     echo json_encode($error, JSON_PRETTY_PRINT);
-
-        //     return array(); //Return array to prevent further process
-        // } else {
-        //     $result = array();
-        //     $result["result"] = 0;
-        //     $result["message"] = sprintf("gate %s/%s opened", $this->gate_k, $this->area_k);
-        //     echo json_encode($result, JSON_PRETTY_PRINT);
-        //     return $result; //Return array to prevent read
-        // }
-
-        //The CGI does not give any error message
+        
+		//The CGI does not give any error message
         $result = array();
         $result["result"] = 0;
-        $result["message"] = "All locks removed";
+        $result["message"] = response("__ALL_LOCKS_REMOVED__");
         echo json_encode($result, JSON_PRETTY_PRINT);
-        return $result; //Return array to prevent read
     }
 
     //SCRIPT_NAME: /cgi-bin/en/gantry/loadbays_locks.cgi
@@ -399,18 +385,17 @@ class LoadBay extends CommonClass
     {
         write_log(json_encode($this), __FILE__, __LINE__);
 
-        $query_string = "op=&bay=" . $this->ba_code . 
-            "&ba_name=" . $this->bad_name .
-            "&dev_cde=" . $this->bad_physcode .
-            "&arm_cde0=" . $this->baa_code . "&cmd=BAY";
+        $query_string = "op=&bay=" . rawurlencode(strip_tags($this->ba_code)) . 
+            "&ba_name=" . rawurlencode(strip_tags($this->bad_name)) .
+            "&dev_cde=" . rawurlencode(strip_tags($this->bad_physcode)) .
+            "&arm_cde0=" . rawurlencode(strip_tags($this->baa_code)) . "&cmd=BAY";
         $res = Utilities::http_cgi_invoke("cgi-bin/en/gantry/loadbays_locks.cgi", $query_string);
         
         //The CGI does not give any error message
         $result = array();
         $result["result"] = 0;
-        $result["message"] = "Bay lock toggled";
+        $result["message"] = response("__BAY_LOCK_TOGGLED__");
         echo json_encode($result, JSON_PRETTY_PRINT);
-        return $result; //Return array to prevent read
     }
 
     //SCRIPT_NAME: /cgi-bin/en/gantry/ldcompl_tnkspec.cgi
@@ -419,23 +404,20 @@ class LoadBay extends CommonClass
     {
         write_log(json_encode($this), __FILE__, __LINE__);
 
-        $query_string = "bay=" . $this->ba_code . 
-            "&ba_name=" . $this->bad_name .
-            "&dev_cde=" . $this->bad_physcode .
-            "&arm_cde0=" . $this->baa_code . "&cmd=TKR";
+        $query_string = "bay=" . rawurlencode(strip_tags($this->ba_code)) . 
+            "&ba_name=" . rawurlencode(strip_tags($this->bad_name)) .
+            "&dev_cde=" . rawurlencode(strip_tags($this->bad_physcode)) .
+            "&arm_cde0=" . rawurlencode(strip_tags($this->baa_code)) . "&cmd=TKR";
         $res = Utilities::http_cgi_invoke("cgi-bin/en/gantry/ldcompl_tnkspec.cgi", $query_string);
 
         if (strpos($res, 'Operation failed')) {
-            $error = new EchoSchema(500, "CGI invocation error, check logs/php_rest_*.log file for details");
+            $error = new EchoSchema(500, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-
-            return array(); //Return array to prevent further process
         } else {
             $result = array();
             $result["result"] = 0;
-            $result["message"] = "Bay tanker determination toggled";
+            $result["message"] = response("__TANKER_DETERMINATION_TOGGLED__");
             echo json_encode($result, JSON_PRETTY_PRINT);
-            return $result; //Return array to prevent read
         }
     }
 
@@ -454,15 +436,15 @@ class LoadBay extends CommonClass
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
+            return;
         }
 
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         if ($row['CN'] > 0) {
-            $error = new EchoSchema(500, sprintf("Bay %s already exist", $this->ba_code));
+            $error = new EchoSchema(500, response("__ALREADY_EXIST__", sprintf("Bay %s already exist", $this->ba_code)));
             echo json_encode($error, JSON_PRETTY_PRINT);
 
-            return array(); //Return array to prevent further process
+            return;
         }
         
         $query_string = "cmd=ADD&bay=" . rawurlencode(strip_tags($this->ba_code)) . 
@@ -511,14 +493,11 @@ class LoadBay extends CommonClass
         if (strpos($res, 'Operation Succeeded')) {
             $result = array();
             $result["result"] = 0;
-            $result["message"] = "Bay added";
+            $result["message"] = response("__ADD_SUCCEEDED__", "Bay added");
             echo json_encode($result, JSON_PRETTY_PRINT);
-            return $result; //Return array to prevent read
         } else {
-            $error = new EchoSchema(500, "CGI invocation error, check logs/php_rest_*.log file for details");
+            $error = new EchoSchema(500, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-
-            return array(); //Return array to prevent further process
         }
     }
 
@@ -574,14 +553,11 @@ class LoadBay extends CommonClass
         if (strpos($res, 'Operation Succeeded')) {
             $result = array();
             $result["result"] = 0;
-            $result["message"] = "Bay modified";
+            $result["message"] = response("__UPDATE_SUCCEEDED__", "Bay modified");
             echo json_encode($result, JSON_PRETTY_PRINT);
-            return $result; //Return array to prevent read
         } else {
-            $error = new EchoSchema(500, "CGI invocation error, check logs/php_rest_*.log file for details");
+            $error = new EchoSchema(500, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-
-            return array(); //Return array to prevent further process
         }
     }
 
@@ -600,14 +576,11 @@ class LoadBay extends CommonClass
         if (strpos($res, 'Operation Succeeded')) {
             $result = array();
             $result["result"] = 0;
-            $result["message"] = "Bay deleted";
+            $result["message"] = response("__DELETE_SUCCEEDED__", "Bay deleted");
             echo json_encode($result, JSON_PRETTY_PRINT);
-            return $result; //Return array to prevent read
         } else {
-            $error = new EchoSchema(500, "CGI invocation error, check logs/php_rest_*.log file for details");
+            $error = new EchoSchema(500, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-
-            return array(); //Return array to prevent further process
         }
     }
 
@@ -624,16 +597,13 @@ class LoadBay extends CommonClass
         $res = Utilities::http_cgi_invoke("cgi-bin/en/gantry/ldcompl_tnkspec.cgi", $query_string);
 
         if (strpos($res, 'Operation failed')) {
-            $error = new EchoSchema(500, "CGI invocation error, check logs/php_rest_*.log file for details");
+            $error = new EchoSchema(500, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-
-            return array(); //Return array to prevent further process
         } else {
             $result = array();
             $result["result"] = 0;
-            $result["message"] = "Bay auto complete toggled";
+            $result["message"] = response("__BAY_AUTO_COMPLETE_TOGGLED__");
             echo json_encode($result, JSON_PRETTY_PRINT);
-            return $result; //Return array to prevent read
         }
     }
 
@@ -643,18 +613,17 @@ class LoadBay extends CommonClass
     {
         write_log(json_encode($this), __FILE__, __LINE__);
 
-        $query_string = "op=&bay=" . $this->ba_code . 
-            "&ba_name=" . $this->bad_name .
-            "&dev_cde=" . $this->bad_physcode .
-            "&arm_cde0=" . $this->baa_code . "&cmd=DEV";
+        $query_string = "op=&bay=" . rawurlencode(strip_tags($this->ba_code)) . 
+            "&ba_name=" . rawurlencode(strip_tags($this->bad_name)) .
+            "&dev_cde=" . rawurlencode(strip_tags($this->bad_physcode)) .
+            "&arm_cde0=" . rawurlencode(strip_tags($this->baa_code)) . "&cmd=DEV";
         $res = Utilities::http_cgi_invoke("cgi-bin/en/gantry/loadbays_locks.cgi", $query_string);
         
         //The CGI does not give any error message
         $result = array();
         $result["result"] = 0;
-        $result["message"] = "Bay device lock toggled";
+        $result["message"] = response("__BAY_DEVICELOCK_TOGGLED__");
         echo json_encode($result, JSON_PRETTY_PRINT);
-        return $result; //Return array to prevent read
     }
 
     //SCRIPT_NAME: /cgi-bin/en/gantry/loadbays_locks.cgi
@@ -663,44 +632,16 @@ class LoadBay extends CommonClass
     {
         write_log(json_encode($this), __FILE__, __LINE__);
 
-        $query_string = "op=&bay=" . $this->ba_code . 
-            "&ba_name=" . $this->bad_name .
-            "&dev_cde=" . $this->bad_physcode .
-            "&arm_cde0=" . $this->baa_code . "&cmd=ARM";
+        $query_string = "op=&bay=" . rawurlencode(strip_tags($this->ba_code)) . 
+            "&ba_name=" . rawurlencode(strip_tags($this->bad_name)) .
+            "&dev_cde=" . rawurlencode(strip_tags($this->bad_physcode)) .
+            "&arm_cde0=" . rawurlencode(strip_tags($this->baa_code)) . "&cmd=ARM";
         $res = Utilities::http_cgi_invoke("cgi-bin/en/gantry/loadbays_locks.cgi", $query_string);
         
         //The CGI does not give any error message
         $result = array();
         $result["result"] = 0;
-        $result["message"] = "Bay arm lock toggled";
+        $result["message"] = response("__BAY_ARMLOCK_TOGGLED__");
         echo json_encode($result, JSON_PRETTY_PRINT);
-        return $result; //Return array to prevent read
     }
-
-    // public function flow_profile()
-    // {
-    //     $query = "
-    //         SELECT BAA_BAY_SEQ, 
-    //             BAF_MIN_QTY, 
-    //             BAF_MAX_QTY, 
-    //             BAF_HI_RATE, 
-    //             BAF_LO_RATE, 
-    //             BAF_UP_QTY, 
-    //             BAF_DN_QTY, 
-    //             BAF_OVER_ORD, 
-    //             BAA_BAD_LNK
-    //         FROM BA_FLOW_PROFS, BA_ARMS 
-    //         WHERE BA_ARMS.BAA_CODE = BA_FLOW_PROFS.BAF_ARM_LINK 
-    //             AND BA_ARMS.BAA_BAD_LNK = :baa_bad_lnk
-    //         ORDER BY BAA_BAY_SEQ";
-    //     $stmt = oci_parse($this->conn, $query);
-    //     if (oci_execute($stmt, $this->commit_mode)) {
-    //         return $stmt;
-    //     } else {
-    //         $e = oci_error($stmt);
-    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-    //         return null;
-    //     }
-    // }
-    
 }

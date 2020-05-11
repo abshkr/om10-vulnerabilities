@@ -151,7 +151,7 @@ class TankGroup extends CommonClass
         }
     }
 
-    public function tank_items()
+    public function available_tanks()
     {
         $query = "SELECT
                 TANKS.TANK_CODE AS TANK_CODE,
@@ -169,5 +169,68 @@ class TankGroup extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function group_items()
+    {
+        $query = "SELECT TANK_CODE, 
+                TANK_BASECODE, 
+                TANK_BASENAME, 
+                TANK_ACTIVE, 
+                TANK_GROUP, 
+                TANK_SITECODE, 
+                TANK_SITENAME
+            FROM GUI_TANK_GROUP_ITEMS
+            WHERE TANK_GROUP = :tank_group
+            ORDER BY TANK_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_group', $this->tgr_name);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    //SCRIPT_NAME: /cgi-bin/en/stck_mgmt/tank_grp.cgi
+    //sess_id=LcLcWNVvmPxe&tk=SP-16&tkgrp=W&tkActive=SP-16&tkOldActive=SP-16&op=14
+    public function activate_tank()
+    {
+        write_log(json_encode($this), __FILE__, __LINE__);
+
+        if ($this->tgr_tankcode == $this->old_active) {
+            $echo = new EchoSchema(200, response("__ALREADY_ACTIVATED_TANK__", null, array($this->tgr_tankcode)));
+            echo json_encode($echo, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $query_string = "tk=" . rawurlencode(strip_tags($this->tgr_tankcode)) . 
+            "&tkgrp=" . rawurlencode(strip_tags($this->tgr_name)) .
+            "&tkActive=" . rawurlencode(strip_tags($this->tgr_tankcode)) .
+            "&tkOldActive=" . rawurlencode(strip_tags($this->old_active)) .
+            "&op=14";
+
+        $res = Utilities::http_cgi_invoke("cgi-bin/en/stck_mgmt/tank_grp.cgi", $query_string);
+        // write_log($res, __FILE__, __LINE__, LogLevel::ERROR);
+        if (strpos($res, "tks_jsArr") !== false) {
+            $journal = new Journal($this->conn, true);
+            $jnl_data[0] = $this->tgr_tankcode;
+            $jnl_data[1] = $this->tgr_name;
+            if (!$journal->jnlLogEvent(
+                Lookup::TMM_TANK_IS_ACTIVE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            }
+
+            $echo = new EchoSchema(200, response("__ACTIVATE_TANK__", null, array($this->tgr_tankcode)));
+            echo json_encode($echo, JSON_PRETTY_PRINT);
+            return;
+        }
+    
+        // write_log(sprintf("CGI returns %s", $res), __FILE__, __LINE__, LogLevel::ERROR);
+        $error = new EchoSchema(400, response("__CGI_FAILED__"));
+        echo json_encode($error, JSON_PRETTY_PRINT);
     }
 }

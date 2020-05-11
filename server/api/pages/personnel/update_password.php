@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/personnel.php';
 
-Utilities::read('Personnel', "update_password", $filter = true);
+Utilities::exec('Personnel', "update_password", $filter = true);

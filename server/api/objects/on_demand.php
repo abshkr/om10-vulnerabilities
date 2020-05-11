@@ -105,11 +105,9 @@ class OndemandReport extends CommonClass
             echo json_encode($jasper_result, JSON_PRETTY_PRINT);
         } else {
             write_log("Jasper report creation failed. report:" . $array['report'] . ", created:" . $array['filepath'], __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(400, "Bad Request", "Failed to call jasper_reports.cgi");
+            $error = new EchoSchema(400, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
         }
-
-        return array();
     }
 
     // get all suppliers

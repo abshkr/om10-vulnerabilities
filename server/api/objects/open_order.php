@@ -122,7 +122,6 @@ class OpenOrder extends CommonClass
 
         http_response_code(200);
         echo json_encode($result, JSON_PRETTY_PRINT);
-        return array(); //Return array to prevent caller doing extra work
     }
 
     public function pre_create()

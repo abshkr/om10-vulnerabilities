@@ -71,16 +71,16 @@ class OutogingMsg extends CommonClass
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
+            return;
         }
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
 
         $host_path = HST_OUTGOING_FOLDER . $row['HST_FILE_TYPE'];
         if (!file_exists($host_path)) {
             write_log(sprintf("File %s does not exist", $host_path), __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(400, sprintf("File %s does not exist", $host_path));
+            $error = new EchoSchema(400, response("__FILE_NOT_EXIST__", sprintf("File %s does not exist", $host_path)));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         $file = fopen($host_path, "r");
@@ -95,6 +95,5 @@ class OutogingMsg extends CommonClass
         }
         fclose($file);
         echo $info;
-        return array();
     }
 }

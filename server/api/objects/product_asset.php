@@ -62,25 +62,22 @@ class ProductAsset extends CommonClass
 		}
 		
         echo json_encode(array('records'=>$arr), JSON_PRETTY_PRINT);
-        return array();
     }
 
     public function delete_image()
     {
         $target_file = __DIR__ . $this->image_path . $this->image_file;
         if (!file_exists($target_file)) {
-            $error = new EchoSchema(500, "File not exists.");
+            $error = new EchoSchema(500, response("__FILE_NOT_EXIST__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
 
-            return array(); //Return array to prevent further process
+            return;
         }
 
         unlink($target_file);
 
-        $error = new EchoSchema(200, "File deleted.");
+        $error = new EchoSchema(200, response("__DELETE_SUCCEEDED__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
-
-        return array(); //Return array to prevent further process
     }
 
     public function upload($field = 'fileToUpload')
@@ -101,25 +98,25 @@ class ProductAsset extends CommonClass
                 
 
             } else {
-                $error = new EchoSchema(500, "General error", "File is not an image.");
+                $error = new EchoSchema(500, response("__NOT_IMAGE__"));
                 echo json_encode($error, JSON_PRETTY_PRINT);
 
-                return array(); //Return array to prevent further process
+                return;
             }
         }
         // Check if file already exists
         if (file_exists($target_file)) {
-            $error = new EchoSchema(500, "File already exists.");
+            $error = new EchoSchema(500, response("__FILE_ALREADY_EXIST__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
 
-            return array(); //Return array to prevent further process
+            return;
         }
         // Check file size
         if ($_FILES[$field]["size"] > 500000) {
-            $error = new EchoSchema(500, "File is too large.");
+            $error = new EchoSchema(500, response("__FILE_TOO_LARGE__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
 
-            return array(); //Return array to prevent further process
+            return;
         }
 
         // Allow certain file formats
@@ -130,15 +127,12 @@ class ProductAsset extends CommonClass
         // }
         
         if (move_uploaded_file($_FILES[$field]["tmp_name"], $target_file)) {
-            $error = new EchoSchema(200, "The file ". basename( $_FILES[$field]["name"]). " has been uploaded.");
+            $error = new EchoSchema(200, reponse("__FILE_UPLOADED__",
+                "The file ". basename($_FILES[$field]["name"]). " has been uploaded."));
             echo json_encode($error, JSON_PRETTY_PRINT);
-
-            return array(); //Return array to prevent further process
         } else {
-            $error = new EchoSchema(500, "Failed to upload file.");
+            $error = new EchoSchema(500, response("__FILE_UPLOAD_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-
-            return array(); //Return array to prevent further process
         }
     }
 }

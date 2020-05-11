@@ -47,9 +47,9 @@ class ProdMovement extends CommonClass
     public function start()
     {
         if (!isset($this->pmv_number)) {
-            $error = new EchoSchema(400, "parameter missing: pmv_number not provided");
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: pmv_number not provided"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         $serv = new SiteService($this->conn);
@@ -59,26 +59,25 @@ class ProdMovement extends CommonClass
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/stck_mgmt/prod_movement.cgi", $query_string);
         if (strpos($res, "op=\"206\"") === false) {
-            $error = new EchoSchema(400, "CGI error");
+            $error = new EchoSchema(400, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         // write_log($res, __FILE__, __LINE__);
 
         echo '{';
-        echo '"message": "product movment started."';
+        echo '"message": "' . response("__PRODUCTMOVEMENT_STARTED__"). '"';
         echo '}';
-        return array();
     }
 
     //op=207&h_PMV_NUMBER=2&pmvDepot=MOBPET&sess_id=GDyaQelbVjls
     public function halt()
     {
         if (!isset($this->pmv_number)) {
-            $error = new EchoSchema(400, "parameter missing: pmv_number not provided");
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: pmv_number not provided"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         $serv = new SiteService($this->conn);
@@ -88,17 +87,16 @@ class ProdMovement extends CommonClass
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/stck_mgmt/prod_movement.cgi", $query_string);
         if (strpos($res, "op=\"207\"") === false) {
-            $error = new EchoSchema(400, "CGI error");
+            $error = new EchoSchema(400, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         // write_log($res, __FILE__, __LINE__);
 
         echo '{';
-        echo '"message": "product movment started."';
+        echo '"message": "' . response("__PRODUCTMOVEMENT_HALTED__") . '"';
         echo '}';
-        return array();
     }
 
 

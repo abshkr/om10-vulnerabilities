@@ -27,7 +27,6 @@ class Feature extends CommonClass
         $result = array();
         $result["records"] = $feature_array;
         echo json_encode($result, JSON_PRETTY_PRINT);
-        return array();
     }
 
     public function save()
@@ -36,9 +35,7 @@ class Feature extends CommonClass
         fwrite($fp, json_encode($this->data, JSON_PRETTY_PRINT));
         fclose($fp);
 
-        $error = new EchoSchema(200, "Feature saved");
+        $error = new EchoSchema(200, response("__SAVE_SUCCEEDED__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
-        
-        return array();
     }
 }

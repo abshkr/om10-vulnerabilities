@@ -125,7 +125,7 @@ class SpecialMovement extends CommonClass
 
     public function pre_create()
     {
-        $query = "SELECT MAX(MLITM_ID) + 1 NEXT_ID FROM MOV_LOAD_ITEMS";
+        $query = "SELECT NVL(MAX(MLITM_ID), 0) + 1 NEXT_ID FROM MOV_LOAD_ITEMS";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
@@ -193,9 +193,9 @@ class SpecialMovement extends CommonClass
             __FILE__, __LINE__);
         
         if (!isset($this->mlitm_id)) {
-            $error = new EchoSchema(400, "parameter missing: mlitm_id not provided");
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: mlitm_id not provided"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         $query = "SELECT COUNT(*) CN 
@@ -210,10 +210,11 @@ class SpecialMovement extends CommonClass
         }
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         if ($row['CN'] > 2 || $row['CN'] <= 0) {
-            $error = new EchoSchema(500, sprintf("There are %d schedules in this special movment", $row['CN']));
+            $error = new EchoSchema(500, response("__INVALID_SPECIAL_MOVEMENT__",
+                sprintf("There are %d schedules in this special movment", $row['CN'])));
             echo json_encode($error, JSON_PRETTY_PRINT);
             write_log(sprintf("There are %d schedules in this special movment", $row['CN']), __FILE__, __LINE__, LogLevel::ERROR);
-            return array();
+            return;
         }
 
         $query = "SELECT MSITM_SHLSTRIP, MSITM_SHLSSUPP 
@@ -224,7 +225,7 @@ class SpecialMovement extends CommonClass
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
+            return;
         }
 
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
@@ -234,20 +235,20 @@ class SpecialMovement extends CommonClass
             $error_msg = null;
             if (!$serv->reverse_trip($error_msg)) {
                 if ($error_msg) {
-                    $error = new EchoSchema(500, "Internal Error: " . $error_msg);
+                    $error = new EchoSchema(500, response("__INTERNAL_ERROR__", "Internal Error: " . $error_msg));
                 } else {
-                    $error = new EchoSchema(500, "Internal error, check logs/php_rest_*.log file for details");
+                    $error = new EchoSchema(500, response("__INTERNAL_ERROR__"));
                 }
                 
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 write_log("reverse_trip failed", __FILE__, __LINE__, LogLevel::ERROR);
-                return array();
+                return;
             }
         }
 
-        $error = new EchoSchema(200, sprintf("Special movment %d has been reversed", $this->mlitm_id));
+        $error = new EchoSchema(200, response("__SPECIAL_MOVEMENT_REVERSED__",
+            sprintf("Special movment %d has been reversed", $this->mlitm_id)));
         echo json_encode($error, JSON_PRETTY_PRINT);
-        return array();
     }
 
     public function tanks()
@@ -304,13 +305,13 @@ class SpecialMovement extends CommonClass
         
         $error_msg = null;
         if ($serv->submit($error_msg)) {
-            $result = new EchoSchema(200, sprintf("Special movment %d submitted", $this->mlitm_id));
+            $result = new EchoSchema(200, response("__SPECIAL_MOVEMENT_SUBMITTED__",
+                sprintf("Special movment %d submitted", $this->mlitm_id)));
             echo json_encode($result, JSON_PRETTY_PRINT);
         } else {
-            $result = new EchoSchema(500, "Failed to submit special movement, error message: " . $error_msg);
+            $result = new EchoSchema(500, response("__SPECIAL_MOVEMENT_FAILED__",
+                "Failed to submit special movement, error message: " . $error_msg));
             echo json_encode($result, JSON_PRETTY_PRINT);
         }
-        
-        return array();
     }
 }

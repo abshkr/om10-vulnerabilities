@@ -199,52 +199,18 @@ class TankStatus extends CommonClass
         $serv = new SiteService($this->conn);
         $site_code = $serv->site_code();
 
-        $query_string = "frm_baseCd=" . $this->tank_base . 
-            "&frm_which_type=" . $this->tank_qty_type .
-            "&frm_real_amount=" . $this->tank_qty_amount .
-            "&frm_real_temp=" . $this->tank_temp .
-            "&frm_real_dens=" . $ref_density .
-            "&frm_tank_trm=" . $site_code .
-            "&frm_tank_cd=" . $this->tank_code .
-            "&frm_strap_height_mm=" . $this->tank_prod_lvl;
+        $query_string = "frm_baseCd=" . rawurlencode(strip_tags($this->tank_base)) . 
+            "&frm_which_type=" . rawurlencode(strip_tags($this->tank_qty_type)) .
+            "&frm_real_amount=" . rawurlencode(strip_tags($this->tank_qty_amount)) .
+            "&frm_real_temp=" . rawurlencode(strip_tags($this->tank_temp)) .
+            "&frm_real_dens=" . rawurlencode(strip_tags($ref_density)) .
+            "&frm_tank_trm=" . rawurlencode(strip_tags($site_code)) .
+            "&frm_tank_cd=" . rawurlencode(strip_tags($this->tank_code)) .
+            "&frm_strap_height_mm=" . rawurlencode(strip_tags($this->tank_prod_lvl));
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi", $query_string);
         $xml = simplexml_load_string($res);
         echo json_encode($xml, JSON_PRETTY_PRINT);
-        return array();
-
-        // $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/calcvcf.cgi';
-
-        // $ref_density = 0;
-        // if (isset($this->tank_15_density) && $this->tank_15_density > 0) {
-        //     $ref_density = $this->tank_15_density;
-        // } else {
-        //     $ref_density = $this->tank_density;
-        // }
-
-        // $data = array(
-        //     'frm_baseCd' => $this->tank_base,
-        //     'frm_which_type' => $this->tank_qty_type,
-        //     'frm_real_amount' => $this->tank_qty_amount,
-        //     'frm_real_temp' => $this->tank_temp,
-        //     'frm_real_dens' => $ref_density,
-        //     'frm_tank_trm' => $this->tank_terminal,
-        //     'frm_tank_cd' => $this->tank_code,
-        //     'frm_strap_height_mm' => $this->tank_prod_lvl);
-
-        // $options = array
-        //     (
-        //     'http' => array
-        //     (
-        //         'header' => "Content-type: text/xml\r\n",
-        //         'method' => 'POST',
-        //         'content' => http_build_query($data),
-        //     ),
-        // );
-        // $context = stream_context_create($options);
-        // $result = file_get_contents($url, false, $context);
-        // $xml = simplexml_load_string($result);
-        // echo json_encode($xml, JSON_PRETTY_PRINT);
     }
 
     /*
@@ -263,16 +229,15 @@ class TankStatus extends CommonClass
             $ref_density = $this->tank_density;
         }
 
-        $query_string = "frm_baseCd=" . $this->tank_base . 
-            "&frm_which_type=" . $this->tank_qty_type .
-            "&frm_real_amount=" . $this->tank_qty_amount .
-            "&frm_real_temp=" . $this->tank_temp .
-            "&frm_real_dens=" . $ref_density;
+        $query_string = "frm_baseCd=" . rawurlencode(strip_tags($this->tank_base)) . 
+            "&frm_which_type=" . rawurlencode(strip_tags($this->tank_qty_type)) .
+            "&frm_real_amount=" . rawurlencode(strip_tags($this->tank_qty_amount)) .
+            "&frm_real_temp=" . rawurlencode(strip_tags($this->tank_temp)) .
+            "&frm_real_dens=" . rawurlencode(strip_tags($ref_density));
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi", $query_string);
         $xml = simplexml_load_string($res);
         echo json_encode($xml, JSON_PRETTY_PRINT);
-        return array();
     }
 
     //Because base cannot be too many, do not do limit

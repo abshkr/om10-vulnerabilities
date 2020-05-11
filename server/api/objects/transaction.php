@@ -33,9 +33,9 @@ class Transaction extends CommonClass
     public function close_trsa()
     {
         if (!isset($this->trsa_id)) {
-            $error = new EchoSchema(400, "parameter missing: trsa_id not provided");
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: trsa_id not provided"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();
+            return;
         }
 
         $this->commit_mode = OCI_NO_AUTO_COMMIT;
@@ -46,13 +46,13 @@ class Transaction extends CommonClass
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return false;
+            return;
         }
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         if ($row['CN'] <= 0) {
-            $error = new EchoSchema(500, "Transaction does not exist");
+            $error = new EchoSchema(500, response("__NOT_EXIST__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();;
+            return;
         }
 
         $query = "SELECT COUNT(*) CN FROM TRANSACTIONS
@@ -62,13 +62,13 @@ class Transaction extends CommonClass
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return false;
+            return;
         }
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         if ($row['CN'] > 0) {
-            $error = new EchoSchema(500, "Transaction is already ended");
+            $error = new EchoSchema(500, response("__TRANSACTION_ALREADY_ENDED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return array();;
+            return;
         }
 
         $query = "UPDATE TRANSACTIONS
@@ -80,7 +80,7 @@ class Transaction extends CommonClass
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return false;
+            return;
         }
 
         $journal = new Journal($this->conn, false);
@@ -90,19 +90,19 @@ class Transaction extends CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
 
-            $error = new EchoSchema(500, "Failed to write journal");
+            $error = new EchoSchema(500, response("__JOURNAL_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
 
             oci_rollback($this->conn);
             
-            return array();
+            return;
         }
 
         oci_commit($this->conn);
 
-        $error = new EchoSchema(200, sprintf("Transaction %s ended", $this->trsa_id));
+        $error = new EchoSchema(200, response("__TRANSACTION_ENDED__",
+            sprintf("Transaction %s ended", $this->trsa_id)));
         echo json_encode($error, JSON_PRETTY_PRINT);
-        return array();
     }
 
     public function get_meter_details()

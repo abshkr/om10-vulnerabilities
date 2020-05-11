@@ -10,7 +10,7 @@ include_once 'common_class.php';
 class Partnership extends CommonClass
 {
     protected $TABLE_NAME = 'CMPY_CUST_PRTNR';
-    protected $VIEWER_NAME = 'CMPY_CUST_PRTNR';
+    protected $VIEW_NAME = 'CMPY_CUST_PRTNR';
 
     public $check_exists = false;
     protected $check_mandatory = false;
@@ -19,6 +19,10 @@ class Partnership extends CommonClass
         // "ccp_cmpy_code",
         "ccp_cust_acct",
         // "ccp_prtnr_seq"
+    );
+
+    protected $table_view_map = array(
+        "CCP_CUST_ACCT" => "PARTNER_CUST_ACCT"
     );
 
     public function customers()
@@ -149,7 +153,7 @@ class Partnership extends CommonClass
                 :ccp_prtnr_seq
             )";
             $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':ccp_cmpy_code', $value->partner_cmpy_code);
+            oci_bind_by_name($stmt, ':ccp_cmpy_code', $this->partner_cmpy_code);
             oci_bind_by_name($stmt, ':ccp_cust_acct', $this->partner_cust_acct);
             oci_bind_by_name($stmt, ':ccp_prtnr_seq', $value->partner_seq);
             
@@ -214,12 +218,13 @@ class Partnership extends CommonClass
     protected function journal_children_change($journal, $old, $new)
     {
         $module = "partnership";
+        // write_log(json_encode($old), __FILE__, __LINE__);
         foreach ($old as $tank_code => $alloc_item) {
             if (!isset($new[$tank_code])) {
                 $jnl_data[0] = Utilities::getCurrPsn();
                 $jnl_data[1] = $module;
-                $jnl_data[2] = sprintf("supplier:%s", $this->ccp_cmpy_code);
-                $jnl_data[3] = sprintf("partner seq:%s", $alloc_item->ccp_prtnr_seq);
+                $jnl_data[2] = sprintf("supplier:%s", $alloc_item['CCP_CMPY_CODE']);
+                $jnl_data[3] = sprintf("partner seq:%s", $alloc_item['CCP_PRTNR_SEQ']);
 
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -237,8 +242,8 @@ class Partnership extends CommonClass
             if (!isset($old[$tank_code])) {
                 $jnl_data[0] = Utilities::getCurrPsn();
                 $jnl_data[1] = $module;
-                $jnl_data[2] = sprintf("supplier:%s", $this->ccp_cmpy_code);
-                $jnl_data[3] = sprintf("partner seq:%s", $alloc_item->ccp_prtnr_seq);
+                $jnl_data[2] = sprintf("supplier:%s", $alloc_item['CCP_CMPY_CODE']);
+                $jnl_data[3] = sprintf("partner seq:%s", $alloc_item['CCP_PRTNR_SEQ']);
 
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -250,5 +255,10 @@ class Partnership extends CommonClass
                 }
             }
         }
+    }
+
+    public function check_existence()
+    {
+        return true;
     }
 }

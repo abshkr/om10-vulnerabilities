@@ -359,11 +359,11 @@ class EquipmentType extends CommonClass
         $etyp_isrigid = (isset($this->etyp_isrigid) && $this->etyp_isrigid ? "y" : "n");
         $is_combo = (isset($this->composition) && count($this->composition) > 0) ? 1 : 0;
 
-        $query_string = "canBreak=" . $is_combo . 
-            "&eqpNm=" . $this->etyp_title . 
-            "&sched=" . $etyp_schedul . 
-            "&rigid=" . $etyp_isrigid . 
-            "&etyp_category=" . $this->etyp_category . 
+        $query_string = "canBreak=" . rawurlencode(strip_tags($is_combo)) . 
+            "&eqpNm=" . rawurlencode(strip_tags($this->etyp_title)) . 
+            "&sched=" . rawurlencode(strip_tags($etyp_schedul)) . 
+            "&rigid=" . rawurlencode(strip_tags($etyp_isrigid)) . 
+            "&etyp_category=" . rawurlencode(strip_tags($this->etyp_category)) . 
             "&op=17&callerTyp=flex";
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/equip_types.cgi", $query_string);
         
@@ -387,9 +387,9 @@ class EquipmentType extends CommonClass
             }
 
             write_log("Adding compartments ...", __FILE__, __LINE__);
-            $query_string = "canBreak=" . $is_combo . 
-                "&sched=" . $etyp_schedul . 
-                "&eqpCd=" . $this->etyp_id . 
+            $query_string = "canBreak=" . rawurlencode(strip_tags($is_combo)) . 
+                "&sched=" . rawurlencode(strip_tags($etyp_schedul)) . 
+                "&eqpCd=" . rawurlencode(strip_tags($this->etyp_id)) . 
                 "&cmpts=" . count($this->compartments) . 
                 "&op=15";
 
@@ -420,8 +420,8 @@ class EquipmentType extends CommonClass
 
             write_log("Adding composition ...", __FILE__, __LINE__);
             $basic_string = "canBreak=1" . 
-                "&sched=" . $etyp_schedul . 
-                "&eqpCd=" . $this->etyp_id . 
+                "&sched=" . rawurlencode(strip_tags($etyp_schedul)) . 
+                "&eqpCd=" . rawurlencode(strip_tags($this->etyp_id)) . 
                 "&op=13";
 
             foreach ($this->composition as $sub_etyp) {
@@ -463,7 +463,8 @@ class EquipmentType extends CommonClass
             $can_break = 0;
         }
         
-        $query_string = "eqpCd=" . $this->etyp_id . "&canBreak=" . $can_break . 
+        $query_string = "eqpCd=" . rawurlencode(strip_tags($this->etyp_id)) . 
+            "&canBreak=" . rawurlencode(strip_tags($can_break)) . 
             "&noOfcompts=0&op=18&callerTyp=flex";
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/equip_types.cgi", $query_string);
