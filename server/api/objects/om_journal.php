@@ -208,7 +208,7 @@ class OMJournal extends CommonClass
                     JNL_CAT
                 FROM GUI_SITE_JOURNAL
                 WHERE MSG_EVENT = 'ALARM'
-                    AND GEN_DATE >= SYSDATE - 5
+                    AND GEN_DATE >= SYSDATE - 1
                 ORDER BY GEN_DATE DESC
             ) 
             WHERE ROWNUM <= 5";
