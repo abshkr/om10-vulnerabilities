@@ -616,8 +616,11 @@ class CommonClass
         //     __FILE__, __LINE__);
         // write_log(json_encode($this), __FILE__, __LINE__);
         if (!isset($this->primary_keys)) {
-            write_log("primary_keys not set", __FILE__, __LINE__);
-            return;
+            $this->retrieve_primary_keys();
+            if (!isset($this->primary_keys)) {
+                write_log("primary_keys not set", __FILE__, __LINE__);
+                return;
+            }
         }
 
         if (isset($this->table_view_map)) {
@@ -689,7 +692,7 @@ class CommonClass
         $stmt = oci_parse($this->conn, $query);
         foreach ($this->primary_keys as $value) {
             oci_bind_by_name($stmt, ':' . $value, $this->$value);
-
+            // write_log($value, __FILE__, __LINE__);
             if (!isset($this->$value)) {
                 throw new Exception(
                     "Primary key fields are missing. Please check these fields: " .

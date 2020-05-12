@@ -192,34 +192,34 @@ class OMJournal extends CommonClass
         return $this->read();
     }
 
-    public function alarms()
-    {
-        $query = "
-            SELECT * FROM
-            (
-                SELECT GEN_DATE,
-                    REGION_CODE,
-                    PRINT_DATE,
-                    COMPANY_CODE,
-                    MSG_EVENT,
-                    MSG_CLASS,
-                    MESSAGE,
-                    SEQ,
-                    JNL_CAT
-                FROM GUI_SITE_JOURNAL
-                WHERE MSG_EVENT = 'ALARM'
-                    AND GEN_DATE >= SYSDATE - 1
-                ORDER BY GEN_DATE DESC
-            ) 
-            WHERE ROWNUM <= 5";
-        // write_log(json_encode($query), __FILE__, __LINE__);
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
+    // public function alarms()
+    // {
+    //     $query = "
+    //         SELECT * FROM
+    //         (
+    //             SELECT GEN_DATE,
+    //                 REGION_CODE,
+    //                 PRINT_DATE,
+    //                 COMPANY_CODE,
+    //                 MSG_EVENT,
+    //                 MSG_CLASS,
+    //                 MESSAGE,
+    //                 SEQ,
+    //                 JNL_CAT
+    //             FROM GUI_SITE_JOURNAL
+    //             WHERE MSG_EVENT = 'ALARM'
+    //                 AND GEN_DATE >= SYSDATE - 1
+    //             ORDER BY GEN_DATE DESC
+    //         ) 
+    //         WHERE ROWNUM <= 5";
+    //     // write_log(json_encode($query), __FILE__, __LINE__);
+    //     $stmt = oci_parse($this->conn, $query);
+    //     if (oci_execute($stmt, $this->commit_mode)) {
+    //         return $stmt;
+    //     } else {
+    //         $e = oci_error($stmt);
+    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         return null;
+    //     }
+    // }
 }
