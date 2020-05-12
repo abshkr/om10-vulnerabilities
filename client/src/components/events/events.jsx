@@ -1,46 +1,75 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, List, Dropdown, Button, Badge } from 'antd';
 
-import { BellOutlined } from '@ant-design/icons';
+import { BellOutlined, CloseOutlined } from '@ant-design/icons';
 
-const data = [
-  {
-    title: 'Error On Bay 04. Please Check The Journal For More Information',
-  },
-  {
-    title: 'Error On Bay 04. Please Check The Journal For More Information',
-  },
-  {
-    title: 'Error On Bay 04. Please Check The Journal For More Information',
-  },
-  {
-    title: 'Error On Bay 04. Please Check The Journal For More Information',
-  },
-  {
-    title: 'Error On Bay 04. Please Check The Journal For More Information',
-  },
-];
+import useSWR from 'swr';
+import _ from 'lodash';
 
-const menu = (
-  <Menu>
-    <List
-      style={{ padding: 10, paddingTop: 0, paddingBottom: 0 }}
-      itemLayout="horizontal"
-      dataSource={data}
-      renderItem={(item) => (
-        <List.Item>
-          <List.Item.Meta title={<p>Omega Event Detected</p>} description={item.title} />
-        </List.Item>
-      )}
-    />
-  </Menu>
-);
+import { useAudio } from '../../hooks';
+import { fetcher } from '../../utils';
+import { COMMON } from '../../api';
 
 const Events = () => {
+  const { data } = useSWR(COMMON.EVENTS, fetcher);
+
+  // const [playing, toggle] = useAudio('/sounds/warning.mp3');
+
+  const [events, setEvents] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [seen, setSeen] = useState([]);
+
+  const onRemove = (message) => {
+    let payload = [...seen, message];
+
+    setSeen(payload);
+  };
+
+  useEffect(() => {
+    const payload = data?.records || [];
+
+    const filtered = _.filter(payload, (object) => {
+      return !seen.includes(object.message);
+    });
+
+    setEvents(filtered.slice(0, 4));
+  }, [data, seen]);
+
+  const menu = (
+    <Menu style={{ display: events.length === 0 && 'none' }}>
+      <List
+        itemLayout="horizontal"
+        dataSource={events}
+        size="small"
+        renderItem={(item) => (
+          <List.Item
+            actions={[
+              <Button
+                type="danger"
+                size="small"
+                icon={<CloseOutlined />}
+                onClick={() => onRemove(item.message)}
+                shape="circle"
+              ></Button>,
+            ]}
+          >
+            <List.Item.Meta title={item.gen_date} description={item.message} />
+          </List.Item>
+        )}
+      />
+    </Menu>
+  );
+
   return (
-    <Dropdown overlay={menu} trigger={['click']}>
+    <Dropdown
+      visible={visible}
+      overlay={menu}
+      onVisibleChange={setVisible}
+      trigger={['click']}
+      disabled={events.length === 0}
+    >
       <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
-        <Badge count={5} offset={[10, -5]}>
+        <Badge count={events?.length} offset={[10, -5]}>
           <BellOutlined style={{ transform: 'scale(1.5)' }} />
         </Badge>
       </Button>

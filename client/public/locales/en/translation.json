@@ -687,7 +687,8 @@
     "tankStrapping": "Show Tank Strapping",
     "closeTransaction": "Close Transaction",
     "close": "Close",
-    "locked": "Locked"
+    "locked": "Locked",
+    "selectAll": "Select All"
   },
 
   "tabColumns": {
