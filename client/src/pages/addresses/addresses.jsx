@@ -6,22 +6,20 @@ import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download } from '../../components';
-import { ALLOCATIONS } from '../../api';
+import { ADDRESSES } from '../../api';
 import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
-import Forms from './forms';
-
-const Allocations = () => {
+const Addresses = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
   const { t } = useTranslation();
 
-  const auth = useAuth('M_ALLOCATIONS');
+  const auth = useAuth('M_ADDRESSES');
 
-  const { data: payload, isValidating, revalidate } = useSWR(ALLOCATIONS.READ);
+  const { data: payload, isValidating, revalidate } = useSWR(ADDRESSES.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -33,8 +31,8 @@ const Allocations = () => {
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
-  const page = t('pageMenu.gantry');
-  const name = t('pageNames.allocations');
+  const page = t('pageMenu.customers');
+  const name = t('pageNames.addresses');
 
   const modifiers = (
     <>
@@ -66,9 +64,9 @@ const Allocations = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <div value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
     </Page>
   );
 };
 
-export default auth(Allocations);
+export default auth(Addresses);

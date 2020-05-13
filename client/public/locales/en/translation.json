@@ -515,7 +515,21 @@
     "partner": "Partner",
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
-    "currentPassword": "Current Password"
+    "currentPassword": "Current Password",
+    "tankBaseName": "Tank Base Name",
+    "tankBaseProduct": "Tank Base Product",
+    "isActivated": "Is Activated?",
+    "terminalName": "Terminal Name",
+    "groupName": "Group Name",
+    "groupBaseCode": "Group Base Code",
+    "groupBaseProduct": "Group Base Product",
+    "addressCode": "Address Code",
+    "addressDetails": "Address Details",
+    "equipmentCode": "Equipment Code",
+    "compartments": "Compartments",
+    "preview": "Preview",
+    "schedulable": "Schedulable",
+    "rigid": "Rigid"
   },
 
   "pageMenu": {
@@ -784,7 +798,8 @@
     "onReverse": "Are you sure you want to reverse this record?",
     "halt": "Are you sure you want to halt?",
     "cancel": "Are you sure you want to cancel?",
-    "closeTransaction": "Are you sure you want to Close this Transaction?"
+    "closeTransaction": "Are you sure you want to Close this Transaction?",
+    "reset": "Are you sure you want to reset this record?"
   },
 
   "divider": {

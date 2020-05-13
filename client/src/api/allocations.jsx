@@ -7,6 +7,7 @@ export const DRAWERS = '/api/pages/allocs/drawers.php';
 export const CARRIERS = '/api/pages/allocs/carriers.php';
 export const CUSTOMERS = '/api/pages/allocs/customers.php';
 export const ITEMS = '/api/pages/allocs/alloc_items.php';
+export const RESET = '/api/pages/allocs/reset.php ';
 
 export const CREATE = '/api/pages/allocs/create.php';
 export const UPDATE = '/api/pages/allocs/update.php';

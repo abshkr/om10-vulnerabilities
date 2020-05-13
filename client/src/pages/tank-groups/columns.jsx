@@ -44,7 +44,7 @@ const columns = (t) => [
   {
     headerName: t('fields.terminalCode'),
     field: 'tgr_sitecode',
-    cellRenderer: 'DateRenderer',
+    filter: 'MultiFilter',
     sortable: true,
     resizable: true,
   },

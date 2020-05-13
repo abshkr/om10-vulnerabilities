@@ -6,22 +6,22 @@ import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download } from '../../components';
-import { ALLOCATIONS } from '../../api';
+import { EQUIPMENT_TYPES } from '../../api';
 import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
 
-const Allocations = () => {
+const EquipmentTypes = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
   const { t } = useTranslation();
 
-  const auth = useAuth('M_ALLOCATIONS');
+  const auth = useAuth('M_LOGICALPRINTERS');
 
-  const { data: payload, isValidating, revalidate } = useSWR(ALLOCATIONS.READ);
+  const { data: payload, isValidating, revalidate } = useSWR(EQUIPMENT_TYPES.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -33,8 +33,8 @@ const Allocations = () => {
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
-  const page = t('pageMenu.gantry');
-  const name = t('pageNames.allocations');
+  const page = t('pageMenu.schedules');
+  const name = t('pageNames.equipmentTypes');
 
   const modifiers = (
     <>
@@ -71,4 +71,4 @@ const Allocations = () => {
   );
 };
 
-export default auth(Allocations);
+export default auth(EquipmentTypes);

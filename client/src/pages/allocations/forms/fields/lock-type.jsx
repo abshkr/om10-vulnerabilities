@@ -5,50 +5,53 @@ import useSWR from 'swr';
 
 import { ALLOCATIONS } from '../../../../api';
 
-const LockType = ({ form, value }) => {
-  const { t } = useTranslation();
+const LockType = ({ form, value, onChange }) => {
+  const { setFieldsValue } = form;
 
-  const { getFieldDecorator, setFieldsValue } = form;
+  const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(ALLOCATIONS.LOCKS);
 
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.lockType')}`);
+      return Promise.resolve(`${t('validate.select')} ─ ${t('fields.lockType')}`);
     }
 
-    callback();
+    return Promise.reject();
   };
 
   useEffect(() => {
-    if (!!value) {
+    if (value) {
       setFieldsValue({
-        alloc_type: value.alloc_type
+        alloc_lock: String(value.alloc_lock),
       });
+
+      onChange(value.alloc_lock);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 
   return (
-    <Form.Item label={t('fields.lockType')}>
-      {getFieldDecorator('alloc_type', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectLockType') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.alloc_lock_id}>
-              {item.alloc_lock_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item
+      name="alloc_lock"
+      label={t('fields.lockType')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        loading={isValidating}
+        showSearch
+        onChange={onChange}
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectLockType') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.alloc_lock_id}>
+            {item.alloc_lock_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

@@ -56,6 +56,7 @@ const Table = ({
   extra,
   minimal,
   components,
+  onCellClick,
 }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
@@ -139,7 +140,7 @@ const Table = ({
 
         <div style={{ float: 'right' }}>{extra}</div>
 
-        <div style={{ height: `calc(100vh - ${height || '300px'})`, marginTop: 5 }}>
+        <div style={{ height: `calc(100vh - ${height || '250px'})`, marginTop: 5 }}>
           <AgGridReact
             columnDefs={columns}
             rowData={data}
@@ -153,6 +154,7 @@ const Table = ({
             onRowSelected={handleMultipleSelection}
             animateRows={true}
             enableCellTextSelection={true}
+            onCellDoubleClicked={onCellClick}
           />
         </div>
       </div>
