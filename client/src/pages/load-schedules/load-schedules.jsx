@@ -1,98 +1,77 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import useSWR from 'swr';
-import axios from 'axios';
 import moment from 'moment';
 import { Button } from 'antd';
-import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined, CaretLeftOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, FormModal, Calendar } from '../../components';
-import { LOAD_SCHEDULES, MOVEMENT_NOMIATIONS } from '../../api';
-import { SETTINGS, ROUTES } from '../../constants';
-import { useQuery } from '../../hooks';
+import { Page, DataTable, Download } from '../../components';
+import { LOAD_SCHEDULES } from '../../api';
+import { SETTINGS } from '../../constants';
+import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 
 const LoadSchedules = () => {
-  let history = useHistory();
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
 
-  const { params } = useQuery(['mv_key']);
   const { t } = useTranslation();
 
+  const access = useAuth('M_LOADSCHEDULES');
   const [start, setStart] = useState(moment().subtract(5, 'years').format(SETTINGS.DATE_TIME_FORMAT));
-
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
-  const [data, setData] = useState([]);
 
-  const { data: schedules, isValidating, revalidate } = useSWR(`${LOAD_SCHEDULES.READ}`);
+  const { data: payload, isValidating, revalidate } = useSWR(
+    `${LOAD_SCHEDULES.READ}?start_date=${start}&end_date=${end}`
+  );
 
-  const IS_NOMINATION = params?.mv_key;
-
-  const fields = columns(IS_NOMINATION, t);
-
-  const handleClick = (value) => {
-    FormModal({
-      value,
-      form: <Forms value={value} IS_NOMINATION={IS_NOMINATION} />,
-      width: '90vw',
-      id: IS_NOMINATION || value?.shls_trip_no,
-      name: value?.shlsload_load_id,
-      t,
-    });
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
   };
 
-  const setRange = (start, end) => {
-    setStart(start);
-    setEnd(end);
-  };
+  const fields = columns(false, t);
 
-  useEffect(() => {
-    if (params?.mv_key) {
-      axios.get(MOVEMENT_NOMIATIONS.SCHEDULES, { params }).then((response) => setData(response.data.records));
-    } else {
-      setData(schedules?.records);
-    }
-  }, [schedules, params]);
+  const data = payload?.records;
+  const isLoading = isValidating || !data;
+
+  const page = t('pageMenu.schedules');
+  const name = t('pageNames.loadSchedules');
 
   const modifiers = (
     <>
-      <Calendar handleChange={setRange} start={start} end={end} />
-
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
 
-      <Download data={data} isLoading={isValidating} columns={fields} />
+      <Download data={data} isLoading={isLoading} columns={fields} />
 
-      {!IS_NOMINATION && (
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => handleClick(null)}
-          loading={isValidating}
-        >
-          {t('operations.create')}
-        </Button>
-      )}
-
-      {IS_NOMINATION && (
-        <Button icon={<CaretLeftOutlined />} onClick={() => history.push(ROUTES.LOAD_SCHEDULES)}>
-          {t('operations.returnToLoadSchedules')}
-        </Button>
-      )}
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => handleFormState(true, null)}
+        loading={isLoading}
+        disabled={!access.canCreate}
+      >
+        {t('operations.create')}
+      </Button>
     </>
   );
 
   return (
-    <Page
-      page={t('pageMenu.schedules')}
-      name={IS_NOMINATION ? t('pageNames.loadSchedulesFromNomination') : t('pageNames.loadSchedules')}
-      modifiers={modifiers}
-    >
-      <DataTable columns={fields} data={data} onClick={handleClick} />
+    <Page page={page} name={name} modifiers={modifiers} access={access}>
+      <DataTable
+        data={data}
+        columns={fields}
+        isLoading={isLoading}
+        selectionMode="single"
+        onClick={(payload) => handleFormState(true, payload)}
+        handleSelect={(payload) => handleFormState(true, payload[0])}
+      />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
     </Page>
   );
 };

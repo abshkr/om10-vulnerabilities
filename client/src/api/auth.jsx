@@ -6,4 +6,5 @@ export const PERMISSIONS = '/api/session/cur_roledata.php';
 export const SESSION = '/api/session/session_data.php';
 
 export const ENVIRONMENT = '/api/session/getenv.php';
+
 export const SITE_CONFIG = '/api/config.php';

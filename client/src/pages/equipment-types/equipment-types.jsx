@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
 import useSWR from 'swr';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download } from '../../components';
 import { EQUIPMENT_TYPES } from '../../api';
@@ -16,6 +16,7 @@ import Forms from './forms';
 const EquipmentTypes = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [isCombination, setCombination] = useState(false);
 
   const { t } = useTranslation();
 
@@ -24,8 +25,30 @@ const EquipmentTypes = () => {
   const { data: payload, isValidating, revalidate } = useSWR(EQUIPMENT_TYPES.READ);
 
   const handleFormState = (visibility, value) => {
-    setVisible(visibility);
-    setSelected(value);
+    if (visibility && !value) {
+      Modal.confirm({
+        title: 'Is it a combination?',
+        icon: <ExclamationCircleOutlined />,
+        okText: 'Yes',
+        cancelText: 'No',
+        centered: true,
+        onOk() {
+          setCombination(true);
+
+          setVisible(visibility);
+          setSelected(value);
+        },
+        onCancel() {
+          setCombination(false);
+
+          setVisible(visibility);
+          setSelected(value);
+        },
+      });
+    } else {
+      setVisible(visibility);
+      setSelected(value);
+    }
   };
 
   const fields = columns(t);
@@ -66,7 +89,13 @@ const EquipmentTypes = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        auth={auth}
+        isCombination={isCombination}
+      />
     </Page>
   );
 };

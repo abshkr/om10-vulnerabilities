@@ -529,7 +529,13 @@
     "compartments": "Compartments",
     "preview": "Preview",
     "schedulable": "Schedulable",
-    "rigid": "Rigid"
+    "rigid": "Rigid",
+    "origin": "Origin",
+    "carrierCode": "Carrier Code",
+    "tankerName": "Tanker Name",
+    "priority": "Priority",
+    "customerCode": "Customer Code",
+    "supplierOrigin": "Supplier Origin"
   },
 
   "pageMenu": {

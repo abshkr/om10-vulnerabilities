@@ -14,7 +14,7 @@ import auth from '../../auth';
 
 const TimeCodes = () => {
   const { t } = useTranslation();
-  const { data: payload, isValidating, revalidate } = useSWR(TIME_CODES.READ);
+  const { data: payload, isValidating } = useSWR(TIME_CODES.READ);
 
   const [code, setCode] = useState(null);
   const [data, setData] = useState(null);
