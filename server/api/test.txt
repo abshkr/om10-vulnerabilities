@@ -1,11 +1,12 @@
 TODO:
 
 Meter Curve in load bay meters
+Validate. Check Laravel validate function. 
 
 
 //--------------------------------------------------------- Genrel PHPs ---------------------------------------------------------//
 https://10.1.10.66/api/session/getenv.php
-https://10.1.10.66/api/session/alarms.php
+https://10.1.10.66/api/session/session_data.php
 https://10.1.10.66/api/session/sys_date.php
 https://10.1.10.66/api/session/person_setups.php
 https://{{server_ip}}/api/session/change_cur_dep.php

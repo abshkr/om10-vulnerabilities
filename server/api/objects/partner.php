@@ -90,22 +90,22 @@ class Partner extends CommonClass
         $this->prtnr_seq = intval($row['NEXT_ID']);
     }
 
-    // public function post_create()
-    // {
-    //     $query = "INSERT INTO CMPY_CUST_PRTNR(CCP_CMPY_CODE, CCP_CUST_ACCT, CCP_PRTNR_SEQ)
-    //         VALUES (:ccp_cmpy_code, NULL, :ccp_prtnr_seq)";
-    //     $stmt = oci_parse($this->conn, $query);
-    //     oci_bind_by_name($stmt, ':ccp_cmpy_code', $this->prtnr_cmpy);
-    //     oci_bind_by_name($stmt, ':ccp_prtnr_seq', $this->prtnr_seq);
-    //     if (oci_execute($stmt, $this->commit_mode)) {
-    //         return true;
-    //     } else {
-    //         $e = oci_error($stmt);
-    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-    //         oci_rollback($this->conn);
-    //         return false;
-    //     }
-    // }
+    public function post_create()
+    {
+        $query = "INSERT INTO CMPY_CUST_PRTNR(CCP_CMPY_CODE, CCP_CUST_ACCT, CCP_PRTNR_SEQ)
+            VALUES (:ccp_cmpy_code, NULL, :ccp_prtnr_seq)";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':ccp_cmpy_code', $this->prtnr_cmpy);
+        oci_bind_by_name($stmt, ':ccp_prtnr_seq', $this->prtnr_seq);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return true;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+    }
 
     protected function check_deletable()
     {
