@@ -12,7 +12,7 @@ import { LOGICAL_PRINTERS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState }) => {
+const FormModal = ({ value, visible, handleFormState, access }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -114,6 +114,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -123,6 +124,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
+              disabled={!access?.canDelete}
               onClick={onDelete}
             >
               {t('operations.delete')}

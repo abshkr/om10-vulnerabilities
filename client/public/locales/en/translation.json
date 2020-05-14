@@ -755,7 +755,12 @@
     "driverPin": "Driver Pin",
     "closeoutOptions": "Closeout Options",
     "terminalLocations": "Terminal Locations",
-    "features": "Features"
+    "features": "Features",
+    "driverInstructions": "Driver Instructions",
+    "bol": "BOL",
+    "loadReport": "Load Report",
+    "additionalHostData": "Additional Host Data",
+    "transactions": "Transactions"
   },
 
   "messages": {

@@ -1,35 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import axios from 'axios';
-import { mutate } from 'swr';
+import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { Form, Button, Tabs, Modal, notification } from 'antd';
+import { mutate } from 'swr';
+import axios from 'axios';
+import _ from 'lodash';
 
-import {
-  EditOutlined,
-  PlusOutlined,
-  CloseOutlined,
-  DeleteOutlined,
-  QuestionCircleOutlined,
-  PrinterOutlined,
-  EyeOutlined,
-  UndoOutlined
-} from '@ant-design/icons';
-
-import { LOAD_SCHEDULES, MOVEMENT_NOMIATIONS } from '../../../api';
-import Nomination from './nomination';
+import { LOAD_SCHEDULES } from '../../../api';
+import { Supplier, Drawer as DrawerForm, Carrier, Tanker } from './fields';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, IS_NOMINATION }) => {
+const FormModal = ({ value, visible, handleFormState, access }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
-  const [isLoading, setLoading] = useState(false);
+  const [tab, setTab] = useState('0');
+
+  const [supplier, setSupplier] = useState(undefined);
+  const [drawer, setDrawer] = useState(undefined);
+  const [carrier, setCarrier] = useState(undefined);
 
   const IS_CREATING = !value;
 
-  const onFinish = values => {
+  const { resetFields } = form;
+
+  const onComplete = () => {
+    handleFormState(false, null);
+    mutate(LOAD_SCHEDULES.READ);
+  };
+
+  const onFinish = async () => {
+    const values = await form.validateFields();
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -40,25 +44,23 @@ const FormModal = ({ value, IS_NOMINATION }) => {
       onOk: async () => {
         await axios
           .post(IS_CREATING ? LOAD_SCHEDULES.CREATE : LOAD_SCHEDULES.UPDATE, values)
-          .then(
-            axios.spread(response => {
-              Modal.destroyAll();
+          .then(() => {
+            onComplete();
 
-              mutate(LOAD_SCHEDULES.READ);
-
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
               });
-            })
-          )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
             });
           });
-      }
+      },
     });
   };
 
@@ -67,241 +69,110 @@ const FormModal = ({ value, IS_NOMINATION }) => {
       title: t('prompts.delete'),
       okText: t('operations.yes'),
       okType: 'danger',
+      icon: <DeleteOutlined />,
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
         await axios
           .post(LOAD_SCHEDULES.DELETE, value)
-          .then(
-            axios.spread(response => {
-              Modal.destroyAll();
+          .then(() => {
+            onComplete();
 
-              mutate(LOAD_SCHEDULES.READ);
-
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
               });
-            })
-          )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.deleteFailed')
             });
           });
-      }
+      },
     });
   };
 
-  const onViewBOL = async () => {
-    setLoading(true);
-
-    await axios
-      .get(MOVEMENT_NOMIATIONS.BOL, {
-        params: {
-          supplier: value?.supplier_code,
-          trip_no: value?.shls_trip_no
-        }
-      })
-      .then(response => {
-        setLoading(false);
-
-        Modal.info({
-          centered: true,
-          width: '40vw',
-          content: (
-            <div className="ant-tab-window">
-              <pre>{response?.data}</pre>
-            </div>
-          )
-        });
-      });
-  };
-
-  const onViewLoadReport = async () => {
-    setLoading(true);
-
-    await axios
-      .get(MOVEMENT_NOMIATIONS.REPORT, {
-        params: {
-          supplier: value?.supplier_code,
-          trip_no: value?.shls_trip_no
-        }
-      })
-      .then(response => {
-        setLoading(false);
-
-        Modal.info({
-          centered: true,
-          width: '40vw',
-          content: (
-            <div className="ant-tab-window">
-              <pre>{response?.data}</pre>
-            </div>
-          )
-        });
-      });
-  };
-
-  const onBOLPrint = () => {
-    Modal.confirm({
-      title: t('prompts.printBOL'),
-      okText: t('operations.yes'),
-      okType: 'primary',
-      cancelText: t('operations.no'),
-      centered: true,
-      onOk: async () => {
-        await axios
-          .post(MOVEMENT_NOMIATIONS.PRINT_BOL, {
-            supplier: value?.supplier_code,
-            trip_no: value?.shls_trip_no
-          })
-          .then(response => {
-            Modal.destroyAll();
-
-            notification.success({
-              message: t('messages.printBOLSuccess'),
-              description: `${t('descriptions.printBOLSuccess')}`
-            });
-          })
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.printBOLFailed')
-            });
-          });
-      }
-    });
-  };
-
-  const onReverseTransaction = () => {
-    Modal.confirm({
-      title: t('prompts.reverseTransaction'),
-      okText: t('operations.yes'),
-      okType: 'primary',
-      cancelText: t('operations.no'),
-      centered: true,
-      onOk: async () => {
-        await axios
-          .post(MOVEMENT_NOMIATIONS.REVERSE, {
-            supplier: value?.supplier_code,
-            trip_no: value?.shls_trip_no
-          })
-          .then(response => {
-            Modal.destroyAll();
-
-            notification.success({
-              message: t('messages.reverseSuccess'),
-              description: `${t('descriptions.reverseSuccess')}`
-            });
-          })
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.reverseFailed')
-            });
-          });
-      }
-    });
-  };
+  useEffect(() => {
+    if (!value) {
+      resetFields();
+    }
+  }, [resetFields, value]);
 
   return (
-    <div>
-      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-        <Tabs defaultActiveKey={IS_NOMINATION ? '2' : '1'} animated={false}>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} key="1" disabled={IS_NOMINATION}>
-            test
-          </TabPane>
-
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.nominationSchedule')}
-            key="2"
-            disabled={!IS_NOMINATION}
-          >
-            <Nomination value={value} />
-          </TabPane>
-        </Tabs>
-
-        <Form.Item>
+    <Drawer
+      bodyStyle={{ paddingTop: 5 }}
+      onClose={() => handleFormState(false, null)}
+      maskClosable={IS_CREATING}
+      destroyOnClose={true}
+      mask={IS_CREATING}
+      placement="right"
+      width="45vw"
+      visible={visible}
+      footer={
+        <>
           <Button
-            htmlType="button"
-            icon={<CloseOutlined />}
-            style={{ float: 'right' }}
-            onClick={() => Modal.destroyAll()}
+            type="primary"
+            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            onClick={onFinish}
+            style={{ float: 'right', marginRight: 5 }}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
           >
-            {t('operations.cancel')}
+            {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
 
-          {IS_NOMINATION && (
-            <>
-              <Button
-                type="default"
-                icon={<EyeOutlined />}
-                style={{ marginRight: 5 }}
-                onClick={onViewBOL}
-                loading={isLoading}
-              >
-                {t('operations.viewBOL')}
-              </Button>
-
-              <Button
-                type="primary"
-                icon={<PrinterOutlined />}
-                style={{ marginRight: 5 }}
-                loading={isLoading}
-                onClick={onBOLPrint}
-              >
-                {t('operations.printBOL')}
-              </Button>
-
-              <Button
-                type="default"
-                icon={<EyeOutlined />}
-                style={{ float: 'right', marginRight: 5 }}
-                loading={isLoading}
-                onClick={onViewLoadReport}
-              >
-                {t('operations.loadReport')}
-              </Button>
-
-              <Button
-                type="danger"
-                icon={<UndoOutlined />}
-                style={{ float: 'right', marginRight: 5 }}
-                loading={isLoading}
-                onClick={onReverseTransaction}
-              >
-                {t('operations.reverseTransactions')}
-              </Button>
-            </>
-          )}
-
-          {!IS_CREATING && !IS_NOMINATION && (
-            <Button
-              type="primary"
-              icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-              htmlType="submit"
-              style={{ float: 'right', marginRight: 5 }}
-            >
-              {IS_CREATING ? t('operations.create') : t('operations.update')}
-            </Button>
-          )}
-
-          {!IS_CREATING && !IS_NOMINATION && (
+          {!IS_CREATING && (
             <Button
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
+              disabled={!access?.canDelete}
               onClick={onDelete}
             >
               {t('operations.delete')}
             </Button>
           )}
-        </Form.Item>
+        </>
+      }
+    >
+      <Form layout="vertical" form={form} scrollToFirstError>
+        <Tabs defaultActiveKey={tab} onChange={setTab}>
+          <TabPane tab={t('tabColumns.general')} key="0">
+            <Row gutter={[8, 8]}>
+              <Col span={12}>
+                <Supplier form={form} value={value} onChange={setSupplier} />
+              </Col>
+
+              <Col span={12}>
+                <DrawerForm form={form} value={value} onChange={setDrawer} />
+              </Col>
+            </Row>
+
+            <Row gutter={[8, 8]}>
+              <Col span={12}>
+                <Carrier form={form} value={value} onChange={setCarrier} />
+              </Col>
+
+              <Col span={12}>
+                <Tanker form={form} value={value} carrier={carrier} />
+              </Col>
+            </Row>
+          </TabPane>
+
+          <TabPane tab={t('tabColumns.transactions')} key="1"></TabPane>
+
+          <TabPane tab={t('tabColumns.driverInstructions')} key="2"></TabPane>
+
+          <TabPane tab={t('tabColumns.bol')} key="3"></TabPane>
+
+          <TabPane tab={t('tabColumns.loadReport')} key="4"></TabPane>
+
+          <TabPane tab={t('tabColumns.additionalHostData')} key="5"></TabPane>
+        </Tabs>
       </Form>
-    </div>
+    </Drawer>
   );
 };
 

@@ -31,7 +31,7 @@ const Home = () => {
                 value={data.tanker_active}
                 suffix={`/ ${data.tanker_total}`}
               />
-              <img src="/svg/truck.svg" alt="truck" />
+              <img src="/svg/truck.svg" alt="truck" style={{ height: 150 }} />
             </div>
           </Card>
         </Col>
@@ -49,7 +49,7 @@ const Home = () => {
                 suffix={`/ ${data.personnel_total}`}
               />
               <Icons type="id" scale={1} size={86} />
-              <img src="/svg/people.svg" alt="people" />
+              <img src="/svg/people.svg" alt="people" style={{ height: 150 }} />
             </div>
           </Card>
         </Col>
@@ -80,7 +80,7 @@ const Home = () => {
                 }, Other: ${data?.key_other || 0}`}</div>
               </div>
               <Icons type="people" scale={1} size={86} />
-              <img src="/svg/id.svg" alt="id" />
+              <img src="/svg/id.svg" alt="id" style={{ height: 150 }} />
             </div>
           </Card>
         </Col>

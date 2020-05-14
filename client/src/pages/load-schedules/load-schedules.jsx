@@ -6,10 +6,10 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download } from '../../components';
+import { Page, DataTable, Download, Calendar } from '../../components';
 import { LOAD_SCHEDULES } from '../../api';
 import { SETTINGS } from '../../constants';
-import { useAuth } from '../../hooks';
+import { useAuth, useConfig } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
@@ -21,7 +21,8 @@ const LoadSchedules = () => {
   const { t } = useTranslation();
 
   const access = useAuth('M_LOADSCHEDULES');
-  const [start, setStart] = useState(moment().subtract(5, 'years').format(SETTINGS.DATE_TIME_FORMAT));
+
+  const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
 
   const { data: payload, isValidating, revalidate } = useSWR(
@@ -31,6 +32,12 @@ const LoadSchedules = () => {
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
+  };
+
+  const setRange = (start, end) => {
+    setStart(start);
+    setEnd(end);
+    revalidate();
   };
 
   const fields = columns(false, t);
@@ -43,6 +50,8 @@ const LoadSchedules = () => {
 
   const modifiers = (
     <>
+      <Calendar handleChange={setRange} start={start} end={end} />
+
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
@@ -71,7 +80,7 @@ const LoadSchedules = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };

@@ -41,7 +41,6 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.date'),
     field: 'shls_caldate',
-    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     width: 120,
@@ -270,20 +269,22 @@ const columns = (IS_NOMINATION, t) => [
   },
   {
     headerName: t('fields.reversed'),
-    field: 'load_reverse_flag',
+    field: 'cmpy_schd_rev_repost',
     sortable: true,
     resizable: true,
     width: 120,
     suppressSizeToFit: true,
+    cellRenderer: 'BooleanRenderer',
   },
   {
     headerName: t('fields.archived'),
-    field: 'load_reverse_flag',
+    field: 'cmpy_schd_archive',
     sortable: true,
     resizable: true,
     hide: IS_NOMINATION,
     width: 120,
     suppressSizeToFit: true,
+    cellRenderer: 'BooleanRenderer',
   },
   {
     headerName: t('fields.supplierOrigin'),

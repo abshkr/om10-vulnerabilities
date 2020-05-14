@@ -36,7 +36,7 @@ const Navigation = () => {
             title={`${t('generic.version')} ${SETTINGS.VERSION}`}
             align={{ offset: [28, 0] }}
           >
-            <img src="/images/dki_small.png" alt="logo" />
+            <img src="/images/dki_small.png" alt="logo" style={{ height: 300 }} />
           </Tooltip>
         </LogoContainer>
 

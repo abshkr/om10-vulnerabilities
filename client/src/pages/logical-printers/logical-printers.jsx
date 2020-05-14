@@ -19,7 +19,7 @@ const LogicalPrinters = () => {
 
   const { t } = useTranslation();
 
-  const auth = useAuth('M_LOGICALPRINTERS');
+  const access = useAuth('M_LOGICALPRINTERS');
 
   const { data: payload, isValidating, revalidate } = useSWR(LOGICAL_PRINTERS.READ);
 
@@ -49,7 +49,7 @@ const LogicalPrinters = () => {
         icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isLoading}
-        disabled={!auth.canCreate}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -57,7 +57,7 @@ const LogicalPrinters = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} auth={auth}>
+    <Page page={page} name={name} modifiers={modifiers} access={access}>
       <DataTable
         data={data}
         columns={fields}
@@ -66,7 +66,7 @@ const LogicalPrinters = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };
