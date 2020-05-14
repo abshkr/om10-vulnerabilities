@@ -17,7 +17,7 @@ const Area = () => {
   const { data: payload, isValidating, revalidate } = useSWR(AREA.READ);
 
   const fields = columns(t);
-
+  
   const handleClick = (value) => {
     FormModal({
       value,
