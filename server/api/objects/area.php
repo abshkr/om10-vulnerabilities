@@ -9,6 +9,7 @@ class Area extends CommonClass
 {
     protected $TABLE_NAME = 'AREA_RC';
     protected $primary_keys = array("area_k");
+    protected $del_n_ins_children = false;  //Because area has gates, and gate has permission
 
     public function read()
     {
@@ -195,13 +196,111 @@ class Area extends CommonClass
         return true;
     }
 
+    protected function update_children($old_children = null)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+        
+        foreach ($old_children as $item_key => $item_array) {
+            $still_exist = false;
+            foreach ($this->gates as $gate) {
+                if ($gate->gate_k == $item_key) {
+                    $query = "UPDATE GATE_RC
+                        SET GATE_DVCE = :gate_dvce,
+                            GATE_DDMY = SYSDATE,
+                            G_TCD = :g_tcd
+                        WHERE GATE_K = :gate_k
+                            AND GATE_AREA = :gate_area";
+                    $stmt = oci_parse($this->conn, $query);
+                    oci_bind_by_name($stmt, ':gate_area', $this->area_k);
+                    oci_bind_by_name($stmt, ':gate_dvce', $gate->gate_dvce);
+                    oci_bind_by_name($stmt, ':gate_k', $gate->gate_k);
+                    oci_bind_by_name($stmt, ':g_tcd', $gate->g_tcd);
+        
+                    if (!oci_execute($stmt, $this->commit_mode)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                        return false;
+                    }
+                    $still_exist = true;
+                    break;
+                }
+            }
+            
+            if ($still_exist == false) {
+                $query = "DELETE FROM PRMT_RC WHERE PRMT_K IN 
+                    (SELECT PRMSSN_K FROM PRMSSN_RC WHERE PRMSSN_GATE = :gate_k)";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':gate_k', $item_array['GATE_K']);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+
+                $query = "DELETE FROM PRMSSN_RC WHERE PRMSSN_GATE = :gate_k";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':gate_k', $item_array['GATE_K']);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+
+                $query = "DELETE FROM GATE_RC
+                    WHERE GATE_K = :gate_k AND GATE_AREA = :gate_area";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':gate_area', $this->area_k);
+                oci_bind_by_name($stmt, ':gate_k', $item_array['GATE_K']);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+            }
+        }
+
+        //In new but not in old.
+        foreach ($this->gates as $gate) {
+            if (isset($old_children[$gate->gate_k])) {
+                continue;
+            }
+            $query = "INSERT INTO GATE_RC (
+                GATE_K,
+                GATE_DVCE,
+                GATE_AREA,
+                GATE_DDMY,
+                G_TCD)
+            VALUES (
+                :gate_k,
+                :gate_dvce,
+                :gate_area,
+                SYSDATE,
+                :g_tcd
+            )";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':gate_area', $this->area_k);
+            oci_bind_by_name($stmt, ':gate_dvce', $gate->gate_dvce);
+            oci_bind_by_name($stmt, ':gate_k', $gate->gate_k);
+            oci_bind_by_name($stmt, ':g_tcd', $gate->g_tcd);
+
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     protected function retrieve_children_data()
     {
         $query = "SELECT * FROM GATE_RC WHERE GATE_AREA = :area_k";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':area_k', $this->area_k);
 
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;

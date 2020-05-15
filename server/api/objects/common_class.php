@@ -87,6 +87,17 @@ class CommonClass
      */
     public $check_exists = true;
 
+    /**
+     * If del_n_ins_children is true, then it calls delete_children()
+     * and insert_children() when update children. 
+     * If del_n_ins_children is false, call update_children() to update children.
+     * Most of the time, delete then insert can workd, but area-gate-permission is
+     * an exception, because when update area, if delete gate first then insert them
+     * back, and the gate has permission, then deleting gate will fail
+     * Check area.php::update_children() for details
+    */
+    protected $del_n_ins_children = true;
+
     //read imp will be called inside read. Make it public because Utilities::update() calls it
     public function read_hook(&$hook_item)
     {
@@ -279,6 +290,12 @@ class CommonClass
         return true;
     }
 
+    //
+    protected function update_children($old_data = null)
+    {
+        return true;
+    }
+
     //Descedant class need to implement this
     protected function retrieve_children_data()
     {
@@ -367,8 +384,13 @@ class CommonClass
         }
 
         $old_child_data = $this->retrieve_children_data();
-        $this->delete_children();
-        $this->insert_children();
+        if ($this->del_n_ins_children) {
+            $this->delete_children();
+            $this->insert_children();
+        } else {
+            $this->update_children($old_child_data);
+        }
+        
         $new_child_data = $this->retrieve_children_data();
 
         $journal = new Journal($this->conn, false);
