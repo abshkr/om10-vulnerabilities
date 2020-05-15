@@ -41,6 +41,8 @@ const movement = (t) => [
     field: 'bays_per_load',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 160,
   },
   {
     headerName: t('fields.numberOfUnloads'),
@@ -48,7 +50,6 @@ const movement = (t) => [
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
-    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.percentage'),
@@ -57,6 +58,7 @@ const movement = (t) => [
     resizable: true,
     filter: 'MultiFilter',
     suppressSizeToFit: true,
+    width: 120,
   },
 ];
 
@@ -74,6 +76,7 @@ const ids = (t) => [
     resizable: true,
     filter: 'FuzzyFilter',
     suppressSizeToFit: true,
+    width: 80,
   },
   {
     headerName: t('fields.totalTransactions'),
@@ -82,6 +85,7 @@ const ids = (t) => [
     resizable: true,
     filter: 'MultiFilter',
     suppressSizeToFit: true,
+    width: 160,
   },
 ];
 

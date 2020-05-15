@@ -6,7 +6,6 @@ import moment from 'moment';
 
 import { SETTINGS } from '../../../../constants';
 import { getDateTimeFormat } from '../../../../utils';
-import { useTime } from '../../../../hooks';
 
 const Dates = ({ form, value }) => {
   const { t } = useTranslation();
@@ -14,8 +13,6 @@ const Dates = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const FORMAT = getDateTimeFormat();
-  const time = useTime();
-  // Please Use Server Time
 
   useEffect(() => {
     if (value) {
