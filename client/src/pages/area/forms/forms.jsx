@@ -137,7 +137,6 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           <TabPane tab={t('tabColumns.general')} key="1">
             <Area form={form} value={value} />
             <AreaName form={form} value={value} />
-
             <Gates form={form} value={value} />
           </TabPane>
         </Tabs>
