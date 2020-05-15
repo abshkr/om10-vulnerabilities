@@ -124,6 +124,7 @@ https://10.1.10.173/api/pages/fsc/batch_counts.php
 //Load Schedules
 https://10.2.20.53/api/pages/schedule/read.php?start_date=2014-09-04%04:07:15&end_date=2014-09-06%04:07:15
 https://10.2.20.53/api/pages/schedule/get_product_details.php?shls_trip_no=4967232&supplier_code=1001
+https://10.2.20.53/api/pages/schedule/get_tnkr_cmpts.php?tnkr_code=PK_323TMGCV
 https://10.2.20.53/api/pages/schedule/get_cmpt_details.php?shls_trip_no=4967232&supplier_code=1001
 https://10.2.20.53/api/pages/schedule/suppliers.php
 https://10.2.20.53/api/pages/schedule/drawers.php
@@ -1665,8 +1666,38 @@ https://{{server_ip}}/api/pages/expiry_types/delete.php
 
 //Area
 https://10.1.10.66/api/pages/area/read.php
-https://10.1.10.66/api/pages/area/create.php?area_k=13&area_name=ADDTEST
-https://10.1.10.66/api/pages/area/update.php?area_k=13&area_name=ADDTEST3
+https://10.1.10.66/api/pages/area/create.php
+{
+    "area_k": "16",
+    "area_name": "test_area",
+    "gates" :  [
+        {
+            "gate_k": "test_g16_1",
+            "gate_dvce": "I2",
+            "krdc_type": "TTLED_TYPE",
+            "g_tcd": "AL"
+        },
+        {
+            "gate_k": "test_g16_2",
+            "gate_dvce": "D2",
+            "krdc_type": "TTLED_TYPE",
+            "g_tcd": "AL"
+        }
+    ]    
+}
+https://10.1.10.66/api/pages/area/update.php
+{
+    "area_k": "16",
+    "area_name": "test_area",
+    "gates" :  [
+        {
+            "gate_k": "test_g16_1",
+            "gate_dvce": "I2",
+            "krdc_type": "TTLED_TYPE",
+            "g_tcd": "AL"
+        }
+    ]    
+}
 https://10.1.10.66/api/pages/area/delete.php?area_k=13
 https://10.1.10.66/api/pages/area/gates.php?area_k=1
 https://10.1.10.66/api/pages/area/devices.php

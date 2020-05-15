@@ -27,30 +27,30 @@ class Area extends CommonClass
         }
     }
 
-    protected function check_deletable()
-    {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
+    // protected function check_deletable()
+    // {
+    //     write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+    //         __FILE__, __LINE__);
 
-        $query = "
-            SELECT COUNT(*) CN
-            FROM GATE_RC
-            WHERE GATE_AREA = :area_k";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':area_k', $this->area_k);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
+    //     $query = "
+    //         SELECT COUNT(*) CN
+    //         FROM GATE_RC
+    //         WHERE GATE_AREA = :area_k";
+    //     $stmt = oci_parse($this->conn, $query);
+    //     oci_bind_by_name($stmt, ':area_k', $this->area_k);
+    //     if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+    //         $e = oci_error($stmt);
+    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         return null;
+    //     }
 
-        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-        if ($row['CN'] > 0) {
-            throw new UndeletableException(sprintf("Area %s cannot be deleted because it has gate", $this->area_k));
-        }
+    //     $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+    //     if ($row['CN'] > 0) {
+    //         throw new UndeletableException(sprintf("Area %s cannot be deleted because it has gate", $this->area_k));
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     public function devices()
     {
@@ -139,124 +139,133 @@ class Area extends CommonClass
         }
     }
 
-    // protected function delete_children()
-    // {
-    //     write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-    //         __FILE__, __LINE__);
+    protected function delete_children()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
 
-    //     $query = "DELETE FROM GATE_RC WHERE GATE_AREA = :area_k";
-    //     $stmt = oci_parse($this->conn, $query);
-    //     oci_bind_by_name($stmt, ':area_k', $this->area_k);
+        $query = "DELETE FROM GATE_RC WHERE GATE_AREA = :area_k";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':area_k', $this->area_k);
 
-    //     if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-    //         $e = oci_error($stmt);
-    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-    //         return false;
-    //     }
-    // }
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+    }
 
-    // protected function insert_children()
-    // {
-    //     write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-    //         __FILE__, __LINE__);
+    protected function insert_children()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
 
-    //     if (!isset($this->gates)) {
-    //         return;
-    //     }
+        if (!isset($this->gates)) {
+            return false;
+        }
 
-    //     foreach ($this->gates as $value) {
-    //         // write_log(json_encode($value), __FILE__, __LINE__);
-    //         $query = "INSERT INTO GATE_RC (
-    //             GATE_K,
-    //             GATE_DVCE,
-    //             GATE_AREA,
-    //             GATE_DDMY,
-    //             G_TCD)
-    //         VALUES (
-    //             :gate_k,
-    //             :gate_dvce,
-    //             :gate_area,
-    //             SYSDATE,
-    //             :g_tcd
-    //         )";
-    //         $stmt = oci_parse($this->conn, $query);
-    //         oci_bind_by_name($stmt, ':gate_area', $this->area_k);
-    //         oci_bind_by_name($stmt, ':gate_dvce', $value->gate_dvce);
-    //         oci_bind_by_name($stmt, ':gate_k', $value->gate_k);
-    //         oci_bind_by_name($stmt, ':g_tcd', $value->g_tcd);
+        foreach ($this->gates as $value) {
+            // write_log(json_encode($value), __FILE__, __LINE__);
+            $query = "INSERT INTO GATE_RC (
+                GATE_K,
+                GATE_DVCE,
+                GATE_AREA,
+                GATE_DDMY,
+                G_TCD)
+            VALUES (
+                :gate_k,
+                :gate_dvce,
+                :gate_area,
+                SYSDATE,
+                :g_tcd
+            )";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':gate_area', $this->area_k);
+            oci_bind_by_name($stmt, ':gate_dvce', $value->gate_dvce);
+            oci_bind_by_name($stmt, ':gate_k', $value->gate_k);
+            oci_bind_by_name($stmt, ':g_tcd', $value->g_tcd);
 
-    //         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-    //             $e = oci_error($stmt);
-    //             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-    //             return false;
-    //         }
-    //     }
-    // }
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
 
-    // protected function retrieve_children_data()
-    // {
-    //     $query = "SELECT * FROM GATE_RC WHERE GATE_AREA = :area_k";
-    //     $stmt = oci_parse($this->conn, $query);
-    //     oci_bind_by_name($stmt, ':area_k', $this->area_k);
+        return true;
+    }
 
-    //     if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-    //         $e = oci_error($stmt);
-    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-    //         return null;
-    //     }
+    protected function retrieve_children_data()
+    {
+        $query = "SELECT * FROM GATE_RC WHERE GATE_AREA = :area_k";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':area_k', $this->area_k);
 
-    //     $gates_data = array();
-    //     while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
-    //         $gates_data[$row['GATE_K']] = $row;
-    //     }
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
 
-    //     // write_log(json_encode($tank_max_flows), __FILE__, __LINE__);
-    //     return $gates_data;
-    // }
+        $gates_data = array();
+        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $gates_data[$row['GATE_K']] = $row;
+        }
 
-    // protected function journal_children_change($journal, $old, $new)
-    // {
-    //     $module = "gate";
-    //     foreach ($old as $item_key => $item_array) {
-    //         if (isset($new[$item_key])) {
-    //             foreach ($item_array as $field => $value) {
-    //                 if ($new[$item_key][$field] != $value) {
-    //                     $record = sprintf("mv_id:%s, item key:%s", $this->mv_id, $item_key);
-    //                     $journal->valueChange($module, $record, $field, $value, $new[$item_key][$field]);
-    //                 }
-    //             }
-    //         } 
+        // write_log(json_encode($tank_max_flows), __FILE__, __LINE__);
+        return $gates_data;
+    }
 
-    //         if (!isset($new[$item_key])) {
-    //             $jnl_data[0] = Utilities::getCurrPsn();
-    //             $jnl_data[1] = $module;
-    //             $jnl_data[2] = sprintf("area:%s, gate:%s", $this->area_k, $item_key);
-    //             if (!$journal->jnlLogEvent(
-    //                 Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-    //                 $e = oci_error($stmt);
-    //                 write_log("DB error:" . $e['message'],
-    //                     __FILE__, __LINE__, LogLevel::ERROR);
-    //                 oci_rollback($this->conn);
-    //                 return false;
-    //             }
-    //         }
-    //     }
+    protected function journal_children_change($journal, $old, $new)
+    {
+        $module = "gate";
+        foreach ($old as $item_key => $item_array) {
+            
+            if (isset($new[$item_key])) {
+                foreach ($item_array as $field => $value) {
+                    if ($field == 'GATE_DDMY') {
+                        continue;
+                    }
 
-    //     //In new but not in old.
-    //     foreach ($new as $item_key => $alloc_item) {
-    //         if (!isset($old[$item_key])) {
-    //             $jnl_data[0] = Utilities::getCurrPsn();
-    //             $jnl_data[1] = $module;
-    //             $jnl_data[2] = sprintf("area:%s, gate:%s", $this->area_k, $item_key);
-    //             if (!$journal->jnlLogEvent(
-    //                 Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-    //                 $e = oci_error($stmt);
-    //                 write_log("DB error:" . $e['message'],
-    //                     __FILE__, __LINE__, LogLevel::ERROR);
-    //                 oci_rollback($this->conn);
-    //                 return false;
-    //             }
-    //         }
-    //     }
-    // }
+                    if ($new[$item_key][$field] != $value) {
+                        $record = sprintf("area:%s, gate:%s", $this->area_k, $item_key);
+                        $journal->valueChange($module, $record, $field, $value, $new[$item_key][$field]);
+                    }
+                }
+            } 
+
+            if (!isset($new[$item_key])) {
+                $jnl_data[0] = Utilities::getCurrPsn();
+                $jnl_data[1] = $module;
+                $jnl_data[2] = sprintf("area:%s", $this->area_k);
+                $jnl_data[3] = sprintf("gate:%s", $item_key);
+                if (!$journal->jnlLogEvent(
+                    Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'],
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+
+        //In new but not in old.
+        foreach ($new as $item_key => $alloc_item) {
+            if (!isset($old[$item_key])) {
+                $jnl_data[0] = Utilities::getCurrPsn();
+                $jnl_data[1] = $module;
+                $jnl_data[2] = sprintf("area:%s", $this->area_k);
+                $jnl_data[3] = sprintf("gate:%s", $item_key);
+                if (!$journal->jnlLogEvent(
+                    Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'],
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+    }
 }
