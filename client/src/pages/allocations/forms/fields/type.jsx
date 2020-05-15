@@ -5,51 +5,59 @@ import useSWR from 'swr';
 
 import { ALLOCATIONS } from '../../../../api';
 
-const Type = ({ form, value }) => {
+const Type = ({ form, value, onChange }) => {
+  const { setFieldsValue } = form;
+
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(ALLOCATIONS.TYPES);
 
-  const { getFieldDecorator, setFieldsValue } = form;
-
-  const validate = (rule, input, callback) => {
+  const validate = (rule, input) => {
     if (input === '' || !input) {
-      callback(`${t('validate.select')} ─ ${t('fields.type')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.type')}`);
     }
 
-    callback();
+    return Promise.resolve();
+  };
+
+  const handleChange = (value) => {
+    onChange(value);
+
+    setFieldsValue({
+      alloc_cmpycode: undefined,
+      alloc_suppcode: undefined,
+    });
   };
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        alloc_type: value.alloc_type
+        alloc_type: value.alloc_type,
       });
+
+      onChange(value.alloc_type);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 
   return (
-    <Form.Item label={t('fields.type')}>
-      {getFieldDecorator('alloc_type', {
-        rules: [{ required: true, validator: validate }]
-      })(
-        <Select
-          loading={isValidating}
-          disabled={!!value}
-          showSearch
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectType') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.acheck_type}>
-              {item.acheck_name}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+    <Form.Item name="alloc_type" label={t('fields.type')} rules={[{ required: true, validator: validate }]}>
+      <Select
+        loading={isValidating}
+        disabled={!!value}
+        showSearch
+        onChange={handleChange}
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectType') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.acheck_type}>
+            {item.acheck_name}
+          </Select.Option>
+        ))}
+      </Select>
     </Form.Item>
   );
 };

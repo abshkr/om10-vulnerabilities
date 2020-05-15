@@ -8,7 +8,7 @@ import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } fr
 
 import { Footer } from '..';
 
-const Page = ({ name, page, children, modifiers, description, minimal, noHeader, isLoading }) => {
+const Page = ({ name, page, children, modifiers, description, minimal, noHeader, access }) => {
   const routes = [
     {
       path: 'index',
@@ -35,7 +35,7 @@ const Page = ({ name, page, children, modifiers, description, minimal, noHeader,
             style={{ width: '30vw' }}
             subTitle={description}
             breadcrumb={{ routes: filtered }}
-          ></PageHeader>
+          />
 
           <PageHeaderExtras>{modifiers}</PageHeaderExtras>
         </PageHeaderContainer>
@@ -54,3 +54,70 @@ const Page = ({ name, page, children, modifiers, description, minimal, noHeader,
 };
 
 export default Page;
+
+// const Page = ({ name, page, children, modifiers, description, minimal, noHeader, access }) => {
+//   const IS_LOCKED = !access?.isLoading && access?.isProtected;
+//   const CAN_VIEW = !access?.isLoading && access?.canView;
+//   const IS_LOADING = access?.isLoading;
+
+//   const routes = [
+//     {
+//       path: 'index',
+//       breadcrumbName: 'OMEGA 5000',
+//     },
+//     {
+//       path: 'first',
+//       breadcrumbName: page,
+//     },
+//     {
+//       path: 'second',
+//       breadcrumbName: name,
+//     },
+//   ];
+
+//   const filtered = name ? routes : _.reject(routes, ['path', 'second']);
+
+//   if (IS_LOADING) {
+//     return <Loading />;
+//   }
+
+//   if (!CAN_VIEW) {
+//     return <div> missing access </div>;
+//   }
+
+//   if (IS_LOCKED && CAN_VIEW) {
+//     return <div> type in ur password </div>;
+//   }
+
+//   if (CAN_VIEW) {
+//     return (
+//       <PageContainer>
+//         {!noHeader && (
+//           <PageHeaderContainer>
+//             <PageHeader
+//               title={name || page}
+//               style={{ width: '30vw' }}
+//               subTitle={description}
+//               breadcrumb={{ routes: filtered }}
+//             />
+
+//             <PageHeaderExtras>{modifiers}</PageHeaderExtras>
+//           </PageHeaderContainer>
+//         )}
+
+//         <Helmet>
+//           <title>{name ? `${name} ─ ${page} ─ OMEGA 5000` : `${page} ─ OMEGA 5000`}</title>
+//         </Helmet>
+
+//         <PageInjector minimal={minimal}>
+//           <div className="main-container">{children}</div>
+//         </PageInjector>
+//         <Footer />
+//       </PageContainer>
+//     );
+//   }
+
+//   return null;
+// };
+
+// export default Page;

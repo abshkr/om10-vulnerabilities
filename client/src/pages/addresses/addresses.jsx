@@ -1,57 +1,41 @@
 import React, { useState } from 'react';
 
 import useSWR from 'swr';
-import moment from 'moment';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, Calendar } from '../../components';
-import { LOAD_SCHEDULES } from '../../api';
-import { SETTINGS } from '../../constants';
-import { useAuth, useConfig } from '../../hooks';
+import { Page, DataTable, Download } from '../../components';
+import { ADDRESSES } from '../../api';
+import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
-import Forms from './forms';
 
-const LoadSchedules = () => {
+const Addresses = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
   const { t } = useTranslation();
 
-  const access = useAuth('M_LOADSCHEDULES');
+  const auth = useAuth('M_ADDRESSES');
 
-  const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-  const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
-
-  const { data: payload, isValidating, revalidate } = useSWR(
-    `${LOAD_SCHEDULES.READ}?start_date=${start}&end_date=${end}`
-  );
+  const { data: payload, isValidating, revalidate } = useSWR(ADDRESSES.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
   };
 
-  const setRange = (start, end) => {
-    setStart(start);
-    setEnd(end);
-    revalidate();
-  };
-
-  const fields = columns(false, t);
+  const fields = columns(t);
 
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
-  const page = t('pageMenu.schedules');
-  const name = t('pageNames.loadSchedules');
+  const page = t('pageMenu.customers');
+  const name = t('pageNames.addresses');
 
   const modifiers = (
     <>
-      <Calendar handleChange={setRange} start={start} end={end} />
-
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
@@ -63,7 +47,7 @@ const LoadSchedules = () => {
         icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isLoading}
-        disabled={!access.canCreate}
+        disabled={!auth.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -71,7 +55,7 @@ const LoadSchedules = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access}>
+    <Page page={page} name={name} modifiers={modifiers} auth={auth}>
       <DataTable
         data={data}
         columns={fields}
@@ -80,9 +64,9 @@ const LoadSchedules = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
+      <div value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
     </Page>
   );
 };
 
-export default auth(LoadSchedules);
+export default auth(Addresses);

@@ -1,20 +1,20 @@
 import React, { useEffect } from 'react';
 
+import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
-import useSWR from 'swr';
 
-import { ALLOCATIONS } from '../../../../api';
+import { LOGICAL_PRINTERS } from '../../../../api';
 
 const Company = ({ form, value, onChange }) => {
-  const { setFieldsValue } = form;
-
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(ALLOCATIONS.CUSTOMERS);
+  const { data: options, isValidating } = useSWR(LOGICAL_PRINTERS.COMPANYS);
 
-  const validate = (rule, input) => {
-    if (input === '' || !input) {
+  const { setFieldsValue } = form;
+
+  const validate = (rule, value) => {
+    if (value === '' || !value) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.company')}`);
     }
 
@@ -24,23 +24,20 @@ const Company = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        alloc_cmpycode: value.alloc_cmpycode,
+        prt_cmpy: value.prt_cmpy
       });
-      onChange(value.alloc_cmpycode);
+
+      onChange(value.prt_cmpy);
     }
   }, [value, setFieldsValue, onChange]);
 
   return (
-    <Form.Item
-      name="alloc_cmpycode"
-      label={t('fields.company')}
-      rules={[{ required: true, validator: validate }]}
-    >
+    <Form.Item name="prt_cmpy" label={t('fields.company')} rules={[{ required: true, validator: validate }]}>
       <Select
         loading={isValidating}
-        disabled={!!value}
         showSearch
         onChange={onChange}
+        disabled={!!value}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCompany') : null}
         filterOption={(input, option) =>

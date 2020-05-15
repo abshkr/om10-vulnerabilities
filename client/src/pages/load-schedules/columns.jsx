@@ -1,47 +1,51 @@
 const columns = (IS_NOMINATION, t) => [
   {
-    headerName: t('fields.source'),
-    field: 'mv_id',
-    filter: 'FuzzyFilter',
-    sortable: true,
-    resizable: true,
-    hide: IS_NOMINATION
-  },
-  {
     headerName: t('fields.tripNumber'),
     field: 'shls_trip_no',
     sortable: true,
     resizable: true,
     width: 120,
     suppressSizeToFit: true,
-    hide: !IS_NOMINATION,
-    pinned: 'left'
+    pinned: 'left',
   },
+
+  {
+    headerName: t('fields.source'),
+    field: 'shls_srctype',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 90,
+    suppressSizeToFit: true,
+    hide: IS_NOMINATION,
+  },
+
   {
     headerName: t('fields.loadId'),
     field: 'shlsload_load_id',
     sortable: true,
     resizable: true,
     width: 70,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.origin'),
-    field: 'mv_key',
+    field: 'shls_trip_no_org',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: IS_NOMINATION
+    width: 80,
+    suppressSizeToFit: true,
+    hide: IS_NOMINATION,
   },
   {
     headerName: t('fields.date'),
     field: 'shls_caldate',
-    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     width: 120,
     suppressSizeToFit: true,
-    cellRenderer: 'DateRenderer'
+    cellRenderer: 'DateRenderer',
   },
   {
     headerName: t('fields.status'),
@@ -50,15 +54,17 @@ const columns = (IS_NOMINATION, t) => [
     sortable: true,
     resizable: true,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.carrierCode'),
-    field: 'mv_status_name',
+    field: 'carrier_code',
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    hide: IS_NOMINATION
+    width: 120,
+    suppressSizeToFit: true,
+    hide: IS_NOMINATION,
   },
   {
     headerName: t('fields.carrier'),
@@ -67,7 +73,7 @@ const columns = (IS_NOMINATION, t) => [
     sortable: true,
     resizable: true,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.vehicle'),
@@ -77,37 +83,43 @@ const columns = (IS_NOMINATION, t) => [
     resizable: true,
     hide: !IS_NOMINATION,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
   },
 
   {
     headerName: t('fields.tanker'),
-    field: 'mv_dtim_expiry',
+    field: 'tnkr_code',
     sortable: true,
     resizable: true,
-    hide: IS_NOMINATION
+    hide: IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.tankerName'),
-    field: 'mv_dtim_create',
+    field: 'tnkr_name',
     sortable: true,
     resizable: true,
-    hide: IS_NOMINATION
+    hide: IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.supplierCode'),
-    field: 'mv_dtim_change',
+    field: 'supplier_code',
     sortable: true,
     resizable: true,
-    hide: IS_NOMINATION
+    hide: IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.supplier'),
-    field: 'drawer_name',
+    field: 'supplier',
     sortable: true,
     resizable: true,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.nominationKey'),
@@ -117,28 +129,34 @@ const columns = (IS_NOMINATION, t) => [
     resizable: true,
     hide: !IS_NOMINATION,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.priority'),
-    field: 'mv_oper_change',
+    field: 'shls_priority',
     sortable: true,
     resizable: true,
-    hide: IS_NOMINATION
+    hide: IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.orderNumber'),
-    field: 'mv_oper_change',
+    field: 'order_cust_ordno',
     sortable: true,
     resizable: true,
-    hide: IS_NOMINATION
+    hide: IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.customerCode'),
-    field: 'mv_oper_change',
+    field: 'order_cust_cmpy_code',
     sortable: true,
     resizable: true,
-    hide: IS_NOMINATION
+    hide: IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
   },
 
   {
@@ -148,7 +166,7 @@ const columns = (IS_NOMINATION, t) => [
     resizable: true,
     width: 120,
     suppressSizeToFit: true,
-    cellRenderer: 'DateRenderer'
+    cellRenderer: 'DateRenderer',
   },
   {
     headerName: t('fields.loadEnd'),
@@ -157,7 +175,7 @@ const columns = (IS_NOMINATION, t) => [
     resizable: true,
     width: 120,
     suppressSizeToFit: true,
-    cellRenderer: 'DateRenderer'
+    cellRenderer: 'DateRenderer',
   },
 
   {
@@ -167,7 +185,7 @@ const columns = (IS_NOMINATION, t) => [
     resizable: true,
     hide: !IS_NOMINATION,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
   },
 
   {
@@ -177,7 +195,7 @@ const columns = (IS_NOMINATION, t) => [
     resizable: true,
     hide: !IS_NOMINATION,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
   },
 
   {
@@ -187,7 +205,7 @@ const columns = (IS_NOMINATION, t) => [
     resizable: true,
     hide: !IS_NOMINATION,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
   },
 
   {
@@ -197,7 +215,7 @@ const columns = (IS_NOMINATION, t) => [
     resizable: true,
     hide: !IS_NOMINATION,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
   },
 
   {
@@ -208,7 +226,7 @@ const columns = (IS_NOMINATION, t) => [
     hide: !IS_NOMINATION,
     width: 120,
     suppressSizeToFit: true,
-    cellRenderer: 'DateRenderer'
+    cellRenderer: 'DateRenderer',
   },
 
   {
@@ -218,7 +236,7 @@ const columns = (IS_NOMINATION, t) => [
     resizable: true,
     hide: !IS_NOMINATION,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
   },
 
   {
@@ -228,7 +246,7 @@ const columns = (IS_NOMINATION, t) => [
     resizable: true,
     hide: !IS_NOMINATION,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
   },
 
   {
@@ -238,69 +256,81 @@ const columns = (IS_NOMINATION, t) => [
     resizable: true,
     hide: !IS_NOMINATION,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
   },
 
   {
     headerName: t('fields.unload'),
-    field: 'mv_oper_change',
+    field: 'shls_ld_type',
     sortable: true,
     resizable: true,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.reversed'),
-    field: 'load_reverse_flag',
+    field: 'cmpy_schd_rev_repost',
     sortable: true,
     resizable: true,
     width: 120,
-    suppressSizeToFit: true
+    suppressSizeToFit: true,
+    cellRenderer: 'BooleanRenderer',
   },
   {
     headerName: t('fields.archived'),
-    field: 'mv_oper_change',
-    sortable: true,
-    resizable: true,
-    hide: IS_NOMINATION
-  },
-  {
-    headerName: t('fields.supplierOrigin'),
-    field: 'mv_oper_change',
-    sortable: true,
-    resizable: true,
-    hide: IS_NOMINATION
-  },
-  {
-    headerName: t('fields.lastModifiedBy'),
-    field: 'mv_oper_change',
-    sortable: true,
-    resizable: true,
-    width: 120,
-    suppressSizeToFit: true
-  },
-  {
-    headerName: t('fields.lastModified'),
-    field: 'mv_oper_change',
+    field: 'cmpy_schd_archive',
     sortable: true,
     resizable: true,
     hide: IS_NOMINATION,
-    cellRenderer: 'DateRenderer'
+    width: 120,
+    suppressSizeToFit: true,
+    cellRenderer: 'BooleanRenderer',
+  },
+  {
+    headerName: t('fields.supplierOrigin'),
+    field: 'shls_supp_org',
+    sortable: true,
+    resizable: true,
+    hide: IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.lastModifiedBy'),
+    field: 'operator',
+    sortable: true,
+    resizable: true,
+    width: 120,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.lastModified'),
+    field: 'last_chg_time',
+    sortable: true,
+    resizable: true,
+    hide: IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
+    cellRenderer: 'DateRenderer',
   },
   {
     headerName: t('fields.soldTo'),
-    field: 'mv_oper_change',
+    field: 'shls_sold_to_num',
     sortable: true,
     resizable: true,
-    hide: IS_NOMINATION
+    hide: IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.shipTo'),
-    field: 'mv_oper_change',
+    field: 'shls_ship_to_num',
     sortable: true,
     resizable: true,
-    hide: IS_NOMINATION
-  }
+    hide: IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
+  },
 ];
 
 export default columns;

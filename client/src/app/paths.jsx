@@ -22,6 +22,11 @@ const paths = [
   },
 
   {
+    path: ROUTES.EQUIPMENT_TYPES,
+    component: lazy(() => import('../pages/equipment-types')),
+  },
+
+  {
     path: ROUTES.HOME,
     component: lazy(() => import('../pages/dashboard')),
   },
@@ -253,7 +258,7 @@ const paths = [
 
   {
     path: ROUTES.ADDRESSES,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/addresses')),
   },
 
   {

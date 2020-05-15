@@ -1,21 +1,21 @@
 import React, { useEffect } from 'react';
 
+import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
-import useSWR from 'swr';
 
-import { ALLOCATIONS } from '../../../../api';
+import { LOAD_SCHEDULES } from '../../../../api';
 
-const Company = ({ form, value, onChange }) => {
-  const { setFieldsValue } = form;
-
+const Drawer = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(ALLOCATIONS.CUSTOMERS);
+  const { setFieldsValue } = form;
+
+  const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.DRAWERS);
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.company')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.drawer')}`);
     }
 
     return Promise.resolve();
@@ -24,27 +24,28 @@ const Company = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        alloc_cmpycode: value.alloc_cmpycode,
+        drawer_code: value.drawer_code,
       });
-      onChange(value.alloc_cmpycode);
+
+      onChange(value.drawer_code);
     }
   }, [value, setFieldsValue, onChange]);
 
   return (
     <Form.Item
-      name="alloc_cmpycode"
-      label={t('fields.company')}
+      name="drawer_code"
+      label={t('fields.drawer')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select
         loading={isValidating}
-        disabled={!!value}
         showSearch
         onChange={onChange}
+        disabled={!!value}
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectCompany') : null}
-        filterOption={(input, option) =>
-          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        placeholder={!value ? t('placeholder.selectDrawer') : null}
+        filterOption={(value, option) =>
+          option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
         }
       >
         {options?.records.map((item, index) => (
@@ -57,4 +58,4 @@ const Company = ({ form, value, onChange }) => {
   );
 };
 
-export default Company;
+export default Drawer;

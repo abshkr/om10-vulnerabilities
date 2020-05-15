@@ -1,22 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import {
-  EditOutlined,
-  PlusOutlined,
-  DeleteOutlined,
-  QuestionCircleOutlined,
-  RedoOutlined,
-} from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
+import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 
-import { Type, Company, Supplier, LockType, Period } from './fields';
-import { DataTable } from '../../../components';
-import { ALLOCATIONS } from '../../../api';
-import columns from './columns';
+import { Company, Usage, Printer } from './fields';
+import { LOGICAL_PRINTERS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -26,18 +18,13 @@ const FormModal = ({ value, visible, handleFormState }) => {
 
   const IS_CREATING = !value;
 
-  const [type, setType] = useState(undefined);
   const [company, setCompany] = useState(undefined);
-  const [supplier, setSupplier] = useState(undefined);
-  const [lockType, setLockType] = useState(undefined);
-
-  const [allocations, setAllocations] = useState([]);
 
   const { resetFields } = form;
 
   const onComplete = () => {
     handleFormState(false, null);
-    mutate(ALLOCATIONS.READ);
+    mutate(LOGICAL_PRINTERS.READ);
   };
 
   const onFinish = async () => {
@@ -52,7 +39,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(IS_CREATING ? ALLOCATIONS.CREATE : ALLOCATIONS.UPDATE, values)
+          .post(IS_CREATING ? LOGICAL_PRINTERS.CREATE : LOGICAL_PRINTERS.UPDATE, values)
           .then(() => {
             onComplete();
 
@@ -83,7 +70,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(ALLOCATIONS.DELETE, value)
+          .post(LOGICAL_PRINTERS.DELETE, value)
           .then(() => {
             onComplete();
 
@@ -104,63 +91,11 @@ const FormModal = ({ value, visible, handleFormState }) => {
     });
   };
 
-  const onReset = () => {
-    Modal.confirm({
-      title: t('prompts.reset'),
-      okText: t('operations.yes'),
-      okType: 'danger',
-      icon: <RedoOutlined />,
-      cancelText: t('operations.no'),
-      centered: true,
-      onOk: async () => {
-        await axios
-          .post(ALLOCATIONS.RESET, {
-            alloc_type: type,
-            alloc_cmpycode: company,
-            alloc_suppcode: supplier,
-          })
-          .then(() => {
-            getAllocations();
-          })
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
-              });
-            });
-          });
-      },
-    });
-  };
-
-  const getAllocations = useCallback(() => {
-    axios
-      .get(`${ALLOCATIONS.ITEMS}?alloc_type=${type}&alloc_cmpycode=${company}&alloc_suppcode=${supplier}`)
-      .then((response) => {
-        const payload = response.data?.records || [];
-
-        setAllocations(payload);
-      });
-  }, [company, type, supplier]);
-
   useEffect(() => {
     if (!value) {
       resetFields();
-
-      setType(undefined);
-      setCompany(undefined);
-      setSupplier(undefined);
-      setLockType(undefined);
-      setAllocations([]);
     }
   }, [resetFields, value]);
-
-  useEffect(() => {
-    if (type && company) {
-      getAllocations();
-    }
-  }, [type, company, supplier, getAllocations]);
 
   return (
     <Drawer
@@ -174,10 +109,6 @@ const FormModal = ({ value, visible, handleFormState }) => {
       visible={visible}
       footer={
         <>
-          <Button type="primary" disabled={IS_CREATING} icon={<RedoOutlined />} onClick={onReset}>
-            {t('operations.reset')}
-          </Button>
-
           <Button
             type="primary"
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
@@ -200,16 +131,14 @@ const FormModal = ({ value, visible, handleFormState }) => {
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError initialValues={value}>
+      <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Type form={form} value={value} onChange={setType} />
             <Company form={form} value={value} onChange={setCompany} />
-            <Supplier form={form} value={value} type={type} onChange={setSupplier} />
-            <LockType form={form} value={value} onChange={setLockType} />
-            <Period form={form} value={value} lockType={lockType} />
-            <Divider />
-            <DataTable data={allocations} height="60vh" minimal columns={columns(t)} />
+
+            <Usage form={form} value={value} company={company} />
+
+            <Printer form={form} value={value} />
           </TabPane>
         </Tabs>
       </Form>

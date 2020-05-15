@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import createActivityDetector from 'activity-detector';
 import axios from 'axios';
+import _ from 'lodash';
 
-import { AUTH } from '../api';
+import { SITE_CONFIGURATION } from '../api';
 
 const useIdle = () => {
   const [isIdle, setIdle] = useState(false);
@@ -35,14 +36,21 @@ const useIdle = () => {
   }, [timeToIdle]);
 
   useEffect(() => {
-    axios.get(AUTH.SITE_CONFIG).then((res) => {
-      const CONFIG = res?.data;
+    axios.get(SITE_CONFIGURATION.READ).then((res) => {
+      const payload = res?.data;
 
-      if (CONFIG?.DEFAULT?.TIMEOUT) {
-        setTimeToIdle(CONFIG.DEFAULT.TIMEOUT);
+      if (payload) {
+        const timeout = _.find(payload?.records, ['config_key', 'URBAC_AUTO_LOGOFF']);
+        const value = _.toNumber(timeout?.config_value);
+
+        if (value > 0) {
+          setTimeToIdle(value);
+        } else {
+          setTimeToIdle(99999999999999999);
+        }
       }
     });
-  }, []);
+  }, [setTimeToIdle]);
 
   return isIdle;
 };

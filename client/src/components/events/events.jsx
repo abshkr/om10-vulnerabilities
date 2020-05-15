@@ -6,14 +6,11 @@ import { BellOutlined, CloseOutlined } from '@ant-design/icons';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { useAudio } from '../../hooks';
 import { fetcher } from '../../utils';
-import { COMMON } from '../../api';
+import { AUTH } from '../../api';
 
 const Events = () => {
-  const { data } = useSWR(COMMON.EVENTS, fetcher);
-
-  // const [playing, toggle] = useAudio('/sounds/warning.mp3');
+  const { data } = useSWR(AUTH.SESSION, fetcher);
 
   const [events, setEvents] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -26,7 +23,7 @@ const Events = () => {
   };
 
   useEffect(() => {
-    const payload = data?.records || [];
+    const payload = data?.records?.alarms || [];
 
     const filtered = _.filter(payload, (object) => {
       return !seen.includes(object.message);
