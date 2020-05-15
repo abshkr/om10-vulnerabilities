@@ -165,6 +165,7 @@ const useConfig = () => {
         loading: false,
       });
     }
+    // eslint-disable-next-line
   }, [configuration, features, environment]);
 
   return config;

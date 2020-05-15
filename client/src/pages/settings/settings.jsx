@@ -130,7 +130,7 @@ const Settings = ({ token }) => {
     } catch (error) {
       return;
     }
-  }, [setFieldsValue, token]);
+  }, [setFieldsValue, setPasswordFields, token]);
 
   return (
     <Page page={page} auth={auth} minimal>

@@ -131,7 +131,7 @@ const FormModal = ({ visible, onCreate, onCancel, gates }) => {
   );
 };
 
-const Gates = ({ form, value }) => {
+const Gates = ({ form, value, formVisible, setFormVisibility }) => {
   const { t } = useTranslation();
   const [data, setData] = useState([]);
 
@@ -234,6 +234,7 @@ const Gates = ({ form, value }) => {
               >
                 <List.Item.Meta
                   avatar={<Avatar>{item.gate_dvce}</Avatar>}
+                  // eslint-disable-next-line
                   title={<a>{item.gate_k}</a>}
                   description={<Description time={item.g_tcd} type={item.krdc_type} />}
                 />

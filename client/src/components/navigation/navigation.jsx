@@ -189,7 +189,7 @@ const Navigation = () => {
             <Badge status="success" /> {t('pageNames.expiryDates')}
           </Menu.Item>
           <Menu.Item key={ROUTES.AREA}>
-            <Badge status="warning" /> {t('pageNames.area')}
+            <Badge status="success" /> {t('pageNames.area')}
           </Menu.Item>
           <Menu.Item key={ROUTES.SITE_ACCESS_DEVICES}>
             <Badge status="success" /> {t('pageNames.siteAccessDevices')}

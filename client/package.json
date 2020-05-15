@@ -42,23 +42,7 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app",
-    "rules": {
-      "jsx-a11y/anchor-is-valid": [
-        "error",
-        {
-          "components": [
-            "Link"
-          ],
-          "specialLink": [
-            "to"
-          ]
-        }
-      ],
-      "jsx-a11y/accessible-emoji": [
-        "error"
-      ]
-    }
+    "extends": "react-app"
   },
   "proxy": "https://10.1.10.66/",
   "browserslist": {
