@@ -444,7 +444,7 @@ class Personnel extends CommonClass
         $result = array();
         $result["records"] = array();
         if ($cgi_ret == 0) {
-            $error = new EchoSchema(500, response("__PWD_UPDATED__", 
+            $error = new EchoSchema(200, response("__PWD_UPDATED__", 
                 sprintf("Password of user %s has been updated", $this->per_code)));
             echo json_encode($error, JSON_PRETTY_PRINT);
         } else {

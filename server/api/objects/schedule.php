@@ -567,12 +567,34 @@ class Schedule extends CommonClass
     public function get_tnkr_cmpts()
     {
         $query = "
-            SELECT TMP.*, ROWNUM COMPARTMENT FROM
+            SELECT EQPT_CODE, 
+                ROWNUM COMPARTMENT,
+                EQPT_CMPT, 
+                NULL PROD_CODE,
+                NULL PROD_NAME,
+                NULL PROD_CMPY,
+                UNIT_CODE,
+                UNIT_NAME, 
+                SAFEFILL, 
+                0 QTY_SCHEDULED,
+                0 QTY_PRELOAD,
+                NULL SCHDSPEC_SHLSTRIP,
+                NULL SCHDSPEC_SHLSSUPP,
+                NULL SCHD_SOLD_TO_NUM,
+                NULL SCHD_SHIP_TO_NUM,
+                NULL SCHD_DELIV_NUM,
+                NULL PROD_CLASS,
+                0 QTY_LOADED,
+                0 QTY_AMB,
+                0 QTY_STD,
+                0 QTY_KG
+            FROM
             (
                 SELECT TC_SEQNO, EQPT_CODE,
                     EQPT_ETP,
                     CMPT_NO EQPT_CMPT,
-                    DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS,
+                    CMPT_UNITS UNIT_CODE,
+                    DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') UNIT_NAME,
                     DECODE(ADJ_AMNT, NULL, CMPT_CAPACIT, CMPT_CAPACIT + ADJ_AMNT) SAFEFILL,
                     DECODE(ADJ_CAPACITY, NULL, CMPT_CAPACIT, ADJ_CAPACITY) SFL,
                     NVL(ADJ_CMPT_LOCK, 0) ADJ_CMPT_LOCK
