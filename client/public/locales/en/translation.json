@@ -535,7 +535,11 @@
     "tankerName": "Tanker Name",
     "priority": "Priority",
     "customerCode": "Customer Code",
-    "supplierOrigin": "Supplier Origin"
+    "supplierOrigin": "Supplier Origin",
+    "schedule": "Schedule",
+    "prevProduct": "Prev. Product",
+    "delvNo": "Delv No.",
+    "gateCode": "Gate Code"
   },
 
   "pageMenu": {
@@ -708,7 +712,11 @@
     "closeTransaction": "Close Transaction",
     "close": "Close",
     "locked": "Locked",
-    "selectAll": "Select All"
+    "selectAll": "Select All",
+    "print": "Print",
+    "preOrder": "Pre Order",
+    "preSchedule": "Pre Schedule",
+    "add": "Add"
   },
 
   "tabColumns": {
@@ -760,7 +768,8 @@
     "bol": "BOL",
     "loadReport": "Load Report",
     "additionalHostData": "Additional Host Data",
-    "transactions": "Transactions"
+    "transactions": "Transactions",
+    "createGates": "Create Gates"
   },
 
   "messages": {
@@ -810,7 +819,8 @@
     "halt": "Are you sure you want to halt?",
     "cancel": "Are you sure you want to cancel?",
     "closeTransaction": "Are you sure you want to Close this Transaction?",
-    "reset": "Are you sure you want to reset this record?"
+    "reset": "Are you sure you want to reset this record?",
+    "createNewGate": "Create New Gate"
   },
 
   "divider": {

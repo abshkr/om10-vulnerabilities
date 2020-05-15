@@ -6,6 +6,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     resizable: true,
     width: 200,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.areaName'),
@@ -14,14 +15,6 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     resizable: true,
     width: 200,
-  },
-  {
-    headerName: t('fields.gates'),
-    field: 'gatesNames',
-    sortable: true,
-    filter: 'FuzzyFilter',
-    resizable: true,
-    cellRenderer: 'TagRenderer',
   },
 ];
 

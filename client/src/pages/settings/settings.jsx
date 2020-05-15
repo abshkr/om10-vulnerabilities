@@ -1,21 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { LockOutlined, IdcardOutlined, HomeOutlined } from '@ant-design/icons';
-import { Card, Button, Form, Input } from 'antd';
+import { LockOutlined, IdcardOutlined, HomeOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Card, Button, Form, Input, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
+import JwtDecode from 'jwt-decode';
 import axios from 'axios';
+import _ from 'lodash';
 
 import { Page } from '../../components';
 import { PERSONNEL } from '../../api';
 import auth from '../../auth';
 
-const Settings = () => {
+const Settings = ({ token }) => {
   const [password, setPassword] = useState(null);
 
   const { t } = useTranslation();
 
   const [profileForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
+
+  const { setFieldsValue } = profileForm;
+  const setPasswordFields = passwordForm.setFieldsValue;
 
   const page = t('pageMenu.settings');
 
@@ -56,12 +61,76 @@ const Settings = () => {
   };
 
   const onProfileChange = (values) => {
-    console.log(values);
+    Modal.confirm({
+      title: t('prompts.update'),
+      okText: t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(PERSONNEL.UPDATE_DEPARTMENT, values)
+          .then((response) => {
+            notification.success({
+              message: t('messages.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
   };
 
   const onPasswordChange = (values) => {
-    axios.post(PERSONNEL.UPDATE_PASSWORD, {});
+    Modal.confirm({
+      title: t('prompts.update'),
+      okText: t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(PERSONNEL.UPDATE_PASSWORD, values)
+          .then((response) => {
+            notification.success({
+              message: t('messages.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
   };
+
+  useEffect(() => {
+    try {
+      const payload = JwtDecode(token);
+
+      setFieldsValue({
+        per_code: payload?.per_code,
+      });
+
+      setPasswordFields({
+        per_code: payload?.per_code,
+      });
+    } catch (error) {
+      return;
+    }
+  }, [setFieldsValue, token]);
 
   return (
     <Page page={page} auth={auth} minimal>
@@ -91,10 +160,11 @@ const Settings = () => {
               prefix={<IdcardOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
               placeholder={t('fields.code')}
               autoComplete="off"
+              disabled
             />
           </Form.Item>
 
-          <Form.Item name="department">
+          <Form.Item name="per_department">
             <Input
               prefix={<HomeOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
               placeholder={t('fields.department')}
@@ -119,6 +189,8 @@ const Settings = () => {
             </Form.Item>,
           ]}
         >
+          <Form.Item name="per_code" noStyle />
+
           <Form.Item name="old_password" rules={[{ required: true, validator: validateOldPassword }]}>
             <Input
               prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}

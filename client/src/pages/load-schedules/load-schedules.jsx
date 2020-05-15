@@ -9,7 +9,7 @@ import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 import { Page, DataTable, Download, Calendar } from '../../components';
 import { LOAD_SCHEDULES } from '../../api';
 import { SETTINGS } from '../../constants';
-import { useAuth, useConfig } from '../../hooks';
+import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';

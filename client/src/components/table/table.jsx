@@ -57,6 +57,7 @@ const Table = ({
   minimal,
   components,
   onCellClick,
+  parentHeight,
 }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
@@ -140,7 +141,7 @@ const Table = ({
 
         <div style={{ float: 'right' }}>{extra}</div>
 
-        <div style={{ height: `calc(100vh - ${height || '250px'})`, marginTop: 5 }}>
+        <div style={{ height: parentHeight || `calc(100vh - ${height || '250px'})`, marginTop: 5 }}>
           <AgGridReact
             columnDefs={columns}
             rowData={data}

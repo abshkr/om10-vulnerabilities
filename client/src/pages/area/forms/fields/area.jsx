@@ -2,8 +2,12 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 import _ from 'lodash';
+import useSWR from 'swr';
+import { AREA } from '../../../../api';
 
-const Area = ({ form, value, data }) => {
+const Area = ({ form, value }) => {
+  const { data } = useSWR(AREA.READ);
+
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -17,7 +21,7 @@ const Area = ({ form, value, data }) => {
   }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
-    const match = _.find(data, ['area_k', input]);
+    const match = _.find(data?.records, ['area_k', input]);
 
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.areaId')}`);

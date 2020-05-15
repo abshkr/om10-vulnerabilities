@@ -7,6 +7,7 @@ export const SOLD_TO = '/api/pages/schedule/sold_tos.php';
 export const SHIP_TOP = '/api/pages/schedule/ship_tos.php';
 export const CARRIERS = '/api/pages/schedule/carriers.php';
 export const TANKERS_BY_CARRIER = '/api/pages/schedule/tankers_by_carrier.php';
+export const COMPARTMENTS_BY_TANKER = '/api/pages/schedule/get_tnkr_cmpts.php';
 export const NEXT_TRIP = '/api/pages/schedule/next_trip_no.php';
 export const DRAWER_PRODUCTS = '/api/pages/schedule/drawer_products.php';
 export const UNIT_TYPES = '/api/pages/schedule/unit_types.php';

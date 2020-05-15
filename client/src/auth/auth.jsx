@@ -46,7 +46,7 @@ export default (Authenticated) => {
         }}
       >
         <AuthContainer>
-          <Authenticated />
+          <Authenticated token={token} />
         </AuthContainer>
       </SWRConfig>
     );

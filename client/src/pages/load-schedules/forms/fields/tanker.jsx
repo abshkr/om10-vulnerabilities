@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { LOAD_SCHEDULES } from '../../../../api';
 
-const Tanker = ({ form, value, carrier }) => {
+const Tanker = ({ form, value, carrier, onChange }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -28,14 +28,17 @@ const Tanker = ({ form, value, carrier }) => {
       setFieldsValue({
         tnkr_code: value.tnkr_code,
       });
+
+      onChange(value.tnkr_code);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 
   return (
     <Form.Item name="tnkr_code" label={t('fields.tanker')} rules={[{ required: true, validator: validate }]}>
       <Select
         loading={isValidating}
         showSearch
+        onChange={onChange}
         disabled={!!value || !carrier}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectTanker') : null}
