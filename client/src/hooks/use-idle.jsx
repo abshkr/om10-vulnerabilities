@@ -44,7 +44,7 @@ const useIdle = () => {
         const value = _.toNumber(timeout?.config_value);
 
         if (value > 0) {
-          setTimeToIdle(value);
+          setTimeToIdle(value * 60000);
         } else {
           setTimeToIdle(99999999999999999);
         }
