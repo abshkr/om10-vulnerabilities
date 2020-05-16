@@ -90,17 +90,15 @@ class EquipmentType extends CommonClass
     public function composition()
     {
         $query = "
-            SELECT NVL(EQC_SUB_ITEM, ETYP_ID) ETYP_ID,
-                ETYP_TITLE,
-                ETYP_ISRIGID,
-                (SELECT COUNT(*) FROM COMPARTMENT
-                WHERE CMPT_ETYP = E.EQC_SUB_ITEM OR CMPT_ETYP = ETYP_ID) CMPT_COUNT,
-                DECODE(
-                    (SELECT COUNT(*) SUB_EQYP FROM EQP_CONNECT
-                    WHERE ECNCT_ETYP = E.EQC_SUB_ITEM), 0, 'Y', 'N') EQUIP_ISLEAF
-            FROM EQP_CONNECT E, EQUIP_TYPES
-            WHERE ECNCT_ETYP (+)= ETYP_ID AND ETYP_ID = :etyp_id
-            ORDER BY EQC_COUNT";
+            SELECT EQC_SUB_ITEM ETYP_ID,
+                EQUIP_TYPES_VW.ETYP_TITLE,
+                EQUIP_TYPES_VW.ETYP_ISRIGID,
+                EQUIP_TYPES_VW.CMPTNU,
+                EQUIP_TYPES_VW.ETYP_CATEGORY
+            FROM EQUIP_VW, EQUIP_TYPES_VW
+            WHERE EQC_SUB_ITEM = EQUIP_TYPES_VW.ETYP_ID AND ETYP_ID_RT = :etyp_id
+                AND EQUIP_ISLEAF = 1
+            ORDER BY EQC_COUNT_RT, EQC_COUNT";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':etyp_id', $this->etyp_id);
         if (oci_execute($stmt, $this->commit_mode)) {
@@ -260,43 +258,45 @@ class EquipmentType extends CommonClass
         $this->etyp_title = isset($this->etyp_title) ? '%' . $this->etyp_title . '%' : '%';
 
         $query = "
-        SELECT EQUIP_TYPES_VW.ETYP_ID,
-            EQUIP_TYPES_VW.ETYP_TITLE,
-            EQUIP_TYPES_VW.ETYP_CLASS,
-            EQUIP_TYPES_VW.ETYP_N_ITEMS,
-            EQUIP_TYPES_VW.ETYP_IS_DRUMFILL,
-            EQUIP_TYPES_VW.ETYP_MAX_GROSS,
-            EQUIP_TYPES_VW.ETYP_ISRIGID,
-            EQUIP_TYPES_VW.ETYP_SCHEDUL,
-            NVL(ETYP_CATEGORY,
-                DECODE(ECNCT_ETYP,
-                    NULL,
-                    DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
-                    DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
-                ) ETYP_CATEGORY,
-            NVL(IMAGES, NVL(ETYP_CATEGORY,
-                DECODE(ECNCT_ETYP,
-                    NULL,
-                    DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
-                    DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
-                )) IMAGE,
-            EQUIP_TYPES_VW.CMPTNU
-        FROM EQUIP_TYPES_VW,
-            (SELECT NVL(ETYP_SCHEDUL, 'N') ETYP_SCHEDUL, NVL(ETYP_ISRIGID, 'N') ETYP_ISRIGID, CMPTNU, ECNCT_ETYP
-            FROM EQUIP_TYPES_VW, EQP_CONNECT
-            WHERE EQP_CONNECT.ECNCT_ETYP = EQUIP_TYPES_VW.ETYP_ID
-                AND EQC_COUNT = 1) FIRST_SUB_ITEM,
-            (
-                SELECT ECNCT_ETYP COMBO_ETYP, LISTAGG(ETYP_CATEGORY, ',') within group(order by EQC_COUNT) IMAGES
-                FROM(
-                SELECT EQC_SUB_ITEM, NVL(ETYP_CATEGORY, 'T') ETYP_CATEGORY, EQC_COUNT, ECNCT_ETYP
-                FROM EQP_CONNECT, EQUIP_TYPES
-                WHERE EQC_SUB_ITEM = ETYP_ID)
-                GROUP BY ECNCT_ETYP
-            ) EQUIP_IMAGES
-        WHERE FIRST_SUB_ITEM.ECNCT_ETYP(+) = EQUIP_TYPES_VW.ETYP_ID
-            AND EQUIP_TYPES_VW.ETYP_ID = EQUIP_IMAGES.COMBO_ETYP(+)
-            AND ETYP_TITLE like :etyp_title";
+            SELECT EQUIP_TYPES_VW.ETYP_ID,
+                EQUIP_TYPES_VW.ETYP_TITLE,
+                EQUIP_TYPES_VW.ETYP_CLASS,
+                EQUIP_TYPES_VW.ETYP_N_ITEMS,
+                EQUIP_TYPES_VW.ETYP_IS_DRUMFILL,
+                EQUIP_TYPES_VW.ETYP_MAX_GROSS,
+                EQUIP_TYPES_VW.ETYP_ISRIGID,
+                EQUIP_TYPES_VW.ETYP_SCHEDUL,
+                NVL(ETYP_CATEGORY,
+                    DECODE(ECNCT_ETYP,
+                        NULL,
+                        DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
+                        DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
+                    ) ETYP_CATEGORY,
+                NVL(IMAGES, NVL(ETYP_CATEGORY,
+                    DECODE(ECNCT_ETYP,
+                        NULL,
+                        DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
+                        DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
+                    )) IMAGE,
+                EQUIP_TYPES_VW.CMPTNU
+            FROM EQUIP_TYPES_VW,
+                (SELECT NVL(ETYP_SCHEDUL, 'N') ETYP_SCHEDUL, NVL(ETYP_ISRIGID, 'N') ETYP_ISRIGID, CMPTNU, ECNCT_ETYP
+                FROM EQUIP_TYPES_VW, EQP_CONNECT
+                WHERE EQP_CONNECT.ECNCT_ETYP = EQUIP_TYPES_VW.ETYP_ID
+                    AND EQC_COUNT = 1) FIRST_SUB_ITEM,
+                (
+                    SELECT ETYP_ID_RT COMBO_ETYP, LISTAGG(ETYP_CATEGORY, ',') WITHIN GROUP(ORDER BY EQC_COUNT_RT, EQC_COUNT) IMAGES
+                    FROM
+                    (
+                        SELECT ETYP_ID_RT, EQUIP_TYPES.ETYP_ID, EQUIP_TYPES.ETYP_CATEGORY, EQC_COUNT_RT, EQC_COUNT
+                        FROM EQUIP_VW, EQUIP_TYPES
+                        WHERE EQC_SUB_ITEM = EQUIP_TYPES.ETYP_ID AND EQUIP_ISLEAF = 1
+                    )
+                    GROUP BY ETYP_ID_RT
+                ) EQUIP_IMAGES
+            WHERE FIRST_SUB_ITEM.ECNCT_ETYP(+) = EQUIP_TYPES_VW.ETYP_ID
+                AND EQUIP_TYPES_VW.ETYP_ID = EQUIP_IMAGES.COMBO_ETYP(+)
+                AND ETYP_TITLE like :etyp_title";
 
         if (isset($this->cmptnu)) {
             $query = $query . " AND CMPTNU = :cmptnu ";
