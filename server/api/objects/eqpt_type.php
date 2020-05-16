@@ -253,8 +253,8 @@ class EquipmentType extends CommonClass
         }
     }
 
-    /* Only all equpment type. because for equipment, the type can
-    only be non-combine, but for tanker, the type can be non-combine or combine */
+    //Old old: EqupipmentTypes.class.php::getAll()
+    //Category: C means combo, T means trailer, R means Rigid, S means ship, E means Rail Tank
     public function read()
     {
         $this->etyp_title = isset($this->etyp_title) ? '%' . $this->etyp_title . '%' : '%';
@@ -273,20 +273,36 @@ class EquipmentType extends CommonClass
                     NULL,
                     DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
                     DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
-                ) IMAGE
+                ) ETYP_CATEGORY,
+            NVL(IMAGES, NVL(ETYP_CATEGORY,
+                DECODE(ECNCT_ETYP,
+                    NULL,
+                    DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
+                    DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
+                )) IMAGE,
+            EQUIP_TYPES_VW.CMPTNU
         FROM EQUIP_TYPES_VW,
             (SELECT NVL(ETYP_SCHEDUL, 'N') ETYP_SCHEDUL, NVL(ETYP_ISRIGID, 'N') ETYP_ISRIGID, CMPTNU, ECNCT_ETYP
             FROM EQUIP_TYPES_VW, EQP_CONNECT
             WHERE EQP_CONNECT.ECNCT_ETYP = EQUIP_TYPES_VW.ETYP_ID
-                AND EQC_COUNT = 1) FIRST_SUB_ITEM
+                AND EQC_COUNT = 1) FIRST_SUB_ITEM,
+            (
+                SELECT ECNCT_ETYP COMBO_ETYP, LISTAGG(ETYP_CATEGORY, ',') within group(order by EQC_COUNT) IMAGES
+                FROM(
+                SELECT EQC_SUB_ITEM, NVL(ETYP_CATEGORY, 'T') ETYP_CATEGORY, EQC_COUNT, ECNCT_ETYP
+                FROM EQP_CONNECT, EQUIP_TYPES
+                WHERE EQC_SUB_ITEM = ETYP_ID)
+                GROUP BY ECNCT_ETYP
+            ) EQUIP_IMAGES
         WHERE FIRST_SUB_ITEM.ECNCT_ETYP(+) = EQUIP_TYPES_VW.ETYP_ID
+            AND EQUIP_TYPES_VW.ETYP_ID = EQUIP_IMAGES.COMBO_ETYP(+)
             AND ETYP_TITLE like :etyp_title";
 
         if (isset($this->cmptnu)) {
             $query = $query . " AND CMPTNU = :cmptnu ";
         }
 
-        $query = $query . " ORDER BY ETYP_TITLE ASC";
+        $query = $query . " ORDER BY UPPER(ETYP_TITLE) ASC";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':etyp_title', $this->etyp_title);
         if (isset($this->cmptnu)) {
