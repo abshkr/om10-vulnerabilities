@@ -145,19 +145,11 @@ const TimeCodes = () => {
 
   const modifiers = (
     <>
-      {/* <Button type="primary" icon={<DeleteOutlined />}>
-        {t('operations.delete')}
-      </Button> */}
-
       <Button type="primary" 
         icon={<EditOutlined />} 
         onClick={onUpdate}>
         {t('operations.update')}
       </Button>
-
-      {/* <Button type="primary" icon={<EditOutlined />}>
-        {t('operations.create')}
-      </Button> */}
     </>
   );
 
