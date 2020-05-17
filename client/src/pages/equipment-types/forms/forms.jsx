@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
@@ -7,24 +7,23 @@ import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 
-import { Company, Usage, Printer } from './fields';
-import { LOGICAL_PRINTERS } from '../../../api';
+import { EQUIPMENT_TYPES } from '../../../api';
+import { Code, NonCombination } from './fields';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState }) => {
+const FormModal = ({ value, visible, handleFormState, isCombination }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const IS_CREATING = !value;
-
-  const [company, setCompany] = useState(undefined);
+  const IS_COMBINATION = isCombination;
 
   const { resetFields } = form;
 
   const onComplete = () => {
     handleFormState(false, null);
-    mutate(LOGICAL_PRINTERS.READ);
+    mutate(EQUIPMENT_TYPES.READ);
   };
 
   const onFinish = async () => {
@@ -39,7 +38,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(IS_CREATING ? LOGICAL_PRINTERS.CREATE : LOGICAL_PRINTERS.UPDATE, values)
+          .post(IS_CREATING ? EQUIPMENT_TYPES.CREATE : EQUIPMENT_TYPES.UPDATE, values)
           .then(() => {
             onComplete();
 
@@ -70,7 +69,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(LOGICAL_PRINTERS.DELETE, value)
+          .post(EQUIPMENT_TYPES.DELETE, value)
           .then(() => {
             onComplete();
 
@@ -134,11 +133,9 @@ const FormModal = ({ value, visible, handleFormState }) => {
       <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Company form={form} value={value} onChange={setCompany} />
+            <Code form={form} value={value} />
 
-            <Usage form={form} value={value} company={company} />
-
-            <Printer form={form} value={value} />
+            {IS_COMBINATION ? <div></div> : <NonCombination form={form} value={value} />}
           </TabPane>
         </Tabs>
       </Form>

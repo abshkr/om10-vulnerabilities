@@ -1,18 +1,20 @@
-const columns = t => [
+const columns = (t, config) => [
   {
     headerName: t('fields.code'),
     field: 'base_code',
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,
-    pinned: 'left'
+    pinned: 'left',
+    width: 120,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.name'),
     field: 'base_name',
     sortable: true,
     filter: 'FuzzyFilter',
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.color'),
@@ -20,35 +22,35 @@ const columns = t => [
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,
-    cellRenderer: 'TagRenderer'
+    cellRenderer: 'TagRenderer',
   },
   {
     headerName: t('fields.classId'),
     field: 'base_cat',
     sortable: true,
     filter: 'MultiFilter',
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.classification'),
     field: 'base_class_desc',
     sortable: true,
     filter: 'MultiFilter',
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.groupCode'),
     field: 'base_prod_group',
     sortable: true,
     filter: 'FuzzyFilter',
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.group'),
     field: 'base_group_name',
     sortable: true,
     filter: 'MultiFilter',
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.isAdditive'),
@@ -56,58 +58,60 @@ const columns = t => [
     sortable: true,
     resizable: true,
     cellRenderer: 'BooleanRenderer',
-    filter: 'MultiFilter'
+    filter: 'MultiFilter',
   },
   {
     headerName: t('fields.numberOfTanks'),
     field: 'base_tank_count',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.listOfTanks'),
     field: 'base_tank_list',
     sortable: true,
     filter: 'FuzzyFilter',
-    resizable: true
+    resizable: true,
   },
   {
-    headerName: t('fields.baseClassMinDensity'),
+    headerName: `${t('fields.baseClassMinDensity')} [${t(`units.${config.densityUnit}`)}]`,
     field: 'base_class_dens_lo',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
-    headerName: t('fields.baseClassMaxDensity'),
+    headerName: `${t('fields.baseClassMaxDensity')} [${t(`units.${config.densityUnit}`)}]`,
     field: 'base_class_dens_hi',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
-    headerName: t('fields.baseClassMinTemp'),
+    headerName: `${t('fields.baseClassMinTemp')} [${t(`units.${config.temperatureUnit}`)}]`,
     field: 'base_class_temp_lo',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
-    headerName: t('fields.baseClassMaxTemp'),
+    headerName: `${t('fields.baseClassMaxTemp')} [${t(`units.${config.temperatureUnit}`)}]`,
     field: 'base_class_temp_hi',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.correctionMethod'),
     field: 'base_corr_mthd_name',
     sortable: true,
     filter: 'MultiFilter',
-    resizable: true
+    resizable: true,
+    hide: !config.manageHotProduct,
   },
   {
     headerName: t('fields.refTempSpec'),
     field: 'base_ref_temp_spec_name',
     sortable: true,
     filter: 'MultiFilter',
-    resizable: true
+    resizable: true,
+    hide: !config.manageHotProduct,
   },
   {
     headerName: t('fields.hotTempFlag'),
@@ -115,8 +119,9 @@ const columns = t => [
     sortable: true,
     filter: 'BooleanFilter',
     resizable: true,
-    cellRenderer: 'BooleanRenderer'
-  }
+    cellRenderer: 'BooleanRenderer',
+    hide: !config.manageHotProduct,
+  },
 ];
 
 export default columns;

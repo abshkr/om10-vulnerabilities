@@ -59,7 +59,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     });
   };
 
-  const onDelete = () => {
+  const onDelete = async () => {
+    const values = await form.validateFields();
+
     Modal.confirm({
       title: t('prompts.delete'),
       okText: t('operations.yes'),
@@ -69,7 +71,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(AREA.DELETE, value)
+          .post(AREA.DELETE, values)
           .then(() => {
             onComplete();
 

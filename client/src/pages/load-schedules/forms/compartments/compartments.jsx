@@ -24,7 +24,7 @@ const Compartments = ({ form, value, tanker, drawer }) => {
   const { t } = useTranslation();
 
   const { data: soldTo } = useSWR(LOAD_SCHEDULES.SOLD_TO);
-  const { data: shipTo } = useSWR(LOAD_SCHEDULES.SHIP_TOP);
+  const { data: shipTo } = useSWR(LOAD_SCHEDULES.SHIP_TO);
   const { data: units } = useSWR(LOAD_SCHEDULES.UNIT_TYPES);
 
   const [compartments, setCompartments] = useState([]);

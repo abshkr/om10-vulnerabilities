@@ -81,6 +81,14 @@ const AntdStyleProvider = createGlobalStyle`
     border-top-width: 1px !important;
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.015);
   }
+
+  .ant-radio-checked .ant-radio-inner {
+    border-color: ${(props) => props.primary};
+  }
+
+  .ant-radio-inner::after {
+    background-color: ${(props) => props.primary};
+  }
   
   .ant-btn-primary {
     background-color: #fff;
