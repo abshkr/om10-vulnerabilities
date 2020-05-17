@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
-import { Button, Select } from 'antd';
+import { Button, Select, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { CheckOutlined, MinusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { CheckOutlined, MinusOutlined, EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import axios from 'axios';
 import _ from 'lodash';
 
 import { Page, DataTable } from '../../components';
 import { TIME_CODES } from '../../api';
-import generator from './generator';
+import {generator, degenerate} from './generator';
 import columns from './columns';
 import auth from '../../auth';
 
@@ -106,19 +107,57 @@ const TimeCodes = () => {
     setData(values);
   }, [code, payload, t]);
 
+  const onComplete = () => {
+    
+  };
+
+  const onUpdate = async () => {
+    let postdata = degenerate(code, data, t);
+    Modal.confirm({
+      title: t('prompts.update'),
+      okText: t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(TIME_CODES.UPDATE, postdata)
+          .then(() => {
+            onComplete();
+
+            notification.success({
+              message: t('messages.updateSuccess'),
+              description: t('messages.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+
   const modifiers = (
     <>
-      <Button type="primary" icon={<DeleteOutlined />}>
+      {/* <Button type="primary" icon={<DeleteOutlined />}>
         {t('operations.delete')}
-      </Button>
+      </Button> */}
 
-      <Button type="primary" icon={<EditOutlined />}>
+      <Button type="primary" 
+        icon={<EditOutlined />} 
+        onClick={onUpdate}>
         {t('operations.update')}
       </Button>
 
-      <Button type="primary" icon={<EditOutlined />}>
+      {/* <Button type="primary" icon={<EditOutlined />}>
         {t('operations.create')}
-      </Button>
+      </Button> */}
     </>
   );
 

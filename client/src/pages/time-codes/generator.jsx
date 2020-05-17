@@ -1,5 +1,30 @@
 import _ from 'lodash';
 
+const degenerate = (code, data, t) => {
+  console.log(data);
+
+  let result = {};
+  for (let i = 0; i < data.length; i++) {
+    let line = data[i];
+    let line_time = 0;
+    for (let j = 0; j <= 23; j++) {
+      line_time += Math.pow(2, j) * line[j];
+    }
+    result[line.day] = line_time;
+  }
+  
+  return {
+    "tcd_title": code,
+    "tcd_mon": result[t('fields.monday')],
+    "tcd_tue": result[t('fields.tuesday')],
+    "tcd_wed": result[t('fields.wednesday')],
+    "tcd_thu": result[t('fields.thursday')],
+    "tcd_fri": result[t('fields.friday')],
+    "tcd_sat": result[t('fields.saturday')],
+    "tcd_sun": result[t('fields.sunday')],
+  };
+};
+
 const generator = (code, data, t) => {
   const filtered = _.find(data, ['tcd_title', code]);
 
@@ -74,4 +99,4 @@ const generator = (code, data, t) => {
   return payload;
 };
 
-export default generator;
+export {generator, degenerate};
