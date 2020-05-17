@@ -355,6 +355,11 @@ const paths = [
     path: ROUTES.CONFIGURATION,
     component: lazy(() => import('../pages/configuration')),
   },
+
+  {
+    path: ROUTES.TANKS,
+    component: lazy(() => import('../pages/tanks')),
+  },
 ];
 
 export default paths;

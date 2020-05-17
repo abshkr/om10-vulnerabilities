@@ -645,7 +645,8 @@
     "siteConfiguration": "Site Configuration",
     "logOut": "Log Out",
     "tankStrapping": "Tank Strapping",
-    "keyReaderDevices": "Key Reader Devices"
+    "keyReaderDevices": "Key Reader Devices",
+    "tanks": "Tanks"
   },
 
   "operations": {
@@ -716,7 +717,9 @@
     "print": "Print",
     "preOrder": "Pre Order",
     "preSchedule": "Pre Schedule",
-    "add": "Add"
+    "add": "Add",
+    "simple": "Simple",
+    "list": "List"
   },
 
   "tabColumns": {
@@ -987,9 +990,11 @@
   },
 
   "units": {
+    "null": "",
     "lpm": "LPM",
-    "celsius": "°C",
-    "kgm3": "kg/m3",
+    "degC": "°C",
+    "degF": "°F",
+    "kg/m3": "kg/m³",
     "volume": "Volume",
     "litres": "Litres",
     "mm": "mm",

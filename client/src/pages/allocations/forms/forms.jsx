@@ -104,6 +104,16 @@ const FormModal = ({ value, visible, handleFormState }) => {
     });
   };
 
+  const getAllocations = useCallback(() => {
+    axios
+      .get(`${ALLOCATIONS.ITEMS}?alloc_type=${type}&alloc_cmpycode=${company}&alloc_suppcode=${supplier}`)
+      .then((response) => {
+        const payload = response.data?.records || [];
+
+        setAllocations(payload);
+      });
+  }, [company, type, supplier]);
+
   const onReset = () => {
     Modal.confirm({
       title: t('prompts.reset'),
@@ -133,16 +143,6 @@ const FormModal = ({ value, visible, handleFormState }) => {
       },
     });
   };
-
-  const getAllocations = useCallback(() => {
-    axios
-      .get(`${ALLOCATIONS.ITEMS}?alloc_type=${type}&alloc_cmpycode=${company}&alloc_suppcode=${supplier}`)
-      .then((response) => {
-        const payload = response.data?.records || [];
-
-        setAllocations(payload);
-      });
-  }, [company, type, supplier]);
 
   useEffect(() => {
     if (!value) {

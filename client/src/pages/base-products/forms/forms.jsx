@@ -1,17 +1,11 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import useSWR, { mutate } from 'swr';
-import { useTranslation } from 'react-i18next';
-import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
-import _ from 'lodash';
+import React, { useEffect, useState } from 'react';
 
-import {
-  EditOutlined,
-  PlusOutlined,
-  CloseOutlined,
-  DeleteOutlined,
-  QuestionCircleOutlined,
-} from '@ant-design/icons';
+import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { mutate } from 'swr';
+import axios from 'axios';
+import _ from 'lodash';
 
 import {
   Code,
@@ -20,40 +14,34 @@ import {
   Group,
   Color,
   DensityRange,
-  AdaptiveArmPriority,
-  AdaptiveFlowControl,
   RefSpecTemp,
   CorrectionMethod,
   HotTempFlag,
 } from './fields';
 
-import { COMMON, BASE_PRODUCTS } from '../../../api';
+import { BASE_PRODUCTS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value }) => {
+const FormModal = ({ value, visible, handleFormState, access, config }) => {
+  const { manageHotProduct, manageBaseProductDensityRange } = config;
   const [classification, setClassification] = useState(undefined);
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
-  const { data: features } = useSWR(COMMON.FEATURES);
-
   const IS_CREATING = !value;
 
-  const HAS_ADAPTIVE_FLOW = _.find(features?.records, (record) => {
-    return record.feature_code === 'ADAPTIVE_FLOW' && record.feature_flag;
-  });
+  const { resetFields } = form;
 
-  const HAS_HOT_PRODUCT = _.find(features?.records, (record) => {
-    return record.feature_code === 'HOT_PRODUCT_BITUMEN' && record.feature_flag;
-  });
+  const onComplete = () => {
+    handleFormState(false, null);
+    mutate(BASE_PRODUCTS.READ);
+  };
 
-  const HAS_DENSITY_RANGE = _.find(features?.records, (record) => {
-    return record.feature_code === 'BASE_PROD__DENS_RANGE' && record.feature_flag;
-  });
+  const onFinish = async () => {
+    const values = await form.validateFields();
 
-  const onFinish = (values) => {
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -64,21 +52,20 @@ const FormModal = ({ value }) => {
       onOk: async () => {
         await axios
           .post(IS_CREATING ? BASE_PRODUCTS.CREATE : BASE_PRODUCTS.UPDATE, values)
-          .then(
-            axios.spread((response) => {
-              Modal.destroyAll();
+          .then(() => {
+            onComplete();
 
-              mutate(BASE_PRODUCTS.READ);
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
               });
-            })
-          )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
             });
           });
       },
@@ -90,102 +77,104 @@ const FormModal = ({ value }) => {
       title: t('prompts.delete'),
       okText: t('operations.yes'),
       okType: 'danger',
+      icon: <DeleteOutlined />,
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
         await axios
           .post(BASE_PRODUCTS.DELETE, value)
-          .then(
-            axios.spread((response) => {
-              mutate(BASE_PRODUCTS.READ);
-              Modal.destroyAll();
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`,
+          .then(() => {
+            onComplete();
+
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
               });
-            })
-          )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.deleteFailed'),
             });
           });
       },
     });
   };
 
+  useEffect(() => {
+    if (!value) {
+      resetFields();
+    }
+  }, [resetFields, value]);
+
   return (
-    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-      <Tabs defaultActiveKey="1" animated={false}>
-        <TabPane
-          className={HAS_HOT_PRODUCT ? 'ant-tab-window' : null}
-          tab={t('tabColumns.general')}
-          forceRender={true}
-          key="1"
-        >
-          <Code form={form} value={value} />
-          <Name form={form} value={value} />
-          <Classification
-            form={form}
-            value={value}
-            onChange={setClassification}
-            classification={classification}
-          />
-          <Group form={form} value={value} />
-          <Color form={form} value={value} />
-
-          {HAS_DENSITY_RANGE && <DensityRange form={form} value={value} classification={classification} />}
-
-          {HAS_HOT_PRODUCT && (
-            <>
-              <Divider>{t('tabColumns.product')}</Divider>
-              <RefSpecTemp form={form} value={value} />
-              <CorrectionMethod form={form} value={value} />
-              <HotTempFlag form={form} value={value} />
-            </>
-          )}
-        </TabPane>
-
-        {HAS_ADAPTIVE_FLOW && (
-          <TabPane className="ant-tab-window" tab={t('tabColumns.adaptiveFlow')} forceRender={true} key="3">
-            <AdaptiveArmPriority form={form} value={value} />
-            <AdaptiveFlowControl form={form} value={value} />
-          </TabPane>
-        )}
-      </Tabs>
-
-      <Form.Item>
-        <Button
-          htmlType="button"
-          icon={<CloseOutlined />}
-          style={{ float: 'right' }}
-          onClick={() => Modal.destroyAll()}
-        >
-          {t('operations.cancel')}
-        </Button>
-
-        <Button
-          type="primary"
-          icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-          htmlType="submit"
-          style={{ float: 'right', marginRight: 5 }}
-        >
-          {IS_CREATING ? t('operations.create') : t('operations.update')}
-        </Button>
-
-        {!IS_CREATING && (
+    <Drawer
+      bodyStyle={{ paddingTop: 5 }}
+      onClose={() => handleFormState(false, null)}
+      maskClosable={IS_CREATING}
+      destroyOnClose={true}
+      mask={IS_CREATING}
+      placement="right"
+      width="30vw"
+      visible={visible}
+      footer={
+        <>
           <Button
-            type="danger"
-            icon={<DeleteOutlined />}
+            type="primary"
+            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            onClick={onDelete}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
           >
-            {t('operations.delete')}
+            {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
-        )}
-      </Form.Item>
-    </Form>
+
+          {!IS_CREATING && (
+            <Button
+              type="danger"
+              icon={<DeleteOutlined />}
+              style={{ float: 'right', marginRight: 5 }}
+              disabled={!access?.canDelete}
+              onClick={onDelete}
+            >
+              {t('operations.delete')}
+            </Button>
+          )}
+        </>
+      }
+    >
+      <Form layout="vertical" form={form} scrollToFirstError>
+        <Tabs defaultActiveKey="1">
+          <TabPane tab={t('tabColumns.general')} key="1">
+            <Code form={form} value={value} />
+            <Name form={form} value={value} />
+            <Classification
+              form={form}
+              value={value}
+              onChange={setClassification}
+              classification={classification}
+            />
+            <Group form={form} value={value} />
+            <Color form={form} value={value} />
+
+            {manageBaseProductDensityRange && (
+              <DensityRange form={form} value={value} classification={classification} />
+            )}
+
+            {manageHotProduct && (
+              <>
+                <Divider>{t('tabColumns.product')}</Divider>
+                <RefSpecTemp form={form} value={value} />
+                <CorrectionMethod form={form} value={value} />
+                <HotTempFlag form={form} value={value} />
+              </>
+            )}
+          </TabPane>
+        </Tabs>
+      </Form>
+    </Drawer>
   );
 };
 

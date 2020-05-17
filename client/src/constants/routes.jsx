@@ -31,6 +31,7 @@ export const ALLOCATIONS = '/allocations';
 export const HAZCHEM_CODES = '/hazchem-codes';
 export const LOAD_METERS = '/load-meters';
 export const COMPANY_BAY_MOVEMENT = '/company-bay-movement';
+export const TANKS = '/tanks';
 
 export const JOURNAL = '/journal';
 export const REPORT_PROFILE = '/report-profile';
