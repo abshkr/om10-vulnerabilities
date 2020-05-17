@@ -13,6 +13,7 @@ import {
   NullRenderer,
   ProgressRenderer,
   ATGRenderer,
+  MarkRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -29,6 +30,7 @@ const defaultComponents = {
   BooleanFilter,
   BooleanRenderer,
   LockRenderer,
+  MarkRenderer,
   DateRenderer,
   LoadingStatus,
   StatusRenderer,

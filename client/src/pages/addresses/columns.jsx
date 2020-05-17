@@ -1,7 +1,7 @@
 const columns = (t) => [
   {
     headerName: t('fields.addressCode'),
-    field: 'addr_code',
+    field: 'db_address_key',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -10,7 +10,7 @@ const columns = (t) => [
   },
   {
     headerName: t('fields.addressDetails'),
-    field: 'db_addr_line',
+    field: 'address_text',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,

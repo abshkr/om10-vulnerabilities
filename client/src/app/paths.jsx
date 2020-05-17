@@ -263,7 +263,7 @@ const paths = [
 
   {
     path: ROUTES.DELIVERY_LOCATIONS,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/delv-locations')),
   },
 
   {
@@ -349,6 +349,11 @@ const paths = [
   {
     path: ROUTES.SETTINGS,
     component: lazy(() => import('../pages/settings')),
+  },
+
+  {
+    path: ROUTES.CONFIGURATION,
+    component: lazy(() => import('../pages/configuration')),
   },
 
   {

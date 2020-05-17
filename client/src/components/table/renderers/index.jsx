@@ -6,6 +6,7 @@ import TagRenderer from './tag';
 import NullRenderer from './null';
 import ProgressRenderer from './progress';
 import ATGRenderer from './atg';
+import MarkRenderer from './mark';
 
 export {
   BooleanRenderer,
@@ -16,4 +17,5 @@ export {
   NullRenderer,
   ProgressRenderer,
   ATGRenderer,
+  MarkRenderer,
 };

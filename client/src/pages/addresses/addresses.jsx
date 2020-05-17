@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-import useSWR from 'swr';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download } from '../../components';
@@ -11,13 +11,16 @@ import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
+import Forms from './forms';
+
 const Addresses = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  //const [loaded, setLoaded] = useState(null);
 
   const { t } = useTranslation();
 
-  const auth = useAuth('M_ADDRESSES');
+  const access = useAuth('M_ADDRESSES');
 
   const { data: payload, isValidating, revalidate } = useSWR(ADDRESSES.READ);
 
@@ -26,6 +29,13 @@ const Addresses = () => {
     setSelected(value);
   };
 
+/*   const handleCurrentSelection = (visibility, value) => {
+    handleFormState(visibility, value);
+    const { data: addrLines } = useSWR(ADDRESSES.LINES+'?address_code='+selected.address_code);
+    setLoaded({db_address_key:selected.address_code, db_address_lines:addrLines});
+    //handleFormState(true, );
+  };
+ */
   const fields = columns(t);
 
   const data = payload?.records;
@@ -47,7 +57,7 @@ const Addresses = () => {
         icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isLoading}
-        disabled={!auth.canCreate}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -55,7 +65,7 @@ const Addresses = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} auth={auth}>
+    <Page page={page} name={name} modifiers={modifiers} access={access}>
       <DataTable
         data={data}
         columns={fields}
@@ -64,7 +74,7 @@ const Addresses = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <div value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };
