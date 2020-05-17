@@ -24,6 +24,8 @@ import {
   Shift,
   HostData,
   Dates,
+  SoldTo,
+  ShipTo,
 } from './fields';
 import { LOAD_SCHEDULES } from '../../../api';
 import Compartments from './compartments';
@@ -219,6 +221,18 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               </Col>
             </Row>
 
+            {mode === '1' && (
+              <Row gutter={[8, 8]}>
+                <Col span={12}>
+                  <SoldTo form={form} value={value} />
+                </Col>
+
+                <Col span={12}>
+                  <ShipTo form={form} value={value} carrier={carrier} />
+                </Col>
+              </Row>
+            )}
+
             <Row gutter={[8, 8]}>
               <Dates form={form} value={value} />
             </Row>
@@ -244,15 +258,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             {mode === '2' && <Compartments form={form} value={value} drawer={drawer} tanker={tanker} />}
           </TabPane>
 
-          <TabPane tab={t('tabColumns.transactions')} key="1"></TabPane>
+          <TabPane tab={t('tabColumns.transactions')} disabled={IS_CREATING} key="1"></TabPane>
 
-          <TabPane tab={t('tabColumns.driverInstructions')} key="2"></TabPane>
+          <TabPane tab={t('tabColumns.driverInstructions')} disabled={IS_CREATING} key="2"></TabPane>
 
-          <TabPane tab={t('tabColumns.bol')} key="3"></TabPane>
+          <TabPane tab={t('tabColumns.bol')} disabled={IS_CREATING} key="3"></TabPane>
 
-          <TabPane tab={t('tabColumns.loadReport')} key="4"></TabPane>
+          <TabPane tab={t('tabColumns.loadReport')} disabled={IS_CREATING} key="4"></TabPane>
 
-          <TabPane tab={t('tabColumns.additionalHostData')} key="5"></TabPane>
+          <TabPane tab={t('tabColumns.additionalHostData')} disabled={IS_CREATING} key="5"></TabPane>
         </Tabs>
       </Form>
     </Drawer>

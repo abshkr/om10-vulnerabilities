@@ -1,5 +1,3 @@
-import Company from "./company";
-import Printer from "./printer";
-import Usage from "./usage";
-
-export { Company, Printer, Usage };
+import Code from './code';
+import NonCombination from './non-combination';
+export { Code, NonCombination };

@@ -20,7 +20,7 @@ const EquipmentTypes = () => {
 
   const { t } = useTranslation();
 
-  const auth = useAuth('M_LOGICALPRINTERS');
+  const auth = useAuth('M_EQUIPMENT');
 
   const { data: payload, isValidating, revalidate } = useSWR(EQUIPMENT_TYPES.READ);
 

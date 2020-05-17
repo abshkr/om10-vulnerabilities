@@ -131,7 +131,7 @@ const FormModal = ({ visible, onCreate, onCancel, gates }) => {
   );
 };
 
-const Gates = ({ form, value, formVisible, setFormVisibility }) => {
+const Gates = ({ form, value }) => {
   const { t } = useTranslation();
   const [data, setData] = useState([]);
 
@@ -156,10 +156,10 @@ const Gates = ({ form, value, formVisible, setFormVisibility }) => {
         })
         .then((res) => {
           setLoading(false);
-          setData(res.data?.records);
+          setData(res.data?.records || []);
 
           form.setFieldsValue({
-            gates: res.data?.records,
+            gates: res.data?.records || [],
           });
         });
     },

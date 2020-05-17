@@ -6,6 +6,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 60,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.equipmentCode'),
@@ -13,6 +14,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    width: 150,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.compartments'),
@@ -20,6 +23,8 @@ const columns = (t) => [
     filterable: true,
     sortable: true,
     resizable: true,
+    width: 120,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.preview'),
@@ -34,6 +39,8 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     cellRenderer: 'BooleanRenderer',
+    width: 120,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.rigid'),
@@ -42,6 +49,8 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     cellRenderer: 'BooleanRenderer',
+    width: 100,
+    suppressSizeToFit: true,
   },
 ];
 
