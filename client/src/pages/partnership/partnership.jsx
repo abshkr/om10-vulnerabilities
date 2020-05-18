@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import useSWR from 'swr';
 import { Button } from 'antd';
@@ -10,23 +10,33 @@ import { PARTNERSHIP } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
+import { useAuth } from '../../hooks';
 
 const Partnership = () => {
   const { t } = useTranslation();
+  const access = useAuth('M_AREA');
 
   const { data: payload, isValidating, revalidate } = useSWR(PARTNERSHIP.READ);
 
   const fields = columns(t);
   const data = payload?.records;
 
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
+
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
+  };
+
   const handleClick = (value) => {
-    FormModal({
-      value,
-      form: <Forms value={value} length={payload?.records?.length} />,
-      id: value?.partner_cmpy_code,
-      name: value?.partner_cmpy_name,
-      t,
-    });
+    // FormModal({
+    //   value,
+    //   form: <Forms value={value} length={payload?.records?.length} />,
+    //   id: value?.partner_cmpy_code,
+    //   name: value?.partner_cmpy_name,
+    //   t,
+    // });
   };
 
   const modifiers = (
@@ -35,7 +45,7 @@ const Partnership = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
+      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleFormState(true, null)} loading={isValidating}>
         {t('operations.create')}
       </Button>
     </>
@@ -43,7 +53,14 @@ const Partnership = () => {
 
   return (
     <Page page={t('pageMenu.customers')} name={t('pageNames.partnership')} modifiers={modifiers}>
-      <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
+      <DataTable 
+        columns={fields} 
+        data={data} 
+        isLoading={isValidating} 
+        onClick={(payload) => handleFormState(true, payload)} 
+        handleSelect={(payload) => handleFormState(true, payload[0])}
+      />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access}/>
     </Page>
   );
 };

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PARTNERSHIP } from '../../../../api';
 
-const Company = ({ form, value, onChange }) => {
+const Company = ({ form, value, onChange, disable }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(PARTNERSHIP.SUPPLIERS);
@@ -48,6 +48,7 @@ const Company = ({ form, value, onChange }) => {
       <Select
         loading={isValidating}
         showSearch
+        disabled = {disable}
         onChange={handleChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCompany') : null}

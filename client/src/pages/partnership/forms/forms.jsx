@@ -8,7 +8,7 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
@@ -19,13 +19,19 @@ import { PARTNERSHIP } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value }) => {
+const FormModal = ({ value, visible, handleFormState, access }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const [company, setCompany] = useState(undefined);
-
+  
   const IS_CREATING = !value;
+  const IS_CUST = (value && value.partner_cust_acct.length > 0)
+  
+  const onComplete = () => {
+    handleFormState(false, null);
+    mutate(PARTNERSHIP.READ);
+  };
 
   const onFinish = (values) => {
     Modal.confirm({
@@ -40,9 +46,8 @@ const FormModal = ({ value }) => {
           .post(PARTNERSHIP.UPDATE, _.omit(values, ['partner']))
           .then(
             axios.spread((response) => {
-              Modal.destroyAll();
+              onComplete();
 
-              mutate(PARTNERSHIP.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
@@ -94,46 +99,46 @@ const FormModal = ({ value }) => {
   };
 
   return (
-    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-      <Tabs defaultActiveKey="1">
-        <TabPane tab={t('tabColumns.general')} key="1">
-          <Company form={form} value={value} onChange={setCompany} />
-          <Customer form={form} value={value} company={company} />
-          <Partner form={form} value={value} company={company} />
-        </TabPane>
-      </Tabs>
+    <Drawer
+      bodyStyle={{ paddingTop: 5 }}
+      onClose={() => handleFormState(false, null)}
+      maskClosable={IS_CREATING}
+      destroyOnClose={true}
+      mask={IS_CREATING}
+      placement="right"
+      width="30vw"
+      visible={visible}>
+      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+        <Tabs defaultActiveKey="1">
+          <TabPane tab={t('tabColumns.general')} key="1">
+            <Company form={form} value={value} onChange={setCompany} disable={!IS_CREATING}/>
+            <Customer form={form} value={value} company={company} disable={!IS_CREATING}/>
+            <Partner form={form} value={value} company={company} disable={!IS_CUST && !IS_CREATING}/>
+          </TabPane>
+        </Tabs>
 
-      <Form.Item>
-        <Button
-          htmlType="button"
-          icon={<CloseOutlined />}
-          style={{ float: 'right' }}
-          onClick={() => Modal.destroyAll()}
-        >
-          {t('operations.cancel')}
-        </Button>
-
-        <Button
-          type="primary"
-          icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-          htmlType="submit"
-          style={{ float: 'right', marginRight: 5 }}
-        >
-          {IS_CREATING ? t('operations.create') : t('operations.update')}
-        </Button>
-
-        {!IS_CREATING && (
+        <Form.Item>
           <Button
-            type="danger"
-            icon={<DeleteOutlined />}
-            style={{ float: 'right', marginRight: 5 }}
-            onClick={onDelete}
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
           >
-            {t('operations.delete')}
+            {t('operations.cancel')}
           </Button>
-        )}
-      </Form.Item>
-    </Form>
+
+          <Button
+            type="primary"
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate || !IS_CUST }
+            icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
+            htmlType="submit"
+            style={{ float: 'right', marginRight: 5 }}
+          >
+            {IS_CREATING ? t('operations.create') : t('operations.update')}
+          </Button>
+        </Form.Item>
+      </Form>
+    </Drawer>
   );
 };
 

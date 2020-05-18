@@ -6,11 +6,10 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { PARTNERSHIP } from '../../../../api';
 
-const Partner = ({ form, value, company }) => {
+const Partner = ({ form, value, company, disable }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(`${PARTNERSHIP.PARTNERS}?supplier=${company}`);
-
   const { setFieldsValue } = form;
 
   const validate = (rule, value) => {
@@ -23,20 +22,25 @@ const Partner = ({ form, value, company }) => {
 
   useEffect(() => {
     if (value) {
-      const payload = [
-        value.prtnr_name1,
-        value.prtnr_name2,
-        value.prtnr_name3,
-        value.prtnr_name4,
-        value.prtnr_name5,
-      ];
-
-      const filtered = _.reject(payload, function (o) {
-        return o === '';
-      });
+      if (value.peers.length > 0) {
+        let payload = [];
+        for (let i = 0; i < value.peers.length; i++) {
+          payload.push(value.peers[i].prtnr_desc)
+        }
+        
+        setFieldsValue({
+          partner: payload,
+        });
+      } else {
+        setFieldsValue({
+          partner: [value.prtnr_desc],
+        });
+      }
 
       setFieldsValue({
-        partner: filtered,
+        partners: {
+          partner_seq: value.partner_seq
+        },
       });
     }
   }, [value, setFieldsValue]);
@@ -45,7 +49,7 @@ const Partner = ({ form, value, company }) => {
     const payload = [];
 
     _.forEach(options?.records, (record) => {
-      if (values.includes(record.prtnr_name1)) {
+      if (values.includes(record.prtnr_desc)) {
         payload.push({
           partner_seq: record.prtnr_seq,
         });
@@ -63,7 +67,7 @@ const Partner = ({ form, value, company }) => {
       <Form.Item name="partner" label={t('fields.partner')} rules={[{ required: true, validator: validate }]}>
         <Select
           loading={isValidating}
-          disabled={isValidating}
+          disabled={isValidating || disable}
           onChange={onChange}
           showSearch
           mode="multiple"
@@ -74,7 +78,7 @@ const Partner = ({ form, value, company }) => {
           }
         >
           {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.prtnr_name1}>
+            <Select.Option key={index} value={item.prtnr_desc}>
               {item.prtnr_desc}
             </Select.Option>
           ))}

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PARTNERSHIP } from '../../../../api';
 
-const Customer = ({ form, value, company }) => {
+const Customer = ({ form, value, company, disable }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(`${PARTNERSHIP.CUSTOMERS}?supplier=${company}`);
@@ -38,6 +38,7 @@ const Customer = ({ form, value, company }) => {
       <Select
         loading={isValidating}
         showSearch
+        disabled = {disable}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCustomer') : null}
         filterOption={(input, option) =>
