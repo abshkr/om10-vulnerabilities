@@ -11,7 +11,7 @@ import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
-//import Forms from './forms';
+import Forms from './forms';
 
 const DelvLocations = () => {
   const [visible, setVisible] = useState(false);
@@ -66,9 +66,9 @@ const DelvLocations = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
-      //<Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
 };
 
 export default auth(DelvLocations);

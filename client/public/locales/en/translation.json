@@ -593,7 +593,8 @@
     "delvCustCatgCode": "Category Code",
     "delvCustCatgText": "Category Description",
     "delvCustCount": "Total Customers",
-    "delvOrderCount": "Total Orders"
+    "delvOrderCount": "Total Orders",
+    "delvFlag": "Treat this delivery location as Default Customer Delivery"
   },
 
   "pageMenu": {
@@ -1032,7 +1033,13 @@
     "selectDestinationType": "Select Destination Type",
     "selectBay": "Select Bay",
     "selectUse": "Select Use",
-    "selectPartner": "Select Partner"
+    "selectPartner": "Select Partner",
+    "selectDocType": "Select Document Type",
+    "selectTrspType": "Select Transport Type",
+    "selectQtyType": "Select Quantity Unit Type",
+    "selectEqptType": "Select Largest Equipment Type",
+    "selectProfile": "Select Profile",
+    "selectAddress": "Select Address"
   },
 
   "validate": {
