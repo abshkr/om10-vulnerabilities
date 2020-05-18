@@ -9,20 +9,44 @@ include_once 'common_class.php';
 class DelvLocation extends CommonClass
 {
     protected $TABLE_NAME = 'DELV_LOCATION';
+    
+    protected $table_view_map = array(
+        "DLV_CODE" => "DELV_CODE",
+        "DLV_NAME" => "DELV_NAME",
+        "DLV_ADDR" => "DELV_ADDR",
+        "DLV_GRID" => "DELV_GRID",
+        "DLV_TRANSTYPE" => "DELV_TRSP_TYPEID",
+        "DLV_DOC_TYPE" => "DELV_DOC_TYPEID",
+        "DLV_QTY_TYPE" => "DELV_QTY_TYPEID",
+        "DLV_ETYP_ID" => "DELV_ETYP_ID",
+        "DLV_PHONE" => "DELV_PHONE",
+        "DLV_TRIP_TIME" => "DELV_TRIP_TIME",
+        "DLV_TARRIF" => "DELV_TARRIF",
+        "DLV_DISTANCE" => "DELV_DISTANCE",
+        "DLV_CONTACT_NAME" => "DELV_CONTACT",
+        "DLV_PROF" => "DELV_PRF_CODE",
+    );
+
+    public $NUMBER_FIELDS = array(
+        "DELV_TRSP_TYPEID",
+        "DELV_DOC_TYPEID",
+        "DELV_QTY_TYPEID",
+        "DELV_ETYP_ID",
+        "DELV_TRIP_TIME",
+        "DELV_TARRIF",
+        "DELV_DISTANCE",
+        "DELV_CUST_COUNT",
+        "DELV_ORDER_COUNT"
+    );
 
     public $BOOLEAN_FIELDS = array(
         
     );
 
-    public $NUMBER_FIELDS = array(
-        "DELV_CUST_COUNT",
-        "DELV_ORDER_COUNT"
-    );
-
     public function unit_types()
     {
         $enum_service = new EnumService($this->conn);
-        return $enum_service->document_types();
+        return $enum_service->unit_types();
     }
 
     public function document_types()
@@ -35,6 +59,34 @@ class DelvLocation extends CommonClass
     {
         $enum_service = new EnumService($this->conn);
         return $enum_service->transport_types();
+    }
+
+    public function profiles()
+    {
+        $query = "
+            SELECT
+                PR.PRF_CODE
+                , PR.PRF_ETYP
+                , PR.PRF_SUPP
+                , ET.ETYP_TITLE             AS PRF_ETYP_NAME
+                , SC.CMPY_NAME              AS PRF_SUPP_NAME
+                , (PR.PRF_CODE||' - '||PR.PRF_ETYP||', '||ET.ETYP_TITLE||' - '||PR.PRF_SUPP||', '||SC.CMPY_NAME)            AS PRF_DESC
+            FROM 
+                PROFILE                 PR
+                , EQUIP_TYPES           ET
+                , COMPANYS              SC
+            WHERE 
+                PR.PRF_ETYP = ET.ETYP_ID
+                AND PR.PRF_SUPP = SC.CMPY_CODE
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
     }
 
     // read personnel
@@ -151,7 +203,7 @@ class DelvLocation extends CommonClass
             return null;
         }
     }
-
+/*
     // pure php function
     public function create()
     {
@@ -273,4 +325,5 @@ class DelvLocation extends CommonClass
         oci_commit($this->conn);
         return true;
     }
+*/
 }

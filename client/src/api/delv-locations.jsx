@@ -2,7 +2,8 @@ export const READ = '/api/pages/delv_location/read.php';
 export const DOC_TYPES = '/api/pages/delv_location/document_types.php';
 export const EQPT_TYPES = '/api/pages/delv_location/eqpt_types.php';
 export const TRANSPORT_TYPES = '/api/pages/delv_location/transport_types.php';
-export const UNIT_TYPES = '/api/pages/delv_location/unit_types.php';
+export const QTY_TYPES = '/api/pages/delv_location/unit_types.php';
+export const PROFILES = '/api/pages/delv_location/profiles.php';
 /*
 export const LOCKS = '/api/pages/delv_location/lock_types.php';
 export const PERIOD = '/api/pages/delv_location/period_types.php';
