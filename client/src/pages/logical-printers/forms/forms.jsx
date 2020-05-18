@@ -93,7 +93,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   useEffect(() => {
     if (!value) {
-      resetFields();
+      form.resetFields();
     }
   }, [resetFields, value]);
 

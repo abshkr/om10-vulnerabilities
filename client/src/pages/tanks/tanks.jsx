@@ -1,35 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
-import { Button, List, Avatar, Card, Tag, Tabs, Descriptions } from 'antd';
+import { Button, List, Avatar, Card, Tag, Tabs, Descriptions, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { SyncOutlined, PlusOutlined, TableOutlined, BarsOutlined, LoadingOutlined } from '@ant-design/icons';
 import { ReactComponent as TankSVG } from './tank.svg';
 import Icon from '@ant-design/icons';
 
-import { Page, Download } from '../../components';
+import { Page, Download, DataTable } from '../../components';
 import { TANKS } from '../../api';
 import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
-
+import { search } from '../../utils';
 import _ from 'lodash';
+
 const { TabPane } = Tabs;
 
 const Tanks = () => {
   const [selected, setSelected] = useState(null);
   const [simpleMode, setSimpleMode] = useState(true);
+  const [payload, setPayload] = useState([]);
 
   const { t } = useTranslation();
 
   const access = useAuth('M_TANKCONFIGURATION');
 
-  const { data: payload, isValidating, revalidate } = useSWR(TANKS.READ);
+  const { data: read, isValidating, revalidate } = useSWR(TANKS.READ);
 
   const handleFormState = (visibility, value) => {
     setSelected(value);
+  };
+
+  const onSearch = (value) => {
+    const results = search(value, read?.records);
+
+    setPayload({
+      records: results,
+    });
   };
 
   const fields = columns(t);
@@ -80,70 +90,88 @@ const Tanks = () => {
     'Out Of Service - Offline': '#fa4659',
   };
 
+  useEffect(() => {
+    console.log(read);
+    if (read) {
+      setPayload(read);
+    }
+  }, [read]);
+
   if (simpleMode) {
     return (
       <Page page={page} name={name} modifiers={modifiers} access={access} minimal>
         <div style={{ display: 'flex' }}>
-          <Scrollbars
-            style={{
-              padding: 5,
-              height: 'calc(100vh - 180px)',
-              width: '33.33vw',
-            }}
-          >
-            <List
-              itemLayout="horizontal"
-              loading={{
-                indicator: <LoadingOutlined />,
-                spinning: isLoading,
+          <div>
+            <div style={{ paddingRight: 20 }}>
+              <Input.Search
+                size="large"
+                placeholder="Search Tanks"
+                enterButton="Search"
+                style={{ borderRadius: 5 }}
+                onSearch={onSearch}
+              />
+            </div>
+            <Scrollbars
+              style={{
+                padding: 5,
+                marginTop: 15,
+                height: 'calc(100vh - 235px)',
+                width: '33.33vw',
               }}
-              style={{ marginRight: 20 }}
-              dataSource={payload?.records}
-              renderItem={(item) => (
-                <Card
-                  hoverable
-                  size="small"
-                  style={{
-                    marginBottom: 5,
-                    borderRadius: 5,
-                    borderColor: 'red !important',
-                  }}
-                  onClick={() => setSelected(item)}
-                >
-                  <List.Item>
-                    <List.Item.Meta
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-around',
-                        alignContent: 'center',
-                        alignItems: 'center',
-                      }}
-                      avatar={
-                        <Avatar
-                          size="large"
-                          style={{
-                            backgroundColor: status[item.tank_status_name],
-                            color: 'rgba(0, 0, 0, 0.65)',
-                          }}
-                        >
-                          {item.tank_code}
-                        </Avatar>
-                      }
-                      title={<a>{item.tank_name}</a>}
-                      description={
-                        <div>
-                          <Tag>{item.tank_status_name}</Tag>
-                          <Tag>{item.tank_lvlalarm_desc}</Tag>
-                          <Tag>{item.tank_base_name}</Tag>
-                        </div>
-                      }
-                    />
-                  </List.Item>
-                </Card>
-              )}
-            />
-          </Scrollbars>
-
+            >
+              <List
+                itemLayout="horizontal"
+                loading={{
+                  indicator: <LoadingOutlined />,
+                  spinning: isLoading,
+                }}
+                style={{ marginRight: 20 }}
+                dataSource={payload?.records}
+                renderItem={(item) => (
+                  <Card
+                    hoverable
+                    size="small"
+                    style={{
+                      marginBottom: 5,
+                      borderRadius: 5,
+                      borderColor: 'red !important',
+                    }}
+                    onClick={() => setSelected(item)}
+                  >
+                    <List.Item>
+                      <List.Item.Meta
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-around',
+                          alignContent: 'center',
+                          alignItems: 'center',
+                        }}
+                        avatar={
+                          <Avatar
+                            size="large"
+                            style={{
+                              backgroundColor: status[item.tank_status_name],
+                              color: 'rgba(0, 0, 0, 0.65)',
+                            }}
+                          >
+                            {item.tank_code}
+                          </Avatar>
+                        }
+                        title={<a>{item.tank_name}</a>}
+                        description={
+                          <div>
+                            <Tag color="green">Status: {item.tank_status_name}</Tag>
+                            <Tag color="blue">Density: {item.tank_density}</Tag>
+                            <Tag color="orange">Product: {item.tank_base_name}</Tag>
+                          </div>
+                        }
+                      />
+                    </List.Item>
+                  </Card>
+                )}
+              />
+            </Scrollbars>
+          </div>
           <div
             style={{
               width: '66.66vw',
@@ -203,37 +231,38 @@ const Tanks = () => {
                           </Descriptions.Item>
 
                           <Descriptions.Item label={t('fields.productLevel')}>
-                            {selected?.tank_prod_lvl}
+                            {selected?.tank_prod_lvl} mm
                           </Descriptions.Item>
 
                           <Descriptions.Item label={t('fields.observedVolume')}>
-                            {selected?.tank_amb_vol}
+                            {selected?.tank_amb_vol} Litres
                           </Descriptions.Item>
 
                           <Descriptions.Item label={t('fields.standardVolume')}>
-                            {selected?.tank_cor_vol}
+                            {selected?.tank_cor_vol} Litres
                           </Descriptions.Item>
 
                           <Descriptions.Item label={t('fields.temperature')}>
-                            {selected?.tank_temp}
+                            {selected?.tank_temp} C
                           </Descriptions.Item>
 
                           <Descriptions.Item label={t('fields.standardDensity')}>
-                            {selected?.tank_15_density}
+                            {selected?.tank_15_density} Kg/M3
                           </Descriptions.Item>
 
                           <Descriptions.Item label={t('fields.weightInAir')}>
-                            {selected?.tank_vapour_kg}
+                            {selected?.tank_vapour_kg} Kg
                           </Descriptions.Item>
 
                           <Descriptions.Item label={t('fields.weightInVaccum')}></Descriptions.Item>
 
                           <Descriptions.Item label={t('fields.waterLevel')}>
-                            {selected?.tank_water_lvl}
+                            {selected?.tank_water_lvl} Kg
                           </Descriptions.Item>
 
                           <Descriptions.Item label={t('fields.maximumCapacity')}>
-                            {_.toNumber(selected?.tank_ullage) || 0 + _.toNumber(selected?.tank_cor_vol) || 0}
+                            {_.toNumber(selected?.tank_ullage) || 0 + _.toNumber(selected?.tank_cor_vol) || 0}{' '}
+                            Litres
                           </Descriptions.Item>
                         </Descriptions>
                       </div>
@@ -279,7 +308,11 @@ const Tanks = () => {
     );
   }
 
-  return <Page page={page} name={name} modifiers={modifiers} access={access}></Page>;
+  return (
+    <Page page={page} name={name} modifiers={modifiers} access={access}>
+      <DataTable columns={fields} data={data} isLoading={isValidating} />
+    </Page>
+  );
 };
 
 export default auth(Tanks);

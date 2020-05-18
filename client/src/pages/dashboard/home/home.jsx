@@ -80,7 +80,7 @@ const Home = () => {
                 }, Other: ${data?.key_other || 0}`}</div>
               </div>
               <Icons type="people" scale={1} size={86} />
-              <img src="/svg/id.svg" alt="id" style={{ height: 150 }} />
+              <img src="/svg/id-assignment.svg" alt="id" style={{ height: 150 }} />
             </div>
           </Card>
         </Col>
