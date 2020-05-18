@@ -53,6 +53,7 @@ import * as KEY_READER_DEVICES from './key-reader-devices';
 import * as SITE_CONFIGURATION from './site-configuration';
 import * as ADDRESSES from './addresses';
 import * as EQUIPMENT_TYPES from './equipment-types';
+import * as DELV_LOCATIONS from './delv-locations';
 
 export {
   AUTH,
@@ -110,4 +111,5 @@ export {
   SITE_CONFIGURATION,
   ADDRESSES,
   EQUIPMENT_TYPES,
+  DELV_LOCATIONS,
 };

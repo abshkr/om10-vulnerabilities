@@ -17,7 +17,19 @@
 
   "fields": {
     "omegaUser": "Omega用户",
-    "password": "密码"
+    "password": "密码",
+    "addressCode": "地址代码",
+    "addressDetails": "地址详情",
+    "addressAction": "",
+    "addressLineCode": "地址代码",
+    "addressLineNo": "地址详情行号",
+    "addressLineType": "地址详情类型",
+    "addressLineTypeId": "地址详情类型编号",
+    "addressLineTypeName": "地址详情类型名称",
+    "addressLineText": "地址详情内容",
+    "addressText": "地址详情",
+    "addressLines": "地址行详情",
+    "addressLineTypes": "地址详情类型"
   },
 
   "pageMenu": {

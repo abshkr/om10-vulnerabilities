@@ -263,7 +263,7 @@ const paths = [
 
   {
     path: ROUTES.DELIVERY_LOCATIONS,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/delv-locations')),
   },
 
   {
@@ -357,8 +357,13 @@ const paths = [
   },
 
   {
+<<<<<<< HEAD
+    path: ROUTES.CONFIGURATION,
+    component: lazy(() => import('../pages/configuration')),
+=======
     path: ROUTES.TANKS,
     component: lazy(() => import('../pages/tanks')),
+>>>>>>> 1ea76fc2464ae2399579c282dfab1dfa578a5d97
   },
 ];
 
