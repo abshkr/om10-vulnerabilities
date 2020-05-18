@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/tank_group.php';
 
-Utilities::read('TankGroup', $method = 'tank_items', $filter = false);
+Utilities::read('TankGroup', $method = 'group_items', $filter = false);

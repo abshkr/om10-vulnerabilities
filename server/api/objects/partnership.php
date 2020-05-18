@@ -98,7 +98,8 @@ class Partnership extends CommonClass
                 PR.PRTNR_TYPE,
                 PT.PARTNER_TYPE_NAME PRTNR_TYPE_NAME,
                 PR.PRTNR_ADDR,
-                DL.DB_ADDR_TEXT PRTNR_ADDR_TEXT
+                DL.DB_ADDR_TEXT PRTNR_ADDR_TEXT,
+                PR.PRTNR_SEQ || ' - ' || PR.PRTNR_CODE || ' - ' || PR.PRTNR_NAME1 PRTNR_DESC
             FROM 
                 CMPY_CUST_PRTNR CCP,
                 GUI_COMPANYS CMP,
