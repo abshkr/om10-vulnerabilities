@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
+import { mutate } from 'swr';
 import { Button, Select, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { CheckOutlined, MinusOutlined, EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
@@ -108,7 +109,7 @@ const TimeCodes = () => {
   }, [code, payload, t]);
 
   const onComplete = () => {
-    
+    mutate(TIME_CODES.READ);
   };
 
   const onUpdate = async () => {
