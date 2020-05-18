@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SmileOutlined, FrownOutlined, IdcardOutlined, LockOutlined } from '@ant-design/icons';
+import Icon, { SmileOutlined, FrownOutlined, IdcardOutlined, LockOutlined } from '@ant-design/icons';
 import { Form, Input, Button, notification, Divider, Carousel, Modal, Select } from 'antd';
 
 import { useHistory } from 'react-router-dom';
@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import _ from 'lodash';
+
+import { ReactComponent as LoginIcon } from './login.svg';
 
 import {
   LoginContainer,
@@ -26,6 +28,10 @@ import * as actions from '../../actions/auth';
 
 import { ROUTES, SETTINGS } from '../../constants';
 import { Icons } from '../../components/';
+
+const LoginOutlined = (props) => (
+  <Icon style={{ transform: 'scale(1.3)' }} component={LoginIcon} {...props} />
+);
 
 const Login = ({ handleLogin, auth }) => {
   const { i18n, t } = useTranslation();
@@ -182,6 +188,7 @@ const Login = ({ handleLogin, auth }) => {
                 type="primary"
                 htmlType="submit"
                 loading={isLoading}
+                icon={<LoginOutlined />}
                 disabled={status === 2 || attempts < 0}
               >
                 {status === 2 || attempts < 0 ? t('operations.locked') : t('operations.logIn')}

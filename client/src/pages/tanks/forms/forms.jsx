@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-import {
-  EditOutlined,
-  PlusOutlined,
-  CloseOutlined,
-  RedoOutlined,
-  QuestionCircleOutlined,
-  ControlOutlined,
-} from '@ant-design/icons';
+import { ReactComponent as EditIcon } from '../pencil.svg';
+import { ReactComponent as CloseIcon } from '../interface.svg';
+import { ReactComponent as RotateIcon } from '../rotate.svg';
+
+import Icon, { PlusOutlined, QuestionCircleOutlined, ControlOutlined } from '@ant-design/icons';
 
 import { Form, Button, Tabs, notification, Modal, Radio } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +19,15 @@ import { VCFManager } from '../../../utils';
 import { ROUTES } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
+
+const EditOutlined = (props) => <Icon style={{ transform: 'scale(1.3)' }} component={EditIcon} {...props} />;
+const CloseOutlined = (props) => (
+  <Icon style={{ transform: 'scale(1.3)' }} component={CloseIcon} {...props} />
+);
+
+const RedoOutlined = (props) => (
+  <Icon style={{ transform: 'scale(1.3)' }} component={RotateIcon} {...props} />
+);
 
 const FormModal = ({ value }) => {
   const { t } = useTranslation();
