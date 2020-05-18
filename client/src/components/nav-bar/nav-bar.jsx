@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {
+import Icon, {
   StarOutlined,
   SettingOutlined,
   QuestionCircleOutlined,
@@ -14,6 +14,12 @@ import { useHistory } from 'react-router-dom';
 import { NavBarContainer } from './style';
 import { ROUTES } from '../../constants';
 import { Events } from '..';
+
+import { ReactComponent as SearchIcon } from './search_two.svg';
+
+const SearchIconOutlined = (props) => (
+  <Icon style={{ transform: 'scale(1.3)' }} component={SearchIcon} {...props} />
+);
 
 const { Header } = Layout;
 
@@ -63,7 +69,7 @@ const NavBar = () => {
           onSearch={onSearch}
           style={{ width: 420, marginLeft: 10 }}
         >
-          <Input.Search placeholder="Search OMEGA" />
+          <Input.Search enterButton={<SearchIconOutlined />} placeholder="Search OMEGA" />
         </AutoComplete>
 
         <div style={{ position: 'fixed', right: 15 }}>

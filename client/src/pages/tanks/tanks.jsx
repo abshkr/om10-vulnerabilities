@@ -4,9 +4,15 @@ import useSWR from 'swr';
 import { Button, List, Avatar, Card, Tag, Tabs, Descriptions, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { SyncOutlined, PlusOutlined, TableOutlined, BarsOutlined, LoadingOutlined } from '@ant-design/icons';
+import Icon, { LoadingOutlined } from '@ant-design/icons';
 import { ReactComponent as TankSVG } from './tank.svg';
-import Icon from '@ant-design/icons';
+
+import { ReactComponent as ListIcon } from './list.svg';
+import { ReactComponent as PlusIcon } from './new.svg';
+import { ReactComponent as RotateIcon } from './rotate.svg';
+import { ReactComponent as BarIcon } from './test.svg';
+import { ReactComponent as ExportIcon } from './arrow.svg';
+import { ReactComponent as SearchIcon } from './search.svg';
 
 import { Page, Download, DataTable } from '../../components';
 import { TANKS } from '../../api';
@@ -18,6 +24,23 @@ import { search } from '../../utils';
 import _ from 'lodash';
 
 const { TabPane } = Tabs;
+
+const ListOutlined = (props) => <Icon style={{ transform: 'scale(1.3)' }} component={ListIcon} {...props} />;
+const PlusOutlined = (props) => <Icon style={{ transform: 'scale(1.3)' }} component={PlusIcon} {...props} />;
+
+const SearchOutlined = (props) => (
+  <Icon style={{ transform: 'scale(1.5)' }} component={SearchIcon} {...props} />
+);
+
+const SyncOutlined = (props) => (
+  <Icon style={{ transform: 'scale(1.3)' }} component={RotateIcon} {...props} />
+);
+
+const BarsOutlined = (props) => <Icon style={{ transform: 'scale(1.3)' }} component={BarIcon} {...props} />;
+
+const ExportOutlined = (props) => (
+  <Icon style={{ transform: 'scale(1.3)' }} component={ExportIcon} {...props} />
+);
 
 const Tanks = () => {
   const [selected, setSelected] = useState(null);
@@ -55,17 +78,23 @@ const Tanks = () => {
       <Button
         shape="round"
         type="primary"
-        icon={simpleMode ? <TableOutlined /> : <BarsOutlined />}
+        icon={simpleMode ? <ListOutlined /> : <BarsOutlined />}
         onClick={() => setSimpleMode(!simpleMode)}
       >
         {simpleMode ? t('operations.list') : t('operations.simple')}
       </Button>
 
-      <Button shape="round" icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
+      <Button
+        type="primary"
+        shape="round"
+        icon={<SyncOutlined />}
+        onClick={() => revalidate()}
+        loading={isLoading}
+      >
         {t('operations.refresh')}
       </Button>
 
-      <Download round data={data} isLoading={isLoading} columns={fields} />
+      <Download icon={<ExportOutlined />} round data={data} isLoading={isLoading} columns={fields} />
 
       <Button
         type="primary"
@@ -106,7 +135,7 @@ const Tanks = () => {
               <Input.Search
                 size="large"
                 placeholder="Search Tanks"
-                enterButton="Search"
+                enterButton={<SearchOutlined />}
                 style={{ borderRadius: 5 }}
                 onSearch={onSearch}
               />
@@ -299,7 +328,7 @@ const Tanks = () => {
                 </div>
               </TabPane>
               <TabPane tab="Strapping" key="3" disabled={!selected}>
-                Content of Tab Pane 3
+                Coming Soon
               </TabPane>
             </Tabs>
           </div>
