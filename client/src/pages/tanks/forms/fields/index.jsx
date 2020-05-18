@@ -1,6 +1,6 @@
-import Area from './area';
-import Lock from './lock';
-import Printer from './printer';
-import SystemPrinter from './system-printer';
+import Calculation from './calculation';
+import Gauging from './gauging';
+import General from './general';
+import Levels from './levels';
 
-export { Area, Lock, Printer, SystemPrinter };
+export { Gauging, General, Calculation, Levels };

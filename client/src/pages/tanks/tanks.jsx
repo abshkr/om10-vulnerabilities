@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import useSWR from 'swr';
 import { Button, List, Avatar, Card, Tag, Tabs, Descriptions } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { SyncOutlined, PlusOutlined, TableOutlined, BarsOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, TableOutlined, BarsOutlined, LoadingOutlined } from '@ant-design/icons';
 import { ReactComponent as TankSVG } from './tank.svg';
 import Icon from '@ant-design/icons';
 
-import { Page, DataTable, Download } from '../../components';
+import { Page, Download } from '../../components';
 import { TANKS } from '../../api';
 import { useAuth } from '../../hooks';
 import columns from './columns';
@@ -43,21 +43,23 @@ const Tanks = () => {
   const modifiers = (
     <>
       <Button
+        shape="round"
         type="primary"
-        icon={simpleMode ? <BarsOutlined /> : <TableOutlined />}
+        icon={simpleMode ? <TableOutlined /> : <BarsOutlined />}
         onClick={() => setSimpleMode(!simpleMode)}
       >
-        {simpleMode ? t('operations.simple') : t('operations.grid')}
+        {simpleMode ? t('operations.list') : t('operations.simple')}
       </Button>
 
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
+      <Button shape="round" icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
 
-      <Download data={data} isLoading={isLoading} columns={fields} />
+      <Download round data={data} isLoading={isLoading} columns={fields} />
 
       <Button
         type="primary"
+        shape="round"
         icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isLoading}
@@ -78,12 +80,6 @@ const Tanks = () => {
     'Out Of Service - Offline': '#fa4659',
   };
 
-  useEffect(() => {
-    if (payload) {
-      setSelected(payload?.records[0]);
-    }
-  }, [payload]);
-
   if (simpleMode) {
     return (
       <Page page={page} name={name} modifiers={modifiers} access={access} minimal>
@@ -97,6 +93,10 @@ const Tanks = () => {
           >
             <List
               itemLayout="horizontal"
+              loading={{
+                indicator: <LoadingOutlined />,
+                spinning: isLoading,
+              }}
               style={{ marginRight: 20 }}
               dataSource={payload?.records}
               renderItem={(item) => (
@@ -106,6 +106,7 @@ const Tanks = () => {
                   style={{
                     marginBottom: 5,
                     borderRadius: 5,
+                    borderColor: 'red !important',
                   }}
                   onClick={() => setSelected(item)}
                 >
@@ -113,12 +114,18 @@ const Tanks = () => {
                     <List.Item.Meta
                       style={{
                         display: 'flex',
-                        justifyContent: 'center',
+                        justifyContent: 'space-around',
                         alignContent: 'center',
                         alignItems: 'center',
                       }}
                       avatar={
-                        <Avatar size="large" style={{ backgroundColor: status[item.tank_status_name] }}>
+                        <Avatar
+                          size="large"
+                          style={{
+                            backgroundColor: status[item.tank_status_name],
+                            color: 'rgba(0, 0, 0, 0.65)',
+                          }}
+                        >
                           {item.tank_code}
                         </Avatar>
                       }
@@ -151,68 +158,118 @@ const Tanks = () => {
                     minHeight: 'calc(100vh - 240px)',
                     background: 'white',
                     display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    alignContent: 'center',
+
                     borderRadius: 5,
                     border: '1px solid #0054a43b',
                     padding: 10,
                   }}
                 >
-                  <Icon
-                    component={TankSVG}
-                    style={{
-                      fontSize: '400px',
-                    }}
-                  />
+                  {selected && (
+                    <>
+                      <div
+                        style={{
+                          width: '50%',
+                          minHeight: '100%',
+                          display: 'flex',
+                          alignContent: 'center',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Icon
+                          component={TankSVG}
+                          style={{
+                            fontSize: '400px',
+                          }}
+                        />
+                      </div>
 
-                  <Descriptions bordered size="small" layout="vertical" title={selected?.tank_name}>
-                    <Descriptions.Item label={t('fields.tankCode')}>{selected?.tank_code}</Descriptions.Item>
+                      <div
+                        style={{
+                          width: '50%',
+                          minHeight: '100%',
+                          display: 'flex',
+                          alignContent: 'center',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Descriptions bordered size="small" layout="vertical" title={selected?.tank_name}>
+                          <Descriptions.Item label={t('fields.tankCode')}>
+                            {selected?.tank_code}
+                          </Descriptions.Item>
 
-                    <Descriptions.Item label={t('fields.product')}>
-                      {selected?.tank_base_name}
-                    </Descriptions.Item>
+                          <Descriptions.Item label={t('fields.product')}>
+                            {selected?.tank_base_name}
+                          </Descriptions.Item>
 
-                    <Descriptions.Item label={t('fields.productLevel')}>
-                      {selected?.tank_prod_lvl}
-                    </Descriptions.Item>
+                          <Descriptions.Item label={t('fields.productLevel')}>
+                            {selected?.tank_prod_lvl}
+                          </Descriptions.Item>
 
-                    <Descriptions.Item label={t('fields.observedVolume')}>
-                      {selected?.tank_amb_vol}
-                    </Descriptions.Item>
+                          <Descriptions.Item label={t('fields.observedVolume')}>
+                            {selected?.tank_amb_vol}
+                          </Descriptions.Item>
 
-                    <Descriptions.Item label={t('fields.standardVolume')}>
-                      {selected?.tank_cor_vol}
-                    </Descriptions.Item>
+                          <Descriptions.Item label={t('fields.standardVolume')}>
+                            {selected?.tank_cor_vol}
+                          </Descriptions.Item>
 
-                    <Descriptions.Item label={t('fields.temperature')}>
-                      {selected?.tank_temp}
-                    </Descriptions.Item>
+                          <Descriptions.Item label={t('fields.temperature')}>
+                            {selected?.tank_temp}
+                          </Descriptions.Item>
 
-                    <Descriptions.Item label={t('fields.standardDensity')}>
-                      {selected?.tank_15_density}
-                    </Descriptions.Item>
+                          <Descriptions.Item label={t('fields.standardDensity')}>
+                            {selected?.tank_15_density}
+                          </Descriptions.Item>
 
-                    <Descriptions.Item label={t('fields.weightInAir')}>
-                      {selected?.tank_vapour_kg}
-                    </Descriptions.Item>
+                          <Descriptions.Item label={t('fields.weightInAir')}>
+                            {selected?.tank_vapour_kg}
+                          </Descriptions.Item>
 
-                    <Descriptions.Item label={t('fields.weightInVaccum')}></Descriptions.Item>
+                          <Descriptions.Item label={t('fields.weightInVaccum')}></Descriptions.Item>
 
-                    <Descriptions.Item label={t('fields.waterLevel')}>
-                      {selected?.tank_water_lvl}
-                    </Descriptions.Item>
+                          <Descriptions.Item label={t('fields.waterLevel')}>
+                            {selected?.tank_water_lvl}
+                          </Descriptions.Item>
 
-                    <Descriptions.Item label={t('fields.maximumCapacity')}>
-                      {_.toNumber(selected?.tank_ullage) || 0 + _.toNumber(selected?.tank_cor_vol) || 0}
-                    </Descriptions.Item>
-                  </Descriptions>
+                          <Descriptions.Item label={t('fields.maximumCapacity')}>
+                            {_.toNumber(selected?.tank_ullage) || 0 + _.toNumber(selected?.tank_cor_vol) || 0}
+                          </Descriptions.Item>
+                        </Descriptions>
+                      </div>
+                    </>
+                  )}
+
+                  {!selected && (
+                    <div
+                      style={{
+                        width: '100%',
+                        minHeight: '100%',
+                        display: 'flex',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      Select A Tank To Begin
+                    </div>
+                  )}
                 </div>
               </TabPane>
-              <TabPane tab="Details" key="2">
-                Content of Tab Pane 2
+              <TabPane tab="Details" key="2" disabled={!selected}>
+                <div
+                  style={{
+                    background: 'white',
+                    borderRadius: 5,
+                    border: '1px solid #0054a43b',
+                    padding: '0 10px 10px 10px',
+                    maxHeight: 'calc(100vh - 240px)',
+                  }}
+                >
+                  <Forms value={selected} />
+                </div>
               </TabPane>
-              <TabPane tab="Strapping" key="3">
+              <TabPane tab="Strapping" key="3" disabled={!selected}>
                 Content of Tab Pane 3
               </TabPane>
             </Tabs>

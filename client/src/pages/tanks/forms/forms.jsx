@@ -1,32 +1,53 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
+import {
+  EditOutlined,
+  PlusOutlined,
+  CloseOutlined,
+  RedoOutlined,
+  QuestionCircleOutlined,
+  ControlOutlined,
+} from '@ant-design/icons';
+
+import { Form, Button, Tabs, notification, Modal, Radio } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import useSWR, { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 
-import { Area, Lock, Printer, SystemPrinter } from './fields';
-import { PHYSICAL_PRINTERS } from '../../../api';
+import { Gauging, General, Calculation, Levels } from './fields';
+
+import { TANKS, TANK_STATUS, AUTH } from '../../../api';
+import { VCFManager } from '../../../utils';
+import { ROUTES } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
+  const { data: envrionment } = useSWR(AUTH.ENVIRONMENT);
+
+  const [tab, setTab] = useState('1');
+  const [refTempC, setRefTempC] = useState('');
+  const [refTempF, setRefTempF] = useState('');
+
   const IS_CREATING = !value;
+  const CAN_CALCULATE = tab === '2';
+  const SHOW_STRAPPING = tab === '1';
 
-  const { resetFields } = form;
-
-  const onComplete = () => {
-    handleFormState(false, null);
-    mutate(PHYSICAL_PRINTERS.READ);
-  };
-
-  const onFinish = async () => {
-    const values = await form.validateFields();
+  const onFinish = (values) => {
+    const payload = _.omit(
+      {
+        ...values,
+        tank_temp:
+          values.tank_temp.tank_temp_unit === 'degC'
+            ? values.tank_temp
+            : VCFManager.temperatureF2C(values.tank_temp),
+      },
+      ['tank_temp_unit']
+    );
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -37,52 +58,283 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(IS_CREATING ? PHYSICAL_PRINTERS.CREATE : PHYSICAL_PRINTERS.UPDATE, values)
-          .then(() => {
-            onComplete();
+          .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, payload)
+          .then(
+            axios.spread((response) => {
+              Modal.destroyAll();
 
-            notification.success({
-              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-              description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
-            });
-          })
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
+              mutate(TANK_STATUS.READ);
+              notification.success({
+                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
               });
+            })
+          )
+          .catch((error) => {
+            notification.error({
+              message: error.message,
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
             });
           });
       },
     });
   };
 
-  const onDelete = () => {
+  const handleRefTemperature = (temperature, unit) => {
+    if (unit === 0) {
+      setRefTempC(temperature);
+      const temp = VCFManager.temperatureC2F(temperature);
+      setRefTempF(temp);
+    } else {
+      setRefTempF(temperature);
+      const temp = VCFManager.temperatureF2C(temperature);
+      setRefTempC(temp);
+    }
+  };
+
+  const handleDensityType = (type) => {
+    const { tank_15_density, tank_density, tank_api } = form.getFieldsValue([
+      'tank_15_density',
+      'tank_density',
+      'tank_api',
+    ]);
+
+    const payload = {
+      reference: _.toNumber(envrionment?.VSM_COMPENSATION_PT) || 15,
+    };
+
+    if (type === 'D15C') {
+      const converted = _.toNumber(tank_15_density);
+      const valid = _.isNumber(converted);
+
+      if (valid) {
+        payload.value = converted;
+        payload.type = 'D15C';
+      }
+    } else if (type === 'D30C') {
+      const converted = _.toNumber(tank_density);
+      const valid = _.isNumber(converted);
+
+      if (valid) {
+        payload.value = converted;
+        payload.type = 'D30C';
+      }
+    } else if (type === 'A60F') {
+      const converted = _.toNumber(tank_api);
+      const valid = _.isNumber(converted);
+
+      if (valid) {
+        payload.value = converted;
+        payload.type = 'A60F';
+      }
+    } else {
+      const converted = _.toNumber(tank_15_density);
+      const valid = _.isNumber(converted);
+
+      if (valid) {
+        payload.value = converted;
+        payload.type = 'NA';
+      }
+    }
+
+    return payload;
+  };
+
+  const handleAPIRange = (low, high) => {
+    if (low && high) {
+      const end = VCFManager.api(low);
+      const start = VCFManager.api(high);
+
+      return {
+        low: _.round(start, 2),
+        high: _.round(end, 2),
+      };
+    } else {
+      return {
+        low: 0,
+        high: 85,
+      };
+    }
+  };
+
+  const onCalculateByDensity = () => {
     Modal.confirm({
-      title: t('prompts.delete'),
-      okText: t('operations.yes'),
-      okType: 'danger',
-      icon: <DeleteOutlined />,
+      title: t('prompts.calculate'),
+      okText: t('operations.calculate'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      content: (
+        <Form form={form} initialValues={{ type: 'D15C' }}>
+          <Form.Item name="type">
+            <Radio.Group style={{ width: '25vw', marginBottom: 15, marginTop: 5 }}>
+              <Radio value="D15C">Use Standard</Radio>
+              <Radio value="D30C">Use Corrected</Radio>
+              <Radio value="A60F">Use API</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Form>
+      ),
+      onOk: () => {
+        const base = value?.tank_base_class;
+        const type = form.getFieldValue('type');
+        const payload = handleDensityType(type);
+
+        if (base !== '6') {
+          if (payload.type === 'D15C') {
+            const densityAtXC = VCFManager.densityAtXC(payload.value, payload.reference);
+            const densityAt60F = VCFManager.densityAt60F(payload.value, payload.reference, 'C');
+            const api = VCFManager.api(densityAt60F);
+
+            form.setFieldsValue({
+              tank_density: densityAtXC.toFixed(3),
+              tank_api: api.toFixed(3),
+            });
+          }
+
+          if (payload.type === 'D30C') {
+            const density15C = VCFManager.density15CFromXC(payload.value, payload.reference, 3);
+            const densityAt60F = VCFManager.densityAt60F(density15C);
+            const api = VCFManager.api(densityAt60F);
+
+            form.setFieldsValue({
+              tank_15_density: density15C.toFixed(3),
+              tank_api: api.toFixed(3),
+            });
+          }
+
+          if (payload.type === 'A60F') {
+            const densityAt15C = VCFManager.densityAt15C(payload.value);
+            const densityAtXC = VCFManager.densityAtXC(densityAt15C, payload.reference);
+
+            form.setFieldsValue({
+              tank_density: densityAtXC.toFixed(3),
+              tank_15_density: densityAt15C.toFixed(3),
+            });
+          }
+        } else {
+          if (payload.type === 'D15C') {
+            const density = payload.value;
+            const densityAt60F = VCFManager.densityAt60F(density);
+            const api = VCFManager.api(densityAt60F);
+
+            form.setFieldsValue({
+              tank_density: density.toFixed(3),
+              tank_api: api.toFixed(3),
+            });
+          }
+
+          if (payload.type === 'D30C') {
+            const density = payload.value;
+            const densityAt60F = VCFManager.densityAt60F(density);
+            const api = VCFManager.api(densityAt60F);
+
+            form.setFieldsValue({
+              tank_15_density: density.toFixed(3),
+              tank_api: api.toFixed(3),
+            });
+          }
+
+          if (payload.type === 'A60F') {
+            const density = VCFManager.densityAt60F(payload.value);
+
+            form.setFieldsValue({
+              tank_15_density: density.toFixed(3),
+            });
+          }
+        }
+      },
+    });
+  };
+
+  const onCalculateByLevel = () => {
+    const { getFieldsValue, setFieldsValue } = form;
+
+    const payload = getFieldsValue(['tank_temp', 'tank_density', 'tank_amb_vol', 'tank_liquid_kg']);
+
+    const values = {
+      tank_base: value?.tank_base,
+      tank_qty_type: 'KG',
+      tank_qty_amount: payload?.tank_liquid_kg,
+      tank_temp: payload?.tank_temp,
+      tank_density: payload?.tank_density,
+    };
+
+    Modal.confirm({
+      title: t('prompts.calculate'),
+      okText: t('operations.calculate'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
         await axios
-          .post(PHYSICAL_PRINTERS.DELETE, value)
-          .then(() => {
-            onComplete();
-
+          .post(TANK_STATUS.CALCULATE_QUANTITY, values)
+          .then((response) => {
+            setFieldsValue({
+              tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
+              tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
+              tank_liquid_kg: _.round(response?.data?.REAL_KG, 2),
+            });
             notification.success({
-              message: t('messages.deleteSuccess'),
-              description: `${t('descriptions.deleteSuccess')}`,
+              message: t('messages.calculateSuccess'),
+              description: t('descriptions.calculateSuccess'),
             });
           })
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
-              });
+
+          .catch((error) => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.calculateFailed'),
+            });
+          });
+      },
+    });
+  };
+
+  const onCalculateByQuantity = () => {
+    const { getFieldsValue, setFieldsValue } = form;
+
+    const payload = getFieldsValue(['tank_temp', 'tank_density', 'tank_amb_vol', 'tank_prod_lvl']);
+
+    const values = {
+      tank_base: value?.tank_base,
+      tank_qty_type: 'LT',
+      tank_qty_amount: payload?.tank_amb_vol,
+      tank_temp: payload?.tank_temp,
+      tank_density: payload?.tank_density,
+      tank_prod_lvl: payload?.tank_prod_lvl,
+      tank_code: value?.tank_code,
+    };
+
+    Modal.confirm({
+      title: t('prompts.calculate'),
+      okText: t('operations.calculate'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(TANK_STATUS.CALCULATE_QUANTITY, values)
+          .then((response) => {
+            setFieldsValue({
+              tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
+              tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
+              tank_liquid_kg: _.round(response?.data?.REAL_KG, 2),
+            });
+
+            notification.success({
+              message: t('messages.calculateSuccess'),
+              description: t('descriptions.calculateSuccess'),
+            });
+          })
+
+          .catch((error) => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.calculateFailed'),
             });
           });
       },
@@ -90,58 +342,107 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   };
 
   useEffect(() => {
-    if (!value) {
-      resetFields();
+    if (envrionment) {
+      handleRefTemperature(envrionment.VSM_COMPENSATION_PT, 0);
     }
-  }, [resetFields, value]);
+  }, [envrionment]);
+
+  const range = handleAPIRange(value?.tank_base_dens_lo, value?.tank_base_dens_hi);
 
   return (
-    <Drawer
-      bodyStyle={{ paddingTop: 5 }}
-      onClose={() => handleFormState(false, null)}
-      maskClosable={IS_CREATING}
-      destroyOnClose={true}
-      mask={IS_CREATING}
-      placement="right"
-      width="30vw"
-      visible={visible}
-      footer={
-        <>
-          <Button
-            type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-            onClick={onFinish}
-            style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
-          >
-            {IS_CREATING ? t('operations.create') : t('operations.update')}
-          </Button>
+    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+      <Tabs defaultActiveKey={tab} animated={false} onChange={setTab}>
+        <TabPane
+          className="ant-tab-window-no-margin"
+          tab={t('tabColumns.general')}
+          forceRender={true}
+          key="1"
+        >
+          <General form={form} value={value} refTempC={refTempC} refTempF={refTempF} />
+        </TabPane>
 
-          {!IS_CREATING && (
+        <TabPane
+          className="ant-tab-window-no-margin"
+          tab={t('tabColumns.calculations')}
+          forceRender={true}
+          key="2"
+        >
+          <Calculation form={form} value={value} range={range} envrionment={envrionment} />
+        </TabPane>
+
+        <TabPane
+          className="ant-tab-window-no-margin"
+          tab={t('tabColumns.gauging')}
+          forceRender={true}
+          key="3"
+        >
+          <Gauging form={form} value={value} />
+        </TabPane>
+
+        <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.levels')} forceRender={true} key="4">
+          <Levels form={form} value={value} />
+        </TabPane>
+      </Tabs>
+
+      <Form.Item>
+        <Button
+          htmlType="button"
+          icon={<CloseOutlined />}
+          style={{ float: 'right' }}
+          onClick={() => Modal.destroyAll()}
+        >
+          {t('operations.cancel')}
+        </Button>
+
+        <Button
+          type="primary"
+          icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
+          htmlType="submit"
+          style={{ float: 'right', marginRight: 5 }}
+        >
+          {IS_CREATING ? t('operations.create') : t('operations.update')}
+        </Button>
+
+        {SHOW_STRAPPING && (
+          <Button
+            icon={<ControlOutlined />}
+            onClick={() => window.open(`${ROUTES.TANK_STRAPPING}?tank_code=${value?.tank_code}`, '_blank')}
+          >
+            {t('operations.tankStrapping')}
+          </Button>
+        )}
+        {CAN_CALCULATE && (
+          <>
             <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete}
-              onClick={onDelete}
+              type="primary"
+              icon={<RedoOutlined />}
+              style={{ marginRight: 5 }}
+              onClick={onCalculateByDensity}
             >
-              {t('operations.delete')}
+              {t('operations.calculateDensity')}
             </Button>
-          )}
-        </>
-      }
-    >
-      <Form layout="vertical" form={form} scrollToFirstError>
-        <Tabs defaultActiveKey="1">
-          <TabPane tab={t('tabColumns.general')} key="1">
-            <SystemPrinter form={form} value={value} />
-            <Printer form={form} value={value} />
-            <Area form={form} value={value} />
-            <Lock form={form} value={value} />
-          </TabPane>
-        </Tabs>
-      </Form>
-    </Drawer>
+
+            <Button
+              type="primary"
+              icon={<RedoOutlined />}
+              style={{ marginRight: 5 }}
+              onClick={onCalculateByLevel}
+            >
+              {t('operations.calculateQuantityByLevel')}
+            </Button>
+
+            <Button
+              type="primary"
+              icon={<RedoOutlined />}
+              style={{ marginRight: 5 }}
+              onClick={onCalculateByQuantity}
+            >
+              {t('operations.calculateQuantity')}
+            </Button>
+          </>
+        )}
+      </Form.Item>
+    </Form>
   );
 };
 

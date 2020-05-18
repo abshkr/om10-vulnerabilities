@@ -1,2 +1,2 @@
-import Forms from "./forms";
+import Forms from './forms';
 export default Forms;

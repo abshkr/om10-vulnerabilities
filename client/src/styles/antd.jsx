@@ -5,6 +5,15 @@ const AntdStyleProvider = createGlobalStyle`
 
   .ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab-active {
     color: #0054a4;
+   
+  }
+
+
+  .ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border: 1px solid #0054a43b !important;
+    margin-right: 10px;
   }
 
   .ant-card {
@@ -18,6 +27,7 @@ const AntdStyleProvider = createGlobalStyle`
   .ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab-active {
     background: #0054a4;
     color: white;
+
   }
 
   .ant-statistic-content {

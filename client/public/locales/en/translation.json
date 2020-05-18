@@ -539,7 +539,11 @@
     "schedule": "Schedule",
     "prevProduct": "Prev. Product",
     "delvNo": "Delv No.",
-    "gateCode": "Gate Code"
+    "gateCode": "Gate Code",
+    "weightInAir": "Weight In Air",
+    "weightInVaccum": "Weight In Vaccum",
+    "waterLevel": "Water Level",
+    "maximumCapacity": "Maximum Capacity"
   },
 
   "pageMenu": {
