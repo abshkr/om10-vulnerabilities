@@ -323,6 +323,11 @@ class DelvLocation extends CommonClass
         }
     }
 
+    public function read_customer_by_delvloc()
+    {
+        
+    }
+
 /*
     // pure php function
     public function create()
