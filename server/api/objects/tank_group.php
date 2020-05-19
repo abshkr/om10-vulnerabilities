@@ -37,12 +37,13 @@ class TankGroup extends CommonClass
                 TGR_TKLK_TANKDEPO)
             VALUES (
                 :tgr_grlk,
-                0,
+                :tgr_ntk,
                 :tgr_tklk_tankcode,
                 :site_code
             )";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':tgr_grlk', $this->tgr_name);
+            oci_bind_by_name($stmt, ':tgr_ntk', $value->tgr_ntk);
             oci_bind_by_name($stmt, ':tgr_tklk_tankcode', $value->tgr_tankcode);
             oci_bind_by_name($stmt, ':site_code', $site_code);
             
@@ -209,12 +210,6 @@ class TankGroup extends CommonClass
     public function activate_tank()
     {
         write_log(json_encode($this), __FILE__, __LINE__);
-
-        if ($this->tgr_tankcode == $this->old_active) {
-            $echo = new EchoSchema(200, response("__ALREADY_ACTIVATED_TANK__", null, array($this->tgr_tankcode)));
-            echo json_encode($echo, JSON_PRETTY_PRINT);
-            return;
-        }
 
         $query_string = "tk=" . rawurlencode(strip_tags($this->tgr_tankcode)) . 
             "&tkgrp=" . rawurlencode(strip_tags($this->tgr_name)) .

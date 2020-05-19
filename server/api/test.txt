@@ -758,12 +758,15 @@ https://{{server_ip}}/api/pages/tank_group/activate_tank.php
 https://{{server_ip}}/api/pages/tank_group/create.php
 {
     "tgr_name": "test_group",
+	"tgr_tankcode": "",
     "tank_items": [
         {
-            "tgr_tankcode": "403404"
+            "tgr_tankcode": "403404",
+			"tgr_ntk": 1
         },
         {
             "tgr_tankcode": "403410"
+			"tgr_ntk": 0
         }
     ]
 }
