@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-const Grid = ({ form, value }) => {
+const Grid = ({ form, value, flag }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -24,8 +24,6 @@ const Grid = ({ form, value }) => {
       setFieldsValue({
         delv_grid: value.delv_grid
       });
-
-      //onChange(e.target.value==='CSTDLV'? true : false);
     }
   }, [value, setFieldsValue]);
 /*
@@ -37,7 +35,7 @@ const Grid = ({ form, value }) => {
 */
   return (
     <Form.Item name="delv_grid" label={t('fields.delvGrid')} rules={[{ required: true, validator: validate }]}>
-      <Input />
+      <Input disabled={flag}/>
     </Form.Item>
   );
 };

@@ -39,7 +39,9 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
   const IS_CREATING = !value;
 
   const [flag, setFlag] = useState(undefined);
-  const [grid, setGrid] = useState(undefined);
+  if (value) {
+    value.delv_flag = value.delv_grid==='CSTDLV'? true : false;
+  }
 
   const { resetFields } = form;
 
@@ -131,7 +133,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
       resetFields();
     }
   }, [resetFields, value]);
-
+console.log(flag);
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -171,11 +173,11 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
       <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Flag form={form} value={value} />
+            <Flag form={form} value={value} onChange={setFlag} />
             <Code form={form} value={value} />
             <Name form={form} value={value} />
             <Address form={form} value={value} />
-            <Grid form={form} value={value} />
+            <Grid form={form} value={value} flag={flag} />
             <TransportType form={form} value={value} />
             <DocumentType form={form} value={value} />
             <QuantityType form={form} value={value} />

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Checkbox } from 'antd';
 
-const Flag = ({ form, value }) => {
+const Flag = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -13,9 +13,9 @@ const Flag = ({ form, value }) => {
         delv_flag: value.delv_grid==='CSTDLV'? true : false
       });
 
-      //onChange(e.target.value? 'CSTDLV' : '');
+      onChange(value?.delv_flag);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 /*
   const onChange = (e) => {
     if (value) {
@@ -26,7 +26,7 @@ const Flag = ({ form, value }) => {
   return (
     <div style={{ display: 'flex' }}>
       <Form.Item name="delv_flag" style={{ marginTop: 5 }} valuePropName="checked">
-        <Checkbox > {t('fields.delvFlag')} </Checkbox>
+        <Checkbox onChange={onChange} > {t('fields.delvFlag')} </Checkbox>
       </Form.Item>
     </div>
   );
