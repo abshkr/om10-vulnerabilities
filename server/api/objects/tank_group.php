@@ -224,7 +224,7 @@ class TankGroup extends CommonClass
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/stck_mgmt/tank_grp.cgi", $query_string);
         // write_log($res, __FILE__, __LINE__, LogLevel::ERROR);
-        if (strpos($res, "tks_jsArr") !== false) {
+        if (strpos($res, "Failed") === false) {
             $journal = new Journal($this->conn, true);
             $jnl_data[0] = $this->tgr_tankcode;
             $jnl_data[1] = $this->tgr_name;
