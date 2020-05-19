@@ -39,9 +39,6 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
   const IS_CREATING = !value;
 
   const [flag, setFlag] = useState(undefined);
-  if (value) {
-    value.delv_flag = value.delv_grid==='CSTDLV'? true : false;
-  }
 
   const { resetFields } = form;
 
@@ -113,27 +110,14 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
       },
     });
   };
-  /*
-  const onFlagChange = (e) => {
-    if (value) {
-      value.delv_grid = e.target.checked? 'CSTDLV' : '';
-      setGrid(value.delv_grid);
-    }
-  };
 
-  const onGridChange = (e) => {
-    if (value) {
-      value.delv_flag = e.target.value === 'CSTDLV'? true : false;
-      setFlag(value.delv_flag);
-    }
-  };
-*/
   useEffect(() => {
     if (!value) {
       resetFields();
     }
   }, [resetFields, value]);
-console.log(flag);
+
+  console.log(flag);
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -188,28 +172,6 @@ console.log(flag);
             <Contact form={form} value={value} />
             <Phone form={form} value={value} />
             <Profile form={form} value={value} />
-            {/*             <Classification
-              form={form}
-              value={value}
-              onChange={setClassification}
-              classification={classification}
-            />
-            <Group form={form} value={value} />
-            <Color form={form} value={value} />
-
-            {manageBaseProductDensityRange && (
-              <DensityRange form={form} value={value} classification={classification} />
-            )}
-
-            {manageHotProduct && (
-              <>
-                <Divider>{t('tabColumns.product')}</Divider>
-                <RefSpecTemp form={form} value={value} />
-                <CorrectionMethod form={form} value={value} />
-                <HotTempFlag form={form} value={value} />
-              </>
-            )}
- */}
           </TabPane>
         </Tabs>
       </Form>

@@ -7,26 +7,32 @@ const Flag = ({ form, value, onChange }) => {
 
   const { setFieldsValue } = form;
 
+  const handleChange = (event) => {
+    const { checked } = event.target;
+
+    onChange(checked);
+
+    setFieldsValue({
+      delv_grid: checked ? 'CSTDLV' : undefined,
+    });
+  };
+
   useEffect(() => {
     if (value) {
+      const payload = value.delv_grid === 'CSTDLV' ? true : false;
+
       setFieldsValue({
-        delv_flag: value.delv_grid==='CSTDLV'? true : false
+        delv_flag: payload,
       });
 
-      onChange(value?.delv_flag);
+      onChange(payload);
     }
   }, [value, setFieldsValue, onChange]);
-/*
-  const onChange = (e) => {
-    if (value) {
-      value.delv_grid = e.target.checked? 'CSTDLV' : '';
-    }
-  };
-*/
+
   return (
     <div style={{ display: 'flex' }}>
       <Form.Item name="delv_flag" style={{ marginTop: 5 }} valuePropName="checked">
-        <Checkbox onChange={onChange} > {t('fields.delvFlag')} </Checkbox>
+        <Checkbox onChange={handleChange}> {t('fields.delvFlag')} </Checkbox>
       </Form.Item>
     </div>
   );
