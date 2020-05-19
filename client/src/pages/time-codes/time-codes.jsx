@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { CheckOutlined, MinusOutlined, EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import _ from 'lodash';
+import { useAuth } from '../../hooks';
 
 import { Page, DataTable } from '../../components';
 import { TIME_CODES } from '../../api';
@@ -16,6 +17,8 @@ import auth from '../../auth';
 
 const TimeCodes = () => {
   const { t } = useTranslation();
+  const access = useAuth('M_AREA');
+
   const { data: payload, isValidating } = useSWR(TIME_CODES.READ);
 
   const [code, setCode] = useState(null);
@@ -148,7 +151,8 @@ const TimeCodes = () => {
     <>
       <Button type="primary" 
         icon={<EditOutlined />} 
-        onClick={onUpdate}>
+        onClick={onUpdate}
+        disabled={!access?.canUpdate}>
         {t('operations.update')}
       </Button>
     </>

@@ -16,7 +16,6 @@ import Forms from './forms';
 const Addresses = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
-  //const [loaded, setLoaded] = useState(null);
 
   const { t } = useTranslation();
 
@@ -29,13 +28,6 @@ const Addresses = () => {
     setSelected(value);
   };
 
-/*   const handleCurrentSelection = (visibility, value) => {
-    handleFormState(visibility, value);
-    const { data: addrLines } = useSWR(ADDRESSES.LINES+'?address_code='+selected.address_code);
-    setLoaded({db_address_key:selected.address_code, db_address_lines:addrLines});
-    //handleFormState(true, );
-  };
- */
   const fields = columns(t);
 
   const data = payload?.records;

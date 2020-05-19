@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { EditOutlined, PlusOutlined, MinusOutlined, EyeOutlined, CarryOutOutlined, LockOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  PlusOutlined,
+  MinusOutlined,
+  EyeOutlined,
+  CarryOutOutlined,
+  LockOutlined,
+} from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Button, Form } from 'antd';
 import useSWR from 'swr';
@@ -25,35 +32,32 @@ const Items = ({ setTableAPIContext, value }) => {
   let lineAddDisabled = false;
   let lineEditDisabled = true;
   let lineDeleteDisabled = true;
-  const canModifyFurther = selected[0]?.address_action === '+' || selected[0]?.address_action === '*' || disabled;
+  const canModifyFurther =
+    selected[0]?.address_action === '+' || selected[0]?.address_action === '*' || disabled;
   const fields = columns(value, selected);
 
   const handleItemSelect = (value) => {
     setSelected(value);
-    if (selected == null )
-    {
+    if (selected == null) {
       lineDeleteDisabled = true;
       lineEditDisabled = true;
       return;
     }
-    
+
     if (selected.address_action === '+') {
       lineDeleteDisabled = false;
       lineEditDisabled = true;
-    }
-    else if (selected.address_action === '-') {
+    } else if (selected.address_action === '-') {
       lineDeleteDisabled = false;
       lineEditDisabled = true;
-    }
-    else if (selected.address_action === '*') {
+    } else if (selected.address_action === '*') {
       lineDeleteDisabled = false;
       lineEditDisabled = true;
-    }
-    else {
+    } else {
       lineDeleteDisabled = false;
       lineEditDisabled = false;
     }
-  }
+  };
 
   const handleItemAdd = () => {
     lineEditDisabled = true;
@@ -68,7 +72,7 @@ const Items = ({ setTableAPIContext, value }) => {
       db_addr_line_type: '',
       db_addr_line_typename: '',
       db_addr_line: '',
-      editable: true
+      editable: true,
     };
 
     setSize(length);
@@ -81,29 +85,19 @@ const Items = ({ setTableAPIContext, value }) => {
     lineDeleteDisabled = true;
     if (selected.address_action === '+') {
       tableAPI.updateRowData({ remove: selected });
-    }
-    else if (selected.address_action === '-') {
+    } else if (selected.address_action === '-') {
       let dataSelected = selected[0];
       dataSelected.address_action = '';
       tableAPI.updateRowData({ update: dataSelected });
-    }
-    else if (selected.address_action === '') {
+    } else if (selected.address_action === '') {
       let dataSelected = selected[0];
       dataSelected.address_action = '-';
       tableAPI.updateRowData({ update: dataSelected });
-    }
-    else {
-        
+    } else {
     }
   };
 
-  const handleItemEdit = () => {
-    lineEditDisabled = true;
-    lineDeleteDisabled = true;
-//tableAPI.updateRowData({ remove: selected });
-  };
-
-  const onEditingFinished = value => {
+  const onEditingFinished = (value) => {
     let payload = value.data;
 
     tableAPI.updateRowData({ update: [payload] });
@@ -125,23 +119,13 @@ const Items = ({ setTableAPIContext, value }) => {
   return (
     <>
       <Button
-        type="primary" 
-        icon={<PlusOutlined />} 
+        type="primary"
+        icon={<PlusOutlined />}
         disabled={lineAddDisabled}
-        onClick={handleItemAdd} 
+        onClick={handleItemAdd}
         style={{ marginRight: 5 }}
       >
         {t('operations.addLineItem')}
-      </Button>
-
-      <Button 
-        type="primary" 
-        icon={<EditOutlined />} 
-        disabled={lineEditDisabled}
-        onClick={handleItemEdit} 
-        style={{ marginBottom: 10 }}
-      >
-        {t('operations.editLineItem')}
       </Button>
 
       <Button

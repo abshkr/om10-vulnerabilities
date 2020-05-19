@@ -106,7 +106,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="30vw"
+      width="40vw"
       visible={visible}>
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1">
