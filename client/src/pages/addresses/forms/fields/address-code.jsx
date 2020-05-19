@@ -12,13 +12,12 @@ const AddressKey = ({ form, value }) => {
 
   const { setFieldsValue } = form;
 
-  //const { data: addresses, isValidating } = useSWR(ADDRESSES.LINES+'?address_code='+value);
   const { data: addresses, isValidating } = useSWR(ADDRESSES.READ);
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        db_address_key: value.db_address_key
+        db_address_key: value.db_address_key,
       });
     }
   }, [value, setFieldsValue]);
