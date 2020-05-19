@@ -14,7 +14,7 @@ import { useAuth } from '../../hooks';
 
 const Partnership = () => {
   const { t } = useTranslation();
-  const access = useAuth('M_AREA');
+  const access = useAuth('M_PARTNERSHIP');
 
   const { data: payload, isValidating, revalidate } = useSWR(PARTNERSHIP.READ);
 
