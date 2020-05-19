@@ -281,9 +281,22 @@ const AntdStyleProvider = createGlobalStyle`
   }
 
   .ant-descriptions-bordered .ant-descriptions-item-label {
-    background: #0054a4;
-    color: white;
+    background: #f5f7f7;
+    color: rgba(0, 0, 0, 0.54)
+    border-color: #BDC3C7;
     font-weight: bold;
+  }
+  
+  .ant-descriptions-bordered .ant-descriptions-view {
+    border-color: #BDC3C7 !important;
+  }
+
+  .ant-descriptions-bordered .ant-descriptions-row {
+    border-color: #BDC3C7 !important;
+  }
+
+  .ant-descriptions-bordered .ant-descriptions-item-label, .ant-descriptions-bordered .ant-descriptions-item-content {
+    border-color: #BDC3C7 !important;
   }
 `;
 export default AntdStyleProvider;

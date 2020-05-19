@@ -30,7 +30,7 @@ import { ROUTES, SETTINGS } from '../../constants';
 import { Icons } from '../../components/';
 
 const LoginOutlined = (props) => (
-  <Icon style={{ transform: 'scale(1.3)' }} component={LoginIcon} {...props} />
+  <Icon style={{ transform: 'scale(1.8)' }} component={LoginIcon} {...props} />
 );
 
 const Login = ({ handleLogin, auth }) => {

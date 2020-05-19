@@ -356,39 +356,8 @@ const FormModal = ({ value }) => {
   const range = handleAPIRange(value?.tank_base_dens_lo, value?.tank_base_dens_hi);
 
   return (
-    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-      <Tabs defaultActiveKey={tab} animated={false} onChange={setTab}>
-        <TabPane
-          className="ant-tab-window-no-margin"
-          tab={t('tabColumns.general')}
-          forceRender={true}
-          key="1"
-        >
-          <General form={form} value={value} refTempC={refTempC} refTempF={refTempF} />
-        </TabPane>
-
-        <TabPane
-          className="ant-tab-window-no-margin"
-          tab={t('tabColumns.calculations')}
-          forceRender={true}
-          key="2"
-        >
-          <Calculation form={form} value={value} range={range} envrionment={envrionment} />
-        </TabPane>
-
-        <TabPane
-          className="ant-tab-window-no-margin"
-          tab={t('tabColumns.gauging')}
-          forceRender={true}
-          key="3"
-        >
-          <Gauging form={form} value={value} />
-        </TabPane>
-
-        <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.levels')} forceRender={true} key="4">
-          <Levels form={form} value={value} />
-        </TabPane>
-      </Tabs>
+    <>
+      <General form={form} value={value} refTempC={refTempC} refTempF={refTempF} />
 
       <Form.Item>
         <Button
@@ -409,14 +378,6 @@ const FormModal = ({ value }) => {
           {IS_CREATING ? t('operations.create') : t('operations.update')}
         </Button>
 
-        {SHOW_STRAPPING && (
-          <Button
-            icon={<ControlOutlined />}
-            onClick={() => window.open(`${ROUTES.TANK_STRAPPING}?tank_code=${value?.tank_code}`, '_blank')}
-          >
-            {t('operations.tankStrapping')}
-          </Button>
-        )}
         {CAN_CALCULATE && (
           <>
             <Button
@@ -448,7 +409,7 @@ const FormModal = ({ value }) => {
           </>
         )}
       </Form.Item>
-    </Form>
+    </>
   );
 };
 

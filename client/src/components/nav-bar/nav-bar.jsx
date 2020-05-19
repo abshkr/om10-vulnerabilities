@@ -18,7 +18,7 @@ import { Events } from '..';
 import { ReactComponent as SearchIcon } from './search_two.svg';
 
 const SearchIconOutlined = (props) => (
-  <Icon style={{ transform: 'scale(1.3)' }} component={SearchIcon} {...props} />
+  <Icon style={{ transform: 'scale(1.8)' }} component={SearchIcon} {...props} />
 );
 
 const { Header } = Layout;
