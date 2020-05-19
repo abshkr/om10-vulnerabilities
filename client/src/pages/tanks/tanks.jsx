@@ -120,8 +120,8 @@ const Tanks = () => {
   };
 
   useEffect(() => {
-    console.log(read);
     if (read) {
+      setSelected(read?.records[0]);
       setPayload(read);
     }
   }, [read]);

@@ -24,7 +24,7 @@ const DocumentType = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        delv_doc_typeid: value.delv_doc_typeid,
+        delv_doc_typeid: String(value.delv_doc_typeid),
       });
     }
   }, [value, setFieldsValue]);

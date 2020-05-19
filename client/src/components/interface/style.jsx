@@ -13,6 +13,7 @@ const InterfaceContainer = styled.div`
   }
 
   .ant-layout-header {
+    height: 50px !important;
     padding: 0px;
   }
 

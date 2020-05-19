@@ -24,7 +24,7 @@ const Profile = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        delv_prf_code: value.delv_prf_code,
+        delv_prf_code: String(value.delv_prf_code),
       });
     }
   }, [value, setFieldsValue]);

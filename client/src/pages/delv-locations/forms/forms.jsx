@@ -22,7 +22,7 @@ import {
   Tarrif,
   Contact,
   Phone,
-  Profile
+  Profile,
 } from './fields';
 
 import { DELV_LOCATIONS } from '../../../api';
@@ -111,7 +111,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
       },
     });
   };
-/*
+  /*
   const onFlagChange = (e) => {
     if (value) {
       value.delv_grid = e.target.checked? 'CSTDLV' : '';
@@ -186,7 +186,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
             <Contact form={form} value={value} />
             <Phone form={form} value={value} />
             <Profile form={form} value={value} />
-{/*             <Classification
+            {/*             <Classification
               form={form}
               value={value}
               onChange={setClassification}

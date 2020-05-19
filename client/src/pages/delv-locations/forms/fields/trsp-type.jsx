@@ -24,7 +24,7 @@ const TransportType = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        delv_trsp_typeid: value.delv_trsp_typeid,
+        delv_trsp_typeid: String(value.delv_trsp_typeid),
       });
     }
   }, [value, setFieldsValue]);

@@ -24,7 +24,7 @@ const QuantityType = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        delv_qty_typeid: value.delv_qty_typeid,
+        delv_qty_typeid: String(value.delv_qty_typeid),
       });
     }
   }, [value, setFieldsValue]);

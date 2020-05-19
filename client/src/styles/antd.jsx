@@ -13,7 +13,6 @@ const AntdStyleProvider = createGlobalStyle`
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     border: 1px solid #0054a43b !important;
-    margin-right: 10px;
   }
 
   .ant-card {
