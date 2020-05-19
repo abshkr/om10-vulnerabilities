@@ -24,7 +24,7 @@ const Address = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        delv_addr: value.delv_addr,
+        delv_addr: value.delv_addr_code,
       });
     }
   }, [value, setFieldsValue]);

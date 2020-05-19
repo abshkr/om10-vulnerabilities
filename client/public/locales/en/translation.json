@@ -828,7 +828,8 @@
     "loadReport": "Load Report",
     "additionalHostData": "Additional Host Data",
     "transactions": "Transactions",
-    "createGates": "Create Gates"
+    "createGates": "Create Gates",
+    "linkToCustomers": "Link To Customers"
   },
 
   "messages": {
