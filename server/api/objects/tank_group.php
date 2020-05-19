@@ -11,6 +11,10 @@ class TankGroup extends CommonClass
     protected $TABLE_NAME = 'TGROUP';
     protected $VIEW_NAME = 'TGROUP';
 
+    public $BOOLEAN_FIELDS = array(
+        "TANK_ACTIVE" => 1,
+    );
+
     protected function insert_children()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -153,15 +157,21 @@ class TankGroup extends CommonClass
 
     public function available_tanks()
     {
+        if (!isset($this->tgr_name)) {
+            $this->tgr_name = "NoNExIsT";
+        }
         $query = "SELECT
                 TANKS.TANK_CODE AS TANK_CODE,
                 BASE_PRODS.BASE_CODE AS TANK_BASECODE,
                 BASE_PRODS.BASE_NAME AS TANK_BASENAME
             FROM TANKS, BASE_PRODS
             WHERE BASE_PRODS.BASE_CODE = TANKS.TANK_BASE
-                AND (TANKS.TANK_CODE, TANKS.TANK_TERMINAL) NOT IN (SELECT TGR_TKLK_TANKCODE, TGRLINK.TGR_TKLK_TANKDEPO FROM TGRLINK)
+                AND ((TANKS.TANK_CODE, TANKS.TANK_TERMINAL) NOT IN (SELECT TGR_TKLK_TANKCODE, TGRLINK.TGR_TKLK_TANKDEPO FROM TGRLINK)
+                    OR (TANKS.TANK_CODE, TANKS.TANK_TERMINAL) IN 
+                    (SELECT TGR_TKLK_TANKCODE, TGRLINK.TGR_TKLK_TANKDEPO FROM TGRLINK WHERE TGR_GRLK = :tgr_name))
             ORDER BY TANKS.TANK_CODE";
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tgr_name', $this->tgr_name);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
