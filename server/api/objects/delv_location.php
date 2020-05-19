@@ -89,8 +89,19 @@ class DelvLocation extends CommonClass
         }
     }
 
-    // read personnel
+    // read delivery locations
     public function read()
+    {
+        if (isset($this->delv_cust_acct) && $this->delv_cust_acct != '') {
+            return $this->read_include_customer();
+        }
+        else {
+            return $this->read_exclude_customer();
+        }
+    }
+
+    // read delivery locations links to customers
+    public function read_include_customer()
     {
         $query = "
             SELECT 
@@ -192,7 +203,8 @@ class DelvLocation extends CommonClass
                 AND DL.DLV_PROF = PR.PRF_CODE(+)
                 AND DL.DLV_CODE = DCNT.DLC_DELV_LOC(+)
                 AND DL.DLV_CODE = CO.ORDER_DLV_CODE(+)
-            ORDER BY DELV_CODE";
+            ORDER BY DELV_CODE
+        ";
 
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
@@ -203,6 +215,114 @@ class DelvLocation extends CommonClass
             return null;
         }
     }
+
+    // read delivery locations disragarding the customers
+    public function read_exclude_customer()
+    {
+        $query = "
+            SELECT 
+                DL.DLV_CODE                                     AS DELV_CODE
+                , DL.DLV_NAME                                   AS DELV_NAME 
+                , DL.DLV_ADDR                                   AS DELV_ADDR_CODE
+                , NVL(AL.DB_ADDR_TEXT, ' ')                     AS DELV_ADDR_TEXT
+                , DECODE(DA.DB_ADDRESS_KEY, NULL, ' ', DA.DB_ADDRESS_KEY||'['||NVL(AL.DB_ADDR_TEXT, ' ')||']')      AS DELV_ADDR_DESC
+                , DL.DLV_GRID                                   AS DELV_GRID 
+                , DL.DLV_TRANSTYPE                              AS DELV_TRSP_TYPEID
+                , TT.TRANSPORT_NAME                             AS DELV_TRSP_TYPENAME
+                , DL.DLV_DOC_TYPE                               AS DELV_DOC_TYPEID
+                , DT.DOCUMENT_NAME                              AS DELV_DOC_TYPENAME
+                , DL.DLV_QTY_TYPE                               AS DELV_QTY_TYPEID 
+                , QT.QTY_NAME                                   AS DELV_QTY_TYPENAME 
+                , DL.DLV_ETYP_ID                                AS DELV_ETYP_ID 
+                , ET.ETYP_TITLE                                 AS DELV_ETYP_TITLE 
+                , DL.DLV_PHONE                                  AS DELV_PHONE 
+                , DL.DLV_TRIP_TIME                              AS DELV_TRIP_TIME 
+                , DL.DLV_TARRIF                                 AS DELV_TARRIF 
+                , DL.DLV_DISTANCE                               AS DELV_DISTANCE 
+                , DL.DLV_CONTACT_NAME                           AS DELV_CONTACT 
+                , DL.DLV_PROF                                   AS DELV_PRF_CODE 
+                , DECODE(DL.DLV_PROF, NULL, ' ', PR.PRF_DESC)   AS DELV_PRF_DESC 
+                , '-1'                                          AS DELV_CUST_ACCT
+                , ''                                            AS DELV_CUST_ACCTDESC
+                , '-1'                                          AS DELV_CUST_SUPPCODE
+                , ''                                            AS DELV_CUST_SUPPNAME
+                , '-1'                                          AS DELV_CUST_CMPYCODE
+                , ''                                            AS DELV_CUST_CMPYNAME
+                , '-1'                                          AS DELV_CUST_CATGCODE
+                , ''                                            AS DELV_CUST_CATGTEXT
+                , NVL(DC.DELV_CUST_COUNT, 0)                    AS DELV_CUST_COUNT
+                , NVL(CO.DELV_ORDER_COUNT, 0)                   AS DELV_ORDER_COUNT
+            FROM 
+                DELV_LOCATION                   DL
+                , TRANSPORT_TYP                 TT
+                , DOCUMENT_TYP                  DT
+                , QTY_TYP                       QT
+                , EQUIP_TYPES                   ET
+                , DB_ADDRESS                    DA
+                , (
+                    SELECT 
+                        DB_ADDR_LINE_ID
+                        , NVL(LISTAGG(DB_ADDR_LINE, ', ') WITHIN GROUP (ORDER BY DB_ADDRLINE_NO), ' ')   AS DB_ADDR_TEXT
+                    FROM 
+                        DB_ADDRESS_LINE
+                    WHERE 
+                        1 = 1 
+                    GROUP BY 
+                        DB_ADDR_LINE_ID
+                )                               AL
+                , (
+                    SELECT
+                        PROFILE.PRF_CODE
+                        , (PROFILE.PRF_CODE||' - '||PROFILE.PRF_ETYP||', '||EQUIP_TYPES.ETYP_TITLE||' - '||PROFILE.PRF_SUPP||', '||COMPANYS.CMPY_NAME)          AS PRF_DESC
+                    FROM 
+                        PROFILE
+                        , EQUIP_TYPES
+                        , COMPANYS
+                    WHERE 
+                        PROFILE.PRF_ETYP = EQUIP_TYPES.ETYP_ID
+                        AND PROFILE.PRF_SUPP = COMPANYS.CMPY_CODE
+                )                               PR
+                , (
+                    SELECT 
+                        DLC_DELV_LOC
+                        , COUNT(*)              AS DELV_CUST_COUNT
+                    FROM DELV_FOR_CUST
+                    WHERE 1=1
+                    GROUP BY DLC_DELV_LOC
+                )                   DC
+                , (
+                    SELECT
+                        ORDER_DLV_CODE
+                        , COUNT(*)          AS DELV_ORDER_COUNT
+                    FROM 
+                        CUST_ORDER
+                    WHERE 
+                        1=1
+                    GROUP BY ORDER_DLV_CODE
+                )                       CO
+            WHERE
+                DL.DLV_ADDR         = DA.DB_ADDRESS_KEY(+)
+                AND DA.DB_ADDRESS_KEY   = AL.DB_ADDR_LINE_ID(+)
+                AND DL.DLV_TRANSTYPE    = TT.TRANSPORT_ID(+)
+                AND DL.DLV_DOC_TYPE     = DT.DOCUMENT_ID(+)
+                AND DL.DLV_QTY_TYPE     = QT.QTY_ID(+)
+                AND DL.DLV_ETYP_ID      = ET.ETYP_ID(+)
+                AND DL.DLV_PROF         = PR.PRF_CODE(+)
+                AND DL.DLV_CODE         = DC.DLC_DELV_LOC(+)
+                AND DL.DLV_CODE         = CO.ORDER_DLV_CODE(+)
+                ORDER BY DELV_CODE
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
 /*
     // pure php function
     public function create()
