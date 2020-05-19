@@ -20,12 +20,11 @@ import { TANKS } from '../../api';
 import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
-import Forms from './forms';
 import { search } from '../../utils';
 import _ from 'lodash';
 
 import TankStrapping from './strapping';
-import { Calculation, Levels, Gauging } from './forms/fields';
+import { General, Levels, Gauging, Calculation } from './forms/fields';
 
 const { TabPane } = Tabs;
 
@@ -333,7 +332,7 @@ const Tanks = () => {
                         paddingTop: 10,
                       }}
                     >
-                      <Forms value={selected} />
+                      <General form={form} value={selected} refTempC={30} refTempF={60} />
                     </div>
                   </TabPane>
 
