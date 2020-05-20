@@ -4,7 +4,7 @@ const AntdStyleProvider = createGlobalStyle`
 
 
   .ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab-active {
-    color: #0054a4;
+    color: white;
    
   }
 
@@ -13,6 +13,7 @@ const AntdStyleProvider = createGlobalStyle`
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     border: 1px solid #0054a43b !important;
+    color: black;
   }
 
   .ant-card {

@@ -3,7 +3,8 @@ import { SETTINGS } from '../../constants';
 
 const InterfaceContainer = styled.div`
   & .ant-layout {
-    background: ${SETTINGS.IS_DEVELOPMENT ? '#f0f2f5' : '#75a9f9'} !important;
+    background: rgb(95, 126, 152);
+    background: linear-gradient(250deg, rgba(95, 126, 152, 1) 0%, rgba(168, 181, 189, 1) 100%);
   }
 
   & .layout {

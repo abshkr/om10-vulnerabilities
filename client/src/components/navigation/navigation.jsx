@@ -29,7 +29,12 @@ const Navigation = () => {
 
   return (
     <MenuContainer>
-      <Menu onClick={handleNavigation} defaultSelectedKeys={[ROUTES.HOME]} theme="dark">
+      <Menu
+        onClick={handleNavigation}
+        defaultSelectedKeys={[ROUTES.HOME]}
+        style={{ width: '100%' }}
+        theme="dark"
+      >
         <LogoContainer>
           <Tooltip
             placement="right"
