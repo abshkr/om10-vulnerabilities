@@ -19,13 +19,14 @@ const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access }) => {
   const [tableAPI, setTableAPI] = useState(null);
+  const [addressKey, setAddressKey] = useState(null);
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const fields = columns(t);
 
   const IS_CREATING = !value;
-
+  
   const onItemValidation = items => {
     const errors = [];
 
@@ -88,6 +89,13 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const onFinish = async () => {
     const values = await form.validateFields();
+    const items = []
+    tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
+       items.push(rowNode.data);
+    });    
+    console.log(items);
+
+    values.addr_lines = items;
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -195,9 +203,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <AddressCode form={form} value={value} />
+            <AddressCode form={form} value={value} onChange={setAddressKey} />
             <Divider />
-            <Items setTableAPIContext={setTableAPI} value={value} />
+            <Items form={form} setTableAPIContext={setTableAPI} value={value} addressCode={addressKey}/>
           </TabPane>
         </Tabs>
       </Form>

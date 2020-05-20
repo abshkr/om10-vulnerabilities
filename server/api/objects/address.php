@@ -223,7 +223,7 @@ class Address extends CommonClass
         }
         
         foreach ($this->addr_lines as $value) {
-            $result = $this->createLine( $value );
+            $result = $this->insert_line( $value );
             if ( $result === false )
             {
                 return false;
