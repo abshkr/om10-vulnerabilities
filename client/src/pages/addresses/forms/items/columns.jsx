@@ -38,7 +38,7 @@ const useColumns = (value, selected) => {
       filter: 'FuzzyFilter',
       sortable: true,
       resizable: true,
-      hide: true,
+      hide: false,
       width: 200,
       suppressSizeToFit: true,
       pinned: 'left'

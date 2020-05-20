@@ -25,6 +25,13 @@ import {
   Profile,
 } from './fields';
 
+import {
+  LocationCode,
+  LocationName,
+  CustomerSupplier,
+  CustomerCategory
+} from './links';
+  
 import { DELV_LOCATIONS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
@@ -39,6 +46,8 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
   const IS_CREATING = !value;
 
   const [flag, setFlag] = useState(undefined);
+  const [supplier, setSupplier] = useState(undefined);
+  const [category, setCategory] = useState(undefined);
 
   const { resetFields } = form;
 
@@ -117,7 +126,6 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
     }
   }, [resetFields, value]);
 
-  console.log(flag);
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -172,6 +180,12 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
             <Contact form={form} value={value} />
             <Phone form={form} value={value} />
             <Profile form={form} value={value} />
+          </TabPane>
+          <TabPane tab={t('tabColumns.linkToCustomers')} key="2">
+            <LocationCode form={form} value={value} />
+            <LocationName form={form} value={value} />
+            <CustomerSupplier form={form} value={value} onChange={setSupplier} />
+            <CustomerCategory form={form} value={value} onChange={setCategory} />
           </TabPane>
         </Tabs>
       </Form>

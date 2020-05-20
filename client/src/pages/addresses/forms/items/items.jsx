@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   EditOutlined,
   PlusOutlined,
@@ -8,8 +8,10 @@ import {
   LockOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Form } from 'antd';
+import { Button, notification, Form } from 'antd';
 import useSWR from 'swr';
+import axios from 'axios';
+import _ from 'lodash';
 
 import { ROUTES } from '../../../../constants';
 import { DataTable } from '../../../../components';
@@ -17,17 +19,60 @@ import { ADDRESSES } from '../../../../api';
 
 import columns from './columns';
 
-const Items = ({ setTableAPIContext, value }) => {
+const Items = ({ form, setTableAPIContext, value, addressCode }) => {
   const { t } = useTranslation();
 
-  let adddressCode = value?.db_address_key;
-  const { data: payload } = useSWR(`${ADDRESSES.LINES}?address_code=${adddressCode}`, { refreshInterval: 0 });
+  const { setFieldsValue } = form;
+
+  //let addressCode = code;//value?.db_address_key;
+  //let payload = null;
+  //const { data: payload } = useSWR(`${ADDRESSES.LINES}?address_code=${addressCode}`, { refreshInterval: 0 });
+  //const { data: payload, isValidating, revalidate } = useSWR(
+  //  `${ADDRESSES.LINES}?address_code=${addressCode}`
+  //);
 
   const [data, setData] = useState([]);
   const [selected, setSelected] = useState([]);
   const [tableAPI, setTableAPI] = useState(null);
   const [size, setSize] = useState([]);
+  const [options, setOptions] = useState([]);
+  const [isLoading, setLoading] = useState(true);
 
+  const fetchByAddress = useCallback(
+    (code) => {
+      setLoading(true);
+
+      axios.get(`${ADDRESSES.LINES}?address_code=${code}`).then((response) => {
+        setData(response.data.records);
+        setFieldsValue({ addr_lines: response.data.records });
+        setLoading(false);
+      });
+    },
+    [setFieldsValue]
+  );
+
+
+  /*
+    // get the address lines by the address code (value.db_address_key)
+    axios
+      .post(
+        ADDRESSES.LINES, {
+        address_code: value?.db_address_key
+      })
+      .then(response => {
+        payload = response;
+        data = response.records;
+        //value.db_address_lines = response.records;
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+      });
+  */
   const disabled = selected.length === 0;
   let lineAddDisabled = false;
   let lineEditDisabled = true;
@@ -67,7 +112,7 @@ const Items = ({ setTableAPIContext, value }) => {
 
     const value = {
       address_action: '+',
-      db_addr_line_id: adddressCode,
+      db_addr_line_id: addressCode,
       db_addrline_no: String(size + 1),
       db_addr_line_type: '',
       db_addr_line_typename: '',
@@ -104,11 +149,23 @@ const Items = ({ setTableAPIContext, value }) => {
 
     setSelected([payload]);
   };
-
+  /*
   useEffect(() => {
+    revalidate();
     setData(payload?.records);
     setSize(payload?.records?.length || 0);
-  }, [payload]);
+  }, [payload, revalidate]);
+  */
+
+  useEffect(() => {
+    if (value) {
+        fetchByAddress(value.addressCode);
+    }
+
+    if (!value && addressCode) {
+      fetchByAddress(addressCode);
+    }
+  }, [value, addressCode, fetchByAddress]);
 
   useEffect(() => {
     if (tableAPI) {
