@@ -248,7 +248,7 @@ const paths = [
 
   {
     path: ROUTES.CUSTOMERS,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/customers')),
   },
 
   {
