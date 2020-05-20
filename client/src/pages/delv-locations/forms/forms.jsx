@@ -29,7 +29,8 @@ import {
   LocationCode,
   LocationName,
   CustomerSupplier,
-  CustomerCategory
+  CustomerCategory,
+  CustomerLink
 } from './links';
   
 import { DELV_LOCATIONS } from '../../../api';
@@ -186,6 +187,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
             <LocationName form={form} value={value} />
             <CustomerSupplier form={form} value={value} onChange={setSupplier} />
             <CustomerCategory form={form} value={value} onChange={setCategory} />
+            <CustomerLink form={form} value={value} supplier={supplier} category={category} location={value?.delv_code} />
           </TabPane>
         </Tabs>
       </Form>

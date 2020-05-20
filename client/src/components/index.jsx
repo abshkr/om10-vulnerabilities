@@ -19,6 +19,7 @@ import Icons from './icons';
 import Footer from './footer';
 import Chart from './chart';
 import Events from './events';
+import TableTransfer from './table-transfer';
 
 export {
   Expiry,
@@ -42,4 +43,5 @@ export {
   Footer,
   Chart,
   Events,
+  TableTransfer,
 };
