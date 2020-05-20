@@ -37,7 +37,7 @@ const Items = ({ form, setTableAPIContext, value, addressCode }) => {
   const [size, setSize] = useState([]);
   const [options, setOptions] = useState([]);
   const [isLoading, setLoading] = useState(true);
-
+  /*
   const fetchByAddress = useCallback(
     (code) => {
       setLoading(true);
@@ -50,7 +50,7 @@ const Items = ({ form, setTableAPIContext, value, addressCode }) => {
     },
     [setFieldsValue]
   );
-
+  */
 
   /*
     // get the address lines by the address code (value.db_address_key)
@@ -156,7 +156,7 @@ const Items = ({ form, setTableAPIContext, value, addressCode }) => {
     setSize(payload?.records?.length || 0);
   }, [payload, revalidate]);
   */
-
+  /*
   useEffect(() => {
     if (value) {
         fetchByAddress(value.addressCode);
@@ -166,7 +166,7 @@ const Items = ({ form, setTableAPIContext, value, addressCode }) => {
       fetchByAddress(addressCode);
     }
   }, [value, addressCode, fetchByAddress]);
-
+  */
   useEffect(() => {
     if (tableAPI) {
       setTableAPIContext(tableAPI);
@@ -198,7 +198,7 @@ const Items = ({ form, setTableAPIContext, value, addressCode }) => {
       <Form.Item name="items">
         <DataTable
           columns={fields}
-          data={data}
+          data={value?.addr_lines}
           height="42vh"
           onClick={(payload) => handleItemSelect(payload)}
           handleSelect={(payload) => handleItemSelect(payload[0])}

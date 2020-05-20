@@ -1967,6 +1967,23 @@ https://10.1.10.66/api/pages/address/read.php
 https://10.1.10.66/api/pages/address/line_types.php
 https://10.1.10.66/api/pages/address/addr_lines.php
 https://10.1.10.66/api/pages/address/create.php?
+{
+	"db_address_key": "tst123",
+	"addr_lines" : [
+	{
+		"db_addr_line_id": "tst123",
+		"db_addrline_no": 1,
+		"db_addr_line": "1 ABC STREET",
+		"db_addr_line_type": 1
+	},
+	{
+		"db_addr_line_id": "tst123",
+		"db_addrline_no": 2,
+		"db_addr_line": "Rowville",
+		"db_addr_line_type": 2
+	}
+	]
+}
 https://10.1.10.66/api/pages/address/update.php?
 https://10.1.10.66/api/pages/address/delete.php?
 
