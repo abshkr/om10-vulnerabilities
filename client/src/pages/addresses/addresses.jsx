@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -10,12 +10,14 @@ import { ADDRESSES } from '../../api';
 import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
+import axios from 'axios';
 
 import Forms from './forms';
 
 const Addresses = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [lines, setLines] = useState(null);
 
   const { t } = useTranslation();
 
@@ -23,9 +25,28 @@ const Addresses = () => {
 
   const { data: payload, isValidating, revalidate } = useSWR(ADDRESSES.READ);
 
+  const fetchAddressLines = useCallback(
+    (code) => {
+      axios.get(`${ADDRESSES.LINES}?address_code=${code}`).then((response) => {
+        let addrRecord = selected;
+        console.log("addrRecord");
+        console.log(addrRecord);
+        console.log("selected");
+        console.log(selected);
+        //addrRecord.addr_lines = response.data.records;
+        setSelected(addrRecord);
+      });
+    }
+  );
+
   const handleFormState = (visibility, value) => {
+    console.log("handleFormState.value");
+    console.log(value);
     setVisible(visibility);
     setSelected(value);
+    console.log("handleFormState.selected");
+    console.log(selected);
+    fetchAddressLines(value?.db_address_key);
   };
 
   const fields = columns(t);
