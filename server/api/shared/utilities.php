@@ -830,6 +830,8 @@ class Utilities
             session_start();
         }
 
+        // write_log(json_encode($_SESSION), __FILE__, __LINE__);
+
         if (isset($_SESSION['PERCODE'])) {
             return $_SESSION['PERCODE'];
         }
@@ -850,7 +852,10 @@ class Utilities
 
     public static function getCurrentSession()
     {
-        session_start();
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
         if (isset($_SESSION['SESSION'])) {
             return strip_tags($_SESSION['SESSION']);
         }
