@@ -54,6 +54,7 @@ import * as SITE_CONFIGURATION from './site-configuration';
 import * as ADDRESSES from './addresses';
 import * as EQUIPMENT_TYPES from './equipment-types';
 import * as DELV_LOCATIONS from './delv-locations';
+import * as CUSTOMERS from './customers';
 
 export {
   AUTH,
@@ -112,4 +113,5 @@ export {
   ADDRESSES,
   EQUIPMENT_TYPES,
   DELV_LOCATIONS,
+  CUSTOMERS
 };

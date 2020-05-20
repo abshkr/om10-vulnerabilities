@@ -5,16 +5,22 @@ import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 import _ from 'lodash';
 
-import { LOGICAL_PRINTERS } from '../../../../api';
+import { DELV_LOCATIONS } from '../../../../api';
 
-const Usage = ({ form, value, company }) => {
+const CustomerLink = ({ form, value, supplier, category, location }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(LOGICAL_PRINTERS.USAGES);
-  const { data: logicalPrinters } = useSWR(LOGICAL_PRINTERS.READ);
+  const { data: availableCustomers, isValidating } = useSWR(
+    `${DELV_LOCATIONS.AVAILABLE_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`,
+    { refreshInterval: 0 }
+  );
+  const { data: linkedCustomers, isValidating } = useSWR(
+    `${DELV_LOCATIONS.LINKED_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`,
+    { refreshInterval: 0 }
+  );
 
   const { setFieldsValue } = form;
-
+  /*
   const validate = (rule, input) => {
     const match = _.find(logicalPrinters?.records, (object) => {
       return object.prt_usage === input && object.prt_cmpy === company;
@@ -30,7 +36,6 @@ const Usage = ({ form, value, company }) => {
 
     return Promise.resolve();
   };
-
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -38,9 +43,10 @@ const Usage = ({ form, value, company }) => {
       });
     }
   }, [value, setFieldsValue]);
+  */
 
   return (
-    <Form.Item name="prt_usage" label={t('fields.usage')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item name="customer_link" label={t('fields.usage')} rules={[{ required: false }]}>
       <Select
         loading={isValidating}
         showSearch
@@ -61,4 +67,4 @@ const Usage = ({ form, value, company }) => {
   );
 };
 
-export default Usage;
+export default CustomerLink;

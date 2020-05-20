@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Icon, { SmileOutlined, FrownOutlined, IdcardOutlined, LockOutlined } from '@ant-design/icons';
-import { Form, Input, Button, notification, Divider, Carousel, Modal, Select } from 'antd';
+import { Form, Input, Button, notification, Divider, Carousel, Modal, Select, Row, Col } from 'antd';
 
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -130,14 +130,13 @@ const Login = ({ handleLogin, auth }) => {
             <img src="/images/omega.png" alt="OMEGA 5000" />
           </LoginTitle>
 
-          <LoginHeader>{t('generic.loginHeader')}</LoginHeader>
           <LoginSubtitle>{t('generic.login')}</LoginSubtitle>
 
           <Form onFinish={handleSubmit} initialValues={{ language: i18n.language || 'en' }}>
             <Form.Item name="code" rules={[{ required: true, message: t('messages.inputOmegaUser') }]}>
               <Input
                 style={{ marginBottom: 5 }}
-                prefix={<IdcardOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                prefix={<IdcardOutlined style={{ color: '#0054a4' }} />}
                 placeholder={t('fields.omegaUser')}
               />
             </Form.Item>
@@ -147,59 +146,55 @@ const Login = ({ handleLogin, auth }) => {
               rules={[{ required: true, message: t('messages.inputOmegaPassword') }]}
             >
               <Input
-                prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                id="login"
+                prefix={<LockOutlined style={{ color: '#0054a4' }} />}
                 type="password"
                 placeholder={t('fields.password')}
               />
             </Form.Item>
 
-            <Form.Item
-              extra={
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <div style={{ marginTop: 5 }}>
-                    <Form.Item name="language">
-                      <Select
-                        style={{ fontSize: 13, width: 100, color: '#0054a4' }}
-                        onChange={handleLanguage}
-                        bordered={false}
-                      >
-                        <Select.Option value="en">
-                          <Icons type="en" scale={1.5} /> English
-                        </Select.Option>
-                        <Select.Option value="cn">
-                          <Icons type="cn" scale={1.5} /> 中文
-                        </Select.Option>
-                      </Select>
-                    </Form.Item>
-                  </div>
+            <div style={{ textAlign: 'center', color: 'red', marginBottom: 10 }}>
+              {attempts !== null && status !== -1 ? `You have ${attempts} attempts left.` : ``}
+            </div>
 
-                  <div style={{ textAlign: 'left', marginTop: 10, fontSize: 13 }}>
-                    {/* eslint-disable-next-line */}
-                    {t('generic.havingTrouble')} <a onClick={onHelp}>{t('operations.clickHere')}</a>
-                  </div>
-                </div>
-              }
-            >
-              <div style={{ textAlign: 'center', color: 'red' }}>
-                {attempts !== null ? `You have ${attempts} attempts left.` : ``}
-              </div>
-              <Button
-                size="large"
-                type="primary"
-                htmlType="submit"
-                loading={isLoading}
-                icon={<LoginOutlined />}
-                disabled={status === 2 || attempts < 0}
-              >
-                {status === 2 || attempts < 0 ? t('operations.locked') : t('operations.logIn')}
-              </Button>
-            </Form.Item>
+            <Row gutter={[12, 12]}>
+              <Col span={12}>
+                <Form.Item name="language" style={{ marginRight: 40 }}>
+                  <Select onChange={handleLanguage}>
+                    <Select.Option value="en">
+                      <Icons type="en" scale={1.5} /> English
+                    </Select.Option>
+                    <Select.Option value="cn">
+                      <Icons type="cn" scale={1.5} /> 中文
+                    </Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+
+              <Col span={12}>
+                <Form.Item style={{ marginLeft: 40 }}>
+                  <Button
+                    style={{ marginTop: 0 }}
+                    type="primary"
+                    htmlType="submit"
+                    loading={isLoading}
+                    icon={<LoginOutlined />}
+                    disabled={status === 2 || attempts < 0}
+                  >
+                    {status === 2 || attempts < 0 ? t('operations.locked') : t('operations.logIn')}
+                  </Button>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <div style={{ textAlign: 'center', fontSize: 13, width: '100%', fontWeight: 500 }}>
+              {/* eslint-disable-next-line */}
+              {t('generic.havingTrouble')} <a onClick={onHelp}>{t('operations.clickHere')}</a>
+            </div>
           </Form>
         </FormBlock>
 
         <LoginFooter>
-          <Divider style={{ marginBottom: 12 }} />
-
           <LoginFooterLogo>
             <img src="/images/dki_big.png" alt="Diamondkey International" />
           </LoginFooterLogo>

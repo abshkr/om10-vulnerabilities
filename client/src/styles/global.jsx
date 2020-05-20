@@ -39,7 +39,14 @@ const GlobalStyleProvider = createGlobalStyle`
     width: 100%;
   }
 
+  .ag-theme-balham .ag-header {
+    color: black;
+    
+  }
 
-
+  .ag-theme-balham .ag-cell {
+    font-size: 12px;
+    color: black;
+  }
 `;
 export default GlobalStyleProvider;

@@ -13,6 +13,7 @@ import { ReactComponent as RotateIcon } from './rotate.svg';
 import { ReactComponent as BarIcon } from './test.svg';
 import { ReactComponent as ExportIcon } from './arrow.svg';
 import { ReactComponent as SearchIcon } from './search.svg';
+import { ReactComponent as FuelIcon } from './fuel.svg';
 
 import { TankContainer } from './style';
 import { Page, Download, DataTable } from '../../components';
@@ -30,6 +31,7 @@ const { TabPane } = Tabs;
 
 const ListOutlined = (props) => <Icon style={{ transform: 'scale(1.3)' }} component={ListIcon} {...props} />;
 const PlusOutlined = (props) => <Icon style={{ transform: 'scale(1.3)' }} component={PlusIcon} {...props} />;
+const FuelOutlined = (props) => <Icon style={{ transform: 'scale(1.3)' }} component={FuelIcon} {...props} />;
 
 const SearchOutlined = (props) => (
   <Icon style={{ transform: 'scale(1.5)' }} component={SearchIcon} {...props} />
@@ -124,6 +126,16 @@ const Tanks = () => {
     'Out Of Service - Offline': '#fa4659',
   };
 
+  const background = {
+    'In Service - Not used': '#e4e6f9',
+    'Out of Service': '#d1e3f9',
+    'In Service - Working': '#fffff2',
+    'In Service - Loading': '#def0d2',
+    'In Service - Settling': '#ffebb2',
+    'In Service - Receiving': '#e1dbf8',
+    'Out Of Service - Offline': '#fa4659',
+  };
+
   useEffect(() => {
     if (read) {
       setSelected(read?.records[0]);
@@ -135,7 +147,14 @@ const Tanks = () => {
     return (
       <Form layout="vertical" form={form} scrollToFirstError>
         <TankContainer>
-          <Page page={page} name={name} modifiers={modifiers} access={access} minimal>
+          <Page
+            page={page}
+            name={name}
+            modifiers={modifiers}
+            access={access}
+            minimal
+            avatar={<FuelOutlined />}
+          >
             <div style={{ display: 'flex' }}>
               <div>
                 <div style={{ paddingRight: 10 }}>
@@ -152,7 +171,7 @@ const Tanks = () => {
                     padding: 5,
                     marginTop: 5,
                     height: 'calc(100vh - 235px)',
-                    width: '33.33vw',
+                    width: '25vw',
                   }}
                 >
                   <List
@@ -171,10 +190,11 @@ const Tanks = () => {
                           marginBottom: 5,
                           borderRadius: 5,
                           borderWidth: '10px !important',
+                          background: background[item.tank_status_name],
                         }}
                         onClick={() => setSelected(item)}
                       >
-                        <List.Item>
+                        <List.Item style={{ padding: 0 }}>
                           <List.Item.Meta
                             style={{
                               display: 'flex',
@@ -200,13 +220,22 @@ const Tanks = () => {
                             }
                             title={<a>{item.tank_name}</a>}
                             description={
-                              <div>
-                                <Tag color="green">Status: {item.tank_status_name}</Tag>
-                                <Tag color="blue">Density: {item.tank_density} Kg/M3</Tag>
-                                <Tag color="orange">Product: {item.tank_base_name}</Tag>
+                              <div style={{ color: 'black', fontSize: 12 }}>
+                                <div>
+                                  <strong>Base Product:</strong> {item.tank_base_name}
+                                </div>
+                                <div>
+                                  <strong>Density:</strong> {item.tank_density} Kg/M3
+                                </div>
+                                <div>
+                                  <strong>Classification:</strong> {item.tank_bclass_name}
+                                </div>
                               </div>
                             }
                           />
+                          <div style={{ color: 'black', fontSize: 12 }}>
+                            <i>{item.tank_status_name}</i>
+                          </div>
                         </List.Item>
                       </Card>
                     )}
@@ -215,7 +244,7 @@ const Tanks = () => {
               </div>
               <div
                 style={{
-                  width: '66.66vw',
+                  width: '75vw',
                   height: 'calc(100vh - 180px)',
                   marginLeft: 2,
                 }}
@@ -315,6 +344,10 @@ const Tanks = () => {
                                   0}{' '}
                                 Litres
                               </Descriptions.Item>
+
+                              <Descriptions.Item label={t('fields.classification')} span={24}>
+                                {selected?.tank_bclass_name}
+                              </Descriptions.Item>
                             </Descriptions>
                           </div>
                         </>
@@ -391,6 +424,17 @@ const Tanks = () => {
                     >
                       <TankStrapping tank={selected?.tank_code} />
                     </div>
+                  </TabPane>
+
+                  <TabPane tab="Connected Arms" key="7">
+                    <div
+                      style={{
+                        background: 'white',
+                        borderRadius: 5,
+                        border: '1px solid #0054a43b',
+                        padding: '10px 10px 10px 10px',
+                      }}
+                    ></div>
                   </TabPane>
                 </Tabs>
               </div>

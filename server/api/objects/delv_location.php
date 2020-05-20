@@ -372,18 +372,27 @@ class DelvLocation extends CommonClass
         return $this->read_customer_by_delvloc("not in", $this->delv_code, $this->delv_cust_suppcode, $this->delv_cust_catgcode);
     }
 
-/*
-    // pure php function
-    public function create()
+    protected function insert_one_link($delv_code, $delv_name, $cust_acct, $cust_desc)
     {
-        $query = "INSERT INTO CST_PRCE_CATEGOR
-                (CATEG_CODE,
-                CATEG_DESCRIPT)
-        VALUES (:categ_code,
-                :categ_descript)";
+        if (!isset($value)) {
+            return true;
+        }
+        
+        $query = "
+            INSERT INTO DELV_FOR_CUST
+            ( 
+                DLC_CUSTOMER
+                , DLC_DELV_LOC
+            ) 
+            VALUES 
+            (
+                :cust_acct
+                , :delv_code
+            )
+        ";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':categ_code', $this->category_code);
-        oci_bind_by_name($stmt, ':categ_descript', $this->category_name);
+        oci_bind_by_name($stmt, ':cust_acct', $cust_acct);
+        oci_bind_by_name($stmt, ':delv_code', $delv_code);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
@@ -391,46 +400,26 @@ class DelvLocation extends CommonClass
             return false;
         }
 
-        $journal = new Journal($this->conn, false);
-        $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "customer catetory";
-        $jnl_data[2] = $this->category_code;
-
-        if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        oci_commit($this->conn);
         return true;
     }
 
-    public function update()
+    protected function delete_one_link($delv_code, $delv_name, $cust_acct, $cust_desc)
     {
-        $query = "
-            SELECT CATEG_CODE CATEGORY_CODE,
-                CATEG_DESCRIPT CATEGORY_NAME
-            FROM CST_PRCE_CATEGOR
-            WHERE CATEG_CODE = :categ_code";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':categ_code', $this->category_code);
-        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-            // write_log(json_encode($row), __FILE__, __LINE__);
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        if (!isset($value)) {
+            return true;
         }
-
-        $query = "UPDATE CST_PRCE_CATEGOR
-                SET CATEG_DESCRIPT = :categ_descript
-                WHERE CATEG_CODE = :categ_code";
+        
+        $query = "
+            DELETE FROM DELV_FOR_CUST
+            WHERE 
+            ( 
+                DLC_CUSTOMER = :cust_acct
+                AND DLC_DELV_LOC = :delv_code
+            ) 
+        ";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':categ_code', $this->category_code);
-        oci_bind_by_name($stmt, ':categ_descript', $this->category_name);
+        oci_bind_by_name($stmt, ':cust_acct', $cust_acct);
+        oci_bind_by_name($stmt, ':delv_code', $delv_code);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
@@ -438,61 +427,46 @@ class DelvLocation extends CommonClass
             return false;
         }
 
-        $journal = new Journal($this->conn, $autocommit = false);
-        $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "customer category";
-        $jnl_data[2] = $this->category_code;
+        return true;
+    }
 
-        if (!$journal->jnlLogEvent(
-            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
+    public function insert_links()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (!isset($this->cust_items)) {
+            return true;
         }
-
-        $module = "customer category";
-        $record = sprintf("code:%s", $this->category_code);
-        foreach ($this as $key => $value) {
-            if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
-                !$journal->valueChange(
-                    $module, $record, $key, $row[strtoupper($key)], $value)) {
+        
+        foreach ($this->cust_items as $value) {
+            $result = $this->insert_one_link( $this->delv_code, $this->delv_name, $value->cust_acnt, $value->cust_desc );
+            if ( $result === false )
+            {
                 return false;
             }
         }
 
-        oci_commit($this->conn);
         return true;
     }
 
-    public function delete()
+    public function delete_links()
     {
-        $query = "DELETE FROM CST_PRCE_CATEGOR
-                WHERE CATEG_CODE = :categ_code";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':categ_code', $this->category_code);
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
 
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return false;
+        if (!isset($this->cust_items)) {
+            return true;
+        }
+        
+        foreach ($this->cust_items as $value) {
+            $result = $this->delete_one_link( $this->delv_code, $this->delv_name, $value->cust_acnt, $value->cust_desc );
+            if ( $result === false )
+            {
+                return false;
+            }
         }
 
-        $journal = new Journal($this->conn, $autocommit = false);
-        $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "customer category";
-        $jnl_data[2] = $this->category_code;
-
-        if (!$journal->jnlLogEvent(
-            Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
-
-        oci_commit($this->conn);
         return true;
     }
-*/
 }

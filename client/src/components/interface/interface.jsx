@@ -12,7 +12,7 @@ const Interface = ({ auth, children }) => {
   return auth ? (
     <InterfaceContainer>
       <Layout className="layout">
-        <Sider width={250} collapsible defaultCollapsed>
+        <Sider width={250} collapsedWidth={120} collapsible defaultCollapsed>
           <Navigation />
         </Sider>
         <Layout className="omega">

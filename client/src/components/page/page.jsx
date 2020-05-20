@@ -8,7 +8,7 @@ import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } fr
 
 import { Footer } from '..';
 
-const Page = ({ name, page, children, modifiers, description, minimal, noHeader, access }) => {
+const Page = ({ name, page, children, modifiers, description, minimal, noHeader, access, avatar }) => {
   const routes = [
     {
       path: 'index',
@@ -35,6 +35,7 @@ const Page = ({ name, page, children, modifiers, description, minimal, noHeader,
             style={{ width: '30vw' }}
             subTitle={description}
             breadcrumb={{ routes: filtered }}
+            avatar={avatar ? { icon: avatar, style: { background: 'white' } } : null}
           />
 
           <PageHeaderExtras>{modifiers}</PageHeaderExtras>

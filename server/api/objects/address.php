@@ -256,4 +256,40 @@ class Address extends CommonClass
 
         return true;
     }
+
+    protected function update_children()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (!isset($this->addr_lines)) {
+            return true;
+        }
+        
+        foreach ($this->addr_lines as $value) {
+            if ($value->address_action == '+') {
+                $result = $this->insert_line( $value );
+                if ( $result === false )
+                {
+                    return false;
+                }
+            }
+            if ($value->address_action == '*') {
+                $result = $this->update_line( $value );
+                if ( $result === false )
+                {
+                    return false;
+                }
+            }
+            if ($value->address_action == '-') {
+                $result = $this->delete_line( $value );
+                if ( $result === false )
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }

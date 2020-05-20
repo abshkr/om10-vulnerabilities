@@ -1,7 +1,8 @@
 import React from 'react';
-import { Card, Col, Row, Statistic } from 'antd';
+import { Card, Col, Row, Statistic, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
+import _ from 'lodash';
 
 import { Icons, DataTable } from '../../../components';
 import { folio, movement, ids } from './columns';
@@ -19,68 +20,115 @@ const Home = () => {
     <>
       <Row gutter={[16, 16]}>
         <Col span={8}>
-          <Card
-            title={`Tankers [${((data?.tanker_active / data?.tanker_total) * 100 || 0).toFixed(2)}]%`}
-            hoverable
-            size="small"
-            loading={isLoading}
-          >
+          <Card title={`Tankers`} hoverable size="small" loading={isLoading}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Statistic
-                title="Total Active Tankers"
-                value={data.tanker_active}
-                suffix={`/ ${data.tanker_total}`}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                  width: '33%',
+                }}
               />
-              <img src="/svg/truck.svg" alt="truck" style={{ height: 150 }} />
-            </div>
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card
-            title={`Personnel [${((data?.personnel_active / data?.personnel_total) * 100 || 0).toFixed(2)}]%`}
-            hoverable
-            size="small"
-            loading={isLoading}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Statistic
-                title="Total Active Personnel"
-                value={data.personnel_active}
-                suffix={`/ ${data.personnel_total}`}
-              />
-              <Icons type="id" scale={1} size={86} />
-              <img src="/svg/people.svg" alt="people" style={{ height: 150 }} />
+
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                  width: '33%',
+                }}
+              >
+                <div style={{ fontSize: 20, color: 'black', textAlign: 'center', fontWeight: '500' }}>
+                  {`Active: ${data.tanker_active}  [${
+                    Math.floor((data?.tanker_active / data?.tanker_total) * 100) || 0
+                  }%]`}
+                  <Divider style={{ margin: 0 }} />
+                  {`Total: ${data.tanker_total}`}
+                </div>
+              </div>
+
+              <img src="/svg/truck.svg" alt="truck" style={{ height: 150, width: '33%' }} />
             </div>
           </Card>
         </Col>
 
         <Col span={8}>
-          <Card
-            title={`Id Assignment [${((data?.key_used / data?.key_available) * 100 || 0).toFixed(2)}]%`}
-            hoverable
-            size="small"
-            loading={isLoading}
-          >
+          <Card title={`Personnel`} hoverable size="small" loading={isLoading}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <div>
-                <Statistic
-                  title="Total Used Assignments"
-                  value={data?.key_used}
-                  suffix={`/ ${data?.key_available}`}
-                />
-                <div
-                  style={{
-                    height: 65,
-                    display: 'flex',
-                    alignContent: 'flex-end',
-                    alignItems: 'flex-end',
-                  }}
-                >{`Personnel: ${data?.key_person || 0}, Tanker: ${data?.key_tanker || 0}, Combo: ${
-                  data?.key_combo || 0
-                }, Other: ${data?.key_other || 0}`}</div>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                  width: '33%',
+                }}
+              />
+
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                  width: '33%',
+                }}
+              >
+                <div style={{ fontSize: 20, color: 'black', textAlign: 'center', fontWeight: '500' }}>
+                  {`Active: ${data.personnel_active}  [${
+                    Math.floor((data?.personnel_active / data?.personnel_total) * 100) || 0
+                  }%]`}
+                  <Divider style={{ margin: 0 }} />
+                  {`Total: ${data.personnel_total}`}
+                </div>
               </div>
-              <Icons type="people" scale={1} size={86} />
-              <img src="/svg/id-assignment.svg" alt="id" style={{ height: 150 }} />
+
+              <img src="/svg/people.svg" alt="truck" style={{ height: 150, width: '33%' }} />
+            </div>
+          </Card>
+        </Col>
+
+        <Col span={8}>
+          <Card title={`ID Assignment`} hoverable size="small" loading={isLoading}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                  width: '33%',
+                }}
+              />
+
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                  width: '33%',
+                }}
+              >
+                <div style={{ fontSize: 20, color: 'black', textAlign: 'center', fontWeight: '500' }}>
+                  {`Used: ${data.key_used}  [${
+                    Math.floor((data?.key_used / data?.key_available) * 100) || 0
+                  }%]`}
+                  <Divider style={{ margin: 0 }} />
+                  {`Available: ${data.key_available}`}
+
+                  <div style={{ fontSize: 16 }}>
+                    {`Personnel: ${data?.key_person || 0}, Tanker: ${data?.key_tanker || 0}, Combo: ${
+                      data?.key_combo || 0
+                    }, Other: ${data?.key_other || 0}`}
+                  </div>
+                </div>
+              </div>
+
+              <img src="/svg/id-assignment.svg" alt="truck" style={{ height: 150, width: '33%' }} />
             </div>
           </Card>
         </Col>

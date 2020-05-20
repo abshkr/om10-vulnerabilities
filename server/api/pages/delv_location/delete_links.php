@@ -7,5 +7,5 @@ include_once '../../config/database.php';
 //include_once '../../objects/delv_location.php';
 include_once '../../objects/customer_delvloc.php';
 
-//Utilities::read('DelvLocation', $method = 'read_customer_have_delvloc', $filter = true);
-Utilities::read('CustomerDelvLocation', $method = 'read_customer_have_delvloc', $filter = true);
+//Utilities::exec('DelvLocation', 'delete_links');
+Utilities::delete('CustomerDelvLocation');

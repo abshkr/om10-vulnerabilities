@@ -4,12 +4,18 @@ const LoginContainer = styled.div`
   height: 100vh;
   background-color: #0054a4;
   display: flex;
+
+  .ant-input::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #838383 !important;
+    opacity: 1 !important;
+  }
 `;
 
 const FormContainer = styled.div`
   width: 33.3vw;
   border: 1px solid #e2eefb;
-  background-color: white;
+  background-color: #a9bfd2;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -20,8 +26,9 @@ const FormContainer = styled.div`
     width: 100%;
   }
 
-  & .ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
-    padding-left: 0px !important;
+  & .ant-input-affix-wrapper > input.ant-input {
+    font-weight: 500;
+    color: black !important;
   }
 `;
 
@@ -44,7 +51,8 @@ const LoginSubtitle = styled.div`
   font-size: 14px;
   margin-top: 15px;
   margin-bottom: 10px;
-  font-weight: 300;
+  font-weight: bold;
+  color: black;
 `;
 
 const LoginFooter = styled.div`

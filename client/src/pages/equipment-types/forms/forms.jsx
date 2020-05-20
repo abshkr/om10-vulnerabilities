@@ -29,34 +29,35 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
   const onFinish = async () => {
     const values = await form.validateFields();
 
-    Modal.confirm({
-      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
-      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
-      okType: 'primary',
-      icon: <QuestionCircleOutlined />,
-      cancelText: t('operations.no'),
-      centered: true,
-      onOk: async () => {
-        await axios
-          .post(IS_CREATING ? EQUIPMENT_TYPES.CREATE : EQUIPMENT_TYPES.UPDATE, values)
-          .then(() => {
-            onComplete();
+    console.log(values);
+    // Modal.confirm({
+    //   title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+    //   okText: IS_CREATING ? t('operations.create') : t('operations.update'),
+    //   okType: 'primary',
+    //   icon: <QuestionCircleOutlined />,
+    //   cancelText: t('operations.no'),
+    //   centered: true,
+    //   onOk: async () => {
+    //     await axios
+    //       .post(IS_CREATING ? EQUIPMENT_TYPES.CREATE : EQUIPMENT_TYPES.UPDATE, values)
+    //       .then(() => {
+    //         onComplete();
 
-            notification.success({
-              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-            });
-          })
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
-              });
-            });
-          });
-      },
-    });
+    //         notification.success({
+    //           message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+    //           description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+    //         });
+    //       })
+    //       .catch((errors) => {
+    //         _.forEach(errors.response.data.errors, (error) => {
+    //           notification.error({
+    //             message: error.type,
+    //             description: error.message,
+    //           });
+    //         });
+    //       });
+    //   },
+    // });
   };
 
   const onDelete = () => {
@@ -130,7 +131,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError>
+      <Form layout="vertical" form={form} scrollToFirstError initialValues={{ equipment: 'p' }}>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <Code form={form} value={value} />

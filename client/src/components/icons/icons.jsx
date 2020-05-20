@@ -39,7 +39,7 @@ const Icons = (props) => (
     component={matrix[props.type]}
     {...props}
     style={{
-      transform: props.scale ? `'scale(${props.scale})'` : 'scale(3.3)',
+      transform: props.scale ? `'scale(${props.scale})'` : 'scale(1)',
       fontSize: props.size || null,
     }}
   />
