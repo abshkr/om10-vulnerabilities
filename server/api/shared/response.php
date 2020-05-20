@@ -5,6 +5,9 @@ include_once __DIR__ . '/utilities.php';
 //Reponse mssage with multiple lang support
 function response($case_name, $default = null, $params = null) 
 {
+    // write_log(sprintf("%s() START. case_name:%s", __FUNCTION__, $case_name),
+    //     __FILE__, __LINE__);
+
     $case_response_map = array(
         "__NOT_EXIST__" => array(
             "ENG" => "Record does not not exist",
@@ -261,7 +264,7 @@ function response($case_name, $default = null, $params = null)
     );
 
     $lang = Utilities::getCurrLang();
-
+        
     if ($lang == 'ENG' && isset($default)) {
         return $default;
     }
@@ -269,6 +272,9 @@ function response($case_name, $default = null, $params = null)
     if (!array_key_exists($case_name, $case_response_map)) {
         $case_name = "__INTERNAL_ERROR__";
     }
+
+    // write_log(sprintf("lang:%s, case:%s, value:%s", $lang, $case_name, $case_response_map[$case_name][$lang]),
+    //     __FILE__, __LINE__);
 
     return vsprintf($case_response_map[$case_name][$lang], $params);
     // return $case_response_map[$case_name][$lang];

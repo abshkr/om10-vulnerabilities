@@ -62,7 +62,7 @@ if ($data) {
         $object->$key = $value;
     }
 }
-
+// write_log(json_encode($data), __FILE__, __LINE__);
 if (!isset($object->user) ||
 !isset($object->user)) {
     echo json_encode(
@@ -73,7 +73,13 @@ if (!isset($object->user) ||
 
 $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/login.cgi';
 $object->clientip = $_SERVER['REMOTE_ADDR'];
-$object->langcode = isset($data->lang) ? isset($data->lang) : 'ENG';
+
+$object->langcode = 'ENG';
+if (isset($data->lang)) {
+    if ($data->lang == 'cn') {
+        $object->langcode = 'CHN';
+    }
+}
 
 $data = array(
     'lang' => $object->langcode,
