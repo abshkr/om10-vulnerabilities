@@ -72,10 +72,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
@@ -86,7 +88,8 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     const activateData = {
       "tgr_name": tgr_name,
       "tgr_tankcode": selected[0].tank_code,
-      "old_active": old_active || selected[0].tank_code
+      // "old_active": old_active,
+      "old_active": old_active || selected[0].tank_code,
     }
     Modal.confirm({
       title: t('prompts.activate'),
@@ -107,10 +110,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.saveFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
@@ -137,10 +142,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.deleteFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },

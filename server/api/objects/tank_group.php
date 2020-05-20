@@ -211,6 +211,15 @@ class TankGroup extends CommonClass
     {
         write_log(json_encode($this), __FILE__, __LINE__);
 
+        //Cannot have this because when there is no active tank, old and new tank is the same
+        //frontend already take care of only allowing activate a differnt tank 
+        // if ($this->tgr_tankcode == $this->old_active) {
+        //     write_log(sprintf("new:%s, old:%s", $this->tgr_tankcode, $this->old_active), LogLevel::ERROR);
+        //     $echo = new EchoSchema(400, response("__ALREADY_ACTIVATED_TANK__", null, array($this->tgr_tankcode)));
+        //     echo json_encode($echo, JSON_PRETTY_PRINT);
+        //     return;
+        // }
+
         $query_string = "tk=" . rawurlencode(strip_tags($this->tgr_tankcode)) . 
             "&tkgrp=" . rawurlencode(strip_tags($this->tgr_name)) .
             "&tkActive=" . rawurlencode(strip_tags($this->tgr_tankcode)) .
