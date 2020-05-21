@@ -37,20 +37,17 @@ import { DELV_LOCATIONS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, config }) => {
-  //const { manageHotProduct, manageBaseProductDensityRange } = config;
-  //const [classification, setClassification] = useState(undefined);
-
-  const { t } = useTranslation();
-  const [form] = Form.useForm();
-
-  const IS_CREATING = !value;
-
+const FormModal = ({ value, visible, handleFormState, access }) => {
   const [flag, setFlag] = useState(undefined);
   const [supplier, setSupplier] = useState(undefined);
   const [category, setCategory] = useState(undefined);
   const [drawerWidth, setDrawerWidth] = useState('30vw');
   const [mainTabOn, setMainTabOn] = useState(true);
+
+  const { t } = useTranslation();
+  const [form] = Form.useForm();
+
+  const IS_CREATING = !value;
 
   const { resetFields } = form;
 
@@ -64,6 +61,12 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
       setMainTabOn(true);
     }
   }
+
+  const onFormClosed = () => {
+    handleFormState(false, null);
+    setDrawerWidth('30vw');
+    setMainTabOn(true);
+};
 
   const onComplete = () => {
     handleFormState(false, null);
@@ -141,11 +144,10 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
   }, [resetFields, value]);
 
 
-
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
-      onClose={() => handleFormState(false, null)}
+      onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
@@ -179,7 +181,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
       }
     >
       <Form layout="vertical" form={form} scrollToFirstError>
-        <Tabs defaultActiveKey="1" onChange={doTabChanges}>
+        <Tabs onChange={doTabChanges}>
           <TabPane tab={t('tabColumns.general')} key="1">
             <Flag form={form} value={value} onChange={setFlag} />
             <Code form={form} value={value} />
@@ -197,12 +199,13 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
             <Phone form={form} value={value} />
             <Profile form={form} value={value} />
           </TabPane>
-          <TabPane tab={t('tabColumns.linkToCustomers')} key="2">
-            <LocationCode form={form} value={value} style={{ float: 'right', marginRight: 5 }}/>
-            <LocationName form={form} value={value} style={{ float: 'right', marginRight: 5 }}/>
-            <CustomerSupplier form={form} value={value} onChange={setSupplier} style={{ float: 'right', marginRight: 5 }}/>
-            <CustomerCategory form={form} value={value} onChange={setCategory} style={{ float: 'right', marginRight: 5 }}/>
-            <CustomerLink form={form} value={value} supplier={supplier} category={category} location={value?.delv_code} />
+          <TabPane tab={t('tabColumns.linkToCustomers')} disabled={IS_CREATING} key="2">
+            <LocationCode form={form} value={value} />
+            <LocationName form={form} value={value} />
+            <CustomerSupplier form={form} value={value} onChange={setSupplier} />
+            <CustomerCategory form={form} value={value} onChange={setCategory} />
+            <CustomerLink form={form} value={value} supplier={supplier} category={category} 
+            location={value?.delv_code} />
           </TabPane>
         </Tabs>
       </Form>

@@ -29,7 +29,7 @@ const LocationName = ({ form, value }) => {
 
   return (
     <Form.Item name="delv_name" label={t('fields.name')} rules={[{ required: true, validator: validate }]}>
-      <Input  disabled="true"/>
+      <Input disabled={true}/>
     </Form.Item>
   );
 };
