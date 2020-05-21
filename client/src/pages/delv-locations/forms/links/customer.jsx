@@ -13,7 +13,7 @@ import columns from './columns';
 import { DELV_LOCATIONS } from '../../../../api';
 
 const CustomerLink = ({ form, value, supplier, category, location }) => {
-  //const [targetKeys, setTargetKeys] = useState(undefined);
+  //const [targetKeys, setTargetKeys] = useState([]);
 
   const { t } = useTranslation();
 
@@ -65,14 +65,20 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
   const data = allCustomers?.records;
   //const originTargetKeys = data?.filter(item => item.delv_code === location).map(item => item.cust_acnt);
   const originTargetKeys = data?.filter(item => item.delv_code === location).map(item => item.key);
+  console.log("originTargetKeys", originTargetKeys);
   const [targetKeys, setTargetKeys] = useState(originTargetKeys);
   //setTargetKeys(originTargetKeys);
-  console.log(targetKeys);
+  console.log("targetKeys", targetKeys);
 
-  const createLinks = async (keys) => {
-    const items = data.filter(item => keys.find(item.key))
-    await axios
-      .post( DELV_LOCATIONS.CREATE_LINKS, items)
+  const createLinksForEach = async (keys) => {
+    console.log('keys:', keys);
+    const items = data.filter(item => _.indexOf(keys,item.key) >= 0);
+    console.log('items:', items);
+    items.forEach((item)=>{
+      item.delv_code=location;
+      console.log('item:', item);
+       axios
+      .post( DELV_LOCATIONS.CREATE_LINKS, item)
       .then(() => {
         mutate(`${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`);
         notification.success({
@@ -88,12 +94,18 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
           });
         });
       });
+    });
   };
 
-  const deleteLinks = async (keys) => {
-    const items = data.filter(item => keys.find(item.key))
-    await axios
-      .post( DELV_LOCATIONS.DELETE_LINKS, items)
+  const deleteLinksForEach = async (keys) => {
+    console.log('keys:', keys);
+    const items = data.filter(item => _.indexOf(keys,item.key) >= 0);
+    console.log('items:', items);
+    items.forEach((item)=>{
+      item.delv_code=location;
+      console.log('item:', item);
+       axios
+      .post( DELV_LOCATIONS.DELETE_LINKS, item)
       .then(() => {
         mutate(`${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`);
         notification.success({
@@ -109,18 +121,79 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
           });
         });
       });
+    });
+  };
+
+  const createLinks = async (keys) => {
+    console.log('keys:', keys);
+    const items = data.filter(item => _.indexOf(keys,item.key) >= 0);
+    console.log('items:', items);
+    items.forEach((item)=>{
+      item.delv_code = location;
+      console.log('item:', item);
+    });
+    axios
+    .post( DELV_LOCATIONS.CREATE_LINKS, items)
+    .then(() => {
+      mutate(`${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`);
+      notification.success({
+        message: t('messages.createSuccess'),
+        description: t('descriptions.createSuccess'),
+      });
+    })
+    .catch((errors) => {
+      _.forEach(errors.response.data.errors, (error) => {
+        notification.error({
+          message: error.type,
+          description: error.message,
+        });
+      });
+    });
+  };
+
+  const deleteLinks = async (keys) => {
+    console.log('keys:', keys);
+    const items = data.filter(item => _.indexOf(keys,item.key) >= 0);
+    console.log('items:', items);
+    items.forEach((item)=>{
+      item.delv_code = location;
+      console.log('item:', item);
+    });
+    axios
+    .post( DELV_LOCATIONS.DELETE_LINKS, items)
+    .then(() => {
+      mutate(`${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`);
+      notification.success({
+        message: t('messages.deleteSuccess'),
+        description: t('descriptions.deleteSuccess'),
+      });
+    })
+    .catch((errors) => {
+      _.forEach(errors.response.data.errors, (error) => {
+        notification.error({
+          message: error.type,
+          description: error.message,
+        });
+      });
+    });
   };
 
   const changeTargetKeys = (nextTargetKeys) => {
     // compare the difference of old target key and the new target key
     // if new target key is longer, then item is moved from left to right, therefore need to add a link
     // if new target key is shorter, then item is moved from right to left, therefore need to remove a link
-    const keys = _.differenceWith(targetKeys, nextTargetKeys, _.isEqual);
+    //const keys = _.differenceWith(targetKeys, nextTargetKeys, _.isEqual);
+    //console.log("test....", _.differenceWith(["1","2"], [], _.isEqual));
+    let keys;
     if (nextTargetKeys.length > targetKeys.length) {
-      createLinks(keys);
+      keys = _.differenceWith(nextTargetKeys, targetKeys, _.isEqual);
+      //createLinks(keys);
+      createLinksForEach(keys);
     }
     if (nextTargetKeys.length < targetKeys.length) {
-      deleteLinks(keys);
+      keys = _.differenceWith(targetKeys, nextTargetKeys, _.isEqual);
+      //deleteLinks(keys);
+      deleteLinksForEach(keys);
     }
     setTargetKeys(nextTargetKeys);
   };

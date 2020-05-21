@@ -9,3 +9,4 @@ include_once '../../objects/customer_delvloc.php';
 
 //Utilities::exec('DelvLocation', 'delete_links');
 Utilities::delete('CustomerDelvLocation');
+//Utilities::deleteArray('CustomerDelvLocation');

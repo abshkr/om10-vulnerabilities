@@ -9,3 +9,4 @@ include_once '../../objects/customer_delvloc.php';
 
 //Utilities::exec('DelvLocation', 'create_links');
 Utilities::create('CustomerDelvLocation');
+//Utilities::createArray('CustomerDelvLocation');

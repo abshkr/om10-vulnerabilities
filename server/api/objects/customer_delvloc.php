@@ -8,6 +8,11 @@ include_once 'common_class.php';
 class CustomerDelvLocation extends CommonClass
 {
     protected $TABLE_NAME = 'DELV_FOR_CUST';
+    
+    protected $table_view_map = array(
+        "DLC_CUSTOMER" => "CUST_ACNT",
+        "DLC_DELV_LOC" => "DELV_CODE",
+    );
 
     public $NUMBER_FIELDS = array(
     );
