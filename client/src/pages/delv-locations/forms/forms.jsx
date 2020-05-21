@@ -29,27 +29,44 @@ import {
   LocationCode,
   LocationName,
   CustomerSupplier,
-  CustomerCategory
+  CustomerCategory,
+  CustomerLink
 } from './links';
   
 import { DELV_LOCATIONS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, config }) => {
-  //const { manageHotProduct, manageBaseProductDensityRange } = config;
-  //const [classification, setClassification] = useState(undefined);
+const FormModal = ({ value, visible, handleFormState, access }) => {
+  const [flag, setFlag] = useState(undefined);
+  const [supplier, setSupplier] = useState(undefined);
+  const [category, setCategory] = useState(undefined);
+  const [drawerWidth, setDrawerWidth] = useState('30vw');
+  const [mainTabOn, setMainTabOn] = useState(true);
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const IS_CREATING = !value;
 
-  const [flag, setFlag] = useState(undefined);
-  const [supplier, setSupplier] = useState(undefined);
-  const [category, setCategory] = useState(undefined);
-
   const { resetFields } = form;
+
+  const doTabChanges = (tabPaneKey) => {
+    if (tabPaneKey === "2") {
+      setDrawerWidth('90vw');
+      setMainTabOn(false);
+    }
+    else {
+      setDrawerWidth('30vw');
+      setMainTabOn(true);
+    }
+  }
+
+  const onFormClosed = () => {
+    handleFormState(false, null);
+    setDrawerWidth('30vw');
+    setMainTabOn(true);
+};
 
   const onComplete = () => {
     handleFormState(false, null);
@@ -126,15 +143,16 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
     }
   }, [resetFields, value]);
 
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
-      onClose={() => handleFormState(false, null)}
+      onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="30vw"
+      width={drawerWidth}
       visible={visible}
       footer={
         <>
@@ -143,7 +161,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
+            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || !mainTabOn}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -153,7 +171,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete}
+              disabled={(!access?.canDelete) ||  !mainTabOn}
               onClick={onDelete}
             >
               {t('operations.delete')}
@@ -163,7 +181,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
       }
     >
       <Form layout="vertical" form={form} scrollToFirstError>
-        <Tabs defaultActiveKey="1">
+        <Tabs onChange={doTabChanges}>
           <TabPane tab={t('tabColumns.general')} key="1">
             <Flag form={form} value={value} onChange={setFlag} />
             <Code form={form} value={value} />
@@ -181,11 +199,13 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
             <Phone form={form} value={value} />
             <Profile form={form} value={value} />
           </TabPane>
-          <TabPane tab={t('tabColumns.linkToCustomers')} key="2">
+          <TabPane tab={t('tabColumns.linkToCustomers')} disabled={IS_CREATING} key="2">
             <LocationCode form={form} value={value} />
             <LocationName form={form} value={value} />
             <CustomerSupplier form={form} value={value} onChange={setSupplier} />
             <CustomerCategory form={form} value={value} onChange={setCategory} />
+            <CustomerLink form={form} value={value} supplier={supplier} category={category} 
+            location={value?.delv_code} />
           </TabPane>
         </Tabs>
       </Form>

@@ -30,7 +30,7 @@ const LocationCode = ({ form, value }) => {
 
   return (
     <Form.Item name="delv_code" label={t('fields.code')} rules={[{ required: false }]}>
-      <Input disabled="true" />
+      <Input disabled={true} />
     </Form.Item>
   );
 };

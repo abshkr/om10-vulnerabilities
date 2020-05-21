@@ -595,6 +595,46 @@ class Utilities
         return;
     }
 
+    //Loop to create for an array. sample: pages/delv_location/create_links.php
+    public static function createArray($class, $method = 'create')
+    {
+        //Get data from POST
+        $data = json_decode(file_get_contents("php://input"));
+        foreach ($data as $item) {
+            if (self::create($class, $method) === false) {
+                $error = new EchoSchema(500, response("__CREATE_FAILED__"));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+                return;
+            }
+        }
+
+        http_response_code(200);
+        echo '{';
+        echo '"message": "' . response("__CREATE_SUCCEEDED__").  '"';
+        echo '}';
+        return;
+    }
+
+    //Loop to delete for an array. sample: pages/delv_location/delete_links.php
+    public static function deleteArray($class, $method = 'delete')
+    {
+        //Get data from POST
+        $data = json_decode(file_get_contents("php://input"));
+        foreach ($data as $item) {
+            if (self::delete($class, $method) === false) {
+                $error = new EchoSchema(500, response("__DELETE_FAILED__"));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+                return;
+            }
+        }
+
+        http_response_code(200);
+        echo '{';
+        echo '"message": "' . response("__DELETE_SUCCEEDED__").  '"';
+        echo '}';
+        return;
+    }
+
     //If $itemData is set, it means it is called from updateArray(), so
     //do not echo if it success, just return true or false.
     public static function update($class, $method = 'update', $itemData = null)
