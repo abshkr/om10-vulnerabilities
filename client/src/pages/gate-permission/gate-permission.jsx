@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import useSWR from 'swr';
 import { Button } from 'antd';
@@ -7,28 +7,29 @@ import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, FormModal } from '../../components';
 import { GATE_PERMISSION } from '../../api';
+import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
+import _ from 'lodash';
 
 const GatePermission = () => {
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
+
   const { t } = useTranslation();
+
+  const access = useAuth('M_GATEPERMISSION');
 
   const { data: payload, isValidating, revalidate } = useSWR(GATE_PERMISSION.READ);
 
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
+  };
+
   const fields = columns(t);
   const data = payload?.records;
-
-  const handleClick = value => {
-    FormModal({
-      value,
-      form: <Forms value={value} />,
-      id: value?.prmssn_k,
-      name: value?.prmssn_name,
-      t,
-      width: '60vw'
-    });
-  };
 
   const modifiers = (
     <>
@@ -36,7 +37,7 @@ const GatePermission = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
+      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleFormState(true, null)}  loading={isValidating}>
         {t('operations.create')}
       </Button>
     </>
@@ -44,7 +45,12 @@ const GatePermission = () => {
 
   return (
     <Page page={t('pageMenu.accessControl')} name={t('pageNames.gatePermission')} modifiers={modifiers}>
-      <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
+      <DataTable 
+        columns={fields} data={data} 
+        isLoading={isValidating} 
+        onClick={(payload) => handleFormState(true, payload)}
+        handleSelect={(payload) => handleFormState(true, payload[0])} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };

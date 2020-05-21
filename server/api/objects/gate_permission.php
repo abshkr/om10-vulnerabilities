@@ -8,44 +8,48 @@ include_once 'common_class.php';
 class GatePermission extends CommonClass
 {
     private $rules_query = "
-    SELECT PR.PRMSSN_K RULE_ID, 
-        PR.PRMSSN_CASE RULE_CASE, 
-        DECODE(PR.PRMSSN_CASE, 
-            'DEFAULT_EQUIP', 'Default Equip', 
-            'PRM_EQPT', 'Equip', 
-            'DEFAULT_PERSONNEL', 'Default Personnel', 
-            'PRM_PRSSNL', 'Personnel') RULE_CASENAME, 
-        DECODE(PR.PRMSSN_CASE, 'DEFAULT_EQUIP', -999, PR.PRMSSN_ETYP) RULE_ETYP, 
-        DECODE(PR.PRMSSN_CASE, 'DEFAULT_EQUIP', 'ANY', ET.ETYP_TITLE) RULE_ETYPNAME, 
-        PR.PRMSSN_AUTH RULE_AUTH, 
-        DECODE(PR.PRMSSN_CASE, 'DEFAULT_PERSONNEL', 'ANY', RT.AUTH_LEVEL_NAME) RULE_AUTHNAME, 
-        1 RULE_FIRST, 
-        PR.PRMSSN_K RULE_PARENT, 
-        NVL(PR.PRMSSN_EXPIRY_CHECK,0) RULE_EXPIRY_CHECK
-    FROM PRMSSN_RC PR, EQUIP_TYPES ET, AUTH_LEVEL_TYP RT
-    WHERE PR.PRMSSN_AUTH = RT.AUTH_LEVEL_ID(+)
-        AND PR.PRMSSN_ETYP = ET.ETYP_ID(+)
-        AND PR.PRMSSN_K = :prmssn_k
-    UNION
-    SELECT PR.PRMT_K RULE_ID,
-        PR.PRMT_CLASS RULE_CASE,
-        DECODE(PR.PRMT_CLASS, 
-            'DEFAULT_EQUIP', 'Default Equip',
-            'PRM_EQPT', 'Equip',
-            'DEFAULT_PERSONNEL', 'Default Personnel',
-            'PRM_PRSSNL', 'Personnel'
-        ) RULE_CASENAME,
-        DECODE(PR.PRMT_CLASS, 'DEFAULT_EQUIP', -999, PR.PRMT_ETP) RULE_ETYP,
-        DECODE(PR.PRMT_CLASS, 'DEFAULT_EQUIP', 'ANY', ET.ETYP_TITLE) RULE_ETYPNAME,
-        PR.PRMT_AUTH RULE_AUTH,
-        DECODE(PR.PRMT_CLASS, 'DEFAULT_PERSONNEL', 'ANY', RT.AUTH_LEVEL_NAME) RULE_AUTHNAME,
-        0 RULE_FIRST,
-        PR.PRMT_PRMSSN RULE_PARENT,
-        NVL(PR.PRMT_EXPIRY_CHECK,0) RULE_EXPIRY_CHECK
-    FROM PRMT_RC PR, EQUIP_TYPES ET, AUTH_LEVEL_TYP RT
-    WHERE PR.PRMT_AUTH = RT.AUTH_LEVEL_ID(+)
-        AND PR.PRMT_ETP = ET.ETYP_ID(+)
-        AND PR.PRMT_PRMSSN = :prmssn_k";
+        SELECT PR.PRMSSN_K RULE_ID, 
+            DECODE(PR.PRMSSN_CASE, 'DEFAULT_EQUIP', 'PRM_EQPT', 
+                'DEFAULT_PERSONNEL', 'PRM_PRSSNL', 
+                PR.PRMSSN_CASE) RULE_CASE, 
+            DECODE(PR.PRMSSN_CASE, 
+                'DEFAULT_EQUIP', 'Equip', 
+                'PRM_EQPT', 'Equip', 
+                'DEFAULT_PERSONNEL', 'Personnel', 
+                'PRM_PRSSNL', 'Personnel') RULE_CASENAME, 
+            DECODE(PR.PRMSSN_CASE, 'DEFAULT_EQUIP', -999, PR.PRMSSN_ETYP) RULE_ETYP, 
+            DECODE(PR.PRMSSN_CASE, 'DEFAULT_EQUIP', 'ANY', ET.ETYP_TITLE) RULE_ETYPNAME, 
+            PR.PRMSSN_AUTH RULE_AUTH, 
+            DECODE(PR.PRMSSN_CASE, 'DEFAULT_PERSONNEL', 'ANY', RT.AUTH_LEVEL_NAME) RULE_AUTHNAME, 
+            1 RULE_FIRST, 
+            PR.PRMSSN_K RULE_PARENT, 
+            NVL(PR.PRMSSN_EXPIRY_CHECK,0) RULE_EXPIRY_CHECK
+        FROM PRMSSN_RC PR, EQUIP_TYPES ET, AUTH_LEVEL_TYP RT
+        WHERE PR.PRMSSN_AUTH = RT.AUTH_LEVEL_ID(+)
+            AND PR.PRMSSN_ETYP = ET.ETYP_ID(+)
+            AND PR.PRMSSN_K = :prmssn_k
+        UNION
+        SELECT PR.PRMT_K RULE_ID,
+            DECODE(PR.PRMT_CLASS, 'DEFAULT_EQUIP', 'PRM_EQPT', 
+                'DEFAULT_PERSONNEL', 'PRM_PRSSNL', 
+                PR.PRMT_CLASS) RULE_CASE, 
+            DECODE(PR.PRMT_CLASS, 
+                'DEFAULT_EQUIP', 'Equip',
+                'PRM_EQPT', 'Equip',
+                'DEFAULT_PERSONNEL', 'Personnel',
+                'PRM_PRSSNL', 'Personnel'
+            ) RULE_CASENAME,
+            DECODE(PR.PRMT_CLASS, 'DEFAULT_EQUIP', -999, PR.PRMT_ETP) RULE_ETYP,
+            DECODE(PR.PRMT_CLASS, 'DEFAULT_EQUIP', 'ANY', ET.ETYP_TITLE) RULE_ETYPNAME,
+            PR.PRMT_AUTH RULE_AUTH,
+            DECODE(PR.PRMT_CLASS, 'DEFAULT_PERSONNEL', 'ANY', RT.AUTH_LEVEL_NAME) RULE_AUTHNAME,
+            0 RULE_FIRST,
+            PR.PRMT_PRMSSN RULE_PARENT,
+            NVL(PR.PRMT_EXPIRY_CHECK,0) RULE_EXPIRY_CHECK
+        FROM PRMT_RC PR, EQUIP_TYPES ET, AUTH_LEVEL_TYP RT
+        WHERE PR.PRMT_AUTH = RT.AUTH_LEVEL_ID(+)
+            AND PR.PRMT_ETP = ET.ETYP_ID(+)
+            AND PR.PRMT_PRMSSN = :prmssn_k";
 
     protected $TABLE_NAME = 'PRMSSN_RC';
     protected $VIEW_NAME = 'PRMSSN_RC';
@@ -183,6 +187,7 @@ class GatePermission extends CommonClass
         if (isset($this->rules)) {
             $lineno = 1;
             foreach ($this->rules as $value) {
+                // write_log($lineno, __FILE__, __LINE__);
                 // write_log(json_encode($value), __FILE__, __LINE__);
                 if ($lineno == 1) {
                     $query = "
@@ -211,6 +216,8 @@ class GatePermission extends CommonClass
                     $lineno += 1;
                     continue;
                 }
+
+                write_log(json_encode($value), __FILE__, __LINE__);
 
                 $query = "INSERT INTO PRMT_RC (
                     PRMT_K,
@@ -338,6 +345,20 @@ class GatePermission extends CommonClass
         return $row['NEXT_NO'];
     }
 
+    public function next_prm_id()
+    {
+        $query = "SELECT MAX(PRMSSN_K) + 1 NEXT_PRM_ID
+            FROM PRMSSN_RC";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function pre_create()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -345,6 +366,41 @@ class GatePermission extends CommonClass
         if (!isset($this->prmssn_k)) {
             $this->prmssn_k = $this->next_id();
         }
+
+        return $this->pre_update();
+    }
+
+    public function pre_update()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+    
+        //Because -999 is in read.php, and for ReactJs use, In db, it is NULL. 
+        write_log(json_encode($this->rules), __FILE__, __LINE__);
+        foreach ($this->rules as $i => $rule) {
+            if ($this->rules[$i]->rule_etyp == "-999" || $this->rules[$i]->rule_etyp == "") {
+                $this->rules[$i]->rule_etyp = "";
+                if ($this->rules[$i]->rule_case == "PRM_EQPT") {
+                    write_log("Changed default equip", __FILE__, __LINE__);
+                    $this->rules[$i]->rule_case = "DEFAULT_EQUIP";
+                }
+            }
+
+            if ($this->rules[$i]->rule_auth == "999") {
+                if ($this->rules[$i]->rule_case == "PRM_PRSSNL") {
+                    write_log("Changed default personnel", __FILE__, __LINE__);
+                    $this->rules[$i]->rule_case = "DEFAULT_PERSONNEL";
+                }
+            }
+
+            // foreach ($rule as $key => $value) {
+            //     if ($key == "rule_etyp" && $value == "-999") {
+            //         $this->rules[$i]->rule_etyp = "";
+            //     }
+
+            // }
+        }
+        write_log(json_encode($this->rules), __FILE__, __LINE__);
     }
 
     public function delete_rule()
@@ -423,10 +479,19 @@ class GatePermission extends CommonClass
 
     public function rule_cases()
     {
+        // $query = "
+        //     SELECT 'DEFAULT_PERSONNEL' CASE_CODE, 'Default Personnel' CASE_NAME FROM DUAL
+        //     UNION 
+        //     SELECT 'PRM_PRSSNL' CASE_CODE, 'Personnel' CASE_NAME FROM DUAL
+        //     UNION 
+        //     SELECT 'DEFAULT_EQUIP' CASE_CODE, 'Default Equip' CASE_NAME FROM DUAL
+        //     UNION 
+        //     SELECT 'PRM_EQPT' CASE_CODE, 'Default Equip' CASE_NAME FROM DUAL
+        //     ";
         $query = "
             SELECT 'PRM_PRSSNL' CASE_CODE, 'Personnel' CASE_NAME FROM DUAL
             UNION 
-            SELECT 'PRM_EQPT' CASE_CODE, 'Transport Equipment' CASE_NAME FROM DUAL
+            SELECT 'PRM_EQPT' CASE_CODE, 'Equip' CASE_NAME FROM DUAL
             ";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
