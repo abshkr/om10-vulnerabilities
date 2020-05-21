@@ -50,15 +50,18 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
   const [supplier, setSupplier] = useState(undefined);
   const [category, setCategory] = useState(undefined);
   const [drawerWidth, setDrawerWidth] = useState('30vw');
+  const [mainTabOn, setMainTabOn] = useState(true);
 
   const { resetFields } = form;
 
   const doTabChanges = (tabPaneKey) => {
     if (tabPaneKey === "2") {
       setDrawerWidth('90vw');
+      setMainTabOn(false);
     }
     else {
       setDrawerWidth('30vw');
+      setMainTabOn(true);
     }
   }
 
@@ -156,7 +159,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
+            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || !mainTabOn}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -166,7 +169,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete}
+              disabled={(!access?.canDelete) ||  !mainTabOn}
               onClick={onDelete}
             >
               {t('operations.delete')}

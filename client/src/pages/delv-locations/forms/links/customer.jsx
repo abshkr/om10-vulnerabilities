@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Form, Select } from 'antd';
+import { Form, Select, notification } from 'antd';
+import { mutate } from 'swr';
+import axios from 'axios';
 import _ from 'lodash';
 
 import { TableTransfer } from '../../../../components';
@@ -11,7 +13,7 @@ import columns from './columns';
 import { DELV_LOCATIONS } from '../../../../api';
 
 const CustomerLink = ({ form, value, supplier, category, location }) => {
-  const [targetKeys, setTargetKeys] = useState(undefined);
+  //const [targetKeys, setTargetKeys] = useState(undefined);
 
   const { t } = useTranslation();
 
@@ -54,43 +56,72 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
   ];
 
 
-  const { data: availableCustomers, isValidating } = useSWR(
-    `${DELV_LOCATIONS.AVAILABLE_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`,
-    { refreshInterval: 0 }
-  );
-  const { data: linkedCustomers, isValidating2 } = useSWR(
-    `${DELV_LOCATIONS.LINKED_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`,
+  const { data: allCustomers, isValidating } = useSWR(
+    `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`,
     { refreshInterval: 0 }
   );
 
   const { setFieldsValue } = form;
-  const data = availableCustomers?.records;
-  /*
-  const validate = (rule, input) => {
-    const match = _.find(logicalPrinters?.records, (object) => {
-      return object.prt_usage === input && object.prt_cmpy === company;
-    });
+  const data = allCustomers?.records;
+  //const originTargetKeys = data?.filter(item => item.delv_code === location).map(item => item.cust_acnt);
+  const originTargetKeys = data?.filter(item => item.delv_code === location).map(item => item.key);
+  const [targetKeys, setTargetKeys] = useState(originTargetKeys);
+  //setTargetKeys(originTargetKeys);
+  console.log(targetKeys);
 
-    if (input && !!match && !value) {
-      return Promise.reject(t('descriptions.alreadyExists'));
-    }
-
-    if (input === '' || !value) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.usage')}`);
-    }
-
-    return Promise.resolve();
-  };
-  useEffect(() => {
-    if (value) {
-      setFieldsValue({
-        prt_usage: value.prt_usage,
+  const createLinks = async (keys) => {
+    const items = data.filter(item => keys.find(item.key))
+    await axios
+      .post( DELV_LOCATIONS.CREATE_LINKS, items)
+      .then(() => {
+        mutate(`${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`);
+        notification.success({
+          message: t('messages.createSuccess'),
+          description: t('descriptions.createSuccess'),
+        });
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
       });
-    }
-  }, [value, setFieldsValue]);
-  */
+  };
 
-  const changeTargetKeys = nextTargetKeys => {
+  const deleteLinks = async (keys) => {
+    const items = data.filter(item => keys.find(item.key))
+    await axios
+      .post( DELV_LOCATIONS.DELETE_LINKS, items)
+      .then(() => {
+        mutate(`${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`);
+        notification.success({
+          message: t('messages.deleteSuccess'),
+          description: t('descriptions.deleteSuccess'),
+        });
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+      });
+  };
+
+  const changeTargetKeys = (nextTargetKeys) => {
+    // compare the difference of old target key and the new target key
+    // if new target key is longer, then item is moved from left to right, therefore need to add a link
+    // if new target key is shorter, then item is moved from right to left, therefore need to remove a link
+    const keys = _.differenceWith(targetKeys, nextTargetKeys, _.isEqual);
+    if (nextTargetKeys.length > targetKeys.length) {
+      createLinks(keys);
+    }
+    if (nextTargetKeys.length < targetKeys.length) {
+      deleteLinks(keys);
+    }
     setTargetKeys(nextTargetKeys);
   };
 
