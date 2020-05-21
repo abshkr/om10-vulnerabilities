@@ -1769,6 +1769,7 @@ https://{{server_ip}}/api/pages/key_reader/delete.php?adv_code=for_test
 
 //Gate Permission
 https://10.1.10.66/api/pages/gate_permission/read.php
+https://10.1.10.66/api/pages/gate_permission/next_prm_id.php
 https://10.1.10.66/api/pages/gate_permission/rule_cases.php
 https://10.1.10.66/api/pages/gate_permission/eqpt_types.php
 https://10.1.10.66/api/pages/gate_permission/role_types.php

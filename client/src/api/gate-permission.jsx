@@ -1,4 +1,5 @@
 export const READ = '/api/pages/gate_permission/read.php';
+export const NEXT_PRM_ID = '/api/pages/gate_permission/next_prm_id.php';
 export const RULE_CASES = '/api/pages/gate_permission/rule_cases.php';
 export const EQUIPMENT_TYPES = '/api/pages/gate_permission/eqpt_types.php';
 export const ROLE_TYPES = '/api/pages/gate_permission/role_types.php';

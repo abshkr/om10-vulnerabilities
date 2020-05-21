@@ -636,7 +636,11 @@
     "custAllocLockId": "Customer Allocation Lock ID",
     "custAllocLockName": "Customer Allocation Lock Name",
     "custOrderCount": "Total Orders",
-    "custDlocCount": "Total Delv Locations"
+    "custDlocCount": "Total Delv Locations",
+    "delvAvailableCustomers": "Available Customers for Delivery Location",
+    "delvLinkedCustomers": "Customers linked to Delivery Location",
+    "delvCustomerLinks": "Link Delivery Location To Customer(s)",
+    "delvLinkToCustomers": "Link To Customers"
   },
 
   "pageMenu": {
@@ -940,6 +944,7 @@
   },
 
   "descriptions": {
+    "gatePermissionRule": "Gate permission must have first rule.",  
     "validationFailed": "Make sure all the fields meet the requirements.",
     "requestFailed": "Failed to make the request.",
     "createFailed": "Failed to create the record.",
@@ -1005,6 +1010,7 @@
   },
 
   "placeholder": {
+	"selectGate": "Select Gate",
     "selectDepot": "Select Base Depot",
     "selectCarrier": "Select Carrier",
     "selectOwner": "Select Owner",
