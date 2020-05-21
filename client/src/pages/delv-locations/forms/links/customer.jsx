@@ -95,7 +95,7 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
   };
 
   return (
-    <Form.Item name="customer_link" label={t('fields.customerLinkTitle')} rules={[{ required: false }]}>
+    <Form.Item name="customer_link" label={t('fields.delvCustomerLinks')} rules={[{ required: false }]}>
         <TableTransfer
           dataSource={data}
           targetKeys={targetKeys}

@@ -636,7 +636,11 @@
     "custAllocLockId": "Customer Allocation Lock ID",
     "custAllocLockName": "Customer Allocation Lock Name",
     "custOrderCount": "Total Orders",
-    "custDlocCount": "Total Delv Locations"
+    "custDlocCount": "Total Delv Locations",
+    "delvAvailableCustomers": "Available Customers for Delivery Location",
+    "delvLinkedCustomers": "Customers linked to Delivery Location",
+    "delvCustomerLinks": "Link Delivery Location To Customer(s)",
+    "delvLinkToCustomers": "Link To Customers"
   },
 
   "pageMenu": {

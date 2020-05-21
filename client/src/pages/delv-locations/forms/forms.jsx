@@ -49,8 +49,18 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
   const [flag, setFlag] = useState(undefined);
   const [supplier, setSupplier] = useState(undefined);
   const [category, setCategory] = useState(undefined);
+  const [drawerWidth, setDrawerWidth] = useState('30vw');
 
   const { resetFields } = form;
+
+  const doTabChanges = (tabPaneKey) => {
+    if (tabPaneKey === "2") {
+      setDrawerWidth('90vw');
+    }
+    else {
+      setDrawerWidth('30vw');
+    }
+  }
 
   const onComplete = () => {
     handleFormState(false, null);
@@ -127,6 +137,8 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
     }
   }, [resetFields, value]);
 
+
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -135,7 +147,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="30vw"
+      width={drawerWidth}
       visible={visible}
       footer={
         <>
@@ -164,7 +176,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
       }
     >
       <Form layout="vertical" form={form} scrollToFirstError>
-        <Tabs defaultActiveKey="1">
+        <Tabs defaultActiveKey="1" onChange={doTabChanges}>
           <TabPane tab={t('tabColumns.general')} key="1">
             <Flag form={form} value={value} onChange={setFlag} />
             <Code form={form} value={value} />
@@ -183,10 +195,10 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
             <Profile form={form} value={value} />
           </TabPane>
           <TabPane tab={t('tabColumns.linkToCustomers')} key="2">
-            <LocationCode form={form} value={value} />
-            <LocationName form={form} value={value} />
-            <CustomerSupplier form={form} value={value} onChange={setSupplier} />
-            <CustomerCategory form={form} value={value} onChange={setCategory} />
+            <LocationCode form={form} value={value} style={{ float: 'right', marginRight: 5 }}/>
+            <LocationName form={form} value={value} style={{ float: 'right', marginRight: 5 }}/>
+            <CustomerSupplier form={form} value={value} onChange={setSupplier} style={{ float: 'right', marginRight: 5 }}/>
+            <CustomerCategory form={form} value={value} onChange={setCategory} style={{ float: 'right', marginRight: 5 }}/>
             <CustomerLink form={form} value={value} supplier={supplier} category={category} location={value?.delv_code} />
           </TabPane>
         </Tabs>
