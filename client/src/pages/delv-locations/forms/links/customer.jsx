@@ -13,7 +13,7 @@ import columns from './columns';
 import { DELV_LOCATIONS } from '../../../../api';
 
 const CustomerLink = ({ form, value, supplier, category, location }) => {
-  //const [targetKeys, setTargetKeys] = useState([]);
+  const [targetKeys, setTargetKeys] = useState([]);
 
   const { t } = useTranslation();
 
@@ -55,20 +55,26 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
     },
   ];
 
-
+  // use onSuccess option to handle some settings after data is retrieved successfully.
+  // note: Tne component of Table Transfer requires the data source to have an index key. 
   const { data: allCustomers, isValidating } = useSWR(
     `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`,
-    { refreshInterval: 0 }
+    { refreshInterval: 0,
+      onSuccess: 
+        (data, key, config) => {
+          console.log('Entered onSuccess!!!'); 
+          console.log({data}); 
+          //const originTargetKeys = data?.filter(item => item.delv_code === location).map(item => item.cust_acnt);
+          const originTargetKeys = data?.records.filter(item => item.delv_code === location).map(item => item.key);
+          console.log("originTargetKeys", originTargetKeys);
+          setTargetKeys(originTargetKeys);
+          console.log("targetKeys", targetKeys);
+      }
+    }
   );
 
   const { setFieldsValue } = form;
   const data = allCustomers?.records;
-  //const originTargetKeys = data?.filter(item => item.delv_code === location).map(item => item.cust_acnt);
-  const originTargetKeys = data?.filter(item => item.delv_code === location).map(item => item.key);
-  console.log("originTargetKeys", originTargetKeys);
-  const [targetKeys, setTargetKeys] = useState(originTargetKeys);
-  //setTargetKeys(originTargetKeys);
-  console.log("targetKeys", targetKeys);
 
   const createLinksForEach = async (keys) => {
     console.log('keys:', keys);
@@ -182,16 +188,19 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
     // compare the difference of old target key and the new target key
     // if new target key is longer, then item is moved from left to right, therefore need to add a link
     // if new target key is shorter, then item is moved from right to left, therefore need to remove a link
-    //const keys = _.differenceWith(targetKeys, nextTargetKeys, _.isEqual);
-    //console.log("test....", _.differenceWith(["1","2"], [], _.isEqual));
+    let currTargetKeys = targetKeys;
+    if (currTargetKeys === undefined) {
+      currTargetKeys = data?.filter(item => item.delv_code === location).map(item => item.key);
+    }
+    console.log(currTargetKeys);
     let keys;
-    if (nextTargetKeys.length > targetKeys.length) {
-      keys = _.differenceWith(nextTargetKeys, targetKeys, _.isEqual);
+    if (nextTargetKeys.length > currTargetKeys.length) {
+      keys = _.differenceWith(nextTargetKeys, currTargetKeys, _.isEqual);
       //createLinks(keys);
       createLinksForEach(keys);
     }
-    if (nextTargetKeys.length < targetKeys.length) {
-      keys = _.differenceWith(targetKeys, nextTargetKeys, _.isEqual);
+    if (nextTargetKeys.length < currTargetKeys.length) {
+      keys = _.differenceWith(currTargetKeys, nextTargetKeys, _.isEqual);
       //deleteLinks(keys);
       deleteLinksForEach(keys);
     }
