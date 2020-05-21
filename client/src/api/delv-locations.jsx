@@ -20,5 +20,7 @@ export const RESET = '/api/pages/delv_location/reset.php ';
 export const CREATE = '/api/pages/delv_location/create.php';
 export const UPDATE = '/api/pages/delv_location/update.php';
 export const DELETE = '/api/pages/delv_location/delete.php';
+export const CREATE_LINK = '/api/pages/delv_location/create_link.php';
+export const DELETE_LINK = '/api/pages/delv_location/delete_link.php';
 export const CREATE_LINKS = '/api/pages/delv_location/create_links.php';
 export const DELETE_LINKS = '/api/pages/delv_location/delete_links.php';

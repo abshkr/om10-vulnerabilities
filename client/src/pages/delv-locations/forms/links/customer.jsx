@@ -84,7 +84,7 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
       item.delv_code=location;
       console.log('item:', item);
        axios
-      .post( DELV_LOCATIONS.CREATE_LINKS, item)
+      .post( DELV_LOCATIONS.CREATE_LINK, item)
       .then(() => {
         mutate(`${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`);
         notification.success({
@@ -111,7 +111,7 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
       item.delv_code=location;
       console.log('item:', item);
        axios
-      .post( DELV_LOCATIONS.DELETE_LINKS, item)
+      .post( DELV_LOCATIONS.DELETE_LINK, item)
       .then(() => {
         mutate(`${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`);
         notification.success({
