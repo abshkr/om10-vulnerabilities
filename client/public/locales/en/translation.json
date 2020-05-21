@@ -749,7 +749,7 @@
   "operations": {
     "editing": "Editing",
     "create": "Create",
-	"activate": "Activate",
+    "activate": "Activate",
     "export": "Export CSV",
     "delete": "Delete",
     "cancel": "Cancel",
@@ -818,7 +818,8 @@
     "preSchedule": "Pre Schedule",
     "add": "Add",
     "simple": "Simple",
-    "list": "List"
+    "list": "List",
+    "allocationPeriod": "Allocation Period"
   },
 
   "tabColumns": {
@@ -910,7 +911,7 @@
 
   "prompts": {
     "create": "Are you sure you want to create this record?",
-	"activate": "Are you sure you want to activate this record?",
+    "activate": "Are you sure you want to activate this record?",
     "update": "Are you sure you want to update this record?",
     "delete": "Are you sure you want to delete this record?",
     "calculate": "Are you sure you want to calculate the selected records?",

@@ -208,9 +208,7 @@ const Tanks = () => {
                                 style={{
                                   transition: '0.3s all',
                                   backgroundColor:
-                                    selected?.tank_code === item.tank_code
-                                      ? '#0054a4'
-                                      : status[item.tank_status_name],
+                                    selected?.tank_code === item.tank_code ? '#0054a4' : item.tank_base_color,
                                   color:
                                     selected?.tank_code === item.tank_code ? 'white' : 'rgba(0, 0, 0, 0.65)',
                                 }}

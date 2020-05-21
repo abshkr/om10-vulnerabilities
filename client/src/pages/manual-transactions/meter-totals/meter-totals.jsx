@@ -10,7 +10,7 @@ const MeterTotals = ({ form }) => {
 
   const fields = columns(t);
 
-  return <DataTable height="80vh" columns={fields} />;
+  return <DataTable data={[]} height="80vh" columns={fields} />;
 };
 
 export default MeterTotals;

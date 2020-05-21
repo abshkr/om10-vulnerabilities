@@ -14,6 +14,7 @@ const AntdStyleProvider = createGlobalStyle`
     border-top-right-radius: 5px;
     border: 1px solid #0054a43b !important;
     color: black;
+    font-weight: 600;
   }
 
   .ant-card {

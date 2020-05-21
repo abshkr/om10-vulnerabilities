@@ -85,11 +85,11 @@ const ManualTransactions = () => {
           setSelectedSupplier={setSelectedSupplier}
         />
 
-        <Divider>{t('divider.drawerProductTransfer')}</Divider>
+        <Divider style={{ margin: '0px 0' }}>{t('divider.drawerProductTransfer')}</Divider>
 
         <DrawerProductTransfer form={form} type={type} />
 
-        <Divider>{t('divider.baseProducts')}</Divider>
+        <Divider style={{ margin: '0px 0' }}>{t('divider.baseProducts')}</Divider>
 
         <Tabs defaultActiveKey="1" animated={false} type="card">
           <TabPane tab={t('tabColumns.transferDetails')} key="1">
@@ -101,7 +101,7 @@ const ManualTransactions = () => {
           </TabPane>
         </Tabs>
 
-        <Divider>{t('divider.meters')}</Divider>
+        <Divider style={{ margin: '0px 0' }}>{t('divider.meters')}</Divider>
 
         <Tabs defaultActiveKey="1" animated={false} type="card">
           <TabPane tab={t('tabColumns.cumulativeMeterTotals')} key="1">

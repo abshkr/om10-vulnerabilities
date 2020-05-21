@@ -26,7 +26,7 @@ const LockType = ({ form, value, onChange }) => {
         alloc_lock: String(value.alloc_lock),
       });
 
-      onChange(value.alloc_lock);
+      onChange(String(value.alloc_lock));
     }
   }, [value, setFieldsValue, onChange]);
 

@@ -27,7 +27,28 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
   };
 
   const onFinish = async () => {
-    const values = await form.validateFields();
+    const record = await form.validateFields();
+
+    console.log(record);
+    const compartments = [];
+
+    _.forEach(record.names, (value, key) => {
+      const payload = {
+        cmpt_no: String(key + 1),
+        cmpt_units: record?.unit,
+        cmpt_capacit: String(value || 0),
+      };
+
+      compartments.push(payload);
+    });
+
+    const values = {
+      etyp_title: record.etyp_title,
+      etyp_category: record.etyp_category,
+      etyp_isrigid: false,
+      etyp_schedul: false,
+      compartments,
+    };
 
     console.log(values);
     // Modal.confirm({
@@ -131,7 +152,12 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError initialValues={{ equipment: 'p' }}>
+      <Form
+        layout="vertical"
+        form={form}
+        scrollToFirstError
+        initialValues={{ etyp_category: 'p', unit: '5' }}
+      >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <Code form={form} value={value} />
