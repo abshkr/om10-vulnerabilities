@@ -4,6 +4,6 @@ include_once '../../shared/header.php';
 
 // include database and object files
 include_once '../../config/database.php';
-include_once '../../objects/delv_location.php';
+include_once '../../objects/schedule.php';
 
-Utilities::read('DelvLocation', $method = 'unit_types', $filter = true);
+Utilities::read('Schedule', $method = 'unit_types');
