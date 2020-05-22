@@ -207,8 +207,10 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
     setTargetKeys(nextTargetKeys);
   };
 
+  const linkTitle = t('fields.delvCustomerLinks') + '  [ ' + t('fields.delvAvailableCustomers') + '  <<->>  ' + t('fields.delvLinkedCustomers') + ' ]';
+
   return (
-    <Form.Item name="customer_link" label={t('fields.delvCustomerLinks')} rules={[{ required: false }]}>
+    <Form.Item name="customer_link" label={linkTitle} rules={[{ required: false }]}>
         <TableTransfer
           dataSource={data}
           targetKeys={targetKeys}
