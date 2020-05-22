@@ -2,12 +2,18 @@ import React, { useState, useEffect } from 'react';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
+
 import { Form, InputNumber, Select, Radio, Row, Col, Input, Button } from 'antd';
 import _ from 'lodash';
+import { Equipment } from '../../../../components/';
+import { EQUIPMENT_TYPES } from '../../../../api';
 
 const { Option } = Select;
 
 const NonCombination = ({ form, value }) => {
+  const { data: units } = useSWR(EQUIPMENT_TYPES.UNITS);
+
   const { setFieldsValue } = form;
 
   const [selected, setSelected] = useState('p');
@@ -51,16 +57,15 @@ const NonCombination = ({ form, value }) => {
                     }}
                     hoverable
                   >
-                    <img
+                    <Equipment
+                      image={item}
                       style={{
                         height: '100%',
-                        width: '100%',
+
                         objectFit: 'contain',
-                        objectPosition: 'bottom',
+                        objectPosition: '0 0',
                         transform: 'scale(0.8)',
                       }}
-                      alt="example"
-                      src={`/images/${item}.png`}
                     />
                     <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                       <Radio value={item} />
@@ -73,10 +78,20 @@ const NonCombination = ({ form, value }) => {
         </Scrollbars>
 
         <Form.Item name="unit">
-          <Select style={{ width: '100%', marginTop: 10 }} onChange={(key, value) => setUnit(value.children)}>
-            <Option value="5">l (amb)</Option>
-            <Option value="11">l (cor)</Option>
-            <Option value="17">kg</Option>
+          <Select
+            showSearch
+            style={{ width: '100%', marginTop: 10 }}
+            onChange={(key, value) => setUnit(value.children)}
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {units?.records?.map((item, index) => (
+              <Select.Option key={index} value={item.unit_id}>
+                {item.description}
+              </Select.Option>
+            ))}
           </Select>
         </Form.Item>
 

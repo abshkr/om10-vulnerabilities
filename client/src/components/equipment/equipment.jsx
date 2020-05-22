@@ -1,14 +1,26 @@
 import React from 'react';
 
-import { EquipmentImage } from './style';
+import t from './t.png';
+import f from './f.png';
+import e from './e.png';
+import r from './r.png';
+import s from './s.png';
+import x from './x.png';
+import p from './p.png';
 
-const Equipment = ({ image, isLoading }) => {
+const matrix = {
+  t,
+  f,
+  e,
+  r,
+  s,
+  x,
+  p,
+};
+
+const Equipment = ({ image, style }) => {
   if (image) {
-    return (
-      <EquipmentImage>
-        <img src={`/images/${image}.png`} alt="equipment" />
-      </EquipmentImage>
-    );
+    return <img style={{ ...style }} src={matrix[image]} alt="equipment" />;
   }
 
   return null;

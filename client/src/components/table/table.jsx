@@ -14,6 +14,7 @@ import {
   ProgressRenderer,
   ATGRenderer,
   MarkRenderer,
+  EquipmentRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -35,6 +36,7 @@ const defaultComponents = {
   LoadingStatus,
   StatusRenderer,
   ProgressRenderer,
+  EquipmentRenderer,
   ATGRenderer,
   TagRenderer,
   NullRenderer,
@@ -60,6 +62,7 @@ const Table = ({
   components,
   onCellClick,
   parentHeight,
+  rowHeight,
 }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
@@ -158,6 +161,7 @@ const Table = ({
             animateRows={true}
             enableCellTextSelection={true}
             onCellDoubleClicked={onCellClick}
+            rowHeight={rowHeight || null}
           />
         </div>
       </div>
