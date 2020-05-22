@@ -332,6 +332,7 @@ https://{{server_ip}}/api/pages/schedule/host_data_delete.php
 
 //Equipment Types
 https://10.1.10.66/api/pages/equipment_type/read.php
+https://10.1.10.66/api/pages/equipment_type/unit_types.php
 https://10.1.10.66/api/pages/equipment_type/composition.php?etyp_id=40
 https://{{server_ip}}/api/pages/equipment_type/delete.php?etyp_id=40
 https://{{server_ip}}/api/pages/equipment_type/create.php		//Non combo; 
@@ -2001,6 +2002,98 @@ https://10.1.10.66/api/pages/delv_location/transport_types.php
 https://10.1.10.66/api/pages/delv_location/document_types.php
 https://10.1.10.66/api/pages/delv_location/unit_types.php
 https://10.1.10.66/api/pages/delv_location/eqpt_types.php
+https://10.1.10.66/api/pages/delv_location/profiles.php
+https://10.1.10.66/api/pages/delv_location/delv_customers.php?delv_cust_suppcode=suppcode1&delv_cust_catgcode=catgcode1&delv_code=delvcode1
+https://10.1.10.66/api/pages/delv_location/rest_customers.php?delv_cust_suppcode=suppcode1&delv_cust_catgcode=catgcode1&delv_code=delvcode1
+https://10.1.10.66/api/pages/delv_location/all_customers.php?delv_cust_suppcode=suppcode1&delv_cust_catgcode=catgcode1&delv_code=delvcode1
+https://10.1.10.66/api/pages/delv_location/create.php
+{
+    "delv_flag": true,
+    "delv_code": "ZZZDLV2",
+    "delv_name": "test zzzdlv2",
+    "delv_addr": "CUST_CA5860114",
+    "delv_grid": "CSTDLV",
+    "delv_trsp_typeid": "0",
+    "delv_doc_typeid": "2",
+    "delv_qty_typeid": "1",
+    "delv_etyp_id": "8",
+    "delv_trip_time": 0,
+    "delv_distance": 0,
+    "delv_tarrif": 0
+}
+https://10.1.10.66/api/pages/delv_location/update.php
+{
+    "delv_flag": true,
+    "delv_code": "ZZZDLV2",
+    "delv_name": "test zzzdlv2",
+    "delv_addr": "CUST_CA5860114",
+    "delv_grid": "CSTDLV",
+    "delv_trsp_typeid": "2",
+    "delv_doc_typeid": "0",
+    "delv_qty_typeid": "0",
+    "delv_etyp_id": "8",
+    "delv_trip_time": 1234,
+    "delv_distance": 4388,
+    "delv_tarrif": 0.9,
+    "delv_contact": "zb",
+    "delv_phone": "",
+    "delv_prf_code": ""
+}
+https://10.1.10.66/api/pages/delv_location/delete.php
+{
+    "delv_code":"ZZZDLV2",
+    "delv_name":"test zzzdlv2",
+    "delv_addr_code":"CUST_CA5860114",
+    "delv_addr_text":"330 Denderson Road, Townsville, CITYLINE2, district, 3178, Victoria C, Rustralia, =61397308888, badul, badul@diamondkee.com, =61397308889",
+    "delv_addr_desc":"CUST_CA5860114[330 Denderson Road, Townsville, CITYLINE2, district, 3178, Victoria C, Rustralia, =61397308888, badul, badul@diamondkee.com, =61397308889]",
+    "delv_grid":"CSTDLV",
+    "delv_trsp_typeid":2,
+    "delv_trsp_typename":"RAIL BULK",
+    "delv_doc_typeid":0,
+    "delv_doc_typename":"INVOICE",
+    "delv_qty_typeid":0,
+    "delv_qty_typename":"OBSERVED",
+    "delv_etyp_id":8,
+    "delv_etyp_title":"EQR_03_06_02",
+    "delv_phone":"",
+    "delv_trip_time":1234,
+    "delv_tarrif":0.9,
+    "delv_distance":4388,
+    "delv_contact":"zb",
+    "delv_prf_code":""
+}
+https://10.1.10.66/api/pages/delv_location/create_link.php
+{
+    "cust_acnt":"P2219992",
+    "delv_code":"ZZZDLV2"
+}
+https://10.1.10.66/api/pages/delv_location/delete_link.php
+{
+    "cust_acnt":"P2219992",
+    "delv_code":"ZZZDLV2"
+}
+https://10.1.10.66/api/pages/delv_location/create_links.php
+[
+    {
+        "cust_acnt":"P2219992",
+        "delv_code":"ZZZDLV2"
+    },
+    {
+        "cust_acnt":"CA5860114",
+        "delv_code":"ZZZDLV2"
+    }
+]
+https://10.1.10.66/api/pages/delv_location/delete_links.php
+[
+    {
+        "cust_acnt":"P2219992",
+        "delv_code":"ZZZDLV2"
+    },
+    {
+        "cust_acnt":"CA5860114",
+        "delv_code":"ZZZDLV2"
+    }
+]
 
 //Price Offset --TODO FLEX screen does not work
 
