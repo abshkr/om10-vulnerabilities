@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import useSWR, { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 
@@ -18,14 +18,33 @@ import { ADDRESSES } from '../../../api';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access }) => {
+  console.log("FormModal Entry:", visible, value?.db_address_key, value);
   const [tableAPI, setTableAPI] = useState(null);
-  const [addressKey, setAddressKey] = useState(null);
+  const [lines, setLines] = useState([]);
+  const [addressKey, setAddressKey] = useState('');
+
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const fields = columns(t);
 
   const IS_CREATING = !value;
+
+  const addressCode = value?.db_address_key;
+
+  // use onSuccess option to handle some settings after data is retrieved successfully.
+  // note: Tne component of Table Transfer requires the data source to have an index key. 
+  const { data: payload, isValidating } = useSWR(
+    `${ADDRESSES.LINES}?address_code=${addressCode}`,
+    { refreshInterval: 0,
+      onSuccess: 
+        (data, key, config) => {
+          console.log('Entered onSuccess!!!'); 
+          console.log({data}); 
+          setLines(data?.records);
+      }
+    }
+  );
   
   const onItemValidation = items => {
     const errors = [];
@@ -93,7 +112,11 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
        items.push(rowNode.data);
     });    
-    console.log(items);
+    console.log("onFinish:", items);
+
+    items.forEach((item) => {
+      item.db_addr_line_id = addressKey;
+    });
 
     values.addr_lines = items;
 
@@ -172,7 +195,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="30vw"
+      width="50vw"
       visible={visible}
       footer={
         <>
@@ -205,7 +228,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           <TabPane tab={t('tabColumns.general')} key="1">
             <AddressCode form={form} value={value} onChange={setAddressKey} />
             <Divider />
-            <Items form={form} setTableAPIContext={setTableAPI} value={value} addressCode={addressKey}/>
+            <Items setTableAPIContext={setTableAPI} value={lines} addressCode={addressKey? addressKey:(value?.db_address_key)}/>
           </TabPane>
         </Tabs>
       </Form>

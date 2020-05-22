@@ -8,6 +8,7 @@ import ProgressRenderer from './progress';
 import ATGRenderer from './atg';
 import MarkRenderer from './mark';
 import EquipmentRenderer from './equipment';
+import ListRenderer from './list';
 
 export {
   BooleanRenderer,
@@ -20,4 +21,5 @@ export {
   ATGRenderer,
   MarkRenderer,
   EquipmentRenderer,
+  ListRenderer,
 };

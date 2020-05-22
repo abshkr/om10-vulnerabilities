@@ -38,7 +38,7 @@ const useColumns = (value, selected) => {
       filter: 'FuzzyFilter',
       sortable: true,
       resizable: true,
-      hide: false,
+      hide: true,
       width: 200,
       suppressSizeToFit: true,
       pinned: 'left'
@@ -49,7 +49,7 @@ const useColumns = (value, selected) => {
       filter: 'MultiFilter',
       sortable: true,
       resizable: true,
-      width: 100,
+      width: 160,
       suppressSizeToFit: true,
       pinned: 'left'
     },
@@ -60,12 +60,16 @@ const useColumns = (value, selected) => {
       filter: 'FuzzyFilter',
       sortable: true,
       resizable: true,
-      width: 160,
+      width: 200,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable || !value,
-      cellEditor: 'SelectEditor',
+      editable: selected[0]?.addresss_action==='+' || selected[0]?.addresss_action==='*' || !!value,
+      cellRenderer: 'ListRenderer',
+      cellRendererParams: {
+        values: _.uniq(_.map(types?.records, (item)=>{return String(item.enum_no)+'|'+item.message;}))
+      },
+      cellEditor: 'ListEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(types?.records, 'message'))
+        values: _.uniq(_.map(types?.records, (item)=>{return String(item.enum_no)+'|'+item.message;}))
       }
     },
     {
@@ -85,7 +89,7 @@ const useColumns = (value, selected) => {
       sortable: true,
       resizable: true,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable || !value
+      editable: selected[0]?.addresss_action==='+' || selected[0]?.addresss_action==='*' || !!value,
     }
   ];
 };

@@ -15,11 +15,12 @@ import {
   ATGRenderer,
   MarkRenderer,
   EquipmentRenderer,
+  ListRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
 
-import { NumericEditor, SelectEditor, BooleanEditor } from './editors';
+import { NumericEditor, SelectEditor, BooleanEditor, ListEditor } from './editors';
 import { LoadingStatus } from './status';
 import { Search } from '..';
 
@@ -37,12 +38,14 @@ const defaultComponents = {
   StatusRenderer,
   ProgressRenderer,
   EquipmentRenderer,
+  ListRenderer,
   ATGRenderer,
   TagRenderer,
   NullRenderer,
   NumericEditor,
   SelectEditor,
   BooleanEditor,
+  ListEditor,
 };
 
 const defaultColumnDef = {};
