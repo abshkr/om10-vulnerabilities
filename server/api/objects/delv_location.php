@@ -89,6 +89,39 @@ class DelvLocation extends CommonClass
         }
     }
 
+    public function check_delvloc_existence()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM DELV_LOCATION WHERE DLV_CODE=:delv_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':delv_code', $this->delv_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function check_delvloc_usage()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM DELV_FOR_CUST WHERE DLC_CUSTOMER=:acct_no AND DLC_DELV_LOC=:delv_no
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':acct_no', $this->cust_acnt);
+        oci_bind_by_name($stmt, ':delv_no', $this->delv_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     // read delivery locations
     public function read()
     {

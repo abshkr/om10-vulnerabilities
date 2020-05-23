@@ -30,6 +30,39 @@ class Address extends CommonClass
         }
     }
 
+    public function check_address_code()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM DB_ADDRESS WHERE DB_ADDRESS_KEY=:addr_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':addr_code', $this->address_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function check_address_line()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM DB_ADDRESS_LINE WHERE DB_ADDR_LINE_ID=:addr_code AND DB_ADDRLINE_NO=:addr_line
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':addr_code', $this->db_addr_line_id);
+        oci_bind_by_name($stmt, ':addr_line', $this->db_addrline_no);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function read()
     {
         $query = "
