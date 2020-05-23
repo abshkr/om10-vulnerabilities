@@ -887,7 +887,10 @@
     "customerCategories": "Customer Categories",
     "allocations": "Allocations",
     "orderListing": "Order Listing",
-    "deliveryLocations": "Delivery Locations"
+    "deliveryLocations": "Delivery Locations",
+	"closetException": "Closeouts Exception Planner",
+	"closetCalendar": "Closeouts Calendar",
+	"closetSettings": "Closeouts Settings"
   },
 
   "messages": {
