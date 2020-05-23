@@ -5,6 +5,7 @@ import * as REPORT_PROFILE from './report-profile';
 import * as REPORT_CONFIGURATION from './report-configuration';
 import * as ID_ASSIGNMENT from './id-assignment';
 import * as FOLIO_SUMMARY from './folio-summary';
+import * as FOLIO_SCHEDULING from './folio-schedulling';
 import * as PERSONNEL from './personnel';
 import * as GATE_CONTROL from './gate-control';
 import * as TIME_CODES from './time-codes';
@@ -85,6 +86,7 @@ export {
   GATE_CONTROL,
   PERSONNEL,
   FOLIO_SUMMARY,
+  FOLIO_SCHEDULING,
   REPORT_CONFIGURATION,
   REPORT_PROFILE,
   SPECIAL_MOVEMENTS,

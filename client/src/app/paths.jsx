@@ -203,7 +203,7 @@ const paths = [
 
   {
     path: ROUTES.FOLIO_SCHEDULLING,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/folio-schedulling')),
   },
 
   {
