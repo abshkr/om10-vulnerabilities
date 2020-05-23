@@ -257,7 +257,7 @@ class Address extends CommonClass
         return true;
     }
 
-    protected function update_children()
+    protected function update_children($old_data = null)
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);

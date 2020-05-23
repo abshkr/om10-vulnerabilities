@@ -36,6 +36,16 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
     selected[0]?.address_action === '+' || selected[0]?.address_action === '*' || disabled;
   const fields = columns(value, selected);
 
+  const getNextLineNo = () => {
+    let nextNo=0;
+    tableAPI.forEachNode((rowNode, index) => {
+      if ( nextNo < _.toNumber(rowNode?.data?.db_addrline_no)){
+        nextNo = _.toNumber(rowNode?.data?.db_addrline_no);
+      }
+    });
+    return nextNo + 1;
+  }
+
   const adjustModifiers = (options) => {
     if (options === null || options === undefined || options?.length === 0) {
       setLineDeleteDisabled(true);
@@ -69,7 +79,8 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
     setLineDeleteDisabled(true);
     setLineEditDisabled(true);
 
-    const length = size + 1;
+    //setSize(value?.length);
+    const length = getNextLineNo();
 
     const option = {
       address_action: '+',
@@ -128,24 +139,7 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
 
     setSelected([payload]);
   };
-  /*
-  useEffect(() => {
-    revalidate();
-    setData(payload?.records);
-    setSize(payload?.records?.length || 0);
-  }, [payload, revalidate]);
-  */
-  /*
-  useEffect(() => {
-    if (value) {
-        fetchByAddress(value.addressCode);
-    }
 
-    if (!value && addressCode) {
-      fetchByAddress(addressCode);
-    }
-  }, [value, addressCode, fetchByAddress]);
-  */
   useEffect(() => {
     if (tableAPI) {
       setTableAPIContext(tableAPI);
@@ -164,6 +158,7 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
         {t('operations.addLineItem')}
       </Button>
 
+      {/*
       <Button
         type="primary"
         icon={<EditOutlined />}
@@ -173,7 +168,7 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
       >
         {t('operations.editLineItem')}
       </Button>
-
+      */}
       <Button
         type="danger"
         icon={<MinusOutlined />}

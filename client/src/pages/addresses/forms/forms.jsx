@@ -108,7 +108,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const onFinish = async () => {
     const values = await form.validateFields();
-    const items = []
+    const items = [];
     tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
        items.push(rowNode.data);
     });    
@@ -116,6 +116,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
     items.forEach((item) => {
       item.db_addr_line_id = addressKey;
+      if ( item.address_action !== '+' && item.address_action !== '-') {
+        item.address_action = '*';
+      }
     });
 
     values.addr_lines = items;
