@@ -12,7 +12,8 @@
     "title": "Login - Authentication",
     "version": "Version",
     "login": "Login to your account",
-    "havingTrouble": "Having Trouble?"
+    "havingTrouble": "Having Trouble?",
+	"every": "Every "
   },
 
   "fields": {
@@ -23,6 +24,9 @@
     "name": "Name",
     "owner": "Owner",
     "areaId": "Area Id",
+	"folioExceptionType": "Exception Type",
+	"folioExceptionInterval": "Interval Setup",
+    "folioExceptionDesc": "Description",
     "areaName": "Area Name",
     "tankCode": "Tank Code",
     "classId": "Class Id",
@@ -1012,7 +1016,12 @@
     "passwordDoesntMatch": "Confirm Password Does Not Match. Please Check Again.",
     "changeYourPassword": "Change Your Password",
     "pleaseEnterYourNewPassword": "Please Enter Your New Password",
-    "changeUseProfile": "Change User Profile"
+    "changeUseProfile": "Change User Profile",
+	"dateOfYear": "Date of Year",
+	"dateOfMonth": "Date of Month",
+	"dayOfWeek": "Day of Week",
+	"dayOfYear": "Day of Year",
+	"onceOffDate": "Once off Date"
   },
 
   "placeholder": {
