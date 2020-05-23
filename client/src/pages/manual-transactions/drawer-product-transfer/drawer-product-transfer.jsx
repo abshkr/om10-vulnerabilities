@@ -27,7 +27,7 @@ const DrawerProductTransfer = ({ form }) => {
     </>
   );
 
-  return <DataTable height="80vh" extra={modifiers} columns={fields} />;
+  return <DataTable height="80vh" data={[]} extra={modifiers} columns={fields} />;
 };
 
 export default DrawerProductTransfer;

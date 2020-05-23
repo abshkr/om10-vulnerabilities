@@ -41,12 +41,24 @@ const Home = () => {
                   width: '33%',
                 }}
               >
-                <div style={{ fontSize: 20, color: 'black', textAlign: 'center', fontWeight: '500' }}>
-                  {`Active: ${data.tanker_active}  [${
-                    Math.floor((data?.tanker_active / data?.tanker_total) * 100) || 0
-                  }%]`}
+                <div style={{ fontSize: 20, color: 'black', fontWeight: '500' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>Active:</div>
+
+                    <div style={{ marginLeft: 10 }}>
+                      {`${data.tanker_active}  [${
+                        Math.floor((data?.tanker_active / data?.tanker_total) * 100) || 0
+                      }%]`}
+                    </div>
+                  </div>
+
                   <Divider style={{ margin: 0 }} />
-                  {`Total: ${data.tanker_total}`}
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>Total:</div>
+
+                    <div style={{ marginLeft: 10 }}>{data.tanker_total}</div>
+                  </div>
                 </div>
               </div>
 
@@ -77,12 +89,24 @@ const Home = () => {
                   width: '33%',
                 }}
               >
-                <div style={{ fontSize: 20, color: 'black', textAlign: 'center', fontWeight: '500' }}>
-                  {`Active: ${data.personnel_active}  [${
-                    Math.floor((data?.personnel_active / data?.personnel_total) * 100) || 0
-                  }%]`}
+                <div style={{ fontSize: 20, color: 'black', fontWeight: '500' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>Active:</div>
+
+                    <div style={{ marginLeft: 10 }}>
+                      {`${data.personnel_active}  [${
+                        Math.floor((data?.personnel_active / data?.personnel_total) * 100) || 0
+                      }%]`}
+                    </div>
+                  </div>
+
                   <Divider style={{ margin: 0 }} />
-                  {`Total: ${data.personnel_total}`}
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>Total:</div>
+
+                    <div style={{ marginLeft: 10 }}>{data.personnel_total}</div>
+                  </div>
                 </div>
               </div>
 
@@ -113,22 +137,34 @@ const Home = () => {
                   width: '33%',
                 }}
               >
-                <div style={{ fontSize: 20, color: 'black', textAlign: 'center', fontWeight: '500' }}>
-                  {`Used: ${data.key_used}  [${
-                    Math.floor((data?.key_used / data?.key_available) * 100) || 0
-                  }%]`}
-                  <Divider style={{ margin: 0 }} />
-                  {`Available: ${data.key_available}`}
+                <div style={{ fontSize: 20, color: 'black', fontWeight: '500' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>Used:</div>
 
-                  <div style={{ fontSize: 16 }}>
-                    {`Personnel: ${data?.key_person || 0}, Tanker: ${data?.key_tanker || 0}, Combo: ${
-                      data?.key_combo || 0
-                    }, Other: ${data?.key_other || 0}`}
+                    <div style={{ marginLeft: 10 }}>
+                      {`${data.key_used}  [${
+                        Math.floor((data?.key_used / data?.key_available) * 100) || 0
+                      }%]`}
+                    </div>
+                  </div>
+
+                  <Divider style={{ margin: 0 }} />
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>Available:</div>
+
+                    <div style={{ marginLeft: 10 }}>{data.key_available}</div>
                   </div>
                 </div>
               </div>
 
               <img src="/svg/id-assignment.svg" alt="truck" style={{ height: 150, width: '33%' }} />
+            </div>
+
+            <div style={{ fontSize: 16, position: 'absolute', bottom: 5, fontWeight: 500 }}>
+              {`Personnel: ${data?.key_person || 0}, Tanker: ${data?.key_tanker || 0}, Combo: ${
+                data?.key_combo || 0
+              }, Other: ${data?.key_other || 0}`}
             </div>
           </Card>
         </Col>
@@ -148,7 +184,7 @@ const Home = () => {
         </Col>
 
         <Col span={8}>
-          <Card title="Transaction Ids" hoverable size="small" loading={isLoading}>
+          <Card title="Transaction Numbers" hoverable size="small" loading={isLoading}>
             <DataTable data={data?.transaction_ids} columns={ids(t)} height="50vh" minimal />
           </Card>
         </Col>

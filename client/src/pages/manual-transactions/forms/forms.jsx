@@ -118,7 +118,7 @@ const Forms = ({
   return (
     <>
       <Row gutter={24}>
-        <Col span={4}>
+        <Col span={8}>
           <Form.Item name="type" label={t('fields.transactionType')} rules={[{ required: true }]}>
             <Select onChange={handleTypeSelect} placeholder="Please Select Transaction Type">
               <Option value="schedule">Load From Schedule</Option>
@@ -127,7 +127,32 @@ const Forms = ({
           </Form.Item>
         </Col>
 
-        <Col span={4}>
+        <Col span={8}>
+          <Form.Item name="tanker" label={t('fields.tanker')} rules={[{ required: true }]}>
+            <Select
+              showSearch
+              optionFilterProp="children"
+              placeholder={t('placeholder.selectTanker')}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {tankers?.records?.map((item, index) => (
+                <Select.Option key={index} value={item.tnkr_code}>
+                  {item.tnkr_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col span={8}>
+          <Form.Item name="user_comments" label={t('fields.comments')} rules={[{ required: false }]}>
+            <Input />
+          </Form.Item>
+        </Col>
+
+        <Col span={8}>
           <Form.Item name="supplier" label={t('fields.supplier')} rules={[{ required: true }]}>
             <Select
               loading={suppliersLoading}
@@ -149,7 +174,33 @@ const Forms = ({
           </Form.Item>
         </Col>
 
-        <Col span={4}>
+        <Col span={8}>
+          <Form.Item name="carrier" label={t('fields.carrier')} rules={[{ required: true }]}>
+            <Select
+              showSearch
+              loading={carriersLoading}
+              optionFilterProp="children"
+              placeholder={t('placeholder.selectCarriers')}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {carriers?.records?.map((item, index) => (
+                <Select.Option key={index} value={item.cmpy_code}>
+                  {item.cmpy_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col span={8}>
+          <Form.Item name="start_date" label={t('fields.startDate')} rules={[{ required: false }]}>
+            <DatePicker showTime={{ format: 'HH:mm' }} format={format} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+
+        <Col span={8}>
           <Form.Item
             name="customer"
             label={t('fields.customer')}
@@ -174,7 +225,34 @@ const Forms = ({
           </Form.Item>
         </Col>
 
-        <Col span={4}>
+        <Col span={8}>
+          <Form.Item name="driver" label={t('fields.driver')} rules={[{ required: true }]}>
+            <Select
+              loading={driversLoading}
+              showSearch
+              disabled={!type}
+              optionFilterProp="children"
+              placeholder={t('placeholder.selectDriver')}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {drivers?.records?.map((item, index) => (
+                <Select.Option key={index} value={item.per_code}>
+                  {item.per_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col span={8}>
+          <Form.Item name="end_date" label={t('fields.endDate')} rules={[{ required: false }]}>
+            <DatePicker showTime={{ format: 'HH:mm' }} format={format} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+
+        <Col span={8}>
           <Form.Item
             name="trip_no"
             label={t('fields.tripNumber')}
@@ -199,7 +277,7 @@ const Forms = ({
           </Form.Item>
         </Col>
 
-        <Col span={4}>
+        <Col span={8}>
           <Form.Item
             name="order_no"
             label={t('fields.orderNumber')}
@@ -223,90 +301,8 @@ const Forms = ({
             </Select>
           </Form.Item>
         </Col>
-      </Row>
 
-      <Row gutter={24}>
-        <Col span={4}>
-          <Form.Item name="carrier" label={t('fields.carrier')} rules={[{ required: true }]}>
-            <Select
-              showSearch
-              loading={carriersLoading}
-              optionFilterProp="children"
-              placeholder={t('placeholder.selectCarriers')}
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {carriers?.records?.map((item, index) => (
-                <Select.Option key={index} value={item.cmpy_code}>
-                  {item.cmpy_name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
-
-        <Col span={4}>
-          <Form.Item name="tanker" label={t('fields.tanker')} rules={[{ required: true }]}>
-            <Select
-              showSearch
-              optionFilterProp="children"
-              placeholder={t('placeholder.selectTanker')}
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {tankers?.records?.map((item, index) => (
-                <Select.Option key={index} value={item.tnkr_code}>
-                  {item.tnkr_name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
-
-        <Col span={4}>
-          <Form.Item name="driver" label={t('fields.driver')} rules={[{ required: true }]}>
-            <Select
-              loading={driversLoading}
-              showSearch
-              disabled={!type}
-              optionFilterProp="children"
-              placeholder={t('placeholder.selectDriver')}
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {drivers?.records?.map((item, index) => (
-                <Select.Option key={index} value={item.per_code}>
-                  {item.per_name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
-
-        <Col span={4}>
-          <Form.Item name="start_date" label={t('fields.startDate')} rules={[{ required: false }]}>
-            <DatePicker showTime={{ format: 'HH:mm' }} format={format} style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-
-        <Col span={4}>
-          <Form.Item name="end_date" label={t('fields.endDate')} rules={[{ required: false }]}>
-            <DatePicker showTime={{ format: 'HH:mm' }} format={format} style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={24}>
-        <Col span={12}>
-          <Form.Item name="user_comments" label={t('fields.comments')} rules={[{ required: false }]}>
-            <Input />
-          </Form.Item>
-        </Col>
-
-        <Col span={12}>
+        <Col span={8}>
           <Form.Item
             name="load_security"
             label={t('fields.loadSecurityInformation')}

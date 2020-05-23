@@ -640,7 +640,8 @@
     "delvAvailableCustomers": "Available Customers for Delivery Location",
     "delvLinkedCustomers": "Customers linked to Delivery Location",
     "delvCustomerLinks": "Link Delivery Location To Customer(s)",
-    "delvLinkToCustomers": "Link To Customers"
+    "delvLinkToCustomers": "Link To Customers",
+    "maxTransactionNumber": "Max Transaction Number"
   },
 
   "pageMenu": {
@@ -753,7 +754,7 @@
   "operations": {
     "editing": "Editing",
     "create": "Create",
-	"activate": "Activate",
+    "activate": "Activate",
     "export": "Export CSV",
     "delete": "Delete",
     "cancel": "Cancel",
@@ -822,7 +823,8 @@
     "preSchedule": "Pre Schedule",
     "add": "Add",
     "simple": "Simple",
-    "list": "List"
+    "list": "List",
+    "allocationPeriod": "Allocation Period"
   },
 
   "tabColumns": {
@@ -876,7 +878,12 @@
     "additionalHostData": "Additional Host Data",
     "transactions": "Transactions",
     "createGates": "Create Gates",
-    "linkToCustomers": "Link To Customers"
+    "linkToCustomers": "Link To Customers",
+    "addresses": "Addresses",
+    "customerCategories": "Customer Categories",
+    "allocations": "Allocations",
+    "orderListing": "Order Listing",
+    "deliveryLocations": "Delivery Locations"
   },
 
   "messages": {
@@ -914,7 +921,7 @@
 
   "prompts": {
     "create": "Are you sure you want to create this record?",
-	"activate": "Are you sure you want to activate this record?",
+    "activate": "Are you sure you want to activate this record?",
     "update": "Are you sure you want to update this record?",
     "delete": "Are you sure you want to delete this record?",
     "calculate": "Are you sure you want to calculate the selected records?",
@@ -943,7 +950,7 @@
   },
 
   "descriptions": {
-    "gatePermissionRule": "Gate permission must have first rule.",  
+    "gatePermissionRule": "Gate permission must have first rule.",
     "validationFailed": "Make sure all the fields meet the requirements.",
     "requestFailed": "Failed to make the request.",
     "createFailed": "Failed to create the record.",
@@ -1009,7 +1016,7 @@
   },
 
   "placeholder": {
-	"selectGate": "Select Gate",
+    "selectGate": "Select Gate",
     "selectDepot": "Select Base Depot",
     "selectCarrier": "Select Carrier",
     "selectOwner": "Select Owner",

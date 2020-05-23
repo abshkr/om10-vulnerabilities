@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   EditOutlined,
   PlusOutlined,
@@ -8,112 +8,84 @@ import {
   LockOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, notification, Form } from 'antd';
-import useSWR from 'swr';
-import axios from 'axios';
+import { Button, Form } from 'antd';
 import _ from 'lodash';
 
-import { ROUTES } from '../../../../constants';
 import { DataTable } from '../../../../components';
 import { ADDRESSES } from '../../../../api';
 
 import columns from './columns';
 
-const Items = ({ form, setTableAPIContext, value, addressCode }) => {
+const Items = ({ setTableAPIContext, value, addressCode }) => {
+  console.log("I am here!!! ", addressCode);
+
+  console.log("lines: ", value);
+
+  const [lineAddDisabled, setLineAddDisabled] = useState(false);
+  const [lineEditDisabled, setLineEditDisabled] = useState(true);
+  const [lineDeleteDisabled, setLineDeleteDisabled] = useState(true);
+  const [selected, setSelected] = useState([]);
+  const [data, setData] = useState([]);
+  const [tableAPI, setTableAPI] = useState(null);
+  const [size, setSize] = useState(value?.length);
+
   const { t } = useTranslation();
 
-  const { setFieldsValue } = form;
-
-  //let addressCode = code;//value?.db_address_key;
-  //let payload = null;
-  //const { data: payload } = useSWR(`${ADDRESSES.LINES}?address_code=${addressCode}`, { refreshInterval: 0 });
-  //const { data: payload, isValidating, revalidate } = useSWR(
-  //  `${ADDRESSES.LINES}?address_code=${addressCode}`
-  //);
-
-  const [data, setData] = useState([]);
-  const [selected, setSelected] = useState([]);
-  const [tableAPI, setTableAPI] = useState(null);
-  const [size, setSize] = useState([]);
-  const [options, setOptions] = useState([]);
-  const [isLoading, setLoading] = useState(true);
-  /*
-  const fetchByAddress = useCallback(
-    (code) => {
-      setLoading(true);
-
-      axios.get(`${ADDRESSES.LINES}?address_code=${code}`).then((response) => {
-        setData(response.data.records);
-        setFieldsValue({ addr_lines: response.data.records });
-        setLoading(false);
-      });
-    },
-    [setFieldsValue]
-  );
-  */
-
-  /*
-    // get the address lines by the address code (value.db_address_key)
-    axios
-      .post(
-        ADDRESSES.LINES, {
-        address_code: value?.db_address_key
-      })
-      .then(response => {
-        payload = response;
-        data = response.records;
-        //value.db_address_lines = response.records;
-      })
-      .catch((errors) => {
-        _.forEach(errors.response.data.errors, (error) => {
-          notification.error({
-            message: error.type,
-            description: error.message,
-          });
-        });
-      });
-  */
   const disabled = selected.length === 0;
-  let lineAddDisabled = false;
-  let lineEditDisabled = true;
-  let lineDeleteDisabled = true;
   const canModifyFurther =
     selected[0]?.address_action === '+' || selected[0]?.address_action === '*' || disabled;
   const fields = columns(value, selected);
 
-  const handleItemSelect = (value) => {
-    setSelected(value);
-    if (selected == null) {
-      lineDeleteDisabled = true;
-      lineEditDisabled = true;
+  const getNextLineNo = () => {
+    let nextNo=0;
+    tableAPI.forEachNode((rowNode, index) => {
+      if ( nextNo < _.toNumber(rowNode?.data?.db_addrline_no)){
+        nextNo = _.toNumber(rowNode?.data?.db_addrline_no);
+      }
+    });
+    return nextNo + 1;
+  }
+
+  const adjustModifiers = (options) => {
+    if (options === null || options === undefined || options?.length === 0) {
+      setLineDeleteDisabled(true);
+      setLineEditDisabled(true);
       return;
     }
 
-    if (selected.address_action === '+') {
-      lineDeleteDisabled = false;
-      lineEditDisabled = true;
-    } else if (selected.address_action === '-') {
-      lineDeleteDisabled = false;
-      lineEditDisabled = true;
-    } else if (selected.address_action === '*') {
-      lineDeleteDisabled = false;
-      lineEditDisabled = true;
+    const option = selected[0];
+
+    if (option?.address_action === '+') {
+      setLineDeleteDisabled(false);
+      setLineEditDisabled(true);
+    } else if (option?.address_action === '-') {
+      setLineDeleteDisabled(false);
+      setLineEditDisabled(true);
+    } else if (option?.address_action === '*') {
+      setLineDeleteDisabled(false);
+      setLineEditDisabled(true);
     } else {
-      lineDeleteDisabled = false;
-      lineEditDisabled = false;
+      setLineDeleteDisabled(false);
+      setLineEditDisabled(false);
     }
   };
 
+  const handleItemSelect = (options) => {
+    setSelected(options);
+    adjustModifiers(options);
+  };
+
   const handleItemAdd = () => {
-    lineEditDisabled = true;
-    lineDeleteDisabled = true;
+    setLineDeleteDisabled(true);
+    setLineEditDisabled(true);
 
-    const length = size + 1;
+    //setSize(value?.length);
+    const length = getNextLineNo();
 
-    const value = {
+    const option = {
       address_action: '+',
       db_addr_line_id: addressCode,
-      db_addrline_no: String(size + 1),
+      db_addrline_no: length,
       db_addr_line_type: '',
       db_addr_line_typename: '',
       db_addr_line: '',
@@ -122,24 +94,42 @@ const Items = ({ form, setTableAPIContext, value, addressCode }) => {
 
     setSize(length);
 
-    tableAPI.updateRowData({ add: [value] });
+    tableAPI.updateRowData({ add: [option] });
+    //adjustModifiers([option]);
+    //handleItemSelect([option]);
+  };
+
+  const handleItemEdit = () => {
+    setLineDeleteDisabled(true);
+    setLineEditDisabled(true);
+
+    const option = selected[0];
+    option.address_action = '*';
+
+    setSelected([option]);
+
+    tableAPI.updateRowData({ update: [option] });
+    adjustModifiers([option]);
   };
 
   const handleItemRemove = () => {
-    lineEditDisabled = true;
-    lineDeleteDisabled = true;
-    if (selected.address_action === '+') {
-      tableAPI.updateRowData({ remove: selected });
-    } else if (selected.address_action === '-') {
-      let dataSelected = selected[0];
-      dataSelected.address_action = '';
-      tableAPI.updateRowData({ update: dataSelected });
-    } else if (selected.address_action === '') {
-      let dataSelected = selected[0];
-      dataSelected.address_action = '-';
-      tableAPI.updateRowData({ update: dataSelected });
+    setLineDeleteDisabled(true);
+    setLineEditDisabled(true);
+
+    const option = selected[0];
+
+    if (option?.address_action === '+') {
+      tableAPI.updateRowData({ remove: [option] });
+    } else if (option?.address_action === '-') {
+      option.address_action = '';
+      tableAPI.updateRowData({ update: [value] });
+    } else if (option?.address_action === '' || option?.address_action === null || option?.address_action === undefined) {
+      option.address_action = '-';
+      tableAPI.updateRowData({ update: [option] });
     } else {
     }
+    
+    adjustModifiers([option]);
   };
 
   const onEditingFinished = (value) => {
@@ -149,24 +139,7 @@ const Items = ({ form, setTableAPIContext, value, addressCode }) => {
 
     setSelected([payload]);
   };
-  /*
-  useEffect(() => {
-    revalidate();
-    setData(payload?.records);
-    setSize(payload?.records?.length || 0);
-  }, [payload, revalidate]);
-  */
-  /*
-  useEffect(() => {
-    if (value) {
-        fetchByAddress(value.addressCode);
-    }
 
-    if (!value && addressCode) {
-      fetchByAddress(addressCode);
-    }
-  }, [value, addressCode, fetchByAddress]);
-  */
   useEffect(() => {
     if (tableAPI) {
       setTableAPIContext(tableAPI);
@@ -185,6 +158,17 @@ const Items = ({ form, setTableAPIContext, value, addressCode }) => {
         {t('operations.addLineItem')}
       </Button>
 
+      {/*
+      <Button
+        type="primary"
+        icon={<EditOutlined />}
+        disabled={lineEditDisabled}
+        onClick={handleItemEdit}
+        style={{ marginBottom: 10 }}
+      >
+        {t('operations.editLineItem')}
+      </Button>
+      */}
       <Button
         type="danger"
         icon={<MinusOutlined />}
@@ -195,13 +179,13 @@ const Items = ({ form, setTableAPIContext, value, addressCode }) => {
         {t('operations.deleteLineItem')}
       </Button>
 
-      <Form.Item name="items">
+      <Form.Item name="addr_lines">
         <DataTable
           columns={fields}
-          data={value?.addr_lines}
+          data={value}
           height="42vh"
-          onClick={(payload) => handleItemSelect(payload)}
-          handleSelect={(payload) => handleItemSelect(payload[0])}
+          onClick={(payload) => handleItemSelect([payload])}
+          handleSelect={(payload) => handleItemSelect(payload)}
           apiContext={setTableAPI}
           selectionMode="single"
           onEditingFinished={onEditingFinished}

@@ -31,6 +31,7 @@ const columns = (t) => [
     field: 'image',
     sortable: true,
     resizable: true,
+    cellRenderer: 'EquipmentRenderer',
   },
   {
     headerName: t('fields.schedulable'),

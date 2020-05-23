@@ -12,7 +12,7 @@ const ProductQuantities = ({ form }) => {
 
   return (
     <>
-      <DataTable height="80vh" columns={fields} />
+      <DataTable data={[]} height="80vh" columns={fields} />
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
         <div style={{ marginRight: 20 }}>
           <strong>Base Standard Total: {500}</strong>

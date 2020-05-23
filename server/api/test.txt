@@ -1967,7 +1967,7 @@ https://10.1.10.66/api/pages/open_order/delete.php?order_sys_no=25
 //Addresses
 https://10.1.10.66/api/pages/address/read.php
 https://10.1.10.66/api/pages/address/line_types.php
-https://10.1.10.66/api/pages/address/addr_lines.php
+https://10.1.10.66/api/pages/address/addr_lines.php?address_code=TST999
 https://10.1.10.66/api/pages/address/create.php?
 {
 	"db_address_key": "tst123",
@@ -1987,7 +1987,48 @@ https://10.1.10.66/api/pages/address/create.php?
 	]
 }
 https://10.1.10.66/api/pages/address/update.php?
+{
+    "db_address_key": "TST888",
+    "addr_lines": [
+    {
+        "db_addr_line_id": "TST888",
+        "db_addrline_no": "1",
+        "db_addr_line": "1  TST ROAD",
+        "db_addr_line_type": "1",
+        "db_addr_line_type_name":"STREET",
+        "address_action": "*"
+    },
+    {
+        "db_addr_line_id": "TST888",
+        "db_addrline_no": "4",
+        "db_addr_line": "MONASH",
+        "db_addr_line_type": "4",
+        "db_addr_line_type_name": "DISTRICT",
+        "address_action": "*"
+    },
+    {
+        "db_addr_line_id": "TST888",
+        "db_addrline_no": "5",
+        "db_addr_line": "AUSTRALIA",
+        "db_addr_line_type": "7",
+        "db_addr_line_type_name": "COUNTRY",
+        "address_action": "*"
+    },
+    {
+        "address_action": "+",
+        "db_addr_line_id": "TST888",
+        "db_addrline_no": 6,
+        "db_addr_line_type": "2",
+        "db_addr_line_typename": "",
+        "db_addr_line": "MELB"
+    }
+    ]
+}
 https://10.1.10.66/api/pages/address/delete.php?
+{
+    "db_address_key": "TST986",
+    "address_text": "123 TST ROAD, VIC"
+}
 
 //Customer Categories
 https://10.1.10.66/api/pages/customer_category/read.php

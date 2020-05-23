@@ -6,6 +6,7 @@ import {
   DeleteOutlined,
   QuestionCircleOutlined,
   RedoOutlined,
+  ClockCircleOutlined,
 } from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -24,21 +25,33 @@ const FormModal = ({ value, visible, handleFormState }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
-  const IS_CREATING = !value;
-
   const [type, setType] = useState(undefined);
   const [company, setCompany] = useState(undefined);
   const [supplier, setSupplier] = useState(undefined);
   const [lockType, setLockType] = useState(undefined);
+  const [selected, setSelected] = useState(null);
 
   const [allocations, setAllocations] = useState([]);
 
   const { resetFields } = form;
 
+  const IS_CREATING = !value;
+  const CAN_ALLOCATE_PERIOD = selected && value && lockType === '4';
+
   const onComplete = () => {
     handleFormState(false, null);
     mutate(ALLOCATIONS.READ);
   };
+
+  const getAllocations = useCallback(() => {
+    axios
+      .get(`${ALLOCATIONS.ITEMS}?alloc_type=${type}&alloc_cmpycode=${company}&alloc_suppcode=${supplier}`)
+      .then((response) => {
+        const payload = response.data?.records || [];
+
+        setAllocations(payload);
+      });
+  }, [company, type, supplier]);
 
   const onFinish = async () => {
     const values = await form.validateFields();
@@ -104,16 +117,6 @@ const FormModal = ({ value, visible, handleFormState }) => {
     });
   };
 
-  const getAllocations = useCallback(() => {
-    axios
-      .get(`${ALLOCATIONS.ITEMS}?alloc_type=${type}&alloc_cmpycode=${company}&alloc_suppcode=${supplier}`)
-      .then((response) => {
-        const payload = response.data?.records || [];
-
-        setAllocations(payload);
-      });
-  }, [company, type, supplier]);
-
   const onReset = () => {
     Modal.confirm({
       title: t('prompts.reset'),
@@ -145,7 +148,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
   };
 
   useEffect(() => {
-    if (!value) {
+    if (!value && !visible) {
       resetFields();
 
       setType(undefined);
@@ -154,7 +157,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
       setLockType(undefined);
       setAllocations([]);
     }
-  }, [resetFields, value]);
+  }, [resetFields, value, visible]);
 
   useEffect(() => {
     if (type && company) {
@@ -180,12 +183,23 @@ const FormModal = ({ value, visible, handleFormState }) => {
 
           <Button
             type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
+
+          {!IS_CREATING && (
+            <Button
+              type="primary"
+              icon={<ClockCircleOutlined />}
+              style={{ marginLeft: 5 }}
+              disabled={!CAN_ALLOCATE_PERIOD}
+            >
+              {t('operations.allocationPeriod')}
+            </Button>
+          )}
 
           {!IS_CREATING && (
             <Button
@@ -209,7 +223,13 @@ const FormModal = ({ value, visible, handleFormState }) => {
             <LockType form={form} value={value} onChange={setLockType} />
             <Period form={form} value={value} lockType={lockType} />
             <Divider />
-            <DataTable data={allocations} height="60vh" minimal columns={columns(t)} />
+            <DataTable
+              data={allocations}
+              height="60vh"
+              minimal
+              columns={columns(t, IS_CREATING)}
+              handleSelect={(value) => setSelected(value[0])}
+            />
           </TabPane>
         </Tabs>
       </Form>

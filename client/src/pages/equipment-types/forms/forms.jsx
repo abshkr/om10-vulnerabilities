@@ -8,7 +8,7 @@ import axios from 'axios';
 import _ from 'lodash';
 
 import { EQUIPMENT_TYPES } from '../../../api';
-import { Code, NonCombination } from './fields';
+import { Code, NonCombination, Compartments, Combination } from './fields';
 
 const TabPane = Tabs.TabPane;
 
@@ -17,7 +17,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
   const [form] = Form.useForm();
 
   const IS_CREATING = !value;
-  const IS_COMBINATION = isCombination;
+  const IS_COMBINATION = isCombination || value?.image?.split(',')?.length > 1;
 
   const { resetFields } = form;
 
@@ -27,7 +27,28 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
   };
 
   const onFinish = async () => {
-    const values = await form.validateFields();
+    const record = await form.validateFields();
+
+    console.log(record);
+    const compartments = [];
+
+    _.forEach(record.names, (value, key) => {
+      const payload = {
+        cmpt_no: String(key + 1),
+        cmpt_units: record?.unit,
+        cmpt_capacit: String(value || 0),
+      };
+
+      compartments.push(payload);
+    });
+
+    const values = {
+      etyp_title: record.etyp_title,
+      etyp_category: record.etyp_category,
+      etyp_isrigid: false,
+      etyp_schedul: false,
+      compartments,
+    };
 
     console.log(values);
     // Modal.confirm({
@@ -114,6 +135,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
+            disabled={!IS_CREATING && IS_COMBINATION}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -131,12 +153,20 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError initialValues={{ equipment: 'p' }}>
+      <Form
+        layout="vertical"
+        form={form}
+        scrollToFirstError
+        initialValues={{ etyp_category: 'p', unit: '5' }}
+      >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <Code form={form} value={value} />
+            {IS_CREATING && IS_COMBINATION && <Combination form={form} value={value} />}
 
-            {IS_COMBINATION ? <div></div> : <NonCombination form={form} value={value} />}
+            {!IS_CREATING && <Compartments form={form} value={value} isCombination={IS_COMBINATION} />}
+
+            {!IS_COMBINATION && IS_CREATING && <NonCombination form={form} value={value} />}
           </TabPane>
         </Tabs>
       </Form>

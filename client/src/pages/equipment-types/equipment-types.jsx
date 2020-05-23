@@ -88,6 +88,7 @@ const EquipmentTypes = () => {
         selectionMode="single"
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        rowHeight={60}
       />
       <Forms
         value={selected}

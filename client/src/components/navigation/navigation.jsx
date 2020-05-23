@@ -67,7 +67,7 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.EQUIPMENT_TYPES}>
-            <Badge status="error" /> {t('pageNames.equipmentTypes')}
+            <Badge status="warning" /> {t('pageNames.equipmentTypes')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANKER_LIST}>
@@ -100,7 +100,7 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANK_GROUPS}>
-            <Badge status="warning" /> {t('pageNames.tankGroups')}
+            <Badge status="success" /> {t('pageNames.tankGroups')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.BASE_PRODUCTS}>
@@ -209,13 +209,13 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.GATE_PERMISSION}>
-            <Badge status="warning" /> {t('pageNames.gatePermission')}
+            <Badge status="success" /> {t('pageNames.gatePermission')}
           </Menu.Item>
           <Menu.Item key={ROUTES.GATE_CONTROL}>
             <Badge status="success" /> {t('pageNames.gateControl')}
           </Menu.Item>
           <Menu.Item key={ROUTES.TIME_CODES}>
-            <Badge status="warning" /> {t('pageNames.timeCodes')}
+            <Badge status="success" /> {t('pageNames.timeCodes')}
           </Menu.Item>
         </SubMenu>
 
@@ -234,19 +234,19 @@ const Navigation = () => {
             <Badge status="error" /> {t('pageNames.orderListing')}
           </Menu.Item>
           <Menu.Item key={ROUTES.ADDRESSES}>
-            <Badge status="error" /> {t('pageNames.addresses')}
+            <Badge status="warning" /> {t('pageNames.addresses')}
           </Menu.Item>
           <Menu.Item key={ROUTES.CUSTOMER_CATEGORIES}>
             <Badge status="success" /> {t('pageNames.customerCategories')}
           </Menu.Item>
           <Menu.Item key={ROUTES.DELIVERY_LOCATIONS}>
-            <Badge status="error" /> {t('pageNames.deliveryLocations')}
+            <Badge status="success" /> {t('pageNames.deliveryLocations')}
           </Menu.Item>
           <Menu.Item key={ROUTES.PARTNERS}>
             <Badge status="success" /> {t('pageNames.partners')}
           </Menu.Item>
           <Menu.Item key={ROUTES.PARTNERSHIP}>
-            <Badge status="warning" /> {t('pageNames.partnership')}
+            <Badge status="success" /> {t('pageNames.partnership')}
           </Menu.Item>
         </SubMenu>
 

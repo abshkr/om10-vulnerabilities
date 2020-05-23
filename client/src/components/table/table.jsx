@@ -14,11 +14,13 @@ import {
   ProgressRenderer,
   ATGRenderer,
   MarkRenderer,
+  EquipmentRenderer,
+  ListRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
 
-import { NumericEditor, SelectEditor, BooleanEditor } from './editors';
+import { NumericEditor, SelectEditor, BooleanEditor, ListEditor } from './editors';
 import { LoadingStatus } from './status';
 import { Search } from '..';
 
@@ -35,12 +37,15 @@ const defaultComponents = {
   LoadingStatus,
   StatusRenderer,
   ProgressRenderer,
+  EquipmentRenderer,
+  ListRenderer,
   ATGRenderer,
   TagRenderer,
   NullRenderer,
   NumericEditor,
   SelectEditor,
   BooleanEditor,
+  ListEditor,
 };
 
 const defaultColumnDef = {};
@@ -60,6 +65,7 @@ const Table = ({
   components,
   onCellClick,
   parentHeight,
+  rowHeight,
 }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
@@ -158,6 +164,7 @@ const Table = ({
             animateRows={true}
             enableCellTextSelection={true}
             onCellDoubleClicked={onCellClick}
+            rowHeight={rowHeight || null}
           />
         </div>
       </div>

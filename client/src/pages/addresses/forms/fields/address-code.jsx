@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import { ADDRESSES } from '../../../../api';
 
-const AddressKey = ({ form, value }) => {
+const AddressKey = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -19,8 +19,10 @@ const AddressKey = ({ form, value }) => {
       setFieldsValue({
         db_address_key: value.db_address_key,
       });
+
+      onChange(value.db_address_key);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 
   const validate = (rule, input) => {
     const match = _.find(addresses?.records, ['db_address_key', input]);
@@ -40,13 +42,17 @@ const AddressKey = ({ form, value }) => {
     return Promise.resolve();
   };
 
+  const handleFieldChange = (event) => {
+    onChange(event.target.value);
+  };
+
   return (
     <Form.Item
       name="db_address_key"
       label={t('fields.addressCode')}
       rules={[{ required: true, validator: validate }]}
     >
-      <Input disabled={!!value || isValidating} />
+      <Input disabled={!!value || isValidating} onChange={handleFieldChange}/>
     </Form.Item>
   );
 };

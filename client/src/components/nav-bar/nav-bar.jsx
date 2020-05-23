@@ -72,7 +72,7 @@ const NavBar = () => {
           <Input.Search enterButton={<SearchIconOutlined />} placeholder="Search OMEGA" />
         </AutoComplete>
 
-        <div style={{ position: 'fixed', right: 15 }}>
+        <div>
           <Events />
 
           <Dropdown overlay={null} trigger={['click']}>

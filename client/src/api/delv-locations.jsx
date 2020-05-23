@@ -1,4 +1,6 @@
 export const READ = '/api/pages/delv_location/read.php';
+export const CHECK_DELVLOC_EXIST = '/api/pages/delv_location/check_delvloc_exist.php';
+export const CHECK_DELVLOC_USAGE = '/api/pages/delv_location/check_delvloc_usage.php';
 export const DOC_TYPES = '/api/pages/delv_location/document_types.php';
 export const EQPT_TYPES = '/api/pages/delv_location/eqpt_types.php';
 export const TRANSPORT_TYPES = '/api/pages/delv_location/transport_types.php';
