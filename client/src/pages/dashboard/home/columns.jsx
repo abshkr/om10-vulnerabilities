@@ -70,13 +70,13 @@ const ids = (t) => [
     resizable: true,
   },
   {
-    headerName: t('fields.maxId'),
+    headerName: t('fields.maxTransactionNumber'),
     field: 'max_transaction_id',
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
     suppressSizeToFit: true,
-    width: 80,
+    width: 200,
   },
   {
     headerName: t('fields.totalTransactions'),

@@ -640,7 +640,8 @@
     "delvAvailableCustomers": "Available Customers for Delivery Location",
     "delvLinkedCustomers": "Customers linked to Delivery Location",
     "delvCustomerLinks": "Link Delivery Location To Customer(s)",
-    "delvLinkToCustomers": "Link To Customers"
+    "delvLinkToCustomers": "Link To Customers",
+    "maxTransactionNumber": "Max Transaction Number"
   },
 
   "pageMenu": {
@@ -944,7 +945,7 @@
   },
 
   "descriptions": {
-    "gatePermissionRule": "Gate permission must have first rule.",  
+    "gatePermissionRule": "Gate permission must have first rule.",
     "validationFailed": "Make sure all the fields meet the requirements.",
     "requestFailed": "Failed to make the request.",
     "createFailed": "Failed to create the record.",
@@ -1010,7 +1011,7 @@
   },
 
   "placeholder": {
-	"selectGate": "Select Gate",
+    "selectGate": "Select Gate",
     "selectDepot": "Select Base Depot",
     "selectCarrier": "Select Carrier",
     "selectOwner": "Select Owner",
