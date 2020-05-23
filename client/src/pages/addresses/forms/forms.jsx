@@ -110,7 +110,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     const values = await form.validateFields();
     const items = [];
     tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
-       items.push(rowNode.data);
+      if (rowNode?.data?.address_action !== '-') {
+        items.push(rowNode.data);
+      }
     });    
     console.log("onFinish:", items);
 
