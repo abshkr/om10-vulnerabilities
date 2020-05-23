@@ -878,7 +878,12 @@
     "additionalHostData": "Additional Host Data",
     "transactions": "Transactions",
     "createGates": "Create Gates",
-    "linkToCustomers": "Link To Customers"
+    "linkToCustomers": "Link To Customers",
+    "addresses": "Addresses",
+    "customerCategories": "Customer Categories",
+    "allocations": "Allocations",
+    "orderListing": "Order Listing",
+    "deliveryLocations": "Delivery Locations"
   },
 
   "messages": {
