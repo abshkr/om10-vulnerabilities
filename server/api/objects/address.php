@@ -8,7 +8,8 @@ include_once 'common_class.php';
 class Address extends CommonClass
 {
     protected $TABLE_NAME = 'DB_ADDRESS';
-    protected $VIEW_NAME = 'DB_ADDRESS_LINE';
+    //protected $VIEW_NAME = 'DB_ADDRESS';
+    //protected $VIEW_NAME = 'DB_ADDRESS_LINE';
     
     public function line_types()
     {
