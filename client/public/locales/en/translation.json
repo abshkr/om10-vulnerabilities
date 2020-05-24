@@ -1115,7 +1115,7 @@
     "selectPricingType": "Select Pricing Type",
     "selectInvoiceType": "Select Invoice Type",
     "selectSaleType": "Select Sale Type",
-    "selectInvoiceGeneration": "Select Invoice Generation"
+    "selectTermsType": "Select Invoice Generation"
   },
 
   "validate": {
