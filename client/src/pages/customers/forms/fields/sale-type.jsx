@@ -38,6 +38,7 @@ const SaleType = ({ form, value }) => {
     >
       <Select
         loading={isValidating}
+        allowClear={true}
         showSearch
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectSaleType') : null}

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { DataTable } from '../../../components';
 import columns from './columns';
 
-const TransferDetails = ({ form }) => {
+const TransferDetails = ({ form, type }) => {
   const { t } = useTranslation();
 
   const fields = columns(t);

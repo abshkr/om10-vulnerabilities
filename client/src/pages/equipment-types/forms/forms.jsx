@@ -27,10 +27,11 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
   };
 
   const onFinish = async () => {
+    const compartments = [];
+
     const record = await form.validateFields();
 
     console.log(record);
-    const compartments = [];
 
     _.forEach(record.names, (value, key) => {
       const payload = {
@@ -50,35 +51,44 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
       compartments,
     };
 
-    console.log(values);
-    // Modal.confirm({
-    //   title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
-    //   okText: IS_CREATING ? t('operations.create') : t('operations.update'),
-    //   okType: 'primary',
-    //   icon: <QuestionCircleOutlined />,
-    //   cancelText: t('operations.no'),
-    //   centered: true,
-    //   onOk: async () => {
-    //     await axios
-    //       .post(IS_CREATING ? EQUIPMENT_TYPES.CREATE : EQUIPMENT_TYPES.UPDATE, values)
-    //       .then(() => {
-    //         onComplete();
+    const combinationPayload = {
+      ...record,
+      etyp_isrigid: false,
+      etyp_schedul: false,
+      etyp_category: 'C',
+    };
 
-    //         notification.success({
-    //           message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-    //           description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-    //         });
-    //       })
-    //       .catch((errors) => {
-    //         _.forEach(errors.response.data.errors, (error) => {
-    //           notification.error({
-    //             message: error.type,
-    //             description: error.message,
-    //           });
-    //         });
-    //       });
-    //   },
-    // });
+    Modal.confirm({
+      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(
+            IS_CREATING ? EQUIPMENT_TYPES.CREATE : EQUIPMENT_TYPES.UPDATE,
+            isCombination ? combinationPayload : values
+          )
+          .then(() => {
+            onComplete();
+
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
   };
 
   const onDelete = () => {
@@ -126,7 +136,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="50vw"
+      width={IS_CREATING && IS_COMBINATION && visible ? '100vw' : '50vw'}
       visible={visible}
       footer={
         <>
