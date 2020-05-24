@@ -90,13 +90,15 @@ class EquipmentType extends CommonClass
     public function composition()
     {
         $query = "
-            SELECT EQC_SUB_ITEM ETYP_ID,
+            SELECT NVL(EQC_SUB_ITEM, ETYP_ID_RT) ETYP_ID,
                 EQUIP_TYPES_VW.ETYP_TITLE,
                 EQUIP_TYPES_VW.ETYP_ISRIGID,
                 EQUIP_TYPES_VW.CMPTNU,
                 EQUIP_TYPES_VW.ETYP_CATEGORY
             FROM EQUIP_VW, EQUIP_TYPES_VW
-            WHERE EQC_SUB_ITEM = EQUIP_TYPES_VW.ETYP_ID AND ETYP_ID_RT = :etyp_id
+            WHERE ((EQC_SUB_ITEM IS NOT NULL AND EQC_SUB_ITEM = EQUIP_TYPES_VW.ETYP_ID) OR (
+                    EQC_SUB_ITEM IS NULL AND ETYP_ID_RT = EQUIP_TYPES_VW.ETYP_ID ))
+                AND ETYP_ID_RT = :etyp_id
                 AND EQUIP_ISLEAF = 1
             ORDER BY EQC_COUNT_RT, EQC_COUNT";
         $stmt = oci_parse($this->conn, $query);
