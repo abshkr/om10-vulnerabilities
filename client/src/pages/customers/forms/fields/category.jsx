@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { CUSTOMER_CATEGORIES } from '../../../../api';
 import { Form, Select } from 'antd';
 
-const CustomerCategory = ({ form, value, onChange }) => {
+const Category = ({ form, value }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(CUSTOMER_CATEGORIES.READ);
@@ -15,7 +15,7 @@ const CustomerCategory = ({ form, value, onChange }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.customerCategory')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.custCategory')}`);
     }
 
     return Promise.resolve();
@@ -24,23 +24,20 @@ const CustomerCategory = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        delv_cust_catgcode: value.delv_cust_catgcode,
+        cust_ctgr_code: value.cust_ctgr_code,
       });
-
-      onChange(value.delv_cust_catgcode);
     }
-  }, [value, setFieldsValue, onChange]);
+  }, [value, setFieldsValue]);
 
   return (
     <Form.Item
-      name="delv_cust_catgcode"
-      label={t('fields.customerCategory')}
+      name="cust_ctgr_code"
+      label={t('fields.custCategory')}
       rules={[{ required: false }]}
     >
       <Select
         loading={isValidating}
         showSearch
-        onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCustomerCategory') : null}
         filterOption={(input, option) =>
@@ -57,4 +54,4 @@ const CustomerCategory = ({ form, value, onChange }) => {
   );
 };
 
-export default CustomerCategory;
+export default Category;

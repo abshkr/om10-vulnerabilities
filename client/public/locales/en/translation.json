@@ -1109,7 +1109,13 @@
     "selectQtyType": "Select Quantity Unit Type",
     "selectEqptType": "Select Largest Equipment Type",
     "selectProfile": "Select Profile",
-    "selectAddress": "Select Address"
+    "selectAddress": "Select Address",
+    "selectCustomerCategory": "Select Customer Category",
+    "selectDeliveryLocation": "Select Delivery Location",
+    "selectPricingType": "Select Pricing Type",
+    "selectInvoiceType": "Select Invoice Type",
+    "selectSaleType": "Select Sale Type",
+    "selectTermsType": "Select Invoice Generation"
   },
 
   "validate": {

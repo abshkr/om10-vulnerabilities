@@ -294,4 +294,84 @@ class EnumService
             return null;
         }
     }
+
+    public function pricing_types()
+    {
+        $query = "
+            select 
+              CUSTOMER_PRICE_ID as PRICE_TYPE_ID, 
+              CUSTOMER_PRICE_NAME as PRICE_TYPE_NAME 
+            from CUSTOMER_PRICE_TYP 
+            order by CUSTOMER_PRICE_ID
+        ";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function invoice_types()
+    {
+        $query = "
+            select 
+                CUSTOMER_INV_ID as INVOICE_TYPE_ID, 
+                CUSTOMER_INV_NAME as INVOICE_TYPE_NAME 
+            from CUSTOMER_INV_TYP 
+            order by CUSTOMER_INV_ID
+        ";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function sale_types()
+    {
+        $query = "
+            select 
+                CUSTOMER_SALE_ID as SALE_TYPE_ID, 
+                CUSTOMER_SALE_NAME as SALE_TYPE_NAME 
+            from CUSTOMER_SALE_TYP 
+            order by CUSTOMER_SALE_ID
+        ";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function terms_types()
+    {
+        $query = "
+            select 
+                CUSTOMER_TERMS_ID as TERMS_TYPE_ID, 
+                CUSTOMER_TERMS_NAME as TERMS_TYPE_NAME 
+            from CUSTOMER_TERMS_TYP 
+            order by CUSTOMER_TERMS_ID
+        ";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }

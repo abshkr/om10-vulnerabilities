@@ -181,7 +181,14 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       }
     >
       <Form layout="vertical" form={form} scrollToFirstError 
-      initialValues={{ delv_qty_typeid: '0', delv_trsp_typeid:'0', delv_doc_typeid:'0', delv_trip_time:0, delv_distance:0, delv_tarrif:0}}>
+      initialValues={{ 
+        delv_qty_typeid: '0'
+        , delv_trsp_typeid:'0'
+        , delv_doc_typeid:'0'
+        , delv_trip_time:0
+        , delv_distance:0
+        , delv_tarrif:0
+      }}>
         <Tabs onChange={doTabChanges}>
           <TabPane tab={t('tabColumns.general')} key="1">
             <Flag form={form} value={value} onChange={setFlag} />
