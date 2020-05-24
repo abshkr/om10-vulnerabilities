@@ -92,6 +92,21 @@ class Customer extends CommonClass
         return $enum_service->terms_types();
     }
 
+    public function account_numbers()
+    {
+        $query = "
+            SELECT CUST_ACCT FROM CUSTOMER
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function check_customer_account()
     {
         $query = "

@@ -1,4 +1,5 @@
 export const READ = '/api/pages/customer/read.php';
+export const ACCOUNT_NUMBERS = '/api/pages/customer/account_numbers.php';
 export const CHECK_ACCOUNT = '/api/pages/customer/check_cust_acnt.php';
 export const CHECK_COMPANY = '/api/pages/customer/check_cust_cmpy.php';
 export const ADDRESSES = '/api/pages/customer/addresses.php';
