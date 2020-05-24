@@ -8,6 +8,26 @@ include_once 'common_class.php';
 class Customer extends CommonClass
 {
     protected $TABLE_NAME = 'CUSTOMER';
+    
+    protected $table_view_map = array(
+        "CUST_ACCT" => "CUST_ACCOUNT",
+        "CUST_CODE" => "CUST_CMPY_CODE",
+        "CUST_SUPP" => "CUST_SUPP_CODE",
+        "CUST_ADDR" => "CUST_ADDR_CODE",
+        "CUST_CONTACT" => "CUST_CONTACT",
+        "CUST_PHONE_NO" => "CUST_PHONE_NO",
+        "CUST_CATEGORY" => "CUST_CTGR_CODE",
+        "CUST_SALE_TYPE" => "CUST_SALETYPE_ID",
+        "CUST_INV_TYPE" => "CUST_INVTYPE_ID",
+        "CUST_VARIABLE_PR" => "CUST_PRICETYPE_ID",
+        "CUST_DELIV_POINT" => "CUST_DELV_CODE",
+        "CUST_CRD_LIM" => "CUST_CRD_LIMIT",
+        "CUST_CRD_TERMS" => "CUST_CRD_TERMS",
+        "CUST_CRD_DAYS" => "CUST_CRD_DAYS",
+        "CUST_ORD_DAYS" => "CUST_ORD_DAYS",
+        "CUST_BALANCE" => "CUST_BALANCE",
+        "CUST_APPR_TOTAL" => "CUST_APPR_TOTAL",
+    );
 
     public $BOOLEAN_FIELDS = array(
         "CUST_CMPY_FLAG" => "Y",
@@ -23,6 +43,39 @@ class Customer extends CommonClass
         "CUST_ORDER_COUNT",
         "CUST_DLOC_COUNT",
     );
+
+    public function check_customer_account()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM CUSTOMER WHERE CUST_ACCT=:acct_no
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':acct_no', $this->cust_account);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function check_customer_company()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM CUSTOMER WHERE CUST_SUPP=:supp_code AND CUST_CODE=:cmpy_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supp_code', $this->cust_supp_code);
+        oci_bind_by_name($stmt, ':cmpy_code', $this->cust_cmpy_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
     
     public function read()
     {
@@ -124,4 +177,81 @@ class Customer extends CommonClass
             return null;
         }
     }
+    
+    public function read_customer_company_by_mode($supplier, $mode)
+    {
+        if ($mode > 0) {
+            // mode = 1, find existing customer company for the supplier
+            $query = "
+                select CMPY_CODE, CMPY_NAME, CMPY_TYPE, (CMPY_CODE||' - '||CMPY_NAME) as CMPY_DESC 
+                from GUI_COMPANYS 
+                where 
+                    bitand(CMPY_TYPE, 8) <> 0 
+                    and (CMPY_CODE in (select CUST_CODE from CUSTOMER where CUST_SUPP=:supp_code))
+                order by CMPY_NAME asc
+            ";
+        }
+        else {
+            // mode = -1, find available customer company for the supplier
+            $query = "
+                select CMPY_CODE, CMPY_NAME, CMPY_TYPE, (CMPY_CODE||' - '||CMPY_NAME) as CMPY_DESC 
+                from GUI_COMPANYS 
+                where 
+                    bitand(CMPY_TYPE, 8)<>0 
+                    and (CMPY_CODE not in (select CUST_CODE from CUSTOMER where CUST_SUPP=:supp_code))
+                order by CMPY_NAME asc
+            ";
+        }
+        
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supp_code', $supplier);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    } 
+
+    public function read_customer_of_supplier()
+    {
+        return $this->read_customer_company_by_mode($this->cust_supp_code, 1);
+    }
+
+    public function read_customer_for_supplier()
+    {
+        return $this->read_customer_company_by_mode($this->cust_supp_code, -1);
+    }
+    
+    public function read_customer_company_by_supplier()
+    {
+        $query = "
+            select cmp.* from 
+            (
+            select CMPY_CODE, CMPY_NAME, CMPY_TYPE, (CMPY_CODE||' - '||CMPY_NAME) as CMPY_DESC, :supp_code as CUST_SUPP 
+            from GUI_COMPANYS 
+            where 
+                bitand(CMPY_TYPE, 8) <> 0 
+                and (CMPY_CODE in (select CUST_CODE from CUSTOMER where CUST_SUPP=:supp_code))
+            union 
+            select CMPY_CODE, CMPY_NAME, CMPY_TYPE, (CMPY_CODE||' - '||CMPY_NAME) as CMPY_DESC, '' as CUST_SUPP 
+            from GUI_COMPANYS 
+            where 
+                bitand(CMPY_TYPE, 8)<>0 
+                and (CMPY_CODE not in (select CUST_CODE from CUSTOMER where CUST_SUPP=:supp_code))
+            ) cmp
+            order by cmp.CMPY_NAME asc
+        ";
+        
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supp_code', $this->cust_supp_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    } 
 }
