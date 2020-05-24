@@ -3,53 +3,51 @@ import React, { useEffect } from 'react';
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 
-import { CUSTOMER_CATEGORIES } from '../../../../api';
+import { CUSTOMERS } from '../../../../api';
 import { Form, Select } from 'antd';
 
-const CustomerCategory = ({ form, value, onChange }) => {
+const PriceType = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(CUSTOMER_CATEGORIES.READ);
+  const { data: options, isValidating } = useSWR(CUSTOMERS.PRICE_TYPES);
 
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
+    /*
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.customerCategory')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.custPriceType')}`);
     }
-
+    */
     return Promise.resolve();
   };
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        delv_cust_catgcode: value.delv_cust_catgcode,
+        cust_pricetype_id: String(value.cust_pricetype_id),
       });
-
-      onChange(value.delv_cust_catgcode);
     }
-  }, [value, setFieldsValue, onChange]);
+  }, [value, setFieldsValue]);
 
   return (
     <Form.Item
-      name="delv_cust_catgcode"
-      label={t('fields.customerCategory')}
-      rules={[{ required: false }]}
+      name="cust_pricetype_id"
+      label={t('fields.custPriceType')}
+      rules={[{ required: false, validator: validate }]}
     >
       <Select
         loading={isValidating}
         showSearch
-        onChange={onChange}
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectCustomerCategory') : null}
+        placeholder={!value ? t('placeholder.selectPricingType') : null}
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.category_code}>
-            {item.category_name}
+          <Select.Option key={index} value={item.price_type_id}>
+            {item.price_type_name}
           </Select.Option>
         ))}
       </Select>
@@ -57,4 +55,4 @@ const CustomerCategory = ({ form, value, onChange }) => {
   );
 };
 
-export default CustomerCategory;
+export default PriceType;

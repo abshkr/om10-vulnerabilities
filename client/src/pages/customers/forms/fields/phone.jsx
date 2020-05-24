@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-const Contact = ({ form, value }) => {
+const Phone = ({ form, value }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -10,11 +10,11 @@ const Contact = ({ form, value }) => {
   const validate = (rule, input) => {
     /*
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvContact')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.custPhoneNo')}`);
     }
     */
-    if (input && input.length > 100) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && input.length > 40) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();
@@ -23,16 +23,16 @@ const Contact = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        delv_contact: value.delv_contact
+        cust_phone_no: value.cust_phone_no
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="delv_contact" label={t('fields.delvContact')} rules={[{ required: false, validator: validate }]}>
+    <Form.Item name="cust_phone_no" label={t('fields.custPhoneNo')} rules={[{ required: false, validator: validate }]}>
       <Input />
     </Form.Item>
   );
 };
 
-export default Contact;
+export default Phone;

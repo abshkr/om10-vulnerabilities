@@ -3,6 +3,7 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/enum_service.php';
 include_once 'common_class.php';
 
 class Customer extends CommonClass
@@ -43,6 +44,53 @@ class Customer extends CommonClass
         "CUST_ORDER_COUNT",
         "CUST_DLOC_COUNT",
     );
+
+    public function delivery_locations()
+    {
+        $query = "
+            select 
+                DLV_CODE as DELV_CODE, 
+                DLV_NAME as DELV_NAME, 
+                DLV_CODE||' - '||DLV_NAME as DELV_DESC, 
+                DLV_GRID as DELV_GRID 
+            from 
+                DELV_LOCATION
+            ORDER BY DLV_CODE
+        ";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function pricing_types()
+    {
+        $enum_service = new EnumService($this->conn);
+        return $enum_service->pricing_types();
+    }
+
+    public function invoice_types()
+    {
+        $enum_service = new EnumService($this->conn);
+        return $enum_service->invoice_types();
+    }
+
+    public function sale_types()
+    {
+        $enum_service = new EnumService($this->conn);
+        return $enum_service->sale_types();
+    }
+
+    public function terms_types()
+    {
+        $enum_service = new EnumService($this->conn);
+        return $enum_service->terms_types();
+    }
 
     public function check_customer_account()
     {

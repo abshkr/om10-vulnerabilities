@@ -10,7 +10,7 @@ const Contact = ({ form, value }) => {
   const validate = (rule, input) => {
     /*
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvContact')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.custContact')}`);
     }
     */
     if (input && input.length > 100) {
@@ -23,13 +23,13 @@ const Contact = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        delv_contact: value.delv_contact
+        cust_contact: value.cust_contact
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="delv_contact" label={t('fields.delvContact')} rules={[{ required: false, validator: validate }]}>
+    <Form.Item name="cust_contact" label={t('fields.custContact')} rules={[{ required: false, validator: validate }]}>
       <Input />
     </Form.Item>
   );

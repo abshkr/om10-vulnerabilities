@@ -8,10 +8,11 @@ const Phone = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
+    /*
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvPhone')}`);
     }
-
+    */
     if (input && input.length > 40) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -28,7 +29,7 @@ const Phone = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="delv_phone" label={t('fields.delvPhone')} rules={[{ required: false, validator: null }]}>
+    <Form.Item name="delv_phone" label={t('fields.delvPhone')} rules={[{ required: false, validator: validate }]}>
       <Input />
     </Form.Item>
   );
