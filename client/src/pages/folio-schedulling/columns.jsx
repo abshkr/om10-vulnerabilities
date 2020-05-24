@@ -30,6 +30,8 @@ const columns = t => [
     valueGetter: function(params) {
       if (params.data.window_name === "WEEK_WINDOW") {
         return t("generic.every") + params.data.repeat_interval;
+      } else if (params.data.window_name === "MONTH_WINDOW") {
+        return t("generic.every") + params.data.repeat_interval + t("generic.everyMonth");
       } else if (params.data.window_name === "DATE_YEAR_WINDOW") {
         let data = params.data.repeat_interval.split("_");
         return t("generic.every") + data[0] + " of " + ["January","February","March","April","May","June","July",

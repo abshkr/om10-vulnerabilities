@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Form, DatePicker, Input, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import moment from 'moment';
 
 const Pickup = ({ form, value }) => {
   const IS_CREATING = value["seq"] === undefined;

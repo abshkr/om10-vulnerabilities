@@ -13,7 +13,8 @@
     "version": "Version",
     "login": "Login to your account",
     "havingTrouble": "Having Trouble?",
-	"every": "Every "
+	"every": "Every ",
+	"everyMonth": " of every month"
   },
 
   "fields": {
