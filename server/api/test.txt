@@ -1021,6 +1021,46 @@ https://10.1.10.66/api/pages/allocs/reset.php
  "alloc_cmpycode": "10372010",
  "alloc_suppcode" : "34402"
 }
+https://10.1.10.66/api/pages/allocs/alloc_period_read.php 
+{
+ "aiprd_type": 1,
+ "aiprd_cmpycode": "11626290",
+ "aiprd_prodcode" : "1234567890",
+ "aiprd_suppcode": "BaSePrOd"
+}
+https://10.1.10.66/api/pages/allocs/unit_types.php
+https://{{server_ip}}/api/pages/allocs/alloc_period_create.php
+{
+    "aiprd_type": "1",
+    "aiprd_cmpycode": "11626290",
+    "aiprd_prodcode": "1234567890",
+    "aiprd_suppcode": "BaSePrOd",
+    "aiprd_index": "3",
+    "aiprd_daystart": "2020-05-25 00:00:00",
+    "aiprd_dayend": "2020-06-03 00:00:00",
+    "aiprd_produnit": "5",
+    "aiprd_qtylimit": "234300"
+}
+https://{{server_ip}}/api/pages/allocs/alloc_period_update.php
+{
+    "aiprd_type": "1",
+    "aiprd_cmpycode": "11626290",
+    "aiprd_prodcode": "1234567890",
+    "aiprd_suppcode": "BaSePrOd",
+    "aiprd_index": "3",
+    "aiprd_daystart": "2021-05-25 00:00:00",
+    "aiprd_dayend": "2021-06-03 00:00:00",
+    "aiprd_produnit": "11",
+    "aiprd_qtylimit": "334300"
+}
+https://{{server_ip}}/api/pages/allocs/alloc_period_delete.php
+{
+    "aiprd_type": "1",
+    "aiprd_cmpycode": "11626290",
+    "aiprd_prodcode": "1234567890",
+    "aiprd_suppcode": "BaSePrOd",
+    "aiprd_index": "3"
+}
 
 //Hazchem Codes
 https://10.1.10.66/api/pages/hazchem/read.php

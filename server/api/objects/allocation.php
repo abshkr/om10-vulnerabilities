@@ -201,16 +201,17 @@ class Allocation extends CommonClass
         return true;
     }
 
+    //TODO: ALLOCS can have children in ALL_CHILD table
     protected function delete_children()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
         $query = "
-            DELETE FROM ALLOCS
-            WHERE ALL_PROD_PRODCMPY = :alloc_suppcode
-                AND ALL_ATKY_AT_TYPE = :alloc_type
-                AND ALL_ATKY_AT_CMPY = :alloc_cmpycode";
+            DELETE FROM ALL_CHILD
+            WHERE ALCH_ALP_ALL_PROD_PRODCMPY = :alloc_suppcode
+                AND ALCH_ALP_ALL_ATKY_AT_TYPE = :alloc_type
+                AND ALCH_ALP_ALL_ATKY_AT_CMPY = :alloc_cmpycode";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':alloc_suppcode', $this->alloc_suppcode);
         oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
@@ -225,22 +226,6 @@ class Allocation extends CommonClass
         }
 
         return true;
-
-        // $query = "
-        //     DELETE FROM ALLOC_TYPE
-        //     WHERE AT_TYPE = :alloc_type
-        //         AND AT_CMPY = :alloc_cmpycode";
-        // $stmt = oci_parse($this->conn, $query);
-        // oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
-        // oci_bind_by_name($stmt, ':alloc_cmpycode', $this->alloc_cmpycode);
-        // if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-        //     $e = oci_error($stmt);
-        //     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-        //     oci_rollback($this->conn);
-
-        //     throw new DatabaseException($e['message']);
-        //     return false;
-        // }
     }
 
     public function read()
