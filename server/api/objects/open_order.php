@@ -49,13 +49,44 @@ class OpenOrder extends CommonClass
         "ORDER_APPROVED" => "Y",
     );
 
-    public function read()
+    public function read_all()
     {
         $query = "
             SELECT *
             FROM " . $this->VIEW_NAME . "
             ORDER BY ORDER_SYS_NO";
         $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function read()
+    {
+        if (!isset($this->start_date)) {
+            $query = "
+            SELECT * FROM " . $this->VIEW_NAME . "
+            WHERE ORDER_ORD_TIME > SYSDATE - 7
+            ORDER BY ORDER_ORD_TIME DESC";
+//            WHERE ORDER_ORD_TIME > TO_CHAR(SYSDATE - 7, 'YYYY-MM-DD HH24:MI:SS')
+            $stmt = oci_parse($this->conn, $query);
+        
+        } else {
+            $query = "
+                SELECT * FROM " . $this->VIEW_NAME . "
+                WHERE ORDER_ORD_TIME > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS') 
+                  AND ORDER_ORD_TIME < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
+                ORDER BY ORDER_ORD_TIME DESC";
+//                WHERE ORDER_ORD_TIME > :start_date AND ORDER_ORD_TIME < :end_date
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        }
+        
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
