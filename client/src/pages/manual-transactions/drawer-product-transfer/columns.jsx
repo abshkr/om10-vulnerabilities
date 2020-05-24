@@ -1,81 +1,109 @@
-const columns = t => [
+const columns = (t, type) => [
+  {
+    headerName: t('fields.soldTo'),
+    field: 'mtd_type_name',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: type === 'open_order',
+    width: 120,
+  },
+
   {
     headerName: t('fields.deliverNumber'),
     field: 'mtd_type_name',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
+    width: 150,
   },
+
+  {
+    headerName: t('fields.shipTo'),
+    field: 'mtd_type_name',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: type === 'open_order',
+    width: 130,
+  },
+
   {
     headerName: t('fields.equipmentId'),
     field: 'mtd_address',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
+    width: 150,
   },
   {
     headerName: t('fields.compartmentNumber'),
     field: 'mtd_code',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.drawerCode'),
     field: 'src_name',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
+    width: 120,
   },
   {
     headerName: t('fields.drawerProduct'),
     field: 'mtd_src_type',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.bayArm'),
     field: 'dst_name',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
+    width: 120,
   },
   {
     headerName: t('fields.density'),
     field: 'mtd_dst_type',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
+    width: 120,
   },
   {
     headerName: t('fields.temperature'),
     field: 'mtd_amb',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
+    width: 140,
   },
   {
     headerName: t('fields.observedQuantity'),
     field: 'mtd_cor',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.standardQuantity'),
     field: 'mtd_poll',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.massQuantity'),
     field: 'mtd_dst_type',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
-  }
+    resizable: true,
+    width: 150,
+  },
 ];
 
 export default columns;

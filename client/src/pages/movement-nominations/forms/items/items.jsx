@@ -53,7 +53,7 @@ const Items = ({ setTableAPIContext, value }) => {
       mvitm_qty_schd: '0',
       mvitm_qty_move: '0',
       mvitm_qty_delv: '0',
-      editable: true
+      editable: true,
     };
 
     setSize(length);
@@ -65,7 +65,7 @@ const Items = ({ setTableAPIContext, value }) => {
     tableAPI.updateRowData({ remove: selected });
   };
 
-  const onEditingFinished = value => {
+  const onEditingFinished = (value) => {
     let payload = value.data;
 
     if (value.colDef.field === 'mvitm_prodcmpy_from') {
@@ -194,7 +194,7 @@ const Items = ({ setTableAPIContext, value }) => {
         <DataTable
           columns={fields}
           data={data}
-          height="42vh"
+          height="450px"
           handleSelect={setSelected}
           apiContext={setTableAPI}
           selectionMode="single"

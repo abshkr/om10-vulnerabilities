@@ -8,10 +8,12 @@ const AntdStyleProvider = createGlobalStyle`
    
   }
 
+  .ant-tabs-bar {
+    border-bottom: none;
+  }
 
   .ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab {
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    border-radius: 5px;
     border: 1px solid #0054a43b !important;
     color: black;
     font-weight: 600;

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Badge } from 'antd';
 
 import t from './t.png';
 import f from './f.png';
@@ -18,9 +19,9 @@ const matrix = {
   p,
 };
 
-const Equipment = ({ image, style }) => {
+const Equipment = ({ image, style, onClick }) => {
   if (image) {
-    return <img style={{ ...style }} src={matrix[image]} alt="equipment" />;
+    return <img style={{ ...style }} onClick={onClick} src={matrix[image?.toLowerCase()]} alt="equipment" />;
   }
 
   return null;

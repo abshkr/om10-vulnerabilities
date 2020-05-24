@@ -6,10 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { DataTable } from '../../../components';
 import columns from './columns';
 
-const DrawerProductTransfer = ({ form }) => {
+const DrawerProductTransfer = ({ form, type }) => {
   const { t } = useTranslation();
 
-  const fields = columns(t);
+  const fields = columns(t, type);
 
   const modifiers = (
     <>
