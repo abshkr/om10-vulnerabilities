@@ -37,7 +37,6 @@ import { SETTINGS } from '../../../../constants';
 import { ALLOCATIONS } from '../../../../api';
 
 const { TabPane } = Tabs;
-const { Option } = Select;
 
 const PeriodForm = ({ value, units, parent, revalidate, data }) => {
   const { t } = useTranslation();
@@ -147,7 +146,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
       <Tabs defaultActiveKey="1" animated={false}>
         <TabPane tab={t('tabColumns.general')} key="1">
           <Form.Item name="aiprd_index" label={t('fields.period')}>
-            <InputNumber disabled min={0} style={{ width: '100%' }} />
+            <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
 
           <Form.Item name="aiprd_qtylimit" label={t('fields.allocatedQuantity')}>
@@ -322,9 +321,13 @@ const Period = ({ selected, setVisibility, visible }) => {
                           {`${t('fields.quantityAllocated')}: ${item.aiprd_qtylimit} ${item.aiprd_unitname}`}{' '}
                         </a>
                       }
-                      description={`${t('fields.startDate')}: ${item.aiprd_daystart} -> ${t(
-                        'fields.endDate'
-                      )}: ${item.aiprd_dayend}`}
+                      description={`${t('fields.startDate')}: ${moment(
+                        item.aiprd_daystart,
+                        SETTINGS.DATE_TIME_FORMAT
+                      ).format(getDateTimeFormat())} -> ${t('fields.endDate')}: ${moment(
+                        item.aiprd_dayend,
+                        SETTINGS.DATE_TIME_FORMAT
+                      ).format(getDateTimeFormat())}`}
                     />
                   </List.Item>
                 </Card>
