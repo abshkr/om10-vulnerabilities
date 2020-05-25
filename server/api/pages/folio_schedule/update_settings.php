@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/folio_setting.php';
 
-Utilities::update('FolioSetting');
+Utilities::updateArray('FolioSetting');

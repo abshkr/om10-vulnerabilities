@@ -7,6 +7,7 @@ import { notification, Button, Tabs, Divider } from 'antd';
 import { SafetyCertificateOutlined, ReconciliationOutlined } from '@ant-design/icons';
 
 import Forms from './forms';
+import Settings from './settings'
 import FolioCalendar from './calendar';
 import auth from '../../auth';
 import columns from './columns';
@@ -76,7 +77,7 @@ const FolioSummary = ({ user }) => {
                 columns={fields} 
                 // data={payload?.records.filter((item)=>{item.window_name != 'OVERRIDE'})}
                 data={payload? _.filter(payload.records, function(item) {
-                  return item.window_name != 'OVERRIDE'}) : null}
+                  return item.window_name !== 'OVERRIDE'}) : null}
                 isLoading={isValidating} 
                 onClick={(payload) => handleFormState(true, payload)}
                 handleSelect={(payload) => handleFormState(true, payload[0])} /> 
@@ -88,9 +89,9 @@ const FolioSummary = ({ user }) => {
                 height="20vh"
                 parentHeight="30vh"
                 columns={overrideFileds} 
-                // data={payload?.records.filter((item)=>{item.window_name == 'OVERRIDE'})}
+                // data={payload?.records.filter((item)=>{item.window_name === 'OVERRIDE'})}
                 data={payload? _.filter(payload.records, function(item) {
-                  return item.window_name == 'OVERRIDE'}) : null}
+                  return item.window_name === 'OVERRIDE'}) : null}
                 isLoading={isValidating} 
                 minimal /> 
             </div>
@@ -98,11 +99,11 @@ const FolioSummary = ({ user }) => {
           </TabPane>
 
           <TabPane tab={t('tabColumns.closetCalendar')} key="2" style={{ height: '72vh' }}>
-            <FolioCalendar value={payload?.records}/>
+            <FolioCalendar access={access} value={payload?.records}/>
           </TabPane>
 
           <TabPane tab={t('tabColumns.closetSettings')} key="3" style={{ height: '72vh' }}>
-            {/* <DataTable columns={fields} data={payload?.records} isLoading={isValidating} onClick={handleClick} /> */}
+            <Settings access={access}></Settings>
           </TabPane>
         </Tabs>
     </Page>
