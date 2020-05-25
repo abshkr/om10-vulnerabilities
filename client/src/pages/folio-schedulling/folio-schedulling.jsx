@@ -40,25 +40,12 @@ const FolioSummary = ({ user }) => {
     setSelected(value);
   };
 
-  const modifiers = (
-    <>
-      <Button
-        type="primary"
-        icon={<SafetyCertificateOutlined />}
-        onClick={() => handleFormState(true, null)}
-        style={{ float: 'right', marginRight: 5 }}
-      >
-        {t('operations.createFolioException')}
-      </Button>
-    </>
-  );
-
-  // useEffect(() => {
+   // useEffect(() => {
   //   setData(data)
   // }, [data]);
 
   return (
-    <Page page={t('pageMenu.reports')} name={t('pageNames.folioScheduling')} modifiers={modifiers}>
+    <Page page={t('pageMenu.reports')} name={t('pageNames.folioScheduling')}>
       <Tabs 
         defaultActiveKey="1" 
         // style={{ height: '72vh' }}
@@ -71,8 +58,8 @@ const FolioSummary = ({ user }) => {
             <div>
               {t("descriptions.exceptionRules")}
               <DataTable 
-                height="42vh"
-                parentHeight="45vh"
+                height="37vh"
+                parentHeight="40vh"
                 // minimal
                 columns={fields} 
                 // data={payload?.records.filter((item)=>{item.window_name != 'OVERRIDE'})}
@@ -82,12 +69,20 @@ const FolioSummary = ({ user }) => {
                 onClick={(payload) => handleFormState(true, payload)}
                 handleSelect={(payload) => handleFormState(true, payload[0])} /> 
             </div>
+            <Button
+              type="primary"
+              icon={<SafetyCertificateOutlined />}
+              onClick={() => handleFormState(true, null)}
+              style={{ float: 'right', marginRight: 5, marginTop: 5 }}
+            >
+              {t('operations.createFolioException')}
+            </Button>
             <br></br>
             <div>
               {t("descriptions.overrideRules")}
               <DataTable 
-                height="20vh"
-                parentHeight="30vh"
+                height="17vh"
+                parentHeight="20vh"
                 columns={overrideFileds} 
                 // data={payload?.records.filter((item)=>{item.window_name === 'OVERRIDE'})}
                 data={payload? _.filter(payload.records, function(item) {

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { SafetyCertificateOutlined, QuestionCircleOutlined, CodeOutlined, SaveOutlined } from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Row, Input, Col, Divider, DatePicker, TimePicker } from 'antd';
@@ -19,10 +19,11 @@ const Settings = ({ value, access }) => {
   const [form] = Form.useForm();
   const { setFieldsValue } = form;
   
-  const newSettings = [];
+  let newSettings = [];
+  // const [newSettings, setNewSettings] = useState([]);
   
   const onComplete = () => {
-    
+    newSettings = [];
   };
 
   const onFinish = async () => {
