@@ -335,6 +335,11 @@ https://10.1.10.66/api/pages/equipment_type/read.php
 https://10.1.10.66/api/pages/equipment_type/unit_types.php
 https://10.1.10.66/api/pages/equipment_type/composition.php?etyp_id=40
 https://{{server_ip}}/api/pages/equipment_type/delete.php?etyp_id=40
+https://{{server_ip}}/api/pages/equipment_type/update.php	//Only update noncombo and only category
+{
+    "etyp_id": "9",
+    "etyp_category": "T"
+}
 https://{{server_ip}}/api/pages/equipment_type/create.php		//Non combo; 
 {
     "etyp_title": "CW5",
