@@ -756,7 +756,15 @@
     "schdProdName": "Product",
     "schdProdQty": "Qty",
     "schdProdUnit": "Prod Unit",
-    "schdUnitName": "Unit"
+    "schdUnitName": "Unit",
+	"lastCloseoutDate": "Last Closeout Date&Time",
+	"lastWeeklyReportDate": "Last Weekly Report Date",
+	"lastMonthlyReportDate": "Last Monthly Report Date",
+	"nextPlannedCloseout": "Next Planned Closeout Date",
+	"dailyReportTime": "Daily Report Time",
+	"nextWeeklyDate": "Next Weekly Report Date",
+	"nextMonthlyDate": "Next Monthly Report Date",
+	"closeoutOperatingDate": "Operating Date"
   },
 
   "pageMenu": {
@@ -877,6 +885,8 @@
     "yes": "Yes",
     "no": "No",
     "addNewExpiry": "Add New Expiry",
+	"freezeCloseout": "Run Manual Closeout",
+	"closeCloseout": "Close First Frozen Folio",
     "unlockAll": "Unlock All Compartments",
     "randomize": "Randomize",
     "copyToClipboard": "Copy to Clipboard",
@@ -940,7 +950,8 @@
     "add": "Add",
     "simple": "Simple",
     "list": "List",
-    "allocationPeriod": "Allocation Period"
+    "allocationPeriod": "Allocation Period",
+	"runAndOverride": "Run and Override"
   },
 
   "tabColumns": {
@@ -1057,7 +1068,9 @@
     "cancel": "Are you sure you want to cancel?",
     "closeTransaction": "Are you sure you want to Close this Transaction?",
     "reset": "Are you sure you want to reset this record?",
-    "createNewGate": "Create New Gate"
+    "createNewGate": "Create New Gate",
+	"freezeCloseout": "Are you sure you want to run manual closeout?",
+	"closeCloseout": "Are you sure you want to close first frozen folio?"
   },
 
   "divider": {
