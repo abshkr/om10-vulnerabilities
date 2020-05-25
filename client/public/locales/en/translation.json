@@ -757,6 +757,14 @@
     "schdProdQty": "Qty",
     "schdProdUnit": "Prod Unit",
     "schdUnitName": "Unit",
+    "lastCloseoutDate": "Last Closeout Date&Time",
+    "lastWeeklyReportDate": "Last Weekly Report Date",
+    "lastMonthlyReportDate": "Last Monthly Report Date",
+    "nextPlannedCloseout": "Next Planned Closeout Date",
+    "dailyReportTime": "Daily Report Time",
+    "nextWeeklyDate": "Next Weekly Report Date",
+    "nextMonthlyDate": "Next Monthly Report Date",
+    "closeoutOperatingDate": "Operating Date",
     "allocatedQuantity": "Allocated Quantity"
   },
 
@@ -878,6 +886,8 @@
     "yes": "Yes",
     "no": "No",
     "addNewExpiry": "Add New Expiry",
+    "freezeCloseout": "Run Manual Closeout",
+    "closeCloseout": "Close First Frozen Folio",
     "unlockAll": "Unlock All Compartments",
     "randomize": "Randomize",
     "copyToClipboard": "Copy to Clipboard",
@@ -941,7 +951,8 @@
     "add": "Add",
     "simple": "Simple",
     "list": "List",
-    "allocationPeriod": "Allocation Period"
+    "allocationPeriod": "Allocation Period",
+    "runAndOverride": "Run and Override"
   },
 
   "tabColumns": {
@@ -1043,6 +1054,7 @@
     "create": "Are you sure you want to create this record?",
     "activate": "Are you sure you want to activate this record?",
     "createOverride": "Are you sure you want to create an override on this date?",
+    "deleteOverride": "Are you sure you want to delete override on this date?",
     "createOnceOffDate": "Are you sure you want to create once-off-date exception on this date?",
     "update": "Are you sure you want to update this record?",
     "delete": "Are you sure you want to delete this record?",
@@ -1057,7 +1069,9 @@
     "cancel": "Are you sure you want to cancel?",
     "closeTransaction": "Are you sure you want to Close this Transaction?",
     "reset": "Are you sure you want to reset this record?",
-    "createNewGate": "Create New Gate"
+    "createNewGate": "Create New Gate",
+    "freezeCloseout": "Are you sure you want to run manual closeout?",
+    "closeCloseout": "Are you sure you want to close first frozen folio?"
   },
 
   "divider": {

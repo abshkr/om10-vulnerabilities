@@ -12,12 +12,3 @@ export const RESET = '/api/pages/allocs/reset.php ';
 export const CREATE = '/api/pages/allocs/create.php';
 export const UPDATE = '/api/pages/allocs/update.php';
 export const DELETE = '/api/pages/allocs/delete.php';
-
-// Allocation Period
-
-export const PERIOD_READ = '/api/pages/allocs/alloc_period_read.php';
-export const PERIOD_TYPES = '/api/pages/allocs/unit_types.php';
-
-export const PERIOD_CREATE = '/api/pages/allocs/alloc_period_create.php';
-export const PERIOD_UPDATE = '/api/pages/allocs/alloc_period_update.php';
-export const PERIOD_DELETE = '/api/pages/allocs/alloc_period_delete.php';

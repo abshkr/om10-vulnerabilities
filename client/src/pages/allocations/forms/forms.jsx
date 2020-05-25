@@ -38,8 +38,6 @@ const FormModal = ({ value, visible, handleFormState }) => {
   const [allocations, setAllocations] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
 
-  const [tableAPI, setTableAPI] = useState(null);
-
   const { resetFields } = form;
 
   const IS_CREATING = !value;
@@ -253,7 +251,6 @@ const FormModal = ({ value, visible, handleFormState }) => {
                 minimal
                 columns={columns(t, IS_CREATING, form, units)}
                 handleSelect={(value) => setSelected(value[0])}
-                apiContext={setTableAPI}
                 components={{
                   UnitEditor: Unit,
                 }}
@@ -262,7 +259,6 @@ const FormModal = ({ value, visible, handleFormState }) => {
           </TabPane>
         </Tabs>
       </Form>
-
       <Period visible={showPeriod && CAN_ALLOCATE_PERIOD} setVisibility={setShowPeriod} selected={selected} />
     </Drawer>
   );

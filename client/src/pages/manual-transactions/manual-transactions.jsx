@@ -26,8 +26,7 @@ const ManualTransactions = () => {
   const [orders, setOrders] = useState(null);
 
   const [customers, setCustomers] = useState(null);
-  const [trip, setTrip] = useState(null);
-  const [selectedSupplier, setSelectedSupplier] = useState(null);
+  const [selecteSupplier, setSelectedSupplier] = useState(null);
 
   const onSumit = async () => {
     try {
@@ -79,17 +78,16 @@ const ManualTransactions = () => {
           tankers={tankers}
           setTankers={setTankers}
           orders={orders}
-          setTrip={setTrip}
           setOrders={setOrders}
           customers={customers}
           setCustomers={setCustomers}
-          selectedSupplier={selectedSupplier}
+          selecteSupplier={selecteSupplier}
           setSelectedSupplier={setSelectedSupplier}
         />
 
         <Divider style={{ margin: '0px 0' }}>{t('divider.drawerProductTransfer')}</Divider>
 
-        <DrawerProductTransfer form={form} type={type} supplier={selectedSupplier} trip={trip} />
+        <DrawerProductTransfer form={form} type={type} />
 
         <Divider style={{ margin: '0px 0' }}>{t('divider.baseProducts')}</Divider>
 

@@ -162,6 +162,24 @@ class Tank extends CommonClass
         Utilities::retrieve($result, $tank_flow, $stmt);
         // write_log(json_encode($result), __FILE__, __LINE__);
         $hook_item['tank_max_flow'] = $result;
+
+        $query = "
+            SELECT STREAM_BAYCODE, STREAM_ARMCODE
+            FROM GUI_PIPENODE
+            WHERE STREAM_TANKCODE = :stream_tankcode
+            ORDER BY STREAM_BAYCODE, STREAM_ARMCODE";
+        $result = array();
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':stream_tankcode', $hook_item['tank_code']);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        //The last $method parameter need to be NonExistHook to prevent 
+        Utilities::retrieve($result, $this, $stmt, $method='NonExistHook');
+        $hook_item['arms'] = $result;
     }
 
     protected function retrieve_children_data()

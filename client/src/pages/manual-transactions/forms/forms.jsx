@@ -22,9 +22,8 @@ const Forms = ({
   setOrders,
   customers,
   setCustomers,
-  selectedSupplier,
+  selecteSupplier,
   setSelectedSupplier,
-  setTrip,
 }) => {
   const { setFieldsValue } = form;
 
@@ -54,7 +53,7 @@ const Forms = ({
 
   const getOrdersByCustomer = async (customer) => {
     const results = await axios.get(
-      `${MANUAL_TRANSACTIONS.ORDERS}?supplier=${selectedSupplier}&customer=${customer}`
+      `${MANUAL_TRANSACTIONS.ORDERS}?supplier=${selecteSupplier}&customer=${customer}`
     );
 
     return results?.data;
@@ -62,7 +61,7 @@ const Forms = ({
 
   const getTankerAndCarrierByTrip = async (trip) => {
     const results = await axios.get(
-      `${MANUAL_TRANSACTIONS.CARRIER_AND_TANKER}?supplier=${selectedSupplier}&trip_no=${trip}`
+      `${MANUAL_TRANSACTIONS.CARRIER_AND_TANKER}?supplier=${selecteSupplier}&trip_no=${trip}`
     );
 
     const value = results?.data.records[0];
@@ -70,7 +69,7 @@ const Forms = ({
     const tankerResults = await getTankersByCarrier(value?.carrier);
 
     setTankers(tankerResults);
-    setTrip(trip);
+
     setFieldsValue({
       tanker: value?.tnkr_code,
       carrier: value?.carrier,
@@ -209,7 +208,7 @@ const Forms = ({
           >
             <Select
               showSearch
-              disabled={type !== 'open_order' || !selectedSupplier}
+              disabled={type !== 'open_order' || !selecteSupplier}
               optionFilterProp="children"
               placeholder={t('placeholder.selectCustomer')}
               onChange={handleCustomerSelect}

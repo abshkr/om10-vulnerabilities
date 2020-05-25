@@ -22,7 +22,7 @@ class FolioSchedule extends CommonClass
 
     public function read()
     {
-        $query = "SELECT * FROM FOLIOCALENDAR WHERE WINDOW_NAME != 'OVERRIDE' ORDER BY SEQ";
+        $query = "SELECT * FROM FOLIOCALENDAR ORDER BY SEQ";
 
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
