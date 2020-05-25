@@ -1042,6 +1042,7 @@
     "create": "Are you sure you want to create this record?",
     "activate": "Are you sure you want to activate this record?",
 	"createOverride": "Are you sure you want to create an override on this date?",
+    "deleteOverride": "Are you sure you want to delete override on this date?",
     "createOnceOffDate": "Are you sure you want to create once-off-date exception on this date?",
     "update": "Are you sure you want to update this record?",
     "delete": "Are you sure you want to delete this record?",

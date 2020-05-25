@@ -56,13 +56,24 @@ const FolioCalendar = ({ value }) => {
     // });
   };
 
+  const override_exist = (d) => {
+    const overrides = _.filter(value, function(item) {
+      return item.window_name == 'OVERRIDE'})
+    for (let i = 0; i < overrides.length; i++) {
+      if (curDate === overrides[i].repeat_interval) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   const onChange = (v) => {
-    console.log("onChange")
-    console.log(v.target.checked)
-    const IS_OVERRIDE = v.target.checked;
-    console.log(IS_OVERRIDE)
-    console.log(curDate)
-    const values = IS_OVERRIDE ? {
+    const overrideExists = override_exist(curDate);
+    const ADD_OVERRIDE = v.target.checked && !overrideExists
+    const ADD_EXCEPTION = !v.target.checked && !overrideExists
+    const DELETE_OVERRIDE = !v.target.checked && overrideExists
+    const values = (ADD_OVERRIDE || DELETE_OVERRIDE) ? {
       repeat_interval: curDate
     } : {
       window_name: "ONCE_WINDOW",
@@ -71,27 +82,9 @@ const FolioCalendar = ({ value }) => {
       status: 1
     }
 
-    // axios.post(FOLIO_SCHEDULING.CREATE_OVERRIDE, values)
-    // .then(() => {
-    //   onComplete();
-
-    //   notification.success({
-    //     message: t('messages.createSuccess'),
-    //     description: t('descriptions.createSuccess'),
-    //   });
-    // })
-    // .catch((errors) => {
-    //   _.forEach(errors.response.value.errors, (error) => {
-    //     notification.error({
-    //       message: error.type,
-    //       description: error.message,
-    //     });
-    //   });
-    // });
-
-    
     Modal.confirm({
-      title: IS_OVERRIDE ? t('prompts.createOverride') : t('prompts.createOnceOffDate'),
+      title: ADD_OVERRIDE ? t('prompts.createOverride') : 
+        (ADD_EXCEPTION? t('prompts.createOnceOffDate') :t('prompts.deleteOverride')),
       okText: t('operations.create') ,
       okType: 'primary',
       icon: <QuestionCircleOutlined />,
@@ -99,7 +92,8 @@ const FolioCalendar = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(IS_OVERRIDE ? FOLIO_SCHEDULING.CREATE_OVERRIDE : FOLIO_SCHEDULING.CREATE, values)
+          .post(ADD_OVERRIDE ? FOLIO_SCHEDULING.CREATE_OVERRIDE : 
+            (ADD_EXCEPTION ? FOLIO_SCHEDULING.CREATE : FOLIO_SCHEDULING.DELETE_OVERRIDE), values)
           .then(() => {
             onComplete()
             notification.success({
@@ -108,7 +102,7 @@ const FolioCalendar = ({ value }) => {
             });
           })
           .catch((errors) => {
-            _.forEach(errors.response.value.errors, (error) => {
+            _.forEach(errors.response.data.errors, (error) => {
               notification.error({
                 message: error.type,
                 description: error.message,
@@ -120,27 +114,38 @@ const FolioCalendar = ({ value }) => {
   }
 
   const checkDate = (v) => {
-    for (let i = 0; i < value.length; i++) {
-      if (value[i].window_name === "MONTH_WINDOW") {
-        if (v.format("D") === value[i].repeat_interval) {
+    //Override overrides exceptions
+    const overrides = _.filter(value, function(item) {
+      return item.window_name == 'OVERRIDE'})
+    for (let i = 0; i < overrides.length; i++) {
+      if (v.format("D_M_YYYY") === overrides[i].repeat_interval) {
+        return true;
+      }
+    }
+
+    const exceptions = _.filter(value, function(item) {
+      return item.window_name != 'OVERRIDE'})
+    for (let i = 0; i < exceptions.length; i++) {
+      if (exceptions[i].window_name === "MONTH_WINDOW") {
+        if (v.format("D") === exceptions[i].repeat_interval) {
           return false;
         }
       } 
 
-      if (value[i].window_name === "WEEK_WINDOW") {
-        if (v.format("dddd") === value[i].repeat_interval) {
+      if (exceptions[i].window_name === "WEEK_WINDOW") {
+        if (v.format("dddd") === exceptions[i].repeat_interval) {
           return false;
         }
       } 
 
-      if (value[i].window_name === "DATE_YEAR_WINDOW") {
-        if (v.format("D_M") === value[i].repeat_interval) {
+      if (exceptions[i].window_name === "DATE_YEAR_WINDOW") {
+        if (v.format("D_M") === exceptions[i].repeat_interval) {
           return false;
         }
       }
 
-      if (value[i].window_name === "YEAR_WINDOW") {
-        let interval = value[i].repeat_interval.split("_");
+      if (exceptions[i].window_name === "YEAR_WINDOW") {
+        let interval = exceptions[i].repeat_interval.split("_");
         if (v.format('dddd') != interval[1]) {
           continue;
         } else if (v.format('M') != interval[2]) {
@@ -156,8 +161,8 @@ const FolioCalendar = ({ value }) => {
         }
       }
 
-      if (value[i].window_name === "ONCE_WINDOW") {
-        if (v.format("D_M_YYYY") === value[i].repeat_interval) {
+      if (exceptions[i].window_name === "ONCE_WINDOW") {
+        if (v.format("D_M_YYYY") === exceptions[i].repeat_interval) {
           return false;
         }
       }

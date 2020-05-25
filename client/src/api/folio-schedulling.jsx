@@ -4,6 +4,7 @@ export const CREATE = '/api/pages/folio_schedule/create.php';
 export const DELETE = '/api/pages/folio_schedule/delete.php';
 
 export const CREATE_OVERRIDE = '/api/pages/folio_schedule/create_override.php';
+export const DELETE_OVERRIDE = '/api/pages/folio_schedule/delete_override.php';
 export const OVERRIDES = '/api/pages/folio_schedule/overrides.php';
 export const METERS = '/api/pages/folio/get_meters.php';
 
