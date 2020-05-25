@@ -1138,7 +1138,7 @@
 	"dateOfMonth": "Date of Month",
 	"dayOfWeek": "Day of Week",
 	"dayOfYear": "Day of Year",
-	"onceOffDate": "Once off Date"
+	"onceOffDate": "Once off Date",
 	"exceptionRules": "Exception Rules (List of events whereby Closeout will not run)",
 	"overrideRules": "Exception Override Rules (List of events whereby Closeout will run regardless of Exception)"
   },
