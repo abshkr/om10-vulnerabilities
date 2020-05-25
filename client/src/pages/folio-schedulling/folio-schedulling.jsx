@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import useSWR from 'swr';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { notification, Button, Tabs, Divider } from 'antd';
-import { SafetyCertificateOutlined, ReconciliationOutlined } from '@ant-design/icons';
+import { Button, Tabs } from 'antd';
+import { SafetyCertificateOutlined } from '@ant-design/icons';
 
 import Forms from './forms';
 import Settings from './settings'
@@ -13,8 +12,7 @@ import auth from '../../auth';
 import columns from './columns';
 import overrideCols from './override_cols';
 import { FOLIO_SCHEDULING } from '../../api';
-import { Page, DataTable, FormModal } from '../../components';
-import { authLevel } from '../../utils';
+import { Page, DataTable } from '../../components';
 import { useAuth } from '../../hooks';
 import _ from 'lodash';
 
@@ -22,14 +20,14 @@ import './folio-schedulling.css';
 
 const TabPane = Tabs.TabPane;
 
-const FolioSummary = ({ user }) => {
+const FolioSummary = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const { t } = useTranslation();
   const access = useAuth('M_FOLIOSCHEDULING');
 
   const { data: payload, isValidating } = useSWR(FOLIO_SCHEDULING.READ);
-  const {data, setData} = useState(payload?.records)
+  // const {data, setData} = useState(payload?.records)
   // const { data: overrides } = useSWR(FOLIO_SCHEDULING.OVERRIDES);
 
   const fields = columns(t);
