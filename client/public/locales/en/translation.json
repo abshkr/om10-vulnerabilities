@@ -14,7 +14,8 @@
     "login": "Login to your account",
     "havingTrouble": "Having Trouble?",
 	"every": "Every ",
-	"everyMonth": " of every month"
+	"everyMonth": " of every month",
+	"overriderun": "Closeout will run on "
   },
 
   "fields": {
@@ -28,6 +29,7 @@
 	"window": "Window",
 	"modifiedDate": "Modified Date",
 	"exception": "Exception",
+	"override": "Override",
 	"folioExceptionType": "Exception Type",
 	"folioExceptionInterval": "Interval Setup",
     "folioExceptionDesc": "Description",
@@ -885,6 +887,7 @@
     "openGate": "Open Gate",
     "openAllGates": "Open All Gates",
     "closeFirstFolio": "Close First Frozen Folio",
+	"createFolioException": "New Exception",
     "createPDSFile": "Create PDS File",
     "regenerate": "Regenerate",
     "calculate": "Calculate",
@@ -1039,6 +1042,7 @@
     "create": "Are you sure you want to create this record?",
     "activate": "Are you sure you want to activate this record?",
 	"createOverride": "Are you sure you want to create an override on this date?",
+    "createOnceOffDate": "Are you sure you want to create once-off-date exception on this date?",
     "update": "Are you sure you want to update this record?",
     "delete": "Are you sure you want to delete this record?",
     "calculate": "Are you sure you want to calculate the selected records?",
@@ -1135,6 +1139,8 @@
 	"dayOfWeek": "Day of Week",
 	"dayOfYear": "Day of Year",
 	"onceOffDate": "Once off Date"
+	"exceptionRules": "Exception Rules (List of events whereby Closeout will not run)",
+	"overrideRules": "Exception Override Rules (List of events whereby Closeout will run regardless of Exception)"
   },
 
   "placeholder": {
