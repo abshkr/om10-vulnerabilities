@@ -756,7 +756,8 @@
     "schdProdName": "Product",
     "schdProdQty": "Qty",
     "schdProdUnit": "Prod Unit",
-    "schdUnitName": "Unit"
+    "schdUnitName": "Unit",
+    "allocatedQuantity": "Allocated Quantity"
   },
 
   "pageMenu": {

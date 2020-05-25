@@ -1,4 +1,4 @@
-const columns = (t, isCreating) => [
+const columns = (t, isCreating, form, units) => [
   {
     headerName: t('fields.productCode'),
     field: 'aitem_prodcode',
@@ -43,9 +43,13 @@ const columns = (t, isCreating) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    editable: isCreating,
-    cellEditor: 'agSelectCellEditor',
+    editable: true,
+    cellEditor: 'UnitEditor',
     width: 130,
+    cellEditorParams: {
+      values: units?.records,
+      form: form,
+    },
   },
   {
     headerName: t('fields.activePeriod'),

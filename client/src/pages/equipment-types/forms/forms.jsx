@@ -27,11 +27,11 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
   };
 
   const onFinish = async () => {
+    let values = {};
+
     const compartments = [];
 
     const record = await form.validateFields();
-
-    console.log(record);
 
     _.forEach(record.names, (value, key) => {
       const payload = {
@@ -43,20 +43,31 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
       compartments.push(payload);
     });
 
-    const values = {
-      etyp_title: record.etyp_title,
-      etyp_category: record.etyp_category,
-      etyp_isrigid: false,
-      etyp_schedul: false,
-      compartments,
-    };
+    if (!IS_COMBINATION && !IS_CREATING) {
+      values = {
+        etyp_id: value.etyp_id,
+        etyp_category: record.etyp_category?.toUpperCase(),
+      };
+    }
 
-    const combinationPayload = {
-      ...record,
-      etyp_isrigid: false,
-      etyp_schedul: false,
-      etyp_category: 'C',
-    };
+    if (IS_CREATING && !IS_COMBINATION) {
+      values = {
+        etyp_title: record.etyp_title,
+        etyp_category: record.etyp_category,
+        etyp_isrigid: false,
+        etyp_schedul: false,
+        compartments,
+      };
+    }
+
+    if (IS_CREATING && IS_COMBINATION) {
+      values = {
+        ...record,
+        etyp_isrigid: false,
+        etyp_schedul: false,
+        etyp_category: 'C',
+      };
+    }
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -67,10 +78,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(
-            IS_CREATING ? EQUIPMENT_TYPES.CREATE : EQUIPMENT_TYPES.UPDATE,
-            isCombination ? combinationPayload : values
-          )
+          .post(IS_CREATING ? EQUIPMENT_TYPES.CREATE : EQUIPMENT_TYPES.UPDATE, values)
           .then(() => {
             onComplete();
 

@@ -13,8 +13,9 @@ import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
+import useSWR from 'swr';
 
-import { Type, Company, Supplier, LockType, Period as PeriodItem } from './fields';
+import { Type, Company, Supplier, LockType, Period as PeriodItem, Unit } from './fields';
 import { DataTable } from '../../../components';
 import { ALLOCATIONS } from '../../../api';
 import columns from './columns';
@@ -23,6 +24,8 @@ import Period from './period';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState }) => {
+  const { data: units } = useSWR(ALLOCATIONS.PERIOD_TYPES);
+
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -34,6 +37,8 @@ const FormModal = ({ value, visible, handleFormState }) => {
 
   const [allocations, setAllocations] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
+
+  const [tableAPI, setTableAPI] = useState(null);
 
   const { resetFields } = form;
 
@@ -51,12 +56,27 @@ const FormModal = ({ value, visible, handleFormState }) => {
       .then((response) => {
         const payload = response.data?.records || [];
 
+        form.setFieldsValue({
+          allocs: payload,
+        });
+
         setAllocations(payload);
       });
   }, [company, type, supplier]);
 
   const onFinish = async () => {
     const values = await form.validateFields();
+    const allocs = [];
+
+    _.forEach(values?.allocs, (alloc) => {
+      allocs.push({
+        aitem_prodcode: alloc.aitem_prodcode,
+        aitem_qtylimit: _.toNumber(alloc.aitem_qtylimit),
+        aitem_produnit: _.toNumber(alloc.aitem_produnit),
+      });
+    });
+
+    values.allocs = allocs;
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -226,13 +246,19 @@ const FormModal = ({ value, visible, handleFormState }) => {
             <LockType form={form} value={value} onChange={setLockType} />
             <PeriodItem form={form} value={value} lockType={lockType} />
             <Divider />
-            <DataTable
-              data={allocations}
-              height="60vh"
-              minimal
-              columns={columns(t, IS_CREATING)}
-              handleSelect={(value) => setSelected(value[0])}
-            />
+            <Form.Item name="allocs">
+              <DataTable
+                data={allocations}
+                height="60vh"
+                minimal
+                columns={columns(t, IS_CREATING, form, units)}
+                handleSelect={(value) => setSelected(value[0])}
+                apiContext={setTableAPI}
+                components={{
+                  UnitEditor: Unit,
+                }}
+              />
+            </Form.Item>
           </TabPane>
         </Tabs>
       </Form>
