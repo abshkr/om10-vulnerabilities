@@ -14,10 +14,11 @@ import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 
-import { Type, Company, Supplier, LockType, Period } from './fields';
+import { Type, Company, Supplier, LockType, Period as PeriodItem } from './fields';
 import { DataTable } from '../../../components';
 import { ALLOCATIONS } from '../../../api';
 import columns from './columns';
+import Period from './period';
 
 const TabPane = Tabs.TabPane;
 
@@ -32,6 +33,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
   const [selected, setSelected] = useState(null);
 
   const [allocations, setAllocations] = useState([]);
+  const [showPeriod, setShowPeriod] = useState(false);
 
   const { resetFields } = form;
 
@@ -196,6 +198,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
               icon={<ClockCircleOutlined />}
               style={{ marginLeft: 5 }}
               disabled={!CAN_ALLOCATE_PERIOD}
+              onClick={() => setShowPeriod(true)}
             >
               {t('operations.allocationPeriod')}
             </Button>
@@ -221,7 +224,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
             <Company form={form} value={value} onChange={setCompany} />
             <Supplier form={form} value={value} type={type} onChange={setSupplier} />
             <LockType form={form} value={value} onChange={setLockType} />
-            <Period form={form} value={value} lockType={lockType} />
+            <PeriodItem form={form} value={value} lockType={lockType} />
             <Divider />
             <DataTable
               data={allocations}
@@ -233,6 +236,8 @@ const FormModal = ({ value, visible, handleFormState }) => {
           </TabPane>
         </Tabs>
       </Form>
+
+      <Period visible={showPeriod && CAN_ALLOCATE_PERIOD} setVisibility={setShowPeriod} selected={selected} />
     </Drawer>
   );
 };
