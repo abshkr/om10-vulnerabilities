@@ -6,7 +6,29 @@ const { Panel } = Collapse;
 
 const data = [
   {
-    title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 22/05/2020`,
+    title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 26/05/2020`,
+    content: (
+      <>
+        <>
+          <Divider>Features</Divider>
+
+          <p>- Allocatioms Screen Completion</p>
+          <p>- Folio Scheduling Completion </p>
+          <p>- Customers Completion </p>
+          <p>- Addresses Completion </p>
+          <p>- Equipment Types Completion </p>
+        </>
+
+        <>
+          <Divider>Bug Fixes</Divider>
+          <p>- Please Refer to all the tasks marked "To Be Tested" on JIRA.</p>
+        </>
+      </>
+    ),
+  },
+
+  {
+    title: `Release Version Notes (10.4.0) - 22/05/2020`,
     content: (
       <>
         <>
