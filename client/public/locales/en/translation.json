@@ -1262,7 +1262,9 @@
     "selectInvoiceType": "Select Invoice Type",
     "selectSaleType": "Select Sale Type",
     "selectTermsType": "Select Invoice Generation",
-    "setPeriod": "Set Period"
+    "selectProductGroup": "Select Product Group",
+    "selectHazchem": "Select Hazchem",
+    "selectGenericName": "Select Generic Name"
   },
 
   "validate": {

@@ -10,6 +10,9 @@ class Allocation extends CommonClass
     protected $TABLE_NAME = 'LOCKAL';
     protected $VIEW_NAME = 'GUI_ALLOCATIONS';
     protected $primary_keys = array("lockatyp_at_type", "lockatyp_at_cmpy", "lockal_supl");
+    protected $view_keys = array("alloc_type", "alloc_cmpycode", "alloc_suppcode");
+
+    protected $del_n_ins_children = false;   //Because ALLOCS has child ALL_CHILD
     
     protected $table_view_map = array(
         "LOCKATYP_AT_TYPE" => "ALLOC_TYPE",
@@ -17,6 +20,9 @@ class Allocation extends CommonClass
         "LOCKAL_SUPL" => "ALLOC_SUPPCODE",
         "LOCKAL_LOCK" => "ALLOC_LOCK",
         "LOCKAL_PERIOD" => "ALLOC_PERIOD",
+        "ALLOC_LIMIT" => "AITEM_QTYLIMIT",
+        "ALL_PROD_PRODCODE" => "AITEM_PRODCODE",
+        "ALLOC_UNITS" => "AITEM_PRODUNIT"
     );
 
     public $NUMBER_FIELDS = array(
@@ -183,6 +189,148 @@ class Allocation extends CommonClass
         return true;
     }
 
+    protected function update_children($old_children = null)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+        write_log(json_encode($this), __FILE__, __LINE__);
+        write_log(json_encode($old_children), __FILE__, __LINE__);
+        
+        foreach ($old_children as $prodcode => $item_array) {
+            $still_exist = false;
+            foreach ($this->allocs as $alloc) {
+                if ($alloc->aitem_prodcode == $prodcode) {
+                    if ($alloc->aitem_qtylimit > 0 && $item_array['AITEM_QTYLEFT'] == 0) {
+                        $query = "INSERT INTO ALLOCS (
+                            ALL_PROD_PRODCODE,
+                            ALL_PROD_PRODCMPY,
+                            ALLOC_LEFT,
+                            ALLOC_LIMIT,
+                            ALLOC_UNITS,
+                            ALL_ATKY_AT_TYPE,
+                            ALL_ATKY_AT_CMPY,
+                            ALLOC_PER_CHILD)
+                        VALUES (
+                            :aitem_prodcode,
+                            :aitem_suppcode,
+                            :aitem_qtylimit,
+                            :aitem_qtylimit,
+                            :aitem_produnit,
+                            :aitem_type,
+                            :aitem_cmpycode,
+                            NULL
+                        )";
+                        $stmt = oci_parse($this->conn, $query);
+                        oci_bind_by_name($stmt, ':aitem_prodcode', $alloc->aitem_prodcode);
+                        oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
+                        oci_bind_by_name($stmt, ':aitem_qtylimit', $alloc->aitem_qtylimit);
+                        oci_bind_by_name($stmt, ':aitem_produnit', $alloc->aitem_produnit);
+                        oci_bind_by_name($stmt, ':aitem_type', $this->alloc_type);
+                        oci_bind_by_name($stmt, ':aitem_cmpycode', $this->alloc_cmpycode);
+            
+                        if (!oci_execute($stmt, $this->commit_mode)) {
+                            $e = oci_error($stmt);
+                            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                            return false;
+                        }
+                    } else if ($alloc->aitem_qtylimit == 0 && $item_array['AITEM_QTYLEFT'] > 0) {
+                        $query = "DELETE FROM ALL_CHILD
+                            WHERE ALCH_ALP_ALL_PROD_PRODCMPY = :alloc_suppcode
+                                AND ALCH_ALP_ALL_ATKY_AT_TYPE = :alloc_type
+                                AND ALCH_ALP_ALL_ATKY_AT_CMPY = :alloc_cmpycode";
+                        $stmt = oci_parse($this->conn, $query);
+                        oci_bind_by_name($stmt, ':alloc_suppcode', $this->alloc_suppcode);
+                        oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
+                        oci_bind_by_name($stmt, ':alloc_cmpycode', $this->alloc_cmpycode);
+                        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                            $e = oci_error($stmt);
+                            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                            return false;
+                        }
+                        
+                        $query = "DELETE FROM ALLOCS 
+                            WHERE ALL_PROD_PRODCMPY = :aitem_suppcode
+                                AND ALL_ATKY_AT_TYPE = :aitem_type
+                                AND ALL_ATKY_AT_CMPY = :aitem_cmpycode
+                                AND ALL_PROD_PRODCODE = :aitem_prodcode";
+                        $stmt = oci_parse($this->conn, $query);
+                        oci_bind_by_name($stmt, ':aitem_prodcode', $alloc->aitem_prodcode);
+                        oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
+                        oci_bind_by_name($stmt, ':aitem_type', $this->alloc_type);
+                        oci_bind_by_name($stmt, ':aitem_cmpycode', $this->alloc_cmpycode);
+                        if (!oci_execute($stmt, $this->commit_mode)) {
+                            $e = oci_error($stmt);
+                            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                            return false;
+                        }
+                    } else if ($alloc->aitem_qtylimit > 0 && $item_array['AITEM_QTYLEFT'] > 0) {
+                        $query = "UPDATE ALLOCS
+                            SET ALLOC_LIMIT = :aitem_qtylimit,
+                                ALLOC_UNITS = :aitem_produnit
+                            WHERE ALL_PROD_PRODCMPY = :aitem_suppcode
+                                AND ALL_ATKY_AT_TYPE = :aitem_type
+                                AND ALL_ATKY_AT_CMPY = :aitem_cmpycode
+                                AND ALL_PROD_PRODCODE = :aitem_prodcode";
+                        $stmt = oci_parse($this->conn, $query);
+                        oci_bind_by_name($stmt, ':aitem_prodcode', $alloc->aitem_prodcode);
+                        oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
+                        oci_bind_by_name($stmt, ':aitem_qtylimit', $alloc->aitem_qtylimit);
+                        oci_bind_by_name($stmt, ':aitem_produnit', $alloc->aitem_produnit);
+                        oci_bind_by_name($stmt, ':aitem_type', $this->alloc_type);
+                        oci_bind_by_name($stmt, ':aitem_cmpycode', $this->alloc_cmpycode);
+            
+                        if (!oci_execute($stmt, $this->commit_mode)) {
+                            $e = oci_error($stmt);
+                            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        //In new but not in old.
+        foreach ($this->allocs as $alloc) {
+            if (isset($old_children[$alloc->aitem_prodcode])) {
+                continue;
+            }
+            $query = "INSERT INTO ALLOCS (
+                ALL_PROD_PRODCODE,
+                ALL_PROD_PRODCMPY,
+                ALLOC_LEFT,
+                ALLOC_LIMIT,
+                ALLOC_UNITS,
+                ALL_ATKY_AT_TYPE,
+                ALL_ATKY_AT_CMPY,
+                ALLOC_PER_CHILD)
+            VALUES (
+                :aitem_prodcode,
+                :aitem_suppcode,
+                :aitem_qtylimit,
+                :aitem_qtylimit,
+                :aitem_produnit,
+                :aitem_type,
+                :aitem_cmpycode,
+                NULL
+            )";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':aitem_prodcode', $alloc->aitem_prodcode);
+            oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
+            oci_bind_by_name($stmt, ':aitem_qtylimit', $alloc->aitem_qtylimit);
+            oci_bind_by_name($stmt, ':aitem_produnit', $alloc->aitem_produnit);
+            oci_bind_by_name($stmt, ':aitem_type', $this->alloc_type);
+            oci_bind_by_name($stmt, ':aitem_cmpycode', $this->alloc_cmpycode);
+
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     protected function insert_children()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -230,15 +378,14 @@ class Allocation extends CommonClass
 
         return true;
     }
-
+    
     //TODO: ALLOCS can have children in ALL_CHILD table
     protected function delete_children()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
-        $query = "
-            DELETE FROM ALL_CHILD
+        $query = "DELETE FROM ALL_CHILD
             WHERE ALCH_ALP_ALL_PROD_PRODCMPY = :alloc_suppcode
                 AND ALCH_ALP_ALL_ATKY_AT_TYPE = :alloc_type
                 AND ALCH_ALP_ALL_ATKY_AT_CMPY = :alloc_cmpycode";
@@ -246,6 +393,23 @@ class Allocation extends CommonClass
         oci_bind_by_name($stmt, ':alloc_suppcode', $this->alloc_suppcode);
         oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
         oci_bind_by_name($stmt, ':alloc_cmpycode', $this->alloc_cmpycode);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+            return false;
+        }
+
+        $query = "DELETE FROM ALLOCS
+            WHERE ALL_PROD_PRODCMPY = :aitem_suppcode
+                AND ALL_ATKY_AT_TYPE = :aitem_type
+                AND ALL_ATKY_AT_CMPY = :aitem_cmpycode";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
+        oci_bind_by_name($stmt, ':aitem_cmpycode', $this->alloc_cmpycode);
+        oci_bind_by_name($stmt, ':aitem_type', $this->alloc_type);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -324,53 +488,98 @@ class Allocation extends CommonClass
 
     public function items()
     {
-        $query = "
-        SELECT NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
-            NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
-            NVL(AITEM_CMPYCODE, ALLOC_CMPYCODE) AITEM_CMPYCODE,
-            NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
-            NVL(AITEM_PRODCODE, PROD_CODE) AITEM_PRODCODE,
-            NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
-            NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
-            NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
-            NVL(AITEM_QTYLIMIT, 0) AITEM_QTYLIMIT,
-            NVL(AITEM_QTYUSED, 0) AITEM_QTYUSED,
-            NVL(AITEM_QTYLEFT, 0) AITEM_QTYLEFT,
-            NVL(AITEM_PRODUNIT, AITEM_PRODUNIT) AITEM_PRODUNIT,
-            NVL(AITEM_UNITNAME, AITEM_UNITNAME) AITEM_UNITNAME,
-            NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
-        FROM
-        (
-            SELECT PROD_CODE,
-                PROD_CMPY,
-                PROD_NAME,
-                ALLOC_TYPE,
-                ALLOC_TYPENAME,
-                ALLOC_CMPYCODE,
-                ALLOC_CMPYNAME,
-                ALLOC_SUPPCODE,
-                ALLOC_SUPPNAME,
-                ALLOC_LOCK,
-                ALLOC_LOCKNAME,
-                ALLOC_PERIOD
-            FROM PRODUCTS, GUI_ALLOCATIONS
-            WHERE PRODUCTS.PROD_CMPY = GUI_ALLOCATIONS.ALLOC_SUPPCODE
-                AND ALLOC_TYPE = :alloc_type
-                AND ALLOC_CMPYCODE = :alloc_cmpy
-                AND ALLOC_SUPPCODE = :alloc_supp
-        ) ALL_PRODS,
-        GUI_ALLOCATION_ITEMS
-        WHERE ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
-            AND ALL_PRODS.PROD_CMPY = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
-            AND ALL_PRODS.ALLOC_TYPE = GUI_ALLOCATION_ITEMS.AITEM_TYPE(+)
-            AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
-            AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
-        ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
-        ";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
-        oci_bind_by_name($stmt, ':alloc_cmpy', $this->alloc_cmpycode);
-        oci_bind_by_name($stmt, ':alloc_supp', $this->alloc_suppcode);
+        if (isset($this->supplier)) {
+            $query = "
+            SELECT NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
+                NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
+                NVL(AITEM_CMPYCODE, ALLOC_CMPYCODE) AITEM_CMPYCODE,
+                NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
+                NVL(AITEM_PRODCODE, PROD_CODE) AITEM_PRODCODE,
+                NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
+                NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
+                NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
+                NVL(AITEM_QTYLIMIT, 0) AITEM_QTYLIMIT,
+                NVL(AITEM_QTYUSED, 0) AITEM_QTYUSED,
+                NVL(AITEM_QTYLEFT, 0) AITEM_QTYLEFT,
+                NVL(AITEM_PRODUNIT, 5) AITEM_PRODUNIT,
+                NVL(AITEM_UNITNAME, 'l (amb)') AITEM_UNITNAME,
+                NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
+            FROM
+            (
+                SELECT PROD_CODE,
+                    PROD_CMPY,
+                    PROD_NAME,
+                    NULL ALLOC_TYPE,
+                    NULL ALLOC_TYPENAME,
+                    NULL ALLOC_CMPYCODE,
+                    NULL ALLOC_CMPYNAME,
+                    NULL ALLOC_SUPPCODE,
+                    NULL ALLOC_SUPPNAME,
+                    NULL ALLOC_LOCK,
+                    NULL ALLOC_LOCKNAME,
+                    NULL ALLOC_PERIOD
+                FROM PRODUCTS
+                WHERE PRODUCTS.PROD_CMPY = :supplier
+            ) ALL_PRODS,
+            GUI_ALLOCATION_ITEMS
+            WHERE ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
+                AND ALL_PRODS.PROD_CMPY = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+                AND ALL_PRODS.ALLOC_TYPE = GUI_ALLOCATION_ITEMS.AITEM_TYPE(+)
+                AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
+                AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+            ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
+            ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        } else {
+            $query = "
+            SELECT NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
+                NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
+                NVL(AITEM_CMPYCODE, ALLOC_CMPYCODE) AITEM_CMPYCODE,
+                NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
+                NVL(AITEM_PRODCODE, PROD_CODE) AITEM_PRODCODE,
+                NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
+                NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
+                NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
+                NVL(AITEM_QTYLIMIT, 0) AITEM_QTYLIMIT,
+                NVL(AITEM_QTYUSED, 0) AITEM_QTYUSED,
+                NVL(AITEM_QTYLEFT, 0) AITEM_QTYLEFT,
+                NVL(AITEM_PRODUNIT, 5) AITEM_PRODUNIT,
+                NVL(AITEM_UNITNAME, 'l (amb)') AITEM_UNITNAME,
+                NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
+            FROM
+            (
+                SELECT PROD_CODE,
+                    PROD_CMPY,
+                    PROD_NAME,
+                    ALLOC_TYPE,
+                    ALLOC_TYPENAME,
+                    ALLOC_CMPYCODE,
+                    ALLOC_CMPYNAME,
+                    ALLOC_SUPPCODE,
+                    ALLOC_SUPPNAME,
+                    ALLOC_LOCK,
+                    ALLOC_LOCKNAME,
+                    ALLOC_PERIOD
+                FROM PRODUCTS, GUI_ALLOCATIONS
+                WHERE PRODUCTS.PROD_CMPY = GUI_ALLOCATIONS.ALLOC_SUPPCODE
+                    AND ALLOC_TYPE = :alloc_type
+                    AND ALLOC_CMPYCODE = :alloc_cmpy
+                    AND ALLOC_SUPPCODE = :alloc_supp
+            ) ALL_PRODS,
+            GUI_ALLOCATION_ITEMS
+            WHERE ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
+                AND ALL_PRODS.PROD_CMPY = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+                AND ALL_PRODS.ALLOC_TYPE = GUI_ALLOCATION_ITEMS.AITEM_TYPE(+)
+                AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
+                AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+            ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
+            ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
+            oci_bind_by_name($stmt, ':alloc_cmpy', $this->alloc_cmpycode);
+            oci_bind_by_name($stmt, ':alloc_supp', $this->alloc_suppcode);
+        }   
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
