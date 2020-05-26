@@ -764,7 +764,16 @@
 	"dailyReportTime": "Daily Report Time",
 	"nextWeeklyDate": "Next Weekly Report Date",
 	"nextMonthlyDate": "Next Monthly Report Date",
-	"closeoutOperatingDate": "Operating Date"
+	"closeoutOperatingDate": "Operating Date",
+	"prodCompliant": "Is Compliant",
+	"genericName": "Generic Name",
+	"isBlend": "Is Blended",
+	"loadToleranceCheck": "Load Tolerance Check",
+	"lowerLimit": "Lower Limit",
+	"upperLimit": "Upper Limit",
+	"hazchemID": "Hazchem ID",
+	"hazchemClass": "Hazchem Class",
+	"hazchemCode": "Hazchem Code"
   },
 
   "pageMenu": {
