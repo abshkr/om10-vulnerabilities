@@ -146,7 +146,15 @@ class CommonClass
         }
 
         if (!isset($this->view_keys)) {
-            $this->view_keys = $this->primary_keys;
+            $this->view_keys = array();
+            foreach ($this->primary_keys as $key => $value) {
+                if (array_key_exists(strtoupper($value), $this->table_view_map)) {
+                    array_push($this->view_keys, strtolower($this->table_view_map[strtoupper($value)]));
+                } else {
+                    array_push($this->view_keys, $value);
+                }
+            }
+            
             if (!isset($this->view_keys)) {
                 return "";
             }
@@ -238,9 +246,9 @@ class CommonClass
         $fields_query = "( ";
         $para_query = " ( ";
         $to_update = array();
-        if (isset($this->table_view_map)) {
-            $view_table_map = array_flip($this->table_view_map);
-        }
+        // if (isset($this->table_view_map)) {
+        //     $view_table_map = array_flip($this->table_view_map);
+        // }
 
         foreach ($this as $key => $value) {
             if (in_array($key, $this->primary_keys)) {
