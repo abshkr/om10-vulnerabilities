@@ -20,6 +20,7 @@ import Footer from './footer';
 import Chart from './chart';
 import Events from './events';
 import TableTransfer from './table-transfer';
+import ListView from './list-view';
 
 export {
   Expiry,
@@ -44,4 +45,5 @@ export {
   Chart,
   Events,
   TableTransfer,
+  ListView,
 };

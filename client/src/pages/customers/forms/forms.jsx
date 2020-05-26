@@ -23,7 +23,7 @@ import {
   OrderDays,
   CreditDays,
   AccountBalance,
-  CreditLimit
+  CreditLimit,
 } from './fields';
 
 import { CUSTOMERS } from '../../../api';
@@ -32,7 +32,6 @@ import CustomerCategories from '../../../pages/customer-categories';
 import Allocations from '../../../pages/allocations';
 import OrderListings from '../../../pages/order-listings';
 import DelvLocations from '../../../pages/delv-locations';
-
 
 const TabPane = Tabs.TabPane;
 
@@ -49,21 +48,20 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const { resetFields } = form;
 
   const doTabChanges = (tabPaneKey) => {
-    if (tabPaneKey === "1") {
+    if (tabPaneKey === '1') {
       setDrawerWidth('60vw');
       setMainTabOn(true);
-    }
-    else {
+    } else {
       setDrawerWidth('90vw');
       setMainTabOn(false);
     }
-  }
+  };
 
   const onFormClosed = () => {
     handleFormState(false, null);
     setDrawerWidth('60vw');
     setMainTabOn(true);
-};
+  };
 
   const onComplete = () => {
     handleFormState(false, null);
@@ -140,7 +138,6 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     }
   }, [resetFields, value]);
 
-
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -168,7 +165,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={(!access?.canDelete) ||  !mainTabOn}
+              disabled={!access?.canDelete || !mainTabOn}
               onClick={onDelete}
             >
               {t('operations.delete')}
@@ -177,67 +174,47 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError 
-      initialValues={{ 
-        cust_account: '' 
-        , cust_supp_code: null 
-        , cust_cmpy_code: null 
-        , cust_addr_code: null
-        , cust_ctgr_code: null
-        , cust_delv_code: null
-        , cust_contact: ''
-        , cust_phone_no: ''
-        , cust_pricetype_id: null
-        , cust_invtype_id: null
-        , cust_saletype_id: null
-        , cust_crd_terms: null
-       // , cust_ord_days: 0
-       // , cust_crd_days: 0
-       // , cust_balance: 0
-       // , cust_crd_limit: 0
-      }}>
+      <Form
+        layout="vertical"
+        form={form}
+        scrollToFirstError
+        initialValues={{
+          cust_account: '',
+          cust_supp_code: null,
+          cust_cmpy_code: null,
+          cust_addr_code: null,
+          cust_ctgr_code: null,
+          cust_delv_code: null,
+          cust_contact: '',
+          cust_phone_no: '',
+          cust_pricetype_id: null,
+          cust_invtype_id: null,
+          cust_saletype_id: null,
+          cust_crd_terms: null,
+          // , cust_ord_days: 0
+          // , cust_crd_days: 0
+          // , cust_balance: 0
+          // , cust_crd_limit: 0
+        }}
+      >
         <Tabs onChange={doTabChanges}>
           <TabPane tab={t('tabColumns.general')} key="1">
             <Account form={form} value={value} />
             <Supplier form={form} value={value} onChange={setSupplier} />
             <Customer form={form} value={value} supplier={supplier} />
             <Address form={form} value={value} />
-            {!IS_CREATING && (
-              <Category form={form} value={value} />
-            )}
-            {!IS_CREATING && (
-              <Location form={form} value={value} />
-            )}
-            {!IS_CREATING && (
-              <Contact form={form} value={value} />
-            )}
-            {!IS_CREATING && (
-              <Phone form={form} value={value} />
-            )}
-            {!IS_CREATING && (
-              <PriceType form={form} value={value} />
-            )}
-            {!IS_CREATING && (
-              <InvoiceType form={form} value={value} />
-            )}
-            {!IS_CREATING && (
-              <SaleType form={form} value={value} />
-            )}
-            {!IS_CREATING && (
-              <TermsType form={form} value={value} />
-            )}
-            {!IS_CREATING && (
-              <OrderDays form={form} value={value} />
-            )}
-            {!IS_CREATING && (
-              <CreditDays form={form} value={value} />
-            )}
-            {!IS_CREATING && (
-              <AccountBalance form={form} value={value} />
-            )}
-            {!IS_CREATING && (
-              <CreditLimit form={form} value={value} />
-            )}
+            {!IS_CREATING && <Category form={form} value={value} />}
+            {!IS_CREATING && <Location form={form} value={value} />}
+            {!IS_CREATING && <Contact form={form} value={value} />}
+            {!IS_CREATING && <Phone form={form} value={value} />}
+            {!IS_CREATING && <PriceType form={form} value={value} />}
+            {!IS_CREATING && <InvoiceType form={form} value={value} />}
+            {!IS_CREATING && <SaleType form={form} value={value} />}
+            {!IS_CREATING && <TermsType form={form} value={value} />}
+            {!IS_CREATING && <OrderDays form={form} value={value} />}
+            {!IS_CREATING && <CreditDays form={form} value={value} />}
+            {!IS_CREATING && <AccountBalance form={form} value={value} />}
+            {!IS_CREATING && <CreditLimit form={form} value={value} />}
           </TabPane>
           <TabPane tab={t('tabColumns.addresses')} key="2">
             <Addresses />
@@ -252,7 +229,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             <OrderListings />
           </TabPane>
           <TabPane tab={t('tabColumns.deliveryLocations')} disabled={IS_CREATING} key="6">
-            <DelvLocations />
+            <DelvLocations pure />
           </TabPane>
         </Tabs>
       </Form>

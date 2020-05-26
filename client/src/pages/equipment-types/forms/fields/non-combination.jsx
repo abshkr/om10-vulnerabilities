@@ -1,27 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
+import { Form, Select, Radio, Row, Col, Input, Button } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
-
-import { Form, InputNumber, Select, Radio, Row, Col, Input, Button } from 'antd';
 import _ from 'lodash';
+
 import { Equipment } from '../../../../components/';
 import { EQUIPMENT_TYPES } from '../../../../api';
-
-const { Option } = Select;
+import { useConfig } from '../../../../hooks';
 
 const NonCombination = ({ form, value }) => {
   const { data: units } = useSWR(EQUIPMENT_TYPES.UNITS);
-
-  const { setFieldsValue } = form;
+  const { railTankAvailable, rigidShipAvailable } = useConfig();
 
   const [selected, setSelected] = useState('p');
   const [unit, setUnit] = useState('l (amb)');
 
   const { t } = useTranslation();
 
-  const equipment = ['p', 'f', 't', 'r', 's', 'e'];
+  const equipment = _.reject(['p', 'f', 't', 'r', 's', 'e'], (equipment) => {
+    if (!railTankAvailable) {
+      return equipment === 'e';
+    }
+
+    if (!rigidShipAvailable) {
+      return equipment === 's';
+    }
+  });
+
+  const names = {
+    p: t('fields.primeMover'),
+    f: t('fields.flatBed'),
+    t: t('fields.trailer'),
+    r: t('fields.ridgid'),
+    s: t('fields.rigidShip'),
+    e: t('fields.railTank'),
+  };
 
   const IS_DISABLED = ['p', 'f'].includes(selected);
   const IS_CREATING = !value;
@@ -68,7 +83,7 @@ const NonCombination = ({ form, value }) => {
                       }}
                     />
                     <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                      <Radio value={item} />
+                      <Radio value={item}>{names[item]}</Radio>
                     </div>
                   </div>
                 ))}

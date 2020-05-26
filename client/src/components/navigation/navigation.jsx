@@ -67,7 +67,7 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.EQUIPMENT_TYPES}>
-            <Badge status="warning" /> {t('pageNames.equipmentTypes')}
+            <Badge status="success" /> {t('pageNames.equipmentTypes')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANKER_LIST}>
@@ -120,7 +120,7 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ALLOCATIONS}>
-            <Badge status="warning" /> {t('pageNames.allocations')}
+            <Badge status="success" /> {t('pageNames.allocations')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.HAZCHEM_CODES}>
@@ -167,7 +167,7 @@ const Navigation = () => {
             <Badge status="success" /> {t('pageNames.folioSummary')}
           </Menu.Item>
           <Menu.Item key={ROUTES.FOLIO_SCHEDULLING}>
-            <Badge status="error" /> {t('pageNames.folioScheduling')}
+            <Badge status="success" /> {t('pageNames.folioScheduling')}
           </Menu.Item>
           <Menu.Item key={ROUTES.HOST_MESSAGING_INTERFACE}>
             <Badge status="error" /> {t('pageNames.hostMessagingInterface')}
@@ -228,13 +228,13 @@ const Navigation = () => {
           }
         >
           <Menu.Item key={ROUTES.CUSTOMERS}>
-            <Badge status="warning" /> {t('pageNames.customers')}
+            <Badge status="success" /> {t('pageNames.customers')}
           </Menu.Item>
           <Menu.Item key={ROUTES.ORDER_LISTING}>
             <Badge status="error" /> {t('pageNames.orderListing')}
           </Menu.Item>
           <Menu.Item key={ROUTES.ADDRESSES}>
-            <Badge status="warning" /> {t('pageNames.addresses')}
+            <Badge status="success" /> {t('pageNames.addresses')}
           </Menu.Item>
           <Menu.Item key={ROUTES.CUSTOMER_CATEGORIES}>
             <Badge status="success" /> {t('pageNames.customerCategories')}

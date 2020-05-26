@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { ALLOCATIONS } from '../../../../api';
 
-const Type = ({ form, value, onChange }) => {
+const Type = ({ form, value, onChange, onSupplier }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -23,10 +23,16 @@ const Type = ({ form, value, onChange }) => {
   const handleChange = (value) => {
     onChange(value);
 
+    const payload = value === '1' ? 'BaSePrOd' : undefined;
+
     setFieldsValue({
       alloc_cmpycode: undefined,
-      alloc_suppcode: undefined,
+      alloc_suppcode: payload,
     });
+
+    if (payload) {
+      onSupplier(payload);
+    }
   };
 
   useEffect(() => {

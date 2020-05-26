@@ -49,17 +49,19 @@ const FormModal = ({ value, visible, handleFormState }) => {
   };
 
   const getAllocations = useCallback(() => {
-    axios
-      .get(`${ALLOCATIONS.ITEMS}?alloc_type=${type}&alloc_cmpycode=${company}&alloc_suppcode=${supplier}`)
-      .then((response) => {
-        const payload = response.data?.records || [];
+    const url = IS_CREATING
+      ? `${ALLOCATIONS.ITEMS}?supplier=${supplier}`
+      : `${ALLOCATIONS.ITEMS}?alloc_type=${type}&alloc_cmpycode=${company}&alloc_suppcode=${supplier}`;
 
-        form.setFieldsValue({
-          allocs: payload,
-        });
+    axios.get(url).then((response) => {
+      const payload = response.data?.records || [];
 
-        setAllocations(payload);
+      form.setFieldsValue({
+        allocs: payload,
       });
+
+      setAllocations(payload);
+    });
   }, [company, type, supplier]);
 
   const onFinish = async () => {
@@ -180,9 +182,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
   }, [resetFields, value, visible]);
 
   useEffect(() => {
-    if (type && company) {
-      getAllocations();
-    }
+    getAllocations();
   }, [type, company, supplier, getAllocations]);
 
   return (
@@ -238,7 +238,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
       <Form layout="vertical" form={form} scrollToFirstError initialValues={value}>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Type form={form} value={value} onChange={setType} />
+            <Type form={form} value={value} onChange={setType} onSupplier={setSupplier} />
             <Company form={form} value={value} onChange={setCompany} />
             <Supplier form={form} value={value} type={type} onChange={setSupplier} />
             <LockType form={form} value={value} onChange={setLockType} />

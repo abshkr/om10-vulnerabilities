@@ -8,7 +8,7 @@ import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } fr
 
 import { Footer } from '..';
 
-const Page = ({ name, page, children, modifiers, description, minimal, noHeader, access, avatar }) => {
+const Page = ({ name, page, children, modifiers, description, minimal, noHeader, access, avatar, pure }) => {
   const routes = [
     {
       path: 'index',
@@ -25,6 +25,10 @@ const Page = ({ name, page, children, modifiers, description, minimal, noHeader,
   ];
 
   const filtered = name ? routes : _.reject(routes, ['path', 'second']);
+
+  if (pure) {
+    return <div className="main-container">{children}</div>;
+  }
 
   return (
     <PageContainer>
