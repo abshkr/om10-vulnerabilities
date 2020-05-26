@@ -836,6 +836,7 @@ https://10.1.10.66/api/pages/base_prod/update.php
 
 //Drawer Products 
 https://10.1.10.66/api/pages/product/read.php
+https://10.1.10.66/api/pages/product_group/read.php
 https://10.1.10.66/api/pages/product/prod_ratios.php?prod_code=000097&prod_cmpycode=0002
 https://10.2.20.53/api/pages/product/generic_prods.php
 https://10.1.10.66/api/pages/product/drawers.php
@@ -974,6 +975,7 @@ https://10.1.10.66/api/pages/allocs/drawers.php
 https://10.1.10.66/api/pages/allocs/carriers.php
 https://10.1.10.66/api/pages/allocs/customers.php
 https://10.1.10.66/api/pages/allocs/alloc_items.php?alloc_type=3&alloc_cmpycode=10372010&alloc_suppcode=3440202
+https://10.1.10.66/api/pages/allocs/alloc_items.php?supplier=BaSePrOd
 https://10.1.10.66/api/pages/allocs/delete.php?alloc_type=3&alloc_cmpycode=10372010&alloc_suppcode=34402
 https://10.1.10.66/api/pages/allocs/create.php 
 {
