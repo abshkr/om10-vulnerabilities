@@ -769,8 +769,8 @@
 	"genericName": "Generic Name",
 	"isBlend": "Is Blended",
 	"loadToleranceCheck": "Load Tolerance Check",
-	"lowerLimit": "Lower Limit",
-	"upperLimit": "Upper Limit",
+	"lowerLimit": "Lower Limit %",
+	"upperLimit": "Upper Limit %",
 	"hazchemID": "Hazchem ID",
 	"hazchemClass": "Hazchem Class",
 	"hazchemCode": "Hazchem Code"
@@ -1254,7 +1254,10 @@
     "selectPricingType": "Select Pricing Type",
     "selectInvoiceType": "Select Invoice Type",
     "selectSaleType": "Select Sale Type",
-    "selectTermsType": "Select Invoice Generation"
+    "selectTermsType": "Select Invoice Generation",
+	"selectProductGroup": "Select Product Group",
+	"selectHazchem": "Select Hazchem",
+	"selectGenericName": "Select Generic Name"
   },
 
   "validate": {
