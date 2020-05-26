@@ -9,6 +9,7 @@ export const DELV_LOCATIONS = '/api/pages/open_order/delv_locations.php';
 export const SHIP_TO = '/api/pages/open_order/ship_to.php';
 export const SOLD_TO = '/api/pages/open_order/sold_to.php';
 export const TRANSPORT_TYPES = '/api/pages/open_order/transport_types.php';
+export const ORDSTAT_TYPES = '/api/pages/open_order/ordstat_types.php';
 
 export const CREATE = '/api/pages/open_order/create.php';
 export const UPDATE = '/api/pages/open_order/update.php';

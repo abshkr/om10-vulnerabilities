@@ -4,6 +4,8 @@ include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/../service/company_service.php';
 include_once __DIR__ . '/../service/site_service.php';
+include_once __DIR__ . '/../service/partnership_service.php';
+include_once __DIR__ . '/../service/enum_service.php';
 include_once 'common_class.php';
 
 class OpenOrder extends CommonClass
@@ -78,10 +80,10 @@ class OpenOrder extends CommonClass
         } else {
             $query = "
                 SELECT * FROM " . $this->VIEW_NAME . "
-                WHERE ORDER_ORD_TIME > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS') 
-                  AND ORDER_ORD_TIME < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
+                WHERE ORDER_ORD_TIME > :start_date AND ORDER_ORD_TIME < :end_date
                 ORDER BY ORDER_ORD_TIME DESC";
-//                WHERE ORDER_ORD_TIME > :start_date AND ORDER_ORD_TIME < :end_date
+//                WHERE ORDER_ORD_TIME > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS') 
+//                  AND ORDER_ORD_TIME < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':start_date', $this->start_date);
             oci_bind_by_name($stmt, ':end_date', $this->end_date);
@@ -98,18 +100,14 @@ class OpenOrder extends CommonClass
 
     public function transport_types()
     {
-        $query = "
-            SELECT *
-            FROM TRANSPORT_TYP
-            ORDER BY TRANSPORT_ID";
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
+        $enum_service = new EnumService($this->conn);
+        return $enum_service->transport_types();
+    }
+
+    public function order_status_types()
+    {
+        $enum_service = new EnumService($this->conn);
+        return $enum_service->order_status_types();
     }
 
     public function delv_locations()
@@ -128,14 +126,16 @@ class OpenOrder extends CommonClass
         }
     }
 
-    public function sold_to()
+    public function sold_tos()
     {
-        return $this->partners('AG');
+        $serv = new PartnershipService($this->conn);
+        return $serv->sold_tos();
     }
 
-    public function ship_to()
+    public function ship_tos()
     {
-        return $this->partners('WE');
+        $serv = new PartnershipService($this->conn);
+        return $serv->ship_tos();
     }
 
     public function next_cust_order()

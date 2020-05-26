@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/open_order.php';
 
-Utilities::read('OpenOrder', "sold_to", $filter = true);
+Utilities::read('OpenOrder', "sold_tos", $filter = true);

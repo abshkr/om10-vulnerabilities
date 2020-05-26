@@ -374,4 +374,24 @@ class EnumService
             return null;
         }
     }
+
+    public function order_status_types()
+    {
+        $query = "
+            select 
+                ORDER_STATUS_ID as ORDSTAT_TYPE_ID, 
+                ORDER_STATUS_NAME as ORDSTAT_TYPE_NAME 
+            from ORDER_STATUS_TYP 
+            order by ORDER_STATUS_ID
+        ";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }

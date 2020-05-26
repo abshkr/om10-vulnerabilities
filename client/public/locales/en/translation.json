@@ -13,9 +13,9 @@
     "version": "Version",
     "login": "Login to your account",
     "havingTrouble": "Having Trouble?",
-    "every": "Every ",
-    "everyMonth": " of every month",
-    "overriderun": "Closeout will run on "
+	"every": "Every ",
+	"everyMonth": " of every month",
+	"overriderun": "Closeout will run on "
   },
 
   "fields": {
@@ -26,12 +26,12 @@
     "name": "Name",
     "owner": "Owner",
     "areaId": "Area Id",
-    "window": "Window",
-    "modifiedDate": "Modified Date",
-    "exception": "Exception",
-    "override": "Override",
-    "folioExceptionType": "Exception Type",
-    "folioExceptionInterval": "Interval Setup",
+	"window": "Window",
+	"modifiedDate": "Modified Date",
+	"exception": "Exception",
+	"override": "Override",
+	"folioExceptionType": "Exception Type",
+	"folioExceptionInterval": "Interval Setup",
     "folioExceptionDesc": "Description",
     "areaName": "Area Name",
     "tankCode": "Tank Code",
@@ -757,15 +757,23 @@
     "schdProdQty": "Qty",
     "schdProdUnit": "Prod Unit",
     "schdUnitName": "Unit",
-    "lastCloseoutDate": "Last Closeout Date&Time",
-    "lastWeeklyReportDate": "Last Weekly Report Date",
-    "lastMonthlyReportDate": "Last Monthly Report Date",
-    "nextPlannedCloseout": "Next Planned Closeout Date",
-    "dailyReportTime": "Daily Report Time",
-    "nextWeeklyDate": "Next Weekly Report Date",
-    "nextMonthlyDate": "Next Monthly Report Date",
-    "closeoutOperatingDate": "Operating Date",
-    "allocatedQuantity": "Allocated Quantity"
+	"lastCloseoutDate": "Last Closeout Date&Time",
+	"lastWeeklyReportDate": "Last Weekly Report Date",
+	"lastMonthlyReportDate": "Last Monthly Report Date",
+	"nextPlannedCloseout": "Next Planned Closeout Date",
+	"dailyReportTime": "Daily Report Time",
+	"nextWeeklyDate": "Next Weekly Report Date",
+	"nextMonthlyDate": "Next Monthly Report Date",
+	"closeoutOperatingDate": "Operating Date",
+	"prodCompliant": "Is Compliant",
+	"genericName": "Generic Name",
+	"isBlend": "Is Blended",
+	"loadToleranceCheck": "Load Tolerance Check",
+	"lowerLimit": "Lower Limit",
+	"upperLimit": "Upper Limit",
+	"hazchemID": "Hazchem ID",
+	"hazchemClass": "Hazchem Class",
+	"hazchemCode": "Hazchem Code"
   },
 
   "pageMenu": {
@@ -886,8 +894,8 @@
     "yes": "Yes",
     "no": "No",
     "addNewExpiry": "Add New Expiry",
-    "freezeCloseout": "Run Manual Closeout",
-    "closeCloseout": "Close First Frozen Folio",
+	"freezeCloseout": "Run Manual Closeout",
+	"closeCloseout": "Close First Frozen Folio",
     "unlockAll": "Unlock All Compartments",
     "randomize": "Randomize",
     "copyToClipboard": "Copy to Clipboard",
@@ -898,7 +906,7 @@
     "openGate": "Open Gate",
     "openAllGates": "Open All Gates",
     "closeFirstFolio": "Close First Frozen Folio",
-    "createFolioException": "New Exception",
+	"createFolioException": "New Exception",
     "createPDSFile": "Create PDS File",
     "regenerate": "Regenerate",
     "calculate": "Calculate",
@@ -952,7 +960,7 @@
     "simple": "Simple",
     "list": "List",
     "allocationPeriod": "Allocation Period",
-    "runAndOverride": "Run and Override"
+	"runAndOverride": "Run and Override"
   },
 
   "tabColumns": {
@@ -1012,9 +1020,9 @@
     "allocations": "Allocations",
     "orderListing": "Order Listing",
     "deliveryLocations": "Delivery Locations",
-    "closetException": "Closeouts Exception Planner",
-    "closetCalendar": "Closeouts Calendar",
-    "closetSettings": "Closeouts Settings"
+	"closetException": "Closeouts Exception Planner",
+	"closetCalendar": "Closeouts Calendar",
+	"closetSettings": "Closeouts Settings"
   },
 
   "messages": {
@@ -1053,7 +1061,7 @@
   "prompts": {
     "create": "Are you sure you want to create this record?",
     "activate": "Are you sure you want to activate this record?",
-    "createOverride": "Are you sure you want to create an override on this date?",
+	"createOverride": "Are you sure you want to create an override on this date?",
     "deleteOverride": "Are you sure you want to delete override on this date?",
     "createOnceOffDate": "Are you sure you want to create once-off-date exception on this date?",
     "update": "Are you sure you want to update this record?",
@@ -1070,8 +1078,8 @@
     "closeTransaction": "Are you sure you want to Close this Transaction?",
     "reset": "Are you sure you want to reset this record?",
     "createNewGate": "Create New Gate",
-    "freezeCloseout": "Are you sure you want to run manual closeout?",
-    "closeCloseout": "Are you sure you want to close first frozen folio?"
+	"freezeCloseout": "Are you sure you want to run manual closeout?",
+	"closeCloseout": "Are you sure you want to close first frozen folio?"
   },
 
   "divider": {
@@ -1149,13 +1157,13 @@
     "changeYourPassword": "Change Your Password",
     "pleaseEnterYourNewPassword": "Please Enter Your New Password",
     "changeUseProfile": "Change User Profile",
-    "dateOfYear": "Date of Year",
-    "dateOfMonth": "Date of Month",
-    "dayOfWeek": "Day of Week",
-    "dayOfYear": "Day of Year",
-    "onceOffDate": "Once off Date",
-    "exceptionRules": "Exception Rules (List of events whereby Closeout will not run)",
-    "overrideRules": "Exception Override Rules (List of events whereby Closeout will run regardless of Exception)"
+	"dateOfYear": "Date of Year",
+	"dateOfMonth": "Date of Month",
+	"dayOfWeek": "Day of Week",
+	"dayOfYear": "Day of Year",
+	"onceOffDate": "Once off Date",
+	"exceptionRules": "Exception Rules (List of events whereby Closeout will not run)",
+	"overrideRules": "Exception Override Rules (List of events whereby Closeout will run regardless of Exception)"
   },
 
   "placeholder": {

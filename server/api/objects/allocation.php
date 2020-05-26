@@ -126,6 +126,36 @@ class Allocation extends CommonClass
         return true;
     }
 
+    public function pre_create()
+    {
+        $query = "SELECT COUNT(*) CN FROM ALLOC_TYPE
+            WHERE AT_TYPE = :at_type AND AT_CMPY = :at_cmpy";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':at_type', $this->alloc_type);
+        oci_bind_by_name($stmt, ':at_cmpy', $this->alloc_cmpycode);
+
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ($row['CN'] <= 0) {
+            $query = "INSERT INTO ALLOC_TYPE(AT_TYPE, AT_CMPY)
+                VALUES (:at_type, :at_cmpy)";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':at_type', $this->alloc_type);
+            oci_bind_by_name($stmt, ':at_cmpy', $this->alloc_cmpycode);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     protected function post_create()
     {
         return $this->post_update();
