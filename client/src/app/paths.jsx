@@ -168,7 +168,7 @@ const paths = [
 
   {
     path: ROUTES.DRAWER_PRODUCTS,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/drawer-product')),
   },
 
   {

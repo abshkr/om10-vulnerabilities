@@ -56,6 +56,7 @@ import * as ADDRESSES from './addresses';
 import * as EQUIPMENT_TYPES from './equipment-types';
 import * as DELV_LOCATIONS from './delv-locations';
 import * as CUSTOMERS from './customers';
+import * as DRAWER_PRODUCTS from './drawer-products';
 
 export {
   AUTH,
@@ -115,5 +116,6 @@ export {
   ADDRESSES,
   EQUIPMENT_TYPES,
   DELV_LOCATIONS,
-  CUSTOMERS
+  CUSTOMERS,
+  DRAWER_PRODUCTS
 };

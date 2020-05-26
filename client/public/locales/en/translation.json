@@ -780,7 +780,9 @@
     "trailer": "Trailer",
     "ridgid": "Rigid",
     "rigidShip": "Rigid Ship",
-    "railTank": "Rail Tank"
+    "railTank": "Rail Tank",
+	"ratio": "Ratio",
+	"blendToleranceCheck": "Blend Tolerance Check"
   },
 
   "pageMenu": {
@@ -1086,7 +1088,8 @@
     "reset": "Are you sure you want to reset this record?",
     "createNewGate": "Create New Gate",
     "freezeCloseout": "Are you sure you want to run manual closeout?",
-    "closeCloseout": "Are you sure you want to close first frozen folio?"
+    "closeCloseout": "Are you sure you want to close first frozen folio?",
+	"notEnoughBase": "Drawer product must have at least one base product"
   },
 
   "divider": {
