@@ -2010,6 +2010,48 @@ https://10.1.10.66/api/pages/open_order/update.php
 	]
 }
 https://10.1.10.66/api/pages/open_order/delete.php?order_sys_no=25
+https://{{server_ip}}/api/pages/open_order/ordperiod_read.php?oprd_order_id=1&oprd_prod_code=400003045&oprd_prod_cmpy=7640102
+https://{{server_ip}}/api/pages/open_order/ordperiod_create.php
+{
+    "oprd_order_id": 1,
+    "oprd_prod_code": "400003045",
+    "oprd_prod_cmpy": "7640102",
+    "oprd_prod_name": "KEROSENE",
+    "oprd_drwr_name": "GSAP COMM FUELS",
+    "oprd_period_no": "2",
+    "oprd_period_start": "2020-05-19 05:16:03",
+    "oprd_period_end": "2020-05-28 05:16:09",
+    "oprd_prod_unit": "5",
+    "oprd_unit_name": "l (amb)",
+    "oprd_prod_qty": 470,
+    "oprd_prod_used": "0",
+    "oprd_price_fixed": "",
+    "oprd_prod_price": ""
+}
+https://{{server_ip}}/api/pages/open_order/ordperiod_update.php
+{
+    "oprd_order_id": 1,
+    "oprd_prod_code": "400003045",
+    "oprd_prod_cmpy": "7640102",
+    "oprd_prod_name": "KEROSENE",
+    "oprd_drwr_name": "GSAP COMM FUELS",
+    "oprd_period_no": "2",
+    "oprd_period_start": "2020-05-19 05:16:03",
+    "oprd_period_end": "2020-05-28 05:16:09",
+    "oprd_prod_unit": "5",
+    "oprd_unit_name": "l (amb)",
+    "oprd_prod_qty": 480,
+    "oprd_prod_used": "0",
+    "oprd_price_fixed": "",
+    "oprd_prod_price": ""
+}
+https://{{server_ip}}/api/pages/open_order/ordperiod_delete.php
+{
+    "oprd_order_id": 1,
+    "oprd_prod_code": "400003045",
+    "oprd_prod_cmpy": "7640102",
+    "oprd_period_no": "2"
+}
 
 //Addresses
 https://10.1.10.66/api/pages/address/read.php
