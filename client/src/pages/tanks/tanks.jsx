@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import { TANKS } from '../../api';
 import { useAuth, useConfig } from '../../hooks';
-import { Page, Download, DataTable, ListView } from '../../components';
+import { Page, Download, ListView } from '../../components';
 
 import Calculations from './calculations';
 import TankStrapping from './strapping';
@@ -15,6 +15,7 @@ import Overview from './overview';
 import Gauging from './gauging';
 import Details from './details';
 import Alarms from './alarms';
+import Table from './table';
 
 import auth from '../../auth';
 import columns from './columns';
@@ -139,7 +140,7 @@ const Tanks = () => {
           </Tabs>
         </ListView>
       ) : (
-        <DataTable isLoading={isLoading} columns={fields} data={payload} />
+        <Table data={payload} />
       )}
     </Page>
   );

@@ -114,7 +114,7 @@ const Compartments = ({ form, value, isCombination }) => {
         <div style={{ display: 'flex', flexDirection: 'row' }}>
           {composition?.records?.map((item) => (
             <div style={{ marginRight: 10 }}>
-              <Equipment image={item?.etyp_category?.toLowerCase()} />
+              <Equipment image={item?.etyp_category?.toLowerCase()} showName={item.etyp_title} />
               {item.etyp_category !== 'P' && item.etyp_category !== 'F' && (
                 <DataTable data={item?.compartments} columns={columns} minimal height="80vh" />
               )}

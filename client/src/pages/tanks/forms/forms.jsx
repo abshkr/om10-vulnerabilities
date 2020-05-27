@@ -1,39 +1,32 @@
 import React, { useState, useEffect } from 'react';
 
-import { ReactComponent as EditIcon } from '../pencil.svg';
-import { ReactComponent as CloseIcon } from '../interface.svg';
-import { ReactComponent as RotateIcon } from '../rotate.svg';
+import {
+  EditOutlined,
+  PlusOutlined,
+  CloseOutlined,
+  RedoOutlined,
+  QuestionCircleOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 
-import Icon, { PlusOutlined, QuestionCircleOutlined, ControlOutlined } from '@ant-design/icons';
-
-import { Form, Button, Tabs, notification, Modal, Radio } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Radio, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
-import useSWR, { mutate } from 'swr';
+import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 
 import { Gauging, General, Calculation, Levels } from './fields';
 
-import { TANKS, TANK_STATUS, AUTH } from '../../../api';
+import { TANKS, TANK_STATUS } from '../../../api';
 import { VCFManager } from '../../../utils';
-import { ROUTES } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const EditOutlined = (props) => <Icon style={{ transform: 'scale(1.3)' }} component={EditIcon} {...props} />;
-const CloseOutlined = (props) => (
-  <Icon style={{ transform: 'scale(1.3)' }} component={CloseIcon} {...props} />
-);
-
-const RedoOutlined = (props) => (
-  <Icon style={{ transform: 'scale(1.3)' }} component={RotateIcon} {...props} />
-);
-
-const FormModal = ({ value }) => {
+const FormModal = ({ value, visible, handleFormState, access, config }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
-  const { data: envrionment } = useSWR(AUTH.ENVIRONMENT);
+  const { resetFields } = form;
 
   const [tab, setTab] = useState('1');
   const [refTempC, setRefTempC] = useState('');
@@ -41,7 +34,11 @@ const FormModal = ({ value }) => {
 
   const IS_CREATING = !value;
   const CAN_CALCULATE = tab === '2';
-  const SHOW_STRAPPING = tab === '1';
+
+  const onComplete = () => {
+    handleFormState(false, null);
+    mutate(TANKS.READ);
+  };
 
   const onFinish = (values) => {
     const payload = _.omit(
@@ -106,7 +103,7 @@ const FormModal = ({ value }) => {
     ]);
 
     const payload = {
-      reference: _.toNumber(envrionment?.VSM_COMPENSATION_PT) || 15,
+      reference: _.toNumber(config?.vsmCompensation) || 15,
     };
 
     if (type === 'D15C') {
@@ -348,68 +345,96 @@ const FormModal = ({ value }) => {
   };
 
   useEffect(() => {
-    if (envrionment) {
-      handleRefTemperature(envrionment.VSM_COMPENSATION_PT, 0);
+    if (config) {
+      handleRefTemperature(config.vsmCompensation, 0);
     }
-  }, [envrionment]);
+  }, [config]);
 
   const range = handleAPIRange(value?.tank_base_dens_lo, value?.tank_base_dens_hi);
 
   return (
-    <>
-      <General form={form} value={value} refTempC={refTempC} refTempF={refTempF} />
+    <Drawer
+      bodyStyle={{ paddingTop: 5 }}
+      onClose={() => handleFormState(false, null)}
+      maskClosable={IS_CREATING}
+      destroyOnClose={true}
+      mask={IS_CREATING}
+      placement="right"
+      width="50vw"
+      visible={visible}
+      footer={
+        <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => Modal.destroyAll()}
+          >
+            {t('operations.cancel')}
+          </Button>
 
-      <Form.Item>
-        <Button
-          htmlType="button"
-          icon={<CloseOutlined />}
-          style={{ float: 'right' }}
-          onClick={() => Modal.destroyAll()}
-        >
-          {t('operations.cancel')}
-        </Button>
+          <Button
+            type="primary"
+            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            htmlType="submit"
+            style={{ float: 'right', marginRight: 5 }}
+          >
+            {IS_CREATING ? t('operations.create') : t('operations.update')}
+          </Button>
 
-        <Button
-          type="primary"
-          icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
-          htmlType="submit"
-          style={{ float: 'right', marginRight: 5 }}
-        >
-          {IS_CREATING ? t('operations.create') : t('operations.update')}
-        </Button>
+          {CAN_CALCULATE && (
+            <>
+              <Button
+                type="primary"
+                icon={<RedoOutlined />}
+                style={{ marginRight: 5 }}
+                onClick={onCalculateByDensity}
+              >
+                {t('operations.calculateDensity')}
+              </Button>
 
-        {CAN_CALCULATE && (
-          <>
-            <Button
-              type="primary"
-              icon={<RedoOutlined />}
-              style={{ marginRight: 5 }}
-              onClick={onCalculateByDensity}
-            >
-              {t('operations.calculateDensity')}
-            </Button>
+              <Button
+                type="primary"
+                icon={<RedoOutlined />}
+                style={{ marginRight: 5 }}
+                onClick={onCalculateByLevel}
+              >
+                {t('operations.calculateQuantityByLevel')}
+              </Button>
 
-            <Button
-              type="primary"
-              icon={<RedoOutlined />}
-              style={{ marginRight: 5 }}
-              onClick={onCalculateByLevel}
-            >
-              {t('operations.calculateQuantityByLevel')}
-            </Button>
+              <Button
+                type="primary"
+                icon={<RedoOutlined />}
+                style={{ marginRight: 5 }}
+                onClick={onCalculateByQuantity}
+              >
+                {t('operations.calculateQuantity')}
+              </Button>
+            </>
+          )}
+        </>
+      }
+    >
+      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+        <Tabs defaultActiveKey={tab} animated={false} onChange={setTab}>
+          <TabPane tab={t('tabColumns.general')} key="1">
+            <General form={form} value={value} refTempC={refTempC} refTempF={refTempF} />
+          </TabPane>
 
-            <Button
-              type="primary"
-              icon={<RedoOutlined />}
-              style={{ marginRight: 5 }}
-              onClick={onCalculateByQuantity}
-            >
-              {t('operations.calculateQuantity')}
-            </Button>
-          </>
-        )}
-      </Form.Item>
-    </>
+          <TabPane tab={t('tabColumns.calculations')} key="2">
+            <Calculation form={form} value={value} range={range} config={config} />
+          </TabPane>
+
+          <TabPane tab={t('tabColumns.gauging')} key="3">
+            <Gauging form={form} value={value} />
+          </TabPane>
+
+          <TabPane tab={t('tabColumns.levels')} key="4">
+            <Levels form={form} value={value} />
+          </TabPane>
+        </Tabs>
+      </Form>
+    </Drawer>
   );
 };
 
