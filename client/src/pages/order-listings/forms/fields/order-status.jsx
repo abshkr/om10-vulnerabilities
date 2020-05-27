@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ORDER_LISTINGS } from '../../../../api';
 import { Form, Select } from 'antd';
 
-const OrderStatus = ({ form, value }) => {
+const OrderStatus = ({ form, value, pageState }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(ORDER_LISTINGS.ORDSTAT_TYPES);
@@ -14,10 +14,11 @@ const OrderStatus = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
+    /*
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.orderStatName')}`);
     }
-
+    */
     return Promise.resolve();
   };
 
@@ -33,7 +34,7 @@ const OrderStatus = ({ form, value }) => {
     <Form.Item
       name="order_stat_id"
       label={t('fields.orderStatName')}
-      rules={[{ required: true, validator: validate }]}
+      rules={[{ required: false, validator: validate }]}
     >
       <Select
         loading={isValidating}

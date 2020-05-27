@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { ORDER_LISTINGS } from '../../../../api';
 
-const Supplier = ({ form, value, onChange }) => {
+const Supplier = ({ form, value, onChange, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -41,7 +41,7 @@ const Supplier = ({ form, value, onChange }) => {
         loading={isValidating}
         showSearch
         onChange={onChange}
-        disabled={!!value}
+        disabled={(pageState==='create')? false : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectSupplier') : null}
         filterOption={(value, option) =>

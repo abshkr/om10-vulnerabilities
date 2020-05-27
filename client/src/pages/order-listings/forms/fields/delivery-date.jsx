@@ -7,12 +7,21 @@ import moment from 'moment';
 import { SETTINGS } from '../../../../constants';
 import { getDateTimeFormat } from '../../../../utils';
 
-const DeliveryDate= ({ form, value }) => {
+const DeliveryDate= ({ form, value, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
 
   const FORMAT = getDateTimeFormat();
+
+  const validate = (rule, input) => {
+    
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.orderDlvTime')}`);
+    }
+    
+    return Promise.resolve();
+  };
 
   useEffect(() => {
     if (value) {
@@ -27,8 +36,17 @@ const DeliveryDate= ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="order_dlv_time" label={t('fields.orderDlvTime')}>
-      <DatePicker showTime format={FORMAT} style={{ width: '100%' }} />
+    <Form.Item 
+      name="order_dlv_time" 
+      label={t('fields.orderDlvTime')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <DatePicker 
+        showTime 
+        format={FORMAT} 
+        style={{ width: '100%' }} 
+        disabled={(pageState==='create'||pageState==='edit'||pageState==='detail')? false : true}
+      />
     </Form.Item>
   );
 };

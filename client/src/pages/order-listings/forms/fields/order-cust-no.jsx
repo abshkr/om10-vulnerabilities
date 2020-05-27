@@ -5,10 +5,23 @@ import axios from 'axios';
 
 import { ORDER_LISTINGS } from '../../../../api';
 
-const OrderCustNo = ({ form, value, supplier }) => {
+const OrderCustNo = ({ form, value, supplier, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
+
+  const validate = (rule, input) => {
+    
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.orderCustNo')}`);
+    }
+    
+    if (input && input.length > 9) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 9 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
 
   useEffect(() => {
     if (value) {
@@ -33,8 +46,16 @@ const OrderCustNo = ({ form, value, supplier }) => {
   }, [value, setFieldsValue, supplier]);
 
   return (
-    <Form.Item name="order_cust_no" label={t('fields.orderCustNo')}>
-      <InputNumber style={{ width: '100%' }} disabled={!supplier} />
+    <Form.Item 
+      name="order_cust_no" 
+      label={t('fields.orderCustNo')}
+      rules={[{ required: true, validator: validate }]}
+    >
+      <InputNumber 
+        style={{ width: '100%' }} 
+        //disabled={!supplier} 
+        disabled={(pageState==='create'&&!!supplier)? false : true}
+      />
     </Form.Item>
   );
 };

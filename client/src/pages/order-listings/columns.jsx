@@ -144,7 +144,7 @@ const columns = (t) => [
     width: 120,
   },
   {
-    headerName: t('fields.OrderDlvTime'),
+    headerName: t('fields.orderDlvTime'),
     field: 'order_dlv_time',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -203,7 +203,7 @@ const columns = (t) => [
     cellRenderer: 'BooleanRenderer',
   },
   {
-    headerName: t('fields.OrderAppNo'),
+    headerName: t('fields.orderAppNo'),
     field: 'order_app_no',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -213,7 +213,7 @@ const columns = (t) => [
     hide: true,
   },
   {
-    headerName: t('fields.OrderAppTime'),
+    headerName: t('fields.orderAppTime'),
     field: 'order_app_time',
     filter: 'FuzzyFilter',
     sortable: true,

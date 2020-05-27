@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ORDER_LISTINGS } from '../../../../api';
 import { Form, Select } from 'antd';
 
-const DeliveryLocation = ({ form, value }) => {
+const DeliveryLocation = ({ form, value, pageState }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(ORDER_LISTINGS.DELV_LOCATIONS);
@@ -14,10 +14,11 @@ const DeliveryLocation = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
+    /*
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.orderDlocName')}`);
     }
-
+    */
     return Promise.resolve();
   };
 
@@ -33,11 +34,12 @@ const DeliveryLocation = ({ form, value }) => {
     <Form.Item
       name="order_dloc_code"
       label={t('fields.orderDlocName')}
-      rules={[{ required: false }]}
+      rules={[{ required: false, validator: validate }]}
     >
       <Select
         loading={isValidating}
         showSearch
+        disabled={(pageState==='create'||pageState==='edit')? false : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectDeliveryLocation') : null}
         filterOption={(input, option) =>

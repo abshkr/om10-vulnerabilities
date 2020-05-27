@@ -5,7 +5,7 @@ import { Form, InputNumber } from 'antd';
 
 //import { ORDER_LISTINGS } from '../../../../api';
 
-const OrderSysNo = ({ form, value }) => {
+const OrderSysNo = ({ form, value, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -19,7 +19,10 @@ const OrderSysNo = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="order_sys_no" label={t('fields.orderSysNo')}>
+    <Form.Item 
+      name="order_sys_no" 
+      label={t('fields.orderSysNo')}
+    >
       <InputNumber style={{ width: '100%' }} disabled={true} />
     </Form.Item>
   );

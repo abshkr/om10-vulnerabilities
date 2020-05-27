@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TANKER_LIST } from '../../../../api';
+import { ORDER_LISTINGS } from '../../../../api';
 import { Form, Select } from 'antd';
 import useSWR from 'swr';
 
-const SupplyDepot = ({ form, value }) => {
+const SupplyDepot = ({ form, value, pageState }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(TANKER_LIST.TERMINAL);
+  const { data: options, isValidating } = useSWR(ORDER_LISTINGS.TERMINAL);
 
   const { setFieldsValue } = form;
 
@@ -28,10 +28,14 @@ const SupplyDepot = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="order_strm_code" label={t('fields.orderStrmName')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item 
+      name="order_strm_code" 
+      label={t('fields.orderStrmName')} 
+      rules={[{ required: true, validator: validate }]}
+    >
       <Select
         loading={isValidating}
-        disabled={!!value}
+        disabled={(pageState==='create'||pageState==='edit')? false : true}
         showSearch
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectSupplyDepot') : null}

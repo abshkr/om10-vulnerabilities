@@ -41,7 +41,12 @@ export default class UnitEditor extends Component {
 
     return (
       <div style={{ display: 'flex' }}>
-        <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick} bordered={false}>
+        <Select 
+          value={this.state.value} 
+          style={{ width: '100%' }} 
+          onChange={this.onClick} 
+          bordered={false}
+        >
           {values?.map((item) => (
             <Select.Option key={item.unit_id} value={item.description}>
               {item.description}

@@ -9,7 +9,7 @@ import {
   ClockCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col, Radio } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
@@ -36,7 +36,7 @@ import {
   TransferType,
   ApproveFlag,
   OrderInstructions,
-  UnitEditor
+  UnitType
 } from './fields';
 
 import { DataTable } from '../../../components';
@@ -56,7 +56,8 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   const [supplier, setSupplier] = useState(undefined);
   const [drawer, setDrawer] = useState(undefined);
   const [selected, setSelected] = useState(null);
-  const [Carrier, setCarrier] = useState(undefined);
+  const [approved, setApproved] = useState(value?.order_approved);
+  const [carrier, setCarrier] = useState(undefined);
   const [type, setType] = useState(undefined);
   const [lockType, setLockType] = useState(undefined);
 
@@ -75,7 +76,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
 
   const getOrderItems = useCallback(() => {
     const url = IS_CREATING
-      ? `${ORDER_LISTINGS.ORDER_ITEMS}?drawer_code=${drawer}`
+      ? `${ORDER_LISTINGS.ORDER_ITEMS}?order_drwr_code=${drawer}&page_state=${pageState}`
       : `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${value?.order_sys_no}`;
 
     axios.get(url).then((response) => {
@@ -94,11 +95,19 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
     const orderItems = [];
 
     _.forEach(values?.order_items, (order_item) => {
-      orderItems.push({
-        aitem_prodcode: order_item.aitem_prodcode,
-        aitem_qtylimit: _.toNumber(order_item.aitem_qtylimit),
-        aitem_produnit: _.toNumber(order_item.aitem_produnit),
-      });
+      if (order_item.oitem_prod_qty > 0) {
+        orderItems.push({
+          oitem_prod_cmpy: order_item.oitem_prod_cmpy,
+          oitem_prod_code: order_item.oitem_prod_code,
+          oitem_prod_qty: _.toNumber(order_item.oitem_prod_qty),
+          oitem_prod_unit: _.toNumber(order_item.oitem_prod_unit),
+          oitem_pack_size: _.toNumber(order_item.oitem_pack_size),
+          oitem_prod_price: _.toNumber(order_item.oitem_prod_price),
+          oitem_exempt_no: order_item.oitem_exempt_no,
+          oitem_padj_code: order_item.oitem_padj_code,
+  
+        });
+      }
     });
 
     values.order_items = orderItems;
@@ -244,18 +253,28 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="50vw"
+      width="80vw"
       visible={visible}
       footer={
         <>
-          {!IS_CREATING && !value?.order_approved && (
-            <Button type="primary" disabled={IS_CREATING} icon={<EditOutlined />} onClick={onApprove}>
+          {!IS_CREATING && !approved && (
+            <Button 
+              type="primary" 
+              disabled={IS_CREATING || !access?.canUpdate} 
+              icon={<EditOutlined />} 
+              onClick={onApprove}
+            >
               {t('operations.approve')}
             </Button>
           )}
 
-          {!IS_CREATING && value?.order_approved && (
-            <Button type="primary" disabled={IS_CREATING} icon={<EditOutlined />} onClick={onUnapprove}>
+          {!IS_CREATING && approved && (
+            <Button 
+              type="primary" 
+              disabled={IS_CREATING || !access?.canUpdate} 
+              icon={<EditOutlined />} 
+              onClick={onUnapprove}
+            >
               {t('operations.unapprove')}
             </Button>
           )}
@@ -265,6 +284,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
+            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) }
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -286,6 +306,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
+              disabled={!access?.canDelete}
               onClick={onDelete}
             >
               {t('operations.delete')}
@@ -297,92 +318,90 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
       <Form layout="vertical" form={form} scrollToFirstError initialValues={value}>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-
-
-          <Row gutter={[8, 8]}>
+            <Row gutter={[8, 8]}>
               <Col span={6}>
-                <Supplier form={form} value={value} onChange={setSupplier} />
+                <Supplier form={form} value={value} onChange={setSupplier} pageState={pageState} />
               </Col>
 
               <Col span={6}>
-                <Customer form={form} value={value} supplier={supplier} />
+                <Customer form={form} value={value} supplier={supplier} pageState={pageState} />
               </Col>
 
               <Col span={6}>
-                <OrderCustNo form={form} value={value} supplier={supplier} />
+                <OrderCustNo form={form} value={value} supplier={supplier} pageState={pageState} />
               </Col>
 
               <Col span={6}>
-                <OrderRefCode form={form} value={value} />
+                <OrderRefCode form={form} value={value} pageState={pageState} />
               </Col>
             </Row>
 
             <Row gutter={[8, 8]}>
               <Col span={6}>
-                <OrderDate form={form} value={value} />
+                <OrderDate form={form} value={value} pageState={pageState} />
               </Col>
 
               <Col span={6}>
-                <DeliveryDate form={form} value={value} />
+                <DeliveryDate form={form} value={value} pageState={pageState} />
               </Col>
 
               <Col span={6}>
-                <ExpiryDate form={form} value={value} />
+                <ExpiryDate form={form} value={value} pageState={pageState} />
               </Col>
 
               <Col span={6}>
-                <TransportType form={form} value={value} />
-              </Col>
-            </Row>
-
-            <Row gutter={[8, 8]}>
-              <Col span={6}>
-                <Carrier form={form} value={value} onChange={setCarrier} />
-              </Col>
-
-              <Col span={6}>
-                <DeliveryLocation form={form} value={value} />
-              </Col>
-
-              <Col span={6}>
-                <OrderTerminal form={form} value={value} />
-              </Col>
-
-              <Col span={6}>
-                <SupplyDepot form={form} value={value} />
+                <TransportType form={form} value={value} pageState={pageState} />
               </Col>
             </Row>
 
             <Row gutter={[8, 8]}>
               <Col span={6}>
-                <DrawerCompany form={form} value={value} onChange={setDrawer} />
+                <Carrier form={form} value={value} onChange={setCarrier} pageState={pageState} />
               </Col>
 
               <Col span={6}>
-                <OrderStatus form={form} value={value} />
+                <DeliveryLocation form={form} value={value} pageState={pageState} />
               </Col>
 
               <Col span={6}>
-                <SoldTo form={form} value={value} supplier={supplier} />
+                <OrderTerminal form={form} value={value} pageState={pageState} />
               </Col>
 
               <Col span={6}>
-                <ShipTo form={form} value={value} supplier={supplier} />
+                <SupplyDepot form={form} value={value} pageState={pageState} />
+              </Col>
+            </Row>
+
+            <Row gutter={[8, 8]}>
+              <Col span={6}>
+                <DrawerCompany form={form} value={value} onChange={setDrawer} pageState={pageState} />
+              </Col>
+
+              <Col span={6}>
+                <OrderStatus form={form} value={value} pageState={pageState} />
+              </Col>
+
+              <Col span={6}>
+                <SoldTo form={form} value={value} supplier={supplier} pageState={pageState} />
+              </Col>
+
+              <Col span={6}>
+                <ShipTo form={form} value={value} supplier={supplier} pageState={pageState} />
               </Col>
             </Row>
 
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                <TransferType form={form} value={value} />
+                <TransferType form={form} value={value} pageState={pageState} />
               </Col>
 
               <Col span={12}>
-                <ApproveFlag form={form} value={value} />
+                <ApproveFlag form={form} value={value} onChange={setApproved} pageState={pageState} />
               </Col>
             </Row>
 
             <Row gutter={[8, 8]}>
-              <OrderInstructions form={form} value={value} />
+              <OrderInstructions form={form} value={value} pageState={pageState} />
             </Row>
 
             <Divider />
@@ -395,7 +414,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
                 columns={columns(t, pageState, form, units)}
                 handleSelect={(value) => setSelected(value[0])}
                 components={{
-                  UnitEditor: UnitEditor,
+                  UnitEditor: UnitType,
                 }}
               />
             </Form.Item>

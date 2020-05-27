@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { ORDER_LISTINGS } from '../../../../api';
 
-const Drawer = ({ form, value, onChange }) => {
+const Drawer = ({ form, value, onChange, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -41,7 +41,7 @@ const Drawer = ({ form, value, onChange }) => {
         loading={isValidating}
         showSearch
         onChange={onChange}
-        disabled={!!value}
+        disabled={(pageState==='create'||pageState==='edit')? false : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectDrawer') : null}
         filterOption={(value, option) =>
