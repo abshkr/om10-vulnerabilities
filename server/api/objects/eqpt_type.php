@@ -95,13 +95,35 @@ class EquipmentType extends CommonClass
                 EQUIP_TYPES_VW.ETYP_TITLE,
                 EQUIP_TYPES_VW.ETYP_ISRIGID,
                 EQUIP_TYPES_VW.CMPTNU,
-                EQUIP_TYPES_VW.ETYP_CATEGORY
-            FROM EQUIP_VW, EQUIP_TYPES_VW
+                NVL(EQUIP_TYPES_VW.ETYP_CATEGORY,
+                    DECODE(FIRST_SUB_ITEM.ECNCT_ETYP,
+                        NULL,
+                        DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
+                        DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
+                    ) ETYP_CATEGORY
+            FROM EQUIP_VW, EQUIP_TYPES_VW,
+                (SELECT NVL(ETYP_SCHEDUL, 'N') ETYP_SCHEDUL, NVL(ETYP_ISRIGID, 'N') ETYP_ISRIGID, ECNCT_ETYP
+                FROM EQUIP_TYPES_VW, EQP_CONNECT
+                WHERE EQP_CONNECT.ECNCT_ETYP = EQUIP_TYPES_VW.ETYP_ID
+                    AND EQC_COUNT = 1) FIRST_SUB_ITEM
             WHERE ((EQC_SUB_ITEM IS NOT NULL AND EQC_SUB_ITEM = EQUIP_TYPES_VW.ETYP_ID) OR (
                     EQC_SUB_ITEM IS NULL AND ETYP_ID_RT = EQUIP_TYPES_VW.ETYP_ID ))
+                AND FIRST_SUB_ITEM.ECNCT_ETYP(+) = EQUIP_TYPES_VW.ETYP_ID
                 AND ETYP_ID_RT = :etyp_id
                 AND EQUIP_ISLEAF = 1
             ORDER BY EQC_COUNT_RT, EQC_COUNT";
+        // $query = "
+        //     SELECT NVL(EQC_SUB_ITEM, ETYP_ID_RT) ETYP_ID,
+        //         EQUIP_TYPES_VW.ETYP_TITLE,
+        //         EQUIP_TYPES_VW.ETYP_ISRIGID,
+        //         EQUIP_TYPES_VW.CMPTNU,
+        //         EQUIP_TYPES_VW.ETYP_CATEGORY
+        //     FROM EQUIP_VW, EQUIP_TYPES_VW
+        //     WHERE ((EQC_SUB_ITEM IS NOT NULL AND EQC_SUB_ITEM = EQUIP_TYPES_VW.ETYP_ID) OR (
+        //             EQC_SUB_ITEM IS NULL AND ETYP_ID_RT = EQUIP_TYPES_VW.ETYP_ID ))
+        //         AND ETYP_ID_RT = :etyp_id
+        //         AND EQUIP_ISLEAF = 1
+        //     ORDER BY EQC_COUNT_RT, EQC_COUNT";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':etyp_id', $this->etyp_id);
         if (oci_execute($stmt, $this->commit_mode)) {
