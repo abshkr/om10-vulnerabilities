@@ -14,9 +14,9 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    hide: true,
     width: 100,
     suppressSizeToFit: true,
-    hide:true
   },
   {
     headerName: t('fields.orderSuppName'),
@@ -24,6 +24,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    hide: false,
     width: 120,
     suppressSizeToFit: true,
   },
@@ -33,9 +34,9 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    hide: true,
     width: 120,
     suppressSizeToFit: true,
-    hide:true,
   },
   {
     headerName: t('fields.orderCustCode'),
@@ -43,9 +44,9 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    hide: true,
     width: 100,
     suppressSizeToFit: true,
-    hide:true,
   },
   {
     headerName: t('fields.orderCustName'),

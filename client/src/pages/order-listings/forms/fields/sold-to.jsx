@@ -4,38 +4,38 @@ import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 
-import { LOAD_SCHEDULES } from '../../../../api';
+import { ORDER_LISTINGS } from '../../../../api';
 
-const SoldTo = ({ form, value }) => {
+const SoldTo = ({ form, value, supplier }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
 
-  const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.SOLD_TO);
+  const { data: options, isValidating } = useSWR(ORDER_LISTINGS.SOLD_TO);
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        shls_sold_to_num: value.shls_sold_to_num,
+        order_sold_to_num: value.order_sold_to_num,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="shls_sold_to_num" label={t('fields.soldTo')}>
+    <Form.Item name="order_sold_to_num" label={t('fields.orderSoldTo')}>
       <Select
         loading={isValidating}
         showSearch
-        disabled={!!value}
+        disabled={false}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectSoldTo') : null}
         filterOption={(value, option) =>
           option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
         }
       >
-        {options?.records.map((item, index) => (
+        {options?.records.filter((item)=>(!value?(item.partner_cmpy_code===''):(item.partner_cmpy_code===supplier))).map((item, index) => (
           <Select.Option key={index} value={item.partner_code}>
-            {item.partner_cmpy_name}
+            {item.partner_cmpy_name}{!item.partner_cust_name?'':(' - '+item.partner_cust_name)} - {item.partner_code} - {item.partner_name1}
           </Select.Option>
         ))}
       </Select>

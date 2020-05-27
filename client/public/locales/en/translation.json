@@ -970,6 +970,7 @@
     "list": "List",
     "allocationPeriod": "Allocation Period",
     "runAndOverride": "Run and Override",
+    "orderPeriod": "Order Period",
     "approve": "Approve",
     "unapprove": "Unapprove"
   },

@@ -1,91 +1,136 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import {
   EditOutlined,
   PlusOutlined,
   DeleteOutlined,
   QuestionCircleOutlined,
-  PrinterOutlined,
+  RedoOutlined,
+  ClockCircleOutlined,
 } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Radio } from 'antd';
-import { useTranslation } from 'react-i18next';
 
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col, Radio } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
+import useSWR from 'swr';
 
 import {
   Supplier,
-  Drawer as DrawerForm,
+  Customer,
+  OrderCustNo,
+  OrderRefCode,
+  OrderDate,
+  DeliveryDate,
+  ExpiryDate,
+  TransportType,
   Carrier,
-  Tanker,
-  TripNumber,
-  Priority,
-  Shift,
-  HostData,
-  Dates,
+  DeliveryLocation,
+  OrderTerminal,
+  SupplyDepot,
+  Drawer as DrawerCompany,
+  OrderStatus,
   SoldTo,
   ShipTo,
+  TransferType,
+  ApproveFlag,
+  OrderInstructions,
+  UnitEditor
 } from './fields';
-import { LOAD_SCHEDULES } from '../../../api';
-import Compartments from './compartments';
+
+import { DataTable } from '../../../components';
+import { ORDER_LISTINGS } from '../../../api';
+import columns from './columns';
+//import Period from './period';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
+  const { data: units } = useSWR(ORDER_LISTINGS.UNIT_TYPES);
+
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
-  const [tab, setTab] = useState('0');
-
-  const [mode, setMode] = useState('1');
+  const [orderNo, setOrderNo] = useState(value?.order_sys_no);
   const [supplier, setSupplier] = useState(undefined);
   const [drawer, setDrawer] = useState(undefined);
-  const [carrier, setCarrier] = useState(undefined);
-  const [tanker, setTanker] = useState(undefined);
+  const [selected, setSelected] = useState(null);
+  const [Carrier, setCarrier] = useState(undefined);
+  const [type, setType] = useState(undefined);
+  const [lockType, setLockType] = useState(undefined);
+
+  const [orderItems, setOrderItems] = useState([]);
+  const [showPeriod, setShowPeriod] = useState(false);
+
+  const { resetFields } = form;
 
   const IS_CREATING = !value;
-  const CAN_PRINT = ['2', '3', '4'].includes(tab);
-
-  const { resetFields, setFieldsValue } = form;
+  const CAN_ORDER_PERIOD = selected && value;
 
   const onComplete = () => {
     handleFormState(false, null);
-    mutate(LOAD_SCHEDULES.READ);
+    mutate(ORDER_LISTINGS.READ);
   };
+
+  const getOrderItems = useCallback(() => {
+    const url = IS_CREATING
+      ? `${ORDER_LISTINGS.ORDER_ITEMS}?drawer_code=${drawer}`
+      : `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${value?.order_sys_no}`;
+
+    axios.get(url).then((response) => {
+      const payload = response.data?.records || [];
+
+      form.setFieldsValue({
+        order_items: payload,
+      });
+
+      setOrderItems(payload);
+    });
+  }, [orderNo, drawer]);
 
   const onFinish = async () => {
     const values = await form.validateFields();
+    const orderItems = [];
 
-    console.log(values);
-    // Modal.confirm({
-    //   title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
-    //   okText: IS_CREATING ? t('operations.create') : t('operations.update'),
-    //   okType: 'primary',
-    //   icon: <QuestionCircleOutlined />,
-    //   cancelText: t('operations.no'),
-    //   centered: true,
-    //   onOk: async () => {
-    //     await axios
-    //       .post(IS_CREATING ? LOAD_SCHEDULES.CREATE : LOAD_SCHEDULES.UPDATE, values)
-    //       .then(() => {
-    //         onComplete();
+    _.forEach(values?.order_items, (order_item) => {
+      orderItems.push({
+        aitem_prodcode: order_item.aitem_prodcode,
+        aitem_qtylimit: _.toNumber(order_item.aitem_qtylimit),
+        aitem_produnit: _.toNumber(order_item.aitem_produnit),
+      });
+    });
 
-    //         notification.success({
-    //           message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-    //           description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-    //         });
-    //       })
-    //       .catch((errors) => {
-    //         _.forEach(errors.response.data.errors, (error) => {
-    //           notification.error({
-    //             message: error.type,
-    //             description: error.message,
-    //           });
-    //         });
-    //       });
-    //   },
-    // });
+    values.order_items = orderItems;
+
+    Modal.confirm({
+      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(IS_CREATING ? ORDER_LISTINGS.CREATE : ORDER_LISTINGS.UPDATE, values)
+          .then(() => {
+            onComplete();
+
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
   };
 
   const onDelete = () => {
@@ -98,7 +143,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(LOAD_SCHEDULES.DELETE, value)
+          .post(ORDER_LISTINGS.DELETE, value)
           .then(() => {
             onComplete();
 
@@ -119,30 +164,78 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     });
   };
 
-  const onPrint = () => {
-    console.log('printing');
+  const onApprove = () => {
+    Modal.confirm({
+      title: t('prompts.approve'),
+      okText: t('operations.yes'),
+      okType: 'danger',
+      icon: <RedoOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(ORDER_LISTINGS.APPROVE, {
+            order_sys_no: value?.order_sys_no,
+          })
+          .then(() => {
+            getOrderItems();
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
   };
 
+  const onUnapprove = () => {
+    Modal.confirm({
+      title: t('prompts.unapprove'),
+      okText: t('operations.yes'),
+      okType: 'danger',
+      icon: <RedoOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(ORDER_LISTINGS.UNAPPROVE, {
+            order_sys_no: value?.order_sys_no,
+          })
+          .then(() => {
+            getOrderItems();
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+  /*
   useEffect(() => {
-    if (value) {
-      setFieldsValue({
-        shls_ld_type: value.shls_ld_type,
-      });
-      setMode(value.shls_ld_type);
-    }
-  }, [setFieldsValue, value]);
-
-  useEffect(() => {
-    if (!value) {
+    if (!value && !visible) {
       resetFields();
-      setSupplier(undefined);
-      setDrawer(undefined);
-      setCarrier(undefined);
-      setTanker(undefined);
-    }
-  }, [resetFields, value]);
 
-  console.log(mode);
+      setType(undefined);
+      setCompany(undefined);
+      setSupplier(undefined);
+      setLockType(undefined);
+      setOrderItems([]);
+    }
+  }, [resetFields, value, visible]);
+  */
+  useEffect(() => {
+    getOrderItems();
+  }, [orderNo, drawer, getOrderItems]);
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -151,124 +244,165 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="60vw"
+      width="50vw"
       visible={visible}
       footer={
         <>
+          {!IS_CREATING && !value?.order_approved && (
+            <Button type="primary" disabled={IS_CREATING} icon={<EditOutlined />} onClick={onApprove}>
+              {t('operations.approve')}
+            </Button>
+          )}
+
+          {!IS_CREATING && value?.order_approved && (
+            <Button type="primary" disabled={IS_CREATING} icon={<EditOutlined />} onClick={onUnapprove}>
+              {t('operations.unapprove')}
+            </Button>
+          )}
+
           <Button
             type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
 
           {!IS_CREATING && (
             <Button
+              type="primary"
+              icon={<ClockCircleOutlined />}
+              style={{ marginLeft: 5 }}
+              disabled={!CAN_ORDER_PERIOD}
+              onClick={() => setShowPeriod(true)}
+            >
+              {t('operations.orderPeriod')}
+            </Button>
+          )}
+
+          {!IS_CREATING && (
+            <Button
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete}
               onClick={onDelete}
             >
               {t('operations.delete')}
             </Button>
           )}
-
-          {CAN_PRINT && !IS_CREATING && (
-            <Button type="dashed" icon={<PrinterOutlined />} onClick={onPrint} disabled={!access?.canUpdate}>
-              {t('operations.print')}
-            </Button>
-          )}
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError>
-        <Tabs defaultActiveKey={tab} onChange={setTab}>
-          <TabPane tab={t('tabColumns.general')} key="0">
-            <Form.Item name="shls_ld_type">
-              <Radio.Group
-                buttonStyle="solid"
-                style={{ marginBottom: 10 }}
-                onChange={(event) => setMode(event.target.value)}
-                defaultValue="1"
-                disabled={!!value}
-              >
-                <Radio.Button value="1">{t('operations.preOrder')}</Radio.Button>
-                <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button>
-              </Radio.Group>
-            </Form.Item>
+      <Form layout="vertical" form={form} scrollToFirstError initialValues={value}>
+        <Tabs defaultActiveKey="1">
+          <TabPane tab={t('tabColumns.general')} key="1">
 
-            <Row gutter={[8, 8]}>
-              <Col span={12}>
+
+          <Row gutter={[8, 8]}>
+              <Col span={6}>
                 <Supplier form={form} value={value} onChange={setSupplier} />
               </Col>
 
-              <Col span={12}>
-                <DrawerForm form={form} value={value} onChange={setDrawer} />
+              <Col span={6}>
+                <Customer form={form} value={value} supplier={supplier} />
+              </Col>
+
+              <Col span={6}>
+                <OrderCustNo form={form} value={value} supplier={supplier} />
+              </Col>
+
+              <Col span={6}>
+                <OrderRefCode form={form} value={value} />
               </Col>
             </Row>
 
             <Row gutter={[8, 8]}>
-              <Col span={12}>
+              <Col span={6}>
+                <OrderDate form={form} value={value} />
+              </Col>
+
+              <Col span={6}>
+                <DeliveryDate form={form} value={value} />
+              </Col>
+
+              <Col span={6}>
+                <ExpiryDate form={form} value={value} />
+              </Col>
+
+              <Col span={6}>
+                <TransportType form={form} value={value} />
+              </Col>
+            </Row>
+
+            <Row gutter={[8, 8]}>
+              <Col span={6}>
                 <Carrier form={form} value={value} onChange={setCarrier} />
               </Col>
 
+              <Col span={6}>
+                <DeliveryLocation form={form} value={value} />
+              </Col>
+
+              <Col span={6}>
+                <OrderTerminal form={form} value={value} />
+              </Col>
+
+              <Col span={6}>
+                <SupplyDepot form={form} value={value} />
+              </Col>
+            </Row>
+
+            <Row gutter={[8, 8]}>
+              <Col span={6}>
+                <DrawerCompany form={form} value={value} onChange={setDrawer} />
+              </Col>
+
+              <Col span={6}>
+                <OrderStatus form={form} value={value} />
+              </Col>
+
+              <Col span={6}>
+                <SoldTo form={form} value={value} supplier={supplier} />
+              </Col>
+
+              <Col span={6}>
+                <ShipTo form={form} value={value} supplier={supplier} />
+              </Col>
+            </Row>
+
+            <Row gutter={[8, 8]}>
               <Col span={12}>
-                <Tanker form={form} value={value} carrier={carrier} onChange={setTanker} />
+                <TransferType form={form} value={value} />
               </Col>
-            </Row>
 
-            {mode === '1' && (
-              <Row gutter={[8, 8]}>
-                <Col span={12}>
-                  <SoldTo form={form} value={value} />
-                </Col>
-
-                <Col span={12}>
-                  <ShipTo form={form} value={value} carrier={carrier} />
-                </Col>
-              </Row>
-            )}
-
-            <Row gutter={[8, 8]}>
-              <Dates form={form} value={value} />
+              <Col span={12}>
+                <ApproveFlag form={form} value={value} />
+              </Col>
             </Row>
 
             <Row gutter={[8, 8]}>
-              <Col span={6}>
-                <TripNumber form={form} value={value} supplier={supplier} />
-              </Col>
-
-              <Col span={6}>
-                <Shift form={form} value={value} />
-              </Col>
-
-              <Col span={6}>
-                <Priority form={form} value={value} />
-              </Col>
-
-              <Col span={6}>
-                <HostData form={form} value={value} />
-              </Col>
+              <OrderInstructions form={form} value={value} />
             </Row>
 
-            {mode === '2' && <Compartments form={form} value={value} drawer={drawer} tanker={tanker} />}
+            <Divider />
+
+            <Form.Item name="order_items">
+              <DataTable
+                data={orderItems}
+                height="60vh"
+                minimal
+                columns={columns(t, pageState, form, units)}
+                handleSelect={(value) => setSelected(value[0])}
+                components={{
+                  UnitEditor: UnitEditor,
+                }}
+              />
+            </Form.Item>
           </TabPane>
-
-          <TabPane tab={t('tabColumns.transactions')} disabled={IS_CREATING} key="1"></TabPane>
-
-          <TabPane tab={t('tabColumns.driverInstructions')} disabled={IS_CREATING} key="2"></TabPane>
-
-          <TabPane tab={t('tabColumns.bol')} disabled={IS_CREATING} key="3"></TabPane>
-
-          <TabPane tab={t('tabColumns.loadReport')} disabled={IS_CREATING} key="4"></TabPane>
-
-          <TabPane tab={t('tabColumns.additionalHostData')} disabled={IS_CREATING} key="5"></TabPane>
         </Tabs>
       </Form>
+      {/* <Period visible={showPeriod && CAN_ORDER_PERIOD} setVisibility={setShowPeriod} selected={selected} /> */}
     </Drawer>
   );
 };

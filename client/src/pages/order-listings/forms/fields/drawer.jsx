@@ -4,14 +4,14 @@ import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 
-import { ORDERLISTINGS } from '../../../../api';
+import { ORDER_LISTINGS } from '../../../../api';
 
 const Drawer = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
 
-  const { data: options, isValidating } = useSWR(ORDERLISTINGS.DRAWERS);
+  const { data: options, isValidating } = useSWR(ORDER_LISTINGS.DRAWERS);
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
