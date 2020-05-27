@@ -969,7 +969,9 @@
     "simple": "Simple",
     "list": "List",
     "allocationPeriod": "Allocation Period",
-    "runAndOverride": "Run and Override"
+    "runAndOverride": "Run and Override",
+    "approve": "Approve",
+    "unapprove": "Unapprove"
   },
 
   "tabColumns": {
@@ -1089,7 +1091,9 @@
     "createNewGate": "Create New Gate",
     "freezeCloseout": "Are you sure you want to run manual closeout?",
     "closeCloseout": "Are you sure you want to close first frozen folio?",
-	"notEnoughBase": "Drawer product must have at least one base product"
+    "notEnoughBase": "Drawer product must have at least one base product",
+    "approve": "Are you sure you want to approve this open order?",
+    "unapprove": "Are you sure you want to unapprove this open order?"
   },
 
   "divider": {
