@@ -16,6 +16,7 @@ import {
   MarkRenderer,
   EquipmentRenderer,
   ListRenderer,
+  AffixRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -38,6 +39,7 @@ const defaultComponents = {
   StatusRenderer,
   ProgressRenderer,
   EquipmentRenderer,
+  AffixRenderer,
   ListRenderer,
   ATGRenderer,
   TagRenderer,
@@ -139,7 +141,7 @@ const Table = ({
 
             <Button
               icon={<ClearOutlined />}
-              style={{ float: 'right', marginLeft: 10 }}
+              style={{ float: 'right', marginLeft: 5 }}
               onClick={onFilterClear}
             >
               Clear Filters

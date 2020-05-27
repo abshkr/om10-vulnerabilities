@@ -28,17 +28,7 @@ const Home = () => {
                   justifyContent: 'center',
                   alignContent: 'center',
                   alignItems: 'center',
-                  width: '33%',
-                }}
-              />
-
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignContent: 'center',
-                  alignItems: 'center',
-                  width: '33%',
+                  width: '66%',
                 }}
               >
                 <div style={{ fontSize: 20, color: 'black', fontWeight: '500' }}>
@@ -76,17 +66,7 @@ const Home = () => {
                   justifyContent: 'center',
                   alignContent: 'center',
                   alignItems: 'center',
-                  width: '33%',
-                }}
-              />
-
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignContent: 'center',
-                  alignItems: 'center',
-                  width: '33%',
+                  width: '66%',
                 }}
               >
                 <div style={{ fontSize: 20, color: 'black', fontWeight: '500' }}>
@@ -124,17 +104,7 @@ const Home = () => {
                   justifyContent: 'center',
                   alignContent: 'center',
                   alignItems: 'center',
-                  width: '33%',
-                }}
-              />
-
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignContent: 'center',
-                  alignItems: 'center',
-                  width: '33%',
+                  width: '66%',
                 }}
               >
                 <div style={{ fontSize: 20, color: 'black', fontWeight: '500' }}>

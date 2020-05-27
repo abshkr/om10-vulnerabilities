@@ -9,6 +9,7 @@ import ATGRenderer from './atg';
 import MarkRenderer from './mark';
 import EquipmentRenderer from './equipment';
 import ListRenderer from './list';
+import AffixRenderer from './affix';
 
 export {
   BooleanRenderer,
@@ -22,4 +23,5 @@ export {
   MarkRenderer,
   EquipmentRenderer,
   ListRenderer,
+  AffixRenderer,
 };

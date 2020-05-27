@@ -57,8 +57,11 @@ const movement = (t) => [
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',
+    cellRenderer: 'AffixRenderer',
     suppressSizeToFit: true,
     width: 120,
+    type: 'postfix',
+    symbol: '%',
   },
 ];
 

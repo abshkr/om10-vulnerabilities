@@ -133,7 +133,7 @@ const Tanks = () => {
             </TabPane>
 
             <TabPane key="7" tab={t('tabColumns.strapping')} disabled={isLoading}>
-              <TankStrapping selected={selected} isLoading={isLoading} />
+              <TankStrapping code={selected?.tank_code} isLoading={isLoading} access={access} />
             </TabPane>
 
             <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')} disabled={isLoading}></TabPane>
