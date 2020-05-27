@@ -83,13 +83,13 @@ const General = ({ form, value }) => {
         <Col span={12}>
           <Form.Item
             name="tank_density"
-            label={`${t('fields.density')} (${value.tank_base_dens_lo} - ${value.tank_base_dens_hi}) ${
+            label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${
               `@30ºC` || '@15ºC/59ºF'
             }`}
           >
             <InputNumber
-              min={value.tank_base_dens_lo}
-              max={value.tank_base_dens_hi}
+              min={value?.tank_base_dens_lo}
+              max={value?.tank_base_dens_hi}
               style={{ width: '100%' }}
             />
           </Form.Item>

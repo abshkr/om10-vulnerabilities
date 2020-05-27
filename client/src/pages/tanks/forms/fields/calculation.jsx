@@ -12,23 +12,23 @@ const Calculation = ({ form, value, range, config }) => {
   const { setFieldsValue } = form;
 
   const [tempBounds, setTempBounds] = useState({
-    min: value.tank_bclass_temp_lo || -50,
-    max: value.tank_bclass_temp_hi || 150,
+    min: value?.tank_bclass_temp_lo || -50,
+    max: value?.tank_bclass_temp_hi || 150,
     type: 'ºC',
   });
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tank_15_density: value.tank_15_density,
-        tank_density: value.tank_density,
-        tank_api: value.tank_api,
-        tank_prod_lvl: value.tank_prod_lvl,
-        tank_prod_c_of_e: value.tank_prod_c_of_e,
-        tank_temp: value.tank_temp,
-        tank_amb_vol: value.tank_amb_vol,
-        tank_cor_vol: value.tank_cor_vol,
-        tank_liquid_kg: value.tank_liquid_kg,
+        tank_15_density: value?.tank_15_density,
+        tank_density: value?.tank_density,
+        tank_api: value?.tank_api,
+        tank_prod_lvl: value?.tank_prod_lvl,
+        tank_prod_c_of_e: value?.tank_prod_c_of_e,
+        tank_temp: value?.tank_temp,
+        tank_amb_vol: value?.tank_amb_vol,
+        tank_cor_vol: value?.tank_cor_vol,
+        tank_liquid_kg: value?.tank_liquid_kg,
       });
     }
   }, [value, setFieldsValue]);
@@ -36,22 +36,22 @@ const Calculation = ({ form, value, range, config }) => {
   const handleTemperature = (selected) => {
     if (selected !== 'degC') {
       setTempBounds({
-        min: VCFManager.temperatureC2F(value.tank_bclass_temp_lo),
-        max: VCFManager.temperatureC2F(value.tank_bclass_temp_hi),
+        min: VCFManager.temperatureC2F(value?.tank_bclass_temp_lo),
+        max: VCFManager.temperatureC2F(value?.tank_bclass_temp_hi),
         type: 'ºF',
       });
       setFieldsValue({
-        tank_temp: VCFManager.temperatureC2F(value.tank_temp),
+        tank_temp: VCFManager.temperatureC2F(value?.tank_temp),
       });
     } else {
       setTempBounds({
-        min: value.tank_bclass_temp_lo,
-        max: value.tank_bclass_temp_hi,
+        min: value?.tank_bclass_temp_lo,
+        max: value?.tank_bclass_temp_hi,
         type: 'ºC',
       });
 
       setFieldsValue({
-        tank_temp: value.tank_temp,
+        tank_temp: value?.tank_temp,
       });
     }
   };
@@ -86,7 +86,7 @@ const Calculation = ({ form, value, range, config }) => {
     <>
       <Form.Item
         name="tank_15_density"
-        label={`${t('fields.standardDensity')} (${value.tank_base_dens_lo} - ${value.tank_base_dens_hi}) ${
+        label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${
           `@${config?.referenceTemperature}ºC` || '@15ºC/59ºF'
         }`}
       >
@@ -99,14 +99,14 @@ const Calculation = ({ form, value, range, config }) => {
 
       <Form.Item
         name="tank_density"
-        label={`${t('fields.density')} (${value.tank_base_dens_lo} - ${value.tank_base_dens_hi}) ${
+        label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${
           `@${config?.vsmCompensation}ºC` || '@15ºC/59ºF'
         }`}
       >
         <InputNumber
           disabled
-          min={value.tank_base_dens_lo}
-          max={value.tank_base_dens_hi}
+          min={value?.tank_base_dens_lo}
+          max={value?.tank_base_dens_hi}
           style={{ width: '100%' }}
         />
       </Form.Item>
