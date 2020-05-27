@@ -116,7 +116,7 @@ const Compartments = ({ form, value, isCombination }) => {
             <div style={{ marginRight: 10 }}>
               <Equipment image={item?.etyp_category?.toLowerCase()} />
               {item.etyp_category !== 'P' && item.etyp_category !== 'F' && (
-                <DataTable data={item?.compartments} columns={columns} minimal height="700px" />
+                <DataTable data={item?.compartments} columns={columns} minimal height="80vh" />
               )}
             </div>
           ))}

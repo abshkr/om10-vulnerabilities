@@ -81,7 +81,7 @@ const getListStyle = (isDraggingOver, ind) => ({
   backgroundColor: ind === 0 ? 'white' : 'slategray',
   borderRadius: 5,
   width: '100%',
-  height: 115,
+  height: 125,
 });
 
 const Combination = ({ form }) => {
@@ -239,11 +239,13 @@ const Combination = ({ form }) => {
                                     <Equipment
                                       image={image}
                                       key={index}
+                                      showName={item.etyp_title}
                                       style={{
                                         height: '100%',
                                         objectFit: 'contain',
                                         objectPosition: '0 0',
-                                        marginRight: image === 'P' && ind === 1 ? -50 : 0,
+                                        marginRight:
+                                          image === 'P' && image?.length > 1 && ind === 1 ? -50 : 0,
                                       }}
                                     />
 
