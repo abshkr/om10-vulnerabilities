@@ -781,8 +781,9 @@
     "ridgid": "Rigid",
     "rigidShip": "Rigid Ship",
     "railTank": "Rail Tank",
-	"ratio": "Ratio",
-	"blendToleranceCheck": "Blend Tolerance Check"
+    "ratio": "Ratio",
+    "blendToleranceCheck": "Blend Tolerance Check",
+    "baseProduct": "Base Product"
   },
 
   "pageMenu": {
@@ -969,7 +970,10 @@
     "simple": "Simple",
     "list": "List",
     "allocationPeriod": "Allocation Period",
-    "runAndOverride": "Run and Override"
+    "runAndOverride": "Run and Override",
+    "orderPeriod": "Order Period",
+    "approve": "Approve",
+    "unapprove": "Unapprove"
   },
 
   "tabColumns": {
@@ -1031,7 +1035,14 @@
     "deliveryLocations": "Delivery Locations",
     "closetException": "Closeouts Exception Planner",
     "closetCalendar": "Closeouts Calendar",
-    "closetSettings": "Closeouts Settings"
+    "closetSettings": "Closeouts Settings",
+    "overview": "Overview",
+    "details": "Details",
+    "connectedArms": "Connected Arms",
+    "alarms": "Alarms",
+    "gauge": "Gauge",
+    "strapping": "Strapping",
+    "adaptiveFlowControl": "Adaptive Flow Control"
   },
 
   "messages": {
@@ -1089,7 +1100,9 @@
     "createNewGate": "Create New Gate",
     "freezeCloseout": "Are you sure you want to run manual closeout?",
     "closeCloseout": "Are you sure you want to close first frozen folio?",
-	"notEnoughBase": "Drawer product must have at least one base product"
+    "notEnoughBase": "Drawer product must have at least one base product",
+    "approve": "Are you sure you want to approve this open order?",
+    "unapprove": "Are you sure you want to unapprove this open order?"
   },
 
   "divider": {

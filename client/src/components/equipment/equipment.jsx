@@ -19,9 +19,16 @@ const matrix = {
   p,
 };
 
-const Equipment = ({ image, style, onClick }) => {
+const Equipment = ({ image, style, onClick, showName }) => {
   if (image) {
-    return <img style={{ ...style }} onClick={onClick} src={matrix[image?.toLowerCase()]} alt="equipment" />;
+    return (
+      <div style={{ ...style }}>
+        <img style={{ ...style }} onClick={onClick} src={matrix[image?.toLowerCase()]} alt="equipment" />
+        <div style={{ height: 25, textAlign: 'center' }}>
+          <strong>{showName}</strong>
+        </div>
+      </div>
+    );
   }
 
   return null;

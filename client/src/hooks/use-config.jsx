@@ -58,6 +58,7 @@ const useConfig = () => {
     railTankAvailable: false,
     rigidShipAvailable: false,
     tankStatusEnforced: false,
+    vsmCompensation: 15,
     showLSI: false,
     showSeals: false,
     loading: true,
@@ -112,6 +113,7 @@ const useConfig = () => {
         temperatureUnit: environment?.SITE_TEMPERATURE_UNIT,
         densityUnit: environment?.SITE_DENSITY_UNIT,
         referenceTemperature: environment?.TEMP_COMP_REF_TEMPERATURE,
+        vsmCompensation: environment?.VSM_COMPENSATION_PT,
         scheduledUnit: environment?.SCHEDUNITS,
         manageBaseProductDensityRange: featuresObject?.BASE_PROD__DENS_RANGE,
         manageDCS: featuresObject?.DCS,
@@ -162,6 +164,7 @@ const useConfig = () => {
         tankStatusEnforced: configurationObject?.SITE_TANK_STATUS_ENFORCEMENT_FLAG,
         showLSI: configurationObject?.SITE_USE_LSI,
         showSeals: configurationObject?.SITE_USE_SEAL,
+
         loading: false,
       });
     }

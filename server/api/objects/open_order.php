@@ -69,6 +69,40 @@ class OpenOrder extends CommonClass
 
     public function read()
     {
+        if (!isset($this->time_option)) {
+            $this->time_option = "ORDER_ORD_TIME";
+        }
+        if (!isset($this->start_date)) {
+            $query = "
+            SELECT * FROM " . $this->VIEW_NAME . "
+            WHERE " . $this->time_option . " > SYSDATE - 7
+            ORDER BY " . $this->time_option . " DESC";
+//            WHERE " . $this->time_option . " > TO_CHAR(SYSDATE - 7, 'YYYY-MM-DD HH24:MI:SS')
+            $stmt = oci_parse($this->conn, $query);
+        
+        } else {
+            $query = "
+                SELECT * FROM " . $this->VIEW_NAME . "
+                WHERE " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS') 
+                  AND " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
+                ORDER BY " . $this->time_option . " DESC";
+//                WHERE " . $this->time_option . " > :start_date AND ORDER_ORD_TIME < :end_date
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        }
+        
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function read_by_order_time()
+    {
         if (!isset($this->start_date)) {
             $query = "
             SELECT * FROM " . $this->VIEW_NAME . "
@@ -80,10 +114,10 @@ class OpenOrder extends CommonClass
         } else {
             $query = "
                 SELECT * FROM " . $this->VIEW_NAME . "
-                WHERE ORDER_ORD_TIME > :start_date AND ORDER_ORD_TIME < :end_date
+                WHERE ORDER_ORD_TIME > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS') 
+                  AND ORDER_ORD_TIME < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
                 ORDER BY ORDER_ORD_TIME DESC";
-//                WHERE ORDER_ORD_TIME > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS') 
-//                  AND ORDER_ORD_TIME < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
+//                WHERE ORDER_ORD_TIME > :start_date AND ORDER_ORD_TIME < :end_date
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':start_date', $this->start_date);
             oci_bind_by_name($stmt, ':end_date', $this->end_date);
@@ -437,6 +471,16 @@ class OpenOrder extends CommonClass
 
     public function items()
     {
+        if (isset($this->page_state) && $this->page_state === 'create') {
+            return $this->init_items();
+        }
+        else {
+            return $this->order_items();
+        }
+    }
+
+    public function order_items()
+    {
         $query = "
         SELECT OITEM_ORDER_ID,
             NVL(OITEM_PROD_CODE, PROD_CODE) OITEM_PROD_CODE,
@@ -487,6 +531,49 @@ class OpenOrder extends CommonClass
         }
     }
 
+    public function init_items()
+    {
+        $query = "
+            select
+                NULL as OITEM_ORDER_ID
+                , PROD_CODE as OITEM_PROD_CODE
+                , PROD_CMPY as OITEM_PROD_CMPY
+                , PROD_NAME as OITEM_PROD_NAME
+                , NULL as OITEM_DRWR_NAME
+                , 0 as OITEM_PROD_QTY
+                , 5 as OITEM_PROD_UNIT
+                , NULL as OITEM_UNIT_NAME
+                , 'N' as OITEM_BY_PACKS 
+                , 1 as OITEM_PACK_SIZE
+                , 0 as OITEM_SCHD_QTY
+                , 0 as OITEM_LOAD_QTY
+                , 0 as OITEM_DELV_QTY
+                , NULL as OITEM_EXEMPT_NO
+                , NULL as OITEM_PADJ_CODE
+                , NULL as OITEM_PADJ_NAME
+                , NULL as OITEM_PRICE_TYPE
+                , NULL as OITEM_PRICE_NAME
+                , NULL as OITEM_PROD_PRICE
+                , NULL as OITEM_PERIOD_NO
+                , NULL as OITEM_LINE_NO
+            from
+                PRODUCTS
+            where 
+                (PROD_CMPY=:drawer_code) 
+            order by
+                PROD_CMPY, PROD_CODE
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':drawer_code', $this->order_drwr_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     protected function retrieve_children_data()
     {
         $query = "SELECT * FROM GUI_ORDER_ITEMS
@@ -508,5 +595,33 @@ class OpenOrder extends CommonClass
 
         // write_log(json_encode($tank_max_flows), __FILE__, __LINE__);
         return $tank_max_flows;
+    }
+
+    public function order_instructions()
+    {
+        $query = "
+            select
+                OI_ORDER_NO             as OINST_ORDER
+                , OI_INSTR_COUNTER         as OINST_COUNTER
+                , OI_INSTRUCTION         as OINST_TEXT
+            from
+                ORD_INSTRUCT
+            where 
+                OI_ORDER_NO=:order_id  
+                and (-1=:order_counter or OI_INSTR_COUNTER=:order_counter) 
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':order_id', $this->order_sys_no);
+        if (!isset($this->order_instruct_counter)) {
+            $this->order_instruct_counter = -1;
+        }
+        oci_bind_by_name($stmt, ':order_counter', $this->order_instruct_counter);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
     }
 }

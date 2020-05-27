@@ -3,13 +3,13 @@ import React, { useEffect } from 'react';
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 
-import { ORDERLISTINGS } from '../../../../api';
+import { ORDER_LISTINGS } from '../../../../api';
 import { Form, Select } from 'antd';
 
 const DeliveryLocation = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(ORDERLISTINGS.DELV_LOCATIONS);
+  const { data: options, isValidating } = useSWR(ORDER_LISTINGS.DELV_LOCATIONS);
 
   const { setFieldsValue } = form;
 
