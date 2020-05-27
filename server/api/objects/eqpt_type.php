@@ -402,10 +402,9 @@ class EquipmentType extends CommonClass
     //sess_id=LWWRTniwSbdD&canBreak=0&eqpNm=CW&sched=n&op=17&rigid=n&etyp_category=P&callerTyp=flex
     public function create()
     {
-        $etyp_schedul = (isset($this->etyp_schedul) && $this->etyp_schedul ? "y" : "n");
-        $etyp_isrigid = (isset($this->etyp_isrigid) && $this->etyp_isrigid ? "y" : "n");
+        $etyp_schedul = ((isset($this->etyp_schedul) && $this->etyp_schedul == "Y") ? "y" : "n");
+        $etyp_isrigid = ((isset($this->etyp_isrigid) && $this->etyp_isrigid  == "Y") ? "y" : "n");
         $is_combo = (isset($this->composition) && count($this->composition) > 0) ? 1 : 0;
-
         $query_string = "canBreak=" . rawurlencode(strip_tags($is_combo)) . 
             "&eqpNm=" . rawurlencode(strip_tags($this->etyp_title)) . 
             "&sched=" . rawurlencode(strip_tags($etyp_schedul)) . 
