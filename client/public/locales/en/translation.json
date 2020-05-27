@@ -780,7 +780,8 @@
     "trailer": "Trailer",
     "ridgid": "Rigid",
     "rigidShip": "Rigid Ship",
-    "railTank": "Rail Tank"
+    "railTank": "Rail Tank",
+    "baseProduct": "Base Product"
   },
 
   "pageMenu": {
@@ -1029,7 +1030,14 @@
     "deliveryLocations": "Delivery Locations",
     "closetException": "Closeouts Exception Planner",
     "closetCalendar": "Closeouts Calendar",
-    "closetSettings": "Closeouts Settings"
+    "closetSettings": "Closeouts Settings",
+    "overview": "Overview",
+    "details": "Details",
+    "connectedArms": "Connected Arms",
+    "alarms": "Alarms",
+    "gauge": "Gauge",
+    "strapping": "Strapping",
+    "adaptiveFlowControl": "Adaptive Flow Control"
   },
 
   "messages": {

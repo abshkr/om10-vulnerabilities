@@ -1,40 +1,42 @@
 import React, { useState, useEffect } from 'react';
 
-import useSWR from 'swr';
-import { Button, List, Avatar, Card, Tabs, Descriptions, Input, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
-
-import { TankContainer } from './style';
-import { Page, Download, DataTable, ListView } from '../../components';
-import { TANKS } from '../../api';
-import { useAuth } from '../../hooks';
-import columns from './columns';
-import auth from '../../auth';
-import { search } from '../../utils';
+import { Button, Tabs } from 'antd';
+import useSWR from 'swr';
 import _ from 'lodash';
 
+import { TANKS } from '../../api';
+import { useAuth, useConfig } from '../../hooks';
+import { Page, Download, DataTable, ListView } from '../../components';
+
+import Calculations from './calculations';
 import TankStrapping from './strapping';
-import { General, Levels, Gauging, Calculation } from './forms/fields';
+import Overview from './overview';
+import Gauging from './gauging';
+import Details from './details';
+import Alarms from './alarms';
+
+import auth from '../../auth';
+import columns from './columns';
+import transform from './transform';
 
 const { TabPane } = Tabs;
 
 const Tanks = () => {
-  const [selected, setSelected] = useState(null);
-  const [payload, setPayload] = useState([]);
-  const [mode, setMode] = useState('1');
-
-  const [form] = Form.useForm();
+  const { data: read, revalidate } = useSWR(TANKS.READ);
   const { t } = useTranslation();
 
   const access = useAuth('M_TANKSTATUS');
+  const config = useConfig();
 
-  const { data: read, isValidating, revalidate } = useSWR(TANKS.READ);
+  const [selected, setSelected] = useState(null);
+  const [payload, setPayload] = useState([]);
+  const [mode, setMode] = useState('1');
+  const [tab, setTab] = useState('1');
 
   const simple = mode === '1';
   const fields = columns(t);
-
-  const data = payload?.records;
-  const isLoading = isValidating || !data;
+  const isLoading = !read;
 
   const page = t('pageMenu.gantry');
   const name = t('pageNames.tanks');
@@ -44,9 +46,9 @@ const Tanks = () => {
   };
 
   const onViewChange = () => {
-    const payload = simple ? '2' : '1';
+    const view = simple ? '2' : '1';
 
-    setMode(payload);
+    setMode(view);
   };
 
   const modifiers = (
@@ -59,7 +61,7 @@ const Tanks = () => {
         {t('operations.refresh')}
       </Button>
 
-      <Download round data={data} isLoading={isLoading} columns={fields} />
+      <Download round data={payload} isLoading={isLoading} columns={fields} />
 
       <Button type="primary" shape="round" loading={isLoading} disabled={!access.canCreate}>
         {t('operations.create')}
@@ -67,10 +69,31 @@ const Tanks = () => {
     </>
   );
 
+  const description = [
+    {
+      field: t('fields.baseProduct'),
+      key: 'tank_base_name',
+    },
+    {
+      field: t('fields.density'),
+      key: 'tank_density',
+    },
+    {
+      field: t('fields.classification'),
+      key: 'tank_bclass_name',
+    },
+    {
+      field: t('fields.status'),
+      key: 'tank_status_name',
+    },
+  ];
+
   useEffect(() => {
     if (read) {
-      setSelected(read?.records[0]);
-      setPayload(read);
+      const records = transform(read?.records);
+
+      setSelected(records[0]);
+      setPayload(records);
     }
   }, [read]);
 
@@ -78,15 +101,45 @@ const Tanks = () => {
     <Page page={page} name={name} modifiers={modifiers} access={access} minimal={simple}>
       {simple ? (
         <ListView
-          data={data}
+          data={payload}
           id="tank_code"
           name="tank_name"
           onSelect={onSelect}
+          description={description}
           selected={selected?.tank_code}
-          form={form}
-        ></ListView>
+        >
+          <Tabs defaultActiveKey="1" type="card" onChange={setTab}>
+            <TabPane key="1" tab={t('tabColumns.overview')} disabled={isLoading}>
+              <Overview selected={selected} isLoading={isLoading} />
+            </TabPane>
+
+            <TabPane key="2" tab={t('tabColumns.details')} disabled={isLoading}>
+              <Details selected={selected} access={access} isLoading={isLoading} />
+            </TabPane>
+
+            <TabPane key="3" tab={t('tabColumns.connectedArms')} disabled></TabPane>
+
+            <TabPane key="4" tab={t('tabColumns.calculations')} disabled={isLoading}>
+              <Calculations selected={selected} access={access} isLoading={isLoading} config={config} />
+            </TabPane>
+
+            <TabPane key="5" tab={t('tabColumns.alarms')} disabled={isLoading}>
+              <Alarms selected={selected} access={access} isLoading={isLoading} />
+            </TabPane>
+
+            <TabPane key="6" tab={t('tabColumns.gauge')} disabled={isLoading}>
+              <Gauging selected={selected} access={access} isLoading={isLoading} />
+            </TabPane>
+
+            <TabPane key="7" tab={t('tabColumns.strapping')} disabled={isLoading}>
+              <TankStrapping selected={selected} isLoading={isLoading} />
+            </TabPane>
+
+            <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')} disabled={isLoading}></TabPane>
+          </Tabs>
+        </ListView>
       ) : (
-        <DataTable columns={fields} data={data} isLoading={isValidating} />
+        <DataTable isLoading={isLoading} columns={fields} data={payload} />
       )}
     </Page>
   );

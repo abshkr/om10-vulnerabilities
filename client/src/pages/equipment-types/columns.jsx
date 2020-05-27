@@ -19,7 +19,7 @@ const columns = (t) => [
   },
   {
     headerName: t('fields.compartments'),
-    field: 'etyp_n_items',
+    field: 'cmptnu',
     filterable: true,
     sortable: true,
     resizable: true,

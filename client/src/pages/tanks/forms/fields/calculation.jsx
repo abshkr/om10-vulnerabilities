@@ -6,7 +6,7 @@ import { VCFManager } from '../../../../utils';
 
 const { Option } = Select;
 
-const Calculation = ({ form, value, range, envrionment }) => {
+const Calculation = ({ form, value, range, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -58,7 +58,7 @@ const Calculation = ({ form, value, range, envrionment }) => {
 
   const temperaturePostfix = (
     <Form.Item name="tank_temp_unit" noStyle>
-      <Select defaultValue={envrionment?.SITE_TEMPERATURE_UNIT || 'degC'} onChange={handleTemperature}>
+      <Select defaultValue={config?.temperatureUnit || 'degC'} onChange={handleTemperature}>
         <Option value="degC">Celcius</Option>
         <Option value="degF">Fahrenheit</Option>
       </Select>
@@ -87,7 +87,7 @@ const Calculation = ({ form, value, range, envrionment }) => {
       <Form.Item
         name="tank_15_density"
         label={`${t('fields.standardDensity')} (${value.tank_base_dens_lo} - ${value.tank_base_dens_hi}) ${
-          `@${envrionment?.TEMP_COMP_REF_TEMPERATURE}ºC` || '@15ºC/59ºF'
+          `@${config?.referenceTemperature}ºC` || '@15ºC/59ºF'
         }`}
       >
         <InputNumber
@@ -100,7 +100,7 @@ const Calculation = ({ form, value, range, envrionment }) => {
       <Form.Item
         name="tank_density"
         label={`${t('fields.density')} (${value.tank_base_dens_lo} - ${value.tank_base_dens_hi}) ${
-          `@${envrionment?.VSM_COMPENSATION_PT}ºC` || '@15ºC/59ºF'
+          `@${config?.vsmCompensation}ºC` || '@15ºC/59ºF'
         }`}
       >
         <InputNumber
@@ -111,8 +111,11 @@ const Calculation = ({ form, value, range, envrionment }) => {
         />
       </Form.Item>
 
-      <Form.Item name="tank_api" label={`${t('fields.api')} (${range.low} - ${range.high}) @60ºF`}>
-        <InputNumber min={range.low} max={range.high} style={{ width: '100%' }} />
+      <Form.Item
+        name="tank_api"
+        label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 90}) @60ºF`}
+      >
+        <InputNumber min={range?.low || 0} max={range?.high || 90} style={{ width: '100%' }} />
       </Form.Item>
 
       <Form.Item name="tank_prod_lvl" label={`${t('fields.productLevel')} (mm)`}>
