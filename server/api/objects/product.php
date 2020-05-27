@@ -51,7 +51,7 @@ class Product extends CommonClass
     public function read()
     {
         $query = "
-            SELECT * FROM " . $this->VIEW_NAME . " ORDER BY PROD_CODE";
+            SELECT * FROM " . $this->VIEW_NAME . " ORDER BY PROD_CMPYCODE, PROD_CODE";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;

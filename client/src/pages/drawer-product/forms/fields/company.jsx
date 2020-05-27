@@ -1,21 +1,21 @@
 import React, { useEffect } from 'react';
 
-import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
+import useSWR from 'swr';
 
-import { ORDER_LISTINGS } from '../../../../api';
+import { ALLOCATIONS } from '../../../../api';
 
-const Drawer = ({ form, value, onChange }) => {
-  const { t } = useTranslation();
-
+const Company = ({ form, value, onChange }) => {
   const { setFieldsValue } = form;
 
-  const { data: options, isValidating } = useSWR(ORDER_LISTINGS.DRAWERS);
+  const { t } = useTranslation();
+
+  const { data: options, isValidating } = useSWR(ALLOCATIONS.CUSTOMERS);
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.orderDrwrName')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.company')}`);
     }
 
     return Promise.resolve();
@@ -24,28 +24,27 @@ const Drawer = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        order_drwr_code: value.order_drwr_code,
+        alloc_cmpycode: value.alloc_cmpycode,
       });
-
-      onChange(value.order_drwr_code);
+      onChange(value.alloc_cmpycode);
     }
   }, [value, setFieldsValue, onChange]);
 
   return (
     <Form.Item
-      name="order_drwr_code"
-      label={t('fields.orderDrwrName')}
+      name="alloc_cmpycode"
+      label={t('fields.company')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select
         loading={isValidating}
+        disabled={!!value}
         showSearch
         onChange={onChange}
-        disabled={!!value}
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectDrawer') : null}
-        filterOption={(value, option) =>
-          option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
+        placeholder={!value ? t('placeholder.selectCompany') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
         {options?.records.map((item, index) => (
@@ -58,4 +57,4 @@ const Drawer = ({ form, value, onChange }) => {
   );
 };
 
-export default Drawer;
+export default Company;

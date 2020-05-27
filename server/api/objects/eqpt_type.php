@@ -24,6 +24,7 @@ class EquipmentType extends CommonClass
         "SAFEFILL",
         "SFL",
         "CMPT_NO",
+        "ETYP_ID"
     );
 
     public function equipmentCount($eqpt_etp)
@@ -290,7 +291,13 @@ class EquipmentType extends CommonClass
                     SELECT ETYP_ID_RT COMBO_ETYP, LISTAGG(ETYP_CATEGORY, ',') WITHIN GROUP(ORDER BY EQC_COUNT_RT, EQC_COUNT) IMAGES
                     FROM
                     (
-                        SELECT ETYP_ID_RT, EQUIP_TYPES.ETYP_ID, EQUIP_TYPES.ETYP_CATEGORY, EQC_COUNT_RT, EQC_COUNT
+                        SELECT ETYP_ID_RT, 
+                            EQUIP_TYPES.ETYP_ID, 
+                            NVL(EQUIP_TYPES.ETYP_CATEGORY,
+                                DECODE(UPPER(EQUIP_TYPES.ETYP_ISRIGID), 'Y', 'R', 
+                                DECODE(UPPER(EQUIP_TYPES.ETYP_SCHEDUL), 'Y', 'T', 'P'))) ETYP_CATEGORY, 
+                            EQC_COUNT_RT, 
+                            EQC_COUNT
                         FROM EQUIP_VW, EQUIP_TYPES
                         WHERE EQC_SUB_ITEM = EQUIP_TYPES.ETYP_ID AND EQUIP_ISLEAF = 1
                     )
