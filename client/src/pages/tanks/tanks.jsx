@@ -133,14 +133,14 @@ const Tanks = () => {
             </TabPane>
 
             <TabPane key="7" tab={t('tabColumns.strapping')} disabled={isLoading}>
-              <TankStrapping code={selected?.tank_code} isLoading={isLoading} access={access} />
+              <TankStrapping code={selected?.tank_code} tanks={read} isLoading={isLoading} access={access} />
             </TabPane>
 
             <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')} disabled={isLoading}></TabPane>
           </Tabs>
         </ListView>
       ) : (
-        <Table data={payload} />
+        <Table data={read?.records} />
       )}
     </Page>
   );

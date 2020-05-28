@@ -1,10 +1,10 @@
 import React from 'react';
-import { Card, Col, Row, Statistic, Divider } from 'antd';
+import { Card, Col, Row, Descriptions } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { Icons, DataTable } from '../../../components';
+import { DataTable } from '../../../components';
 import { folio, movement, ids } from './columns';
 import { DASHBOARD } from '../../../api';
 
@@ -31,25 +31,17 @@ const Home = () => {
                   width: '66%',
                 }}
               >
-                <div style={{ fontSize: 20, color: 'black', fontWeight: '500' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>Active:</div>
+                <Descriptions bordered size="small">
+                  <Descriptions.Item label="Active:" span={12}>
+                    {`${data.tanker_active}  [${
+                      Math.floor((data?.tanker_active / data?.tanker_total) * 100) || 0
+                    }%]`}
+                  </Descriptions.Item>
 
-                    <div style={{ marginLeft: 10 }}>
-                      {`${data.tanker_active}  [${
-                        Math.floor((data?.tanker_active / data?.tanker_total) * 100) || 0
-                      }%]`}
-                    </div>
-                  </div>
-
-                  <Divider style={{ margin: 0 }} />
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>Total:</div>
-
-                    <div style={{ marginLeft: 10 }}>{data.tanker_total}</div>
-                  </div>
-                </div>
+                  <Descriptions.Item label="Total:" span={12}>
+                    {data.tanker_total}
+                  </Descriptions.Item>
+                </Descriptions>
               </div>
 
               <img src="/svg/truck.svg" alt="truck" style={{ height: 150, width: '33%' }} />
@@ -69,25 +61,17 @@ const Home = () => {
                   width: '66%',
                 }}
               >
-                <div style={{ fontSize: 20, color: 'black', fontWeight: '500' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>Active:</div>
+                <Descriptions bordered size="small">
+                  <Descriptions.Item label="Active:" span={12}>
+                    {`${data.personnel_active}  [${
+                      Math.floor((data?.personnel_active / data?.personnel_total) * 100) || 0
+                    }%]`}
+                  </Descriptions.Item>
 
-                    <div style={{ marginLeft: 10 }}>
-                      {`${data.personnel_active}  [${
-                        Math.floor((data?.personnel_active / data?.personnel_total) * 100) || 0
-                      }%]`}
-                    </div>
-                  </div>
-
-                  <Divider style={{ margin: 0 }} />
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>Total:</div>
-
-                    <div style={{ marginLeft: 10 }}>{data.personnel_total}</div>
-                  </div>
-                </div>
+                  <Descriptions.Item label="Total:" span={12}>
+                    {data.personnel_total}
+                  </Descriptions.Item>
+                </Descriptions>
               </div>
 
               <img src="/svg/people.svg" alt="truck" style={{ height: 150, width: '33%' }} />
@@ -107,25 +91,15 @@ const Home = () => {
                   width: '66%',
                 }}
               >
-                <div style={{ fontSize: 20, color: 'black', fontWeight: '500' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>Used:</div>
+                <Descriptions bordered size="small">
+                  <Descriptions.Item label="Used:" span={12}>
+                    {`${data.key_used}  [${Math.floor((data?.key_used / data?.key_available) * 100) || 0}%]`}
+                  </Descriptions.Item>
 
-                    <div style={{ marginLeft: 10 }}>
-                      {`${data.key_used}  [${
-                        Math.floor((data?.key_used / data?.key_available) * 100) || 0
-                      }%]`}
-                    </div>
-                  </div>
-
-                  <Divider style={{ margin: 0 }} />
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>Available:</div>
-
-                    <div style={{ marginLeft: 10 }}>{data.key_available}</div>
-                  </div>
-                </div>
+                  <Descriptions.Item label="Available:" span={12}>
+                    {data.key_available}
+                  </Descriptions.Item>
+                </Descriptions>
               </div>
 
               <img src="/svg/id-assignment.svg" alt="truck" style={{ height: 150, width: '33%' }} />
