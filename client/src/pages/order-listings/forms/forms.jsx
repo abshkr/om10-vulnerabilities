@@ -110,6 +110,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
     });
 
     values.order_items = orderItems;
+    values.order_sys_no = orderNo;
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -243,6 +244,12 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   useEffect(() => {
     getOrderItems();
   }, [orderNo, drawer, getOrderItems]);
+
+  useEffect(() => {
+    if (!value) {
+      resetFields();
+    }
+  }, [value, resetFields]);
 
   return (
     <Drawer
