@@ -16,10 +16,8 @@ export default class ListRenderer extends Component {
     const { values } = this.props;
 
     const getText = (items, item) => {
-      //let option = _.find(items, function(o) { return (_.split(o, '|'))[0] === item; });
-      //return (_.split(option, '|'))[1];
-      let option = _.find(items, function(o) { return o.code === item; });
-      return option?.name;
+      let option = _.find(items, function(o) { return (_.split(o, '|'))[0] === item; });
+      return (_.split(option, '|'))[1];
     };
 
     return (

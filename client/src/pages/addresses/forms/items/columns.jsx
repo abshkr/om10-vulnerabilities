@@ -65,11 +65,13 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.addresss_action==='+' || selected[0]?.addresss_action==='*' || !!value,
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
-        values: _.uniq(_.map(types?.records, (item)=>{return String(item.enum_no)+'|'+item.message;}))
+        //values: _.uniq(_.map(types?.records, (item)=>{return String(item.enum_no)+'|'+item.message;}))
+        values: _.uniq(_.map(types?.records, (item)=>{return {code: String(item.enum_no), name: item.message};}))
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(types?.records, (item)=>{return String(item.enum_no)+'|'+item.message;}))
+        //values: _.uniq(_.map(types?.records, (item)=>{return String(item.enum_no)+'|'+item.message;}))
+        values: _.uniq(_.map(types?.records, (item)=>{return {code: String(item.enum_no), name: item.message};}))
       }
     },
     {
