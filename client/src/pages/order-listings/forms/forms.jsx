@@ -16,6 +16,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import useSWR from 'swr';
 //import moment from 'moment';
+import jwtDecode from 'jwt-decode';
 
 import {
   Supplier,
@@ -43,7 +44,7 @@ import { DataTable } from '../../../components';
 import { SETTINGS } from '../../../constants';
 import { ORDER_LISTINGS } from '../../../api';
 import columns from './columns';
-//import Period from './period';
+import Period from './item-periods';
 
 const TabPane = Tabs.TabPane;
 
@@ -64,10 +65,14 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   const [orderItems, setOrderItems] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
 
-  const { resetFields } = form;
+  const { setFieldsValue, resetFields, validateFields } = form;
 
   const IS_CREATING = !value;
   const CAN_ORDER_PERIOD = selected && value;
+
+  const token = sessionStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const user_code = decoded?.per_code;
 
   const onComplete = () => {
     handleFormState(false, null);
@@ -126,6 +131,14 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
     values.order_dlv_time = values?.order_dlv_time?.format(SETTINGS.DATE_TIME_FORMAT);
     values.order_exp_time = values?.order_exp_time?.format(SETTINGS.DATE_TIME_FORMAT);
     console.log("date after", values.order_ord_time, values.order_dlv_time, values.order_exp_time);
+
+    values.order_styp_id = 0;
+    values.order_totals = 0;
+    values.order_limit = 0;
+    values.order_src_id = 5;
+    if (user_code !== undefined) {
+      values.order_psnl_code = user_code;
+    }
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -202,7 +215,13 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
             order_sys_no: value?.order_sys_no,
           })
           .then(() => {
-            getOrderItems();
+            //getOrderItems();
+            onComplete();
+
+            notification.success({
+              message: t('messages.updateSuccess'),
+              description: t('descriptions.updateSuccess'),
+            });
           })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
@@ -230,7 +249,13 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
             order_sys_no: value?.order_sys_no,
           })
           .then(() => {
-            getOrderItems();
+            //getOrderItems();
+            onComplete();
+
+            notification.success({
+              message: t('messages.updateSuccess'),
+              description: t('descriptions.updateSuccess'),
+            });
           })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
@@ -455,7 +480,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
           </TabPane>
         </Tabs>
       </Form>
-      {/* <Period visible={showPeriod && CAN_ORDER_PERIOD} setVisibility={setShowPeriod} selected={selected} /> */}
+      <Period visible={showPeriod && CAN_ORDER_PERIOD} setVisibility={setShowPeriod} selected={selected} />
     </Drawer>
   );
 };

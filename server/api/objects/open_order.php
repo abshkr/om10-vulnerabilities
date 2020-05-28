@@ -642,4 +642,156 @@ class OpenOrder extends CommonClass
             return null;
         }
     }
+
+    public function order_schedules()
+    {
+        $query = "
+            select
+                co.ORDER_NO as SCHD_ORDER_ID
+                , sd.SHLS_SUPP as SCHD_SUPP_CODE
+                , sp.CMPY_NAME as SCHD_SUPPLIER
+                , sd.SHLS_TRIP_NO as SCHD_TRIP_NO
+                , sd.SHL_TANKER as SCHD_TNKR_CODE
+                , tk.TNKR_NAME as SCHD_TANKER
+                , tk.TNKR_CARRIER as SCHD_CARR_CODE
+                , ca.CMPY_NAME as SCHD_CARRIER
+                , sd.SHLS_CALDATE as SCHD_DATE
+                , NVL (sd.STATS, 'F') as SCHD_STATUS_CODE
+                , DECODE(st.STATUS_TEXT, NULL, 'UNKNOWN', st.STATUS_TEXT) as SCHD_STATUS
+            from 
+                CUST_ORDER co
+                , ORD_SCHEDULE os
+                , SCHEDULE sd
+                , COMPANYS sp
+                , TANKERS tk
+                , COMPANYS ca
+                , SCHEDULE_STATUS_SHORT_LOOKUP st
+            where 
+                co.ORDER_NO = os.OS_ORDER_NO
+                and os.OS_SHL_SHLSTRIP =  sd.SHLS_TRIP_NO
+                and os.OS_SHL_SHLSSUPP =  sd.SHLS_SUPP
+                and sd.SHLS_SUPP = sp.CMPY_CODE
+                and sd.SHL_TANKER = tk.TNKR_CODE
+                and tk.TNKR_CARRIER = ca.CMPY_CODE
+                and NVL (sd.STATS, 'F') = st.STATUS_CODE(+)
+                and co.ORDER_NO=:order_id 
+            order by
+                sd.SHLS_SUPP, sd.SHLS_TRIP_NO
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (!isset($this->order_sys_no) || $this->order_sys_no === 'undefined') {
+            $this->order_sys_no = -1;
+        }
+        oci_bind_by_name($stmt, ':order_id', $this->order_sys_no);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    private function order_assign_mode()
+    {
+        $query = "
+          select count(*) as CNT
+          from SITE_CONFIG 
+          where CONFIG_KEY='OO_TO_ONE_TRIP' 
+            and CONFIG_VALUE='S'
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return -1;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        return $row['CNT'];
+    }
+
+    public function order_item_schedules()
+    {
+        $query = "";
+		$singleOO = $this->isSingleOrderToOneTripCmpt();
+		
+		if ( $singleOO === 1 ) { // assign single order to one trip compartment
+            $query = "
+                select 
+                    sc.SCHD_ORDER as SCHD_ORDER_ID 
+                    , sc.SCHDSPEC_SHLSSUPP as SCHD_SUPP_CODE 
+                    , sp.CMPY_NAME as SCHD_SUPPLIER 
+                    , sc.SCHDSPEC_SHLSTRIP as SCHD_TRIP_NO 
+                    , sc.SCHD_COMP_ID as SCHD_CMPT_NO 
+                    , sc.SCHDPROD_PRODCODE as SCHD_PROD_CODE 
+                    , sc.SCHDPROD_PRODCMPY as SCHD_PROD_CMPY  
+                    , pd.PROD_NAME as SCHD_PROD_NAME 
+                    , sc.SCHD_SPECQTY as SCHD_PROD_QTY 
+                    , sc.SCHD_UNITS as SCHD_PROD_UNIT 
+                    , un.DESCRIPTION as SCHD_UNIT_NAME 
+                from 
+                    SPECDETS sc 
+                    , COMPANYS sp 
+                    , PRODUCTS pd 
+                    , UNIT_SCALE_VW un 
+                where 
+                    sc.SCHD_ORDER = :order_id 
+                    and sc.SCHDPROD_PRODCODE = :order_prod_code 
+                    and sc.SCHDPROD_PRODCMPY = :order_prod_cmpy 
+                    and sc.SCHDSPEC_SHLSSUPP = sp.CMPY_CODE 
+                    and sc.SCHDPROD_PRODCODE = pd.PROD_CODE  
+                    and sc.SCHDPROD_PRODCMPY = pd.PROD_CMPY  
+                    and sc.SCHD_UNITS = un.UNIT_ID 
+                order by
+                    sc.SCHDSPEC_SHLSSUPP, sc.SCHDSPEC_SHLSTRIP, sc.SCHD_COMP_ID 
+            ";
+        }
+        else { // assign multiple order to one trip compartment
+            $query = "
+                select 
+                    so.SCHORDER_ORD as SCHD_ORDER_ID 
+                    , so.SCHO_DAD_SCHDSPEC_SHLSSUPP as SCHD_SUPP_CODE 
+                    , sp.CMPY_NAME as SCHD_SUPPLIER 
+                    , so.SCHO_DAD_SCHDSPEC_SHLSTRIP as SCHD_TRIP_NO 
+                    , so.SCHO_DAD_SCHDCMPT as SCHD_CMPT_NO 
+                    , sc.SCHDPROD_PRODCODE as SCHD_PROD_CODE 
+                    , sc.SCHDPROD_PRODCMPY as SCHD_PROD_CMPY  
+                    , pd.PROD_NAME as SCHD_PROD_NAME 
+                    , so.SCHORDER_QTY as SCHD_PROD_QTY 
+                    , sc.SCHD_UNITS as SCHD_PROD_UNIT 
+                    , un.DESCRIPTION as SCHD_UNIT_NAME 
+                from 
+                    SPECDETS sc 
+                    , SPEC_ORDERS so
+                    , COMPANYS sp 
+                    , PRODUCTS pd 
+                    , UNIT_SCALE_VW un 
+                where 
+                    so.SCHORDER_ORD = :order_id 
+                    and sc.SCHDPROD_PRODCODE = :order_prod_code 
+                    and sc.SCHDPROD_PRODCMPY = :order_prod_cmpy 
+                    and sc.SCHDSPEC_SHLSSUPP = sp.CMPY_CODE 
+                    and sc.SCHDPROD_PRODCODE = pd.PROD_CODE  
+                    and sc.SCHDPROD_PRODCMPY = pd.PROD_CMPY  
+                    and sc.SCHD_UNITS = un.UNIT_ID 
+                    and sc.SCHDSPEC_SHLSSUPP = so.SCHO_DAD_SCHDSPEC_SHLSSUPP 
+                    and sc.SCHDSPEC_SHLSTRIP = so.SCHO_DAD_SCHDSPEC_SHLSTRIP 
+                    and sc.SCHD_COMP_ID = so.SCHO_DAD_SCHDCMPT 
+                order by 
+                    so.SCHO_DAD_SCHDSPEC_SHLSSUPP, so.SCHO_DAD_SCHDSPEC_SHLSTRIP, so.SCHO_DAD_SCHDCMPT 
+            ";
+        }
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':order_id', $this->oitem_order_id);
+        oci_bind_by_name($stmt, ':order_prod_code', $this->oitem_prod_code);
+        oci_bind_by_name($stmt, ':order_prod_cmpy', $this->oitem_prod_cmpy);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }

@@ -1,5 +1,7 @@
 export const READ = '/api/pages/open_order/read.php';
 export const ORDER_ITEMS = '/api/pages/open_order/order_items.php';
+export const ORDER_ITEM_TRIPS = '/api/pages/open_order/order_item_trips.php';
+export const ORDER_TRIPS = '/api/pages/open_order/order_trips.php';
 export const NEXT_CUST_ORDER = '/api/pages/open_order/next_cust_order.php';
 export const SUPPLIERS = '/api/pages/open_order/suppliers.php';
 export const CARRIERS = '/api/pages/open_order/carriers.php';
@@ -20,3 +22,11 @@ export const UPDATE = '/api/pages/open_order/update.php';
 export const DELETE = '/api/pages/open_order/delete.php';
 export const APPROVE = '/api/pages/open_order/approve.php';
 export const UNAPPROVE = '/api/pages/open_order/unapprove.php';
+
+// Order Period
+
+export const PERIOD_READ = '/api/pages/open_order/ordperiod_read.php';
+
+export const PERIOD_CREATE = '/api/pages/open_order/ordperiod_create.php';
+export const PERIOD_UPDATE = '/api/pages/open_order/ordperiod_update.php';
+export const PERIOD_DELETE = '/api/pages/open_order/ordperiod_delete.php';
