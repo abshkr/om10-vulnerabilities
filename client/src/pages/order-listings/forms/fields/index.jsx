@@ -17,7 +17,7 @@ import ShipTo from './ship-to';
 import TransferType from './transfer-type';
 import ApproveFlag from './approve-flag';
 import OrderInstructions from './order-instructions';
-import UnitType from './unit-editor';
+//import UnitType from './unit-editor';
 
 export {
   Supplier,
@@ -39,5 +39,5 @@ export {
   TransferType,
   ApproveFlag,
   OrderInstructions,
-  UnitType
+//  UnitType
 };

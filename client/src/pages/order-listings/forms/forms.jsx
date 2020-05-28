@@ -15,6 +15,7 @@ import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 import useSWR from 'swr';
+//import moment from 'moment';
 
 import {
   Supplier,
@@ -39,6 +40,7 @@ import {
 } from './fields';
 
 import { DataTable } from '../../../components';
+import { SETTINGS } from '../../../constants';
 import { ORDER_LISTINGS } from '../../../api';
 import columns from './columns';
 //import Period from './period';
@@ -47,6 +49,7 @@ const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   const { data: units } = useSWR(ORDER_LISTINGS.UNIT_TYPES);
+  const { data: siteData } = useSWR(ORDER_LISTINGS.SITE_CODE);
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -57,8 +60,6 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   const [selected, setSelected] = useState(null);
   const [approved, setApproved] = useState(value?.order_approved);
   const [carrier, setCarrier] = useState(undefined);
-  const [type, setType] = useState(undefined);
-  const [lockType, setLockType] = useState(undefined);
 
   const [orderItems, setOrderItems] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
@@ -71,6 +72,9 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   const onComplete = () => {
     handleFormState(false, null);
     mutate(ORDER_LISTINGS.READ);
+    setSupplier(undefined);
+    setDrawer(undefined);
+    setSelected(null);
   };
 
   const getOrderItems = useCallback(() => {
@@ -110,7 +114,18 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
     });
 
     values.order_items = orderItems;
-    values.order_sys_no = orderNo;
+    if (value?.order_sys_no === undefined) {
+      values.order_sys_no = -1;
+    }
+    else {
+      values.order_sys_no = value?.order_sys_no;
+    }
+    console.log("values:", value?.order_sys_no, orderNo, values)
+    console.log("date before", values.order_ord_time, values.order_dlv_time, values.order_exp_time);
+    values.order_ord_time = values?.order_ord_time?.format(SETTINGS.DATE_TIME_FORMAT);
+    values.order_dlv_time = values?.order_dlv_time?.format(SETTINGS.DATE_TIME_FORMAT);
+    values.order_exp_time = values?.order_exp_time?.format(SETTINGS.DATE_TIME_FORMAT);
+    console.log("date after", values.order_ord_time, values.order_dlv_time, values.order_exp_time);
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -248,6 +263,10 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   useEffect(() => {
     if (!value) {
       resetFields();
+      setOrderItems([]);
+      setSupplier(undefined);
+      setDrawer(undefined);
+      setSelected(null);
     }
   }, [value, resetFields]);
 
@@ -321,7 +340,18 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError initialValues={value}>
+      <Form 
+        layout="vertical" 
+        form={form} 
+        scrollToFirstError 
+        initialValues={{
+          order_cust_no: null,
+          order_ttyp_id: '0',
+          order_dtrm_code: siteData?.records[0].site_code, 
+          order_strm_code: siteData?.records[0].site_code, 
+          order_stat_id: '0',
+        }}
+      >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <Row gutter={[8, 8]}>
@@ -419,9 +449,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
                 minimal
                 columns={columns(t, pageState, form, units)}
                 handleSelect={(value) => setSelected(value[0])}
-                /* components={{
-                  UnitEditor: UnitType,
-                }} */
+                //apiContext={setTableAPI}
               />
             </Form.Item>
           </TabPane>

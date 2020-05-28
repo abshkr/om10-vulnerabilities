@@ -30,7 +30,8 @@ const ExpiryDate= ({ form, value, pageState }) => {
       });
     } else {
       setFieldsValue({
-        order_exp_time: moment(),
+        //order_exp_time: moment(),
+        order_exp_time: moment().add(365,'days'),//.format(SETTINGS.DATE_TIME_FORMAT),
       });
     }
   }, [value, setFieldsValue]);

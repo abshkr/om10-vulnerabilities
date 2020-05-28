@@ -127,7 +127,12 @@ const columns = (t, pageState, form, units) => [
     editable: false,
     width: 160,
     cellRenderer: 'QuantityRenderer',
-  },
+    cellRendererParams: {
+      total: 100000,
+      colorAvail: '#00FF00',
+      colorUsed: '#FF0000',
+    },
+},
   {
     headerName: t('fields.oitemLoadQty'),
     field: 'oitem_load_qty',
@@ -138,6 +143,11 @@ const columns = (t, pageState, form, units) => [
     editable: false,
     width: 160,
     cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      total: 100000,
+      colorAvail: '#00FF00',
+      colorUsed: '#FF0000',
+    },
   },
   {
     headerName: t('fields.oitemDelvQty'),
@@ -149,6 +159,11 @@ const columns = (t, pageState, form, units) => [
     editable: false,
     width: 160,
     cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      total: 100000,
+      colorAvail: '#00FF00',
+      colorUsed: '#FF0000',
+    },
   },
   {
     headerName: t('fields.oitemExemptNo'),
