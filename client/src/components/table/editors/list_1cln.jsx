@@ -31,11 +31,8 @@ export default class ListEditor extends Component {
       <div style={{ display: 'flex' }}>
         <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick} bordered={false}>
           {values?.map((item) => (
-            //<Select.Option key={(_.split(item, '|'))[0]} value={(_.split(item, '|'))[0]}>
-            //  {(_.split(item, '|'))[1]}
-            //</Select.Option>
-            <Select.Option key={item.code} value={item.code}>
-              {item.name}
+            <Select.Option key={(_.split(item, '|'))[0]} value={(_.split(item, '|'))[0]}>
+              {(_.split(item, '|'))[1]}
             </Select.Option>
           ))}
         </Select>

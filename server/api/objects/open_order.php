@@ -611,6 +611,9 @@ class OpenOrder extends CommonClass
                 and (-1=:order_counter or OI_INSTR_COUNTER=:order_counter) 
         ";
         $stmt = oci_parse($this->conn, $query);
+        if (!isset($this->order_sys_no) || $this->order_sys_no === 'undefined') {
+            $this->order_sys_no = -1;
+        }
         oci_bind_by_name($stmt, ':order_id', $this->order_sys_no);
         if (!isset($this->order_instruct_counter)) {
             $this->order_instruct_counter = -1;

@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { ORDER_LISTINGS } from '../../../../api';
 
-const OrderInstructions = ({ form, value }) => {
+const OrderInstructions = ({ form, value, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -18,9 +18,11 @@ const OrderInstructions = ({ form, value }) => {
           console.log('Entered onSuccess!!!'); 
           console.log({data}); 
           let txt='';
-          data.records.forEach((item) => {
-            txt += item.oinst_text;
-          });
+          if (data.records.length > 0) {
+            data.records.forEach((item) => {
+              txt += item.oinst_text;
+            });
+          }
           value.order_instructions = txt;
         }
     }
@@ -31,10 +33,10 @@ const OrderInstructions = ({ form, value }) => {
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.orderInstructions')}`);
     }
-    */
     if (input && input.length > 60) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 60 ─ ${t('descriptions.maxCharacters')}`);
     }
+    */
 
     return Promise.resolve();
   };
@@ -48,8 +50,14 @@ const OrderInstructions = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="order_instructions" label={t('fields.orderInstructions')} rules={[{ required: false, validator: validate }]}>
-      <Input.TextArea />
+    <Form.Item 
+      name="order_instructions" 
+      label={t('fields.orderInstructions')} 
+      rules={[{ required: false, validator: validate }]}
+    >
+      <Input.TextArea 
+        disabled={(pageState==='create'||pageState==='edit')? false : true}
+      />
     </Form.Item>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import moment from 'moment';
@@ -43,17 +43,24 @@ const OrderListings = () => {
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
-    if (!value) {
-      setPageState('create');
-    }
-    else {
-      if(value.order_approved) {
-        setPageState('detail');
+    /*
+    if (visibility) {
+      if (!value) {
+        setPageState('create');
       }
       else {
-        setPageState('edit');
+        if(value.order_approved) {
+          setPageState('detail');
+        }
+        else {
+          setPageState('edit');
+        }
       }
     }
+    else {
+      setPageState('view');
+    }
+    */
   };
 
   const setRange = (start, end) => {
@@ -69,6 +76,25 @@ const OrderListings = () => {
 
   const page = t('pageMenu.customers');
   const name = t('pageNames.orderListing');
+
+  useEffect(() => {
+    if (visible) {
+      if (!selected) {
+        setPageState('create');
+      }
+      else {
+        if(selected.order_approved) {
+          setPageState('detail');
+        }
+        else {
+          setPageState('edit');
+        }
+      }
+    }
+    else {
+      setPageState('view');
+    }
+  }, [visible, selected]);
 
   const modifiers = (
     <>

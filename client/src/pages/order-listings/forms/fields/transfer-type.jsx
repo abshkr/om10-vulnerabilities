@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-const TransferType = ({ form, value }) => {
+const TransferType = ({ form, value, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -29,8 +29,14 @@ const TransferType = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="order_trsf_type" label={t('fields.orderTrsfType')} rules={[{ required: false, validator: validate }]}>
-      <Input />
+    <Form.Item 
+      name="order_trsf_type" 
+      label={t('fields.orderTrsfType')} 
+      rules={[{ required: false, validator: validate }]}
+    >
+      <Input 
+        disabled={(pageState==='create'||pageState==='edit')? false : true}
+      />
     </Form.Item>
   );
 };

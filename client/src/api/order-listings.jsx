@@ -6,6 +6,7 @@ export const CARRIERS = '/api/pages/open_order/carriers.php';
 export const SUPP_CUSTOMERS = '/api/pages/open_order/supp_customers.php';
 export const DRAWERS = '/api/pages/open_order/drawers.php';
 export const DELV_LOCATIONS = '/api/pages/open_order/delv_locations.php';
+export const TERMINAL = '/api/pages/open_order/terminals.php';
 export const SHIP_TO = '/api/pages/open_order/ship_to.php';
 export const SOLD_TO = '/api/pages/open_order/sold_to.php';
 export const TRANSPORT_TYPES = '/api/pages/open_order/transport_types.php';

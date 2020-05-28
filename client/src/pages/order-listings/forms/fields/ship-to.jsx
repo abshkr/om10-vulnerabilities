@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { ORDER_LISTINGS } from '../../../../api';
 
-const ShipTo = ({ form, value, supplier }) => {
+const ShipTo = ({ form, value, supplier, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -26,7 +26,7 @@ const ShipTo = ({ form, value, supplier }) => {
       <Select
         loading={isValidating}
         showSearch
-        disabled={false}
+        disabled={(pageState==='create'||pageState==='edit'||pageState==='detail')? false : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectShipTo') : null}
         filterOption={(value, option) =>

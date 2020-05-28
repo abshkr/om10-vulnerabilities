@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { ORDER_LISTINGS } from '../../../../api';
 
-const Carrier = ({ form, value, onChange }) => {
+const Carrier = ({ form, value, onChange, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -14,10 +14,11 @@ const Carrier = ({ form, value, onChange }) => {
   const { data: options, isValidating } = useSWR(ORDER_LISTINGS.CARRIERS);
 
   const validate = (rule, input) => {
+    /*
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.orderCarrName')}`);
     }
-
+    */
     return Promise.resolve();
   };
 
@@ -39,13 +40,13 @@ const Carrier = ({ form, value, onChange }) => {
     <Form.Item
       name="order_carr_code"
       label={t('fields.orderCarrName')}
-      rules={[{ required: true, validator: validate }]}
+      rules={[{ required: false, validator: validate }]}
     >
       <Select
         loading={isValidating}
         showSearch
         onChange={onCarrierChange}
-        disabled={false}
+        disabled={(pageState==='create'||pageState==='edit')? false : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCarrier') : null}
         filterOption={(value, option) =>

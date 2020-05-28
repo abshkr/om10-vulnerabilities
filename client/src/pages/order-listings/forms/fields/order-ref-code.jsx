@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-const OrderRefCode = ({ form, value }) => {
+const OrderRefCode = ({ form, value, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -29,8 +29,14 @@ const OrderRefCode = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="order_ref_code" label={t('fields.orderRefCode')} rules={[{ required: false, validator: validate }]}>
-      <Input />
+    <Form.Item 
+      name="order_ref_code" 
+      label={t('fields.orderRefCode')} 
+      rules={[{ required: false, validator: validate }]}
+    >
+      <Input 
+        disabled={(pageState==='create'||pageState==='edit')? false : true}
+      />
     </Form.Item>
   );
 };

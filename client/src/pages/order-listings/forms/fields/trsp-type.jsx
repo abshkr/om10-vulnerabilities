@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ORDER_LISTINGS } from '../../../../api';
 import { Form, Select } from 'antd';
 
-const TransportType = ({ form, value }) => {
+const TransportType = ({ form, value, pageState }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(ORDER_LISTINGS.TRANSPORT_TYPES);
@@ -38,6 +38,7 @@ const TransportType = ({ form, value }) => {
       <Select
         loading={isValidating}
         showSearch
+        disabled={(pageState==='create'||pageState==='edit')? false : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectTrspType') : null}
         filterOption={(input, option) =>
