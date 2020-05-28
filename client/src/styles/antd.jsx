@@ -8,6 +8,10 @@ const AntdStyleProvider = createGlobalStyle`
    
   }
 
+  .ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab-disabled {
+    color: rgba(0, 0, 0, 0.25) !important;
+  }
+  
   .ant-tabs-bar {
     border-bottom: none;
   }

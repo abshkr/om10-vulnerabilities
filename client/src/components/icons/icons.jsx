@@ -24,8 +24,12 @@ import { ReactComponent as Refresh } from './rotate.svg';
 import { ReactComponent as Export } from './arrow.svg';
 import { ReactComponent as Search } from './search.svg';
 import { ReactComponent as Tanks } from './fuel.svg';
+import { ReactComponent as Product } from './product.svg';
+import { ReactComponent as Office } from './office.svg';
+import { ReactComponent as Modules } from './modules.svg';
+import { ReactComponent as Config } from './settings.svg';
 
-const matrix = {
+const enumerator = {
   gantry: Gantry,
   dashboard: Dashboard,
   schedules: Schedules,
@@ -47,11 +51,15 @@ const matrix = {
   export: Export,
   search: Search,
   tanks: Tanks,
+  products: Product,
+  companies: Office,
+  modules: Modules,
+  config: Config,
 };
 
 const Icons = (props) => (
   <Icon
-    component={matrix[props.type]}
+    component={enumerator[props.type]}
     {...props}
     style={{
       transform: props.scale ? `'scale(${props.scale})'` : 'scale(1)',

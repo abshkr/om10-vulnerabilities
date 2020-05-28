@@ -7,7 +7,9 @@ import _ from 'lodash';
 
 import { TANKS } from '../../api';
 import { useAuth, useConfig } from '../../hooks';
-import { Page, Download, ListView } from '../../components';
+import { Page, Download, ListView, FormModal } from '../../components';
+
+import TankConfigurationForm from '../tank-configuration/forms';
 
 import Calculations from './calculations';
 import TankStrapping from './strapping';
@@ -33,7 +35,6 @@ const Tanks = () => {
   const [selected, setSelected] = useState(null);
   const [payload, setPayload] = useState([]);
   const [mode, setMode] = useState('1');
-  const [tab, setTab] = useState('1');
 
   const simple = mode === '1';
   const fields = columns(t);
@@ -46,6 +47,16 @@ const Tanks = () => {
     setSelected(value);
   };
 
+  const onCreate = (value) => {
+    FormModal({
+      value,
+      form: <TankConfigurationForm value={value} config={config} />,
+      id: value?.tank_code,
+      name: value?.tank_name,
+      t,
+    });
+  };
+
   const onViewChange = () => {
     const view = simple ? '2' : '1';
 
@@ -54,7 +65,7 @@ const Tanks = () => {
 
   const modifiers = (
     <>
-      <Button shape="round" type="primary" onClick={onViewChange}>
+      <Button shape="round" type="primary" onClick={onViewChange} loading={isLoading}>
         {simple ? t('operations.list') : t('operations.simple')}
       </Button>
 
@@ -64,7 +75,13 @@ const Tanks = () => {
 
       <Download round data={payload} isLoading={isLoading} columns={fields} />
 
-      <Button type="primary" shape="round" loading={isLoading} disabled={!access.canCreate}>
+      <Button
+        type="primary"
+        shape="round"
+        loading={isLoading}
+        disabled={!access.canCreate}
+        onClick={() => onCreate(null)}
+      >
         {t('operations.create')}
       </Button>
     </>
@@ -109,7 +126,7 @@ const Tanks = () => {
           description={description}
           selected={selected?.tank_code}
         >
-          <Tabs defaultActiveKey="1" type="card" onChange={setTab}>
+          <Tabs defaultActiveKey="1" type="card">
             <TabPane key="1" tab={t('tabColumns.overview')} disabled={isLoading}>
               <Overview selected={selected} isLoading={isLoading} />
             </TabPane>
@@ -132,11 +149,20 @@ const Tanks = () => {
               <Gauging selected={selected} access={access} isLoading={isLoading} />
             </TabPane>
 
-            <TabPane key="7" tab={t('tabColumns.strapping')} disabled={isLoading}>
-              <TankStrapping code={selected?.tank_code} tanks={read} isLoading={isLoading} access={access} />
-            </TabPane>
+            {config.manageTankStrapping && (
+              <TabPane key="7" tab={t('tabColumns.strapping')} disabled={isLoading}>
+                <TankStrapping
+                  code={selected?.tank_code}
+                  tanks={read}
+                  isLoading={isLoading}
+                  access={access}
+                />
+              </TabPane>
+            )}
 
-            <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')} disabled={isLoading}></TabPane>
+            {config.manageAdaptiveFlow && (
+              <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')} disabled></TabPane>
+            )}
           </Tabs>
         </ListView>
       ) : (

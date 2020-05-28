@@ -133,7 +133,7 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
         strap_volume: 0,
       });
     }
-  }, [resetFields, code, selected]);
+  }, [resetFields, setFieldsValue, code, selected]);
 
   useEffect(() => {
     if (selected) {
