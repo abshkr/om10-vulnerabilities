@@ -973,7 +973,10 @@
     "runAndOverride": "Run and Override",
     "orderPeriod": "Order Period",
     "approve": "Approve",
-    "unapprove": "Unapprove"
+    "unapprove": "Unapprove",
+	"addBase": "Add Base Product",
+	"editBase": "Edit Base Product",
+	"deleteBase": "Delete Base Product"
   },
 
   "tabColumns": {

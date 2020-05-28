@@ -10,7 +10,7 @@ const Generic = ({ form, value }) => {
 
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(DRAWER_PRODUCTS.HAZCHEMS);
+  const { data: options, isValidating } = useSWR(DRAWER_PRODUCTS.GENERICS);
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
@@ -22,7 +22,7 @@ const Generic = ({ form, value }) => {
 
   const handleChange = (value) => {
     setFieldsValue({
-      prod_cmpycode: undefined,
+      gen_prod_code: value,
     });
   };
 

@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { DRAWER_PRODUCTS } from '../../../../api';
 
-const DrawerCompany = ({ form, value, onChange }) => {
+const DrawerCompany = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -13,6 +13,8 @@ const DrawerCompany = ({ form, value, onChange }) => {
   const { data: options, isValidating } = useSWR(DRAWER_PRODUCTS.DRAWERS);
 
   const validate = (rule, input) => {
+    console.log("drawer validate")
+    console.log(input)
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.drawer')}`);
     }
@@ -21,10 +23,8 @@ const DrawerCompany = ({ form, value, onChange }) => {
   };
 
   const handleChange = (value) => {
-    onChange(value);
-
     setFieldsValue({
-      prod_cmpycode: undefined,
+      prod_cmpycode: value,
     });
   };
 
@@ -33,10 +33,8 @@ const DrawerCompany = ({ form, value, onChange }) => {
       setFieldsValue({
         prod_cmpycode: value.prod_cmpycode,
       });
-
-      onChange(value.prod_cmpycode);
     }
-  }, [value, setFieldsValue, onChange]);
+  }, [value, setFieldsValue]);
 
   return (
     <Form.Item name="prod_cmpycode" label={t('fields.drawer')} rules={[{ required: true, validator: validate }]}>

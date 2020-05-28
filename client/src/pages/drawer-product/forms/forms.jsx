@@ -5,10 +5,11 @@ import {
   PlusOutlined,
   DeleteOutlined,
   QuestionCircleOutlined,
+  CloseOutlined,
   RedoOutlined,
   ClockCircleOutlined,
 } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Checkbox, Col, Row, Input } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Checkbox, Col, Row, Input, Select, InputNumber } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
@@ -17,47 +18,59 @@ import { DRAWER_PRODUCTS } from '../../../api';
 import useSWR from 'swr';
 
 import { DrawerCompany, LoadTolerance, ProductCode, ProductName, Group, Hazchem, Generic } from './fields';
-import { DataTable } from '../../../components';
+import { DataTable, FormModal } from '../../../components';
 import { ALLOCATIONS } from '../../../api';
 import columns from './columns';
+import BaseProductForm from './base-form';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const DrawerForm = ({ value, visible, handleFormState, access }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { TextArea } = Input;
-  const { data: payload } = useSWR(`${DRAWER_PRODUCTS.BASES}?prod_code=${value?.prod_code}&prod_cmpycode=${value?.prod_cmpycode}`);
-  // const bases = payload?.records;
-  console.log("Start")
-  console.log(value)
   
-  const [type, setType] = useState(undefined);
   const [bases, setBases] = useState([]);
-  const [ prod_is_compliant, setCompliant ] = useState(value?.prod_ldtol_flag)
-  const [ prod_is_locked, setLocked ] = useState(value?.prod_is_locked)
-  const [supplier, setSupplier] = useState(undefined);
-  const [lockType, setLockType] = useState(undefined);
+  const [prod_is_compliant, setCompliant] = useState(value?.prod_ldtol_flag)
+  const [prod_is_locked, setLocked] = useState(value?.prod_is_locked)
   const [selected, setSelected] = useState(null);
-  // console.log(bases)
-  // console.log(payload?.records)
 
-  // if (payload?.records.length > 0) {
-  //   setBases(payload?.records)
-  // }
+  const [baseLoading, setBaseLoading] = useState(true);
+  const [newBase, setNewBase] = useState(null);
 
   const { resetFields, setFieldsValue } = form;
-  // setFieldsValue({
-  //   bases: bases,
-  // });
 
   const IS_CREATING = !value;
 
-  const addBase = () => {
-    let payload = [...bases, {
-      pitem_prod_code: null,
-      pitem_prod_name: null,
-    }]
+  const handleBaseCallBack = (values) => {
+    if (values.to_delete) {
+      return deleteBase();
+    }
+
+    let payload = null;
+    if (!values.to_create) {
+      payload = [..._.filter(bases, (item) => {
+        return item.pitem_base_code !== selected.pitem_base_code
+      }), {
+        pitem_base_code: values.pitem_base_code,
+        pitem_bltol_ntol: values.pitem_bltol_ntol,
+        pitem_bltol_flag: values.pitem_bltol_flag,
+        pitem_bltol_ptol: values.pitem_bltol_ptol,
+        pitem_ratio_value: values.pitem_ratio_value,
+        pitem_base_name: values.pitem_base_name,
+      }]
+      setSelected(null)
+    } else {
+      payload = [...bases, {
+        pitem_base_code: values.pitem_base_code,
+        pitem_bltol_ntol: values.pitem_bltol_ntol,
+        pitem_bltol_flag: values.pitem_bltol_flag,
+        pitem_bltol_ptol: values.pitem_bltol_ptol,
+        pitem_ratio_value: values.pitem_ratio_value,
+        pitem_base_name: values.pitem_base_name,
+      }]
+    }
+      
     form.setFieldsValue({
       bases: payload,
     });
@@ -65,28 +78,51 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     setBases(payload);
   }
 
+  const deleteBase = () => {
+    let payload = _.filter(bases, (item) => {
+      return item.pitem_base_code !== selected.pitem_base_code
+    });
+    form.setFieldsValue({
+      bases: payload,
+    });
+
+    setBases(payload);
+    setSelected(null)
+  }
+
+  const handleBase = (v) => {
+    FormModal({
+      width: "50vh",
+      value,
+      form: <BaseProductForm value={v} handleBaseCallBack={handleBaseCallBack}/>,
+      id: v?.pitem_base_code,
+      name: v?.pitem_base_name,
+      t
+    });
+  }
+
   const getBases = useCallback(() => {
     axios
       .get(`${DRAWER_PRODUCTS.BASES}?prod_code=${value?.prod_code}&prod_cmpycode=${value?.prod_cmpycode}`)
       .then((response) => {
         const payload = response.data?.records || [];
-
         form.setFieldsValue({
           bases: payload,
         });
 
         setBases(payload);
+        setBaseLoading(false);
       });
   });
   
   const onComplete = () => {
     handleFormState(false, null); 
+    setSelected(null);
     mutate(DRAWER_PRODUCTS.READ);
   };
 
   const onFinish = async () => {
     const values = await form.validateFields();
-    console.log(values)
     if (values.bases === undefined || values.bases.length <= 0) {
       Modal.info({
         title: t('prompts.notEnoughBase'),
@@ -159,14 +195,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
-
-      setType(undefined);
-      setSupplier(undefined);
-      setLockType(undefined);
     } 
 
     if (value) {
-      console.log("setFieldsValue in useEffect")
       setFieldsValue({
         prod_desc: value.prod_desc,
         prod_is_compliant: value.prod_is_compliant,
@@ -176,24 +207,8 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       setLocked(value.prod_is_locked)
       getBases();
     }
-    console.log("useEffect")
-    console.log(bases)
-    // if (bases) {
-    //   setFieldsValue({
-    //     bases: value.bases,
-    //   });
-    // }
-
-    // if (payload?.records.length > 0) {
-    //   setBases(payload?.records)
-    // }
-    // if (value.prod_code && value.prod_cmpycode) {
-    //   getBases();
-    // }
-
+    
   }, [resetFields, value, visible]);
-  // }, [resetFields, value, visible, bases]);
-
 
   const layout = {
     labelCol: {
@@ -216,7 +231,14 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       visible={visible}
       footer={
         <>
-            
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
 
           <Button
             type="primary"
@@ -244,7 +266,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       <Form {...layout} form={form} scrollToFirstError initialValues={value}>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <DrawerCompany form={form} value={value} onChange={setType} />
+            <DrawerCompany form={form} value={value} />
             <ProductCode form={form} value={value} />
             <ProductName form={form} value={value} />
             <Group form={form} value={value} />
@@ -284,26 +306,48 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             <Form.Item name="prod_desc" label={t('fields.description')} >
               <TextArea rows={3} />
             </Form.Item>
-            {/* <Company form={form} value={value} /> */}
             <Divider orientation="left">{t('fields.baseProducts')}</Divider>
             <Form.Item name="bases" noStyle >
               <DataTable
                 data={bases}
                 height="70vh"
                 minimal
-                columns={columns(t, IS_CREATING)}
+                columns={columns(t)}
                 handleSelect={(value) => setSelected(value[0])}
               />
             </Form.Item>
+            
+            
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              loading={baseLoading && !IS_CREATING}
+              onClick={()=>handleBase(null)}
+              style={{ float: 'right', marginRight: 5, marginTop: 10 }}
+            >
+              {t('operations.addBase')}
+            </Button>
 
             <Button
               type="primary"
-              // icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
-              onClick={addBase}
+              icon={<EditOutlined />}
+              onClick={()=>handleBase(selected)}
+              style={{ float: 'right', marginRight: 5, marginTop: 10 }}
+              disabled={!selected}
+            >
+              {t('operations.editBase')}
+            </Button>
+
+            <Button
+              type="danger"
+              icon={<DeleteOutlined />}
+              onClick={deleteBase}
+              disabled={!selected}
               style={{ float: 'right', marginRight: 5, marginTop: 10 }}
             >
-              {t('operations.add')}
-            ></Button>
+              {t('operations.deleteBase')}
+            </Button>
+
           </TabPane>
         </Tabs>
       </Form>
@@ -311,4 +355,4 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   );
 };
 
-export default FormModal;
+export default DrawerForm;

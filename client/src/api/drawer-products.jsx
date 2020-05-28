@@ -9,7 +9,7 @@ export const HAZCHEMS = '/api/pages/product/hazchems.php';
 export const GENERICS = '/api/pages/product/generic_prods.php';
 export const CARRIERS = '/api/pages/product/carriers.php';
 export const CUSTOMERS = '/api/pages/product/customers.php';
-export const ITEMS = '/api/pages/product/alloc_items.php';
+export const AVAILABLE_BASES = '/api/pages/product/base_products.php';
 export const BASES = '/api/pages/product/prod_ratios.php';
 
 export const CREATE = '/api/pages/product/create.php';
