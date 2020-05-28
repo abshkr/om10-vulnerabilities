@@ -17,6 +17,7 @@ import {
   EquipmentRenderer,
   ListRenderer,
   AffixRenderer,
+  QuantityRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -41,6 +42,7 @@ const defaultComponents = {
   EquipmentRenderer,
   AffixRenderer,
   ListRenderer,
+  QuantityRenderer,
   ATGRenderer,
   TagRenderer,
   NullRenderer,

@@ -10,6 +10,7 @@ import MarkRenderer from './mark';
 import EquipmentRenderer from './equipment';
 import ListRenderer from './list';
 import AffixRenderer from './affix';
+import QuantityRenderer from './quantity';
 
 export {
   BooleanRenderer,
@@ -24,4 +25,5 @@ export {
   EquipmentRenderer,
   ListRenderer,
   AffixRenderer,
+  QuantityRenderer,
 };

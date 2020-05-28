@@ -21,7 +21,6 @@ const columns = (t, isCreating) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: true,
   },
   {
     headerName: t('fields.blendToleranceCheck'),
@@ -30,10 +29,6 @@ const columns = (t, isCreating) => [
     sortable: true,
     resizable: true,
     cellRenderer: 'BooleanRenderer',
-    editable: true,
-    cellRenderer: params => {
-      return `<input type='checkbox' ${params.value ? 'checked' : ''} />`;
-    }
   },
   {
     headerName: t('fields.lowerLimit'),
@@ -41,7 +36,6 @@ const columns = (t, isCreating) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: true,
   },
   {
     headerName: t('fields.upperLimit'),
@@ -49,7 +43,6 @@ const columns = (t, isCreating) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    editable: true,
   },
 ];
 

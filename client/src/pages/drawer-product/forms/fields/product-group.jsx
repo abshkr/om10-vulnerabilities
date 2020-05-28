@@ -21,8 +21,6 @@ const Group = ({ form, value }) => {
       setFieldsValue({
         prod_group: value.prod_group,
       });
-
-      // onChange(value.prod_cmpycode);
     }
   }, [value, setFieldsValue]);
 

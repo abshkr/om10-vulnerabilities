@@ -15,6 +15,8 @@ import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 import useSWR from 'swr';
+//import moment from 'moment';
+import jwtDecode from 'jwt-decode';
 
 import {
   Supplier,
@@ -35,19 +37,20 @@ import {
   ShipTo,
   TransferType,
   ApproveFlag,
-  OrderInstructions,
-  UnitType
+  OrderInstructions
 } from './fields';
 
 import { DataTable } from '../../../components';
+import { SETTINGS } from '../../../constants';
 import { ORDER_LISTINGS } from '../../../api';
 import columns from './columns';
-//import Period from './period';
+import Period from './item-periods';
 
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   const { data: units } = useSWR(ORDER_LISTINGS.UNIT_TYPES);
+  const { data: siteData } = useSWR(ORDER_LISTINGS.SITE_CODE);
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -58,20 +61,25 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   const [selected, setSelected] = useState(null);
   const [approved, setApproved] = useState(value?.order_approved);
   const [carrier, setCarrier] = useState(undefined);
-  const [type, setType] = useState(undefined);
-  const [lockType, setLockType] = useState(undefined);
 
   const [orderItems, setOrderItems] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
 
-  const { resetFields } = form;
+  const { setFieldsValue, resetFields, validateFields } = form;
 
   const IS_CREATING = !value;
   const CAN_ORDER_PERIOD = selected && value;
 
+  const token = sessionStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const user_code = decoded?.per_code;
+
   const onComplete = () => {
     handleFormState(false, null);
     mutate(ORDER_LISTINGS.READ);
+    setSupplier(undefined);
+    setDrawer(undefined);
+    setSelected(null);
   };
 
   const getOrderItems = useCallback(() => {
@@ -81,7 +89,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
 
     axios.get(url).then((response) => {
       const payload = response.data?.records || [];
-
+  
       form.setFieldsValue({
         order_items: payload,
       });
@@ -111,6 +119,26 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
     });
 
     values.order_items = orderItems;
+    if (value?.order_sys_no === undefined) {
+      values.order_sys_no = -1;
+    }
+    else {
+      values.order_sys_no = value?.order_sys_no;
+    }
+    console.log("values:", value?.order_sys_no, orderNo, values)
+    console.log("date before", values.order_ord_time, values.order_dlv_time, values.order_exp_time);
+    values.order_ord_time = values?.order_ord_time?.format(SETTINGS.DATE_TIME_FORMAT);
+    values.order_dlv_time = values?.order_dlv_time?.format(SETTINGS.DATE_TIME_FORMAT);
+    values.order_exp_time = values?.order_exp_time?.format(SETTINGS.DATE_TIME_FORMAT);
+    console.log("date after", values.order_ord_time, values.order_dlv_time, values.order_exp_time);
+
+    values.order_styp_id = 0;
+    values.order_totals = 0;
+    values.order_limit = 0;
+    values.order_src_id = 5;
+    if (user_code !== undefined) {
+      values.order_psnl_code = user_code;
+    }
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -187,7 +215,13 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
             order_sys_no: value?.order_sys_no,
           })
           .then(() => {
-            getOrderItems();
+            //getOrderItems();
+            onComplete();
+
+            notification.success({
+              message: t('messages.updateSuccess'),
+              description: t('descriptions.updateSuccess'),
+            });
           })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
@@ -215,7 +249,13 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
             order_sys_no: value?.order_sys_no,
           })
           .then(() => {
-            getOrderItems();
+            //getOrderItems();
+            onComplete();
+
+            notification.success({
+              message: t('messages.updateSuccess'),
+              description: t('descriptions.updateSuccess'),
+            });
           })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
@@ -244,6 +284,16 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   useEffect(() => {
     getOrderItems();
   }, [orderNo, drawer, getOrderItems]);
+
+  useEffect(() => {
+    if (!value) {
+      resetFields();
+      setOrderItems([]);
+      setSupplier(undefined);
+      setDrawer(undefined);
+      setSelected(null);
+    }
+  }, [value, resetFields]);
 
   return (
     <Drawer
@@ -315,7 +365,18 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError initialValues={value}>
+      <Form 
+        layout="vertical" 
+        form={form} 
+        scrollToFirstError 
+        initialValues={{
+          order_cust_no: null,
+          order_ttyp_id: '0',
+          order_dtrm_code: siteData?.records[0].site_code, 
+          order_strm_code: siteData?.records[0].site_code, 
+          order_stat_id: '0',
+        }}
+      >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <Row gutter={[8, 8]}>
@@ -400,9 +461,9 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
               </Col>
             </Row>
 
-            <Row gutter={[8, 8]}>
+            {/* <Row gutter={[8, 8]}>
               <OrderInstructions form={form} value={value} pageState={pageState} />
-            </Row>
+            </Row> */}
 
             <Divider />
 
@@ -413,15 +474,13 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
                 minimal
                 columns={columns(t, pageState, form, units)}
                 handleSelect={(value) => setSelected(value[0])}
-                components={{
-                  UnitEditor: UnitType,
-                }}
+                //apiContext={setTableAPI}
               />
             </Form.Item>
           </TabPane>
         </Tabs>
       </Form>
-      {/* <Period visible={showPeriod && CAN_ORDER_PERIOD} setVisibility={setShowPeriod} selected={selected} /> */}
+      <Period visible={showPeriod && CAN_ORDER_PERIOD} setVisibility={setShowPeriod} selected={selected} />
     </Drawer>
   );
 };

@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const columns = (t, pageState, form, units) => [
   {
     headerName: t('fields.oitemOrderId'),
@@ -67,12 +69,22 @@ const columns = (t, pageState, form, units) => [
     resizable: true,
     hide: false,
     editable: (pageState==='detail'? false : true),
-    cellEditor: 'UnitEditor',
     width: 130,
-    cellEditorParams: {
-      values: units?.records,
-      form: form,
+    //cellEditor: 'UnitEditor',
+    //cellEditorParams: {
+    //  values: units?.records,
+    //  form: form,
+    //},
+    cellRenderer: 'ListRenderer',
+    cellRendererParams: {
+      //values: _.uniq(_.map(units?.records, (item)=>{return String(item.unit_id)+'|'+item.description;}))
+      values: _.uniq(_.map(units?.records, (item)=>{return {code: _.toNumber(item.unit_id), name: item.description};}))
     },
+    cellEditor: 'ListEditor',
+    cellEditorParams: {
+      //values: _.uniq(_.map(units?.records, (item)=>{return String(item.unit_id)+'|'+item.description;}))
+      values: _.uniq(_.map(units?.records, (item)=>{return {code: _.toNumber(item.unit_id), name: item.description};}))
+    }
   },
   {
     headerName: t('fields.oitemUnitName'),
@@ -115,7 +127,12 @@ const columns = (t, pageState, form, units) => [
     editable: false,
     width: 160,
     cellRenderer: 'QuantityRenderer',
-  },
+    cellRendererParams: {
+      total: 100000,
+      colorAvail: '#00FF00',
+      colorUsed: '#FF0000',
+    },
+},
   {
     headerName: t('fields.oitemLoadQty'),
     field: 'oitem_load_qty',
@@ -126,6 +143,11 @@ const columns = (t, pageState, form, units) => [
     editable: false,
     width: 160,
     cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      total: 100000,
+      colorAvail: '#00FF00',
+      colorUsed: '#FF0000',
+    },
   },
   {
     headerName: t('fields.oitemDelvQty'),
@@ -137,6 +159,11 @@ const columns = (t, pageState, form, units) => [
     editable: false,
     width: 160,
     cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      total: 100000,
+      colorAvail: '#00FF00',
+      colorUsed: '#FF0000',
+    },
   },
   {
     headerName: t('fields.oitemExemptNo'),

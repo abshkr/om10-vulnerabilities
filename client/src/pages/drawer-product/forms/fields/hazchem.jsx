@@ -16,6 +16,12 @@ const Hazchem = ({ form, value }) => {
     return Promise.resolve();
   };
 
+  const handleChange = (value) => {
+    setFieldsValue({
+      prod_hazid: value,
+    });
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -29,6 +35,7 @@ const Hazchem = ({ form, value }) => {
       <Select
         loading={isValidating}
         showSearch
+        onChange={handleChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectHazchem') : null}
         filterOption={(input, option) =>

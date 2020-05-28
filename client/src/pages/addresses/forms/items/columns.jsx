@@ -66,12 +66,12 @@ const useColumns = (value, selected) => {
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         //values: _.uniq(_.map(types?.records, (item)=>{return String(item.enum_no)+'|'+item.message;}))
-        values: _.uniq(_.map(types?.records, (item)=>{return {code: String(item.enum_no), name: item.message};}))
+        values: _.uniq(_.map(types?.records, (item)=>{return {code: _.toNumber(item.enum_no), name: item.message};}))
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
         //values: _.uniq(_.map(types?.records, (item)=>{return String(item.enum_no)+'|'+item.message;}))
-        values: _.uniq(_.map(types?.records, (item)=>{return {code: String(item.enum_no), name: item.message};}))
+        values: _.uniq(_.map(types?.records, (item)=>{return {code: _.toNumber(item.enum_no), name: item.message};}))
       }
     },
     {
