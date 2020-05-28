@@ -10,36 +10,14 @@ const DashboardContainer = styled.div`
     color: black;
   }
 
-  .ant-statistic-content {
-    font-size: 20px;
-  }
-
-  .ant-descriptions-bordered .ant-descriptions-view {
+  .statistic td {
     font-size: 20px;
     color: black;
+    font-weight: 500;
   }
 
-  .ant-descriptions-bordered.ant-descriptions-small .ant-descriptions-item-label,
-  .ant-descriptions-bordered.ant-descriptions-small .ant-descriptions-item-content {
-    font-size: 20px;
-    color: black;
-    font-weight: 500 !important;
-    padding-top: 0px !important;
-    padding-bottom: 0px !important;
-    border-color: #bdc3c700 !important;
-  }
-
-  .ant-descriptions-bordered .ant-descriptions-item-label {
-    font-weight: normal !important;
-    background: #bdc3c700;
-  }
-
-  .ant-descriptions-bordered .ant-descriptions-view {
-    border-color: #bdc3c700 !important;
-  }
-
-  .ant-descriptions-bordered .ant-descriptions-row {
-    border-color: #f0f0f0 !important;
+  .statistic .first {
+    border-bottom: 1px solid #f0f0f0;
   }
 `;
 

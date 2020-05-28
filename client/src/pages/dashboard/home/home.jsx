@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Col, Row, Descriptions } from 'antd';
+import { Card, Col, Row, Descriptions, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -28,20 +28,29 @@ const Home = () => {
                   justifyContent: 'center',
                   alignContent: 'center',
                   alignItems: 'center',
+                  flexDirection: 'column',
                   width: '66%',
                 }}
               >
-                <Descriptions bordered size="small">
-                  <Descriptions.Item label="Active:" span={12}>
-                    {`${data.tanker_active}  [${
+                <table className="statistic" style={{ width: '50%' }}>
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                  <tr className="first">
+                    <td>Active:</td>
+                    <td style={{ textAlign: 'right' }}>{data?.tanker_active}</td>
+                    <td style={{ textAlign: 'right' }}>{` [${
                       Math.floor((data?.tanker_active / data?.tanker_total) * 100) || 0
-                    }%]`}
-                  </Descriptions.Item>
+                    }%]`}</td>
+                  </tr>
 
-                  <Descriptions.Item label="Total:" span={12}>
-                    {data.tanker_total}
-                  </Descriptions.Item>
-                </Descriptions>
+                  <tr>
+                    <td>Total:</td>
+                    <td style={{ textAlign: 'right' }}>{data?.tanker_total}</td>
+                  </tr>
+                </table>
               </div>
 
               <img src="/svg/truck.svg" alt="truck" style={{ height: 150, width: '33%' }} />
@@ -61,17 +70,25 @@ const Home = () => {
                   width: '66%',
                 }}
               >
-                <Descriptions bordered size="small">
-                  <Descriptions.Item label="Active:" span={12}>
-                    {`${data.personnel_active}  [${
+                <table className="statistic" style={{ width: '50%' }}>
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                  <tr className="first">
+                    <td>Active:</td>
+                    <td style={{ textAlign: 'right' }}>{data?.personnel_active}</td>
+                    <td style={{ textAlign: 'right' }}>{` [${
                       Math.floor((data?.personnel_active / data?.personnel_total) * 100) || 0
-                    }%]`}
-                  </Descriptions.Item>
+                    }%]`}</td>
+                  </tr>
 
-                  <Descriptions.Item label="Total:" span={12}>
-                    {data.personnel_total}
-                  </Descriptions.Item>
-                </Descriptions>
+                  <tr>
+                    <td>Total:</td>
+                    <td style={{ textAlign: 'right' }}>{data?.personnel_total}</td>
+                  </tr>
+                </table>
               </div>
 
               <img src="/svg/people.svg" alt="truck" style={{ height: 150, width: '33%' }} />
@@ -91,15 +108,25 @@ const Home = () => {
                   width: '66%',
                 }}
               >
-                <Descriptions bordered size="small">
-                  <Descriptions.Item label="Used:" span={12}>
-                    {`${data.key_used}  [${Math.floor((data?.key_used / data?.key_available) * 100) || 0}%]`}
-                  </Descriptions.Item>
+                <table className="statistic" style={{ width: '66%' }}>
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                  <tr className="first">
+                    <td>Used:</td>
+                    <td style={{ textAlign: 'right' }}>{data?.key_used}</td>
+                    <td style={{ textAlign: 'right' }}>{` [${
+                      Math.floor((data?.key_used / data?.key_available) * 100) || 0
+                    }%]`}</td>
+                  </tr>
 
-                  <Descriptions.Item label="Available:" span={12}>
-                    {data.key_available}
-                  </Descriptions.Item>
-                </Descriptions>
+                  <tr>
+                    <td>Available:</td>
+                    <td style={{ textAlign: 'right' }}>{data?.key_available}</td>
+                  </tr>
+                </table>
               </div>
 
               <img src="/svg/id-assignment.svg" alt="truck" style={{ height: 150, width: '33%' }} />
