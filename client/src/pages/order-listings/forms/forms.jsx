@@ -35,8 +35,7 @@ import {
   ShipTo,
   TransferType,
   ApproveFlag,
-  OrderInstructions,
-  UnitType
+  OrderInstructions
 } from './fields';
 
 import { DataTable } from '../../../components';
@@ -81,7 +80,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
 
     axios.get(url).then((response) => {
       const payload = response.data?.records || [];
-
+  
       form.setFieldsValue({
         order_items: payload,
       });
@@ -400,9 +399,9 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
               </Col>
             </Row>
 
-            <Row gutter={[8, 8]}>
+            {/* <Row gutter={[8, 8]}>
               <OrderInstructions form={form} value={value} pageState={pageState} />
-            </Row>
+            </Row> */}
 
             <Divider />
 
@@ -413,9 +412,9 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
                 minimal
                 columns={columns(t, pageState, form, units)}
                 handleSelect={(value) => setSelected(value[0])}
-                components={{
+                /* components={{
                   UnitEditor: UnitType,
-                }}
+                }} */
               />
             </Form.Item>
           </TabPane>

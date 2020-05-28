@@ -41,6 +41,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         (data, key, config) => {
           console.log('Entered onSuccess!!!'); 
           console.log({data}); 
+          data.records.forEach((item) => {
+            item.db_addr_line_type = _.toNumber(item.db_addr_line_type);
+          });
           setLines(data?.records);
       }
     }
