@@ -13,6 +13,9 @@ class OpenOrder extends CommonClass
     protected $TABLE_NAME = 'CUST_ORDER';
     protected $VIEW_NAME = 'GUI_ORDERS';
     protected $primary_keys = array("order_no");
+
+    protected $del_n_ins_children = false;   //Because OPRODMTD has child OPROD_CHILD
+
     protected $table_view_map = array(
         "ORDER_NO" => "ORDER_SYS_NO",
         "ORDER_CUST_ORDNO" => "ORDER_CUST_NO",
@@ -208,14 +211,15 @@ class OpenOrder extends CommonClass
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
-        $this->order_sys_no = $this->next_order_no();
-        $this->order_stat_id = 0; // 0 -- NEW
+        $this->order_no = $this->next_order_no();
+        $this->order_sys_no = $this->order_no;
+        $this->order_stat = 0; // 0 -- NEW
         $this->order_approved = 'N';
         // write_log($this->order_no, __FILE__, __LINE__);
         $site_service = new SiteService($this->conn, $auto_commit = false);
         $site_code = $site_service->site_code();
-        $this->order_strm_code = $site_code;
-        $this->order_dtrm_code = $site_code;
+        $this->ord_supply_point = $site_code;
+        $this->order_terminal = $site_code;
     }
 
     protected function post_create()
@@ -224,14 +228,67 @@ class OpenOrder extends CommonClass
         $company_service->set_last_order($this->order_cust_no);
     }
 
+	public function devide_text_into_array($txt, $step)
+	{
+		$arr = array();
+		$len = strlen($txt);
+		for($i=0; $i<$len; $i+=$step)
+		{
+			$msg = substr($txt, $i, $step);
+			$arr[] = $msg;
+		}
+		return $arr;
+	}
+
+    protected function insert_order_instructions($order_id, $instructions)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (isset($instructions)) {
+            $items = $this->devide_text_into_array($instructions, 80);
+            $lineno = 1;
+            foreach ($items as $value) {
+                // write_log(json_encode($value), __FILE__, __LINE__);
+                $query = "
+                    INSERT INTO ORD_INSTRUCT (
+                        OI_ORDER_NO, 
+                        OI_INSTR_COUNTER, 
+                        OI_INSTRUCTION
+                    )
+                    VALUES (
+                        :oi_order_no, 
+                        :oi_counter, 
+                        :oi_instruction
+                    )
+                ";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':oi_order_no', $order_id);
+                oci_bind_by_name($stmt, ':oi_counter', $lineno);
+                oci_bind_by_name($stmt, ':oi_instruction', $value);
+
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    throw new DatabaseException($e['message']);
+                    return false;
+                }
+
+                $lineno += 1;
+            }
+        }
+
+        return true;
+    }
+
     protected function insert_children()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
-        if (isset($this->items)) {
+        if (isset($this->order_items)) {
             $lineno = 1;
-            foreach ($this->items as $value) {
+            foreach ($this->order_items as $value) {
                 // write_log(json_encode($value), __FILE__, __LINE__);
                 $query = "INSERT INTO OPRODMTD (
                     OPROD_SCHEDULED,
@@ -283,20 +340,7 @@ class OpenOrder extends CommonClass
             }
         }
 
-        if (isset($this->order_instruction)) {
-            $query = "INSERT INTO ORD_INSTRUCT (OI_ORDER_NO, OI_INSTR_COUNTER, OI_INSTRUCTION)
-                VALUES (:oi_order_no, 1, :oi_instruction)";
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
-            oci_bind_by_name($stmt, ':oi_instruction', $this->order_instruction);
-
-            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                $e = oci_error($stmt);
-                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                throw new DatabaseException($e['message']);
-                return false;
-            }
-        }
+        $this->insert_order_instructions($this->order_sys_no, $this->order_instructions);
 
         return true;
     }
@@ -321,6 +365,20 @@ class OpenOrder extends CommonClass
         }
 
         $query = "
+            DELETE FROM OPROD_CHILD
+            WHERE OPB_DAD_OPRODKEY = :oi_order_no";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+            return false;
+        }
+
+        $query = "
             DELETE FROM OPRODMTD
             WHERE ORDER_PROD_KEY = :oi_order_no";
         $stmt = oci_parse($this->conn, $query);
@@ -333,6 +391,131 @@ class OpenOrder extends CommonClass
             throw new DatabaseException($e['message']);
             return false;
         }
+
+        return true;
+    }
+
+    protected function update_children($old_children = null)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+        
+        foreach ($old_children as $product => $item_array) {
+            $still_exist = false;
+            foreach ($this->order_items as $item) {
+                if ($item->oitem_prod_code == $product) {
+                    $query = "UPDATE OPRODMTD
+                        SET ORDER_PROD_QTY = :order_prod_qty,
+                            ORDER_PROD_UNIT = :order_prod_unit
+                        WHERE OSPROD_PRODCODE = :osprod_prodcode
+                            AND OSPROD_PRODCMPY = :osprod_prodcmpy
+                            AND ORDER_PROD_KEY = :order_prod_key";
+                    $stmt = oci_parse($this->conn, $query);
+                    oci_bind_by_name($stmt, ':order_prod_key', $this->order_sys_no);
+                    oci_bind_by_name($stmt, ':order_prod_unit', $item->oitem_prod_unit);
+                    oci_bind_by_name($stmt, ':order_prod_qty', $item->oitem_prod_qty);
+                    oci_bind_by_name($stmt, ':osprod_prodcmpy', $item->oitem_prod_cmpy);
+                    oci_bind_by_name($stmt, ':osprod_prodcode', $item->oitem_prod_code);
+        
+                    if (!oci_execute($stmt, $this->commit_mode)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                        return false;
+                    }
+                    $still_exist = true;
+                    break;
+                }
+            }
+            
+            if ($still_exist == false) {
+                $query = "DELETE FROM OPROD_CHILD WHERE OPB_DAD_OPRODKEY = :oi_order_no";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+
+                $query = "DELETE FROM OPRODMTD WHERE ORDER_PROD_KEY = :oi_order_no";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+            }
+        }
+
+        //In new but not in old.
+        foreach ($this->order_items as $item) {
+            if (isset($old_children[$item->oitem_prod_code])) {
+                continue;
+            }
+
+            $query = "INSERT INTO OPRODMTD (
+                OPROD_SCHEDULED,
+                OPROD_LOADED,
+                OPROD_DELIVERED,
+                OPROD_BY_PACKS,
+                OPRD_PACK_SIZE,
+                ORDER_PROD_QTY,
+                ORDER_PROD_UNIT,
+                PROD_PRICE_TYPE,
+                OPROD_PRICE,
+                ORDER_PROD_KEY,
+                OSPROD_PRODCODE,
+                OSPROD_PRODCMPY,
+                OPROD_CH_NO,
+                OPRD_LINE_ITEMNO)
+            VALUES (
+                0,
+                0,
+                0,
+                'N',
+                1,
+                :order_prod_qty,
+                :order_prod_unit,
+                0,
+                0,
+                :order_prod_key,
+                :osprod_prodcode,
+                :osprod_prodcmpy,
+                0,
+                NULL
+            )";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':order_prod_qty', $item->oitem_prod_qty);
+            oci_bind_by_name($stmt, ':order_prod_unit', $item->oitem_prod_unit);
+            oci_bind_by_name($stmt, ':order_prod_key', $this->order_sys_no);
+            oci_bind_by_name($stmt, ':osprod_prodcode', $item->oitem_prod_code);
+            oci_bind_by_name($stmt, ':osprod_prodcmpy', $item->oitem_prod_cmpy);
+            // oci_bind_by_name($stmt, ':oprd_line_itemno', $lineno);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
+
+        // update order instructions
+        // delete it first
+        $query = "
+            DELETE FROM ORD_INSTRUCT
+            WHERE OI_ORDER_NO = :oi_order_no";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+            return false;
+        }
+        // then insert new again
+        $this->insert_order_instructions($this->order_sys_no, $this->order_instructions);
 
         return true;
     }

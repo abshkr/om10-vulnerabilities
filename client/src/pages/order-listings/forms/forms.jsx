@@ -45,10 +45,12 @@ import { SETTINGS } from '../../../constants';
 import { ORDER_LISTINGS } from '../../../api';
 import columns from './columns';
 import Period from './item-periods';
+import OrderTrips from './order-trips';
+import OrderItemTrips from './item-trips';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
+const FormModal = ({ value, visible, handleFormState, access, pageState, revalidate }) => {
   const { data: units } = useSWR(ORDER_LISTINGS.UNIT_TYPES);
   const { data: siteData } = useSWR(ORDER_LISTINGS.SITE_CODE);
 
@@ -75,11 +77,16 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   const user_code = decoded?.per_code;
 
   const onComplete = () => {
+    console.log("start of onComplete");
     handleFormState(false, null);
-    mutate(ORDER_LISTINGS.READ);
-    setSupplier(undefined);
+    console.log("in onComplete 1");
+    //mutate(ORDER_LISTINGS.READ);
+    revalidate();
+    console.log("in onComplete 2");
+    /* setSupplier(undefined);
     setDrawer(undefined);
-    setSelected(null);
+    setSelected(null); */
+    console.log("end of onComplete");
   };
 
   const getOrderItems = useCallback(() => {
@@ -453,17 +460,22 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
 
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                <TransferType form={form} value={value} pageState={pageState} />
+                <Row gutter={8,8}>
+                  <Col span={24}>
+                    <ApproveFlag form={form} value={value} onChange={setApproved} pageState={pageState} />
+                  </Col>
+                </Row>
+                <Row gutter={8,8}>
+                  <Col span={24}>
+                    <TransferType form={form} value={value} pageState={pageState} />
+                  </Col>
+                </Row>
               </Col>
 
               <Col span={12}>
-                <ApproveFlag form={form} value={value} onChange={setApproved} pageState={pageState} />
+                <OrderInstructions form={form} value={value} pageState={pageState} />
               </Col>
             </Row>
-
-            {/* <Row gutter={[8, 8]}>
-              <OrderInstructions form={form} value={value} pageState={pageState} />
-            </Row> */}
 
             <Divider />
 
@@ -477,6 +489,12 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
                 //apiContext={setTableAPI}
               />
             </Form.Item>
+          </TabPane>
+          <TabPane tab={t('tabColumns.orderTrips')} disabled={IS_CREATING} key="2">
+            <OrderTrips value={value} orderNo={orderNo}/>
+          </TabPane>
+          <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING||!selected} key="3">
+            <OrderTrips value={value} orderItem={selected}/>
           </TabPane>
         </Tabs>
       </Form>

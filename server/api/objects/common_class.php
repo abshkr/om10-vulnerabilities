@@ -757,9 +757,11 @@ class CommonClass
             foreach ($this->mandatory_fields as $value) {
                 // write_log($value, __FILE__, __LINE__);
                 // write_log(json_encode($this), __FILE__, __LINE__);
-                if (isset($this->table_view_map) && isset($this->table_view_map[strtoupper($value)])) {
-                    $value = strtolower($this->table_view_map[strtoupper($value)]);
-                }
+
+                //Before calling this function, map_view_files_to_table_fiels is called in common_prep
+                // if (isset($this->table_view_map) && isset($this->table_view_map[strtoupper($value)])) {
+                //     $value = strtolower($this->table_view_map[strtoupper($value)]);
+                // }
 
                 if (!property_exists($this, $value) || $this->$value == null) {
                     write_log($value . " is not set for class " . get_class($this),
