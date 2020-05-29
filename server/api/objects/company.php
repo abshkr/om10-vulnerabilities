@@ -22,7 +22,7 @@ class Company extends CommonClass
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = array(
         "TRSA_REVERSE_FLAG" => 1,
-        "SITE_MANAGER" => "T",
+        "SITE_MANAGER" => "Y",
         "SUPPLIER" => "Y",
         "CARRIER" => "Y",
         "CUSTOMER" => "Y",
@@ -72,6 +72,37 @@ class Company extends CommonClass
         }
         if (!isset($this->cmpy_ord_end)) {
             $this->cmpy_ord_end = 999999999;
+        }
+
+        $this->pre_update();
+    }
+
+    public function pre_update() 
+    {
+        $this->cmpy_type = 0;
+        if (isset($this->site_manager) && $this->site_manager === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 0);
+        }
+        if (isset($this->supplier) && $this->supplier === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 1);
+        }
+        if (isset($this->carrier) && $this->carrier === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 2);
+        }
+        if (isset($this->customer) && $this->customer === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 3);
+        }
+        if (isset($this->drawer) && $this->drawer === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 4);
+        }
+        if (isset($this->issuer) && $this->issuer === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 5);
+        }
+        if (isset($this->employer) && $this->employer === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 6);
+        }
+        if (isset($this->host) && $this->host === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 7);
         }
     }
 

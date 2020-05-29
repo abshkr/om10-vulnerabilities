@@ -117,6 +117,7 @@
     "event": "Event",
     "details": "Details",
     "companyCode": "Company Code",
+	"companyType": "Company Type",
     "company": "Company",
     "usageId": "Usage Id",
     "usage": "Usage",
