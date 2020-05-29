@@ -45,6 +45,8 @@ import { SETTINGS } from '../../../constants';
 import { ORDER_LISTINGS } from '../../../api';
 import columns from './columns';
 import Period from './item-periods';
+import OrderTrips from './order-trips';
+import OrderItemTrips from './item-trips';
 
 const TabPane = Tabs.TabPane;
 
@@ -75,11 +77,15 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   const user_code = decoded?.per_code;
 
   const onComplete = () => {
+    console.log("start of onComplete");
     handleFormState(false, null);
+    console.log("in onComplete 1");
     mutate(ORDER_LISTINGS.READ);
-    setSupplier(undefined);
+    console.log("in onComplete 2");
+    /* setSupplier(undefined);
     setDrawer(undefined);
-    setSelected(null);
+    setSelected(null); */
+    console.log("end of onComplete");
   };
 
   const getOrderItems = useCallback(() => {
@@ -477,6 +483,12 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
                 //apiContext={setTableAPI}
               />
             </Form.Item>
+          </TabPane>
+          <TabPane tab={t('tabColumns.orderTrips')} disabled={IS_CREATING} key="2">
+            <OrderTrips value={value} orderNo={orderNo}/>
+          </TabPane>
+          <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING||!selected} key="2">
+            <OrderTrips value={value} orderItem={selected}/>
           </TabPane>
         </Tabs>
       </Form>

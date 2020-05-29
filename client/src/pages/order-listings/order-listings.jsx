@@ -34,7 +34,7 @@ const OrderListings = () => {
   const access = useAuth('M_ORDERLISTING');
 
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-  const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
+  const [end, setEnd] = useState(moment().add(1, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
   const { data: payload, isValidating, revalidate } = useSWR(
     `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
