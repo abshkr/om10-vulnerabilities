@@ -193,8 +193,8 @@ class Allocation extends CommonClass
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
-        write_log(json_encode($this), __FILE__, __LINE__);
-        write_log(json_encode($old_children), __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
+        // write_log(json_encode($old_children), __FILE__, __LINE__);
         
         foreach ($old_children as $prodcode => $item_array) {
             $still_exist = false;
