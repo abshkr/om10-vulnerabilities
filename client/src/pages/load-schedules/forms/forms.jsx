@@ -28,6 +28,8 @@ import {
   ShipTo,
 } from './fields';
 import { LOAD_SCHEDULES } from '../../../api';
+
+import DriverInstructions from './driver-instructions';
 import Compartments from './compartments';
 
 const TabPane = Tabs.TabPane;
@@ -260,7 +262,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
           <TabPane tab={t('tabColumns.transactions')} disabled={IS_CREATING} key="1"></TabPane>
 
-          <TabPane tab={t('tabColumns.driverInstructions')} disabled={IS_CREATING} key="2"></TabPane>
+          <TabPane tab={t('tabColumns.driverInstructions')} disabled={IS_CREATING} key="2">
+            <DriverInstructions value={value} />
+          </TabPane>
 
           <TabPane tab={t('tabColumns.bol')} disabled={IS_CREATING} key="3"></TabPane>
 

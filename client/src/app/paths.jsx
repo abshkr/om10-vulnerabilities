@@ -153,7 +153,7 @@ const paths = [
 
   {
     path: ROUTES.LOAD_BAYS,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/load-bays')),
   },
 
   {

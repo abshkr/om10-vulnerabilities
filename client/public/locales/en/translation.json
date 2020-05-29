@@ -803,7 +803,12 @@
     "user": "User",
     "stock": "Stock",
     "settings": "Settings",
-    "configuration": "Configuration"
+    "configuration": "Configuration",
+    "security": "Security",
+    "products": "Products",
+    "companies": "Companies",
+    "config": "Config",
+    "modules": "Modules"
   },
 
   "pageNames": {
@@ -974,9 +979,10 @@
     "orderPeriod": "Order Period",
     "approve": "Approve",
     "unapprove": "Unapprove",
-	"addBase": "Add Base Product",
-	"editBase": "Edit Base Product",
-	"deleteBase": "Delete Base Product"
+    "addBase": "Add Base Product",
+    "editBase": "Edit Base Product",
+    "deleteBase": "Delete Base Product",
+    "addStrapping": "Add Strapping"
   },
 
   "tabColumns": {

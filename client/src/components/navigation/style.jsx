@@ -1,6 +1,17 @@
 import styled from 'styled-components';
 
 const MenuContainer = styled.div`
+  .ant-menu-vertical > .ant-menu-item,
+  .ant-menu-vertical-left > .ant-menu-item,
+  .ant-menu-vertical-right > .ant-menu-item,
+  .ant-menu-inline > .ant-menu-item,
+  .ant-menu-vertical > .ant-menu-submenu > .ant-menu-submenu-title,
+  .ant-menu-vertical-left > .ant-menu-submenu > .ant-menu-submenu-title,
+  .ant-menu-vertical-right > .ant-menu-submenu > .ant-menu-submenu-title,
+  .ant-menu-inline > .ant-menu-submenu > .ant-menu-submenu-title {
+    height: 50px;
+  }
+
   & .ant-menu-item .anticon + span,
   .ant-menu-submenu-title .anticon + span {
     margin-left: 10px;

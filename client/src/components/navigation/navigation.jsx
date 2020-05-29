@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, Badge, Tooltip, Divider } from 'antd';
+import { Menu, Badge, Tooltip } from 'antd';
 import useSWR from 'swr';
 
 import { LogoContainer, MenuContainer } from './style';
@@ -14,12 +14,15 @@ import { Icons, Loading } from '..';
 const { SubMenu } = Menu;
 
 const Navigation = () => {
-  const history = useHistory();
-  const { t } = useTranslation();
-
   const { isValidating: isLoading } = useSWR(AUTH.PERMISSIONS, { refreshInterval: 0 });
+  const { t } = useTranslation();
+  const history = useHistory();
+
+  const [active, setActive] = useState([ROUTES.HOME]);
 
   const handleNavigation = (event) => {
+    setActive([[event.key]]);
+
     history.push(event.key);
   };
 
@@ -29,12 +32,7 @@ const Navigation = () => {
 
   return (
     <MenuContainer>
-      <Menu
-        onClick={handleNavigation}
-        defaultSelectedKeys={[ROUTES.HOME]}
-        style={{ width: '100%' }}
-        theme="dark"
-      >
+      <Menu onClick={handleNavigation} defaultSelectedKeys={active} style={{ width: '100%' }} theme="dark">
         <LogoContainer>
           <Tooltip
             placement="right"

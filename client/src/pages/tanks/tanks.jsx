@@ -125,38 +125,34 @@ const Tanks = () => {
           onSelect={onSelect}
           description={description}
           selected={selected?.tank_code}
+          isLoading={isLoading}
         >
           <Tabs defaultActiveKey="1" type="card">
             <TabPane key="1" tab={t('tabColumns.overview')} disabled={isLoading}>
-              <Overview selected={selected} isLoading={isLoading} />
+              <Overview selected={selected} />
             </TabPane>
 
             <TabPane key="2" tab={t('tabColumns.details')} disabled={isLoading}>
-              <Details selected={selected} access={access} isLoading={isLoading} />
+              <Details selected={selected} access={access} />
             </TabPane>
 
             <TabPane key="3" tab={t('tabColumns.connectedArms')} disabled></TabPane>
 
             <TabPane key="4" tab={t('tabColumns.calculations')} disabled={isLoading}>
-              <Calculations selected={selected} access={access} isLoading={isLoading} config={config} />
+              <Calculations selected={selected} access={access} config={config} />
             </TabPane>
 
             <TabPane key="5" tab={t('tabColumns.alarms')} disabled={isLoading}>
-              <Alarms selected={selected} access={access} isLoading={isLoading} />
+              <Alarms selected={selected} access={access} />
             </TabPane>
 
             <TabPane key="6" tab={t('tabColumns.gauge')} disabled={isLoading}>
-              <Gauging selected={selected} access={access} isLoading={isLoading} />
+              <Gauging selected={selected} access={access} />
             </TabPane>
 
             {config.manageTankStrapping && (
               <TabPane key="7" tab={t('tabColumns.strapping')} disabled={isLoading}>
-                <TankStrapping
-                  code={selected?.tank_code}
-                  tanks={read}
-                  isLoading={isLoading}
-                  access={access}
-                />
+                <TankStrapping code={selected?.tank_code} tanks={read} access={access} />
               </TabPane>
             )}
 

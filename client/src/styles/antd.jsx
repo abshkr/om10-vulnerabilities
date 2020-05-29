@@ -265,9 +265,6 @@ const AntdStyleProvider = createGlobalStyle`
     background-color: #0054A4;
   }
 
-  .ant-picker {
-    padding-top: 6px;
-  }
 
  .ant-picker-input > input {
     text-align: center;
