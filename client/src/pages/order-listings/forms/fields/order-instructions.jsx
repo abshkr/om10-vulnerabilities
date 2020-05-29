@@ -10,6 +10,12 @@ const OrderInstructions = ({ form, value, pageState }) => {
 
   const { setFieldsValue } = form;
 
+  const { data: payload, isValidating } = useSWR(
+    `${ORDER_LISTINGS.INSTRUCTIONS}?order_sys_no=${value?.order_sys_no}`, { 
+      refreshInterval: 0,
+    }
+  );
+  /*
   const { isValidating } = useSWR(
     `${ORDER_LISTINGS.INSTRUCTIONS}?order_sys_no=${value?.order_sys_no}`, { 
       refreshInterval: 0,
@@ -23,11 +29,13 @@ const OrderInstructions = ({ form, value, pageState }) => {
               txt += item.oinst_text;
             });
           }
+          console.log("txt", txt);
           value.order_instructions = txt;
+          console.log("value.order_instructions", value.order_instructions);
         }
     }
   );
-
+  */
   const validate = (rule, input) => {
     /*
     if (input === '' || !input) {
@@ -43,11 +51,21 @@ const OrderInstructions = ({ form, value, pageState }) => {
 
   useEffect(() => {
     if (value) {
+      console.log({payload}); 
+      let txt='';
+      if (payload?.records.length > 0) {
+        payload.records.forEach((item) => {
+          txt += item.oinst_text;
+        });
+      }
+      console.log("txt", txt);
+      value.order_instructions = txt;
+      console.log("value.order_instructions", value.order_instructions);
       setFieldsValue({
         order_instructions: value.order_instructions
       });
     }
-  }, [value, setFieldsValue]);
+  }, [payload, value, setFieldsValue]);
 
   return (
     <Form.Item 
@@ -56,6 +74,7 @@ const OrderInstructions = ({ form, value, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Input.TextArea 
+        style={{width:'100%', height:'20%'}}
         disabled={(pageState==='create'||pageState==='edit')? false : true}
       />
     </Form.Item>

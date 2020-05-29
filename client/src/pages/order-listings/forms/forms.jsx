@@ -50,7 +50,7 @@ import OrderItemTrips from './item-trips';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
+const FormModal = ({ value, visible, handleFormState, access, pageState, revalidate }) => {
   const { data: units } = useSWR(ORDER_LISTINGS.UNIT_TYPES);
   const { data: siteData } = useSWR(ORDER_LISTINGS.SITE_CODE);
 
@@ -80,7 +80,8 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
     console.log("start of onComplete");
     handleFormState(false, null);
     console.log("in onComplete 1");
-    mutate(ORDER_LISTINGS.READ);
+    //mutate(ORDER_LISTINGS.READ);
+    revalidate();
     console.log("in onComplete 2");
     /* setSupplier(undefined);
     setDrawer(undefined);
@@ -459,17 +460,22 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
 
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                <TransferType form={form} value={value} pageState={pageState} />
+                <Row gutter={8,8}>
+                  <Col span={24}>
+                    <ApproveFlag form={form} value={value} onChange={setApproved} pageState={pageState} />
+                  </Col>
+                </Row>
+                <Row gutter={8,8}>
+                  <Col span={24}>
+                    <TransferType form={form} value={value} pageState={pageState} />
+                  </Col>
+                </Row>
               </Col>
 
               <Col span={12}>
-                <ApproveFlag form={form} value={value} onChange={setApproved} pageState={pageState} />
+                <OrderInstructions form={form} value={value} pageState={pageState} />
               </Col>
             </Row>
-
-            {/* <Row gutter={[8, 8]}>
-              <OrderInstructions form={form} value={value} pageState={pageState} />
-            </Row> */}
 
             <Divider />
 
@@ -487,7 +493,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
           <TabPane tab={t('tabColumns.orderTrips')} disabled={IS_CREATING} key="2">
             <OrderTrips value={value} orderNo={orderNo}/>
           </TabPane>
-          <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING||!selected} key="2">
+          <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING||!selected} key="3">
             <OrderTrips value={value} orderItem={selected}/>
           </TabPane>
         </Tabs>

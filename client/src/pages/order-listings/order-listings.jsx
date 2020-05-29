@@ -144,7 +144,7 @@ const OrderListings = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} pageState={pageState} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} pageState={pageState} revalidate={revalidate} />
     </Page>
   );
 };

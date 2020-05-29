@@ -212,6 +212,7 @@ class OpenOrder extends CommonClass
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
         $this->order_no = $this->next_order_no();
+        $this->order_sys_no = $this->order_no;
         $this->order_stat = 0; // 0 -- NEW
         $this->order_approved = 'N';
         // write_log($this->order_no, __FILE__, __LINE__);
@@ -227,14 +228,67 @@ class OpenOrder extends CommonClass
         $company_service->set_last_order($this->order_cust_no);
     }
 
+	public function devide_text_into_array($txt, $step)
+	{
+		$arr = array();
+		$len = strlen($txt);
+		for($i=0; $i<$len; $i+=$step)
+		{
+			$msg = substr($txt, $i, $step);
+			$arr[] = $msg;
+		}
+		return $arr;
+	}
+
+    protected function insert_order_instructions($order_id, $instructions)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (isset($instructions)) {
+            $items = $this->devide_text_into_array($instructions, 80);
+            $lineno = 1;
+            foreach ($items as $value) {
+                // write_log(json_encode($value), __FILE__, __LINE__);
+                $query = "
+                    INSERT INTO ORD_INSTRUCT (
+                        OI_ORDER_NO, 
+                        OI_INSTR_COUNTER, 
+                        OI_INSTRUCTION
+                    )
+                    VALUES (
+                        :oi_order_no, 
+                        :oi_counter, 
+                        :oi_instruction
+                    )
+                ";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':oi_order_no', $order_id);
+                oci_bind_by_name($stmt, ':oi_counter', $lineno);
+                oci_bind_by_name($stmt, ':oi_instruction', $value);
+
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    throw new DatabaseException($e['message']);
+                    return false;
+                }
+
+                $lineno += 1;
+            }
+        }
+
+        return true;
+    }
+
     protected function insert_children()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
-        if (isset($this->items)) {
+        if (isset($this->order_items)) {
             $lineno = 1;
-            foreach ($this->items as $value) {
+            foreach ($this->order_items as $value) {
                 // write_log(json_encode($value), __FILE__, __LINE__);
                 $query = "INSERT INTO OPRODMTD (
                     OPROD_SCHEDULED,
@@ -286,20 +340,7 @@ class OpenOrder extends CommonClass
             }
         }
 
-        if (isset($this->order_instruction)) {
-            $query = "INSERT INTO ORD_INSTRUCT (OI_ORDER_NO, OI_INSTR_COUNTER, OI_INSTRUCTION)
-                VALUES (:oi_order_no, 1, :oi_instruction)";
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
-            oci_bind_by_name($stmt, ':oi_instruction', $this->order_instruction);
-
-            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                $e = oci_error($stmt);
-                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                throw new DatabaseException($e['message']);
-                return false;
-            }
-        }
+        $this->insert_order_instructions($this->order_sys_no, $this->order_instructions);
 
         return true;
     }
@@ -312,6 +353,20 @@ class OpenOrder extends CommonClass
         $query = "
             DELETE FROM ORD_INSTRUCT
             WHERE OI_ORDER_NO = :oi_order_no";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+            return false;
+        }
+
+        $query = "
+            DELETE FROM OPROD_CHILD
+            WHERE OPB_DAD_OPRODKEY = :oi_order_no";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
@@ -347,7 +402,7 @@ class OpenOrder extends CommonClass
         
         foreach ($old_children as $product => $item_array) {
             $still_exist = false;
-            foreach ($this->items as $item) {
+            foreach ($this->order_items as $item) {
                 if ($item->oitem_prod_code == $product) {
                     $query = "UPDATE OPRODMTD
                         SET ORDER_PROD_QTY = :order_prod_qty,
@@ -394,7 +449,7 @@ class OpenOrder extends CommonClass
         }
 
         //In new but not in old.
-        foreach ($this->items as $item) {
+        foreach ($this->order_items as $item) {
             if (isset($old_children[$item->oitem_prod_code])) {
                 continue;
             }
@@ -443,6 +498,24 @@ class OpenOrder extends CommonClass
                 return false;
             }
         }
+
+        // update order instructions
+        // delete it first
+        $query = "
+            DELETE FROM ORD_INSTRUCT
+            WHERE OI_ORDER_NO = :oi_order_no";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+            return false;
+        }
+        // then insert new again
+        $this->insert_order_instructions($this->order_sys_no, $this->order_instructions);
 
         return true;
     }
