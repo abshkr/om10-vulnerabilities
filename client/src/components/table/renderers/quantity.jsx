@@ -13,8 +13,9 @@ export default class ListRenderer extends Component {
 
 
   render() {
-    const { total, colorAvail, colorUsed } = this.props;
-
+    const { colorAvail, colorUsed, data } = this.props;
+    //console.log("quantity renderer, props", this.props);
+    const total = data?.oitem_prod_qty;
     return (
       <div style={{ display: 'flex' }}>
         <span style={{ color: colorUsed }}>{this.state.value}</span>
