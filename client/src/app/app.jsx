@@ -49,7 +49,6 @@ const App = () => {
                 {paths.map((item) => {
                   return <Route key={item.path} path={item.path} component={item.component} />;
                 })}
-                <Redirect path={ROUTES.ROOT} to={ROUTES.LOG_IN} />
               </Switch>
             </Suspense>
           </Interface>

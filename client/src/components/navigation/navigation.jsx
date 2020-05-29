@@ -180,6 +180,10 @@ const Navigation = () => {
           <Menu.Item key={ROUTES.AUDITING_DATA}>
             <Badge status="success" /> {t('pageNames.auditingData')}
           </Menu.Item>
+
+          <Menu.Item key={ROUTES.METERING}>
+            <Badge status="success" /> {t('pageNames.metering')}
+          </Menu.Item>
         </SubMenu>
 
         <SubMenu
@@ -208,6 +212,14 @@ const Navigation = () => {
 
           <Menu.Item key={ROUTES.ROLE_ACCESS_MANAGEMENT}>
             <Badge status="success" /> {t('pageNames.roleAccessManagement')}
+          </Menu.Item>
+
+          <Menu.Item key={ROUTES.AREA}>
+            <Badge status="success" /> {t('pageNames.area')}
+          </Menu.Item>
+
+          <Menu.Item key={ROUTES.GATE_PERMISSION}>
+            <Badge status="success" /> {t('pageNames.gatePermission')}
           </Menu.Item>
         </SubMenu>
 
@@ -271,6 +283,10 @@ const Navigation = () => {
           <Menu.Item key={ROUTES.PARTNERSHIP}>
             <Badge status="success" /> {t('pageNames.partnership')}
           </Menu.Item>
+
+          <Menu.Item key={ROUTES.CUSTOMER_CATEGORIES}>
+            <Badge status="success" /> {t('pageNames.customerCategories')}
+          </Menu.Item>
         </SubMenu>
 
         <SubMenu
@@ -295,10 +311,6 @@ const Navigation = () => {
 
           <Menu.Item key={ROUTES.METER_DEVICES}>
             <Badge status="success" /> {t('pageNames.meterDevices')}{' '}
-          </Menu.Item>
-
-          <Menu.Item key={ROUTES.METERING}>
-            <Badge status="success" /> {t('pageNames.metering')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.PHYSICAL_PRINTERS}>
@@ -331,18 +343,6 @@ const Navigation = () => {
 
           <Menu.Item key={ROUTES.FOLIO_SCHEDULLING}>
             <Badge status="success" /> {t('pageNames.folioScheduling')}
-          </Menu.Item>
-
-          <Menu.Item key={ROUTES.AREA}>
-            <Badge status="success" /> {t('pageNames.area')}
-          </Menu.Item>
-
-          <Menu.Item key={ROUTES.GATE_PERMISSION}>
-            <Badge status="success" /> {t('pageNames.gatePermission')}
-          </Menu.Item>
-
-          <Menu.Item key={ROUTES.CUSTOMER_CATEGORIES}>
-            <Badge status="success" /> {t('pageNames.customerCategories')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.MOVEMENT_REASONS}>

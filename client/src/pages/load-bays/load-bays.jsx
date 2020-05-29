@@ -16,7 +16,7 @@ const LoadBays = () => {
     <Page page={page} name={name}>
       <div style={{ height: 'calc(100vh - 200px)' }}>
         <Iframe
-          url="/api/pages/product_group/read.php"
+          url="/phpwrapper/load_bays.php"
           id="myId"
           className="myClassname"
           display="initial"
