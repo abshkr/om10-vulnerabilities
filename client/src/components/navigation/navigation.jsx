@@ -61,7 +61,7 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ORDER_LISTING}>
-            <Badge status="error" /> {t('pageNames.orderListing')}
+            <Badge status="success" /> {t('pageNames.orderListing')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TRANSACTION_LIST}>
@@ -236,7 +236,7 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.DRAWER_PRODUCTS}>
-            <Badge status="error" /> {t('pageNames.drawerProducts')}
+            <Badge status="success" /> {t('pageNames.drawerProducts')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.HAZCHEM_CODES}>
@@ -298,7 +298,7 @@ const Navigation = () => {
           }
         >
           <Menu.Item key={ROUTES.LOAD_BAYS}>
-            <Badge status="error" /> {t('pageNames.loadBays')}
+            <Badge status="success" /> {t('pageNames.loadBays')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.COMPANY_BAY_MOVEMENT}>
