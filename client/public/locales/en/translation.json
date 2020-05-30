@@ -784,7 +784,29 @@
     "railTank": "Rail Tank",
     "ratio": "Ratio",
     "blendToleranceCheck": "Blend Tolerance Check",
-    "baseProduct": "Base Product"
+    "baseProduct": "Base Product",
+	"autoTripNumbers": "Auto Trip Numbers",
+	"startAt": "Start At",
+	"endAt": "End At",
+	"hostPrintDoc": "Host prints documents",
+	"reconcilePrev": "Reconcile previous load when starting new load",
+	"hostCommUp": "Host communications is up",
+	"autoTankConfig": "Auto tanker configuration for load specs sent from host",
+	"loadDeletionLog": "Load deletion is logged",
+	"doLoadTolCheck": "Do load tolerance check for this company",
+	"autoCompletePreschedule": "Auto-complete pre-scheduled loads",
+	"doBlendTolCheck": "Do blend tolerance check for this company",
+	"autoCompleteNonPreschedule": "Auto-complete non pre-scheduled loads",
+	"doSafeTolCheck": "Do safe fill tolerance check for this company",
+	"ignoreCarrierForPreorder": "Ignore carrier for pre-order load",
+	"mustEndOnWB": "Loads start on weighbridge must end on weighbridge",
+	"reverseRepost": "Reverse / repost schedules",
+	"maxWeightDLICheck": "Maximum loadable weight check at DLI",
+	"reverseMovement": "Reverse movements",
+	"authAtDLI": "Load authorisation at DLI",
+	"archiveSchedules": "Archive schedules",
+	"validateSchdAtDLI": "Validate load schedle availability at DLI",
+	"weightTolerance": "Tolerance % of the total load vehicle weight (0-20)"
   },
 
   "pageMenu": {
@@ -983,7 +1005,8 @@
     "addBase": "Add Base Product",
     "editBase": "Edit Base Product",
     "deleteBase": "Delete Base Product",
-    "addStrapping": "Add Strapping"
+    "addStrapping": "Add Strapping",
+	"specialAction": "Special Action"
   },
 
   "tabColumns": {
@@ -1055,7 +1078,11 @@
     "alarms": "Alarms",
     "gauge": "Gauge",
     "strapping": "Strapping",
-    "adaptiveFlowControl": "Adaptive Flow Control"
+    "adaptiveFlowControl": "Adaptive Flow Control",
+	"supplierSettings": "Supplier Company Settings",
+	"others": "Others",
+	"printerSettings": "Printer Settings",
+	"transportationDoc": "Transportation Documents"
   },
 
   "messages": {
