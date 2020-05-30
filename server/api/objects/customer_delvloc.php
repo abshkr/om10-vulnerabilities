@@ -165,7 +165,13 @@ class CustomerDelvLocation extends CommonClass
             order by CUST_CMPY_NAME         
         ";
         $stmt = oci_parse($this->conn, $query);
+        if (!isset($this->delv_cust_suppcode) || $this->delv_cust_suppcode=='null') {
+            $this->delv_cust_suppcode = '-1';
+        }
         oci_bind_by_name($stmt, ':supplier', $this->delv_cust_suppcode);
+        if (!isset($this->delv_cust_catgcode) || $this->delv_cust_catgcode=='null') {
+            $this->delv_cust_catgcode = '-1';
+        }
         oci_bind_by_name($stmt, ':category', $this->delv_cust_catgcode);
         oci_bind_by_name($stmt, ':delv_code', $this->delv_code);
         if (oci_execute($stmt, $this->commit_mode)) {

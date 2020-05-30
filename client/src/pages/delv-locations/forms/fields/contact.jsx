@@ -8,11 +8,12 @@ const Contact = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    /*
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvContact')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvContact')}`);
+      }
     }
-    */
+
     if (input && input.length > 100) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -29,7 +30,11 @@ const Contact = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="delv_contact" label={t('fields.delvContact')} rules={[{ required: false, validator: validate }]}>
+    <Form.Item 
+      name="delv_contact" 
+      label={t('fields.delvContact')} 
+      rules={[{ required: false, validator: validate }]}
+    >
       <Input />
     </Form.Item>
   );

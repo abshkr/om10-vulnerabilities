@@ -8,11 +8,12 @@ const OrderDays = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    /*
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.custOrdDays')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.custOrdDays')}`);
+      }
     }
-    */
+
     if (input && input.length > 4) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 4 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -29,7 +30,11 @@ const OrderDays = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="cust_ord_days" label={t('fields.custOrdDays')} rules={[{ required: false, validator: validate }]}>
+    <Form.Item 
+      name="cust_ord_days" 
+      label={t('fields.custOrdDays')} 
+      rules={[{ required: false, validator: validate }]}
+    >
       <InputNumber min={0} max={9999} defaultValue={0} style={{ width: '100%' }} />
     </Form.Item>
   );

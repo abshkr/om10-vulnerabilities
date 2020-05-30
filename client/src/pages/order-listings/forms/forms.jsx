@@ -11,11 +11,9 @@ import {
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 import useSWR from 'swr';
-//import moment from 'moment';
 import jwtDecode from 'jwt-decode';
 
 import {
@@ -56,6 +54,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const { setFieldsValue, resetFields, validateFields } = form;
 
   const [orderNo, setOrderNo] = useState(value?.order_sys_no);
   const [supplier, setSupplier] = useState(undefined);
@@ -67,10 +66,10 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const [orderItems, setOrderItems] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
 
-  const { setFieldsValue, resetFields, validateFields } = form;
 
   const IS_CREATING = !value;
-  const CAN_ORDER_PERIOD = selected && value;
+  //const CAN_ORDER_PERIOD = !!selected && !!value;
+  const CAN_ORDER_PERIOD = (selected !== null && selected !== undefined) && (value !== null && value !== undefined);
 
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
@@ -79,10 +78,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const onComplete = () => {
     console.log("start of onComplete");
     handleFormState(false, null);
-    console.log("in onComplete 1");
-    //mutate(ORDER_LISTINGS.READ);
     revalidate();
-    console.log("in onComplete 2");
     /* setSupplier(undefined);
     setDrawer(undefined);
     setSelected(null); */
@@ -92,12 +88,13 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const getOrderItems = useCallback(() => {
     const url = IS_CREATING
       ? `${ORDER_LISTINGS.ORDER_ITEMS}?order_drwr_code=${drawer}&page_state=${pageState}`
-      : `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${value?.order_sys_no}`;
+      : `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${orderNo}`;
+      //: `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${value?.order_sys_no}`;
 
     axios.get(url).then((response) => {
       const payload = response.data?.records || [];
   
-      form.setFieldsValue({
+      setFieldsValue({
         order_items: payload,
       });
 
@@ -106,7 +103,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   }, [orderNo, drawer]);
 
   const onFinish = async () => {
-    const values = await form.validateFields();
+    const values = await validateFields();
     const orderItems = [];
 
     _.forEach(values?.order_items, (order_item) => {
@@ -275,32 +272,26 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
       },
     });
   };
-  /*
+
   useEffect(() => {
     if (!value && !visible) {
-      resetFields();
-
-      setType(undefined);
-      setCompany(undefined);
-      setSupplier(undefined);
-      setLockType(undefined);
-      setOrderItems([]);
-    }
-  }, [resetFields, value, visible]);
-  */
-  useEffect(() => {
-    getOrderItems();
-  }, [orderNo, drawer, getOrderItems]);
-
-  useEffect(() => {
-    if (!value) {
       resetFields();
       setOrderItems([]);
       setSupplier(undefined);
       setDrawer(undefined);
       setSelected(null);
     }
-  }, [value, resetFields]);
+  }, [value, visible, resetFields, setOrderItems, setSupplier, setDrawer, setSelected]);
+
+  useEffect(() => {
+    getOrderItems();
+  }, [orderNo, drawer, getOrderItems]);
+
+  useEffect(() => {
+    if (value !== null && value !== undefined) {
+      setOrderNo(value.order_sys_no);
+    }
+  }, [value, setOrderNo]);
 
   return (
     <Drawer
@@ -494,11 +485,11 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
             <OrderTrips value={value} orderNo={orderNo}/>
           </TabPane>
           <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING||!selected} key="3">
-            <OrderTrips value={value} orderItem={selected}/>
+            <OrderItemTrips value={value} orderItem={selected}/>
           </TabPane>
         </Tabs>
       </Form>
-      <Period visible={showPeriod && CAN_ORDER_PERIOD} setVisibility={setShowPeriod} selected={selected} />
+      <Period visible={showPeriod && CAN_ORDER_PERIOD} setVisibility={setShowPeriod} selected={selected} order={value} form={form} />
     </Drawer>
   );
 };

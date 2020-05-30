@@ -14,8 +14,10 @@ const Location = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.custDelvLoc')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.custDelvLoc')}`);
+      }
     }
 
     return Promise.resolve();
@@ -33,7 +35,7 @@ const Location = ({ form, value }) => {
     <Form.Item
       name="cust_delv_code"
       label={t('fields.custDelvLoc')}
-      rules={[{ required: false }]}
+      rules={[{ required: false, validator: validate }]}
     >
       <Select
         loading={isValidating}
