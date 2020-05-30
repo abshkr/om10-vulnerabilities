@@ -14,6 +14,8 @@ import {
   DatePicker,
   InputNumber,
   Select,
+  Row,
+  Col,
 } from 'antd';
 
 import {
@@ -38,10 +40,10 @@ import { ORDER_LISTINGS } from '../../../../api';
 
 const { TabPane } = Tabs;
 
-const PeriodForm = ({ value, units, parent, revalidate, data }) => {
+const PeriodForm = ({ value, units, parent, revalidate, data, form }) => {
   const { t } = useTranslation();
 
-  const [form] = Form.useForm();
+  //const [form] = Form.useForm();
   const { setFieldsValue } = form;
 
   const FORMAT = getDateTimeFormat();
@@ -54,6 +56,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
       oprd_order_id: parent?.oitem_order_id,
       oprd_prod_code: parent?.oitem_prod_code,
       oprd_prod_cmpy: parent?.oitem_prod_cmpy,
+      //oprd_prod_unit: parent?.oitem_prod_unit,
       ...values,
       oprd_period_start: values.oprd_period_start?.format(SETTINGS.DATE_TIME_FORMAT),
       oprd_period_end: values.oprd_period_end?.format(SETTINGS.DATE_TIME_FORMAT),
@@ -143,7 +146,12 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
   }, [IS_CREATING, value, data, setFieldsValue]);
 
   return (
-    <Form layout="vertical" form={form} onFinish={onFinish}>
+    <Form 
+      layout="vertical" 
+      form={form} 
+      onFinish={onFinish} 
+      initialValues={{oprd_prod_unit: String(parent?.oitem_prod_unit)}}
+    >
       <Tabs defaultActiveKey="1" animated={false}>
         <TabPane tab={t('tabColumns.general')} key="1">
           <Form.Item name="oprd_period_no" label={t('fields.oprdPeriodNo')}>
@@ -216,8 +224,8 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
   );
 };
 
-const Period = ({ selected, setVisibility, visible }) => {
-  const [form] = Form.useForm();
+const Period = ({ visible, setVisibility, selected, order, form }) => {
+  //const [form] = Form.useForm();
   const { setFieldsValue } = form;
 
   const SHOULD_FETCH = !!selected;
@@ -242,6 +250,7 @@ const Period = ({ selected, setVisibility, visible }) => {
           parent={selected}
           revalidate={revalidate}
           data={data}
+          form={form}
         />
       ),
       id: value?.oitem_prod_code,
@@ -253,16 +262,20 @@ const Period = ({ selected, setVisibility, visible }) => {
   useEffect(() => {
     if (selected) {
       setFieldsValue({
+        oitem_supp_name: order.order_supp_name,
+        oitem_cust_name: order.order_cust_name,
+        oitem_cust_no: order.order_cust_no,
         oitem_prod_code: selected.oitem_prod_code,
         oitem_prod_name: selected.oitem_prod_name,
+        //oitem_prod_unit: selected.oitem_prod_unit,
       });
     }
-  }, [selected]);
+  }, [selected, setFieldsValue]);
 
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
-      width="33vw"
+      width="40vw"
       onClose={() => setVisibility(false)}
       visible={visible}
       footer={
@@ -281,13 +294,35 @@ const Period = ({ selected, setVisibility, visible }) => {
       <Tabs defaultActiveKey="1">
         <Tabs.TabPane key="1" tab={t('operations.orderPeriod')}>
           <Form layout="vertical" form={form}>
-            <Form.Item name="oitem_prod_code" label={t('fields.oitemProdCode')}>
+            <Form.Item name="oitem_cust_no" label={t('fields.orderCustNo')}>
               <Input readOnly />
             </Form.Item>
 
-            <Form.Item name="oitem_prod_name" label={t('fields.oitemProdName')}>
-              <Input readOnly />
-            </Form.Item>
+            <Row gutter={[8, 8]}>
+              <Col span={12}>
+                <Form.Item name="oitem_supp_name" label={t('fields.orderSuppName')}>
+                  <Input readOnly />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name="oitem_cust_name" label={t('fields.orderCustName')}>
+                  <Input readOnly />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={[8, 8]}>
+              <Col span={12}>
+                <Form.Item name="oitem_prod_code" label={t('fields.oitemProdCode')}>
+                  <Input readOnly />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name="oitem_prod_name" label={t('fields.oitemProdName')}>
+                  <Input readOnly />
+                </Form.Item>
+              </Col>
+            </Row>
 
             <List
               size="small"
@@ -316,12 +351,17 @@ const Period = ({ selected, setVisibility, visible }) => {
                     ]}
                   >
                     <List.Item.Meta
-                      avatar={<Avatar>{item.oprd_order_id}</Avatar>}
+                      avatar={<Avatar>{item.oprd_period_no}</Avatar>}
                       // eslint-disable-next-line
                       title={
-                        <a>
-                          {`${t('fields.oprdProdQty')}: ${item.oprd_prod_qty} ${item.oprd_unit_name}`}{' '}
-                        </a>
+                        <Row gutter={[8, 8]}>
+                          <Col span={12} style={{color: '#00FF00'}}>
+                            {`${t('fields.oprdProdQty')}: ${item.oprd_prod_qty} ${item.oprd_unit_name}`}{' '}
+                          </Col>
+                          <Col span={12} style={{color: '#FF0000'}}>
+                            {`${t('fields.oprdProdUsed')}: ${item.oprd_prod_used} ${item.oprd_unit_name}`}{' '}
+                          </Col>
+                        </Row>
                       }
                       description={`${t('fields.oprdPeriodStart')}: ${moment(
                         item.oprd_period_start,
