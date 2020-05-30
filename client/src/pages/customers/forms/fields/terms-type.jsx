@@ -14,11 +14,12 @@ const TermsType = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    /*
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.custCrdTerms')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.custCrdTerms')}`);
+      }
     }
-    */
+
     return Promise.resolve();
   };
 

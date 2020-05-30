@@ -42,6 +42,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
   const { t } = useTranslation();
 
   const [form] = Form.useForm();
+  const { setFieldsValue } = form;
 
   const FORMAT = getDateTimeFormat();
 
@@ -125,7 +126,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
 
   useEffect(() => {
     if (!IS_CREATING) {
-      form.setFieldsValue({
+      setFieldsValue({
         oprd_period_no: value.oprd_period_no,
         oprd_prod_qty: value.oprd_prod_qty,
         oprd_prod_unit: value.oprd_prod_unit,
@@ -133,13 +134,13 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
         oprd_period_end: moment(value.oprd_period_end, SETTINGS.DATE_TIME_FORMAT) || null,
       });
     } else {
-      form.setFieldsValue({
+      setFieldsValue({
         oprd_period_start: moment(),
         oprd_period_end: moment().add(7, 'days'),
         oprd_period_no: data?.records?.length + 1 || 1,
       });
     }
-  }, [IS_CREATING]);
+  }, [IS_CREATING, value, data, setFieldsValue]);
 
   return (
     <Form layout="vertical" form={form} onFinish={onFinish}>
@@ -217,6 +218,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
 
 const Period = ({ selected, setVisibility, visible }) => {
   const [form] = Form.useForm();
+  const { setFieldsValue } = form;
 
   const SHOULD_FETCH = !!selected;
 
@@ -250,7 +252,7 @@ const Period = ({ selected, setVisibility, visible }) => {
 
   useEffect(() => {
     if (selected) {
-      form.setFieldsValue({
+      setFieldsValue({
         oitem_prod_code: selected.oitem_prod_code,
         oitem_prod_name: selected.oitem_prod_name,
       });

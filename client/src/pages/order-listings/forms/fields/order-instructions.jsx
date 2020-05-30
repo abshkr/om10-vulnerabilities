@@ -10,7 +10,7 @@ const OrderInstructions = ({ form, value, pageState }) => {
 
   const { setFieldsValue } = form;
 
-  const { data: payload, isValidating } = useSWR(
+  const { data: payload } = useSWR(
     `${ORDER_LISTINGS.INSTRUCTIONS}?order_sys_no=${value?.order_sys_no}`, { 
       refreshInterval: 0,
     }
@@ -37,10 +37,12 @@ const OrderInstructions = ({ form, value, pageState }) => {
   );
   */
   const validate = (rule, input) => {
-    /*
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.orderInstructions')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.orderInstructions')}`);
+      }
     }
+    /*
     if (input && input.length > 60) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 60 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -74,7 +76,7 @@ const OrderInstructions = ({ form, value, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Input.TextArea 
-        style={{width:'100%', height:'20%'}}
+        style={{width:'100%'}}
         disabled={(pageState==='create'||pageState==='edit')? false : true}
       />
     </Form.Item>

@@ -14,11 +14,12 @@ const Carrier = ({ form, value, onChange, pageState }) => {
   const { data: options, isValidating } = useSWR(ORDER_LISTINGS.CARRIERS);
 
   const validate = (rule, input) => {
-    /*
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.orderCarrName')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.orderCarrName')}`);
+      }
     }
-    */
+
     return Promise.resolve();
   };
 

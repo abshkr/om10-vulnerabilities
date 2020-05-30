@@ -14,8 +14,10 @@ const CustomerCategory = ({ form, value, onChange }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.customerCategory')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.customerCategory')}`);
+      }
     }
 
     return Promise.resolve();
@@ -35,7 +37,7 @@ const CustomerCategory = ({ form, value, onChange }) => {
     <Form.Item
       name="delv_cust_catgcode"
       label={t('fields.customerCategory')}
-      rules={[{ required: false }]}
+      rules={[{ required: false, validator: validate }]}
     >
       <Select
         loading={isValidating}

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Select } from 'antd';
 import _ from 'lodash';
 
-export default class ListRenderer extends Component {
+export default class QuantityRenderer extends Component {
   constructor(props) {
     super(props);
 

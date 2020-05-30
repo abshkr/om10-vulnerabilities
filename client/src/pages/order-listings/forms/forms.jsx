@@ -11,11 +11,9 @@ import {
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 import useSWR from 'swr';
-//import moment from 'moment';
 import jwtDecode from 'jwt-decode';
 
 import {
@@ -79,10 +77,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const onComplete = () => {
     console.log("start of onComplete");
     handleFormState(false, null);
-    console.log("in onComplete 1");
-    //mutate(ORDER_LISTINGS.READ);
     revalidate();
-    console.log("in onComplete 2");
     /* setSupplier(undefined);
     setDrawer(undefined);
     setSelected(null); */
@@ -494,7 +489,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
             <OrderTrips value={value} orderNo={orderNo}/>
           </TabPane>
           <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING||!selected} key="3">
-            <OrderTrips value={value} orderItem={selected}/>
+            <OrderItemTrips value={value} orderItem={selected}/>
           </TabPane>
         </Tabs>
       </Form>

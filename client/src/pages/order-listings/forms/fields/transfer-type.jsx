@@ -8,11 +8,12 @@ const TransferType = ({ form, value, pageState }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    /*
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.orderTrsfType')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.orderTrsfType')}`);
+      }
     }
-    */
+
     if (input && input.length > 60) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 60 ─ ${t('descriptions.maxCharacters')}`);
     }

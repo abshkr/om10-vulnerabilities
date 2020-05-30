@@ -14,10 +14,15 @@ const Profile = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.delvProfile')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.delvProfile')}`);
+      }
     }
-
+    /*
+    if (input === '' || !input) {
+    }
+    */
     return Promise.resolve();
   };
 
@@ -33,7 +38,7 @@ const Profile = ({ form, value }) => {
     <Form.Item
       name="delv_prf_code"
       label={t('fields.delvProfile')}
-      rules={[{ required: false, validator: null }]}
+      rules={[{ required: false, validator: validate }]}
     >
       <Select
         loading={isValidating}

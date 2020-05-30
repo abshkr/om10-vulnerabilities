@@ -8,11 +8,12 @@ const OrderRefCode = ({ form, value, pageState }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    /*
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.orderRefCode')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.orderRefCode')}`);
+      }
     }
-    */
+
     if (input && input.length > 32) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 32 ─ ${t('descriptions.maxCharacters')}`);
     }
