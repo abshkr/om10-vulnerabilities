@@ -143,20 +143,30 @@ const OtherForm = ({ value, form }) => {
     return Promise.resolve();
   };
 
-  const swithLayout = {
+  const leftItemLayout = {
+    labelCol: { span: 18 },
+    labelAlign: "left",
+    // marginRight: 10
+    // wrapperCol: { span: 16 },
+  };
+
+  const rightItemLayout = {
     labelCol: { span: 20 },
+    labelAlign: "left",
+    // marginLeft: 10,
     // wrapperCol: { span: 16 },
   };
 
   const singleLineLayout = {
-    labelCol: { span: 10 },
+    labelCol: { span: 9 },
+    labelAlign: "left",
     // wrapperCol: { span: 16 },
   };
 
   return (
     <div>    
       <Divider orientation="left">{t('fields.autoOrderNumbers')}</Divider>
-      <Row justify="center">
+      <Row justify="center" gutter="8">
         <Col span={7}>
           <Form.Item name="cmpy_ord_strt" label={t('fields.startAt')} rules={[{ required: true }]}>
             <InputNumber min={1} max={999999999} style={{width:'11vh'}}/>
@@ -175,73 +185,94 @@ const OtherForm = ({ value, form }) => {
       </Row>
 
       <Divider orientation="left"></Divider>
-      <Row justify="center" >
+      <Row justify="center" gutter="8">
         <Col span={12}>
-          <Form.Item name="cmpy_vet" label={t('fields.vetFlag')} {...swithLayout} >
-            {/* <Switch checked={cmpy_vet} onChange={onHostDocChange}></Switch> */}
-            <Input></Input>
+          <Form.Item name="cmpy_vet" label={t('fields.vetFlag')} {...leftItemLayout} >
+            <Select
+              style={{width:"14vh"}}
+              // onChange={handleVetChange}
+            >
+              <Select.Option key={-1} value="-1">Vet None</Select.Option>
+              <Select.Option key={0} value="0">Vet Carrier</Select.Option>
+              <Select.Option key={1} value="1">Vet Prime Mover</Select.Option>
+              <Select.Option key={2} value="2">Vet Trailer</Select.Option>
+              <Select.Option key={3} value="3">Vet All</Select.Option>
+            </Select>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="cmpy_bay_loop_ch" label={t('fields.equipMustInArea')} {...swithLayout} >
+          <Form.Item name="cmpy_bay_loop_ch" label={t('fields.equipMustInArea')} {...rightItemLayout} >
             <Switch checked={cmpy_bay_loop_ch} onChange={onAutoReconcChange}></Switch>
           </Form.Item>
         </Col>
       </Row>
 
-      <Row justify="center">
+      <Row justify="center" gutter="8">
         <Col span={12}>
-          <Form.Item name="cmpy_rtn_prompt" label={t('fields.returnLocationCarrier')} {...swithLayout} >
-            <Input></Input>
+          <Form.Item name="cmpy_rtn_prompt" label={t('fields.returnLocationCarrier')} {...leftItemLayout} >
+            {/* <Input></Input> */}
+            <Select
+              style={{width:"14vh"}}
+              // onChange={handRtnPrompt}
+            >
+              <Select.Option key={0} value="0">{t('fields.bayOnly')}</Select.Option>
+              <Select.Option key={1} value="1">{t('fields.gateAndBay')}</Select.Option>
+              <Select.Option key={2} value="2">{t('fields.gateAndDevice')}</Select.Option>
+              <Select.Option key={3} value="3">{t('fields.gateOnly')}</Select.Option>
+              <Select.Option key={4} value="4">{t('fields.deviceOnly')}</Select.Option>
+              <Select.Option key={5} value="5">{t('fields.bayOrDevice')}</Select.Option>
+              <Select.Option key={6} value="6">{t('fields.hostOnly')}</Select.Option>
+              <Select.Option key={7} value="7">{t('fields.none')}</Select.Option>
+            </Select>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="cmpy_mod_drawer" label={t('fields.drawerChangeForNew')} {...swithLayout} >
+          <Form.Item name="cmpy_mod_drawer" label={t('fields.drawerChangeForNew')} {...rightItemLayout} >
             <Switch checked={cmpy_mod_drawer} onChange={onFlag2}></Switch>
           </Form.Item>
         </Col>
       </Row>
 
-      <Row justify="center">
+      <Row justify="center" gutter="8">
         <Col span={12}>
-          <Form.Item name="cmpy_auto_reconc" label={t('fields.autoConfigTanker')} {...swithLayout} >
+          <Form.Item name="cmpy_auto_reconc" label={t('fields.autoConfigTanker')} {...leftItemLayout} >
             <Switch checked={cmpy_auto_reconc} onChange={onLogDel}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="cmpy_must_sealno" label={t('fields.mustHaveSeal')} {...swithLayout} >
+          <Form.Item name="cmpy_must_sealno" label={t('fields.mustHaveSeal')} {...rightItemLayout} >
             <Switch checked={cmpy_must_sealno} onChange={onLoadTol}></Switch>
           </Form.Item>
         </Col>
       </Row>
 
-      <Row justify="center">
+      <Row justify="center" gutter="8">
         <Col span={12}>
-          <Form.Item name="cmpy_tkr_activat" label={t('fields.activateTanker')} {...swithLayout} >
+          <Form.Item name="cmpy_tkr_activat" label={t('fields.activateTanker')} {...leftItemLayout} >
             <Switch checked={cmpy_tkr_activat} onChange={onAutoLoad}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="cmpy_req_pin_flag" label={t('fields.mustHavePin')} {...swithLayout} >
+          <Form.Item name="cmpy_req_pin_flag" label={t('fields.mustHavePin')} {...rightItemLayout} >
             <Switch checked={cmpy_req_pin_flag} onChange={onBlendTol}></Switch>
           </Form.Item>
         </Col>
       </Row>
 
-      <Row justify="center">
+      <Row justify="center" gutter="8">
         <Col span={12}>
-          <Form.Item name="cmpy_wipe_ordets" label={t('fields.hostUpdateOrder')} {...swithLayout} >
+          <Form.Item name="cmpy_wipe_ordets" label={t('fields.hostUpdateOrder')} {...leftItemLayout} >
             <Switch checked={cmpy_wipe_ordets} onChange={onOrdCarrier}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="cmpy_enable_expd" label={t('fields.enableExpiryCheck')} {...swithLayout} >
+          <Form.Item name="cmpy_enable_expd" label={t('fields.enableExpiryCheck')} {...rightItemLayout} >
             <Switch checked={cmpy_enable_expd} onChange={onWghComplete}></Switch>
           </Form.Item>
         </Col>
       </Row>
 
-      <Row justify="center">
+      <Row justify="center" gutter="8">
         <Col span={24}>
           <Form.Item name="cmpy_report_receivers" label={t('fields.closeoutRptEmails')} {...singleLineLayout} >
             <TextArea rows={2}/>
@@ -249,7 +280,7 @@ const OtherForm = ({ value, form }) => {
           </Form.Item>
         </Col>
         {/* <Col span={12}>
-          <Form.Item name="validate_schedule_availabitilty" label={t('fields.validateSchdAtDLI')} {...swithLayout} >
+          <Form.Item name="validate_schedule_availabitilty" label={t('fields.validateSchdAtDLI')} {...rightItemLayout} >
             <Switch checked={validate_schedule_availabitilty} onChange={onValidateSchd}></Switch>
           </Form.Item>
         </Col> */}

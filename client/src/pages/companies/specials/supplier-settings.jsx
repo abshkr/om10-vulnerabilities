@@ -253,13 +253,23 @@ const SupplierForm = ({ value, form }) => {
     return Promise.resolve();
   };
 
-  const swithLayout = {
+  const leftItemLayout = {
+    labelCol: { span: 18 },
+    labelAlign: "left",
+    // marginRight: 10
+    // wrapperCol: { span: 16 },
+  };
+
+  const rightItemLayout = {
     labelCol: { span: 20 },
+    labelAlign: "left",
+    // marginLeft: 10,
     // wrapperCol: { span: 16 },
   };
 
   const singleLineLayout = {
-    labelCol: { span: 10 },
+    labelCol: { span: 9 },
+    labelAlign: "left",
     // wrapperCol: { span: 16 },
   };
 
@@ -287,12 +297,12 @@ const SupplierForm = ({ value, form }) => {
       <Divider orientation="left"></Divider>
       <Row justify="center" >
         <Col span={12}>
-          <Form.Item name="cmpy_host_docs" label={t('fields.hostPrintDoc')} {...swithLayout} >
+          <Form.Item name="cmpy_host_docs" label={t('fields.hostPrintDoc')} {...leftItemLayout} >
             <Switch checked={cmpy_host_docs} onChange={onHostDocChange}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="cmpy_auto_reconc" label={t('fields.reconcilePrev')} {...swithLayout} >
+          <Form.Item name="cmpy_auto_reconc" label={t('fields.reconcilePrev')} {...rightItemLayout} >
             <Switch checked={cmpy_auto_reconc} onChange={onAutoReconcChange}></Switch>
           </Form.Item>
         </Col>
@@ -300,12 +310,12 @@ const SupplierForm = ({ value, form }) => {
 
       <Row justify="center">
         <Col span={12}>
-          <Form.Item name="cmpy_comms_ok" label={t('fields.hostCommUp')} {...swithLayout} >
+          <Form.Item name="cmpy_comms_ok" label={t('fields.hostCommUp')} {...leftItemLayout} >
             <Switch checked={cmpy_comms_ok} onChange={onComms}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="cmpy_flag_2" label={t('fields.autoTankConfig')} {...swithLayout} >
+          <Form.Item name="cmpy_flag_2" label={t('fields.autoTankConfig')} {...rightItemLayout} >
             <Switch checked={cmpy_flag_2} onChange={onFlag2}></Switch>
           </Form.Item>
         </Col>
@@ -313,12 +323,12 @@ const SupplierForm = ({ value, form }) => {
 
       <Row justify="center">
         <Col span={12}>
-          <Form.Item name="cmpy_log_ld_del" label={t('fields.loadDeletionLog')} {...swithLayout} >
+          <Form.Item name="cmpy_log_ld_del" label={t('fields.loadDeletionLog')} {...leftItemLayout} >
             <Switch checked={cmpy_log_ld_del} onChange={onLogDel}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="cmpy_ldtol_flag" label={t('fields.doLoadTolCheck')} {...swithLayout} >
+          <Form.Item name="cmpy_ldtol_flag" label={t('fields.doLoadTolCheck')} {...rightItemLayout} >
             <Switch checked={cmpy_ldtol_flag} onChange={onLoadTol}></Switch>
           </Form.Item>
         </Col>
@@ -326,12 +336,12 @@ const SupplierForm = ({ value, form }) => {
 
       <Row justify="center">
         <Col span={12}>
-          <Form.Item name="cmpy_auto_ld" label={t('fields.autoCompletePreschedule')} {...swithLayout} >
+          <Form.Item name="cmpy_auto_ld" label={t('fields.autoCompletePreschedule')} {...leftItemLayout} >
             <Switch checked={cmpy_auto_ld} onChange={onAutoLoad}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="cmpy_bltol_flag" label={t('fields.doBlendTolCheck')} {...swithLayout} >
+          <Form.Item name="cmpy_bltol_flag" label={t('fields.doBlendTolCheck')} {...rightItemLayout} >
             <Switch checked={cmpy_bltol_flag} onChange={onBlendTol}></Switch>
           </Form.Item>
         </Col>
@@ -339,12 +349,12 @@ const SupplierForm = ({ value, form }) => {
 
       <Row justify="center">
         <Col span={12}>
-          <Form.Item name="cmpy_ord_carrier" label={t('fields.ignoreCarrierForPreorder')} {...swithLayout} >
+          <Form.Item name="cmpy_ord_carrier" label={t('fields.ignoreCarrierForPreorder')} {...leftItemLayout} >
             <Switch checked={cmpy_ord_carrier} onChange={onOrdCarrier}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="cmpy_wgh_complet" label={t('fields.mustEndOnWB')} {...swithLayout} >
+          <Form.Item name="cmpy_wgh_complet" label={t('fields.mustEndOnWB')} {...rightItemLayout} >
             <Switch checked={cmpy_wgh_complet} onChange={onWghComplete}></Switch>
           </Form.Item>
         </Col>
@@ -352,12 +362,12 @@ const SupplierForm = ({ value, form }) => {
 
       <Row justify="center">
         <Col span={12}>
-          <Form.Item name="auto_complete_non_preschd_loads" label={t('fields.autoCompleteNonPreschedule')} {...swithLayout} >
+          <Form.Item name="auto_complete_non_preschd_loads" label={t('fields.autoCompleteNonPreschedule')} {...leftItemLayout} >
             <Switch checked={auto_complete_non_preschd_loads} onChange={onAutoNonPreschedule}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="safefill_tolerance_check" label={t('fields.doSafeTolCheck')} {...swithLayout} >
+          <Form.Item name="safefill_tolerance_check" label={t('fields.doSafeTolCheck')} {...rightItemLayout} >
             <Switch checked={safefill_tolerance_check} onChange={onSafefillCheck}></Switch>
           </Form.Item>
         </Col>
@@ -365,12 +375,12 @@ const SupplierForm = ({ value, form }) => {
 
       <Row justify="center">
         <Col span={12}>
-          <Form.Item name="cmpy_schd_rev_repost" label={t('fields.reverseRepost')} {...swithLayout} >
+          <Form.Item name="cmpy_schd_rev_repost" label={t('fields.reverseRepost')} {...leftItemLayout} >
             <Switch checked={cmpy_schd_rev_repost} onChange={onReverseRepost}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="validate_schedule_max_weight" label={t('fields.maxWeightDLICheck')} {...swithLayout} >
+          <Form.Item name="validate_schedule_max_weight" label={t('fields.maxWeightDLICheck')} {...rightItemLayout} >
             <Switch checked={validate_schedule_max_weight} onChange={onValidateScheduleWeight}></Switch>
           </Form.Item>
         </Col>
@@ -378,12 +388,12 @@ const SupplierForm = ({ value, form }) => {
 
       <Row justify="center">
         <Col span={12}>
-          <Form.Item name="cmpy_movements_rev" label={t('fields.reverseMovement')} {...swithLayout} >
+          <Form.Item name="cmpy_movements_rev" label={t('fields.reverseMovement')} {...leftItemLayout} >
             <Switch checked={cmpy_movements_rev} onChange={onMovementRev}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="auth_at_gate" label={t('fields.authAtDLI')} {...swithLayout} >
+          <Form.Item name="auth_at_gate" label={t('fields.authAtDLI')} {...rightItemLayout} >
             <Switch checked={auth_at_gate} onChange={onAuthAtGate}></Switch>
           </Form.Item>
         </Col>
@@ -391,12 +401,12 @@ const SupplierForm = ({ value, form }) => {
 
       <Row justify="center">
         <Col span={12}>
-          <Form.Item name="cmpy_schd_archive" label={t('fields.archiveSchedules')} {...swithLayout} >
+          <Form.Item name="cmpy_schd_archive" label={t('fields.archiveSchedules')} {...leftItemLayout} >
             <Switch checked={cmpy_schd_archive} onChange={onArchive}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="validate_schedule_availabitilty" label={t('fields.validateSchdAtDLI')} {...swithLayout} >
+          <Form.Item name="validate_schedule_availabitilty" label={t('fields.validateSchdAtDLI')} {...rightItemLayout} >
             <Switch checked={validate_schedule_availabitilty} onChange={onValidateSchd}></Switch>
           </Form.Item>
         </Col>
@@ -413,7 +423,7 @@ const SupplierForm = ({ value, form }) => {
           </Form.Item>
         </Col>
         {/* <Col span={12}>
-          <Form.Item name="validate_schedule_availabitilty" label={t('fields.validateSchdAtDLI')} {...swithLayout} >
+          <Form.Item name="validate_schedule_availabitilty" label={t('fields.validateSchdAtDLI')} {...rightItemLayout} >
             <Switch checked={validate_schedule_availabitilty} onChange={onValidateSchd}></Switch>
           </Form.Item>
         </Col> */}

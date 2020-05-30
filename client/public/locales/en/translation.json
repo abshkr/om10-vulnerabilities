@@ -830,7 +830,20 @@
 	"defaultTemplate": "Default Template",
 	"numOfCopies": "Num of Copies",
 	"footerText": "Footer Text",
-	"tiggerPoint": "Trigger Point"
+	"tiggerPoint": "Trigger Point",
+	"vetNone": "Vet None",
+	"vetCarrier": "Vet Carrier",
+	"vetPM": "Vet Primemover",
+	"vetTrailer": "Vet Trailer",
+	"vetAll": "Vet All",
+	"bayOnly": "Bay Only",
+	"gateAndBay": "Gate and Bay",
+	"gateAndDevice": "Gate and Returns Device",
+	"gateOnly": "Gate Only",
+	"deviceOnly": "Returns device only",
+	"bayOrDevice": "Host Bay or Device",
+	"hostOnly": "Host Only",
+	"none": "None"
   },
 
   "pageMenu": {

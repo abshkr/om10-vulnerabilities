@@ -22,7 +22,10 @@ const FormModal = ({ value, handleBaseCallBack }) => {
   const [form] = Form.useForm();
   const IS_CREATING = !value;
   
-  const onFinish = values => {
+  const onFinish = async () => {
+    const values = await form.validateFields();
+    console.log("onFinish")
+    console.log(values)
     // values.pitem_base_name = _.filter(baseProducts, (item) => {
     //   return item.base_code === values.pitem_base_code;
     // })[0].base_name
