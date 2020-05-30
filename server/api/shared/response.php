@@ -250,12 +250,40 @@ function response($case_name, $default = null, $params = null)
             "CHN" => "内部异常，请检查日志文件获取详情"
         ),
         "__DATABASE_EXCEPTION__" => array(
-            "ENG" => "Database exception caught",
+            "ENG" => "Database exception caught, check logs/php_rest_*.log file for details",
             "CHN" => "数据库异常，请检查日志文件获取详情"
         ),
         "__PARAMETER_EXCEPTION__" => array(
             "ENG" => "Parameter exception caught",
             "CHN" => "参数异常，请检查日志文件获取详情"
+        ),
+        "__SEAL_ALLOCATED__" => array(
+            "ENG" => "Seal numbers allocated",
+            "CHN" => "已完成分配"
+        ),
+        "__SEAL_ALLOCATED_ONE__" => array(
+            "ENG" => "One seal allocated",
+            "CHN" => "已完成分配"
+        ),
+        "__SCHED_ARCHIVED__" => array(
+            "ENG" => "Schedule has been archived",
+            "CHN" => "发油单已归档"
+        ),
+        "__SET_NEXT_SEAL__" => array(
+            "ENG" => "Next seal saved",
+            "CHN" => "下一个密封号已经保存"
+        ),
+        "__SET_DELETED__" => array(
+            "ENG" => "Seal number deleted",
+            "CHN" => "密封号已经删除"
+        ),
+        "__SET_REALLOCATED__" => array(
+            "ENG" => "Seal number reallocated",
+            "CHN" => "密封号已经重新分配"
+        ),
+        "__SEAL_ALL_DEALLOCATED__" => array(
+            "ENG" => "Seal numbers deallocated",
+            "CHN" => "密封号已经取消"
         ),
         "__INTERNAL_ERROR__" => array(
             "ENG" => "Internal error, check logs/php_rest_*.log file for details",

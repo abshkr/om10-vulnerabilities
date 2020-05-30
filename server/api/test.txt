@@ -329,6 +329,14 @@ https://{{server_ip}}/api/pages/schedule/host_data_delete.php
 	"dh_shlssupp": "5860106",
 	"dh_shlscmpt": "2"
 }
+https://10.1.10.66/api/pages/schedule/seals.php?supplier=7640114&trip_no=246829219
+https://10.1.10.66/api/pages/schedule/next_seal.php
+https://10.1.10.66/api/pages/schedule/set_next_seal.php?next_seal=420114-420266
+https://10.1.10.66/api/pages/schedule/allocate_seal.php?supplier=7640114&trip_no=246829219&seal_num=3  //Allocate. seal_num: number of seals
+https://10.1.10.66/api/pages/schedule/allocate_one.php?supplier=7640114&trip_no=246829219&cmpt_nr=1  //Add one 
+https://10.1.10.66/api/pages/schedule/delete_seal.php?seal_nr=420114-420264   //Deallocate selected
+https://10.1.10.66/api/pages/schedule/reallocate.php?supplier=7640114&trip_no=246829219&seal_nr=420114-420262&cmpt_nr=1    //Reallcate selected 
+https://10.1.10.66/api/pages/schedule/deallocate_all.php?supplier=7640114&trip_no=246829219  //Deallocate all 
 
 //Equipment Types
 https://10.1.10.66/api/pages/equipment_type/read.php

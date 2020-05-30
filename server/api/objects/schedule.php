@@ -185,7 +185,7 @@ class Schedule extends CommonClass
             return;
         }
 
-        $error = new EchoSchema(200, "Schedule archived");
+        $error = new EchoSchema(200, response("__SCHED_ARCHIVED__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
     }
 
