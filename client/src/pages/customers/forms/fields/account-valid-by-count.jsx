@@ -6,14 +6,24 @@ import _ from 'lodash';
 import { CUSTOMERS } from '../../../../api';
 
 import {validatorStatus} from '../../../../utils';
-
+/*
+const validateSwitch = (isLoading, match) => {
+  if (isLoading) {
+    return 'validating';
+  } else if (match) {
+    return 'warning';
+  } else {
+    return 'success';
+  }
+};
+*/
 const Account = ({ form, value }) => {
   const [account, setAccount] = useState(value?.cust_account);
   const [matched, setMatched] = useState(false);
   const { t } = useTranslation();
   const { setFieldsValue, validateFields } = form;
 
-  const { data, isValidating, revalidate } = useSWR(`${CUSTOMERS.CHECK_ACCOUNT}?cust_account=${account}`, {
+  const { data, isValidating } = useSWR(`${CUSTOMERS.CHECK_ACCOUNT}?cust_account=${account}`, {
     refreshInterval: 0,
   });
 
@@ -25,26 +35,17 @@ const Account = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
-  const handleFieldChange = (event) => {
-    setAccount(event.target.value);
-    revalidate();
-  };
-
-  useEffect(() => {
-    revalidate();
-  }, [account, revalidate]);
-
   useEffect(() => {
     if (data) {
       const counter = _.toNumber(data?.records[0]?.cnt);
       const match = counter > 0;
       setMatched(match);
     }
-  }, [data, setMatched]);
+  }, [data]);
 
   useEffect(() => {
     validateFields(['cust_account']);
-  }, [matched, validateFields]);
+  }, [matched]);
 
   const validate = (rule, input) => {
     if (matched && !value) {
@@ -57,6 +58,10 @@ const Account = ({ form, value }) => {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
     return Promise.resolve();
+  };
+
+  const handleFieldChange = (event) => {
+    setAccount(event.target.value);
   };
 
   const status = validatorStatus(isValidating, matched);

@@ -6,7 +6,17 @@ import _ from 'lodash';
 import { CUSTOMERS } from '../../../../api';
 
 import {validatorStatus} from '../../../../utils';
-
+/*
+const validateSwitch = (isLoading, match) => {
+  if (isLoading) {
+    return 'validating';
+  } else if (match) {
+    return 'warning';
+  } else {
+    return 'success';
+  }
+};
+*/
 const Account = ({ form, value }) => {
   const [account, setAccount] = useState(value?.cust_account);
   const [matched, setMatched] = useState(false);
