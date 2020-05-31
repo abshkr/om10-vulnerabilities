@@ -71,11 +71,13 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     handleFormState(false, null);
     setDrawerWidth('30vw');
     setMainTabOn(true);
-};
+  };
 
   const onComplete = () => {
     handleFormState(false, null);
     mutate(DELV_LOCATIONS.READ);
+    setDrawerWidth('30vw');
+    setMainTabOn(true);
   };
 
   const onFinish = async () => {

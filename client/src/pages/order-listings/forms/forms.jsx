@@ -46,9 +46,14 @@ import Period from './item-periods';
 import OrderTrips from './order-trips';
 import OrderItemTrips from './item-trips';
 
+import DeliveryDetails from '../../delivery-details';
+
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, pageState, revalidate }) => {
+  const [drawerWidth, setDrawerWidth] = useState('80vw');
+  const [mainTabOn, setMainTabOn] = useState(true);
+
   const { data: units } = useSWR(ORDER_LISTINGS.UNIT_TYPES);
   const { data: siteData } = useSWR(ORDER_LISTINGS.SITE_CODE);
 
@@ -65,23 +70,44 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
 
   const [orderItems, setOrderItems] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
+  const [showDeliveryDetails, setShowDeliveryDetails] = useState(false);
 
 
   const IS_CREATING = !value;
   //const CAN_ORDER_PERIOD = !!selected && !!value;
   const CAN_ORDER_PERIOD = (selected !== null && selected !== undefined) && (value !== null && value !== undefined);
+  const CAN_DELIVERY_DETAIL = (value !== null && value !== undefined);
 
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
   const user_code = decoded?.per_code;
 
+  const doTabChanges = (tabPaneKey) => {
+    if (tabPaneKey === "1") {
+      setDrawerWidth('80vw');
+      setMainTabOn(true);
+    }
+    else {
+      setDrawerWidth('90vw');
+      setMainTabOn(false);
+    }
+  }
+
+  const onFormClosed = () => {
+    handleFormState(false, null);
+    setDrawerWidth('80vw');
+    setMainTabOn(true);
+  };
+
   const onComplete = () => {
     console.log("start of onComplete");
     handleFormState(false, null);
+    setDrawerWidth('80vw');
+    setMainTabOn(true);
     revalidate();
-    /* setSupplier(undefined);
+    setSupplier(undefined);
     setDrawer(undefined);
-    setSelected(null); */
+    setSelected(null);
     console.log("end of onComplete");
   };
 
@@ -296,19 +322,19 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
-      onClose={() => handleFormState(false, null)}
+      onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="80vw"
+      width={drawerWidth}
       visible={visible}
       footer={
         <>
           {!IS_CREATING && !approved && (
             <Button 
               type="primary" 
-              disabled={IS_CREATING || !access?.canUpdate} 
+              disabled={IS_CREATING || !access?.canUpdate || !mainTabOn} 
               icon={<EditOutlined />} 
               onClick={onApprove}
             >
@@ -319,7 +345,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
           {!IS_CREATING && approved && (
             <Button 
               type="primary" 
-              disabled={IS_CREATING || !access?.canUpdate} 
+              disabled={IS_CREATING || !access?.canUpdate || !mainTabOn} 
               icon={<EditOutlined />} 
               onClick={onUnapprove}
             >
@@ -332,7 +358,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) }
+            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || !mainTabOn }
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -342,19 +368,31 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               type="primary"
               icon={<ClockCircleOutlined />}
               style={{ marginLeft: 5 }}
-              disabled={!CAN_ORDER_PERIOD}
+              disabled={!CAN_ORDER_PERIOD || !mainTabOn}
               onClick={() => setShowPeriod(true)}
             >
               {t('operations.orderPeriod')}
             </Button>
           )}
 
+          {/* {!IS_CREATING && (
+            <Button
+              type="primary"
+              icon={<ClockCircleOutlined />}
+              style={{ marginLeft: 5 }}
+              disabled={!CAN_DELIVERY_DETAIL}
+              onClick={() => setShowDeliveryDetails(true)}
+            >
+              {t('operations.deliveryDetails')}
+            </Button>
+          )} */}
+
           {!IS_CREATING && (
             <Button
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete}
+              disabled={(!access?.canDelete) || !mainTabOn}
               onClick={onDelete}
             >
               {t('operations.delete')}
@@ -375,7 +413,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
           order_stat_id: '0',
         }}
       >
-        <Tabs defaultActiveKey="1">
+        <Tabs defaultActiveKey="1" onChange={doTabChanges}>
           <TabPane tab={t('tabColumns.general')} key="1">
             <Row gutter={[8, 8]}>
               <Col span={6}>
@@ -486,6 +524,16 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
           </TabPane>
           <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING||!selected} key="3">
             <OrderItemTrips value={value} orderItem={selected}/>
+          </TabPane>
+          <TabPane tab={t('tabColumns.deliveryDetails')} disabled={IS_CREATING} key="4">
+            <DeliveryDetails 
+              access={access} 
+              params={{
+                dd_supp_code: value?.order_supp_code, 
+                dd_tripord_no: value?.order_cust_no, 
+                dd_ld_type: 3
+              }}
+            />
           </TabPane>
         </Tabs>
       </Form>
