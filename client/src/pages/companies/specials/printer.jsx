@@ -17,244 +17,32 @@ import _ from 'lodash';
 import { COMPANIES } from '../../../api';
 
 const PrinterForm = ({ value, form }) => {
-  const { data: payload } = useSWR(`${COMPANIES.CONFIG}?cmpy_code=${value?.cmpy_code}`);
-  console.log(payload?.records);
+  const { data: docPrinters, isValidating } = useSWR(`${COMPANIES.DOC_PRINTERS}?cmpy_code=${value?.cmpy_code}`);
+  const { data: reportPrinters } = useSWR(`${COMPANIES.REPORT_PRINTERS}?cmpy_code=${value?.cmpy_code}`);
+  const { data: dliPrinters } = useSWR(`${COMPANIES.DLI_PRINTERS}?cmpy_code=${value?.cmpy_code}`);
   
   const { t } = useTranslation();
   const { TextArea } = Input;
   const { resetFields, setFieldsValue, getFieldDecorator } = form;
   // const [ pitem_bltol_flag, setFlag ] = useState(value?.pitem_bltol_flag)
-
-  const [ cmpy_configs, setConfigs ] = useState(payload?.records)
   
   const [ cmpy_bol_vp_name, setReconc ] = useState(value?.cmpy_bol_vp_name)
-  const [ cmpy_vet, setHostDocs ] = useState(value?.cmpy_vet)
-  const [ cmpy_rtn_prompt, setComms ] = useState(value?.cmpy_rtn_prompt)
-  const [ cmpy_mod_drawer, setFlag2 ] = useState(value?.cmpy_mod_drawer)
-  const [ cmpy_auto_reconc, setLogDel ] = useState(value?.cmpy_auto_reconc)
-  const [ cmpy_must_sealno, setLoadTol ] = useState(value?.cmpy_must_sealno)
-  const [ cmpy_tkr_activat, setAutoLoad ] = useState(value?.cmpy_tkr_activat)
-  const [ cmpy_req_pin_flag, setBlendTol ] = useState(value?.cmpy_req_pin_flag)
-  const [ cmpy_wipe_ordets, setOrdCarrier ] = useState(value?.cmpy_wipe_ordets)
-  const [ cmpy_enable_expd, setWghComplete ] = useState(value?.cmpy_enable_expd)
-  const [ cmpy_schd_rev_repost, setReverseRepost ] = useState(value?.cmpy_schd_rev_repost)
-  const [ cmpy_movements_rev, setMovementRev ] = useState(value?.cmpy_movements_rev)
-  const [ cmpy_report_receivers, setArchive ] = useState(value?.cmpy_report_receivers)
-  const [auto_complete_non_preschd_loads, setAutoNonSchedule] = useState(false)
-  const [safefill_tolerance_check, setSafefillCheck] = useState(false)
-  const [validate_schedule_max_weight, setValidateScheduleWeight] = useState(false)
-  const [auth_at_gate, setAuthAtGate] = useState(false)
-  const [validate_schedule_availabitilty, setValidateSchd] = useState(false)
-  const [weightTolerance, setWeightTol] = useState(0)
+  const [ cmpy_ld_rep_vp, setLDprinter ] = useState(value?.cmpy_ld_rep_vp)
+  const [ cmpy_drv_inst_vp, setDLIPrinter ] = useState(value?.cmpy_drv_inst_vp)
   
-  // const [ auto_complete_non_preschd_loads, setAutoNonSchedule ] = useState(cmpy_configs?_.find(cmpy_configs, (item) => {
-  //     item.config_key === "AUTO_COMPLETE_NON_PRESCHD_LOADS"
-  //   }).config_value === : null)
-  // const [ auto_complete_non_preschd_loads, setAutoNonSchedule ] = 
-  //   useState(autoNonSchduleConfig && autoNonSchduleConfig.config_value === "Y" ? true:false)
-
-  const IS_CREATING = !value;
-  
-  const onAutoReconcChange = v => {
-    setReconc(v)
-    setFieldsValue({
-      cmpy_bol_vp_name: v,
-    });
-  }
-
-  const onHostDocChange = v => {
-    setHostDocs(v)
-    setFieldsValue({
-      cmpy_vet: v,
-    });
-  }
-
-  const onComms = v => {
-    setHostDocs(v)
-    setFieldsValue({
-      cmpy_rtn_prompt: v,
-    });
-  }
-
-  const onFlag2 = v => {
-    setFlag2(v)
-    setFieldsValue({
-      cmpy_mod_drawer: v,
-    });
-  }
-
-  const onLogDel = v => {
-    setLogDel(v)
-    setFieldsValue({
-      cmpy_auto_reconc: v,
-    });
-  }
-
-  const onLoadTol = v => {
-    setLoadTol(v)
-    setFieldsValue({
-      cmpy_must_sealno: v,
-    });
-  }
-
-  const onAutoLoad = v => {
-    setAutoLoad(v)
-    setFieldsValue({
-      cmpy_tkr_activat: v,
-    });
-  }
-
-  const onBlendTol = v => {
-    setBlendTol(v)
-    setFieldsValue({
-      cmpy_req_pin_flag: v,
-    });
-  }
-
-  const onOrdCarrier = v => {
-    setOrdCarrier(v)
-    setFieldsValue({
-      cmpy_wipe_ordets: v,
-    });
-  }
-
-  const onWghComplete = v => {
-    setWghComplete(v)
-    setFieldsValue({
-      cmpy_enable_expd: v,
-    });
-  }
-  const onAuthAtGate = v => {
-    setAuthAtGate(v)
-    setFieldsValue({
-      auth_at_gate: v,
-    });
-  }
-  
-  const onAutoNonPreschedule = v => {
-    setAutoNonSchedule(v)
-    setFieldsValue({
-      auto_complete_non_preschd_loads: v,
-    });
-  }
-
-  const onSafefillCheck = v => {
-    setSafefillCheck(v)
-    setFieldsValue({
-      safefill_tolerance_check: v,
-    });
-  }
-
-  const onReverseRepost = v => {
-    setReverseRepost(v)
-    setFieldsValue({
-      cmpy_schd_rev_repost: v,
-    });
-  }
-
-  const onValidateScheduleWeight = v => {
-    setValidateScheduleWeight(v)
-    setFieldsValue({
-      validate_schedule_max_weight: v,
-    });
-  }
-
-  const onMovementRev = v => {
-    setMovementRev(v)
-    setFieldsValue({
-      cmpy_movements_rev: v,
-    });
-  }
-
-  const onArchive = v => {
-    setArchive(v)
-    setFieldsValue({
-      cmpy_report_receivers: v,
-    });
-  }
-
-  const onValidateSchd = v => {
-    setValidateSchd(v)
-    setFieldsValue({
-      validate_schedule_availabitilty: v,
-    });
-  }
-
   useEffect(() => {
-    console.log("useEffect")
-    console.log(value.cmpy_rtn_prompt)
     if (value) {
       setFieldsValue({
-        cmpy_ord_strt: value.cmpy_ord_strt,
-        cmpy_ord_last: value.cmpy_ord_last,
-        cmpy_ord_end: value.cmpy_ord_end,
-        cmpy_vet: value.cmpy_vet,
         cmpy_bol_vp_name: value.cmpy_bol_vp_name,
-        cmpy_rtn_prompt: value.cmpy_rtn_prompt,
-        cmpy_mod_drawer: value.cmpy_mod_drawer,
-        cmpy_auto_reconc: value.cmpy_auto_reconc,
-        cmpy_must_sealno: value.cmpy_must_sealno,
-        cmpy_tkr_activat: value.cmpy_tkr_activat,
-        cmpy_req_pin_flag: value.cmpy_req_pin_flag,
-        cmpy_wipe_ordets: value.cmpy_wipe_ordets,
-        cmpy_enable_expd: value.cmpy_enable_expd,
-        cmpy_schd_rev_repost: value.cmpy_schd_rev_repost,
-        cmpy_movements_rev: value.cmpy_movements_rev,
-        cmpy_report_receivers: value.cmpy_report_receivers,
+        cmpy_ld_rep_vp: value.cmpy_ld_rep_vp,
+        cmpy_drv_inst_vp: value.cmpy_drv_inst_vp,
       })
   
       setReconc(value.cmpy_bol_vp_name)
-      setHostDocs(value.cmpy_vet)
-      setComms(value.cmpy_rtn_prompt)
-      setFlag2(value.cmpy_mod_drawer)
-      setLogDel(value.cmpy_auto_reconc)
-      setLoadTol(value.cmpy_must_sealno)
-      setAutoLoad(value.cmpy_tkr_activat)
-      setBlendTol(value.cmpy_req_pin_flag)
-      setOrdCarrier(value.cmpy_wipe_ordets)
-      setWghComplete(value.cmpy_enable_expd)
-      setReverseRepost(value.cmpy_schd_rev_repost)
-      setMovementRev(value.cmpy_movements_rev)
-      setArchive(value.cmpy_report_receivers)
+      setLDprinter(value.cmpy_ld_rep_vp)
+      setDLIPrinter(value.cmpy_drv_inst_vp)
     }
-
-    if (payload) {
-      const autoNonSchduleConfig = _.find(payload?.records, (item) => {
-        return item.config_key === "AUTO_COMPLETE_NON_PRESCHD_LOADS"
-      });
-      const safefillConfig = _.find(payload?.records, (item) => {
-        return item.config_key === "SAFEFILL_TOLERANCE_CHECK"
-      });
-      const validateWeightConfig = _.find(payload?.records, (item) => {
-        return item.config_key === "VALIDATE_SCHEDULE_MAX_WEIGHT"
-      });
-      const authAtGateConfig = _.find(payload?.records, (item) => {
-        return item.config_key === "AUTH_AT_GATE"
-      });
-      const validateSchdConfig = _.find(payload?.records, (item) => {
-        return item.config_key === "VALIDATE_SCHEDULE_AVAILABITILTY"
-      });
-      const weightTolConfig = _.find(payload?.records, (item) => {
-        return item.config_key === "LOAD_VEHICLE_WEIGHT_TOLERANCE"
-      });
-      setFieldsValue({
-        auto_complete_non_preschd_loads: autoNonSchduleConfig && autoNonSchduleConfig.config_value === "Y" ? true:false,
-        safefill_tolerance_check: safefillConfig && safefillConfig.config_value === "Y" ? true:false,
-        validate_schedule_max_weight: validateWeightConfig && validateWeightConfig.config_value === "Y" ? true:false,
-        auth_at_gate: authAtGateConfig && authAtGateConfig.config_value === "Y" ? true:false,
-        validate_schedule_availabitilty: validateSchdConfig && validateSchdConfig.config_value === "Y" ? true:false,
-        weightTolerance: weightTolConfig?.config_value,
-      })
-      setAutoNonSchedule(autoNonSchduleConfig && autoNonSchduleConfig.config_value === "Y" ? true:false)
-      setSafefillCheck(safefillConfig && safefillConfig.config_value === "Y" ? true:false)
-      setValidateScheduleWeight(validateWeightConfig && validateWeightConfig.config_value === "Y" ? true:false)
-      setAuthAtGate(authAtGateConfig && authAtGateConfig.config_value === "Y" ? true:false)
-      setValidateSchd(validateSchdConfig && validateSchdConfig.config_value === "Y" ? true:false)
-      setWeightTol(weightTolConfig?.config_value)
-      
-      // console.log("cmpy_configs useEffect")
-    }
-  }, [value, setFieldsValue, payload]);
+  }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
     // if (input === '' || !input) {
@@ -264,34 +52,7 @@ const PrinterForm = ({ value, form }) => {
     return Promise.resolve();
   };
 
-  const onCheck = v => {
-    // setFlag(v.target.checked)
-    setFieldsValue({
-      pitem_bltol_flag: v.target.checked,
-    });
-  }
-
-  const onFinish = values => {
-    // values.pitem_base_name = _.filter(baseProducts, (item) => {
-    //   return item.base_code === values.pitem_base_code;
-    // })[0].base_name
-    // values.to_create = true
-    // handleBaseCallBack(values)
-    // Modal.destroyAll();
-  };
-
-  const onDelete = values => {
-    values.to_delete = true
-    // handleBaseCallBack(values)
-    Modal.destroyAll();
-  };
-
   const swithLayout = {
-    labelCol: { span: 10 },
-    // wrapperCol: { span: 16 },
-  };
-
-  const singleLineLayout = {
     labelCol: { span: 10 },
     // wrapperCol: { span: 16 },
   };
@@ -300,16 +61,46 @@ const PrinterForm = ({ value, form }) => {
     <div>    
       <Divider></Divider>
       <Form.Item name="cmpy_bol_vp_name" label={t('fields.defaultDocPrinter')} {...swithLayout} >
-        <Input></Input>
+        <Select
+          loading={isValidating}
+          style={{width:"25vw"}}
+          // onChange={handleChange}
+        >
+          {docPrinters?.records.map((item, index) => (
+            <Select.Option key={index} value={item.prntr}>
+              {item.prntr_desc}
+            </Select.Option>
+          ))}
+        </Select>
       </Form.Item>
 
-      <Form.Item name="cmpy_mod_drawer" label={t('fields.defaultLDPrinter')} {...swithLayout} >
-      <Input></Input>
+      <Form.Item name="cmpy_ld_rep_vp" label={t('fields.defaultLDPrinter')} {...swithLayout} >
+        <Select
+          loading={isValidating}
+          style={{width:"25vw"}}
+          // onChange={handleChange}
+        >
+          {reportPrinters?.records.map((item, index) => (
+            <Select.Option key={index} value={item.prntr}>
+              {item.prntr_desc}
+            </Select.Option>
+          ))}
+        </Select>
       </Form.Item>
 
-      <Form.Item name="cmpy_auto_reconc" label={t('fields.defaultDLIPrinter')} {...swithLayout} >
-      <Input></Input>
-          </Form.Item>
+      <Form.Item name="cmpy_drv_inst_vp" label={t('fields.defaultDLIPrinter')} {...swithLayout} >
+        <Select
+          loading={isValidating}
+          style={{width:"25vw"}}
+          // onChange={handleChange}
+        >
+          {dliPrinters?.records.map((item, index) => (
+            <Select.Option key={index} value={item.prntr}>
+              {item.prntr_desc}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
     </div>
   );
 };

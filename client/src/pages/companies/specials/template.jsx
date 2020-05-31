@@ -218,43 +218,6 @@ const TemplateForm = ({ value, form }) => {
       setMovementRev(value.cmpy_movements_rev)
       setArchive(value.cmpy_report_receivers)
     }
-
-    if (payload) {
-      const autoNonSchduleConfig = _.find(payload?.records, (item) => {
-        return item.config_key === "AUTO_COMPLETE_NON_PRESCHD_LOADS"
-      });
-      const safefillConfig = _.find(payload?.records, (item) => {
-        return item.config_key === "SAFEFILL_TOLERANCE_CHECK"
-      });
-      const validateWeightConfig = _.find(payload?.records, (item) => {
-        return item.config_key === "VALIDATE_SCHEDULE_MAX_WEIGHT"
-      });
-      const authAtGateConfig = _.find(payload?.records, (item) => {
-        return item.config_key === "AUTH_AT_GATE"
-      });
-      const validateSchdConfig = _.find(payload?.records, (item) => {
-        return item.config_key === "VALIDATE_SCHEDULE_AVAILABITILTY"
-      });
-      const weightTolConfig = _.find(payload?.records, (item) => {
-        return item.config_key === "LOAD_VEHICLE_WEIGHT_TOLERANCE"
-      });
-      setFieldsValue({
-        auto_complete_non_preschd_loads: autoNonSchduleConfig && autoNonSchduleConfig.config_value === "Y" ? true:false,
-        safefill_tolerance_check: safefillConfig && safefillConfig.config_value === "Y" ? true:false,
-        validate_schedule_max_weight: validateWeightConfig && validateWeightConfig.config_value === "Y" ? true:false,
-        auth_at_gate: authAtGateConfig && authAtGateConfig.config_value === "Y" ? true:false,
-        validate_schedule_availabitilty: validateSchdConfig && validateSchdConfig.config_value === "Y" ? true:false,
-        weightTolerance: weightTolConfig?.config_value,
-      })
-      setAutoNonSchedule(autoNonSchduleConfig && autoNonSchduleConfig.config_value === "Y" ? true:false)
-      setSafefillCheck(safefillConfig && safefillConfig.config_value === "Y" ? true:false)
-      setValidateScheduleWeight(validateWeightConfig && validateWeightConfig.config_value === "Y" ? true:false)
-      setAuthAtGate(authAtGateConfig && authAtGateConfig.config_value === "Y" ? true:false)
-      setValidateSchd(validateSchdConfig && validateSchdConfig.config_value === "Y" ? true:false)
-      setWeightTol(weightTolConfig?.config_value)
-      
-      // console.log("cmpy_configs useEffect")
-    }
   }, [value, setFieldsValue, payload]);
 
   const validate = (rule, input) => {

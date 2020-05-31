@@ -170,8 +170,6 @@ const SupplierForm = ({ value, form }) => {
   }
 
   useEffect(() => {
-    console.log("useEffect")
-    console.log(value.cmpy_trip_strt)
     if (value) {
       setFieldsValue({
         cmpy_trip_strt: value.cmpy_trip_strt,
@@ -240,8 +238,6 @@ const SupplierForm = ({ value, form }) => {
       setAuthAtGate(authAtGateConfig && authAtGateConfig.config_value === "Y" ? true:false)
       setValidateSchd(validateSchdConfig && validateSchdConfig.config_value === "Y" ? true:false)
       setWeightTol(weightTolConfig?.config_value)
-      
-      // console.log("cmpy_configs useEffect")
     }
   }, [value, setFieldsValue, payload, resetFields]);
 
@@ -256,8 +252,6 @@ const SupplierForm = ({ value, form }) => {
   const leftItemLayout = {
     labelCol: { span: 18 },
     labelAlign: "left",
-    // marginRight: 10
-    // wrapperCol: { span: 16 },
   };
 
   const rightItemLayout = {
@@ -298,12 +292,12 @@ const SupplierForm = ({ value, form }) => {
       <Row justify="center" >
         <Col span={12}>
           <Form.Item name="cmpy_host_docs" label={t('fields.hostPrintDoc')} {...leftItemLayout} >
-            <Switch checked={cmpy_host_docs} onChange={onHostDocChange}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_host_docs} onChange={onHostDocChange}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item name="cmpy_auto_reconc" label={t('fields.reconcilePrev')} {...rightItemLayout} >
-            <Switch checked={cmpy_auto_reconc} onChange={onAutoReconcChange}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_auto_reconc} onChange={onAutoReconcChange}></Switch>
           </Form.Item>
         </Col>
       </Row>
@@ -311,12 +305,12 @@ const SupplierForm = ({ value, form }) => {
       <Row justify="center">
         <Col span={12}>
           <Form.Item name="cmpy_comms_ok" label={t('fields.hostCommUp')} {...leftItemLayout} >
-            <Switch checked={cmpy_comms_ok} onChange={onComms}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_comms_ok} onChange={onComms}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item name="cmpy_flag_2" label={t('fields.autoTankConfig')} {...rightItemLayout} >
-            <Switch checked={cmpy_flag_2} onChange={onFlag2}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_flag_2} onChange={onFlag2}></Switch>
           </Form.Item>
         </Col>
       </Row>
@@ -324,12 +318,12 @@ const SupplierForm = ({ value, form }) => {
       <Row justify="center">
         <Col span={12}>
           <Form.Item name="cmpy_log_ld_del" label={t('fields.loadDeletionLog')} {...leftItemLayout} >
-            <Switch checked={cmpy_log_ld_del} onChange={onLogDel}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_log_ld_del} onChange={onLogDel}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item name="cmpy_ldtol_flag" label={t('fields.doLoadTolCheck')} {...rightItemLayout} >
-            <Switch checked={cmpy_ldtol_flag} onChange={onLoadTol}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_ldtol_flag} onChange={onLoadTol}></Switch>
           </Form.Item>
         </Col>
       </Row>
@@ -337,12 +331,12 @@ const SupplierForm = ({ value, form }) => {
       <Row justify="center">
         <Col span={12}>
           <Form.Item name="cmpy_auto_ld" label={t('fields.autoCompletePreschedule')} {...leftItemLayout} >
-            <Switch checked={cmpy_auto_ld} onChange={onAutoLoad}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_auto_ld} onChange={onAutoLoad}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item name="cmpy_bltol_flag" label={t('fields.doBlendTolCheck')} {...rightItemLayout} >
-            <Switch checked={cmpy_bltol_flag} onChange={onBlendTol}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_bltol_flag} onChange={onBlendTol}></Switch>
           </Form.Item>
         </Col>
       </Row>
@@ -350,12 +344,12 @@ const SupplierForm = ({ value, form }) => {
       <Row justify="center">
         <Col span={12}>
           <Form.Item name="cmpy_ord_carrier" label={t('fields.ignoreCarrierForPreorder')} {...leftItemLayout} >
-            <Switch checked={cmpy_ord_carrier} onChange={onOrdCarrier}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_ord_carrier} onChange={onOrdCarrier}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item name="cmpy_wgh_complet" label={t('fields.mustEndOnWB')} {...rightItemLayout} >
-            <Switch checked={cmpy_wgh_complet} onChange={onWghComplete}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_wgh_complet} onChange={onWghComplete}></Switch>
           </Form.Item>
         </Col>
       </Row>
@@ -363,12 +357,12 @@ const SupplierForm = ({ value, form }) => {
       <Row justify="center">
         <Col span={12}>
           <Form.Item name="auto_complete_non_preschd_loads" label={t('fields.autoCompleteNonPreschedule')} {...leftItemLayout} >
-            <Switch checked={auto_complete_non_preschd_loads} onChange={onAutoNonPreschedule}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={auto_complete_non_preschd_loads} onChange={onAutoNonPreschedule}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item name="safefill_tolerance_check" label={t('fields.doSafeTolCheck')} {...rightItemLayout} >
-            <Switch checked={safefill_tolerance_check} onChange={onSafefillCheck}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={safefill_tolerance_check} onChange={onSafefillCheck}></Switch>
           </Form.Item>
         </Col>
       </Row>
@@ -376,12 +370,12 @@ const SupplierForm = ({ value, form }) => {
       <Row justify="center">
         <Col span={12}>
           <Form.Item name="cmpy_schd_rev_repost" label={t('fields.reverseRepost')} {...leftItemLayout} >
-            <Switch checked={cmpy_schd_rev_repost} onChange={onReverseRepost}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_schd_rev_repost} onChange={onReverseRepost}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item name="validate_schedule_max_weight" label={t('fields.maxWeightDLICheck')} {...rightItemLayout} >
-            <Switch checked={validate_schedule_max_weight} onChange={onValidateScheduleWeight}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={validate_schedule_max_weight} onChange={onValidateScheduleWeight}></Switch>
           </Form.Item>
         </Col>
       </Row>
@@ -389,12 +383,12 @@ const SupplierForm = ({ value, form }) => {
       <Row justify="center">
         <Col span={12}>
           <Form.Item name="cmpy_movements_rev" label={t('fields.reverseMovement')} {...leftItemLayout} >
-            <Switch checked={cmpy_movements_rev} onChange={onMovementRev}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_movements_rev} onChange={onMovementRev}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item name="auth_at_gate" label={t('fields.authAtDLI')} {...rightItemLayout} >
-            <Switch checked={auth_at_gate} onChange={onAuthAtGate}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={auth_at_gate} onChange={onAuthAtGate}></Switch>
           </Form.Item>
         </Col>
       </Row>
@@ -402,12 +396,12 @@ const SupplierForm = ({ value, form }) => {
       <Row justify="center">
         <Col span={12}>
           <Form.Item name="cmpy_schd_archive" label={t('fields.archiveSchedules')} {...leftItemLayout} >
-            <Switch checked={cmpy_schd_archive} onChange={onArchive}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_schd_archive} onChange={onArchive}></Switch>
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item name="validate_schedule_availabitilty" label={t('fields.validateSchdAtDLI')} {...rightItemLayout} >
-            <Switch checked={validate_schedule_availabitilty} onChange={onValidateSchd}></Switch>
+            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={validate_schedule_availabitilty} onChange={onValidateSchd}></Switch>
           </Form.Item>
         </Col>
       </Row>
@@ -422,11 +416,6 @@ const SupplierForm = ({ value, form }) => {
               parser={value => value.replace('%', '')}/>
           </Form.Item>
         </Col>
-        {/* <Col span={12}>
-          <Form.Item name="validate_schedule_availabitilty" label={t('fields.validateSchdAtDLI')} {...rightItemLayout} >
-            <Switch checked={validate_schedule_availabitilty} onChange={onValidateSchd}></Switch>
-          </Form.Item>
-        </Col> */}
       </Row>
     </div>
   );

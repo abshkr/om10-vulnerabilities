@@ -37,7 +37,7 @@ const Companies = () => {
     // console.log(selected)
     FormModal({
       width: "120vh",
-      form: <SpecialActionForm value={currentCmpy} />,
+      form: <SpecialActionForm value={currentCmpy} handleFormState={handleFormState}/>,
       // id: v?.pitem_base_code,
       // name: v?.pitem_base_name,
       t

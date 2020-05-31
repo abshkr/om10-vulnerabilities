@@ -2,42 +2,104 @@ import React from 'react';
 
 import {
   EditOutlined,
-  PlusOutlined,
+  QuestionCircleOutlined,
   CloseOutlined,
   DeleteOutlined
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal } from 'antd';
+import { Form, Button, Tabs, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import SupplierForm from './supplier-settings'
 import OtherForm from './other'
 import PrinterForm from './printer'
 import TemplateForm from './template'
 import _ from 'lodash';
+import axios from 'axios';
+import { COMPANIES } from '../../../api';
+import { mutate } from 'swr';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, handleBaseCallBack }) => {
+const FormModal = ({ value, handleFormState }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const IS_CREATING = !value;
+
+  const onComplete = () => {
+    handleFormState(false, null);
+    mutate(COMPANIES.READ);
+    Modal.destroyAll();
+  };
   
   const onFinish = async () => {
     const values = await form.validateFields();
-    console.log("onFinish")
-    console.log(values)
-    // values.pitem_base_name = _.filter(baseProducts, (item) => {
-    //   return item.base_code === values.pitem_base_code;
-    // })[0].base_name
-    // values.to_create = true
-    // handleBaseCallBack(values)
-    // Modal.destroyAll();
-  };
+    values.cmpy_code = value.cmpy_code
+    
+    values.company_configs = [
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'AUTO_COMPLETE_NON_PRESCHD_LOADS',
+        config_value: values.auto_complete_non_preschd_loads ? "Y" : "N",
+      },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'SAFEFILL_TOLERANCE_CHECK',
+        config_value: values.safefill_tolerance_check ? "Y" : "N",
+      },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'VALIDATE_SCHEDULE_MAX_WEIGHT',
+        config_value: values.validate_schedule_max_weight ? "Y" : "N",
+      },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'AUTH_AT_GATE',
+        config_value: values.auth_at_gate ? "Y" : "N",
+      },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'VALIDATE_SCHEDULE_AVAILABITILTY',
+        config_value: values.validate_schedule_availabitilty ? "Y" : "N",
+      },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'LOAD_VEHICLE_WEIGHT_TOLERANCE',
+        config_value: values.weightTolerance
+      },
+    ]
+    
+    Modal.confirm({
+      title: t('prompts.update'),
+      okText: t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(COMPANIES.UPDATE, values)
+          .then(
+            axios.spread(response => {
+              // mutate(COMPANIES.READ);
+              // Modal.destroyAll();
+              onComplete()
 
-  const onDelete = values => {
-    values.to_delete = true
-    handleBaseCallBack(values)
-    Modal.destroyAll();
+              // mutate(COMPANIES.READ);
+              notification.success({
+                message: t('messages.updateSuccess'),
+                description: t('messages.updateSuccess')
+              });
+            })
+          )
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      }
+    });
   };
 
   return (
@@ -74,23 +136,12 @@ const FormModal = ({ value, handleBaseCallBack }) => {
 
           <Button
             type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            icon={<EditOutlined />}
             htmlType="submit"
             style={{ float: 'right', marginRight: 5 }}
           >
-            {IS_CREATING ? t('operations.create') : t('operations.update')}
+            {t('operations.update')}
           </Button>
-
-          {!IS_CREATING && (
-            <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={onDelete}
-            >
-              {t('operations.delete')}
-            </Button>
-          )}
         </Form.Item>
       </Form>
     </div>

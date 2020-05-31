@@ -8,7 +8,7 @@ import {
   QuestionCircleOutlined
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer, Input, Select, Checkbox, Divider } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Input, Select, Checkbox, Divider, Row, Col } from 'antd';
 import 'antd/dist/antd.css';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
@@ -27,7 +27,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
   const { data: addresses, isValidating, revalidate } = useSWR(COMPANIES.ADDRESSES);
 
   const [form] = Form.useForm();
-  const { setFieldsValue } = form;
+  const { resetFields, setFieldsValue } = form;
 
   const [ site_manager, setManager ] = useState(value?.site_manager)
   const [ supplier, setSupplier ] = useState(value?.supplier)
@@ -126,10 +126,13 @@ const FormModal = ({ value, visible, handleFormState }) => {
         employer: value.employer,
         host: value.host,
       });
+    } else {
+      resetFields()
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, resetFields]);
 
-  const onFinish = values => {
+  const onFinish = async () => {
+    const values = await form.validateFields();
     // Attaching the Id to the Updated Object
     console.log("onFinish")
     console.log(values)
@@ -207,10 +210,43 @@ const FormModal = ({ value, visible, handleFormState }) => {
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="50vw"
+      width="35vw"
       visible={visible}
-      >
-      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+      footer={
+        <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
+
+          <Button
+            type="primary"
+            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            htmlType="submit"
+            onClick={onFinish}
+            style={{ float: 'right', marginRight: 5 }}
+          >
+            {IS_CREATING ? t('operations.create') : t('operations.update')}
+          </Button>
+
+          {!IS_CREATING && (
+            <Button
+              type="danger"
+              icon={<DeleteOutlined />}
+              style={{ float: 'right', marginRight: 5 }}
+              onClick={onDelete}
+            >
+              {t('operations.delete')}
+            </Button>
+          )}
+        </>
+      }
+    >
+      <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1" style={{ height: '60vh' }}>
             <Form.Item name="cmpy_code" label={t('fields.companyCode')} rules={[{ required: true }]}>
@@ -248,63 +284,53 @@ const FormModal = ({ value, visible, handleFormState }) => {
               </Select>
             </Form.Item>
             <Divider orientation="left" plain="plain" >{t('fields.companyType')}</Divider>
-            <Form.Item name="site_manager" noStyle >
-              <Checkbox checked={site_manager} disabled={true} onChange={onManagerChange}>{t('fields.siteManager')}</Checkbox>
-            </Form.Item>
-            <Form.Item name="supplier" noStyle>
-              <Checkbox checked={supplier} onChange={onSupplierChange}>{t('fields.supplier')}</Checkbox>
-            </Form.Item>
-            <Form.Item name="carrier" noStyle>
-              <Checkbox checked={carrier} onChange={onCarrierChange}>{t('fields.carrier')}</Checkbox>
-            </Form.Item>
-            <Form.Item name="customer" noStyle>
-              <Checkbox checked={customer} onChange={onCustomerChange}>{t('fields.customer')}</Checkbox>
-            </Form.Item>
-            <Form.Item name="drawer" noStyle>
-              <Checkbox checked={drawer} onChange={onDrawerChange}>{t('fields.drawer')}</Checkbox>
-            </Form.Item>
-            <Form.Item name="issuer" noStyle>
-              <Checkbox checked={issuer} onChange={onIssuerChange}>{t('fields.issuer')}</Checkbox>
-            </Form.Item>
-            <Form.Item name="employer" noStyle>
-              <Checkbox checked={employer} onChange={onEmployerChange}>{t('fields.employer')}</Checkbox>
-            </Form.Item>
-            <Form.Item name="host" noStyle>
-              <Checkbox checked={host} onChange={onHostChange}>{t('fields.host')}</Checkbox>
-            </Form.Item>
+            <Row>
+              <Col span={6}>
+                <Form.Item name="site_manager" noStyle >
+                  <Checkbox checked={site_manager && !IS_CREATING} disabled={true} onChange={onManagerChange}>{t('fields.siteManager')}</Checkbox>
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item name="supplier" noStyle>
+                  <Checkbox checked={supplier} onChange={onSupplierChange}>{t('fields.supplier')}</Checkbox>
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item name="carrier" noStyle>
+                  <Checkbox checked={carrier} onChange={onCarrierChange}>{t('fields.carrier')}</Checkbox>
+                </Form.Item>
+            </Col>
+              <Col span={6}>
+                <Form.Item name="customer" noStyle>
+                  <Checkbox checked={customer} onChange={onCustomerChange}>{t('fields.customer')}</Checkbox>
+                </Form.Item>
+              </Col>
+              
+            </Row>
+            <Row>
+              <Col span={6}>
+                <Form.Item name="drawer" noStyle>
+                  <Checkbox checked={drawer} onChange={onDrawerChange}>{t('fields.drawer')}</Checkbox>
+              </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item name="issuer" noStyle>
+                  <Checkbox checked={issuer} onChange={onIssuerChange}>{t('fields.issuer')}</Checkbox>
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item name="employer" noStyle>
+                  <Checkbox checked={employer} onChange={onEmployerChange}>{t('fields.employer')}</Checkbox>
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item name="host" noStyle>
+                  <Checkbox checked={host} onChange={onHostChange}>{t('fields.host')}</Checkbox>
+                </Form.Item>
+              </Col>
+            </Row>
           </TabPane>
         </Tabs>
-
-        <Form.Item>
-          <Button
-            htmlType="button"
-            icon={<CloseOutlined />}
-            style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
-          >
-            {t('operations.cancel')}
-          </Button>
-
-          <Button
-            type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-            htmlType="submit"
-            style={{ float: 'right', marginRight: 5 }}
-          >
-            {IS_CREATING ? t('operations.create') : t('operations.update')}
-          </Button>
-
-          {!IS_CREATING && (
-            <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={onDelete}
-            >
-              {t('operations.delete')}
-            </Button>
-          )}
-        </Form.Item>
       </Form>
       </Drawer>
   );

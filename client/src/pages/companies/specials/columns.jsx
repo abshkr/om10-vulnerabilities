@@ -62,6 +62,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    editable: true,
   },
   {
     headerName: t('fields.email'),
@@ -69,6 +70,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    editable: true,
   },
   // {
   //   headerName: t('fields.tiggerPoint'),
