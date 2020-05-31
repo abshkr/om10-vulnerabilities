@@ -10,10 +10,12 @@ import { COMPANIES } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
 import { Forms } from './forms';
+import { useAuth } from '../../hooks';
 import { SpecialActionForm } from './specials';
 
 const Companies = () => {
   const { t } = useTranslation();
+  const auth = useAuth('M_COMPANIES');
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [currentCmpy, setCurrentCmpy] = useState(null);
@@ -57,6 +59,7 @@ const Companies = () => {
         disabled={!currentCmpy}
         // style={{float:"left", marginRight:500}}
         onClick={() => specialActions()}
+        disabled={!auth.canUpdate}
       >
         {t('operations.specialAction')}
       </Button>
@@ -65,6 +68,7 @@ const Companies = () => {
         icon={<PlusOutlined />}  
         loading={isValidating}
         onClick={() => handleFormState(true, null)}
+        disabled={!auth.canCreate}
       >
         {t('operations.create')}
       </Button>
