@@ -912,8 +912,24 @@
 	"deviceOnly": "Returns device only",
 	"bayOrDevice": "Host Bay or Device",
 	"hostOnly": "Host Only",
-	"none": "None"
+	"none": "None",
+	"material": "Material",
+	"adrDesc": "ADR Description",
+	"adrDesc2": "ADR Description2",
+	"adrDesc3": "ADR Description3",
+	"adrName": "ADR Name",
+	"adrType": "ADR Type",
+	"adrFareklasse": "ADR Fareklasse",
+	"protectFreeze": "Protect From Freeze",
+	"certificOfAnalysis": "Certific of Analysis",
+	"additionalTxt": "Additional Text",
+	"placardNotation1": "Placard Notation1",
+	"placardNotation2": "Placard Notation2",
+	"placardNotation3": "Placard Notation3",
+	"placardNotation4": "Placard Notation4",
+	"stccCode": "STCC Code"
   },
+
 
   "pageMenu": {
     "home": "Home",
@@ -1024,7 +1040,8 @@
     "logOut": "Log Out",
     "tankStrapping": "Tank Strapping",
     "keyReaderDevices": "Key Reader Devices",
-    "tanks": "Tanks"
+    "tanks": "Tanks",
+	"dangerousGoods": "Dangerous Goods"
   },
 
   "operations": {
