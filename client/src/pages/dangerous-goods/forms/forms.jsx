@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 
 import { useTranslation } from 'react-i18next';
-import { Form, Button, Tabs, notification, Modal, Input } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Input, Drawer } from 'antd';
 import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
@@ -19,7 +19,7 @@ import { DANGEROUS_GOODS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value }) => {
+const FormModal = ({ value, visible, handleFormState, auth }) => {
   const { data: payload, isValidating } = useSWR(DANGEROUS_GOODS.READ);
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -27,8 +27,13 @@ const FormModal = ({ value }) => {
 
   const IS_CREATING = !value;
 
-  const onFinish = value => {
-    console.log(value)
+  const onComplete = () => {
+    handleFormState(false, null);
+    mutate(DANGEROUS_GOODS.READ);
+  };
+
+  const onFinish = async () => {
+    const values = await form.validateFields();
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -38,12 +43,11 @@ const FormModal = ({ value }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(IS_CREATING ? DANGEROUS_GOODS.CREATE : DANGEROUS_GOODS.UPDATE, value)
+          .post(IS_CREATING ? DANGEROUS_GOODS.CREATE : DANGEROUS_GOODS.UPDATE, values)
           .then(
             axios.spread(response => {
-              Modal.destroyAll();
+              onComplete()
 
-              mutate(DANGEROUS_GOODS.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
@@ -72,8 +76,8 @@ const FormModal = ({ value }) => {
           .post(DANGEROUS_GOODS.DELETE, value)
           .then(
             axios.spread(response => {
-              mutate(DANGEROUS_GOODS.READ);
-              Modal.destroyAll();
+              onComplete();
+
               notification.success({
                 message: t('messages.deleteSuccess'),
                 description: `${t('descriptions.deleteSuccess')}`
@@ -136,10 +140,52 @@ const FormModal = ({ value }) => {
   };
 
   return (
-    <div>
-      <Form form={form} onFinish={onFinish} scrollToFirstError {...formLayout}>
+    <Drawer
+      bodyStyle={{ paddingTop: 5 }}
+      onClose={() => handleFormState(false, null)}
+      maskClosable={IS_CREATING}
+      destroyOnClose={true}
+      mask={IS_CREATING}
+      placement="right"
+      width="35vw"
+      visible={visible}
+      footer={
+        <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
+
+          <Button
+            type="primary"
+            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            htmlType="submit"
+            style={{ float: 'right', marginRight: 5 }}
+            onClick={onFinish}
+          >
+            {IS_CREATING ? t('operations.create') : t('operations.update')}
+          </Button>
+
+          {!IS_CREATING && (
+            <Button
+              type="danger"
+              icon={<DeleteOutlined />}
+              style={{ float: 'right', marginRight: 5 }}
+              onClick={onDelete}
+            >
+              {t('operations.delete')}
+            </Button>
+          )}
+        </>
+      }
+    >
+      <Form form={form} scrollToFirstError  {...formLayout}>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} key="1">
+          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} key="1" style={{ height: '80vh' }}>
             <Form.Item name="material" label={t('fields.material')} rules={[{ required: true, validator: materialValidate}]}>
               <Input />
             </Form.Item>
@@ -184,10 +230,6 @@ const FormModal = ({ value }) => {
               <Input />
             </Form.Item>
             
-            <Form.Item name="placard_notation1" label={t('fields.placardNotation1')} >
-              <Input />
-            </Form.Item>
-            
             <Form.Item name="placard_notation2" label={t('fields.placardNotation2')} >
               <Input />
             </Form.Item>
@@ -206,39 +248,8 @@ const FormModal = ({ value }) => {
             
           </TabPane>
         </Tabs>
-
-        <Form.Item>
-          <Button
-            htmlType="button"
-            icon={<CloseOutlined />}
-            style={{ float: 'right' }}
-            onClick={() => Modal.destroyAll()}
-          >
-            {t('operations.cancel')}
-          </Button>
-
-          <Button
-            type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-            htmlType="submit"
-            style={{ float: 'right', marginRight: 5 }}
-          >
-            {IS_CREATING ? t('operations.create') : t('operations.update')}
-          </Button>
-
-          {!IS_CREATING && (
-            <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={onDelete}
-            >
-              {t('operations.delete')}
-            </Button>
-          )}
-        </Form.Item>
       </Form>
-    </div>
+    </Drawer>
   );
 };
 

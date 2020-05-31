@@ -30,10 +30,7 @@ const TemplateForm = ({ value }) => {
   const [ templateData, setTemplateDate ] = useState(payload?.records)
 
   useEffect(() => {
-    console.log("useEffect")
-    console.log(value.cmpy_rtn_prompt)
     if (payload) {
-      console.log("setFieldsValue templates")
       setFieldsValue({
         templates: payload?.records
       })
@@ -93,7 +90,7 @@ const TemplateForm = ({ value }) => {
     labelCol: { span: 10 },
     // wrapperCol: { span: 16 },
   };
-  
+
   return (
     <Form form={form}>
       <Form.Item name="templates">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
@@ -17,15 +17,12 @@ const HazchemCodes = () => {
   const { data: payload, isValidating, revalidate } = useSWR(DANGEROUS_GOODS.READ);
 
   const fields = columns(t);
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
 
-  const handleClick = value => {
-    FormModal({
-      value,
-      form: <Forms value={value} />,
-      id: value?.hzcf_id,
-      name: value?.hzcf_name,
-      t
-    });
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
   };
 
   const modifiers = (
@@ -34,7 +31,7 @@ const HazchemCodes = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
+      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleFormState(true, null)} loading={isValidating}>
         {t('operations.create')}
       </Button>
     </>
@@ -42,7 +39,13 @@ const HazchemCodes = () => {
 
   return (
     <Page page={t('pageMenu.gantry')} name={t('pageNames.dangerousGoods')} modifiers={modifiers}>
-      <DataTable columns={fields} data={payload?.records} isLoading={isValidating} onClick={handleClick} />
+      <DataTable 
+        columns={fields} 
+        data={payload?.records} 
+        isLoading={isValidating} 
+        onClick={(payload) => handleFormState(true, payload)}
+        handleSelect={(payload) => handleFormState(true, payload[0])} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
     </Page>
   );
 };
