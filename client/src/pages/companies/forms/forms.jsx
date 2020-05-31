@@ -134,8 +134,6 @@ const FormModal = ({ value, visible, handleFormState }) => {
   const onFinish = async () => {
     const values = await form.validateFields();
     // Attaching the Id to the Updated Object
-    console.log("onFinish")
-    console.log(values)
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),

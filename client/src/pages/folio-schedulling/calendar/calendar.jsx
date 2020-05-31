@@ -58,7 +58,7 @@ const FolioCalendar = ({ value }) => {
 
   const override_exist = (d) => {
     const overrides = _.filter(value, function(item) {
-      return item.window_name == 'OVERRIDE'})
+      return item.window_name === 'OVERRIDE'})
     for (let i = 0; i < overrides.length; i++) {
       if (curDate === overrides[i].repeat_interval) {
         return true;
@@ -116,7 +116,7 @@ const FolioCalendar = ({ value }) => {
   const checkDate = (v) => {
     //Override overrides exceptions
     const overrides = _.filter(value, function(item) {
-      return item.window_name == 'OVERRIDE'})
+      return item.window_name === 'OVERRIDE'})
     for (let i = 0; i < overrides.length; i++) {
       if (v.format("D_M_YYYY") === overrides[i].repeat_interval) {
         return true;
@@ -146,7 +146,7 @@ const FolioCalendar = ({ value }) => {
 
       if (exceptions[i].window_name === "YEAR_WINDOW") {
         let interval = exceptions[i].repeat_interval.split("_");
-        if (v.format('dddd') != interval[1]) {
+        if (v.format('dddd') !== interval[1]) {
           continue;
         } else if (v.format('M') != interval[2]) {
           continue;
@@ -155,7 +155,7 @@ const FolioCalendar = ({ value }) => {
         for (let j = 1; j <= 5; j ++) {
           const cloneMoment = v.clone();
           if (cloneMoment.subtract(7 * j, 'days').format('M') != v.format('M') 
-            && interval[0] == j) {
+            && interval[0] === j) {
               return false;
           }
         }

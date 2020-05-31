@@ -686,8 +686,8 @@ https://10.1.10.66/api/pages/company/report_printers.php?cmpy_code=60801
 https://10.2.20.53/api/pages/company/dli_printers.php?cmpy_code=0003
 https://10.1.10.66/api/pages/company/cmpy_configs.php?cmpy_code=1000
 https://10.1.10.66/api/pages/company/cmpy_templates.php?cmpy_code=1000
-https://{{server_ip}}/api/pages/company/update_template.php
-{
+https://{{server_ip}}/api/pages/company/update_templates.php
+[{
       "template_code": "BOL_MOBIL",
       "cmpy_code": "1000",
       "default_flag": false,
@@ -698,7 +698,7 @@ https://{{server_ip}}/api/pages/company/update_template.php
       "warning_percent": "0.5",
       "warning_qty": "0.25",
       "send_to_printer": false
-}
+}]
 https://10.1.10.66/api/pages/company/parent_cmpy_roles.php
 https://10.1.10.66/api/pages/company/child_cmpy_roles.php
 https://10.1.10.66/api/pages/company/companys_by_role.php?cmpy_role_id=1

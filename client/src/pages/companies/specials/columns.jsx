@@ -1,4 +1,4 @@
-const columns = (t) => [
+const columns = (t, values, form) => [
   {
     headerName: t('fields.status'),
     field: 'status',
@@ -6,7 +6,12 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 90,
-    cellRenderer: 'BooleanRenderer',
+    cellRenderer: 'SwitchRender',
+    // cellEditor: 'SwitchEditor',
+    // cellEditorParams: {
+    //   values: "hello",
+    //   form: form,
+    // },
   },
   {
     headerName: t('fields.templateName'),
@@ -26,7 +31,7 @@ const columns = (t) => [
   },
   {
     headerName: t('fields.templateType'),
-    field: 'template_type',
+    field: 'template_type_desc',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -45,7 +50,7 @@ const columns = (t) => [
     filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
-    cellRenderer: 'BooleanRenderer',
+    cellRenderer: 'SwitchRender',
     width: 150,
   },
   {
@@ -60,9 +65,14 @@ const columns = (t) => [
     headerName: t('fields.footerText'),
     field: 'footers',
     filter: 'FuzzyFilter',
+    cellEditor: 'FooterEditor',
     sortable: true,
     resizable: true,
     editable: true,
+    cellEditorParams: {
+      values: "hello",
+      form: form,
+    },
   },
   {
     headerName: t('fields.email'),
