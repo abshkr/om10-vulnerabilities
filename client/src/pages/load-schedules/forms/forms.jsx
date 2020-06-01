@@ -40,6 +40,7 @@ import DriverInstructions from './driver-instructions';
 import AdditionalHostData from './additional-host-data';
 import Compartments from './compartments';
 import Transactions from './transactions';
+import Summary from './summary';
 import Seals from './seals';
 import BOL from './bol';
 
@@ -53,7 +54,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const [tab, setTab] = useState('0');
 
-  const [mode, setMode] = useState('1');
+  const [mode, setMode] = useState('3');
   const [supplier, setSupplier] = useState(undefined);
   const [drawer, setDrawer] = useState(undefined);
   const [carrier, setCarrier] = useState(undefined);
@@ -62,6 +63,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const IS_CREATING = !value;
   const CAN_PRINT = ['2', '3', '4'].includes(tab);
 
+  const READ_ONLY = value?.shls_status !== 'NEW SCHEDULE' && !IS_CREATING;
   const CAN_VIEW_REPORTS = value?.shlsload_load_id !== '0';
   const CAN_MAKE_TRANSACTIONS = value?.shls_status !== 'NEW SCHEDULE' && manageMakeManualTransaction;
   const CAN_ADD_HOST_DATA = value?.shls_ld_type === '2' && manageAdditionalHostData;
@@ -296,7 +298,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="60vw"
+      width="75vw"
       visible={visible}
       footer={
         <>
@@ -363,7 +365,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError>
+      <Form layout="vertical" form={form} scrollToFirstError initialValues={{ shls_ld_type: '3' }}>
         <Tabs defaultActiveKey="1" activeKey={tab} onChange={setTab} animated={false}>
           <TabPane tab={t('tabColumns.general')} key="0">
             <Form.Item name="supermode" noStyle />
@@ -372,7 +374,6 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
                 buttonStyle="solid"
                 style={{ marginBottom: 10 }}
                 onChange={(event) => setMode(event.target.value)}
-                defaultValue="3"
                 disabled={!!value}
               >
                 <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>
@@ -436,9 +437,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               </Col>
             </Row>
 
-            {mode === '2' && <Compartments form={form} value={value} drawer={drawer} tanker={tanker} />}
+            {mode === '2' && !READ_ONLY && (
+              <Compartments form={form} value={value} drawer={drawer} tanker={tanker} />
+            )}
 
-            {mode === '3' && <Products form={form} value={value} drawer={drawer} tanker={tanker} />}
+            {mode === '3' && !READ_ONLY && (
+              <Products form={form} value={value} drawer={drawer} tanker={tanker} />
+            )}
+
+            {READ_ONLY && <Summary value={value} />}
           </TabPane>
 
           <TabPane
@@ -462,7 +469,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           </TabPane>
 
           <TabPane tab={t('tabColumns.seals')} disabled={IS_CREATING || !showSeals} key="5">
-            <Seals />
+            <Seals value={value} />
           </TabPane>
 
           <TabPane tab={t('tabColumns.deliveryDetails')} disabled={IS_CREATING} key="6"></TabPane>

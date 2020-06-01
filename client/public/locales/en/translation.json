@@ -934,7 +934,11 @@
     "placardNotation2": "Placard Notation2",
     "placardNotation3": "Placard Notation3",
     "placardNotation4": "Placard Notation4",
-    "stccCode": "STCC Code"
+    "stccCode": "STCC Code",
+    "prefix": "Prefix",
+    "sealNumber": "Seal Number",
+    "suffix": "Suffix",
+    "preloaded": "Preloaded"
   },
 
   "pageMenu": {
@@ -1137,7 +1141,10 @@
     "addStrapping": "Add Strapping",
     "repost": "Repost",
     "archive": "Archive",
-    "specialAction": "Special Action"
+    "specialAction": "Special Action",
+    "reallocateSelected": "Reallocate Selected",
+    "deallocateSelected": "Deallocate Selected",
+    "deallocateAll": "Deallocate All"
   },
 
   "tabColumns": {
@@ -1212,7 +1219,6 @@
     "strapping": "Strapping",
     "adaptiveFlowControl": "Adaptive Flow Control",
     "seals": "Seals",
-
     "supplierSettings": "Supplier Company Settings",
     "others": "Others",
     "printerSettings": "Printer Settings",

@@ -70,6 +70,7 @@ const Table = ({
   onCellClick,
   parentHeight,
   rowHeight,
+  onCellUpdate,
 }) => {
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
@@ -173,6 +174,7 @@ const Table = ({
             enableCellTextSelection={true}
             onCellDoubleClicked={onCellClick}
             rowHeight={rowHeight || null}
+            onCellValueChanged={onCellUpdate}
           />
         </div>
       </div>
