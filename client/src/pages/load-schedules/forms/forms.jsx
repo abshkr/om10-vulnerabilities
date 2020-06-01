@@ -43,6 +43,7 @@ import Transactions from './transactions';
 import Summary from './summary';
 import Seals from './seals';
 import BOL from './bol';
+import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
@@ -62,7 +63,6 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const IS_CREATING = !value;
   const CAN_PRINT = ['2', '3', '4'].includes(tab);
-
   const READ_ONLY = value?.shls_status !== 'NEW SCHEDULE' && !IS_CREATING;
   const CAN_VIEW_REPORTS = value?.shlsload_load_id !== '0';
   const CAN_MAKE_TRANSACTIONS = value?.shls_status !== 'NEW SCHEDULE' && manageMakeManualTransaction;
@@ -76,37 +76,42 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   };
 
   const onFinish = async () => {
-    const values = await form.validateFields();
+    const record = await form.validateFields();
 
-    console.log(values);
-    // Modal.confirm({
-    //   title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
-    //   okText: IS_CREATING ? t('operations.create') : t('operations.update'),
-    //   okType: 'primary',
-    //   icon: <QuestionCircleOutlined />,
-    //   cancelText: t('operations.no'),
-    //   centered: true,
-    //   onOk: async () => {
-    //     await axios
-    //       .post(IS_CREATING ? LOAD_SCHEDULES.CREATE : LOAD_SCHEDULES.UPDATE, values)
-    //       .then(() => {
-    //         onComplete();
+    const values = {
+      ...record,
+      shls_caldate: record?.shls_caldate?.format(SETTINGS.DATE_TIME_FORMAT),
+      shls_exp2: record?.shls_exp2?.format(SETTINGS.DATE_TIME_FORMAT),
+    };
 
-    //         notification.success({
-    //           message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-    //           description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-    //         });
-    //       })
-    //       .catch((errors) => {
-    //         _.forEach(errors.response.data.errors, (error) => {
-    //           notification.error({
-    //             message: error.type,
-    //             description: error.message,
-    //           });
-    //         });
-    //       });
-    //   },
-    // });
+    Modal.confirm({
+      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(IS_CREATING ? LOAD_SCHEDULES.CREATE : LOAD_SCHEDULES.UPDATE, values)
+          .then(() => {
+            onComplete();
+
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
   };
 
   const onDelete = () => {
@@ -295,24 +300,25 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       bodyStyle={{ paddingTop: 5 }}
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
-      destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
       width="75vw"
       visible={visible}
       footer={
         <>
-          <Button
-            type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-            onClick={onFinish}
-            style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
-          >
-            {IS_CREATING ? t('operations.create') : t('operations.update')}
-          </Button>
+          {!READ_ONLY && (
+            <Button
+              type="primary"
+              icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+              onClick={onFinish}
+              style={{ float: 'right', marginRight: 5 }}
+              disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
+            >
+              {IS_CREATING ? t('operations.create') : t('operations.update')}
+            </Button>
+          )}
 
-          {!IS_CREATING && (
+          {!IS_CREATING && !READ_ONLY && (
             <Button
               type="danger"
               icon={<DeleteOutlined />}
@@ -356,7 +362,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
                 type="primary"
                 icon={<EditOutlined />}
                 onClick={onArchive}
-                disabled={!access?.canUpdate || !CAN_MAKE_TRANSACTIONS}
+                disabled={!access?.canUpdate || !CAN_MAKE_TRANSACTIONS || READ_ONLY}
               >
                 {t('operations.archive')}
               </Button>

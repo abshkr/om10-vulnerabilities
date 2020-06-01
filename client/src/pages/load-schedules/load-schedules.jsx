@@ -83,9 +83,7 @@ const LoadSchedules = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
 
-      {visible && (
-        <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
-      )}
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };
