@@ -25,7 +25,7 @@ import BaseProductForm from './base-form';
 
 const TabPane = Tabs.TabPane;
 
-const DrawerForm = ({ value, visible, handleFormState, access }) => {
+const DrawerForm = ({ value, visible, handleFormState, auth }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { TextArea } = Input;
@@ -171,7 +171,7 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(ALLOCATIONS.DELETE, value)
+          .post(DRAWER_PRODUCTS.DELETE, value)
           .then(() => {
             onComplete();
 
@@ -245,7 +245,7 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            // disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
+            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -255,7 +255,7 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!access?.canDelete}
+              disabled={!auth?.canDelete}
             >
               {t('operations.delete')}
             </Button>
