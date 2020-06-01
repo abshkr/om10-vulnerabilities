@@ -934,7 +934,8 @@
     "placardNotation2": "Placard Notation2",
     "placardNotation3": "Placard Notation3",
     "placardNotation4": "Placard Notation4",
-    "stccCode": "STCC Code"
+    "stccCode": "STCC Code",
+    "dangerousGoods": "Dangerous Goods"
   },
 
   "pageMenu": {
@@ -1046,8 +1047,7 @@
     "logOut": "Log Out",
     "tankStrapping": "Tank Strapping",
     "keyReaderDevices": "Key Reader Devices",
-    "tanks": "Tanks",
-    "dangerousGoods": "Dangerous Goods"
+    "tanks": "Tanks"
   },
 
   "operations": {

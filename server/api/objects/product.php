@@ -51,7 +51,10 @@ class Product extends CommonClass
     public function read()
     {
         $query = "
-            SELECT * FROM " . $this->VIEW_NAME . " ORDER BY PROD_CMPYCODE, PROD_CODE";
+            SELECT GUI_PRODUCTS.*, DG_LINK_ID 
+            FROM GUI_PRODUCTS, DG_LINK
+            WHERE PROD_CMPYCODE = DG_LINK.DGLNK_SP_PRODCMPY(+) AND PROD_CODE = DG_LINK.DGLNK_SP_PRODCODE(+) 
+            ORDER BY PROD_CMPYCODE, PROD_CODE";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
@@ -146,6 +149,22 @@ class Product extends CommonClass
             __FILE__, __LINE__);
 
         $query = "
+            DELETE FROM DG_LINK
+            WHERE DGLNK_SP_PRODCODE = :rat_prod_prodcode
+                AND DGLNK_SP_PRODCMPY = :rat_prod_prodcmpy";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':rat_prod_prodcode', $this->prod_code);
+            oci_bind_by_name($stmt, ':rat_prod_prodcmpy', $this->prod_cmpy);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+            return false;
+        }
+
+        $query = "
             DELETE FROM RATIOS
             WHERE RAT_PROD_PRODCODE = :rat_prod_prodcode
                 AND RAT_PROD_PRODCMPY = :rat_prod_prodcmpy";
@@ -185,6 +204,27 @@ class Product extends CommonClass
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
+        if (isset($this->dg_link_id)) {
+            $query = "INSERT INTO DG_LINK (
+                DGLNK_SP_PRODCODE,
+                DGLNK_SP_PRODCMPY,
+                DG_LINK_ID)
+            VALUES (
+                :dglnk_sp_prodcode,
+                :dglnk_sp_prodcmpy,
+                :dg_link_id
+            )";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':dglnk_sp_prodcode', $this->prod_code);
+            oci_bind_by_name($stmt, ':dglnk_sp_prodcmpy', $this->prod_cmpy);
+            oci_bind_by_name($stmt, ':dg_link_id', $this->dg_link_id);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
+
         if (!isset($this->bases)) {
             return true;
         }
@@ -220,7 +260,7 @@ class Product extends CommonClass
             oci_bind_by_name($stmt, ':rat_bltol_ntol', $value->pitem_bltol_ntol);
             oci_bind_by_name($stmt, ':rat_hot_main', $value->pitem_hot_main);
 
-            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            if (!oci_execute($stmt, $this->commit_mode)) {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 return false;
@@ -233,7 +273,7 @@ class Product extends CommonClass
         oci_bind_by_name($stmt, ':hzlnk_sp_prodcode', $this->prod_code);
         oci_bind_by_name($stmt, ':hzlnk_sp_prodcmpy', $this->prod_cmpy);
         oci_bind_by_name($stmt, ':hz_link_id', $this->prod_hazid);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -244,7 +284,6 @@ class Product extends CommonClass
 
         return true;
     }
-
 
     public function drawers()
     {
