@@ -1047,7 +1047,8 @@
     "logOut": "Log Out",
     "tankStrapping": "Tank Strapping",
     "keyReaderDevices": "Key Reader Devices",
-    "tanks": "Tanks"
+    "tanks": "Tanks",
+	"dangerousGoods": "Dangerous Goods"
   },
 
   "operations": {
