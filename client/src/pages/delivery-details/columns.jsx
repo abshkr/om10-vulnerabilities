@@ -15,6 +15,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 100,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddSuppName'),
@@ -23,6 +24,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 150,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddTripOrdNo'),
@@ -32,6 +34,7 @@ const columns = (t) => [
     resizable: true,
     hide: false,
     width: 100,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddLdType'),
@@ -41,6 +44,7 @@ const columns = (t) => [
     resizable: true,
     hide: true,
     width: 100,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddLoadTypeName'),
@@ -49,6 +53,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 120,
+    suppressSizeToFit: true,
   },
 
   {
@@ -59,6 +64,7 @@ const columns = (t) => [
     resizable: true,
     hide: false,
     width: 100,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddSoldToDesc'),
@@ -67,6 +73,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 150,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddShipTo'),
@@ -76,6 +83,7 @@ const columns = (t) => [
     resizable: true,
     hide: false,
     width: 100,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddShipToDesc'),
@@ -84,6 +92,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 150,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddDelvType'),
@@ -93,6 +102,7 @@ const columns = (t) => [
     resizable: true,
     hide: false,
     width: 120,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddDelvTypeName'),
@@ -102,6 +112,7 @@ const columns = (t) => [
     resizable: true,
     hide: true,
     width: 120,
+    suppressSizeToFit: true,
   },
 
   {
@@ -111,6 +122,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 100,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddShipCond'),
@@ -119,6 +131,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 150,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddVehArrTime'),
@@ -128,6 +141,7 @@ const columns = (t) => [
     resizable: true,
     width: 130,
     cellRenderer: 'DateRenderer',
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddPhone'),
@@ -136,6 +150,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 100,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddInstruction'),
@@ -144,6 +159,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 100,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddLpgRemark'),
@@ -152,6 +168,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 100,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddSalesOrdNum'),
@@ -160,6 +177,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 150,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddCustPo'),
@@ -168,6 +186,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 150,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddSaleOrdType'),
@@ -176,6 +195,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 120,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddVatId'),
@@ -184,6 +204,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 130,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddCustomCode'),
@@ -192,6 +213,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 150,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddLpgDestType'),
@@ -200,6 +222,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 200,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddPermitNum'),
@@ -208,6 +231,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 200,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ddSellCmpyCode'),
@@ -215,7 +239,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 200,
+    width: 100,
+    suppressSizeToFit: true,
   },
 ];
   
