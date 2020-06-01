@@ -6,12 +6,14 @@ import { Form, Select } from 'antd';
 
 import { LOAD_SCHEDULES } from '../../../../api';
 
-const SoldTo = ({ form, value }) => {
+const SoldTo = ({ form, value, mode }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.SOLD_TO);
+
+  const IS_DISABLED = mode === '2' || value?.shls_status !== 'NEW SCHEDULE';
 
   useEffect(() => {
     if (value) {
@@ -26,7 +28,7 @@ const SoldTo = ({ form, value }) => {
       <Select
         loading={isValidating}
         showSearch
-        disabled={!!value}
+        disabled={IS_DISABLED}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectSoldTo') : null}
         filterOption={(value, option) =>

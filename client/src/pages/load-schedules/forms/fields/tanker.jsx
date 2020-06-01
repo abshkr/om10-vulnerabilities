@@ -15,6 +15,8 @@ const Tanker = ({ form, value, carrier, onChange }) => {
     `${LOAD_SCHEDULES.TANKERS_BY_CARRIER}?tnkr_carrier=${carrier}`
   );
 
+  const IS_DISABLED = !value ? false : value?.shls_status !== 'NEW SCHEDULE';
+
   const validate = (rule, input) => {
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.tanker')}`);
@@ -39,7 +41,7 @@ const Tanker = ({ form, value, carrier, onChange }) => {
         loading={isValidating}
         showSearch
         onChange={onChange}
-        disabled={!!value || !carrier}
+        disabled={IS_DISABLED || !carrier}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectTanker') : null}
         filterOption={(value, option) =>

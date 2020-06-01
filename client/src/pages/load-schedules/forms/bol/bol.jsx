@@ -6,7 +6,7 @@ import axios from 'axios';
 
 import { LOAD_SCHEDULES } from '../../../../api';
 
-const DriverInstructions = ({ value }) => {
+const BOL = ({ value }) => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -14,7 +14,7 @@ const DriverInstructions = ({ value }) => {
 
     if (value) {
       axios
-        .get(LOAD_SCHEDULES.VIEW_DLI, {
+        .get(LOAD_SCHEDULES.VIEW_BOL, {
           params: {
             supplier: value.supplier_code,
             trip_no: value.shls_trip_no,
@@ -31,4 +31,4 @@ const DriverInstructions = ({ value }) => {
   );
 };
 
-export default DriverInstructions;
+export default BOL;

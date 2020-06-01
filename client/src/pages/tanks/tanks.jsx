@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import { SyncOutlined, PlusOutlined, SwapOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Button, Tabs } from 'antd';
 import useSWR from 'swr';
@@ -11,6 +11,7 @@ import { Page, Download, ListView, FormModal } from '../../components';
 
 import TankConfigurationForm from '../tank-configuration/forms';
 
+import ConnectedArms from './connected-arms';
 import Calculations from './calculations';
 import TankStrapping from './strapping';
 import Overview from './overview';
@@ -65,22 +66,22 @@ const Tanks = () => {
 
   const modifiers = (
     <>
-      <Button shape="round" type="primary" onClick={onViewChange} loading={isLoading}>
+      <Button type="primary" onClick={onViewChange} loading={isLoading} icon={<SwapOutlined />}>
         {simple ? t('operations.list') : t('operations.simple')}
       </Button>
 
-      <Button type="primary" shape="round" onClick={() => revalidate()} loading={isLoading}>
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
 
-      <Download round data={payload} isLoading={isLoading} columns={fields} />
+      <Download data={payload} isLoading={isLoading} columns={fields} />
 
       <Button
         type="primary"
-        shape="round"
+        icon={<PlusOutlined />}
+        onClick={() => onCreate(null)}
         loading={isLoading}
         disabled={!access.canCreate}
-        onClick={() => onCreate(null)}
       >
         {t('operations.create')}
       </Button>
@@ -136,7 +137,9 @@ const Tanks = () => {
               <Details selected={selected} access={access} />
             </TabPane>
 
-            <TabPane key="3" tab={t('tabColumns.connectedArms')} disabled></TabPane>
+            <TabPane key="3" tab={t('tabColumns.connectedArms')} disabled={isLoading}>
+              <ConnectedArms arms={selected?.arms} />
+            </TabPane>
 
             <TabPane key="4" tab={t('tabColumns.calculations')} disabled={isLoading}>
               <Calculations selected={selected} access={access} config={config} />
@@ -150,15 +153,11 @@ const Tanks = () => {
               <Gauging selected={selected} access={access} />
             </TabPane>
 
-            {config.manageTankStrapping && (
-              <TabPane key="7" tab={t('tabColumns.strapping')} disabled={isLoading}>
-                <TankStrapping code={selected?.tank_code} tanks={read} access={access} />
-              </TabPane>
-            )}
+            <TabPane key="7" tab={t('tabColumns.strapping')} disabled={!config.manageTankStrapping}>
+              <TankStrapping code={selected?.tank_code} tanks={read} access={access} />
+            </TabPane>
 
-            {config.manageAdaptiveFlow && (
-              <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')} disabled></TabPane>
-            )}
+            <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')} disabled />
           </Tabs>
         </ListView>
       ) : (

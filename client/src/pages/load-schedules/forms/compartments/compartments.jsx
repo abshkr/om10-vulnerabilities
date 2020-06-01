@@ -90,7 +90,7 @@ const Compartments = ({ form, value, tanker, drawer }) => {
 
   return (
     <Form.Item name="compartments">
-      <DataTable data={compartments} columns={fields} parentHeight="400px" components={components} minimal />
+      <DataTable data={compartments} columns={fields} parentHeight="350px" components={components} minimal />
     </Form.Item>
   );
 };

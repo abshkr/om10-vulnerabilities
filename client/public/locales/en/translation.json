@@ -783,7 +783,14 @@
     "railTank": "Rail Tank",
     "ratio": "Ratio",
     "blendToleranceCheck": "Blend Tolerance Check",
-    "baseProduct": "Base Product"
+    "baseProduct": "Base Product",
+    "scheduleDate": "Schedule Date",
+    "shift": "Shift",
+    "hostData": "Host Data",
+    "additionalHostDataType": "Additional Host Data Type",
+    "additionalHostData": "Additional Host Data",
+    "userCode": "User Code",
+    "userName": "User Name"
   },
 
   "pageMenu": {
@@ -982,7 +989,9 @@
     "addBase": "Add Base Product",
     "editBase": "Edit Base Product",
     "deleteBase": "Delete Base Product",
-    "addStrapping": "Add Strapping"
+    "addStrapping": "Add Strapping",
+    "repost": "Repost",
+    "archive": "Archive"
   },
 
   "tabColumns": {
@@ -1054,7 +1063,9 @@
     "alarms": "Alarms",
     "gauge": "Gauge",
     "strapping": "Strapping",
-    "adaptiveFlowControl": "Adaptive Flow Control"
+    "adaptiveFlowControl": "Adaptive Flow Control",
+    "seals": "Seals",
+    "deliveryDetails": "Delivery Details"
   },
 
   "messages": {
@@ -1072,6 +1083,8 @@
     "saveSuccess": "Successfully Saved.",
     "reverseSuccess": "Successfully Reversed.",
     "printBOLSuccess": "Sucessfully Printed the BOL",
+    "printDriverInstructionSuccess": "Sucessfully Printed the Driver Instructions",
+    "printLoadReportSuccess": "Sucessfully Printed Load Report",
     "submitSuccess": "Successfully Submitted.",
     "submitFailed": "Submit Failed.",
     "movementReverseSuccess": "Successfully Reversed.",
@@ -1087,7 +1100,8 @@
     "loginSuccess": "Successfully Logged In.",
     "loginFailed": "Failed To Login.",
     "cancelSuccess": "Successfully Cancelled.",
-    "closeSuccess": "Successfully Closed."
+    "closeSuccess": "Successfully Closed.",
+    "archiveSuccess": "Successfully Archived."
   },
 
   "prompts": {
@@ -1103,6 +1117,8 @@
     "iButtonLookUp": "I-Button Look up",
     "reverseTransaction": "Are you sure you want to reverse this Transaction?",
     "printBOL": "Are you sure you want to print this BOL?",
+    "printDriverInstruction": "Are you sure you want to print this Driver Instruction?",
+    "printLoadReport": "Are you sure you want to print this Load Report?",
     "submit": "Are you sure you want to submit this record?",
     "onReverse": "Are you sure you want to reverse this record?",
     "halt": "Are you sure you want to halt?",
@@ -1114,7 +1130,9 @@
     "closeCloseout": "Are you sure you want to close first frozen folio?",
     "notEnoughBase": "Drawer product must have at least one base product",
     "approve": "Are you sure you want to approve this open order?",
-    "unapprove": "Are you sure you want to unapprove this open order?"
+    "unapprove": "Are you sure you want to unapprove this open order?",
+    "confirmReverse": "Confirm Schedule Reversal?",
+    "confirmArchive": "Confirm Schedule is to be Archived?"
   },
 
   "divider": {

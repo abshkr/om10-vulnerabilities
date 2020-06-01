@@ -89,8 +89,6 @@ const Table = ({
     if (apiContext) {
       apiContext(params.api);
     }
-
-    params.api.sizeColumnsToFit();
   };
 
   const onFilterClear = () => {
@@ -112,6 +110,12 @@ const Table = ({
       setValue(search);
     }
   }, [search]);
+
+  useEffect(() => {
+    if (api) {
+      api.sizeColumnsToFit();
+    }
+  }, [data, api]);
 
   const icon = (
     <LoadingOutlined

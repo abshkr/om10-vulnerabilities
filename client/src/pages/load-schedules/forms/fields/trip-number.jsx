@@ -36,7 +36,7 @@ const TripNumber = ({ form, value, supplier }) => {
 
   return (
     <Form.Item name="shls_trip_no" label={t('fields.tripNumber')}>
-      <InputNumber style={{ width: '100%' }} disabled={!supplier} />
+      <InputNumber style={{ width: '100%' }} disabled={!supplier || !!value} />
     </Form.Item>
   );
 };

@@ -12,6 +12,7 @@ const Dates = ({ form, value }) => {
 
   const { setFieldsValue } = form;
 
+  const IS_DISABLED = !value ? false : value?.shls_status !== 'NEW SCHEDULE';
   const FORMAT = getDateTimeFormat();
 
   useEffect(() => {
@@ -30,15 +31,15 @@ const Dates = ({ form, value }) => {
 
   return (
     <>
-      <Col span={12}>
+      <Col span={6}>
         <Form.Item name="shls_caldate" label={t('fields.scheduleDate')}>
-          <DatePicker showTime format={FORMAT} style={{ width: '100%' }} />
+          <DatePicker disabled={IS_DISABLED} showTime format={FORMAT} style={{ width: '100%' }} />
         </Form.Item>
       </Col>
 
-      <Col span={12}>
+      <Col span={6}>
         <Form.Item name="shls_exp2" label={t('fields.expiryDate')}>
-          <DatePicker showTime format={FORMAT} style={{ width: '100%' }} />
+          <DatePicker disabled={IS_DISABLED} showTime format={FORMAT} style={{ width: '100%' }} />
         </Form.Item>
       </Col>
     </>

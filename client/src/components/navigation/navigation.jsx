@@ -117,7 +117,7 @@ const Navigation = () => {
           }
         >
           <Menu.Item key={ROUTES.TANKS}>
-            <Badge status="warning" /> {t('pageNames.tanks')}
+            <Badge status="success" /> {t('pageNames.tanks')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANK_GROUPS}>
@@ -358,7 +358,7 @@ const Navigation = () => {
             </>
           }
         >
-          <Menu.Item key={ROUTES.TANK_VIEW}>
+          <Menu.Item key={ROUTES.TANK_VIEW} disabled>
             <Badge status="warning" />
             {t('pageNames.tankView')}
           </Menu.Item>
