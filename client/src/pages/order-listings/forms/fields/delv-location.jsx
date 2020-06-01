@@ -14,11 +14,12 @@ const DeliveryLocation = ({ form, value, pageState }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    /*
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.orderDlocName')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.orderDlocName')}`);
+      }
     }
-    */
+
     return Promise.resolve();
   };
 

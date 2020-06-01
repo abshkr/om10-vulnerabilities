@@ -22,7 +22,7 @@ class Company extends CommonClass
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = array(
         "TRSA_REVERSE_FLAG" => 1,
-        "SITE_MANAGER" => "T",
+        "SITE_MANAGER" => "Y",
         "SUPPLIER" => "Y",
         "CARRIER" => "Y",
         "CUSTOMER" => "Y",
@@ -73,6 +73,48 @@ class Company extends CommonClass
         if (!isset($this->cmpy_ord_end)) {
             $this->cmpy_ord_end = 999999999;
         }
+
+        $this->pre_update();
+    }
+
+    public function pre_update() 
+    {
+        if (!isset($this->site_manager) &&
+            !isset($this->supplier) &&
+            !isset($this->carrier) &&
+            !isset($this->customer) &&
+            !isset($this->drawer) &&
+            !isset($this->issuer) &&
+            !isset($this->employer) &&
+            !isset($this->host)) {
+            return;
+        }
+
+        $this->cmpy_type = 0;
+        if (isset($this->site_manager) && $this->site_manager === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 0);
+        }
+        if (isset($this->supplier) && $this->supplier === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 1);
+        }
+        if (isset($this->carrier) && $this->carrier === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 2);
+        }
+        if (isset($this->customer) && $this->customer === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 3);
+        }
+        if (isset($this->drawer) && $this->drawer === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 4);
+        }
+        if (isset($this->issuer) && $this->issuer === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 5);
+        }
+        if (isset($this->employer) && $this->employer === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 6);
+        }
+        if (isset($this->host) && $this->host === 'Y') {
+            $this->cmpy_type = $this->cmpy_type | pow(2, 7);
+        }
     }
 
     protected function post_delete()
@@ -99,7 +141,7 @@ class Company extends CommonClass
                     WHERE CONFIG_KEY = :config_key AND CMPY_CODE = :cmpy_code";
                 $stmt = oci_parse($this->conn, $query);
                 oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
-                oci_bind_by_name($stmt, ':config_key', $config->confic_key);
+                oci_bind_by_name($stmt, ':config_key', $config->config_key);
                 if (!oci_execute($stmt, $this->commit_mode)) {
                     $e = oci_error($stmt);
                     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -180,7 +222,7 @@ class Company extends CommonClass
     public function document_printers()
     {
         $query = "
-            SELECT DISTINCT P.CMPY, P.PRNTR, CMP.CMPY_BOL_VP_NAME, U.PRNF_USE AS USAGE 
+            SELECT DISTINCT P.CMPY, P.PRNTR, P.CMPY || '-' || P.PRNTR PRNTR_DESC, CMP.CMPY_BOL_VP_NAME, U.PRNF_USE AS USAGE 
             FROM PRNTR_CMPY_USAGE P, PRNT_USE U, COMPANYS CMP 
             WHERE P.USAGE = U.USAGE
                 AND (P.CMPY IN (:cmpy_code, 'ANY') OR (P.CMPY IS NULL))
@@ -201,12 +243,12 @@ class Company extends CommonClass
     public function report_printers()
     {
         $query = "
-            SELECT DISTINCT P.CMPY, P.PRNTR, CMP.CMPY_BOL_VP_NAME, U.PRNF_USE AS USAGE 
+            SELECT DISTINCT P.CMPY, P.PRNTR, P.CMPY || '-' || P.PRNTR PRNTR_DESC, CMP.CMPY_LD_REP_VP, U.PRNF_USE AS USAGE 
             FROM PRNTR_CMPY_USAGE P, PRNT_USE U, COMPANYS CMP 
             WHERE P.USAGE = U.USAGE
                 AND (P.CMPY IN (:cmpy_code, 'ANY') OR (P.CMPY IS NULL))
                 AND U.PRNF_USE = 'LD_REPORT'
-                AND PRNTR = CMP.CMPY_BOL_VP_NAME(+)";
+                AND PRNTR = CMP.CMPY_LD_REP_VP(+)";
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
@@ -222,12 +264,12 @@ class Company extends CommonClass
     public function dli_printers()
     {
         $query = "
-            SELECT DISTINCT P.CMPY, P.PRNTR, CMP.CMPY_BOL_VP_NAME, U.PRNF_USE AS USAGE 
+            SELECT DISTINCT P.CMPY, P.PRNTR, P.CMPY || '-' || P.PRNTR PRNTR_DESC, CMP.CMPY_DRV_INST_VP, U.PRNF_USE AS USAGE 
             FROM PRNTR_CMPY_USAGE P, PRNT_USE U, COMPANYS CMP 
             WHERE P.USAGE = U.USAGE
                 AND (P.CMPY IN (:cmpy_code, 'ANY') OR (P.CMPY IS NULL))
                 AND U.PRNF_USE = 'INSTRUCT'
-                AND PRNTR = CMP.CMPY_BOL_VP_NAME(+)";
+                AND PRNTR = CMP.CMPY_DRV_INST_VP(+)";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
         if (oci_execute($stmt, $this->commit_mode)) {

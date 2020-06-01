@@ -29,6 +29,7 @@ export const TANK_CONFIGURATION = '/tank-configuration';
 export const PRODUCT_GROUPS = '/product-groups';
 export const ALLOCATIONS = '/allocations';
 export const HAZCHEM_CODES = '/hazchem-codes';
+export const DANGEROUS_GOODS = '/dangerous-goods';
 export const LOAD_METERS = '/load-meters';
 export const COMPANY_BAY_MOVEMENT = '/company-bay-movement';
 export const TANKS = '/tanks';

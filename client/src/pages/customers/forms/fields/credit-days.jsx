@@ -8,11 +8,12 @@ const CreditDays = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    /*
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.custCrdDays')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.custCrdDays')}`);
+      }
     }
-    */
+
     if (input && input.length > 2) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 2 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -29,8 +30,12 @@ const CreditDays = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="cust_crd_days" label={t('fields.custCrdDays')} rules={[{ required: false, validator: validate }]}>
-      <InputNumber min={0} max={99} defaultValue={0} style={{ width: '100%' }} />
+    <Form.Item 
+      name="cust_crd_days" 
+      label={t('fields.custCrdDays')} 
+      rules={[{ required: false, validator: validate }]}
+    >
+      <InputNumber min={0} max={99} style={{ width: '100%' }} />
     </Form.Item>
   );
 };

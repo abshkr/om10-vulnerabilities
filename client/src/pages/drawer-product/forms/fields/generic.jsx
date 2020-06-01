@@ -22,20 +22,20 @@ const Generic = ({ form, value }) => {
 
   const handleChange = (value) => {
     setFieldsValue({
-      gen_prod_code: value,
+      prod_class: value,
     });
   };
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        gen_prod_code: value.prod_class,
+        prod_class: value.prod_class,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="gen_prod_code" label={t('fields.genericName')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item name="prod_class" label={t('fields.genericName')} rules={[{ required: true, validator: validate }]}>
       <Select
         loading={isValidating}
         showSearch

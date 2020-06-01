@@ -242,6 +242,10 @@ const Navigation = () => {
           <Menu.Item key={ROUTES.HAZCHEM_CODES}>
             <Badge status="success" /> {t('pageNames.hazchemCodes')}
           </Menu.Item>
+		  
+		  <Menu.Item key={ROUTES.DANGEROUS_GOODS}>
+            <Badge status="success" /> {t('pageNames.dangerousGoods')}
+          </Menu.Item>
 
           <Menu.Item key={ROUTES.PRODUCT_GROUPS}>
             <Badge status="success" /> {t('pageNames.productGroups')}

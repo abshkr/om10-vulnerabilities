@@ -10,6 +10,7 @@ import * as PERSONNEL from './personnel';
 import * as GATE_CONTROL from './gate-control';
 import * as TIME_CODES from './time-codes';
 import * as HAZCHEM_CODES from './hazchem-codes';
+import * as DANGEROUS_GOODS from './dangerous_goods';
 import * as LOGICAL_PRINTERS from './logical-printers';
 import * as EXPIRY_DATES from './expiry-dates';
 import * as TRANSACTION_LIST from './transaction-list';
@@ -57,6 +58,7 @@ import * as EQUIPMENT_TYPES from './equipment-types';
 import * as DELV_LOCATIONS from './delv-locations';
 import * as CUSTOMERS from './customers';
 import * as DRAWER_PRODUCTS from './drawer-products';
+import * as DELIVERY_DETAILS from './delivery-details';
 
 export {
   AUTH,
@@ -67,6 +69,7 @@ export {
   TANKS,
   TIME_CODES,
   HAZCHEM_CODES,
+  DANGEROUS_GOODS,
   ID_ASSIGNMENT,
   EXPIRY_DATES,
   TRANSACTION_LIST,
@@ -117,5 +120,6 @@ export {
   EQUIPMENT_TYPES,
   DELV_LOCATIONS,
   CUSTOMERS,
-  DRAWER_PRODUCTS
+  DRAWER_PRODUCTS,
+  DELIVERY_DETAILS
 };

@@ -8,6 +8,7 @@ const TripTime = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
+    console.log("rule", rule.required);
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvTripTime')}`);
     }
@@ -28,8 +29,12 @@ const TripTime = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="delv_trip_time" label={t('fields.delvTripTime')} rules={[{ required: true }]}>
-      <InputNumber min={0} max={999999999} defaultValue={0} style={{ width: '100%' }} />
+    <Form.Item 
+      name="delv_trip_time" 
+      label={t('fields.delvTripTime')} 
+      rules={[{ required: true, validator: validate }]}
+    >
+      <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
     </Form.Item>
   );
 };

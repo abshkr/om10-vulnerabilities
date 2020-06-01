@@ -23,7 +23,7 @@ import Period from './period';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState }) => {
+const FormModal = ({ value, visible, handleFormState, auth }) => {
   const { data: units } = useSWR(ALLOCATIONS.PERIOD_TYPES);
 
   const { t } = useTranslation();
@@ -206,6 +206,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
+            disabled={IS_CREATING ? !auth.canCreate : !auth.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -228,6 +229,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
+              disabled={!auth.canDelete}
             >
               {t('operations.delete')}
             </Button>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
@@ -14,8 +14,10 @@ import { DELV_LOCATIONS } from '../../../../api';
 
 const CustomerLink = ({ form, value, supplier, category, location }) => {
   const [targetKeys, setTargetKeys] = useState([]);
+  //const [data, setData] = useState([]);
 
   const { t } = useTranslation();
+  const { setFieldsValue } = form;
 
   const leftTableColumns = [
     {
@@ -72,10 +74,36 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
       }
     }
   );
+  let data = allCustomers?.records;
+  
+  useEffect(() => {
+    if (!!allCustomers) {
+      data = (allCustomers?.records);
+    }
+  }, [allCustomers]);
+  
 
-  const { setFieldsValue } = form;
-  const data = allCustomers?.records;
+/*   const { data: allCustomers } = useSWR(
+    `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`,
+    { refreshInterval: 0,
+    }
+  );
 
+  useEffect(() => {
+    if (!!allCustomers) {
+      setData(allCustomers?.records);
+    }
+  }, [allCustomers, setData]);
+
+  useEffect(() => {
+    if (!data) {
+      const originTargetKeys = data?.filter(item => item.delv_code === location).map(item => item.key);
+      console.log("originTargetKeys", originTargetKeys);
+      setTargetKeys(originTargetKeys);
+      console.log("targetKeys", targetKeys);
+    }
+  }, [data, setTargetKeys]);
+ */
   const createLinksForEach = async (keys) => {
     console.log('keys:', keys);
     const items = data.filter(item => _.indexOf(keys,item.key) >= 0);
