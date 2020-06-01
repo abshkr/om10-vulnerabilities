@@ -7,5 +7,6 @@ import Generic from './generic';
 import LoadTolerance from './load-tolerance';
 import Company from './company';
 import Supplier from './supplier';
+import DangerousGoods from './dangerous-goods'
 
-export { DrawerCompany, Company, Supplier, ProductCode, ProductName, Group, Hazchem, Generic, LoadTolerance };
+export { DrawerCompany, Company, Supplier, ProductCode, ProductName, Group, Hazchem, Generic, LoadTolerance, DangerousGoods };
