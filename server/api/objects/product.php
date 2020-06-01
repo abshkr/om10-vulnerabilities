@@ -109,7 +109,7 @@ class Product extends CommonClass
              if (!isset($new[$item_key])) {
                 $jnl_data[0] = Utilities::getCurrPsn();
                 $jnl_data[1] = $module;
-                $jnl_data[2] = $record = sprintf("product:%s, cmpy:%s", $this->prod_code, $this->prod_cmpy);
+                $jnl_data[2] = sprintf("product:%s, cmpy:%s", $this->prod_code, $this->prod_cmpy);
                 $jnl_data[3] = sprintf("base product:%s", $item_key);
 
                 if (!$journal->jnlLogEvent(
@@ -128,7 +128,7 @@ class Product extends CommonClass
             if (!isset($old[$item_key])) {
                 $jnl_data[0] = Utilities::getCurrPsn();
                 $jnl_data[1] = $module;
-                $jnl_data[2] = $record = sprintf("product:%s, cmpy:%s", $this->prod_code, $this->prod_cmpy);
+                $jnl_data[2] = sprintf("product:%s, cmpy:%s", $this->prod_code, $this->prod_cmpy);
                 $jnl_data[3] = sprintf("base product:%s", $item_key);
 
                 if (!$journal->jnlLogEvent(

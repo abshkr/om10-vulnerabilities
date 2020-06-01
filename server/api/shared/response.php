@@ -285,6 +285,14 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Seal numbers deallocated",
             "CHN" => "密封号已经取消"
         ),
+        "__SEAL_PREFIX_SET__" => array(
+            "ENG" => "Seal prefix set",
+            "CHN" => "密封号前缀已经设置"
+        ),
+        "__SEAL_SUFFIX_SET__" => array(
+            "ENG" => "Seal suffix set",
+            "CHN" => "密封号后缀已经设置"
+        ),
         "__INTERNAL_ERROR__" => array(
             "ENG" => "Internal error, check logs/php_rest_*.log file for details",
             "CHN" => "内部错误，请检查日志文件获取详情"

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import useSWR from 'swr';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined, FormOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, FormOutlined, ApiOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, FormModal } from '../../components';
 import { COMPANIES } from '../../api';
@@ -12,6 +12,7 @@ import auth from '../../auth';
 import { Forms } from './forms';
 import { useAuth } from '../../hooks';
 import { SpecialActionForm } from './specials';
+import { RelationsForm } from './relations';
 
 const Companies = () => {
   const { t } = useTranslation();
@@ -36,12 +37,26 @@ const Companies = () => {
 
   const specialActions = () => {
     // console.log("SpecialAction")
-    // console.log(selected)
+    // console.log(currentCmpy)
     FormModal({
+      value: currentCmpy,
       width: "120vh",
       form: <SpecialActionForm value={currentCmpy} handleFormState={handleFormState}/>,
-      // id: v?.pitem_base_code,
-      // name: v?.pitem_base_name,
+      id: currentCmpy.cmpy_code,
+      name: currentCmpy.cmpy_name,
+      t
+    });
+  }
+
+  const companyRelations = () => {
+    // console.log("SpecialAction")
+    // console.log(selected)
+    FormModal({
+      value: currentCmpy,
+      width: "120vh",
+      form: <RelationsForm value={currentCmpy} handleFormState={handleFormState}/>,
+      id: currentCmpy.cmpy_code,
+      name: currentCmpy.cmpy_name,
       t
     });
   }
@@ -56,12 +71,21 @@ const Companies = () => {
         type="primary" 
         icon={<FormOutlined />}  
         loading={isValidating}
-        disabled={!currentCmpy}
         // style={{float:"left", marginRight:500}}
         onClick={() => specialActions()}
-        disabled={!auth.canUpdate}
+        disabled={!currentCmpy || !auth.canUpdate}
       >
         {t('operations.specialAction')}
+      </Button>
+      <Button 
+        type="primary" 
+        icon={<ApiOutlined />}  
+        loading={isValidating}
+        // style={{float:"left", marginRight:500}}
+        onClick={() => companyRelations()}
+        disabled={!currentCmpy || !auth.canUpdate}
+      >
+        {t('operations.companyRelation')}
       </Button>
       <Button 
         type="primary" 

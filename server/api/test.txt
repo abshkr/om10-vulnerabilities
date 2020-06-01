@@ -337,6 +337,8 @@ https://10.1.10.66/api/pages/schedule/allocate_one.php?supplier=7640114&trip_no=
 https://10.1.10.66/api/pages/schedule/delete_seal.php?seal_nr=420114-420264   //Deallocate selected
 https://10.1.10.66/api/pages/schedule/reallocate.php?supplier=7640114&trip_no=246829219&seal_nr=420114-420262&cmpt_nr=1    //Reallcate selected 
 https://10.1.10.66/api/pages/schedule/deallocate_all.php?supplier=7640114&trip_no=246829219  //Deallocate all 
+https://10.1.10.66/api/pages/schedule/set_prefix.php?seal_nr=335&prefix=NEWPRE
+https://10.1.10.66/api/pages/schedule/set_suffix.php?seal_nr=335&prefix=NEWSUF
 
 //Equipment Types
 https://10.1.10.66/api/pages/equipment_type/read.php
@@ -703,6 +705,49 @@ https://10.1.10.66/api/pages/company/parent_cmpy_roles.php
 https://10.1.10.66/api/pages/company/child_cmpy_roles.php
 https://10.1.10.66/api/pages/company/companys_by_role.php?cmpy_role_id=1
 https://10.1.10.66/api/pages/company/cmpy_relations.php
+https://10.1.10.66/api/pages/company/cmpy_relations.php?parent_cmpy_code=7640103
+https://{{server_ip}}/api/pages/company/update_relations.php
+{
+    "cmpy_code": "7640103",
+    "relations": [
+      {
+            "parent_cmpy_code": "7640103",
+            "parent_cmpy_name": "GSAP AVIATION",
+            "parent_cmpy_role": "1",
+            "parent_cmpy_role_name": "SUPPLIER",
+            "child_cmpy_code": "11561639",
+            "child_cmpy_name": "MAXWELL 1991 CO LTD",
+            "child_cmpy_role": "2",
+            "child_cmpy_role_name": "CARRIER",
+            "status": true,
+            "comments": ""
+        },
+        {
+            "parent_cmpy_code": "7640103",
+            "parent_cmpy_name": "GSAP AVIATION",
+            "parent_cmpy_role": "1",
+            "parent_cmpy_role_name": "SUPPLIER",
+            "child_cmpy_code": "12000000",
+            "child_cmpy_name": "PREMIUM OIL CO LTD",
+            "child_cmpy_role": "2",
+            "child_cmpy_role_name": "CARRIER",
+            "status": true,
+            "comments": ""
+        },
+        {
+            "parent_cmpy_code": "7640103",
+            "parent_cmpy_name": "GSAP AVIATION",
+            "parent_cmpy_role": "1",
+            "parent_cmpy_role_name": "SUPPLIER",
+            "child_cmpy_code": "68057026",
+            "child_cmpy_name": "PONGRAVEE (PRV)",
+            "child_cmpy_role": "2",
+            "child_cmpy_role_name": "CARRIER",
+            "status": true,
+            "comments": ""
+        }
+    ]
+}
 https://{{server_ip}}/api/pages/company/create_relation.php
 {
       "parent_cmpy_code": "11626229",

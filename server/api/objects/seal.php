@@ -58,6 +58,94 @@ class Seal extends CommonClass
         }
     }
 
+    public function set_prefix()
+    {
+        $query = "UPDATE SEAL SET SEAL_PREFIX = :prefix WHERE SEAL_NR = :seal_nr";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':prefix', $this->prefix);
+        oci_bind_by_name($stmt, ':seal_nr', $this->seal_nr);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__SAVE_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);;
+        }
+
+        $query = "SELECT SEALSPEC_SHLSTRIP, SEALSPEC_SHLSSUPP FROM SEAL WHERE SEAL_NR = :seal_nr";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':seal_nr', $this->seal_nr);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__DATABASE_EXCEPTION__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $supplier = $row['SEALSPEC_SHLSSUPP'];
+        $trip_no = $row['SEALSPEC_SHLSTRIP'];
+
+        $query_string = "supplier=" . $supplier . "&trip=" . $trip_no . "&cmd=reassemble";
+
+        $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/loadspec_seal.cgi", $query_string);
+        if (strpos($res, "OK") === false) {
+            write_log("load_spec_compt CGI error", __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__CGI_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            oci_rollback($this->conn);
+            return;
+        }
+
+        $error = new EchoSchema(200, response("__SEAL_PREFIX_SET__"));
+        echo json_encode($error, JSON_PRETTY_PRINT);
+        oci_commit($this->conn);
+    }
+
+    public function set_suffix()
+    {
+        $query = "UPDATE SEAL SET SEAL_SUFFIX = :suffix WHERE SEAL_NR = :seal_nr";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':suffix', $this->suffix);
+        oci_bind_by_name($stmt, ':seal_nr', $this->seal_nr);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__SAVE_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);;
+        }
+
+        $query = "SELECT SEALSPEC_SHLSTRIP, SEALSPEC_SHLSSUPP FROM SEAL WHERE SEAL_NR = :seal_nr";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':seal_nr', $this->seal_nr);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__DATABASE_EXCEPTION__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $supplier = $row['SEALSPEC_SHLSSUPP'];
+        $trip_no = $row['SEALSPEC_SHLSTRIP'];
+
+        $query_string = "supplier=" . $supplier . "&trip=" . $trip_no . "&cmd=reassemble";
+
+        $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/loadspec_seal.cgi", $query_string);
+        if (strpos($res, "OK") === false) {
+            write_log("load_spec_compt CGI error", __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__CGI_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            oci_rollback($this->conn);
+            return;
+        }
+
+        $error = new EchoSchema(200, response("__SEAL_SUFFIX_SET__"));
+        echo json_encode($error, JSON_PRETTY_PRINT);
+        oci_commit($this->conn);
+    }
+
     //trip=246829219&supplier=7640114&seal_num=1
     public function allocate_seal()
     {
