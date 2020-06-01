@@ -12,3 +12,9 @@ export const REPORT_PRINTERS = '/api/pages/company/report_printers.php';
 export const DLI_PRINTERS = '/api/pages/company/dli_printers.php';
 
 export const ADDRESSES = '/api/pages/company/addresses.php';
+
+export const RELATIONS = '/api/pages/company/cmpy_relations.php';
+export const CHILD_CMPY_ROLES = '/api/pages/company/child_cmpy_roles.php';
+export const PARENT_CMPY_ROLES = '/api/pages/company/parent_cmpy_roles.php';
+export const CHILD_CMPYS = '/api/pages/company/companys_by_role.php';
+export const UPDATE_RELATIONS = '/api/pages/company/update_relations.php';

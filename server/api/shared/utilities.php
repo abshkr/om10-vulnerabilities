@@ -698,7 +698,7 @@ class Utilities
         }
 
         try {
-            if (method_exists($object, "mandatory_fields_check")) {
+            if ($method === 'update' && method_exists($object, "mandatory_fields_check")) {
                 $object->mandatory_fields_check();
             }
         } catch (NullableException $e) {
@@ -713,7 +713,7 @@ class Utilities
         }
 
         // write_log(json_encode($object), __FILE__, __LINE__, LogLevel::DEBUG);
-        if (method_exists($object, "check_existence")) {
+        if ($method === 'update' && method_exists($object, "check_existence")) {
             if (!$object->check_existence()) {
                 $record_str = strlen($object->primiary_key_str()) > 0 ? " (" . $object->primiary_key_str() . ") ": " ";
                 write_log(sprintf("record%sdoes not not exist", $record_str), __FILE__, __LINE__, LogLevel::ERROR);

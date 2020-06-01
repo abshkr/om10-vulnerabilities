@@ -75,7 +75,7 @@ class CompanyRelation extends CommonClass
             return null;
         }
     }
-    
+
     public function read()
     {
         if (isset($this->parent_cmpy_code)) {

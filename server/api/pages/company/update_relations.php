@@ -4,6 +4,6 @@ include_once '../../shared/header.php';
 
 // include database and object files
 include_once '../../config/database.php';
-include_once '../../objects/company_relation.php';
+include_once '../../objects/company.php';
 
-Utilities::createArray('CompanyRelation');
+Utilities::update('Company', $method = 'update_relations');

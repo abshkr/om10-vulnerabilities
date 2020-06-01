@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import { Button } from 'antd';
@@ -11,14 +11,16 @@ import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
-//import Forms from './forms';
+import Forms from './forms';
 
-const DeliveryDetails = (access, params) => {
+const DeliveryDetails = ({access, params}) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [pageState, setPageState] = useState('view');
 
   const { t } = useTranslation();
-  console.log(params);
+  console.log("params", params);
+  console.log("access", access);
   //const access = useAuth('M_DELIVERYLOCATIONS');
 
   const { data: payload, isValidating, revalidate } = useSWR(
@@ -37,6 +39,20 @@ const DeliveryDetails = (access, params) => {
 
   const page = t('pageMenu.customers');
   const name = t('pageNames.deliveryDetails');
+
+  useEffect(() => {
+    if (visible) {
+      if (!selected) {
+        setPageState('create');
+      }
+      else {
+        setPageState('edit');
+      }
+    }
+    else {
+      setPageState('view');
+    }
+  }, [visible, selected]);
 
   const modifiers = (
     <>
@@ -68,7 +84,7 @@ const DeliveryDetails = (access, params) => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      {/* <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} /> */}
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} pageState={pageState} revalidate={revalidate} params={params} />
     </Page>
   );
 };

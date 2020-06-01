@@ -21,8 +21,6 @@ import _ from 'lodash';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState }) => {
-  console.log("Form start")
-  console.log(value)
   const { t } = useTranslation();
   const { data: addresses, isValidating, revalidate } = useSWR(COMPANIES.ADDRESSES);
 

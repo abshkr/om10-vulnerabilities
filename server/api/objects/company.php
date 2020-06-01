@@ -437,4 +437,164 @@ class Company extends CommonClass
             return null;
         }
     }
+
+    protected function retrieve_relations()
+    {
+        $query = "
+            SELECT * FROM COMPANY_RELATION 
+            WHERE PARENT_CMPY_CODE = :cmpy_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        $tank_max_flows = array();
+        while ($flow_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $tank_max_flows[$flow_row['CHILD_CMPY_CODE']] = $flow_row;
+            // array_push($tank_max_flows, $base_item);
+        }
+
+        // write_log(json_encode($tank_max_flows), __FILE__, __LINE__);
+        return $tank_max_flows;
+    }
+
+    protected function delete_relations()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $query = "
+            DELETE FROM COMPANY_RELATION
+            WHERE PARENT_CMPY_CODE = :cmpy_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function insert_relations()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (!isset($this->relations)) {
+            return true;
+        }
+        
+        foreach ($this->relations as $value) {
+            // write_log(json_encode($value), __FILE__, __LINE__);
+            $query = "INSERT INTO COMPANY_RELATION (
+                PARENT_CMPY_CODE,
+                PARENT_CMPY_ROLE,
+                CHILD_CMPY_CODE,
+                CHILD_CMPY_ROLE,
+                STATUS,
+                CREATE_DATE,
+                COMMENTS)
+            VALUES (
+                :parent_cmpy_code,
+                :parent_cmpy_role,
+                :child_cmpy_code,
+                :child_cmpy_role,
+                :status,
+                SYSDATE,
+                :comments)";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':parent_cmpy_code', $value->parent_cmpy_code);
+            oci_bind_by_name($stmt, ':parent_cmpy_role', $value->parent_cmpy_role);
+            oci_bind_by_name($stmt, ':child_cmpy_code', $value->child_cmpy_code);
+            oci_bind_by_name($stmt, ':child_cmpy_role', $value->child_cmpy_role);
+            oci_bind_by_name($stmt, ':status', $value->status);
+            oci_bind_by_name($stmt, ':comments', $value->comments);
+
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected function journal_relations_change($journal, $old, $new)
+    {
+        $module = "product relationship";
+        foreach ($old as $item_key => $item_array) {
+            if (isset($new[$item_key])) {
+                foreach ($item_array as $field => $value) {
+                    if ($new[$item_key][$field] != $value) {
+                        $record = sprintf("parent company:%s, child company:%s",
+                            $this->cmpy_code, $item_key);
+                        $journal->valueChange($module, $record, $field, $value, $new[$item_key][$field]);
+                    }
+                }
+            }
+
+             if (!isset($new[$item_key])) {
+                $jnl_data[0] = Utilities::getCurrPsn();
+                $jnl_data[1] = $module;
+                $jnl_data[2] = sprintf("parent company:%s", $this->cmpy_code);
+                $jnl_data[3] = sprintf("child companry:%s", $item_key);
+
+                if (!$journal->jnlLogEvent(
+                    Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'],
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+
+        //In new but not in old.
+        foreach ($new as $item_key => $item_array) {
+            if (!isset($old[$item_key])) {
+                $jnl_data[0] = Utilities::getCurrPsn();
+                $jnl_data[1] = $module;
+                $jnl_data[2] = sprintf("parent company:%s", $this->cmpy_code);
+                $jnl_data[3] = sprintf("child companry:%s", $item_key);
+
+                if (!$journal->jnlLogEvent(
+                    Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'],
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+    }
+
+    public function update_relations()
+    {
+        $this->commit_mode = OCI_NO_AUTO_COMMIT;
+
+        $old_child_data = $this->retrieve_relations();
+        if ($this->del_n_ins_children) {
+            $this->delete_relations();
+            $this->insert_relations();
+        }
+        
+        $new_child_data = $this->retrieve_relations();
+
+        $journal = new Journal($this->conn, false);
+        $this->journal_relations_change($journal, $old_child_data, $new_child_data);
+
+        oci_commit($this->conn);
+        return true;
+    }
 }

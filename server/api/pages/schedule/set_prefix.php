@@ -4,6 +4,6 @@ include_once '../../shared/header.php';
 
 // include database and object files
 include_once '../../config/database.php';
-include_once '../../objects/company_relation.php';
+include_once '../../objects/seal.php';
 
-Utilities::createArray('CompanyRelation');
+Utilities::exec('Seal', $method = 'set_prefix', $filter = true);

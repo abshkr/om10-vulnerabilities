@@ -28,8 +28,6 @@ class AllocationPeriod extends CommonClass
         "AIPRD_QTYLIMIT",
     );
 
-    
-
     public function read()
     {
         $query = "

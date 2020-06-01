@@ -6,8 +6,6 @@ import {
   DeleteOutlined,
   QuestionCircleOutlined,
   CloseOutlined,
-  RedoOutlined,
-  ClockCircleOutlined,
 } from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Checkbox, Col, Row, Input, Select, InputNumber } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -15,11 +13,9 @@ import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 import { DRAWER_PRODUCTS } from '../../../api';
-import useSWR from 'swr';
 
-import { DrawerCompany, LoadTolerance, ProductCode, ProductName, Group, Hazchem, Generic } from './fields';
+import { DrawerCompany, LoadTolerance, ProductCode, ProductName, Group, Hazchem, Generic, DangerousGoods } from './fields';
 import { DataTable, FormModal } from '../../../components';
-import { ALLOCATIONS } from '../../../api';
 import columns from './columns';
 import BaseProductForm from './base-form';
 
@@ -303,14 +299,15 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
                 </Col>
               </Row>
             </Form.Item >
+            <DangerousGoods form={form} value={value} />
             <Form.Item name="prod_desc" label={t('fields.description')} >
-              <TextArea rows={3} />
+              <TextArea rows={2} />
             </Form.Item>
             <Divider orientation="left">{t('fields.baseProducts')}</Divider>
             <Form.Item name="bases" noStyle >
               <DataTable
                 data={bases}
-                height="70vh"
+                height="78vh"
                 minimal
                 columns={columns(t)}
                 handleSelect={(value) => setSelected(value[0])}
