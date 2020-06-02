@@ -43,6 +43,9 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
       return deleteBase();
     }
 
+    console.log("handleBaseCallBack")
+    console.log(values)
+
     let payload = null;
     if (!values.to_create) {
       payload = [..._.filter(bases, (item) => {

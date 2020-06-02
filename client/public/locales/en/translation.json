@@ -1011,7 +1011,9 @@
     "sealNumber": "Seal Number",
     "suffix": "Suffix",
     "preloaded": "Preloaded",
-    "dangerousGoods": "Dangerous Goods"
+    "dangerousGoods": "Dangerous Goods",
+	"childCmpyName": "Child Company Name",
+	"childCmpyType": "Child Company Type"
   },
 
   "pageMenu": {
@@ -1217,7 +1219,8 @@
     "specialAction": "Special Action",
     "reallocateSelected": "Reallocate Selected",
     "deallocateSelected": "Deallocate Selected",
-    "deallocateAll": "Deallocate All"
+    "deallocateAll": "Deallocate All",
+	"companyRelation": "Company Relations"
   },
 
   "tabColumns": {
@@ -1295,7 +1298,8 @@
     "supplierSettings": "Supplier Company Settings",
     "others": "Others",
     "printerSettings": "Printer Settings",
-    "transportationDoc": "Transportation Documents"
+    "transportationDoc": "Transportation Documents",
+	"companyRelation": "Company Relations"
   },
 
   "messages": {

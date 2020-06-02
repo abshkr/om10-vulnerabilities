@@ -28,16 +28,7 @@ const FormModal = ({ value, handleBaseCallBack }) => {
   const [ pitem_bltol_flag, setFlag ] = useState(value?.pitem_bltol_flag)
 
   const IS_CREATING = !value;
-  if (value) {
-    setFieldsValue({
-      pitem_ratio_value: value.pitem_ratio_value,
-      pitem_bltol_ntol: value.pitem_bltol_ntol,
-      pitem_bltol_flag: value.pitem_bltol_flag,
-      pitem_bltol_ptol: value.pitem_bltol_ptol,
-      pitem_base_code: value.pitem_base_code,
-    })
-  }
-
+  
   const validate = (rule, input) => {
     // if (input === '' || !input) {
     //   return Promise.reject(`${t('fields.loadToleranceCheck')}`);
@@ -57,7 +48,7 @@ const FormModal = ({ value, handleBaseCallBack }) => {
     values.pitem_base_name = _.filter(baseProducts, (item) => {
       return item.base_code === values.pitem_base_code;
     })[0].base_name
-    values.to_create = true
+    values.to_create = IS_CREATING
     handleBaseCallBack(values)
     Modal.destroyAll();
   };
@@ -67,6 +58,18 @@ const FormModal = ({ value, handleBaseCallBack }) => {
     handleBaseCallBack(values)
     Modal.destroyAll();
   };
+
+  useEffect(() => {
+    if (value) {
+      setFieldsValue({
+        pitem_ratio_value: value.pitem_ratio_value,
+        pitem_bltol_ntol: value.pitem_bltol_ntol,
+        pitem_bltol_flag: value.pitem_bltol_flag,
+        pitem_bltol_ptol: value.pitem_bltol_ptol,
+        pitem_base_code: value.pitem_base_code,
+      })
+    }
+  }, [value]);
 
   return (
     <div>
@@ -100,8 +103,8 @@ const FormModal = ({ value, handleBaseCallBack }) => {
               <InputNumber min={1} style={{ width: '100%' }} />
             </Form.Item>
 
-            <Form.Item name="pitem_bltol_flag" label={t('fields.blendToleranceCheck')} rules={[{ required: false, validator: validate }]}>
-              <Checkbox checked={pitem_bltol_flag} onChange={onCheck}></Checkbox>
+            <Form.Item name="pitem_bltol_flag" label={t('fields.blendToleranceCheck')} >
+              <Checkbox defaultChecked={value?.pitem_bltol_flag} onChange={onCheck}></Checkbox>
             </Form.Item>
 
             <Form.Item name="pitem_bltol_ntol" label={t('fields.lowerLimit')} rules={[{ required: false, validator: validate }]}>
