@@ -17,14 +17,6 @@ const Tanker = ({ form, value, carrier, onChange }) => {
 
   const IS_DISABLED = !value ? false : value?.shls_status !== 'NEW SCHEDULE';
 
-  const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.tanker')}`);
-    }
-
-    return Promise.resolve();
-  };
-
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -36,7 +28,7 @@ const Tanker = ({ form, value, carrier, onChange }) => {
   }, [value, setFieldsValue, onChange]);
 
   return (
-    <Form.Item name="tnkr_code" label={t('fields.tanker')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item name="tnkr_code" label={t('fields.tanker')}>
       <Select
         loading={isValidating}
         showSearch

@@ -4,9 +4,10 @@ import useSWR from 'swr';
 import { Form } from 'antd';
 import axios from 'axios';
 
+import { Unit, Schedule } from './fields';
 import { DataTable } from '../../../../components';
 import columns from './columns';
-import { Unit, Schedule } from './fields';
+import transform from './transform';
 
 import { LOAD_SCHEDULES } from '../../../../api';
 
@@ -15,34 +16,35 @@ const components = {
   ScheduleEditor: Schedule,
 };
 
-const Products = ({ value, form }) => {
+const Products = ({ value, form, drawer }) => {
   const { t } = useTranslation();
   const { data: units } = useSWR(LOAD_SCHEDULES.UNIT_TYPES);
 
   const [data, setData] = useState([]);
 
+  const { setFieldsValue } = form;
+
   const fields = columns(t, form, units);
 
   useEffect(() => {
-    if (value) {
+    if (drawer) {
       axios
-        .get(LOAD_SCHEDULES.PRODUCTS, {
+        .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
           params: {
-            supplier_code: value.supplier_code,
-            shls_trip_no: value.shls_trip_no,
+            drawer_code: drawer,
           },
         })
         .then((res) => {
-          const payload = res?.data?.records;
+          const payload = transform(res?.data?.records);
 
           setData(payload);
 
-          form.setFieldsValue({
+          setFieldsValue({
             products: payload,
           });
         });
     }
-  }, [value]);
+  }, [drawer, setFieldsValue]);
 
   return (
     <Form.Item name="products" noStyle>

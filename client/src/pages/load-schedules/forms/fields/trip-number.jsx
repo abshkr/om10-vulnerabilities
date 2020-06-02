@@ -5,7 +5,7 @@ import axios from 'axios';
 
 import { LOAD_SCHEDULES } from '../../../../api';
 
-const TripNumber = ({ form, value, supplier }) => {
+const TripNumber = ({ form, value, supplier, onChange }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -17,6 +17,8 @@ const TripNumber = ({ form, value, supplier }) => {
         shls_shift: value.shls_shift,
         shls_priority: value.shls_priority,
       });
+
+      onChange(value.shls_trip_no);
     } else if (supplier) {
       axios
         .get(LOAD_SCHEDULES.NEXT_TRIP, {
@@ -26,6 +28,8 @@ const TripNumber = ({ form, value, supplier }) => {
         })
         .then((res) => {
           const trip = res.data?.records[0]?.next_trip_no;
+
+          onChange(trip);
 
           setFieldsValue({
             shls_trip_no: trip,

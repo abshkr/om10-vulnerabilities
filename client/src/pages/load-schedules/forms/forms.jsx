@@ -60,6 +60,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const [drawer, setDrawer] = useState(undefined);
   const [carrier, setCarrier] = useState(undefined);
   const [tanker, setTanker] = useState(undefined);
+  const [trip, setTrip] = useState(undefined);
 
   const IS_CREATING = !value;
   const CAN_PRINT = ['2', '3', '4'].includes(tab);
@@ -287,13 +288,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   useEffect(() => {
     if (!value) {
-      resetFields();
       setSupplier(undefined);
       setDrawer(undefined);
       setCarrier(undefined);
       setTanker(undefined);
+      setTrip(undefined);
+
+      resetFields();
     }
-  }, [resetFields, value]);
+  }, [resetFields, visible, value]);
 
   return (
     <Drawer
@@ -301,6 +304,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       mask={IS_CREATING}
+      destroyOnClose
       placement="right"
       width="75vw"
       visible={visible}
@@ -421,7 +425,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
             <Row gutter={[8, 8]}>
               <Col span={6}>
-                <TripNumber form={form} value={value} supplier={supplier} />
+                <TripNumber form={form} value={value} supplier={supplier} onChange={setTrip} />
               </Col>
 
               <Col span={6}>
@@ -447,9 +451,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               <Compartments form={form} value={value} drawer={drawer} tanker={tanker} />
             )}
 
-            {mode === '3' && !READ_ONLY && (
-              <Products form={form} value={value} drawer={drawer} tanker={tanker} />
-            )}
+            {mode === '3' && !READ_ONLY && <Products form={form} value={value} drawer={drawer} />}
 
             {READ_ONLY && <Summary value={value} />}
           </TabPane>
