@@ -242,8 +242,8 @@ const Navigation = () => {
           <Menu.Item key={ROUTES.HAZCHEM_CODES}>
             <Badge status="success" /> {t('pageNames.hazchemCodes')}
           </Menu.Item>
-		  
-		  <Menu.Item key={ROUTES.DANGEROUS_GOODS}>
+
+          <Menu.Item key={ROUTES.DANGEROUS_GOODS}>
             <Badge status="success" /> {t('pageNames.dangerousGoods')}
           </Menu.Item>
 
@@ -261,7 +261,7 @@ const Navigation = () => {
           }
         >
           <Menu.Item key={ROUTES.COMPANIES}>
-            <Badge status="warning" /> {t('pageNames.companies')}
+            <Badge status="success" /> {t('pageNames.companies')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ALLOCATIONS}>
