@@ -43,9 +43,6 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
       return deleteBase();
     }
 
-    console.log("handleBaseCallBack")
-    console.log(values)
-
     let payload = null;
     if (!values.to_create) {
       payload = [..._.filter(bases, (item) => {
@@ -57,9 +54,20 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
         pitem_bltol_ptol: values.pitem_bltol_ptol,
         pitem_ratio_value: values.pitem_ratio_value,
         pitem_base_name: values.pitem_base_name,
+        pitem_bclass_name: values.pitem_bclass_name,
       }]
       setSelected(null)
     } else {
+      if (_.find(bases, (item) => {
+        return item.pitem_base_code === values.pitem_base_code
+      })) {
+        notification.error({
+          message: t('messages.validationFailed'),
+          description: t('descriptions.alreadyExists'),
+        });
+        return;
+      }
+      
       payload = [...bases, {
         pitem_base_code: values.pitem_base_code,
         pitem_bltol_ntol: values.pitem_bltol_ntol,
@@ -67,6 +75,7 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
         pitem_bltol_ptol: values.pitem_bltol_ptol,
         pitem_ratio_value: values.pitem_ratio_value,
         pitem_base_name: values.pitem_base_name,
+        pitem_bclass_name: values.pitem_bclass_name,
       }]
     }
       

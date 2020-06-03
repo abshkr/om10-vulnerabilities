@@ -45,10 +45,16 @@ const FormModal = ({ value, handleBaseCallBack }) => {
   }
 
   const onFinish = values => {
-    values.pitem_base_name = _.filter(baseProducts, (item) => {
-      return item.base_code === values.pitem_base_code;
-    })[0].base_name
+    // values.pitem_base_name = _.filter(baseProducts, (item) => {
+    //   return item.base_code === values.pitem_base_code;
+    // })[0].base_name
     values.to_create = IS_CREATING
+    const baseItem = _.find(baseProducts, (item) => {
+      return item.base_code === values.pitem_base_code;
+    });
+    values.pitem_base_name = baseItem.base_name;
+    values.pitem_bclass_name = baseItem.bclass_desc;
+    
     handleBaseCallBack(values)
     Modal.destroyAll();
   };
@@ -75,6 +81,10 @@ const FormModal = ({ value, handleBaseCallBack }) => {
     <div>
       <Form 
         // style={{ width: '40vh' }} 
+        initialValues={{
+          pitem_bltol_ntol: -10,
+          pitem_bltol_ptol: 10
+        }}
         layout="vertical" 
         form={form} 
         onFinish={onFinish} 
@@ -109,9 +119,9 @@ const FormModal = ({ value, handleBaseCallBack }) => {
 
             <Form.Item name="pitem_bltol_ntol" label={t('fields.lowerLimit')} rules={[{ required: false, validator: validate }]}>
               <InputNumber
-                defaultValue={-10}
                 min={-200}
                 max={0}
+                // defaultValue={-10}
                 formatter={value => `${value}%`}
                 parser={value => value.replace('%', '')}
                 disabled={!pitem_bltol_flag}
@@ -121,7 +131,6 @@ const FormModal = ({ value, handleBaseCallBack }) => {
 
             <Form.Item name="pitem_bltol_ptol" label={t('fields.upperLimit')} rules={[{ required: false, validator: validate }]}>
               <InputNumber
-                defaultValue={10}
                 min={0}
                 max={200}
                 formatter={value => `${value}%`}

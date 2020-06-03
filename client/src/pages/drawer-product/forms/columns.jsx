@@ -21,6 +21,7 @@ const columns = (t, isCreating) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    width: 60,
   },
   {
     headerName: t('fields.blendToleranceCheck'),
@@ -36,6 +37,7 @@ const columns = (t, isCreating) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    width: 130,
   },
   {
     headerName: t('fields.upperLimit'),
@@ -43,6 +45,15 @@ const columns = (t, isCreating) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
+    width: 130,
+  },
+  {
+    headerName: t('fields.baseClass'),
+    field: 'pitem_bclass_name',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
+    // width: 130,
   },
 ];
 
