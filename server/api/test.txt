@@ -3045,7 +3045,9 @@ https://{{server_ip}}/api/pages/manual_trans/submit.php //schedule manual transa
         }
     ]
 }
-https://10.1.10.66/api/pages/manual_trans/get_suppliers.php
+https://10.1.10.66/api/pages/manual_trans/suppliers.php
+https://10.1.10.66/api/pages/manual_trans/get_ord_suppliers.php
+https://10.1.10.66/api/pages/manual_trans/get_schd_suppliers.php
 https://10.1.10.66/api/pages/manual_trans/get_customers.php?supplier=5860106
 https://10.1.10.66/api/pages/manual_trans/get_orders.php?supplier=5860106&customer=11626230
 https://10.1.10.66/api/pages/manual_trans/get_order_basics.php?order_cust_no=322140337  //get order carrier, shipto soldto

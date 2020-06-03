@@ -10,12 +10,33 @@ class ManualTrans extends CommonClass
 {
     protected $TABLE_NAME = 'DUMMY';
 
-    public function get_suppliers()
+    public function get_ord_suppliers()
     {
         $query = "SELECT DISTINCT ORDER_SUPP_CODE SUPPLIER,
                 ORDER_SUPP_NAME SUPPLIER_NAME
             FROM GUI_ORDERS
-            WHERE ORDER_STAT_ID NOT IN (2, 3, 5, 6)";
+            WHERE ORDER_STAT_ID NOT IN (2, 3, 5, 6)
+            ORDER BY ORDER_SUPP_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function get_schd_suppliers()
+    {
+        $query = "SELECT SHLS_SUPP SUPPLIER, CMPY_NAME SUPPLIER_NAME
+            FROM
+            (
+                SELECT DISTINCT SHLS_SUPP FROM SCHEDULE
+                WHERE STATS IS NULL OR STATS IN ('A', 'L', 'N')
+            ), COMPANYS
+            WHERE SHLS_SUPP = CMPY_CODE
+            ORDER BY SHLS_SUPP";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;

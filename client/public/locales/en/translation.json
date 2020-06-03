@@ -45,6 +45,7 @@
     "listOfTanks": "List of Tanks",
     "baseProductCode": "Base Product Code",
     "baseProductName": "Base Product Name",
+    "baseClass": "Base Class",
     "baseClassMinDensity": "Base Class Min Density",
     "baseClassMaxDensity": "Base Class Max Density",
     "baseClassMinTemp": "Base Class Min Temperature",
@@ -850,6 +851,7 @@
     "nomtranToTank": "Tank",
     "nomtranComment": "Comment",
     "nomtranPlanQty": "Planned Qty",
+    "nomtranAvailQty": "Avaiable",
     "nomtranObsQty": "Obs Qty",
     "nomtranStdQty": "Std Qty",
     "nomtranMass": "Obs Mass",
@@ -865,7 +867,7 @@
     "nomtranBaseProdDet": "Base Product Details:",
     "nomtranBaseGui": "Base Product",
     "nomtranTankCode": "Tank Code",
-    "nomtranBclass_desc": "Product Class",
+    "nomtranBclassDesc": "Product Class",
     "nomtranTankDens": "Density (kg/m³)",
     "nomtranTemperature": "Temp. (ºC)",
     "nomtranAmbVol": "Obs. Litres",
@@ -885,6 +887,15 @@
     "nomtranOpenKg": "Start Meter",
     "nomtranCloseKg": "End Meter",
     "nomtranQuantityKg": "Quantity",
+    "nomtranOpenAmbMeter": "Amb Start Meter",
+    "nomtranCloseAmbMeter": "Amb End Meter",
+    "nomtranQuantityAmbMeter": "Amb Quantity",
+    "nomtranOpenCorMeter": "Std Start Meter",
+    "nomtranCloseCorMeter": "Std End Meter",
+    "nomtranQuantityCorMeter": "Std Quantity",
+    "nomtranOpenKgMeter": "Mass Start Meter",
+    "nomtranCloseKgMeter": "Mass End Meter",
+    "nomtranQuantityKgMeter": "Mass Quantity",
     "nomtranAllTotal": "Total",
     "nomtranObsTotal": "Observed Quantity Total:",
     "nomtranStdTotal": "Standard Quantity Total:",
@@ -901,8 +912,8 @@
     "genericName": "Generic Name",
     "isBlend": "Is Blended",
     "loadToleranceCheck": "Load Tolerance Check",
-    "lowerLimit": "Lower Limit",
-    "upperLimit": "Upper Limit",
+    "lowerLimit": "Lower Limit %",
+    "upperLimit": "Upper Limit %",
     "hazchemID": "Hazchem ID",
     "hazchemClass": "Hazchem Class",
     "hazchemCode": "Hazchem Code",
@@ -1001,7 +1012,9 @@
     "sealNumber": "Seal Number",
     "suffix": "Suffix",
     "preloaded": "Preloaded",
-    "dangerousGoods": "Dangerous Goods"
+    "dangerousGoods": "Dangerous Goods",
+    "childCmpyName": "Child Company Name",
+    "childCmpyType": "Child Company Type"
   },
 
   "pageMenu": {
@@ -1208,7 +1221,8 @@
     "reallocateSelected": "Reallocate Selected",
     "deallocateSelected": "Deallocate Selected",
     "deallocateAll": "Deallocate All",
-    "showDeliveryDetails": "Show Delivery Details"
+    "showDeliveryDetails": "Show Delivery Details",
+    "companyRelation": "Company Relations"
   },
 
   "tabColumns": {
@@ -1286,7 +1300,8 @@
     "supplierSettings": "Supplier Company Settings",
     "others": "Others",
     "printerSettings": "Printer Settings",
-    "transportationDoc": "Transportation Documents"
+    "transportationDoc": "Transportation Documents",
+    "companyRelation": "Company Relations"
   },
 
   "messages": {
