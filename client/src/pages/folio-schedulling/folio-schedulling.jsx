@@ -96,7 +96,7 @@ const FolioSummary = () => {
           </TabPane>
 
           <TabPane tab={t('tabColumns.closetSettings')} key="3" style={{ height: '72vh' }}>
-            <Settings access={access}></Settings>
+            <Settings access={access} value={payload?.records}></Settings>
           </TabPane>
         </Tabs>
     </Page>

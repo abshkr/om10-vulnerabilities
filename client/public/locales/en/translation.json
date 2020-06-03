@@ -1144,7 +1144,7 @@
     "yes": "Yes",
     "no": "No",
     "addNewExpiry": "Add New Expiry",
-    "freezeCloseout": "Run Manual Closeout",
+	"freezeCloseout": "Run Manual Closeout",
     "closeCloseout": "Close First Frozen Folio",
     "unlockAll": "Unlock All Compartments",
     "randomize": "Randomize",
@@ -1341,7 +1341,8 @@
     "loginFailed": "Failed To Login.",
     "cancelSuccess": "Successfully Cancelled.",
     "closeSuccess": "Successfully Closed.",
-    "archiveSuccess": "Successfully Archived."
+    "archiveSuccess": "Successfully Archived.",
+	"manualOverride": "Manual Closeout Override"
   },
 
   "prompts": {
@@ -1368,6 +1369,7 @@
     "createNewGate": "Create New Gate",
     "freezeCloseout": "Are you sure you want to run manual closeout?",
     "closeCloseout": "Are you sure you want to close first frozen folio?",
+	"runAndOverride": "Are you sure you want to run manual closeout and make today an exception?",
     "notEnoughBase": "Drawer product must have at least one base product",
     "approve": "Are you sure you want to approve this open order?",
     "unapprove": "Are you sure you want to unapprove this open order?",

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
-import { Modal, Button, Checkbox, notification, Calendar } from 'antd';
+import { Modal, Badge, Checkbox, notification, Calendar } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import { mutate } from 'swr';
@@ -12,49 +12,14 @@ import _ from 'lodash';
 import { FOLIO_SCHEDULING } from '../../../api';
 
 
-const FolioCalendar = ({ value }) => {
-  console.log("Start")
+const FolioCalendar = ({ access, value }) => {
   const { t } = useTranslation();
-  // const { value: payload, isValidating } = useSWR(FOLIO_SCHEDULING.READ);
-  // const { value: roles, isValidating: isRolesLoading } = useSWR(GATE_PERMISSION.ROLE_TYPES);
-  // const { value: cases, isValidating: isCasesLoading } = useSWR(GATE_PERMISSION.RULE_CASES);
-  // const { value: types, isValidating: isTypesLoading } = useSWR(GATE_PERMISSION.EQUIPMENT_TYPES);
-  // const { value: next, isValidating: isNextLoading } = useSWR(GATE_PERMISSION.NEXT_PRM_ID);
-
-
-  // const [value, setData] = useState(value?value:[]);
-  console.log(value)
-  console.log("Check Data")
-  // console.log(value)
   let curDate = null;
-  // let checkStatus = false;
   
-  // const { setFieldsValue } = form;
-
   const onComplete = () => {
     console.log("onComplete")
     mutate(FOLIO_SCHEDULING.READ)
-    // const { value: payload } = useSWR(FOLIO_SCHEDULING.READ);
-    // setData(payload?.records);
   }
-
-  // useEffect(() => {
-  //   console.log("useEffect")
-  //   // setData(value)
-  // }, [value]);
-  
-  const handleSave = (row) => {
-    // const payload = [...value];
-    // const toUpdate = payload.find(x => x.rule_id === row.rule_id);
-
-    // Object.assign(toUpdate, row);
-    
-    // setData(payload);
-
-    // setFieldsValue({
-    //   rules: payload,
-    // });
-  };
 
   const override_exist = (d) => {
     const overrides = _.filter(value, function(item) {
@@ -114,12 +79,16 @@ const FolioCalendar = ({ value }) => {
   }
 
   const checkDate = (v) => {
+    const ret = {};
+    ret.closeoutEnabled = true;
+
     //Override overrides exceptions
     const overrides = _.filter(value, function(item) {
       return item.window_name === 'OVERRIDE'})
     for (let i = 0; i < overrides.length; i++) {
       if (v.format("D_M_YYYY") === overrides[i].repeat_interval) {
-        return true;
+        ret.closeoutEnabled = true;
+        ret.override = t("fields.override") + ": " + overrides[i].description;
       }
     }
 
@@ -128,19 +97,25 @@ const FolioCalendar = ({ value }) => {
     for (let i = 0; i < exceptions.length; i++) {
       if (exceptions[i].window_name === "MONTH_WINDOW") {
         if (v.format("D") === exceptions[i].repeat_interval) {
-          return false;
+          ret.closeoutEnabled = false;
+          ret.exception = t("fields.exception") + ": " + exceptions[i].description;
+          break;
         }
       } 
 
       if (exceptions[i].window_name === "WEEK_WINDOW") {
         if (v.format("dddd") === exceptions[i].repeat_interval) {
-          return false;
+          ret.closeoutEnabled = false;
+          ret.exception = t("fields.exception") + ": " + exceptions[i].description;
+          break;
         }
       } 
 
       if (exceptions[i].window_name === "DATE_YEAR_WINDOW") {
         if (v.format("D_M") === exceptions[i].repeat_interval) {
-          return false;
+          ret.closeoutEnabled = false;
+          ret.exception = t("fields.exception") + ": " + exceptions[i].description;
+          break;
         }
       }
 
@@ -156,39 +131,56 @@ const FolioCalendar = ({ value }) => {
           const cloneMoment = v.clone();
           if (cloneMoment.subtract(7 * j, 'days').format('M') != v.format('M') 
             && interval[0] === j) {
-              return false;
+              ret.closeoutEnabled = false;
+              ret.exception = t("fields.exception") + ": " + exceptions[i].description;
+              break;
           }
         }
       }
 
       if (exceptions[i].window_name === "ONCE_WINDOW") {
         if (v.format("D_M_YYYY") === exceptions[i].repeat_interval) {
-          return false;
+          ret.closeoutEnabled = false;
+          ret.exception = t("fields.exception") + ": " + exceptions[i].description;
+          break;
         }
       }
     }
 
-    return true;
+    if (ret.override) {
+      ret.closeoutEnabled = true;
+    }
+
+    return ret;
   }
  
   const dateCellRender = (v) => {
-    // console.log("dateCellRender")
-    // console.log(value.format("YYYY-MM-DD"))
     const isPast = v.diff(moment()) < 0;
-    const isChecked = checkDate(v);
+    const checkDateRet = checkDate(v);
     return (
-      <div className={isPast? "past":"future"}>
-      <Checkbox checked={isChecked} onChange={onChange} disabled={isPast}>
-      </Checkbox>
+      <div >
+        <div className={isPast? "past":"future"}>
+        <Checkbox checked={checkDateRet.closeoutEnabled} onChange={onChange} disabled={isPast}/>
+        </div>
+        <ul 
+          className="events"
+          // style={{listStyle: "none"}}
+        >
+          {
+            checkDateRet.override ? (
+            <li key={1}>
+              <Badge status='success' text={checkDateRet.override} />
+            </li>) : null
+          }
+          {
+            checkDateRet.exception ? (
+            <li key={2}>
+              <Badge status='error' text={checkDateRet.exception} />
+            </li>) : null
+          }
+        </ul>
       </div>
     )
-  }
-
-  const monthCellRender = (v) => {
-    console.log("monthCellRender")
-    console.log(v)
-    // console.log(mode)
-    // setData([]);
   }
 
   const onSelect = (v) => {
@@ -199,7 +191,6 @@ const FolioCalendar = ({ value }) => {
     <Calendar 
       dateCellRender={dateCellRender}
       onSelect={onSelect}
-      monthCellRender={monthCellRender}
       // onPanelChange={onPanelChange}
     >
     </Calendar>
