@@ -19,6 +19,7 @@ export const EQUIPMENT_LIST = '/equipment-list';
 export const TANKER_LIST = '/tanker-list';
 export const TRANSACTION_LIST = '/transaction-list';
 export const SELF_FUEL_TRANSACTION_LIST = '/self-fuel-transaction-list';
+export const DELIVERY_DETAILS = '/delivery-details';
 
 export const LOAD_BAYS = '/load-bays';
 export const COMPANIES = '/companies';

@@ -11,20 +11,28 @@ import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
+import { useLocation } from 'react-router-dom';
+
 import Forms from './forms';
 
-const DeliveryDetails = ({access, params}) => {
+const DeliveryDetails = ({ params }) => {
+  let location = useLocation();
+
+  const access = useAuth('M_DELIVERYLOCATIONS');
+
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [pageState, setPageState] = useState('view');
 
   const { t } = useTranslation();
-  console.log("params", params);
-  console.log("access", access);
-  //const access = useAuth('M_DELIVERYLOCATIONS');
+
+  console.log(location);
+  const supplier = location?.state ? location?.state.dd_supp_code : params?.dd_supp_code;
+  const trip = location?.state ? location?.state.dd_tripord_no : params?.dd_tripord_no;
+  const type = location?.state ? location?.state.dd_ld_type : params?.dd_ld_type;
 
   const { data: payload, isValidating, revalidate } = useSWR(
-    `${DELIVERY_DETAILS.READ}?dd_supp_code=${params?.dd_supp_code}&dd_tripord_no=${params?.dd_tripord_no}&dd_ld_type=${params?.dd_ld_type}`
+    `${DELIVERY_DETAILS.READ}?dd_supp_code=${supplier}&dd_tripord_no=${trip}&dd_ld_type=${type}`
   );
 
   const handleFormState = (visibility, value) => {
@@ -44,12 +52,10 @@ const DeliveryDetails = ({access, params}) => {
     if (visible) {
       if (!selected) {
         setPageState('create');
-      }
-      else {
+      } else {
         setPageState('edit');
       }
-    }
-    else {
+    } else {
       setPageState('view');
     }
   }, [visible, selected]);
@@ -67,7 +73,7 @@ const DeliveryDetails = ({access, params}) => {
         icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isLoading}
-        disabled={!access.canCreate}
+        disabled={!access?.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -84,9 +90,17 @@ const DeliveryDetails = ({access, params}) => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} pageState={pageState} revalidate={revalidate} params={params} />
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        access={access}
+        pageState={pageState}
+        revalidate={revalidate}
+        params={params}
+      />
     </Page>
   );
 };
 
-export default DeliveryDetails;
+export default auth(DeliveryDetails);

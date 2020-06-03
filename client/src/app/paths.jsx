@@ -125,7 +125,7 @@ const paths = [
     path: ROUTES.HAZCHEM_CODES,
     component: lazy(() => import('../pages/hazchem-codes')),
   },
-  
+
   {
     path: ROUTES.DANGEROUS_GOODS,
     component: lazy(() => import('../pages/dangerous-goods')),
@@ -364,6 +364,11 @@ const paths = [
   {
     path: ROUTES.TANKS,
     component: lazy(() => import('../pages/tanks')),
+  },
+
+  {
+    path: ROUTES.DELIVERY_DETAILS,
+    component: lazy(() => import('../pages/delivery-details')),
   },
 ];
 

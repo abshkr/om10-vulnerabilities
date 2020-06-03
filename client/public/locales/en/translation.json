@@ -1207,7 +1207,8 @@
     "specialAction": "Special Action",
     "reallocateSelected": "Reallocate Selected",
     "deallocateSelected": "Deallocate Selected",
-    "deallocateAll": "Deallocate All"
+    "deallocateAll": "Deallocate All",
+    "showDeliveryDetails": "Show Delivery Details"
   },
 
   "tabColumns": {

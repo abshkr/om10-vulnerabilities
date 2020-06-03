@@ -7,9 +7,13 @@ import {
   QuestionCircleOutlined,
   PrinterOutlined,
   RedoOutlined,
+  ArrowLeftOutlined,
 } from '@ant-design/icons';
+
 import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Radio, Checkbox } from 'antd';
+
 import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
 
 import { mutate } from 'swr';
 import axios from 'axios';
@@ -30,6 +34,7 @@ import {
   LoadSecurityInformation,
 } from './fields';
 
+import { SETTINGS, ROUTES } from '../../../constants';
 import { LOAD_SCHEDULES } from '../../../api';
 
 import { useConfig } from '../../../hooks';
@@ -43,12 +48,13 @@ import Transactions from './transactions';
 import Summary from './summary';
 import Seals from './seals';
 import BOL from './bol';
-import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access }) => {
   const { manageMakeManualTransaction, showSeals, manageAdditionalHostData } = useConfig();
+
+  let history = useHistory();
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -214,6 +220,17 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     });
   };
 
+  const onShowDeliveryDetails = () => {
+    history.push({
+      pathname: ROUTES.DELIVERY_DETAILS,
+      state: {
+        dd_supp_code: value?.supplier_code,
+        dd_tripord_no: value?.shls_trip_no,
+        dd_ld_type: value?.shls_ld_type,
+      },
+    });
+  };
+
   const onPrint = () => {
     const printEnumerator = {
       '2': {
@@ -323,14 +340,27 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           )}
 
           {!IS_CREATING && !READ_ONLY && (
+            <>
+              <Button
+                type="danger"
+                icon={<DeleteOutlined />}
+                style={{ float: 'right', marginRight: 5 }}
+                disabled={!access?.canDelete}
+                onClick={onDelete}
+              >
+                {t('operations.delete')}
+              </Button>
+            </>
+          )}
+
+          {!IS_CREATING && (
             <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete}
-              onClick={onDelete}
+              icon={<ArrowLeftOutlined />}
+              onClick={onShowDeliveryDetails}
+              disabled={!access?.canUpdate}
+              style={{ marginRight: 5 }}
             >
-              {t('operations.delete')}
+              {t('operations.showDeliveryDetails')}
             </Button>
           )}
 
@@ -479,8 +509,6 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           <TabPane tab={t('tabColumns.seals')} disabled={IS_CREATING || !showSeals} key="5">
             <Seals value={value} />
           </TabPane>
-
-          <TabPane tab={t('tabColumns.deliveryDetails')} disabled={IS_CREATING} key="6"></TabPane>
 
           <TabPane
             tab={t('tabColumns.additionalHostData')}
