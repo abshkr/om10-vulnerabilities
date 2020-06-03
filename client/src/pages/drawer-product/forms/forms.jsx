@@ -13,17 +13,21 @@ import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 import { DRAWER_PRODUCTS } from '../../../api';
+import { useConfig } from '../../../hooks';
 
 import { DrawerCompany, LoadTolerance, ProductCode, ProductName, Group, Hazchem, Generic, DangerousGoods } from './fields';
 import { DataTable, FormModal } from '../../../components';
 import columns from './columns';
 import BaseProductForm from './base-form';
+import HotLitresForm from './hot-litres';
 
 const TabPane = Tabs.TabPane;
 
 const DrawerForm = ({ value, visible, handleFormState, auth }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const config = useConfig();
+
   const { TextArea } = Input;
   
   const [bases, setBases] = useState([]);
@@ -131,6 +135,7 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
 
   const onFinish = async () => {
     const values = await form.validateFields();
+
     if (values.bases === undefined || values.bases.length <= 0) {
       Modal.info({
         title: t('prompts.notEnoughBase'),
@@ -321,7 +326,7 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
                 data={bases}
                 height="78vh"
                 minimal
-                columns={columns(t)}
+                columns={columns(t, config)}
                 handleSelect={(value) => setSelected(value[0])}
               />
             </Form.Item>
@@ -358,6 +363,12 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
             </Button>
 
           </TabPane>
+          {config.safefillCheckByHighTemp ? 
+            <TabPane tab={t('tabColumns.companyHotLitres')} key="2">
+              <HotLitresForm value={value} form={form}></HotLitresForm>
+            </TabPane> :
+            null
+          }
         </Tabs>
       </Form>
     </Drawer>

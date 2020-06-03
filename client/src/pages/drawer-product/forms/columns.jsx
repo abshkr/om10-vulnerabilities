@@ -1,4 +1,4 @@
-const columns = (t, isCreating) => [
+const columns = (t, config) => [
   {
     headerName: t('fields.baseProductCode'),
     field: 'pitem_base_code',
@@ -53,6 +53,16 @@ const columns = (t, isCreating) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
+    // width: 130,
+  },
+  {
+    headerName: t('fields.checkHotLitre'),
+    field: 'pitem_hot_check',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+    hide: !config.manageHotProduct
     // width: 130,
   },
 ];
