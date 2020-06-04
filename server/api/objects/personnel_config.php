@@ -12,6 +12,7 @@ class PersonnelConfig extends CommonClass
     {
         if (!isset($this->per_code)) {
             $this->per_code = Utilities::getCurrPsn();
+            // write_log($this->per_code, __FILE__, __LINE__);
         }
         $query = "SELECT *
             FROM PERSONNEL_CONFIG

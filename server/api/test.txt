@@ -22,17 +22,21 @@ https://{{server_ip}}/api/session/check_password.php
 https://{{server_ip}}/api/session/change_person_setups.php	//Set up user's favariate. 
 [
     {
+        "per_code": "9999",
         "config_key": "Sample_Key",
         "config_value": "new",
-		"config_comment": "some comments here"
+        "config_comment": ""
     },
     {
+        "per_code": "9999",
         "config_key": "Sample_Key2",
         "config_value": "2345"
     },
     {
+        "per_code": "9999",
         "config_key": "Sample_Key3",
-        "config_value": "23456"
+        "config_value": "23456",
+        "config_comment": ""
     }
 ]
 https://10.1.10.66/api/session/session.php

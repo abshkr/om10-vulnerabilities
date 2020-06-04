@@ -127,6 +127,7 @@ if ($array['MSG_CODE'] === "0") {
         session_start();
     }
     
+    session_regenerate_id(true);
     $_SESSION['SESSION'] = $array['USER_DETAIL']['USER_SESSION'];
     $_SESSION['MANAGER'] = $array['USER_DETAIL']['ISMANAGER_CMPY'];
     $_SESSION['LANGUAGE'] = $array['USER_DETAIL']['USER_LANG'];
@@ -135,8 +136,7 @@ if ($array['MSG_CODE'] === "0") {
     $_SESSION['PERCODE'] = $object->user;
     $_SESSION['PERNAME'] = $array['USER_DETAIL']['USER_NAME'];
     $_SESSION['CLIENTIP'] = $array['USER_DETAIL']['USER_CLIENTIP'];
-    session_regenerate_id(true);
-
+    
     http_response_code(200);
     echo json_encode($login_result, JSON_PRETTY_PRINT);
 } else {
