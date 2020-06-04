@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StarOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
-import { Button, Dropdown, Menu, notification } from 'antd';
+import { Button, Dropdown, Menu, message, notification } from 'antd';
 import JwtDecode from 'jwt-decode';
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -14,7 +14,6 @@ import { AUTH } from '../../api';
 
 const Favourites = ({ token }) => {
   const { data, revalidate } = useSWR(AUTH.SETUP);
-
   const { t } = useTranslation();
   const history = useHistory();
 
@@ -22,28 +21,15 @@ const Favourites = ({ token }) => {
 
   const current = history?.location?.pathname;
   const disabled = ['/home', '/configuration', '/settings'].includes(current);
+  const exists = _.find(data?.records, ['config_key', current]);
 
-  useEffect(() => {
-    if (data?.records) {
-      const payload = [];
-
-      _.forEach(data?.records, (item) => {
-        payload.push(<Menu.Item key={item}>1st menu item</Menu.Item>);
-      });
-
-      setItems(payload);
-    }
-  }, [data]);
-
-  const onFinish = (payload) => {
+  const onFinish = (type, payload) => {
     axios
       .post(AUTH.UPDATE_SETUP, payload)
       .then(() => {
         revalidate();
 
-        notification.success({
-          message: t('messages.updateSuccess'),
-        });
+        message.success(type === 'add' ? t('messages.favouriteAddded') : t('messages.favouriteRemoved'));
       })
       .catch((errors) => {
         _.forEach(errors.response.data.errors, (error) => {
@@ -58,14 +44,19 @@ const Favourites = ({ token }) => {
   const onFavourite = () => {
     try {
       const decoded = JwtDecode(token);
+      const paths = generatePaths(t);
 
       const payload = [...data?.records];
 
-      const paths = generatePaths(t);
-
       const entry = _.find(paths, ['path', current]);
 
-      if (entry) {
+      if (exists) {
+        const filtered = _.reject(payload, ['config_key', current]);
+
+        onFinish('remove', filtered);
+      }
+
+      if (!exists && entry) {
         const record = {
           per_code: decoded?.per_code,
           config_key: current,
@@ -74,7 +65,7 @@ const Favourites = ({ token }) => {
 
         payload.push(record);
 
-        onFinish(payload);
+        onFinish('add', payload);
       }
     } catch (error) {
       return;
@@ -85,7 +76,23 @@ const Favourites = ({ token }) => {
     if (event?.key === '9999') {
       onFavourite();
     }
+
+    if (event?.key?.startsWith('/')) {
+      history.push(event?.key);
+    }
   };
+
+  useEffect(() => {
+    if (data?.records) {
+      const payload = [];
+
+      _.forEach(data?.records, (item) => {
+        payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
+      });
+
+      setItems(payload);
+    }
+  }, [data]);
 
   const menu = (
     <Menu onClick={onMenuEvent}>
@@ -93,12 +100,14 @@ const Favourites = ({ token }) => {
 
       <Menu.Divider />
 
-      <Menu.Item key="9999">Add To Favourites</Menu.Item>
+      <Menu.Item key="9999" disabled={disabled}>
+        {exists ? t('operations.removeFromFavourites') : t('operations.addToFavourites')}
+      </Menu.Item>
     </Menu>
   );
 
   return (
-    <Dropdown overlay={menu} trigger={['click']} disabled={disabled}>
+    <Dropdown overlay={menu} trigger={['click']}>
       <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
         <StarOutlined style={{ transform: 'scale(1.5)' }} />
       </Button>

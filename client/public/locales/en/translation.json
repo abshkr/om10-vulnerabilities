@@ -1015,9 +1015,9 @@
     "dangerousGoods": "Dangerous Goods",
     "childCmpyName": "Child Company Name",
     "childCmpyType": "Child Company Type",
-	"checkHotLitre": "Check Hot Litres",
-	"prodDensAt15": "Product @15ºC [kg/m³]",
-	"prodHotTemp": "Product Hot Temp [ºC]"
+    "checkHotLitre": "Check Hot Litres",
+    "prodDensAt15": "Product @15ºC [kg/m³]",
+    "prodHotTemp": "Product Hot Temp [ºC]"
   },
 
   "pageMenu": {
@@ -1144,7 +1144,7 @@
     "yes": "Yes",
     "no": "No",
     "addNewExpiry": "Add New Expiry",
-	"freezeCloseout": "Run Manual Closeout",
+    "freezeCloseout": "Run Manual Closeout",
     "closeCloseout": "Close First Frozen Folio",
     "unlockAll": "Unlock All Compartments",
     "randomize": "Randomize",
@@ -1225,7 +1225,9 @@
     "deallocateSelected": "Deallocate Selected",
     "deallocateAll": "Deallocate All",
     "showDeliveryDetails": "Show Delivery Details",
-    "companyRelation": "Company Relations"
+    "companyRelation": "Company Relations",
+    "removeFromFavourites": "Remove From Favourites",
+    "addToFavourites": "Add To Favourites"
   },
 
   "tabColumns": {
@@ -1305,7 +1307,7 @@
     "printerSettings": "Printer Settings",
     "transportationDoc": "Transportation Documents",
     "companyRelation": "Company Relations",
-	"companyHotLitres": "Hot Litres"
+    "companyHotLitres": "Hot Litres"
   },
 
   "messages": {
@@ -1342,7 +1344,9 @@
     "cancelSuccess": "Successfully Cancelled.",
     "closeSuccess": "Successfully Closed.",
     "archiveSuccess": "Successfully Archived.",
-	"manualOverride": "Manual Closeout Override"
+    "manualOverride": "Manual Closeout Override",
+    "favouriteAddded": "Successfully Favourited.",
+    "favouriteRemoved": "Successfully Removed."
   },
 
   "prompts": {
@@ -1369,7 +1373,7 @@
     "createNewGate": "Create New Gate",
     "freezeCloseout": "Are you sure you want to run manual closeout?",
     "closeCloseout": "Are you sure you want to close first frozen folio?",
-	"runAndOverride": "Are you sure you want to run manual closeout and make today an exception?",
+    "runAndOverride": "Are you sure you want to run manual closeout and make today an exception?",
     "notEnoughBase": "Drawer product must have at least one base product",
     "approve": "Are you sure you want to approve this open order?",
     "unapprove": "Are you sure you want to unapprove this open order?",
