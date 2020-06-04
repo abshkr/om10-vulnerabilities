@@ -11,14 +11,22 @@ const data = [
       <>
         <>
           <Divider>Features</Divider>
+
+          <p>- Companies Screen Completion</p>
+          <p>- Delivery Details Completion</p>
+          <p>- Ability To Search the Pages</p>
+          <p>- Delivery Details Completion</p>
         </>
 
         <>
           <Divider>Enhancements</Divider>
+
+          <p>- Ability To Toggle Between Classes </p>
         </>
 
         <>
           <Divider>Bug Fixes</Divider>
+          <p>- Searc</p>
           <p>- Please Refer to all the tasks marked "To Be Tested" on JIRA.</p>
         </>
       </>
