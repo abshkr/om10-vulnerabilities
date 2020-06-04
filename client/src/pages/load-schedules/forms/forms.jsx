@@ -41,6 +41,7 @@ import { useConfig } from '../../../hooks';
 
 import Products from './products';
 import LoadReport from './load-report';
+import DeliveryDetails from '../../delivery-details';
 import DriverInstructions from './driver-instructions';
 import AdditionalHostData from './additional-host-data';
 import Compartments from './compartments';
@@ -220,17 +221,6 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     });
   };
 
-  const onShowDeliveryDetails = () => {
-    history.push({
-      pathname: ROUTES.DELIVERY_DETAILS,
-      state: {
-        dd_supp_code: value?.supplier_code,
-        dd_tripord_no: value?.shls_trip_no,
-        dd_ld_type: value?.shls_ld_type,
-      },
-    });
-  };
-
   const onPrint = () => {
     const printEnumerator = {
       '2': {
@@ -351,17 +341,6 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
                 {t('operations.delete')}
               </Button>
             </>
-          )}
-
-          {!IS_CREATING && (
-            <Button
-              icon={<ArrowLeftOutlined />}
-              onClick={onShowDeliveryDetails}
-              disabled={!access?.canUpdate}
-              style={{ marginRight: 5 }}
-            >
-              {t('operations.showDeliveryDetails')}
-            </Button>
           )}
 
           {CAN_PRINT && !IS_CREATING && (
@@ -508,6 +487,16 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
           <TabPane tab={t('tabColumns.seals')} disabled={IS_CREATING || !showSeals} key="5">
             <Seals value={value} />
+          </TabPane>
+
+          <TabPane tab={t('tabColumns.deliveryDetails')} disabled={!access?.canUpdate} key="6">
+            <DeliveryDetails
+              params={{
+                dd_supp_code: value?.supplier_code,
+                dd_tripord_no: value?.shls_trip_no,
+                dd_ld_type: value?.shls_ld_type,
+              }}
+            />
           </TabPane>
 
           <TabPane

@@ -77,10 +77,10 @@ const Home = () => {
                     <th></th>
                   </tr>
                   <tr className="first">
-                    <td>Active:</td>
-                    <td style={{ textAlign: 'right' }}>{data?.personnel_active}</td>
+                    <td>Unlocked:</td>
+                    <td style={{ textAlign: 'right' }}>{data?.personnel_unlocked}</td>
                     <td style={{ textAlign: 'right' }}>{` [${
-                      Math.floor((data?.personnel_active / data?.personnel_total) * 100) || 0
+                      Math.floor((data?.personnel_unlocked / data?.personnel_total) * 100) || 0
                     }%]`}</td>
                   </tr>
 

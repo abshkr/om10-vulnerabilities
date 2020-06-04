@@ -13,15 +13,15 @@ import { useHistory } from 'react-router-dom';
 
 import { NavBarContainer } from './style';
 import { ROUTES } from '../../constants';
-import { Events } from '..';
+import { Events, Favourites } from '..';
 
 import { ReactComponent as SearchIcon } from './search_two.svg';
+
+const { Header } = Layout;
 
 const SearchIconOutlined = (props) => (
   <Icon style={{ transform: 'scale(1.8)' }} component={SearchIcon} {...props} />
 );
-
-const { Header } = Layout;
 
 const mockVal = (str, repeat = 1) => ({
   value: str.repeat(repeat),
@@ -33,6 +33,7 @@ const NavBar = () => {
   const [options, setOptions] = useState([]);
 
   const onSearch = (searchText) => {
+    console.log(searchText);
     setOptions(!searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]);
   };
 
@@ -75,11 +76,7 @@ const NavBar = () => {
         <div>
           <Events />
 
-          <Dropdown overlay={null} trigger={['click']}>
-            <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
-              <StarOutlined style={{ transform: 'scale(1.5)' }} />
-            </Button>
-          </Dropdown>
+          <Favourites />
 
           <Button
             type="primary"

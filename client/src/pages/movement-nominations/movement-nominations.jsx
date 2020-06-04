@@ -17,11 +17,13 @@ import Forms from './forms';
 const MovementNominations = () => {
   const { t } = useTranslation();
 
-  const [start, setStart] = useState(moment().subtract(5, 'years').format(SETTINGS.DATE_TIME_FORMAT));
+  const [start, setStart] = useState(moment().subtract(5, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
 
-  const { data: payload, isValidating, revalidate } = useSWR(`${MOVEMENT_NOMIATIONS.READ}`);
+  const { data: payload, isValidating, revalidate } = useSWR(
+    `${MOVEMENT_NOMIATIONS.READ}?start_date=${start}&end_date=${end}`
+  );
 
   const fields = columns(t);
   const data = payload?.records;
@@ -48,7 +50,9 @@ const MovementNominations = () => {
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
+
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+
       <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
         {t('operations.create')}
       </Button>

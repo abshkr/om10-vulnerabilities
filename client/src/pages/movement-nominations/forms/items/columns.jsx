@@ -26,7 +26,7 @@ const useColumns = (value, selected) => {
     const id = supplier?.cmpy_code;
 
     if (id) {
-      axios.get(`${MOVEMENT_NOMIATIONS.PRODUCTS}?prod_cmpy=${id}`).then(response => {
+      axios.get(`${MOVEMENT_NOMIATIONS.PRODUCTS}?prod_cmpy=${id}`).then((response) => {
         setProducts(response.data.records);
       });
     }
@@ -66,7 +66,7 @@ const useColumns = (value, selected) => {
       checkboxSelection: true,
       cellRenderer: 'NullRenderer',
       suppressSizeToFit: true,
-      pinned: 'left'
+      pinned: 'left',
     },
     {
       headerName: t('fields.line'),
@@ -76,7 +76,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 70,
       suppressSizeToFit: true,
-      pinned: 'left'
+      pinned: 'left',
     },
     {
       headerName: t('fields.itemId'),
@@ -86,7 +86,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 90,
       suppressSizeToFit: true,
-      pinned: 'left'
+      pinned: 'left',
     },
 
     {
@@ -100,8 +100,8 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable || !value,
       cellEditor: 'SelectEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(types?.records, 'movitem_type_name'))
-      }
+        values: _.uniq(_.map(types?.records, 'movitem_type_name')),
+      },
     },
     {
       headerName: t('fields.itemKey'),
@@ -110,7 +110,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 80,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable
+      editable: selected[0]?.editable,
     },
     {
       headerName: t('fields.itemStatus'),
@@ -118,7 +118,7 @@ const useColumns = (value, selected) => {
       sortable: true,
       resizable: true,
       width: 100,
-      suppressSizeToFit: true
+      suppressSizeToFit: true,
     },
     {
       headerName: t('fields.productQuantity'),
@@ -129,7 +129,7 @@ const useColumns = (value, selected) => {
       width: 100,
       suppressSizeToFit: true,
       editable: selected[0]?.editable || !value,
-      cellEditor: 'NumericEditor'
+      cellEditor: 'NumericEditor',
     },
     {
       headerName: t('fields.productUnit'),
@@ -141,8 +141,8 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable || !value,
       cellEditor: 'SelectEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(units?.records, 'description'))
-      }
+        values: _.uniq(_.map(units?.records, 'description')),
+      },
     },
     {
       headerName: t('fields.fromPlant'),
@@ -154,8 +154,8 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable && from.includes(type),
       cellEditor: 'SelectEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(plants?.records, 'cmpy_plant'))
-      }
+        values: _.uniq(_.map(plants?.records, 'cmpy_plant')),
+      },
     },
     {
       headerName: t('fields.fromSupplier'),
@@ -167,8 +167,8 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable && from.includes(type),
       cellEditor: 'SelectEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(suppliers?.records, 'cmpy_name'))
-      }
+        values: _.uniq(_.map(suppliers?.records, 'cmpy_name')),
+      },
     },
     {
       headerName: t('fields.fromProduct'),
@@ -180,8 +180,8 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable && from.includes(type),
       cellEditor: 'SelectEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(products, 'prod_name'))
-      }
+        values: _.uniq(_.map(products, 'prod_name')),
+      },
     },
     {
       headerName: t('fields.fromTank'),
@@ -189,7 +189,7 @@ const useColumns = (value, selected) => {
       sortable: true,
       resizable: true,
       width: 100,
-      suppressSizeToFit: true
+      suppressSizeToFit: true,
     },
     {
       headerName: t('fields.fromStoreLocationCompany'),
@@ -197,7 +197,7 @@ const useColumns = (value, selected) => {
       sortable: true,
       resizable: true,
       width: 100,
-      suppressSizeToFit: true
+      suppressSizeToFit: true,
     },
     {
       headerName: t('fields.fromDescription'),
@@ -205,7 +205,7 @@ const useColumns = (value, selected) => {
       sortable: true,
       resizable: true,
       width: 100,
-      suppressSizeToFit: true
+      suppressSizeToFit: true,
     },
     {
       headerName: t('fields.fromSecondDescription'),
@@ -213,7 +213,7 @@ const useColumns = (value, selected) => {
       sortable: true,
       resizable: true,
       width: 100,
-      suppressSizeToFit: true
+      suppressSizeToFit: true,
     },
     {
       headerName: t('fields.toPlant'),
@@ -225,8 +225,8 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable && to.includes(type),
       cellEditor: 'SelectEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(plants?.records, 'cmpy_plant'))
-      }
+        values: _.uniq(_.map(plants?.records, 'cmpy_plant')),
+      },
     },
     {
       headerName: t('fields.toSupplier'),
@@ -238,8 +238,8 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable && to.includes(type),
       cellEditor: 'SelectEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(suppliers?.records, 'cmpy_name'))
-      }
+        values: _.uniq(_.map(suppliers?.records, 'cmpy_name')),
+      },
     },
     {
       headerName: t('fields.toProduct'),
@@ -251,8 +251,8 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable && to.includes(type),
       cellEditor: 'SelectEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(products, 'prod_name'))
-      }
+        values: _.uniq(_.map(products, 'prod_name')),
+      },
     },
     {
       headerName: t('fields.toTank'),
@@ -260,7 +260,7 @@ const useColumns = (value, selected) => {
       sortable: true,
       resizable: true,
       width: 100,
-      suppressSizeToFit: true
+      suppressSizeToFit: true,
     },
     {
       headerName: t('fields.toStoreLocationCompany'),
@@ -268,7 +268,7 @@ const useColumns = (value, selected) => {
       sortable: true,
       resizable: true,
       width: 100,
-      suppressSizeToFit: true
+      suppressSizeToFit: true,
     },
     {
       headerName: t('fields.toDescription'),
@@ -276,7 +276,7 @@ const useColumns = (value, selected) => {
       sortable: true,
       resizable: true,
       width: 100,
-      suppressSizeToFit: true
+      suppressSizeToFit: true,
     },
     {
       headerName: t('fields.toSecondDescription'),
@@ -284,7 +284,7 @@ const useColumns = (value, selected) => {
       sortable: true,
       resizable: true,
       width: 100,
-      suppressSizeToFit: true
+      suppressSizeToFit: true,
     },
     {
       headerName: t('fields.comments'),
@@ -293,7 +293,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable || !value
+      editable: selected[0]?.editable || !value,
     },
     {
       headerName: t('fields.quantityScheduled'),
@@ -301,7 +301,7 @@ const useColumns = (value, selected) => {
       sortable: true,
       resizable: true,
       width: 100,
-      suppressSizeToFit: true
+      suppressSizeToFit: true,
     },
     {
       headerName: t('fields.quantityMoved'),
@@ -311,7 +311,7 @@ const useColumns = (value, selected) => {
       width: 100,
       suppressSizeToFit: true,
       editable: selected[0]?.editable || !value,
-      cellEditor: 'NumericEditor'
+      cellEditor: 'NumericEditor',
     },
     {
       headerName: t('fields.quantityDelivered'),
@@ -321,8 +321,8 @@ const useColumns = (value, selected) => {
       width: 100,
       suppressSizeToFit: true,
       editable: selected[0]?.editable || !value,
-      cellEditor: 'NumericEditor'
-    }
+      cellEditor: 'NumericEditor',
+    },
   ];
 };
 

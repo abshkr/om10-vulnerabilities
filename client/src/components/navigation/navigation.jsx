@@ -4,17 +4,15 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu, Badge, Tooltip } from 'antd';
-import useSWR from 'swr';
 
 import { LogoContainer, MenuContainer } from './style';
 import { ROUTES, SETTINGS } from '../../constants';
-import { AUTH } from '../../api';
-import { Icons, Loading } from '..';
+
+import { Icons } from '..';
 
 const { SubMenu } = Menu;
 
 const Navigation = () => {
-  const { isValidating: isLoading } = useSWR(AUTH.PERMISSIONS, { refreshInterval: 0 });
   const { t } = useTranslation();
   const history = useHistory();
 
@@ -25,10 +23,6 @@ const Navigation = () => {
 
     history.push(event.key);
   };
-
-  if (isLoading) {
-    return <Loading />;
-  }
 
   return (
     <MenuContainer>

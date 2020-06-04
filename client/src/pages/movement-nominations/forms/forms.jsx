@@ -5,7 +5,7 @@ import {
   PlusOutlined,
   DeleteOutlined,
   QuestionCircleOutlined,
-  CloseOutlined
+  CloseOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
@@ -26,7 +26,7 @@ import {
   TransportSystem,
   Comments,
   EffectiveFrom,
-  ExpiredAfter
+  ExpiredAfter,
 } from './fields';
 
 import columns from './columns';
@@ -47,10 +47,10 @@ const FormModal = ({ value }) => {
 
   const IS_CREATING = !value;
 
-  const onItemValidation = items => {
+  const onItemValidation = (items) => {
     const errors = [];
 
-    _.forEach(items, item => {
+    _.forEach(items, (item) => {
       const keys = Object.keys(item);
       const values = Object.values(item);
 
@@ -58,18 +58,18 @@ const FormModal = ({ value }) => {
         if (value === 'Please Select') {
           errors.push({
             field: _.find(fields, ['field', keys[index]])?.headerName,
-            message: `Please Fill This Field on Line Item ${values[0]}`
+            message: `Please Fill This Field on Line Item ${values[0]}`,
           });
         }
       });
     });
 
     if (errors.length > 0) {
-      _.forEach(errors, error => {
+      _.forEach(errors, (error) => {
         notification.error({
           message: error.field,
           description: error.message,
-          key: error.field
+          key: error.field,
         });
       });
     }
@@ -77,7 +77,7 @@ const FormModal = ({ value }) => {
     return errors;
   };
 
-  const onFinish = values => {
+  const onFinish = (values) => {
     const items = [];
 
     tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
@@ -103,23 +103,23 @@ const FormModal = ({ value }) => {
           await axios
             .post(IS_CREATING ? MOVEMENT_NOMIATIONS.CREATE : MOVEMENT_NOMIATIONS.UPDATE, values)
             .then(
-              axios.spread(response => {
+              axios.spread((response) => {
                 Modal.destroyAll();
 
                 mutate(MOVEMENT_NOMIATIONS.READ);
                 notification.success({
                   message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                  description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
+                  description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
                 });
               })
             )
-            .catch(error => {
+            .catch((error) => {
               notification.error({
                 message: error.message,
-                description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
+                description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
               });
             });
-        }
+        },
       });
     }
   };
@@ -135,22 +135,22 @@ const FormModal = ({ value }) => {
         await axios
           .post(MOVEMENT_NOMIATIONS.DELETE, value)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               mutate(MOVEMENT_NOMIATIONS.READ);
               Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`
+                description: `${t('descriptions.deleteSuccess')}`,
               });
             })
           )
-          .catch(error => {
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: t('descriptions.deleteFailed')
+              description: t('descriptions.deleteFailed'),
             });
           });
-      }
+      },
     });
   };
 
@@ -160,22 +160,31 @@ const FormModal = ({ value }) => {
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
             <NominationKey form={form} value={value} />
+
             <NominationNumber form={form} value={value} />
+
             <NominationSource form={form} value={value} />
+
             <Supplier form={form} value={value} />
+
             <Carrier form={form} value={value} />
+
             <Vehicle form={form} value={value} />
 
             <Divider />
 
             <EffectiveFrom form={form} value={value} />
+
             <ExpiredAfter form={form} value={value} />
 
             <Divider />
 
             <TPP form={form} value={value} />
+
             <TransportMode form={form} value={value} />
+
             <TransportSystem form={form} value={value} />
+
             <Comments form={form} value={value} />
           </TabPane>
           <TabPane className="ant-tab-window" tab={t('tabColumns.items')} forceRender={true} key="2">

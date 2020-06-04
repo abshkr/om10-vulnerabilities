@@ -12,6 +12,20 @@ const LoginContainer = styled.div`
   }
 `;
 
+const ButtonContainer = styled.span`
+  margin-right: 10px;
+
+  .key-icon {
+    transition: all 0.3s;
+  }
+
+  &:hover {
+    .key-icon {
+      filter: invert(100%) sepia(0%) saturate(2%) hue-rotate(194deg) brightness(111%) contrast(101%);
+    }
+  }
+`;
+
 const FormContainer = styled.div`
   width: 33.3vw;
   border: 1px solid #e2eefb;
@@ -143,4 +157,5 @@ export {
   LoginTitle,
   SliderContainer,
   Version,
+  ButtonContainer,
 };
