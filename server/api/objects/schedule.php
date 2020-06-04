@@ -321,8 +321,8 @@ class Schedule extends CommonClass
             "&carr=" . rawurlencode(strip_tags($this->carrier_code)) . 
             "&tanker=" . rawurlencode(strip_tags($this->tnkr_code)) . 
             "&date=" . rawurlencode(strip_tags($this->shls_caldate)) . 
-            "&shift=" . rawurlencode(strip_tags($this->shls_shift)) . 
-            "&priority=" . rawurlencode(strip_tags($this->shls_priority)) . 
+            "&shift=" . (isset($this->shls_shift) ? rawurlencode(strip_tags($this->shls_shift)) : "") . 
+            "&priority=" . (isset($this->shls_priority) ? rawurlencode(strip_tags($this->shls_priority)) : "")  . 
             "&tripExpirDteTime=" . rawurlencode(strip_tags($this->shls_exp2)) . 
             "&supp=" . rawurlencode(strip_tags($this->supplier_code)) . 
             "&op=" . strval($op) . "&cmd=" . $cmd;

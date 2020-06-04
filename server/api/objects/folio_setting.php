@@ -52,6 +52,60 @@ class FolioSetting extends CommonClass
         return true;
     }
 
+    public function run_n_override()
+    {
+        $this->commit_mode = OCI_NO_AUTO_COMMIT;
+
+        $query = "SELECT NVL(MAX(SEQ), 0) + 1 NEW_SEQ FROM FOLIOCALENDAR";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $this->seq = $row['NEW_SEQ'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $query = "INSERT INTO FOLIOCALENDAR (
+                SEQ,
+                WINDOW_NAME,
+                DESCRIPTION,
+                REPEAT_INTERVAL,
+                STATUS,
+                USER_CODE,
+                LAST_CHG_TIME
+            )
+            VALUES (
+                :seq,
+                'ONCE_WINDOW',
+                :description,
+                :repeat_interval,
+                1, 
+                :cur_user,
+                SYSDATE
+            )";
+        $stmt = oci_parse($this->conn, $query);
+        $cur_user = Utilities::getCurrPsn();
+        oci_bind_by_name($stmt, ':seq', $this->seq);
+        oci_bind_by_name($stmt, ':description', $this->description);
+        oci_bind_by_name($stmt, ':repeat_interval', $this->repeat_interval);
+        oci_bind_by_name($stmt, ':cur_user', $cur_user);
+        
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__DATABASE_EXCEPTION__", "DB error:" . $e['message']));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+
+            oci_rollback($this->conn);
+
+            return;
+        }
+
+        return $this->freeze_closeout();
+    }
+
     public function freeze_closeout()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),

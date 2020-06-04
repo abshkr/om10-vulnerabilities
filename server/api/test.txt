@@ -23,7 +23,8 @@ https://{{server_ip}}/api/session/change_person_setups.php	//Set up user's favar
 [
     {
         "config_key": "Sample_Key",
-        "config_value": "new"
+        "config_value": "new",
+		"config_comment": "some comments here"
     },
     {
         "config_key": "Sample_Key2",

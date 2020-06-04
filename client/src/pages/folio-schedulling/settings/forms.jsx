@@ -21,6 +21,8 @@ const Settings = ({ value, access }) => {
   
   let newSettings = [];
   // const [newSettings, setNewSettings] = useState([]);
+  const [runAndOverrideFlag, setRunAndOverRide] = useState(false);
+  const [freezeCloseoutFlag, setFreezeCloseout] = useState(false);
   
   const onComplete = () => {
     newSettings = [];
@@ -39,10 +41,46 @@ const Settings = ({ value, access }) => {
           .post(FOLIO_SCHEDULING.UPDATE_SETTINGS, newSettings)
           .then(() => {
             onComplete();
+            setRunAndOverRide(false);
 
             notification.success({
               message: t('messages.updateSuccess'),
               description: t('messages.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+
+  const runAndOverride = async () => {
+    const values = {}
+    const today = moment();
+    values.repeat_interval = today.format('D_M_YYYY');
+    values.description = t("messages.manualOverride");
+    Modal.confirm({
+      title: t('prompts.runAndOverride'),
+      okText: t('operations.yes'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(FOLIO_SCHEDULING.RUN_N_OVERRIDE, values)
+          .then(() => {
+            onComplete();
+
+            notification.success({
+              message: t('messages.submitSuccess'),
+              description: t('messages.submitSuccess'),
             });
           })
           .catch((errors) => {
@@ -146,6 +184,10 @@ const Settings = ({ value, access }) => {
       next_closeout_time: nextDailyDate,
     });
 
+    setRunAndOverRide(runnable(data));
+    const today = moment();
+    setFreezeCloseout(checkDate(today));
+
     const nextWeeklyDate = moment((_.filter(data, function(item) {
       return item.param_key === 'NEXT_WEEKLY_REPORT_DATE'}))[0].param_value, 'YYYY-MM-DD HH:mm:ss')
     setFieldsValue({
@@ -238,6 +280,88 @@ const Settings = ({ value, access }) => {
     }
   };
 
+  //Returns true: closeout runs this day; false: closeout does not run this day
+  const checkDate = (v) => {
+    // console.log(value)
+    // console.log(v)
+    //Override overrides exceptions
+    const overrides = _.filter(value, function(item) {
+      return item.window_name === 'OVERRIDE'})
+    for (let i = 0; i < overrides.length; i++) {
+      if (v.format("D_M_YYYY") === overrides[i].repeat_interval) {
+        return true;
+      }
+    }
+
+    const exceptions = _.filter(value, function(item) {
+      return item.window_name != 'OVERRIDE'})
+    for (let i = 0; i < exceptions.length; i++) {
+      if (exceptions[i].window_name === "MONTH_WINDOW") {
+        if (v.format("D") === exceptions[i].repeat_interval) {
+          return false;
+        }
+      } 
+
+      if (exceptions[i].window_name === "WEEK_WINDOW") {
+        if (v.format("dddd") === exceptions[i].repeat_interval) {
+          return false;
+        }
+      } 
+
+      if (exceptions[i].window_name === "DATE_YEAR_WINDOW") {
+        if (v.format("D_M") === exceptions[i].repeat_interval) {
+          return false;
+        }
+      }
+
+      if (exceptions[i].window_name === "YEAR_WINDOW") {
+        let interval = exceptions[i].repeat_interval.split("_");
+        if (v.format('dddd') !== interval[1]) {
+          continue;
+        } else if (v.format('M') != interval[2]) {
+          continue;
+        }
+        
+        for (let j = 1; j <= 5; j ++) {
+          const cloneMoment = v.clone();
+          if (cloneMoment.subtract(7 * j, 'days').format('M') != v.format('M') 
+            && interval[0] === j) {
+              return false;
+          }
+        }
+      }
+
+      if (exceptions[i].window_name === "ONCE_WINDOW") {
+        if (v.format("D_M_YYYY") === exceptions[i].repeat_interval) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+ 
+  //Is todady ready for "Run and Override"
+  const runnable = (data) => {
+    console.log("runnable start")
+
+    //1# today is not an exception
+    const today = moment();
+    if (!checkDate(today)) {
+      console.log("checkDate false")
+      return false;
+    }
+
+    const nextDailyDate = moment((_.filter(data, function(item) {
+      return item.param_key === 'NEXT_DAILY_REPORT_DATE'}))[0].param_value, 'YYYY-MM-DD HH:mm:ss')
+    if (today.format("HH:mm:ss") > nextDailyDate.format("HH:mm:ss")) {
+      console.log("already run today")
+      return false;
+    }
+
+    return true;
+  }
+
   useEffect(() => {
     setFields(payload?.records)
   })
@@ -291,8 +415,9 @@ const Settings = ({ value, access }) => {
         <Col span={12} style={{textAlign: 'center',}} >
           <Button 
           type="primary" 
-          disabled 
+          disabled={!runAndOverrideFlag}
           icon={<CodeOutlined />} 
+          onClick={runAndOverride}
         >
             {t("operations.runAndOverride")}
           </Button>
@@ -387,19 +512,21 @@ const Settings = ({ value, access }) => {
           <Button type="primary" 
             icon={<SafetyCertificateOutlined />} 
             style={{ float: 'right', marginRight: 5 }}
-            onClick={freezeCloseout}
-            disabled={!access?.canUpdate}
-          >
-            {t("operations.freezeCloseout")}
-          </Button>
-          <Button type="primary" 
-            icon={<SafetyCertificateOutlined />} 
-            style={{ float: 'right', marginRight: 5 }}
             onClick={closeCloseout}
             disabled={!access?.canUpdate}
           >
             {t("operations.closeCloseout")}
           </Button>
+
+          <Button type="primary" 
+            icon={<SafetyCertificateOutlined />} 
+            style={{ float: 'right', marginRight: 5 }}
+            onClick={freezeCloseout}
+            disabled={!access?.canUpdate || !freezeCloseoutFlag}
+          >
+            {t("operations.freezeCloseout")}
+          </Button>
+          
         </Col>
       </Row>
     </Form>
