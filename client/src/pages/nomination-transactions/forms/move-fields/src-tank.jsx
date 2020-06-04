@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import { NOMINATION_TRANSACTIONS } from '../../../../api';
 
-const SourceTank = ({ form, value, onChange, pageState }) => {
+const SourceTank = ({ form, value, onChange, arm, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -50,7 +50,18 @@ const SourceTank = ({ form, value, onChange, pageState }) => {
       //onChange(value.mvitm_tank_from);
       onChange(getTankItem(value.mvitm_tank_from, options?.records));
     }
-  }, [value, setFieldsValue, onChange]);
+  }, [value, options, setFieldsValue, onChange]);
+
+  useEffect(() => {
+    if (arm && arm.length>0) {
+      setFieldsValue({
+        mvitm_tank_from: arm?.[0]?.stream_tankcode,
+      });
+
+      //onChange(value.mvitm_tank_from);
+      onChange(getTankItem(arm?.[0]?.stream_tankcode, options?.records));
+    }
+  }, [arm, setFieldsValue, onChange]);
 
   return (
     <Form.Item
@@ -60,9 +71,10 @@ const SourceTank = ({ form, value, onChange, pageState }) => {
     >
       <Select
         loading={isValidating}
+        allowClear
         showSearch
         onChange={onTankChange}
-        disabled={(pageState==='receipt')? true : false}
+        disabled={(pageState==='receipt')? true : (arm?.length>0? true : false)}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectFromTank') : null}
         filterOption={(value, option) =>

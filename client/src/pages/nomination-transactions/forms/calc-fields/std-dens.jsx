@@ -1,9 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 import axios from 'axios';
 
 const StdDensity = ({ form, value, tank, pageState }) => {
+  const [minDens, setMinDens] = useState(0);
+  const [maxDens, setMaxDens] = useState(2000);
+
   console.log("in StdDensity", tank);
   const { t } = useTranslation();
 
@@ -32,12 +35,21 @@ const StdDensity = ({ form, value, tank, pageState }) => {
   }, [value, setFieldsValue]);
 
   useEffect(() => {
-    if (tank) {
+    if (tank && tank.length>0) {
       setFieldsValue({
         mlitm_dens_cor: tank?.[0]?.tank_density,
       });
+      setMinDens(tank?.[0]?.bclass_dens_lo);
+      setMaxDens(tank?.[0]?.bclass_dens_hi);
     }
-  }, [tank, setFieldsValue]);
+    else {
+      setFieldsValue({
+        mlitm_dens_cor: null,
+      });
+      setMinDens(0);
+      setMaxDens(2000);
+    }
+  }, [tank, setFieldsValue, setMinDens, setMaxDens]);
 
   return (
     <Form.Item 
@@ -47,7 +59,11 @@ const StdDensity = ({ form, value, tank, pageState }) => {
     >
       <InputNumber 
         style={{ width: '100%' }} 
+        min={minDens}
+        max={maxDens}
+        //step={0.01}
         disabled={pageState==='transfer'? false : false}
+        placeholder={String(minDens)+" ~ "+String(maxDens)}
       />
     </Form.Item>
   );

@@ -50,7 +50,7 @@ const DestinationTank = ({ form, value, onChange, pageState }) => {
       //onChange(value.mvitm_tank_to);
       onChange(getTankItem(value.mvitm_tank_to, options?.records));
     }
-  }, [value, setFieldsValue, onChange]);
+  }, [value, options, setFieldsValue, onChange]);
 
   return (
     <Form.Item
@@ -60,6 +60,7 @@ const DestinationTank = ({ form, value, onChange, pageState }) => {
     >
       <Select
         loading={isValidating}
+        allowClear
         showSearch
         onChange={onTankChange}
         disabled={(pageState==='disposal')? true : false}

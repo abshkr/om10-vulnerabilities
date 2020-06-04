@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
+import _ from 'lodash';
 
 import { NOMINATION_TRANSACTIONS } from '../../../../api';
 
@@ -27,8 +28,17 @@ const SourceArm = ({ form, value, onChange, pageState }) => {
     return Promise.resolve();
   };
 
+  const getArmItem = (code, list) => {
+    // find the item having a particular stream_armcode
+    let arm_item = _.filter(list, (item) => {
+      return item.stream_armcode === code
+    });
+
+    return arm_item;
+  };
+
   const onArmChange = (value) => {
-    onChange(value);
+    onChange(getArmItem(value, options?.records));
   };
 
   useEffect(() => {
@@ -37,9 +47,10 @@ const SourceArm = ({ form, value, onChange, pageState }) => {
         mvitm_arm: value.mvitm_arm,
       });
 
-      onChange(value.mvitm_arm);
+      //onChange(value.mvitm_arm);
+      onChange(getArmItem(value.mvitm_arm, options?.records));
     }
-  }, [value, setFieldsValue, onChange]);
+  }, [value, options, setFieldsValue, onChange]);
 
   return (
     <Form.Item
@@ -49,6 +60,7 @@ const SourceArm = ({ form, value, onChange, pageState }) => {
     >
       <Select
         loading={isValidating}
+        allowClear
         showSearch
         onChange={onArmChange}
         disabled={(pageState==='disposal')? false : true}

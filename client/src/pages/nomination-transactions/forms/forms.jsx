@@ -92,6 +92,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   const [tanker, setTanker] = useState(value?.mvitm_tanker);
   const [tankFrom, setTankFrom] = useState([]);//value?.mvitm_tank_from);
   const [tankTo, setTankTo] = useState([]);//value?.mvitm_tank_to);
+  const [tank, setTank] = useState([]);//value?.mvitm_tank_to);
   const [arm, setArm] = useState(value?.mvitm_arm);
   const [calcSource, setCalcSource] = useState(null);
   const [altQty, setAltQty] = useState(null);
@@ -456,7 +457,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
                 
                 <Row gutter={[8, 1]}>
                   <Col span={24}>
-                    <SourceTank form={form} value={value} onChange={setTankFrom} pageState={pageState} />
+                    <SourceTank form={form} value={value} onChange={setTank} arm={arm} pageState={pageState} />
                   </Col>
                 </Row>
                 </Card>
@@ -483,7 +484,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
                 
                 <Row gutter={[8, 1]}>
                   <Col span={24}>
-                    <DestinationTank form={form} value={value} onChange={setTankTo} pageState={pageState} />
+                    <DestinationTank form={form} value={value} onChange={setTank} pageState={pageState} />
                   </Col>
                 </Row>
                 </Card>
@@ -557,7 +558,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
               </Col>
               
               <Col span={12}>
-                <StdDensity form={form} value={value} tank={pageState==='receipt'? tankTo:tankFrom} pageState={pageState} />
+                <StdDensity form={form} value={value} tank={tank} pageState={pageState} />
               </Col>
             </Row>
             </Card>
