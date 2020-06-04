@@ -1,0 +1,85 @@
+import React, { useState } from 'react';
+import { PlusOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Button, Divider, Form, Tabs, Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
+
+import { Page } from '../../components';
+import auth from '../../auth';
+
+//import DrawerProductTransfer from './drawer-product-transfer';
+//import ProductQuantities from './product-quantities';
+//import TransferDetails from './transfer-details';
+//import MeterTotals from './meter-totals';
+import Forms from './forms';
+
+const { TabPane } = Tabs;
+const { confirm } = Modal;
+
+const NominationTransactions = ({ access, params }) => {
+  /* let params2 = {
+    mvitm_move_id: '5089', 
+    mvitm_key: '99887766', 
+    mvitm_terminal: 'CNS',
+    mvitm_item_id: '508903', 
+    mvitm_item_key: '3',
+    mvitm_status: 'NEW', 
+    mvitm_type: 'Transfer',
+    mvitm_tas_ref: null, 
+    mvitm_dtim_effect: '2020-06-01 00:00:00',
+    mvitm_carrier: '76401', 
+    mvitm_tanker: 'Generic Nom Vol',
+    mvitm_dtim_expiry: '2020-07-01 00:00:00', 
+    mvitm_plant_from: 'T048',
+    mvitm_prodcmpy_from: '7640104',
+    mvitm_prodcode_from: '400003057',
+    mvitm_prodname_from: '400003057 - GTL', 
+    mvitm_arm: null,
+    mvitm_tank_from: null, 
+    mvitm_plant_to: '22',
+    mvitm_prodcmpy_to: '7640104',
+    mvitm_prodcode_to: '400000257',
+    mvitm_prodname_to: '400000257 - MFO 380',
+    mvitm_tank_to: 'PL0257', 
+    mvitm_prod_qty: '21212266',
+    mvitm_qty_schd: '0',
+    mvitm_prod_unit: 'l(amb)',
+    mvitm_avail_qty: 1234,
+  }; */
+  const [pageState, setPageState] = useState(_.toLower(params?.mvitm_type));
+  const [visible, setVisible] = useState(true);
+
+  const { t } = useTranslation();
+
+  const [form] = Form.useForm();
+
+  const [type, setType] = useState(undefined);
+
+  const [trips, setTrips] = useState(null);
+  const [tankers, setTankers] = useState(null);
+  const [orders, setOrders] = useState(null);
+
+  const [customers, setCustomers] = useState(null);
+  const [selecteSupplier, setSelectedSupplier] = useState(null);
+
+  console.log("access", access);
+  console.log("params in MOT4NOM", params);
+
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+  }
+
+  return (
+    <>
+      <Forms
+        value={params}
+        visible={visible}
+        handleFormState={handleFormState}
+        access={access}
+        pageState={pageState}
+      />
+    </>
+  );
+};
+
+export default NominationTransactions;

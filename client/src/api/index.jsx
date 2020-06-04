@@ -59,6 +59,7 @@ import * as DELV_LOCATIONS from './delv-locations';
 import * as CUSTOMERS from './customers';
 import * as DRAWER_PRODUCTS from './drawer-products';
 import * as DELIVERY_DETAILS from './delivery-details';
+import * as NOMINATION_TRANSACTIONS from './nomination-transactions';
 
 export {
   AUTH,
@@ -121,5 +122,6 @@ export {
   DELV_LOCATIONS,
   CUSTOMERS,
   DRAWER_PRODUCTS,
-  DELIVERY_DETAILS
+  DELIVERY_DETAILS,
+  NOMINATION_TRANSACTIONS
 };
