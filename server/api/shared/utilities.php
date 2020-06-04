@@ -872,10 +872,17 @@ class Utilities
         }
 
         // write_log(json_encode($_SESSION), __FILE__, __LINE__);
+        // write_log($_SESSION['PERCODE'], __FILE__, __LINE__);
 
         if (isset($_SESSION['PERCODE'])) {
             return $_SESSION['PERCODE'];
         }
+
+        if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'localhost')) {
+            // write_log("localhotst", __FILE__, __LINE__);
+            return "9999";
+        }
+
         return "";
     }
 

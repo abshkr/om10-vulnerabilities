@@ -12,6 +12,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    width: 350,
   },
   {
     headerName: t('fields.plantCode'),
