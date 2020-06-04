@@ -170,7 +170,8 @@ const Overview = () => {
 
       for (let index = 0; index < entry?.throughput.length; index++) {
         const base = entry?.throughput[index];
-        payload[base.base_name] = _.toNumber(base.qty_cmb);
+
+        payload[base.dmy] = _.toNumber(base.qty_cor);
       }
 
       const options = {
