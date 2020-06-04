@@ -16,16 +16,16 @@ const Dashboard = () => {
   return (
     <Page page={t('pageMenu.dashboard')} minimal noHeader>
       <DashboardContainer>
-        <Tabs type="card" defaultActiveKey="0">
+        <Tabs type="card" defaultActiveKey="0" forceRender>
           <Tabs.TabPane tab="Home" key="0">
             <Home />
           </Tabs.TabPane>
 
-          <Tabs.TabPane tab="Overview" key="1">
+          <Tabs.TabPane tab="Overview" key="1" forceRender>
             <Overview />
           </Tabs.TabPane>
 
-          <Tabs.TabPane tab="Release Notes" key="3">
+          <Tabs.TabPane tab="Release Notes" key="3" forceRender>
             <ReleaseNotes />
           </Tabs.TabPane>
         </Tabs>

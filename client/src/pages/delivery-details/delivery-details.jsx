@@ -9,15 +9,10 @@ import { Page, DataTable, Download } from '../../components';
 import { DELIVERY_DETAILS } from '../../api';
 import { useAuth } from '../../hooks';
 import columns from './columns';
-import auth from '../../auth';
-
-import { useLocation } from 'react-router-dom';
 
 import Forms from './forms';
 
 const DeliveryDetails = ({ params }) => {
-  let location = useLocation();
-
   const access = useAuth('M_DELIVERYLOCATIONS');
 
   const [visible, setVisible] = useState(false);
@@ -26,10 +21,9 @@ const DeliveryDetails = ({ params }) => {
 
   const { t } = useTranslation();
 
-  console.log(location);
-  const supplier = location?.state ? location?.state.dd_supp_code : params?.dd_supp_code;
-  const trip = location?.state ? location?.state.dd_tripord_no : params?.dd_tripord_no;
-  const type = location?.state ? location?.state.dd_ld_type : params?.dd_ld_type;
+  const supplier = params?.dd_supp_code;
+  const trip = params?.dd_tripord_no;
+  const type = params?.dd_ld_type;
 
   const { data: payload, isValidating, revalidate } = useSWR(
     `${DELIVERY_DETAILS.READ}?dd_supp_code=${supplier}&dd_tripord_no=${trip}&dd_ld_type=${type}`
@@ -103,4 +97,4 @@ const DeliveryDetails = ({ params }) => {
   );
 };
 
-export default auth(DeliveryDetails);
+export default DeliveryDetails;

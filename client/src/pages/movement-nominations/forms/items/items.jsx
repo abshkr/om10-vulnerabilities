@@ -20,9 +20,111 @@ const Items = ({ setTableAPIContext, value }) => {
   const [tableAPI, setTableAPI] = useState(null);
   const [size, setSize] = useState([]);
 
+  const [buttonState, setButtonState] = useState({
+    makeSchedule: false,
+    viewSchedule: false,
+    makeTransaction: false,
+    viewTransaction: false,
+    editLineItem: false,
+  });
+
   const disabled = selected.length === 0;
   const canModifyFurther = selected[0]?.mvitm_status_name === 'NEW' || disabled;
   const fields = columns(value, selected);
+
+  const handleButtonState = (state) => {
+    switch (state) {
+      case 'NEW':
+        return {
+          makeSchedule: true,
+          viewSchedule: false,
+          makeTransaction: true,
+          viewTransaction: false,
+          editLineItem: false,
+        };
+
+      case 'PARTIALLY SCHEDULED':
+        return {
+          makeSchedule: true,
+          viewSchedule: true,
+          makeTransaction: true,
+          viewTransaction: false,
+          editLineItem: true,
+        };
+
+      case 'FULLY SCHEDULED':
+        return {
+          makeSchedule: false,
+          viewSchedule: true,
+          makeTransaction: true,
+          viewTransaction: false,
+          editLineItem: true,
+        };
+
+      case 'FULLY MOVED':
+        return {
+          makeSchedule: false,
+          viewSchedule: true,
+          makeTransaction: false,
+          viewTransaction: true,
+          editLineItem: true,
+        };
+
+      case 'OUTSTANDING':
+        return {
+          makeSchedule: true,
+          viewSchedule: true,
+          makeTransaction: true,
+          viewTransaction: true,
+          editLineItem: true,
+        };
+
+      case 'FULLY DELIVERED':
+        return {
+          makeSchedule: false,
+          viewSchedule: true,
+          makeTransaction: false,
+          viewTransaction: true,
+          editLineItem: true,
+        };
+
+      case 'EXPIRED':
+        return {
+          makeSchedule: false,
+          viewSchedule: true,
+          makeTransaction: false,
+          viewTransaction: true,
+          editLineItem: true,
+        };
+
+      case 'PARTIALLY MOVED':
+        return {
+          makeSchedule: true,
+          viewSchedule: true,
+          makeTransaction: true,
+          viewTransaction: true,
+          editLineItem: true,
+        };
+
+      case 'PARTIALLY DELIVERED':
+        return {
+          makeSchedule: true,
+          viewSchedule: true,
+          makeTransaction: true,
+          viewTransaction: true,
+          editLineItem: true,
+        };
+
+      default:
+        return {
+          makeSchedule: false,
+          viewSchedule: false,
+          makeTransaction: false,
+          viewTransaction: false,
+          editLineItem: false,
+        };
+    }
+  };
 
   const handleItemAdd = () => {
     const length = size + 1;
@@ -131,6 +233,15 @@ const Items = ({ setTableAPIContext, value }) => {
       setTableAPIContext(tableAPI);
     }
   }, [tableAPI, setTableAPIContext]);
+
+  useEffect(() => {
+    if (value) {
+      const buttonStates = handleButtonState(value?.mv_status_name);
+
+      setButtonState(buttonStates);
+    }
+  }, [value]);
+
   return (
     <>
       <Button type="primary" icon={<PlusOutlined />} onClick={handleItemAdd} style={{ marginRight: 5 }}>
@@ -151,7 +262,7 @@ const Items = ({ setTableAPIContext, value }) => {
         type="primary"
         icon={<CarryOutOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={disabled || !canModifyFurther}
+        disabled={!buttonState?.makeTransaction}
       >
         {t('operations.makeTransaction')}
       </Button>
@@ -160,13 +271,7 @@ const Items = ({ setTableAPIContext, value }) => {
         type="primary"
         icon={<EyeOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={canModifyFurther}
-        onClick={() =>
-          window.open(
-            `${ROUTES.TRANSACTION_LIST}?mv_id=${value?.mv_id}&line_id=${selected[0]?.mvitm_line_id}`,
-            '_blank'
-          )
-        }
+        disabled={!buttonState?.viewTransaction}
       >
         {t('operations.viewTransaction')}
       </Button>
@@ -175,8 +280,7 @@ const Items = ({ setTableAPIContext, value }) => {
         type="primary"
         icon={<EyeOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={canModifyFurther}
-        onClick={() => window.open(`${ROUTES.LOAD_SCHEDULES}?mv_key=${value?.mv_key}`, '_blank')}
+        disabled={!buttonState?.viewSchedule}
       >
         {t('operations.viewSchedule')}
       </Button>
