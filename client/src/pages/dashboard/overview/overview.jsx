@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Col, Row } from 'antd';
+import { Card, Col, Row, Select } from 'antd';
 
 import ReactApexChart from 'react-apexcharts';
 import useSWR from 'swr';
@@ -18,6 +18,8 @@ const Overview = () => {
 
   const [storageSeries, setStorageSeries] = useState([]);
   const [storageOptions, setStorageOptions] = useState({});
+  const [storageClass, setStorageClass] = useState(null);
+  const [storageTypes, setStorageTypes] = useState([]);
 
   const [folioSeries, setFolioSeries] = useState([]);
   const [folioOptions, setFolioOptions] = useState({});
@@ -70,11 +72,25 @@ const Overview = () => {
     const entry = payload?.records && payload?.records[0];
 
     if (entry?.storage) {
+      const baseClasses = _.uniq(_.map(entry?.storage, 'bclass_desc'));
+
+      setStorageTypes(baseClasses);
+      setStorageClass(baseClasses[0]);
+    }
+  }, [payload]);
+
+  useEffect(() => {
+    const entry = payload?.records && payload?.records[0];
+
+    if (entry?.storage && storageClass) {
       const payload = {};
 
       for (let index = 0; index < entry?.storage.length; index++) {
         const base = entry?.storage[index];
-        payload[base.base_name] = _.toNumber(base.qty_cor);
+
+        if (base.bclass_desc === storageClass) {
+          payload[base.base_name] = _.toNumber(base.qty_cor);
+        }
       }
 
       const options = {
@@ -104,7 +120,7 @@ const Overview = () => {
       setStorageOptions(options);
       setStorageSeries(series);
     }
-  }, [payload]);
+  }, [payload, storageClass]);
 
   useEffect(() => {
     const entry = payload?.records && payload?.records[0];
@@ -196,7 +212,26 @@ const Overview = () => {
         </Col>
 
         <Col span={12}>
-          <Card title="Base Product Storage (m3)" hoverable size="small" loading={!payload}>
+          <Card
+            title="Base Product Storage (m3)"
+            hoverable
+            size="small"
+            loading={!payload}
+            extra={
+              <Select
+                value={storageClass}
+                style={{ width: 250 }}
+                loading={!payload}
+                onChange={(value) => setStorageClass(value)}
+              >
+                {storageTypes.map((item) => (
+                  <Select.Option value={item} key={item}>
+                    {item}
+                  </Select.Option>
+                ))}
+              </Select>
+            }
+          >
             <ReactApexChart options={storageOptions} series={storageSeries} type="bar" height={300} />
           </Card>
         </Col>

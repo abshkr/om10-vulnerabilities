@@ -7,6 +7,7 @@ import getDateTimeFormat from './get-date-time-format';
 import fetcher from './fetcher';
 import hexToRGB from './hex-to-rbg';
 import validatorStatus from './validator-status';
+import generatePaths from './generate-paths';
 
 import * as VCFManager from './vcf-manager';
 
@@ -21,4 +22,5 @@ export {
   hexToRGB,
   VCFManager,
   validatorStatus,
+  generatePaths,
 };

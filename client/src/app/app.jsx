@@ -35,19 +35,19 @@ const locale = {
   cn,
 };
 
+const fetchConfig = {
+  refreshInterval: 0,
+  fetcher,
+  errorRetryCount: 3,
+};
+
 const App = () => {
   const { i18n } = useTranslation();
 
   const language = locale[i18n.language];
 
   return (
-    <SWRConfig
-      value={{
-        refreshInterval: 0,
-        fetcher,
-        errorRetryCount: 3,
-      }}
-    >
+    <SWRConfig value={fetchConfig}>
       <ConfigProvider locale={language}>
         <Provider store={authStore}>
           <BrowserRouter>

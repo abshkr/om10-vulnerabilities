@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+
 import Icon, {
-  StarOutlined,
   SettingOutlined,
   QuestionCircleOutlined,
   UserOutlined,
@@ -8,12 +8,15 @@ import Icon, {
   ExclamationCircleOutlined,
   CopyrightOutlined,
 } from '@ant-design/icons';
-import { Layout, AutoComplete, Button, Input, Dropdown, Modal } from 'antd';
+
+import { Layout, AutoComplete, Button, Input, Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
 import { NavBarContainer } from './style';
 import { ROUTES } from '../../constants';
 import { Events, Favourites } from '..';
+import generator from './generator';
 
 import { ReactComponent as SearchIcon } from './search_two.svg';
 
@@ -23,22 +26,23 @@ const SearchIconOutlined = (props) => (
   <Icon style={{ transform: 'scale(1.8)' }} component={SearchIcon} {...props} />
 );
 
-const mockVal = (str, repeat = 1) => ({
-  value: str.repeat(repeat),
-});
-
 const NavBar = () => {
+  const { t } = useTranslation();
+
   let history = useHistory();
 
   const [options, setOptions] = useState([]);
 
   const onSearch = (searchText) => {
-    console.log(searchText);
-    setOptions(!searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]);
+    const val = generator(searchText, t);
+
+    setOptions(!searchText ? [] : val);
   };
 
   const onSelect = (data) => {
-    console.log('onSelect', data);
+    if (data?.path) {
+      history.push(data?.path);
+    }
   };
 
   const onLogOut = () => {
@@ -66,8 +70,8 @@ const NavBar = () => {
       <NavBarContainer>
         <AutoComplete
           options={options}
-          onSelect={onSelect}
           onSearch={onSearch}
+          onSelect={(value, option) => onSelect(option)}
           style={{ width: 420, marginLeft: 10 }}
         >
           <Input.Search enterButton={<SearchIconOutlined />} placeholder="Search OMEGA" />

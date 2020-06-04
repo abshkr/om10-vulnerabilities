@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { ROUTES } from '../constants';
-import { AuthContainer } from './style';
 
 import { useIdle } from '../hooks';
 
@@ -26,11 +25,7 @@ export default (Authenticated) => {
       }
     }, [isIdle, history]);
 
-    return (
-      <AuthContainer>
-        <Authenticated token={token} />
-      </AuthContainer>
-    );
+    return <Authenticated token={token} />;
   };
 
   const mapStateToProps = (state) => {
