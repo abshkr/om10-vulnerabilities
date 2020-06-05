@@ -29,7 +29,6 @@ const data = [
 
         <>
           <Divider>Bug Fixes</Divider>
-          <p>- Searc</p>
           <p>- Please Refer to all the tasks marked "To Be Tested" on JIRA.</p>
         </>
       </>
@@ -57,7 +56,6 @@ const data = [
 
         <>
           <Divider>Bug Fixes</Divider>
-          <p>- Searc</p>
           <p>- Please Refer to all the tasks marked "To Be Tested" on JIRA.</p>
         </>
       </>
