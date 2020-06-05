@@ -27,6 +27,7 @@ const columns = (t) => [
     filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
+    width: 130,
   },
   {
     headerName: t('fields.siteManager'),

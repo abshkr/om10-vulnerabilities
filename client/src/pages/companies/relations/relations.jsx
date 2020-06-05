@@ -8,14 +8,14 @@ import {
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification } from 'antd';
-import { DataTable, FormModal } from '../../../components';
+import { DataTable } from '../../../components';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import axios from 'axios';
 import { COMPANIES } from '../../../api';
 import useSWR, { mutate } from 'swr';
 import columns from './columns';
-import ChildForm from './child-company';
+import ChildForm from './child-form/forms';
 
 const TabPane = Tabs.TabPane;
 
