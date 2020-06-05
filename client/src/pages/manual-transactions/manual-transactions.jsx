@@ -26,7 +26,8 @@ const ManualTransactions = () => {
   const [orders, setOrders] = useState(null);
 
   const [customers, setCustomers] = useState(null);
-  const [selecteSupplier, setSelectedSupplier] = useState(null);
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
+  const [selectedTrip, setSelectedTrip] = useState(null);
 
   const onSumit = async () => {
     try {
@@ -82,15 +83,16 @@ const ManualTransactions = () => {
           setOrders={setOrders}
           customers={customers}
           setCustomers={setCustomers}
-          selecteSupplier={selecteSupplier}
+          selectedSupplier={selectedSupplier}
           setSelectedSupplier={setSelectedSupplier}
+          setSelectedTrip={setSelectedTrip}
         />
 
         <Divider style={{ margin: '0px 0' }}>{t('divider.drawerProductTransfer')}</Divider>
 
-        <DrawerProductTransfer form={form} type={type} />
+        <DrawerProductTransfer form={form} type={type} supplier={selectedSupplier} trip={selectedTrip} />
 
-        <Divider style={{ margin: '0px 0' }}>{t('divider.baseProducts')}</Divider>
+        <Divider style={{ margin: '0px 0', marginTop: 10 }}>{t('divider.baseProducts')}</Divider>
 
         <Tabs defaultActiveKey="1" animated={false} type="card">
           <TabPane tab={t('tabColumns.transferDetails')} key="1">

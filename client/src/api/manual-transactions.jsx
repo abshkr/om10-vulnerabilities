@@ -10,6 +10,8 @@ export const ORDERS = '/api/pages/manual_trans/get_orders.php';
 export const CARRIERS = '/api/pages/manual_trans/carriers.php';
 export const TANKERS = '/api/pages/manual_trans/tankers_by_carrier.php';
 export const ORDER_DETAILS = '/api/pages/manual_trans/get_order_details.php';
+export const ORDER_SUPPLIERS = '/api/pages/manual_trans/get_ord_suppliers.php';
+export const SCHEDULE_SUPPLIERS = '/api/pages/manual_trans/get_schd_suppliers.php';
 
 export const CALCULATE = '/api/pages/manual_trans/calc_vcf.php';
 export const SUBMIT = '/api/pages/manual_trans/submit.php';

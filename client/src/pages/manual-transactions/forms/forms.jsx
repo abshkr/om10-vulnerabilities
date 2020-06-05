@@ -22,14 +22,17 @@ const Forms = ({
   setOrders,
   customers,
   setCustomers,
-  selecteSupplier,
+  selectedSupplier,
   setSelectedSupplier,
+  setSelectedTrip,
 }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
 
-  const { data: suppliers, isValidating: suppliersLoading } = useSWR(MANUAL_TRANSACTIONS.SUPPLIERS);
+  const { data: suppliers, isValidating: suppliersLoading } = useSWR(
+    type === 'schedule' ? MANUAL_TRANSACTIONS.SCHEDULE_SUPPLIERS : MANUAL_TRANSACTIONS.ORDER_SUPPLIERS
+  );
   const { data: drivers, isValidating: driversLoading } = useSWR(MANUAL_TRANSACTIONS.DRIVERS);
   const { data: carriers, isValidating: carriersLoading } = useSWR(MANUAL_TRANSACTIONS.CARRIERS);
 
@@ -53,7 +56,7 @@ const Forms = ({
 
   const getOrdersByCustomer = async (customer) => {
     const results = await axios.get(
-      `${MANUAL_TRANSACTIONS.ORDERS}?supplier=${selecteSupplier}&customer=${customer}`
+      `${MANUAL_TRANSACTIONS.ORDERS}?supplier=${selectedSupplier}&customer=${customer}`
     );
 
     return results?.data;
@@ -61,7 +64,7 @@ const Forms = ({
 
   const getTankerAndCarrierByTrip = async (trip) => {
     const results = await axios.get(
-      `${MANUAL_TRANSACTIONS.CARRIER_AND_TANKER}?supplier=${selecteSupplier}&trip_no=${trip}`
+      `${MANUAL_TRANSACTIONS.CARRIER_AND_TANKER}?supplier=${selectedSupplier}&trip_no=${trip}`
     );
 
     const value = results?.data.records[0];
@@ -69,6 +72,7 @@ const Forms = ({
     const tankerResults = await getTankersByCarrier(value?.carrier);
 
     setTankers(tankerResults);
+    setSelectedTrip(trip);
 
     setFieldsValue({
       tanker: value?.tnkr_code,
@@ -208,7 +212,7 @@ const Forms = ({
           >
             <Select
               showSearch
-              disabled={type !== 'open_order' || !selecteSupplier}
+              disabled={type !== 'open_order' || !selectedSupplier}
               optionFilterProp="children"
               placeholder={t('placeholder.selectCustomer')}
               onChange={handleCustomerSelect}

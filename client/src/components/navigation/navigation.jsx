@@ -51,7 +51,7 @@ const Navigation = () => {
           }
         >
           <Menu.Item key={ROUTES.LOAD_SCHEDULES}>
-            <Badge status="warning" /> {t('pageNames.loadSchedules')}
+            <Badge status="success" /> {t('pageNames.loadSchedules')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ORDER_LISTING}>

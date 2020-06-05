@@ -1563,7 +1563,9 @@
     "selectProductGroup": "Select Product Group",
     "selectHazchem": "Select Hazchem",
     "selectGenericName": "Select Generic Name",
-    "setPeriod": "Set Period"
+    "setPeriod": "Set Period",
+    "selectDrawerProduct": "Select Drawer Product",
+    "selectArmCode": "Select Arm Code"
   },
 
   "validate": {

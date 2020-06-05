@@ -27,6 +27,7 @@ const Products = ({ value, form, drawer }) => {
   const fields = columns(t, form, units);
 
   useEffect(() => {
+    setData([]);
     if (drawer && !value) {
       axios
         .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
@@ -47,6 +48,7 @@ const Products = ({ value, form, drawer }) => {
   }, [drawer, value, setFieldsValue]);
 
   useEffect(() => {
+    setData([]);
     if (value) {
       axios
         .get(LOAD_SCHEDULES.PRODUCTS, {
