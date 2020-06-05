@@ -27,8 +27,10 @@ const ObsQty = ({ form, value, onChange, pageState }) => {
       setFieldsValue({
         mlitm_qty_amb: value.mlitm_qty_amb,
       });
+
+      onChange({qty: value.mlitm_qty_amb, type: 'LT'});
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange]);
 
   const handleFieldChange = (value) => {
     onChange({qty: value, type: 'LT'});

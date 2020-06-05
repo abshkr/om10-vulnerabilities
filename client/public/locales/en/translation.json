@@ -1130,7 +1130,9 @@
     "tankStrapping": "Tank Strapping",
     "keyReaderDevices": "Key Reader Devices",
     "tanks": "Tanks",
-    "dangerousGoods": "Dangerous Goods"
+    "dangerousGoods": "Dangerous Goods",
+    "deliveryDetails": "Delivery Details",
+    "nominationTransactions": "Manual Transactions For Nominations"
   },
 
   "operations": {
@@ -1307,7 +1309,8 @@
     "printerSettings": "Printer Settings",
     "transportationDoc": "Transportation Documents",
     "companyRelation": "Company Relations",
-    "companyHotLitres": "Hot Litres"
+    "companyHotLitres": "Hot Litres",
+    "nominationTransactions": "Manual Transactions For Nominations"
   },
 
   "messages": {

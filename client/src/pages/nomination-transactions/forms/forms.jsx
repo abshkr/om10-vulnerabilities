@@ -99,11 +99,6 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
 
   const [selected, setSelected] = useState(null);
 
-  const [orderItems, setDdiItems] = useState([]);
-  const [showPeriod, setShowPeriod] = useState(false);
-  const [showDeliveryDetails, setShowDeliveryDetails] = useState(false);
-
-
   const IS_CREATING = !value;
 
   const token = sessionStorage.getItem('token');
@@ -136,126 +131,41 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
     console.log("end of onComplete");
   };
 
-  const onFinish = async () => {
-    const values = await validateFields();
-    const orderItems = [];
-    // TODO
-    return;
-
-    _.forEach(values?.order_items, (order_item) => {
-      if (order_item.oitem_prod_qty > 0) {
-        orderItems.push({
-          oitem_prod_cmpy: order_item.oitem_prod_cmpy,
-          oitem_prod_code: order_item.oitem_prod_code,
-          oitem_prod_qty: _.toNumber(order_item.oitem_prod_qty),
-          oitem_prod_unit: _.toNumber(order_item.oitem_prod_unit),
-          oitem_pack_size: _.toNumber(order_item.oitem_pack_size),
-          oitem_prod_price: _.toNumber(order_item.oitem_prod_price),
-          oitem_exempt_no: order_item.oitem_exempt_no,
-          oitem_padj_code: order_item.oitem_padj_code,
-  
-        });
-      }
-    });
-
-    values.order_items = orderItems;
-    if (value?.order_sys_no === undefined) {
-      values.order_sys_no = -1;
+  const preparePayload = (values) => {
+    const payload = {};
+    
+    payload.operator_code = user_code;  //Will force to use 8888in backend because baiman uses 8888
+    payload.tanker_code = values?.mvitm_tanker;
+    payload.mvitm_item_id = values?.mvitm_item_id;
+    payload.temperature = values?.mlitm_temp_amb;
+    payload.amb_vol = values?.mlitm_qty_amb;
+    payload.cor_vol = values?.mlitm_qty_cor;
+    payload.liq_kg = values?.mlitm_qty_kg;
+    payload.density = values?.mlitm_dens_cor;
+    payload.start_time = values?.mvitm_dtim_effect?.format(SETTINGS.DATE_TIME_FORMAT);
+    payload.end_time = values?.mvitm_dtim_expiry?.format(SETTINGS.DATE_TIME_FORMAT);
+    
+    if (!!(values?.mvitm_tank_from)) {
+      payload.from_tank = values?.mvitm_tank_from;
+      payload.from_supplier = value?.mvitm_prodcmpy_from;
+      payload.from_product = value?.mvitm_prodcode_from;
     }
-    else {
-      values.order_sys_no = value?.order_sys_no;
-    }
-    console.log("values:", value?.order_sys_no, values)
-    console.log("date before", values.order_ord_time, values.order_dlv_time, values.order_exp_time);
-    values.order_ord_time = values?.order_ord_time?.format(SETTINGS.DATE_TIME_FORMAT);
-    values.order_dlv_time = values?.order_dlv_time?.format(SETTINGS.DATE_TIME_FORMAT);
-    values.order_exp_time = values?.order_exp_time?.format(SETTINGS.DATE_TIME_FORMAT);
-    console.log("date after", values.order_ord_time, values.order_dlv_time, values.order_exp_time);
-
-    values.order_styp_id = 0;
-    values.order_totals = 0;
-    values.order_limit = 0;
-    values.order_src_id = 5;
-    if (user_code !== undefined) {
-      values.order_psnl_code = user_code;
+    
+    if (!!(values?.mvitm_tank_to)) {
+      payload.to_tank = values?.mvitm_tank_to;
+      payload.to_supplier = value?.mvitm_prodcmpy_to;
+      payload.to_product = value?.mvitm_prodcode_to;
     }
 
-    Modal.confirm({
-      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
-      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
-      okType: 'primary',
-      icon: <QuestionCircleOutlined />,
-      cancelText: t('operations.no'),
-      centered: true,
-      onOk: async () => {
-        await axios
-          .post(IS_CREATING ? NOMINATION_TRANSACTIONS.CREATE : NOMINATION_TRANSACTIONS.UPDATE, values)
-          .then(() => {
-            onComplete();
+    if (!!(values?.mlitm_qty_rpt)) {
+      payload.alternate_qty = values?.mlitm_qty_rpt;
+    }
+    if (!!(values?.mlitm_unit_rpt)) {
+      payload.alternate_unit = values?.mlitm_unit_rpt;
+    }
 
-            notification.success({
-              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-            });
-          })
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
-              });
-            });
-          });
-      },
-    });
+    return payload;
   };
-
-  const onCalculate = () => {
-    Modal.confirm({
-      title: t('prompts.calculate'),
-      okText: t('operations.yes'),
-      okType: 'primary',
-      cancelText: t('operations.no'),
-      icon: <QuestionCircleOutlined />,
-      centered: true,
-      onOk: async () => {
-        try {
-          const values = await form.validateFields();
-          await axios
-            .post(NOMINATION_TRANSACTIONS.CALCULATE, {
-              frm_baseCd: value.mvitm_prodcode_to,
-              frm_which_type: calcSource.type,//'LT',
-              frm_real_amount: calcSource.qty, //values.mlitm_qty_amb,
-              frm_real_temp: values.mlitm_temp_amb,
-              frm_real_dens: values.mlitm_dens_cor,
-            })
-            .then((response) => {
-              form.setFieldsValue({
-                mlitm_qty_amb: response?.data?.real_litre,
-                mlitm_qty_cor: response?.data?.real_litre15,
-                mlitm_qty_kg: response?.data?.real_kg,
-              });
-            });
-        } catch (error) {
-          message.error({
-            key: 'calc',
-            content: t('descriptions.validationFailed'),
-          });
-        }
-      },
-    });
-  };
-
-  const onSubmit = async () => {
-    try {
-      const values = await form.validateFields();
-      console.log('Success:', values);
-    } catch (errorInfo) {
-      console.log('Failed:', errorInfo);
-    }
-  };
-
-  /*
 
   const onSubmit = () => {
     Modal.confirm({
@@ -268,14 +178,15 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
       onOk: async () => {
         try {
           const values = await form.validateFields();
-
+          console.log("await values", values);
+          console.log("await value", value);
           await axios
-            .post(SPECIAL_MOVEMENTS.SUBMIT, values)
+            .post(NOMINATION_TRANSACTIONS.SUBMIT, preparePayload(values))
             .then(
               axios.spread((response) => {
-                Modal.destroyAll();
+                //Modal.destroyAll();
+                onComplete();
 
-                mutate(SPECIAL_MOVEMENTS.READ);
                 notification.success({
                   message: t('messages.submitSuccess'),
                   description: t('descriptions.submitSuccess'),
@@ -297,7 +208,49 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
       },
     });
   };
-  */
+
+  const onCalculate = () => {
+    Modal.confirm({
+      title: t('prompts.calculate'),
+      okText: t('operations.yes'),
+      okType: 'primary',
+      cancelText: t('operations.no'),
+      icon: <QuestionCircleOutlined />,
+      centered: true,
+      onOk: async () => {
+        try {
+          const values = await form.validateFields();
+          await axios
+            .post(NOMINATION_TRANSACTIONS.CALCULATE, {
+              frm_baseCd: value?.mvitm_prodcode_to,
+              frm_which_type: calcSource?.type,//'LT',
+              frm_real_amount: calcSource?.qty, //values.mlitm_qty_amb,
+              frm_real_temp: values?.mlitm_temp_amb,
+              frm_real_dens: values?.mlitm_dens_cor,
+            })
+            .then((response) => {
+              form.setFieldsValue({
+                mlitm_qty_amb: response?.data?.real_litre,
+                mlitm_qty_cor: response?.data?.real_litre15,
+                mlitm_qty_kg: response?.data?.real_kg,
+              });
+              console.log("before change vaalue", value);
+              /* value.mlitm_qty_amb = response?.data?.real_litre;
+              value.mlitm_qty_cor = response?.data?.real_litre15;
+              value.mlitm_qty_kg = response?.data?.real_kg;
+              value.mlitm_temp_amb = values?.mlitm_temp_amb;
+              value.mlitm_dens_cor = values?.mlitm_dens_cor; */
+              console.log("after change vaalue", value);
+            });
+        } catch (error) {
+          message.error({
+            key: 'calc',
+            content: t('descriptions.validationFailed'),
+          });
+        }
+      },
+    });
+  };
 
   useEffect(() => {
     if (!value && !visible) {
