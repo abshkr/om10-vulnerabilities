@@ -507,7 +507,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
               
             <Row gutter={[8, 1]}>
               <Col span={12}>
-                <ObsTemp form={form} value={value} pageState={pageState} />
+                <ObsTemp form={form} value={value} tank={tank} pageState={pageState} />
               </Col>
               
               <Col span={12}>

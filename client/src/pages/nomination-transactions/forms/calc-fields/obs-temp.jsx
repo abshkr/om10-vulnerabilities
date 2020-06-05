@@ -1,9 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 import axios from 'axios';
 
-const ObsTemp = ({ form, value, pageState }) => {
+const ObsTemp = ({ form, value, tank, pageState }) => {
+  const [minTemp, setMinTemp] = useState(0);
+  const [maxTemp, setMaxTemp] = useState(2000);
+
+  console.log("in ObsTemp", tank);
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -30,6 +34,23 @@ const ObsTemp = ({ form, value, pageState }) => {
     }
   }, [value, setFieldsValue]);
 
+  useEffect(() => {
+    if (tank && tank.length>0) {
+      setFieldsValue({
+        mlitm_temp_amb: tank?.[0]?.tank_temp,
+      });
+      setMinTemp(tank?.[0]?.bclass_temp_lo);
+      setMaxTemp(tank?.[0]?.bclass_temp_hi);
+    }
+    else {
+      setFieldsValue({
+        mlitm_temp_amb: null,
+      });
+      setMinTemp(-273);
+      setMaxTemp(500);
+    }
+  }, [tank, setFieldsValue, setMinTemp, setMaxTemp]);
+
   return (
     <Form.Item 
       name="mlitm_temp_amb" 
@@ -39,6 +60,9 @@ const ObsTemp = ({ form, value, pageState }) => {
       <InputNumber 
         style={{ width: '100%' }} 
         disabled={pageState==='transfer'? false : false}
+        placeholder={String(minTemp)+" ~ "+String(maxTemp)}
+        min={minTemp}
+        max={maxTemp}
       />
     </Form.Item>
   );
