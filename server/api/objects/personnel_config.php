@@ -31,6 +31,8 @@ class PersonnelConfig extends CommonClass
 
     public function pre_update()
     {
+        write_log(json_encode($this), __FILE__, __LINE__);
+
         if (!isset($this->per_code)) {
             $this->per_code = Utilities::getCurrPsn();
         }
@@ -61,6 +63,26 @@ class PersonnelConfig extends CommonClass
                 return false;
             }
         }
+    }
+
+
+    public function pre_update_array()
+    {
+        if (!isset($this->per_code)) {
+            $this->per_code = Utilities::getCurrPsn();
+        }
+
+        $query = "DELETE FROM PERSONNEL_CONFIG
+            WHERE PER_CODE = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+        
+        return true;
     }
 
     public function update()

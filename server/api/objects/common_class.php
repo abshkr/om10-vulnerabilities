@@ -828,4 +828,10 @@ class CommonClass
             return null;
         }
     }
+
+    //Utilities::updateArray calls this one before call each update. for example: personnel_config.php 
+    public function pre_update_array()
+    {
+        return true;
+    }
 }

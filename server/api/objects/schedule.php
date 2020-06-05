@@ -319,7 +319,7 @@ class Schedule extends CommonClass
             "&sched_type=" . rawurlencode(strip_tags($this->shls_ld_type)) .
             "&tripNo=" . rawurlencode(strip_tags($this->shls_trip_no)) . 
             "&carr=" . rawurlencode(strip_tags($this->carrier_code)) . 
-            "&tanker=" . rawurlencode(strip_tags($this->tnkr_code)) . 
+            "&tanker=" . (isset($this->tnkr_code) ? rawurlencode(strip_tags($this->tnkr_code)): "")  . 
             "&date=" . rawurlencode(strip_tags($this->shls_caldate)) . 
             "&shift=" . (isset($this->shls_shift) ? rawurlencode(strip_tags($this->shls_shift)) : "") . 
             "&priority=" . (isset($this->shls_priority) ? rawurlencode(strip_tags($this->shls_priority)) : "")  . 
@@ -328,7 +328,7 @@ class Schedule extends CommonClass
             "&op=" . strval($op) . "&cmd=" . $cmd;
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/load_scheds.cgi", $query_string);
-        // write_log($res, __FILE__, __LINE__);
+        write_log($res, __FILE__, __LINE__);
 
         $op_response = $op + 10;
         if (strpos($res, "var op=" . strval($op_response) . ";") === false) {
@@ -354,9 +354,9 @@ class Schedule extends CommonClass
                     "&op=17&cmd=MOD";
     
                 $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/load_spec_compt.cgi", $query_string);
-                // write_log($res, __FILE__, __LINE__);
                 if (strpos($res, "Success!") === false) {
                     write_log("load_spec_compt CGI error", __FILE__, __LINE__, LogLevel::ERROR);
+                    write_log($res, __FILE__, __LINE__);
                     throw new DatabaseException(response("__CGI_FAILED__"));
                 }
     
@@ -381,6 +381,7 @@ class Schedule extends CommonClass
                 if ($cmd == "ADD") {
                     if (strpos($res, "Success!") === false) {
                         write_log("load_spec_prod CGI error", __FILE__, __LINE__, LogLevel::ERROR);
+                        write_log($res, __FILE__, __LINE__);
                         throw new DatabaseException(response("__CGI_FAILED__"));
                     }
                 } else {
@@ -399,6 +400,7 @@ class Schedule extends CommonClass
             
                         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/load_spec_prod.cgi", $query_string);
                         if (strpos($res, "Success!") === false) {
+                            write_log($res, __FILE__, __LINE__);
                             write_log("load_spec_prod CGI error", __FILE__, __LINE__, LogLevel::ERROR);
                             throw new DatabaseException(response("__CGI_FAILED__"));
                         }

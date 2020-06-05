@@ -363,11 +363,10 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
             </Button>
 
           </TabPane>
-          {config.safefillCheckByHighTemp ? 
+          {config.safefillCheckByHighTemp && 
             <TabPane tab={t('tabColumns.companyHotLitres')} key="2">
               <HotLitresForm value={value} form={form}></HotLitresForm>
-            </TabPane> :
-            null
+            </TabPane>
           }
         </Tabs>
       </Form>

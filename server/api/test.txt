@@ -3023,6 +3023,7 @@ https://{{server_ip}}/api/pages/manual_trans/submit.php //schedule manual transa
             "amb_vol": 340,
             "cor_vol": 341,
             "liq_kg": 256,
+			"nr_in_tkr": 1, 
             "meters": [
                 {
                     "open_amb": 12345,
@@ -3078,6 +3079,7 @@ https://{{server_ip}}/api/pages/manual_trans/submit.php    //Submit open order
             "amb_vol": 340,
             "cor_vol": 341,
             "liq_kg": 256,
+			"nr_in_tkr": 1, 
             "meters": [
                 {
                     "open_amb": 12345,

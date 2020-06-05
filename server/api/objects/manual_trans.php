@@ -295,7 +295,7 @@ class ManualTrans extends CommonClass
             $transfers[$i] = new Manual_Transfer();
             $transfers[$i]->Arm_Code = $this->transfers[$i]->arm_code;
             //$transfers[$i]->Device_Code = "BAY01";       //Not important, baiman does not use it
-            $transfers[$i]->nr_in_tkr = 1;
+            $transfers[$i]->nr_in_tkr = $this->transfers[$i]->nr_in_tkr;
 
             $transfers[$i]->drawer_code = $this->transfers[$i]->drawer_code;
             $transfers[$i]->product_code = $this->transfers[$i]->product_code;
