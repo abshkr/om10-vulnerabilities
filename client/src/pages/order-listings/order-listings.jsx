@@ -40,10 +40,7 @@ const OrderListings = () => {
     `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
   );
 
-  const handleFormState = (visibility, value) => {
-    setVisible(visibility);
-    setSelected(value);
-    /*
+  const adjustPageState = (visibility, value) => {
     if (visibility) {
       if (!value) {
         setPageState('create');
@@ -60,7 +57,12 @@ const OrderListings = () => {
     else {
       setPageState('view');
     }
-    */
+  }
+
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
+    adjustPageState(visibility, value);
   };
 
   const setRange = (start, end) => {
@@ -77,7 +79,7 @@ const OrderListings = () => {
   const page = t('pageMenu.customers');
   const name = t('pageNames.orderListing');
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (visible) {
       if (!selected) {
         setPageState('create');
@@ -94,7 +96,7 @@ const OrderListings = () => {
     else {
       setPageState('view');
     }
-  }, [visible, selected]);
+  }, [visible, selected]); */
 
   const modifiers = (
     <>

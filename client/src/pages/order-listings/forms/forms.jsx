@@ -63,7 +63,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const { setFieldsValue, resetFields, validateFields } = form;
 
   const [orderNo, setOrderNo] = useState(value?.order_sys_no);
-  const [supplier, setSupplier] = useState(value?.order_supp_code);
+  const [supplier, setSupplier] = useState(undefined);
   const [drawer, setDrawer] = useState(value?.order_drwr_code);
   const [selected, setSelected] = useState(null);
   const [approved, setApproved] = useState(value?.order_approved);
@@ -73,7 +73,8 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const [showPeriod, setShowPeriod] = useState(false);
   const [showDeliveryDetails, setShowDeliveryDetails] = useState(false);
 
-  console.log("access in OO", access);
+  //console.log("access in OO", access);
+  console.log("pageState in OO", pageState);
   const IS_CREATING = !value;
   //const CAN_ORDER_PERIOD = !!selected && !!value;
   const CAN_ORDER_PERIOD = (selected !== null && selected !== undefined) && (value !== null && value !== undefined);

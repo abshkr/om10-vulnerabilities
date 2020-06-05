@@ -32,7 +32,7 @@ const Drawer = ({ form, value, supplier, onChange, pageState }) => {
   }, [value, setFieldsValue, onChange]);
 
   useEffect(() => {
-    if (supplier) {
+    if (supplier && pageState === 'create') {
       setFieldsValue({
         order_drwr_code: supplier,
       });
