@@ -47,6 +47,7 @@ import OrderTrips from './order-trips';
 import OrderItemTrips from './item-trips';
 
 import DeliveryDetails from '../../delivery-details';
+import NominationTransactions from '../../nomination-transactions';
 
 const TabPane = Tabs.TabPane;
 
@@ -62,17 +63,17 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const { setFieldsValue, resetFields, validateFields } = form;
 
   const [orderNo, setOrderNo] = useState(value?.order_sys_no);
-  const [supplier, setSupplier] = useState(undefined);
-  const [drawer, setDrawer] = useState(undefined);
+  const [supplier, setSupplier] = useState(value?.order_supp_code);
+  const [drawer, setDrawer] = useState(value?.order_drwr_code);
   const [selected, setSelected] = useState(null);
   const [approved, setApproved] = useState(value?.order_approved);
-  const [carrier, setCarrier] = useState(undefined);
+  const [carrier, setCarrier] = useState(value?.order_carr_code);
 
   const [orderItems, setOrderItems] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
   const [showDeliveryDetails, setShowDeliveryDetails] = useState(false);
 
-
+  console.log("access in OO", access);
   const IS_CREATING = !value;
   //const CAN_ORDER_PERIOD = !!selected && !!value;
   const CAN_ORDER_PERIOD = (selected !== null && selected !== undefined) && (value !== null && value !== undefined);
@@ -113,7 +114,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
 
   const getOrderItems = useCallback(() => {
     const url = IS_CREATING
-      ? `${ORDER_LISTINGS.ORDER_ITEMS}?order_drwr_code=${drawer}&page_state=${pageState}`
+      ? `${ORDER_LISTINGS.ORDER_ITEMS}?order_drwr_code=${supplier}&page_state=${pageState}`
       : `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${orderNo}`;
       //: `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${value?.order_sys_no}`;
 
@@ -126,11 +127,12 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
 
       setOrderItems(payload);
     });
-  }, [orderNo, drawer]);
+  }, [orderNo, supplier, pageState]);
 
   const onFinish = async () => {
     const values = await validateFields();
     const orderItems = [];
+
 
     _.forEach(values?.order_items, (order_item) => {
       if (order_item.oitem_prod_qty > 0) {
@@ -311,7 +313,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
 
   useEffect(() => {
     getOrderItems();
-  }, [orderNo, drawer, getOrderItems]);
+  }, [orderNo, supplier, pageState, getOrderItems]);
 
   useEffect(() => {
     if (value !== null && value !== undefined) {
@@ -471,7 +473,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
 
             <Row gutter={[8, 8]}>
               <Col span={6}>
-                <DrawerCompany form={form} value={value} onChange={setDrawer} pageState={pageState} />
+                <DrawerCompany form={form} value={value} supplier={supplier} onChange={setDrawer} pageState={pageState} />
               </Col>
 
               <Col span={6}>
@@ -514,6 +516,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
                 height="60vh"
                 minimal
                 columns={columns(t, pageState, form, units)}
+                //onClick={(value) => setSelected(value)}
                 handleSelect={(value) => setSelected(value[0])}
                 //apiContext={setTableAPI}
               />
@@ -527,7 +530,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
           </TabPane>
           <TabPane tab={t('tabColumns.deliveryDetails')} disabled={IS_CREATING} key="4">
             <DeliveryDetails 
-              access={access} 
+              // access={access} 
               params={{
                 dd_supp_code: value?.order_supp_code, 
                 dd_tripord_no: value?.order_cust_no, 
@@ -537,7 +540,9 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
           </TabPane>
         </Tabs>
       </Form>
+      {pageState !== 'create' &&
       <Period visible={showPeriod && CAN_ORDER_PERIOD} setVisibility={setShowPeriod} selected={selected} order={value} form={form} />
+      }
     </Drawer>
   );
 };

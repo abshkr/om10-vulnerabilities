@@ -13,7 +13,7 @@ const DestinationTank = ({ form, value, onChange, pageState }) => {
   const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(
-    `${NOMINATION_TRANSACTIONS.TANKS}?supplier=${value?.mvitm_prodcmpy_to}`,
+    `${NOMINATION_TRANSACTIONS.TANKS_BY_DRAWPROD}?supplier=${value?.mvitm_prodcmpy_to}&product=${value?.mvitm_prodcode_to}`,
     { refreshInterval: 0,
     }
   );

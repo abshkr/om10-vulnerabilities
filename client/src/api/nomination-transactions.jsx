@@ -17,6 +17,7 @@ export const ARMS = '/api/pages/manual_trans/get_arms.php';
 //export const SUPPLIERS = '/api/pages/special_mv/suppliers.php';
 export const TANKS = '/api/pages/special_mv/tanks.php';
 export const TANK_PRODUCTS = '/api/pages/special_mv/tank_proddata.php';
+export const TANKS_BY_DRAWPROD = '/api/pages/movement/tanks_by_drawprod.php';
 
 //export const REVERSE = '/api/pages/special_mv/reverse.php';
 export const CALCULATE = '/api/pages/movement/calc_vcf.php';

@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { ORDER_LISTINGS } from '../../../../api';
 
-const Drawer = ({ form, value, onChange, pageState }) => {
+const Drawer = ({ form, value, supplier, onChange, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -30,6 +30,16 @@ const Drawer = ({ form, value, onChange, pageState }) => {
       onChange(value.order_drwr_code);
     }
   }, [value, setFieldsValue, onChange]);
+
+  useEffect(() => {
+    if (supplier) {
+      setFieldsValue({
+        order_drwr_code: supplier,
+      });
+
+      onChange(supplier);
+    }
+  }, [supplier, setFieldsValue, onChange]);
 
   return (
     <Form.Item
