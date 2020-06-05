@@ -14,7 +14,8 @@ import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 
-const OrderListings = () => {
+const OrderListings = ({popup}) => {
+  console.log('popup', popup);
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [timeOption, setTimeOption] = useState('ORDER_ORD_TIME');
@@ -40,10 +41,7 @@ const OrderListings = () => {
     `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
   );
 
-  const handleFormState = (visibility, value) => {
-    setVisible(visibility);
-    setSelected(value);
-    /*
+  const adjustPageState = (visibility, value) => {
     if (visibility) {
       if (!value) {
         setPageState('create');
@@ -60,7 +58,12 @@ const OrderListings = () => {
     else {
       setPageState('view');
     }
-    */
+  }
+
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
+    adjustPageState(visibility, value);
   };
 
   const setRange = (start, end) => {
@@ -77,7 +80,7 @@ const OrderListings = () => {
   const page = t('pageMenu.customers');
   const name = t('pageNames.orderListing');
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (visible) {
       if (!selected) {
         setPageState('create');
@@ -94,10 +97,11 @@ const OrderListings = () => {
     else {
       setPageState('view');
     }
-  }, [visible, selected]);
+  }, [visible, selected]); */
 
   const modifiers = (
     <>
+      <div style={{ float: 'left' }}>
       <Select
         defaultValue="ORDER_ORD_TIME"
         onChange={setTimeOption}
@@ -113,8 +117,11 @@ const OrderListings = () => {
           </Select.Option>
         ))}
       </Select>
+      </div>
 
+      <div style={{ float: 'left', width: '420px' }}>
       <Calendar handleChange={setRange} start={start} end={end} />
+      </div>
 
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
@@ -135,7 +142,7 @@ const OrderListings = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access}>
+    <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup}>
       <DataTable
         data={data}
         columns={fields}

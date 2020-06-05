@@ -141,6 +141,34 @@ class ManualTrans extends CommonClass
         }
     }
 
+    public function get_sched_prods()
+    {
+        $query = "SELECT SCHPSPID_SHLSTRIP,
+                SCHPSPID_SHLSSUPP,
+                SCHPPROD_PRODCODE,
+                SCHPPROD_PRODCMPY,
+                PROD_NAME,
+                SCHP_UNITS,
+                SCHP_SPECQTY,
+                SCHP_ORDER 
+            FROM SPECPROD, PRODUCTS
+            WHERE SCHPSPID_SHLSTRIP = :trip_no
+                AND SCHPSPID_SHLSSUPP = :supplier
+                AND SCHPPROD_PRODCODE = PROD_CODE
+                AND SCHPPROD_PRODCMPY = PROD_CMPY
+            ORDER BY SCHPPROD_PRODCODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        return $stmt;
+    }
+
     public function get_sched_basics()
     {
         // write_log(sprintf("%s::%s() START. trip:%d, supplier:%s",
@@ -295,7 +323,7 @@ class ManualTrans extends CommonClass
             $transfers[$i] = new Manual_Transfer();
             $transfers[$i]->Arm_Code = $this->transfers[$i]->arm_code;
             //$transfers[$i]->Device_Code = "BAY01";       //Not important, baiman does not use it
-            $transfers[$i]->nr_in_tkr = 1;
+            $transfers[$i]->nr_in_tkr = $this->transfers[$i]->nr_in_tkr;
 
             $transfers[$i]->drawer_code = $this->transfers[$i]->drawer_code;
             $transfers[$i]->product_code = $this->transfers[$i]->product_code;

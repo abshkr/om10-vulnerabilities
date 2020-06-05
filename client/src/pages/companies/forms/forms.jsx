@@ -55,6 +55,13 @@ const FormModal = ({ value, visible, handleFormState }) => {
     setFieldsValue({
       supplier: v.target.checked,
     });
+
+    if (v.target.checked && !drawer) {
+      setDrawer(v.target.checked)
+      setFieldsValue({
+        drawer: v.target.checked,
+      });
+    }
   }
   
   const onCarrierChange = v => {
@@ -72,6 +79,10 @@ const FormModal = ({ value, visible, handleFormState }) => {
   }
 
   const onDrawerChange = v => {
+    if (!v.target.checked && supplier) {
+      return;
+    }
+
     setDrawer(v.target.checked)
     setFieldsValue({
       drawer: v.target.checked,

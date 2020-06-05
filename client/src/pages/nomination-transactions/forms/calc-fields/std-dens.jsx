@@ -59,11 +59,11 @@ const StdDensity = ({ form, value, tank, pageState }) => {
     >
       <InputNumber 
         style={{ width: '100%' }} 
+        disabled={pageState==='transfer'? false : false}
+        placeholder={String(minDens)+" ~ "+String(maxDens)}
         min={minDens}
         max={maxDens}
         //step={0.01}
-        disabled={pageState==='transfer'? false : false}
-        placeholder={String(minDens)+" ~ "+String(maxDens)}
       />
     </Form.Item>
   );

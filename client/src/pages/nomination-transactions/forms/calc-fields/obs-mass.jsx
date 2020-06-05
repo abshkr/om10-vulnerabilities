@@ -27,6 +27,8 @@ const ObsMass = ({ form, value, onChange, pageState }) => {
       setFieldsValue({
         mlitm_qty_kg: value.mlitm_qty_kg,
       });
+      
+      onChange({qty: value.mlitm_qty_kg, type: 'KG'});
     }
   }, [value, setFieldsValue]);
 

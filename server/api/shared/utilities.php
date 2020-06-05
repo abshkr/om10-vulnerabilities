@@ -579,6 +579,21 @@ class Utilities
     //Loop to update for an array. sample: pages/folio/update_meters.php
     public static function updateArray($class, $method = 'update')
     {
+        if (method_exists($class, "pre_update_array")) {
+            $database = new Database();
+            $db = $database->getConnection($class, "pre_update_array");
+
+            $access_check = new AccessCheck($db);
+            if (!$access_check->check($class, $method, self::getCurrPsn())) {
+                $error = new EchoSchema(400, response("__INVALID_PRIV__"));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+                return;
+            }
+
+            $object = new $class($db);
+            $object->pre_update_array();
+        }
+
         //Get data from POST
         $data = json_decode(file_get_contents("php://input"));
         foreach ($data as $item) {

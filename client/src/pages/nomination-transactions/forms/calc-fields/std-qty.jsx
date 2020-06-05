@@ -27,6 +27,8 @@ const StdQty = ({ form, value, onChange, pageState }) => {
       setFieldsValue({
         mlitm_qty_cor: value.mlitm_qty_cor,
       });
+      
+      onChange({qty: value.mlitm_qty_cor, type: 'L15'});
     }
   }, [value, setFieldsValue]);
 

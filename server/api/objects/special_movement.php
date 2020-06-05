@@ -270,6 +270,8 @@ class SpecialMovement extends CommonClass
             BS.BCLASS_NO,
             BS.BCLASS_DENS_LO,
             BS.BCLASS_DENS_HI,
+            BS.BCLASS_TEMP_LO,
+            BS.BCLASS_TEMP_HI,
             BS.BCLASS_VCF_ALG					
         FROM PRODUCTS DP, RPTOBJ_PROD_RATIOS_VW PR, BASE_PRODS BP, TANKS TK, TERMINAL TL, BASECLASS BS 
         WHERE DP.PROD_CMPY  = PR.RAT_PROD_PRODCMPY 

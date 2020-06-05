@@ -13,7 +13,7 @@ const SourceTank = ({ form, value, onChange, arm, pageState }) => {
   const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(
-    `${NOMINATION_TRANSACTIONS.TANKS}?supplier=${value?.mvitm_prodcmpy_from}`,
+    `${NOMINATION_TRANSACTIONS.TANKS_BY_DRAWPROD}?supplier=${value?.mvitm_prodcmpy_from}&product=${value?.mvitm_prodcode_from}`,
     { refreshInterval: 0,
     }
   );
