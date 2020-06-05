@@ -21,11 +21,6 @@ const Dates = ({ form, value }) => {
         shls_caldate: '' ? null : moment(value.shls_caldate, SETTINGS.DATE_TIME_FORMAT),
         shls_exp2: '' ? null : moment(value.shls_caldate, SETTINGS.DATE_TIME_FORMAT),
       });
-    } else {
-      setFieldsValue({
-        shls_caldate: moment(),
-        shls_exp2: moment(),
-      });
     }
   }, [value, setFieldsValue]);
 

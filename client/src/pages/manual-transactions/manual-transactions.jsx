@@ -43,6 +43,7 @@ const ManualTransactions = () => {
       icon: <ExclamationCircleOutlined />,
       okText: 'Reset',
       okType: 'danger',
+      centered: true,
       cancelText: 'No',
       onOk: async () => {
         await form.resetFields();

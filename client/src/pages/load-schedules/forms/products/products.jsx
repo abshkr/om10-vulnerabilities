@@ -27,7 +27,7 @@ const Products = ({ value, form, drawer }) => {
   const fields = columns(t, form, units);
 
   useEffect(() => {
-    if (drawer) {
+    if (drawer && !value) {
       axios
         .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
           params: {
@@ -44,7 +44,28 @@ const Products = ({ value, form, drawer }) => {
           });
         });
     }
-  }, [drawer, setFieldsValue]);
+  }, [drawer, value, setFieldsValue]);
+
+  useEffect(() => {
+    if (value) {
+      axios
+        .get(LOAD_SCHEDULES.PRODUCTS, {
+          params: {
+            supplier_code: value.supplier_code,
+            shls_trip_no: value.shls_trip_no,
+          },
+        })
+        .then((res) => {
+          const payload = res?.data?.records;
+
+          setData(payload);
+
+          setFieldsValue({
+            products: payload,
+          });
+        });
+    }
+  }, [value, setFieldsValue]);
 
   return (
     <Form.Item name="products" noStyle>

@@ -7,14 +7,12 @@ import {
   QuestionCircleOutlined,
   PrinterOutlined,
   RedoOutlined,
-  ArrowLeftOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Radio, Checkbox } from 'antd';
 
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
-
+import moment from 'moment';
 import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
@@ -34,7 +32,7 @@ import {
   LoadSecurityInformation,
 } from './fields';
 
-import { SETTINGS, ROUTES } from '../../../constants';
+import { SETTINGS } from '../../../constants';
 import { LOAD_SCHEDULES } from '../../../api';
 
 import { useConfig } from '../../../hooks';
@@ -54,8 +52,6 @@ const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access }) => {
   const { manageMakeManualTransaction, showSeals, manageAdditionalHostData } = useConfig();
-
-  let history = useHistory();
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -302,6 +298,11 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       setTrip(undefined);
 
       resetFields();
+
+      setFieldsValue({
+        shls_caldate: moment(),
+        shls_exp2: moment(),
+      });
     }
   }, [resetFields, visible, value]);
 
@@ -489,7 +490,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             <Seals value={value} />
           </TabPane>
 
-          <TabPane tab={t('tabColumns.deliveryDetails')} disabled={!access?.canUpdate} key="6">
+          <TabPane tab={t('tabColumns.deliveryDetails')} disabled={IS_CREATING} key="6">
             <DeliveryDetails
               params={{
                 dd_supp_code: value?.supplier_code,
