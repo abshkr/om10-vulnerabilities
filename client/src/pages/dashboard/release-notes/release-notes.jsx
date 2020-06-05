@@ -6,7 +6,38 @@ const { Panel } = Collapse;
 
 const data = [
   {
-    title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 02/06/2020`,
+    title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 05/06/2020`,
+    content: (
+      <>
+        <>
+          <Divider>Features</Divider>
+
+          <p>- Load Schdules Screen Completion</p>
+          <p>- Favourites Function Completion</p>
+        </>
+
+        <>
+          <Divider>Enhancements</Divider>
+
+          <p>- Overview screen chart legend moved to the right hand side to help with spacing. </p>
+          <p>
+            - Base Product Storage & Currrent Folio Throughput now has the ability to filter by Base
+            Classification.
+          </p>
+          <p>- Weekly Throughput now has a Linear and Logarithmic Mode. </p>
+        </>
+
+        <>
+          <Divider>Bug Fixes</Divider>
+          <p>- Searc</p>
+          <p>- Please Refer to all the tasks marked "To Be Tested" on JIRA.</p>
+        </>
+      </>
+    ),
+  },
+
+  {
+    title: `Release Version Notes (10.7.0-dev) - 02/06/2020`,
     content: (
       <>
         <>
@@ -34,7 +65,7 @@ const data = [
   },
 
   {
-    title: `Release Version Notes (10.6.0) - 29/05/2020`,
+    title: `Release Version Notes (10.6.0-dev) - 29/05/2020`,
     content: (
       <>
         <>
@@ -61,7 +92,7 @@ const data = [
   },
 
   {
-    title: `Release Version Notes (10.5.0) - 26/05/2020`,
+    title: `Release Version Notes (10.5.0-dev) - 26/05/2020`,
     content: (
       <>
         <>
@@ -83,7 +114,7 @@ const data = [
   },
 
   {
-    title: `Release Version Notes (10.4.0) - 22/05/2020`,
+    title: `Release Version Notes (10.4.0-dev) - 22/05/2020`,
     content: (
       <>
         <>
@@ -117,7 +148,7 @@ const data = [
   },
 
   {
-    title: `Release Version Notes (10.3.0) - 15/05/2020`,
+    title: `Release Version Notes (10.3.0-dev) - 15/05/2020`,
     content: (
       <>
         <>
@@ -161,7 +192,7 @@ const data = [
   },
 
   {
-    title: `Release Version Notes (10.2.0) - 12/05/2020`,
+    title: `Release Version Notes (10.2.0-dev) - 12/05/2020`,
     content: (
       <>
         <>
@@ -210,23 +241,3 @@ const ReleaseNotes = () => {
 };
 
 export default ReleaseNotes;
-
-{
-  /* <List
-itemLayout="vertical"
-size="small"
-dataSource={data}
-renderItem={(item) => (
-  <Card
-    style={{ marginBottom: 20 }}
-    bodyStyle={{ padding: 10 }}
-    hoverable
-    title={item.title}
-    size="small"
-  >
-    <List.Item.Meta style={{ marginBottom: 5 }} description={item.description} />
-    {item.content}
-  </Card>
-)}
-/> */
-}
