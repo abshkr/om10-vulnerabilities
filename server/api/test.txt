@@ -3000,6 +3000,7 @@ https://{{server_ip}}/api/pages/mov_reason/delete.php?mr_id=33
 https://10.1.10.66/api/pages/manual_trans/get_trips.php?supplier=5869999
 https://10.1.10.66/api/pages/manual_trans/get_sched_basics.php?supplier=5869999&trip_no=900000001  //Get carrier and tanker
 https://10.1.10.66/api/pages/manual_trans/get_drivers.php
+https://10.1.10.66/api/pages/schedule/get_product_details.php?supplier_code=7640103&shls_trip_no=900000011
 https://10.1.10.66/api/pages/manual_trans/get_sched_details.php?supplier=5869999&trip_no=900000001
 https://10.1.10.66/api/pages/manual_trans/get_arms.php?prod_cmpy=5860106&prod_code=400003401
 https://10.1.10.66/api/pages/manual_trans/get_base_details.php?prod_cmpy=5860106&prod_code=400003401&arm_code=A04501
