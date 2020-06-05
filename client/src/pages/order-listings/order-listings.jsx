@@ -14,7 +14,8 @@ import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 
-const OrderListings = () => {
+const OrderListings = ({popup}) => {
+  console.log('popup', popup);
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [timeOption, setTimeOption] = useState('ORDER_ORD_TIME');
@@ -100,6 +101,7 @@ const OrderListings = () => {
 
   const modifiers = (
     <>
+      <div style={{ float: 'left' }}>
       <Select
         defaultValue="ORDER_ORD_TIME"
         onChange={setTimeOption}
@@ -115,8 +117,11 @@ const OrderListings = () => {
           </Select.Option>
         ))}
       </Select>
+      </div>
 
+      <div style={{ float: 'left', width: '420px' }}>
       <Calendar handleChange={setRange} start={start} end={end} />
+      </div>
 
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
@@ -137,7 +142,7 @@ const OrderListings = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access}>
+    <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup}>
       <DataTable
         data={data}
         columns={fields}
