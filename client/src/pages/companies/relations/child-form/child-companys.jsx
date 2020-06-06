@@ -1,24 +1,17 @@
 import React, { useCallback, useState, useEffect } from 'react';
 
-import {
-  EditOutlined,
-  QuestionCircleOutlined,
-  CloseOutlined,
-  DeleteOutlined
-} from '@ant-design/icons';
-
-import { Form, Button, Select, Modal, notification, Checkbox, Input } from 'antd';
+import { Form, Select,  Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import axios from 'axios';
 import { COMPANIES } from '../../../../api';
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 
-const ChildSelectFields = ({ value, form }) => {
-  const { data: childRoles, isValidating } = useSWR(COMPANIES.CHILD_CMPY_ROLES);
+const ChildSelectFields = ({ value, form, visible }) => {
+  const { data: childRoles } = useSWR(COMPANIES.CHILD_CMPY_ROLES);
   
   const { t } = useTranslation();
-  const { setFieldsValue } = form;
+  const { setFieldsValue, resetFields } = form;
 
   const IS_CREATING = !value;
 
@@ -36,21 +29,27 @@ const ChildSelectFields = ({ value, form }) => {
 
   const onRoleChange = (v) => {
     const selecteRole = _.find(childRoles.records, (item) => {
-      return item.cmpy_role_id = v;
+      return item.cmpy_role_id === v;
     })
-    setFieldsValue({
-      child_cmpy_role_name: selecteRole.cmpy_role_name,
-    })
+    if (selecteRole) {
+      setFieldsValue({
+        child_cmpy_role_name: selecteRole.cmpy_role_name,
+      })
+    }
+    
     setChildRole(v);
   }
 
   const onCompanyChange = (v) => {
     const selected = _.find(children, (item) => {
-      return item.cmpy_code = v;
+      return item.cmpy_code === v;
     })
-    setFieldsValue({
-      child_cmpy_name: selected?.cmpy_name,
-    })
+    
+    if (selected) {
+      setFieldsValue({
+        child_cmpy_name: selected?.cmpy_name,
+      })
+    }
   }
   
   useEffect(() => {
@@ -64,9 +63,13 @@ const ChildSelectFields = ({ value, form }) => {
       setFieldsValue({
         child_cmpy_role: value.child_cmpy_role,
         child_cmpy_code: value.child_cmpy_code,
+        child_cmpy_role_name: value.child_cmpy_role_name,
+        child_cmpy_name: value.child_cmpy_name,
       })
+    } else {
+      resetFields();
     }
-  }, [value]);
+  }, [value, visible]);
 
   return (
     <div>
@@ -90,13 +93,13 @@ const ChildSelectFields = ({ value, form }) => {
       <Form.Item name="child_cmpy_code" label={t('fields.childCmpyName')} rules={[{ required: true }]}>
         <Select
           disabled={!IS_CREATING}
-          onClick={onCompanyChange}
-          showSearch
-          optionFilterProp="children"
+          onChange={onCompanyChange}
+          // showSearch
+          // optionFilterProp="children"
           // placeholder={!value ? t('placeholder.selectHazchem') : null}
-          filterOption={(input, option) =>
-          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
+          // filterOption={(input, option) =>
+          // option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          // }
         >
           {children?.map((item, index) => (
           <Select.Option key={index} value={item.cmpy_code}>

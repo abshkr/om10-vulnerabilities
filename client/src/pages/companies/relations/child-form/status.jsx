@@ -1,12 +1,12 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Form, Checkbox } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-const StatusField = ({ value, form }) => {
+const StatusField = ({ value, form, visible }) => {
   const { t } = useTranslation();
-  const { setFieldsValue } = form;
+  const { setFieldsValue, resetFields } = form;
   const [status , setStatus] = useState(value?.status);
 
   const onStatusChange = (e) => {
@@ -17,12 +17,16 @@ const StatusField = ({ value, form }) => {
   }
 
   useEffect(() => {
-    if (value) {
+    if (value && visible) {
+      setStatus(value.status);
       setFieldsValue({
         status: value.status,
       })
+    } else {
+      setStatus(false);
+      resetFields();
     }
-  }, [value]);
+  }, [value, visible]);
 
   return (
     <Form.Item name="status" label={t('fields.status')} >
