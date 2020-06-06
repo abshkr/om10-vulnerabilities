@@ -113,8 +113,11 @@ const FormModal = ({ value, handleBaseCallBack }) => {
               <InputNumber min={1} style={{ width: '100%' }} />
             </Form.Item>
 
-            <Form.Item name="pitem_bltol_flag" label={t('fields.blendToleranceCheck')} >
-              <Checkbox defaultChecked={value?.pitem_bltol_flag} onChange={onCheck}></Checkbox>
+            <Form.Item name="pitem_bltol_flag" label={t('fields.blendToleranceCheck')} valuePropName="checked" >
+              <Checkbox 
+                defaultChecked={value?.pitem_bltol_flag} 
+                onChange={onCheck}
+              />
             </Form.Item>
 
             <Form.Item name="pitem_bltol_ntol" label={t('fields.lowerLimit')} rules={[{ required: false, validator: validate }]}>

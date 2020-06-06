@@ -47,6 +47,7 @@ const LoadTolerance = ({ form, value }) => {
         prod_ldtol_ntol: value.prod_ldtol_ntol,
         prod_ldtol_ptol: value.prod_ldtol_ptol,
       });
+      setFlag(value.prod_ldtol_flag);
     }
   }, [value, setFieldsValue]);
 

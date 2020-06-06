@@ -7,7 +7,7 @@ import {
   QuestionCircleOutlined,
   CloseOutlined,
 } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Checkbox, Col, Row, Input, Select, InputNumber } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Checkbox, Col, Row, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
@@ -291,6 +291,7 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
                 <Col span={4}>
                   <Form.Item noStyle name="prod_is_compliant" >
                     <Checkbox 
+                      valuePropName="checked"
                       checked={prod_is_compliant} 
                       onChange={(v) => {
                         setCompliant(v.target.checked)
@@ -304,6 +305,7 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
                 <Col span={20}>
                   <Form.Item name="prod_is_locked" label={t('fields.locked')} >
                     <Checkbox 
+                      valuePropName="checked"
                       checked={prod_is_locked}
                       onChange={(v) => {
                         setLocked(v.target.checked)

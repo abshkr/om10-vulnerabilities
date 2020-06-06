@@ -294,7 +294,7 @@ const Settings = ({ value, access }) => {
     }
 
     const exceptions = _.filter(value, function(item) {
-      return item.window_name != 'OVERRIDE'})
+      return item.window_name !== 'OVERRIDE'})
     for (let i = 0; i < exceptions.length; i++) {
       if (exceptions[i].window_name === "MONTH_WINDOW") {
         if (v.format("D") === exceptions[i].repeat_interval) {
@@ -318,13 +318,13 @@ const Settings = ({ value, access }) => {
         let interval = exceptions[i].repeat_interval.split("_");
         if (v.format('dddd') !== interval[1]) {
           continue;
-        } else if (v.format('M') != interval[2]) {
+        } else if (v.format('M') !== interval[2]) {
           continue;
         }
         
         for (let j = 1; j <= 5; j ++) {
           const cloneMoment = v.clone();
-          if (cloneMoment.subtract(7 * j, 'days').format('M') != v.format('M') 
+          if (cloneMoment.subtract(7 * j, 'days').format('M') !== v.format('M') 
             && interval[0] === j) {
               return false;
           }
