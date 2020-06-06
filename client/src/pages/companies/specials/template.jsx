@@ -17,7 +17,6 @@ import { COMPANIES } from '../../../api';
 
 const TemplateForm = ({ value }) => {
   const { data: payload, isValidating } = useSWR(`${COMPANIES.TEMPLATES}?cmpy_code=${value?.cmpy_code}`);
-  console.log(payload?.records);
 
   const { t } = useTranslation();
   const fields = columns(t);
@@ -33,14 +32,6 @@ const TemplateForm = ({ value }) => {
     }
     
   }, [ setFieldsValue, payload]);
-
-  const validate = (rule, input) => {
-    // if (input === '' || !input) {
-    //   return Promise.reject(`${t('fields.loadToleranceCheck')}`);
-    // }
-
-    return Promise.resolve();
-  };
 
   const onSave = async () => {
     const values = await form.validateFields();
@@ -97,7 +88,7 @@ const TemplateForm = ({ value }) => {
           isLoading={isValidating} 
           components={{
             FooterEditor: FooterEditor,
-            SwitchRender: SwitchRender
+            SwitchRender: SwitchRender,
           }}
         />
       </Form.Item>

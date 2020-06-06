@@ -7,11 +7,6 @@ const columns = (t, values, form) => [
     resizable: true,
     width: 90,
     cellRenderer: 'SwitchRender',
-    // cellEditor: 'SwitchEditor',
-    // cellEditorParams: {
-    //   values: "hello",
-    //   form: form,
-    // },
   },
   {
     headerName: t('fields.templateName'),
@@ -37,13 +32,6 @@ const columns = (t, values, form) => [
     resizable: true,
     width: 110,
   },
-  // {
-  //   headerName: t('fields.templateIdentifier'),
-  //   field: 'template_code',
-  //   filter: 'FuzzyFilter',
-  //   sortable: true,
-  //   resizable: true,
-  // },
   {
     headerName: t('fields.defaultTemplate'),
     field: 'default_flag',
@@ -70,7 +58,6 @@ const columns = (t, values, form) => [
     resizable: true,
     editable: true,
     cellEditorParams: {
-      values: "hello",
       form: form,
     },
     width: 120,
@@ -82,6 +69,18 @@ const columns = (t, values, form) => [
     sortable: true,
     resizable: true,
     editable: true,
+    valueParser: (params) => {
+      const regEx = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+      const result = params.newValue.replace(/\s/g, "").split(/:|;/);   
+      for(let i = 0; i < result.length; i++) {
+          
+        if(!regEx.test(result[i])) {
+          return params.oldValue;
+        }
+      }
+
+      return params.newValue;
+    }
   },
   {
     headerName: t('fields.print'),
@@ -92,13 +91,6 @@ const columns = (t, values, form) => [
     cellRenderer: 'SwitchRender',
     width: 80,
   },
-  // {
-  //   headerName: t('fields.tiggerPoint'),
-  //   field: '',
-  //   filter: 'FuzzyFilter',
-  //   sortable: true,
-  //   resizable: true,
-  // },
 ];
 
 export default columns;
