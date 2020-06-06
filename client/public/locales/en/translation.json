@@ -977,6 +977,7 @@
     "templateType": "Template Type",
     "templateIdentifier": "Template Identifier",
     "defaultTemplate": "Default Template",
+	"print": "Print",
     "numOfCopies": "Num of Copies",
     "footerText": "Footer Text",
     "tiggerPoint": "Trigger Point",

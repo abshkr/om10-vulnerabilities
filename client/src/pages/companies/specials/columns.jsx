@@ -27,7 +27,7 @@ const columns = (t, values, form) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 110,
+    width: 90,
   },
   {
     headerName: t('fields.templateType'),
@@ -51,7 +51,7 @@ const columns = (t, values, form) => [
     sortable: true,
     resizable: true,
     cellRenderer: 'SwitchRender',
-    width: 150,
+    width: 120,
   },
   {
     headerName: t('fields.numOfCopies'),
@@ -73,6 +73,7 @@ const columns = (t, values, form) => [
       values: "hello",
       form: form,
     },
+    width: 120,
   },
   {
     headerName: t('fields.email'),
@@ -81,6 +82,15 @@ const columns = (t, values, form) => [
     sortable: true,
     resizable: true,
     editable: true,
+  },
+  {
+    headerName: t('fields.print'),
+    field: 'send_to_printer',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'SwitchRender',
+    width: 80,
   },
   // {
   //   headerName: t('fields.tiggerPoint'),

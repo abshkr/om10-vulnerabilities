@@ -23,6 +23,19 @@ const OtherForm = ({ value, form }) => {
   const [ cmpy_wipe_ordets, setOrdCarrier ] = useState(value?.cmpy_wipe_ordets)
   const [ cmpy_enable_expd, setWghComplete ] = useState(value?.cmpy_enable_expd)
   
+  const emailValidate = (rule, input) => {
+    const regEx = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+    const result = input.replace(/\s/g, "").split(/:|;/);   
+    for(let i = 0; i < result.length; i++) {
+        
+      if(!regEx.test(result[i])) {
+        return Promise.reject(`${t('fields.closeoutRptEmails')}`);
+      }
+    }
+
+    return Promise.resolve();
+  };
+
   const onAutoReconcChange = v => {
     setReconc(v)
     setFieldsValue({
@@ -170,7 +183,10 @@ const OtherForm = ({ value, form }) => {
         </Col>
         <Col span={12}>
           <Form.Item name="cmpy_bay_loop_ch" label={t('fields.equipMustInArea')} {...rightItemLayout} >
-            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_bay_loop_ch} onChange={onAutoReconcChange}></Switch>
+            <Switch checkedChildren={t('operations.yes')} 
+              unCheckedChildren={t('operations.no')} 
+              checked={cmpy_bay_loop_ch} 
+              onChange={onAutoReconcChange}/>
           </Form.Item>
         </Col>
       </Row>
@@ -194,7 +210,12 @@ const OtherForm = ({ value, form }) => {
         </Col>
         <Col span={12}>
           <Form.Item name="cmpy_mod_drawer" label={t('fields.drawerChangeForNew')} {...rightItemLayout} >
-            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_mod_drawer} onChange={onFlag2}></Switch>
+            <Switch 
+              checkedChildren={t('operations.yes')} 
+              unCheckedChildren={t('operations.no')} 
+              checked={cmpy_mod_drawer} 
+              onChange={onFlag2}
+            />
           </Form.Item>
         </Col>
       </Row>
@@ -202,12 +223,22 @@ const OtherForm = ({ value, form }) => {
       <Row justify="center" gutter="8">
         <Col span={12}>
           <Form.Item name="cmpy_auto_reconc" label={t('fields.autoConfigTanker')} {...leftItemLayout} >
-            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_auto_reconc} onChange={onLogDel}></Switch>
+            <Switch 
+              checkedChildren={t('operations.yes')} 
+              unCheckedChildren={t('operations.no')} 
+              checked={cmpy_auto_reconc} 
+              onChange={onLogDel}
+            />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item name="cmpy_must_sealno" label={t('fields.mustHaveSeal')} {...rightItemLayout} >
-            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_must_sealno} onChange={onLoadTol}></Switch>
+            <Switch 
+              checkedChildren={t('operations.yes')} 
+              unCheckedChildren={t('operations.no')} 
+              checked={cmpy_must_sealno} 
+              onChange={onLoadTol}
+            />
           </Form.Item>
         </Col>
       </Row>
@@ -215,12 +246,22 @@ const OtherForm = ({ value, form }) => {
       <Row justify="center" gutter="8">
         <Col span={12}>
           <Form.Item name="cmpy_tkr_activat" label={t('fields.activateTanker')} {...leftItemLayout} >
-            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_tkr_activat} onChange={onAutoLoad}></Switch>
+            <Switch 
+              checkedChildren={t('operations.yes')} 
+              unCheckedChildren={t('operations.no')} 
+              checked={cmpy_tkr_activat} 
+              onChange={onAutoLoad}
+            />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item name="cmpy_req_pin_flag" label={t('fields.mustHavePin')} {...rightItemLayout} >
-            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_req_pin_flag} onChange={onBlendTol}></Switch>
+            <Switch 
+              checkedChildren={t('operations.yes')} 
+              unCheckedChildren={t('operations.no')} 
+              checked={cmpy_req_pin_flag}
+              onChange={onBlendTol}
+            />
           </Form.Item>
         </Col>
       </Row>
@@ -228,20 +269,35 @@ const OtherForm = ({ value, form }) => {
       <Row justify="center" gutter="8">
         <Col span={12}>
           <Form.Item name="cmpy_wipe_ordets" label={t('fields.hostUpdateOrder')} {...leftItemLayout} >
-            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_wipe_ordets} onChange={onOrdCarrier}></Switch>
+            <Switch 
+              checkedChildren={t('operations.yes')} 
+              unCheckedChildren={t('operations.no')} 
+              checked={cmpy_wipe_ordets} 
+              onChange={onOrdCarrier}
+            />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item name="cmpy_enable_expd" label={t('fields.enableExpiryCheck')} {...rightItemLayout} >
-            <Switch checkedChildren={t('operations.yes')} unCheckedChildren={t('operations.no')} checked={cmpy_enable_expd} onChange={onWghComplete}></Switch>
+            <Switch 
+              checkedChildren={t('operations.yes')} 
+              unCheckedChildren={t('operations.no')} 
+              checked={cmpy_enable_expd} 
+              onChange={onWghComplete}
+            />
           </Form.Item>
         </Col>
       </Row>
 
       <Row justify="center" gutter="8">
         <Col span={24}>
-          <Form.Item name="cmpy_report_receivers" label={t('fields.closeoutRptEmails')} {...singleLineLayout} >
-            <TextArea rows={2}/>
+          <Form.Item 
+            name="cmpy_report_receivers" 
+            label={t('fields.closeoutRptEmails')} 
+            {...singleLineLayout} 
+            rules={[{ validator: emailValidate }]}
+          >
+            <TextArea rows={2} />
           </Form.Item>
         </Col>
         <Col offset={18} span={24}>

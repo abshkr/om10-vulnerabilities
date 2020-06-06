@@ -1,14 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {  useEffect } from 'react';
 
 import {
-  EditOutlined,
-  PlusOutlined,
-  CloseOutlined,
-  DeleteOutlined,
+  SaveOutlined,
   QuestionCircleOutlined
 } from '@ant-design/icons';
 
-import { Form, Button, Modal, notification, Select, InputNumber, Input } from 'antd';
+import { Form, Button, Modal, notification } from 'antd';
 import { DataTable } from '../../../components';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
@@ -24,10 +21,9 @@ const TemplateForm = ({ value }) => {
 
   const { t } = useTranslation();
   const fields = columns(t);
-  const { TextArea } = Input;
   const [form] = Form.useForm();
-  const { resetFields, setFieldsValue, getFieldDecorator } = form;
-  const [ templateData, setTemplateDate ] = useState(payload?.records)
+  const { setFieldsValue } = form;
+  // const [ templateData, setTemplateDate ] = useState(payload?.records)
 
   useEffect(() => {
     if (payload) {
@@ -36,7 +32,7 @@ const TemplateForm = ({ value }) => {
       })
     }
     
-  }, [ setFieldsValue, payload, setTemplateDate]);
+  }, [ setFieldsValue, payload]);
 
   const validate = (rule, input) => {
     // if (input === '' || !input) {
@@ -107,7 +103,7 @@ const TemplateForm = ({ value }) => {
       </Form.Item>
       <Button
         type="primary"
-        icon={<EditOutlined />}
+        icon={<SaveOutlined />}
         htmlType="submit"
         style={{ float: 'right', marginTop: 5 }}
         onClick={onSave}
