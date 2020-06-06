@@ -24,6 +24,10 @@ const Name = ({ form, value }) => {
       setFieldsValue({
         prmssn_name: value.prmssn_name
       });
+    } else {
+      setFieldsValue({
+        prmssn_name: null,
+      });
     }
   }, [value, setFieldsValue]);
 

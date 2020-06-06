@@ -379,8 +379,8 @@
     "deviceLockout": "Device Lockout",
     "devicePinPassword": "Device Pin Password",
     "rules": "Rules",
-    "permissionRuleId": "Permission Rule Id",
-    "permissionRuleClass": "Permission Rule Class",
+    "permissionRuleId": "Rule Id",
+    "permissionRuleClass": "Rule Class",
     "authorityType": "Authority Type",
     "firstRule": "First Rule?",
     "expiryCheck": "Expiry Check?",
@@ -1222,7 +1222,7 @@
     "addBase": "Add Base Product",
     "editBase": "Edit Base Product",
     "deleteBase": "Delete Base Product",
-    "addStrapping": "Add Strapping",
+	"addStrapping": "Add Strapping",
     "repost": "Repost",
     "archive": "Archive",
     "specialAction": "Special Action",
@@ -1232,7 +1232,10 @@
     "showDeliveryDetails": "Show Delivery Details",
     "companyRelation": "Company Relations",
     "removeFromFavourites": "Remove From Favourites",
-    "addToFavourites": "Add To Favourites"
+    "addToFavourites": "Add To Favourites",
+	"addRule": "Add Rule",
+	"editRule": "Edit Rule",
+	"deleteRule": "Delete Rule"
   },
 
   "tabColumns": {

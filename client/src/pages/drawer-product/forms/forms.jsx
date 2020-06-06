@@ -105,7 +105,7 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
   const handleBase = (v) => {
     FormModal({
       width: "50vh",
-      value,
+      value: v,
       form: <BaseProductForm value={v} handleBaseCallBack={handleBaseCallBack}/>,
       id: v?.pitem_base_code,
       name: v?.pitem_base_name,
@@ -332,7 +332,6 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
                 handleSelect={(value) => setSelected(value[0])}
               />
             </Form.Item>
-            
             
             <Button
               type="primary"

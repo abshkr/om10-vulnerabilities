@@ -17,6 +17,10 @@ const Gate = ({ form, value }) => {
       setFieldsValue({
         prmssn_gate: value.prmssn_gate
       });
+    } else {
+      setFieldsValue({
+        prmssn_gate: null,
+      });
     }
   }, [value, setFieldsValue]);
 
