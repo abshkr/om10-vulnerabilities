@@ -10,8 +10,6 @@ import moment from 'moment';
 
 import { FOLIO_SCHEDULING } from '../../../api';
 
-const TabPane = Tabs.TabPane;
-
 const Settings = ({ value, access }) => {
   const { data: payload } = useSWR(FOLIO_SCHEDULING.SETTINGS);
   
@@ -343,8 +341,6 @@ const Settings = ({ value, access }) => {
  
   //Is todady ready for "Run and Override"
   const runnable = (data) => {
-    console.log("runnable start")
-
     //1# today is not an exception
     const today = moment();
     if (!checkDate(today)) {
