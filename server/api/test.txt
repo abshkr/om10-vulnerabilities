@@ -2699,6 +2699,12 @@ https://10.1.10.66/api/pages/movement/reverse.php?supplier=CN51&trip_no=900090
 https://10.1.10.66/api/pages/movement/schedules.php?mv_key=1681420
 https://10.1.10.66/api/pages/movement/schedules.php
 https://10.1.10.66/api/pages/movement/schedule_items.php?supplier=CN51&trip_no=900063
+https://{{server_ip}}/api/pages/movement/lock_item.php
+{
+    "mvitm_move_id": "5089",
+    "mvitm_line_id": "3",
+    "mvitm_completed": false
+}
 https://10.1.10.66/api/pages/movement/reverse.php?supplier=CN51&trip_no=900063
 https://10.1.10.66/api/pages/movement/view_bol.php?supplier=1565102&trip_no=900000027
 https://10.1.10.66/api/pages/movement/print_bol.php?supplier=1565102&trip_no=900000027
