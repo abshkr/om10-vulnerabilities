@@ -5,17 +5,19 @@ import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 import _ from 'lodash';
 
-import { NOMINATION_TRANSACTIONS } from '../../../../api';
+import { NOMINATION_TRANSACTIONS } from '../../../../../../../api';
 
 const SourceArm = ({ form, value, onChange, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
 
-  const { data: options, isValidating } = useSWR(
+  const {
+    data: options,
+    isValidating,
+  } = useSWR(
     `${NOMINATION_TRANSACTIONS.ARMS}?prod_code=${value?.mvitm_prodcode_from}&prod_cmpy=${value?.mvitm_prodcmpy_from}`,
-    { refreshInterval: 0,
-    }
+    { refreshInterval: 0 }
   );
 
   const validate = (rule, input) => {
@@ -31,7 +33,7 @@ const SourceArm = ({ form, value, onChange, pageState }) => {
   const getArmItem = (code, list) => {
     // find the item having a particular stream_armcode
     let arm_item = _.filter(list, (item) => {
-      return item.stream_armcode === code
+      return item.stream_armcode === code;
     });
 
     return arm_item;
@@ -63,7 +65,7 @@ const SourceArm = ({ form, value, onChange, pageState }) => {
         allowClear
         showSearch
         onChange={onArmChange}
-        disabled={(pageState==='disposal')? false : true}
+        disabled={pageState === 'disposal' ? false : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectFromArm') : null}
         filterOption={(value, option) =>

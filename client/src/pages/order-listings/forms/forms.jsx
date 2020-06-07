@@ -35,7 +35,7 @@ import {
   ShipTo,
   TransferType,
   ApproveFlag,
-  OrderInstructions
+  OrderInstructions,
 } from './fields';
 
 import { DataTable } from '../../../components';
@@ -47,7 +47,6 @@ import OrderTrips from './order-trips';
 import OrderItemTrips from './item-trips';
 
 import DeliveryDetails from '../../delivery-details';
-import NominationTransactions from '../../nomination-transactions';
 
 const TabPane = Tabs.TabPane;
 
@@ -74,26 +73,26 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const [showDeliveryDetails, setShowDeliveryDetails] = useState(false);
 
   //console.log("access in OO", access);
-  console.log("pageState in OO", pageState);
+  console.log('pageState in OO', pageState);
   const IS_CREATING = !value;
   //const CAN_ORDER_PERIOD = !!selected && !!value;
-  const CAN_ORDER_PERIOD = (selected !== null && selected !== undefined) && (value !== null && value !== undefined);
-  const CAN_DELIVERY_DETAIL = (value !== null && value !== undefined);
+  const CAN_ORDER_PERIOD =
+    selected !== null && selected !== undefined && value !== null && value !== undefined;
+  const CAN_DELIVERY_DETAIL = value !== null && value !== undefined;
 
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
   const user_code = decoded?.per_code;
 
   const doTabChanges = (tabPaneKey) => {
-    if (tabPaneKey === "1") {
+    if (tabPaneKey === '1') {
       setDrawerWidth('80vw');
       setMainTabOn(true);
-    }
-    else {
+    } else {
       setDrawerWidth('90vw');
       setMainTabOn(false);
     }
-  }
+  };
 
   const onFormClosed = () => {
     handleFormState(false, null);
@@ -102,7 +101,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   };
 
   const onComplete = () => {
-    console.log("start of onComplete");
+    console.log('start of onComplete');
     handleFormState(false, null);
     setDrawerWidth('80vw');
     setMainTabOn(true);
@@ -110,18 +109,18 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
     setSupplier(undefined);
     setDrawer(undefined);
     setSelected(null);
-    console.log("end of onComplete");
+    console.log('end of onComplete');
   };
 
   const getOrderItems = useCallback(() => {
     const url = IS_CREATING
       ? `${ORDER_LISTINGS.ORDER_ITEMS}?order_drwr_code=${supplier}&page_state=${pageState}`
       : `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${orderNo}`;
-      //: `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${value?.order_sys_no}`;
+    //: `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${value?.order_sys_no}`;
 
     axios.get(url).then((response) => {
       const payload = response.data?.records || [];
-  
+
       setFieldsValue({
         order_items: payload,
       });
@@ -134,7 +133,6 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
     const values = await validateFields();
     const orderItems = [];
 
-
     _.forEach(values?.order_items, (order_item) => {
       if (order_item.oitem_prod_qty > 0) {
         orderItems.push({
@@ -146,7 +144,6 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
           oitem_prod_price: _.toNumber(order_item.oitem_prod_price),
           oitem_exempt_no: order_item.oitem_exempt_no,
           oitem_padj_code: order_item.oitem_padj_code,
-  
         });
       }
     });
@@ -154,16 +151,15 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
     values.order_items = orderItems;
     if (value?.order_sys_no === undefined) {
       values.order_sys_no = -1;
-    }
-    else {
+    } else {
       values.order_sys_no = value?.order_sys_no;
     }
-    console.log("values:", value?.order_sys_no, orderNo, values)
-    console.log("date before", values.order_ord_time, values.order_dlv_time, values.order_exp_time);
+    console.log('values:', value?.order_sys_no, orderNo, values);
+    console.log('date before', values.order_ord_time, values.order_dlv_time, values.order_exp_time);
     values.order_ord_time = values?.order_ord_time?.format(SETTINGS.DATE_TIME_FORMAT);
     values.order_dlv_time = values?.order_dlv_time?.format(SETTINGS.DATE_TIME_FORMAT);
     values.order_exp_time = values?.order_exp_time?.format(SETTINGS.DATE_TIME_FORMAT);
-    console.log("date after", values.order_ord_time, values.order_dlv_time, values.order_exp_time);
+    console.log('date after', values.order_ord_time, values.order_dlv_time, values.order_exp_time);
 
     values.order_styp_id = 0;
     values.order_totals = 0;
@@ -335,10 +331,10 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
       footer={
         <>
           {!IS_CREATING && !approved && (
-            <Button 
-              type="primary" 
-              disabled={IS_CREATING || !access?.canUpdate || !mainTabOn} 
-              icon={<EditOutlined />} 
+            <Button
+              type="primary"
+              disabled={IS_CREATING || !access?.canUpdate || !mainTabOn}
+              icon={<EditOutlined />}
               onClick={onApprove}
             >
               {t('operations.approve')}
@@ -346,10 +342,10 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
           )}
 
           {!IS_CREATING && approved && (
-            <Button 
-              type="primary" 
-              disabled={IS_CREATING || !access?.canUpdate || !mainTabOn} 
-              icon={<EditOutlined />} 
+            <Button
+              type="primary"
+              disabled={IS_CREATING || !access?.canUpdate || !mainTabOn}
+              icon={<EditOutlined />}
               onClick={onUnapprove}
             >
               {t('operations.unapprove')}
@@ -361,7 +357,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || !mainTabOn }
+            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || !mainTabOn}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -395,7 +391,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={(!access?.canDelete) || !mainTabOn}
+              disabled={!access?.canDelete || !mainTabOn}
               onClick={onDelete}
             >
               {t('operations.delete')}
@@ -404,15 +400,15 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
         </>
       }
     >
-      <Form 
-        layout="vertical" 
-        form={form} 
-        scrollToFirstError 
+      <Form
+        layout="vertical"
+        form={form}
+        scrollToFirstError
         initialValues={{
           order_cust_no: null,
           order_ttyp_id: '0',
-          order_dtrm_code: siteData?.records[0].site_code, 
-          order_strm_code: siteData?.records[0].site_code, 
+          order_dtrm_code: siteData?.records[0].site_code,
+          order_strm_code: siteData?.records[0].site_code,
           order_stat_id: '0',
         }}
       >
@@ -474,7 +470,13 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
 
             <Row gutter={[8, 8]}>
               <Col span={6}>
-                <DrawerCompany form={form} value={value} supplier={supplier} onChange={setDrawer} pageState={pageState} />
+                <DrawerCompany
+                  form={form}
+                  value={value}
+                  supplier={supplier}
+                  onChange={setDrawer}
+                  pageState={pageState}
+                />
               </Col>
 
               <Col span={6}>
@@ -492,12 +494,12 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
 
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                <Row gutter={8,8}>
+                <Row gutter={(8, 8)}>
                   <Col span={24}>
                     <ApproveFlag form={form} value={value} onChange={setApproved} pageState={pageState} />
                   </Col>
                 </Row>
-                <Row gutter={8,8}>
+                <Row gutter={(8, 8)}>
                   <Col span={24}>
                     <TransferType form={form} value={value} pageState={pageState} />
                   </Col>
@@ -524,26 +526,32 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
             </Form.Item>
           </TabPane>
           <TabPane tab={t('tabColumns.orderTrips')} disabled={IS_CREATING} key="2">
-            <OrderTrips value={value} orderNo={orderNo}/>
+            <OrderTrips value={value} orderNo={orderNo} />
           </TabPane>
-          <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING||!selected} key="3">
-            <OrderItemTrips value={value} orderItem={selected}/>
+          <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING || !selected} key="3">
+            <OrderItemTrips value={value} orderItem={selected} />
           </TabPane>
           <TabPane tab={t('tabColumns.deliveryDetails')} disabled={IS_CREATING} key="4">
-            <DeliveryDetails 
-              // access={access} 
+            <DeliveryDetails
+              // access={access}
               params={{
-                dd_supp_code: value?.order_supp_code, 
-                dd_tripord_no: value?.order_cust_no, 
-                dd_ld_type: 3
+                dd_supp_code: value?.order_supp_code,
+                dd_tripord_no: value?.order_cust_no,
+                dd_ld_type: 3,
               }}
             />
           </TabPane>
         </Tabs>
       </Form>
-      {pageState !== 'create' &&
-      <Period visible={showPeriod && CAN_ORDER_PERIOD} setVisibility={setShowPeriod} selected={selected} order={value} form={form} />
-      }
+      {pageState !== 'create' && (
+        <Period
+          visible={showPeriod && CAN_ORDER_PERIOD}
+          setVisibility={setShowPeriod}
+          selected={selected}
+          order={value}
+          form={form}
+        />
+      )}
     </Drawer>
   );
 };

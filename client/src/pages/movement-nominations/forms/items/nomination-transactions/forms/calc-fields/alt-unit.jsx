@@ -4,7 +4,7 @@ import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 
-import { NOMINATION_TRANSACTIONS } from '../../../../api';
+import { NOMINATION_TRANSACTIONS } from '../../../../../../../api';
 
 const AltQtyUnit = ({ form, value, altQty, pageState }) => {
   const { t } = useTranslation();
@@ -34,13 +34,13 @@ const AltQtyUnit = ({ form, value, altQty, pageState }) => {
   return (
     <Form.Item
       name="mlitm_unit_rpt"
-      label={t('fields.nomtranAltQtyUnit')+'   '}
+      label={t('fields.nomtranAltQtyUnit') + '   '}
       rules={[{ required: false, validator: validate }]}
     >
       <Select
         loading={isValidating}
         showSearch
-        disabled={((pageState==='transfer')? false : false) || !altQty}
+        disabled={(pageState === 'transfer' ? false : false) || !altQty}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectUnit') : null}
         filterOption={(value, option) =>

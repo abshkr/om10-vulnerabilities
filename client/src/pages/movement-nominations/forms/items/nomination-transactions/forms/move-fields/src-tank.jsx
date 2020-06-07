@@ -5,23 +5,25 @@ import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 import _ from 'lodash';
 
-import { NOMINATION_TRANSACTIONS } from '../../../../api';
+import { NOMINATION_TRANSACTIONS } from '../../../../../../../api';
 
-const DestinationTank = ({ form, value, onChange, pageState }) => {
+const SourceTank = ({ form, value, onChange, arm, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
 
-  const { data: options, isValidating } = useSWR(
-    `${NOMINATION_TRANSACTIONS.TANKS_BY_DRAWPROD}?supplier=${value?.mvitm_prodcmpy_to}&product=${value?.mvitm_prodcode_to}`,
-    { refreshInterval: 0,
-    }
+  const {
+    data: options,
+    isValidating,
+  } = useSWR(
+    `${NOMINATION_TRANSACTIONS.TANKS_BY_DRAWPROD}?supplier=${value?.mvitm_prodcmpy_from}&product=${value?.mvitm_prodcode_from}`,
+    { refreshInterval: 0 }
   );
 
   const validate = (rule, input) => {
     if (rule.required) {
       if (input === '' || !input) {
-        return Promise.reject(`${t('validate.select')} ─ ${t('fields.nomtranToTank')}`);
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.nomtranFromTank')}`);
       }
     }
 
@@ -31,7 +33,7 @@ const DestinationTank = ({ form, value, onChange, pageState }) => {
   const getTankItem = (code, list) => {
     // find the item having a particular tank_code
     let tank_item = _.filter(list, (item) => {
-      return item.tank_code === code
+      return item.tank_code === code;
     });
 
     return tank_item;
@@ -44,18 +46,29 @@ const DestinationTank = ({ form, value, onChange, pageState }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mvitm_tank_to: value.mvitm_tank_to,
+        mvitm_tank_from: value.mvitm_tank_from,
       });
 
-      //onChange(value.mvitm_tank_to);
-      onChange(getTankItem(value.mvitm_tank_to, options?.records));
+      //onChange(value.mvitm_tank_from);
+      onChange(getTankItem(value.mvitm_tank_from, options?.records));
     }
   }, [value, options, setFieldsValue, onChange]);
 
+  useEffect(() => {
+    if (arm && arm.length > 0) {
+      setFieldsValue({
+        mvitm_tank_from: arm?.[0]?.stream_tankcode,
+      });
+
+      //onChange(value.mvitm_tank_from);
+      onChange(getTankItem(arm?.[0]?.stream_tankcode, options?.records));
+    }
+  }, [arm, setFieldsValue, onChange]);
+
   return (
     <Form.Item
-      name="mvitm_tank_to"
-      label={t('fields.nomtranToTank')}
+      name="mvitm_tank_from"
+      label={t('fields.nomtranFromTank')}
       rules={[{ required: false, validator: validate }]}
     >
       <Select
@@ -63,7 +76,7 @@ const DestinationTank = ({ form, value, onChange, pageState }) => {
         allowClear
         showSearch
         onChange={onTankChange}
-        disabled={(pageState==='disposal')? true : false}
+        disabled={pageState === 'receipt' ? true : arm?.length > 0 ? true : false}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectFromTank') : null}
         filterOption={(value, option) =>
@@ -80,4 +93,4 @@ const DestinationTank = ({ form, value, onChange, pageState }) => {
   );
 };
 
-export default DestinationTank;
+export default SourceTank;

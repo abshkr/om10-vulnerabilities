@@ -6,6 +6,7 @@ import useSWR from 'swr';
 
 import Schedules from './schedules';
 import TransactionList from './transaction-list';
+import NominationTransactions from './nomination-transactions';
 
 import { DataTable } from '../../../../components';
 import { MOVEMENT_NOMIATIONS } from '../../../../api';
@@ -272,7 +273,7 @@ const Items = ({ setTableAPIContext, value }) => {
         type="primary"
         icon={<CarryOutOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={!buttonState?.makeTransaction || disabled}
+        // disabled={!buttonState?.makeTransaction || disabled}
         onClick={() => setMakeTransactionVisible(true)}
       >
         {t('operations.makeTransaction')}
@@ -324,7 +325,7 @@ const Items = ({ setTableAPIContext, value }) => {
         visible={makeTransactionVisible}
         width="100vw"
       >
-        make transaction
+        <NominationTransactions params={selected[0]} access={null} />
       </Drawer>
 
       <Drawer

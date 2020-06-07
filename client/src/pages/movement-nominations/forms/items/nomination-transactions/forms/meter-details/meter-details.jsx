@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { DataTable } from '../../../../components';
+import { DataTable } from '../../../../../../../components';
 import columns from './columns';
 
 const MeterDetails = ({ form, value, pageState, arm }) => {
@@ -12,11 +12,11 @@ const MeterDetails = ({ form, value, pageState, arm }) => {
 
   return (
     <>
-      <DataTable 
-        data={[]} 
-        height="80vh" 
+      <DataTable
+        data={[]}
+        height="80vh"
         columns={columns(t, pageState, form, arm)}
-        //columns={fields} 
+        //columns={fields}
       />
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
         <div style={{ marginRight: 20 }}>
