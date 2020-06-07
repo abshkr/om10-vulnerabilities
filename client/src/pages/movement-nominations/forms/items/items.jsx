@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { PlusOutlined, MinusOutlined, EyeOutlined, CarryOutOutlined, LockOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Drawer } from 'antd';
+import { Button, Form, Drawer, notification } from 'antd';
 import useSWR from 'swr';
+import axios from 'axios';
 
 import Schedules from './schedules';
 import TransactionList from './transaction-list';
@@ -18,7 +19,7 @@ const Items = ({ setTableAPIContext, value }) => {
 
   const url = value ? `${MOVEMENT_NOMIATIONS.ITEMS}?mv_id=${value?.mv_id}` : null;
 
-  const { data: payload } = useSWR(url);
+  const { data: payload, revalidate } = useSWR(url);
 
   const [data, setData] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -145,7 +146,7 @@ const Items = ({ setTableAPIContext, value }) => {
     }
     setTransItem(currItem);
     setMakeTransactionVisible(true);
-  }
+  };
 
   const handleItemAdd = () => {
     const length = size + 1;
@@ -244,7 +245,27 @@ const Items = ({ setTableAPIContext, value }) => {
     setSelected([payload]);
   };
 
-  const onViewSchedule = () => {};
+  const onItemLock = async () => {
+    const locked = selected[0]?.mvitm_completed === '1';
+
+    await axios
+      .post(MOVEMENT_NOMIATIONS.TOGGLE_LOCK, {
+        mvitm_move_id: selected[0]?.mvitm_move_id,
+        mvitm_line_id: selected[0]?.mvitm_line_id,
+        mvitm_completed: !locked,
+      })
+      .then(
+        axios.spread(() => {
+          revalidate();
+
+          setSelected([]);
+
+          notification.success({
+            message: locked ? t('messages.unlockSuccess') : t('messages.lockSuccess'),
+          });
+        })
+      );
+  };
 
   useEffect(() => {
     setData(payload?.records);
@@ -314,13 +335,14 @@ const Items = ({ setTableAPIContext, value }) => {
       <Button
         type="primary"
         icon={<LockOutlined />}
+        onClick={onItemLock}
         style={{ float: 'right', marginRight: 5 }}
         disabled={canModifyFurther || disabled}
       >
-        {t('operations.lockItem')}
+        {selected[0]?.mvitm_completed === '1' ? t('operations.unlockItem') : t('operations.lockItem')}
       </Button>
 
-      {transactionVisible &&(
+      {transactionVisible && (
         <Drawer
           placement="right"
           bodyStyle={{ paddingTop: 5 }}

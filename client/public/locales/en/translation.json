@@ -977,7 +977,7 @@
     "templateType": "Template Type",
     "templateIdentifier": "Template Identifier",
     "defaultTemplate": "Default Template",
-	"print": "Print",
+    "print": "Print",
     "numOfCopies": "Num of Copies",
     "footerText": "Footer Text",
     "tiggerPoint": "Trigger Point",
@@ -1224,7 +1224,7 @@
     "addBase": "Add Base Product",
     "editBase": "Edit Base Product",
     "deleteBase": "Delete Base Product",
-	"addStrapping": "Add Strapping",
+    "addStrapping": "Add Strapping",
     "repost": "Repost",
     "archive": "Archive",
     "specialAction": "Special Action",
@@ -1235,9 +1235,10 @@
     "companyRelation": "Company Relations",
     "removeFromFavourites": "Remove From Favourites",
     "addToFavourites": "Add To Favourites",
-	"addRule": "Add Rule",
-	"editRule": "Edit Rule",
-	"deleteRule": "Delete Rule"
+    "addRule": "Add Rule",
+    "editRule": "Edit Rule",
+    "deleteRule": "Delete Rule",
+    "unlockItem": "Unlock Item"
   },
 
   "tabColumns": {
@@ -1361,7 +1362,8 @@
     "archiveSuccess": "Successfully Archived.",
     "manualOverride": "Manual Closeout Override",
     "favouriteAddded": "Successfully Favourited.",
-    "favouriteRemoved": "Successfully Removed."
+    "favouriteRemoved": "Successfully Removed.",
+    "lockSuccess": "Successfully Locked."
   },
 
   "prompts": {
