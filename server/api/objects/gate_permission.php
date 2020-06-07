@@ -3,6 +3,7 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/eqpt_service.php';
 include_once 'common_class.php';
 
 class GatePermission extends CommonClass
@@ -501,5 +502,11 @@ class GatePermission extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function dropdown_eqpt_types()
+    {
+        $serv = new EqptService($this->conn);
+        return $serv->dropdown_eqpt_types();
     }
 }

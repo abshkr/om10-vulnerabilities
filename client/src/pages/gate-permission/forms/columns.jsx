@@ -6,7 +6,7 @@ const columns = (t) => [
       sortable: true,
       resizable: true,
       suppressSizeToFit: true, 
-      width: 75,
+      width: 80,
     //   pinned: "left",
     },
     {
