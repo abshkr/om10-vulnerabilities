@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Input } from 'antd';
 import _ from 'lodash';
-import Form from 'antd/lib/form/Form';
-// import { useTranslation } from 'react-i18next';
 
 export default class FooterEditor extends Component {
   constructor(props) {

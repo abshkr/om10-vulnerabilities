@@ -11,10 +11,7 @@ class MovementReason extends CommonClass
     protected $TABLE_NAME = 'MOV_REASONS';
     
     public $NUMBER_FIELDS = array(
-        "MVITM_PROD_QTY",
-        "MVITM_QTY_SCHD",
-        "MVITM_QTY_MOVE",
-        "MVITM_QTY_DELV"
+        "MR_ID",
     );
 
     public $BOOLEAN_FIELDS = array(
@@ -76,13 +73,13 @@ class MovementReason extends CommonClass
         // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
         //     __FILE__, __LINE__);
             
-        if (isset($this->mr_action)) {
+        if (isset($this->mr_id)) {
             $query = "SELECT COUNT(*) CN FROM MOV_REASONS
-                WHERE MR_ACTION = :mr_action";
+                WHERE MR_ID = :mr_id";
             $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':mr_action', $this->mr_action);
+            oci_bind_by_name($stmt, ':mr_id', $this->mr_id);
             if (oci_execute($stmt, $this->commit_mode)) {
-                $this->record_str = sprintf("mr_action:%s", $this->mr_action);
+                $this->record_str = sprintf("mr_id:%s", $this->mr_id);
                 
                 $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
                 if ($row['CN'] > 0) {

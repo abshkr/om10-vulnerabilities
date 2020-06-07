@@ -4,6 +4,7 @@ import unitConverter from './unit-converter';
 import generateOptions from './generate-options';
 import convertToLocale from './convert-to-locale';
 import getDateTimeFormat from './get-date-time-format';
+import getDateRangeOffset from './get-date-range-offset';
 import fetcher from './fetcher';
 import hexToRGB from './hex-to-rbg';
 import validatorStatus from './validator-status';
@@ -18,6 +19,7 @@ export {
   unitConverter,
   authLevel,
   getDateTimeFormat,
+  getDateRangeOffset,
   fetcher,
   hexToRGB,
   VCFManager,

@@ -2,16 +2,22 @@ const columns = t => [
   {
     headerName: t('fields.drawerCode'),
     field: 'prod_cmpycode',
-    filter: 'MultiFilter',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    width: 120,
+    suppressSizeToFit: true, 
+    pinned: "left",
   },
   {
     headerName: t('fields.oitemDrwrName'),
     field: 'prod_cmpyname',
-    filter: 'MultiFilter',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 180,
+    pinned: "left",
   },
   {
     headerName: t('fields.productCode'),
@@ -19,6 +25,9 @@ const columns = t => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 140,
+    pinned: "left",
   },
   {
     headerName: t('fields.productName'),
@@ -26,6 +35,9 @@ const columns = t => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 220,
+    pinned: "left",
   },
   {
     headerName: t('fields.prodCompliant'),
@@ -33,7 +45,9 @@ const columns = t => [
     filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
     cellRenderer: 'BooleanRenderer',
+    width: 120,
   },
   {
     headerName: t('fields.locked'),
@@ -41,7 +55,9 @@ const columns = t => [
     filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
     cellRenderer: 'BooleanRenderer',
+    width: 90,
   },
   {
     headerName: t('fields.productGroupCode'),
@@ -49,6 +65,8 @@ const columns = t => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 170,
   },
   {
     headerName: t('fields.productGroup'),
@@ -56,6 +74,8 @@ const columns = t => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 130,
   },
   {
     headerName: t('fields.genericName'),
@@ -63,6 +83,8 @@ const columns = t => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 140,
   },
   {
     headerName: t('fields.isBlend'),
@@ -71,6 +93,8 @@ const columns = t => [
     sortable: true,
     resizable: true,
     cellRenderer: 'BooleanRenderer',
+    suppressSizeToFit: true,
+    width: 120,
   },
   {
     headerName: t('fields.loadToleranceCheck'),
@@ -79,6 +103,8 @@ const columns = t => [
     sortable: true,
     resizable: true,
     cellRenderer: 'BooleanRenderer',
+    suppressSizeToFit: true,
+    width: 180,
   },
   {
     headerName: t('fields.lowerLimit'),
@@ -86,6 +112,8 @@ const columns = t => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 130,
   },
   {
     headerName: t('fields.upperLimit'),
@@ -93,6 +121,8 @@ const columns = t => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 130,
   },
   {
     headerName: t('fields.hazchemID'),
@@ -100,6 +130,8 @@ const columns = t => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 130,
   },
   {
     headerName: t('fields.technicalName'),
@@ -107,6 +139,8 @@ const columns = t => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 140,
   },
   {
     headerName: t('fields.hazchemClass'),
@@ -114,6 +148,8 @@ const columns = t => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 140,
   },
   {
     headerName: t('fields.hazchemCode'),
@@ -121,6 +157,8 @@ const columns = t => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 140,
   },
   {
     headerName: t('fields.description'),
@@ -128,6 +166,8 @@ const columns = t => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 130,
   },
 ];
 

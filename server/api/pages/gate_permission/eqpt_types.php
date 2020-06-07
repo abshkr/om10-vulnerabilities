@@ -4,7 +4,7 @@ include_once '../../shared/header.php';
 
 // include database and object files
 include_once '../../config/database.php';
-include_once '../../objects/eqpt_type.php';
+include_once '../../objects/gate_permission.php';
 
-Utilities::read('EquipmentType', $method = 'dropdown_eqpt_types', $filter = true);
-// Utilities::read('EquipmentType', $method = 'search', $filter = true);
+Utilities::read('GatePermission', $method = 'dropdown_eqpt_types', $filter = true);
+

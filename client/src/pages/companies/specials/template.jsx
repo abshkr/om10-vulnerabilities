@@ -1,14 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {  useEffect } from 'react';
 
 import {
-  EditOutlined,
-  PlusOutlined,
-  CloseOutlined,
-  DeleteOutlined,
+  SaveOutlined,
   QuestionCircleOutlined
 } from '@ant-design/icons';
 
-import { Form, Button, Modal, notification, Select, InputNumber, Input } from 'antd';
+import { Form, Button, Modal, notification } from 'antd';
 import { DataTable } from '../../../components';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
@@ -20,14 +17,12 @@ import { COMPANIES } from '../../../api';
 
 const TemplateForm = ({ value }) => {
   const { data: payload, isValidating } = useSWR(`${COMPANIES.TEMPLATES}?cmpy_code=${value?.cmpy_code}`);
-  console.log(payload?.records);
 
   const { t } = useTranslation();
   const fields = columns(t);
-  const { TextArea } = Input;
   const [form] = Form.useForm();
-  const { resetFields, setFieldsValue, getFieldDecorator } = form;
-  const [ templateData, setTemplateDate ] = useState(payload?.records)
+  const { setFieldsValue } = form;
+  // const [ templateData, setTemplateDate ] = useState(payload?.records)
 
   useEffect(() => {
     if (payload) {
@@ -36,15 +31,7 @@ const TemplateForm = ({ value }) => {
       })
     }
     
-  }, [ setFieldsValue, payload, setTemplateDate]);
-
-  const validate = (rule, input) => {
-    // if (input === '' || !input) {
-    //   return Promise.reject(`${t('fields.loadToleranceCheck')}`);
-    // }
-
-    return Promise.resolve();
-  };
+  }, [ setFieldsValue, payload]);
 
   const onSave = async () => {
     const values = await form.validateFields();
@@ -101,13 +88,13 @@ const TemplateForm = ({ value }) => {
           isLoading={isValidating} 
           components={{
             FooterEditor: FooterEditor,
-            SwitchRender: SwitchRender
+            SwitchRender: SwitchRender,
           }}
         />
       </Form.Item>
       <Button
         type="primary"
-        icon={<EditOutlined />}
+        icon={<SaveOutlined />}
         htmlType="submit"
         style={{ float: 'right', marginTop: 5 }}
         onClick={onSave}

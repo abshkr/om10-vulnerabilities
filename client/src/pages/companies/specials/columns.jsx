@@ -7,11 +7,6 @@ const columns = (t, values, form) => [
     resizable: true,
     width: 90,
     cellRenderer: 'SwitchRender',
-    // cellEditor: 'SwitchEditor',
-    // cellEditorParams: {
-    //   values: "hello",
-    //   form: form,
-    // },
   },
   {
     headerName: t('fields.templateName'),
@@ -27,7 +22,7 @@ const columns = (t, values, form) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 110,
+    width: 90,
   },
   {
     headerName: t('fields.templateType'),
@@ -37,13 +32,6 @@ const columns = (t, values, form) => [
     resizable: true,
     width: 110,
   },
-  // {
-  //   headerName: t('fields.templateIdentifier'),
-  //   field: 'template_code',
-  //   filter: 'FuzzyFilter',
-  //   sortable: true,
-  //   resizable: true,
-  // },
   {
     headerName: t('fields.defaultTemplate'),
     field: 'default_flag',
@@ -51,7 +39,7 @@ const columns = (t, values, form) => [
     sortable: true,
     resizable: true,
     cellRenderer: 'SwitchRender',
-    width: 150,
+    width: 120,
   },
   {
     headerName: t('fields.numOfCopies'),
@@ -70,9 +58,9 @@ const columns = (t, values, form) => [
     resizable: true,
     editable: true,
     cellEditorParams: {
-      values: "hello",
       form: form,
     },
+    width: 120,
   },
   {
     headerName: t('fields.email'),
@@ -81,14 +69,28 @@ const columns = (t, values, form) => [
     sortable: true,
     resizable: true,
     editable: true,
+    valueParser: (params) => {
+      const regEx = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+      const result = params.newValue.replace(/\s/g, "").split(/:|;/);   
+      for(let i = 0; i < result.length; i++) {
+          
+        if(!regEx.test(result[i])) {
+          return params.oldValue;
+        }
+      }
+
+      return params.newValue;
+    }
   },
-  // {
-  //   headerName: t('fields.tiggerPoint'),
-  //   field: '',
-  //   filter: 'FuzzyFilter',
-  //   sortable: true,
-  //   resizable: true,
-  // },
+  {
+    headerName: t('fields.print'),
+    field: 'send_to_printer',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'SwitchRender',
+    width: 80,
+  },
 ];
 
 export default columns;

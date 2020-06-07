@@ -13,9 +13,16 @@ import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
+import { useConfig } from '../../hooks';
+import { getDateRangeOffset } from '../../utils';
 
 const OrderListings = ({popup}) => {
   console.log('popup', popup);
+  const config = useConfig();
+  console.log('config', config);
+  const ranges = getDateRangeOffset( String(config.openOrderDateRange), "365");
+  console.log("ranges", config.openOrderDateRange, ranges);
+
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [timeOption, setTimeOption] = useState('ORDER_ORD_TIME');
@@ -34,8 +41,10 @@ const OrderListings = ({popup}) => {
 
   const access = useAuth('M_ORDERLISTING');
 
-  const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-  const [end, setEnd] = useState(moment().add(1, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  //const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  //const [end, setEnd] = useState(moment().add(1, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  const [start, setStart] = useState(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  const [end, setEnd] = useState(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
   const { data: payload, isValidating, revalidate } = useSWR(
     `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
@@ -79,6 +88,24 @@ const OrderListings = ({popup}) => {
 
   const page = t('pageMenu.customers');
   const name = t('pageNames.orderListing');
+
+  useEffect(() => {
+    if (!!ranges && !!ranges.beforeToday) {
+      setStart(
+        moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT)
+      );
+    }
+    if (!!ranges && !!ranges.beforeToday && !!ranges.afterToday) {
+      setEnd(
+        moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT)
+      );
+    }
+    
+  }, [ranges, setStart, setEnd]);
+
+  /* useEffect(() => {
+    revalidate();
+  }, [start, end]); */
 
   /* useEffect(() => {
     if (visible) {

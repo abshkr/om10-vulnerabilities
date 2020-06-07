@@ -25,7 +25,7 @@ const RelationForm = ({ value, handleFormState }) => {
 
   const { t } = useTranslation();
   const fields = columns(t);
-  const [form] = Form.useForm();
+  const [form] = Form?.useForm();
   const { setFieldsValue } = form;
   const [selected, setSelected] = useState(null);
   const [childVisible, setChildVisible] = useState(false);
@@ -80,6 +80,15 @@ const RelationForm = ({ value, handleFormState }) => {
     v.parent_cmpy_code = value.cmpy_code;
     v.parent_cmpy_name = value.cmpy_name;
     if (v.is_creating) {
+      if (_.find(children, (item) => {
+        return item.child_cmpy_code === v.child_cmpy_code;
+      })) {
+        notification.error({
+          message: t("messages.submitFailed"),
+          description: t("descriptions.alreadyExists"),
+        });
+        return;
+      }
       setChildren([...children, v])
       setFieldsValue({
         relations: [...children, v],
@@ -112,6 +121,7 @@ const RelationForm = ({ value, handleFormState }) => {
     setFieldsValue({
       relations: [...filtered],
     })
+    setSelected(null);
   }
 
   useEffect(() => {
