@@ -59,7 +59,7 @@ const useConfig = () => {
     rigidShipAvailable: false,
     tankStatusEnforced: false,
     vsmCompensation: 15,
-	safefillCheckByHighTemp: false, 
+    safefillCheckByHighTemp: false,
     showLSI: false,
     showSeals: false,
     loading: true,
@@ -165,7 +165,7 @@ const useConfig = () => {
         tankStatusEnforced: configurationObject?.SITE_TANK_STATUS_ENFORCEMENT_FLAG,
         showLSI: configurationObject?.SITE_USE_LSI,
         showSeals: configurationObject?.SITE_USE_SEAL,
-		safefillCheckByHighTemp: configurationObject?.SITE_LOAD_SAFEFILL_CHECK_BY_HIGHTEMP,
+        safefillCheckByHighTemp: configurationObject?.SITE_LOAD_SAFEFILL_CHECK_BY_HIGHTEMP,
 
         loading: false,
       });

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { Form, Input } from 'antd';
+import { Form, Input, Row, Col } from 'antd';
 
 const TransportMode = ({ form, value }) => {
   const { t } = useTranslation();
@@ -12,24 +12,25 @@ const TransportMode = ({ form, value }) => {
     if (value) {
       setFieldsValue({
         mv_tpmode: value.mv_tpmode,
-        mv_tpmode_text: value.mv_tpmode_text
+        mv_tpmode_text: value.mv_tpmode_text,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <>
-      <Form.Item name="mv_tpmode" label={t('fields.transportMode')}>
-        <Input
-          placeholder={t('placeholder.setTransportMode')}
-          style={{ width: '29.5%', marginRight: '0.5%' }}
-        />
-      </Form.Item>
+    <Row gutter={[12, 12]}>
+      <Col span={12}>
+        <Form.Item name="mv_tpmode" label={t('fields.transportMode')}>
+          <Input placeholder={t('placeholder.setTransportMode')} style={{ width: '100%' }} />
+        </Form.Item>
+      </Col>
 
-      <Form.Item name="mv_tpmode_text">
-        <Input placeholder={t('placeholder.setTransportModeDescription')} style={{ width: '70%' }} />
-      </Form.Item>
-    </>
+      <Col span={12}>
+        <Form.Item name="mv_tpmode_text" label={t('fields.transportModeDescription')}>
+          <Input placeholder={t('placeholder.setTransportModeDescription')} style={{ width: '100%' }} />
+        </Form.Item>
+      </Col>
+    </Row>
   );
 };
 

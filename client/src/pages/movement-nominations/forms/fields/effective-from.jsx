@@ -13,14 +13,14 @@ const EffectiveFrom = ({ form, value }) => {
     if (value) {
       setFieldsValue({
         mv_dtim_effect:
-          value.mv_dtim_effect === '' ? null : moment(value.mv_dtim_effect, SETTINGS.DATE_TIME_FORMAT)
+          value.mv_dtim_effect === '' ? null : moment(value.mv_dtim_effect, SETTINGS.DATE_TIME_FORMAT),
       });
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item name="mv_dtim_effect" label={t('fields.effectiveFrom')}>
-      <DatePicker showTime />
+      <DatePicker showTime style={{ width: '100%' }} />
     </Form.Item>
   );
 };

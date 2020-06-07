@@ -8,7 +8,7 @@ import {
   CloseOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Divider } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Divider, Drawer, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
@@ -38,7 +38,7 @@ import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value }) => {
+const FormModal = ({ value, visible, handleFormState, access, url }) => {
   const [tableAPI, setTableAPI] = useState(null);
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -46,6 +46,11 @@ const FormModal = ({ value }) => {
   const fields = columns(t);
 
   const IS_CREATING = !value;
+
+  const onComplete = () => {
+    handleFormState(false, null);
+    mutate(url);
+  };
 
   const onItemValidation = (items) => {
     const errors = [];
@@ -155,58 +160,23 @@ const FormModal = ({ value }) => {
   };
 
   return (
-    <div>
-      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-        <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
-            <NominationKey form={form} value={value} />
-
-            <NominationNumber form={form} value={value} />
-
-            <NominationSource form={form} value={value} />
-
-            <Supplier form={form} value={value} />
-
-            <Carrier form={form} value={value} />
-
-            <Vehicle form={form} value={value} />
-
-            <Divider />
-
-            <EffectiveFrom form={form} value={value} />
-
-            <ExpiredAfter form={form} value={value} />
-
-            <Divider />
-
-            <TPP form={form} value={value} />
-
-            <TransportMode form={form} value={value} />
-
-            <TransportSystem form={form} value={value} />
-
-            <Comments form={form} value={value} />
-          </TabPane>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.items')} forceRender={true} key="2">
-            <Items setTableAPIContext={setTableAPI} value={value} />
-          </TabPane>
-        </Tabs>
-
-        <Form.Item>
-          <Button
-            htmlType="button"
-            icon={<CloseOutlined />}
-            style={{ float: 'right' }}
-            onClick={() => Modal.destroyAll()}
-          >
-            {t('operations.cancel')}
-          </Button>
-
+    <Drawer
+      bodyStyle={{ paddingTop: 5 }}
+      onClose={() => handleFormState(false, null)}
+      maskClosable={IS_CREATING}
+      destroyOnClose={true}
+      mask={IS_CREATING}
+      placement="right"
+      width="80vw"
+      visible={visible}
+      footer={
+        <>
           <Button
             type="primary"
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-            htmlType="submit"
+            onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -216,14 +186,58 @@ const FormModal = ({ value }) => {
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
+              disabled={!access?.canDelete}
               onClick={onDelete}
             >
               {t('operations.delete')}
             </Button>
           )}
-        </Form.Item>
+        </>
+      }
+    >
+      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+        <Tabs defaultActiveKey="1" animated={false}>
+          <TabPane tab={t('tabColumns.general')} forceRender={true} key="1">
+            <NominationKey form={form} value={value} />
+
+            <NominationNumber form={form} value={value} />
+
+            <NominationSource form={form} value={value} />
+
+            <Row gutter={[12, 12]}>
+              <Col span={12}>
+                <Supplier form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <Carrier form={form} value={value} />
+              </Col>
+            </Row>
+
+            <Vehicle form={form} value={value} />
+
+            <Row gutter={[12, 12]}>
+              <Col span={12}>
+                <EffectiveFrom form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <ExpiredAfter form={form} value={value} />
+              </Col>
+            </Row>
+
+            <TPP form={form} value={value} />
+
+            <TransportMode form={form} value={value} />
+
+            <TransportSystem form={form} value={value} />
+
+            <Comments form={form} value={value} />
+          </TabPane>
+          <TabPane tab={t('tabColumns.items')} forceRender={true} key="2">
+            <Items setTableAPIContext={setTableAPI} value={value} />
+          </TabPane>
+        </Tabs>
       </Form>
-    </div>
+    </Drawer>
   );
 };
 

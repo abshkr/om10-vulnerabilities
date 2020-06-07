@@ -1013,13 +1013,15 @@
     "suffix": "Suffix",
     "preloaded": "Preloaded",
     "dangerousGoods": "Dangerous Goods",
-	"parentCmpyType": "Parent Company Type",
-	"childCmpyCode": "Child Company Code",
+    "parentCmpyType": "Parent Company Type",
+    "childCmpyCode": "Child Company Code",
     "childCmpyName": "Child Company Name",
     "childCmpyType": "Child Company Type",
     "checkHotLitre": "Check Hot Litres",
     "prodDensAt15": "Product @15ºC [kg/m³]",
-    "prodHotTemp": "Product Hot Temp [ºC]"
+    "prodHotTemp": "Product Hot Temp [ºC]",
+    "tppDescription": "TPP Description",
+    "transportModeDescription": "Transport Mode Description"
   },
 
   "pageMenu": {
@@ -1312,7 +1314,11 @@
     "transportationDoc": "Transportation Documents",
     "companyRelation": "Company Relations",
     "companyHotLitres": "Hot Litres",
-    "nominationTransactions": "Manual Transactions For Nominations"
+    "nominationTransactions": "Manual Transactions For Nominations",
+    "transactionForNomination": "Transactions For Nomination",
+    "meterDetails": "Meter Details",
+    "baseProductDetails": "Base Product Details",
+    "loadSchedulesForNomination": "Schdules For Nomination"
   },
 
   "messages": {

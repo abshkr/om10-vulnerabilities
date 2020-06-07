@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { PlusOutlined, MinusOutlined, EyeOutlined, CarryOutOutlined, LockOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Form } from 'antd';
+import { Button, Form, Drawer } from 'antd';
 import useSWR from 'swr';
 
-import { ROUTES } from '../../../../constants';
+import Schedules from './schedules';
+import TransactionList from './transaction-list';
+
 import { DataTable } from '../../../../components';
 import { MOVEMENT_NOMIATIONS } from '../../../../api';
 
@@ -13,12 +15,18 @@ import columns from './columns';
 const Items = ({ setTableAPIContext, value }) => {
   const { t } = useTranslation();
 
-  const { data: payload } = useSWR(`${MOVEMENT_NOMIATIONS.ITEMS}?mv_id=${value?.mv_id}`);
+  const url = value ? `${MOVEMENT_NOMIATIONS.ITEMS}?mv_id=${value?.mv_id}` : null;
+
+  const { data: payload } = useSWR(url);
 
   const [data, setData] = useState([]);
   const [selected, setSelected] = useState([]);
   const [tableAPI, setTableAPI] = useState(null);
   const [size, setSize] = useState([]);
+
+  const [scheduleVisible, setScheduleVisible] = useState(false);
+  const [transactionVisible, setTransactionVisible] = useState(false);
+  const [makeTransactionVisible, setMakeTransactionVisible] = useState(false);
 
   const [buttonState, setButtonState] = useState({
     makeSchedule: false,
@@ -28,7 +36,7 @@ const Items = ({ setTableAPIContext, value }) => {
     editLineItem: false,
   });
 
-  const disabled = selected.length === 0;
+  const disabled = selected?.length === 0 || !selected;
   const canModifyFurther = selected[0]?.mvitm_status_name === 'NEW' || disabled;
   const fields = columns(value, selected);
 
@@ -223,6 +231,8 @@ const Items = ({ setTableAPIContext, value }) => {
     setSelected([payload]);
   };
 
+  const onViewSchedule = () => {};
+
   useEffect(() => {
     setData(payload?.records);
     setSize(payload?.records?.length || 0);
@@ -235,12 +245,12 @@ const Items = ({ setTableAPIContext, value }) => {
   }, [tableAPI, setTableAPIContext]);
 
   useEffect(() => {
-    if (value) {
-      const buttonStates = handleButtonState(value?.mv_status_name);
+    if (selected[0]) {
+      const buttonStates = handleButtonState(selected[0]?.mvitm_status_name);
 
       setButtonState(buttonStates);
     }
-  }, [value]);
+  }, [selected]);
 
   return (
     <>
@@ -262,7 +272,8 @@ const Items = ({ setTableAPIContext, value }) => {
         type="primary"
         icon={<CarryOutOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={!buttonState?.makeTransaction}
+        disabled={!buttonState?.makeTransaction || disabled}
+        onClick={() => setMakeTransactionVisible(true)}
       >
         {t('operations.makeTransaction')}
       </Button>
@@ -271,7 +282,8 @@ const Items = ({ setTableAPIContext, value }) => {
         type="primary"
         icon={<EyeOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={!buttonState?.viewTransaction}
+        disabled={!buttonState?.viewTransaction || disabled}
+        onClick={() => setTransactionVisible(true)}
       >
         {t('operations.viewTransaction')}
       </Button>
@@ -280,7 +292,8 @@ const Items = ({ setTableAPIContext, value }) => {
         type="primary"
         icon={<EyeOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={!buttonState?.viewSchedule}
+        disabled={!buttonState?.viewSchedule || disabled}
+        onClick={() => setScheduleVisible(true)}
       >
         {t('operations.viewSchedule')}
       </Button>
@@ -289,17 +302,46 @@ const Items = ({ setTableAPIContext, value }) => {
         type="primary"
         icon={<LockOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={canModifyFurther}
+        disabled={canModifyFurther || disabled}
       >
         {t('operations.lockItem')}
       </Button>
+
+      <Drawer
+        placement="right"
+        bodyStyle={{ paddingTop: 5 }}
+        onClose={() => setTransactionVisible(false)}
+        visible={transactionVisible}
+        width="100vw"
+      >
+        <TransactionList selected={selected[0]} />
+      </Drawer>
+
+      <Drawer
+        placement="right"
+        bodyStyle={{ paddingTop: 5 }}
+        onClose={() => setMakeTransactionVisible(false)}
+        visible={makeTransactionVisible}
+        width="100vw"
+      >
+        make transaction
+      </Drawer>
+
+      <Drawer
+        placement="right"
+        bodyStyle={{ paddingTop: 5 }}
+        onClose={() => setScheduleVisible(false)}
+        visible={scheduleVisible}
+        width="100vw"
+      >
+        <Schedules selected={selected[0]} />
+      </Drawer>
 
       <Form.Item name="items">
         <DataTable
           columns={fields}
           data={data}
-          height="450px"
-          handleSelect={setSelected}
+          handleSelect={(value) => setSelected(value)}
           apiContext={setTableAPI}
           selectionMode="single"
           onEditingFinished={onEditingFinished}

@@ -1,4 +1,4 @@
-const columns = (t, type) => [
+const columns = (t, form, setPayload, payload, type, drawers) => [
   {
     headerName: t('fields.soldTo'),
     field: 'mtd_type_name',
@@ -60,39 +60,54 @@ const columns = (t, type) => [
     resizable: true,
     width: 120,
   },
+
   {
     headerName: t('fields.drawerProduct'),
-    field: 'product_code',
+    field: 'prod_code',
+    hide: true,
+  },
+
+  {
+    headerName: t('fields.drawerProduct'),
+    field: 'prod_code',
+    hide: true,
+  },
+
+  {
+    headerName: t('fields.company'),
+    field: 'prod_cmpy',
+    hide: true,
+  },
+
+  {
+    headerName: t('fields.drawerProduct'),
+    field: 'prod_name',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     cellEditor: 'DrawerProductsEditor',
     editable: true,
     cellEditorParams: {
-      values: [
-        {
-          drawer_name: 'test',
-          drawer_code: '2323',
-        },
-      ],
+      values: drawers?.records || [],
+      form,
+      setPayload,
+      t,
     },
   },
+
   {
     headerName: t('fields.bayArm'),
     field: 'arm_code',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 200,
     cellEditor: 'BayArmEditor',
     editable: true,
     cellEditorParams: {
-      values: [
-        {
-          arm_name: 'test',
-          arm_code: '2323',
-        },
-      ],
+      values: [],
+      form,
+      payload,
     },
   },
   {

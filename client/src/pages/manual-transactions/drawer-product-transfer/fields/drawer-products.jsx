@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Select } from 'antd';
+import _ from 'lodash';
 
 export default class DrawerProducts extends Component {
   constructor(props) {
@@ -15,7 +16,28 @@ export default class DrawerProducts extends Component {
   }
 
   onClick = (value, record) => {
-    const { rowIndex } = this.props;
+    const { form, setPayload, t } = this.props;
+
+    let current = form.getFieldValue('products');
+
+    const key = this.props.data?.tnkr_cmpt_no;
+    const index = _.findIndex(current, ['tnkr_cmpt_no', key]);
+
+    current[index].prod_code = record?.item?.prod_code;
+    current[index].prod_name = record.children;
+    current[index].prod_cmpy = record?.item?.prod_cmpy;
+    current[index].arm_code = t('placeholder.selectArmCode');
+    current[index].dens = null;
+    current[index].temperature = null;
+    current[index].cor_vol = null;
+    current[index].amb_vol = null;
+    current[index].liq_kg = null;
+
+    form.setFieldsValue({
+      products: current,
+    });
+
+    setPayload(current);
 
     this.setState(
       {
@@ -32,8 +54,8 @@ export default class DrawerProducts extends Component {
       <div style={{ display: 'flex' }}>
         <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick} bordered={false}>
           {values?.map((item) => (
-            <Select.Option key={item.partner_code} value={item.partner_code}>
-              {`${item.partner_code} - ${item.partner_name1}`}
+            <Select.Option key={item.prod_code} value={item.prod_name} item={item}>
+              {`${item.prod_code} - ${item.prod_name} (Planned: ${item.qty_scheduled} | Loaded: ${item.qty_loaded} | ${item.unit_name})`}
             </Select.Option>
           ))}
         </Select>

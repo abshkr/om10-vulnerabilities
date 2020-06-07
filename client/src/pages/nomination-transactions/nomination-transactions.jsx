@@ -1,20 +1,7 @@
 import React, { useState } from 'react';
-import { PlusOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Divider, Form, Tabs, Modal } from 'antd';
-import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-import { Page } from '../../components';
-import auth from '../../auth';
-
-//import DrawerProductTransfer from './drawer-product-transfer';
-//import ProductQuantities from './product-quantities';
-//import TransferDetails from './transfer-details';
-//import MeterTotals from './meter-totals';
 import Forms from './forms';
-
-const { TabPane } = Tabs;
-const { confirm } = Modal;
 
 const NominationTransactions = ({ access, params }) => {
   /* let params2 = {
@@ -49,25 +36,12 @@ const NominationTransactions = ({ access, params }) => {
   const [pageState, setPageState] = useState(_.toLower(params?.mvitm_type));
   const [visible, setVisible] = useState(true);
 
-  const { t } = useTranslation();
-
-  const [form] = Form.useForm();
-
-  const [type, setType] = useState(undefined);
-
-  const [trips, setTrips] = useState(null);
-  const [tankers, setTankers] = useState(null);
-  const [orders, setOrders] = useState(null);
-
-  const [customers, setCustomers] = useState(null);
-  const [selecteSupplier, setSelectedSupplier] = useState(null);
-
-  console.log("access", access);
-  console.log("params in MOT4NOM", params);
+  console.log('access', access);
+  console.log('params in MOT4NOM', params);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
-  }
+  };
 
   return (
     <>

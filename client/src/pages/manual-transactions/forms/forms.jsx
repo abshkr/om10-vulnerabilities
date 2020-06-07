@@ -82,6 +82,15 @@ const Forms = ({
   };
 
   const handleSupplierSelect = async (supplier) => {
+    setFieldsValue({
+      trip_no: undefined,
+      tanker: undefined,
+      carrier: undefined,
+      driver: undefined,
+      customer: undefined,
+      order_no: undefined,
+    });
+
     const trips = await getTripsBySupplier(supplier);
     const suppliers = await getCustomersBySupplier(supplier);
 

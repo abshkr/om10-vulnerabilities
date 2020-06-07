@@ -4,6 +4,7 @@ export const DRIVERS = '/api/pages/manual_trans/get_drivers.php';
 export const DETAILS = '/api/pages/manual_trans/get_sched_details.php';
 export const GET_ARMS = '/api/pages/manual_trans/get_arms.php';
 export const BASE_DETAILS = '/api/pages/manual_trans/get_base_details.php';
+export const PRODUCTS = '/api/pages/schedule/get_product_details.php';
 export const SUPPLIERS = '/api/pages/manual_trans/get_suppliers.php';
 export const CUSTOMERS = '/api/pages/manual_trans/get_customers.php';
 export const ORDERS = '/api/pages/manual_trans/get_orders.php';

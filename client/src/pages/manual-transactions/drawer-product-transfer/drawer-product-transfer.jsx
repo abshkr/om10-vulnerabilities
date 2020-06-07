@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UndoOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -25,17 +25,27 @@ const DrawerProductTransfer = ({ form, type, supplier, trip }) => {
     supplier && trip && `${MANUAL_TRANSACTIONS.DETAILS}?supplier=${supplier}&trip_no=${trip}`
   );
 
+  const { data: drawers } = useSWR(
+    supplier && trip && `${MANUAL_TRANSACTIONS.PRODUCTS}?supplier_code=${supplier}&shls_trip_no=${trip}`
+  );
+
   const { t } = useTranslation();
 
+  const [productsAPI, setProductsAPI] = useState(null);
   const [payload, setPayload] = useState([]);
   const [selected, setSelected] = useState(null);
 
-  const fields = columns(t, type);
+  const fields = columns(t, form, setPayload, payload, type, drawers);
 
   const onDelete = () => {
     const filtered = _.reject(payload, ['tnkr_cmpt_no', selected?.tnkr_cmpt_no]);
 
     setSelected(null);
+
+    form.setFieldsValue({
+      products: filtered,
+    });
+
     setPayload(filtered);
   };
 
@@ -46,25 +56,38 @@ const DrawerProductTransfer = ({ form, type, supplier, trip }) => {
       const transformed = [];
 
       _.forEach(data?.records, (record) => {
-        const object = {
-          eqpt_code: record.eqpt_code,
-          tnkr_cmpt_no: record.tnkr_cmpt_no,
-          drawer_code: record.shls_supp,
-          product_code: t('placeholder.selectDrawerProduct'),
-          arm_code: t('placeholder.selectArmCode'),
-          dens: null,
-          temperature: null,
-          cor_vol: null,
-          amb_vol: null,
-          liq_kg: null,
-        };
+        if (record.shls_supp !== '') {
+          const object = {
+            eqpt_code: record.eqpt_code,
+            tnkr_cmpt_no: record.tnkr_cmpt_no,
+            drawer_code: record.shls_supp,
+            prod_code: record?.prod_code,
+            prod_name: record?.prod_name === '' ? t('placeholder.selectDrawerProduct') : record?.prod_name,
+            prod_cmpy: record?.shls_supp,
+            arm_code: t('placeholder.selectArmCode'),
+            dens: null,
+            temperature: null,
+            cor_vol: null,
+            amb_vol: null,
+            liq_kg: null,
+          };
 
-        transformed.push(object);
+          transformed.push(object);
+        }
+      });
+
+      form.setFieldsValue({
+        products: transformed,
       });
 
       setPayload(transformed);
     }
   }, [data, supplier, supplier]);
+
+  const onCalculate = (api) => {
+    const payload = form.getFieldValue('products');
+    console.log(payload);
+  };
 
   const modifiers = (
     <>
@@ -78,25 +101,34 @@ const DrawerProductTransfer = ({ form, type, supplier, trip }) => {
         {t('operations.deleteTransfer')}
       </Button>
 
-      <Button type="primary" icon={<UndoOutlined />} style={{ marginRight: 5 }}>
+      <Button
+        type="primary"
+        icon={<UndoOutlined />}
+        onClick={onCalculate}
+        style={{ marginRight: 5 }}
+        disabled={!selected}
+      >
         {t('operations.calculateDrawer')}
       </Button>
 
-      <Button type="primary" icon={<UndoOutlined />} style={{ marginRight: 5 }}>
+      <Button type="primary" icon={<UndoOutlined />} style={{ marginRight: 5 }} disabled={!selected}>
         {t('operations.getTankDensities')}
       </Button>
     </>
   );
 
   return (
-    <DataTable
-      parentHeight="200px"
-      data={payload}
-      extra={modifiers}
-      columns={fields}
-      handleSelect={(value) => setSelected(value[0])}
-      components={components}
-    />
+    <Form.Item name="products" noStyle>
+      <DataTable
+        parentHeight="200px"
+        data={payload}
+        extra={modifiers}
+        columns={fields}
+        handleSelect={(value) => setSelected(value[0])}
+        components={components}
+        apiContext={setProductsAPI}
+      />
+    </Form.Item>
   );
 };
 
