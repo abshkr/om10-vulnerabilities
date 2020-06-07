@@ -22,13 +22,20 @@ const EquipType = ({ value, form, enabled }) => {
   }
 
   useEffect(() => {
-    if (value) {
+    if (value && enabled) {
       setFieldsValue({
-        rule_etyp: value.rule_etyp,
+        rule_etyp: parseInt(value.rule_etyp),
         rule_etypname: value.rule_etypname,
       });
     }
-  }, [value]);
+
+    if (!enabled) {
+      setFieldsValue({
+        rule_etyp: null,
+        rule_etypname: null,
+      });
+    }
+  }, [value, enabled]);
 
   return (
     <div>

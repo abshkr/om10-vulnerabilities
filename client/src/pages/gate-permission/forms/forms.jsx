@@ -127,26 +127,14 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
   };
 
   const handleCallBack = (values) => {
-    console.log("handleCallBack")
-    console.log(values)
     if (values.to_create) {
       let prmssn_k;
       if (!value) {
         prmssn_k = next_id;
-        // axios
-        //   .get(`${GATE_PERMISSION.NEXT_PRM_ID}`)
-        //   .then((response) => {
-        //     const payload = response.data?.records || [];
-        //     prmssn_k = payload[0].next_prm_id;
-        //     console.log("Getting it")
-        //     console.log(prmssn_k)
-        //   });
       } else {
         prmssn_k = value.prmssn_k
       }
 
-      console.log(prmssn_k)
-      
       const payload = {
         rule_id: rules.length == 0? prmssn_k : prmssn_k * 1000 + rules.length + 1,
         rule_case: values.rule_case,

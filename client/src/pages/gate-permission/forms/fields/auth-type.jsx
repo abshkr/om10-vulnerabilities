@@ -22,13 +22,20 @@ const AuthType = ({ value, form, enabled }) => {
   }
 
   useEffect(() => {
-    if (value) {
+    if (value && enabled) {
       setFieldsValue({
         rule_auth: value.rule_auth,
         rule_authname: value.rule_authname,
       });
     }
-  }, [value]);
+
+    if (!enabled) {
+      setFieldsValue({
+        rule_auth: null,
+        rule_authname: null,
+      });
+    }
+  }, [value, enabled]);
 
   return (
     <div>

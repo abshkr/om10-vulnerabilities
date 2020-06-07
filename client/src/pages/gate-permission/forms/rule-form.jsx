@@ -18,14 +18,10 @@ import ExpiryCheck from './fields/expiry-check';
 const TabPane = Tabs.TabPane;
 
 const RuleForm = ({ value, handleCallBack }) => {
-  // const { data: payload } = useSWR(`${DRAWER_PRODUCTS.AVAILABLE_BASES}`);
-  // let baseProducts = payload?.records;
-  
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { setFieldsValue } = form;
-  // // const [ pitem_bltol_flag, setFlag ] = useState(value?.pitem_bltol_flag)
-
+  
   const [ ruleCase, setRuleCase ] = useState(value?.rule_case)
 
   const IS_CREATING = !value;
@@ -35,8 +31,6 @@ const RuleForm = ({ value, handleCallBack }) => {
   }
   
   const onFinish = values => {
-    console.log("onFinish");
-    console.log(values)
     values.to_create = IS_CREATING
     handleCallBack(values)
     Modal.destroyAll();
