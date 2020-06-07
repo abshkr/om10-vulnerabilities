@@ -98,9 +98,13 @@ class EnumService
     public function movement_types()
     {
         $query = "
-            SELECT *
+            SELECT 
+                MOVITEM_TYPE_ID, 
+                decode(MOVITEM_TYPE_ID, 0, 'R', 1, 'D', 2, 'T', 'R') as MOVITEM_TYPE_CODE, 
+                MOVITEM_TYPE_NAME 
             FROM MOVITEM_TYPES
-            ORDER BY MOVITEM_TYPE_ID";
+            ORDER BY MOVITEM_TYPE_ID
+        ";
         // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {

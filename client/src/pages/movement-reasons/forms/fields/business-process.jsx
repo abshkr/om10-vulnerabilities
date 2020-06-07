@@ -13,7 +13,8 @@ const BusinessProcess = ({ form, value }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.businessProcess')}`);
     }
 
-    if (value && value.length > 128) {
+    const len = (new TextEncoder().encode(value)).length;
+    if (value && len > 128) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 128 ─ ${t('descriptions.maxCharacters')}`);
     }
 

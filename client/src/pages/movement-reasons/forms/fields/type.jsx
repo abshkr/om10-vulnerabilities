@@ -24,13 +24,18 @@ const Type = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mr_type_name: value.mr_type_name
+        mr_type: value.mr_type
+        //mr_type_name: value.mr_type_name
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="mr_type_name" label={t('fields.type')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item 
+      name="mr_type" 
+      label={t('fields.type')} 
+      rules={[{ required: true, validator: validate }]}
+    >
       <Select
         loading={isValidating}
         showSearch
@@ -41,7 +46,7 @@ const Type = ({ form, value }) => {
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.movitem_type_name}>
+          <Select.Option key={index} value={item.movitem_type_code}>
             {item.movitem_type_name}
           </Select.Option>
         ))}

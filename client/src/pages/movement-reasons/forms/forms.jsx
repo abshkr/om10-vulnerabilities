@@ -31,6 +31,9 @@ const FormModal = ({ value, length }) => {
     if (!IS_CREATING) {
       values.mr_id = value?.mr_id;
     }
+    else {
+      values.mr_id = length+1;
+    }
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
