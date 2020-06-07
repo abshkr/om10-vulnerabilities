@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 import axios from 'axios';
+import _ from 'lodash';
 
 const ObsTemp = ({ form, value, tank, pageState }) => {
   const [minTemp, setMinTemp] = useState(0);
@@ -61,8 +62,8 @@ const ObsTemp = ({ form, value, tank, pageState }) => {
         style={{ width: '100%' }} 
         disabled={pageState==='transfer'? false : false}
         placeholder={String(minTemp)+" ~ "+String(maxTemp)}
-        min={minTemp}
-        max={maxTemp}
+        min={_.toNumber(minTemp)}
+        max={_.toNumber(maxTemp)}
       />
     </Form.Item>
   );

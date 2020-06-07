@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import useSWR from 'swr';
 import _ from 'lodash';
 
 import Forms from './forms';
+import { NOMINATION_TRANSACTIONS } from '../../../../../api';
 
 const NominationTransactions = ({ access, params }) => {
   /* let params2 = {
@@ -39,6 +41,19 @@ const NominationTransactions = ({ access, params }) => {
                               : (params?.mvitm_type === "1"? "disposal" : "transfer")
   );
   const [visible, setVisible] = useState(true);
+  const [nomTanker, setNomTanker] = useState(null);
+
+  const { data: options } = useSWR(
+    `${NOMINATION_TRANSACTIONS.CARRIER_BY_TANKER}?tnkr_code=${'Generic Nom Vol'}`
+  );
+
+  useEffect(() => {
+    if (!!options && options?.records?.length>0) {
+      setNomTanker(options?.records?.[0]);
+      console.log("nomTanker", nomTanker);
+    }
+  }, [options, nomTanker, setNomTanker]);
+
 
   console.log('access', access);
   console.log('params in MOT4NOM', params);
@@ -55,6 +70,7 @@ const NominationTransactions = ({ access, params }) => {
         handleFormState={handleFormState}
         access={access}
         pageState={pageState}
+        defaultTanker={nomTanker}
       />
     </>
   );

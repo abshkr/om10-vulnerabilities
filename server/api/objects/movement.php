@@ -144,7 +144,8 @@ class Movement extends CommonClass
 
     public function carrier_by_tanker()
     {
-        $query = "SELECT TNKR_CARRIER
+        $query = "
+            SELECT TNKR_CARRIER, TNKR_CODE, TNKR_OWNER
             FROM TANKERS
             WHERE TNKR_CODE = :tnkr_code
         ";

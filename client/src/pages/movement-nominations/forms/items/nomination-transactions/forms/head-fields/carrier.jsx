@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { NOMINATION_TRANSACTIONS } from '../../../../../../../api';
 
-const Carrier = ({ form, value, onChange, pageState }) => {
+const Carrier = ({ form, value, onChange, carrier, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -30,12 +30,12 @@ const Carrier = ({ form, value, onChange, pageState }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mvitm_carrier: value.mvitm_carrier,
+        mvitm_carrier: value.mvitm_carrier || carrier,
       });
 
       onChange(value.mvitm_carrier);
     }
-  }, [value, setFieldsValue, onChange]);
+  }, [value, carrier, setFieldsValue, onChange]);
 
   return (
     <Form.Item

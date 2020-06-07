@@ -77,7 +77,7 @@ import MeterDetails from './meter-details/meter-details';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
+const FormModal = ({ value, visible, handleFormState, access, pageState, defaultTanker }) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [mainTabOn, setMainTabOn] = useState(true);
   const [disableCalculation, setDisableCalculation] = useState(false);
@@ -96,9 +96,6 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   console.log('value', value);
 
   const { data: units } = useSWR(NOMINATION_TRANSACTIONS.UNIT_TYPES);
-  const { data: nomCarrier } = useSWR(
-    `${NOMINATION_TRANSACTIONS.CARRIER_BY_TANKER}?tnkr_code=${'Generic Nom Vol'}`
-  );
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -275,10 +272,22 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   }, [value, visible, resetFields, setSelected]);
 
   useEffect(() => {
-    if (!nomCarrier && nomCarrier?.records?.length>0 && !carrier) {
-      setCarrier(nomCarrier?.records?.[0].tnkr_carrier);
+    if ( !!defaultTanker && !carrier) {
+      setCarrier(defaultTanker.tnkr_carrier);
+      if (value) {
+        value.mvitm_carrier = defaultTanker.tnkr_carrier;
+      }
     }
-  }, [nomCarrier, setCarrier]);
+  }, [defaultTanker, value, carrier, setCarrier]);
+
+  useEffect(() => {
+    if ( !!defaultTanker && !tanker) {
+      setTanker(defaultTanker.tnkr_code);
+      if (value) {
+        value.mvitm_tanker = defaultTanker.tnkr_code;
+      }
+    }
+  }, [defaultTanker, value, tanker, setTanker]);
 
   return (
     <Tabs defaultActiveKey="1" animated={false}>
@@ -360,7 +369,12 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
 
           <Row gutter={[8, 1]}>
             <Col span={8}>
-              <Carrier form={form} value={value} onChange={setCarrier} pageState={pageState} />
+              <Carrier 
+                form={form} 
+                value={value} 
+                onChange={setCarrier} 
+                carrier={carrier}
+                pageState={pageState} />
             </Col>
 
             <Col span={8}>
@@ -543,7 +557,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
 
           <>
             <Button
-              type="ghost"
+              type="primary"
               icon={<SaveOutlined />}
               htmlType="button"
               disabled={isUpdating}
