@@ -28,6 +28,7 @@ const Items = ({ setTableAPIContext, value }) => {
   const [scheduleVisible, setScheduleVisible] = useState(false);
   const [transactionVisible, setTransactionVisible] = useState(false);
   const [makeTransactionVisible, setMakeTransactionVisible] = useState(false);
+  const [transItem, setTransItem] = useState({});
 
   const [buttonState, setButtonState] = useState({
     makeSchedule: false,
@@ -134,6 +135,17 @@ const Items = ({ setTableAPIContext, value }) => {
         };
     }
   };
+
+  const gotoMakeTransactions = () => {
+    const currItem = selected[0];
+    currItem.mvitm_carrier = value?.mv_carrier;
+    currItem.mvitm_tanker = value?.mv_vehicle;
+    if (!currItem.mvitm_tanker) {
+      currItem.mvitm_tanker = 'Generic Nom Vol';
+    }
+    setTransItem(currItem);
+    setMakeTransactionVisible(true);
+  }
 
   const handleItemAdd = () => {
     const length = size + 1;
@@ -273,8 +285,8 @@ const Items = ({ setTableAPIContext, value }) => {
         type="primary"
         icon={<CarryOutOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        // disabled={!buttonState?.makeTransaction || disabled}
-        onClick={() => setMakeTransactionVisible(true)}
+        disabled={!buttonState?.makeTransaction || disabled}
+        onClick={() => gotoMakeTransactions()}
       >
         {t('operations.makeTransaction')}
       </Button>
@@ -308,35 +320,41 @@ const Items = ({ setTableAPIContext, value }) => {
         {t('operations.lockItem')}
       </Button>
 
-      <Drawer
-        placement="right"
-        bodyStyle={{ paddingTop: 5 }}
-        onClose={() => setTransactionVisible(false)}
-        visible={transactionVisible}
-        width="100vw"
-      >
-        <TransactionList selected={selected[0]} />
-      </Drawer>
+      {transactionVisible &&(
+        <Drawer
+          placement="right"
+          bodyStyle={{ paddingTop: 5 }}
+          onClose={() => setTransactionVisible(false)}
+          visible={transactionVisible}
+          width="100vw"
+        >
+          <TransactionList selected={selected[0]} />
+        </Drawer>
+      )}
 
-      <Drawer
-        placement="right"
-        bodyStyle={{ paddingTop: 5 }}
-        onClose={() => setMakeTransactionVisible(false)}
-        visible={makeTransactionVisible}
-        width="100vw"
-      >
-        <NominationTransactions params={selected[0]} access={null} />
-      </Drawer>
+      {makeTransactionVisible && (
+        <Drawer
+          placement="right"
+          bodyStyle={{ paddingTop: 5 }}
+          onClose={() => setMakeTransactionVisible(false)}
+          visible={makeTransactionVisible}
+          width="100vw"
+        >
+          <NominationTransactions params={transItem} access={null} />
+        </Drawer>
+      )}
 
-      <Drawer
-        placement="right"
-        bodyStyle={{ paddingTop: 5 }}
-        onClose={() => setScheduleVisible(false)}
-        visible={scheduleVisible}
-        width="100vw"
-      >
-        <Schedules selected={selected[0]} />
-      </Drawer>
+      {scheduleVisible && (
+        <Drawer
+          placement="right"
+          bodyStyle={{ paddingTop: 5 }}
+          onClose={() => setScheduleVisible(false)}
+          visible={scheduleVisible}
+          width="100vw"
+        >
+          <Schedules selected={selected[0]} />
+        </Drawer>
+      )}
 
       <Form.Item name="items">
         <DataTable

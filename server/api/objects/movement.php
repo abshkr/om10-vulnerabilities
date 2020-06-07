@@ -141,6 +141,24 @@ class Movement extends CommonClass
             return null;
         }
     }
+
+    public function carrier_by_tanker()
+    {
+        $query = "SELECT TNKR_CARRIER
+            FROM TANKERS
+            WHERE TNKR_CODE = :tnkr_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
     
     public function item_instance()
     {

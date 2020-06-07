@@ -96,6 +96,9 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
   console.log('value', value);
 
   const { data: units } = useSWR(NOMINATION_TRANSACTIONS.UNIT_TYPES);
+  const { data: nomCarrier } = useSWR(
+    `${NOMINATION_TRANSACTIONS.CARRIER_BY_TANKER}?tnkr_code=${'Generic Nom Vol'}`
+  );
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -234,7 +237,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
           const values = await form.validateFields();
           await axios
             .post(NOMINATION_TRANSACTIONS.CALCULATE, {
-              frm_baseCd: value?.mvitm_prodcode_to,
+              frm_baseCd: (pageState==='receipt'? value?.mvitm_prodcode_to : value?.mvitm_prodcode_from),
               frm_which_type: calcSource?.type, //'LT',
               frm_real_amount: calcSource?.qty, //values.mlitm_qty_amb,
               frm_real_temp: values?.mlitm_temp_amb,
@@ -270,6 +273,12 @@ const FormModal = ({ value, visible, handleFormState, access, pageState }) => {
       setSelected(null);
     }
   }, [value, visible, resetFields, setSelected]);
+
+  useEffect(() => {
+    if (!nomCarrier && nomCarrier?.records?.length>0 && !carrier) {
+      setCarrier(nomCarrier?.records?.[0].tnkr_carrier);
+    }
+  }, [nomCarrier, setCarrier]);
 
   return (
     <Tabs defaultActiveKey="1" animated={false}>

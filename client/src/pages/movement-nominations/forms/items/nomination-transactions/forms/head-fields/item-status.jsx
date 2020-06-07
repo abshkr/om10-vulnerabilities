@@ -25,14 +25,14 @@ const NominationItemStatus = ({ form, value, pageState }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mvitm_status: value.mvitm_status,
+        mvitm_status_name: value.mvitm_status_name,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item 
-      name="mvitm_status" 
+      name="mvitm_status_name" 
       label={t('fields.nomtranItemStat')}
       rules={[{ required: false, validator: validate }]}
     >

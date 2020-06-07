@@ -33,7 +33,11 @@ const NominationTransactions = ({ access, params }) => {
     mvitm_prod_unit: 'l(amb)',
     mvitm_avail_qty: 1234,
   }; */
-  const [pageState, setPageState] = useState(_.toLower(params?.mvitm_type));
+  //const [pageState, setPageState] = useState(_.toLower(params?.mvitm_type));
+  const [pageState, setPageState] = useState(
+    params?.mvitm_type === "0"? "receipt" 
+                              : (params?.mvitm_type === "1"? "disposal" : "transfer")
+  );
   const [visible, setVisible] = useState(true);
 
   console.log('access', access);

@@ -25,14 +25,14 @@ const NominationItemType = ({ form, value, pageState }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mvitm_type: value.mvitm_type,
+        mvitm_type_name: value.mvitm_type_name,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item 
-      name="mvitm_type" 
+      name="mvitm_type_name" 
       label={t('fields.nomtranType')}
       rules={[{ required: false, validator: validate }]}
     >

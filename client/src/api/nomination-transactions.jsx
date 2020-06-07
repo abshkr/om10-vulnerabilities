@@ -3,6 +3,7 @@ export const READ = '/api/pages/movement/read.php';
 export const SUPPLIERS = '/api/pages/movement/suppliers.php';
 export const CARRIERS = '/api/pages/movement/carriers.php';
 export const TANKERS = '/api/pages/movement/tankers_by_carrier.php';
+export const CARRIER_BY_TANKER = '/api/pages/movement/carrier_by_tanker.php';
 export const PRODUCTS = '/api/pages/movement/products.php';
 export const STATUS = '/api/pages/movement/nomination_status.php';
 export const TYPES = '/api/pages/movement/nomination_types.php';

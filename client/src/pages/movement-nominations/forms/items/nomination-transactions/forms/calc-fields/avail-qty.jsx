@@ -25,7 +25,7 @@ const AvailQty = ({ form, value, pageState }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mvitm_avail_qty: value.mvitm_avail_qty,
+        mvitm_avail_qty: value.mvitm_prod_qty - value.mvitm_qty_schd,
       });
     }
   }, [value, setFieldsValue]);
