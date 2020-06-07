@@ -97,7 +97,7 @@ const FormModal = ({ value, length }) => {
     <div>
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1">
-          <TabPane tab={t('tabColumns.general')} key="1" style={{ height: '50vh' }}>
+          <TabPane tab={t('tabColumns.general')} key="1">
             {IS_CREATING && <p>ID: {length + 1}</p>}
             <SendToHost form={form} onChange={setSend} value={value} />
             <Type form={form} value={value} />
