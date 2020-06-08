@@ -36,7 +36,6 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
   const [selected, setSelected] = useState(null);
 
   const [baseLoading, setBaseLoading] = useState(true);
-  const [newBase, setNewBase] = useState(null);
 
   const { resetFields, setFieldsValue } = form;
 
