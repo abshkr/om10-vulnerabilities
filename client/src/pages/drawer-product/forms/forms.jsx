@@ -207,6 +207,9 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
+      setBases([]);
+      setCompliant(false);
+      setLocked(false);
     } 
 
     if (value) {
