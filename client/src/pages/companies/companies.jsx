@@ -29,15 +29,12 @@ const Companies = () => {
   const handleFormState = (visibility, value) => {
     if (value) {
       setCurrentCmpy(value)
-      // console.log(currentCmpy)
     }
     setVisible(visibility);
     setSelected(value);
   };
 
   const specialActions = () => {
-    // console.log("SpecialAction")
-    // console.log(currentCmpy)
     FormModal({
       value: currentCmpy,
       width: "120vh",
@@ -49,8 +46,6 @@ const Companies = () => {
   }
 
   const companyRelations = () => {
-    // console.log("SpecialAction")
-    // console.log(selected)
     FormModal({
       value: currentCmpy,
       width: "120vh",

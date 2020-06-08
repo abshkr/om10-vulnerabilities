@@ -20,7 +20,7 @@ import _ from 'lodash';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState }) => {
+const FormModal = ({ value, visible, handleFormState, auth }) => {
   const { t } = useTranslation();
   const { data: addresses, isValidating, revalidate } = useSWR(COMPANIES.ADDRESSES);
 
@@ -236,6 +236,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
             htmlType="submit"
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
+            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -246,6 +247,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
+              disabled={!auth?.canDelete}
             >
               {t('operations.delete')}
             </Button>
