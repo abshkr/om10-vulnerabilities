@@ -54,6 +54,41 @@ class CustomerCategory extends CommonClass
         }
     }
 
+    public function customers_by_category()
+    {
+        $query = "
+            select 
+                cust.CUST_ACCT                                  as CUST_ACNT 
+                , cust.CUST_SUPP                                as CUST_SUPP_CODE
+                , scmp.CMPY_NAME                                as CUST_SUPP_NAME
+                , cust.CUST_CODE                                as CUST_CMPY_CODE
+                , ccmp.CMPY_NAME                                as CUST_CMPY_NAME
+                , cust.CUST_ACCT||' - '||ccmp.CMPY_NAME         as CUST_DESC
+                , cust.CUST_CATEGORY                            as CUST_CTGR_CODE
+                , catg.CATEG_DESCRIPT                           as CUST_CTGR_TEXT
+            from 
+                CUSTOMER                cust
+                , GUI_COMPANYS              scmp
+                , GUI_COMPANYS              ccmp
+                , CST_PRCE_CATEGOR      catg
+            where 
+                cust.CUST_SUPP = scmp.CMPY_CODE 
+                and cust.CUST_CODE = ccmp.CMPY_CODE
+                and cust.CUST_CATEGORY = catg.CATEG_CODE(+)
+                and ('-1'=:category or cust.CUST_CATEGORY=:category) 
+            order by CUST_CMPY_NAME         
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':category', $this->category);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     // pure php function
     public function create()
     {

@@ -31,6 +31,15 @@ const Category = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
+  const handChange = (value) => {
+    console.log('selection',value);
+    if (value === undefined) {
+      setFieldsValue({
+        cust_ctgr_code: '',
+      });
+    }
+  }
+
   return (
     <Form.Item
       name="cust_ctgr_code"
@@ -39,7 +48,9 @@ const Category = ({ form, value }) => {
     >
       <Select
         loading={isValidating}
+        allowClear
         showSearch
+        onChange={handChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCustomerCategory') : null}
         filterOption={(input, option) =>

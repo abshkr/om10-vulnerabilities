@@ -169,6 +169,8 @@
     "companyCanReceiveReportByEmail": "Company can receive the report by Email",
     "companyCanReceiveReportByPrinting": "Company can receive the report by printing",
     "totalCustomerCategories": "Total Customer Categories",
+    "totalCustomersPerCategory": "Total Customers / Category",
+    "customersPerCategory": "Customers / Category",
     "monday": "Monday",
     "tuesday": "Tuesday",
     "wednesday": "Wednesday",
