@@ -1483,6 +1483,7 @@
   },
 
   "placeholder": {
+    "selectPlease": "Please Select",
     "selectGate": "Select Gate",
     "selectDepot": "Select Base Depot",
     "selectCarrier": "Select Carrier",

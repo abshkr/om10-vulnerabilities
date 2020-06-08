@@ -91,17 +91,21 @@ const useColumns = (value, selected) => {
 
     {
       headerName: t('fields.nominationType'),
-      field: 'mvitm_type_name',
+      field: 'mvitm_type',
       filter: 'FuzzyFilter',
       sortable: true,
       resizable: true,
       width: 140,
       suppressSizeToFit: true,
       editable: selected[0]?.editable || !value,
-      cellEditor: 'SelectEditor',
-      cellEditorParams: {
-        values: _.uniq(_.map(types?.records, 'movitem_type_name')),
+      cellRenderer: 'ListRenderer',
+      cellRendererParams: {
+        values: _.uniq(_.map(types?.records, (item)=>{return {code: _.toNumber(item.movitem_type_id), name: item.movitem_type_name};}))
       },
+      cellEditor: 'ListEditor',
+      cellEditorParams: {
+        values: _.uniq(_.map(types?.records, (item)=>{return {code: _.toNumber(item.movitem_type_id), name: item.movitem_type_name};}))
+      }
     },
     {
       headerName: t('fields.itemKey'),
@@ -129,20 +133,25 @@ const useColumns = (value, selected) => {
       width: 100,
       suppressSizeToFit: true,
       editable: selected[0]?.editable || !value,
-      cellEditor: 'NumericEditor',
+      //cellEditor: 'NumericEditor',
     },
     {
       headerName: t('fields.productUnit'),
-      field: 'mvitm_prod_unit_str',
+      //field: 'mvitm_prod_unit_str',
+      field: 'mvitm_prod_unit',
       sortable: true,
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
       editable: selected[0]?.editable || !value,
-      cellEditor: 'SelectEditor',
-      cellEditorParams: {
-        values: _.uniq(_.map(units?.records, 'description')),
+      cellRenderer: 'ListRenderer',
+      cellRendererParams: {
+        values: _.uniq(_.map(units?.records, (item)=>{return {code: _.toNumber(item.unit_id), name: item.description};}))
       },
+      cellEditor: 'ListEditor',
+      cellEditorParams: {
+        values: _.uniq(_.map(units?.records, (item)=>{return {code: _.toNumber(item.unit_id), name: item.description};}))
+      }
     },
     {
       headerName: t('fields.fromPlant'),
@@ -165,23 +174,31 @@ const useColumns = (value, selected) => {
       width: 100,
       suppressSizeToFit: true,
       editable: selected[0]?.editable && from.includes(type),
-      cellEditor: 'SelectEditor',
-      cellEditorParams: {
-        values: _.uniq(_.map(suppliers?.records, 'cmpy_name')),
+      cellRenderer: 'ListRenderer',
+      cellRendererParams: {
+        values: _.uniq(_.map(suppliers?.records, (item)=>{return {code: item.cmpy_code, name: item.cmpy_name};}))
       },
+      cellEditor: 'ListEditor',
+      cellEditorParams: {
+        values: _.uniq(_.map(suppliers?.records, (item)=>{return {code: item.cmpy_code, name: item.cmpy_name};}))
+      }
     },
     {
       headerName: t('fields.fromProduct'),
-      field: 'mvitm_prodname_from',
+      field: 'mvitm_prodcode_from',
       sortable: true,
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
       editable: selected[0]?.editable && from.includes(type),
-      cellEditor: 'SelectEditor',
-      cellEditorParams: {
-        values: _.uniq(_.map(products, 'prod_name')),
+      cellRenderer: 'ListRenderer',
+      cellRendererParams: {
+        values: _.uniq(_.map(products?.records, (item)=>{return {code: item.prod_code, name: item.prod_name};}))
       },
+      cellEditor: 'ListEditor',
+      cellEditorParams: {
+        values: _.uniq(_.map(products?.records, (item)=>{return {code: item.prod_code, name: item.prod_name};}))
+      }
     },
     {
       headerName: t('fields.fromTank'),
@@ -236,23 +253,31 @@ const useColumns = (value, selected) => {
       width: 100,
       suppressSizeToFit: true,
       editable: selected[0]?.editable && to.includes(type),
-      cellEditor: 'SelectEditor',
-      cellEditorParams: {
-        values: _.uniq(_.map(suppliers?.records, 'cmpy_name')),
+      cellRenderer: 'ListRenderer',
+      cellRendererParams: {
+        values: _.uniq(_.map(suppliers?.records, (item)=>{return {code: item.cmpy_code, name: item.cmpy_name};}))
       },
+      cellEditor: 'ListEditor',
+      cellEditorParams: {
+        values: _.uniq(_.map(suppliers?.records, (item)=>{return {code: item.cmpy_code, name: item.cmpy_name};}))
+      }
     },
     {
       headerName: t('fields.toProduct'),
-      field: 'mvitm_prodname_to',
+      field: 'mvitm_prodcode_to',
       sortable: true,
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
       editable: selected[0]?.editable && to.includes(type),
-      cellEditor: 'SelectEditor',
-      cellEditorParams: {
-        values: _.uniq(_.map(products, 'prod_name')),
+      cellRenderer: 'ListRenderer',
+      cellRendererParams: {
+        values: _.uniq(_.map(products?.records, (item)=>{return {code: item.prod_code, name: item.prod_name};}))
       },
+      cellEditor: 'ListEditor',
+      cellEditorParams: {
+        values: _.uniq(_.map(products?.records, (item)=>{return {code: item.prod_code, name: item.prod_name};}))
+      }
     },
     {
       headerName: t('fields.toTank'),

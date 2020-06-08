@@ -60,6 +60,7 @@ const columns = (t, pageState, form, units) => [
     hide: false,
     editable: (pageState==='detail'? false : true),
     width: 100,
+    cellEditor: 'NumericEditor',
   },
   {
     headerName: t('fields.oitemProdUnit'),

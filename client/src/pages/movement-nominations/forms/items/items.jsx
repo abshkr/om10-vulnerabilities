@@ -153,21 +153,23 @@ const Items = ({ setTableAPIContext, value }) => {
     const value = {
       mvitm_line_id: String(size + 1),
       mvitm_item_id: '',
+      mvitm_type: 0,
       mvitm_type_name: 'Receipt',
       mvitm_item_key: String(size + 1),
       mvitm_status_name: 'NEW',
       mvitm_prod_qty: '0',
+      mvitm_prod_unit: '5',
       mvitm_prod_unit_str: 'l (amb)',
       mvitm_plant_from: '',
       mvitm_prodcmpy_from: '',
-      mvitm_prodname_from: '',
+      mvitm_prodcode_from: '',
       mvitm_tank_from: '',
       mvitm_shiploc_from: '',
       mvitm_shiptext_from: '',
       mvitm_shiptext_from2: '',
       mvitm_plant_to: 'Please Select',
       mvitm_prodcmpy_to: 'Please Select',
-      mvitm_prodname_to: 'Please Select',
+      mvitm_prodcode_to: 'Please Select',
       mvitm_tank_to: '',
       mvitm_shiploc_to: '',
       mvitm_shiptext_to: '',
@@ -192,50 +194,50 @@ const Items = ({ setTableAPIContext, value }) => {
     let payload = value.data;
 
     if (value.colDef.field === 'mvitm_prodcmpy_from') {
-      payload.mvitm_prodname_from = 'Please Select';
+      payload.mvitm_prodcode_from = 'Please Select';
     }
 
     if (value.colDef.field === 'mvitm_prodcmpy_to') {
-      payload.mvitm_prodname_to = 'Please Select';
+      payload.mvitm_prodcode_to = 'Please Select';
     }
 
-    if (value.colDef.field === 'mvitm_type_name') {
-      if (value.value === 'Receipt') {
+    if (value.colDef.field === 'mvitm_type') {
+      if (value.value === 0) {
         payload.mvitm_plant_from = '';
         payload.mvitm_prodcmpy_from = '';
-        payload.mvitm_prodname_from = '';
+        payload.mvitm_prodcode_from = '';
         payload.mvitm_tank_from = '';
         payload.mvitm_tank_to = '';
 
         payload.mvitm_plant_to = 'Please Select';
         payload.mvitm_prodcmpy_to = 'Please Select';
-        payload.mvitm_prodname_to = 'Please Select';
+        payload.mvitm_prodcode_to = 'Please Select';
       }
 
-      if (value.value === 'Disposal') {
+      if (value.value === 1) {
         payload.mvitm_plant_from = 'Please Select';
         payload.mvitm_prodcmpy_from = 'Please Select';
-        payload.mvitm_prodname_from = 'Please Select';
+        payload.mvitm_prodcode_from = 'Please Select';
 
         payload.mvitm_tank_to = '';
         payload.mvitm_tank_from = '';
-        payload.mvitm_prodname_to = '';
+        payload.mvitm_prodcode_to = '';
         payload.mvitm_plant_to = '';
         payload.mvitm_prodcmpy_to = '';
-        payload.mvitm_prodname_to = '';
+        payload.mvitm_prodcode_to = '';
       }
 
-      if (value.value === 'Transfer') {
+      if (value.value === 2) {
         payload.mvitm_plant_from = 'Please Select';
         payload.mvitm_prodcmpy_from = 'Please Select';
-        payload.mvitm_prodname_from = 'Please Select';
+        payload.mvitm_prodcode_from = 'Please Select';
         payload.mvitm_tank_from = 'Please Select';
 
         payload.mvitm_tank_to = 'Please Select';
         payload.mvitm_tank_from = 'Please Select';
         payload.mvitm_plant_to = 'Please Select';
         payload.mvitm_prodcmpy_to = 'Please Select';
-        payload.mvitm_prodname_to = 'Please Select';
+        payload.mvitm_prodcode_to = 'Please Select';
       }
     }
 
