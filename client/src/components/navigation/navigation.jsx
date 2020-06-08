@@ -63,7 +63,7 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.MOVEMENT_NOMINATIONS}>
-            <Badge status="warning" />
+            <Badge status="success" />
             {t('pageNames.movementNominations')}
           </Menu.Item>
 

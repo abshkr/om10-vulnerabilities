@@ -9,7 +9,6 @@ import useSWR from 'swr';
 
 import { Page, DataTable, FormModal } from '../../components';
 import { TANK_STATUS, TANK_STRAPPING } from '../../api';
-import { useQuery } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
@@ -22,7 +21,6 @@ const TankStrapping = () => {
   const [height, setHeight] = useState(700);
 
   const { t } = useTranslation();
-  const { params } = useQuery(['tank_code']);
 
   const { data: payload, isValidating, revalidate } = useSWR(TANK_STATUS.READ);
 
@@ -68,12 +66,12 @@ const TankStrapping = () => {
 
   useEffect(() => {
     const values = _.uniq(_.map(payload?.records, 'tank_code'));
-    const tank = params?.tank_code || values[0];
+    const tank = values[0];
 
     setTank(tank);
 
     setTanks(values);
-  }, [payload, params]);
+  }, [payload]);
 
   useEffect(() => {
     if (tank) {

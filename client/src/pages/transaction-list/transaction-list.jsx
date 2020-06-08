@@ -1,29 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import useSWR from 'swr';
-import axios from 'axios';
 import moment from 'moment';
 import { Button } from 'antd';
-import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, CaretLeftOutlined } from '@ant-design/icons';
+import { SyncOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, Calendar, FormModal } from '../../components';
-import { TRANSACTION_LIST, MOVEMENT_NOMIATIONS } from '../../api';
-import { SETTINGS, ROUTES } from '../../constants';
-import { useQuery } from '../../hooks';
+import { TRANSACTION_LIST } from '../../api';
+import { SETTINGS } from '../../constants';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 
 const TransactionList = () => {
-  let history = useHistory();
-
-  const { params } = useQuery(['mv_id', 'line_id']);
   const { t } = useTranslation();
-
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   const [start, setStart] = useState(moment().subtract(3, 'years').format(SETTINGS.DATE_TIME_FORMAT));
 
@@ -33,8 +24,8 @@ const TransactionList = () => {
     `${TRANSACTION_LIST.READ}?start_date=${start}&end_date=${end}`
   );
 
-  const isFromNomination = params?.mv_id && params?.line_id;
-  const isLoading = loading || isValidating;
+  const data = transactions?.records;
+  const isLoading = isValidating;
   const fields = columns(t);
 
   const setRange = (start, end) => {
@@ -46,7 +37,7 @@ const TransactionList = () => {
   const handleClick = (value) => {
     FormModal({
       value,
-      form: <Forms value={value} isFromNomination={isFromNomination} start={start} end={end} />,
+      form: <Forms value={value} start={start} end={end} />,
       id: value?.trsa_id,
       name: value?.trsa_trip,
       t,
@@ -54,44 +45,19 @@ const TransactionList = () => {
     });
   };
 
-  useEffect(() => {
-    if (isFromNomination) {
-      setLoading(true);
-      axios.get(MOVEMENT_NOMIATIONS.TRANSACTIONS, { params }).then((response) => {
-        setData(response.data.records);
-        setLoading(false);
-      });
-    } else {
-      setData(transactions?.records);
-    }
-  }, [transactions, isFromNomination, history, params]);
-
   const modifiers = (
     <>
-      {!isFromNomination && <Calendar handleChange={setRange} start={start} end={end} />}
+      <Calendar handleChange={setRange} start={start} end={end} />
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
 
       <Download data={data} isLoading={isLoading} columns={fields} />
-
-      {isFromNomination && (
-        <Button icon={<CaretLeftOutlined />} onClick={() => history.push(ROUTES.TRANSACTION_LIST)}>
-          {t('operations.returnToTransactionList')}
-        </Button>
-      )}
     </>
   );
 
   return (
-    <Page
-      page={t('pageMenu.schedules')}
-      name={
-        isFromNomination ? `${t('pageNames.transactionListbyNomination')}` : t('pageNames.transactionList')
-      }
-      modifiers={modifiers}
-      description={isFromNomination && `For Movement Id ${params?.mv_id} and Line Item ${params?.line_id}`}
-    >
+    <Page page={t('pageMenu.schedules')} name={t('pageNames.transactionList')} modifiers={modifiers}>
       <DataTable columns={fields} data={data} isLoading={isLoading} onClick={handleClick} />
     </Page>
   );

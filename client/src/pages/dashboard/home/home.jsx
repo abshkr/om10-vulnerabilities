@@ -33,23 +33,30 @@ const Home = () => {
                 }}
               >
                 <table className="statistic" style={{ width: '50%' }}>
-                  <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                  </tr>
-                  <tr className="first">
-                    <td>Active:</td>
-                    <td style={{ textAlign: 'right' }}>{data?.tanker_active}</td>
-                    <td style={{ textAlign: 'right' }}>{` [${
-                      Math.floor((data?.tanker_active / data?.tanker_total) * 100) || 0
-                    }%]`}</td>
-                  </tr>
+                  <tbody>
+                    <tr>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                    </tr>
+                  </tbody>
 
-                  <tr>
-                    <td>Total:</td>
-                    <td style={{ textAlign: 'right' }}>{data?.tanker_total}</td>
-                  </tr>
+                  <tbody>
+                    <tr className="first">
+                      <td>Active:</td>
+                      <td style={{ textAlign: 'right' }}>{data?.tanker_active}</td>
+                      <td style={{ textAlign: 'right' }}>{` [${
+                        Math.floor((data?.tanker_active / data?.tanker_total) * 100) || 0
+                      }%]`}</td>
+                    </tr>
+                  </tbody>
+
+                  <tbody>
+                    <tr>
+                      <td>Total:</td>
+                      <td style={{ textAlign: 'right' }}>{data?.tanker_total}</td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
 
@@ -71,23 +78,30 @@ const Home = () => {
                 }}
               >
                 <table className="statistic" style={{ width: '50%' }}>
-                  <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                  </tr>
-                  <tr className="first">
-                    <td>Unlocked:</td>
-                    <td style={{ textAlign: 'right' }}>{data?.personnel_unlocked}</td>
-                    <td style={{ textAlign: 'right' }}>{` [${
-                      Math.floor((data?.personnel_unlocked / data?.personnel_total) * 100) || 0
-                    }%]`}</td>
-                  </tr>
+                  <tbody>
+                    <tr>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                    </tr>
+                  </tbody>
 
-                  <tr>
-                    <td>Total:</td>
-                    <td style={{ textAlign: 'right' }}>{data?.personnel_total}</td>
-                  </tr>
+                  <tbody>
+                    <tr className="first">
+                      <td>Unlocked:</td>
+                      <td style={{ textAlign: 'right' }}>{data?.personnel_unlocked}</td>
+                      <td style={{ textAlign: 'right' }}>{` [${
+                        Math.floor((data?.personnel_unlocked / data?.personnel_total) * 100) || 0
+                      }%]`}</td>
+                    </tr>
+                  </tbody>
+
+                  <tbody>
+                    <tr>
+                      <td>Total:</td>
+                      <td style={{ textAlign: 'right' }}>{data?.personnel_total}</td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
 
@@ -109,23 +123,30 @@ const Home = () => {
                 }}
               >
                 <table className="statistic" style={{ width: '66%' }}>
-                  <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                  </tr>
-                  <tr className="first">
-                    <td>Used:</td>
-                    <td style={{ textAlign: 'right' }}>{data?.key_used}</td>
-                    <td style={{ textAlign: 'right' }}>{` [${
-                      Math.floor((data?.key_used / data?.key_available) * 100) || 0
-                    }%]`}</td>
-                  </tr>
+                  <tbody>
+                    <tr>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                    </tr>
+                  </tbody>
 
-                  <tr>
-                    <td>Available:</td>
-                    <td style={{ textAlign: 'right' }}>{data?.key_available}</td>
-                  </tr>
+                  <tbody>
+                    <tr className="first">
+                      <td>Used:</td>
+                      <td style={{ textAlign: 'right' }}>{data?.key_used}</td>
+                      <td style={{ textAlign: 'right' }}>{` [${
+                        Math.floor((data?.key_used / data?.key_available) * 100) || 0
+                      }%]`}</td>
+                    </tr>
+                  </tbody>
+
+                  <tbody>
+                    <tr>
+                      <td>Available:</td>
+                      <td style={{ textAlign: 'right' }}>{data?.key_available}</td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
 

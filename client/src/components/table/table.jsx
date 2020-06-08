@@ -72,6 +72,7 @@ const Table = ({
   rowHeight,
   onCellUpdate,
 }) => {
+  const [payload, setPayload] = useState([]);
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
 
@@ -118,6 +119,12 @@ const Table = ({
     }
   }, [data, api]);
 
+  useEffect(() => {
+    if (data?.length > 0) {
+      setPayload(data);
+    }
+  }, [data]);
+
   const icon = (
     <LoadingOutlined
       style={{
@@ -161,7 +168,7 @@ const Table = ({
         <div style={{ height: parentHeight || `calc(100vh - ${height || '250px'})`, marginTop: 5 }}>
           <AgGridReact
             columnDefs={columns}
-            rowData={data}
+            rowData={payload}
             onGridReady={handleGridReady}
             frameworkComponents={{ ...defaultComponents, ...components }}
             onRowDoubleClicked={(value) => onClick && onClick(value.data)}
