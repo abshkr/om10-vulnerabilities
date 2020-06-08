@@ -30,11 +30,13 @@ const ItemExpiryTime = ({ form, value, pageState }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mvitm_dtim_expiry: '' ? null : moment(value.mvitm_dtim_expiry, SETTINGS.DATE_TIME_FORMAT),
+        mvitm_dtim_expiry: 
+          value.mvitm_dtim_expiry === '' ? null : moment(value.mvitm_dtim_expiry, SETTINGS.DATE_TIME_FORMAT),
       });
     } else {
       setFieldsValue({
-        mvitm_dtim_expiry: moment(),
+        //mvitm_dtim_expiry: moment(),
+        mvitm_dtim_expiry: moment().add(60,'days'),//.format(SETTINGS.DATE_TIME_FORMAT),
       });
     }
   }, [value, setFieldsValue]);

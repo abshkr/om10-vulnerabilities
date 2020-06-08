@@ -11,15 +11,14 @@ const TransportSystem = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mv_tpmode: value.mv_tpmode,
-        mv_tpmode_text: value.mv_tpmode_text
+        mv_tpsystem: value.mv_tpsystem
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="mv_tpmode" label={t('fields.transportSystem')} labelCol="">
-      <Input placeholder={t('placeholder.setTransportSystem')} />
+    <Form.Item name="mv_tpsystem" label={t('fields.transportSystem')} labelCol="">
+      <Input placeholder={t('placeholder.setTransportSystem')} maxLength={40}/>
     </Form.Item>
   );
 };

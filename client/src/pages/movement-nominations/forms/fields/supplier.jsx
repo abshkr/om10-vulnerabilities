@@ -19,7 +19,12 @@ const Supplier = ({ form, value }) => {
         mv_supplier: value.mv_supplier
       });
     }
-  }, [value, setFieldsValue]);
+    else {
+      setFieldsValue({
+        mv_supplier: options?.records?.[0].cmpy_code,
+      });
+    }
+  }, [value, options, setFieldsValue]);
 
   return (
     <Form.Item name="mv_supplier" label={t('fields.supplier')}>

@@ -16,6 +16,12 @@ const ExpiredAfter = ({ form, value }) => {
           value.mv_dtim_expiry === '' ? null : moment(value.mv_dtim_expiry, SETTINGS.DATE_TIME_FORMAT),
       });
     }
+    else {
+      setFieldsValue({
+        //mv_dtim_expiry: moment(),
+        mv_dtim_expiry: moment().add(60,'days'),//.format(SETTINGS.DATE_TIME_FORMAT),
+      });
+    }
   }, [value, setFieldsValue]);
 
   return (

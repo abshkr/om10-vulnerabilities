@@ -16,6 +16,11 @@ const EffectiveFrom = ({ form, value }) => {
           value.mv_dtim_effect === '' ? null : moment(value.mv_dtim_effect, SETTINGS.DATE_TIME_FORMAT),
       });
     }
+    else {
+      setFieldsValue({
+        mv_dtim_effect: moment(),
+      });
+    }
   }, [value, setFieldsValue]);
 
   return (

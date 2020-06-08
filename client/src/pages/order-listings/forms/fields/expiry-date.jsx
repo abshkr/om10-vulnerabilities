@@ -26,7 +26,8 @@ const ExpiryDate= ({ form, value, pageState }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        order_exp_time: '' ? null : moment(value.order_exp_time, SETTINGS.DATE_TIME_FORMAT),
+        order_exp_time: 
+          value.order_exp_time === '' ? null : moment(value.order_exp_time, SETTINGS.DATE_TIME_FORMAT),
       });
     } else {
       setFieldsValue({

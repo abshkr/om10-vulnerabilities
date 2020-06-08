@@ -26,7 +26,8 @@ const DeliveryDate= ({ form, value, pageState }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        order_dlv_time: '' ? null : moment(value.order_dlv_time, SETTINGS.DATE_TIME_FORMAT),
+        order_dlv_time: 
+          value.order_dlv_time === '' ? null : moment(value.order_dlv_time, SETTINGS.DATE_TIME_FORMAT),
       });
     } else {
       setFieldsValue({

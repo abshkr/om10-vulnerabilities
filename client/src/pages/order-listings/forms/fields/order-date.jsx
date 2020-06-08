@@ -26,7 +26,8 @@ const OrderDate= ({ form, value, pageState }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        order_ord_time: '' ? null : moment(value.order_ord_time, SETTINGS.DATE_TIME_FORMAT),
+        order_ord_time:
+          value.order_ord_time === '' ? null : moment(value.order_ord_time, SETTINGS.DATE_TIME_FORMAT),
       });
     } else {
       setFieldsValue({
