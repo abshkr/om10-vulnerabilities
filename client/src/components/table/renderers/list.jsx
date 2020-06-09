@@ -19,7 +19,12 @@ export default class ListRenderer extends Component {
       //let option = _.find(items, function(o) { return (_.split(o, '|'))[0] === item; });
       //return (_.split(option, '|'))[1];
       let option = _.find(items, function(o) { return o.code === item; });
-      return option?.name;
+      if (!!option) {
+        return option?.name;
+      } else {
+        return item;
+      }
+      
     };
 
     return (

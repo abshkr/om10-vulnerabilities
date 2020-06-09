@@ -158,7 +158,7 @@ const Items = ({ setTableAPIContext, value }) => {
       mvitm_item_key: String(size + 1),
       mvitm_status_name: 'NEW',
       mvitm_prod_qty: '0',
-      mvitm_prod_unit: '5',
+      mvitm_prod_unit: 5,
       mvitm_prod_unit_str: 'l (amb)',
       mvitm_plant_from: '',
       mvitm_prodcmpy_from: '',
@@ -167,9 +167,9 @@ const Items = ({ setTableAPIContext, value }) => {
       mvitm_shiploc_from: '',
       mvitm_shiptext_from: '',
       mvitm_shiptext_from2: '',
-      mvitm_plant_to: 'Please Select',
-      mvitm_prodcmpy_to: 'Please Select',
-      mvitm_prodcode_to: 'Please Select',
+      mvitm_plant_to: t('selectPlease'),
+      mvitm_prodcmpy_to: t('selectPlease'),
+      mvitm_prodcode_to: t('selectPlease'),
       mvitm_tank_to: '',
       mvitm_shiploc_to: '',
       mvitm_shiptext_to: '',
@@ -194,11 +194,11 @@ const Items = ({ setTableAPIContext, value }) => {
     let payload = value.data;
 
     if (value.colDef.field === 'mvitm_prodcmpy_from') {
-      payload.mvitm_prodcode_from = 'Please Select';
+      payload.mvitm_prodcode_from = t('selectPlease');
     }
 
     if (value.colDef.field === 'mvitm_prodcmpy_to') {
-      payload.mvitm_prodcode_to = 'Please Select';
+      payload.mvitm_prodcode_to = t('selectPlease');
     }
 
     if (value.colDef.field === 'mvitm_type') {
@@ -209,15 +209,15 @@ const Items = ({ setTableAPIContext, value }) => {
         payload.mvitm_tank_from = '';
         payload.mvitm_tank_to = '';
 
-        payload.mvitm_plant_to = 'Please Select';
-        payload.mvitm_prodcmpy_to = 'Please Select';
-        payload.mvitm_prodcode_to = 'Please Select';
+        payload.mvitm_plant_to = t('selectPlease');
+        payload.mvitm_prodcmpy_to = t('selectPlease');
+        payload.mvitm_prodcode_to = t('selectPlease');
       }
 
       if (value.value === 1) {
-        payload.mvitm_plant_from = 'Please Select';
-        payload.mvitm_prodcmpy_from = 'Please Select';
-        payload.mvitm_prodcode_from = 'Please Select';
+        payload.mvitm_plant_from = t('selectPlease');
+        payload.mvitm_prodcmpy_from = t('selectPlease');
+        payload.mvitm_prodcode_from = t('selectPlease');
 
         payload.mvitm_tank_to = '';
         payload.mvitm_tank_from = '';
@@ -228,16 +228,16 @@ const Items = ({ setTableAPIContext, value }) => {
       }
 
       if (value.value === 2) {
-        payload.mvitm_plant_from = 'Please Select';
-        payload.mvitm_prodcmpy_from = 'Please Select';
-        payload.mvitm_prodcode_from = 'Please Select';
-        payload.mvitm_tank_from = 'Please Select';
+        payload.mvitm_plant_from = t('selectPlease');
+        payload.mvitm_prodcmpy_from = t('selectPlease');
+        payload.mvitm_prodcode_from = t('selectPlease');
+        payload.mvitm_tank_from = t('selectPlease');
 
-        payload.mvitm_tank_to = 'Please Select';
-        payload.mvitm_tank_from = 'Please Select';
-        payload.mvitm_plant_to = 'Please Select';
-        payload.mvitm_prodcmpy_to = 'Please Select';
-        payload.mvitm_prodcode_to = 'Please Select';
+        payload.mvitm_tank_to = t('selectPlease');
+        payload.mvitm_tank_from = t('selectPlease');
+        payload.mvitm_plant_to = t('selectPlease');
+        payload.mvitm_prodcmpy_to = t('selectPlease');
+        payload.mvitm_prodcode_to = t('selectPlease');
       }
     }
 
@@ -360,7 +360,7 @@ const Items = ({ setTableAPIContext, value }) => {
 
       <Form.Item name="items">
         <DataTable
-          columns={fields}
+          columns={columns(value, selected)}
           data={data}
           handleSelect={(value) => setSelected(value)}
           apiContext={setTableAPI}
