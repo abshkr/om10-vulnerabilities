@@ -30,7 +30,8 @@ const ItemEffectTime = ({ form, value, pageState }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mvitm_dtim_effect: '' ? null : moment(value.mvitm_dtim_effect, SETTINGS.DATE_TIME_FORMAT),
+        mvitm_dtim_effect: 
+          value.mvitm_dtim_effect === '' ? null : moment(value.mvitm_dtim_effect, SETTINGS.DATE_TIME_FORMAT),
       });
     } else {
       setFieldsValue({

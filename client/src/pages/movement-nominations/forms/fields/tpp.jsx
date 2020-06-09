@@ -18,16 +18,16 @@ const TPP = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Row gutter={[12, 12]}>
-      <Col span={12}>
+    <Row gutter={[12, 3]}>
+      <Col span={6}>
         <Form.Item name="mv_tppoint" label={t('fields.tpp')}>
-          <Input placeholder={t('placeholder.setTPPCode')} style={{ width: '100%' }} />
+          <Input placeholder={t('placeholder.setTPPCode')} style={{ width: '100%' }} maxLength={16} />
         </Form.Item>
       </Col>
 
-      <Col span={12}>
+      <Col span={18}>
         <Form.Item name="mv_tpp_text" label={t('fields.tppDescription')}>
-          <Input placeholder={t('placeholder.setTPPDescription')} style={{ width: '100%' }} />
+          <Input placeholder={t('placeholder.setTPPDescription')} style={{ width: '100%' }} maxLength={256} />
         </Form.Item>
       </Col>
     </Row>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   EditOutlined,
@@ -17,7 +17,9 @@ import _ from 'lodash';
 import {
   NominationKey,
   NominationNumber,
+  NominationStatus,
   NominationSource,
+  Terminal,
   Supplier,
   Carrier,
   Vehicle,
@@ -40,12 +42,18 @@ const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, url }) => {
   const [tableAPI, setTableAPI] = useState(null);
+  const [carrier, setCarrier] = useState(null);
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const { setFieldsValue, resetFields, validateFields } = form;
 
   const fields = columns(t);
 
   const IS_CREATING = !value;
+
+  const onFormClosed = () => {
+    handleFormState(false, null);
+  };
 
   const onComplete = () => {
     handleFormState(false, null);
@@ -82,7 +90,10 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
     return errors;
   };
 
-  const onFinish = (values) => {
+  //const onFinish = (values) => {
+  const onFinish = async () => {
+    const values = await validateFields();
+    console.log("form values", values);
     const items = [];
 
     tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
@@ -96,6 +107,9 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
 
       values.mv_dtim_effect = values.mv_dtim_effect?.format(SETTINGS.DATE_TIME_FORMAT);
       values.mv_dtim_expiry = values.mv_dtim_expiry?.format(SETTINGS.DATE_TIME_FORMAT);
+      if (!!value && !!(value.mv_id)) {
+        values.mv_id = value.mv_id;
+      }
 
       Modal.confirm({
         title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -109,9 +123,10 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
             .post(IS_CREATING ? MOVEMENT_NOMIATIONS.CREATE : MOVEMENT_NOMIATIONS.UPDATE, values)
             .then(
               axios.spread((response) => {
-                Modal.destroyAll();
+                onComplete();
+                //Modal.destroyAll();
 
-                mutate(MOVEMENT_NOMIATIONS.READ);
+                //mutate(url);
                 notification.success({
                   message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                   description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
@@ -141,8 +156,9 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
           .post(MOVEMENT_NOMIATIONS.DELETE, value)
           .then(
             axios.spread((response) => {
-              mutate(MOVEMENT_NOMIATIONS.READ);
-              Modal.destroyAll();
+              onComplete();
+              //mutate(MOVEMENT_NOMIATIONS.READ);
+              //Modal.destroyAll();
               notification.success({
                 message: t('messages.deleteSuccess'),
                 description: `${t('descriptions.deleteSuccess')}`,
@@ -159,10 +175,16 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
     });
   };
 
+  useEffect(() => {
+    if (!value && !visible) {
+      resetFields();
+    }
+  }, [value, visible, resetFields]);
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
-      onClose={() => handleFormState(false, null)}
+      onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
@@ -173,6 +195,7 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
         <>
           <Button
             type="primary"
+            //htmlType="submit"
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
@@ -195,27 +218,58 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
         </>
       }
     >
-      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+      <Form 
+        layout="vertical" 
+        form={form} 
+        //onFinish={onFinish} 
+        scrollToFirstError
+        initialValues={{
+          mv_key: '',
+          mv_number: '',
+          mv_status: '0',
+          mv_srctype: '2',
+        }}
+      >
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane tab={t('tabColumns.general')} forceRender={true} key="1">
-            <NominationKey form={form} value={value} />
-
-            <NominationNumber form={form} value={value} />
-
-            <NominationSource form={form} value={value} />
-
-            <Row gutter={[12, 12]}>
+            <Row gutter={[12, 3]}>
               <Col span={12}>
-                <Supplier form={form} value={value} />
+                <NominationKey form={form} value={value} />
               </Col>
               <Col span={12}>
-                <Carrier form={form} value={value} />
+                <NominationNumber form={form} value={value} />
               </Col>
             </Row>
 
-            <Vehicle form={form} value={value} />
+            <Row gutter={[12, 3]}>
+              <Col span={12}>
+                <NominationStatus form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <NominationSource form={form} value={value} />
+              </Col>
+            </Row>
 
-            <Row gutter={[12, 12]}>
+
+            <Row gutter={[12, 3]}>
+              <Col span={12}>
+                <Terminal form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <Supplier form={form} value={value} />
+              </Col>
+            </Row>
+
+            <Row gutter={[12, 3]}>
+              <Col span={12}>
+                <Carrier form={form} value={value} onChange={setCarrier} />
+              </Col>
+              <Col span={12}>
+                <Vehicle form={form} value={value} carrier={carrier} />
+              </Col>
+            </Row>
+
+            <Row gutter={[12, 3]}>
               <Col span={12}>
                 <EffectiveFrom form={form} value={value} />
               </Col>

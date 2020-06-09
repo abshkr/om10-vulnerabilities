@@ -1,4 +1,5 @@
 export const READ = '/api/pages/movement/read.php';
+export const CHECK_NOMKEY = '/api/pages/movement/check_nom_key.php';
 
 export const SUPPLIERS = '/api/pages/movement/suppliers.php';
 export const CARRIERS = '/api/pages/movement/carriers.php';
@@ -16,6 +17,8 @@ export const BOL = '/api/pages/movement/view_bol.php';
 export const REPORT = '/api/pages/movement/view_loadreport.php';
 export const UNITS = '/api/pages/movement/unit_types.php';
 export const TOGGLE_LOCK = '/api/pages/movement/lock_item.php';
+export const TANKS_BY_DRAWPROD = '/api/pages/movement/tanks_by_drawprod.php';
+
 export const PRINT_BOL = '/api/pages/movement/print_bol.php';
 export const PRINT_REPORT = '/api/pages/movement/print_loadreport.php';
 export const REVERSE = '/api/pages/movement/reverse.php';
@@ -23,3 +26,4 @@ export const REVERSE = '/api/pages/movement/reverse.php';
 export const CREATE = '/api/pages/movement/create.php';
 export const UPDATE = '/api/pages/movement/update.php';
 export const DELETE = '/api/pages/movement/delete.php';
+export const TOGGLE_ITEM = '/api/pages/movement/lock_item.php';

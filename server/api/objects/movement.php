@@ -29,6 +29,22 @@ class Movement extends CommonClass
         
     );
 
+    public function check_nomination_key()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM MOVEMENTS WHERE MV_KEY=:mv_key
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mv_key', $this->nomination_key);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function alternate_units()
     {
         $query = "SELECT 'BB6' UNIT FROM DUAL

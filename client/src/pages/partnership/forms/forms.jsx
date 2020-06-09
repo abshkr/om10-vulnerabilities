@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   EditOutlined,
@@ -8,32 +8,37 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import useSWR, { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
+
 
 import { Company, Customer, Partner } from './fields';
 import { PARTNERSHIP } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const PartnerForm = ({ value, visible, handleFormState, auth }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-
-  const [company, setCompany] = useState(undefined);
+  const { resetFields } = form;
+  
+  const [company, setCompany] = useState(value?.partner_cmpy_code);
+  const [selected, setSelected] = useState(null);
   
   const IS_CREATING = !value;
-  const IS_CUST = (value && value.partner_cust_acct.length > 0)
   
   const onComplete = () => {
     handleFormState(false, null);
     mutate(PARTNERSHIP.READ);
   };
-
-  const onFinish = (values) => {
+  
+  const onFinish = async () => {
+    const values = await form.validateFields();
+    values.partners = selected
+    
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -80,8 +85,8 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           })
           .then(
             axios.spread((response) => {
-              mutate(PARTNERSHIP.READ);
-              Modal.destroyAll();
+              onComplete();
+
               notification.success({
                 message: t('messages.deleteSuccess'),
                 description: `${t('descriptions.deleteSuccess')}`,
@@ -98,6 +103,13 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     });
   };
 
+  useEffect(() => {
+    if (!value && !visible) {
+      resetFields();
+      setCompany(null);
+    }
+  }, [value]);
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -107,17 +119,8 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       mask={IS_CREATING}
       placement="right"
       width="40vw"
-      visible={visible}>
-      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-        <Tabs defaultActiveKey="1">
-          <TabPane tab={t('tabColumns.general')} key="1">
-            <Company form={form} value={value} onChange={setCompany} disable={!IS_CREATING}/>
-            <Customer form={form} value={value} company={company} disable={!IS_CREATING}/>
-            <Partner form={form} value={value} company={company} disable={!IS_CUST && !IS_CREATING}/>
-          </TabPane>
-        </Tabs>
-
-        <Form.Item>
+      visible={visible}footer={
+        <>
           <Button
             htmlType="button"
             icon={<CloseOutlined />}
@@ -129,17 +132,50 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
           <Button
             type="primary"
-            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate || !IS_CUST }
+            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             htmlType="submit"
             style={{ float: 'right', marginRight: 5 }}
+            onClick={onFinish}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
-        </Form.Item>
+
+          {!IS_CREATING && (
+            <Button
+              type="danger"
+              icon={<DeleteOutlined />}
+              style={{ float: 'right', marginRight: 5 }}
+              onClick={onDelete}
+              disabled={!auth?.canDelete}
+            >
+              {t('operations.delete')}
+            </Button>
+          )}
+        </>
+      }
+    >
+      <Form layout="vertical" form={form} scrollToFirstError>
+        <Tabs defaultActiveKey="1">
+          <TabPane tab={t('tabColumns.general')} key="1">
+            <Company form={form} value={value} onChange={setCompany} disable={!IS_CREATING}/>
+            <Customer form={form} value={value} company={company} />
+            <Divider>{t("pageNames.partners")}</Divider>
+            <Partner form={form} value={value} company={company} setSelected={setSelected}/>
+            {/* <Form.Item name="partners" noStyle >
+              <DataTable
+                data={partnersData}
+                height="78vh"
+                minimal
+                columns={columns(t)}
+                handleSelect={handleSelect}
+              />
+            </Form.Item> */}
+          </TabPane>
+        </Tabs>
       </Form>
     </Drawer>
   );
 };
 
-export default FormModal;
+export default PartnerForm;

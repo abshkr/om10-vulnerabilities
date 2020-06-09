@@ -6,12 +6,10 @@ import { Form, Select } from 'antd';
 
 import { MOVEMENT_NOMIATIONS } from '../../../../api';
 
-const Vehicle = ({ form, value }) => {
+const Vehicle = ({ form, value, carrier }) => {
   const { t } = useTranslation();
 
-  const { setFieldsValue, getFieldValue } = form;
-
-  const carrier = getFieldValue('mv_carrier');
+  const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(`${MOVEMENT_NOMIATIONS.TANKERS}?tnkr_carrier=${carrier}`);
 
@@ -22,12 +20,6 @@ const Vehicle = ({ form, value }) => {
       });
     }
   }, [value, setFieldsValue]);
-
-  useEffect(() => {
-    setFieldsValue({
-      mv_vehicle: undefined
-    });
-  }, [carrier, setFieldsValue]);
 
   return (
     <Form.Item name="mv_vehicle" label={t('fields.vehicle')}>

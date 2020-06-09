@@ -3010,6 +3010,12 @@ https://10.1.10.66/api/pages/schedule/get_product_details.php?supplier_code=7640
 https://10.1.10.66/api/pages/manual_trans/get_sched_details.php?supplier=5869999&trip_no=900000001
 https://10.1.10.66/api/pages/manual_trans/get_arms.php?prod_cmpy=5860106&prod_code=400003401
 https://10.1.10.66/api/pages/manual_trans/get_base_details.php?prod_cmpy=5860106&prod_code=400003401&arm_code=A04501
+https://10.1.10.185/api/pages/manual_trans/get_base_details.php
+{
+    "prod_cmpy": "0002",
+    "prod_code": "110218",
+    "arm_code": ["A03102", "SSS"]
+}
 https://10.1.10.66/api/pages/manual_trans/calc_vcf.php?frm_baseCd=400009868&frm_which_type=LT&frm_real_amount=6000&frm_real_temp=33&frm_real_dens=890
 https://{{server_ip}}/api/pages/manual_trans/submit.php //schedule manual transaction
 {

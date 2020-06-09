@@ -2,21 +2,21 @@ import React, { useEffect } from 'react';
 
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
-
-import { CUSTOMER_CATEGORIES } from '../../../../api';
 import { Form, Select } from 'antd';
 
-const Category = ({ form, value }) => {
+import { MOVEMENT_NOMIATIONS } from '../../../../api';
+
+const NominationStatus = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(CUSTOMER_CATEGORIES.READ);
-
   const { setFieldsValue } = form;
+
+  const { data: options, isValidating } = useSWR(MOVEMENT_NOMIATIONS.STATUS);
 
   const validate = (rule, input) => {
     if (rule.required) {
       if (input === '' || !input) {
-        return Promise.reject(`${t('validate.select')} ─ ${t('fields.custCategory')}`);
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.nominationStatus')}`);
       }
     }
 
@@ -26,40 +26,30 @@ const Category = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        cust_ctgr_code: value.cust_ctgr_code,
+        mv_status: value.mv_status
       });
     }
   }, [value, setFieldsValue]);
 
-  const handChange = (value) => {
-    console.log('selection',value);
-    if (value === undefined) {
-      setFieldsValue({
-        cust_ctgr_code: '',
-      });
-    }
-  }
-
   return (
     <Form.Item
-      name="cust_ctgr_code"
-      label={t('fields.custCategory')}
+      name="mv_status"
+      label={t('fields.nominationStatus')}
       rules={[{ required: false, validator: validate }]}
     >
       <Select
+        disabled={true}
         loading={isValidating}
-        allowClear
         showSearch
-        onChange={handChange}
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectCustomerCategory') : null}
+        placeholder={!value ? t('placeholder.selectNominationStatus') : null}
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.category_code}>
-            {item.category_name}
+          <Select.Option key={index} value={item.movstatus_type_id}>
+            {item.movstatus_type_name}
           </Select.Option>
         ))}
       </Select>
@@ -67,4 +57,4 @@ const Category = ({ form, value }) => {
   );
 };
 
-export default Category;
+export default NominationStatus;

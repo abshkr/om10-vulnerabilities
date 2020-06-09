@@ -36,7 +36,6 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
   const [selected, setSelected] = useState(null);
 
   const [baseLoading, setBaseLoading] = useState(true);
-  const [newBase, setNewBase] = useState(null);
 
   const { resetFields, setFieldsValue } = form;
 
@@ -208,6 +207,9 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
+      setBases([]);
+      setCompliant(false);
+      setLocked(false);
     } 
 
     if (value) {

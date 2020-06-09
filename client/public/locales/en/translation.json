@@ -169,6 +169,8 @@
     "companyCanReceiveReportByEmail": "Company can receive the report by Email",
     "companyCanReceiveReportByPrinting": "Company can receive the report by printing",
     "totalCustomerCategories": "Total Customer Categories",
+    "totalCustomersPerCategory": "Total Customers / Category",
+    "customersPerCategory": "Customers / Category",
     "monday": "Monday",
     "tuesday": "Tuesday",
     "wednesday": "Wednesday",
@@ -281,6 +283,7 @@
     "itemId": "Item Id",
     "nominationType": "Nomination Type",
     "itemKey": "Item Key",
+    "itemLock": "Lock/Unlock",
     "itemStatus": "Item Status",
     "productQuantity": "Product Quantity",
     "fromPlant": "From Plant",
@@ -1179,6 +1182,7 @@
     "editLineItem": "Edit Line Item",
     "deleteLineItem": "Delete Line Item",
     "lockItem": "Lock Item",
+    "unlockItem": "Unlock Item",
     "selectAllTimes": "Select All Times",
     "deselectAllTimes": "Deselect All Times",
     "returnToTransactionList": "Return to Transaction List",
@@ -1483,6 +1487,7 @@
   },
 
   "placeholder": {
+    "selectPlease": "Please Select",
     "selectGate": "Select Gate",
     "selectDepot": "Select Base Depot",
     "selectCarrier": "Select Carrier",

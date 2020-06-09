@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { MOVEMENT_NOMIATIONS } from '../../../../api';
 
-const Carrier = ({ form, value }) => {
+const Carrier = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -18,14 +18,17 @@ const Carrier = ({ form, value }) => {
       setFieldsValue({
         mv_carrier: value.mv_carrier
       });
+
+      onChange(value.mv_carrier);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onchange]);
 
   return (
     <Form.Item name="mv_carrier" label={t('fields.carrier')}>
       <Select
         loading={isValidating}
         showSearch
+        onChange={onChange}
         optionFilterProp="children"
         placeholder={t('placeholder.selectCarrier')}
         filterOption={(input, option) =>

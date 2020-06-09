@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-
 import { useTranslation } from 'react-i18next';
+
 import { Form, Input } from 'antd';
 
-const TransportSystem = ({ form, value }) => {
+const CategoryCount = ({ form, value }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -11,16 +11,16 @@ const TransportSystem = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mv_tpsystem: value.mv_tpsystem
+        category_count: value.category_count
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="mv_tpsystem" label={t('fields.transportSystem')} labelCol="">
-      <Input placeholder={t('placeholder.setTransportSystem')} maxLength={40}/>
+    <Form.Item name="category_count" label={t('fields.totalCustomersPerCategory')}>
+      <Input disabled={true} />
     </Form.Item>
   );
 };
 
-export default TransportSystem;
+export default CategoryCount;

@@ -1,5 +1,7 @@
 import Name from './name';
 import Code from './code';
-import CustomerCategory from './customer-category';
+import CategoryCount from './category-count';
+import CategoryCustomers from './category-customers';
+//import CustomerCategory from './customer-category';
 
-export { Name, Code, CustomerCategory };
+export { Name, Code, CategoryCount, CategoryCustomers };

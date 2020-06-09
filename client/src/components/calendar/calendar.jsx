@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { DatePicker } from 'antd';
 import moment from 'moment';
 
@@ -20,6 +20,7 @@ const Calendar = ({ handleChange, start, end, disabled }) => {
       showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
       format={format}
       defaultValue={[moment(start, 'YYYY-MM-DD HH:mm:ss'), moment(end, 'YYYY-MM-DD HH:mm:ss')]}
+      value={[moment(start, 'YYYY-MM-DD HH:mm:ss'), moment(end, 'YYYY-MM-DD HH:mm:ss')]}
       onChange={(dates) => handleDateChange(dates)}
       onOk={(dates) => handleDateChange(dates)}
       onPanelChange={(value) => console.log(value)}

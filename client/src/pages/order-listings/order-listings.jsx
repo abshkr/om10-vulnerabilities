@@ -183,4 +183,4 @@ const OrderListings = ({popup}) => {
   );
 };
 
-export default auth(OrderListings);
+export default OrderListings;
