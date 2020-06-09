@@ -44,6 +44,14 @@ const ManualTransactions = () => {
       cancelText: 'No',
       onOk: async () => {
         await form.resetFields();
+
+        setType(null);
+        setTrips(null);
+        setTankers(null);
+        setOrders(null);
+        setCustomers(null);
+        setSelectedSupplier(null);
+        setSelectedTrip(null);
       },
     });
   };

@@ -29,8 +29,8 @@ const MeterTotals = ({ form, type, selected, transfers }) => {
           await axios
             .get(MANUAL_TRANSACTIONS.BASE_DETAILS, {
               params: {
-                prod_cmpy: selected?.prod_cmpy,
-                prod_code: selected?.prod_code,
+                prod_cmpy: transfer?.prod_cmpy,
+                prod_code: transfer?.prod_code,
                 arm_code: [transfer?.arm_code],
               },
             })

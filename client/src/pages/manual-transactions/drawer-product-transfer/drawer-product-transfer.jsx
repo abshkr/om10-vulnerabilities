@@ -63,7 +63,9 @@ const DrawerProductTransfer = ({ form, supplier, trip }) => {
   };
 
   const onCellUpdate = (value) => {
-    if (value?.column?.colId === 'arm_code') {
+    console.log(value);
+
+    if (value?.column?.colId === 'arm_code' || value?.column?.colId === 'prod_name') {
       setSelected({
         ...value?.data,
       });
