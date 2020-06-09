@@ -208,7 +208,7 @@ const paths = [
 
   {
     path: ROUTES.HOST_MESSAGING_INTERFACE,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/host-messaging-interface')),
   },
 
   {
@@ -360,6 +360,7 @@ const paths = [
     path: ROUTES.TANKS,
     component: lazy(() => import('../pages/tanks')),
   },
+
 ];
 
 export default paths;
