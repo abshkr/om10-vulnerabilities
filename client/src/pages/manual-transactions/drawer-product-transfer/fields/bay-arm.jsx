@@ -23,7 +23,7 @@ export default class BayArm extends Component {
   onClick = (value, record) => {
     const { form, setPayload } = this.props;
 
-    let current = form.getFieldValue('products');
+    let current = form.getFieldValue('transfers');
 
     const key = this.props.data?.tnkr_cmpt_no;
     const index = _.findIndex(current, ['tnkr_cmpt_no', key]);
@@ -31,7 +31,7 @@ export default class BayArm extends Component {
     current[index].arm_code = record?.item?.stream_armcode;
 
     form.setFieldsValue({
-      products: current,
+      transfers: current,
     });
 
     this.setState(

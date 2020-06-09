@@ -1,34 +1,42 @@
 const columns = (t, form, setPayload, payload, type, drawers) => [
   {
-    headerName: t('fields.soldTo'),
-    field: 'mtd_type_name',
+    headerName: t('fields.compartmentNumber'),
+    field: 'tnkr_cmpt_no',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: type === 'open_order',
     width: 120,
-    hide: true,
+    pinned: 'left',
+  },
+
+  {
+    headerName: t('fields.soldTo'),
+    field: 'customer_code',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: type === 'BY_PRODUCT',
+    width: 80,
   },
 
   {
     headerName: t('fields.deliverNumber'),
-    field: 'mtd_type_name',
+    field: 'delivery_number',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 150,
-    hide: true,
+    width: 120,
+    hide: type === 'BY_PRODUCT',
   },
 
   {
     headerName: t('fields.shipTo'),
-    field: 'mtd_type_name',
+    field: 'delivery_location',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: type === 'open_order',
-    width: 130,
-    hide: true,
+    width: 80,
+    hide: type === 'BY_PRODUCT',
   },
 
   {
@@ -37,7 +45,7 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 150,
+    width: 120,
     cellEditor: 'EquipmentEditor',
     editable: true,
 
@@ -45,13 +53,7 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
       values: [],
     },
   },
-  {
-    headerName: t('fields.compartmentNumber'),
-    field: 'tnkr_cmpt_no',
-    filter: 'FuzzyFilter',
-    sortable: true,
-    resizable: true,
-  },
+
   {
     headerName: t('fields.drawerCode'),
     field: 'drawer_code',
@@ -87,6 +89,7 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
     resizable: true,
     cellEditor: 'DrawerProductsEditor',
     editable: true,
+    width: 250,
     cellEditorParams: {
       values: drawers?.records || [],
       form,
@@ -101,7 +104,7 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 200,
+    width: 250,
     cellEditor: 'BayArmEditor',
     editable: true,
     cellEditorParams: {

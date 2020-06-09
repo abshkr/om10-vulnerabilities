@@ -1,60 +1,60 @@
-const columns = t => [
+const columns = (t) => [
   {
     headerName: t('fields.product'),
-    field: 'mtd_type_name',
+    field: 'product',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.tankCode'),
-    field: 'mtd_address',
+    field: 'tank_code',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.productClass'),
-    field: 'mtd_code',
+    field: 'stream_bclass_nmae',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.density'),
-    field: 'src_name',
+    field: 'dens',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.temperature'),
-    field: 'mtd_src_type',
+    field: 'temperature',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.observedQuantity'),
-    field: 'dst_name',
+    field: 'amb_vol',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.standardQuantity'),
-    field: 'mtd_dst_type',
+    field: 'cor_vol',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
   },
   {
     headerName: t('fields.massQuantity'),
-    field: 'mtd_dst_type',
+    field: 'liq_kg',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
-  }
+    resizable: true,
+  },
 ];
 
 export default columns;
