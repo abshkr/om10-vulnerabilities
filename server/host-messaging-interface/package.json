@@ -1,0 +1,28 @@
+{
+  "name": "msgbroker_be",
+  "version": "1.0.0",
+  "description": "Message Broker Backend",
+  "main": "restapi.js",
+  "dependencies": {
+    "async": "^3.1.0",
+    "bcrypt": "^3.0.6",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "dateformat": "^3.0.3",
+    "express": "^4.17.1",
+    "ftpd": "^0.2.14",
+    "ip": "^1.1.5",
+    "jsonwebtoken": "^8.5.1",
+    "oracledb": "^4.2.0",
+    "pg": "^7.12.1",
+    "stat-mode": "^0.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node msgbroker.js",
+    "start": "node msgbroker.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

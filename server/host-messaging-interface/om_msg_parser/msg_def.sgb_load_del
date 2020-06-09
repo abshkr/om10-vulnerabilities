@@ -1,0 +1,361 @@
+std_fld_def STD_MESSAGE_LEN			( ASCII_9,		 4 );
+std_fld_def STD_SITE_CODE empty_char(' ')	( ASCII_X,		 6 );
+std_fld_def STD_CO_CODE empty_char(' ')		( ASCII_X,		 8 );
+std_fld_def STD_CO_NAME empty_char(' ')		( ASCII_X,		50 );
+std_fld_def STD_REPEAT_COUNT empty_char(' ')	( ASCII_9,		 2 );
+std_fld_def STD_TANK_CODE empty_char(' ')	( ASCII_X,		 6 );
+std_fld_def STD_BASE_PROD_CODE empty_char(' ')	( ASCII_X,		10 );
+std_fld_def STD_PRODUCT_CODE empty_char(' ')	( ASCII_X,		10 );
+std_fld_def STD_VOLUME				( ASCII_9,		 9 );
+std_fld_def STD_AOI_NUMBER empty_char('9')	( ASCII_9,		 2 );
+std_fld_def STD_LOAD_NUMBER			( ASCII_9,		 4 );
+std_fld_def STD_SHIFT_NUMBER empty_char (' ')	( ASCII_9,		 2 );
+std_fld_def STD_SEAL_NUMBER empty_char(' ')	( ASCII_X,		20 );
+std_fld_def STD_EQUIPMENT_CODE	 		( ASCII_X,		20 );
+std_fld_def STD_METER_CODE	 		( ASCII_X,		10 );
+std_fld_def STD_DELIVERY_LOCATION empty_char(' ')  ( ASCII_X,		 8 );
+std_fld_def STD_ORDER_REF_CD empty_char(' ')	( ASCII_X,		16 );
+std_fld_def STD_EXEMPT_NO empty_char(' ')	( ASCII_X,		 8 );
+std_fld_def STD_PERSONNEL_CODE empty_char(' ')	( ASCII_X,		 6 );
+std_fld_def STD_TIME_CODE empty_char(' ')	( ASCII_X,		 2 );
+std_fld_def STD_COMPANY_CODE empty_char(' ')	( ASCII_X,		 8 );
+
+std_fld_def STD_DLV_NAME empty_char(' ')	( ASCII_X,		 36 );
+std_fld_def STD_DLV_ADDR1 empty_char(' ')	( ASCII_X,		 36 );
+std_fld_def STD_DLV_ADDR2 empty_char(' ')	( ASCII_X,		 28 );
+std_fld_def STD_DLV_ADDR3 empty_char(' ')	( ASCII_X,		 6 );
+std_fld_def STD_DLV_INSTRUCTION empty_char(' ')	( ASCII_X,		 36 );
+std_fld_def STD_CUST_ORDER_TEXT empty_char(' ')	( ASCII_X,		 8 );
+std_fld_def STD_LOAD_INSTRUCTION empty_char(' ')( ASCII_X,		 50 );
+std_fld_def STD_DOCKET_NUMBER_TEXT empty_char(' ')( ASCII_X,		 8 );
+std_fld_def STD_SUMMARY_LINE empty_char(' ')	( ASCII_X,		 490 );
+
+
+std_fld_def STD_FILLER1 (IGNORED, 1 );
+std_fld_def STD_FILLER2 (IGNORED, 2 );
+std_fld_def STD_FILLER4 (IGNORED, 4 );
+std_fld_def STD_FILLER7 (IGNORED, 7 );
+std_fld_def STD_FILLER10 (IGNORED, 10 );
+std_fld_def STD_FILLER20 (IGNORED, 20 );
+std_fld_def STD_FILLER22 (IGNORED, 22 );
+std_fld_def STD_FILLER500 (IGNORED, 500 );
+std_fld_def STD_FILLER240 (IGNORED, 240 );
+
+
+
+message_group_def MGR_SGB;
+
+//[--- SGB: Common Stuff
+
+const_def SGB_VERSION_N			("10.00.00");
+const_def SGB_OM_PORT			("A000000070");
+const_def SGB_OM_PRTNR_TYP		("LS");
+const_def SGB_OM_PRTNR_NR		("CAPQASHPH0");
+const_def SGB_HST_PORT			("SAPA94    ");
+const_def SGB_HST_PRTNR_TYP		("LS");
+const_def SGB_HST_PRTNR_NR		("A94ACR3110");
+
+std_fld_def SGB_OM_PORT_IGN		(IGNORED,	10);
+std_fld_def SGB_OM_PRTNR_TYP_IGN	(IGNORED,	 2);
+std_fld_def SGB_OM_PRTNR_NR_IGN		(IGNORED,	10);
+std_fld_def SGB_HST_PORT_IGN		(IGNORED,	10);
+std_fld_def SGB_HST_PRTNR_TYP_IGN	(IGNORED,	 2);
+std_fld_def SGB_HST_PRTNR_NR_IGN	(IGNORED,	10);
+
+const_def SGB_NUMBER_OF_DRUMS	("000");
+const_def SGB_LD_DET_FILLER	(" ");
+const_def SGB_DENSITY_UOM	("KGV");		/* kg/m3 */
+const_def SGB_TEMPERATURE_UOM	("CEL");		/* degree celcius */
+const_def SGB_REF_TEMPERATURE	("+00000000000150");	/* reference temperature, scaled to one power of 10 */
+const_def SGB_AIR_BUOY_INDR	("X");			/* air buoyancy indicator */
+
+enum_def SGB_MSG_TYPE enum_name(MSG_TYPE) {
+	("LOAD:SPEC       ",	MSG_TY_LOAD_SPEC		);
+	("LOAD:ORDER      ",	MSG_TY_LOAD_ORDER		);
+	("OPEN:ORD        ",	MSG_TY_OPEN_ORDER		);
+	("LOAD:DELETE     ",	MSG_TY_LOAD_DELETE		);
+	("LOAD:DETAIL     ",	MSG_TY_LOAD_DET			);
+	("LOAD:DETAIL     ",	MSG_TY_WEIGH_LD_COMPLETE	);
+	("LOAD:REJECT     ",	MSG_TY_LOAD_SPEC_ERR		);
+	("ALEAUD:UPLOAD   ",	MSG_TY_LOAD_ACK			);
+	("DOC:REQUEST     ",	MSG_TY_DELIVERY_DOC_REQ		);
+	("OILNOM          ",	MSG_TY_NOMINATION		);
+	("OILTKT          ",	MSG_TY_TICKET			);
+	("PID:REQUEST     ",	MSG_TY_PID_REQUEST		);
+	("PDS:REQUEST     ",	MSG_TY_PDS_REQUEST		);
+	("SPCL:MVMENT     ", 	MSG_TY_SPCL_MVMENT		);
+	("CUSTOMER:DET    ", 	MSG_TY_CUSTOMER_UPDATE		);
+};
+
+enum_def SGB_UNITS_OF_MEASURE enum_name(QTY_SCALE) empty_char(' ')
+{
+	("L  ",			AMB_LITRE	);
+	("L  ",			QTY_LITRE	);
+	("STD",			COR_LITRE	);
+	("ML ",			QTY_MILLILITRE	);
+	("KG ",			KGRAM		);
+};
+
+enum_def SGB_LOAD_TYPE enum_name(LD_TYPE)
+{
+	("?",		LD_INV_TYP	);
+	("A",		LD_PRESCHEDULE	);
+	("Q",		LD_PREORDER	);
+	("O",		LD_ORDER	);
+	("B",		LD_BRIDGER	);
+	("R",		LD_REFUELLER	);
+	("O",		LD_CUST_ORDER	);
+	("O",		LD_PROD_ALLOC	);
+	("H",		LD_HOST_DETS	);
+	("A",		LD_WEIGHBRIDGE	);
+};
+
+enum_def SGB_POSTING_TYPE enum_name(LD_REVERSE_STATUS)
+{
+	("00",		LD_NOT_REVERSED	);
+	("01",		LD_REVERSED	);
+	("02",		LD_REPOSTED	);
+};
+
+enum_def SGB_IDOC_STATUS enum_name(IDOC_STATUS) empty_char(' ')
+{
+	("53",		IDOC_STAT_OK);
+	("68",		IDOC_STAT_NOT_OK);
+};
+
+enum_def SGB_CUSTOMER_SALE_TYPE enum_name(CUSTOMER_SALE_TYP) empty_char(' ')
+{
+	("00",		CST_CASH);
+	("01",		CST_CRDT);
+	("02",		CST_CHEQUE);
+	("03",		CST_LOAN);
+	("04",		CST_TRANSFER);
+	("05",		CST_PREPAID);
+};
+
+enum_def SGB_CUST_INVOICE_TY enum_name(CUSTOMER_INV_TYP) empty_char(' ')
+{
+	("01",		PRICED);
+	("02",		UNPRICED);
+};
+
+enum_def SGB_TRNSP_TY enum_name(TRANSPORT_TYPE) empty_char(' ')
+{
+	("01",		TT_ROAD_BULK);
+	("02",		TT_ROAD_PACK);
+	("03",		TT_RAIL_BULK);
+	("04",		TT_RAIL_PACK);
+	("05",		TT_PIPELINE);
+	("06",		TT_SHIP);
+};
+
+enum_def SGB_DOC_TY enum_name(DOCUMENT_TYPE) empty_char(' ')
+{
+	("01",		DT_INVOICE);
+	("02",		DT_LOAN);
+	("03",		DT_TRANSFER);
+};
+
+enum_def SGB_QTY_TY enum_name(QTY_TYPE) empty_char(' ')
+{
+	("01",		QT_AMB);
+	("02",		QT_COR);
+	("03",		QT_MASS);
+};
+
+std_fld_def SGB_FLEET_DATA	empty_char(' ')	( ASCII_X,		20);
+std_fld_def SGB_SUPP_CODE	empty_char(' ') ( ASCII_X,		 8);
+std_fld_def SGB_CUST_CODE	empty_char(' ') ( ASCII_X,		 8);
+std_fld_def SGB_COMPANY_CODE	empty_char(' ') ( ASCII_X,		 8);
+std_fld_def SGB_CMPY_CODE_2	empty_char(' ') ( ASCII_X,		16);
+std_fld_def SGB_DATE		empty_char(' ') ( ASCII_DDdMMdCCYY,	10);
+std_fld_def SGB_DATE_2		empty_char(' ') ( ASCII_CCYYMMDD,	 8);
+std_fld_def SGB_DATE_UTC	empty_char(' '), utc_format ( ASCII_CCYYMMDD,	 8);
+std_fld_def SGB_TIME		empty_char(' ') ( ASCII_HHMMSS,	 	 6);
+std_fld_def SGB_TIME_UTC	empty_char(' '), utc_format ( ASCII_HHMMSS, 	 6);
+std_fld_def SGB_DATE_TIME	empty_char(' ') ( ASCII_CCYYMMDDHHMM,	12);
+std_fld_def SGB_DATE_TIME_2	empty_char(' ') ( ASCII_DDdMMdCCYYHHcMMcSS,	18);
+
+std_fld_def SGB_TANKER_CODE	empty_char(' '),truncate(RIGHT_TRUNC) ( ASCII_X,		20);
+std_fld_def SGB_EQUIPMENT_CODE	empty_char(' '),truncate(RIGHT_TRUNC) ( ASCII_X,		20);
+std_fld_def SGB_SITE_CODE	empty_char(' ') ( ASCII_X,		 8);
+std_fld_def SGB_TRM_LOC_CODE	empty_char(' ') ( ASCII_X,		 6);
+std_fld_def SGB_MSG_ID          empty_char(' ') (ASCII_X,               36);
+std_fld_def SGB_PID_TRM_CODE	empty_char(' ') ( ASCII_X,		 14);
+std_fld_def SGB_SPMVMT_TRM_CODE	empty_char(' ') ( ASCII_X,		 10);
+std_fld_def SGB_TRM_ARC_CODE	empty_char('X') ( ASCII_X,		 6);
+std_fld_def SGB_PRODUCT_INDEX	empty_char(' ') ( ASCII_9,		 2);
+std_fld_def SGB_PROD_QUANTITY	empty_char(' ') ( ASCII_9,		 9);
+std_fld_def SGB_LOAD_NO 	empty_char('0')	( ASCII_9,		 9);
+std_fld_def SGB_ORDER_NO	empty_char('0')	( ASCII_9,		 9);
+std_fld_def SGB_HST_ORD_REF_CD	empty_char(' ') (ASCII_X,               30);
+std_fld_def SGB_HOST_PROD_CODE	empty_char(' ')	( ASCII_X,		18);
+std_fld_def SGB_QUANTITY	empty_char(' ')	( ASCII_9,		 9);
+std_fld_def SGB_SHIFT_NUMBER	empty_char(' ') ( ASCII_9,		 2);
+std_fld_def SGB_SEAL_NUMBER	empty_char(' '),truncate(RIGHT_TRUNC) ( ASCII_X,		20);
+std_fld_def SGB_LSI		empty_char(' '),truncate(RIGHT_TRUNC) ( ASCII_X,		120);
+std_fld_def SGB_PERSONNEL_CODE	empty_char(' ')	( ASCII_X,		 6);
+std_fld_def SGB_COMPONENT_NO	empty_char('0')	( ASCII_9,		 1);
+std_fld_def SGB_COMPARTMENT_NO	empty_char('0')	( ASCII_9,		 2);
+std_fld_def SGB_PRODUCT_CODE	empty_char(' ')	( ASCII_X,		18);
+std_fld_def SGB_PROD_CODE_2	empty_char(' ')	( ASCII_X,		35);
+std_fld_def SGB_DENSITY		scale_pow10(2), empty_char(' ') ( ASCII_9,	6);
+std_fld_def SGB_DENSITY_2	scale_pow10(1), empty_char(' ') ( ASCII_9,	5);
+std_fld_def SGB_DENSITY_3	scale_pow10(2), empty_char(' ') ( ASCII_9,	16);
+std_fld_def SGB_TEMPERATURE	scale_pow10(1), empty_char(' ') (ASCII_9,	4);
+std_fld_def SGB_TEMPERATURE_2	scale_pow10(1), empty_char(' ') (ASCII_S9,	16);
+std_fld_def SGB_TANK_CODE	empty_char(' ')	(ASCII_X,		 6);
+std_fld_def SGB_VOLUME		empty_char(' ')	( ASCII_9,		 9);
+std_fld_def SGB_MASS		empty_char(' ')	(ASCII_9,		 9);
+std_fld_def SGB_PROD_QTY	empty_char(' ') ( ASCII_9, 		15);
+std_fld_def SGB_IDOC_NUM	empty_char('0')	( ASCII_9,              16);
+std_fld_def SGB_STATUS_DESC	empty_char(' '),truncate(RIGHT_TRUNC) ( ASCII_X,              70);
+std_fld_def SGB_DELIV_NUM	empty_char(' ')	( ASCII_X,              10);
+std_fld_def SGB_SOLD_TO_NUM	empty_char(' ')	( ASCII_X,              17);
+std_fld_def SGB_SHIP_TO_NUM	empty_char(' ')	( ASCII_X,              17);
+std_fld_def SGB_SHIPMENT_NUM	empty_char(' ')	( ASCII_9,		 9);
+std_fld_def SGB_REPEAT_COUNT	empty_char(' ')	( ASCII_9,		 2);
+std_fld_def SGB_BASE_PROD_CODE	empty_char(' ')	( ASCII_X,		10);
+std_fld_def SGB_EXEMPT_NO	empty_char(' ')	( ASCII_X,		 8);
+std_fld_def SGB_ADDITIVE_VOLUME scale_pow10(3), empty_char('0') (ASCII_9,	8);
+std_fld_def SGB_CUST_ACCT	empty_char(' ')	( ASCII_X,		 8);
+std_fld_def SGB_TRM_CODE_6	empty_char(' ')	(ASCII_X,		 6);
+std_fld_def SGB_CST_ACCT_NUMBER empty_char(' ')	(ASCII_X,		20);
+std_fld_def SGB_ADDRESS_CODE    empty_char(' ')	(ASCII_X,		20);
+std_fld_def SGB_GRID    	empty_char(' ')	(ASCII_X,		30);
+std_fld_def SGB_ETP_ID 		empty_char(' ')	(ASCII_9,		 9);
+std_fld_def SGB_DELV_LOC_CODE   empty_char(' ')	(ASCII_X,		 8);
+std_fld_def SGB_DELV_LOC_NAME   empty_char(' ')	(ASCII_X,		50);
+std_fld_def SGB_CONTACT_KEY	empty_char(' ') (ASCII_X,               20);
+std_fld_def SGB_STRT_NO_AND_NM  empty_char(' ') (ASCII_X,               35);
+std_fld_def SGB_CITY_LINE_1     empty_char(' ') (ASCII_X,               35);
+std_fld_def SGB_CITY_LINE_2     empty_char(' ') (ASCII_X,               35);
+std_fld_def SGB_DISTRICT        empty_char(' ') (ASCII_X,               35);
+std_fld_def SGB_POSTAL_CODE     empty_char(' ') (ASCII_9,                9);
+std_fld_def SGB_STATE           empty_char(' ') (ASCII_X,               35);
+std_fld_def SGB_COUNTRY         empty_char(' ') (ASCII_X,               35);
+std_fld_def SGB_PHONE_NO        empty_char(' ') (ASCII_X,               25);
+std_fld_def SGB_CONTACT_NM      empty_char(' ') (ASCII_X,               50);
+std_fld_def SGB_EMAIL_ADDR      empty_char(' ') (ASCII_X,               50);
+std_fld_def SGB_FAX_NO          empty_char(' ') (ASCII_X,               25);
+
+truth_value_def SGB_LD_COMPLETION empty_char(' ')	{ "1",	"0"};
+
+sub_message_def SGB_MSG_HEADER_1
+	struct_name		(HDB_TRANS_HDR)
+{
+	SGB_MSG_TYPE		("Message Type")	message_type;
+	SGB_VERSION_N		("Version Number");
+	SGB_DATE_TIME_2		("Event Date and Time",	event_time);
+	SGB_SITE_CODE		("Site Code",		site_cd);
+};
+
+sub_message_def SGB_MSG_HEADER_2
+	struct_name		(SHL_MAIN_STRUCT)
+{
+	SGB_MSG_TYPE		("Message Type")		message_type;
+	SGB_VERSION_N		("Version Number");
+	SGB_DATE_TIME_2		("Event Date and Time",		event_time);
+	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
+	SGB_MSG_ID		("Message ID", msg_id) optional;
+};
+
+sub_message_def SGB_MSG_HEADER_3
+	struct_name		(SHL_MAIN_STRUCT)
+{
+	SGB_MSG_TYPE		("Message Type")		message_type;
+	SGB_VERSION_N		("Version Number");
+	SGB_DATE_TIME_2		("Event Date and Time",		event_time);
+	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
+};
+
+sub_message_def SGB_MSG_HEADER_4
+	struct_name		(HDB_TRANS_HDR)
+{
+	SGB_MSG_TYPE		("Message Type")		message_type;
+	SGB_VERSION_N		("Version Number");
+	SGB_DATE_TIME_2		("Event Date and Time",		event_time);
+	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
+	SGB_MSG_ID		("Message ID", msg_id) optional;
+};
+
+sub_message_def SGB_MSG_HEADER_5
+	struct_name		(HDB_TRANS_HDR)
+{
+	SGB_MSG_TYPE		("Message Type")		message_type;
+	SGB_VERSION_N		("Version Number");
+	SGB_DATE_TIME_2		("Event Date and Time",		event_time);
+	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
+};
+
+sub_message_def SGB_MSG_HEADER_6
+	struct_name		(HDB_TRANS_HDR)
+{
+	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
+};
+
+sub_message_def SGB_MSG_HEADER_7
+	struct_name		(HDB_TRANS_HDR)
+{
+	SGB_MSG_TYPE		("Message Type")		message_type;
+	SGB_VERSION_N		("Version Number");
+	SGB_DATE_TIME_2		("Event Date and Time",		event_time) optional;
+	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd) optional;
+	SGB_MSG_ID		("Message Id", 			msg_id) optional;
+};
+
+sub_message_def SGB_MSG_HEADER_8
+	struct_name		(HDB_TRANS_HDR)
+{
+	SGB_PID_TRM_CODE	("Terminal Location Code",	site_cd);
+};
+
+sub_message_def SGB_TKR_EQUIP_STRUCT
+	struct_name		(TKR_COMPONENT_STRUCT)
+{
+	SGB_EQUIPMENT_CODE	("Equipment Code", equip_cd) optional;
+};
+
+sub_message_def SGB_TKR_STRUCT
+	struct_name		(TKR_STRUCT)
+{
+	SGB_TANKER_CODE			("Tanker Code", tanker_cd);
+	SGB_TKR_EQUIP_STRUCT		("Equipment Codes", components)
+							max_repeats(5);
+};
+
+//]--- SGB: Common Stuff
+
+
+
+//[--- SGB: LOAD_DELETE (SGB->OMEGA)
+
+std_fld_def SGB_DEL_PLANT_CODE_IGN	(IGNORED,		  6);
+
+sub_message_def SGB_DEL_HEADER
+	struct_name		(SHL_MAIN_STRUCT)
+{
+	SGB_MSG_TYPE		("Message Type")		message_type;
+	SGB_VERSION_N		("Version Number");
+	SGB_DATE_TIME_2		("Event Date and Time",		event_time);
+	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
+	SGB_MSG_ID		("Message ID", msg_id);
+	SGB_LOAD_NO		("Load Number", load_number);
+	STD_COMPANY_CODE	("Supplier Code", supplier_cd);
+	STD_COMPANY_CODE	("Drawer Code", drawer_cd);
+        SGB_IDOC_NUM		("IDOC number", idoc_num);
+	SGB_DEL_PLANT_CODE_IGN	("Ignored plant code");
+};
+
+main_message_def SGB_LOAD_DELETE
+	struct_name		(SHL_LOAD_SPEC_STRUCT),
+	name			("Delete Load"),
+	message_type		(LOAD_DELETE),
+	message_group		(MGR_SGB)
+{
+	SGB_DEL_HEADER		("Header", schedule);
+};
+
+//]--- SGB: LOAD_DELETE (SGB->OMEGA)
+
+

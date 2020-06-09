@@ -1,0 +1,85 @@
+.login {
+	width: 350px;
+	margin: 0 auto;
+	padding: 5px;
+	border: 2px solid;
+	border-color: lightgrey;
+	border-radius: 10px;
+	background-color: #E5EAED;
+}
+
+.spacer {
+	width: 35%;
+}
+
+.adjacent {
+	text-align: center;
+
+	/* these settings causes two consecutive div's to appear side by side
+	*/
+	float: none;
+	display: flex;
+}
+
+
+body {
+    background-color : #484848;
+    margin: 0;
+    padding: 0;
+	text-align: center;
+}
+h1 {
+    color : blue;
+    align : center;
+    font-family: "SIMPSON";
+	text-align: center;
+	text-shadow: 1px 6px 6px #999;
+}
+
+form {
+	display: inline-block;
+    align : center;
+}
+
+.formInput {
+	width: 250px;
+	border-radius: 10px;
+}
+
+.shadow {
+	-moz-box-shadow:    inset 0 0 10px #000000;
+	-webkit-box-shadow: inset 0 0 10px #000000;
+	box-shadow:         inset 0 0 10px #000000;
+}
+
+/* set margin-left to auto to push element to the right */
+.loginButton {
+	margin-left: auto;
+	height: 30px;
+	border: 2px solid;
+	border-color: grey;
+	border-radius: 10px;
+	background-color: beige;
+}
+
+/* set margin-right to auto to push element to the left */
+.signupButton {
+	margin-right: auto;
+	height: 30px;
+	border: 2px solid;
+	border-color: grey;
+	border-radius: 10px;
+	background-color: beige;
+}
+
+.notice {
+	margin: 0;
+}
+
+.hidden {
+	visible: 'hidden';
+}
+
+.separator{
+	margin: 0 auto;
+}

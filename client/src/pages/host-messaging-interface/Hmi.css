@@ -1,0 +1,401 @@
+.Hmi {
+  background-color: white;
+  text-align: center;
+
+  /* these settings causes two consecutive div's to appear side by side
+  */
+  float: none;
+  display: flex;
+}
+
+.Hmi-logo {
+  display: block;
+  animation: Hmi-logo-spin infinite 20s linear;
+  /*height: 40vmin;*/
+  height: 4vmin;
+  pointer-events: none;
+  text-align: center;
+}
+
+.Hmi-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.Hmi-link {
+  color: #61dafb;
+}
+
+@keyframes Hmi-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.highlight {
+	background-color: yellow;
+}
+
+.hostSearchResult {
+	color: blue;
+}
+
+.omSearchResult {
+	color: coral;
+}
+
+
+/*----------- */
+
+table {
+	width: 100%;
+	table-layout: auto;
+	border-collapse: collapse;
+	text-overflow: ellipsis;
+}	
+
+/*
+tableInner {
+	display: table;
+	table-layout: fixed;
+	white-space: nowrap;
+	word-wrap: break-word;
+	word-break: break-all;
+	float: left;
+
+	width: 49%;
+	overflow-x: scroll;
+	overflow-y: scroll;
+}
+*/
+
+thead {
+	display: block;
+}
+
+
+.summary {
+	display: block;
+	height:320px;
+	width:700px;
+	overflow:auto;
+	line-height: 1.2;
+}
+
+.msgSummary {
+	border-collapse: collapse;
+	width:100%;
+	padding-left: 6px;
+}
+
+.detailsArea {
+	display: block;
+	height:300px;
+	width:820px;
+	text-align: left;
+	border: 2px solid;
+	border-color: lightgrey;
+	border-radius: 10px;
+	background-color: #E5EAED;
+}
+
+.detailsAreaPre {
+	display: block;
+	height:100%;
+	width:100%;
+	text-align: left;
+}
+
+.detailsAreaFilledByHostMsg {
+	display: block;
+	height:300px;
+	width:820px;
+	text-align: left;
+	border: 4px solid;
+	border-color: blue;
+	border-radius: 10px;
+	background-color: #E5EAED;
+	padding: 6px;
+}
+
+.detailsAreaFilledByOmMsg {
+	display: block;
+	height:300px;
+	width:820px;
+	text-align: left;
+	border: 4px solid;
+	border-color: coral;
+	border-radius: 10px;
+	background-color: #E5EAED;
+	padding: 6px;
+}
+
+.contentsArea {
+	display: block;
+	height:480px;
+	width:820px;
+	text-align: left;
+	border: 2px solid;
+	border-color: lightgrey;
+	border-radius: 10px;
+	background-color: #E5EAED;
+}
+
+.contentsAreaPre {
+	display: block;
+	height:450px;
+	width:100%;
+	text-align: left;
+}
+
+.contentsAreaPreBody {
+	display: block;
+	height:100%;
+	width:100%;
+	text-align: left;
+	padding: 6px;
+	overflow:auto;
+}
+
+.contentsAreaPreBodyInputFld {
+	size: 40%;
+}
+
+
+.contentsAreaFilledByHostMsg {
+	display: block;
+	width: 820px;
+	text-align: left;
+	border: 4px solid;
+	border-color: blue;
+	border-radius: 10px;
+	background-color: #E5EAED;
+	padding: 6px;
+}
+
+
+.contentsAreaFilledByOmMsg {
+	display: block;
+	width: 820px;
+	text-align: left;
+	border: 4px solid;
+	border-color: coral;
+	border-radius: 10px;
+	background-color: #E5EAED;
+	padding: 6px;
+}
+
+
+td {
+	text-align: left;
+}
+
+/* This creates a zebra-striped background on table rows
+** but is interfering with the related markings.
+** disable it for now.
+tr:nth-child(even) {
+  background-color: #f2f2f2
+}
+*/
+
+
+#sep {
+	display: block;
+	background-color: grey;
+	color: grey;
+	float: next;
+	width: 10px;
+}
+
+#sepm {
+	display: block;
+	background-color: white;
+	color: white;
+	float: next;
+	width: 10px;
+}
+
+
+.adjacent {
+  text-align: center;
+
+  /* these settings causes two consecutive div's to appear side by side
+  */
+  float: none;
+  display: flex;
+}
+
+
+.sortGroup {
+	border: 1px solid;
+	border-color: lightgrey;
+	border-radius: 0px;
+	height: 28px;
+}
+
+.sortOption {
+	font-size: fit;
+	height: 28px;
+	border-radius: 0px;
+}
+
+.filterGroup {
+	border: 1px solid;
+	border-color: lightgrey;
+	border-radius: 0px;
+	height: 28px;
+}
+
+.filterOption {
+	font-size: fit;
+	height: 28px;
+	width: 100px;
+	border-radius: 0px;
+}
+
+.filterCriteria {
+	border-radius: 10px;
+}
+
+.menuGroup {
+	border: 2px solid;
+	border-color: lightgrey;
+	border-radius: 0px;
+	height: 28px;
+}
+
+.menuOption {
+	font-size: fit;
+	height: 28px;
+	border-radius: 10px;
+}
+
+.hostSearchBox {
+	border-radius: 0px;
+	width: 285px;
+	color: blue;
+}
+
+.hostFilterBox {
+	border-radius: 0px;
+	width: 150px;
+}
+
+.searchGroup {
+	border: 1px solid;
+	border-color: lightgrey;
+	border-radius: 0px;
+	height: 28px;
+}
+
+.searchOption {
+	font-size: fit;
+	height: 28px;
+	border-radius: 0px;
+}
+
+.omSearchBox {
+	border-radius: 0px;
+	width: 285px;
+	color: coral;
+}
+
+.omFilterBox {
+	border-radius: 0px;
+	width: 150px;
+}
+
+
+.HostMsgHeading {
+	font-size: medium;
+	font-weight: bold;
+	color: blue;
+	text-shadow: 1px 6px 6px #999;
+	text-align: center;
+	-webkit-background-clip: text;
+	-moz-background-clip: text;
+}
+
+.OmMsgHeading {
+	font-size: medium;
+	font-weight: bold;
+	color: coral;
+	text-shadow: 1px 6px 6px #999;
+	text-align: center;
+	-webkit-background-clip: text;
+	-moz-background-clip: text;
+}
+
+.rowIndex {
+	border-collapse: collapse;
+	//border-right: 4px solid;
+	font-weight: bold;
+}
+
+.visible {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 2s linear;
+}
+
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 2s, opacity 2s linear;
+}
+
+.statusOk {
+	background-color: lightgreen;
+}
+
+.statusBad {
+	background-color: red;
+}
+
+.submitButton {
+	height: 30px;
+}
+
+.blinking {
+    animation: blinkingText 3s linear 0s 1;
+}
+
+@keyframes blinkingText{
+    0%{     color: #000;    }
+    49%{    color: transparent; }
+    50%{    color: transparent; }
+    99%{    color: transparent;  }
+    100%{   color: #000;    }
+}
+
+.edited {
+	color: red;
+}
+
+toggleButtonUp {
+  background: #ccc;
+  cursor: pointer;
+  border-top: solid 2px #eaeaea;
+  border-left: solid 2px #eaeaea;
+  border-bottom: solid 2px #777;
+  border-right: solid 2px #777;
+  padding: 5px 5px;
+}
+
+toggleButtonDown {
+  background: #bbb;
+  border-top: solid 2px #777;
+  border-left: solid 2px #777;
+  border-bottom: solid 2px #eaeaea;
+  border-right: solid 2px #eaeaea;
+}
+

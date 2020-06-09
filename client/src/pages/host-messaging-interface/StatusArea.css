@@ -1,0 +1,46 @@
+.statusArea {
+	disabled: true;
+	resize: none;
+	readonly: true;
+	border: 2px solid;
+	border-color: lightgrey;
+	border-radius: 10px;
+	width: 640px;
+	height: 70px;
+	overflow: auto;
+}
+
+.statusAreaLine {
+	disabled: true;
+	resize: none;
+	readonly: true;
+	border-collapse: collapse;
+	height: 20px;
+	padding: 0;
+	margin: 0;
+	text-align: left;
+}
+
+.statusAreaLineWarn {
+	disabled: true;
+	resize: none;
+	readonly: true;
+	border-collapse: collapse;
+	height: 20px;
+	padding: 0;
+	margin: 0;
+	text-align: left;
+	color: orange;
+}
+
+.statusAreaLineErr {
+	disabled: true;
+	resize: none;
+	readonly: true;
+	border-collapse: collapse;
+	height: 20px;
+	padding: 0;
+	margin: 0;
+	text-align: left;
+	color: red;
+}

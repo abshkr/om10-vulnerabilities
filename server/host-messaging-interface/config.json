@@ -1,0 +1,145 @@
+{
+
+"hosts" : [
+	{
+		"ip" : "10.1.10.250",
+		"conns" : [
+			{
+				"data_flow_direction" : "from",
+				"protocol" : "na",
+				"start_as" : "dir_monitor",
+				"src_dir" : "/usr/omega/omfe/server/inbound/mobil",
+				"archive_dir" : "/usr/omega/data/mobil/archive/sap",
+				"file_name_format" : {
+					"field_separator" : "_",
+					"extension_prefix" : ".",
+					"extension" : "dat",
+					"accept_extension" : ["dat", "xml"],
+					"ignore_extension" : ".lck",
+					"fields" : ["site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ],
+					"fe_fields" : ["EMB_SITE_CODE", "EMB_MSG_TYPE:SHORT", "EMB_IDOC_NO", "EMB_LOAD_NO", "EMB_DATE_TIME:yyyymmddhhmmssfff" ]
+				},
+				"routing_rules" : {
+					"method" : "by_file_name",
+					"fld_idx" : 0
+				},
+				"route_to" : [
+					{ "0ZP2" : { "ip" : "10.1.10.197", "dir" : "/usr/omega/data/mobil/sap", "file_nm_fmt" : "SAP" } }
+                ],
+				"msg_parse_rules" : {
+					"file_name_field" : "msg_type",
+					"rules" : [
+						{ "SHP" : { "schema" : "msg_def.emb_load_spec", "name" : "EMB_LOAD_SPEC", "msg_id_idx" : 7 } },
+						{ "ORD" : { "schema" : "msg_def.emb_load_ord", "name" : "EMB_LOAD_ORDER", "msg_id_idx" : 7 } },
+						{ "CON" : { "schema" : "msg_def.emb_open_ord", "name" : "EMB_OPEN_ORDER", "msg_id_idx" : 7 } },
+						{ "DEL" : { "schema" : "msg_def.emb_load_del", "name" : "EMB_LOAD_DELETE", "msg_id_idx" : 7 } }
+					]
+				}
+			},
+			{
+				"data_flow_direction" : "to",
+				"protocol" : "na",
+				"start_as" : "dir_monitor",
+				"src_dir" : "/usr/omega/data/mobil/tas/out",
+				"archive_dir" : "/usr/omega/data/mobil/archive/tas",
+				"file_name_format" : {
+					"field_separator" : "_",
+					"extension_prefix" : ".",
+					"extension" : "dat",
+					"accept_extension" : ["dat", "xml"],
+					"ignore_extension" : ".lck",
+					"fields" : ["site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ]
+				},
+				"routing_rules" : {
+					"method" : "by_file_name",
+					"fld_idx" : 0
+				},
+				"route_to" : [
+					{ "P251" : { "ip" : "10.1.10.250", "dir" : "/usr/omega/data/mobil/tas/0zp2", "file_nm_fmt" : "ORIG" } }
+                ],
+				"msg_parse_rules" : {
+					"file_name_field" : "msg_type",
+					"rules" : [
+						{ "ACK" : { "schema" : "msg_def.emb_load_ack", "name" : "EMB_LOAD_ACK", "msg_id_idx" : 7, "status_idx" : 2, "status_desc_idx" : 3 } },
+						{ "LDS" : { "schema" : "msg_def.emb_load_start", "name" : "EMB_LOAD_STARTED", "msg_id_idx" : 7 } },
+						{ "LDD" : { "schema" : "msg_def.emb_load_det", "name" : "EMB_LOAD_DETAILS", "msg_id_idx" : 7 } }
+					]
+				}
+			}
+
+		]
+	},
+	{
+		"ip" : "10.1.10.244",
+		"conns" : [
+			{
+				"data_flow_direction" : "from",
+				"protocol" : "na",
+				"start_as" : "dir_monitor",
+				"src_dir" : "/usr/omega/omfe/server/inbound/shell",
+				"archive_dir" : "/usr/omega/data/gsap/archive/sap",
+				"file_name_format" : {
+					"field_separator" : "_",
+					"extension_prefix" : ".",
+					"extension" : "dat",
+					"accept_extension" : ["dat", "xml"],
+					"ignore_extension" : ".lck",
+					"fields" : ["site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ],
+					"fe_fields" : ["SGB_SITE_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NO", "SGB_LOAD_NO", "SGB_DATE_TIME:yyyymmddhhmmssfff" ]
+				},
+				"routing_rules" : {
+					"method" : "by_file_name",
+					"fld_idx" : 0
+				},
+				"route_to" : [
+					{ "T048" : { "ip" : "localhost", "dir" : "/usr/omega/data/gsap/outbox/P251", "file_nm_fmt" : "SAP" } }
+                ],
+				"msg_parse_rules" : {
+					"file_name_field" : "msg_type",
+					"rules" : [
+						{ "SHP" : { "schema" : "msg_def.sgb_load_spec", "name" : "SGB_LOAD_SPEC", "msg_id_idx" : 4 } },
+						{ "ORD" : { "schema" : "msg_def.sgb_load_ord", "name" : "SGB_LOAD_ORDER", "msg_id_idx" : 4 } },
+						{ "CON" : { "schema" : "msg_def.sgb_open_ord", "name" : "SGB_OPEN_ORDER", "msg_id_idx" : 4 } },
+						{ "DEL" : { "schema" : "msg_def.sgb_load_del", "name" : "SGB_LOAD_DELETE", "msg_id_idx" : 4 } },
+						{ "NOM" : { "schema" : "msg_def.sgb_nom", "name" : "SGB_NOM", "msg_id_idx" : 4, "preprocess" : "sgb_nom.py" } }
+					]
+				}
+			},
+			{
+				"data_flow_direction" : "to",
+				"protocol" : "na",
+				"start_as" : "dir_monitor",
+				"src_dir" : "/usr/omega/data/gsap/hstcom_out",
+				"archive_dir" : "/usr/omega/data/gsap/archive/tas",
+				"file_name_format" : {
+					"field_separator" : "_",
+					"extension_prefix" : ".",
+					"extension" : "dat",
+					"accept_extension" : ["dat", "xml"],
+					"ignore_extension" : ".lck",
+					"fields" : ["site_code", "msg_type", "idoc_status", "idoc_no", "yyyymmddhhmmssfff" ]
+				},
+				"routing_rules" : {
+					"method" : "by_file_name",
+					"fld_idx" : 0
+				},
+				"route_to" : [
+                    { "CNS" : { "ip" : "10.1.10.244", "dir" : "/usr/omega/data/gsap/tas/T048", "file_nm_fmt" : "ORIG" },
+                      "MKY" : { "ip" : "10.1.10.244", "dir" : "/usr/omega/data/gsap/tas/T048", "file_nm_fmt" : "ORIG" }
+ 					}
+                ],
+				"msg_parse_rules" : {
+					"file_name_field" : "msg_type",
+					"rules" : [
+						{ "ACK" : { "schema" : "msg_def.sgb_load_ack", "name" : "SGB_LOAD_ACK", "msg_id_idx" : 4, "status_idx" : 3, "status_desc_idx" : 4 } },
+						{ "LDS" : { "schema" : "msg_def.sgb_load_start", "name" : "SGB_LOAD_STARTED", "msg_id_idx" : 4 } },
+						{ "LDD" : { "schema" : "msg_def.sgb_load_det", "name" : "SGB_LOAD_DETAILS", "msg_id_idx" : 4 } }
+					]
+				}
+			}
+
+		]
+	}
+]
+
+}
