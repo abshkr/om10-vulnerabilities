@@ -7,6 +7,8 @@ const HostData = ({ form, value }) => {
 
   const { setFieldsValue } = form;
 
+  const IS_DISABLED = !value ? false : value?.shls_status !== 'NEW SCHEDULE';
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -17,7 +19,7 @@ const HostData = ({ form, value }) => {
 
   return (
     <Form.Item name="shl_fleet_data" label={t('fields.hostData')}>
-      <Input style={{ width: '100%' }} maxLength={40} />
+      <Input style={{ width: '100%' }} maxLength={40} disabled={IS_DISABLED} />
     </Form.Item>
   );
 };

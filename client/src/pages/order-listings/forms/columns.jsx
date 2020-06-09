@@ -60,6 +60,7 @@ const columns = (t, pageState, form, units) => [
     hide: false,
     editable: (pageState==='detail'? false : true),
     width: 100,
+    cellEditor: 'NumericEditor',
   },
   {
     headerName: t('fields.oitemProdUnit'),
@@ -128,9 +129,8 @@ const columns = (t, pageState, form, units) => [
     width: 160,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      total: 100000,
-      colorAvail: '#00FF00',
-      colorUsed: '#FF0000',
+      colorAvail: '#009900',
+      colorUsed: '#C80000',
     },
 },
   {
@@ -144,9 +144,8 @@ const columns = (t, pageState, form, units) => [
     width: 160,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      total: 100000,
-      colorAvail: '#00FF00',
-      colorUsed: '#FF0000',
+      colorAvail: '#009900',
+      colorUsed: '#C80000',
     },
   },
   {
@@ -160,9 +159,8 @@ const columns = (t, pageState, form, units) => [
     width: 160,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      total: 100000,
-      colorAvail: '#00FF00',
-      colorUsed: '#FF0000',
+      colorAvail: '#009900',
+      colorUsed: '#C80000',
     },
   },
   {

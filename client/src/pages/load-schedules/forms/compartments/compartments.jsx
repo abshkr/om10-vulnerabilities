@@ -42,6 +42,9 @@ const Compartments = ({ form, value, tanker, drawer }) => {
   };
 
   useEffect(() => {
+    setCompartments([]);
+    setProducts([]);
+
     if (value) {
       axios
         .get(LOAD_SCHEDULES.COMPARTMENTS, {
@@ -71,6 +74,9 @@ const Compartments = ({ form, value, tanker, drawer }) => {
   }, [drawer]);
 
   useEffect(() => {
+    setCompartments([]);
+    setProducts([]);
+
     if (!value && tanker) {
       axios
         .get(LOAD_SCHEDULES.COMPARTMENTS_BY_TANKER, {
@@ -90,7 +96,7 @@ const Compartments = ({ form, value, tanker, drawer }) => {
 
   return (
     <Form.Item name="compartments">
-      <DataTable data={compartments} columns={fields} parentHeight="400px" components={components} minimal />
+      <DataTable data={compartments} columns={fields} parentHeight="350px" components={components} minimal />
     </Form.Item>
   );
 };

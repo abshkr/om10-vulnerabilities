@@ -1,74 +1,121 @@
-const columns = (t, type) => [
+const columns = (t, form, setPayload, payload, type, drawers) => [
   {
-    headerName: t('fields.soldTo'),
-    field: 'mtd_type_name',
+    headerName: t('fields.compartmentNumber'),
+    field: 'tnkr_cmpt_no',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: type === 'open_order',
     width: 120,
+    pinned: 'left',
+  },
+
+  {
+    headerName: t('fields.soldTo'),
+    field: 'customer_code',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: type === 'BY_PRODUCT',
+    width: 80,
   },
 
   {
     headerName: t('fields.deliverNumber'),
-    field: 'mtd_type_name',
+    field: 'delivery_number',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 150,
+    width: 120,
+    hide: type === 'BY_PRODUCT',
   },
 
   {
     headerName: t('fields.shipTo'),
-    field: 'mtd_type_name',
+    field: 'delivery_location',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: type === 'open_order',
-    width: 130,
+    width: 80,
+    hide: type === 'BY_PRODUCT',
   },
 
   {
     headerName: t('fields.equipmentId'),
-    field: 'mtd_address',
+    field: 'eqpt_code',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 150,
+    width: 120,
+    cellEditor: 'EquipmentEditor',
+    editable: true,
+
+    cellEditorParams: {
+      values: [],
+    },
   },
-  {
-    headerName: t('fields.compartmentNumber'),
-    field: 'mtd_code',
-    filter: 'FuzzyFilter',
-    sortable: true,
-    resizable: true,
-  },
+
   {
     headerName: t('fields.drawerCode'),
-    field: 'src_name',
+    field: 'drawer_code',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     width: 120,
   },
+
   {
     headerName: t('fields.drawerProduct'),
-    field: 'mtd_src_type',
+    field: 'prod_code',
+    hide: true,
+  },
+
+  {
+    headerName: t('fields.drawerProduct'),
+    field: 'prod_code',
+    hide: true,
+  },
+
+  {
+    headerName: t('fields.company'),
+    field: 'prod_cmpy',
+    hide: true,
+  },
+
+  {
+    headerName: t('fields.drawerProduct'),
+    field: 'prod_name',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    cellEditor: 'DrawerProductsEditor',
+    editable: true,
+    width: 250,
+    cellEditorParams: {
+      values: drawers?.records || [],
+      form,
+      setPayload,
+      t,
+    },
   },
+
   {
     headerName: t('fields.bayArm'),
-    field: 'dst_name',
+    field: 'arm_code',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 250,
+    cellEditor: 'BayArmEditor',
+    editable: true,
+    cellEditorParams: {
+      values: [],
+      form,
+      payload,
+    },
   },
   {
     headerName: t('fields.density'),
-    field: 'mtd_dst_type',
+    field: 'dens',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -76,33 +123,57 @@ const columns = (t, type) => [
   },
   {
     headerName: t('fields.temperature'),
-    field: 'mtd_amb',
+    field: 'temperature',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     width: 140,
+    cellEditor: 'TemperatureEditor',
+    editable: true,
+    cellEditorParams: {
+      min: -18,
+      max: 150,
+    },
   },
   {
     headerName: t('fields.observedQuantity'),
-    field: 'mtd_cor',
+    field: 'cor_vol',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    cellEditor: 'ObservedEditor',
+    editable: true,
+    cellEditorParams: {
+      min: 0,
+      max: 999999999,
+    },
   },
   {
     headerName: t('fields.standardQuantity'),
-    field: 'mtd_poll',
+    field: 'amb_vol',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    cellEditor: 'StandardEditor',
+    editable: true,
+    cellEditorParams: {
+      min: 0,
+      max: 999999999,
+    },
   },
   {
     headerName: t('fields.massQuantity'),
-    field: 'mtd_dst_type',
+    field: 'liq_kg',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    cellEditor: 'MassEditor',
+    editable: true,
     width: 150,
+    cellEditorParams: {
+      min: 0,
+      max: 999999999,
+    },
   },
 ];
 

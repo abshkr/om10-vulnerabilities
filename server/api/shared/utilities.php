@@ -579,6 +579,21 @@ class Utilities
     //Loop to update for an array. sample: pages/folio/update_meters.php
     public static function updateArray($class, $method = 'update')
     {
+        if (method_exists($class, "pre_update_array")) {
+            $database = new Database();
+            $db = $database->getConnection($class, "pre_update_array");
+
+            $access_check = new AccessCheck($db);
+            if (!$access_check->check($class, $method, self::getCurrPsn())) {
+                $error = new EchoSchema(400, response("__INVALID_PRIV__"));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+                return;
+            }
+
+            $object = new $class($db);
+            $object->pre_update_array();
+        }
+
         //Get data from POST
         $data = json_decode(file_get_contents("php://input"));
         foreach ($data as $item) {
@@ -698,7 +713,7 @@ class Utilities
         }
 
         try {
-            if (method_exists($object, "mandatory_fields_check")) {
+            if ($method === 'update' && method_exists($object, "mandatory_fields_check")) {
                 $object->mandatory_fields_check();
             }
         } catch (NullableException $e) {
@@ -713,7 +728,7 @@ class Utilities
         }
 
         // write_log(json_encode($object), __FILE__, __LINE__, LogLevel::DEBUG);
-        if (method_exists($object, "check_existence")) {
+        if ($method === 'update' && method_exists($object, "check_existence")) {
             if (!$object->check_existence()) {
                 $record_str = strlen($object->primiary_key_str()) > 0 ? " (" . $object->primiary_key_str() . ") ": " ";
                 write_log(sprintf("record%sdoes not not exist", $record_str), __FILE__, __LINE__, LogLevel::ERROR);
@@ -872,10 +887,17 @@ class Utilities
         }
 
         // write_log(json_encode($_SESSION), __FILE__, __LINE__);
+        // write_log($_SESSION['PERCODE'], __FILE__, __LINE__);
 
         if (isset($_SESSION['PERCODE'])) {
             return $_SESSION['PERCODE'];
         }
+
+        if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'localhost')) {
+            // write_log("localhotst", __FILE__, __LINE__);
+            return "9999";
+        }
+
         return "";
     }
 

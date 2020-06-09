@@ -6,20 +6,12 @@ import { useTranslation } from 'react-i18next';
 
 import { PARTNERSHIP } from '../../../../api';
 
-const Customer = ({ form, value, company, disable }) => {
+const Customer = ({ form, value, company }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(`${PARTNERSHIP.CUSTOMERS}?supplier=${company}`);
 
   const { setFieldsValue } = form;
-
-  const validate = (rule, value) => {
-    if (value === '' || !value) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.customer')}`);
-    }
-
-    return Promise.resolve();
-  };
 
   useEffect(() => {
     if (value) {
@@ -33,12 +25,10 @@ const Customer = ({ form, value, company, disable }) => {
     <Form.Item
       name="partner_cust_acct"
       label={t('fields.customer')}
-      rules={[{ required: true, validator: validate }]}
     >
       <Select
         loading={isValidating}
         showSearch
-        disabled = {disable}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCustomer') : null}
         filterOption={(input, option) =>

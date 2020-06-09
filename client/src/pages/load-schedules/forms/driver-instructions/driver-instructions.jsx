@@ -10,6 +10,8 @@ const DriverInstructions = ({ value }) => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
+    setData(null);
+
     if (value) {
       axios
         .get(LOAD_SCHEDULES.VIEW_DLI, {

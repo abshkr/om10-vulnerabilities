@@ -19,9 +19,9 @@ import {
   GraphicContainer,
   FormBlock,
   LoginTitle,
-  LoginHeader,
   SliderContainer,
   Version,
+  ButtonContainer,
 } from './style';
 
 import * as actions from '../../actions/auth';
@@ -30,7 +30,7 @@ import { ROUTES, SETTINGS } from '../../constants';
 import { Icons } from '../../components/';
 
 const LoginOutlined = (props) => (
-  <Icon style={{ transform: 'scale(1.8)' }} component={LoginIcon} {...props} />
+  <Icon className="key-icon" style={{ transform: 'scale(1.8)' }} component={LoginIcon} {...props} />
 );
 
 const Login = ({ handleLogin, auth }) => {
@@ -173,16 +173,18 @@ const Login = ({ handleLogin, auth }) => {
 
               <Col span={12}>
                 <Form.Item style={{ marginLeft: 40 }}>
-                  <Button
-                    style={{ marginTop: 0 }}
-                    type="primary"
-                    htmlType="submit"
-                    loading={isLoading}
-                    icon={<LoginOutlined />}
-                    disabled={status === 2 || attempts < 0}
-                  >
-                    {status === 2 || attempts < 0 ? t('operations.locked') : t('operations.logIn')}
-                  </Button>
+                  <ButtonContainer>
+                    <Button
+                      style={{ marginTop: 0 }}
+                      type="primary"
+                      htmlType="submit"
+                      loading={isLoading}
+                      icon={<LoginOutlined />}
+                      disabled={status === 2 || attempts < 0}
+                    >
+                      {status === 2 || attempts < 0 ? t('operations.locked') : t('operations.logIn')}
+                    </Button>
+                  </ButtonContainer>
                 </Form.Item>
               </Col>
             </Row>

@@ -14,8 +14,10 @@ const Category = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.custCategory')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.custCategory')}`);
+      }
     }
 
     return Promise.resolve();
@@ -29,15 +31,26 @@ const Category = ({ form, value }) => {
     }
   }, [value, setFieldsValue]);
 
+  const handChange = (value) => {
+    console.log('selection',value);
+    if (value === undefined) {
+      setFieldsValue({
+        cust_ctgr_code: '',
+      });
+    }
+  }
+
   return (
     <Form.Item
       name="cust_ctgr_code"
       label={t('fields.custCategory')}
-      rules={[{ required: false }]}
+      rules={[{ required: false, validator: validate }]}
     >
       <Select
         loading={isValidating}
+        allowClear
         showSearch
+        onChange={handChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCustomerCategory') : null}
         filterOption={(input, option) =>

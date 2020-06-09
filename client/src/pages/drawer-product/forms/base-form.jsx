@@ -4,14 +4,12 @@ import {
   EditOutlined,
   PlusOutlined,
   CloseOutlined,
-  DeleteOutlined,
-  QuestionCircleOutlined
+  DeleteOutlined
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Select, InputNumber, Checkbox, Divider } from 'antd';
+import { Form, Button, Tabs, Modal, Select, InputNumber, Checkbox } from 'antd';
 import { useTranslation } from 'react-i18next';
-import useSWR, { mutate } from 'swr';
-import axios from 'axios';
+import useSWR from 'swr';
 import _ from 'lodash';
 
 import { DRAWER_PRODUCTS } from '../../../api';
@@ -24,28 +22,11 @@ const FormModal = ({ value, handleBaseCallBack }) => {
   
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const { resetFields, setFieldsValue } = form;
+  const { setFieldsValue } = form;
   const [ pitem_bltol_flag, setFlag ] = useState(value?.pitem_bltol_flag)
 
   const IS_CREATING = !value;
-  if (value) {
-    setFieldsValue({
-      pitem_ratio_value: value.pitem_ratio_value,
-      pitem_bltol_ntol: value.pitem_bltol_ntol,
-      pitem_bltol_flag: value.pitem_bltol_flag,
-      pitem_bltol_ptol: value.pitem_bltol_ptol,
-      pitem_base_code: value.pitem_base_code,
-    })
-  }
-
-  const validate = (rule, input) => {
-    // if (input === '' || !input) {
-    //   return Promise.reject(`${t('fields.loadToleranceCheck')}`);
-    // }
-
-    return Promise.resolve();
-  };
-
+  
   const onCheck = v => {
     setFlag(v.target.checked)
     setFieldsValue({
@@ -54,10 +35,13 @@ const FormModal = ({ value, handleBaseCallBack }) => {
   }
 
   const onFinish = values => {
-    values.pitem_base_name = _.filter(baseProducts, (item) => {
+    values.to_create = IS_CREATING
+    const baseItem = _.find(baseProducts, (item) => {
       return item.base_code === values.pitem_base_code;
-    })[0].base_name
-    values.to_create = true
+    });
+    values.pitem_base_name = baseItem.base_name;
+    values.pitem_bclass_name = baseItem.bclass_desc;
+    
     handleBaseCallBack(values)
     Modal.destroyAll();
   };
@@ -68,10 +52,26 @@ const FormModal = ({ value, handleBaseCallBack }) => {
     Modal.destroyAll();
   };
 
+  useEffect(() => {
+    if (value) {
+      setFieldsValue({
+        pitem_ratio_value: value.pitem_ratio_value,
+        pitem_bltol_ntol: value.pitem_bltol_ntol,
+        pitem_bltol_flag: value.pitem_bltol_flag,
+        pitem_bltol_ptol: value.pitem_bltol_ptol,
+        pitem_base_code: value.pitem_base_code,
+      })
+    }
+  }, [value]);
+
   return (
     <div>
       <Form 
         // style={{ width: '40vh' }} 
+        initialValues={{
+          pitem_bltol_ntol: -10,
+          pitem_bltol_ptol: 10
+        }}
         layout="vertical" 
         form={form} 
         onFinish={onFinish} 
@@ -100,15 +100,18 @@ const FormModal = ({ value, handleBaseCallBack }) => {
               <InputNumber min={1} style={{ width: '100%' }} />
             </Form.Item>
 
-            <Form.Item name="pitem_bltol_flag" label={t('fields.blendToleranceCheck')} rules={[{ required: false, validator: validate }]}>
-              <Checkbox checked={pitem_bltol_flag} onChange={onCheck}></Checkbox>
+            <Form.Item name="pitem_bltol_flag" label={t('fields.blendToleranceCheck')} valuePropName="checked" >
+              <Checkbox 
+                defaultChecked={value?.pitem_bltol_flag} 
+                onChange={onCheck}
+              />
             </Form.Item>
 
-            <Form.Item name="pitem_bltol_ntol" label={t('fields.lowerLimit')} rules={[{ required: false, validator: validate }]}>
+            <Form.Item name="pitem_bltol_ntol" label={t('fields.lowerLimit')} rules={[{ required: false }]}>
               <InputNumber
-                defaultValue={-10}
                 min={-200}
                 max={0}
+                // defaultValue={-10}
                 formatter={value => `${value}%`}
                 parser={value => value.replace('%', '')}
                 disabled={!pitem_bltol_flag}
@@ -116,9 +119,8 @@ const FormModal = ({ value, handleBaseCallBack }) => {
               />
             </Form.Item>
 
-            <Form.Item name="pitem_bltol_ptol" label={t('fields.upperLimit')} rules={[{ required: false, validator: validate }]}>
+            <Form.Item name="pitem_bltol_ptol" label={t('fields.upperLimit')} rules={[{ required: false }]}>
               <InputNumber
-                defaultValue={10}
                 min={0}
                 max={200}
                 formatter={value => `${value}%`}

@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import { PlusOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Divider, Form, Tabs, Modal } from 'antd';
+import { Button, Divider, Form, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Page } from '../../components';
 import auth from '../../auth';
 
 import DrawerProductTransfer from './drawer-product-transfer';
-import ProductQuantities from './product-quantities';
-import TransferDetails from './transfer-details';
-import MeterTotals from './meter-totals';
 import Forms from './forms';
 
-const { TabPane } = Tabs;
 const { confirm } = Modal;
 
 const ManualTransactions = () => {
@@ -26,7 +22,8 @@ const ManualTransactions = () => {
   const [orders, setOrders] = useState(null);
 
   const [customers, setCustomers] = useState(null);
-  const [selecteSupplier, setSelectedSupplier] = useState(null);
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
+  const [selectedTrip, setSelectedTrip] = useState(null);
 
   const onSumit = async () => {
     try {
@@ -43,6 +40,7 @@ const ManualTransactions = () => {
       icon: <ExclamationCircleOutlined />,
       okText: 'Reset',
       okType: 'danger',
+      centered: true,
       cancelText: 'No',
       onOk: async () => {
         await form.resetFields();
@@ -81,33 +79,14 @@ const ManualTransactions = () => {
           setOrders={setOrders}
           customers={customers}
           setCustomers={setCustomers}
-          selecteSupplier={selecteSupplier}
+          selectedSupplier={selectedSupplier}
           setSelectedSupplier={setSelectedSupplier}
+          setSelectedTrip={setSelectedTrip}
         />
 
         <Divider style={{ margin: '0px 0' }}>{t('divider.drawerProductTransfer')}</Divider>
 
-        <DrawerProductTransfer form={form} type={type} />
-
-        <Divider style={{ margin: '0px 0' }}>{t('divider.baseProducts')}</Divider>
-
-        <Tabs defaultActiveKey="1" animated={false} type="card">
-          <TabPane tab={t('tabColumns.transferDetails')} key="1">
-            <TransferDetails form={form} type={type} />
-          </TabPane>
-
-          <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="2">
-            <ProductQuantities form={form} type={type} />
-          </TabPane>
-        </Tabs>
-
-        <Divider style={{ margin: '0px 0' }}>{t('divider.meters')}</Divider>
-
-        <Tabs defaultActiveKey="1" animated={false} type="card">
-          <TabPane tab={t('tabColumns.cumulativeMeterTotals')} key="1">
-            <MeterTotals form={form} type={type} />
-          </TabPane>
-        </Tabs>
+        <DrawerProductTransfer form={form} type={type} supplier={selectedSupplier} trip={selectedTrip} />
       </Form>
     </Page>
   );

@@ -12,7 +12,7 @@ import {
   QuestionCircleOutlined
 } from '@ant-design/icons';
 
-import { Code, Name, CustomerCategory } from './fields';
+import { Code, Name, CategoryCount, CategoryCustomers } from './fields';
 
 import { CUSTOMER_CATEGORIES } from '../../../api';
 
@@ -92,14 +92,18 @@ const FormModal = ({ value }) => {
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane
             className="ant-tab-window"
-            style={{ height: '33vh' }}
             tab={t('tabColumns.general')}
             forceRender={true}
             key="1"
           >
             <Code form={form} value={value} />
             <Name form={form} value={value} />
-            <CustomerCategory form={form} value={value} />
+            {!IS_CREATING && (
+              <CategoryCount form={form} value={value} />
+            )}
+            {!IS_CREATING && (
+              <CategoryCustomers form={form} value={value} />
+            )}
           </TabPane>
         </Tabs>
 
@@ -128,6 +132,7 @@ const FormModal = ({ value }) => {
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
+              disabled={value?.category_count>0}
             >
               {t('operations.delete')}
             </Button>

@@ -7,6 +7,8 @@ const Shift = ({ form, value }) => {
 
   const { setFieldsValue } = form;
 
+  const IS_DISABLED = !value ? false : value?.shls_status !== 'NEW SCHEDULE';
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -17,7 +19,7 @@ const Shift = ({ form, value }) => {
 
   return (
     <Form.Item name="shls_shift" label={t('fields.shift')}>
-      <InputNumber min={0} max={9} style={{ width: '100%' }} />
+      <InputNumber min={0} max={9} style={{ width: '100%' }} disabled={IS_DISABLED} />
     </Form.Item>
   );
 };

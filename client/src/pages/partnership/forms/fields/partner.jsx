@@ -5,11 +5,13 @@ import { Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { PARTNERSHIP } from '../../../../api';
+import { DataTable } from '../../../../components';
+import columns from './columns';
 
-const Partner = ({ form, value, company, disable }) => {
+const Partner = ({ form, value, company, setSelected }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(`${PARTNERSHIP.PARTNERS}?supplier=${company}`);
+  const { data: partners, isValidating, revalidate } = useSWR(`${PARTNERSHIP.PARTNERS}?supplier=${company}`);
   const { setFieldsValue } = form;
 
   const validate = (rule, value) => {
@@ -20,69 +22,20 @@ const Partner = ({ form, value, company, disable }) => {
     return Promise.resolve();
   };
 
-  useEffect(() => {
-    if (value) {
-      if (value.peers.length > 0) {
-        let payload = [];
-        for (let i = 0; i < value.peers.length; i++) {
-          payload.push(value.peers[i].prtnr_desc)
-        }
-        
-        setFieldsValue({
-          partner: payload,
-        });
-      } else {
-        setFieldsValue({
-          partner: [value.prtnr_desc],
-        });
-      }
-
-      setFieldsValue({
-        partners: {
-          partner_seq: value.partner_seq
-        },
-      });
-    }
-  }, [value, setFieldsValue]);
-
-  const onChange = (values) => {
-    const payload = [];
-
-    _.forEach(options?.records, (record) => {
-      if (values.includes(record.prtnr_desc)) {
-        payload.push({
-          partner_seq: record.prtnr_seq,
-        });
-      }
-    });
-
-    setFieldsValue({
-      partners: payload,
-    });
-  };
+  const handleSelect = (v) => {
+    setSelected(v);
+  }
 
   return (
     <>
-      <Form.Item name="partners" noStyle />
-      <Form.Item name="partner" label={t('fields.partner')} rules={[{ required: true, validator: validate }]}>
-        <Select
-          loading={isValidating}
-          disabled={isValidating || disable}
-          onChange={onChange}
-          showSearch
-          mode="multiple"
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectPartner') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {options?.records.map((item, index) => (
-            <Select.Option key={index} value={item.prtnr_desc}>
-              {item.prtnr_desc}
-            </Select.Option>
-          ))}
-        </Select>
+      <Form.Item name="partners" noStyle >
+        <DataTable
+          data={company ? partners?.records : []}
+          height="78vh"
+          minimal
+          columns={columns(t)}
+          handleSelect={handleSelect}
+        />
       </Form.Item>
     </>
   );

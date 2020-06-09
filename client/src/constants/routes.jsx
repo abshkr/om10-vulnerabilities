@@ -19,6 +19,7 @@ export const EQUIPMENT_LIST = '/equipment-list';
 export const TANKER_LIST = '/tanker-list';
 export const TRANSACTION_LIST = '/transaction-list';
 export const SELF_FUEL_TRANSACTION_LIST = '/self-fuel-transaction-list';
+export const DELIVERY_DETAILS = '/delivery-details';
 
 export const LOAD_BAYS = '/load-bays';
 export const COMPANIES = '/companies';
@@ -29,6 +30,7 @@ export const TANK_CONFIGURATION = '/tank-configuration';
 export const PRODUCT_GROUPS = '/product-groups';
 export const ALLOCATIONS = '/allocations';
 export const HAZCHEM_CODES = '/hazchem-codes';
+export const DANGEROUS_GOODS = '/dangerous-goods';
 export const LOAD_METERS = '/load-meters';
 export const COMPANY_BAY_MOVEMENT = '/company-bay-movement';
 export const TANKS = '/tanks';

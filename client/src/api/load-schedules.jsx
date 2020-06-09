@@ -26,9 +26,21 @@ export const PRINT_DLI = '/api/pages/schedule/print_dli.php';
 export const TRANSACTIONS = '/api/pages/schedule/transactions.php';
 export const REVERSE = '/api/pages/schedule/reverse.php';
 export const ARCHIVE = '/api/pages/schedule/archive.php';
+
 export const HOST_DATA = '/api/pages/schedule/host_data.php';
 export const HOST_DATA_TYPES = '/api/pages/schedule/host_data_types.php';
-
 export const HOST_DATA_CREATE = '/api/pages/schedule/host_data_create.php';
 export const HOST_DATA_UPDATE = '/api/pages/schedule/host_data_update.php';
 export const HOST_DATA_DELETE = '/api/pages/schedule/host_data_delete.php';
+
+export const SEALS = '/api/pages/schedule/seals.php';
+export const NEXT_SEAL = '/api/pages/schedule/next_seal.php';
+export const SET_NEXT_SEAL = '/api/pages/schedule/set_next_seal.php';
+export const ALLOCATE_ALL = '/api/pages/schedule/allocate_seal.php';
+export const ALLOCATE_ONE = '/api/pages/schedule/allocate_one.php';
+export const DELETE_SEAL = '/api/pages/schedule/delete_seal.php';
+export const REALLOCATE = '/api/pages/schedule/reallocate.php';
+export const DEALLOCATE = '/api/pages/schedule/deallocate_all.php';
+
+export const SET_PREFIX = '/api/pages/schedule/set_prefix.php';
+export const SET_SUFFIX = '/api/pages/schedule/set_suffix.php';

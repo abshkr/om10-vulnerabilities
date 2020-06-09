@@ -5,6 +5,9 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 140,
+    pinned: 'left',
   },
   {
     headerName: t('fields.companyName'),
@@ -12,6 +15,9 @@ const columns = (t) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 150,
+    pinned: 'left',
   },
   {
     headerName: t('fields.customerAccount'),
@@ -19,6 +25,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 160,
   },
   {
     headerName: t('fields.customerName'),
@@ -26,6 +34,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 150,
   },
   {
     headerName: t('fields.partnerId'),
@@ -33,6 +43,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 100,
   },
   {
     headerName: t('fields.partnerCode'),
@@ -40,6 +52,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 130,
   },
   {
     headerName: `${t('fields.partnerName')} 1`,
@@ -47,6 +61,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 140,
   },
   {
     headerName: `${t('fields.partnerName')} 2`,
@@ -54,6 +70,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 140,
   },
   {
     headerName: `${t('fields.partnerName')} 3`,
@@ -61,6 +79,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 140,
   },
   {
     headerName: `${t('fields.partnerName')} 4`,
@@ -68,6 +88,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 140,
   },
   {
     headerName: `${t('fields.partnerName')} 5`,
@@ -75,6 +97,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 140,
   },
   {
     headerName: t('fields.partnerTypeCode'),
@@ -82,6 +106,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 160,
   },
   {
     headerName: t('fields.partnerType'),
@@ -89,6 +115,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 140,
   },
 
   {
@@ -97,6 +125,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 180,
   },
 
   {
@@ -105,6 +135,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 140,
   },
 ];
 

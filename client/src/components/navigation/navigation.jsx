@@ -4,17 +4,15 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu, Badge, Tooltip } from 'antd';
-import useSWR from 'swr';
 
 import { LogoContainer, MenuContainer } from './style';
 import { ROUTES, SETTINGS } from '../../constants';
-import { AUTH } from '../../api';
-import { Icons, Loading } from '..';
+
+import { Icons } from '..';
 
 const { SubMenu } = Menu;
 
 const Navigation = () => {
-  const { isValidating: isLoading } = useSWR(AUTH.PERMISSIONS, { refreshInterval: 0 });
   const { t } = useTranslation();
   const history = useHistory();
 
@@ -25,10 +23,6 @@ const Navigation = () => {
 
     history.push(event.key);
   };
-
-  if (isLoading) {
-    return <Loading />;
-  }
 
   return (
     <MenuContainer>
@@ -57,7 +51,7 @@ const Navigation = () => {
           }
         >
           <Menu.Item key={ROUTES.LOAD_SCHEDULES}>
-            <Badge status="warning" /> {t('pageNames.loadSchedules')}
+            <Badge status="success" /> {t('pageNames.loadSchedules')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ORDER_LISTING}>
@@ -69,7 +63,7 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.MOVEMENT_NOMINATIONS}>
-            <Badge status="warning" />
+            <Badge status="success" />
             {t('pageNames.movementNominations')}
           </Menu.Item>
 
@@ -117,7 +111,7 @@ const Navigation = () => {
           }
         >
           <Menu.Item key={ROUTES.TANKS}>
-            <Badge status="warning" /> {t('pageNames.tanks')}
+            <Badge status="success" /> {t('pageNames.tanks')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANK_GROUPS}>
@@ -243,6 +237,10 @@ const Navigation = () => {
             <Badge status="success" /> {t('pageNames.hazchemCodes')}
           </Menu.Item>
 
+          <Menu.Item key={ROUTES.DANGEROUS_GOODS}>
+            <Badge status="success" /> {t('pageNames.dangerousGoods')}
+          </Menu.Item>
+
           <Menu.Item key={ROUTES.PRODUCT_GROUPS}>
             <Badge status="success" /> {t('pageNames.productGroups')}
           </Menu.Item>
@@ -257,7 +255,7 @@ const Navigation = () => {
           }
         >
           <Menu.Item key={ROUTES.COMPANIES}>
-            <Badge status="warning" /> {t('pageNames.companies')}
+            <Badge status="success" /> {t('pageNames.companies')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ALLOCATIONS}>
@@ -358,7 +356,7 @@ const Navigation = () => {
             </>
           }
         >
-          <Menu.Item key={ROUTES.TANK_VIEW}>
+          <Menu.Item key={ROUTES.TANK_VIEW} disabled>
             <Badge status="warning" />
             {t('pageNames.tankView')}
           </Menu.Item>

@@ -28,8 +28,12 @@ const Tarrif = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="delv_tarrif" label={t('fields.delvTarrif')} rules={[{ required: true }]}>
-      <InputNumber defaultValue={0} style={{ width: '100%' }} />
+    <Form.Item 
+      name="delv_tarrif" 
+      label={t('fields.delvTarrif')} 
+      rules={[{ required: true, validator:validate }]}
+    >
+      <InputNumber style={{ width: '100%' }} />
     </Form.Item>
   );
 };

@@ -14,8 +14,10 @@ const CustomerSupplier = ({ form, value, onChange }) => {
   const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.SUPPLIERS);
 
   const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.supplier')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.supplier')}`);
+      }
     }
 
     return Promise.resolve();
@@ -35,7 +37,7 @@ const CustomerSupplier = ({ form, value, onChange }) => {
     <Form.Item
       name="delv_cust_suppcode"
       label={t('fields.supplier')}
-      rules={[{ required: false }]}
+      rules={[{ required: false, validator: validate }]}
     >
       <Select
         loading={isValidating}

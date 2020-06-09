@@ -1,11 +1,13 @@
-const columns = (t, isCreating) => [
+const columns = (t, config) => [
   {
     headerName: t('fields.baseProductCode'),
     field: 'pitem_base_code',
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    width: 180,
+    suppressSizeToFit: true, 
+    width: 140,
+    pinned: "left",
   },
   {
     headerName: t('fields.baseProductName'),
@@ -13,7 +15,9 @@ const columns = (t, isCreating) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    width: 130,
+    suppressSizeToFit: true, 
+    width: 180,
+    pinned: "left",
   },
   {
     headerName: t('fields.ratio'),
@@ -21,6 +25,8 @@ const columns = (t, isCreating) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 80,
   },
   {
     headerName: t('fields.blendToleranceCheck'),
@@ -28,7 +34,9 @@ const columns = (t, isCreating) => [
     filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
     cellRenderer: 'BooleanRenderer',
+    width: 180,
   },
   {
     headerName: t('fields.lowerLimit'),
@@ -36,6 +44,8 @@ const columns = (t, isCreating) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 130,
   },
   {
     headerName: t('fields.upperLimit'),
@@ -43,6 +53,28 @@ const columns = (t, isCreating) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 130,
+  },
+  {
+    headerName: t('fields.baseClass'),
+    field: 'pitem_bclass_name',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true, 
+    width: 130,
+  },
+  {
+    headerName: t('fields.checkHotLitre'),
+    field: 'pitem_hot_check',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+    suppressSizeToFit: true, 
+    hide: !config.manageHotProduct,
+    width: 150,
   },
 ];
 

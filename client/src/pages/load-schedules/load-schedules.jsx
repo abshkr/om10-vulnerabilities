@@ -25,9 +25,11 @@ const LoadSchedules = () => {
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
 
-  const { data: payload, isValidating, revalidate } = useSWR(
-    `${LOAD_SCHEDULES.READ}?start_date=${start}&end_date=${end}`
-  );
+  const {
+    data: payload,
+    isValidating,
+    revalidate,
+  } = useSWR(`${LOAD_SCHEDULES.READ}?start_date=${start}&end_date=${end}`, { revalidateOnFocus: false });
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -80,6 +82,7 @@ const LoadSchedules = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
+
       <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );

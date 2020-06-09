@@ -127,6 +127,11 @@ const paths = [
   },
 
   {
+    path: ROUTES.DANGEROUS_GOODS,
+    component: lazy(() => import('../pages/dangerous-goods')),
+  },
+
+  {
     path: ROUTES.ALLOCATIONS,
     component: lazy(() => import('../pages/allocations')),
   },
@@ -361,6 +366,10 @@ const paths = [
     component: lazy(() => import('../pages/tanks')),
   },
 
+  {
+    path: ROUTES.DELIVERY_DETAILS,
+    component: lazy(() => import('../pages/delivery-details')),
+  },
 ];
 
 export default paths;

@@ -14,7 +14,7 @@ const columns = t => [
     resizable: true
   },
   {
-    headerName: t('fields.totalCustomerCategories'),
+    headerName: t('fields.totalCustomersPerCategory'),
     field: 'category_count',
     filterable: true,
     sortable: true,

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
@@ -44,6 +44,11 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const [drawerWidth, setDrawerWidth] = useState('30vw');
   const [mainTabOn, setMainTabOn] = useState(true);
 
+  if (!!value) {
+    value.delv_cust_suppcode = null;
+    value.delv_cust_catgcode = null;
+  }
+
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -66,11 +71,13 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     handleFormState(false, null);
     setDrawerWidth('30vw');
     setMainTabOn(true);
-};
+  };
 
   const onComplete = () => {
     handleFormState(false, null);
     mutate(DELV_LOCATIONS.READ);
+    setDrawerWidth('30vw');
+    setMainTabOn(true);
   };
 
   const onFinish = async () => {
@@ -208,10 +215,23 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             <Profile form={form} value={value} />
           </TabPane>
           <TabPane tab={t('tabColumns.linkToCustomers')} disabled={IS_CREATING} key="2">
-            <LocationCode form={form} value={value} />
-            <LocationName form={form} value={value} />
-            <CustomerSupplier form={form} value={value} onChange={setSupplier} />
-            <CustomerCategory form={form} value={value} onChange={setCategory} />
+            <Row gutter={[8, 8]}>
+              <Col span={12}>
+                <LocationCode form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <LocationName form={form} value={value} />
+              </Col>
+            </Row>
+            <Row gutter={[8, 8]}>
+              <Col span={12}>
+                <CustomerSupplier form={form} value={value} onChange={setSupplier} />
+              </Col>
+              <Col span={12}>
+                <CustomerCategory form={form} value={value} onChange={setCategory} />
+              </Col>
+            </Row>
+            <Divider />
             <CustomerLink form={form} value={value} supplier={supplier} category={category} 
             location={value?.delv_code} />
           </TabPane>

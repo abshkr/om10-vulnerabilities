@@ -17,10 +17,10 @@ import PasswordReset from './password-reset';
 import SideDrawer from './side-drawer';
 import Icons from './icons';
 import Footer from './footer';
-import Chart from './chart';
 import Events from './events';
 import TableTransfer from './table-transfer';
 import ListView from './list-view';
+import Favourites from './favourites';
 
 export {
   Expiry,
@@ -42,8 +42,8 @@ export {
   SideDrawer,
   Icons,
   Footer,
-  Chart,
   Events,
   TableTransfer,
   ListView,
+  Favourites,
 };

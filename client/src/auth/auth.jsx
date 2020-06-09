@@ -1,13 +1,10 @@
 import React, { useEffect } from 'react';
 
-import { SWRConfig } from 'swr';
-import { notification } from 'antd';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { ROUTES } from '../constants';
-import { AuthContainer } from './style';
-import { fetcher } from '../utils';
+
 import { useIdle } from '../hooks';
 
 export default (Authenticated) => {
@@ -15,14 +12,6 @@ export default (Authenticated) => {
     const isIdle = useIdle();
 
     const history = useHistory();
-
-    const onError = (error) => {
-      notification.error({
-        message: 'Error Fetching Data for This View.',
-        description: error?.message,
-        key: error?.message,
-      });
-    };
 
     useEffect(() => {
       if (!token) {
@@ -36,20 +25,7 @@ export default (Authenticated) => {
       }
     }, [isIdle, history]);
 
-    return (
-      <SWRConfig
-        value={{
-          refreshInterval: 0,
-          fetcher,
-          onError,
-          errorRetryCount: 3,
-        }}
-      >
-        <AuthContainer>
-          <Authenticated token={token} />
-        </AuthContainer>
-      </SWRConfig>
-    );
+    return <Authenticated token={token} />;
   };
 
   const mapStateToProps = (state) => {

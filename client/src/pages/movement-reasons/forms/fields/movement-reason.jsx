@@ -1,13 +1,20 @@
 import React, { useEffect } from 'react';
-import { Form, InputNumber, Row, Col } from 'antd';
+import { Form, Input, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 const MovementReason = ({ form, value, send }) => {
   const { t } = useTranslation();
 
-  const validate = (rule, value) => {
-    if (send && !value) {
-      return Promise.reject(`${t('validate.set')}`);
+  const validate = (rule, input) => {
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')}`);
+      }
+    }
+
+    const len = (new TextEncoder().encode(input)).length;
+    if (input && len > 4) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 4 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();
@@ -34,7 +41,7 @@ const MovementReason = ({ form, value, send }) => {
               label={t('fields.originalMovementType')}
               rules={[{ required: send, validator: validate }]}
             >
-              <InputNumber min={-999} max={999} style={{ width: '100%' }} />
+              <Input maxLength={4} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
 
@@ -44,7 +51,7 @@ const MovementReason = ({ form, value, send }) => {
               label={t('fields.originalReasonCode')}
               rules={[{ required: send, validator: validate }]}
             >
-              <InputNumber min={-999} max={999} style={{ width: '100%' }} />
+              <Input maxLength={4} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
 
@@ -54,7 +61,7 @@ const MovementReason = ({ form, value, send }) => {
               label={t('fields.reversalMovementType')}
               rules={[{ required: send, validator: validate }]}
             >
-              <InputNumber min={-999} max={999} style={{ width: '100%' }} />
+              <Input maxLength={4} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
 
@@ -64,7 +71,7 @@ const MovementReason = ({ form, value, send }) => {
               label={t('fields.reversalReasonCode')}
               rules={[{ required: send, validator: validate }]}
             >
-              <InputNumber min={-999} max={999} style={{ width: '100%' }} />
+              <Input maxLength={4} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
         </Row>

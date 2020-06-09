@@ -13,8 +13,16 @@ import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
+import { useConfig } from '../../hooks';
+import { getDateRangeOffset } from '../../utils';
 
-const OrderListings = () => {
+const OrderListings = ({popup}) => {
+  console.log('popup', popup);
+  const config = useConfig();
+  console.log('config', config);
+  const ranges = getDateRangeOffset( String(config.openOrderDateRange), "365");
+  console.log("ranges", config.openOrderDateRange, ranges);
+
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [timeOption, setTimeOption] = useState('ORDER_ORD_TIME');
@@ -33,17 +41,16 @@ const OrderListings = () => {
 
   const access = useAuth('M_ORDERLISTING');
 
-  const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-  const [end, setEnd] = useState(moment().add(1, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  //const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  //const [end, setEnd] = useState(moment().add(1, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  const [start, setStart] = useState(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  const [end, setEnd] = useState(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
   const { data: payload, isValidating, revalidate } = useSWR(
     `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
   );
 
-  const handleFormState = (visibility, value) => {
-    setVisible(visibility);
-    setSelected(value);
-    /*
+  const adjustPageState = (visibility, value) => {
     if (visibility) {
       if (!value) {
         setPageState('create');
@@ -60,7 +67,12 @@ const OrderListings = () => {
     else {
       setPageState('view');
     }
-    */
+  }
+
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
+    adjustPageState(visibility, value);
   };
 
   const setRange = (start, end) => {
@@ -78,6 +90,24 @@ const OrderListings = () => {
   const name = t('pageNames.orderListing');
 
   useEffect(() => {
+    if (!!ranges && !!ranges.beforeToday) {
+      setStart(
+        moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT)
+      );
+    }
+    if (!!ranges && !!ranges.beforeToday && !!ranges.afterToday) {
+      setEnd(
+        moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT)
+      );
+    }
+    
+  }, [ranges, setStart, setEnd]);
+
+  /* useEffect(() => {
+    revalidate();
+  }, [start, end]); */
+
+  /* useEffect(() => {
     if (visible) {
       if (!selected) {
         setPageState('create');
@@ -94,10 +124,11 @@ const OrderListings = () => {
     else {
       setPageState('view');
     }
-  }, [visible, selected]);
+  }, [visible, selected]); */
 
   const modifiers = (
     <>
+      <div style={{ float: 'left' }}>
       <Select
         defaultValue="ORDER_ORD_TIME"
         onChange={setTimeOption}
@@ -113,8 +144,11 @@ const OrderListings = () => {
           </Select.Option>
         ))}
       </Select>
+      </div>
 
+      <div style={{ float: 'left', width: '420px' }}>
       <Calendar handleChange={setRange} start={start} end={end} />
+      </div>
 
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
@@ -135,7 +169,7 @@ const OrderListings = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access}>
+    <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup}>
       <DataTable
         data={data}
         columns={fields}
@@ -149,4 +183,4 @@ const OrderListings = () => {
   );
 };
 
-export default auth(OrderListings);
+export default OrderListings;

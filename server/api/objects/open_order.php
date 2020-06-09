@@ -707,10 +707,11 @@ class OpenOrder extends CommonClass
                 PROD_CMPY,
                 PROD_NAME,
                 CMPY_NAME
-            FROM PRODUCTS, CUST_ORDER, COMPANYS
-            WHERE PROD_CMPY = CUST_ORDER.ORDER_DRAWER
+            FROM PRODUCTS, CUST_ORDER, COMPANYS, CUSTOMER
+            WHERE PROD_CMPY = CUSTOMER.CUST_SUPP
+                AND CUSTOMER.CUST_ACCT=CUST_ORDER.ORDER_CUST
                 AND PROD_CMPY = CMPY_CODE
-                AND ORDER_NO = :order_sys_no
+                AND CUST_ORDER.ORDER_NO = :order_sys_no
             ) ALL_PRODS,
             GUI_ORDER_ITEMS
         WHERE ALL_PRODS.PROD_CODE = GUI_ORDER_ITEMS.OITEM_PROD_CODE(+)

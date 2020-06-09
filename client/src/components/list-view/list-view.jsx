@@ -9,8 +9,8 @@ import { search } from '../../utils';
 const ItemDescription = ({ descriptions, item }) => {
   return (
     <DescriptionContainer>
-      {descriptions.map((value) => (
-        <div>
+      {descriptions.map((value, index) => (
+        <div key={index}>
           <strong>{value.field}</strong>: {item[value.key]}
         </div>
       ))}

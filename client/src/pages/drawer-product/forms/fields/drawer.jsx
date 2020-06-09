@@ -13,8 +13,6 @@ const DrawerCompany = ({ form, value }) => {
   const { data: options, isValidating } = useSWR(DRAWER_PRODUCTS.DRAWERS);
 
   const validate = (rule, input) => {
-    console.log("drawer validate")
-    console.log(input)
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.drawer')}`);
     }

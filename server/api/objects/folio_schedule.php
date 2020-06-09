@@ -110,12 +110,15 @@ class FolioSchedule extends CommonClass
 
     protected function post_update()
     {
+        $this->user_code = Utilities::getCurrPsn();
+        
         $query = "UPDATE FOLIOCALENDAR
-            SET LAST_CHG_TIME = SYSDATE
+            SET LAST_CHG_TIME = SYSDATE,
+                USER_CODE = :last_chg_user
             WHERE SEQ = :seq";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':seq', $this->seq);
-        
+        oci_bind_by_name($stmt, ':last_chg_user', $this->user_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);

@@ -13,6 +13,8 @@ const Carrier = ({ form, value, onChange }) => {
 
   const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.CARRIERS);
 
+  const IS_DISABLED = !value ? false : value?.shls_status !== 'NEW SCHEDULE';
+
   const validate = (rule, input) => {
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.carrier')}`);
@@ -49,7 +51,7 @@ const Carrier = ({ form, value, onChange }) => {
         loading={isValidating}
         showSearch
         onChange={onCarrierChange}
-        disabled={!!value}
+        disabled={IS_DISABLED}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCarrier') : null}
         filterOption={(value, option) =>

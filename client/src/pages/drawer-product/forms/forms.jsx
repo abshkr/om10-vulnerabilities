@@ -6,28 +6,28 @@ import {
   DeleteOutlined,
   QuestionCircleOutlined,
   CloseOutlined,
-  RedoOutlined,
-  ClockCircleOutlined,
 } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Checkbox, Col, Row, Input, Select, InputNumber } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Checkbox, Col, Row, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 import { DRAWER_PRODUCTS } from '../../../api';
-import useSWR from 'swr';
+import { useConfig } from '../../../hooks';
 
-import { DrawerCompany, LoadTolerance, ProductCode, ProductName, Group, Hazchem, Generic } from './fields';
+import { DrawerCompany, LoadTolerance, ProductCode, ProductName, Group, Hazchem, Generic, DangerousGoods } from './fields';
 import { DataTable, FormModal } from '../../../components';
-import { ALLOCATIONS } from '../../../api';
 import columns from './columns';
 import BaseProductForm from './base-form';
+import HotLitresForm from './hot-litres';
 
 const TabPane = Tabs.TabPane;
 
-const DrawerForm = ({ value, visible, handleFormState, access }) => {
+const DrawerForm = ({ value, visible, handleFormState, auth }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const config = useConfig();
+
   const { TextArea } = Input;
   
   const [bases, setBases] = useState([]);
@@ -36,7 +36,6 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
   const [selected, setSelected] = useState(null);
 
   const [baseLoading, setBaseLoading] = useState(true);
-  const [newBase, setNewBase] = useState(null);
 
   const { resetFields, setFieldsValue } = form;
 
@@ -58,9 +57,20 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
         pitem_bltol_ptol: values.pitem_bltol_ptol,
         pitem_ratio_value: values.pitem_ratio_value,
         pitem_base_name: values.pitem_base_name,
+        pitem_bclass_name: values.pitem_bclass_name,
       }]
       setSelected(null)
     } else {
+      if (_.find(bases, (item) => {
+        return item.pitem_base_code === values.pitem_base_code
+      })) {
+        notification.error({
+          message: t('messages.validationFailed'),
+          description: t('descriptions.alreadyExists'),
+        });
+        return;
+      }
+      
       payload = [...bases, {
         pitem_base_code: values.pitem_base_code,
         pitem_bltol_ntol: values.pitem_bltol_ntol,
@@ -68,6 +78,7 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
         pitem_bltol_ptol: values.pitem_bltol_ptol,
         pitem_ratio_value: values.pitem_ratio_value,
         pitem_base_name: values.pitem_base_name,
+        pitem_bclass_name: values.pitem_bclass_name,
       }]
     }
       
@@ -93,7 +104,7 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
   const handleBase = (v) => {
     FormModal({
       width: "50vh",
-      value,
+      value: v,
       form: <BaseProductForm value={v} handleBaseCallBack={handleBaseCallBack}/>,
       id: v?.pitem_base_code,
       name: v?.pitem_base_name,
@@ -123,6 +134,7 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
 
   const onFinish = async () => {
     const values = await form.validateFields();
+
     if (values.bases === undefined || values.bases.length <= 0) {
       Modal.info({
         title: t('prompts.notEnoughBase'),
@@ -171,7 +183,7 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(ALLOCATIONS.DELETE, value)
+          .post(DRAWER_PRODUCTS.DELETE, value)
           .then(() => {
             onComplete();
 
@@ -195,6 +207,9 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
+      setBases([]);
+      setCompliant(false);
+      setLocked(false);
     } 
 
     if (value) {
@@ -245,7 +260,7 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            // disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
+            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -255,7 +270,7 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!access?.canDelete}
+              disabled={!auth?.canDelete}
             >
               {t('operations.delete')}
             </Button>
@@ -278,6 +293,7 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
                 <Col span={4}>
                   <Form.Item noStyle name="prod_is_compliant" >
                     <Checkbox 
+                      valuePropName="checked"
                       checked={prod_is_compliant} 
                       onChange={(v) => {
                         setCompliant(v.target.checked)
@@ -291,6 +307,7 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
                 <Col span={20}>
                   <Form.Item name="prod_is_locked" label={t('fields.locked')} >
                     <Checkbox 
+                      valuePropName="checked"
                       checked={prod_is_locked}
                       onChange={(v) => {
                         setLocked(v.target.checked)
@@ -303,20 +320,20 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
                 </Col>
               </Row>
             </Form.Item >
+            <DangerousGoods form={form} value={value} />
             <Form.Item name="prod_desc" label={t('fields.description')} >
-              <TextArea rows={3} />
+              <TextArea rows={2} />
             </Form.Item>
             <Divider orientation="left">{t('fields.baseProducts')}</Divider>
             <Form.Item name="bases" noStyle >
               <DataTable
                 data={bases}
-                height="70vh"
+                height="78vh"
                 minimal
-                columns={columns(t)}
+                columns={columns(t, config)}
                 handleSelect={(value) => setSelected(value[0])}
               />
             </Form.Item>
-            
             
             <Button
               type="primary"
@@ -349,6 +366,11 @@ const DrawerForm = ({ value, visible, handleFormState, access }) => {
             </Button>
 
           </TabPane>
+          {config.safefillCheckByHighTemp && 
+            <TabPane tab={t('tabColumns.companyHotLitres')} key="2">
+              <HotLitresForm value={value} form={form}></HotLitresForm>
+            </TabPane>
+          }
         </Tabs>
       </Form>
     </Drawer>

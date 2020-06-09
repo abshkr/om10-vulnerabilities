@@ -1,564 +1,166 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
-<style
-   id="style2"
-   type="text/css">
-	.st_syt0{fill:#9E005D;}
-	.st_syt1{fill:none;}
-	.st_syt2{clip-path:url(#SVGID_2_);}
-	.st_syt3{fill:none;stroke:#000000;stroke-width:2.2035;stroke-miterlimit:10;}
-	.st_syt4{fill:#FFC837;stroke:#E5AA0A;stroke-width:3.3052;stroke-miterlimit:10;}
-	.st_syt5{fill:none;stroke:#E5AA0A;stroke-width:3.3052;stroke-miterlimit:10;}
-	.st_syt6{fill:#FFC837;stroke:#E5AA0A;stroke-width:5.7225;stroke-miterlimit:10;}
-	.st_syt7{fill:#E5AA0A;}
-	.st_syt8{fill:none;stroke:#FFFFFF;stroke-width:5.5087;stroke-linecap:round;stroke-miterlimit:10;}
-	.st_syt9{fill:none;stroke:#000000;stroke-width:2.9306;stroke-miterlimit:10;}
-	.st_syt10{fill:#FFC837;stroke:#E5AA0A;stroke-width:4.396;stroke-miterlimit:10;}
-	.st_syt11{fill:none;stroke:#E5AA0A;stroke-width:4.396;stroke-miterlimit:10;}
-	.st_syt12{fill:#FFC837;stroke:#E5AA0A;stroke-width:4.4;stroke-miterlimit:10;}
-	.st_syt13{fill:none;stroke:#FFFFFF;stroke-width:7.3266;stroke-linecap:round;stroke-miterlimit:10;}
-	.st_syt14{fill:none;stroke:#000000;stroke-width:3.008;stroke-linecap:round;stroke-miterlimit:10;}
-	.st_syt15{fill:none;stroke:#000000;stroke-width:3.008;stroke-miterlimit:10;}
-	.st_syt16{fill:none;stroke:#000000;stroke-width:4;stroke-miterlimit:10;}
-	.st_syt17{fill:#FFC837;stroke:#E5AA0A;stroke-width:6;stroke-miterlimit:10;}
-	.st_syt18{fill:none;stroke:#E5AA0A;stroke-width:6;stroke-miterlimit:10;}
-	.st_syt19{fill:none;stroke:#FFFFFF;stroke-width:10;stroke-linecap:round;stroke-miterlimit:10;}
-	.st_syt20{fill:none;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-miterlimit:10;}
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.1.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="512px" height="512px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{clip-path:url(#SVGID_2_);}
+	.st2{fill:none;stroke:#000000;stroke-width:4.0006;stroke-miterlimit:10;}
+	.st3{fill:none;}
+	.st4{fill:#FFC837;stroke:#E5AA0A;stroke-width:6.0009;stroke-miterlimit:10;}
+	.st5{fill:none;stroke:#E5AA0A;stroke-width:6.0009;stroke-miterlimit:10;}
+	.st6{fill:#FFC837;stroke:#E5AA0A;stroke-width:10.3897;stroke-miterlimit:10;}
+	.st7{fill:#E5AA0A;}
+	.st8{fill:none;stroke:#FFFFFF;stroke-width:10.0015;stroke-linecap:round;stroke-miterlimit:10;}
+	.st9{fill:none;stroke:#000000;stroke-width:5.3209;stroke-miterlimit:10;}
+	.st10{fill:#FFC837;stroke:#E5AA0A;stroke-width:7.9813;stroke-miterlimit:10;}
+	.st11{fill:none;stroke:#E5AA0A;stroke-width:7.9813;stroke-miterlimit:10;}
+	.st12{fill:#FFC837;stroke:#E5AA0A;stroke-width:7.9887;stroke-miterlimit:10;}
+	.st13{fill:none;stroke:#FFFFFF;stroke-width:13.3022;stroke-linecap:round;stroke-miterlimit:10;}
+	.st14{fill:none;stroke:#000000;stroke-width:5.4614;stroke-linecap:round;stroke-miterlimit:10;}
+	.st15{fill:none;stroke:#000000;stroke-width:5.4614;stroke-miterlimit:10;}
+	.st16{fill:none;stroke:#000000;stroke-width:7.2624;stroke-miterlimit:10;}
+	.st17{fill:#FFC837;stroke:#E5AA0A;stroke-width:10.8936;stroke-miterlimit:10;}
+	.st18{fill:none;stroke:#E5AA0A;stroke-width:10.8936;stroke-miterlimit:10;}
+	.st19{fill:none;stroke:#FFFFFF;stroke-width:18.156;stroke-linecap:round;stroke-miterlimit:10;}
+	.st20{fill:none;stroke:#000000;stroke-width:7.2624;stroke-linecap:round;stroke-miterlimit:10;}
 </style>
-<ellipse
-   style="stroke-width:1.81326"
-   ry="255.52213"
-   rx="255.81641"
-   id="circle4"
-   cy="256.02371"
-   cx="256.27859"
-   class="st_syt0" />
-<path
-   style="stroke-width:0.730789"
-   id="path6"
-   d="m -195.61926,-158 c -0.1523,0.35067 -0.30459,0.70133 -0.38074,0.98187 v 6.59254 c 5.25422,-2.80534 11.65066,-5.33014 18.96089,-7.57441"
-   class="st_syt1" />
-<g
-   transform="matrix(1.8143007,0,0,1.8122137,-112.02444,-122.72896)"
-   id="g208">
-	<defs
-   id="defs9">
-		<circle
-   r="141"
-   cy="209"
-   cx="203"
-   id="SVGID_1_" />
+<circle class="st0" cx="256" cy="256" r="256"/>
+<g>
+	<defs>
+		<circle id="SVGID_1_" cx="256" cy="256" r="256"/>
 	</defs>
-	<clipPath
-   id="SVGID_2_">
-		<use
-   height="100%"
-   width="100%"
-   y="0"
-   x="0"
-   id="use11"
-   style="overflow:visible"
-   xlink:href="#SVGID_1_" />
+	<clipPath id="SVGID_2_">
+		<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
 	</clipPath>
-	<g
-   id="g62"
-   clip-path="url(#SVGID_2_)"
-   class="st_syt2">
-		<g
-   id="g32">
-			<g
-   id="g18">
-				<path
-   id="path14"
-   d="m 87.4,262.7 c 0.8,-0.7 1.8,-1.3 2.9,-1.9 2.6,-1.4 6,-2.7 10.1,-3.9 7.7,-2.2 17.8,-4.1 29.6,-5.3 10.9,-1.2 23.2,-1.8 36.1,-1.8 13.4,0 26.1,0.6 37.2,1.8"
-   class="st_syt3" />
-				<path
-   id="path16"
-   d="m 87.6,257.1 c 2.9,-8.2 30.4,-15.4 64.4,-16.6 0.6,0 1.2,0 1.8,-0.1 19.6,-0.6 37.3,0.9 49.6,3.8"
-   class="st_syt3" />
+	<g class="st1">
+		<g>
+			<g>
+				<path class="st2" d="M46.2,353.5c1.4-1.2,3.2-2.4,5.3-3.5c4.6-2.5,10.8-4.9,18.3-7.1c13.9-4.1,32.4-7.4,53.8-9.6
+					c19.8-2.1,42-3.3,65.6-3.3c24.3,0,47.3,1.2,67.5,3.3"/>
+				<path class="st2" d="M46.4,343.3c5.2-14.9,55.2-28,116.9-30.2c1.1,0,2.2-0.1,3.2-0.1c35.6-1.1,67.7,1.7,90.1,7"/>
 			</g>
-			<g
-   id="g22">
-				<polyline
-   id="polyline20"
-   points="87.4,256.9 87.4,259.1 87.4,262.6 87.4,268.7     "
-   class="st_syt3" />
+			<g>
+				<polyline class="st2" points="46.2,343 46.2,347 46.2,353.4 46.2,364.3 				"/>
 			</g>
-			<line
-   id="line24"
-   y2="262.89999"
-   x2="97.300003"
-   y1="249.7"
-   x1="97.300003"
-   class="st_syt3" />
-			<line
-   id="line26"
-   y2="259"
-   x2="119.9"
-   y1="243.60001"
-   x1="119.9"
-   class="st_syt3" />
-			<line
-   id="line28"
-   y2="256.79999"
-   x2="147.5"
-   y1="240.8"
-   x1="147.5"
-   class="st_syt3" />
-			<line
-   id="line30"
-   y2="257.10001"
-   x2="179.7"
-   y1="240.60001"
-   x1="179.7"
-   class="st_syt3" />
+			<line class="st2" x1="64.2" y1="329.8" x2="64.2" y2="353.8"/>
+			<line class="st2" x1="105.2" y1="318.8" x2="105.2" y2="346.8"/>
+			<line class="st2" x1="155.2" y1="313.8" x2="155.2" y2="342.8"/>
+			<line class="st2" x1="213.7" y1="313.3" x2="213.7" y2="343.3"/>
 		</g>
-		<path
-   id="path34"
-   d="m 158.5,277.1 c 0,0.2 0,0.3 0,0.5"
-   class="st_syt1" />
-		<path
-   id="path36"
-   d="m 158.4,307.9 v 0 c 0.1,0 0.1,0 0,0"
-   class="st_syt1" />
-		<path
-   id="path38"
-   d="m 158.5,346.7 c -0.1,0 -0.2,0.1 -0.3,0.1"
-   class="st_syt1" />
-		<path
-   id="path40"
-   d="m 207,261.9 v 33.7 c 0,0 0,0 0,0 -13.3,-1.9 -29.2,-3 -46.3,-3 -1.8,0 -3.5,0 -5.2,0 -28.9,0.4 -53.9,3.9 -68,9.1 v -30.8 c 1.2,-7.8 31.2,-14.1 68,-14.1 20.5,0 39,2 51.5,5.1 0,0 0,0 0,0 z"
-   class="st_syt4" />
-		<path
-   id="path42"
-   d="m 87.5,270.9 c 0,0.2 0,0.3 0,0.5"
-   class="st_syt5" />
-		<path
-   id="path44"
-   d="m 87.4,301.8 v 0 c 0,-0.1 0,-0.1 0,0"
-   class="st_syt5" />
-		<path
-   id="path46"
-   d="m 87.5,340.6 c -0.1,0 -0.2,0.1 -0.3,0.1"
-   class="st_syt5" />
-		<path
-   id="path48"
-   d="m 207,295.6 v 42.7 c -12.7,-0.5 -29.2,-0.9 -47.3,-0.9 -37.3,0 -68.1,1.4 -72.3,3.2 v -38.9 c 14.1,-5.1 39.1,-8.7 68,-9.1 1.7,0 3.5,0 5.2,0 17.1,0 33,1.1 46.4,3 0,0 0,0 0,0 z"
-   class="st_syt4" />
-		<path
-   id="path50"
-   d="M 207,340 V 543 H 87.5 V 346.9 c 4.2,-5.4 34.9,-9.5 72.3,-9.5 18,0 34.5,1 47.2,2.6 z"
-   class="st_syt6" />
-		<path
-   id="path52"
-   d="m 207,261.9 v 24.5 c -13.3,-1.9 -29.2,-3 -46.3,-3 -1.7,0 -3.5,0 -5.2,0 v -26.6 c 20.5,0 39,2 51.5,5.1 z"
-   class="st_syt7" />
-		<path
-   id="path54"
-   d="m 207,295.6 v 36.7 c -12.7,-0.5 -29.2,-0.9 -47.3,-0.9 -1.4,0 -2.8,0 -4.2,0 v -38.8 c 1.7,0 3.5,0 5.2,0 17,0 32.9,1.1 46.3,3 z"
-   class="st_syt7" />
-		<path
-   id="path56"
-   d="m 207,337.8 v 67.7 H 155.5 V 337 c 1.4,0 2.8,0 4.2,0 18,0 34.5,0.3 47.3,0.8 z"
-   class="st_syt7" />
-		<line
-   id="line58"
-   y2="289.60001"
-   x2="100.9"
-   y1="271.39999"
-   x1="100.9"
-   class="st_syt8" />
-		<line
-   id="line60"
-   y2="333.10001"
-   x2="100.9"
-   y1="306.70001"
-   x1="100.9"
-   class="st_syt8" />
+		<path class="st3" d="M175.2,379.6c-0.1,0.3-0.1,0.6-0.1,0.9"/>
+		<path class="st3" d="M175.1,435.6L175.1,435.6C175.1,435.5,175.2,435.5,175.1,435.6"/>
+		<path class="st3" d="M175.2,506.1c-0.2,0.1-0.4,0.2-0.5,0.3"/>
+		<path class="st4" d="M263.3,352v61.2c0,0,0,0-0.1,0c-24.2-3.4-53-5.4-84-5.4c-3.2,0-6.4,0-9.5,0.1c-52.4,0.7-97.9,7.1-123.4,16.5
+			v-55.9c2.2-14.2,56.6-25.6,123.4-25.6C207,342.8,240.5,346.4,263.3,352C263.2,352,263.2,352,263.3,352z"/>
+		<path class="st5" d="M46.2,368.4c-0.1,0.3-0.1,0.6-0.1,0.9"/>
+		<path class="st5" d="M46.2,424.4L46.2,424.4C46.2,424.4,46.2,424.3,46.2,424.4"/>
+		<path class="st5" d="M46.2,494.9c-0.2,0.1-0.4,0.2-0.5,0.3"/>
+		<path class="st4" d="M263.3,413.3v77.5c-23.1-1-53.1-1.6-85.9-1.6c-67.7,0-123.6,2.5-131.2,5.8v-70.6c25.6-9.3,71-15.8,123.4-16.5
+			c3.1,0,6.3-0.1,9.5-0.1C210.1,407.8,239,409.8,263.3,413.3C263.2,413.2,263.2,413.3,263.3,413.3z"/>
+		<path class="st6" d="M263.3,493.9v368.5h-217v-356c7.6-9.7,63.4-17.2,131.2-17.2C210.2,489.2,240.2,490.9,263.3,493.9z"/>
+		<path class="st7" d="M263.2,352v44.4c-24.2-3.4-53.1-5.4-84.1-5.4c-3.2,0-6.3,0-9.4,0.1v-48.3C207,342.8,240.5,346.4,263.2,352z"
+			/>
+		<path class="st7" d="M263.2,413.2v66.7c-23.1-1-53.1-1.6-85.9-1.6c-2.6,0-5.1,0-7.7,0v-70.5c3.1,0,6.3-0.1,9.5-0.1
+			C210.1,407.8,239,409.8,263.2,413.2z"/>
+		<path class="st7" d="M263.2,489.9v122.9h-93.5V488.4c2.5,0,5.1,0,7.7,0C210.1,488.3,240.1,488.9,263.2,489.9z"/>
+		<line class="st8" x1="70.7" y1="369.3" x2="70.7" y2="402.3"/>
+		<line class="st8" x1="70.7" y1="433.3" x2="70.7" y2="481.3"/>
 	</g>
-	<g
-   id="g112"
-   clip-path="url(#SVGID_2_)"
-   class="st_syt2">
-		<g
-   id="g82">
-			<g
-   id="g68">
-				<path
-   id="path64"
-   d="m 141.3,202.4 c 1.1,-0.9 2.4,-1.7 3.9,-2.5 3.4,-1.9 7.9,-3.6 13.4,-5.2 10.2,-3 23.7,-5.4 39.4,-7.1 14.5,-1.5 30.8,-2.4 48.1,-2.4 17.8,0 34.6,0.8 49.5,2.4"
-   class="st_syt9" />
-				<path
-   id="path66"
-   d="m 141.5,194.9 c 3.8,-10.9 40.4,-20.5 85.7,-22.1 0.8,0 1.6,-0.1 2.4,-0.1 26.1,-0.8 49.6,1.2 66,5.1"
-   class="st_syt9" />
+	<g class="st1">
+		<g>
+			<g>
+				<path class="st9" d="M144,244.1c1.9-1.6,4.3-3.1,7-4.6c6.2-3.4,14.4-6.5,24.3-9.4c18.5-5.4,43.1-9.8,71.5-12.8
+					c26.3-2.8,55.9-4.4,87.2-4.4c32.4-0.1,62.9,1.5,89.8,4.4"/>
+				<path class="st9" d="M144.3,230.4c6.9-19.8,73.4-37.2,155.5-40.2c1.4-0.1,2.9-0.1,4.3-0.1c47.3-1.4,90.1,2.3,119.9,9.3"/>
 			</g>
-			<g
-   id="g72">
-				<polyline
-   id="polyline70"
-   points="141.3,194.8 141.3,197.6 141.3,202.3 141.3,210.3     "
-   class="st_syt9" />
+			<g>
+				<polyline class="st9" points="144,230.1 144,235.4 144,243.9 144,258.4 				"/>
 			</g>
-			<line
-   id="line74"
-   y2="202.60001"
-   x2="154.5"
-   y1="185.10001"
-   x1="154.5"
-   class="st_syt9" />
-			<line
-   id="line76"
-   y2="197.5"
-   x2="184.5"
-   y1="177"
-   x1="184.5"
-   class="st_syt9" />
-			<line
-   id="line78"
-   y2="194.60001"
-   x2="221.2"
-   y1="173.3"
-   x1="221.2"
-   class="st_syt9" />
-			<line
-   id="line80"
-   y2="195"
-   x2="264"
-   y1="173"
-   x1="264"
-   class="st_syt9" />
+			<line class="st9" x1="167.9" y1="212.5" x2="167.9" y2="244.5"/>
+			<line class="st9" x1="222.5" y1="197.9" x2="222.5" y2="235.1"/>
+			<line class="st9" x1="289" y1="191.3" x2="289" y2="229.8"/>
+			<line class="st9" x1="366.8" y1="190.6" x2="366.8" y2="230.5"/>
 		</g>
-		<path
-   id="path84"
-   d="m 235.8,221.6 c 0,0.2 -0.1,0.4 -0.1,0.6"
-   class="st_syt1" />
-		<path
-   id="path86"
-   d="m 235.8,262.5 v 0 c 0,0 0,0 0,0"
-   class="st_syt1" />
-		<path
-   id="path88"
-   d="m 235.8,314.2 c -0.1,0.1 -0.3,0.1 -0.4,0.2"
-   class="st_syt1" />
-		<path
-   id="path90"
-   d="m 300.4,201.3 v 44.9 c 0,0 0,0 -0.1,0 -17.7,-2.5 -38.9,-4 -61.5,-4 -2.3,0 -4.7,0 -7,0 -38.4,0.5 -71.7,5.2 -90.4,12.1 v -40.9 c 1.6,-10.4 41.5,-18.8 90.4,-18.8 27.4,0 51.9,2.6 68.6,6.7 -0.1,0 -0.1,0 0,0 z"
-   class="st_syt10" />
-		<path
-   id="path92"
-   d="m 141.4,213.4 c 0,0.2 -0.1,0.4 -0.1,0.6"
-   class="st_syt11" />
-		<path
-   id="path94"
-   d="m 141.3,254.4 v 0 c 0,-0.1 0.1,-0.1 0,0"
-   class="st_syt11" />
-		<path
-   id="path96"
-   d="m 141.4,306 c -0.1,0.1 -0.3,0.1 -0.4,0.2"
-   class="st_syt11" />
-		<path
-   id="path98"
-   d="m 300.4,246.2 v 56.7 c -16.9,-0.7 -38.9,-1.2 -62.9,-1.2 -49.6,0 -90.5,1.8 -96.1,4.2 v -51.7 c 18.7,-6.8 52,-11.5 90.4,-12.1 2.3,0 4.6,0 7,0 22.6,0.1 43.8,1.6 61.6,4.1 -0.1,0 -0.1,0 0,0 z"
-   class="st_syt10" />
-		<path
-   id="path100"
-   d="M 300.4,302.8 V 541 h -159 V 310.9 c 5.6,-6.3 46.5,-11.1 96.1,-11.1 24,0 45.9,1.1 62.9,3 z"
-   class="st_syt12" />
-		<path
-   id="path102"
-   d="m 300.3,201.3 v 32.6 c -17.7,-2.5 -38.9,-4 -61.6,-4 -2.3,0 -4.6,0 -6.9,0 v -35.4 c 27.4,0.1 51.9,2.7 68.5,6.8 z"
-   class="st_syt7" />
-		<path
-   id="path104"
-   d="M 300.3,246.2 V 295 c -16.9,-0.7 -38.9,-1.2 -62.9,-1.2 -1.9,0 -3.8,0 -5.6,0 v -51.6 c 2.3,0 4.6,0 7,0 22.6,0 43.8,1.5 61.5,4 z"
-   class="st_syt7" />
-		<path
-   id="path106"
-   d="M 300.3,304 V 528 H 231.8 V 301.2 c 1.9,0 3.7,0 5.6,0 24,0 46,1.1 62.9,2.8 z"
-   class="st_syt7" />
-		<line
-   id="line108"
-   y2="238.2"
-   x2="159.3"
-   y1="214"
-   x1="159.3"
-   class="st_syt13" />
-		<line
-   id="line110"
-   y2="296.10001"
-   x2="159.3"
-   y1="260.89999"
-   x1="159.3"
-   class="st_syt13" />
+		<path class="st3" d="M315.6,278.8c-0.1,0.4-0.1,0.8-0.1,1.2"/>
+		<path class="st3" d="M315.5,353.2L315.5,353.2C315.5,353.2,315.6,353.1,315.5,353.2"/>
+		<path class="st3" d="M315.6,447c-0.3,0.1-0.5,0.2-0.7,0.3"/>
+		<path class="st10" d="M432.8,242.1v81.4c0,0-0.1,0-0.1,0c-32.2-4.6-70.6-7.2-111.7-7.2c-4.2,0-8.5,0-12.6,0.1
+			c-69.8,0.9-130.2,9.5-164.2,21.9v-74.3c2.9-18.9,75.3-34.1,164.2-34.1C358,229.8,402.5,234.5,432.8,242.1
+			C432.7,242.1,432.7,242.1,432.8,242.1z"/>
+		<path class="st11" d="M144.1,263.9c-0.1,0.4-0.1,0.8-0.1,1.2"/>
+		<path class="st11" d="M144,338.3L144,338.3C144,338.3,144.1,338.3,144,338.3"/>
+		<path class="st11" d="M144.1,432.1c-0.3,0.1-0.5,0.2-0.7,0.3"/>
+		<path class="st10" d="M432.8,323.5v103c-30.7-1.3-70.6-2.1-114.2-2.1c-90.1,0-164.3,3.3-174.5,7.6v-93.8
+			c34-12.4,94.4-21,164.2-21.9c4.2-0.1,8.4-0.1,12.6-0.1C362.1,316.3,400.5,318.9,432.8,323.5C432.7,323.5,432.7,323.5,432.8,323.5z
+			"/>
+		<path class="st12" d="M432.8,426.3v432.4H144.1V441.1c10.1-11.4,84.4-20.2,174.5-20.2C362.2,420.8,402.1,422.9,432.8,426.3z"/>
+		<path class="st7" d="M432.7,242v59.1c-32.2-4.6-70.6-7.2-111.8-7.2c-4.2,0-8.4,0-12.5,0.1v-64.2C358,229.8,402.5,234.5,432.7,242z
+			"/>
+		<path class="st7" d="M432.7,323.5v88.7c-30.7-1.3-70.6-2.1-114.2-2.1c-3.4,0-6.8,0-10.2,0v-93.7c4.2-0.1,8.4-0.1,12.6-0.1
+			C362.1,316.3,400.5,318.9,432.7,323.5z"/>
+		<path class="st7" d="M432.7,428.6v406.6H308.3V423.4c3.4,0,6.8,0,10.2,0C362.1,423.4,402,425.3,432.7,428.6z"/>
+		<line class="st13" x1="176.6" y1="265.1" x2="176.6" y2="309"/>
+		<line class="st13" x1="176.6" y1="350.2" x2="176.6" y2="414.1"/>
 	</g>
-	<g
-   id="g134"
-   clip-path="url(#SVGID_2_)"
-   class="st_syt2">
-		<line
-   id="line114"
-   y2="345.79999"
-   x2="139.2"
-   y1="268"
-   x1="228.3"
-   class="st_syt14" />
-		<line
-   id="line116"
-   y2="345.79999"
-   x2="139.2"
-   y1="324"
-   x1="139.2"
-   class="st_syt15" />
-		<line
-   id="line118"
-   y2="280.39999"
-   x2="214.3"
-   y1="258.60001"
-   x1="214.3"
-   class="st_syt15" />
-		<line
-   id="line120"
-   y2="310.70001"
-   x2="180.39999"
-   y1="288.89999"
-   x1="180.39999"
-   class="st_syt15" />
-		<line
-   id="line122"
-   y2="333.79999"
-   x2="153.10001"
-   y1="312"
-   x1="153.10001"
-   class="st_syt15" />
-		<line
-   id="line124"
-   y2="324.20001"
-   x2="139"
-   y1="246.3"
-   x1="228.10001"
-   class="st_syt14" />
-		<line
-   id="line126"
-   y2="333.20001"
-   x2="139"
-   y1="255.39999"
-   x1="228.10001"
-   class="st_syt15" />
-		<line
-   id="line128"
-   y2="246.2"
-   x2="267"
-   y1="246.2"
-   x1="227.89999"
-   class="st_syt15" />
-		<line
-   id="line130"
-   y2="268"
-   x2="267"
-   y1="268"
-   x1="227.89999"
-   class="st_syt15" />
-		<line
-   id="line132"
-   y2="256.70001"
-   x2="267"
-   y1="256.70001"
-   x1="227.89999"
-   class="st_syt15" />
+	<g class="st1">
+		<line class="st14" x1="301.9" y1="363.1" x2="140.1" y2="504.5"/>
+		<line class="st15" x1="140.1" y1="464.9" x2="140.1" y2="504.5"/>
+		<line class="st15" x1="276.5" y1="346" x2="276.5" y2="385.6"/>
+		<line class="st15" x1="215" y1="401.1" x2="215" y2="440.7"/>
+		<line class="st15" x1="165.3" y1="443" x2="165.3" y2="482.6"/>
+		<line class="st14" x1="301.5" y1="323.8" x2="139.7" y2="465.1"/>
+		<line class="st15" x1="301.5" y1="340.2" x2="139.7" y2="481.5"/>
+		<line class="st15" x1="301.2" y1="323.5" x2="372.2" y2="323.5"/>
+		<line class="st15" x1="301.2" y1="363.1" x2="372.2" y2="363.1"/>
+		<line class="st15" x1="301.2" y1="342.7" x2="372.2" y2="342.7"/>
 	</g>
-	<g
-   id="g184"
-   clip-path="url(#SVGID_2_)"
-   class="st_syt2">
-		<g
-   id="g154">
-			<g
-   id="g140">
-				<path
-   id="path136"
-   d="m 222.5,134.2 c 1.4,-1.2 3.2,-2.3 5.3,-3.5 4.6,-2.5 10.8,-4.9 18.3,-7.1 13.9,-4.1 32.4,-7.4 53.8,-9.6 19.8,-2.1 42,-3.3 65.6,-3.3 24.3,0 47.3,1.2 67.5,3.3"
-   class="st_syt16" />
-				<path
-   id="path138"
-   d="m 222.7,123.9 c 5.2,-14.9 55.2,-28 116.9,-30.2 1.1,0 2.2,-0.1 3.2,-0.1 35.6,-1.1 67.7,1.7 90.1,7"
-   class="st_syt16" />
+	<g class="st1">
+		<g>
+			<g>
+				<path class="st16" d="M291.5,120.2c2.6-2.1,5.8-4.3,9.6-6.3c8.4-4.6,19.6-8.9,33.2-12.9c25.3-7.4,58.8-13.4,97.6-17.5
+					c35.9-3.8,76.3-6,119.1-6.1c44.2-0.1,85.9,2.1,122.6,6"/>
+				<path class="st16" d="M291.8,101.6c9.5-27.1,100.1-50.8,212.3-54.8c1.9-0.1,3.9-0.1,5.9-0.2c64.6-1.9,122.9,3.1,163.6,12.6"/>
 			</g>
-			<g
-   id="g144">
-				<polyline
-   id="polyline142"
-   points="222.5,123.7 222.5,127.7 222.5,134.1 222.5,145     "
-   class="st_syt16" />
+			<g>
+				<polyline class="st16" points="291.4,101.2 291.4,108.3 291.4,120 291.4,139.8 				"/>
 			</g>
-			<line
-   id="line146"
-   y2="134.5"
-   x2="240.5"
-   y1="110.5"
-   x1="240.5"
-   class="st_syt16" />
-			<line
-   id="line148"
-   y2="127.5"
-   x2="281.5"
-   y1="99.5"
-   x1="281.5"
-   class="st_syt16" />
-			<line
-   id="line150"
-   y2="123.5"
-   x2="331.5"
-   y1="94.5"
-   x1="331.5"
-   class="st_syt16" />
-			<line
-   id="line152"
-   y2="124"
-   x2="390"
-   y1="94"
-   x1="390"
-   class="st_syt16" />
+			<line class="st16" x1="324.1" y1="77.2" x2="324.1" y2="120.7"/>
+			<line class="st16" x1="398.5" y1="57.2" x2="398.5" y2="108"/>
+			<line class="st16" x1="489.3" y1="48.1" x2="489.3" y2="100.8"/>
+			<line class="st16" x1="595.5" y1="47.2" x2="595.5" y2="101.7"/>
 		</g>
-		<path
-   id="path156"
-   d="m 351.5,160.3 c 0,0.3 -0.1,0.6 -0.1,0.9"
-   class="st_syt1" />
-		<path
-   id="path158"
-   d="m 351.4,216.3 v 0 c 0.1,-0.1 0.1,-0.1 0,0"
-   class="st_syt1" />
-		<path
-   id="path160"
-   d="m 351.5,286.8 c -0.2,0.1 -0.4,0.2 -0.5,0.3"
-   class="st_syt1" />
-		<path
-   id="path162"
-   d="m 439.6,132.7 v 61.2 c 0,0 0,0 -0.1,0 -24.2,-3.4 -53,-5.4 -84,-5.4 -3.2,0 -6.4,0 -9.5,0.1 -52.4,0.7 -97.9,7.1 -123.4,16.5 v -55.9 c 2.2,-14.2 56.6,-25.6 123.4,-25.6 37.4,-0.1 70.8,3.4 93.6,9.1 -0.1,0 -0.1,0 0,0 z"
-   class="st_syt17" />
-		<path
-   id="path164"
-   d="m 222.6,149.1 c -0.1,0.3 -0.1,0.6 -0.1,0.9"
-   class="st_syt18" />
-		<path
-   id="path166"
-   d="m 222.5,205.1 v 0 c 0,-0.1 0.1,-0.1 0,0"
-   class="st_syt18" />
-		<path
-   id="path168"
-   d="m 222.6,275.6 c -0.2,0.1 -0.4,0.2 -0.5,0.3"
-   class="st_syt18" />
-		<path
-   id="path170"
-   d="m 439.6,195.9 v 77.5 c -23.1,-1 -53.1,-1.6 -85.8,-1.6 -67.7,0 -123.6,2.5 -131.2,5.8 V 207 c 25.6,-9.3 71,-15.8 123.4,-16.5 3.1,0 6.3,-0.1 9.5,-0.1 31,0.1 59.8,2.1 84.1,5.5 -0.1,0 -0.1,0 0,0 z"
-   class="st_syt17" />
-		<path
-   id="path172"
-   d="M 439.6,274.3 V 544 h -217 V 283.4 c 7.6,-7.1 63.4,-12.6 131.2,-12.6 32.7,0 62.7,1.3 85.8,3.5 z"
-   class="st_syt17" />
-		<path
-   id="path174"
-   d="m 439.5,132.7 v 44.4 c -24.2,-3.4 -53.1,-5.4 -84.1,-5.4 -3.2,0 -6.3,0 -9.4,0.1 v -48.3 c 37.4,0 70.8,3.5 93.5,9.2 z"
-   class="st_syt7" />
-		<path
-   id="path176"
-   d="m 439.5,193.9 v 66.7 c -23.1,-1 -53.1,-1.6 -85.8,-1.6 -2.6,0 -5.1,0 -7.7,0 v -70.5 c 3.1,0 6.3,-0.1 9.5,-0.1 31,0.1 59.8,2.1 84,5.5 z"
-   class="st_syt7" />
-		<path
-   id="path178"
-   d="M 439.5,272.2 V 519 H 346 V 269 c 2.5,0 5.1,0 7.7,0 32.7,0 62.7,1.2 85.8,3.2 z"
-   class="st_syt7" />
-		<line
-   id="line180"
-   y2="183"
-   x2="247"
-   y1="150"
-   x1="247"
-   class="st_syt19" />
-		<line
-   id="line182"
-   y2="262"
-   x2="247"
-   y1="214"
-   x1="247"
-   class="st_syt19" />
+		<path class="st3" d="M525.6,167.6c-0.1,0.5-0.1,1.1-0.1,1.6"/>
+		<path class="st3" d="M525.5,269.2L525.5,269.2c0-0.1,0.1-0.1,0.1-0.1"/>
+		<path class="st3" d="M525.6,397.2c-0.4,0.1-0.7,0.3-0.9,0.5"/>
+		<path class="st17" d="M685.5,117.5v111.2c0,0-0.1,0-0.1,0c-44-6.2-96.3-9.8-152.5-9.8c-5.8,0-11.5,0-17.2,0.1
+			c-95.2,1.3-177.7,12.9-224.1,29.9V147.3c3.9-25.8,102.8-46.5,224.1-46.5c67.8,0,128.6,6.4,169.8,16.7
+			C685.4,117.5,685.5,117.5,685.5,117.5z"/>
+		<path class="st18" d="M291.5,147.3c-0.1,0.5-0.1,1.1-0.1,1.6"/>
+		<path class="st18" d="M291.4,248.9L291.4,248.9c0-0.1,0.1-0.1,0.1-0.1"/>
+		<path class="st18" d="M291.5,376.9c-0.4,0.1-0.7,0.3-0.9,0.5"/>
+		<path class="st17" d="M685.5,232.3v140.6c-41.9-1.8-96.4-2.9-155.9-2.9c-123,0-224.3,4.6-238.1,10.4V252.4
+			c46.4-16.9,128.9-28.6,224.1-29.9c5.7-0.1,11.5-0.1,17.2-0.1c56.2,0,108.6,3.6,152.5,9.8C685.4,232.3,685.5,232.3,685.5,232.3z"/>
+		<path class="st17" d="M685.5,374.5v489.7h-394V391.1c13.8-12.9,115.2-22.9,238.1-22.9C589.2,368.2,643.6,370.6,685.5,374.5z"/>
+		<path class="st7" d="M685.4,117.4v80.7c-44-6.2-96.4-9.9-152.6-9.9c-5.8,0-11.5,0-17.1,0.1v-87.6
+			C583.5,100.8,644.3,107.2,685.4,117.4z"/>
+		<path class="st7" d="M685.4,228.6v121c-41.9-1.8-96.4-2.9-155.9-2.9c-4.7,0-9.3,0-13.9,0V218.9c5.7-0.1,11.5-0.1,17.2-0.1
+			C589.1,218.8,641.4,222.4,685.4,228.6z"/>
+		<path class="st7" d="M685.4,370.7v448.2H515.6V365c4.6,0,9.2,0,13.9,0C589,364.9,643.5,367.1,685.4,370.7z"/>
+		<line class="st19" x1="335.9" y1="148.9" x2="335.9" y2="208.8"/>
+		<line class="st19" x1="335.9" y1="265.1" x2="335.9" y2="352.2"/>
 	</g>
-	<g
-   id="g206"
-   clip-path="url(#SVGID_2_)"
-   class="st_syt2">
-		<line
-   id="line186"
-   y2="350"
-   x2="201"
-   y1="246.5"
-   x1="319.5"
-   class="st_syt20" />
-		<line
-   id="line188"
-   y2="350"
-   x2="201"
-   y1="321"
-   x1="201"
-   class="st_syt16" />
-		<line
-   id="line190"
-   y2="247"
-   x2="319.5"
-   y1="218"
-   x1="319.5"
-   class="st_syt16" />
-		<line
-   id="line192"
-   y2="286"
-   x2="274.5"
-   y1="257"
-   x1="274.5"
-   class="st_syt16" />
-		<line
-   id="line194"
-   y2="334"
-   x2="219.5"
-   y1="305"
-   x1="219.5"
-   class="st_syt16" />
-		<line
-   id="line196"
-   y2="321.20001"
-   x2="200.7"
-   y1="217.7"
-   x1="319.20001"
-   class="st_syt20" />
-		<line
-   id="line198"
-   y2="333.20001"
-   x2="200.7"
-   y1="229.7"
-   x1="319.20001"
-   class="st_syt16" />
-		<line
-   id="line200"
-   y2="217.5"
-   x2="422"
-   y1="217.5"
-   x1="319"
-   class="st_syt16" />
-		<line
-   id="line202"
-   y2="246.5"
-   x2="422"
-   y1="246.5"
-   x1="319"
-   class="st_syt16" />
-		<line
-   id="line204"
-   y2="231.5"
-   x2="423"
-   y1="231.5"
-   x1="319"
-   class="st_syt16" />
+	<g class="st1">
+		<line class="st20" x1="467.5" y1="324.1" x2="252.4" y2="512"/>
+		<line class="st16" x1="252.4" y1="459.3" x2="252.4" y2="512"/>
+		<line class="st16" x1="467.5" y1="272.3" x2="467.5" y2="325"/>
+		<line class="st16" x1="385.8" y1="343.1" x2="385.8" y2="395.8"/>
+		<line class="st16" x1="286" y1="430.3" x2="286" y2="483"/>
+		<line class="st20" x1="467" y1="271.8" x2="251.9" y2="459.7"/>
+		<line class="st16" x1="467" y1="293.6" x2="251.9" y2="481.5"/>
+		<line class="st16" x1="466.6" y1="271.4" x2="653.6" y2="271.4"/>
+		<line class="st16" x1="466.6" y1="324.1" x2="653.6" y2="324.1"/>
+		<line class="st16" x1="466.6" y1="296.9" x2="655.4" y2="296.9"/>
 	</g>
 </g>
 </svg>

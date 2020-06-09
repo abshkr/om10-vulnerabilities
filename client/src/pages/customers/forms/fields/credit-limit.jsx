@@ -8,11 +8,12 @@ const CreditLimit = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    /*
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.custCrdLimit')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.custCrdLimit')}`);
+      }
     }
-    */
+
     if (input && input.length > 9) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 9 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -29,8 +30,12 @@ const CreditLimit = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="cust_crd_limit" label={t('fields.custCrdLimit')} rules={[{ required: false, validator: validate }]}>
-      <InputNumber defaultValue={0} style={{ width: '100%' }} />
+    <Form.Item 
+      name="cust_crd_limit" 
+      label={t('fields.custCrdLimit')} 
+      rules={[{ required: false, validator: validate }]}
+    >
+      <InputNumber style={{ width: '100%' }} />
     </Form.Item>
   );
 };

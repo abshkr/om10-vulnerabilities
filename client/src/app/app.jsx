@@ -5,6 +5,8 @@ import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ConfigProvider } from 'antd';
 import { Provider } from 'react-redux';
+import { SWRConfig } from 'swr';
+
 import en from 'antd/es/locale/en_GB';
 import cn from 'antd/es/locale/zh_CN';
 
@@ -12,6 +14,7 @@ import { GlobalStyleProvider, AntdStyleProvider } from '../styles';
 import { Interface, Loading } from '../components';
 import { authStore } from '../stores';
 import { ROUTES } from '../constants';
+import { fetcher } from '../utils';
 import paths from './paths';
 
 /**
@@ -32,30 +35,38 @@ const locale = {
   cn,
 };
 
+const fetchConfig = {
+  refreshInterval: 0,
+  fetcher,
+  errorRetryCount: 3,
+};
+
 const App = () => {
   const { i18n } = useTranslation();
 
   const language = locale[i18n.language];
 
   return (
-    <ConfigProvider locale={language}>
-      <Provider store={authStore}>
-        <BrowserRouter>
-          <Interface>
-            <GlobalStyleProvider primary="#0054A4" />
-            <AntdStyleProvider primary="#0054A4" />
-            <Suspense fallback={<Loading />}>
-              <Switch>
-                {paths.map((item) => {
-                  return <Route key={item.path} path={item.path} component={item.component} />;
-                })}
-                <Redirect path={ROUTES.ROOT} to={ROUTES.LOG_IN} />
-              </Switch>
-            </Suspense>
-          </Interface>
-        </BrowserRouter>
-      </Provider>
-    </ConfigProvider>
+    <SWRConfig value={fetchConfig}>
+      <ConfigProvider locale={language}>
+        <Provider store={authStore}>
+          <BrowserRouter>
+            <Interface>
+              <GlobalStyleProvider primary="#0054A4" />
+              <AntdStyleProvider primary="#0054A4" />
+              <Suspense fallback={<Loading />}>
+                <Switch>
+                  {paths.map((item) => {
+                    return <Route key={item.path} path={item.path} component={item.component} />;
+                  })}
+                  <Redirect path={ROUTES.ROOT} to={ROUTES.LOG_IN} />
+                </Switch>
+              </Suspense>
+            </Interface>
+          </BrowserRouter>
+        </Provider>
+      </ConfigProvider>
+    </SWRConfig>
   );
 };
 

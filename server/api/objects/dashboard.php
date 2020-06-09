@@ -28,6 +28,8 @@ class Dashboard extends CommonClass
             (SELECT COUNT(TNKR_CODE) FROM TANKERS WHERE TNKR_ACTIVE = 'Y') TANKER_ACTIVE,
             (SELECT COUNT(USER_CODE) FROM URBAC_USERS) PERSONNEL_TOTAL,
             (SELECT COUNT(USER_CODE) FROM URBAC_USERS WHERE USER_STATUS_FLAG = 1) PERSONNEL_ACTIVE,
+            (SELECT COUNT(PER_CODE) FROM PERSONNEL WHERE PER_LOCK = 'Y') PERSONNEL_LOCKED,
+            (SELECT COUNT(PER_CODE) FROM PERSONNEL WHERE PER_LOCK != 'Y') PERSONNEL_UNLOCKED,
             4000 KEY_AVAILABLE,
             (SELECT COUNT(*) FROM ACCESS_KEYS) KEY_USED,
             (SELECT COUNT(*) FROM ACCESS_KEYS WHERE KYA_TYPE = 4) KEY_TANKER,
@@ -214,11 +216,14 @@ class Dashboard extends CommonClass
             SELECT SUM(TANK_AMB_VOL) / 1000 QTY_ABM, 
                 SUM(TANK_COR_VOL) / 1000 QTY_COR,
                 TANK_BASE, 
-                BASE_NAME
-            FROM TANKS, BASE_PRODS
+                BASE_NAME,
+                BCLASS_NO,
+                BCLASS_DESC
+            FROM TANKS, BASE_PRODS, BASECLASS
             WHERE TANK_BASE = BASE_CODE
-            GROUP BY TANK_BASE, BASE_NAME
-            ORDER BY BASE_NAME";
+                AND BASE_CAT = BCLASS_NO
+            GROUP BY TANK_BASE, BASE_NAME, BCLASS_NO, BCLASS_DESC
+            ORDER BY QTY_ABM desc";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);

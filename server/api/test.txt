@@ -22,16 +22,21 @@ https://{{server_ip}}/api/session/check_password.php
 https://{{server_ip}}/api/session/change_person_setups.php	//Set up user's favariate. 
 [
     {
+        "per_code": "9999",
         "config_key": "Sample_Key",
-        "config_value": "new"
+        "config_value": "new",
+        "config_comment": ""
     },
     {
+        "per_code": "9999",
         "config_key": "Sample_Key2",
         "config_value": "2345"
     },
     {
+        "per_code": "9999",
         "config_key": "Sample_Key3",
-        "config_value": "23456"
+        "config_value": "23456",
+        "config_comment": ""
     }
 ]
 https://10.1.10.66/api/session/session.php
@@ -329,6 +334,16 @@ https://{{server_ip}}/api/pages/schedule/host_data_delete.php
 	"dh_shlssupp": "5860106",
 	"dh_shlscmpt": "2"
 }
+https://10.1.10.66/api/pages/schedule/seals.php?supplier=7640114&trip_no=246829219
+https://10.1.10.66/api/pages/schedule/next_seal.php
+https://10.1.10.66/api/pages/schedule/set_next_seal.php?next_seal=420114-420266
+https://10.1.10.66/api/pages/schedule/allocate_seal.php?supplier=7640114&trip_no=246829219&seal_num=3  //Allocate. seal_num: number of seals
+https://10.1.10.66/api/pages/schedule/allocate_one.php?supplier=7640114&trip_no=246829219&cmpt_nr=1  //Add one 
+https://10.1.10.66/api/pages/schedule/delete_seal.php?seal_nr=420114-420264   //Deallocate selected
+https://10.1.10.66/api/pages/schedule/reallocate.php?supplier=7640114&trip_no=246829219&seal_nr=420114-420262&cmpt_nr=1    //Reallcate selected 
+https://10.1.10.66/api/pages/schedule/deallocate_all.php?supplier=7640114&trip_no=246829219  //Deallocate all 
+https://10.1.10.66/api/pages/schedule/set_prefix.php?seal_nr=335&prefix=NEWPRE
+https://10.1.10.66/api/pages/schedule/set_suffix.php?seal_nr=335&prefix=NEWSUF
 
 //Equipment Types
 https://10.1.10.66/api/pages/equipment_type/read.php
@@ -677,10 +692,9 @@ https://10.1.10.66/api/pages/company/doc_printers.php?cmpy_code=60801
 https://10.1.10.66/api/pages/company/report_printers.php?cmpy_code=60801
 https://10.2.20.53/api/pages/company/dli_printers.php?cmpy_code=0003
 https://10.1.10.66/api/pages/company/cmpy_configs.php?cmpy_code=1000
-
 https://10.1.10.66/api/pages/company/cmpy_templates.php?cmpy_code=1000
-https://{{server_ip}}/api/pages/company/update_template.php
-{
+https://{{server_ip}}/api/pages/company/update_templates.php
+[{
       "template_code": "BOL_MOBIL",
       "cmpy_code": "1000",
       "default_flag": false,
@@ -691,12 +705,54 @@ https://{{server_ip}}/api/pages/company/update_template.php
       "warning_percent": "0.5",
       "warning_qty": "0.25",
       "send_to_printer": false
-}
-
+}]
 https://10.1.10.66/api/pages/company/parent_cmpy_roles.php
 https://10.1.10.66/api/pages/company/child_cmpy_roles.php
 https://10.1.10.66/api/pages/company/companys_by_role.php?cmpy_role_id=1
 https://10.1.10.66/api/pages/company/cmpy_relations.php
+https://10.1.10.66/api/pages/company/cmpy_relations.php?parent_cmpy_code=7640103
+https://{{server_ip}}/api/pages/company/update_relations.php
+{
+    "cmpy_code": "7640103",
+    "relations": [
+      {
+            "parent_cmpy_code": "7640103",
+            "parent_cmpy_name": "GSAP AVIATION",
+            "parent_cmpy_role": "1",
+            "parent_cmpy_role_name": "SUPPLIER",
+            "child_cmpy_code": "11561639",
+            "child_cmpy_name": "MAXWELL 1991 CO LTD",
+            "child_cmpy_role": "2",
+            "child_cmpy_role_name": "CARRIER",
+            "status": true,
+            "comments": ""
+        },
+        {
+            "parent_cmpy_code": "7640103",
+            "parent_cmpy_name": "GSAP AVIATION",
+            "parent_cmpy_role": "1",
+            "parent_cmpy_role_name": "SUPPLIER",
+            "child_cmpy_code": "12000000",
+            "child_cmpy_name": "PREMIUM OIL CO LTD",
+            "child_cmpy_role": "2",
+            "child_cmpy_role_name": "CARRIER",
+            "status": true,
+            "comments": ""
+        },
+        {
+            "parent_cmpy_code": "7640103",
+            "parent_cmpy_name": "GSAP AVIATION",
+            "parent_cmpy_role": "1",
+            "parent_cmpy_role_name": "SUPPLIER",
+            "child_cmpy_code": "68057026",
+            "child_cmpy_name": "PONGRAVEE (PRV)",
+            "child_cmpy_role": "2",
+            "child_cmpy_role_name": "CARRIER",
+            "status": true,
+            "comments": ""
+        }
+    ]
+}
 https://{{server_ip}}/api/pages/company/create_relation.php
 {
       "parent_cmpy_code": "11626229",
@@ -2643,6 +2699,12 @@ https://10.1.10.66/api/pages/movement/reverse.php?supplier=CN51&trip_no=900090
 https://10.1.10.66/api/pages/movement/schedules.php?mv_key=1681420
 https://10.1.10.66/api/pages/movement/schedules.php
 https://10.1.10.66/api/pages/movement/schedule_items.php?supplier=CN51&trip_no=900063
+https://{{server_ip}}/api/pages/movement/lock_item.php
+{
+    "mvitm_move_id": "5089",
+    "mvitm_line_id": "3",
+    "mvitm_completed": false
+}
 https://10.1.10.66/api/pages/movement/reverse.php?supplier=CN51&trip_no=900063
 https://10.1.10.66/api/pages/movement/view_bol.php?supplier=1565102&trip_no=900000027
 https://10.1.10.66/api/pages/movement/print_bol.php?supplier=1565102&trip_no=900000027
@@ -2944,9 +3006,16 @@ https://{{server_ip}}/api/pages/mov_reason/delete.php?mr_id=33
 https://10.1.10.66/api/pages/manual_trans/get_trips.php?supplier=5869999
 https://10.1.10.66/api/pages/manual_trans/get_sched_basics.php?supplier=5869999&trip_no=900000001  //Get carrier and tanker
 https://10.1.10.66/api/pages/manual_trans/get_drivers.php
+https://10.1.10.66/api/pages/schedule/get_product_details.php?supplier_code=7640103&shls_trip_no=900000011
 https://10.1.10.66/api/pages/manual_trans/get_sched_details.php?supplier=5869999&trip_no=900000001
 https://10.1.10.66/api/pages/manual_trans/get_arms.php?prod_cmpy=5860106&prod_code=400003401
 https://10.1.10.66/api/pages/manual_trans/get_base_details.php?prod_cmpy=5860106&prod_code=400003401&arm_code=A04501
+https://10.1.10.185/api/pages/manual_trans/get_base_details.php
+{
+    "prod_cmpy": "0002",
+    "prod_code": "110218",
+    "arm_code": ["A03102", "SSS"]
+}
 https://10.1.10.66/api/pages/manual_trans/calc_vcf.php?frm_baseCd=400009868&frm_which_type=LT&frm_real_amount=6000&frm_real_temp=33&frm_real_dens=890
 https://{{server_ip}}/api/pages/manual_trans/submit.php //schedule manual transaction
 {
@@ -2967,6 +3036,7 @@ https://{{server_ip}}/api/pages/manual_trans/submit.php //schedule manual transa
             "amb_vol": 340,
             "cor_vol": 341,
             "liq_kg": 256,
+			"nr_in_tkr": 1, 
             "meters": [
                 {
                     "open_amb": 12345,
@@ -2994,7 +3064,9 @@ https://{{server_ip}}/api/pages/manual_trans/submit.php //schedule manual transa
         }
     ]
 }
-https://10.1.10.66/api/pages/manual_trans/get_suppliers.php
+https://10.1.10.66/api/pages/manual_trans/suppliers.php
+https://10.1.10.66/api/pages/manual_trans/get_ord_suppliers.php
+https://10.1.10.66/api/pages/manual_trans/get_schd_suppliers.php
 https://10.1.10.66/api/pages/manual_trans/get_customers.php?supplier=5860106
 https://10.1.10.66/api/pages/manual_trans/get_orders.php?supplier=5860106&customer=11626230
 https://10.1.10.66/api/pages/manual_trans/get_order_basics.php?order_cust_no=322140337  //get order carrier, shipto soldto
@@ -3020,6 +3092,7 @@ https://{{server_ip}}/api/pages/manual_trans/submit.php    //Submit open order
             "amb_vol": 340,
             "cor_vol": 341,
             "liq_kg": 256,
+			"nr_in_tkr": 1, 
             "meters": [
                 {
                     "open_amb": 12345,

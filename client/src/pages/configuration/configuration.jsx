@@ -261,7 +261,14 @@ const Configuration = () => {
         </TabPane>
 
         <TabPane tab={t('tabColumns.closeoutOptions')} key="4">
-          <ConfigurationItems data={_.filter(configuration, ['config_required_by_gui', 'M'])} />
+          <ConfigurationItems data={_.filter(configuration, ['config_required_by_gui', ''])} />
+        </TabPane>
+
+        <TabPane tab={t('tabColumns.seals')} key="5">
+          <ConfigurationItems
+            data={_.filter(configuration, ['config_required_by_gui', 'S'])}
+            onChange={onConfigurationEdit}
+          />
         </TabPane>
 
         <TabPane tab={t('tabColumns.features')} key="6">

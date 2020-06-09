@@ -8,3 +8,6 @@ export const SESSION = '/api/session/session_data.php';
 export const ENVIRONMENT = '/api/session/getenv.php';
 
 export const SITE_CONFIG = '/api/config.php';
+
+export const SETUP = '/api/session/person_setups.php';
+export const UPDATE_SETUP = '/api/session/change_person_setups.php';

@@ -29,6 +29,22 @@ class Movement extends CommonClass
         
     );
 
+    public function check_nomination_key()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM MOVEMENTS WHERE MV_KEY=:mv_key
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mv_key', $this->nomination_key);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function alternate_units()
     {
         $query = "SELECT 'BB6' UNIT FROM DUAL
@@ -94,6 +110,71 @@ class Movement extends CommonClass
     {
         $serv = new TankService($this->conn, $this->tank_code);
         return $serv->tank_proddata();
+    }
+
+    public function tanks_by_drawprod()
+    {
+        $query = "SELECT TK.TANK_CODE, 
+            TK.TANK_DENSITY, 
+            TK.TANK_TEMP, 
+            TK.TANK_NAME, 
+            TL.TERM_CODE,  
+            TL.TERM_NAME,
+            DP.PROD_CMPY, 
+            DP.PROD_CODE, 
+            DP.PROD_NAME, 
+            BP.BASE_CODE, 
+            BP.BASE_NAME, 
+            PR.RATIO_VALUE, 
+            PR.RAT_PROD_PRODCODE,
+            BS.BCLASS_DESC,
+            BS.BCLASS_NO,
+            BS.BCLASS_DENS_LO,
+            BS.BCLASS_DENS_HI,
+            BS.BCLASS_TEMP_LO,
+            BS.BCLASS_TEMP_HI,
+            BS.BCLASS_VCF_ALG					
+        FROM PRODUCTS DP, RPTOBJ_PROD_RATIOS_VW PR, BASE_PRODS BP, TANKS TK, TERMINAL TL, BASECLASS BS 
+        WHERE DP.PROD_CMPY  = PR.RAT_PROD_PRODCMPY 
+        AND DP.PROD_CODE  = PR.RAT_PROD_PRODCODE 
+        AND PR.RATIO_BASE = BP.BASE_CODE 
+        AND BP.BASE_CODE  = TK.TANK_BASE 
+        AND TL.TERM_CODE  = TK.TANK_TERMINAL
+        AND PR.RAT_COUNT  = 1 
+        AND DP.PROD_CMPY  != 'BaSePrOd'
+        AND DP.PROD_CMPY = :supplier
+        AND DP.PROD_CODE = :product
+        AND BP.BASE_CAT = BS.BCLASS_NO
+        ORDER BY TL.TERM_CODE, DP.PROD_CMPY, TK.TANK_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':product', $this->product);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function carrier_by_tanker()
+    {
+        $query = "
+            SELECT TNKR_CARRIER, TNKR_CODE, TNKR_OWNER
+            FROM TANKERS
+            WHERE TNKR_CODE = :tnkr_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
     }
     
     public function item_instance()

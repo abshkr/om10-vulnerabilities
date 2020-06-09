@@ -1,52 +1,76 @@
-import React, { useEffect } from 'react';
-
+import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 import _ from 'lodash';
-
 import { MOVEMENT_NOMIATIONS } from '../../../../api';
 
+import {validatorStatus} from '../../../../utils';
+
 const NominationKey = ({ form, value }) => {
+  const [nomkey, setNomkey] = useState(value?.mv_key);
+  const [matched, setMatched] = useState(false);
   const { t } = useTranslation();
+  const { setFieldsValue, validateFields } = form;
 
-  const { setFieldsValue } = form;
-
-  const { data: movementNominations, isValidating } = useSWR(MOVEMENT_NOMIATIONS.READ);
+  const { data, isValidating, revalidate } = useSWR(`${MOVEMENT_NOMIATIONS.CHECK_NOMKEY}?nomination_key=${nomkey}`, {
+    refreshInterval: 0,
+  });
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mv_key: value.mv_key
+        mv_key: value.mv_key,
       });
     }
   }, [value, setFieldsValue]);
 
-  const validate = (rule, input) => {
-    const match = _.find(movementNominations?.records, ['mv_key', input]);
+  const handleFieldChange = (event) => {
+    setNomkey(event.target.value);
+    revalidate();
+  };
 
+  useEffect(() => {
+    revalidate();
+  }, [nomkey, revalidate]);
+
+  useEffect(() => {
+    if (data) {
+      const counter = _.toNumber(data?.records[0]?.cnt);
+      const match = counter > 0;
+      setMatched(match);
+    }
+  }, [data, setMatched]);
+
+  useEffect(() => {
+    validateFields(['mv_key']);
+  }, [matched, validateFields]);
+
+  const validate = (rule, input) => {
+    if (matched && !value) {
+      return Promise.reject(t('descriptions.alreadyExists'));
+    }
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.nominationKey')}`);
     }
-
-    if (input && !!match && !value) {
-      return Promise.reject(t('descriptions.alreadyExists'));
-    }
-
     if (input && input.length > 20) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
     }
-
     return Promise.resolve();
   };
+
+  const status = validatorStatus(isValidating, matched);
 
   return (
     <Form.Item
       name="mv_key"
       label={t('fields.nominationKey')}
+      hasFeedback
       rules={[{ required: true, validator: validate }]}
+      validateStatus={status}
+      shouldUpdate
     >
-      <Input disabled={!!value || isValidating} />
+      <Input disabled={!!value} onChange={handleFieldChange} />
     </Form.Item>
   );
 };

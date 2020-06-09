@@ -10,12 +10,33 @@ class ManualTrans extends CommonClass
 {
     protected $TABLE_NAME = 'DUMMY';
 
-    public function get_suppliers()
+    public function get_ord_suppliers()
     {
         $query = "SELECT DISTINCT ORDER_SUPP_CODE SUPPLIER,
                 ORDER_SUPP_NAME SUPPLIER_NAME
             FROM GUI_ORDERS
-            WHERE ORDER_STAT_ID NOT IN (2, 3, 5, 6)";
+            WHERE ORDER_STAT_ID NOT IN (2, 3, 5, 6)
+            ORDER BY ORDER_SUPP_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function get_schd_suppliers()
+    {
+        $query = "SELECT SHLS_SUPP SUPPLIER, CMPY_NAME SUPPLIER_NAME
+            FROM
+            (
+                SELECT DISTINCT SHLS_SUPP FROM SCHEDULE
+                WHERE STATS IS NULL OR STATS IN ('A', 'L', 'N')
+            ), COMPANYS
+            WHERE SHLS_SUPP = CMPY_CODE
+            ORDER BY SHLS_SUPP";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
@@ -118,6 +139,34 @@ class ManualTrans extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function get_sched_prods()
+    {
+        $query = "SELECT SCHPSPID_SHLSTRIP,
+                SCHPSPID_SHLSSUPP,
+                SCHPPROD_PRODCODE,
+                SCHPPROD_PRODCMPY,
+                PROD_NAME,
+                SCHP_UNITS,
+                SCHP_SPECQTY,
+                SCHP_ORDER 
+            FROM SPECPROD, PRODUCTS
+            WHERE SCHPSPID_SHLSTRIP = :trip_no
+                AND SCHPSPID_SHLSSUPP = :supplier
+                AND SCHPPROD_PRODCODE = PROD_CODE
+                AND SCHPPROD_PRODCMPY = PROD_CMPY
+            ORDER BY SCHPPROD_PRODCODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        return $stmt;
     }
 
     public function get_sched_basics()
@@ -274,7 +323,7 @@ class ManualTrans extends CommonClass
             $transfers[$i] = new Manual_Transfer();
             $transfers[$i]->Arm_Code = $this->transfers[$i]->arm_code;
             //$transfers[$i]->Device_Code = "BAY01";       //Not important, baiman does not use it
-            $transfers[$i]->nr_in_tkr = 1;
+            $transfers[$i]->nr_in_tkr = $this->transfers[$i]->nr_in_tkr;
 
             $transfers[$i]->drawer_code = $this->transfers[$i]->drawer_code;
             $transfers[$i]->product_code = $this->transfers[$i]->product_code;
@@ -343,30 +392,60 @@ class ManualTrans extends CommonClass
 
     public function get_base_details()
     {
-        $query = "SELECT R.RAT_PROD_PRODCMPY, 
-                R.RAT_PROD_PRODCODE, 
-                B.STREAM_ARMCODE, 
-                B.STREAM_MTRCODE, 
-                B.STREAM_INJCODE, 
-                B.STREAM_BASECODE, 
-                B.STREAM_BASENAME, 
-                B.STREAM_BCLASS_CODE,
-                DECODE(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, 
-                DECODE(B.STREAM_BCLASS_CODE, 6, 'INJECT', 11,'INJECT','METER') METER_TYPE_DESC, 
-                B.STREAM_BCLASS_NMAE,
-                B.STREAM_TANKCODE, B.STREAM_TANKDEN, STREAM_TANKTEMP AS BASE_RPT_TEMP, 
-                BP.BASE_RPT_TEMP AS BASE_RPT_TEMP2, R.RATIO_VALUE
-            FROM RATIOS R,
-                GUI_PIPENODE B,
-                BASE_PRODS BP
-            WHERE B.STREAM_BASECODE = R.RATIO_BASE(+)
-                AND B.STREAM_BASECODE = BP.BASE_CODE(+) 
-                AND RAT_PROD_PRODCMPY = :prod_cmpy AND RAT_PROD_PRODCODE = :prod_code AND STREAM_ARMCODE = :arm_code
-            ORDER BY R.RAT_PROD_PRODCMPY, METER_TYPE_CODE, B.STREAM_ARMCODE, B.STREAM_BASECODE";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':prod_code', $this->prod_code);
-        oci_bind_by_name($stmt, ':prod_cmpy', $this->prod_cmpy);
-        oci_bind_by_name($stmt, ':arm_code', $this->arm_code);
+        if (is_array($this->arm_code)) {
+            foreach($this->arm_code as &$value){
+                $value = "'$value'";
+            }
+            $comma_separated_arms = implode(',', $this->arm_code);
+            $query = "SELECT R.RAT_PROD_PRODCMPY, 
+                    R.RAT_PROD_PRODCODE, 
+                    B.STREAM_ARMCODE, 
+                    B.STREAM_MTRCODE, 
+                    B.STREAM_INJCODE, 
+                    B.STREAM_BASECODE, 
+                    B.STREAM_BASENAME, 
+                    B.STREAM_BCLASS_CODE,
+                    DECODE(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, 
+                    DECODE(B.STREAM_BCLASS_CODE, 6, 'INJECT', 11,'INJECT','METER') METER_TYPE_DESC, 
+                    B.STREAM_BCLASS_NMAE,
+                    B.STREAM_TANKCODE, B.STREAM_TANKDEN, STREAM_TANKTEMP AS BASE_RPT_TEMP, 
+                    BP.BASE_RPT_TEMP AS BASE_RPT_TEMP2, R.RATIO_VALUE
+                FROM RATIOS R,
+                    GUI_PIPENODE B,
+                    BASE_PRODS BP
+                WHERE B.STREAM_BASECODE = R.RATIO_BASE(+)
+                    AND B.STREAM_BASECODE = BP.BASE_CODE(+) 
+                    AND RAT_PROD_PRODCMPY = :prod_cmpy AND RAT_PROD_PRODCODE = :prod_code AND STREAM_ARMCODE IN ("
+                . $comma_separated_arms . ") ORDER BY R.RAT_PROD_PRODCMPY, METER_TYPE_CODE, B.STREAM_ARMCODE, B.STREAM_BASECODE";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':prod_code', $this->prod_code);
+            oci_bind_by_name($stmt, ':prod_cmpy', $this->prod_cmpy);
+        } else {
+            $query = "SELECT R.RAT_PROD_PRODCMPY, 
+                    R.RAT_PROD_PRODCODE, 
+                    B.STREAM_ARMCODE, 
+                    B.STREAM_MTRCODE, 
+                    B.STREAM_INJCODE, 
+                    B.STREAM_BASECODE, 
+                    B.STREAM_BASENAME, 
+                    B.STREAM_BCLASS_CODE,
+                    DECODE(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, 
+                    DECODE(B.STREAM_BCLASS_CODE, 6, 'INJECT', 11,'INJECT','METER') METER_TYPE_DESC, 
+                    B.STREAM_BCLASS_NMAE,
+                    B.STREAM_TANKCODE, B.STREAM_TANKDEN, STREAM_TANKTEMP AS BASE_RPT_TEMP, 
+                    BP.BASE_RPT_TEMP AS BASE_RPT_TEMP2, R.RATIO_VALUE
+                FROM RATIOS R,
+                    GUI_PIPENODE B,
+                    BASE_PRODS BP
+                WHERE B.STREAM_BASECODE = R.RATIO_BASE(+)
+                    AND B.STREAM_BASECODE = BP.BASE_CODE(+) 
+                    AND RAT_PROD_PRODCMPY = :prod_cmpy AND RAT_PROD_PRODCODE = :prod_code AND STREAM_ARMCODE = :arm_code
+                ORDER BY R.RAT_PROD_PRODCMPY, METER_TYPE_CODE, B.STREAM_ARMCODE, B.STREAM_BASECODE";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':prod_code', $this->prod_code);
+            oci_bind_by_name($stmt, ':prod_cmpy', $this->prod_cmpy);
+            oci_bind_by_name($stmt, ':arm_code', $this->arm_code);
+        }
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
