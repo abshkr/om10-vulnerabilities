@@ -22,7 +22,27 @@ class Movement extends CommonClass
         "MSITM_SPECQTY",
         "MSITM_PRLDQTY",
         "MSITM_PRSTQTY",
-        "MSITM_DELVQTY"
+        "MSITM_DELVQTY",
+        "MVITM_MOVE_ID",
+        "MVITM_LINE_ID",
+        "MVITM_ITEM_ID",
+        "MVITM_PERIOD_ID",
+        "MVITM_ITEM_KEY",
+        "MVITM_TYPE",
+        "MVITM_PROD_UNIT",
+        "MVITM_RAT_UPTOL",
+        "MVITM_QTY_UPTOL",
+        "MVITM_UNIT_UPTOL",
+        "MVITM_RAT_DNTOL",
+        "MVITM_QTY_DNTOL",
+        "MVITM_UNIT_DNTOL",
+        "MVITM_UNIT_SCHD",
+        "MVITM_UNIT_MOVE",
+        "MVITM_UNIT_DELV",
+        "MVITM_STATUS",
+        "MVITM_PACK_SIZE",
+        "MVITM_PRICE_TYPE",
+        "MVITM_PRICE"
     );
 
     public $BOOLEAN_FIELDS = array(
@@ -169,6 +189,66 @@ class Movement extends CommonClass
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
 
         if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function nomination_tanks()
+    {
+        $query = "SELECT TK.TANK_CODE, 
+            TK.TANK_DENSITY, 
+            TK.TANK_TEMP, 
+            TK.TANK_NAME, 
+            TL.TERM_CODE,  
+            TL.TERM_NAME,
+            DP.PROD_CMPY, 
+            DP.PROD_CODE, 
+            DP.PROD_NAME, 
+            BP.BASE_CODE, 
+            BP.BASE_NAME, 
+            PR.RATIO_VALUE, 
+            PR.RAT_PROD_PRODCODE,
+            BS.BCLASS_DESC,
+            BS.BCLASS_NO,
+            BS.BCLASS_DENS_LO,
+            BS.BCLASS_DENS_HI,
+            BS.BCLASS_TEMP_LO,
+            BS.BCLASS_TEMP_HI,
+            BS.BCLASS_VCF_ALG					
+        FROM PRODUCTS DP, RPTOBJ_PROD_RATIOS_VW PR, BASE_PRODS BP, TANKS TK, TERMINAL TL, BASECLASS BS 
+        WHERE DP.PROD_CMPY  = PR.RAT_PROD_PRODCMPY 
+        AND DP.PROD_CODE  = PR.RAT_PROD_PRODCODE 
+        AND PR.RATIO_BASE = BP.BASE_CODE 
+        AND BP.BASE_CODE  = TK.TANK_BASE 
+        AND TL.TERM_CODE  = TK.TANK_TERMINAL
+        AND PR.RAT_COUNT  = 1 
+        AND DP.PROD_CMPY  != 'BaSePrOd'
+        AND BP.BASE_CAT = BS.BCLASS_NO
+        ORDER BY TL.TERM_CODE, DP.PROD_CMPY, TK.TANK_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function nomination_products()
+    {
+        $query = "
+            SELECT *
+            FROM PRODUCTS
+            WHERE 1=1
+            ORDER BY PROD_CODE";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);

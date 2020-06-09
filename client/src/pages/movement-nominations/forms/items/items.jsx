@@ -355,7 +355,6 @@ const Items = ({ setTableAPIContext, value }) => {
       <Button
         type="primary"
         icon={<LockOutlined />}
-        onClick={onToggle}
         style={{ float: 'right', marginRight: 5 }}
         disabled={canModifyFurther || disabled}
         onClick={onToggle}
@@ -401,7 +400,7 @@ const Items = ({ setTableAPIContext, value }) => {
 
       <Form.Item name="items">
         <DataTable
-          columns={columns(value, selected)}
+          columns={fields}
           data={data}
           handleSelect={(value) => setSelected(value)}
           apiContext={setTableAPI}
