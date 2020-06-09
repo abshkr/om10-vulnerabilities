@@ -164,7 +164,7 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.HOST_MESSAGING_INTERFACE}>
-            <Badge status="error" /> {t('pageNames.hostMessagingInterface')}
+            <Badge status="warning" /> {t('pageNames.hostMessagingInterface')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.PERSONNEL_ON_SITE}>
@@ -356,10 +356,10 @@ const Navigation = () => {
             </>
           }
         >
-          <Menu.Item key={ROUTES.TANK_VIEW} disabled>
+          {/* <Menu.Item key={ROUTES.TANK_VIEW} disabled>
             <Badge status="warning" />
             {t('pageNames.tankView')}
-          </Menu.Item>
+          </Menu.Item> */}
 
           <Menu.Item key={ROUTES.BAY_VIEW}>
             <Badge status="success" />

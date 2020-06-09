@@ -8,7 +8,7 @@ import { DataTable } from '../../../../components';
 import columns from './columns';
 import { MANUAL_TRANSACTIONS } from '../../../../api';
 
-const ProductQuantities = ({ form, type, selected, transfers }) => {
+const ProductQuantities = ({ form, type, selected }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -21,6 +21,8 @@ const ProductQuantities = ({ form, type, selected, transfers }) => {
       const products = [];
 
       setLoading(true);
+
+      const transfers = form.getFieldValue('transfers') || [];
 
       for (let index = 0; index < transfers.length; index++) {
         const transfer = transfers[index];
@@ -37,6 +39,7 @@ const ProductQuantities = ({ form, type, selected, transfers }) => {
             .then((res) => {
               if (res.data?.records?.length > 0) {
                 _.forEach(res?.data?.records, (product) => {
+                  console.log(product);
                   products.push({
                     product: `${product?.stream_basecode} - ${product.stream_basename}`,
                     tank_code: product?.stream_tankcode,
@@ -59,7 +62,7 @@ const ProductQuantities = ({ form, type, selected, transfers }) => {
     }
 
     getMeters();
-  }, [selected, transfers]);
+  }, [selected]);
 
   useEffect(() => {
     if (data) {
