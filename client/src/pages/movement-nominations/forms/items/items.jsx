@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { PlusOutlined, MinusOutlined, EyeOutlined, CarryOutOutlined, LockOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Drawer } from 'antd';
+import { Button, Form, Drawer, Modal, notification } from 'antd';
 import useSWR from 'swr';
+import { mutate } from 'swr';
+import axios from 'axios';
 
 import Schedules from './schedules';
 import TransactionList from './transaction-list';
@@ -246,6 +248,42 @@ const Items = ({ setTableAPIContext, value }) => {
     setSelected([payload]);
   };
 
+  const onToggle = () => {
+    Modal.confirm({
+      title: t('prompts.update'),
+      okText: t('operations.update'),
+      okType: 'danger',
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        const itemValue = {
+          mvitm_move_id: value?.mv_id,
+          mvitm_line_id: selected?.[0]?.mvitm_line_id,
+          mvitm_completed: !(selected?.[0]?.mvitm_completed)
+        };
+    
+        await axios
+          .post(MOVEMENT_NOMIATIONS.TOGGLE_ITEM, itemValue)
+          .then(
+            axios.spread((response) => {
+              mutate(url);
+              
+              notification.success({
+                message: t('messages.updateSuccess'),
+                description: `${t('messages.updateSuccess')}`,
+              });
+            })
+          )
+          .catch((error) => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.updateFailed'),
+            });
+          });
+      },
+    });
+  };
+
   const onViewSchedule = () => {};
 
   useEffect(() => {
@@ -318,8 +356,9 @@ const Items = ({ setTableAPIContext, value }) => {
         icon={<LockOutlined />}
         style={{ float: 'right', marginRight: 5 }}
         disabled={canModifyFurther || disabled}
+        onClick={onToggle}
       >
-        {t('operations.lockItem')}
+        {selected?.[0]?.mvitm_completed? t('operations.unlockItem') : t('operations.lockItem')}
       </Button>
 
       {transactionVisible &&(

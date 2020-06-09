@@ -134,6 +134,17 @@ const useColumns = (value, selected) => {
       suppressSizeToFit: true,
       pinned: 'left',
     },
+    {
+      headerName: t('fields.itemLock'),
+      field: 'mvitm_completed',
+      filter: 'MultiFilter',
+      sortable: true,
+      resizable: true,
+      width: 90,
+      suppressSizeToFit: true,
+      pinned: 'left',
+      cellRenderer: 'LockRenderer',
+    },
 
     {
       headerName: t('fields.nominationType'),

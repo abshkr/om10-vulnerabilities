@@ -25,3 +25,4 @@ export const REVERSE = '/api/pages/movement/reverse.php';
 export const CREATE = '/api/pages/movement/create.php';
 export const UPDATE = '/api/pages/movement/update.php';
 export const DELETE = '/api/pages/movement/delete.php';
+export const TOGGLE_ITEM = '/api/pages/movement/lock_item.php';
