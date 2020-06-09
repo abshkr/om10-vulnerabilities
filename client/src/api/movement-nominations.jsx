@@ -18,6 +18,8 @@ export const REPORT = '/api/pages/movement/view_loadreport.php';
 export const UNITS = '/api/pages/movement/unit_types.php';
 export const TOGGLE_LOCK = '/api/pages/movement/lock_item.php';
 export const TANKS_BY_DRAWPROD = '/api/pages/movement/tanks_by_drawprod.php';
+export const NOM_TANKS = '/api/pages/movement/nomination_tanks.php';
+export const NOM_PRODUCTS = '/api/pages/movement/nomination_products.php';
 
 export const PRINT_BOL = '/api/pages/movement/print_bol.php';
 export const PRINT_REPORT = '/api/pages/movement/print_loadreport.php';

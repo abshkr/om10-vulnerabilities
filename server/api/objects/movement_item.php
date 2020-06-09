@@ -17,11 +17,31 @@ class MovementItem extends CommonClass
         "MSITM_SPECQTY",
         "MSITM_PRLDQTY",
         "MSITM_PRSTQTY",
-        "MSITM_DELVQTY"
+        "MSITM_DELVQTY",
+        "MVITM_MOVE_ID",
+        "MVITM_LINE_ID",
+        "MVITM_ITEM_ID",
+        "MVITM_PERIOD_ID",
+        "MVITM_ITEM_KEY",
+        "MVITM_TYPE",
+        "MVITM_PROD_UNIT",
+        "MVITM_RAT_UPTOL",
+        "MVITM_QTY_UPTOL",
+        "MVITM_UNIT_UPTOL",
+        "MVITM_RAT_DNTOL",
+        "MVITM_QTY_DNTOL",
+        "MVITM_UNIT_DNTOL",
+        "MVITM_UNIT_SCHD",
+        "MVITM_UNIT_MOVE",
+        "MVITM_UNIT_DELV",
+        "MVITM_STATUS",
+        "MVITM_PACK_SIZE",
+        "MVITM_PRICE_TYPE",
+        "MVITM_PRICE"
     );
 
     public $BOOLEAN_FIELDS = array(
-        
+        //"MVITM_COMPLETED"
     );
 
     
