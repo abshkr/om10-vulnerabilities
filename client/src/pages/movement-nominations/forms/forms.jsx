@@ -68,7 +68,7 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
       const values = Object.values(item);
 
       _.forEach(values, (value, index) => {
-        if (value === 'Please Select') {
+        if (value === t('placeholder.selectPlease')) {
           errors.push({
             field: _.find(fields, ['field', keys[index]])?.headerName,
             message: `Please Fill This Field on Line Item ${values[0]}`,

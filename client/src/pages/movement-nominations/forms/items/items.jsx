@@ -183,9 +183,9 @@ const Items = ({ setTableAPIContext, value }) => {
       mvitm_shiploc_from: '',
       mvitm_shiptext_from: '',
       mvitm_shiptext_from2: '',
-      mvitm_plant_to: t('selectPlease'),
-      mvitm_prodcmpy_to: t('selectPlease'),
-      mvitm_prodcode_to: t('selectPlease'),
+      mvitm_plant_to: t('placeholder.selectPlease'),
+      mvitm_prodcmpy_to: t('placeholder.selectPlease'),
+      mvitm_prodcode_to: t('placeholder.selectPlease'),
       mvitm_tank_to: '',
       mvitm_shiploc_to: '',
       mvitm_shiptext_to: '',
@@ -218,11 +218,11 @@ const Items = ({ setTableAPIContext, value }) => {
     let payload = value.data;
 
     if (value.colDef.field === 'mvitm_prodcmpy_from') {
-      payload.mvitm_prodcode_from = t('selectPlease');
+      payload.mvitm_prodcode_from = t('placeholder.selectPlease');
     }
 
     if (value.colDef.field === 'mvitm_prodcmpy_to') {
-      payload.mvitm_prodcode_to = t('selectPlease');
+      payload.mvitm_prodcode_to = t('placeholder.selectPlease');
     }
 
     if (value.colDef.field === 'mvitm_type') {
@@ -231,37 +231,35 @@ const Items = ({ setTableAPIContext, value }) => {
         payload.mvitm_prodcmpy_from = '';
         payload.mvitm_prodcode_from = '';
         payload.mvitm_tank_from = '';
-        payload.mvitm_tank_to = '';
 
-        payload.mvitm_plant_to = t('selectPlease');
-        payload.mvitm_prodcmpy_to = t('selectPlease');
-        payload.mvitm_prodcode_to = t('selectPlease');
+        payload.mvitm_plant_to = t('placeholder.selectPlease');
+        payload.mvitm_prodcmpy_to = t('placeholder.selectPlease');
+        payload.mvitm_prodcode_to = t('placeholder.selectPlease');
+        payload.mvitm_tank_to = '';//t('placeholder.selectPlease');
       }
 
       if (value.value === 1) {
-        payload.mvitm_plant_from = t('selectPlease');
-        payload.mvitm_prodcmpy_from = t('selectPlease');
-        payload.mvitm_prodcode_from = t('selectPlease');
+        payload.mvitm_plant_from = t('placeholder.selectPlease');
+        payload.mvitm_prodcmpy_from = t('placeholder.selectPlease');
+        payload.mvitm_prodcode_from = t('placeholder.selectPlease');
+        payload.mvitm_tank_from = '';//t('placeholder.selectPlease');
 
         payload.mvitm_tank_to = '';
-        payload.mvitm_tank_from = '';
         payload.mvitm_prodcode_to = '';
         payload.mvitm_plant_to = '';
         payload.mvitm_prodcmpy_to = '';
-        payload.mvitm_prodcode_to = '';
       }
 
       if (value.value === 2) {
-        payload.mvitm_plant_from = t('selectPlease');
-        payload.mvitm_prodcmpy_from = t('selectPlease');
-        payload.mvitm_prodcode_from = t('selectPlease');
-        payload.mvitm_tank_from = t('selectPlease');
+        payload.mvitm_plant_from = t('placeholder.selectPlease');
+        payload.mvitm_prodcmpy_from = t('placeholder.selectPlease');
+        payload.mvitm_prodcode_from = t('placeholder.selectPlease');
+        payload.mvitm_tank_from = '';//t('placeholder.selectPlease');
 
-        payload.mvitm_tank_to = t('selectPlease');
-        payload.mvitm_tank_from = t('selectPlease');
-        payload.mvitm_plant_to = t('selectPlease');
-        payload.mvitm_prodcmpy_to = t('selectPlease');
-        payload.mvitm_prodcode_to = t('selectPlease');
+        payload.mvitm_plant_to = t('placeholder.selectPlease');
+        payload.mvitm_prodcmpy_to = t('placeholder.selectPlease');
+        payload.mvitm_prodcode_to = t('placeholder.selectPlease');
+        payload.mvitm_tank_to = '';//t('placeholder.selectPlease');
       }
     }
 
@@ -309,9 +307,12 @@ const Items = ({ setTableAPIContext, value }) => {
   const onViewSchedule = () => {};
 
   useEffect(() => {
-    setData(payload?.records);
+    if (payload?.records) {
+       setData(payload?.records);
+     }
+            
     setSize(payload?.records?.length || 0);
-  }, [payload]);
+  }, [payload]);  
 
   useEffect(() => {
     if (tableAPI) {
