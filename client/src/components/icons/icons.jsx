@@ -29,6 +29,9 @@ import { ReactComponent as Office } from './office.svg';
 import { ReactComponent as Modules } from './modules.svg';
 import { ReactComponent as Config } from './settings.svg';
 
+import { ReactComponent as Lock } from './lock.svg';
+import { ReactComponent as Unlock } from './unlock.svg';
+
 const enumerator = {
   gantry: Gantry,
   dashboard: Dashboard,
@@ -55,6 +58,8 @@ const enumerator = {
   companies: Office,
   modules: Modules,
   config: Config,
+  lock: Lock,
+  unlock: Unlock,
 };
 
 const Icons = (props) => (
