@@ -137,7 +137,7 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
   },
   {
     headerName: t('fields.observedQuantity'),
-    field: 'cor_vol',
+    field: 'amb_vol',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -150,7 +150,7 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
   },
   {
     headerName: t('fields.standardQuantity'),
-    field: 'amb_vol',
+    field: 'cor_vol',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,

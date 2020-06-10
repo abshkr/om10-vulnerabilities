@@ -18,13 +18,11 @@ const ProductQuantities = ({ form, type, selected }) => {
 
   useEffect(() => {
     async function getMeters() {
-      const products = [];
-
+      const pre = [];
+      const transfers = form.getFieldValue('transfers');
       setLoading(true);
 
-      const transfers = form.getFieldValue('transfers') || [];
-
-      for (let index = 0; index < transfers.length; index++) {
+      for (let index = 0; index < transfers?.length; index++) {
         const transfer = transfers[index];
 
         if (!transfer?.arm_code.includes(' ')) {
@@ -39,16 +37,25 @@ const ProductQuantities = ({ form, type, selected }) => {
             .then((res) => {
               if (res.data?.records?.length > 0) {
                 _.forEach(res?.data?.records, (product) => {
-                  console.log(product);
-                  products.push({
+                  pre.push({
                     product: `${product?.stream_basecode} - ${product.stream_basename}`,
                     tank_code: product?.stream_tankcode,
                     stream_bclass_nmae: product.stream_bclass_nmae,
                     dens: product?.stream_tankden,
                     temperature: null,
-                    amb_vol: null,
-                    cor_vol: null,
-                    liq_kg: null,
+                    amb_vol: _.sumBy(transfers, (o) => {
+                      if (o?.prod_code === product?.rat_prod_prodcode) {
+                        return o?.amb_vol;
+                      } else {
+                        return 0;
+                      }
+                    }),
+                    cor_vol: _.sumBy(res?.data?.records, (o) => {
+                      return o.cor_vol;
+                    }),
+                    liq_kg: _.sumBy(res?.data?.records, (o) => {
+                      return o.liq_kg;
+                    }),
                     is_updated: false,
                   });
                 });
@@ -58,7 +65,7 @@ const ProductQuantities = ({ form, type, selected }) => {
       }
 
       setLoading(false);
-      setData(products);
+      setData(pre);
     }
 
     getMeters();
