@@ -100,7 +100,13 @@ class EquipmentType extends CommonClass
                         NULL,
                         DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
                         DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
-                    ) ETYP_CATEGORY
+                    ) ETYP_CATEGORY,
+                NVL(EQUIP_TYPES_VW.ETYP_CATEGORY,
+                    DECODE(FIRST_SUB_ITEM.ECNCT_ETYP,
+                        NULL,
+                        DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
+                        DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
+                    ) IMAGE
             FROM EQUIP_VW, EQUIP_TYPES_VW,
                 (SELECT NVL(ETYP_SCHEDUL, 'N') ETYP_SCHEDUL, NVL(ETYP_ISRIGID, 'N') ETYP_ISRIGID, ECNCT_ETYP
                 FROM EQUIP_TYPES_VW, EQP_CONNECT
@@ -168,6 +174,13 @@ class EquipmentType extends CommonClass
 
         Utilities::retrieve($result, $this, $stmt, $method = __FUNCTION__);
         $hook_item['compartments'] = $result;
+
+        $eqpt_types = new EquipmentType($this->conn);
+        $stmt = $eqpt_types->equipments($hook_item['etyp_id']);
+        $result = array();
+        Utilities::retrieve($result, $eqpt_types, $stmt, $method = 'equipments');
+        // write_log(json_encode($result), __FILE__, __LINE__);
+        $hook_item['eqpt_list'] = $result;
     }
 
     public function compartments($etyp_id = null)
