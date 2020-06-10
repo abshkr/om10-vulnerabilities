@@ -13,7 +13,7 @@ const Flags = ({ form, value, onCanEmailChange, onEnabledChange, enabled, canEma
         report_active: value.report_active,
         report_enabled: value.report_enabled,
         report_canemail: value.report_canemail,
-        report_canprint: value.report_canprint
+        report_canprint: value.report_canprint,
       });
 
       onEnabledChange(value.report_enabled);
@@ -26,7 +26,7 @@ const Flags = ({ form, value, onCanEmailChange, onEnabledChange, enabled, canEma
       setFieldsValue({
         report_active: false,
         report_canemail: false,
-        report_canprint: false
+        report_canprint: false,
       });
     }
   }, [enabled, setFieldsValue]);
@@ -34,7 +34,7 @@ const Flags = ({ form, value, onCanEmailChange, onEnabledChange, enabled, canEma
   return (
     <div>
       <Form.Item name="report_enabled" valuePropName="checked">
-        <Checkbox onChange={query => onEnabledChange(query.target.checked)}>
+        <Checkbox onChange={(query) => onEnabledChange(query.target.checked)}>
           {t('fields.enableReportForCompany')}
         </Checkbox>
       </Form.Item>
@@ -48,7 +48,7 @@ const Flags = ({ form, value, onCanEmailChange, onEnabledChange, enabled, canEma
       </Form.Item>
 
       <Form.Item name="report_canemail" valuePropName="checked">
-        <Checkbox onChange={query => onCanEmailChange(query.target.checked)} disabled={!enabled && !canEmail}>
+        <Checkbox onChange={(query) => onCanEmailChange(query.target.checked)} disabled={!enabled}>
           {t('fields.companyCanReceiveReportByEmail')}
         </Checkbox>
       </Form.Item>

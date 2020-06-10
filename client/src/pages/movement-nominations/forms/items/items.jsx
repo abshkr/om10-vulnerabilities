@@ -59,7 +59,7 @@ const Items = ({ setTableAPIContext, value }) => {
     8	PARTIALLY DELIVERED
     */
     switch (state) {
-      case 0://'NEW':
+      case 0: //'NEW':
         return {
           makeSchedule: true,
           viewSchedule: false,
@@ -68,7 +68,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: false,
         };
 
-      case 1://'PARTIALLY SCHEDULED':
+      case 1: //'PARTIALLY SCHEDULED':
         return {
           makeSchedule: true,
           viewSchedule: true,
@@ -77,7 +77,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: true,
         };
 
-      case 2://'FULLY SCHEDULED':
+      case 2: //'FULLY SCHEDULED':
         return {
           makeSchedule: false,
           viewSchedule: true,
@@ -86,7 +86,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: true,
         };
 
-      case 3://'FULLY MOVED':
+      case 3: //'FULLY MOVED':
         return {
           makeSchedule: false,
           viewSchedule: true,
@@ -95,7 +95,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: true,
         };
 
-      case 4://'OUTSTANDING':
+      case 4: //'OUTSTANDING':
         return {
           makeSchedule: true,
           viewSchedule: true,
@@ -104,7 +104,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: true,
         };
 
-      case 5://'FULLY DELIVERED':
+      case 5: //'FULLY DELIVERED':
         return {
           makeSchedule: false,
           viewSchedule: true,
@@ -113,7 +113,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: true,
         };
 
-      case 6://'EXPIRED':
+      case 6: //'EXPIRED':
         return {
           makeSchedule: false,
           viewSchedule: true,
@@ -122,7 +122,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: true,
         };
 
-      case 7://'PARTIALLY MOVED':
+      case 7: //'PARTIALLY MOVED':
         return {
           makeSchedule: true,
           viewSchedule: true,
@@ -131,7 +131,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: true,
         };
 
-      case 8://'PARTIALLY DELIVERED':
+      case 8: //'PARTIALLY DELIVERED':
         return {
           makeSchedule: true,
           viewSchedule: true,
@@ -207,9 +207,9 @@ const Items = ({ setTableAPIContext, value }) => {
   };
 
   const handleItemSelect = (value) => {
-    console.log("handleItemSelect", value);
+    console.log('handleItemSelect', value);
     if (value && value[0]) {
-      value[0].editable = value?.[0]?.mvitm_status===0 && !value?.[0]?.mvitm_completed;
+      value[0].editable = value?.[0]?.mvitm_status === 0 && !value?.[0]?.mvitm_completed;
     }
     setSelected(value);
   };
