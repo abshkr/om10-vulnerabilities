@@ -16,25 +16,41 @@ var omEvents = null;
 const bcrypt = require('bcrypt');
 const withAuth = require('./auth.js');
 let dbconn = null;
-let originIP = process.env.MSGBROKER_ORIGIN_IP || '127.0.0.1';
-let originPort = process.env.MSGBROKER_ORIGIN_PORT || 8000;
-let proto = process.env.MSGBROKER_PROTO || 'https';
-let originURL = proto + '://' + originIP + ':' + originPort;
-console.log('originURL:'+originURL);
+let originProto = process.env.HMI_ORIGIN_PROTO || 'https';
+let originIP = process.env.HMI_ORIGIN_IP || '127.0.0.1';
+let originPort = process.env.HMI_ORIGIN_PORT || 8000;
+let proto = process.env.HMI_PROTO || 'https';
+let portnum = process.env.HMI_PORT || 8443;
+let originURL = originProto + '://' + originIP + ':' + originPort;
+console.log('originURL: '+originURL);
 let db_conn_ok = false;
 
+// Set up a whitelist and check against it:
 var cors = require('cors');
+/*
+var whitelist = ['https://10.1.10.66:22443']
+var corsOptions = {
+	origin: function (origin, callback) {
+		if (whitelist.indexOf(origin) !== -1) {
+			callback(null, true)
+		} else {
+			callback(new Error('Not allowed by CORS'))
+		}
+	},
+	credentials: true
+}
+*/
 var corsOptions = {
 	origin: originURL,
 	credentials: true
 };
+app.use(cors(corsOptions));
+app.enable('trust proxy');
+
 
 // First arg is node, second arg is this script, so slice them away.
 var args = process.argv.slice(2);
 
-app.enable('trust proxy');
-//app.enable(cors(corsOptions));
-app.use(cors(corsOptions));
 
 // BEWARE: when using post method with text body data, must:
 // 1. on client side, set content type to 'text/plain' in header, AND
@@ -43,16 +59,48 @@ app.use(bodyParser.text({type: 'text/*'}));
 
 app.use(cookieParser());
 
+/*
 app.use(function(req, res, next) {
 	this.req = req;
 	//this.req.body.verify = (proto === 'https');
 	this.req.body.verify = false;
 	next();
 });
+*/
+
+app.use (function (req, res, next) {
+	console.log('here');
+	//if (req.headers['x-forwarded-proto'] === 'https') {
+    //if((req.secure) && (req.get('X-Forwarded-Proto') === 'https')) {
+	if (req.secure) {
+		//request was via https, so do no special handling
+		//console.log('next ...');
+		next();
+	}
+	else
+	{
+		hdr_origin = req.headers['origin'];
+		if (hdr_origin !== '' && hdr_origin == originURL)
+		{
+			// request was via http but came from expected origin
+			// therefore, it is ok
+			next();
+		}
+		else
+		{	
+			// request was via http and is from unexpected origin
+			// therefore, redirect it to https
+			//console.log('req.headers: '+JSON.stringify(req.headers,null,'\t'));
+			//console.log('req.url: '+req.url);
+			console.log('redirecting to ' + originURL);
+			res.redirect(originURL);
+		}
+	}
+});
 
 
-/* Default port number is 8443 */
-let portnum = 8443;
+
+
 
 /* Default exec directory */
 let exedir = './certs';
@@ -242,9 +290,9 @@ function start_https()
 {
 	//console.log('start_https');
 	let https = require('https');
-	let privateKeyFile = path.join(exedir + '/' + 'cert_and_key.pem');
+	let privateKeyFile = path.join(exedir + '/' + 'DKI.key');
 	let privateKey = fs.readFileSync(privateKeyFile);
-	let certFile = path.join(exedir + '/' + 'cert_and_key.pem');
+	let certFile = path.join(exedir + '/' + 'DKI.crt');
 	let certificate = fs.readFileSync(certFile);
 	let sslOptions = {'key' : privateKey, 'cert' : certificate };
 	const tlssrvr = https.createServer(sslOptions, app);
@@ -256,7 +304,7 @@ function start_https()
 	tlssrvr.listen(portnum,
 		function()
 		{
-			console.log('rest api listening on ' + proto + '://' + originIP + ':' + portnum);
+			console.log('rest api listening on ' + proto + '://' + ip.address() + ':' + portnum);
 		}
 	);
 }
@@ -267,7 +315,7 @@ function start_http()
 	var server = app.listen(portnum,
 		function ()
 		{
-			console.log('rest api listening on ' + proto + '://' + originIP + ':' + portnum);
+			console.log('rest api listening on ' + proto + '://' + ip.address() + ':' + portnum);
 		}
 	);
 	server.setTimeout(0);
@@ -279,28 +327,6 @@ function start_http()
 
 
 
-
-
-
-
-/*
-app.use (function (req, res, next) {
-	//if (req.headers['x-forwarded-proto'] === 'https') {
-    //if((req.secure) && (req.get('X-Forwarded-Proto') === 'https')) {
-	if (req.secure) {
-		//request was via https, so do no special handling
-		//console.log('next ...');
-		next();
-	} else {
-		// request was via http, so redirect to https
-		newurl = 'https://' + req.headers.host + req.url;
-		console.log('redirecting to ' + newurl);
-
-		// TODO: Fix address and port
-		res.redirect(newurl);
-	}
-});
-*/
 
 app.on('connection', (client) => {
 	console.log('received connection from:'+ client);
@@ -334,7 +360,7 @@ app.get('/',
 	}
 );
 
-app.post('/register', express.json(),
+app.post('/hmi/register', express.json(),
 	(req, res) => {
 		//const { email, password } = req.body;
 		const email = req.body.email;
@@ -390,7 +416,7 @@ app.post('/register', express.json(),
 	}
 );
 
-app.post('/authenticate', express.json(),
+app.post('/hmi/authenticate', express.json(),
 	(req, res) => {
 		const { email, password } = req.body;
 
@@ -496,7 +522,7 @@ app.post('/authenticate', express.json(),
 );
 
 
-app.post('/logout', express.json(),
+app.post('/hmi/logout', express.json(),
 	(req, res) => {
 		cookie = req.cookies;
 		for (var prop in cookie)
@@ -515,19 +541,19 @@ app.post('/logout', express.json(),
 );
 
 /*
-app.get('/secret', withAuth, function(req, res) {
+app.get('/hmi/secret', withAuth, function(req, res) {
   res.status(200).send('Auth OK');
 });
 */
 
 
-app.post('/verifyToken', withAuth, function(req, res) {
-//app.post('/verifyToken', function(req, res) {
+app.post('/hmi/verifyToken', withAuth, function(req, res) {
+//app.post('/hmi/verifyToken', function(req, res) {
 	res.status(200).send({success: true, message: 'OK'});
 });
 
-app.get('/host_events', withAuth, (req,res) => {
-//app.get('/host_events', (req,res) => {
+app.get('/hmi/host_events', withAuth, (req,res) => {
+//app.get('/hmi/host_events', (req,res) => {
 	console.log('setting up host server-sent-events...');
 
 	res.writeHead(200, {
@@ -568,8 +594,8 @@ app.get('/host_events', withAuth, (req,res) => {
 	});
 });
 
-app.get('/omega_events', withAuth, (req,res) => {
-//app.get('/omega_events', (req,res) => {
+app.get('/hmi/omega_events', withAuth, (req,res) => {
+//app.get('/hmi/omega_events', (req,res) => {
 	console.log('setting up omega server-sent-events...');
 
 	res.writeHead(200, {
@@ -578,6 +604,7 @@ app.get('/omega_events', withAuth, (req,res) => {
 		'Connection': 'keep-alive',
 		'Access-Control-Allow-Origin': originURL,
 		'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Cookie',
+		'Access-Control-Allow-Credentials': true,
 		'timeout': 0
 	});
 
@@ -604,8 +631,8 @@ app.get('/omega_events', withAuth, (req,res) => {
 
 
 
-app.get('/ping', withAuth,
-//app.get('/ping', 
+app.get('/hmi/ping', withAuth,
+//app.get('/hmi/ping', 
 	function (request, res)
 	{
 		var resp = {};
@@ -617,8 +644,8 @@ app.get('/ping', withAuth,
 );
 
 
-app.get('/config', withAuth,
-//app.get('/config',
+app.get('/hmi/config', withAuth,
+//app.get('/hmi/config',
 	function (request, res)
 	{
 		var cfg_file = __dirname + '/' + 'config.json';
@@ -633,8 +660,8 @@ app.get('/config', withAuth,
 
 
 
-app.get('/omega_message', withAuth,
-//app.get('/omega_message',
+app.get('/hmi/omega_message', withAuth,
+//app.get('/hmi/omega_message',
 	function (request, res)
 	{
 		var now = new Date();
@@ -681,8 +708,8 @@ app.get('/omega_message', withAuth,
 	}
 );
 
-app.post('/omega_message/:rec_id', withAuth,
-//app.post('/omega_message/:rec_id',
+app.post('/hmi/omega_message/:rec_id', withAuth,
+//app.post('/hmi/omega_message/:rec_id',
 	function (request, res)
 	{
 		var sql = "SELECT * FROM out_msgs WHERE rec_id=" + "'" + request.params.rec_id + "';";
@@ -708,8 +735,8 @@ app.post('/omega_message/:rec_id', withAuth,
 	}
 );
 
-app.get('/host_message', withAuth,
-//app.get('/host_message',
+app.get('/hmi/host_message', withAuth,
+//app.get('/hmi/host_message',
 	function (request, res)
 	{
 		var now = new Date();
@@ -760,8 +787,8 @@ app.get('/host_message', withAuth,
 );
 
 
-app.post('/host_message/:rec_id', withAuth,
-//app.post('/host_message/:rec_id',
+app.post('/hmi/host_message/:rec_id', withAuth,
+//app.post('/hmi/host_message/:rec_id',
 	function (request, res)
 	{
 		var sql = "SELECT * FROM in_msgs WHERE rec_id=" + "'" + request.params.rec_id + "';";
@@ -790,8 +817,8 @@ app.post('/host_message/:rec_id', withAuth,
 // BEWARE: when using post method with json body data, must:
 // 1. on client side, set json content type in header, AND
 // 2. on server side, specify json body in second arg in the route
-app.post('/resubmit/host_message', withAuth, express.json(),
-//app.post('/resubmit/host_message', express.json(),
+app.post('/hmi/resubmit/host_message', withAuth, express.json(),
+//app.post('/hmi/resubmit/host_message', express.json(),
 	function (request, res)
 	{
 		var sql = "SELECT origin, file_name, archived_file FROM in_msgs WHERE rec_id=" + "'" + request.body.rec_id + "'";
@@ -869,8 +896,8 @@ app.post('/resubmit/host_message', withAuth, express.json(),
 // BEWARE: when using post method with json body data, must:
 // 1. on client side, set json content type in header, AND
 // 2. on server side, specify json body in second arg in the route
-app.post('/resubmit/omega_message', withAuth, express.json(),
-//app.post('/resubmit/omega_message', express.json(),
+app.post('/hmi/resubmit/omega_message', withAuth, express.json(),
+//app.post('/hmi/resubmit/omega_message', express.json(),
 	function (request, res)
 	{
 		var sql = "SELECT origin, destination, archived_file FROM out_msgs WHERE rec_id=" + "'" + request.body.rec_id + "'";
@@ -951,8 +978,8 @@ app.post('/resubmit/omega_message', withAuth, express.json(),
 // BEWARE: when using post method with json body data, must:
 // 1. on client side, set json content type in header, AND
 // 2. on server side, specify json body in second arg in the route
-app.post('/parse/host_message', withAuth, express.json(),
-//app.post('/parse/host_message', express.json(),
+app.post('/hmi/parse/host_message', withAuth, express.json(),
+//app.post('/hmi/parse/host_message', express.json(),
 	function (req, res)
 	{
 		//var sql = "SELECT origin, archived_file FROM in_msgs WHERE rec_id=" + "'" + req.params.rec_id + "';";
@@ -1023,8 +1050,8 @@ app.post('/parse/host_message', withAuth, express.json(),
 // BEWARE: when using post method with body data, must:
 // 1. on client side, set content type in header, AND
 // 2. on server side, specify json body in second arg in the route
-app.post('/parse/omega_message', withAuth, express.json(),
-//app.post('/parse/omega_message', express.json(),
+app.post('/hmi/parse/omega_message', withAuth, express.json(),
+//app.post('/hmi/parse/omega_message', express.json(),
 	function (req, res)
 	{
 		var sql = "SELECT origin, destination, archived_file FROM out_msgs WHERE rec_id=" + "'" + req.body.rec_id + "'";
@@ -1099,8 +1126,8 @@ app.post('/parse/omega_message', withAuth, express.json(),
 // BEWARE: when using post method with body data, must:
 // 1. on client side, set content type in header, AND
 // 2. on server side, specify json body in second arg in the route
-app.post('/edit/host_message', withAuth, express.json(),
-//app.post('/edit/host_message', express.json(),
+app.post('/hmi/edit/host_message', withAuth, express.json(),
+//app.post('/hmi/edit/host_message', express.json(),
 	function (req, res)
 	{
 		//console.log('submit host:req:'+JSON.stringify(req.body,null,'\t'));
@@ -1208,8 +1235,8 @@ app.post('/edit/host_message', withAuth, express.json(),
 // BEWARE: when using post method with body data, must:
 // 1. on client side, set content type in header, AND
 // 2. on server side, specify json body in second arg in the route
-app.post('/edit/omega_message', withAuth, express.json(),
-//app.post('/edit/omega_message', express.json(),
+app.post('/hmi/edit/omega_message', withAuth, express.json(),
+//app.post('/hmi/edit/omega_message', express.json(),
 	function (req, res)
 	{
 		//console.log('submit om:req:'+req.body);
@@ -1318,8 +1345,8 @@ app.post('/edit/omega_message', withAuth, express.json(),
 // BEWARE: when using post method with body data, must:
 // 1. on client side, set content type in header, AND
 // 2. on server side, specify json body in second arg in the route
-app.post('/filter/host_message', withAuth, express.json(),
-//app.post('/filter/host_message', express.json(),
+app.post('/hmi/filter/host_message', withAuth, express.json(),
+//app.post('/hmi/filter/host_message', express.json(),
 	function (req, res)
 	{
 		//console.log('filter host:req:'+JSON.stringify(req.body,null,'\t'));
@@ -1468,8 +1495,8 @@ app.post('/filter/host_message', withAuth, express.json(),
 // BEWARE: when using post method with body data, must:
 // 1. on client side, set content type in header, AND
 // 2. on server side, specify json body in second arg in the route
-app.post('/filter/omega_message', withAuth, express.json(),
-//app.post('/filter/omega_message', express.json(),
+app.post('/hmi/filter/omega_message', withAuth, express.json(),
+//app.post('/hmi/filter/omega_message', express.json(),
 	function (req, res)
 	{
 		//console.log('filter omega:req:'+JSON.stringify(req.body,null,'\t'));
