@@ -1080,9 +1080,10 @@ https://10.1.10.66/api/pages/allocs/update.php
 }
 https://10.1.10.66/api/pages/allocs/reset.php 
 {
- "alloc_type": 3,
- "alloc_cmpycode": "10372010",
- "alloc_suppcode" : "34402"
+ "aitem_type": 3,
+ "aitem_cmpycode": "10372010",
+ "aitem_prodcode": "",
+ "aitem_suppcode" : "34402"
 }
 https://10.1.10.66/api/pages/allocs/alloc_period_read.php 
 {

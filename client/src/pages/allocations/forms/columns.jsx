@@ -5,7 +5,8 @@ const columns = (t, isCreating, form, units) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    width: 180,
+    suppressSizeToFit: true, 
+    width: 150,
   },
   {
     headerName: t('fields.product'),
@@ -13,7 +14,8 @@ const columns = (t, isCreating, form, units) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    width: 130,
+    suppressSizeToFit: true, 
+    width: 170,
   },
   {
     headerName: t('fields.quantityAllocated'),
@@ -22,6 +24,8 @@ const columns = (t, isCreating, form, units) => [
     sortable: true,
     resizable: true,
     editable: true,
+    suppressSizeToFit: true, 
+    width: 160,
   },
   {
     headerName: t('fields.quantityDelivered'),
@@ -29,6 +33,8 @@ const columns = (t, isCreating, form, units) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 120,
   },
   {
     headerName: t('fields.quantityRemained'),
@@ -36,6 +42,8 @@ const columns = (t, isCreating, form, units) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 120,
   },
   {
     headerName: t('fields.productUnit'),
