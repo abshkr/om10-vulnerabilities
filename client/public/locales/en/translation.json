@@ -1028,7 +1028,11 @@
     "transportModeDescription": "Transport Mode Description",
     "mtTypeSchedule": "Load From Schedule",
     "mtTypeOrder": "Load From Open Order",
-    "sealRange": "Seal Range"
+    "sealRange": "Seal Range",
+    "mtMngrOO": "Mgr Cmpy OO No.",
+    "mtSoldTo": "Sold To",
+    "mtShipTo": "Ship To",
+    "mtDelvNum": "Delv No."
   },
 
   "pageMenu": {

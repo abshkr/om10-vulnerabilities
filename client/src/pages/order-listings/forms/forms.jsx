@@ -113,7 +113,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   };
 
   const getOrderItems = useCallback(() => {
-    const url = IS_CREATING
+    const url = (pageState === 'create')
       ? `${ORDER_LISTINGS.ORDER_ITEMS}?order_drwr_code=${supplier}&page_state=${pageState}`
       : `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${orderNo}`;
     //: `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${value?.order_sys_no}`;
@@ -131,11 +131,12 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
 
   const onFinish = async () => {
     const values = await validateFields();
-    const orderItems = [];
+    const newItems = [];
+    console.log("order items", values);
 
     _.forEach(values?.order_items, (order_item) => {
       if (order_item.oitem_prod_qty > 0) {
-        orderItems.push({
+        newItems.push({
           oitem_prod_cmpy: order_item.oitem_prod_cmpy,
           oitem_prod_code: order_item.oitem_prod_code,
           oitem_prod_qty: _.toNumber(order_item.oitem_prod_qty),
@@ -148,7 +149,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
       }
     });
 
-    values.order_items = orderItems;
+    values.order_items = newItems;
     if (value?.order_sys_no === undefined) {
       values.order_sys_no = -1;
     } else {
@@ -519,9 +520,10 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
                 height="60vh"
                 minimal
                 columns={columns(t, pageState, form, units)}
-                //onClick={(value) => setSelected(value)}
+                onClick={(value) => setSelected(value)}
                 handleSelect={(value) => setSelected(value[0])}
                 //apiContext={setTableAPI}
+                selectionMode="single"
               />
             </Form.Item>
           </TabPane>

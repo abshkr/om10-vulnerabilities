@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Form, Select, Input, Button, Row, Col, DatePicker } from 'antd';
+import { Form, Select, Input, Button, Row, Col, DatePicker, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import axios from 'axios';
@@ -121,10 +121,12 @@ const Forms = ({
 
   const onViewTripSeals = () => {
     // pop up the dialog to manage seals for the schedule
+    alert("TODO: manage seals for the schedule");
   };
 
   const onViewOrderSeals = () => {
     // pop up the dialog to manage seals for the open order
+    alert("TODO: manage seals for the open order");
   };
 
   useEffect(() => {
@@ -151,6 +153,7 @@ const Forms = ({
         <Col span={8}>
           <Form.Item name="tanker" label={t('fields.tanker')} rules={[{ required: true }]}>
             <Select
+              allowClear
               showSearch
               optionFilterProp="children"
               placeholder={t('placeholder.selectTanker')}
@@ -160,7 +163,7 @@ const Forms = ({
             >
               {tankers?.records?.map((item, index) => (
                 <Select.Option key={index} value={item.tnkr_code}>
-                  {item.tnkr_name}
+                  {item.tnkr_code + (!item.tnkr_name ? '' : (' - ' + item.tnkr_name))}
                 </Select.Option>
               ))}
             </Select>
@@ -179,6 +182,7 @@ const Forms = ({
           <Form.Item name="supplier" label={t('fields.supplier')} rules={[{ required: true }]}>
             <Select
               loading={suppliersLoading}
+              allowClear
               showSearch
               disabled={!type}
               onChange={handleSupplierSelect}
@@ -200,6 +204,7 @@ const Forms = ({
         <Col span={8}>
           <Form.Item name="carrier" label={t('fields.carrier')} rules={[{ required: true }]}>
             <Select
+              allowClear
               showSearch
               loading={carriersLoading}
               optionFilterProp="children"
@@ -232,6 +237,7 @@ const Forms = ({
             rules={[{ required: type === 'open_order' }]}
           >
             <Select
+              allowClear
               showSearch
               disabled={type !== 'open_order' || !selectedSupplier}
               optionFilterProp="children"
@@ -254,6 +260,7 @@ const Forms = ({
           <Form.Item name="driver" label={t('fields.driver')} rules={[{ required: true }]}>
             <Select
               loading={driversLoading}
+              allowClear
               showSearch
               disabled={!type}
               optionFilterProp="children"
@@ -286,6 +293,7 @@ const Forms = ({
             rules={[{ required: type === 'schedule' }]}
           >
             <Select
+              allowClear
               showSearch
               optionFilterProp="children"
               placeholder={t('placeholder.selectTripNumber')}
@@ -315,9 +323,10 @@ const Forms = ({
         </Col>
 
         <Col span={8}>
-          <Row gutter={2,36}>
-            <Col>&nbsp;</Col>
+          <Row gutter={[8,30]}>
+            <Col span={24}></Col>
           </Row>
+
           {type === 'schedule' &&(
             <Button type="primary"  onClick={onViewTripSeals}>
               {t('operations.viewTripSeals')}
@@ -341,6 +350,7 @@ const Forms = ({
           >
             <Select
               loading={driversLoading}
+              allowClear
               showSearch
               disabled={type !== 'open_order'}
               optionFilterProp="children"
@@ -369,6 +379,46 @@ const Forms = ({
         </Col>
       </Row>
 
+      <Divider style={{ margin: '2px 0' }} />
+
+      <Row gutter={24}>
+        <Col span={6}>
+          <Form.Item
+            name="mt_mngr_oo"
+            label={t('fields.mtMngrOO')}
+            rules={[{ required: false }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item
+            name="mt_cust_code"
+            label={t('fields.mtSoldTo')}
+            rules={[{ required: false }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item
+            name="mt_delv_loc"
+            label={t('fields.mtShipTo')}
+            rules={[{ required: false }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item
+            name="mt_delv_num"
+            label={t('fields.mtDelvNum')}
+            rules={[{ required: false }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+      </Row>
     </>
   );
 };
