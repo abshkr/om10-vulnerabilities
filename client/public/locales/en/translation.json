@@ -203,9 +203,9 @@
     "productCode": "Product Code",
     "product": "Product",
     "quantityAllocated": "Quantity Allocated",
-    "quantityDelivered": "Quantity Delivered",
-    "quantityRemained": "Quantity Remained",
-    "productUnit": "Product Unit",
+    "quantityDelivered": "Delivered",
+    "quantityRemained": "Remained",
+    "productUnit": "Unit",
     "activePeriod": "Active Period",
     "assignmentNo": "Assignment No.",
     "issuer": "Issuer",
@@ -1025,7 +1025,10 @@
     "prodDensAt15": "Product @15ºC [kg/m³]",
     "prodHotTemp": "Product Hot Temp [ºC]",
     "tppDescription": "TPP Description",
-    "transportModeDescription": "Transport Mode Description"
+    "transportModeDescription": "Transport Mode Description",
+    "mtTypeSchedule": "Load From Schedule",
+    "mtTypeOrder": "Load From Open Order",
+    "sealRange": "Seal Range"
   },
 
   "pageMenu": {
@@ -1242,7 +1245,10 @@
     "addRule": "Add Rule",
     "editRule": "Edit Rule",
     "deleteRule": "Delete Rule",
-    "unlockItem": "Unlock Item"
+    "view": "View",
+    "viewSeals": "View Seals",
+    "viewTripSeals": "View Schedule Seals",
+    "viewOrderSeals": "View Order Seals"
   },
 
   "tabColumns": {
@@ -1483,7 +1489,9 @@
     "dayOfYear": "Day of Year",
     "onceOffDate": "Once off Date",
     "exceptionRules": "Exception Rules (List of events whereby Closeout will not run)",
-    "overrideRules": "Exception Override Rules (List of events whereby Closeout will run regardless of Exception)"
+    "overrideRules": "Exception Override Rules (List of events whereby Closeout will run regardless of Exception)",
+	"selectAllocationItem": "Please select allocation product item to reset",
+	"deliveredBeingZero": "Delivered volume is 0, reset is not required"
   },
 
   "placeholder": {
@@ -1587,7 +1595,8 @@
     "selectGenericName": "Select Generic Name",
     "setPeriod": "Set Period",
     "selectDrawerProduct": "Select Drawer Product",
-    "selectArmCode": "Select Arm Code"
+    "selectArmCode": "Select Arm Code",
+    "selectTransType": "Please Select Transaction Type"
   },
 
   "validate": {
