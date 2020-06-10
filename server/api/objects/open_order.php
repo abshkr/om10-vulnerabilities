@@ -428,9 +428,12 @@ class OpenOrder extends CommonClass
             }
             
             if ($still_exist == false) {
-                $query = "DELETE FROM OPROD_CHILD WHERE OPB_DAD_OPRODKEY = :oi_order_no";
+                $query = "DELETE FROM OPROD_CHILD 
+                    WHERE OPB_DAD_OPRODKEY = :order_prod_key
+                        AND OPB_DAD_OSPROD_PRODCODE = :osprod_prodcode";
                 $stmt = oci_parse($this->conn, $query);
-                oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
+                oci_bind_by_name($stmt, ':order_prod_key', $this->order_sys_no);
+                oci_bind_by_name($stmt, ':osprod_prodcode', $product);
                 if (!oci_execute($stmt, $this->commit_mode)) {
                     $e = oci_error($stmt);
                     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -439,12 +442,10 @@ class OpenOrder extends CommonClass
 
                 $query = "DELETE FROM OPRODMTD 
                     WHERE OSPROD_PRODCODE = :osprod_prodcode
-                        AND OSPROD_PRODCMPY = :osprod_prodcmpy
                         AND ORDER_PROD_KEY = :order_prod_key";
                 $stmt = oci_parse($this->conn, $query);
                 oci_bind_by_name($stmt, ':order_prod_key', $this->order_sys_no);
-                oci_bind_by_name($stmt, ':osprod_prodcmpy', $item->oitem_prod_cmpy);
-                oci_bind_by_name($stmt, ':osprod_prodcode', $item->oitem_prod_code);
+                oci_bind_by_name($stmt, ':osprod_prodcode', $product);
                 if (!oci_execute($stmt, $this->commit_mode)) {
                     $e = oci_error($stmt);
                     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
