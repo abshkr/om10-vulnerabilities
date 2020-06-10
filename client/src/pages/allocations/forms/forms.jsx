@@ -140,9 +140,6 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   };
 
   const onReset = () => {
-    console.log("onReset")
-    console.log(selected);
-
     if (!selected) {
       notification.error({
         message: t('pageNames.allocations'),
