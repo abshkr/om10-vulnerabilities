@@ -36,7 +36,13 @@ const RoleAccessManagement = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleFormState(true, null)} loading={isValidating}>
+      <Button 
+        type="primary" 
+        icon={<PlusOutlined />} 
+        onClick={() => handleFormState(true, null)} 
+        loading={isValidating}
+        disabled={!auth.canCreate}
+      >
         {t('operations.create')}
       </Button>
     </>
