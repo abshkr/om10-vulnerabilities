@@ -9,7 +9,7 @@ import fetcher from './fetcher';
 import hexToRGB from './hex-to-rbg';
 import validatorStatus from './validator-status';
 import generatePaths from './generate-paths';
-
+import hash from './hash';
 import * as VCFManager from './vcf-manager';
 
 export {
@@ -25,4 +25,5 @@ export {
   VCFManager,
   validatorStatus,
   generatePaths,
+  hash,
 };
