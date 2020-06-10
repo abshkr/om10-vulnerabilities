@@ -1027,7 +1027,8 @@
     "tppDescription": "TPP Description",
     "transportModeDescription": "Transport Mode Description",
     "mtTypeSchedule": "Load From Schedule",
-    "mtTypeOrder": "Load From Open Order"
+    "mtTypeOrder": "Load From Open Order",
+    "sealRange": "Seal Range"
   },
 
   "pageMenu": {
@@ -1243,8 +1244,7 @@
     "addToFavourites": "Add To Favourites",
     "addRule": "Add Rule",
     "editRule": "Edit Rule",
-    "deleteRule": "Delete Rule",
-    "unlockItem": "Unlock Item"
+    "deleteRule": "Delete Rule"
   },
 
   "tabColumns": {
