@@ -1025,7 +1025,9 @@
     "prodDensAt15": "Product @15ºC [kg/m³]",
     "prodHotTemp": "Product Hot Temp [ºC]",
     "tppDescription": "TPP Description",
-    "transportModeDescription": "Transport Mode Description"
+    "transportModeDescription": "Transport Mode Description",
+    "mtTypeSchedule": "Load From Schedule",
+    "mtTypeOrder": "Load From Open Order"
   },
 
   "pageMenu": {
@@ -1050,9 +1052,7 @@
     "products": "Products",
     "companies": "Companies",
     "config": "Config",
-    "modules": "Modules",
-    "mtTypeSchedule": "Load From Schedule",
-    "mtTypeOrder": "Load From Open Order"
+    "modules": "Modules"
   },
 
   "pageNames": {

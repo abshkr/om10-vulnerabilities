@@ -133,9 +133,9 @@ const Forms = ({
       <Row gutter={24}>
         <Col span={8}>
           <Form.Item name="type" label={t('fields.transactionType')} rules={[{ required: true }]}>
-            <Select onChange={handleTypeSelect} placeholder="Please Select Transaction Type">
-              <Option value="schedule">Load From Schedule</Option>
-              <Option value="open_order">Load From Open Order</Option>
+            <Select onChange={handleTypeSelect} placeholder={t('placeholder.selectTransType')}>
+              <Option value="schedule">{t('fields.mtTypeSchedule')}</Option>
+              <Option value="open_order">{t('fields.mtTypeOrder')}</Option>
             </Select>
           </Form.Item>
         </Col>
