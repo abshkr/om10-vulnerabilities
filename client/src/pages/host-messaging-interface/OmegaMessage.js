@@ -101,7 +101,7 @@ class OmegaMessageRow extends Component
 
 	resubmit()
 	{
-		var url = process.env.REACT_APP_API_URL + '/resubmit/omega_message';
+		var url = process.env.REACT_APP_API_URL + '/hmi/resubmit/omega_message';
 
 		// BEWARE: when using post method with json body data, must:
 		// 1. on client side, set json content type in header, AND
@@ -225,9 +225,12 @@ class OmegaMessages extends Component
 			sortOrder: 'descending'
 		};
 
+		this.sseSetup = this.sseSetup.bind(this);
+		this.sseCleanup = this.sseCleanup.bind(this);
 		this.sseOpened = this.sseOpened.bind(this);
 		this.sseMessage = this.sseMessage.bind(this);
 		this.sseError = this.sseError.bind(this);
+		this.sseReconnect = this.sseReconnect.bind(this);
 		this.sseAdd = this.sseAdd.bind(this);
 		this.sseModify = this.sseModify.bind(this);
 		this.sendStatusUpdate = this.sendStatusUpdate.bind(this);
@@ -257,32 +260,22 @@ class OmegaMessages extends Component
 		this.startSearchNow = this.startSearchNow.bind(this);
 		this.clearSearchResults = this.clearSearchResults.bind(this);
 
-		//console.log('creating Omega EventSource instance...');
-		this.eventSource = new EventSource(process.env.REACT_APP_API_URL + '/omega_events', {withCredentials: true});
+		this.sseTimer = null;
+		this.sseSetup();
 	}
 
-
+/*
 	componentDidMount()
 	{
-		this.eventSource.addEventListener('open', this.sseOpened);
-		this.eventSource.addEventListener('message', this.sseMessage);
-		this.eventSource.addEventListener('error', this.sseError);
-		this.eventSource.addEventListener('add', this.sseAdd);
-		this.eventSource.addEventListener('modify', this.sseModify);
+		this.sseSetup();
 	}
 
 	componentWillUnmount()
 	{
-		this.eventSource.removeEventListener('open', this.sseOpened);
-		this.eventSource.removeEventListener('message', this.sseMessage);
-		this.eventSource.removeEventListener('error', this.sseError);
-		this.eventSource.removeEventListener('add', this.sseAdd);
-		this.eventSource.removeEventListener('modify', this.sseModify);
-		this.eventSource.close();
+		this.sseCleanup();
 	}
 
 	// This allows state change in parent component to initiate state change in child component
-/*
 	componentWillReceiveProps(nextProps)
 	{
 		if (this.state.startUp !== nextProps.startUp)
@@ -332,6 +325,27 @@ class OmegaMessages extends Component
 		}
 	}
 
+	sseSetup()
+	{
+		//console.log('creating Omega EventSource instance...');
+		this.eventSource = new EventSource(process.env.REACT_APP_API_URL + '/hmi/omega_events', {withCredentials: true});
+		this.eventSource.addEventListener('open', this.sseOpened);
+		this.eventSource.addEventListener('message', this.sseMessage);
+		this.eventSource.addEventListener('error', this.sseError);
+		this.eventSource.addEventListener('add', this.sseAdd);
+		this.eventSource.addEventListener('modify', this.sseModify);
+	}
+
+	sseCleanup()
+	{
+		this.eventSource.removeEventListener('open', this.sseOpened);
+		this.eventSource.removeEventListener('message', this.sseMessage);
+		this.eventSource.removeEventListener('error', this.sseError);
+		this.eventSource.removeEventListener('add', this.sseAdd);
+		this.eventSource.removeEventListener('modify', this.sseModify);
+		this.eventSource.close();
+	}
+
 	sseOpened(e)
 	{
 		//console.log('omega sse opened:' + e);
@@ -347,6 +361,17 @@ class OmegaMessages extends Component
 	{
 		//console.log('received error from omega sse:' + e + ', connection status:' + this.eventSource.readyState);
 		this.sendStatusUpdate(2, 'received error from omega sse');
+
+		// Attempt to reconnect after waiting a configurable time (default is 10 seconds)
+		this.sseCleanup();
+		var wait = process.env.REACT_APP_SSE_RECONNECT || 10;
+		this.sseTimer = setTimeout(this.sseReconnect, wait * 1000);
+	}
+
+	sseReconnect()
+	{
+		clearTimeout(this.sseTimer);
+		this.sseSetup();
 	}
 
 	sseAdd(e)
@@ -481,7 +506,7 @@ class OmegaMessages extends Component
 
 	getData()
 	{
-		var url = process.env.REACT_APP_API_URL + '/omega_message';
+		var url = process.env.REACT_APP_API_URL + '/hmi/omega_message';
 		fetch(url, {
 			method: 'GET',
 			credentials: 'include'
@@ -821,7 +846,7 @@ console.log('duration:'+ (end-start));
 	{
 		//if (ev) { ev.preventDefault(); };
 
-		var url = process.env.REACT_APP_API_URL + '/filter/omega_message';
+		var url = process.env.REACT_APP_API_URL + '/hmi/filter/omega_message';
 		if (ev.target.id === "omDateFilter")
 		{
 			var startDate = document.getElementById('omStartDate');

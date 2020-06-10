@@ -51,7 +51,7 @@ class Login extends Component {
 	{
 		/* NOTE: The entered password is in plain text. Refer to notes in backend's restapi.js for explanations */
 
-		/* var url = process.env.REACT_APP_API_URL + '/authenticate';*/
+		/* var url = process.env.REACT_APP_API_URL + '/hmi/authenticate';*/
 		var url = 'https://10.2.20.53:8000/authenticate';
 		fetch(url, {
 			method: 'POST',
@@ -95,7 +95,7 @@ class Login extends Component {
 	onSignup = (event) => {
 		event.preventDefault();
 
-		var url = process.env.REACT_APP_API_URL + '/register';
+		var url = process.env.REACT_APP_API_URL + '/hmi/register';
 		fetch(url, {
 			method: 'POST',
 			body: JSON.stringify(this.state),
