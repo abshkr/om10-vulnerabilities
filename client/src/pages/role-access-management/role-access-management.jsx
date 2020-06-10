@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import useSWR from 'swr';
 import { Button } from 'antd';
@@ -9,26 +9,25 @@ import { Page, DataTable, Download, FormModal } from '../../components';
 import { ROLE_ACCESS_MANAGEMENT } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
+import { useAuth } from '../../hooks';
 
 import Forms from './forms';
 
 const RoleAccessManagement = () => {
   const { t } = useTranslation();
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
+
+  const auth = useAuth('M_ROLEACCESS');
 
   const { data: payload, isValidating, revalidate } = useSWR(ROLE_ACCESS_MANAGEMENT.READ);
 
   const fields = columns(t);
   const data = payload?.records;
 
-  const handleClick = (value) => {
-    FormModal({
-      value,
-      form: <Forms value={value} />,
-      id: value?.role_code,
-      name: value?.auth_level_name,
-      width: '60vw',
-      t,
-    });
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
   };
 
   const modifiers = (
@@ -37,7 +36,7 @@ const RoleAccessManagement = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
+      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleFormState(true, null)} loading={isValidating}>
         {t('operations.create')}
       </Button>
     </>
@@ -45,7 +44,14 @@ const RoleAccessManagement = () => {
 
   return (
     <Page page={t('pageMenu.accessControl')} name={t('pageNames.roleAccessManagement')} modifiers={modifiers}>
-      <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
+      <DataTable 
+        columns={fields} 
+        data={data} 
+        isLoading={isValidating} 
+        onClick={(payload) => handleFormState(true, payload)}
+        handleSelect={(payload) => handleFormState(true, payload[0])}
+      />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
     </Page>
   );
 };
