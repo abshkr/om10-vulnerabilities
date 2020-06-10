@@ -117,6 +117,10 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       }
     }
 
+    if (input && input.length > 40 && rule.field === 'auth_level_name') {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
     return Promise.resolve();
   };
 
