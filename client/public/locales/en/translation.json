@@ -1244,7 +1244,11 @@
     "addToFavourites": "Add To Favourites",
     "addRule": "Add Rule",
     "editRule": "Edit Rule",
-    "deleteRule": "Delete Rule"
+    "deleteRule": "Delete Rule",
+    "view": "View",
+    "viewSeals": "View Seals",
+    "viewTripSeals": "View Schedule Seals",
+    "viewOrderSeals": "View Order Seals"
   },
 
   "tabColumns": {

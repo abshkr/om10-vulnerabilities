@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Form, Select, Input, Row, Col, DatePicker } from 'antd';
+import { Form, Select, Input, Button, Row, Col, DatePicker } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import axios from 'axios';
@@ -119,6 +119,14 @@ const Forms = ({
     setOrders(orders);
   };
 
+  const onViewTripSeals = () => {
+    // pop up the dialog to manage seals for the schedule
+  };
+
+  const onViewOrderSeals = () => {
+    // pop up the dialog to manage seals for the open order
+  };
+
   useEffect(() => {
     setFieldsValue({
       start_date: moment(),
@@ -164,7 +172,9 @@ const Forms = ({
             <Input />
           </Form.Item>
         </Col>
+      </Row>
 
+      <Row gutter={24}>
         <Col span={8}>
           <Form.Item name="supplier" label={t('fields.supplier')} rules={[{ required: true }]}>
             <Select
@@ -212,7 +222,9 @@ const Forms = ({
             <DatePicker showTime={{ format: 'HH:mm' }} format={format} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
+      </Row>
 
+      <Row gutter={24}>
         <Col span={8}>
           <Form.Item
             name="customer"
@@ -264,7 +276,9 @@ const Forms = ({
             <DatePicker showTime={{ format: 'HH:mm' }} format={format} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
+      </Row>
 
+      <Row gutter={24}>
         <Col span={8}>
           <Form.Item
             name="trip_no"
@@ -292,6 +306,35 @@ const Forms = ({
 
         <Col span={8}>
           <Form.Item
+            name="seal_range"
+            label={t('fields.sealRange')}
+            rules={[{ required: false }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+
+        <Col span={8}>
+          <Row gutter={2,36}>
+            <Col>&nbsp;</Col>
+          </Row>
+          {type === 'schedule' &&(
+            <Button type="primary"  onClick={onViewTripSeals}>
+              {t('operations.viewTripSeals')}
+            </Button>
+          )}
+
+          {type === 'open_order' && (
+            <Button type="primary"  onClick={onViewOrderSeals}>
+              {t('operations.viewOrderSeals')}
+            </Button>
+          )}
+        </Col>
+      </Row>
+
+      <Row gutter={24}>
+        <Col span={8}>
+          <Form.Item
             name="order_no"
             label={t('fields.orderNumber')}
             rules={[{ required: type === 'open_order' }]}
@@ -315,7 +358,7 @@ const Forms = ({
           </Form.Item>
         </Col>
 
-        <Col span={8}>
+        <Col span={16}>
           <Form.Item
             name="load_security"
             label={t('fields.loadSecurityInformation')}
@@ -325,6 +368,7 @@ const Forms = ({
           </Form.Item>
         </Col>
       </Row>
+
     </>
   );
 };
