@@ -47,19 +47,21 @@ import OrderTrips from './order-trips';
 import OrderItemTrips from './item-trips';
 
 import DeliveryDetails from '../../delivery-details';
+import { ItemEffectTime } from '../../movement-nominations/forms/items/nomination-transactions/forms/head-fields';
 
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, pageState, revalidate }) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [mainTabOn, setMainTabOn] = useState(true);
+  const [tableAPI, setTableAPI] = useState(undefined);
 
   const { data: units } = useSWR(ORDER_LISTINGS.UNIT_TYPES);
   const { data: siteData } = useSWR(ORDER_LISTINGS.SITE_CODE);
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const { setFieldsValue, resetFields, validateFields } = form;
+  const { setFieldsValue, resetFields, validateFields, getFieldValue } = form;
 
   const [orderNo, setOrderNo] = useState(value?.order_sys_no);
   const [supplier, setSupplier] = useState(undefined);
@@ -73,12 +75,14 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const [showDeliveryDetails, setShowDeliveryDetails] = useState(false);
 
   //console.log("access in OO", access);
-  console.log('pageState in OO', pageState);
+  //console.log('pageState in OO', pageState);
+
   const IS_CREATING = !value;
   //const CAN_ORDER_PERIOD = !!selected && !!value;
   const CAN_ORDER_PERIOD =
     selected !== null && selected !== undefined && value !== null && value !== undefined;
   const CAN_DELIVERY_DETAIL = value !== null && value !== undefined;
+  const fields = columns(t, pageState, form, units);
 
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
@@ -121,20 +125,49 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
     axios.get(url).then((response) => {
       const payload = response.data?.records || [];
 
-      setFieldsValue({
+      /* setFieldsValue({
         order_items: payload,
-      });
+      }); */
 
       setOrderItems(payload);
     });
   }, [orderNo, supplier, pageState]);
 
+  const onEditingFinished = (value) => {
+    if (pageState === 'create') return;
+
+    /* console.log("onEditingFinished", value);
+    const payload = orderItems;
+    const line = value.data;
+
+    payload.forEach((item) => {
+      if (item.oitem_prod_cmpy === line.oitem_prod_cmpy 
+      && item.oitem_prod_code === line.oitem_prod_code) {
+        console.log("onEditingFinished1", item, line);
+        item.oitem_prod_qty = line.oitem_prod_qty;
+        item.oitem_prod_unit = line.oitem_prod_unit;
+      }
+    });
+    console.log("onEditingFinished2", payload);
+
+    setFieldsValue({
+      order_items: payload,
+    });
+    setOrderItems(payload); */
+  };
+
   const onFinish = async () => {
     const values = await validateFields();
-    const newItems = [];
     console.log("order items", values);
 
-    _.forEach(values?.order_items, (order_item) => {
+    const gridItems = [];
+    tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
+        gridItems.push(rowNode.data);
+    });       
+    console.log("order items2", gridItems);
+
+    const newItems = [];
+    _.forEach(gridItems, (order_item) => {
       if (order_item.oitem_prod_qty > 0) {
         newItems.push({
           oitem_prod_cmpy: order_item.oitem_prod_cmpy,
@@ -310,6 +343,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   }, [value, visible, resetFields, setOrderItems, setSupplier, setDrawer, setSelected]);
 
   useEffect(() => {
+    console.log('getOrderItems by', orderNo, supplier, pageState);
     getOrderItems();
   }, [orderNo, supplier, pageState, getOrderItems]);
 
@@ -318,6 +352,12 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
       setOrderNo(value.order_sys_no);
     }
   }, [value, setOrderNo]);
+
+  useEffect(() => {
+    setFieldsValue({
+      order_items: orderItems,
+    });
+  }, [orderItems, setFieldsValue]);
 
   return (
     <Drawer
@@ -519,12 +559,13 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
                 data={orderItems}
                 height="60vh"
                 minimal
-                columns={columns(t, pageState, form, units)}
-                onClick={(value) => setSelected(value)}
+                columns={fields}
+                //onClick={(value) => setSelected(value)}
                 handleSelect={(value) => setSelected(value[0])}
-                //apiContext={setTableAPI}
-                selectionMode="single"
-              />
+                apiContext={setTableAPI}
+                //selectionMode="single"
+                onEditingFinished={onEditingFinished}
+                />
             </Form.Item>
           </TabPane>
           <TabPane tab={t('tabColumns.orderTrips')} disabled={IS_CREATING} key="2">

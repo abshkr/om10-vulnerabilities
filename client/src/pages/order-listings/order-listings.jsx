@@ -17,7 +17,7 @@ import { useConfig } from '../../hooks';
 import { getDateRangeOffset } from '../../utils';
 
 const OrderListings = ({popup}) => {
-  console.log('popup', popup);
+  //console.log('popup', popup);
   const config = useConfig();
   //console.log('config', config);
   const ranges = getDateRangeOffset( String(config.openOrderDateRange), "365");
@@ -178,7 +178,16 @@ const OrderListings = ({popup}) => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} pageState={pageState} revalidate={revalidate} />
+      {pageState !== 'view' && (
+        <Forms 
+          value={selected} 
+          visible={visible} 
+          handleFormState={handleFormState} 
+          access={access} 
+          pageState={pageState} 
+          revalidate={revalidate} 
+        />
+      )}
     </Page>
   );
 };

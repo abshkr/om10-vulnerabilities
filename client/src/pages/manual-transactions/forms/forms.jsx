@@ -81,6 +81,10 @@ const Forms = ({
     });
   };
 
+  const handleTripSelect = async (trip) => {
+    await getTankerAndCarrierByTrip(trip);
+  };
+
   const handleSupplierSelect = async (supplier) => {
     setFieldsValue({
       trip_no: undefined,
@@ -119,6 +123,22 @@ const Forms = ({
     setOrders(orders);
   };
 
+  const handleTankerSelect = (tanker) => {
+    // get tanker equipment and compartments
+
+  };
+
+  const handleCarrierSelect = async (carrier) => {
+    // get tanker list of the carrier
+    const tankers = await getTankersByCarrier(carrier);
+    setTankers(tankers);
+  };
+
+  const handleDriverSelect = (tanker) => {
+    // get tanker equipment and compartments
+
+  };
+
   const onViewTripSeals = () => {
     // pop up the dialog to manage seals for the schedule
     alert("TODO: manage seals for the schedule");
@@ -155,6 +175,7 @@ const Forms = ({
             <Select
               allowClear
               showSearch
+              onChange={handleTankerSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectTanker')}
               filterOption={(input, option) =>
@@ -207,6 +228,7 @@ const Forms = ({
               allowClear
               showSearch
               loading={carriersLoading}
+              onChange={handleCarrierSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectCarriers')}
               filterOption={(input, option) =>
@@ -263,6 +285,7 @@ const Forms = ({
               allowClear
               showSearch
               disabled={!type}
+              onChange={handleDriverSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectDriver')}
               filterOption={(input, option) =>
@@ -349,7 +372,7 @@ const Forms = ({
             rules={[{ required: type === 'open_order' }]}
           >
             <Select
-              loading={driversLoading}
+              //loading={driversLoading}
               allowClear
               showSearch
               disabled={type !== 'open_order'}
