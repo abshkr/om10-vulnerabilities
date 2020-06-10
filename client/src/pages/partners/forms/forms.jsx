@@ -98,10 +98,12 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
@@ -128,10 +130,12 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.deleteFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },

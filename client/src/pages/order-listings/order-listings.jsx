@@ -19,9 +19,9 @@ import { getDateRangeOffset } from '../../utils';
 const OrderListings = ({popup}) => {
   console.log('popup', popup);
   const config = useConfig();
-  console.log('config', config);
+  //console.log('config', config);
   const ranges = getDateRangeOffset( String(config.openOrderDateRange), "365");
-  console.log("ranges", config.openOrderDateRange, ranges);
+  //console.log("ranges", config.openOrderDateRange, ranges);
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);

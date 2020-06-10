@@ -42,12 +42,24 @@ const Items = ({ setTableAPIContext, value }) => {
   });
 
   const disabled = selected?.length === 0 || !selected;
-  const canModifyFurther = selected[0]?.mvitm_status_name === 'NEW' || disabled;
+  //const canModifyFurther = selected[0]?.mvitm_status_name === 'NEW' || disabled;
+  const canModifyFurther = selected[0]?.mvitm_status === 0 || disabled;
   const fields = columns(value, selected);
 
   const handleButtonState = (state) => {
+    /** 
+    0	NEW
+    1	PARTIALLY SCHEDULED
+    2	FULLY SCHEDULED
+    3	FULLY MOVED
+    4	OUTSTANDING
+    5	FULLY DELIVERED
+    6	EXPIRED
+    7	PARTIALLY MOVED
+    8	PARTIALLY DELIVERED
+    */
     switch (state) {
-      case 'NEW':
+      case 0: //'NEW':
         return {
           makeSchedule: true,
           viewSchedule: false,
@@ -56,7 +68,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: false,
         };
 
-      case 'PARTIALLY SCHEDULED':
+      case 1: //'PARTIALLY SCHEDULED':
         return {
           makeSchedule: true,
           viewSchedule: true,
@@ -65,7 +77,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: true,
         };
 
-      case 'FULLY SCHEDULED':
+      case 2: //'FULLY SCHEDULED':
         return {
           makeSchedule: false,
           viewSchedule: true,
@@ -74,7 +86,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: true,
         };
 
-      case 'FULLY MOVED':
+      case 3: //'FULLY MOVED':
         return {
           makeSchedule: false,
           viewSchedule: true,
@@ -83,7 +95,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: true,
         };
 
-      case 'OUTSTANDING':
+      case 4: //'OUTSTANDING':
         return {
           makeSchedule: true,
           viewSchedule: true,
@@ -92,7 +104,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: true,
         };
 
-      case 'FULLY DELIVERED':
+      case 5: //'FULLY DELIVERED':
         return {
           makeSchedule: false,
           viewSchedule: true,
@@ -101,7 +113,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: true,
         };
 
-      case 'EXPIRED':
+      case 6: //'EXPIRED':
         return {
           makeSchedule: false,
           viewSchedule: true,
@@ -110,7 +122,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: true,
         };
 
-      case 'PARTIALLY MOVED':
+      case 7: //'PARTIALLY MOVED':
         return {
           makeSchedule: true,
           viewSchedule: true,
@@ -119,7 +131,7 @@ const Items = ({ setTableAPIContext, value }) => {
           editLineItem: true,
         };
 
-      case 'PARTIALLY DELIVERED':
+      case 8: //'PARTIALLY DELIVERED':
         return {
           makeSchedule: true,
           viewSchedule: true,
@@ -159,6 +171,7 @@ const Items = ({ setTableAPIContext, value }) => {
       mvitm_type: 0,
       mvitm_type_name: 'Receipt',
       mvitm_item_key: String(size + 1),
+      mvitm_status: 0,
       mvitm_status_name: 'NEW',
       mvitm_prod_qty: '0',
       mvitm_prod_unit: 5,
@@ -170,9 +183,9 @@ const Items = ({ setTableAPIContext, value }) => {
       mvitm_shiploc_from: '',
       mvitm_shiptext_from: '',
       mvitm_shiptext_from2: '',
-      mvitm_plant_to: t('selectPlease'),
-      mvitm_prodcmpy_to: t('selectPlease'),
-      mvitm_prodcode_to: t('selectPlease'),
+      mvitm_plant_to: t('placeholder.selectPlease'),
+      mvitm_prodcmpy_to: t('placeholder.selectPlease'),
+      mvitm_prodcode_to: t('placeholder.selectPlease'),
       mvitm_tank_to: '',
       mvitm_shiploc_to: '',
       mvitm_shiptext_to: '',
@@ -193,15 +206,23 @@ const Items = ({ setTableAPIContext, value }) => {
     tableAPI.updateRowData({ remove: selected });
   };
 
+  const handleItemSelect = (value) => {
+    console.log('handleItemSelect', value);
+    if (value && value[0]) {
+      value[0].editable = value?.[0]?.mvitm_status === 0 && !value?.[0]?.mvitm_completed;
+    }
+    setSelected(value);
+  };
+
   const onEditingFinished = (value) => {
     let payload = value.data;
 
     if (value.colDef.field === 'mvitm_prodcmpy_from') {
-      payload.mvitm_prodcode_from = t('selectPlease');
+      payload.mvitm_prodcode_from = t('placeholder.selectPlease');
     }
 
     if (value.colDef.field === 'mvitm_prodcmpy_to') {
-      payload.mvitm_prodcode_to = t('selectPlease');
+      payload.mvitm_prodcode_to = t('placeholder.selectPlease');
     }
 
     if (value.colDef.field === 'mvitm_type') {
@@ -210,37 +231,35 @@ const Items = ({ setTableAPIContext, value }) => {
         payload.mvitm_prodcmpy_from = '';
         payload.mvitm_prodcode_from = '';
         payload.mvitm_tank_from = '';
-        payload.mvitm_tank_to = '';
 
-        payload.mvitm_plant_to = t('selectPlease');
-        payload.mvitm_prodcmpy_to = t('selectPlease');
-        payload.mvitm_prodcode_to = t('selectPlease');
+        payload.mvitm_plant_to = t('placeholder.selectPlease');
+        payload.mvitm_prodcmpy_to = t('placeholder.selectPlease');
+        payload.mvitm_prodcode_to = t('placeholder.selectPlease');
+        payload.mvitm_tank_to = '';//t('placeholder.selectPlease');
       }
 
       if (value.value === 1) {
-        payload.mvitm_plant_from = t('selectPlease');
-        payload.mvitm_prodcmpy_from = t('selectPlease');
-        payload.mvitm_prodcode_from = t('selectPlease');
+        payload.mvitm_plant_from = t('placeholder.selectPlease');
+        payload.mvitm_prodcmpy_from = t('placeholder.selectPlease');
+        payload.mvitm_prodcode_from = t('placeholder.selectPlease');
+        payload.mvitm_tank_from = '';//t('placeholder.selectPlease');
 
         payload.mvitm_tank_to = '';
-        payload.mvitm_tank_from = '';
         payload.mvitm_prodcode_to = '';
         payload.mvitm_plant_to = '';
         payload.mvitm_prodcmpy_to = '';
-        payload.mvitm_prodcode_to = '';
       }
 
       if (value.value === 2) {
-        payload.mvitm_plant_from = t('selectPlease');
-        payload.mvitm_prodcmpy_from = t('selectPlease');
-        payload.mvitm_prodcode_from = t('selectPlease');
-        payload.mvitm_tank_from = t('selectPlease');
+        payload.mvitm_plant_from = t('placeholder.selectPlease');
+        payload.mvitm_prodcmpy_from = t('placeholder.selectPlease');
+        payload.mvitm_prodcode_from = t('placeholder.selectPlease');
+        payload.mvitm_tank_from = '';//t('placeholder.selectPlease');
 
-        payload.mvitm_tank_to = t('selectPlease');
-        payload.mvitm_tank_from = t('selectPlease');
-        payload.mvitm_plant_to = t('selectPlease');
-        payload.mvitm_prodcmpy_to = t('selectPlease');
-        payload.mvitm_prodcode_to = t('selectPlease');
+        payload.mvitm_plant_to = t('placeholder.selectPlease');
+        payload.mvitm_prodcmpy_to = t('placeholder.selectPlease');
+        payload.mvitm_prodcode_to = t('placeholder.selectPlease');
+        payload.mvitm_tank_to = '';//t('placeholder.selectPlease');
       }
     }
 
@@ -288,9 +307,12 @@ const Items = ({ setTableAPIContext, value }) => {
   const onViewSchedule = () => {};
 
   useEffect(() => {
-    setData(payload?.records);
+    if (payload?.records) {
+       setData(payload?.records);
+     }
+            
     setSize(payload?.records?.length || 0);
-  }, [payload]);
+  }, [payload]);  
 
   useEffect(() => {
     if (tableAPI) {
@@ -300,7 +322,7 @@ const Items = ({ setTableAPIContext, value }) => {
 
   useEffect(() => {
     if (selected[0]) {
-      const buttonStates = handleButtonState(selected[0]?.mvitm_status_name);
+      const buttonStates = handleButtonState(selected[0]?.mvitm_status);
 
       setButtonState(buttonStates);
     }
@@ -355,7 +377,6 @@ const Items = ({ setTableAPIContext, value }) => {
       <Button
         type="primary"
         icon={<LockOutlined />}
-        onClick={onToggle}
         style={{ float: 'right', marginRight: 5 }}
         disabled={canModifyFurther || disabled}
         onClick={onToggle}
@@ -401,9 +422,9 @@ const Items = ({ setTableAPIContext, value }) => {
 
       <Form.Item name="items">
         <DataTable
-          columns={columns(value, selected)}
+          columns={fields}
           data={data}
-          handleSelect={(value) => setSelected(value)}
+          handleSelect={(value) => handleItemSelect(value)}
           apiContext={setTableAPI}
           selectionMode="single"
           onEditingFinished={onEditingFinished}

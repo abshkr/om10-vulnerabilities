@@ -110,6 +110,7 @@ class Allocation extends CommonClass
         }
     }
 
+    //Old php: AllocationService.php::resetAllocationItem
     public function reset()
     {
         $query = "UPDATE ALLOCS
@@ -117,11 +118,13 @@ class Allocation extends CommonClass
         WHERE ALL_ATKY_AT_TYPE = :alloc_type
             AND ALL_ATKY_AT_CMPY = :alloc_cmpycode
             AND ALL_PROD_PRODCMPY = :alloc_suppcode
+            AND ALL_PROD_PRODCODE = :aitem_prodcode
         ";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':alloc_suppcode', $this->alloc_suppcode);
-        oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
-        oci_bind_by_name($stmt, ':alloc_cmpycode', $this->alloc_cmpycode);
+        oci_bind_by_name($stmt, ':alloc_suppcode', $this->aitem_suppcode);
+        oci_bind_by_name($stmt, ':alloc_type', $this->aitem_type);
+        oci_bind_by_name($stmt, ':alloc_cmpycode', $this->aitem_cmpycode);
+        oci_bind_by_name($stmt, ':aitem_prodcode', $this->aitem_prodcode);
 
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);

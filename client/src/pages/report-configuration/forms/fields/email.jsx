@@ -25,7 +25,7 @@ const Email = ({ form, value, enabled, canEmail }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        report_cmpyemail: value.report_cmpyemail
+        report_cmpyemail: value.report_cmpyemail,
       });
     }
   }, [value, setFieldsValue]);

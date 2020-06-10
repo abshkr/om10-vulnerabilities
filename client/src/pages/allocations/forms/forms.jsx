@@ -140,6 +140,22 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   };
 
   const onReset = () => {
+    if (!selected) {
+      notification.error({
+        message: t('pageNames.allocations'),
+        description: t("descriptions.selectAllocationItem"),
+      })
+      return;
+    }
+
+    if (selected.aitem_qtyused === 0) {
+      notification.error({
+        message: t('pageNames.allocations'),
+        description: t("descriptions.deliveredBeingZero"),
+      })
+      return;
+    }
+
     Modal.confirm({
       title: t('prompts.reset'),
       okText: t('operations.yes'),
@@ -149,11 +165,13 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(ALLOCATIONS.RESET, {
-            alloc_type: type,
-            alloc_cmpycode: company,
-            alloc_suppcode: supplier,
-          })
+          // .post(ALLOCATIONS.RESET, {
+          //   aitem_type: type,
+          //   aitem_cmpycode: company,
+          //   aitem_suppcode: supplier,
+          //   // aitem_prodcode: selected.
+          // })
+          .post(ALLOCATIONS.RESET, selected)
           .then(() => {
             getAllocations();
           })
@@ -179,6 +197,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       setLockType(undefined);
       setAllocations([]);
     }
+    setSelected(null);
   }, [resetFields, value, visible]);
 
   useEffect(() => {
@@ -197,7 +216,11 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       visible={visible}
       footer={
         <>
-          <Button type="primary" disabled={IS_CREATING} icon={<RedoOutlined />} onClick={onReset}>
+          <Button type="primary" 
+            disabled={IS_CREATING || !selected} 
+            icon={<RedoOutlined />} 
+            onClick={onReset}
+          >
             {t('operations.reset')}
           </Button>
 

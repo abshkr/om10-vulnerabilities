@@ -53,7 +53,7 @@ const Pickup = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   function sequenceDayChanged(v) {
-    data.weekDay = v;
+    data.day = v;
     if (data.weekDay !== undefined && data.month !== undefined) {
       setFieldsValue({
         repeat_interval: data.sequenceDay + "_" + data.weekDay + "_" + data.month,
@@ -157,39 +157,39 @@ const Pickup = ({ form, value }) => {
             ) : (
               value.window_name == "DATE_YEAR_WINDOW" ? (
                 <div>
-                <Select 
-                  name="month_day" 
-                  disabled={!IS_CREATING}
-                  style={{width:"150px"}} 
-                  value={data.day} 
-                  onChange={dayChanged}
-                  // rules={[{ required: true }]}
-                >
-                  {_.range(1, 32).map((item)=>{
-                    return <Option key={item} value={item}>{item}</Option>
-                  })}
-                </Select>
-                <Select name="month2" 
-                  style={{width:"150px", paddingLeft: "20px"}} 
-                  disabled={!IS_CREATING}
-                  // defaultValue={data.month} 
-                  value={data?.month}
-                  onChange={monthChanged}
-                  // rules={[{ required: true }]}
-                >
-                  <Option key="1" value="1">January</Option>
-                  <Option key="2" value="2">February</Option>
-                  <Option key="3" value="3">March</Option>
-                  <Option key="4" value="4">April</Option>
-                  <Option key="5" value="5">May</Option>
-                  <Option key="6" value="6">June</Option>
-                  <Option key="7" value="7" >July</Option>
-                  <Option key="8" value="8">August</Option>
-                  <Option key="9" value="9">September</Option>
-                  <Option key="10" value="10" >October</Option>
-                  <Option key="11" value="11">November</Option>
-                  <Option key="12" value="12">December</Option>
-                </Select>
+                  <Select 
+                    name="month_day" 
+                    disabled={!IS_CREATING}
+                    style={{width:"150px"}} 
+                    value={data.day} 
+                    onChange={dayChanged}
+                    // rules={[{ required: true }]}
+                  >
+                    {_.range(1, 32).map((item)=>{
+                      return <Option key={item} value={item}>{item}</Option>
+                    })}
+                  </Select>
+                  <Select name="month2" 
+                    style={{width:"150px", paddingLeft: "20px"}} 
+                    disabled={!IS_CREATING}
+                    // defaultValue={data.month} 
+                    value={data?.month}
+                    onChange={monthChanged}
+                    // rules={[{ required: true }]}
+                  >
+                    <Option key="1" value="1">January</Option>
+                    <Option key="2" value="2">February</Option>
+                    <Option key="3" value="3">March</Option>
+                    <Option key="4" value="4">April</Option>
+                    <Option key="5" value="5">May</Option>
+                    <Option key="6" value="6">June</Option>
+                    <Option key="7" value="7" >July</Option>
+                    <Option key="8" value="8">August</Option>
+                    <Option key="9" value="9">September</Option>
+                    <Option key="10" value="10" >October</Option>
+                    <Option key="11" value="11">November</Option>
+                    <Option key="12" value="12">December</Option>
+                  </Select>
                 </div>
               ) : (
                 <div>

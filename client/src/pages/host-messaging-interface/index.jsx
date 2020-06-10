@@ -1,2 +1,2 @@
-import Hmi from "./Hmi";
-export default Hmi;
+import HostMessagingInterface from './host-messaging-interface';
+export default HostMessagingInterface;

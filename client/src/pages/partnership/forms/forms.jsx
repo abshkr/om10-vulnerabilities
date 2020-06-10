@@ -69,40 +69,6 @@ const PartnerForm = ({ value, visible, handleFormState, auth }) => {
     });
   };
 
-  const onDelete = () => {
-    Modal.confirm({
-      title: t('prompts.delete'),
-      okText: t('operations.yes'),
-      okType: 'danger',
-      cancelText: t('operations.no'),
-      centered: true,
-      onOk: async () => {
-        await axios
-          .post(PARTNERSHIP.UPDATE, {
-            partner_cust_acct: value.partner_cust_acct,
-            partner_cmpy_code: value.partner_cmpy_code,
-            partners: [],
-          })
-          .then(
-            axios.spread((response) => {
-              onComplete();
-
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`,
-              });
-            })
-          )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.deleteFailed'),
-            });
-          });
-      },
-    });
-  };
-
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
@@ -141,17 +107,6 @@ const PartnerForm = ({ value, visible, handleFormState, auth }) => {
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
 
-          {!IS_CREATING && (
-            <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={onDelete}
-              disabled={!auth?.canDelete}
-            >
-              {t('operations.delete')}
-            </Button>
-          )}
         </>
       }
     >
