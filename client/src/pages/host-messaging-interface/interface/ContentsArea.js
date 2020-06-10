@@ -242,7 +242,7 @@ class ContentsArea extends Component
 		}
 		else if (this.state.from === 'omega')
 		{
-			//url = "http://10.2.20.53:6443/parse/omega_message/";
+			//url = "http://10.2.20.53:6443/hmi/parse/omega_message/";
 			url = process.env.REACT_APP_API_URL + '/hmi/parse/omega_message';
 		}
 
