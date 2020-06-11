@@ -6,6 +6,7 @@ import { Button, Form, Drawer, Modal, notification } from 'antd';
 
 import useSWR, { mutate } from 'swr';
 import axios from 'axios';
+import moment from 'moment';
 
 import Schedules from './schedules';
 import TransactionList from './transaction-list';
@@ -158,6 +159,8 @@ const Items = ({ setTableAPIContext, value }) => {
     if (!currItem.mvitm_tanker) {
       currItem.mvitm_tanker = 'Generic Nom Vol';
     }
+    currItem.mvitm_dtim_effect = moment();
+    currItem.mvitm_dtim_expiry = moment();
     setTransItem(currItem);
     setMakeTransactionVisible(true);
   };

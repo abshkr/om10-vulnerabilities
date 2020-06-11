@@ -9,8 +9,8 @@ import useSWR from 'swr';
 
 const TransferDetails = ({ form, type, selected }) => {
   const url =
-    selected && selected?.arm_code !== 'Select Arm Code'
-      ? `${MANUAL_TRANSACTIONS.BASE_DETAILS}?prod_cmpy=${selected?.prod_cmpy}&prod_code=${selected?.prod_code}&arm_code=${selected?.arm_code}`
+    selected && selected?.trsf_arm_cd !== 'Select Arm Code'
+      ? `${MANUAL_TRANSACTIONS.BASE_DETAILS}?prod_cmpy=${selected?.trsf_prod_cmpy}&prod_code=${selected?.trsf_prod_code}&arm_code=${selected?.trsf_arm_cd}`
       : null;
 
   const { data: payload } = useSWR(url, { params: 'test' }, { swr: 'test' });

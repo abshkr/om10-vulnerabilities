@@ -1,21 +1,21 @@
 const columns = (t) => [
   {
     headerName: t('fields.meter'),
-    field: 'meter_injector_code',
+    field: 'trsf_mtr_cd',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
   },
   {
     headerName: t('fields.type'),
-    field: 'type',
+    field: 'trsf_mtr_typ',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
   },
   {
     headerName: t('fields.openingAmbient'),
-    field: 'open_amb',
+    field: 'trsf_mtr_opn_amb',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -24,7 +24,7 @@ const columns = (t) => [
   },
   {
     headerName: t('fields.closingAmbient'),
-    field: 'close_amb',
+    field: 'trsf_mtr_cls_amb',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -33,7 +33,7 @@ const columns = (t) => [
   },
   {
     headerName: t('fields.openingCorrected'),
-    field: 'open_cor',
+    field: 'trsf_mtr_opn_cor',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -42,7 +42,7 @@ const columns = (t) => [
   },
   {
     headerName: t('fields.closingCorrected'),
-    field: 'close_cor',
+    field: 'trsf_mtr_cls_cor',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -51,7 +51,7 @@ const columns = (t) => [
   },
   {
     headerName: t('fields.openingMass'),
-    field: 'open_kg',
+    field: 'trsf_mtr_open_kg',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -61,7 +61,7 @@ const columns = (t) => [
 
   {
     headerName: t('fields.closingMass'),
-    field: 'close_kg',
+    field: 'trsf_mtr_close_kg',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -69,33 +69,26 @@ const columns = (t) => [
     cellEditor: 'NumericEditor',
   },
   // {
-  //   headerName: t('fields.temperature'),
-  //   field: 'mtd_amb',
-  //   filter: 'FuzzyFilter',
-  //   sortable: true,
-  //   resizable: true
-  // },
-  // {
   //   headerName: t('fields.observedQuantity'),
-  //   field: 'mtd_cor',
+  //   field: 'trsf_mtr_amb',
   //   filter: 'FuzzyFilter',
   //   sortable: true,
   //   resizable: true
   // },
   // {
   //   headerName: t('fields.standardQuantity'),
-  //   field: 'mtd_poll',
+  //   field: 'trsf_mtr_cor',
   //   filter: 'FuzzyFilter',
   //   sortable: true,
   //   resizable: true
   // },
   // {
   //   headerName: t('fields.massQuantity'),
-  //   field: 'mtd_poll',
+  //   field: 'trsf_mtr_mass',
   //   filter: 'FuzzyFilter',
   //   sortable: true,
   //   resizable: true
-  // }
+  // },
 ];
 
 export default columns;

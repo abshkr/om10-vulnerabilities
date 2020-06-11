@@ -25,36 +25,37 @@ const ProductQuantities = ({ form, type, selected }) => {
       for (let index = 0; index < transfers?.length; index++) {
         const transfer = transfers[index];
 
-        if (!transfer?.arm_code.includes(' ')) {
+        if (!transfer?.trsf_arm_cd.includes(' ')) {
           await axios
             .get(MANUAL_TRANSACTIONS.BASE_DETAILS, {
               params: {
-                prod_cmpy: transfer?.prod_cmpy,
-                prod_code: transfer?.prod_code,
-                arm_code: [transfer?.arm_code],
+                prod_cmpy: transfer?.trsf_prod_cmpy,
+                prod_code: transfer?.trsf_prod_code,
+                arm_code: [transfer?.trsf_arm_cd],
               },
             })
             .then((res) => {
               if (res.data?.records?.length > 0) {
                 _.forEach(res?.data?.records, (product) => {
                   pre.push({
-                    product: `${product?.stream_basecode} - ${product.stream_basename}`,
-                    tank_code: product?.stream_tankcode,
-                    stream_bclass_nmae: product.stream_bclass_nmae,
-                    dens: product?.stream_tankden,
-                    temperature: null,
-                    amb_vol: _.sumBy(transfers, (o) => {
-                      if (o?.prod_code === product?.rat_prod_prodcode) {
-                        return o?.amb_vol;
+                    trsf_bs_prodcd_tot: product?.stream_basecode,
+                    trsf_bs_prodname_tot: `${product?.stream_basecode} - ${product.stream_basename}`,
+                    trsf_bs_tk_cd_tot: product?.stream_tankcode,
+                    trsf_bs_prodcls_tot: product.stream_bclass_nmae,
+                    trsf_bs_den_tot: product?.stream_tankden,
+                    trsf_bs_temp_tot: null,
+                    trsf_bs_qty_amb_tot: _.sumBy(transfers, (o) => {
+                      if (o?.trsf_prod_code === product?.rat_prod_prodcode) {
+                        return o?.trsf_qty_amb; //????
                       } else {
                         return 0;
                       }
                     }),
-                    cor_vol: _.sumBy(res?.data?.records, (o) => {
-                      return o.cor_vol;
+                    trsf_bs_qty_cor_tot: _.sumBy(res?.data?.records, (o) => {
+                      return o.trsf_qty_cor; //????
                     }),
-                    liq_kg: _.sumBy(res?.data?.records, (o) => {
-                      return o.liq_kg;
+                    trsf_bs_load_kg_tot: _.sumBy(res?.data?.records, (o) => {
+                      return o.trsf_load_kg; //????
                     }),
                     is_updated: false,
                   });

@@ -12,11 +12,14 @@ class ManualTrans extends CommonClass
 
     public function get_ord_suppliers()
     {
-        $query = "SELECT DISTINCT ORDER_SUPP_CODE SUPPLIER,
+        $query = "
+            SELECT DISTINCT 
+                ORDER_SUPP_CODE SUPPLIER,
                 ORDER_SUPP_NAME SUPPLIER_NAME
             FROM GUI_ORDERS
-            WHERE ORDER_STAT_ID NOT IN (2, 3, 5, 6)
-            ORDER BY ORDER_SUPP_CODE";
+            WHERE ORDER_STAT_ID NOT IN (2, 3, 5, 6) AND ORDER_APPROVED = 'Y'
+            ORDER BY ORDER_SUPP_CODE
+        ";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
@@ -121,18 +124,23 @@ class ManualTrans extends CommonClass
     //Old code: ManualTransactions.class.php::getAdditionalInfoByOpenOrder
     public function get_order_basics()
     {
-        $query = "SELECT (CO.ORD_SOLD_TO_NUM || NVL2(CMPY.CMPY_NAME,' - ','') || CMPY.CMPY_NAME) as CUSTOMER_CODE, 
-                    (CO.ORD_SHIP_TO_NUM || NVL2(DL.DLV_NAME,' - ','') || DL.DLV_NAME) as DELIVERY_LOCATION,
-                    ORDER_CARRIER
-                FROM CUST_ORDER CO,
-                    CUSTOMER CUST,
-                    COMPANYS CMPY,
-                    DELV_LOCATION DL
-                WHERE CO.ORDER_CUST_ORDNO = :order_cust_no
-                    AND (CO.ORD_SOLD_TO_NUM = CUST.CUST_CODE(+) AND CUST.CUST_CODE = CMPY.CMPY_CODE(+))
-                    AND CO.ORD_SHIP_TO_NUM = DL.DLV_CODE(+)";
+        $query = "
+            SELECT 
+                (CO.ORD_SOLD_TO_NUM || NVL2(CMPY.CMPY_NAME,' - ','') || CMPY.CMPY_NAME) as CUSTOMER_CODE, 
+                (CO.ORD_SHIP_TO_NUM || NVL2(DL.DLV_NAME,' - ','') || DL.DLV_NAME) as DELIVERY_LOCATION,
+                ORDER_CARRIER
+            FROM CUST_ORDER CO,
+                CUSTOMER CUST,
+                COMPANYS CMPY,
+                DELV_LOCATION DL
+            WHERE CO.ORDER_CUST_ORDNO = :order_cust_no
+            AND CO.ORDER_CUST in (select CUST_ACCT from CUSTOMER where CUST_SUPP=:supplier)
+            AND (CO.ORD_SOLD_TO_NUM = CUST.CUST_CODE(+) AND CUST.CUST_CODE = CMPY.CMPY_CODE(+))
+            AND CO.ORD_SHIP_TO_NUM = DL.DLV_CODE(+)
+        ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':order_cust_no', $this->order_cust_no);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -176,12 +184,14 @@ class ManualTrans extends CommonClass
         //     __CLASS__, __FUNCTION__, $this->trip_no, $this->supplier),
         //     __FILE__, __LINE__);
 
-        $query = "SELECT C.CMPY_CODE, C.CMPY_NAME
+        $query = "
+            SELECT C.CMPY_CODE, C.CMPY_NAME
             FROM SCHEDULE S, COMPANYS C, TANKERS T 
             WHERE S.SHL_TANKER = T.TNKR_CODE 
                 AND T.TNKR_CARRIER = C.CMPY_CODE 
                 AND S.SHLS_SUPP = :supplier 
-                AND S.SHLS_TRIP_NO = :trip_no";
+                AND S.SHLS_TRIP_NO = :trip_no
+        ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':supplier', $this->supplier);
         oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
@@ -205,23 +215,32 @@ class ManualTrans extends CommonClass
             $row = oci_fetch_array($stmt2, OCI_ASSOC + OCI_RETURN_NULLS);
             if ($row['CMPY_VET'] == 1 || $row['CMPY_VET'] == 2 || $row['CMPY_VET'] == 3) {
                 //Vet PrimeMover(1) or Vet Trailer(2) or Vet all(3)
-                $query = "SELECT C.CMPY_CODE CARRIER, 
+                $query = "
+                    SELECT 
+                        C.CMPY_CODE CARRIER, 
                         C.CMPY_NAME CARRIER_NAME,
-                        T.TNKR_CODE
+                        T.TNKR_CODE,
+                        S.SHLS_DRIVER DRIVER
                     FROM SCHEDULE S, COMPANYS C, TANKERS T 
                     WHERE S.SHL_TANKER = T.TNKR_CODE 
                         AND T.TNKR_CARRIER = C.CMPY_CODE 
-                        AND S.SHLS_SUPP = :supplier AND S.SHLS_TRIP_NO = :trip_no";
+                        AND S.SHLS_SUPP = :supplier 
+                        AND S.SHLS_TRIP_NO = :trip_no
+                ";
                 $stmt = oci_parse($this->conn, $query);
                 oci_bind_by_name($stmt, ':supplier', $this->supplier);
                 oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
             } else {
-                $query = "SELECT CMPY_CODE CARRIER, 
+                $query = "
+                    SELECT 
+                        CMPY_CODE CARRIER, 
                         CMPY_NAME CARRIER_NAME,
-                        NULL TNKR_CODE
+                        NULL TNKR_CODE,
+                        NULL DRIVER
                     FROM GUI_COMPANYS 
                     WHERE BITAND(CMPY_TYPE, 4) <> 0 
-                    ORDER BY CMPY_CODE ASC";
+                    ORDER BY CMPY_CODE ASC
+                ";
                 $stmt = oci_parse($this->conn, $query);
             }
 
@@ -230,20 +249,23 @@ class ManualTrans extends CommonClass
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 return null;
             }
-        } else {
-            $query = "SELECT C.CMPY_CODE CARRIER, 
-                    C.CMPY_NAME CARRIER_NAME,
-                    T.TNKR_CODE
-                FROM SCHEDULE S, COMPANYS C, TANKERS T 
-                WHERE S.SHL_TANKER = T.TNKR_CODE 
-                    AND T.TNKR_CARRIER = C.CMPY_CODE 
-                    AND S.SHLS_SUPP = :supplier 
-                    AND S.SHLS_TRIP_NO = :trip_no";
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':supplier', $this->supplier);
-            oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
-            if (oci_execute($stmt, $this->commit_mode)) {
-                return $stmt;
+            } else {
+                $query = "
+                    SELECT C.CMPY_CODE CARRIER, 
+                        C.CMPY_NAME CARRIER_NAME,
+                        T.TNKR_CODE,
+                        S.SHLS_DRIVER DRIVER
+                    FROM SCHEDULE S, COMPANYS C, TANKERS T 
+                    WHERE S.SHL_TANKER = T.TNKR_CODE 
+                        AND T.TNKR_CARRIER = C.CMPY_CODE 
+                        AND S.SHLS_SUPP = :supplier 
+                        AND S.SHLS_TRIP_NO = :trip_no
+                ";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':supplier', $this->supplier);
+                oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
+                if (oci_execute($stmt, $this->commit_mode)) {
+                    return $stmt;
             } else {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
