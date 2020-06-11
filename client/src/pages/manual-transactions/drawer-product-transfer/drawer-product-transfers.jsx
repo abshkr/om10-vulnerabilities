@@ -11,8 +11,8 @@ import useSWR from 'swr';
 
 import { MANUAL_TRANSACTIONS } from '../../../api';
 
-import BaseProductTransfers from './transfer-details';
-import BaseProductTotals from './product-quantities';
+import BaseProductTransfers from './base-product-transfers';
+import BaseProductTotals from './base-product-totals';
 import MeterTotals from './meter-totals';
 
 const components = {
