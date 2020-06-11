@@ -15,7 +15,7 @@ const Overview = () => {
 
   const [weeklySeries, setWeeklySeries] = useState([]);
   const [weeklyOptions, setWeeklyOptions] = useState({});
-
+  const [weeklyMin, setWeeklyMin] = useState(0);
   const [weeklyMode, setWeeklyMode] = useState('linear');
 
   const [storageSeries, setStorageSeries] = useState([]);
@@ -36,6 +36,7 @@ const Overview = () => {
     if (entry?.weekly_throughput) {
       const bases = _.uniq(_.map(entry?.weekly_throughput, 'base_name'));
       const dates = _.uniq(_.map(entry?.weekly_throughput, 'wk'));
+      const quantities = [];
 
       for (let index = 0; index < bases.length; index++) {
         const base = bases[index];
@@ -46,7 +47,13 @@ const Overview = () => {
             return object.wk === date && object.base_name === base;
           });
 
-          const val = _.toNumber(match?.qty_amb) || 0;
+          const formatted = _.toNumber(match?.qty_amb) || null;
+
+          let val = formatted === 0 ? 0 : formatted;
+
+          if (val) {
+            quantities.push(val);
+          }
 
           points.push(val);
         });
@@ -56,6 +63,8 @@ const Overview = () => {
           data: points,
         });
       }
+
+      setWeeklyMin(_.min(quantities));
 
       setWeeklySeries(series);
     }
@@ -76,6 +85,8 @@ const Overview = () => {
 
         yaxis: {
           logarithmic: weeklyMode !== 'linear',
+          min: weeklyMin,
+          forceNiceScale: true,
         },
 
         xaxis: {
@@ -88,7 +99,7 @@ const Overview = () => {
       };
       setWeeklyOptions(options);
     }
-  }, [payload, weeklyMode]);
+  }, [payload, weeklyMode, weeklyMin]);
 
   useEffect(() => {
     const entry = payload?.records && payload?.records[0];
@@ -106,15 +117,30 @@ const Overview = () => {
     if (entry?.storage && storageClass) {
       const payload = [];
 
+      if (storageClass === 'All') {
+        const transformed = _.chain(entry?.storage)
+          .groupBy((value) => {
+            return value?.bclass_desc;
+          })
+          .mapValues((products) => {
+            const value = _.sumBy(products, (product) => {
+              return _.toNumber(product?.qty_cor) || 0;
+            });
+
+            return value;
+          })
+          .value();
+
+        Object.keys(transformed).forEach((key) => {
+          payload.push({
+            name: key,
+            data: [transformed[key]],
+          });
+        });
+      }
+
       for (let index = 0; index < entry?.storage.length; index++) {
         const base = entry?.storage[index];
-
-        if (storageClass === 'All') {
-          payload.push({
-            name: base.base_name,
-            data: [_.toNumber(base.qty_cor)],
-          });
-        }
 
         if (base.bclass_desc === storageClass) {
           payload.push({
