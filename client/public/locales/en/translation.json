@@ -1497,7 +1497,8 @@
     "overrideRules": "Exception Override Rules (List of events whereby Closeout will run regardless of Exception)",
     "selectAllocationItem": "Please select allocation product item to reset",
     "deliveredBeingZero": "Delivered volume is 0, reset is not required",
-    "mustBeAlphaNumeric": "Must be Alphanumeric."
+    "mustBeAlphaNumeric": "Must be Alphanumeric.",
+	"timecodeAL": "Cannot delete time code AL"
   },
 
   "placeholder": {

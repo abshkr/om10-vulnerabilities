@@ -23,7 +23,7 @@ const LoadSchedules = () => {
   const access = useAuth('M_LOADSCHEDULES');
 
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-  const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
+  const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
   const {
     data: payload,

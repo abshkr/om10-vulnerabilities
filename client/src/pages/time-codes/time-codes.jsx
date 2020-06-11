@@ -4,7 +4,7 @@ import useSWR from 'swr';
 import { mutate } from 'swr';
 import { Button, Select, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { CheckOutlined, MinusOutlined, EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { CheckOutlined, MinusOutlined, EditOutlined, PlusOutlined, QuestionCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import _ from 'lodash';
 import { useAuth } from '../../hooks';
@@ -14,6 +14,7 @@ import { TIME_CODES } from '../../api';
 import {generator, degenerate} from './generator';
 import columns from './columns';
 import auth from '../../auth';
+import TimecodeForm from './forms/forms';
 
 const TimeCodes = () => {
   const { t } = useTranslation();
@@ -24,8 +25,14 @@ const TimeCodes = () => {
   const [code, setCode] = useState(null);
   const [data, setData] = useState(null);
   const [selected, setSelected] = useState([]);
+  const [visible, setVisible] = useState(false);
 
   const fields = columns(t);
+
+  const handleFormState = (visibility) => {
+    setVisible(visibility);
+    // setSelected(value);
+  };
 
   const onSelectAll = () => {
     const values = [];
@@ -147,13 +154,74 @@ const TimeCodes = () => {
     });
   };
 
+  const onDelete = () => {
+    if (code === 'AL') {
+      notification.error({
+        message: t("messages.validationFailed"),
+        description: t("descriptions.timecodeAL"),
+      });
+      return;
+    }
+
+    const value = {
+      tcd_title: code,
+    }
+    Modal.confirm({
+      title: t('prompts.delete'),
+      okText: t('operations.yes'),
+      okType: 'danger',
+      icon: <DeleteOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await axios
+          .post(TIME_CODES.DELETE, value)
+          .then(() => {
+            onComplete();
+
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+
   const modifiers = (
     <>
+      <Button
+        type="danger"
+        icon={<DeleteOutlined />}
+        style={{ marginLeft: 10 }}
+        // disabled={!access?.canCreate}
+        onClick={onDelete}
+      >
+        {t('operations.delete')}
+      </Button>
+
       <Button type="primary" 
         icon={<EditOutlined />} 
         onClick={onUpdate}
         disabled={!access?.canUpdate}>
         {t('operations.update')}
+      </Button>
+
+      <Button
+        icon={<PlusOutlined />}
+        style={{ marginLeft: 10 }}
+        // disabled={!access?.canCreate}
+        onClick={()=>setVisible(true)}
+      >
+        {t('operations.create')}
       </Button>
     </>
   );
@@ -189,6 +257,7 @@ const TimeCodes = () => {
       >
         {t('operations.deselectAllTimes')}
       </Button>
+      
     </>
   );
 
@@ -202,6 +271,7 @@ const TimeCodes = () => {
         onCellClick={onCellEdit}
         extra={extra}
       />
+      <TimecodeForm value={selected} visible={visible} handleFormState={handleFormState} />
     </Page>
   );
 };

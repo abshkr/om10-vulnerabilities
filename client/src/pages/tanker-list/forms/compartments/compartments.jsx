@@ -98,8 +98,7 @@ const Compartments = ({ form, value, equipment }) => {
   const changeType = (tanker, code) => {
     axios.get(`${TANKER_LIST.COMPARTMENT}?eqpt_id=${code}`).then((response) => {
       const payload = [...data];
-
-      const index = _.findIndex(payload, ['etyp_id', tanker.etyp_id]);
+      const index = _.findIndex(payload, ['tc_eqpt', tanker.tc_eqpt]);
       let compartment = _.find(tanker.eqpt_list, ['eqpt_id', code]);
 
       compartment['compartments'] = response.data.records;
@@ -108,14 +107,12 @@ const Compartments = ({ form, value, equipment }) => {
       compartment['image'] = tanker.image;
 
       payload.splice(index, 1, compartment);
-
       setdata(payload);
-
       setFieldsValue({
         tnkr_equips: _.map(payload, (value) => {
           return _.omit(value, ['eqpt_list']);
         }),
-      });
+      });;
     });
   };
 
