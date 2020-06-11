@@ -63,6 +63,7 @@ if ($data) {
     }
 }
 // write_log(json_encode($data), __FILE__, __LINE__);
+// write_log(json_encode($object), __FILE__, __LINE__);
 if (!isset($object->user) ||
 !isset($object->user)) {
     echo json_encode(
@@ -71,7 +72,7 @@ if (!isset($object->user) ||
     return;
 }
 
-$url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/login.cgi';
+// $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/login.cgi';
 $object->clientip = $_SERVER['REMOTE_ADDR'];
 
 $object->langcode = 'ENG';
@@ -81,26 +82,17 @@ if (isset($data->lang)) {
     }
 }
 
-$data = array(
-    'lang' => $object->langcode,
-    'oput' => 'XML',
-    'lock' => 'N',
-    'usr' => $object->user,
-    'pwd' => $object->password,
-    'clientip' => $object->clientip);
+$query_string = "lang=" . $object->langcode . 
+            "&usr=" . rawurlencode(strip_tags($object->user)) .
+            "&pwd=" . rawurlencode(strip_tags($object->psw)) . 
+            "&clientip=" . rawurlencode(strip_tags($object->clientip)) . 
+            "&hash=" . rawurlencode(strip_tags($object->hash)) . 
+            "&oput=XML";
 
-$options = array
-    (
-    'http' => array
-    (
-        'header' => "Content-type: text/xml\r\n",
-        'method' => 'POST',
-        'content' => http_build_query($data),
-    ),
-);
-$context = stream_context_create($options);
-$result = file_get_contents($url, false, $context);
-$xml = simplexml_load_string($result);
+$res = Utilities::http_cgi_invoke("cgi-bin/en/login.cgi", $query_string);
+// write_log(json_encode($res), __FILE__, __LINE__);
+
+$xml = simplexml_load_string($res);
 // echo json_encode($xml, JSON_PRETTY_PRINT);
 $json = json_encode($xml);
 $array = json_decode($json, true);
