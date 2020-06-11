@@ -328,7 +328,7 @@ class Schedule extends CommonClass
             "&op=" . strval($op) . "&cmd=" . $cmd;
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/load_scheds.cgi", $query_string);
-        write_log($res, __FILE__, __LINE__);
+        // write_log($res, __FILE__, __LINE__);
 
         $op_response = $op + 10;
         if (strpos($res, "var op=" . strval($op_response) . ";") === false) {
@@ -339,6 +339,10 @@ class Schedule extends CommonClass
 
         if (isset($this->compartments)) {
             foreach ($this->compartments as $compartment) {
+                if ($compartment->qty_scheduled <= 0 || $compartment->qty_scheduled === "") {
+                    continue;
+                }
+
                 $query_string = "tankTerm=" . rawurlencode(strip_tags($site_code)) . 
                     "&sched_type=" . rawurlencode(strip_tags($this->shls_ld_type)) .
                     "&prod=" . rawurlencode(strip_tags($compartment->prod_code)) . 
@@ -366,6 +370,10 @@ class Schedule extends CommonClass
         
         if (isset($this->products)) {
             foreach ($this->products as $product) {
+                if ($product->qty_scheduled <= 0 || $product->qty_scheduled === "") {
+                    continue;
+                }
+
                 $query_string = "tankTerm=" . rawurlencode(strip_tags($site_code)) . 
                     "&sched_type=" . rawurlencode(strip_tags($this->shls_ld_type)) .
                     "&prod=" . rawurlencode(strip_tags($product->prod_code)) . 
