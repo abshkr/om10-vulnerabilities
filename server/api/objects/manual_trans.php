@@ -54,6 +54,7 @@ class ManualTrans extends CommonClass
             WHERE ORDER_STAT_ID NOT IN (2, 3, 5, 6)
                 AND ORDER_CUST_CODE = :customer
                 AND ORDER_SUPP_CODE = :supplier
+                AND ORDER_APPROVED = 'Y'
             ORDER BY ORDER_CUST_NO";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':supplier', $this->supplier);

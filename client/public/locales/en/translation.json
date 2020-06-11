@@ -1029,7 +1029,11 @@
     "mtTypeSchedule": "Load From Schedule",
     "mtTypeOrder": "Load From Open Order",
     "sealRange": "Seal Range",
-    "equipmentTypeCode": "Equipment Type Code"
+    "equipmentTypeCode": "Equipment Type Code",
+    "mtMngrOO": "Mgr Cmpy OO No.",
+    "mtSoldTo": "Sold To",
+    "mtShipTo": "Ship To",
+    "mtDelvNum": "Delv No."
   },
 
   "pageMenu": {

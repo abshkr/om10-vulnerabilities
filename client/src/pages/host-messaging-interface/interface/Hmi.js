@@ -142,7 +142,7 @@ class Hmi extends Component {
   }
 
   logout() {
-    var url = process.env.REACT_APP_API_URL + '/logout';
+    var url = process.env.REACT_APP_API_URL + '/hmi/logout';
     fetch(url, {
       method: 'POST',
       credentials: 'include',

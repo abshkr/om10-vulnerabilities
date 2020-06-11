@@ -55,10 +55,11 @@ function startup() {
 	// parse it again, use parent.send() and child.on('message').
 	//restArgs.push(cfg_file);
 	//restArgs.push(cfgData.hosts);
-	restArgs.push(8443);
-	restArgs.push('.');
+	//restArgs.push(8443);
+	//restArgs.push('.');
 	var restScript = './restapi.js';
-	var restapisrvr = fork(restScript, restArgs);
+	//var restapisrvr = fork(restScript, restArgs);
+	var restapisrvr = fork(restScript);
 	children.push(restapisrvr);
 	var cfgArgs = [];
 	cfgArgs.push('config');

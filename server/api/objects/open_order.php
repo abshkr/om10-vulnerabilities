@@ -428,18 +428,24 @@ class OpenOrder extends CommonClass
             }
             
             if ($still_exist == false) {
-                $query = "DELETE FROM OPROD_CHILD WHERE OPB_DAD_OPRODKEY = :oi_order_no";
+                $query = "DELETE FROM OPROD_CHILD 
+                    WHERE OPB_DAD_OPRODKEY = :order_prod_key
+                        AND OPB_DAD_OSPROD_PRODCODE = :osprod_prodcode";
                 $stmt = oci_parse($this->conn, $query);
-                oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
+                oci_bind_by_name($stmt, ':order_prod_key', $this->order_sys_no);
+                oci_bind_by_name($stmt, ':osprod_prodcode', $product);
                 if (!oci_execute($stmt, $this->commit_mode)) {
                     $e = oci_error($stmt);
                     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                     return false;
                 }
 
-                $query = "DELETE FROM OPRODMTD WHERE ORDER_PROD_KEY = :oi_order_no";
+                $query = "DELETE FROM OPRODMTD 
+                    WHERE OSPROD_PRODCODE = :osprod_prodcode
+                        AND ORDER_PROD_KEY = :order_prod_key";
                 $stmt = oci_parse($this->conn, $query);
-                oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
+                oci_bind_by_name($stmt, ':order_prod_key', $this->order_sys_no);
+                oci_bind_by_name($stmt, ':osprod_prodcode', $product);
                 if (!oci_execute($stmt, $this->commit_mode)) {
                     $e = oci_error($stmt);
                     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -686,8 +692,8 @@ class OpenOrder extends CommonClass
             NVL(OITEM_PROD_NAME, PROD_NAME) OITEM_PROD_NAME,
             NVL(OITEM_DRWR_NAME, CMPY_NAME) OITEM_DRWR_NAME,
             NVL(OITEM_PROD_QTY, 0) OITEM_PROD_QTY,
-            OITEM_PROD_UNIT,
-            OITEM_UNIT_NAME,
+            NVL(OITEM_PROD_UNIT, 5) OITEM_PROD_UNIT,
+            NVL(OITEM_UNIT_NAME, 'l') OITEM_UNIT_NAME,
             OITEM_BY_PACKS,
             OITEM_PACK_SIZE,
             NVL(OITEM_SCHD_QTY, 0) OITEM_SCHD_QTY,

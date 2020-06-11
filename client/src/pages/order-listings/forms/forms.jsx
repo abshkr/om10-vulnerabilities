@@ -47,19 +47,21 @@ import OrderTrips from './order-trips';
 import OrderItemTrips from './item-trips';
 
 import DeliveryDetails from '../../delivery-details';
+import { ItemEffectTime } from '../../movement-nominations/forms/items/nomination-transactions/forms/head-fields';
 
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, pageState, revalidate }) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [mainTabOn, setMainTabOn] = useState(true);
+  const [tableAPI, setTableAPI] = useState(undefined);
 
   const { data: units } = useSWR(ORDER_LISTINGS.UNIT_TYPES);
   const { data: siteData } = useSWR(ORDER_LISTINGS.SITE_CODE);
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const { setFieldsValue, resetFields, validateFields } = form;
+  const { setFieldsValue, resetFields, validateFields, getFieldValue } = form;
 
   const [orderNo, setOrderNo] = useState(value?.order_sys_no);
   const [supplier, setSupplier] = useState(undefined);
@@ -71,15 +73,16 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const [orderItems, setOrderItems] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
   const [showDeliveryDetails, setShowDeliveryDetails] = useState(false);
-  const [tableAPI, setTableAPI] = useState(null);
 
   //console.log("access in OO", access);
-  console.log('pageState in OO', pageState);
+  //console.log('pageState in OO', pageState);
+
   const IS_CREATING = !value;
   //const CAN_ORDER_PERIOD = !!selected && !!value;
   const CAN_ORDER_PERIOD =
     selected !== null && selected !== undefined && value !== null && value !== undefined;
   const CAN_DELIVERY_DETAIL = value !== null && value !== undefined;
+  const fields = columns(t, pageState, form, units);
 
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
@@ -114,43 +117,73 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   };
 
   const getOrderItems = useCallback(() => {
-    const url = IS_CREATING
-      ? `${ORDER_LISTINGS.ORDER_ITEMS}?order_drwr_code=${supplier}&page_state=${pageState}`
-      : `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${orderNo}`;
+    const url =
+      pageState === 'create'
+        ? `${ORDER_LISTINGS.ORDER_ITEMS}?order_drwr_code=${supplier}&page_state=${pageState}`
+        : `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${orderNo}`;
     //: `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${value?.order_sys_no}`;
 
     axios.get(url).then((response) => {
       const payload = response.data?.records || [];
 
-      setFieldsValue({
+      /* setFieldsValue({
         order_items: payload,
-      });
+      }); */
 
       setOrderItems(payload);
     });
   }, [orderNo, supplier, pageState]);
 
+  const onEditingFinished = (value) => {
+    if (pageState === 'create') return;
+
+    /* console.log("onEditingFinished", value);
+    const payload = orderItems;
+    const line = value.data;
+
+    payload.forEach((item) => {
+      if (item.oitem_prod_cmpy === line.oitem_prod_cmpy 
+      && item.oitem_prod_code === line.oitem_prod_code) {
+        console.log("onEditingFinished1", item, line);
+        item.oitem_prod_qty = line.oitem_prod_qty;
+        item.oitem_prod_unit = line.oitem_prod_unit;
+      }
+    });
+    console.log("onEditingFinished2", payload);
+
+    setFieldsValue({
+      order_items: payload,
+    });
+    setOrderItems(payload); */
+  };
+
   const onFinish = async () => {
     const values = await validateFields();
+    console.log('order items', values);
 
-    const orderItems = [];
-
+    const gridItems = [];
     tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
-      if (rowNode.data?.oitem_prod_qty > 0) {
-        orderItems.push({
-          oitem_prod_cmpy: rowNode.data.oitem_prod_cmpy,
-          oitem_prod_code: rowNode.data.oitem_prod_code,
-          oitem_prod_qty: _.toNumber(rowNode.data.oitem_prod_qty),
-          oitem_prod_unit: _.toNumber(rowNode.data.oitem_prod_unit),
-          oitem_pack_size: _.toNumber(rowNode.data.oitem_pack_size),
-          oitem_prod_price: _.toNumber(rowNode.data.oitem_prod_price),
-          oitem_exempt_no: rowNode.data.oitem_exempt_no,
-          oitem_padj_code: rowNode.data.oitem_padj_code,
+      gridItems.push(rowNode.data);
+    });
+    console.log('order items2', gridItems);
+
+    const newItems = [];
+    _.forEach(gridItems, (order_item) => {
+      if (order_item.oitem_prod_qty > 0) {
+        newItems.push({
+          oitem_prod_cmpy: order_item.oitem_prod_cmpy,
+          oitem_prod_code: order_item.oitem_prod_code,
+          oitem_prod_qty: _.toNumber(order_item.oitem_prod_qty),
+          oitem_prod_unit: _.toNumber(order_item.oitem_prod_unit),
+          oitem_pack_size: _.toNumber(order_item.oitem_pack_size),
+          oitem_prod_price: _.toNumber(order_item.oitem_prod_price),
+          oitem_exempt_no: order_item.oitem_exempt_no,
+          oitem_padj_code: order_item.oitem_padj_code,
         });
       }
     });
 
-    values.order_items = orderItems;
+    values.order_items = newItems;
     if (value?.order_sys_no === undefined) {
       values.order_sys_no = -1;
     } else {
@@ -311,6 +344,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   }, [value, visible, resetFields, setOrderItems, setSupplier, setDrawer, setSelected]);
 
   useEffect(() => {
+    console.log('getOrderItems by', orderNo, supplier, pageState);
     getOrderItems();
   }, [orderNo, supplier, pageState, getOrderItems]);
 
@@ -319,6 +353,12 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
       setOrderNo(value.order_sys_no);
     }
   }, [value, setOrderNo]);
+
+  useEffect(() => {
+    setFieldsValue({
+      order_items: orderItems,
+    });
+  }, [orderItems, setFieldsValue]);
 
   return (
     <Drawer
@@ -520,12 +560,12 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
                 data={orderItems}
                 height="60vh"
                 minimal
-                columns={columns(t, pageState, form, units)}
+                columns={fields}
                 //onClick={(value) => setSelected(value)}
                 handleSelect={(value) => setSelected(value[0])}
                 apiContext={setTableAPI}
-
-                //apiContext={setTableAPI}
+                //selectionMode="single"
+                onEditingFinished={onEditingFinished}
               />
             </Form.Item>
           </TabPane>

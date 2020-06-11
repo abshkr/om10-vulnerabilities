@@ -238,12 +238,12 @@ class ContentsArea extends Component
 		var url;
 		if (this.state.from === 'host')
 		{
-			url = process.env.REACT_APP_API_URL + '/parse/host_message';
+			url = process.env.REACT_APP_API_URL + '/hmi/parse/host_message';
 		}
 		else if (this.state.from === 'omega')
 		{
-			//url = "http://10.2.20.53:6443/parse/omega_message/";
-			url = process.env.REACT_APP_API_URL + '/parse/omega_message';
+			//url = "http://10.2.20.53:6443/hmi/parse/omega_message/";
+			url = process.env.REACT_APP_API_URL + '/hmi/parse/omega_message';
 		}
 
 		var act = this.state.action;
@@ -362,7 +362,7 @@ class ContentsArea extends Component
 		if (ev.target.id === "submit")
 		{
 			// TODO: do this once only
-			var url = process.env.REACT_APP_API_URL + '/config';
+			var url = process.env.REACT_APP_API_URL + '/hmi/config';
 			fetch(url, {
 				method: 'GET',
 				credentials: 'include'
@@ -380,13 +380,13 @@ class ContentsArea extends Component
 						// 2. on server side, specify json body in second arg in the route
 						if (this.state.from === 'host')
 						{
-							url = process.env.REACT_APP_API_URL + '/edit/host_message';
+							url = process.env.REACT_APP_API_URL + '/hmi/edit/host_message';
 
 							jsval['file_name'] = this.create_filename_from_content(body.message.hosts);
 						}
 						else if (this.state.from === 'omega')
 						{
-							url = process.env.REACT_APP_API_URL + '/edit/omega_message';
+							url = process.env.REACT_APP_API_URL + '/hmi/edit/omega_message';
 						}
 
 						fetch(url, {

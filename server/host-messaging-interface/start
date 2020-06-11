@@ -1,8 +1,11 @@
 #!/bin/sh
 
-export MSGBROKER_ORIGIN_IP="10.1.10.66"
-export MSGBROKER_ORIGIN_PORT=8000
-export MSGBROKER_PROTO="https"
+export HMI_ORIGIN_IP="10.1.10.66"
+export HMI_ORIGIN_PORT=8000
+export HMI_ORIGIN_PROTO="https"
+
+export HMI_PROTO="http"
+export HMI_PORT="8443"
 
 export OMEGA_USER="messages"
 export OMEGA_PWD="abcd1234"

@@ -20,7 +20,7 @@ const DrawerProduct = () => {
   const { t } = useTranslation();
 
   const auth = useAuth('M_DRAWERPRODUCTS');
-
+  
   const { data: payload, isValidating, revalidate } = useSWR(DRAWER_PRODUCTS.READ);
 
   const handleFormState = (visibility, value) => {

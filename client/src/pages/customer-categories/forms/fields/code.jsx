@@ -27,7 +27,7 @@ const Code = ({ form, value }) => {
     }
 
     if (input && input.length > 16) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();

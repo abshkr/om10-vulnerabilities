@@ -92,7 +92,7 @@ class HostMessageRow extends Component
 
 	resubmit()
 	{
-		var url = process.env.REACT_APP_API_URL + '/resubmit/host_message';
+		var url = process.env.REACT_APP_API_URL + '/hmi/resubmit/host_message';
 
 		// BEWARE: when using post method with json body data, must:
 		// 1. on client side, set json content type in header, AND
@@ -242,9 +242,12 @@ class HostMessages extends Component
 			sortOrder: 'descending'
 		};
 
+		this.sseSetup = this.sseSetup.bind(this);
+		this.sseCleanup = this.sseCleanup.bind(this);
 		this.sseOpened = this.sseOpened.bind(this);
 		this.sseMessage = this.sseMessage.bind(this);
 		this.sseError = this.sseError.bind(this);
+		this.sseReconnect = this.sseReconnect.bind(this);
 		this.sseAdd = this.sseAdd.bind(this);
 		this.sseModify = this.sseModify.bind(this);
 		this.sendStatusUpdate = this.sendStatusUpdate.bind(this);
@@ -274,32 +277,23 @@ class HostMessages extends Component
 		this.startSearch = this.startSearch.bind(this);
 		this.clearSearchResults = this.clearSearchResults.bind(this);
 
-		//console.log('creating Host EventSource instance...');
-		this.eventSource = new EventSource(process.env.REACT_APP_API_URL + '/host_events', {withCredentials: true});
+		this.sseTimer = null;
+		this.sseSetup();
 	}
 
+/*
 	componentDidMount()
 	{
-		this.eventSource.addEventListener('open', this.sseOpened);
-		this.eventSource.addEventListener('message', this.sseMessage);
-		this.eventSource.addEventListener('error', this.sseError);
-		this.eventSource.addEventListener('add', this.sseAdd);
-		this.eventSource.addEventListener('modify', this.sseModify);
+		this.sseSetup();
 	}
 
 	componentWillUnmount()
 	{
 		//console.log('HostMessage unmounted');
-		this.eventSource.removeEventListener('open', this.sseOpened);
-		this.eventSource.removeEventListener('message', this.sseMessage);
-		this.eventSource.removeEventListener('error', this.sseError);
-		this.eventSource.removeEventListener('add', this.sseAdd);
-		this.eventSource.removeEventListener('modify', this.sseModify);
-		this.eventSource.close();
+		this.sseCleanup();
 	}
 
 	// This allows state change in parent component to initiate state change in child component
-/*
 	componentWillReceiveProps(nextProps)
 	{
 		if (this.state.startUp !== nextProps.startUp)
@@ -330,6 +324,27 @@ class HostMessages extends Component
 		}
 	}
 
+	sseSetup()
+	{
+		//console.log('creating Host EventSource instance...');
+		this.eventSource = new EventSource(process.env.REACT_APP_API_URL + '/hmi/host_events', {withCredentials: true});
+		this.eventSource.addEventListener('open', this.sseOpened);
+		this.eventSource.addEventListener('message', this.sseMessage);
+		this.eventSource.addEventListener('error', this.sseError);
+		this.eventSource.addEventListener('add', this.sseAdd);
+		this.eventSource.addEventListener('modify', this.sseModify);
+	}
+
+	sseCleanup()
+	{
+		this.eventSource.removeEventListener('open', this.sseOpened);
+		this.eventSource.removeEventListener('message', this.sseMessage);
+		this.eventSource.removeEventListener('error', this.sseError);
+		this.eventSource.removeEventListener('add', this.sseAdd);
+		this.eventSource.removeEventListener('modify', this.sseModify);
+		this.eventSource.close();
+	}
+
 	sseOpened(e)
 	{
 		//console.log('host sse opened:' + e);
@@ -345,6 +360,17 @@ class HostMessages extends Component
 	{
 		//console.log('received error from host sse:' + e + ', connection status:' + this.eventSource.readyState);
 		this.sendStatusUpdate(2, 'received error from host sse');
+
+		// Attempt to reconnect after waiting a configurable time (default is 10 seconds)
+		this.sseCleanup();
+		var wait = process.env.REACT_APP_SSE_RECONNECT || 10;
+		this.sseTimer = setTimeout(this.sseReconnect, wait * 1000);
+	}
+
+	sseReconnect()
+	{
+		clearTimeout(this.sseTimer);
+		this.sseSetup();
 	}
 
 	sseAdd(e)
@@ -479,7 +505,7 @@ class HostMessages extends Component
 
 	getData()
 	{
-		var url = process.env.REACT_APP_API_URL + '/host_message';
+		var url = process.env.REACT_APP_API_URL + '/hmi/host_message';
 		fetch(url, {
 			method: 'GET',
 			credentials: 'include'
@@ -795,7 +821,7 @@ people.stableSort( (p1, p2) => {
 	{
 		//if (ev) { ev.preventDefault(); };
 
-		var url = process.env.REACT_APP_API_URL + '/filter/host_message';
+		var url = process.env.REACT_APP_API_URL + '/hmi/filter/host_message';
 		if (ev.target.id === "hostDateFilter")
 		{
 			var startDate = document.getElementById('hostStartDate');
