@@ -30,9 +30,8 @@ const FormModal = ({ value, length }) => {
     // Attaching the Id to the Updated Object
     if (!IS_CREATING) {
       values.mr_id = value?.mr_id;
-    }
-    else {
-      values.mr_id = length+1;
+    } else {
+      values.mr_id = length + 1;
     }
 
     Modal.confirm({
@@ -101,7 +100,7 @@ const FormModal = ({ value, length }) => {
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            {IS_CREATING && <p>ID: {length + 1}</p>}
+            <p>ID: {value ? value?.mr_id : length + 1}</p>
             <SendToHost form={form} onChange={setSend} value={value} />
             <Type form={form} value={value} />
             <BusinessProcess form={form} value={value} />
