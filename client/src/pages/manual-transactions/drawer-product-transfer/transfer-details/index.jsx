@@ -1,2 +1,2 @@
-import BaseProductTransfers from './transfer-details';
+import BaseProductTransfers from './base-product-transfers';
 export default BaseProductTransfers;

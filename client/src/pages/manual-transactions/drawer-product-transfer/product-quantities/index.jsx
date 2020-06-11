@@ -1,2 +1,2 @@
-import BaseProductTotals from './product-quantities';
+import BaseProductTotals from './base-product-totals';
 export default BaseProductTotals;
