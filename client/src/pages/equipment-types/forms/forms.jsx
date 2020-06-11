@@ -131,10 +131,10 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
   };
 
   useEffect(() => {
-    if (!value) {
+    if (!visible && !value) {
       resetFields();
     }
-  }, [resetFields, value]);
+  }, [resetFields, value, visible]);
 
   return (
     <Drawer

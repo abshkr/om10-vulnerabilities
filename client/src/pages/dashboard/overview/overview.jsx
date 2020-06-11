@@ -46,11 +46,9 @@ const Overview = () => {
             return object.wk === date && object.base_name === base;
           });
 
-          if (match) {
-            points.push(_.toNumber(match.qty_amb));
-          } else {
-            points.push(null);
-          }
+          const val = _.toNumber(match?.qty_amb) || 0;
+
+          points.push(val);
         });
 
         series.push({
@@ -58,6 +56,16 @@ const Overview = () => {
           data: points,
         });
       }
+
+      setWeeklySeries(series);
+    }
+  }, [payload]);
+
+  useEffect(() => {
+    const entry = payload?.records && payload?.records[0];
+
+    if (entry?.weekly_throughput) {
+      const dates = _.uniq(_.map(entry?.weekly_throughput, 'wk'));
 
       const options = {
         chart: {
@@ -67,17 +75,17 @@ const Overview = () => {
         },
 
         yaxis: {
-          logarithmic: weeklyMode === 'log',
+          logarithmic: weeklyMode !== 'linear',
+        },
+
+        xaxis: {
+          categories: dates,
         },
 
         legend: {
           position: 'right',
         },
-
-        labels: dates,
       };
-
-      setWeeklySeries(series);
       setWeeklyOptions(options);
     }
   }, [payload, weeklyMode]);

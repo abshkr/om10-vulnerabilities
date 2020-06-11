@@ -1,5 +1,17 @@
 import _ from 'lodash';
 
+const parser = (value) => {
+  switch (value) {
+    case true:
+      return 'true';
+    case false:
+      return 'false';
+
+    default:
+      return value;
+  }
+};
+
 const transform = (data, columns) => {
   const collection = [];
 
@@ -7,7 +19,7 @@ const transform = (data, columns) => {
     const record = {};
 
     _.forEach(columns, (column) => {
-      record[column.headerName] = element[column.field];
+      record[column.headerName] = parser(element[column.field]);
     });
 
     collection.push(record);

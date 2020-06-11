@@ -1029,6 +1029,7 @@
     "mtTypeSchedule": "Load From Schedule",
     "mtTypeOrder": "Load From Open Order",
     "sealRange": "Seal Range",
+    "equipmentTypeCode": "Equipment Type Code",
     "mtMngrOO": "Mgr Cmpy OO No.",
     "mtSoldTo": "Sold To",
     "mtShipTo": "Ship To",
@@ -1494,8 +1495,8 @@
     "onceOffDate": "Once off Date",
     "exceptionRules": "Exception Rules (List of events whereby Closeout will not run)",
     "overrideRules": "Exception Override Rules (List of events whereby Closeout will run regardless of Exception)",
-	"selectAllocationItem": "Please select allocation product item to reset",
-	"deliveredBeingZero": "Delivered volume is 0, reset is not required"
+    "selectAllocationItem": "Please select allocation product item to reset",
+    "deliveredBeingZero": "Delivered volume is 0, reset is not required"
   },
 
   "placeholder": {

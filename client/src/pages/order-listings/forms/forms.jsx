@@ -117,9 +117,10 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   };
 
   const getOrderItems = useCallback(() => {
-    const url = (pageState === 'create')
-      ? `${ORDER_LISTINGS.ORDER_ITEMS}?order_drwr_code=${supplier}&page_state=${pageState}`
-      : `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${orderNo}`;
+    const url =
+      pageState === 'create'
+        ? `${ORDER_LISTINGS.ORDER_ITEMS}?order_drwr_code=${supplier}&page_state=${pageState}`
+        : `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${orderNo}`;
     //: `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${value?.order_sys_no}`;
 
     axios.get(url).then((response) => {
@@ -158,13 +159,13 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
 
   const onFinish = async () => {
     const values = await validateFields();
-    console.log("order items", values);
+    console.log('order items', values);
 
     const gridItems = [];
     tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
-        gridItems.push(rowNode.data);
-    });       
-    console.log("order items2", gridItems);
+      gridItems.push(rowNode.data);
+    });
+    console.log('order items2', gridItems);
 
     const newItems = [];
     _.forEach(gridItems, (order_item) => {
@@ -565,7 +566,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
                 apiContext={setTableAPI}
                 //selectionMode="single"
                 onEditingFinished={onEditingFinished}
-                />
+              />
             </Form.Item>
           </TabPane>
           <TabPane tab={t('tabColumns.orderTrips')} disabled={IS_CREATING} key="2">

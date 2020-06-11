@@ -19,13 +19,13 @@ const BaseProducts = () => {
 
   const fields = columns(t);
 
-  const handleClick = value => {
+  const handleClick = (value) => {
     FormModal({
       value,
       form: <Forms value={value} />,
       id: value?.eqpt_id,
-      name: value?.eqpt_code,
-      t
+      name: value?.eqpt_title,
+      t,
     });
   };
 

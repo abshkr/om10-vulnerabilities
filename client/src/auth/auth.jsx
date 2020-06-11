@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { Modal } from 'antd';
 
 import { ROUTES } from '../constants';
 
@@ -21,6 +22,8 @@ export default (Authenticated) => {
 
     useEffect(() => {
       if (isIdle) {
+        Modal.destroyAll();
+
         history.push(ROUTES.LOG_OUT);
       }
     }, [isIdle, history]);
