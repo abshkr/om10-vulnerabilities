@@ -13,6 +13,12 @@ const PageContainer = styled.div`
     pointer-events: none;
     cursor: default;
   }
+
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  flex-direction: column;
+  height: calc(100vh - 70px);
 `;
 
 const PageHeaderContainer = styled.div`
@@ -32,7 +38,7 @@ const PageInjector = styled.div`
   padding: ${(props) => (props.minimal ? 'none' : '10px')};
   background: ${(props) => (props.minimal ? 'none' : '#fff')};
   border-radius: 2px;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   box-shadow: ${(props) =>
     props.minimal ? 'none' : '0 2px 0 rgba(54,45,89,0.15), 0 0 100px rgba(54,45,89,0.2)'};
 `;

@@ -5,6 +5,7 @@ import { FooterContainer } from './style';
 
 const Footer = () => {
   const [time, setTime] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -18,7 +19,13 @@ const Footer = () => {
   return (
     <>
       <FooterContainer>
-        Server Time: <span>{time || 'Loading...'}</span>
+        <div>
+          Server Time: <span>{time || 'Loading...'}</span>
+        </div>
+
+        <div style={{ textAlign: 'right' }}>
+          Logged In As : <span>{time || 'Loading...'}</span>
+        </div>
       </FooterContainer>
     </>
   );

@@ -194,12 +194,6 @@ const generatePaths = (t) => [
   },
 
   {
-    page: t('pageMenu.companies'),
-    name: t('pageNames.allocations'),
-    path: ROUTES.ALLOCATIONS,
-  },
-
-  {
     page: t('pageMenu.config'),
     name: t('pageNames.loadMeters'),
     path: ROUTES.LOAD_METERS,

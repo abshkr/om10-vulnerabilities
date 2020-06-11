@@ -1,10 +1,9 @@
 import styled from 'styled-components';
 
 const FooterContainer = styled.div`
-  position: fixed;
-  bottom: 10px;
   width: 100%;
-
+  display: flex;
+  justify-content: space-between;
   & span {
     font-weight: bold;
   }

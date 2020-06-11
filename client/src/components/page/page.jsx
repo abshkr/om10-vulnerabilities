@@ -52,27 +52,30 @@ const Page = ({
 
   return (
     <PageContainer>
-      {!noHeader && (
-        <PageHeaderContainer>
-          <PageHeader
-            title={name || page}
-            style={{ width: '30vw' }}
-            subTitle={description}
-            breadcrumb={{ routes: filtered }}
-            avatar={avatar ? { icon: <Icons type={avatar} size={32} /> } : null}
-          />
+      <div>
+        {!noHeader && (
+          <PageHeaderContainer>
+            <PageHeader
+              title={name || page}
+              style={{ width: '30vw' }}
+              subTitle={description}
+              breadcrumb={{ routes: filtered }}
+              avatar={avatar ? { icon: <Icons type={avatar} size={32} /> } : null}
+            />
 
-          <PageHeaderExtras>{modifiers}</PageHeaderExtras>
-        </PageHeaderContainer>
-      )}
+            <PageHeaderExtras>{modifiers}</PageHeaderExtras>
+          </PageHeaderContainer>
+        )}
 
-      <Helmet>
-        <title>{name ? `${name} ─ ${page} ─ OMEGA 5000` : `${page} ─ OMEGA 5000`}</title>
-      </Helmet>
+        <Helmet>
+          <title>{name ? `${name} ─ ${page} ─ OMEGA 5000` : `${page} ─ OMEGA 5000`}</title>
+        </Helmet>
 
-      <PageInjector minimal={minimal}>
-        <div className="main-container">{children}</div>
-      </PageInjector>
+        <PageInjector minimal={minimal}>
+          <div className="main-container">{children}</div>
+        </PageInjector>
+      </div>
+
       <Footer />
     </PageContainer>
   );
