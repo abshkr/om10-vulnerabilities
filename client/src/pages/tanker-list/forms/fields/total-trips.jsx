@@ -10,7 +10,7 @@ const TotalTrips = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tnkr_ntrips: value.tnkr_ntrips
+        tnkr_ntrips: value.tnkr_ntrips,
       });
     }
   }, [value, setFieldsValue]);
@@ -29,7 +29,7 @@ const TotalTrips = ({ form, value }) => {
       label={t('fields.totalTrips')}
       rules={[{ required: false, validator: validate }]}
     >
-      <InputNumber />
+      <InputNumber min={0} />
     </Form.Item>
   );
 };

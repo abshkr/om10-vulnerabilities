@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } from './style';
 
-import { Footer } from '..';
+import { Footer, Icons } from '..';
 
 const Page = ({
   name,
@@ -59,7 +59,7 @@ const Page = ({
             style={{ width: '30vw' }}
             subTitle={description}
             breadcrumb={{ routes: filtered }}
-            avatar={avatar ? { icon: avatar, style: { background: 'white' } } : null}
+            avatar={avatar ? { icon: <Icons type={avatar} size={32} /> } : null}
           />
 
           <PageHeaderExtras>{modifiers}</PageHeaderExtras>

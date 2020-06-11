@@ -6,6 +6,7 @@ import { Form, Input } from 'antd';
 import _ from 'lodash';
 
 import { BASE_PRODUCTS } from '../../../../api';
+import { REGEX } from '../../../../constants';
 
 const Code = ({ form, value }) => {
   const { t } = useTranslation();
@@ -17,15 +18,22 @@ const Code = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        base_code: value.base_code
+        base_code: value.base_code,
       });
     }
   }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
-    const match = _.find(baseProducts?.records, record => {
+    const match = _.find(baseProducts?.records, (record) => {
       return record.base_code.toLowerCase() === input?.toLowerCase();
     });
+
+    const regex = new RegExp(REGEX.ALPHANUMERIC);
+    const validated = regex.exec(input);
+
+    if (!validated) {
+      return Promise.reject(`${t('placeholder.invalidInput')}: ${t('descriptions.mustBeAlphaNumeric')}`);
+    }
 
     if (!!match && !value) {
       return Promise.reject(t('descriptions.alreadyExists'));

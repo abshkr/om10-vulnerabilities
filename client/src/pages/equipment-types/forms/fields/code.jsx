@@ -43,13 +43,21 @@ const Code = ({ form, value }) => {
   };
 
   return (
-    <Form.Item
-      name="etyp_title"
-      label={t('fields.equipmentTypeCode')}
-      rules={[{ required: true, validator: validate }]}
-    >
-      <Input disabled={!!value || isValidating} />
-    </Form.Item>
+    <>
+      <Form.Item
+        name="etyp_title"
+        label={t('fields.equipmentTypeCode')}
+        rules={[{ required: true, validator: validate }]}
+      >
+        <Input disabled={!!value || isValidating} />
+      </Form.Item>
+
+      {value && (
+        <Form.Item label={t('fields.compartments')}>
+          <Input value={value?.cmptnu} disabled />
+        </Form.Item>
+      )}
+    </>
   );
 };
 

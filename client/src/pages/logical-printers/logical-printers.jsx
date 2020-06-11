@@ -57,7 +57,7 @@ const LogicalPrinters = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access}>
+    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="logicalPrinters">
       <DataTable
         data={data}
         columns={fields}

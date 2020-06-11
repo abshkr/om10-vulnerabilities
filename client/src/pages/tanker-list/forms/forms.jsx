@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   EditOutlined,
@@ -52,11 +52,11 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   const IS_CREATING = !value;
 
   const onComplete = () => {
-    handleFormState(false, null); 
+    handleFormState(false, null);
     mutate(TANKER_LIST.READ);
   };
 
-  const onFinish =  async () => {
+  const onFinish = async () => {
     const values = await form.validateFields();
 
     let matches = [];
@@ -88,7 +88,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
           .then(
             axios.spread((response) => {
               onComplete();
-              
+
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
@@ -160,6 +160,12 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
     });
   };
 
+  useEffect(() => {
+    if (!value && !visible) {
+      form.resetFields();
+    }
+  }, [value, visible]);
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -219,10 +225,10 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
     >
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane 
-            // className="ant-tab-window" 
-            tab={t('tabColumns.identification')} 
-            forceRender={true} 
+          <TabPane
+            // className="ant-tab-window"
+            tab={t('tabColumns.identification')}
+            forceRender={true}
             key="1"
           >
             {/* <Depot form={form} value={value} /> */}

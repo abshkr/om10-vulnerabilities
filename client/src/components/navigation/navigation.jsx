@@ -50,6 +50,10 @@ const Navigation = () => {
             </>
           }
         >
+          <Menu.Item key="operations" disabled>
+            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.operations')}</div>
+          </Menu.Item>
+
           <Menu.Item key={ROUTES.LOAD_SCHEDULES} style={{ display: 'flex', marginTop: 10 }}>
             <Icons size={40} type="loadSchedules" /> {t('pageNames.loadSchedules')}
           </Menu.Item>
@@ -116,6 +120,10 @@ const Navigation = () => {
             </>
           }
         >
+          <Menu.Item key="stock" disabled>
+            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.stock')}</div>
+          </Menu.Item>
+
           <Menu.Item key={ROUTES.TANKS} style={{ display: 'flex', marginTop: 10 }}>
             <Icons size={40} type="tankScreen" />
             {t('pageNames.tanks')}
@@ -160,6 +168,10 @@ const Navigation = () => {
             </>
           }
         >
+          <Menu.Item key="reports" disabled>
+            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.reports')}</div>
+          </Menu.Item>
+
           <Menu.Item key={ROUTES.FOLIO_SUMMARY} style={{ display: 'flex', marginTop: 10 }}>
             <Icons size={40} type="folioSummary" /> {t('pageNames.folioSummary')}
           </Menu.Item>
@@ -197,6 +209,10 @@ const Navigation = () => {
             </>
           }
         >
+          <Menu.Item key="security" disabled>
+            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.security')}</div>
+          </Menu.Item>
+
           <Menu.Item key={ROUTES.PERSONNEL} style={{ display: 'flex', marginTop: 10 }}>
             <Icons size={40} type="personnel" /> {t('pageNames.personnel')}
           </Menu.Item>
@@ -234,6 +250,10 @@ const Navigation = () => {
             </>
           }
         >
+          <Menu.Item key="products" disabled>
+            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.products')}</div>
+          </Menu.Item>
+
           <Menu.Item key={ROUTES.BASE_PRODUCTS} style={{ display: 'flex', marginTop: 10 }}>
             <Icons size={40} type="baseProducts" /> {t('pageNames.baseProducts')}
           </Menu.Item>
@@ -263,6 +283,10 @@ const Navigation = () => {
             </>
           }
         >
+          <Menu.Item key="companies" disabled>
+            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.companies')}</div>
+          </Menu.Item>
+
           <Menu.Item key={ROUTES.COMPANIES} style={{ display: 'flex', marginTop: 10 }}>
             <Icons size={40} type="companies" />
             {t('pageNames.companies')}
@@ -312,6 +336,10 @@ const Navigation = () => {
             </>
           }
         >
+          <Menu.Item key="config" disabled>
+            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.config')}</div>
+          </Menu.Item>
+
           <Menu.Item key={ROUTES.LOAD_BAYS} style={{ display: 'flex', marginTop: 10 }}>
             <Icons size={40} type="loadBays" />
             {t('pageNames.loadBays')}
@@ -377,6 +405,10 @@ const Navigation = () => {
             </>
           }
         >
+          <Menu.Item key="modules" disabled>
+            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.modules')}</div>
+          </Menu.Item>
+
           <Menu.Item key={ROUTES.BAY_VIEW} style={{ display: 'flex', marginTop: 10 }}>
             <Icons size={40} type="bayView" />
             {t('pageNames.bayView')}

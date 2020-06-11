@@ -180,6 +180,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <Code form={form} value={value} />
+
             {IS_CREATING && IS_COMBINATION && <Combination form={form} value={value} />}
 
             {!IS_CREATING && <Compartments form={form} value={value} isCombination={IS_COMBINATION} />}

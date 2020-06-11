@@ -10,7 +10,7 @@ const MaxKg = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tnkr_max_kg: value.tnkr_max_kg
+        tnkr_max_kg: value.tnkr_max_kg,
       });
     }
   }, [value, setFieldsValue]);
@@ -29,7 +29,7 @@ const MaxKg = ({ form, value }) => {
       label={t('fields.maxKg')}
       rules={[{ required: false, validator: validate }]}
     >
-      <InputNumber />
+      <InputNumber min={0} />
     </Form.Item>
   );
 };

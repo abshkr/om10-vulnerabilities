@@ -10,7 +10,7 @@ const Pin = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tnkr_pin: value.tnkr_pin
+        tnkr_pin: value.tnkr_pin,
       });
     }
   }, [value, setFieldsValue]);
@@ -24,7 +24,7 @@ const Pin = ({ form, value }) => {
 
   return (
     <Form.Item name="tnkr_pin" label={t('fields.pin')} rules={[{ required: false, validator: validate }]}>
-      <InputNumber />
+      <InputNumber min={0} />
     </Form.Item>
   );
 };
