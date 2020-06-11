@@ -1,5 +1,15 @@
 const columns = (t) => [
   {
+    headerName: t('fields.tankCode'),
+    field: 'tank_code',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 120,
+    suppressSizeToFit: true,
+    pinned: "left",
+  },
+  {
     width: 120,
     headerName: t('fields.atgStatus'),
     field: 'tank_atg_status',
@@ -15,17 +25,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 110,
     cellRenderer: 'BooleanRenderer',
-    suppressSizeToFit: true,
-  },
-  {
-    headerName: t('fields.tankCode'),
-    field: 'tank_code',
-    filter: 'FuzzyFilter',
-    sortable: true,
-    resizable: true,
-    width: 120,
     suppressSizeToFit: true,
   },
   {
@@ -37,22 +38,22 @@ const columns = (t) => [
     width: 120,
     suppressSizeToFit: true,
   },
-  {
-    headerName: t('fields.terminal'),
-    field: 'tank_sitename',
-    filter: 'FuzzyFilter',
-    sortable: true,
-    resizable: true,
-    width: 120,
-    suppressSizeToFit: true,
-  },
+  // {
+  //   headerName: t('fields.terminal'),
+  //   field: 'tank_sitename',
+  //   filter: 'FuzzyFilter',
+  //   sortable: true,
+  //   resizable: true,
+  //   width: 120,
+  //   suppressSizeToFit: true,
+  // },
   {
     headerName: t('fields.productCode'),
     field: 'tank_base',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 140,
     suppressSizeToFit: true,
   },
   {
@@ -61,7 +62,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 160,
     suppressSizeToFit: true,
   },
   {
@@ -70,7 +71,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 200,
     suppressSizeToFit: true,
   },
   {
@@ -79,7 +80,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 110,
     suppressSizeToFit: true,
   },
   {
@@ -88,7 +89,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 130,
     suppressSizeToFit: true,
   },
   {
@@ -97,7 +98,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 150,
     suppressSizeToFit: true,
   },
   {
@@ -106,7 +107,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 160,
     suppressSizeToFit: true,
   },
   {
@@ -115,20 +116,18 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 150,
     suppressSizeToFit: true,
   },
-
   {
     headerName: t('fields.standardVolume'),
     field: 'tank_cor_vol',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 150,
     suppressSizeToFit: true,
   },
-
   {
     headerName: t('fields.liquidMass'),
     field: 'tank_liquid_kg',
@@ -165,7 +164,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 140,
     suppressSizeToFit: true,
   },
 
@@ -175,7 +174,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 100,
     suppressSizeToFit: true,
   },
 
@@ -185,8 +184,9 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 160,
     suppressSizeToFit: true,
+    cellRenderer: 'TemperatureRender',
   },
 
   {
@@ -205,7 +205,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 160,
     suppressSizeToFit: true,
   },
 
@@ -245,7 +245,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 160,
     suppressSizeToFit: true,
   },
 

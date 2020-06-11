@@ -66,7 +66,7 @@ class CommonClass
     //All the fields that should be treated as number in JSON. For example:
     // array(
     //     "TANK_BCLASS_DENS_HI",
-    //     "TANK_BCLASS_DENS_LO",
+    //     "TANK_BCLASS_DENS_LO" => 2,  //2 decimals
     // );
     public $NUMBER_FIELDS = null;
 

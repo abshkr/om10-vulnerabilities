@@ -9,6 +9,7 @@ import { Page, DataTable, Download, FormModal } from '../../components';
 import { TANK_STATUS } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
+import TemperatureRender from './temperature-render';
 
 import Forms from './forms';
 
@@ -43,7 +44,15 @@ const TankStatus = () => {
 
   return (
     <Page page={t('pageMenu.stockManagement')} name={t('pageNames.tankStatus')} modifiers={modifiers}>
-      <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
+      <DataTable 
+        columns={fields} 
+        data={data} 
+        isLoading={isValidating} 
+        onClick={handleClick} 
+        components={{
+          TemperatureRender: TemperatureRender,
+        }}
+      />
     </Page>
   );
 };

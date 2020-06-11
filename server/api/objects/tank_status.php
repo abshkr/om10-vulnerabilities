@@ -128,23 +128,23 @@ class TankStatus extends CommonClass
         "TANK_BCLASS_TEMP_LO",
         "TANK_BCLASS_TEMP_HI",
         "TANK_POLL_GAP",
-        "TANK_CLOSE_DENS",
-        "TANK_DENSITY",
+        "TANK_CLOSE_DENS" => 3,
+        "TANK_DENSITY" => 3,
         "TANK_BASE_REF_TEMP",
         "TANK_BASE_DENS_LO",
         "TANK_BASE_DENS_HI",
         "TANK_VAPOUR_KG",
-        "TANK_LIQUID_KG",
+        "TANK_LIQUID_KG" => 0,
         "TANK_WATER",
         "TANK_WATER_LVL",
         "TANK_PUMP_VOL",
         "TANK_LTR_CLOSE",
         "TANK_KG_CLOSE",
         "TANK_AMB_DENSITY",
-        "TANK_AMB_VOL",
-        "TANK_COR_VOL",
+        "TANK_AMB_VOL" => 0,
+        "TANK_COR_VOL" => 0,
         "TANK_PROD_LVL",
-        "TANK_TEMP",
+        "TANK_TEMP" => 2,
         "TANK_RCPTS",
         "TANK_TRFS",
         "TANK_NO_SBT",
@@ -239,6 +239,28 @@ class TankStatus extends CommonClass
         $xml = simplexml_load_string($res);
         echo json_encode($xml, JSON_PRETTY_PRINT);
     }
+
+    //Because in db, some status like tank_hh_state is -1, which means null. This is old CGI legacy
+    public function read_decorate(&$result_array)
+    {
+        foreach ($result_array as $key => $tank_item) {
+            foreach ($tank_item as $item => $item_value) {
+                if ((
+                        $item === "tank_hh_state" || 
+                        $item === "tank_h_state" ||
+                        $item === "tank_l_state" ||
+                        $item === "tank_ll_state" ||
+                        $item === "tank_uh_state" ||
+                        $item === "tank_ul_state"
+                    ) && $item_value === "-1") {
+                    $result_array[$key][$item] = "";
+                } //else if ($item === "tank_temp") {
+                    // $result_array[$key]["tank_temp_f"] = ((float)$item_value) * 1.8 + 32;
+                // }
+            }
+        }
+    }
+
 
     //Because base cannot be too many, do not do limit
     //Old sample from amf TankService.php::getPaged():
