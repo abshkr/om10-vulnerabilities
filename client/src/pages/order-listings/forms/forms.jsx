@@ -71,6 +71,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const [orderItems, setOrderItems] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
   const [showDeliveryDetails, setShowDeliveryDetails] = useState(false);
+  const [tableAPI, setTableAPI] = useState(null);
 
   //console.log("access in OO", access);
   console.log('pageState in OO', pageState);
@@ -131,19 +132,20 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
 
   const onFinish = async () => {
     const values = await validateFields();
+
     const orderItems = [];
 
-    _.forEach(values?.order_items, (order_item) => {
-      if (order_item.oitem_prod_qty > 0) {
+    tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
+      if (rowNode.data?.oitem_prod_qty > 0) {
         orderItems.push({
-          oitem_prod_cmpy: order_item.oitem_prod_cmpy,
-          oitem_prod_code: order_item.oitem_prod_code,
-          oitem_prod_qty: _.toNumber(order_item.oitem_prod_qty),
-          oitem_prod_unit: _.toNumber(order_item.oitem_prod_unit),
-          oitem_pack_size: _.toNumber(order_item.oitem_pack_size),
-          oitem_prod_price: _.toNumber(order_item.oitem_prod_price),
-          oitem_exempt_no: order_item.oitem_exempt_no,
-          oitem_padj_code: order_item.oitem_padj_code,
+          oitem_prod_cmpy: rowNode.data.oitem_prod_cmpy,
+          oitem_prod_code: rowNode.data.oitem_prod_code,
+          oitem_prod_qty: _.toNumber(rowNode.data.oitem_prod_qty),
+          oitem_prod_unit: _.toNumber(rowNode.data.oitem_prod_unit),
+          oitem_pack_size: _.toNumber(rowNode.data.oitem_pack_size),
+          oitem_prod_price: _.toNumber(rowNode.data.oitem_prod_price),
+          oitem_exempt_no: rowNode.data.oitem_exempt_no,
+          oitem_padj_code: rowNode.data.oitem_padj_code,
         });
       }
     });
@@ -521,6 +523,8 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
                 columns={columns(t, pageState, form, units)}
                 //onClick={(value) => setSelected(value)}
                 handleSelect={(value) => setSelected(value[0])}
+                apiContext={setTableAPI}
+
                 //apiContext={setTableAPI}
               />
             </Form.Item>

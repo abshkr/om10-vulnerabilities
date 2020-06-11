@@ -29,17 +29,17 @@ const EquipmentTypes = () => {
       Modal.confirm({
         title: 'Is it a combination?',
         icon: <ExclamationCircleOutlined />,
-        okText: 'Yes',
-        cancelText: 'No',
+        okText: 'No',
+        cancelText: 'Yes',
         centered: true,
         onOk() {
-          setCombination(true);
+          setCombination(false);
 
           setVisible(visibility);
           setSelected(value);
         },
         onCancel() {
-          setCombination(false);
+          setCombination(true);
 
           setVisible(visibility);
           setSelected(value);

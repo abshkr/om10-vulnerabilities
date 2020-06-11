@@ -32,18 +32,22 @@ const Code = ({ form, value }) => {
     }
 
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.equipmentTypeCode')}`);
     }
 
-    if (input && input.length > 40) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && input.length > 16) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();
   };
 
   return (
-    <Form.Item name="etyp_title" label={t('fields.code')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item
+      name="etyp_title"
+      label={t('fields.equipmentTypeCode')}
+      rules={[{ required: true, validator: validate }]}
+    >
       <Input disabled={!!value || isValidating} />
     </Form.Item>
   );

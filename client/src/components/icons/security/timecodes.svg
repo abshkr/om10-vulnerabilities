@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.1.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+<g>
+	<circle fill="#FFFFFF" cx="256" cy="256" r="256"/>
+</g>
+<g>
+	
+		<image overflow="visible" opacity="0.75" width="248" height="115" xlink:href="D04555F4.png"  transform="matrix(1 0 0 1 139 65)">
+	</image>
+	<g>
+		<text transform="matrix(1 0 0 1 147.9651 135.6548)" fill="#C1272D" font-family="'Arial-Black'" font-size="72px">10:00</text>
+	</g>
+</g>
+<g>
+	
+		<image overflow="visible" opacity="0.75" width="248" height="115" xlink:href="D04555F5.png"  transform="matrix(1 0 0 1 139 333)">
+	</image>
+	<g>
+		<text transform="matrix(1 0 0 1 147.9651 403.6548)" fill="#C1272D" font-family="'Arial-Black'" font-size="72px">18:00</text>
+	</g>
+</g>
+<g>
+	
+		<image overflow="visible" opacity="0.13" width="113" height="185" xlink:href="D04555F3.png"  transform="matrix(1 0 0 1 207.9999 157.9999)">
+	</image>
+	<g>
+		<path fill-rule="evenodd" clip-rule="evenodd" fill="#208F2B" d="M278.7,219.8v50.5h14.1L256,315.3l-36.8-45.1h14.1v-50.5H278.7
+			L278.7,219.8z M278.7,189.5v20.2h-45.5v-20.2H278.7L278.7,189.5z M278.7,169.3v10.1h-45.5v-10.1H278.7z"/>
+		
+			<path fill="none" stroke="#F2F2F2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+			M278.7,219.8v50.5h14.1L256,315.3l-36.8-45.1h14.1v-50.5H278.7L278.7,219.8z M278.7,189.5v20.2h-45.5v-20.2H278.7L278.7,189.5z
+			 M278.7,169.3v10.1h-45.5v-10.1H278.7z"/>
+	</g>
+</g>
+</svg>

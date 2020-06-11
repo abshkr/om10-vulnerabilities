@@ -50,55 +50,61 @@ const Navigation = () => {
             </>
           }
         >
-          <Menu.Item key={ROUTES.LOAD_SCHEDULES}>
-            <Badge status="success" /> {t('pageNames.loadSchedules')}
+          <Menu.Item key={ROUTES.LOAD_SCHEDULES} style={{ display: 'flex', marginTop: 10 }}>
+            <Icons size={40} type="loadSchedules" /> {t('pageNames.loadSchedules')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.ORDER_LISTING}>
-            <Badge status="success" /> {t('pageNames.orderListing')}
+          <Menu.Item key={ROUTES.ORDER_LISTING} style={{ display: 'flex' }}>
+            <Icons size={40} type="orderListing" /> {t('pageNames.orderListing')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.TRANSACTION_LIST}>
-            <Badge status="success" /> {t('pageNames.transactionList')}
+          <Menu.Item key={ROUTES.TRANSACTION_LIST} style={{ display: 'flex' }}>
+            <Icons size={40} type="transactionList" /> {t('pageNames.transactionList')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.MOVEMENT_NOMINATIONS}>
-            <Badge status="success" />
+          <Menu.Item key={ROUTES.MOVEMENT_NOMINATIONS} style={{ display: 'flex' }}>
+            <Icons size={40} type="movementNominations" />
             {t('pageNames.movementNominations')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.SPECIAL_MOVEMENTS}>
-            <Badge status="success" />
+          <Menu.Item key={ROUTES.SPECIAL_MOVEMENTS} style={{ display: 'flex' }}>
+            <Icons size={40} type="specialMovements" />
             {t('pageNames.specialMovements')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.MANUAL_TRANSACTIONS}>
-            <Badge status="warning" />
+          <Menu.Item key={ROUTES.MANUAL_TRANSACTIONS} style={{ display: 'flex' }}>
+            <Icons size={40} type="manualTransactions" />
             {t('pageNames.manualTransactions')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.PRODUCT_MOVEMENTS}>
-            <Badge status="success" /> {t('pageNames.productMovements')}
+          <Menu.Item key={ROUTES.PRODUCT_MOVEMENTS} style={{ display: 'flex' }}>
+            <Icons size={40} type="productMovements" />
+            {t('pageNames.productMovements')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.INVENTORY_REQUESTS}>
-            <Badge status="success" /> {t('pageNames.inventoryRequests')}
+          <Menu.Item key={ROUTES.INVENTORY_REQUESTS} style={{ display: 'flex' }}>
+            <Icons size={40} type="inventoryRequests" />
+            {t('pageNames.inventoryRequests')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.GATE_CONTROL}>
-            <Badge status="success" /> {t('pageNames.gateControl')}
+          <Menu.Item key={ROUTES.GATE_CONTROL} style={{ display: 'flex' }}>
+            <Icons size={40} type="gateControl" />
+            {t('pageNames.gateControl')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.EQUIPMENT_TYPES}>
-            <Badge status="success" /> {t('pageNames.equipmentTypes')}
+          <Menu.Item key={ROUTES.EQUIPMENT_TYPES} style={{ display: 'flex' }}>
+            <Icons size={40} type="equipmentTypes" />
+            {t('pageNames.equipmentTypes')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.EQUIPMENT_LIST}>
-            <Badge status="success" /> {t('pageNames.equipmentList')}
+          <Menu.Item key={ROUTES.EQUIPMENT_LIST} style={{ display: 'flex' }}>
+            <Icons size={40} type="equipmentList" />
+            {t('pageNames.equipmentList')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.TANKER_LIST}>
-            <Badge status="success" /> {t('pageNames.tankerList')}
+          <Menu.Item key={ROUTES.TANKER_LIST} style={{ display: 'flex', marginBottom: 10 }}>
+            <Icons size={40} type="tankerList" />
+            {t('pageNames.tankerList')}
           </Menu.Item>
         </SubMenu>
 
@@ -110,36 +116,39 @@ const Navigation = () => {
             </>
           }
         >
-          <Menu.Item key={ROUTES.TANKS}>
-            <Badge status="success" /> {t('pageNames.tanks')}
+          <Menu.Item key={ROUTES.TANKS} style={{ display: 'flex', marginTop: 10 }}>
+            <Icons size={40} type="tankScreen" />
+            {t('pageNames.tanks')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.TANK_GROUPS}>
-            <Badge status="success" /> {t('pageNames.tankGroups')}
+          <Menu.Item key={ROUTES.TANK_GROUPS} style={{ display: 'flex' }}>
+            <Icons size={40} type="tankGroups" />
+            {t('pageNames.tankGroups')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.SITE_BALANCE}>
-            <Badge status="success" /> {t('pageNames.siteBalance')}
+          <Menu.Item key={ROUTES.SITE_BALANCE} style={{ display: 'flex' }}>
+            <Icons size={40} type="siteBalance" />
+            {t('pageNames.siteBalance')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.TANK_INVENTORY}>
-            <Badge status="success" /> {t('pageNames.tankInventory')}
+          <Menu.Item key={ROUTES.TANK_INVENTORY} style={{ display: 'flex' }}>
+            <Icons size={40} type="tankInventory" />
+            {t('pageNames.tankInventory')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.PRODUCT_INVENTORY}>
-            <Badge status="success" /> {t('pageNames.productInventory')}
+          <Menu.Item key={ROUTES.PRODUCT_INVENTORY} style={{ display: 'flex' }}>
+            <Icons size={40} type="productInventory" />
+            <span>{t('pageNames.productInventory')}</span>
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.TANK_STATUS}>
-            <Badge status="success" /> {t('pageNames.tankStatus')}
+          <Menu.Item key={ROUTES.TANK_STATUS} style={{ display: 'flex' }}>
+            <Icons size={40} type="tankStatus" />
+            {t('pageNames.tankStatus')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.TANK_STRAPPING}>
-            <Badge status="success" /> {t('pageNames.tankStrapping')}
-          </Menu.Item>
-
-          <Menu.Item key={ROUTES.SELF_FUEL_TRANSACTION_LIST}>
-            <Badge status="success" /> {t('pageNames.selfFuelTransactionList')}
+          <Menu.Item key={ROUTES.SELF_FUEL_TRANSACTION_LIST} style={{ display: 'flex', marginBottom: 10 }}>
+            <Icons size={40} type="selfFuelTransactionList" />
+            {t('pageNames.selfFuelTransactionList')}
           </Menu.Item>
         </SubMenu>
 
@@ -151,32 +160,32 @@ const Navigation = () => {
             </>
           }
         >
-          <Menu.Item key={ROUTES.FOLIO_SUMMARY}>
-            <Badge status="success" /> {t('pageNames.folioSummary')}
+          <Menu.Item key={ROUTES.FOLIO_SUMMARY} style={{ display: 'flex', marginTop: 10 }}>
+            <Icons size={40} type="folioSummary" /> {t('pageNames.folioSummary')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.ON_DEMAND_REPORTS}>
-            <Badge status="success" /> {t('pageNames.onDemandReports')}
+          <Menu.Item key={ROUTES.ON_DEMAND_REPORTS} style={{ display: 'flex' }}>
+            <Icons size={40} type="onDemandReports" /> {t('pageNames.onDemandReports')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.JOURNAL}>
-            <Badge status="success" /> {t('pageNames.journal')}
+          <Menu.Item key={ROUTES.JOURNAL} style={{ display: 'flex' }}>
+            <Icons size={40} type="journal" /> {t('pageNames.journal')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.HOST_MESSAGING_INTERFACE}>
-            <Badge status="warning" /> {t('pageNames.hostMessagingInterface')}
+          <Menu.Item key={ROUTES.HOST_MESSAGING_INTERFACE} style={{ display: 'flex' }}>
+            <Icons size={40} type="hostMessagingInterface" /> {t('pageNames.hostMessagingInterface')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.PERSONNEL_ON_SITE}>
-            <Badge status="success" /> {t('pageNames.personnelOnSite')}
+          <Menu.Item key={ROUTES.PERSONNEL_ON_SITE} style={{ display: 'flex' }}>
+            <Icons size={40} type="personnelOnSite" /> {t('pageNames.personnelOnSite')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.AUDITING_DATA}>
-            <Badge status="success" /> {t('pageNames.auditingData')}
+          <Menu.Item key={ROUTES.AUDITING_DATA} style={{ display: 'flex' }}>
+            <Icons size={40} type="auditingData" /> {t('pageNames.auditingData')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.METERING}>
-            <Badge status="success" /> {t('pageNames.metering')}
+          <Menu.Item key={ROUTES.METERING} style={{ display: 'flex', marginBottom: 10 }}>
+            <Icons size={40} type="metering" /> {t('pageNames.metering')}
           </Menu.Item>
         </SubMenu>
 
@@ -188,32 +197,32 @@ const Navigation = () => {
             </>
           }
         >
-          <Menu.Item key={ROUTES.PERSONNEL}>
-            <Badge status="success" /> {t('pageNames.personnel')}
+          <Menu.Item key={ROUTES.PERSONNEL} style={{ display: 'flex', marginTop: 10 }}>
+            <Icons size={40} type="personnel" /> {t('pageNames.personnel')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.ID_ASSIGNMENT}>
-            <Badge status="success" /> {t('pageNames.idAssignment')}
+          <Menu.Item key={ROUTES.ID_ASSIGNMENT} style={{ display: 'flex' }}>
+            <Icons size={40} type="idAssignment" /> {t('pageNames.idAssignment')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.EXPIRY_DATES}>
-            <Badge status="success" /> {t('pageNames.expiryDates')}
+          <Menu.Item key={ROUTES.EXPIRY_DATES} style={{ display: 'flex' }}>
+            <Icons size={40} type="expiryDates" /> {t('pageNames.expiryDates')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.TIME_CODES}>
-            <Badge status="success" /> {t('pageNames.timeCodes')}
+          <Menu.Item key={ROUTES.TIME_CODES} style={{ display: 'flex' }}>
+            <Icons size={40} type="timeCodes" /> {t('pageNames.timeCodes')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.ROLE_ACCESS_MANAGEMENT}>
-            <Badge status="success" /> {t('pageNames.roleAccessManagement')}
+          <Menu.Item key={ROUTES.ROLE_ACCESS_MANAGEMENT} style={{ display: 'flex' }}>
+            <Icons size={40} type="roleAccessManagement" /> {t('pageNames.roleAccessManagement')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.AREA}>
-            <Badge status="success" /> {t('pageNames.area')}
+          <Menu.Item key={ROUTES.AREA} style={{ display: 'flex' }}>
+            <Icons size={40} type="area" /> {t('pageNames.area')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.GATE_PERMISSION}>
-            <Badge status="success" /> {t('pageNames.gatePermission')}
+          <Menu.Item key={ROUTES.GATE_PERMISSION} style={{ display: 'flex', marginBottom: 10 }}>
+            <Icons size={40} type="gatePermission" /> {t('pageNames.gatePermission')}
           </Menu.Item>
         </SubMenu>
 
@@ -225,24 +234,24 @@ const Navigation = () => {
             </>
           }
         >
-          <Menu.Item key={ROUTES.BASE_PRODUCTS}>
-            <Badge status="success" /> {t('pageNames.baseProducts')}
+          <Menu.Item key={ROUTES.BASE_PRODUCTS} style={{ display: 'flex', marginTop: 10 }}>
+            <Icons size={40} type="baseProducts" /> {t('pageNames.baseProducts')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.DRAWER_PRODUCTS}>
-            <Badge status="success" /> {t('pageNames.drawerProducts')}
+          <Menu.Item key={ROUTES.DRAWER_PRODUCTS} style={{ display: 'flex' }}>
+            <Icons size={40} type="drawerProducts" /> {t('pageNames.drawerProducts')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.HAZCHEM_CODES}>
-            <Badge status="success" /> {t('pageNames.hazchemCodes')}
+          <Menu.Item key={ROUTES.HAZCHEM_CODES} style={{ display: 'flex' }}>
+            <Icons size={40} type="hazchemCodes" /> {t('pageNames.hazchemCodes')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.DANGEROUS_GOODS}>
-            <Badge status="success" /> {t('pageNames.dangerousGoods')}
+          <Menu.Item key={ROUTES.DANGEROUS_GOODS} style={{ display: 'flex' }}>
+            <Icons size={40} type="dangerousGoods" /> {t('pageNames.dangerousGoods')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.PRODUCT_GROUPS}>
-            <Badge status="success" /> {t('pageNames.productGroups')}
+          <Menu.Item key={ROUTES.PRODUCT_GROUPS} style={{ display: 'flex', marginBottom: 10 }}>
+            <Icons size={40} type="productGroups" /> {t('pageNames.productGroups')}
           </Menu.Item>
         </SubMenu>
 
@@ -254,36 +263,44 @@ const Navigation = () => {
             </>
           }
         >
-          <Menu.Item key={ROUTES.COMPANIES}>
-            <Badge status="success" /> {t('pageNames.companies')}
+          <Menu.Item key={ROUTES.COMPANIES} style={{ display: 'flex', marginTop: 10 }}>
+            <Icons size={40} type="companies" />
+            {t('pageNames.companies')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.ALLOCATIONS}>
-            <Badge status="success" /> {t('pageNames.allocations')}
+          <Menu.Item key={ROUTES.ALLOCATIONS} style={{ display: 'flex' }}>
+            <Icons size={40} type="allocations" />
+            {t('pageNames.allocations')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.CUSTOMERS}>
-            <Badge status="success" /> {t('pageNames.customers')}
+          <Menu.Item key={ROUTES.CUSTOMERS} style={{ display: 'flex' }}>
+            <Icons size={40} type="customerScreen" />
+            {t('pageNames.customers')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.ADDRESSES}>
-            <Badge status="success" /> {t('pageNames.addresses')}
+          <Menu.Item key={ROUTES.ADDRESSES} style={{ display: 'flex' }}>
+            <Icons size={40} type="addresses" />
+            {t('pageNames.addresses')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.DELIVERY_LOCATIONS}>
-            <Badge status="success" /> {t('pageNames.deliveryLocations')}
+          <Menu.Item key={ROUTES.DELIVERY_LOCATIONS} style={{ display: 'flex' }}>
+            <Icons size={40} type="deliveryLocations" />
+            {t('pageNames.deliveryLocations')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.PARTNERS}>
-            <Badge status="success" /> {t('pageNames.partners')}
+          <Menu.Item key={ROUTES.PARTNERS} style={{ display: 'flex' }}>
+            <Icons size={40} type="partners" />
+            {t('pageNames.partners')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.PARTNERSHIP}>
-            <Badge status="success" /> {t('pageNames.partnership')}
+          <Menu.Item key={ROUTES.PARTNERSHIP} style={{ display: 'flex' }}>
+            <Icons size={40} type="partnership" />
+            {t('pageNames.partnership')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.CUSTOMER_CATEGORIES}>
-            <Badge status="success" /> {t('pageNames.customerCategories')}
+          <Menu.Item key={ROUTES.CUSTOMER_CATEGORIES} style={{ display: 'flex', marginBottom: 10 }}>
+            <Icons size={40} type="customerCategories" />
+            {t('pageNames.customerCategories')}
           </Menu.Item>
         </SubMenu>
 
@@ -295,56 +312,60 @@ const Navigation = () => {
             </>
           }
         >
-          <Menu.Item key={ROUTES.LOAD_BAYS}>
-            <Badge status="success" /> {t('pageNames.loadBays')}
+          <Menu.Item key={ROUTES.LOAD_BAYS} style={{ display: 'flex', marginTop: 10 }}>
+            <Icons size={40} type="loadBays" />
+            {t('pageNames.loadBays')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.COMPANY_BAY_MOVEMENT}>
-            <Badge status="success" /> {t('pageNames.companyBayMovement')}
+          <Menu.Item key={ROUTES.COMPANY_BAY_MOVEMENT} style={{ display: 'flex' }}>
+            <Icons size={40} type="companyBayMovement" />
+            {t('pageNames.companyBayMovement')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.LOAD_METERS}>
-            <Badge status="success" /> {t('pageNames.loadMeters')}
+          <Menu.Item key={ROUTES.LOAD_METERS} style={{ display: 'flex' }}>
+            <Icons size={40} type="loadMeters" />
+            {t('pageNames.loadMeters')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.METER_DEVICES}>
-            <Badge status="success" /> {t('pageNames.meterDevices')}{' '}
+          <Menu.Item key={ROUTES.METER_DEVICES} style={{ display: 'flex' }}>
+            <Icons size={40} type="meterDevices" />
+            {t('pageNames.meterDevices')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.PHYSICAL_PRINTERS}>
-            <Badge status="success" /> {t('pageNames.physicalPrinters')}
+          <Menu.Item key={ROUTES.PHYSICAL_PRINTERS} style={{ display: 'flex' }}>
+            <Icons size={40} type="physicalPrinters" /> {t('pageNames.physicalPrinters')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.SITE_ACCESS_DEVICES}>
-            <Badge status="success" /> {t('pageNames.siteAccessDevices')}
+          <Menu.Item key={ROUTES.SITE_ACCESS_DEVICES} style={{ display: 'flex' }}>
+            <Icons size={40} type="siteAccessDevices" /> {t('pageNames.siteAccessDevices')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.KEY_READER_DEVICES}>
-            <Badge status="success" /> {t('pageNames.keyReaderDevices')}
+          <Menu.Item key={ROUTES.KEY_READER_DEVICES} style={{ display: 'flex' }}>
+            <Icons size={40} type="keyReaderDevices" /> {t('pageNames.keyReaderDevices')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.TANK_CONFIGURATION}>
-            <Badge status="success" /> {t('pageNames.tankConfiguration')}
+          <Menu.Item key={ROUTES.TANK_CONFIGURATION} style={{ display: 'flex' }}>
+            <Icons size={40} type="tankConfiguration" /> {t('pageNames.tankConfiguration')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.LOGICAL_PRINTERS}>
-            <Badge status="success" /> {t('pageNames.logicalPrinters')}
+          <Menu.Item key={ROUTES.LOGICAL_PRINTERS} style={{ display: 'flex' }}>
+            <Icons size={40} type="logicalPrinters" /> {t('pageNames.logicalPrinters')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.REPORT_CONFIGURATION}>
-            <Badge status="success" /> {t('pageNames.reportConfiguration')}
+          <Menu.Item key={ROUTES.REPORT_CONFIGURATION} style={{ display: 'flex' }}>
+            <Icons size={40} type="reportConfiguration" /> {t('pageNames.reportConfiguration')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.REPORT_PROFILE}>
-            <Badge status="success" /> {t('pageNames.reportProfile')}
+          <Menu.Item key={ROUTES.REPORT_PROFILE} style={{ display: 'flex' }}>
+            <Icons size={40} type="reportProfile" /> {t('pageNames.reportProfile')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.FOLIO_SCHEDULLING}>
-            <Badge status="success" /> {t('pageNames.folioScheduling')}
+          <Menu.Item key={ROUTES.FOLIO_SCHEDULLING} style={{ display: 'flex' }}>
+            <Icons size={40} type="folioScheduling" /> {t('pageNames.folioScheduling')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.MOVEMENT_REASONS}>
-            <Badge status="success" /> {t('pageNames.movementReasons')}
+          <Menu.Item key={ROUTES.MOVEMENT_REASONS} style={{ display: 'flex', marginBottom: 10 }}>
+            <Icons size={40} type="movementReasons" /> {t('pageNames.movementReasons')}
           </Menu.Item>
         </SubMenu>
 
@@ -356,23 +377,18 @@ const Navigation = () => {
             </>
           }
         >
-          {/* <Menu.Item key={ROUTES.TANK_VIEW} disabled>
-            <Badge status="warning" />
-            {t('pageNames.tankView')}
-          </Menu.Item> */}
-
-          <Menu.Item key={ROUTES.BAY_VIEW}>
-            <Badge status="success" />
+          <Menu.Item key={ROUTES.BAY_VIEW} style={{ display: 'flex', marginTop: 10 }}>
+            <Icons size={40} type="bayView" />
             {t('pageNames.bayView')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.ADAPTIVE_FLOW_CONTROL}>
-            <Badge status="success" />
+          <Menu.Item key={ROUTES.ADAPTIVE_FLOW_CONTROL} style={{ display: 'flex' }}>
+            <Icons size={40} type="adaptiveFlowControl" />
             {t('pageNames.adaptiveFlowControl')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.FSC_STATUS}>
-            <Badge status="success" />
+          <Menu.Item key={ROUTES.FSC_STATUS} style={{ display: 'flex', marginBottom: 10 }}>
+            <Icons size={40} type="fscStatus" />
             {t('pageNames.fscStatus')}
           </Menu.Item>
         </SubMenu>
