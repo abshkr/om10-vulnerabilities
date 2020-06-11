@@ -8,7 +8,7 @@ import { DataTable } from '../../../../components';
 import columns from './columns';
 import { MANUAL_TRANSACTIONS } from '../../../../api';
 
-const ProductQuantities = ({ form, type, selected }) => {
+const BaseProductTotals = ({ form, type, selected }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -95,4 +95,4 @@ const ProductQuantities = ({ form, type, selected }) => {
   );
 };
 
-export default ProductQuantities;
+export default BaseProductTotals;

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Page } from '../../components';
 import auth from '../../auth';
 
-import DrawerProductTransfer from './drawer-product-transfer';
+import DrawerProductTransfers from './drawer-product-transfer';
 import Forms from './forms';
 
 const { confirm } = Modal;
@@ -98,7 +98,7 @@ const ManualTransactions = () => {
 
         <Divider style={{ margin: '0px 0' }}>{t('divider.drawerProductTransfer')}</Divider>
 
-        <DrawerProductTransfer 
+        <DrawerProductTransfers 
           form={form} 
           trsaType={trsaType} 
           supplier={selectedSupplier} 

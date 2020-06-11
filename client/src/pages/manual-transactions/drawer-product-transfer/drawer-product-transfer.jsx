@@ -11,8 +11,8 @@ import useSWR from 'swr';
 
 import { MANUAL_TRANSACTIONS } from '../../../api';
 
-import TransferDetails from './transfer-details';
-import ProductQuantities from './product-quantities';
+import BaseProductTransfers from './transfer-details';
+import BaseProductTotals from './product-quantities';
 import MeterTotals from './meter-totals';
 
 const components = {
@@ -27,7 +27,7 @@ const components = {
 
 const { TabPane } = Tabs;
 
-const DrawerProductTransfer = ({ form, trsaType, supplier, trip, order, tanker }) => {
+const DrawerProductTransfers = ({ form, trsaType, supplier, trip, order, tanker }) => {
   const { data } = useSWR(
     supplier && trip && `${MANUAL_TRANSACTIONS.DETAILS}?supplier=${supplier}&trip_no=${trip}`
   );
@@ -166,10 +166,10 @@ const DrawerProductTransfer = ({ form, trsaType, supplier, trip, order, tanker }
 
       <Tabs defaultActiveKey="1" animated={false} type="card">
         <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="1">
-          <TransferDetails form={form} selected={selected} transfers={payload} />
+          <BaseProductTransfers form={form} selected={selected} transfers={payload} />
         </TabPane>
         <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="1">
-          <ProductQuantities form={form} selected={selected} transfers={payload} />
+          <BaseProductTotals form={form} selected={selected} transfers={payload} />
         </TabPane>
       </Tabs>
 
@@ -184,4 +184,4 @@ const DrawerProductTransfer = ({ form, trsaType, supplier, trip, order, tanker }
   );
 };
 
-export default DrawerProductTransfer;
+export default DrawerProductTransfers;

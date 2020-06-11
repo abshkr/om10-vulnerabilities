@@ -1,2 +1,2 @@
-import TransferDetails from './transfer-details';
-export default TransferDetails;
+import BaseProductTransfers from './transfer-details';
+export default BaseProductTransfers;
