@@ -3,7 +3,6 @@
 include_once '../shared/header.php';
 
 // include database and object files
-include_once 'database.php';
 include_once '../objects/cur_session.php';
 
 Utilities::exec('CurSession', "sessionData", $filter = true);
