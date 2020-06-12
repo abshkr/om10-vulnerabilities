@@ -16,7 +16,7 @@ const DateTimeFormat = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="dateTimeFormat" label={t('fields.dateTimeFormat')}>
+    <Form.Item name="edt_date_fmt" label={t('fields.dateTimeFormat')}>
       <Input />
     </Form.Item>
   );

@@ -26,7 +26,7 @@ const DefaultValue = ({ form, value }) => {
       });
     } else {
       setFieldsValue({
-        edt_def_exp_date: moment()
+        edt_def_exp_date: moment().add('years', 1),
       });
     }
   }, [value, setFieldsValue]);
