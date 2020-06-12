@@ -5,6 +5,7 @@ import { DataTable } from '../../components';
 import columns from './columns';
 
 import Forms from './forms';
+import TemperatureRender from './temperature-render';
 
 const Table = ({ data, access }) => {
   const { t } = useTranslation();
@@ -26,6 +27,9 @@ const Table = ({ data, access }) => {
         data={data}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        components={{
+          TemperatureRender: TemperatureRender,
+        }}
       />
 
       <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
