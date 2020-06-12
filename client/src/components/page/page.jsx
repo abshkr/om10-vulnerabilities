@@ -8,7 +8,7 @@ import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } fr
 
 import { Icons } from '..';
 
-const Page = ({ name, page, children, modifiers, minimal, noHeader, access, avatar, standalone }) => {
+const Page = ({ name, page, children, modifiers, minimal, transparent, access, avatar, standalone }) => {
   const routes = [
     {
       path: 'index',
@@ -59,7 +59,7 @@ const Page = ({ name, page, children, modifiers, minimal, noHeader, access, avat
           <title>{name ? `${name} ─ ${page} ─ OMEGA 5000` : `${page} ─ OMEGA 5000`}</title>
         </Helmet>
 
-        <PageInjector minimal={minimal}>
+        <PageInjector minimal={minimal} transparent={transparent}>
           <div className="main-container">{children}</div>
         </PageInjector>
       </div>

@@ -5,6 +5,8 @@ import { Button, Tabs } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
+import { useLocation } from 'react-router-dom';
+
 import { TANKS } from '../../api';
 import { useAuth, useConfig } from '../../hooks';
 import { Page, Download, ListView, FormModal } from '../../components';
@@ -30,6 +32,7 @@ const Tanks = () => {
   const { data: read, revalidate } = useSWR(TANKS.READ);
   const { t } = useTranslation();
 
+  const location = useLocation();
   const access = useAuth('M_TANKSTATUS');
   const config = useConfig();
 
@@ -116,8 +119,14 @@ const Tanks = () => {
     }
   }, [read]);
 
+  useEffect(() => {
+    if (location?.state?.listed) {
+      setMode('2');
+    }
+  }, [location]);
+
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access} minimal={simple}>
+    <Page page={page} name={name} modifiers={modifiers} access={access} transparent={simple}>
       {simple ? (
         <ListView
           data={payload}

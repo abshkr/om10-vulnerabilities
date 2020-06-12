@@ -6,7 +6,20 @@ const { Panel } = Collapse;
 
 const data = [
   {
-    title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 09/06/2020`,
+    title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 12/06/2020`,
+    content: (
+      <>
+        <>
+          <Divider>Bug Fixes</Divider>
+          <p>- Please Refer to all the bug fixes in the version document on Confluence.</p>
+          <p>- Please Refer to all the tasks marked "To Be Tested" on JIRA.</p>
+        </>
+      </>
+    ),
+  },
+
+  {
+    title: `Release Version Notes (10.0.9-dev) - 09/06/2020`,
     content: (
       <>
         <>
@@ -199,16 +212,6 @@ const data = [
           <Divider>Bug Fixes</Divider>
           <p>- SVG Icons showing up smaller than intended of Firefox and Edge now fixed.</p>
           <p>- Please Refer to all the tasks marked "To Be Tested" on JIRA.</p>
-        </>
-
-        <>
-          <Divider>Next Release Targets -> 19/05/2020</Divider>
-          <p>- Load Schedules</p>
-          <p>- Gate Permissions</p>
-          <p>- Time Codes</p>
-          <p>- Delivery Locations</p>
-          <p>- Addresses </p>
-          <p>- Equipment Types</p>
         </>
       </>
     ),

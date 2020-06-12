@@ -21,7 +21,13 @@ const Navigation = () => {
   const handleNavigation = (event) => {
     setActive([[event.key]]);
 
-    history.push(event.key);
+    if (event?.key === ROUTES.TANK_STATUS) {
+      history.push(ROUTES.TANKS, {
+        listed: true,
+      });
+    } else {
+      history.push(event.key);
+    }
   };
 
   return (

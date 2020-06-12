@@ -33,7 +33,7 @@ const ViewContainer = styled.div`
   .ant-tabs .ant-tabs-top-content,
   .ant-tabs .ant-tabs-bottom-content {
     border-radius: 5px;
-    height: calc(100vh - 216px);
+    height: calc(100vh - 240px);
   }
 
   .ant-card-body {

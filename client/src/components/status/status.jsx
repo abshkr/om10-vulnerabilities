@@ -15,7 +15,6 @@ const Status = ({ user }) => {
     return () => clearInterval(interval);
   }, []);
 
-  console.log(user);
   return (
     <>
       <div style={{ fontSize: 12 }}>
