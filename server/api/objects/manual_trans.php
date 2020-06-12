@@ -178,6 +178,33 @@ class ManualTrans extends CommonClass
         return $stmt;
     }
 
+    public function get_sched_type()
+    {
+        $query = "
+            SELECT 
+                DECODE(
+                    UPPER(LD_TYPE), 
+                    'PRESCHEDULE', 'BY_COMPARTMENT', 
+                    'PREORDER', 'BY_PRODUCT', 
+                    UPPER(LD_TYPE)
+                ) as SCHD_TYPE 
+            FROM GUI_SCHEDULES 
+            WHERE 
+                SUPPLIER_CODE = :supplier 
+                AND SHLS_TRIP_NO = :trip_no
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        return $stmt;
+    }
+
     public function get_sched_basics()
     {
         // write_log(sprintf("%s::%s() START. trip:%d, supplier:%s",
@@ -481,10 +508,22 @@ class ManualTrans extends CommonClass
     //Old code: ManualTransactions.class.php::getOrderDetailsByTanker
     public function get_order_details()
     {
-        $query = "SELECT 'BY_PRODUCT' as SCHD_TYPE,
+        $query = "
+            SELECT 
+                'BY_PRODUCT' AS SCHD_TYPE,
+                (
+                    SELECT (
+                        CASE 
+                            WHEN :supplier <> (SELECT ORDER_DRAWER FROM CUST_ORDER WHERE ORDER_CUST_ORDNO = :order_cust_no)
+                            THEN (SELECT ORDER_DRAWER FROM CUST_ORDER WHERE ORDER_CUST_ORDNO = :order_cust_no)
+                            ELSE :supplier
+                        END
+                    )
+                    FROM DUAL
+                ) as SHLS_SUPP,
                 TC.TNKR_CMPT_NO,
                 TC.TRAILERCOMP,
-                NVL(SF.ADJ_AMNT, 0) + TC.CMPT_CAPACIT CMPT_CAPACIT,
+                (NVL(SF.ADJ_AMNT, 0) + TC.CMPT_CAPACIT) AS CMPT_CAPACIT,
                 TC.CMPT_UNITS,
                 TC.UNIT,
                 TC.EQPT_CODE,
@@ -492,21 +531,24 @@ class ManualTrans extends CommonClass
                 NULL AS PROD_CODE,
                 NULL AS ALLOWED_QTY
             FROM
-            (
-                SELECT ROWNUM TNKR_CMPT_NO,
+                (
+                SELECT 
+                    ROWNUM TNKR_CMPT_NO,
                     tc_tmp.*
                 FROM
-                (
-                    SELECT c.TRAILERCOMP,
-                    c.CMPT_CAPACIT,
-                    c.CMPT_UNITS,
-                    un.DESCRIPTION UNIT,
-                    te.TC_SEQNO,
-                    trs.EQPT_CODE,
-                    te.TC_EQPT,
-                    c.ETYP_ID_RT,
-                    te.TC_TANKER
-                    FROM TNKR_EQUIP te,
+                    (
+                    SELECT 
+                        c.TRAILERCOMP,
+                        c.CMPT_CAPACIT,
+                        c.CMPT_UNITS,
+                        un.DESCRIPTION UNIT,
+                        te.TC_SEQNO,
+                        trs.EQPT_CODE,
+                        te.TC_EQPT,
+                        c.ETYP_ID_RT,
+                        te.TC_TANKER
+                    FROM 
+                        TNKR_EQUIP te,
                         TRANSP_EQUIP trs,
                         UNIT_SCALE_VW un,
                         CMPT_VW c
@@ -515,14 +557,155 @@ class ManualTrans extends CommonClass
                         AND un.UNIT_ID = c.CMPT_UNITS
                         AND te.TC_TANKER = :tanker
                     ORDER BY te.TC_SEQNO,c.TRAILERCOMP
-                ) tc_tmp
-            ) tc,
-            SFILL_ADJUST sf
-        WHERE tc.TC_EQPT = sf.ADJ_EQP(+)
-            AND tc.TRAILERCOMP = sf.ADJ_CMPT(+)
-        ORDER BY tc.TNKR_CMPT_NO";
+                    ) tc_tmp
+                ) tc,
+                SFILL_ADJUST sf
+            WHERE 
+                tc.TC_EQPT = sf.ADJ_EQP(+)
+                AND tc.TRAILERCOMP = sf.ADJ_CMPT(+)
+            ORDER BY tc.TNKR_CMPT_NO
+        ";
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':order_cust_no', $this->order_cust_no);
         oci_bind_by_name($stmt, ':tanker', $this->tanker);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        return $stmt;
+    }
+
+    //Old code: ManualTransactions.class.php::getOrderProductsByCustOrderNo($custorderno)
+    public function get_order_products()
+    {
+        $query = "
+            SELECT 
+                CO.ORDER_CUST_ORDNO, 
+                OPD.OSPROD_PRODCODE as SUPP_PROD_CODE, 
+                P.PROD_NAME as SUPP_PROD_NAME, 
+                P.PROD_CLASS as SUPP_PROD_CLASS, 
+                OPD.OSPROD_PRODCMPY SUPP_PROD_CMPY, 
+                OPD.ORDER_PROD_QTY SCHP_SPECQTY, 
+                decode(OPD.ORDER_PROD_UNIT,'5','l(amb)','11','l(cor)','17','kg','unknown') UNIT_NAME, 
+                NVL(OO_QTY.QTY_LOADED,0) QTY_LOADED, 
+                NVL(OO_QTY.QTY_AMB,0) QTY_AMB, 
+                NVL(OO_QTY.QTY_STD,0) QTY_STD, 
+                NVL(OO_QTY.QTY_KG,0) QTY_KG,
+                DRAWER_P.PROD_CMPY as PROD_CMPY, 
+                DRAWER_P.PROD_CODE as PROD_CODE, 
+                DRAWER_P.PROD_NAME as PROD_NAME, 
+                DRAWER_P.PROD_CLASS as PROD_CLASS
+            FROM
+                CUST_ORDER CO,
+                OPRODMTD OPD,
+                PRODUCTS P,
+                PRODUCTS DRAWER_P,
+                (
+                select 
+                    TRIP_PROD.PROD_CODE,
+                    sum(TRIP_PROD.QTY_LOADED) QTY_LOADED,
+                    sum(TRIP_PROD.QTY_AMB) QTY_AMB,
+                    sum(TRIP_PROD.QTY_STD) QTY_STD,
+                    sum(TRIP_PROD.QTY_KG) QTY_KG
+                from
+                    CUST_ORDER CO,
+                    ORD_SCHEDULE OS,
+                    (
+                    select
+                        pr.PROD_CODE as PROD_CODE
+                        , pr.PROD_NAME as PROD_NAME
+                        , pr.PROD_CMPY as PROD_CMPY
+                        , spec.SCHP_UNITS as UNIT_CODE
+                        , uv.DESCRIPTION as UNIT_NAME
+                        , spec.SCHP_SPECQTY as SCHP_SPECQTY
+                        , NVL(DECODE(spec.SCHP_UNITS, 5, trsf.TRIP_QTY_AMB, 11, trsf.TRIP_QTY_STD, 17, trsf.TRIP_QTY_KG, trsf.TRIP_QTY_DELIVERED),0) as QTY_LOADED
+                        , cmpt.TRIP_QTY_PRELOAD QTY_PRELOADED
+                        , trsf.TRIP_QTY_AMB QTY_AMB
+                        , trsf.TRIP_QTY_STD QTY_STD
+                        , trsf.TRIP_QTY_KG QTY_KG
+                        , spec.SCHPSPID_SHLSTRIP
+                        , spec.SCHPSPID_SHLSSUPP
+                    from
+                        SPECPROD spec
+                        , PRODUCTS pr
+                        , UNIT_SCALE_VW uv
+                        , (
+                        select
+                            SPECDETS.SCHDSPEC_SHLSSUPP as TRIP_SUPPLIER
+                            , SPECDETS.SCHDSPEC_SHLSTRIP as TRIP_NO
+                            , SPECDETS.SCHDPROD_PRODCMPY as TRIP_PRODCMPY
+                            , SPECDETS.SCHDPROD_PRODCODE as TRIP_PRODCODE
+                            , SUM(SPECDETS.SCHD_PRESETQTY) as TRIP_QTY_PRESET
+                            , SUM(SPECDETS.SCHD_PRLDQTY) as TRIP_QTY_PRELOAD
+                            , SUM(SPECDETS.SCHD_SPECQTY) as TRIP_QTY_SCHED
+                            , SUM(SPECDETS.SCHD_DELIVERED) as TRIP_QTY_LOADED
+                        from SPECDETS
+                        group by SPECDETS.SCHDSPEC_SHLSSUPP, SPECDETS.SCHDSPEC_SHLSTRIP, SPECDETS.SCHDPROD_PRODCMPY, SPECDETS.SCHDPROD_PRODCODE
+                        ) cmpt
+                        , (
+                        select
+                            SCHEDULE.SHLS_SUPP as TRIP_SUPPLIER
+                            , SCHEDULE.SHLS_TRIP_NO as TRIP_NO
+                            , TRANSFERS.TRSFPROD_PRODCMPY as TRIP_PRODCMPY
+                            , TRANSFERS.TRSFPROD_PRODCODE as TRIP_PRODCODE
+                            , SUM(TRANSFERS.TRSF_QTY_AMB) as TRIP_QTY_AMB
+                            , SUM(TRANSFERS.TRSF_QTY_COR) as TRIP_QTY_STD
+                            , SUM(TRANSFERS.TRSF_LOAD_KG) as TRIP_QTY_KG
+                            , SUM(TRANSFERS.TRSF_RETURNS) as TRIP_QTY_RTN
+                            , SUM(TRANSFERS.TRSF_PRELOAD_KG) as TRIP_QTY_PKG
+                            , SUM(TRANSFERS.TRSF_DELIVERED) as TRIP_QTY_DELIVERED
+                        from
+                            SCHEDULE
+                            , LOADS
+                            , TRANSACTIONS
+                            , TRANSFERS
+                        where
+                            SCHEDULE.SHLSLOAD_LD_TRM = LOADS.LD_TERMINAL
+                            and SCHEDULE.SHLSLOAD_LOAD_ID = LOADS.LOAD_ID
+                            and LOADS.LOAD_ID = TRANSACTIONS.TRSALDID_LOAD_ID
+                            and LOADS.LD_TERMINAL = TRANSACTIONS.TRSALDID_LD_TRM
+                            and TRANSACTIONS.TRSA_ID = TRANSFERS.TRSFTRID_TRSA_ID
+                            and TRANSACTIONS.TRSA_TERMINAL = TRANSFERS.TRSFTRID_TRSA_TRM
+                        group by SCHEDULE.SHLS_SUPP, SCHEDULE.SHLS_TRIP_NO, TRANSFERS.TRSFPROD_PRODCMPY, TRANSFERS.TRSFPROD_PRODCODE
+                        ) trsf
+                    where
+                        spec.SCHPSPID_SHLSSUPP = cmpt.TRIP_SUPPLIER (+)
+                        and spec.SCHPSPID_SHLSTRIP = cmpt.TRIP_NO (+)
+                        and spec.SCHPPROD_PRODCMPY = cmpt.TRIP_PRODCMPY (+)
+                        and spec.SCHPPROD_PRODCODE = cmpt.TRIP_PRODCODE (+)
+                        and cmpt.TRIP_SUPPLIER = trsf.TRIP_SUPPLIER (+)
+                        and cmpt.TRIP_NO = trsf.TRIP_NO (+)
+                        and cmpt.TRIP_PRODCMPY = trsf.TRIP_PRODCMPY (+)
+                        and cmpt.TRIP_PRODCODE = trsf.TRIP_PRODCODE (+)
+                        and spec.SCHPPROD_PRODCMPY = pr.PROD_CMPY
+                        and spec.SCHPPROD_PRODCODE = pr.PROD_CODE
+                        and uv.UNIT_ID = spec.SCHP_UNITS
+                    order by spec.SCHPSPID_SHLSSUPP, spec.SCHPSPID_SHLSTRIP, pr.PROD_NAME
+                    ) trip_prod
+                where
+                    CO.ORDER_NO = OS.OS_ORDER_NO
+                    and OS.OS_SHL_SHLSTRIP = trip_prod.SCHPSPID_SHLSTRIP
+                    and OS.OS_SHL_SHLSSUPP = trip_prod.SCHPSPID_SHLSSUPP
+                    and CO.ORDER_CUST_ORDNO = :order_cust_no
+                group by trip_prod.PROD_CODE, CO.ORDER_CUST_ORDNO
+                ) OO_QTY
+            WHERE
+                OPD.ORDER_PROD_KEY=CO.ORDER_NO
+                AND OPD.OSPROD_PRODCODE = P.PROD_CODE
+                AND OPD.OSPROD_PRODCMPY = P.PROD_CMPY
+                AND DRAWER_P.PROD_CLASS = P.PROD_CLASS -- get comptiable drawer products
+                AND DRAWER_P.PROD_CMPY = CO.ORDER_DRAWER -- get comptiable drawer products
+                AND OPD.OSPROD_PRODCODE = OO_QTY.PROD_CODE(+)
+                AND CO.ORDER_CUST_ORDNO = :order_cust_no
+                AND OPD.OSPROD_PRODCMPY = :supplier
+            ORDER BY OPD.OSPROD_PRODCODE
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':order_cust_no', $this->order_cust_no);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);

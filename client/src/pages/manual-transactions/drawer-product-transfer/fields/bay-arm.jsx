@@ -25,7 +25,7 @@ export default class BayArm extends Component {
 
     let current = form.getFieldValue('transfers');
 
-    const key = this.props.data?.tnkr_cmpt_no;
+    const key = this.props.data?.trsf_cmpt_no; // tnkr_cmpt_no;
     const index = _.findIndex(current, ['trsf_cmpt_no', key]);
 
     current[index].trsf_arm_cd = record?.item?.stream_armcode;

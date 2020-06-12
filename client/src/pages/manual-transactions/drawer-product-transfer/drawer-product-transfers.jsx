@@ -27,18 +27,28 @@ const components = {
 
 const { TabPane } = Tabs;
 
-const DrawerProductTransfers = ({ form, trsaType, supplier, trip, order, tanker }) => {
-  const { data } = useSWR(
-    supplier && trip && `${MANUAL_TRANSACTIONS.DETAILS}?supplier=${supplier}&trip_no=${trip}`
+const DrawerProductTransfers = ({ form, sourceType, loadType, loadNumber, supplier, trip, order, tanker }) => {
+  const { data } = useSWR((
+      sourceType === 'SCHEDULE' && supplier && trip && 
+      `${MANUAL_TRANSACTIONS.TRIP_DETAILS}?supplier=${supplier}&trip_no=${trip}`
+    ) || (
+      sourceType === 'OPENORDER' && supplier && order && tanker && 
+      `${MANUAL_TRANSACTIONS.ORDER_DETAILS}?supplier=${supplier}&order_cust_no=${order}&tanker=${tanker}`
+    )
   );
 
-  const { data: drawers } = useSWR(
-    supplier && trip && `${MANUAL_TRANSACTIONS.PRODUCTS}?supplier_code=${supplier}&shls_trip_no=${trip}`
+  const { data: products } = useSWR((
+      sourceType === 'SCHEDULE' && supplier && trip && 
+      `${MANUAL_TRANSACTIONS.TRIP_PRODUCTS}?supplier_code=${supplier}&shls_trip_no=${trip}`
+    ) || (
+      sourceType === 'OPENORDER' && supplier && order && 
+      `${MANUAL_TRANSACTIONS.ORDER_PRODUCTS}?supplier=${supplier}&order_cust_no=${order}`
+    )
   );
 
   const { t } = useTranslation();
+  //const { setFieldsValue } = form;
 
-  const [tripType, setTripType] = useState(null);
   const [payload, setPayload] = useState([]);
   const [selected, setSelected] = useState(null);
   const [fields, setFields] = useState([]);
@@ -70,15 +80,21 @@ const DrawerProductTransfers = ({ form, trsaType, supplier, trip, order, tanker 
 
   useEffect(() => {
     if (data?.records[0]?.schd_type) {
-      setTripType(data?.records[0]?.schd_type);
+      //setLoadType(data?.records[0]?.schd_type);
     }
   }, [data]);
 
   useEffect(() => {
-    const values = columns(t, form, setPayload, payload, tripType, drawers);
+    form.setFieldsValue({
+      transfers: [],
+    });
+  }, [sourceType]);
+
+  useEffect(() => {
+    const values = columns(t, form, sourceType, loadType, loadNumber, setPayload, payload, products);
 
     setFields(values);
-  }, [t, form, setPayload, payload, tripType, drawers]);
+  }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products]);
 
   useEffect(() => {
     setPayload([]);
@@ -166,10 +182,20 @@ const DrawerProductTransfers = ({ form, trsaType, supplier, trip, order, tanker 
 
       <Tabs defaultActiveKey="1" animated={false} type="card">
         <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="1">
-          <BaseProductTransfers form={form} selected={selected} transfers={payload} />
+          <BaseProductTransfers 
+            form={form} 
+            sourceType={sourceType} 
+            selected={selected} 
+            transfers={payload} 
+          />
         </TabPane>
-        <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="1">
-          <BaseProductTotals form={form} selected={selected} transfers={payload} />
+        <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="2">
+          <BaseProductTotals 
+            form={form} 
+            sourceType={sourceType} 
+            selected={selected} 
+            transfers={payload} 
+          />
         </TabPane>
       </Tabs>
 
@@ -177,7 +203,12 @@ const DrawerProductTransfers = ({ form, trsaType, supplier, trip, order, tanker 
 
       <Tabs defaultActiveKey="1" animated={false} type="card">
         <TabPane tab={t('tabColumns.cumulativeMeterTotals')} key="1">
-          <MeterTotals form={form} selected={selected} transfers={payload} />
+          <MeterTotals 
+            form={form} 
+            sourceType={sourceType} 
+            selected={selected} 
+            transfers={payload} 
+          />
         </TabPane>
       </Tabs>
     </>

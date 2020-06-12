@@ -8,7 +8,7 @@ import { DataTable } from '../../../../components';
 import columns from './columns';
 import { MANUAL_TRANSACTIONS } from '../../../../api';
 
-const BaseProductTotals = ({ form, type, selected }) => {
+const BaseProductTotals = ({ form, sourceType, selected, transfers }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -75,14 +75,20 @@ const BaseProductTotals = ({ form, type, selected }) => {
   useEffect(() => {
     if (data) {
       form.setFieldsValue({
-        bases: data,
+        base_totals: data,
       });
     }
   }, [data]);
 
+  useEffect(() => {
+    form.setFieldsValue({
+      base_totals: [],
+    });
+  }, [sourceType]);
+
   return (
     <Spin indicator={null} spinning={isLoading}>
-      <Form.Item name="bases">
+      <Form.Item name="base_totals">
         <DataTable data={data} height="80vh" columns={fields} />
       </Form.Item>
 
