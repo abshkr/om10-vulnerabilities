@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
 const DashboardContainer = styled.div`
+  margin-top: 10px;
+
   .ant-card-head {
     background: #a9bfd2;
   }
