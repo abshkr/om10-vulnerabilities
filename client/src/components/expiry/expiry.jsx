@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CalendarOutlined } from '@ant-design/icons';
 import { Table, Button, Popconfirm, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,7 @@ const Expiry = ({ form, value, type }) => {
 
   const [count, setCount] = useState(value ? value.expiry_dates.length : 3);
   const [data, setData] = useState(value ? value.expiry_dates : []);
-
+  
   const { setFieldsValue } = form;
 
   const handleSave = (row) => {
@@ -135,6 +135,12 @@ const Expiry = ({ form, value, type }) => {
       }),
     };
   });
+
+  useEffect(() => {
+    if (value) {
+      setData(value ? value.expiry_dates : []);
+    }
+  }, [value]);
 
   return (
     <Form.Item name="expiry_dates">

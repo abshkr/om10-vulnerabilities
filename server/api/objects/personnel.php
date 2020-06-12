@@ -576,7 +576,6 @@ class Personnel extends CommonClass
             return false;
         }
 
-
         if (isset($this->user_status_flag)) {
             $query = "
             UPDATE URBAC_USERS
