@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   EditOutlined,
@@ -8,25 +8,33 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
-
+import _ from 'lodash';
 import { Type, BusinessProcess, SendToHost, MovementReason } from './fields';
 import { MOVEMENT_REASONS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, length }) => {
+const FormModal = ({ value, length, visible, handleFormState, auth}) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const { resetFields } = form;
 
   const [send, setSend] = useState(false);
 
   const IS_CREATING = !value;
 
-  const onFinish = (values) => {
+  const onComplete = () => {
+    handleFormState(false, null); 
+    mutate(MOVEMENT_REASONS.READ);
+  };
+
+  const onFinish = async () => {
+    const values = await form.validateFields();
+
     // Attaching the Id to the Updated Object
     if (!IS_CREATING) {
       values.mr_id = value?.mr_id;
@@ -46,19 +54,20 @@ const FormModal = ({ value, length }) => {
           .post(IS_CREATING ? MOVEMENT_REASONS.CREATE : MOVEMENT_REASONS.UPDATE, values)
           .then(
             axios.spread((response) => {
-              Modal.destroyAll();
+              onComplete();
 
-              mutate(MOVEMENT_REASONS.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
@@ -77,43 +86,50 @@ const FormModal = ({ value, length }) => {
           .post(MOVEMENT_REASONS.DELETE, value)
           .then(
             axios.spread((response) => {
-              mutate(MOVEMENT_REASONS.READ);
-              Modal.destroyAll();
+              onComplete();
+
               notification.success({
                 message: t('messages.deleteSuccess'),
                 description: `${t('descriptions.deleteSuccess')}`,
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.deleteFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
     });
   };
 
-  return (
-    <div>
-      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-        <Tabs defaultActiveKey="1">
-          <TabPane tab={t('tabColumns.general')} key="1">
-            <p>ID: {value ? value?.mr_id : length + 1}</p>
-            <SendToHost form={form} onChange={setSend} value={value} />
-            <Type form={form} value={value} />
-            <BusinessProcess form={form} value={value} />
-            <MovementReason form={form} value={value} send={send} />
-          </TabPane>
-        </Tabs>
+  useEffect(() => {
+    if (!value && !visible) {
+      resetFields();
+      setSend(false);
+    } 
+  }, [value, visible]);
 
-        <Form.Item>
+  return (
+    <Drawer
+      bodyStyle={{ paddingTop: 5 }}
+      onClose={() => handleFormState(false, null)}
+      maskClosable={IS_CREATING}
+      destroyOnClose={true}
+      mask={IS_CREATING}
+      placement="right"
+      width="50vw"
+      visible={visible}
+      footer={
+        <>
           <Button
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => Modal.destroyAll()}
+            onClick={() => handleFormState(false, null)}
           >
             {t('operations.cancel')}
           </Button>
@@ -123,6 +139,9 @@ const FormModal = ({ value, length }) => {
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
             htmlType="submit"
             style={{ float: 'right', marginRight: 5 }}
+            style={{ float: 'right', marginRight: 5 }}
+            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
+            onClick={onFinish}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -133,13 +152,26 @@ const FormModal = ({ value, length }) => {
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
+              disabled={!auth?.canDelete}
             >
               {t('operations.delete')}
             </Button>
           )}
-        </Form.Item>
+        </>
+      }
+    >
+      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+        <Tabs defaultActiveKey="1">
+          <TabPane tab={t('tabColumns.general')} key="1">
+            <p>ID: {value ? value?.mr_id : length + 1}</p>
+            <SendToHost form={form} onChange={setSend} value={value} />
+            <Type form={form} value={value} />
+            <BusinessProcess form={form} value={value} />
+            <MovementReason form={form} value={value} send={send} />
+          </TabPane>
+        </Tabs>
       </Form>
-    </div>
+    </Drawer>
   );
 };
 
