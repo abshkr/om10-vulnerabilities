@@ -19,6 +19,60 @@ class CurRole extends CommonClass
         "PRIV_PROTECT" => 1
     );
 
+    public function prev_on_page()
+    {
+        $query = "
+            SELECT URBAC_USER_ROLES.ROLE_ID
+            FROM URBAC_USER_ROLES, URBAC_USERS
+            WHERE URBAC_USERS.USER_ID = URBAC_USER_ROLES.USER_ID
+                AND URBAC_USERS.USER_CODE = :user_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':user_code', $this->user_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $this->role_id = $row['ROLE_ID'];
+
+        $query = "
+            SELECT A.DOMAIN_ID, DOMAIN_TEXT, A.OBJECT_ID, OBJECT_TEXT, DOMAIN_OBJECT_ACTIVE,
+                (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES B
+                WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 1
+                    AND B.DOMAIN_ID = A.DOMAIN_ID AND B.OBJECT_ID = A.OBJECT_ID) PRIV_VIEW,
+                (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES C
+                WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 2
+                    AND C.DOMAIN_ID = A.DOMAIN_ID AND C.OBJECT_ID = A.OBJECT_ID) PRIV_UPDATE,
+                (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES D
+                WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 3
+                    AND D.DOMAIN_ID = A.DOMAIN_ID AND D.OBJECT_ID = A.OBJECT_ID) PRIV_CREATE,
+                (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES E
+                WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 4
+                    AND E.DOMAIN_ID = A.DOMAIN_ID AND E.OBJECT_ID = A.OBJECT_ID) PRIV_DELETE,
+                (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES F
+                WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 5
+                    AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) PRIV_PROTECT
+            FROM URBAC_DOMAIN_OBJECTS A, URBAC_DOMAINS, URBAC_OBJECTS
+            WHERE A.DOMAIN_ID != 1
+                AND A.DOMAIN_ID = URBAC_DOMAINS.DOMAIN_ID
+                AND A.OBJECT_ID = URBAC_OBJECTS.OBJECT_ID
+                AND URBAC_OBJECTS.OBJECT_TEXT = :object_text
+            ORDER BY DOMAIN_ID, OBJECT_ID";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':role_id', $this->role_id);
+        oci_bind_by_name($stmt, ':object_text', $this->object_text);
+
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        return $stmt;
+    }
+
     public function read()
     {
         $query = "
@@ -53,29 +107,30 @@ class CurRole extends CommonClass
         }
 
         $query = "
-        SELECT A.DOMAIN_ID, DOMAIN_TEXT, A.OBJECT_ID, OBJECT_TEXT, DOMAIN_OBJECT_ACTIVE,
-            (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES B
-            WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 1
-                AND B.DOMAIN_ID = A.DOMAIN_ID AND B.OBJECT_ID = A.OBJECT_ID) PRIV_VIEW,
-            (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES C
-            WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 2
-                AND C.DOMAIN_ID = A.DOMAIN_ID AND C.OBJECT_ID = A.OBJECT_ID) PRIV_UPDATE,
-            (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES D
-            WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 3
-                AND D.DOMAIN_ID = A.DOMAIN_ID AND D.OBJECT_ID = A.OBJECT_ID) PRIV_CREATE,
-            (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES E
-            WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 4
-                AND E.DOMAIN_ID = A.DOMAIN_ID AND E.OBJECT_ID = A.OBJECT_ID) PRIV_DELETE,
-            (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES F
-            WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 5
-                AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) PRIV_PROTECT
-        FROM URBAC_DOMAIN_OBJECTS A, URBAC_DOMAINS, URBAC_OBJECTS
-        WHERE A.DOMAIN_ID != 1
-            AND A.DOMAIN_ID = URBAC_DOMAINS.DOMAIN_ID
-            AND A.OBJECT_ID = URBAC_OBJECTS.OBJECT_ID
-        ORDER BY DOMAIN_ID, OBJECT_ID";
+            SELECT A.DOMAIN_ID, DOMAIN_TEXT, A.OBJECT_ID, OBJECT_TEXT, DOMAIN_OBJECT_ACTIVE,
+                (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES B
+                WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 1
+                    AND B.DOMAIN_ID = A.DOMAIN_ID AND B.OBJECT_ID = A.OBJECT_ID) PRIV_VIEW,
+                (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES C
+                WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 2
+                    AND C.DOMAIN_ID = A.DOMAIN_ID AND C.OBJECT_ID = A.OBJECT_ID) PRIV_UPDATE,
+                (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES D
+                WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 3
+                    AND D.DOMAIN_ID = A.DOMAIN_ID AND D.OBJECT_ID = A.OBJECT_ID) PRIV_CREATE,
+                (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES E
+                WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 4
+                    AND E.DOMAIN_ID = A.DOMAIN_ID AND E.OBJECT_ID = A.OBJECT_ID) PRIV_DELETE,
+                (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES F
+                WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 5
+                    AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) PRIV_PROTECT
+            FROM URBAC_DOMAIN_OBJECTS A, URBAC_DOMAINS, URBAC_OBJECTS
+            WHERE A.DOMAIN_ID != 1
+                AND A.DOMAIN_ID = URBAC_DOMAINS.DOMAIN_ID
+                AND A.OBJECT_ID = URBAC_OBJECTS.OBJECT_ID
+            ORDER BY DOMAIN_ID, OBJECT_ID";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':role_id', $hook_item['role_id']);
+        
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);

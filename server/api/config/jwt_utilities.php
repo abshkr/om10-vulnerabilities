@@ -3,12 +3,14 @@
 include_once "jwt.php";
 include_once __DIR__ . '/../shared/log.php';
 
-function get_token($per_code, $sess_id = null, $exp_seconds = 1800)
+function get_token($per_code, $sess_id = null, $site_code = null, $lang = null, $exp_seconds = 1800)
 {
     write_log('get_token START. per_code:' . $per_code . ' sess_id:' . $sess_id,
         __FILE__, __LINE__);
     $token = array();
     $token['per_code'] = $per_code;
+    $token['site_code'] = $site_code;
+    $token['lang'] = $lang;
     $token['exp'] = time() + $exp_seconds;
     $token['sess_id'] = $sess_id;
 

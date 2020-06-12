@@ -43,6 +43,7 @@ https://10.1.10.66/api/session/session.php
 https://10.1.10.66/api/session/get_token.php?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6Ijk5OTkiLCJleHAiOjE1NzkwNDUzOTksInNlc3NfaWQiOiJnWXFZS1B1emdOS1MifQ.C4g4QgRP4cBdezA756ERgup789edUY73_ac7pVuwlNw
 https://10.1.10.66/api/session/invalidate_token.php?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6Ijk5OTkiLCJleHAiOjE1ODAyNjU5NzEsInNlc3NfaWQiOiJ5ekxnbnBNS0pVWUkifQ.tuU7tqi9DB5YsENor04Y8QWhB4EQkAv5s6GbnGA07bY
 https://10.1.10.66/api/session/cur_roledata.php
+https://10.1.10.66/api/session/prev_on_page.php?object_text=M_LOADBAYS
 
 https://10.1.10.66/api/config.php
 
