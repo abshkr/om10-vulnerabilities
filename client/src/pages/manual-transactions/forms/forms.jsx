@@ -12,8 +12,8 @@ const { Option } = Select;
 
 const Forms = ({
   form,
-  type,
-  setType,
+  trsaType,
+  setTrsaType,
   trips,
   setTrips,
   tankers,
@@ -25,13 +25,15 @@ const Forms = ({
   selectedSupplier,
   setSelectedSupplier,
   setSelectedTrip,
+  setSelectedOrder,
+  setSelectedTanker,
 }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
 
   const { data: suppliers, isValidating: suppliersLoading } = useSWR(
-    type === 'schedule' ? MANUAL_TRANSACTIONS.SCHEDULE_SUPPLIERS : MANUAL_TRANSACTIONS.ORDER_SUPPLIERS
+    trsaType === 'SCHEDULE' ? MANUAL_TRANSACTIONS.SCHEDULE_SUPPLIERS : MANUAL_TRANSACTIONS.ORDER_SUPPLIERS
   );
   const { data: drivers, isValidating: driversLoading } = useSWR(MANUAL_TRANSACTIONS.DRIVERS);
   const { data: carriers, isValidating: carriersLoading } = useSWR(MANUAL_TRANSACTIONS.CARRIERS);
@@ -73,16 +75,67 @@ const Forms = ({
 
     setTankers(tankerResults);
     setSelectedTrip(trip);
+    setSelectedTanker(value?.tnkr_code);
 
     setFieldsValue({
       tanker: value?.tnkr_code,
       carrier: value?.carrier,
       driver: drivers?.records[0].per_code,
     });
+
+    return value;
+  };
+
+  const getTripBasicsByTrip = async (trip) => {
+    const results = await axios.get(
+      `${MANUAL_TRANSACTIONS.TRIP_BASICS}?supplier=${selectedSupplier}&trip_no=${trip}`
+    );
+
+    return results?.data;
+  };
+
+  const getOrderBasicsByOrder = async (order) => {
+    const results = await axios.get(
+      `${MANUAL_TRANSACTIONS.ORDER_BASICS}?supplier=${selectedSupplier}&order_cust_no=${order}`
+    );
+
+    return results?.data;
   };
 
   const handleTripSelect = async (trip) => {
-    await getTankerAndCarrierByTrip(trip);
+    const results = await getTripBasicsByTrip(trip);
+
+    const value = results?.records[0];
+
+    const tankerResults = await getTankersByCarrier(value?.carrier);
+
+    setTankers(tankerResults);
+    setSelectedTrip(trip);
+    setSelectedTanker(value?.tnkr_code);
+
+    setFieldsValue({
+      tanker: value?.tnkr_code,
+      carrier: value?.carrier,
+      driver: !value?.driver ? drivers?.records[0].per_code : value?.driver,
+    });
+  };
+
+  const handleOrderSelect = async (order) => {
+    const results = await getOrderBasicsByOrder(order);
+
+    const value = results?.records[0];
+
+    const tankerResults = await getTankersByCarrier(value?.order_carrier);
+
+    setTankers(tankerResults);
+    setSelectedOrder(order);
+
+    setFieldsValue({
+      carrier: value?.order_carrier,
+      driver: drivers?.records[0].per_code,
+      mt_cust_code: value?.customer_code,
+      mt_delv_loc: value?.delivery_location,
+    });
   };
 
   const handleSupplierSelect = async (supplier) => {
@@ -104,7 +157,7 @@ const Forms = ({
   };
 
   const handleTypeSelect = (type) => {
-    setType(type);
+    setTrsaType(type);
 
     setFieldsValue({
       supplier: undefined,
@@ -125,7 +178,7 @@ const Forms = ({
 
   const handleTankerSelect = (tanker) => {
     // get tanker equipment and compartments
-
+    setSelectedTanker(tanker);
   };
 
   const handleCarrierSelect = async (carrier) => {
@@ -164,8 +217,8 @@ const Forms = ({
         <Col span={8}>
           <Form.Item name="type" label={t('fields.transactionType')} rules={[{ required: true }]}>
             <Select onChange={handleTypeSelect} placeholder={t('placeholder.selectTransType')}>
-              <Option value="schedule">{t('fields.mtTypeSchedule')}</Option>
-              <Option value="open_order">{t('fields.mtTypeOrder')}</Option>
+              <Option value="SCHEDULE">{t('fields.mtTypeSchedule')}</Option>
+              <Option value="OPENORDER">{t('fields.mtTypeOrder')}</Option>
             </Select>
           </Form.Item>
         </Col>
@@ -205,7 +258,7 @@ const Forms = ({
               loading={suppliersLoading}
               allowClear
               showSearch
-              disabled={!type}
+              disabled={!trsaType}
               onChange={handleSupplierSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectSupplier')}
@@ -256,12 +309,12 @@ const Forms = ({
           <Form.Item
             name="customer"
             label={t('fields.customer')}
-            rules={[{ required: type === 'open_order' }]}
+            rules={[{ required: trsaType === 'OPENORDER' }]}
           >
             <Select
               allowClear
               showSearch
-              disabled={type !== 'open_order' || !selectedSupplier}
+              disabled={trsaType !== 'OPENORDER' || !selectedSupplier}
               optionFilterProp="children"
               placeholder={t('placeholder.selectCustomer')}
               onChange={handleCustomerSelect}
@@ -284,7 +337,7 @@ const Forms = ({
               loading={driversLoading}
               allowClear
               showSearch
-              disabled={!type}
+              disabled={!trsaType}
               onChange={handleDriverSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectDriver')}
@@ -313,15 +366,15 @@ const Forms = ({
           <Form.Item
             name="trip_no"
             label={t('fields.tripNumber')}
-            rules={[{ required: type === 'schedule' }]}
+            rules={[{ required: trsaType === 'SCHEDULE' }]}
           >
             <Select
               allowClear
               showSearch
               optionFilterProp="children"
               placeholder={t('placeholder.selectTripNumber')}
-              onChange={getTankerAndCarrierByTrip}
-              disabled={!trips || type !== 'schedule'}
+              onChange={handleTripSelect}
+              disabled={!trips || trsaType !== 'SCHEDULE'}
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
@@ -350,13 +403,13 @@ const Forms = ({
             <Col span={24}></Col>
           </Row>
 
-          {type === 'schedule' &&(
+          {trsaType === 'SCHEDULE' &&(
             <Button type="primary"  onClick={onViewTripSeals}>
               {t('operations.viewTripSeals')}
             </Button>
           )}
 
-          {type === 'open_order' && (
+          {trsaType === 'OPENORDER' && (
             <Button type="primary"  onClick={onViewOrderSeals}>
               {t('operations.viewOrderSeals')}
             </Button>
@@ -369,13 +422,14 @@ const Forms = ({
           <Form.Item
             name="order_no"
             label={t('fields.orderNumber')}
-            rules={[{ required: type === 'open_order' }]}
+            rules={[{ required: trsaType === 'OPENORDER' }]}
           >
             <Select
               //loading={driversLoading}
               allowClear
               showSearch
-              disabled={type !== 'open_order'}
+              disabled={trsaType !== 'OPENORDER'}
+              onChange={handleOrderSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectOrderNumber')}
               filterOption={(input, option) =>

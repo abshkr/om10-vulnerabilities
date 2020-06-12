@@ -1,7 +1,7 @@
-const columns = (t, form, setPayload, payload, type, drawers) => [
+const columns = (t, form, setPayload, payload, tripType, drawers) => [
   {
     headerName: t('fields.compartmentNumber'),
-    field: 'tnkr_cmpt_no',
+    field: 'trsf_cmpt_no',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -11,37 +11,37 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
 
   {
     headerName: t('fields.soldTo'),
-    field: 'customer_code',
+    field: 'trsf_sold_to',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: type === 'BY_PRODUCT',
+    hide: tripType === 'BY_PRODUCT',
     width: 80,
   },
 
   {
     headerName: t('fields.deliverNumber'),
-    field: 'delivery_number',
+    field: 'trsf_delv_num',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     width: 120,
-    hide: type === 'BY_PRODUCT',
+    hide: tripType === 'BY_PRODUCT',
   },
 
   {
     headerName: t('fields.shipTo'),
-    field: 'delivery_location',
+    field: 'trsf_delv_loc',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     width: 80,
-    hide: type === 'BY_PRODUCT',
+    hide: tripType === 'BY_PRODUCT',
   },
 
   {
     headerName: t('fields.equipmentId'),
-    field: 'eqpt_code',
+    field: 'trsf_equip_id',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -56,7 +56,7 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
 
   {
     headerName: t('fields.drawerCode'),
-    field: 'drawer_code',
+    field: 'trsf_drwr_cd',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -65,25 +65,19 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
 
   {
     headerName: t('fields.drawerProduct'),
-    field: 'prod_code',
-    hide: true,
-  },
-
-  {
-    headerName: t('fields.drawerProduct'),
-    field: 'prod_code',
+    field: 'trsf_prod_code',
     hide: true,
   },
 
   {
     headerName: t('fields.company'),
-    field: 'prod_cmpy',
+    field: 'trsf_prod_cmpy',
     hide: true,
   },
 
   {
     headerName: t('fields.drawerProduct'),
-    field: 'prod_name',
+    field: 'trsf_prod_name',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -100,7 +94,7 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
 
   {
     headerName: t('fields.bayArm'),
-    field: 'arm_code',
+    field: 'trsf_arm_cd',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -113,9 +107,31 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
       payload,
     },
   },
+
+  {
+    headerName: t('fields.scheduled'),
+    field: 'trsf_qty_plan',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    editable: false,
+    width:120,
+    hide: tripType === 'BY_PRODUCT',
+  },
+  {
+    headerName: t('fields.oprdProdQty'),
+    field: 'trsf_qty_left',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    editable: false,
+    width:120,
+    hide: tripType === 'BY_PRODUCT',
+  },
+
   {
     headerName: t('fields.density'),
-    field: 'dens',
+    field: 'trsf_density',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -123,7 +139,7 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
   },
   {
     headerName: t('fields.temperature'),
-    field: 'temperature',
+    field: 'trsf_temp',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -137,7 +153,7 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
   },
   {
     headerName: t('fields.observedQuantity'),
-    field: 'amb_vol',
+    field: 'trsf_qty_amb',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -150,7 +166,7 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
   },
   {
     headerName: t('fields.standardQuantity'),
-    field: 'cor_vol',
+    field: 'trsf_qty_cor',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -163,7 +179,7 @@ const columns = (t, form, setPayload, payload, type, drawers) => [
   },
   {
     headerName: t('fields.massQuantity'),
-    field: 'liq_kg',
+    field: 'trsf_load_kg',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,

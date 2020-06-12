@@ -1,2 +1,2 @@
-import DrawerProductTransfer from './drawer-product-transfer';
-export default DrawerProductTransfer;
+import DrawerProductTransfers from './drawer-product-transfers';
+export default DrawerProductTransfers;

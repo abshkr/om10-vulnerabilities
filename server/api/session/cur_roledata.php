@@ -1,9 +1,6 @@
 <?php
 // required headers
 include_once '../shared/header.php';
-
-// include database and object files
-include_once '../config/database.php';
 include_once '../objects/cur_role.php';
 
 if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'localhost')) {

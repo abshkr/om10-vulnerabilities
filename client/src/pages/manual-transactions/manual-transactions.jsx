@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Page } from '../../components';
 import auth from '../../auth';
 
-import DrawerProductTransfer from './drawer-product-transfer';
+import DrawerProductTransfers from './drawer-product-transfer';
 import Forms from './forms';
 
 const { confirm } = Modal;
@@ -15,7 +15,7 @@ const ManualTransactions = () => {
 
   const [form] = Form.useForm();
 
-  const [type, setType] = useState(undefined);
+  const [trsaType, setTrsaType] = useState(undefined);
 
   const [trips, setTrips] = useState(null);
   const [tankers, setTankers] = useState(null);
@@ -24,6 +24,8 @@ const ManualTransactions = () => {
   const [customers, setCustomers] = useState(null);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [selectedTrip, setSelectedTrip] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedTanker, setSelectedTanker] = useState(null);
 
   const onSumit = async () => {
     try {
@@ -45,7 +47,7 @@ const ManualTransactions = () => {
       onOk: async () => {
         await form.resetFields();
 
-        setType(null);
+        setTrsaType(null);
         setTrips(null);
         setTankers(null);
         setOrders(null);
@@ -77,8 +79,8 @@ const ManualTransactions = () => {
       <Form layout="vertical" form={form} scrollToFirstError>
         <Forms
           form={form}
-          type={type}
-          setType={setType}
+          trsaType={trsaType}
+          setTrsaType={setTrsaType}
           trips={trips}
           setTrips={setTrips}
           tankers={tankers}
@@ -90,11 +92,20 @@ const ManualTransactions = () => {
           selectedSupplier={selectedSupplier}
           setSelectedSupplier={setSelectedSupplier}
           setSelectedTrip={setSelectedTrip}
+          setSelectedOrder={setSelectedOrder}
+          setSelectedTanker={setSelectedTanker}
         />
 
         <Divider style={{ margin: '0px 0' }}>{t('divider.drawerProductTransfer')}</Divider>
 
-        <DrawerProductTransfer form={form} type={type} supplier={selectedSupplier} trip={selectedTrip} />
+        <DrawerProductTransfers 
+          form={form} 
+          trsaType={trsaType} 
+          supplier={selectedSupplier} 
+          trip={selectedTrip} 
+          order={selectedOrder} 
+          tanker={selectedTanker}
+        />
       </Form>
     </Page>
   );

@@ -11,8 +11,8 @@ import useSWR from 'swr';
 
 import { MANUAL_TRANSACTIONS } from '../../../api';
 
-import TransferDetails from './transfer-details';
-import ProductQuantities from './product-quantities';
+import BaseProductTransfers from './base-product-transfers';
+import BaseProductTotals from './base-product-totals';
 import MeterTotals from './meter-totals';
 
 const components = {
@@ -27,7 +27,7 @@ const components = {
 
 const { TabPane } = Tabs;
 
-const DrawerProductTransfer = ({ form, supplier, trip }) => {
+const DrawerProductTransfers = ({ form, trsaType, supplier, trip, order, tanker }) => {
   const { data } = useSWR(
     supplier && trip && `${MANUAL_TRANSACTIONS.DETAILS}?supplier=${supplier}&trip_no=${trip}`
   );
@@ -38,14 +38,14 @@ const DrawerProductTransfer = ({ form, supplier, trip }) => {
 
   const { t } = useTranslation();
 
-  const [type, setType] = useState(null);
+  const [tripType, setTripType] = useState(null);
   const [payload, setPayload] = useState([]);
   const [selected, setSelected] = useState(null);
   const [fields, setFields] = useState([]);
   const [clicked, setClicked] = useState(null);
 
   const onDelete = () => {
-    const filtered = _.reject(payload, ['tnkr_cmpt_no', clicked?.tnkr_cmpt_no]);
+    const filtered = _.reject(payload, ['trsf_cmpt_no', clicked?.trsf_cmpt_no]);
 
     setClicked(null);
 
@@ -70,15 +70,15 @@ const DrawerProductTransfer = ({ form, supplier, trip }) => {
 
   useEffect(() => {
     if (data?.records[0]?.schd_type) {
-      setType(data?.records[0]?.schd_type);
+      setTripType(data?.records[0]?.schd_type);
     }
   }, [data]);
 
   useEffect(() => {
-    const values = columns(t, form, setPayload, payload, type, drawers);
+    const values = columns(t, form, setPayload, payload, tripType, drawers);
 
     setFields(values);
-  }, [t, form, setPayload, payload, type, drawers]);
+  }, [t, form, setPayload, payload, tripType, drawers]);
 
   useEffect(() => {
     setPayload([]);
@@ -89,21 +89,23 @@ const DrawerProductTransfer = ({ form, supplier, trip }) => {
       _.forEach(data?.records, (record) => {
         if (record.shls_supp !== '') {
           const object = {
-            customer_code: record?.customer_code,
-            delivery_number: record?.delivery_number,
-            delivery_location: record?.delivery_location,
-            eqpt_code: record.eqpt_code,
-            tnkr_cmpt_no: record.tnkr_cmpt_no,
-            drawer_code: record.shls_supp,
-            prod_code: record?.prod_code,
-            prod_name: record?.prod_name === '' ? t('placeholder.selectDrawerProduct') : record?.prod_name,
-            prod_cmpy: record?.shls_supp,
-            arm_code: t('placeholder.selectArmCode'),
-            dens: null,
-            temperature: null,
-            cor_vol: null,
-            amb_vol: null,
-            liq_kg: null,
+            trsf_sold_to: record?.customer_code,
+            trsf_delv_num: record?.delivery_number,
+            trsf_delv_loc: record?.delivery_location,
+            trsf_equip_id: record.eqpt_code,
+            trsf_cmpt_no: record.tnkr_cmpt_no,
+            trsf_drwr_cd: record.shls_supp,
+            trsf_prod_code: record?.prod_code,
+            trsf_prod_name: record?.prod_name === '' ? t('placeholder.selectDrawerProduct') : record?.prod_name,
+            trsf_prod_cmpy: record?.shls_supp,
+            trsf_arm_cd: t('placeholder.selectArmCode'),
+            trsf_qty_plan: null,
+            trsf_qty_left: null,
+            trsf_density: null,
+            trsf_temp: null,
+            trsf_qty_amb: null,
+            trsf_qty_cor: null,
+            trsf_load_kg: null,
           };
 
           transformed.push(object);
@@ -164,7 +166,10 @@ const DrawerProductTransfer = ({ form, supplier, trip }) => {
 
       <Tabs defaultActiveKey="1" animated={false} type="card">
         <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="1">
-          <ProductQuantities form={form} selected={selected} transfers={payload} />
+          <BaseProductTransfers form={form} selected={selected} transfers={payload} />
+        </TabPane>
+        <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="1">
+          <BaseProductTotals form={form} selected={selected} transfers={payload} />
         </TabPane>
       </Tabs>
 
@@ -179,4 +184,4 @@ const DrawerProductTransfer = ({ form, supplier, trip }) => {
   );
 };
 
-export default DrawerProductTransfer;
+export default DrawerProductTransfers;

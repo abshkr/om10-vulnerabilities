@@ -400,9 +400,14 @@ class Utilities
                         $base_item[$lower_key] = false;
                     }
                 } else {
-                    if (isset($object->NUMBER_FIELDS) && in_array($key, $object->NUMBER_FIELDS)) {
-                        // write_log($value, __FILE__, __LINE__);
-                        $base_item[$lower_key] = (float) $value;
+                    if (isset($object->NUMBER_FIELDS)) {
+                        if (array_key_exists($key, $object->NUMBER_FIELDS)) {
+                            $base_item[$lower_key] = round((float) $value, $object->NUMBER_FIELDS[$key]);
+                        } else if (in_array($key, $object->NUMBER_FIELDS, true)) {
+                            $base_item[$lower_key] = (float) $value;
+                        } else {
+                            $base_item[$lower_key] = $value;
+                        }
                     } else {
                         $base_item[$lower_key] = $value;
                     }

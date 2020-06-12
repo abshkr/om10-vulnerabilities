@@ -7,9 +7,7 @@
  * curl -i "http://10.2.20.53/api/config/get_token.php" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6Ijk5OTkiLCJleHAiOjE1MzcwMjM4MzMsInNlc3NfaWQiOm51bGx9.35Gy9asUBLA3uBbwV9W4QUpaFGS4FHebcA-jTvCeQ5A"
  */
 
-include_once __DIR__ .  "/jwt.php";
-// include_once '../../objects/refresh_tokens.php';
-include_once __DIR__ .  '/database.php';
+include_once __DIR__ .  "/../config/jwt_utilities.php";
 include_once __DIR__ .  '/../shared/log.php';
 
 $data = json_decode(file_get_contents("php://input"));
@@ -71,7 +69,7 @@ if (!$payload) {
 
 echo json_encode(
     array("token_type" => "bearer",
-        "access_token" => get_token($payload->per_code)),
+        "access_token" => get_token($payload->per_code, $payload->sess_id, $payload->site_code, $payload->lang)),
     JSON_PRETTY_PRINT
 );
 

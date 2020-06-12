@@ -21,17 +21,19 @@ export default class DrawerProducts extends Component {
     let current = form.getFieldValue('transfers');
 
     const key = this.props.data?.tnkr_cmpt_no;
-    const index = _.findIndex(current, ['tnkr_cmpt_no', key]);
+    const index = _.findIndex(current, ['trsf_cmpt_no', key]);
 
-    current[index].prod_code = record?.item?.prod_code;
-    current[index].prod_name = record.children;
-    current[index].prod_cmpy = record?.item?.prod_cmpy;
-    current[index].arm_code = t('placeholder.selectArmCode');
-    current[index].dens = null;
-    current[index].temperature = null;
-    current[index].cor_vol = null;
-    current[index].amb_vol = null;
-    current[index].liq_kg = null;
+    current[index].trsf_prod_code = record?.item?.prod_code;
+    current[index].trsf_prod_name = record.children;
+    current[index].trsf_prod_cmpy = record?.item?.prod_cmpy;
+    current[index].trsf_arm_cd = t('placeholder.selectArmCode');
+    current[index].trsf_qty_plan = null;
+    current[index].trsf_qty_left = null;
+    current[index].trsf_density = null;
+    current[index].trsf_temp = null;
+    current[index].trsf_qty_cor = null;
+    current[index].trsf_qty_amb = null;
+    current[index].trsf_load_kg = null;
 
     form.setFieldsValue({
       transfers: current,

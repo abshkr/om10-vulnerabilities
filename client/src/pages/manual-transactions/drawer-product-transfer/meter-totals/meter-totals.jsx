@@ -25,29 +25,29 @@ const MeterTotals = ({ form, type, selected, transfers }) => {
       for (let index = 0; index < transfers.length; index++) {
         const transfer = transfers[index];
 
-        if (!transfer?.arm_code.includes(' ')) {
+        if (!transfer?.trsf_arm_cd.includes(' ')) {
           await axios
             .get(MANUAL_TRANSACTIONS.BASE_DETAILS, {
               params: {
-                prod_cmpy: transfer?.prod_cmpy,
-                prod_code: transfer?.prod_code,
-                arm_code: [transfer?.arm_code],
+                prod_cmpy: transfer?.trsf_prod_cmpy,
+                prod_code: transfer?.trsf_prod_code,
+                arm_code: [transfer?.trsf_arm_cd],
               },
             })
             .then((res) => {
               if (res.data?.records?.length > 0) {
                 _.forEach(res?.data?.records, (arm) => {
                   meters.push({
-                    open_amb: null,
-                    open_cor: null,
-                    open_kg: null,
-                    close_amb: null,
-                    close_cor: null,
-                    close_kg: null,
+                    trsf_mtr_opn_amb: null,
+                    trsf_mtr_opn_cor: null,
+                    trsf_mtr_open_kg: null,
+                    trsf_mtr_cls_amb: null,
+                    trsf_mtr_cls_cor: null,
+                    trsf_mtr_close_kg: null,
                     injector_or_meter: arm?.meter_type_code,
-                    meter_injector_code: arm.stream_mtrcode,
-                    type: `${arm.meter_type_code} - ${arm?.meter_type_desc}`,
-                    tnkr_cmpt_no: transfer.tnkr_cmpt_no,
+                    trsf_mtr_cd: arm.stream_mtrcode,
+                    trsf_mtr_typ: `${arm.meter_type_code} - ${arm?.meter_type_desc}`,
+                    trsf_cmpt_no: transfer.trsf_cmpt_no,  //????
                   });
                 });
               }

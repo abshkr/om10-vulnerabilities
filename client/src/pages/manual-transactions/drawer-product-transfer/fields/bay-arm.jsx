@@ -26,9 +26,18 @@ export default class BayArm extends Component {
     let current = form.getFieldValue('transfers');
 
     const key = this.props.data?.tnkr_cmpt_no;
-    const index = _.findIndex(current, ['tnkr_cmpt_no', key]);
+    const index = _.findIndex(current, ['trsf_cmpt_no', key]);
 
-    current[index].arm_code = record?.item?.stream_armcode;
+    current[index].trsf_arm_cd = record?.item?.stream_armcode;
+    current[index].trsf_qty_plan = null;
+    current[index].trsf_qty_left = null;
+    current[index].trsf_density = record?.item?.stream_tankden;
+    current[index].trsf_temp = null;
+    current[index].trsf_qty_amb = null;
+    current[index].trsf_qty_cor = null;
+    current[index].trsf_load_kg = null;
+
+
 
     form.setFieldsValue({
       transfers: current,
@@ -50,8 +59,8 @@ export default class BayArm extends Component {
     axios
       .get(MANUAL_TRANSACTIONS.GET_ARMS, {
         params: {
-          prod_cmpy: this.props.data.prod_cmpy,
-          prod_code: this.props.data.prod_code,
+          prod_cmpy: this.props.data.trsf_prod_cmpy,
+          prod_code: this.props.data.trsf_prod_code,
         },
       })
       .then((res) => {

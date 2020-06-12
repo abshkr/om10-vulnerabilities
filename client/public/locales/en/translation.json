@@ -1033,7 +1033,9 @@
     "mtMngrOO": "Mgr Cmpy OO No.",
     "mtSoldTo": "Sold To",
     "mtShipTo": "Ship To",
-    "mtDelvNum": "Delv No."
+    "mtDelvNum": "Delv No.",
+	"massUnit": "Mass Unit",
+	"volumeUnit": "Volume Unit"
   },
 
   "pageMenu": {
