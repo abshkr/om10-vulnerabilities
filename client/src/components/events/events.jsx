@@ -66,9 +66,11 @@ const Events = () => {
       disabled={events.length === 0}
     >
       <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
-        <Badge count={events?.length} offset={[10, -5]}>
-          <BellOutlined style={{ transform: 'scale(1.5)' }} />
-        </Badge>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Badge count={events?.length} offset={[10, -5]}>
+            <BellOutlined style={{ transform: 'scale(1.5)' }} />
+          </Badge>
+        </div>
       </Button>
     </Dropdown>
   );

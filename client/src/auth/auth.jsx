@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { Modal } from 'antd';
+import jwtDecode from 'jwt-decode';
 
 import { ROUTES } from '../constants';
 
@@ -10,11 +10,23 @@ import { useIdle } from '../hooks';
 
 export default (Authenticated) => {
   const ComposedComponent = ({ token }) => {
+    const [user, setUser] = useState(null);
+
     const isIdle = useIdle();
 
     const history = useHistory();
 
     useEffect(() => {
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          setUser(decoded);
+        } catch (error) {
+          // invalid jwt
+          history.push(ROUTES.LOG_OUT);
+        }
+      }
+
       if (!token) {
         history.push(ROUTES.LOG_IN);
       }
@@ -22,13 +34,11 @@ export default (Authenticated) => {
 
     useEffect(() => {
       if (isIdle) {
-        Modal.destroyAll();
-
         history.push(ROUTES.LOG_OUT);
       }
     }, [isIdle, history]);
 
-    return <Authenticated token={token} />;
+    return <Authenticated user={user} />;
   };
 
   const mapStateToProps = (state) => {

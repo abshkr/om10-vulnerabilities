@@ -89,7 +89,9 @@ const NavBar = () => {
             style={{ marginRight: 7 }}
             onClick={() => history.push(ROUTES.CONFIGURATION)}
           >
-            <SettingOutlined style={{ transform: 'scale(1.5)' }} />
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <SettingOutlined style={{ transform: 'scale(1.5)' }} />
+            </div>
           </Button>
 
           <Button
@@ -99,7 +101,9 @@ const NavBar = () => {
             style={{ marginRight: 7 }}
             onClick={() => window.open(ROUTES.MANUAL, '_blank')}
           >
-            <QuestionCircleOutlined style={{ transform: 'scale(1.5)' }} />
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <QuestionCircleOutlined style={{ transform: 'scale(1.5)' }} />
+            </div>
           </Button>
 
           <Button
@@ -109,7 +113,9 @@ const NavBar = () => {
             style={{ marginRight: 7 }}
             onClick={() => window.open(ROUTES.EULA, '_blank')}
           >
-            <CopyrightOutlined style={{ transform: 'scale(1.5)' }} />
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <CopyrightOutlined style={{ transform: 'scale(1.5)' }} />
+            </div>
           </Button>
 
           <Button
@@ -119,11 +125,15 @@ const NavBar = () => {
             style={{ marginRight: 7 }}
             onClick={() => history.push(ROUTES.SETTINGS)}
           >
-            <UserOutlined style={{ transform: 'scale(1.5)' }} />
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <UserOutlined style={{ transform: 'scale(1.5)' }} />
+            </div>
           </Button>
 
           <Button type="primary" size="large" shape="circle" onClick={onLogOut}>
-            <PoweroffOutlined style={{ transform: 'scale(1.5)' }} />
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <PoweroffOutlined style={{ transform: 'scale(1.5)' }} />
+            </div>
           </Button>
         </div>
       </NavBarContainer>

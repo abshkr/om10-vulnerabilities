@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import { Layout } from 'antd';
 
 import { InterfaceContainer } from './style';
-import { NavBar, Navigation } from '..';
+import { NavBar, Navigation, Status } from '..';
 
-const { Content, Sider } = Layout;
+const { Content, Sider, Footer } = Layout;
 
 const Interface = ({ auth, children }) => {
   return auth ? (
@@ -18,6 +18,9 @@ const Interface = ({ auth, children }) => {
         <Layout className="omega">
           <NavBar />
           <Content className="content">{children}</Content>
+          <Footer>
+            <Status />
+          </Footer>
         </Layout>
       </Layout>
     </InterfaceContainer>

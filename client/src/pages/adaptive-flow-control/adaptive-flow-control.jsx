@@ -12,16 +12,20 @@ import { AdaptiveFlowFooter } from './styles';
 import generator from './generator';
 import FlowRates from './flow-rates';
 
+import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
 const AdaptiveFlowControl = () => {
+  const access = useAuth('M_ADAPTIVEFLOWCONTROL');
+
   const { t } = useTranslation();
-  const [data, setData] = useState([]);
 
   const { data: baseProducts } = useSWR(BASE_PRODUCTS.READ, { refreshInterval: 1000 });
   const { data: flowRate } = useSWR(ADAPTIVE_FLOW_CONTROL.READ, { refreshInterval: 1000 });
   const { data: currentRate } = useSWR(ADAPTIVE_FLOW_CONTROL.CURRENT_FLOW, { refreshInterval: 1000 });
+
+  const [data, setData] = useState([]);
 
   const isLoading = !baseProducts || !flowRate || !currentRate;
 
@@ -33,15 +37,14 @@ const AdaptiveFlowControl = () => {
   }, [isLoading, flowRate, currentRate, baseProducts]);
 
   return (
-    <Page page={t('pageMenu.operations')} name={t('pageNames.adaptiveFlow')} block={true}>
+    <Page page={t('pageMenu.operations')} name={t('pageNames.adaptiveFlow')} access={access}>
       <Table
-        size="small"
         dataSource={data}
         rowKey="baseCode"
         bordered
         loading={false}
         columns={columns(data, t)}
-        expandedRowRender={tank => FlowRates(tank, t)}
+        expandedRowRender={(tank) => FlowRates(tank, t)}
         footer={() => (
           <AdaptiveFlowFooter>
             {t('descriptions.totalFlow')}: {0} {t('units.lpm')}{' '}

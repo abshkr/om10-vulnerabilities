@@ -1,3 +1,5 @@
+import api from './api';
+
 import * as TANKER_LIST from './tanker-list';
 import * as AUTH from './auth';
 import * as EQUIPMENT_LIST from './equipment-list';
@@ -123,5 +125,7 @@ export {
   CUSTOMERS,
   DRAWER_PRODUCTS,
   DELIVERY_DETAILS,
-  NOMINATION_TRANSACTIONS
+  NOMINATION_TRANSACTIONS,
 };
+
+export default api;

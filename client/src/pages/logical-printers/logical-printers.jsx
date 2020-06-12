@@ -5,13 +5,13 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download } from '../../components';
-import { LOGICAL_PRINTERS } from '../../api';
-import { useAuth } from '../../hooks';
-import columns from './columns';
-import auth from '../../auth';
+import { Page, DataTable, Download } from 'components';
+import { LOGICAL_PRINTERS } from 'api';
+import useAuth from 'hooks/use-auth';
+import auth from 'auth';
 
 import Forms from './forms';
+import columns from './columns';
 
 const LogicalPrinters = () => {
   const [visible, setVisible] = useState(false);

@@ -1,14 +1,13 @@
-import axios from 'axios';
 import { hash } from '../utils';
 
 import { AUTHORIZED, UNAUTHORIZED } from './types';
-import { AUTH } from '../api';
+import api, { AUTH } from '../api';
 
 export const login = (values, callback) => async (dispatch) => {
   const payload = hash(values.language, values.code, values.password);
 
   try {
-    axios
+    api
       .post(AUTH.LOGIN, payload)
       .then((response) => {
         const token = response.data.token;
@@ -31,7 +30,7 @@ export const login = (values, callback) => async (dispatch) => {
 };
 
 export const signout = () => {
-  axios
+  api
     .post(AUTH.LOGOUT, {
       token: sessionStorage.getItem('token'),
     })

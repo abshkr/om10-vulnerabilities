@@ -4,11 +4,11 @@ import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } fr
 import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
+import api, { LOGICAL_PRINTERS } from 'api';
+
 import { Company, Usage, Printer } from './fields';
-import { LOGICAL_PRINTERS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -38,7 +38,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? LOGICAL_PRINTERS.CREATE : LOGICAL_PRINTERS.UPDATE, values)
           .then(() => {
             onComplete();
@@ -69,7 +69,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(LOGICAL_PRINTERS.DELETE, value)
           .then(() => {
             onComplete();

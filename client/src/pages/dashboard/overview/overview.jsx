@@ -87,6 +87,11 @@ const Overview = () => {
           logarithmic: weeklyMode !== 'linear',
           min: weeklyMin,
           forceNiceScale: true,
+          labels: {
+            formatter: function (value, timestamp) {
+              return value?.toFixed(2);
+            },
+          },
         },
 
         xaxis: {
@@ -172,6 +177,16 @@ const Overview = () => {
 
           markers: {
             radius: 12,
+          },
+        },
+
+        yaxis: {
+          forceNiceScale: true,
+
+          labels: {
+            formatter: function (value, timestamp) {
+              return value?.toFixed(2);
+            },
           },
         },
 
@@ -308,7 +323,7 @@ const Overview = () => {
       <Row gutter={[16, 16]}>
         <Col span={12}>
           <Card title="Daily Throughput Totals (m3)" hoverable size="small" loading={!payload}>
-            <ReactApexChart options={dailyOptions} series={dailySeries} type="line" height={300} />
+            <ReactApexChart options={dailyOptions} series={dailySeries} type="line" height={240} />
           </Card>
         </Col>
 
@@ -333,7 +348,7 @@ const Overview = () => {
               </Select>
             }
           >
-            <ReactApexChart options={storageOptions} series={storageSeries} type="bar" height={300} />
+            <ReactApexChart options={storageOptions} series={storageSeries} type="bar" height={240} />
           </Card>
         </Col>
       </Row>
@@ -360,7 +375,7 @@ const Overview = () => {
               </Select>
             }
           >
-            <ReactApexChart options={folioOptions} series={folioSeries} type="bar" height={300} />
+            <ReactApexChart options={folioOptions} series={folioSeries} type="bar" height={240} />
           </Card>
         </Col>
 
@@ -381,7 +396,7 @@ const Overview = () => {
               </Radio.Group>
             }
           >
-            <ReactApexChart options={weeklyOptions} series={weeklySeries} type="line" height={300} />
+            <ReactApexChart options={weeklyOptions} series={weeklySeries} type="line" height={240} />
           </Card>
         </Col>
       </Row>

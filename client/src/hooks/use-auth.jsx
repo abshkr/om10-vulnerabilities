@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react';
 
 import { useHistory } from 'react-router-dom';
-import jwtDecode from 'jwt-decode';
 import useSWR from 'swr';
 import _ from 'lodash';
 
 import { AUTH } from '../api';
-import { ROUTES } from '../constants';
 
 const useAuth = (module) => {
-  const [matrix, setMatrix] = useState({
-    user: null,
+  const { data: payload, revalidate } = useSWR(`${AUTH.PERMISSIONS}?object_text=${module}`, {
+    revalidateOnFocus: false,
+  });
+
+  const history = useHistory();
+
+  const [access, setAccess] = useState({
     isProtected: false,
     isLoading: true,
     canDelete: false,
@@ -19,36 +22,17 @@ const useAuth = (module) => {
     canView: false,
   });
 
-  const { data: payload, revalidate } = useSWR(AUTH.PERMISSIONS);
-
-  let history = useHistory();
-
   useEffect(() => {
-    const resource = payload?.records;
+    const access = payload?.records[0];
 
-    if (resource) {
-      const token = sessionStorage.getItem('token');
-      try {
-        const decoded = jwtDecode(token);
-
-        const code = decoded?.per_code;
-        const user = _.find(resource, ['user_code', code]);
-        const auth = _.find(user?.privilege, ['object_text', module]);
-
-        if (auth) {
-          setMatrix({
-            user: code,
-            isProtected: auth.priv_protect,
-            canDelete: auth.priv_update && auth.priv_delete,
-            canUpdate: auth.priv_update,
-            canCreate: auth.priv_create,
-            canView: auth.priv_view,
-          });
-        }
-      } catch (error) {
-        // JWT is invalid
-        history.push(ROUTES.LOG_OUT);
-      }
+    if (access) {
+      setAccess({
+        isProtected: access.priv_protect,
+        canDelete: access.priv_update && access.priv_delete,
+        canUpdate: access.priv_update,
+        canCreate: access.priv_create,
+        canView: access.priv_view,
+      });
     }
   }, [payload, history, module]);
 
@@ -59,7 +43,7 @@ const useAuth = (module) => {
   }, [revalidate]);
 
   return {
-    ...matrix,
+    ...access,
     isLoading: !payload,
   };
 };

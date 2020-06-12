@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
+
+import { Button, Dropdown, Menu, message, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { StarOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
-import { Button, Dropdown, Menu, message, notification } from 'antd';
-import JwtDecode from 'jwt-decode';
 import useSWR from 'swr';
 import _ from 'lodash';
-import axios from 'axios';
 
+import { useAuth } from '../../hooks';
 import { generatePaths } from '../../utils';
+import api, { AUTH } from '../../api';
 import auth from '../../auth';
-import { AUTH } from '../../api';
 
-const Favourites = ({ token }) => {
+const Favourites = ({ user }) => {
   const { data, revalidate } = useSWR(AUTH.SETUP);
   const { t } = useTranslation();
   const history = useHistory();
@@ -24,7 +24,7 @@ const Favourites = ({ token }) => {
   const exists = _.find(data?.records, ['config_key', current]);
 
   const onFinish = (type, payload) => {
-    axios
+    api
       .post(AUTH.UPDATE_SETUP, payload)
       .then(() => {
         revalidate();
@@ -43,7 +43,6 @@ const Favourites = ({ token }) => {
 
   const onFavourite = () => {
     try {
-      const decoded = JwtDecode(token);
       const paths = generatePaths(t);
 
       const payload = [...data?.records];
@@ -58,7 +57,7 @@ const Favourites = ({ token }) => {
 
       if (!exists && entry) {
         const record = {
-          per_code: decoded?.per_code,
+          per_code: user?.per_code,
           config_key: current,
           config_value: entry.name,
         };
@@ -109,7 +108,9 @@ const Favourites = ({ token }) => {
   return (
     <Dropdown overlay={menu} trigger={['click']}>
       <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
-        <StarOutlined style={{ transform: 'scale(1.5)' }} />
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <StarOutlined style={{ transform: 'scale(1.5)' }} />
+        </div>
       </Button>
     </Dropdown>
   );

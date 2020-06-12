@@ -65,9 +65,9 @@ const useConfig = () => {
     loading: true,
   });
 
-  const { data: configuration } = useSWR(SITE_CONFIGURATION.READ);
-  const { data: features } = useSWR(SITE_CONFIGURATION.FEATURES);
-  const { data: environment } = useSWR(AUTH.ENVIRONMENT);
+  const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
+  const { data: features } = useSWR(SITE_CONFIGURATION.FEATURES, { revalidateOnFocus: false });
+  const { data: environment } = useSWR(AUTH.ENVIRONMENT, { revalidateOnFocus: false });
 
   const formatter = (value) => {
     switch (value) {

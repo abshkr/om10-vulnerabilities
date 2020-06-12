@@ -3,23 +3,23 @@ import React, { useState, useEffect } from 'react';
 import { LockOutlined, IdcardOutlined, HomeOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Card, Button, Form, Input, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
-import JwtDecode from 'jwt-decode';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { Page } from '../../components';
-import { PERSONNEL } from '../../api';
+import api, { PERSONNEL } from '../../api';
+import { useAuth } from '../../hooks';
 import auth from '../../auth';
 
-const Settings = ({ token }) => {
-  const [password, setPassword] = useState(null);
-
+const Settings = ({ user }) => {
   const { t } = useTranslation();
 
   const [profileForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
 
+  const [password, setPassword] = useState(null);
+
   const { setFieldsValue } = profileForm;
+
   const setPasswordFields = passwordForm.setFieldsValue;
 
   const page = t('pageMenu.settings');
@@ -69,7 +69,7 @@ const Settings = ({ token }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(PERSONNEL.UPDATE_DEPARTMENT, values)
           .then((response) => {
             notification.success({
@@ -97,7 +97,7 @@ const Settings = ({ token }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(PERSONNEL.UPDATE_PASSWORD, values)
           .then((response) => {
             notification.success({
@@ -117,23 +117,19 @@ const Settings = ({ token }) => {
   };
 
   useEffect(() => {
-    try {
-      const payload = JwtDecode(token);
-
+    if (user?.per_code) {
       setFieldsValue({
-        per_code: payload?.per_code,
+        per_code: user?.per_code,
       });
 
       setPasswordFields({
-        per_code: payload?.per_code,
+        per_code: user?.per_code,
       });
-    } catch (error) {
-      return;
     }
-  }, [setFieldsValue, setPasswordFields, token]);
+  }, [setFieldsValue, setPasswordFields, user]);
 
   return (
-    <Page page={page} auth={auth} minimal>
+    <Page page={page} minimal>
       <Form
         layout="horizontal"
         form={profileForm}

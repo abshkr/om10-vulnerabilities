@@ -6,20 +6,9 @@ import _ from 'lodash';
 
 import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } from './style';
 
-import { Footer, Icons } from '..';
+import { Icons } from '..';
 
-const Page = ({
-  name,
-  page,
-  children,
-  modifiers,
-  description,
-  minimal,
-  noHeader,
-  access,
-  avatar,
-  standalone,
-}) => {
+const Page = ({ name, page, children, modifiers, minimal, noHeader, access, avatar, standalone }) => {
   const routes = [
     {
       path: 'index',
@@ -53,12 +42,11 @@ const Page = ({
   return (
     <PageContainer>
       <div>
-        {!noHeader && (
+        {!minimal && (
           <PageHeaderContainer>
             <PageHeader
               title={name || page}
               style={{ width: '30vw' }}
-              subTitle={description}
               breadcrumb={{ routes: filtered }}
               avatar={avatar ? { icon: <Icons type={avatar} size={32} /> } : null}
             />
@@ -75,8 +63,6 @@ const Page = ({
           <div className="main-container">{children}</div>
         </PageInjector>
       </div>
-
-      <Footer />
     </PageContainer>
   );
 };
