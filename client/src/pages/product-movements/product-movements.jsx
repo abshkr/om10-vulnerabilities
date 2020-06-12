@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
@@ -9,24 +9,24 @@ import { PRODUCT_MOVEMENTS } from '../../api';
 import generator from './generator';
 import columns from './columns';
 import auth from '../../auth';
+import { useAuth } from '../../hooks';
 
 import Forms from './forms';
 
 const ProductMovements = () => {
   const { t } = useTranslation();
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
+
+  const auth = useAuth('M_PRODUCTMOVEMENT');
 
   const { data: payload, isValidating, revalidate } = useSWR(PRODUCT_MOVEMENTS.READ);
   const fields = columns(t);
   const data = generator(payload?.records);
 
-  const handleClick = (value) => {
-    FormModal({
-      value,
-      form: <Forms value={value} />,
-      id: value?.pmv_number,
-      name: value?.pmv_prdctlnk,
-      t,
-    });
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
   };
 
   const modifiers = (
@@ -35,7 +35,11 @@ const ProductMovements = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={data} isLoading={isValidating} columns={fields} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
+      <Button 
+        type="primary" 
+        icon={<PlusOutlined />} 
+        onClick={() => handleFormState(true, null)} 
+        loading={isValidating}>
         {t('operations.create')}
       </Button>
     </>
@@ -48,8 +52,10 @@ const ProductMovements = () => {
         data={data}
         isLoading={isValidating}
         selectionMode="single"
-        onClick={handleClick}
+        onClick={(payload) => handleFormState(true, payload)}
+        handleSelect={(payload) => handleFormState(true, payload[0])}
       />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
     </Page>
   );
 };
