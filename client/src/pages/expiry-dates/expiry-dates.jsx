@@ -56,7 +56,7 @@ const ExpiryDates = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} all={payload?.records} />
     </Page>
   );
 };

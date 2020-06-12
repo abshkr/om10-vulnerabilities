@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
+import _ from 'lodash';
 
-const ExpiryDateTarget = ({ form, value }) => {
+const ExpiryDateTarget = ({ form, value, all }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -25,6 +26,15 @@ const ExpiryDateTarget = ({ form, value }) => {
   ];
 
   const validate = (rule, input) => {
+    const filtered = _.filter(all, (item) => {
+      return item.edt_target_code === input;
+    })
+    console.log(filtered.length)
+    
+    if (filtered.length >= 10) {
+      return Promise.reject(`${t('descriptions.maxExpTarget')}`);
+    }
+
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.expiryDateTarget')}`);
     }

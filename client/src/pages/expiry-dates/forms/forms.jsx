@@ -20,7 +20,7 @@ import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, auth }) => {
+const FormModal = ({ value, visible, handleFormState, auth, all }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -161,7 +161,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} key="1">
-            <ExpiryDateTarget form={form} value={value} />
+            <ExpiryDateTarget form={form} value={value} all={all} />
             <TypeCode form={form} value={value} />
             <TypeDescription form={form} value={value} />
 
