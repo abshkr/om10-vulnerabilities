@@ -165,19 +165,19 @@ const Home = () => {
       <Row gutter={[16, 16]}>
         <Col span={8}>
           <Card title="Current Folio" hoverable size="small" loading={isLoading}>
-            <DataTable data={data?.folio_loads} columns={folio(t)} parentHeight="370px" minimal />
+            <DataTable data={data?.folio_loads} columns={folio(t)} parentHeight="450px" minimal />
           </Card>
         </Col>
 
         <Col span={8}>
           <Card title="Tanker Movement" hoverable size="small" loading={isLoading}>
-            <DataTable data={data?.tanker_movement} columns={movement(t)} parentHeight="370px" minimal />
+            <DataTable data={data?.tanker_movement} columns={movement(t)} parentHeight="450px" minimal />
           </Card>
         </Col>
 
         <Col span={8}>
           <Card title="Transaction Numbers" hoverable size="small" loading={isLoading}>
-            <DataTable data={data?.transaction_ids} columns={ids(t)} parentHeight="370px" minimal />
+            <DataTable data={data?.transaction_ids} columns={ids(t)} parentHeight="450px" minimal />
           </Card>
         </Col>
       </Row>

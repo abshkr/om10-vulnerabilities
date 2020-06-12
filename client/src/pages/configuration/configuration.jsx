@@ -77,7 +77,7 @@ const FormSwitch = ({ config, onChange }) => {
 
 const ConfigurationItems = ({ data, onChange }) => (
   <List
-    style={{ height: '75vh' }}
+    style={{ height: '75vh', overflowY: 'scroll' }}
     itemLayout="horizontal"
     size="small"
     dataSource={data}
