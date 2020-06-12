@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
 
-import api, { LOGICAL_PRINTERS } from 'api';
+import api, { LOGICAL_PRINTERS } from '../../../api';
 
 import { Company, Usage, Printer } from './fields';
 
