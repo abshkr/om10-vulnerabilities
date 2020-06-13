@@ -50,7 +50,7 @@ import BOL from './bol';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, url }) => {
   const { manageMakeManualTransaction, showSeals, manageAdditionalHostData } = useConfig();
 
   const { t } = useTranslation();
@@ -76,7 +76,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const onComplete = () => {
     handleFormState(false, null);
-    mutate(LOAD_SCHEDULES.READ);
+    mutate(url);
   };
 
   const onFinish = async () => {
