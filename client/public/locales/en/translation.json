@@ -1607,9 +1607,10 @@
     "selectDrawerProduct": "Select Drawer Product",
     "selectArmCode": "Select Arm Code",
     "selectTransType": "Please Select Transaction Type",
-    "invalidInput": "Invalid Input",
-	"setSourceUnit": "Please Select Source Unit",
-	"setDestinationUnit": "Please Select Destination Unit"
+    "setSourceUnit": "Please Select Source Unit",
+	"setDestinationUnit": "Please Select Destination Unit",
+	"selectLocale": "Please Select Locale",
+	"selectMessage": "Please Select Message"
   },
 
   "validate": {
@@ -1619,7 +1620,8 @@
     "mustBeNumber": "Must Be Number",
     "outOfRange": "Value Out of Range",
     "mustBeBetween": "Must Be Between",
-	"prodMoveSrcAndDst": "Source and/or destination must be a tank and specified"
+	"prodMoveSrcAndDst": "Source and/or destination must be a tank and specified",
+	"invalidInput": "Invalid Input"
   },
 
   "units": {

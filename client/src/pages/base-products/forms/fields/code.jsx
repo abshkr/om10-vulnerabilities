@@ -32,7 +32,7 @@ const Code = ({ form, value }) => {
     const validated = regex.exec(input);
 
     if (!validated) {
-      return Promise.reject(`${t('placeholder.invalidInput')}: ${t('descriptions.mustBeAlphaNumeric')}`);
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('descriptions.mustBeAlphaNumeric')}`);
     }
 
     if (!!match && !value) {

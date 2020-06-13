@@ -38,6 +38,7 @@ const ProductGroup = ({ form, value }) => {
       >
         <Select
           loading={isValidating}
+          disabled={value}
           showSearch
           optionFilterProp="children"
           placeholder={!value ? t('placeholder.selectGroup') : null}
