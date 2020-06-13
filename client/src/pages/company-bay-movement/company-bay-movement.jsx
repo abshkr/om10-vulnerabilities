@@ -30,7 +30,6 @@ const CompanyBayMovement = () => {
     setSelected(value);
   };
 
-
   const modifiers = (
     <>
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>

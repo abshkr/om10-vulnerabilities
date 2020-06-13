@@ -147,7 +147,6 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               {t('operations.delete')}
             </Button>
           )}
-          )}
         </>
       }
     >

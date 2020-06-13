@@ -135,15 +135,15 @@ class ReportProfile extends CommonClass
 
     public function pre_create()
     {
-        if (!isset($this->report_file)) {
-            $this->report_file = substr($this->report_jasper_file, 0, -7) . '_' . $this->report_type . ".jrxml";
+        if (!isset($this->rpt_file)) {
+            $this->rpt_file = substr($this->report_jasper_file, 0, -7) . '_' . $this->report_type . ".jrxml";
         }
-        if (!isset($this->report_lang)) {
-            $this->report_lang = 'ENG';
+        if (!isset($this->lang_id)) {
+            $this->lang_id = 'ENG';
         }
 
-        if (!isset($this->report_ondemand_title)) {
-            $this->report_ondemand_title = $this->report_name;
+        if (!isset($this->ondemand_title)) {
+            $this->ondemand_title = $this->report_name;
         }
     }
 }
