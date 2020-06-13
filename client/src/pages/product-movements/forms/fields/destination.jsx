@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input, Select } from 'antd';
 import useSWR from 'swr';
+import _ from 'lodash';
 
 import { PRODUCT_MOVEMENTS } from '../../../../api';
 
-const Destination = ({ form, value }) => {
+const Destination = ({ form, value, base }) => {
   const { t } = useTranslation();
 
   const { data: types, typesLoading } = useSWR(PRODUCT_MOVEMENTS.TYPES);
@@ -38,7 +39,7 @@ const Destination = ({ form, value }) => {
     if (value) {
       setFieldsValue({
         pmv_dsttype: value.pmv_dsttype,
-        pmv_dsttype_name: value.pmv_dsttype_name,
+        pmv_dstcode: value.pmv_dstcode,
       });
     }
   }, [value, setFieldsValue]);
@@ -70,7 +71,7 @@ const Destination = ({ form, value }) => {
       </Form.Item>
 
       <Form.Item
-        name="pmv_dsttype_name"
+        name="pmv_dstcode"
         label={t('fields.destinationUnit')}
         rules={[{ required: true, validator: validateCode }]}
       >
@@ -85,9 +86,11 @@ const Destination = ({ form, value }) => {
               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
           >
-            {tanks?.records.map((item, index) => (
-              <Select.Option key={index} value={item.pmv_id}>
-                {item.pmv_name}
+            {_.filter(tanks?.records, (item) => {
+              return item.tank_base === base
+            }).map((item, index) => (
+              <Select.Option key={index} value={item.tank_code}>
+                {item.tank_code}
               </Select.Option>
             ))}
           </Select>

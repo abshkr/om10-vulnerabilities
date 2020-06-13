@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import { PRODUCT_MOVEMENTS } from '../../../../api';
 
-const BaseProduct = ({ form, value }) => {
+const BaseProduct = ({ form, value, setBase }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -36,6 +36,7 @@ const BaseProduct = ({ form, value }) => {
         // loading={isValidating}
         showSearch
         disabled={value}
+        onChange={setBase}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectDepot') : null}
         filterOption={(input, option) =>
