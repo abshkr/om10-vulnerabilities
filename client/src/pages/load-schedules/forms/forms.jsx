@@ -290,7 +290,7 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
   }, [setFieldsValue, value]);
 
   useEffect(() => {
-    if (!value) {
+    if (!value && !visible) {
       setSupplier(undefined);
       setDrawer(undefined);
       setCarrier(undefined);

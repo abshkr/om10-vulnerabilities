@@ -61,6 +61,17 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
 
     let matches = [];
 
+    const compartmentCounter = {};
+
+    _.forEach(values?.tnkr_equips, (equipment, index) => {
+      compartmentCounter[index + 1] = equipment?.compartments?.length;
+    });
+
+    const compartmentArray = Object.values(compartmentCounter);
+    const noCompartments = compartmentArray.includes(0) || compartmentArray?.length === 0;
+
+    const createPrompt = noCompartments ? t('prompts.zeroEquipmentSelected') : t('prompts.create');
+
     if (!IS_CREATING) {
       matches = _.filter(payload?.records, (object) => {
         return (
@@ -72,9 +83,10 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
     }
 
     Modal.confirm({
-      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+      title: IS_CREATING ? createPrompt : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
       okType: 'primary',
+      width: noCompartments ? '40vw' : null,
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
