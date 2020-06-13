@@ -15,7 +15,14 @@ const ManualTransactions = () => {
 
   const [form] = Form.useForm();
 
-  const [trsaType, setTrsaType] = useState(undefined);
+  // SCHEDULE: doing manual transaction with Load Schedule
+  // OPENORDER: doing manual transaction with Open Order
+  const [sourceType, setSourceType] = useState(undefined);
+  // BY_PRODUCT: doing manual transaction with Pre-Order
+  // BY_COMPARTMENT: doing manual transaction with Pre-Schedule
+  const [loadType, setLoadType] = useState(undefined);
+  // Store the trip number or open order number
+  const [loadNumber, setLoadNumber] = useState(undefined);
 
   const [trips, setTrips] = useState(null);
   const [tankers, setTankers] = useState(null);
@@ -47,13 +54,15 @@ const ManualTransactions = () => {
       onOk: async () => {
         await form.resetFields();
 
-        setTrsaType(null);
+        setSourceType(null);
         setTrips(null);
         setTankers(null);
         setOrders(null);
         setCustomers(null);
         setSelectedSupplier(null);
         setSelectedTrip(null);
+        setSelectedOrder(null);
+        setSelectedTanker(null);
       },
     });
   };
@@ -79,8 +88,12 @@ const ManualTransactions = () => {
       <Form layout="vertical" form={form} scrollToFirstError>
         <Forms
           form={form}
-          trsaType={trsaType}
-          setTrsaType={setTrsaType}
+          sourceType={sourceType}
+          setSourceType={setSourceType}
+          loadType={loadType}
+          setLoadType={setLoadType}
+          loadNumber={loadNumber}
+          setLoadNumber={setLoadNumber}
           trips={trips}
           setTrips={setTrips}
           tankers={tankers}
@@ -100,7 +113,9 @@ const ManualTransactions = () => {
 
         <DrawerProductTransfers 
           form={form} 
-          trsaType={trsaType} 
+          sourceType={sourceType} 
+          loadType={loadType} 
+          loadNumber={loadNumber} 
           supplier={selectedSupplier} 
           trip={selectedTrip} 
           order={selectedOrder} 

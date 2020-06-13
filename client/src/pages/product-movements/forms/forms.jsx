@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import {
   EditOutlined,
@@ -8,24 +8,33 @@ import {
   DeleteOutlined,
   RedoOutlined,
 } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
+import _ from 'lodash';
 
-import { MovementType, Unit, Source, Destination, BatchCode, Quantity, Class } from './fields';
+import { MovementType, Unit, Source, Destination, BatchCode, Quantity, Class, BaseProduct } from './fields';
 import { PRODUCT_MOVEMENTS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value }) => {
+const FormModal = ({ value, visible, handleFormState, auth }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const { resetFields } = form;
 
   const IS_CREATING = !value;
   const CAN_DELETE = value?.pmv_status_name === 'NEW';
 
-  const onFinish = (values) => {
+  const onComplete = () => {
+    handleFormState(false, null); 
+    mutate(PRODUCT_MOVEMENTS.READ);
+  };
+
+  const onFinish = async () => {
+    const values = await form.validateFields();
+    
     Modal.confirm({
       title: t('prompts.create'),
       okText: t('operations.create'),
@@ -38,19 +47,20 @@ const FormModal = ({ value }) => {
           .post(PRODUCT_MOVEMENTS.CREATE, values)
           .then(
             axios.spread((response) => {
-              Modal.destroyAll();
+              onComplete();
 
-              mutate(PRODUCT_MOVEMENTS.READ);
               notification.success({
                 message: t('messages.createSuccess'),
                 description: t('descriptions.createSuccess'),
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.createFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
@@ -70,19 +80,20 @@ const FormModal = ({ value }) => {
           .post(PRODUCT_MOVEMENTS.HALT, value)
           .then(
             axios.spread((response) => {
-              Modal.destroyAll();
+              onComplete();
 
-              mutate(PRODUCT_MOVEMENTS.READ);
               notification.success({
                 message: t('messages.haltSuccess'),
                 description: t('descriptions.haltSuccess'),
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.haltFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
@@ -102,19 +113,20 @@ const FormModal = ({ value }) => {
           .post(PRODUCT_MOVEMENTS.START, value)
           .then(
             axios.spread((response) => {
-              Modal.destroyAll();
+              onComplete();
 
-              mutate(PRODUCT_MOVEMENTS.READ);
               notification.success({
                 message: t('messages.startSuccess'),
                 description: t('descriptions.startSuccess'),
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.startFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
@@ -134,98 +146,123 @@ const FormModal = ({ value }) => {
           .post(PRODUCT_MOVEMENTS.DELETE, value)
           .then(
             axios.spread((response) => {
-              mutate(PRODUCT_MOVEMENTS.READ);
-              Modal.destroyAll();
+              onComplete();
+
               notification.success({
                 message: t('messages.deleteSuccess'),
                 description: `${t('descriptions.deleteSuccess')}`,
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.deleteFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
     });
   };
 
+  useEffect(() => {
+    if (!value && !visible) {
+      resetFields();
+    } 
+  }, [value, visible]);
+
   return (
-    <Form
-      layout="vertical"
-      form={form}
-      onFinish={onFinish}
-      scrollToFirstError
-      initialValues={{ pmv_state_name: 'NEW', pmv_unit_name: 'l' }}
-    >
-      <Tabs defaultActiveKey="1">
-        <TabPane tab={t('tabColumns.general')} key="1" className="ant-tab-window">
-          <MovementType value={value} />
-          <Unit value={value} />
-          <Class form={form} value={value} />
-          <Source form={form} value={value} />
-          <Destination form={form} value={value} />
-          <BatchCode form={form} value={value} />
-          <Quantity form={form} value={value} />
-        </TabPane>
-      </Tabs>
-
-      <Form.Item>
-        <Button
-          htmlType="button"
-          icon={<CloseOutlined />}
-          style={{ float: 'right' }}
-          onClick={() => Modal.destroyAll()}
-        >
-          {t('operations.cancel')}
-        </Button>
-
-        {IS_CREATING && (
+    <Drawer
+      bodyStyle={{ paddingTop: 5 }}
+      onClose={() => handleFormState(false, null)}
+      maskClosable={IS_CREATING}
+      destroyOnClose={true}
+      mask={IS_CREATING}
+      placement="right"
+      width="50vw"
+      visible={visible}
+      footer={
+        <>
           <Button
-            type="primary"
-            icon={<EditOutlined />}
-            htmlType="submit"
-            style={{ float: 'right', marginRight: 5 }}
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
           >
-            {t('operations.create')}
+            {t('operations.cancel')}
           </Button>
-        )}
 
-        {CAN_DELETE && (
-          <>
+          {IS_CREATING && (
             <Button
               type="primary"
-              icon={<RedoOutlined />}
-              onClick={onStart}
+              icon={<EditOutlined />}
+              htmlType="submit"
               style={{ float: 'right', marginRight: 5 }}
+              onClick={onFinish}
+              disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
             >
-              {t('operations.start')}
+              {t('operations.create')}
             </Button>
+          )}
+
+          {CAN_DELETE && (
+            <>
+              <Button
+                type="primary"
+                icon={<RedoOutlined />}
+                onClick={onStart}
+                style={{ float: 'right', marginRight: 5 }}
+                disabled={!auth?.canDelete}
+              >
+                {t('operations.start')}
+              </Button>
+              <Button
+                type="danger"
+                icon={<DeleteOutlined />}
+                onClick={onDelete}
+                style={{ float: 'right', marginRight: 5 }}
+                disabled={!auth?.canDelete}
+              >
+                {t('operations.delete')}
+              </Button>
+            </>
+          )}
+
+          {!IS_CREATING && !CAN_DELETE && (
             <Button
               type="danger"
-              icon={<DeleteOutlined />}
-              onClick={onDelete}
+              icon={<WarningOutlined />}
               style={{ float: 'right', marginRight: 5 }}
+              onClick={onHalt}
             >
-              {t('operations.delete')}
+              {t('operations.halt')}
             </Button>
-          </>
-        )}
-
-        {!IS_CREATING && !CAN_DELETE && (
-          <Button
-            type="danger"
-            icon={<WarningOutlined />}
-            style={{ float: 'right', marginRight: 5 }}
-            onClick={onHalt}
-          >
-            {t('operations.halt')}
-          </Button>
-        )}
-      </Form.Item>
-    </Form>
+          )}
+        </>
+      }
+    >
+      <Form
+        layout="vertical"
+        form={form}
+        onFinish={onFinish}
+        scrollToFirstError
+        initialValues={{ pmv_state_name: 'NEW', pmv_unit_name: 'l' }}
+      >
+        <Tabs defaultActiveKey="1">
+          <TabPane tab={t('tabColumns.general')} key="1">
+            <MovementType value={value} />
+            <Unit value={value} />
+            <BaseProduct form={form} value={value} />
+            <Class form={form} value={value} />
+            <Source form={form} value={value} />
+            <Destination form={form} value={value} />
+            <BatchCode form={form} value={value} />
+            <Quantity form={form} value={value} />
+          </TabPane>
+        </Tabs>
+      </Form>
+    </Drawer>
   );
 };
 

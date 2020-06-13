@@ -1,22 +1,30 @@
-const columns = (t, form, setPayload, payload, tripType, drawers) => [
+const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload, products) => [
   {
     headerName: t('fields.compartmentNumber'),
     field: 'trsf_cmpt_no',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 50,
     pinned: 'left',
   },
 
+  // (!sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT')) && 
+  // (!sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType !== 'BY_COMPARTMENT')) && 
+  // (!sourceType || !loadNumber || (sourceType === 'OPENORDER')) && 
   {
     headerName: t('fields.soldTo'),
     field: 'trsf_sold_to',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: tripType === 'BY_PRODUCT',
-    width: 80,
+    hide: (
+      !sourceType || 
+      !loadNumber || 
+      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') || 
+      (sourceType === 'OPENORDER')
+    ),
+    width: 100,
   },
 
   {
@@ -25,8 +33,12 @@ const columns = (t, form, setPayload, payload, tripType, drawers) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
-    hide: tripType === 'BY_PRODUCT',
+    hide: (
+      !sourceType || 
+      !loadNumber || 
+      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') 
+    ),
+    width: 100,
   },
 
   {
@@ -35,8 +47,13 @@ const columns = (t, form, setPayload, payload, tripType, drawers) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 80,
-    hide: tripType === 'BY_PRODUCT',
+    hide: (
+      !sourceType || 
+      !loadNumber || 
+      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') || 
+      (sourceType === 'OPENORDER')
+    ),
+    width: 100,
   },
 
   {
@@ -85,7 +102,7 @@ const columns = (t, form, setPayload, payload, tripType, drawers) => [
     editable: true,
     width: 250,
     cellEditorParams: {
-      values: drawers?.records || [],
+      values: products?.records || [],
       form,
       setPayload,
       t,
@@ -115,8 +132,13 @@ const columns = (t, form, setPayload, payload, tripType, drawers) => [
     sortable: true,
     resizable: true,
     editable: false,
+    hide: (
+      !sourceType || 
+      !loadNumber || 
+      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') || 
+      (sourceType === 'OPENORDER')
+    ),
     width:120,
-    hide: tripType === 'BY_PRODUCT',
   },
   {
     headerName: t('fields.oprdProdQty'),
@@ -125,8 +147,13 @@ const columns = (t, form, setPayload, payload, tripType, drawers) => [
     sortable: true,
     resizable: true,
     editable: false,
+    hide: (
+      !sourceType || 
+      !loadNumber || 
+      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') || 
+      (sourceType === 'OPENORDER')
+    ),
     width:120,
-    hide: tripType === 'BY_PRODUCT',
   },
 
   {

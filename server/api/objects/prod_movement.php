@@ -113,19 +113,38 @@ class ProdMovement extends CommonClass
         }
 
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-        if ((int)$row['CNT'] > 0) {
-            return true;
+        if ((int)$row['CNT'] <= 0) {
+            $query = "INSERT INTO PRODUCT_BATCH (PRB_BATCHCODE, PRB_STRT_DATE)
+                VALUES (:prb_batchcode, SYSDATE)";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':prb_batchcode', $this->pmv_batchcode);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                $err_msg = "DB error:" . $e['message'];
+                return false;
+            }
         }
 
-        $query = "INSERT INTO PRODUCT_BATCH (PRB_BATCHCODE, PRB_STRT_DATE)
-            VALUES (:prb_batchcode, SYSDATE)";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':prb_batchcode', $this->pmv_batchcode);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            $err_msg = "DB error:" . $e['message'];
-            return false;
+        if (!isset($this->pmv_number)) {
+            $query = "SELECT NVL(MAX(PMV_NUMBER), 0) + 1 PMV_NUMBER FROM PRODUCT_MVMNTS";
+            $stmt = oci_parse($this->conn, $query);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $this->pmv_number = $row['PMV_NUMBER'];
+        }
+
+        if (!isset($this->pmv_status)) {
+            $this->pmv_status = 0;
+        }
+
+        if (!isset($this->pmv_unit)) {
+            $this->pmv_unit = 28;
         }
 
         return true;
@@ -202,10 +221,10 @@ class ProdMovement extends CommonClass
                 PMV.PMV_STATUS,
                 PMV_STATE_TYP.PMV_STATE_NAME PMV_STATUS_NAME
             FROM PRODUCT_MVMNTS PMV, PMV_STATE_TYP, PMV_TYP PMV_TYP1, PMV_TYP PMV_TYP2, UNIT_SCALE_VW, PMV_TRANSFER_CLASS_TYP
-            WHERE PMV.PMV_STATUS = PMV_STATE_TYP.PMV_STATE_ID
+            WHERE PMV.PMV_STATUS = PMV_STATE_TYP.PMV_STATE_ID(+)
                 AND PMV_SRCTYPE = PMV_TYP1.PMV_ID
                 AND PMV_DSTTYPE = PMV_TYP2.PMV_ID
-                AND PMV_UNIT = UNIT_ID
+                AND PMV_UNIT = UNIT_ID(+)
                 AND PMV_TRANS_TYPE = PMV_TRANSFER_CLASS_TYP.PMV_TRANSFER_CLASS_ID
             ORDER BY NVL(PMV.PMV_DATE2, SYSDATE) DESC, PMV.PMV_STATUS DESC";
 

@@ -12,8 +12,12 @@ const { Option } = Select;
 
 const Forms = ({
   form,
-  trsaType,
-  setTrsaType,
+  sourceType,
+  setSourceType,
+  loadType,
+  setLoadType,
+  loadNumber,
+  setLoadNumber,
   trips,
   setTrips,
   tankers,
@@ -28,12 +32,12 @@ const Forms = ({
   setSelectedOrder,
   setSelectedTanker,
 }) => {
-  const { setFieldsValue } = form;
+  const { setFieldsValue, resetFields } = form;
 
   const { t } = useTranslation();
 
   const { data: suppliers, isValidating: suppliersLoading } = useSWR(
-    trsaType === 'SCHEDULE' ? MANUAL_TRANSACTIONS.SCHEDULE_SUPPLIERS : MANUAL_TRANSACTIONS.ORDER_SUPPLIERS
+    sourceType === 'SCHEDULE' ? MANUAL_TRANSACTIONS.SCHEDULE_SUPPLIERS : MANUAL_TRANSACTIONS.ORDER_SUPPLIERS
   );
   const { data: drivers, isValidating: driversLoading } = useSWR(MANUAL_TRANSACTIONS.DRIVERS);
   const { data: carriers, isValidating: carriersLoading } = useSWR(MANUAL_TRANSACTIONS.CARRIERS);
@@ -75,6 +79,7 @@ const Forms = ({
 
     setTankers(tankerResults);
     setSelectedTrip(trip);
+    setLoadNumber(trip);
     setSelectedTanker(value?.tnkr_code);
 
     setFieldsValue({
@@ -84,6 +89,14 @@ const Forms = ({
     });
 
     return value;
+  };
+
+  const getTripTypeByTrip = async (trip) => {
+    const results = await axios.get(
+      `${MANUAL_TRANSACTIONS.TRIP_TYPE}?supplier=${selectedSupplier}&trip_no=${trip}`
+    );
+
+    return results?.data;
   };
 
   const getTripBasicsByTrip = async (trip) => {
@@ -108,6 +121,11 @@ const Forms = ({
     const value = results?.records[0];
 
     const tankerResults = await getTankersByCarrier(value?.carrier);
+    
+    const typeResults = await getTripTypeByTrip(trip);
+
+    setLoadType(typeResults?.records[0].schd_type);
+    setLoadNumber(trip);
 
     setTankers(tankerResults);
     setSelectedTrip(trip);
@@ -126,6 +144,9 @@ const Forms = ({
     const value = results?.records[0];
 
     const tankerResults = await getTankersByCarrier(value?.order_carrier);
+    
+    setLoadType('BY_PRODUCT');
+    setLoadNumber(order);
 
     setTankers(tankerResults);
     setSelectedOrder(order);
@@ -149,25 +170,11 @@ const Forms = ({
     });
 
     const trips = await getTripsBySupplier(supplier);
-    const suppliers = await getCustomersBySupplier(supplier);
+    const customers = await getCustomersBySupplier(supplier);
 
     setTrips(trips);
-    setCustomers(suppliers);
+    setCustomers(customers);
     setSelectedSupplier(supplier);
-  };
-
-  const handleTypeSelect = (type) => {
-    setTrsaType(type);
-
-    setFieldsValue({
-      supplier: undefined,
-      trip_no: undefined,
-      tanker: undefined,
-      carrier: undefined,
-      driver: undefined,
-      customer: undefined,
-      order_no: undefined,
-    });
   };
 
   const handleCustomerSelect = async (customer) => {
@@ -189,7 +196,41 @@ const Forms = ({
 
   const handleDriverSelect = (tanker) => {
     // get tanker equipment and compartments
+    console.log("Testing Types", sourceType, loadType, loadNumber);
+  };
 
+  const handleTypeSelect = (type) => {
+    setSourceType(type);
+
+    setFieldsValue({
+      supplier: undefined,
+      trip_no: undefined,
+      tanker: undefined,
+      carrier: undefined,
+      driver: undefined,
+      customer: undefined,
+      order_no: undefined,
+      user_comments: '',
+      seal_range: '',
+      load_security: '',
+      mt_mngr_oo: '',
+      mt_cust_code: '',
+      mt_delv_loc: '',
+      mt_delv_num: '',
+    });
+
+    setLoadType(null);
+    setLoadNumber(null);
+    setTrips(null);
+    setTankers(null);
+    setOrders(null);
+    setCustomers(null);
+    setSelectedSupplier(null);
+    setSelectedTrip(null);
+    setSelectedOrder(null);
+    setSelectedTanker(null);
+  
+    //resetFields();
   };
 
   const onViewTripSeals = () => {
@@ -215,7 +256,7 @@ const Forms = ({
     <>
       <Row gutter={24}>
         <Col span={8}>
-          <Form.Item name="type" label={t('fields.transactionType')} rules={[{ required: true }]}>
+          <Form.Item name="source_type" label={t('fields.transactionType')} rules={[{ required: true }]}>
             <Select onChange={handleTypeSelect} placeholder={t('placeholder.selectTransType')}>
               <Option value="SCHEDULE">{t('fields.mtTypeSchedule')}</Option>
               <Option value="OPENORDER">{t('fields.mtTypeOrder')}</Option>
@@ -258,7 +299,7 @@ const Forms = ({
               loading={suppliersLoading}
               allowClear
               showSearch
-              disabled={!trsaType}
+              disabled={!sourceType}
               onChange={handleSupplierSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectSupplier')}
@@ -309,12 +350,12 @@ const Forms = ({
           <Form.Item
             name="customer"
             label={t('fields.customer')}
-            rules={[{ required: trsaType === 'OPENORDER' }]}
+            rules={[{ required: sourceType === 'OPENORDER' }]}
           >
             <Select
               allowClear
               showSearch
-              disabled={trsaType !== 'OPENORDER' || !selectedSupplier}
+              disabled={sourceType !== 'OPENORDER' || !selectedSupplier}
               optionFilterProp="children"
               placeholder={t('placeholder.selectCustomer')}
               onChange={handleCustomerSelect}
@@ -337,7 +378,7 @@ const Forms = ({
               loading={driversLoading}
               allowClear
               showSearch
-              disabled={!trsaType}
+              disabled={!sourceType}
               onChange={handleDriverSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectDriver')}
@@ -366,7 +407,7 @@ const Forms = ({
           <Form.Item
             name="trip_no"
             label={t('fields.tripNumber')}
-            rules={[{ required: trsaType === 'SCHEDULE' }]}
+            rules={[{ required: sourceType === 'SCHEDULE' }]}
           >
             <Select
               allowClear
@@ -374,7 +415,7 @@ const Forms = ({
               optionFilterProp="children"
               placeholder={t('placeholder.selectTripNumber')}
               onChange={handleTripSelect}
-              disabled={!trips || trsaType !== 'SCHEDULE'}
+              disabled={!trips || sourceType !== 'SCHEDULE'}
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
@@ -403,13 +444,13 @@ const Forms = ({
             <Col span={24}></Col>
           </Row>
 
-          {trsaType === 'SCHEDULE' &&(
+          {sourceType === 'SCHEDULE' && !!trips && (
             <Button type="primary"  onClick={onViewTripSeals}>
               {t('operations.viewTripSeals')}
             </Button>
           )}
 
-          {trsaType === 'OPENORDER' && (
+          {sourceType === 'OPENORDER' && !!orders && (
             <Button type="primary"  onClick={onViewOrderSeals}>
               {t('operations.viewOrderSeals')}
             </Button>
@@ -422,13 +463,13 @@ const Forms = ({
           <Form.Item
             name="order_no"
             label={t('fields.orderNumber')}
-            rules={[{ required: trsaType === 'OPENORDER' }]}
+            rules={[{ required: sourceType === 'OPENORDER' }]}
           >
             <Select
               //loading={driversLoading}
               allowClear
               showSearch
-              disabled={trsaType !== 'OPENORDER'}
+              disabled={!orders || sourceType !== 'OPENORDER'}
               onChange={handleOrderSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectOrderNumber')}
@@ -465,36 +506,63 @@ const Forms = ({
             label={t('fields.mtMngrOO')}
             rules={[{ required: false }]}
           >
-            <Input />
+            <Input disabled={true} />
           </Form.Item>
         </Col>
-        <Col span={6}>
-          <Form.Item
-            name="mt_cust_code"
-            label={t('fields.mtSoldTo')}
-            rules={[{ required: false }]}
-          >
-            <Input />
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item
-            name="mt_delv_loc"
-            label={t('fields.mtShipTo')}
-            rules={[{ required: false }]}
-          >
-            <Input />
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item
-            name="mt_delv_num"
-            label={t('fields.mtDelvNum')}
-            rules={[{ required: false }]}
-          >
-            <Input />
-          </Form.Item>
-        </Col>
+
+        {/*(!sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT')) && */}
+        {/*(!sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType !== 'BY_COMPARTMENT')) && */}
+        {/*(!sourceType || !loadNumber || (sourceType === 'OPENORDER')) && */}
+
+        {(
+          !sourceType || 
+          !loadNumber || 
+          (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') || 
+          (sourceType === 'OPENORDER')
+          ) && 
+          <Col span={6}>
+            <Form.Item
+              name="mt_cust_code"
+              label={t('fields.mtSoldTo')}
+              rules={[{ required: false }]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+        }
+
+        {(
+          !sourceType || 
+          !loadNumber || 
+          (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') || 
+          (sourceType === 'OPENORDER')
+          ) && 
+          <Col span={6}>
+            <Form.Item
+              name="mt_delv_loc"
+              label={t('fields.mtShipTo')}
+              rules={[{ required: false }]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+        }
+
+        {(
+          !sourceType || 
+          !loadNumber || 
+          (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') 
+          ) && 
+          <Col span={6}>
+            <Form.Item
+              name="mt_delv_num"
+              label={t('fields.mtDelvNum')}
+              rules={[{ required: false }]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+        }
       </Row>
     </>
   );
