@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Form, Button, Tabs, Modal, notification } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 
 import {
   EditOutlined,
@@ -23,7 +23,7 @@ import {
   Employer,
   Role,
   Personnel,
-  Drawer,
+  DrawerField,
   Supplier,
   Carrier,
   Tanker,
@@ -31,12 +31,14 @@ import {
   TransportEquipment
 } from './fields';
 import { ID_ASSIGNMENT } from '../../../api';
+import _ from 'lodash';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value }) => {
+const FormModal = ({ value, visible, handleFormState, auth }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const { resetFields } = form;
 
   const [type, setType] = useState(null);
   const [carrier, setCarrier] = useState(null);
@@ -45,7 +47,14 @@ const FormModal = ({ value }) => {
 
   const IS_CREATING = !value;
 
-  const onFinish = values => {
+  const onComplete = () => {
+    handleFormState(false, null); 
+    mutate(ID_ASSIGNMENT.READ);
+  };
+
+  const onFinish = async () => {
+    const values = await form.validateFields();
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -58,24 +67,31 @@ const FormModal = ({ value }) => {
           .post(IS_CREATING ? ID_ASSIGNMENT.CREATE : ID_ASSIGNMENT.UPDATE, values)
           .then(
             axios.spread(response => {
-              Modal.destroyAll();
+              onComplete();
 
-              mutate(ID_ASSIGNMENT.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
               });
             })
           )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       }
     });
   };
+
+  useEffect(() => {
+    if (!value && !visible) {
+      resetFields();
+    } 
+  }, [value, visible]);
 
   const onDelete = () => {
     Modal.confirm({
@@ -89,18 +105,20 @@ const FormModal = ({ value }) => {
           .post(ID_ASSIGNMENT.DELETE, value)
           .then(
             axios.spread(response => {
-              mutate(ID_ASSIGNMENT.READ);
-              Modal.destroyAll();
+              onComplete();
+              
               notification.success({
                 message: t('messages.deleteSuccess'),
                 description: `${t('descriptions.deleteSuccess')}`
               });
             })
           )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.deleteFailed')
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       }
@@ -108,7 +126,51 @@ const FormModal = ({ value }) => {
   };
 
   return (
-    <div>
+    <Drawer
+      bodyStyle={{ paddingTop: 5 }}
+      onClose={() => handleFormState(false, null)}
+      maskClosable={IS_CREATING}
+      destroyOnClose={true}
+      mask={IS_CREATING}
+      placement="right"
+      width="50vw"
+      visible={visible}
+      footer={
+        <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
+
+          <Button
+            type="primary"
+            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            htmlType="submit"
+            onClick={onFinish}
+            style={{ float: 'right', marginRight: 5 }}
+            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
+          >
+            {IS_CREATING ? t('operations.create') : t('operations.update')}
+          </Button>
+
+          {!IS_CREATING && (
+            <Button
+              type="danger"
+              icon={<DeleteOutlined />}
+              style={{ float: 'right', marginRight: 5 }}
+              onClick={onDelete}
+              disabled={!auth?.canDelete}
+            >
+              {t('operations.delete')}
+            </Button>
+          )}
+        </>
+      }
+    >
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
@@ -143,7 +205,7 @@ const FormModal = ({ value }) => {
 
             {['3', '5'].includes(type) && (
               <>
-                <Drawer form={form} value={value} />
+                <DrawerField form={form} value={value} />
               </>
             )}
 
@@ -173,39 +235,8 @@ const FormModal = ({ value }) => {
             )}
           </TabPane>
         </Tabs>
-
-        <Form.Item>
-          <Button
-            htmlType="button"
-            icon={<CloseOutlined />}
-            style={{ float: 'right' }}
-            onClick={() => Modal.destroyAll()}
-          >
-            {t('operations.cancel')}
-          </Button>
-
-          <Button
-            type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-            htmlType="submit"
-            style={{ float: 'right', marginRight: 5 }}
-          >
-            {IS_CREATING ? t('operations.create') : t('operations.update')}
-          </Button>
-
-          {!IS_CREATING && (
-            <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={onDelete}
-            >
-              {t('operations.delete')}
-            </Button>
-          )}
-        </Form.Item>
       </Form>
-    </div>
+    </Drawer>
   );
 };
 

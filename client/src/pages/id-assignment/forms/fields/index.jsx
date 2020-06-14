@@ -9,7 +9,7 @@ import Pin from './pin';
 import Employer from './employer';
 import Role from './role';
 import Personnel from './personnel';
-import Drawer from './drawer';
+import DrawerField from './drawer';
 import Supplier from './supplier';
 import Carrier from './carrier';
 import Tanker from './tanker';
@@ -28,7 +28,7 @@ export {
   Employer,
   Role,
   Personnel,
-  Drawer,
+  DrawerField,
   Supplier,
   Carrier,
   Tanker,

@@ -10,26 +10,25 @@ import { ID_ASSIGNMENT } from '../../api';
 
 import columns from './columns';
 import auth from '../../auth';
-
+import { useAuth } from 'hooks';
 import Forms from './forms';
 
 const IdAssignment = () => {
   const [search, setSearch] = useState('');
 
   const { t } = useTranslation();
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
+
+  const auth = useAuth('M_IDENTIFICATIONASSIGNMENT');
 
   const { data: payload, isValidating, revalidate } = useSWR(ID_ASSIGNMENT.READ);
 
   const fields = columns(t);
 
-  const handleClick = value => {
-    FormModal({
-      value,
-      form: <Forms value={value} />,
-      id: value?.kya_key_no,
-      name: value?.kya_key_issuer,
-      t
-    });
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
   };
 
   const handleTagLookUp = () => {
@@ -49,7 +48,12 @@ const IdAssignment = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
+      <Button 
+        icon={<PlusOutlined />} 
+        onClick={() => handleFormState(true, null)}
+        loading={isValidating}
+        disabled={!auth.canCreate}
+      >
         {t('operations.create')}
       </Button>
     </>
@@ -61,9 +65,11 @@ const IdAssignment = () => {
         columns={fields}
         data={payload?.records}
         isLoading={isValidating}
-        onClick={handleClick}
         search={search}
+        onClick={(payload) => handleFormState(true, payload)}
+        handleSelect={(payload) => handleFormState(true, payload[0])}
       />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
     </Page>
   );
 };

@@ -26,7 +26,7 @@ const Personnel = ({ form, value, employer, role }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_psnl_name: value.kya_psnl_name
+        kya_personnel: value.kya_personnel
       });
     }
   }, [value, setFieldsValue]);
@@ -36,14 +36,14 @@ const Personnel = ({ form, value, employer, role }) => {
 
     if (!value) {
       setFieldsValue({
-        kya_psnl_name: undefined
+        kya_personnel: undefined
       });
     }
   }, [employer, role, revalidate, setFieldsValue, value]);
 
   return (
     <Form.Item
-      name="kya_psnl_name"
+      name="kya_personnel"
       label={t('fields.personnel')}
       rules={[{ required: true, validator: validate }]}
     >
