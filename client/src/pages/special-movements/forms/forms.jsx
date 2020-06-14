@@ -264,7 +264,10 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
           )}
 
           {DISABLED && (
-            <Button htmlType="button" onClick={onReverse} icon={<ReloadOutlined />}>
+            <Button htmlType="button" 
+              onClick={onReverse} 
+              icon={<ReloadOutlined />}
+            >
               {t('operations.reverse')}
             </Button>
           )}
@@ -277,7 +280,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             style={{ float: 'right', marginRight: 5 }}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
+            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate || value.mlitm_status !== '0'}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -289,7 +292,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             disabled={DISABLED}
             onClick={onSubmit}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
+            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate || value.mlitm_status !== '0'}
           >
             {t('operations.submit')}
           </Button>
@@ -301,7 +304,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               disabled={DISABLED}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!auth?.canDelete}
+              disabled={!auth?.canDelete || value.mlitm_status !== '0'}
             >
               {t('operations.delete')}
             </Button>
