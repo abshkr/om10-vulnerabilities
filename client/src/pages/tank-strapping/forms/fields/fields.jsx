@@ -29,6 +29,7 @@ const Fields = ({ form, value }) => {
         <Select
           loading={isLoading}
           showSearch
+          disabled={!!value}
           optionFilterProp="children"
           filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -42,11 +43,11 @@ const Fields = ({ form, value }) => {
         </Select>
       </Form.Item>
 
-      <Form.Item name="strap_height" label={t('fields.level')}>
-        <InputNumber style={{ width: '100%' }} />
+      <Form.Item name="strap_height" label={`${t('fields.level')} (${t('units.mm')})`}>
+        <InputNumber style={{ width: '100%' }} disabled={!!value} />
       </Form.Item>
 
-      <Form.Item name="strap_volume" label={t('fields.observedVolume')}>
+      <Form.Item name="strap_volume" label={`${t('fields.observedVolume')} (${t('units.litres')})`}>
         <InputNumber style={{ width: '100%' }} />
       </Form.Item>
     </>

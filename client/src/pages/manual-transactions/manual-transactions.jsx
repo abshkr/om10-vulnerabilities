@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PlusOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Divider, Form, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +34,19 @@ const ManualTransactions = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedTanker, setSelectedTanker] = useState(null);
 
+  const resetFormData = () => {
+    setLoadType(null);
+    setLoadNumber(null);
+    setTrips(null);
+    setTankers(null);
+    setOrders(null);
+    setCustomers(null);
+    setSelectedSupplier(null);
+    setSelectedTrip(null);
+    setSelectedOrder(null);
+    setSelectedTanker(null);
+  };
+
   const onSumit = async () => {
     try {
       const values = await form.validateFields();
@@ -55,17 +68,15 @@ const ManualTransactions = () => {
         await form.resetFields();
 
         setSourceType(null);
-        setTrips(null);
-        setTankers(null);
-        setOrders(null);
-        setCustomers(null);
-        setSelectedSupplier(null);
-        setSelectedTrip(null);
-        setSelectedOrder(null);
-        setSelectedTanker(null);
+        resetFormData();
       },
     });
   };
+
+  useEffect(() => {
+    console.log("MT entry page sourceType", sourceType);
+    resetFormData();
+  }, [sourceType]);
 
   const modifiers = (
     <>

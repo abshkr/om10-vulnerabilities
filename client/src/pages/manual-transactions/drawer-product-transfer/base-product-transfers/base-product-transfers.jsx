@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { DataTable } from '../../../../components';
 import columns from './columns';
 import { MANUAL_TRANSACTIONS } from '../../../../api';
-import useSWR from 'swr';
+import {calcBaseRatios} from '../../../../utils'
 
 const BaseProductTransfers = ({
   form, 
@@ -15,88 +15,76 @@ const BaseProductTransfers = ({
   selected, 
   transfers 
 }) => {
-  const url =
-    selected && selected?.trsf_arm_cd !== 'Select Arm Code'
-      ? `${MANUAL_TRANSACTIONS.BASE_DETAILS}?prod_cmpy=${selected?.trsf_prod_cmpy}&prod_code=${selected?.trsf_prod_code}&arm_code=${selected?.trsf_arm_cd}&id=bprod`
-      : null;
-
-  const { data: payload, isValidating } = useSWR(url);
-
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
-  const [isLoading, setLoading] = useState(isValidating || !data);
+  const [isLoading, setLoading] = useState(true);
 
   const fields = columns(t);
 
-  useEffect(() => {
-    async function getMeters() {
-      const pre = [];
-      const transfers = form.getFieldValue('transfers');
-      setLoading(true);
+  const getBaseTransfers = async () => {
+    const pre = [];
+    //const transfers = form.getFieldValue('transfers');
+    setLoading(true);
 
-      for (let index = 0; index < transfers?.length; index++) {
-        const transfer = transfers[index];
+    for (let index = 0; index < transfers?.length; index++) {
+      const transfer = transfers[index];
 
-        if (!transfer?.trsf_arm_cd.includes(' ')) {
-          await axios
-            .get(MANUAL_TRANSACTIONS.BASE_DETAILS, {
-              params: {
-                prod_cmpy: transfer?.trsf_prod_cmpy,
-                prod_code: transfer?.trsf_prod_code,
-                //arm_code: [transfer?.trsf_arm_cd],
-                arm_code: transfer?.trsf_arm_cd,
-                id: 'bptrsf',
-              },
-            })
-            .then((res) => {
-              if (res.data?.records?.length > 0) {
-                _.forEach(res?.data?.records, (product) => {
-                  pre.push({
-                    trsf_bs_prodcd: product?.stream_basecode,
-                    trsf_bs_prodname: `${product?.stream_basecode} - ${product.stream_basename}`,
-                    trsf_bs_tk_cd: product?.stream_tankcode,
-                    trsf_bs_prodcls: product.stream_bclass_nmae,
-                    trsf_bs_den: product?.stream_tankden,
-                    trsf_bs_temp: null,
-                    trsf_bs_qty_amb: _.sumBy(transfers, (o) => {
-                      if (o?.trsf_prod_code === product?.rat_prod_prodcode) {
-                        return o?.trsf_qty_amb; //????
-                      } else {
-                        return 0;
-                      }
-                    }),
-                    trsf_bs_qty_cor: _.sumBy(res?.data?.records, (o) => {
-                      return o.trsf_qty_cor; //????
-                    }),
-                    trsf_bs_load_kg: _.sumBy(res?.data?.records, (o) => {
-                      return o.trsf_load_kg; //????
-                    }),
-                    is_updated: false,
-                  });
-                });
-              }
-            });
-        }
+      if (selected?.trsf_cmpt_no !== transfer?.trsf_cmpt_no) {
+        continue;
       }
 
-      setLoading(false);
-      setData(pre);
+      if (!transfer?.trsf_arm_cd.includes(' ')) {
+        await axios
+          .get(MANUAL_TRANSACTIONS.BASE_DETAILS, {
+            params: {
+              prod_cmpy: transfer?.trsf_prod_cmpy,
+              prod_code: transfer?.trsf_prod_code,
+              //arm_code: [transfer?.trsf_arm_cd],
+              arm_code: transfer?.trsf_arm_cd,
+              id: 'bptrsf',
+            },
+          })
+          .then((res) => {
+            if (res.data?.records?.length > 0) {
+              _.forEach(res?.data?.records, (product) => {
+                pre.push({
+                  trsf_bs_prodcd: product?.stream_basecode,
+                  trsf_bs_prodname: `${product?.stream_basecode} - ${product.stream_basename}`,
+                  trsf_bs_tk_cd: product?.stream_tankcode,
+                  trsf_bs_prodcls: product.stream_bclass_nmae,
+                  trsf_bs_den: product?.stream_tankden,
+                  trsf_bs_temp: null,
+                  trsf_bs_qty_amb: calcBaseRatios(transfer?.trsf_qty_amb, product?.ratio_value, product?.ratio_total),
+                  trsf_bs_qty_cor: calcBaseRatios(transfer?.trsf_qty_cor, product?.ratio_value, product?.ratio_total),
+                  trsf_bs_load_kg: calcBaseRatios(transfer?.trsf_load_kg, product?.ratio_value, product?.ratio_total),
+                  is_updated: false,
+                });
+              });
+            }
+          });
+      }
     }
 
-    getMeters();
+    setLoading(false);
+    setData(pre);
+  };
+
+  useEffect(() => {
+    getBaseTransfers();
   }, [selected]);
 
   useEffect(() => {
-    if (payload) {
-      setData(payload?.records);
+    if (data) {
+      form.setFieldsValue({
+        base_totals: data,
+      });
     }
-  }, [payload]);
+  }, [data]);
 
   useEffect(() => {
-    form.setFieldsValue({
-      base_transfers: [],
-    });
+    console.log("base-transfers sourceType", sourceType);
+    setData([]);
   }, [sourceType]);
 
   return (
