@@ -994,28 +994,39 @@ app.post('/hmi/parse/host_message', withAuth, express.json(),
 					if (typeof sqlres.result[0] !== 'undefined' && sqlres.result[0] !== [])
 					{
 						var conn = cfg.find_conn_data_for_host_msg(sqlres.result[0].ORIGIN, hosts_cfg.hosts);
-						var src_filenm = sqlres.result[0].ARCHIVED_FILE;
-						var src_file = conn.archive_dir + '/' + src_filenm;
-						var prsres = parser.parse(conn, src_file, req.body.content_format);
-						if (prsres[0])
+						if (typeof conn !== 'undefined' && conn != [])
 						{
-								if (req.body.content_format === 1)
-								{
-									//console.log('resp:'+prsres[1]);
-									res.setHeader('Content-Type', 'application/text');
-								}
-								else if (req.body.content_format === 2)
-								{
-									//console.log('resp:'+JSON.stringify(prsres[1],null,'\t'));
-									res.setHeader('Content-Type', 'application/json');
-								}
-								res.status(200);
-								res.send(prsres[1]);
+							var src_filenm = sqlres.result[0].ARCHIVED_FILE;
+							var src_file = conn.archive_dir + '/' + src_filenm;
+							var prsres = parser.parse(conn, src_file, req.body.content_format);
+							if (prsres[0])
+							{
+									if (req.body.content_format === 1)
+									{
+										//console.log('resp:'+prsres[1]);
+										res.setHeader('Content-Type', 'application/text');
+									}
+									else if (req.body.content_format === 2)
+									{
+										//console.log('resp:'+JSON.stringify(prsres[1],null,'\t'));
+										res.setHeader('Content-Type', 'application/json');
+									}
+									res.status(200);
+									res.send(prsres[1]);
+							}
+							else
+							{
+								var resp = {};
+								resp["message"] = prsres[1];
+								res.setHeader('Content-Type', 'application/json');
+								res.status(500);
+								res.send(resp);
+							}
 						}
 						else
 						{
 							var resp = {};
-							resp["message"] = prsres[1];
+							resp["message"] = "can't find connection data of origin of requested message";
 							res.setHeader('Content-Type', 'application/json');
 							res.status(500);
 							res.send(resp);
@@ -1068,33 +1079,52 @@ app.post('/hmi/parse/omega_message', withAuth, express.json(),
 									sqlres.result[0].ORIGIN,
 									sqlres.result[0].DESTINATION,
 									hosts_cfg.hosts);
-						//console.log('conn:'+JSON.stringify(conn,null,'\t'));
-						var src_filenm = sqlres.result[0].ARCHIVED_FILE;
-						var src_file = conn.archive_dir + '/' + src_filenm;
-						var prsres = parser.parse(conn, src_file, parseInt(req.body.content_format));
-						if (prsres[0])
+						if (typeof conn !== 'undefined' && conn != [])
 						{
-								//console.log('resp:'+prsres[1]);
-								if (req.body.content_format === 1)
-								{
+							//console.log('conn:'+JSON.stringify(conn,null,'\t'));
+							var src_filenm = sqlres.result[0].ARCHIVED_FILE;
+							var src_file = conn.archive_dir + '/' + src_filenm;
+							var prsres = parser.parse(conn, src_file, parseInt(req.body.content_format));
+							if (prsres[0])
+							{
 									//console.log('resp:'+prsres[1]);
-									res.setHeader('Content-Type', 'application/text');
-								}
-								else if (req.body.content_format === 2)
-								{
-									//console.log('resp:'+JSON.stringify(prsres[1],null,'\t'));
-									res.setHeader('Content-Type', 'application/json');
-								}
+									if (req.body.content_format === 1)
+									{
+										//console.log('resp:'+prsres[1]);
+										res.setHeader('Content-Type', 'application/text');
+									}
+									else if (req.body.content_format === 2)
+									{
+										//console.log('resp:'+JSON.stringify(prsres[1],null,'\t'));
+										res.setHeader('Content-Type', 'application/json');
+									}
+									res.status(200);
+									res.send(prsres[1]);
+							}
+							else
+							{
+								/*
+								var resp = {};
+								resp["message"] = prsres[1];
+								res.setHeader('Content-Type', 'application/json');
+								res.status(500);
+								res.send(resp);
+								*/
+
+								/* If parsing fails, just send raw content */
 								res.status(200);
-								res.send(prsres[1]);
+								res.send(fs.readFileSync(src_file, 'utf8'));
+							}
 						}
 						else
 						{
 							var resp = {};
-							resp["message"] = prsres[1];
+							resp["message"] = "can't find connection data of origin of requested message";
 							res.setHeader('Content-Type', 'application/json');
 							res.status(500);
 							res.send(resp);
+
+							/* TODO: just send raw content */
 						}
 					}
 					else
