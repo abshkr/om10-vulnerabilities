@@ -80,6 +80,14 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     mutate(LOAD_SCHEDULES.READ);
   };
 
+  const changeSupplier = (supplier) => {
+    setSupplier(supplier);
+    setDrawer(supplier);
+    setFieldsValue({
+      drawer_code: supplier,
+    })
+  }
+
   const onFinish = async () => {
     const record = await form.validateFields();
 
@@ -419,7 +427,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                <Supplier form={form} value={value} onChange={setSupplier} />
+                <Supplier form={form} value={value} onChange={changeSupplier} />
               </Col>
 
               <Col span={12}>

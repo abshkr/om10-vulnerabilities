@@ -19,9 +19,13 @@ import {
 import useSWR from 'swr';
 
 const Compartments = ({ form, value, tanker, drawer }) => {
+  console.log("Compartments")
+  console.log(tanker)
+  console.log(value)
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
+  const IS_CREATING = !value;
 
   const { data: soldTo } = useSWR(LOAD_SCHEDULES.SOLD_TO);
   const { data: shipTo } = useSWR(LOAD_SCHEDULES.SHIP_TO);
@@ -71,7 +75,7 @@ const Compartments = ({ form, value, tanker, drawer }) => {
         },
       })
       .then((res) => setProducts(res.data.records));
-  }, [drawer]);
+  }, [drawer, tanker]);
 
   useEffect(() => {
     setCompartments([]);
