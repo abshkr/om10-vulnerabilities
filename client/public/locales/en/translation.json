@@ -214,6 +214,7 @@
     "adhoc": "Adhoc?",
     "physicalTagText": "Physical Tag Text",
     "personnel": "Personnel",
+	"personnelCode": "Personnel Code",
     "drawer": "Drawer",
     "tankerCode": "Tanker Code",
     "tanker": "Tanker",
