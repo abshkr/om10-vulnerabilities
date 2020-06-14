@@ -33,6 +33,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    editable: (sourceType === 'SCHEDULE' ? false : true),
     hide: (
       !sourceType || 
       !loadNumber || 
@@ -83,6 +84,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
   {
     headerName: t('fields.drawerProduct'),
     field: 'trsf_prod_code',
+    width: ((sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') ? 200 : 400),
     hide: true,
   },
 
@@ -100,7 +102,11 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     resizable: true,
     cellEditor: 'DrawerProductsEditor',
     editable: true,
-    width: 250,
+    width: ((
+      !sourceType || 
+      !loadNumber ||
+      (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT')) ? 200 : 400
+    ),
     cellEditorParams: {
       values: products?.records || [],
       form,

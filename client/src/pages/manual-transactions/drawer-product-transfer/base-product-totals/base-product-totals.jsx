@@ -8,7 +8,12 @@ import { DataTable } from '../../../../components';
 import columns from './columns';
 import { MANUAL_TRANSACTIONS } from '../../../../api';
 
-const BaseProductTotals = ({ form, sourceType, selected, transfers }) => {
+const BaseProductTotals = ({ 
+  form, 
+  sourceType, 
+  selected, 
+  transfers 
+}) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -31,7 +36,9 @@ const BaseProductTotals = ({ form, sourceType, selected, transfers }) => {
               params: {
                 prod_cmpy: transfer?.trsf_prod_cmpy,
                 prod_code: transfer?.trsf_prod_code,
-                arm_code: [transfer?.trsf_arm_cd],
+                //arm_code: [transfer?.trsf_arm_cd],
+                arm_code: transfer?.trsf_arm_cd,
+                id: 'bpttl',
               },
             })
             .then((res) => {
