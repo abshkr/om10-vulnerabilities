@@ -402,7 +402,10 @@ class OmegaMessages extends Component
 		}
 		else
 		{
-			newMessages.push(newMsg);
+			if (newMessages)
+			{
+				newMessages.push(newMsg);
+			}
 		}
 
 		this.setState({ messages: newMessages });
