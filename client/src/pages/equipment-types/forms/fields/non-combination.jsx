@@ -92,23 +92,25 @@ const NonCombination = ({ form, value }) => {
           </Form.Item>
         </Scrollbars>
 
-        <Form.Item name="unit">
-          <Select
-            showSearch
-            style={{ width: '100%', marginTop: 10 }}
-            onChange={(key, value) => setUnit(value.children)}
-            optionFilterProp="children"
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
-          >
-            {units?.records?.map((item, index) => (
-              <Select.Option key={index} value={item.unit_id}>
-                {item.description}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+        {!IS_DISABLED && (
+          <Form.Item name="unit">
+            <Select
+              showSearch
+              style={{ width: '100%', marginTop: 10 }}
+              onChange={(key, value) => setUnit(value.children)}
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {units?.records?.map((item, index) => (
+                <Select.Option key={index} value={item.unit_id}>
+                  {item.description}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        )}
 
         {!IS_DISABLED && (
           <Form.List name="names">
