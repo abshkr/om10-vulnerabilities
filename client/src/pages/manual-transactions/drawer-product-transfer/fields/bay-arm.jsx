@@ -4,6 +4,7 @@ import axios from 'axios';
 import _ from 'lodash';
 
 import { MANUAL_TRANSACTIONS } from '../../../../api';
+import {calcBaseRatios} from '../../../../utils'
 
 export default class BayArm extends Component {
   constructor(props) {
@@ -31,7 +32,7 @@ export default class BayArm extends Component {
     current[index].trsf_arm_cd = record?.item?.stream_armcode;
     current[index].trsf_qty_plan = null;
     current[index].trsf_qty_left = null;
-    current[index].trsf_density = record?.item?.stream_tankden;
+    current[index].trsf_density = calcBaseRatios(record?.item?.stream_tankden, record?.item?.ratio_total, record?.item?.ratio_value);
     current[index].trsf_temp = null;
     current[index].trsf_qty_amb = null;
     current[index].trsf_qty_cor = null;
@@ -89,7 +90,7 @@ export default class BayArm extends Component {
               value={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
               item={item}
             >
-              {`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
+              {`${item.ratio_seq}: ${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
             </Select.Option>
           ))}
         </Select>

@@ -78,9 +78,8 @@ const MeterTotals = ({
   }, [data]);
 
   useEffect(() => {
-    form.setFieldsValue({
-      meter_totals: [],
-    });
+    console.log("meter-totals sourceType", sourceType);
+    setData([]);
   }, [sourceType]);
 
   return (
