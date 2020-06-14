@@ -14,7 +14,7 @@ import detailColumns from './detail.columns';
 
 const TabPane = Tabs.TabPane;
 
-const Forms = ({ value, isFromNomination, start, end }) => {
+const Forms = ({ value, isFromNomination, start, end, access }) => {
   const { data: transfer } = useSWR(`${TRANSACTION_LIST.TRANSFER}?trsa_id=${value?.trsa_id}`);
   const { data: meters } = useSWR(`${TRANSACTION_LIST.METER}?trsa_id=${value?.trsa_id}`);
 
@@ -129,23 +129,23 @@ const Forms = ({ value, isFromNomination, start, end }) => {
 
       <>
         <Button
-          type="danger"
-          icon={<WarningOutlined />}
-          style={{ marginRight: 5, float: 'right' }}
-          onClick={onClose}
-          disabled={value.trsa_ed_dmy !== ''}
-          loading={isLoading}
-        >
-          {t('operations.closeTransaction')}
-        </Button>
-
-        <Button
           htmlType="button"
           icon={<CloseOutlined />}
           style={{ marginRight: 5, float: 'right' }}
           onClick={() => Modal.destroyAll()}
         >
           {t('operations.cancel')}
+        </Button>
+
+        <Button
+          type="danger"
+          icon={<WarningOutlined />}
+          style={{ marginRight: 5, float: 'right' }}
+          onClick={onClose}
+          disabled={value.trsa_ed_dmy !== '' || !access.canUpdate }
+          loading={isLoading}
+        >
+          {t('operations.closeTransaction')}
         </Button>
       </>
     </Tabs>
