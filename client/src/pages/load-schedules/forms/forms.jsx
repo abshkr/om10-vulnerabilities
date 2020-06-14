@@ -7,6 +7,7 @@ import {
   QuestionCircleOutlined,
   PrinterOutlined,
   RedoOutlined,
+  CloseOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Radio, Checkbox } from 'antd';
@@ -279,6 +280,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   };
 
   useEffect(() => {
+    if (!value) {
+      setTab('0');
+    }
+  }, [value]);
+
+  useEffect(() => {
     if (value) {
       setTab('0');
 
@@ -318,6 +325,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       visible={visible}
       footer={
         <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
+
           {!READ_ONLY && (
             <Button
               type="primary"
