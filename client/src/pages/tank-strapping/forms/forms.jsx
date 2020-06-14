@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import {
   EditOutlined,
@@ -7,24 +7,33 @@ import {
   DeleteOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
+import _ from 'lodash';
 
 import { TANK_STRAPPING } from '../../../api';
 import Fields from './fields';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value }) => {
+const FormModal = ({ value, visible, handleFormState, auth }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const { resetFields } = form;
 
   const IS_CREATING = !value;
   const CAN_DELETE = !!value;
 
-  const onFinish = (values) => {
+  const onComplete = () => {
+    handleFormState(false, null); 
+    mutate(TANK_STRAPPING.READ);
+  };
+
+  const onFinish = async () => {
+    const values = await form.validateFields();
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -37,24 +46,31 @@ const FormModal = ({ value }) => {
           .post(IS_CREATING ? TANK_STRAPPING.CREATE : TANK_STRAPPING.UPDATE, values)
           .then(
             axios.spread((response) => {
-              Modal.destroyAll();
+              onComplete();
 
-              mutate(TANK_STRAPPING.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
     });
   };
+
+  useEffect(() => {
+    if (!value && !visible) {
+      resetFields();
+    } 
+  }, [value, visible]);
 
   const onDelete = () => {
     Modal.confirm({
@@ -69,8 +85,8 @@ const FormModal = ({ value }) => {
           .post(TANK_STRAPPING.DELETE, value)
           .then(
             axios.spread((response) => {
-              mutate(TANK_STRAPPING.READ);
-              Modal.destroyAll();
+              onComplete();
+              
               notification.success({
                 message: t('messages.deleteSuccess'),
                 description: `${t('descriptions.deleteSuccess')}`,
@@ -88,52 +104,65 @@ const FormModal = ({ value }) => {
   };
 
   return (
-    <Form
-      layout="vertical"
-      form={form}
-      onFinish={onFinish}
-      scrollToFirstError
-      initialValues={{ pmv_state_name: 'NEW', pmv_unit_name: 'l' }}
-    >
-      <Tabs defaultActiveKey="1">
-        <TabPane tab={t('tabColumns.general')} key="1">
-          <Fields form={form} value={value} />
-        </TabPane>
-      </Tabs>
+    <Drawer
+      bodyStyle={{ paddingTop: 5 }}
+      onClose={() => handleFormState(false, null)}
+      maskClosable={IS_CREATING}
+      destroyOnClose={true}
+      mask={IS_CREATING}
+      placement="right"
+      width="50vw"
+      visible={visible}
+      footer={
+        <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
 
-      <Form.Item>
-        <Button
-          htmlType="button"
-          icon={<CloseOutlined />}
-          style={{ float: 'right' }}
-          onClick={() => Modal.destroyAll()}
-        >
-          {t('operations.cancel')}
-        </Button>
+          <Button
+            type="primary"
+            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            htmlType="submit"
+            onClick={onFinish}
+            style={{ float: 'right', marginRight: 5 }}
+            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
+          >
+            {IS_CREATING ? t('operations.create') : t('operations.update')}
+          </Button>
 
-        <Button
-          type="primary"
-          icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-          htmlType="submit"
-          style={{ float: 'right', marginRight: 5 }}
-        >
-          {IS_CREATING ? t('operations.create') : t('operations.update')}
-        </Button>
-
-        {CAN_DELETE && (
-          <>
+          {CAN_DELETE && (
             <Button
               type="danger"
               icon={<DeleteOutlined />}
               onClick={onDelete}
               style={{ float: 'right', marginRight: 5 }}
+              disabled={!auth?.canDelete}
             >
               {t('operations.delete')}
             </Button>
-          </>
-        )}
-      </Form.Item>
-    </Form>
+          )}
+        </>
+      }
+    >
+      <Form
+        layout="vertical"
+        form={form}
+        onFinish={onFinish}
+        scrollToFirstError
+        initialValues={{ pmv_state_name: 'NEW', pmv_unit_name: 'l' }}
+      >
+        <Tabs defaultActiveKey="1">
+          <TabPane tab={t('tabColumns.general')} key="1">
+            <Fields form={form} value={value} />
+          </TabPane>
+        </Tabs>
+      </Form>
+    </Drawer>
   );
 };
 

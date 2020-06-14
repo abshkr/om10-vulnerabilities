@@ -1,11 +1,17 @@
 const columns = (t) => [
   {
+    headerName: t('fields.tankCode'),
+    field: 'strap_tankcode',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+  },
+  {
     headerName: `${t('fields.level')} (${t('units.mm')})`,
     field: 'strap_height',
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
-    pinned: 'left',
     width: 150,
   },
   {
@@ -15,13 +21,6 @@ const columns = (t) => [
     resizable: true,
     filter: 'FuzzyFilter',
     width: 300,
-  },
-  {
-    headerName: t('fields.tankCode'),
-    field: 'strap_tankcode',
-    sortable: true,
-    resizable: true,
-    filter: 'FuzzyFilter',
   },
   {
     headerName: t('fields.tankName'),

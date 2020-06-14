@@ -150,6 +150,11 @@ const Navigation = () => {
             {t('pageNames.tankInventory')}
           </Menu.Item>
 
+          <Menu.Item key={ROUTES.TANK_STRAPPING} style={{ display: 'flex' }}>
+            {/* <Icons size={40} type="tankInventory" /> */}
+            {t('pageNames.tankStrapping')}
+          </Menu.Item>
+
           <Menu.Item key={ROUTES.PRODUCT_INVENTORY} style={{ display: 'flex' }}>
             <Icons size={40} type="productInventory" />
             <span>{t('pageNames.productInventory')}</span>

@@ -42,7 +42,8 @@ class TankStrap extends CommonClass
             FROM STRAPS, GUI_TANKS
             WHERE
                 STR_TK_TANKCODE = TANK_CODE
-                AND STR_TK_TANKDEPO = TANK_TERMINAL";
+                AND STR_TK_TANKDEPO = TANK_TERMINAL
+            ORDER BY STR_TK_TANKCODE, STRAP_HEIGHT";
 
         if (isset($this->strap_tankcode)) {
             $query = $query . " AND STR_TK_TANKCODE = :strap_tankcode ";
@@ -79,7 +80,7 @@ class TankStrap extends CommonClass
     {
         if (!isset($this->strap_sitecode)) {
             $serv = new SiteService($this->conn);
-            $this->strap_sitecode = $serv->site_code();
+            $this->str_tk_tankdepo = $serv->site_code();
         }
     }
 

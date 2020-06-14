@@ -1,90 +1,63 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import { Button, Select, InputNumber } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
-import axios from 'axios';
+// import axios from 'axios';
 import _ from 'lodash';
 import useSWR from 'swr';
+import { useAuth } from 'hooks';
 
-import { Page, DataTable, FormModal } from '../../components';
-import { TANK_STATUS, TANK_STRAPPING } from '../../api';
+import { Page, DataTable } from '../../components';
+import { TANK_STRAPPING } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
 
 const TankStrapping = () => {
-  const [tank, setTank] = useState(null);
-  const [tanks, setTanks] = useState([]);
-  const [straps, setStraps] = useState(null);
-  const [height, setHeight] = useState(700);
-
   const { t } = useTranslation();
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
 
-  const { data: payload, isValidating, revalidate } = useSWR(TANK_STATUS.READ);
+  const auth = useAuth('M_TANKSTATUS');
+
+  const { data: payload, isValidating, revalidate } = useSWR(TANK_STRAPPING.READ);
 
   const fields = columns(t);
 
-  const handleClick = (value) => {
-    FormModal({
-      value,
-      form: <Forms value={value} />,
-      id: value?.strap_height,
-      name: value?.strap_volume,
-      t,
-    });
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
   };
 
   const modifiers = (
     <div style={{ display: 'flex' }}>
-      <InputNumber
-        style={{ marginRight: 5, width: 150 }}
-        value={height}
-        onPressEnter={(e) => setHeight(e.target.value)}
-      />
-
-      <Select key="1" style={{ width: 200 }} value={tank} onChange={setTank} loading={isValidating}>
-        {tanks.map((item) => {
-          return (
-            <Select.Option key={item} value={item}>
-              {item}
-            </Select.Option>
-          );
-        })}
-      </Select>
-
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
 
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
+      <Button type="primary" 
+        icon={<PlusOutlined />} 
+        onClick={() => handleFormState(true, null)}
+        loading={isValidating}
+        disabled={!auth.canCreate}
+      >
         {t('operations.create')}
       </Button>
     </div>
   );
 
-  useEffect(() => {
-    const values = _.uniq(_.map(payload?.records, 'tank_code'));
-    const tank = values[0];
-
-    setTank(tank);
-
-    setTanks(values);
-  }, [payload]);
-
-  useEffect(() => {
-    if (tank) {
-      setStraps(null);
-      axios.get(`${TANK_STRAPPING.READ}?strap_tankcode=${tank}&start_height=${height}`).then((response) => {
-        setStraps(response.data.records);
-      });
-    }
-  }, [tank, height]);
-
   return (
     <Page page={t('pageMenu.gantry')} name={t('pageNames.tankStrapping')} modifiers={modifiers}>
-      <DataTable columns={fields} data={straps} isLoading={isValidating} onClick={handleClick} />
+      <DataTable 
+        columns={fields} 
+        data={payload?.records} 
+        isLoading={isValidating} 
+        onClick={(payload) => handleFormState(true, payload)}
+        handleSelect={(payload) => handleFormState(true, payload[0])}
+      />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
     </Page>
   );
 };
