@@ -7,11 +7,13 @@ import _ from 'lodash';
 
 import { Page } from '../../components';
 import api, { PERSONNEL } from '../../api';
-import { useAuth } from '../../hooks';
+// import { useAuth } from '../../hooks';
 import auth from '../../auth';
+import useSWR from 'swr';
 
 const Settings = ({ user }) => {
   const { t } = useTranslation();
+  const { data: payload } = useSWR(PERSONNEL.READ_DEPARTMENT);
 
   const [profileForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
@@ -60,7 +62,9 @@ const Settings = ({ user }) => {
     return Promise.resolve();
   };
 
-  const onProfileChange = (values) => {
+  const onProfileChange = async () => {
+    const values = await profileForm.validateFields();
+
     Modal.confirm({
       title: t('prompts.update'),
       okText: t('operations.update'),
@@ -126,7 +130,13 @@ const Settings = ({ user }) => {
         per_code: user?.per_code,
       });
     }
-  }, [setFieldsValue, setPasswordFields, user]);
+    
+    if (payload) {
+      setFieldsValue({
+        per_department: payload?.records[0].per_department,
+      });
+    }
+  }, [setFieldsValue, setPasswordFields, user, payload]);
 
   return (
     <Page page={page} minimal>
