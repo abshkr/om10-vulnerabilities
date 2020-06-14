@@ -63,12 +63,6 @@ const DrawerProductTransfers = ({
   const [fields, setFields] = useState([]);
   const [clicked, setClicked] = useState(null);
 
-  const urlBase =
-    selected && selected?.trsf_arm_cd !== 'Select Arm Code'
-      ? `${MANUAL_TRANSACTIONS.BASE_DETAILS}?prod_cmpy=${selected?.trsf_prod_cmpy}&prod_code=${selected?.trsf_prod_code}&arm_code=${selected?.trsf_arm_cd}&id=dprod`
-      : null;
-  const { data: baseDetails, isValidating } = useSWR(urlBase);
-
   const onDelete = () => {
     const filtered = _.reject(payload, ['trsf_cmpt_no', clicked?.trsf_cmpt_no]);
 
@@ -94,15 +88,23 @@ const DrawerProductTransfers = ({
   };
 
   useEffect(() => {
-    if (data?.records[0]?.schd_type) {
-      //setLoadType(data?.records[0]?.schd_type);
-    }
+    console.log("dptrsf selected", selected);
+  }, [selected]);
+
+  useEffect(() => {
+    console.log("dptrsf clicked", clicked);
+  }, [clicked]);
+
+  useEffect(() => {
+    console.log("dptrsf data?.records", data?.records);
   }, [data]);
 
   useEffect(() => {
-    form.setFieldsValue({
+    console.log("dp transfers sourceType", sourceType);
+    /* form.setFieldsValue({
       transfers: [],
-    });
+    }); */
+    setPayload([]);
   }, [sourceType]);
 
   useEffect(() => {
@@ -181,7 +183,6 @@ const DrawerProductTransfers = ({
 
   return (
     <>
-      {/* <Divider orientation="left" style={{ margin: '0px 0' }}>{t('divider.drawerProductTransfer')}</Divider> */}
       <Row gutter={[1,8]}>
         <Col span={24}>
         </Col>
@@ -199,8 +200,6 @@ const DrawerProductTransfers = ({
           />
         </Form.Item>
       </Card>
-
-      {/* <Divider orientation="left" style={{ margin: '0px 0', marginTop: 10 }}>{t('divider.baseProducts')}</Divider> */}
 
       <Row gutter={[1,8]}>
         <Col span={24}>
@@ -226,8 +225,6 @@ const DrawerProductTransfers = ({
           </TabPane>
         </Tabs>
       </Card>
-
-      {/* <Divider orientation="left" style={{ margin: '0px 0' }}>{t('divider.meters')}</Divider> */}
 
       <Row gutter={[1,8]}>
         <Col span={24}>
