@@ -33,6 +33,12 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   const [tab, setTab] = useState('1');
   const [tank, setTank] = useState(undefined);
 
+  const changeToTank = (tank) => {
+    if (type !== '2'){
+      setTank(tank);
+    }
+  }
+
   const IS_CREATING = !value;
   const DISABLED = value?.mlitm_status === '5';
 
@@ -328,7 +334,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             {FROM.includes(type) && <From onChange={setTank} form={form} value={value} disabled={DISABLED} />}
 
             {TO.includes(type) && (
-              <To type={type} onChange={setTank} form={form} value={value} disabled={DISABLED} />
+              <To type={type} onChange={changeToTank} form={form} value={value} disabled={DISABLED} />
             )}
 
             <Divider>{t('divider.calculation')}</Divider>

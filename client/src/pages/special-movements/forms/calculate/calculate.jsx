@@ -29,6 +29,9 @@ const Calculate = ({ form, value, disabled, type, tank }) => {
       .then((response) => {
         if (response?.data?.records?.length > 0) {
           setLimit(response.data.records[0]);
+          setFieldsValue({
+            mlitm_dens_cor: response.data.records[0].tank_density,
+          });
           setLoading(false);
         }
 
