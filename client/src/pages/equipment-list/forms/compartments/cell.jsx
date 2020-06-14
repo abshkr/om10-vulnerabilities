@@ -19,21 +19,44 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
   const save = async (e) => {
     let values = await form.validateFields();
 
-    const max = values?.sfl ? values?.sfl : record?.sfl;
-
     if (values?.safefill) {
-      if (_.toNumber(values?.safefill) <= max) {
+      if (_.toNumber(values?.safefill) <= record?.sfl) {
         onEdit();
 
         handleSave({ ...record, ...values });
       } else {
         onEdit();
+
+        form.setFieldsValue({
+          safefill: record?.safefill,
+        });
+
         message.error('Safefill Cannot be higher than capacity');
+      }
+    } else if (values?.sfl) {
+      if (_.toNumber(values?.sfl) >= record?.safefill) {
+        onEdit();
+
+        handleSave({ ...record, ...values });
+      } else {
+        onEdit();
+
+        form.setFieldsValue({
+          sfl: record?.sfl,
+        });
+
+        message.error('Compartment Capacity should not be less its than safefill.');
       }
     } else {
       onEdit();
 
-      handleSave({ ...record, ...values });
+      const reverted = {
+        ...values,
+        safefill: record?.safefill,
+        sfL: record?.sfl,
+      };
+
+      handleSave({ ...record, ...reverted });
     }
   };
 
