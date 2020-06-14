@@ -15,7 +15,7 @@ const Tanker = ({ form, value, carrier, onChange }) => {
     `${LOAD_SCHEDULES.TANKERS_BY_CARRIER}?tnkr_carrier=${carrier}`
   );
 
-  const IS_DISABLED = !value ? false : value?.shls_status !== 'NEW SCHEDULE';
+  const IS_DISABLED = !value ? false : (value?.shls_status !== 'NEW SCHEDULE' || value?.shls_ld_type === '2');
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
