@@ -8,9 +8,12 @@ import columns from './columns';
 import { FSC_STATUS } from '../../api';
 import { Page, DataTable } from '../../components';
 import generator from './generator';
+import useAuth from 'hooks/use-auth';
 
 const FSCStatus = () => {
   const { t } = useTranslation();
+
+  const access = useAuth('M_FSCSTATUS');
 
   const { data: heartbeat, isValidating } = useSWR(FSC_STATUS.HEARTBEAT, { refreshInterval: 1000 });
   const { data: batch } = useSWR(FSC_STATUS.BATCH, { refreshInterval: 1000 });
@@ -29,7 +32,12 @@ const FSCStatus = () => {
   );
 
   return (
-    <Page page={t('pageMenu.operations')} name={t('pageNames.fscStatus')} modifiers={modifiers}>
+    <Page
+      page={t('pageMenu.operations')}
+      name={t('pageNames.fscStatus')}
+      modifiers={modifiers}
+      access={access}
+    >
       <DataTable columns={fields} data={data} isLoading={isValidating} />
     </Page>
   );

@@ -17,7 +17,7 @@ import { useAuth } from '../../hooks';
 
 const MovementNominations = () => {
   const { t } = useTranslation();
-  const access = useAuth('M_PHYSICALPRINTERS');
+  const access = useAuth('M_NOMINATION');
 
   const [start, setStart] = useState(moment().subtract(60, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(360, 'days').format(SETTINGS.DATE_TIME_FORMAT));

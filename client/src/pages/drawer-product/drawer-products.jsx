@@ -19,8 +19,8 @@ const DrawerProduct = () => {
 
   const { t } = useTranslation();
 
-  const auth = useAuth('M_DRAWERPRODUCTS');
-  
+  const access = useAuth('M_DRAWERPRODUCTS');
+
   const { data: payload, isValidating, revalidate } = useSWR(DRAWER_PRODUCTS.READ);
 
   const handleFormState = (visibility, value) => {
@@ -57,7 +57,7 @@ const DrawerProduct = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} auth={auth}>
+    <Page page={page} name={name} modifiers={modifiers} access={access}>
       <DataTable
         data={data}
         columns={fields}
@@ -66,7 +66,7 @@ const DrawerProduct = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={access} />
     </Page>
   );
 };

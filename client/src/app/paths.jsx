@@ -182,11 +182,6 @@ const paths = [
   },
 
   {
-    path: ROUTES.ALLOCATIONS,
-    component: lazy(() => import('../pages/work-in-progress')),
-  },
-
-  {
     path: ROUTES.LOAD_METERS,
     component: lazy(() => import('../pages/load-meters')),
   },
@@ -219,11 +214,6 @@ const paths = [
   {
     path: ROUTES.AUDITING_DATA,
     component: lazy(() => import('../pages/auditing-data')),
-  },
-
-  {
-    path: ROUTES.FOLIO_SCHEDULLING,
-    component: lazy(() => import('../pages/work-in-progress')),
   },
 
   {
@@ -337,11 +327,6 @@ const paths = [
   },
 
   {
-    path: ROUTES.DRAWER_PRODUCT_ASSETS,
-    component: lazy(() => import('../pages/work-in-progress')),
-  },
-
-  {
     path: ROUTES.ADAPTIVE_FLOW_CONTROL,
     component: lazy(() => import('../pages/adaptive-flow-control')),
   },
@@ -364,6 +349,11 @@ const paths = [
   {
     path: ROUTES.TANKS,
     component: lazy(() => import('../pages/tanks')),
+  },
+
+  {
+    path: ROUTES.DELIVERY_DETAILS,
+    component: lazy(() => import('../pages/delivery-details')),
   },
 
   {

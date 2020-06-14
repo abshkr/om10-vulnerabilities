@@ -44,6 +44,7 @@ export const FOLIO_SUMMARY = '/folio-summary';
 export const FOLIO_SCHEDULLING = '/folio-schedulling';
 export const HOST_MESSAGING_INTERFACE = '/host-messaging-interface';
 export const AUDITING_DATA = '/auditing-data';
+export const REPORTS = '/reports';
 
 export const ID_ASSIGNMENT = '/id-assignment';
 export const PERSONNEL = '/personnel';

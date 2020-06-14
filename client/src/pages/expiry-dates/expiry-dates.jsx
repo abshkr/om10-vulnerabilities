@@ -18,7 +18,7 @@ const ExpiryDates = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const auth = useAuth('M_EXPIRYDATES');
+  const access = useAuth('M_EXPIRYDATES');
 
   const { data: payload, isValidating, revalidate } = useSWR(EXPIRY_DATES.READ);
 
@@ -35,10 +35,10 @@ const ExpiryDates = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
-        onClick={() => handleFormState(true, null)} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => handleFormState(true, null)}
         loading={isValidating}
         disabled={!auth.canCreate}
       >
@@ -48,15 +48,26 @@ const ExpiryDates = () => {
   );
 
   return (
-    <Page page={t('pageMenu.accessControl')} name={t('pageNames.expiryDates')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={payload?.records} 
-        isLoading={isValidating} 
+    <Page
+      page={t('pageMenu.accessControl')}
+      name={t('pageNames.expiryDates')}
+      modifiers={modifiers}
+      access={access}
+    >
+      <DataTable
+        columns={fields}
+        data={payload?.records}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} all={payload?.records} />
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        auth={access}
+        all={payload?.records}
+      />
     </Page>
   );
 };

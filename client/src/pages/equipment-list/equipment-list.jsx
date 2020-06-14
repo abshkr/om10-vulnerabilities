@@ -35,9 +35,10 @@ const BaseProducts = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button type="primary" 
-        icon={<PlusOutlined />} 
-        onClick={() => handleFormState(true, null)} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => handleFormState(true, null)}
         loading={isValidating}
         disabled={!auth.canCreate}
       >
@@ -47,11 +48,16 @@ const BaseProducts = () => {
   );
 
   return (
-    <Page page={t('pageMenu.schedules')} name={t('pageNames.equipmentList')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={payload?.records} 
-        isLoading={isValidating} 
+    <Page
+      page={t('pageMenu.schedules')}
+      name={t('pageNames.equipmentList')}
+      modifiers={modifiers}
+      access={auth}
+    >
+      <DataTable
+        columns={fields}
+        data={payload?.records}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />

@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
-import { Select, Button } from 'antd';
-import { useTranslation } from 'react-i18next';
-import useSWR from 'swr';
-import { SyncOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download } from '../../components';
-import { STOCK_MANAGEMENT } from '../../api';
+import useSWR from 'swr';
+import { Select, Button } from 'antd';
+import { SyncOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
+
+import { useAuth } from 'hooks';
+import { Page, DataTable, Download } from 'components';
+import { STOCK_MANAGEMENT } from 'api';
+import auth from 'auth';
+
 import transform from './transform';
 import columns from './columns';
-import auth from '../../auth';
 
 const SiteBalance = () => {
   const [unit, setUnit] = useState('Litres');
+
+  const access = useAuth('M_SITEBALANCE');
 
   const { t } = useTranslation();
   const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.SITE_BALANCE);
@@ -42,7 +47,13 @@ const SiteBalance = () => {
   );
 
   return (
-    <Page page={t('pageMenu.stockManagement')} name={t('pageNames.siteBalance')} modifiers={modifiers}>
+    <Page
+      page={t('pageMenu.stock')}
+      name={t('pageNames.siteBalance')}
+      modifiers={modifiers}
+      access={access}
+      avatar="siteBalance"
+    >
       <DataTable columns={fields} data={payload} isLoading={isValidating} />
     </Page>
   );
