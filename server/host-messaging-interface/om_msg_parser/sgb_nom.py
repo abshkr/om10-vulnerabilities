@@ -1,41 +1,69 @@
 #!/usr/bin/python
 
+# This script is customised to work specifically with Shell GSAP hostcomm. It is intended to be used as
+# a pre-processing step on the Nomination XML file before being passed to the generic omega parser.
+
 import sys, os, csv
 from datetime import datetime
 from lxml import etree
 
+# TODO: Replace this with function
+import site_config
+
 
 def __load_store_loc_map(map_file):
-	store_loc_map = {}
 	if map_file is not None:
 		try:
 			with open(map_file, 'r') as dataf:
+				store_loc_map = {} 
 				rdr = csv.reader(filter(lambda row: row[0]!='#' and row[0]!='\n', dataf))
 				for row in rdr:
 					store_loc_map[row[0].strip()] = [row[1].strip(), row[2].strip(), row[3].strip()]
 				return store_loc_map
 		except Exception as err:
-			print (err)
-			return {}
+			print ('Failed to load %s, err %s' % (map_file, err))
+			return None
 	else:
-		return {}
+		return None
 
 
 def __load_conpat_map(map_file):
-	conpat_map = {}
 	if map_file is not None:
 		try:
 			with open(map_file, 'r') as dataf:
+				conpat_map = {} 
 				rdr = csv.reader(filter(lambda row: row[0]!='#' and row[0]!='\n', dataf))
 				for row in rdr:
 					conpat_map[row[0].strip()] = [row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip()]
 				return conpat_map
 		except Exception as err:
-			print (err)
-			return {}
+			#print ('Failed to load %s, err %s' % (map_file, err))
+			return None 
 	else:
-		return {}
+		return None
 
+
+def __load_uom_map(map_file):
+	if map_file is not None:
+		try:
+			with open(map_file, 'r') as dataf:
+				uom_map = {}
+				rdr = csv.reader(filter(lambda row: row[0]!='#' and row[0]!='\n', dataf))
+				for row in rdr:
+					uom_map[row[1].strip()] = [row[2].strip(), row[3].strip()]
+				return uom_map
+		except Exception as err:
+			#print ('Failed to load %s, err %s' % (map_file, err))
+			return None
+	else:
+		return None
+
+
+def __sitecode_from_plantcode(siteconf, plant_code):
+	for key in siteconf:
+		if plant_code in siteconf[key]:
+			return key
+	return ''
 
 def __header(xmltree):
 	changed = False
@@ -81,13 +109,17 @@ def __header(xmltree):
 		evtdate.text = eday + '.' + emon + '.' + eyear + ehour + ':' + emin + ':' + esec;
 
 		# TODO: use first field of filename (plant code) to derive site code from config
+		siteconf = site_config.omega_plant_codes
+
 		res = hdr.find("TRMLOC")
 		if res is not None and len(res) > 0:
 			trm = res[0]
 		else:
 			trm = etree.SubElement(hdr, 'TRMLOC')
+
 		fldlist = os.path.basename(data_file).split('_')
-		trm.text = fldlist[0]
+		sitecode = __sitecode_from_plantcode(siteconf, fldlist[0])
+		trm.text = sitecode
 
 		res = hdr.find("MSGID")
 		if res is not None and len(res) > 0:
@@ -232,6 +264,36 @@ def __line_item_loc_type(line_item_node):
 	print('loc_type.text',loc_type.text)
 	return changed
 
+
+def __line_item_uom_qty(line_item_node):
+	changed = False
+
+	uom_map = __load_uom_map('./om_msg_parser/UnitOfMeasure.csv')
+	if uom_map is not None:
+		multiplier = 1
+
+		try:
+			uom = line_item_node.find("E1OIP21/MENEE")
+			if uom is not None:
+				print('uom.text.strip()',uom.text.strip())
+				print('uom_map.keys()',uom_map.keys())
+				if uom.text.strip() in uom_map.keys():
+					multiplier = uom_map[uom.text.strip()][1]
+					uom.text = uom_map[uom.text.strip()][0]
+					print('uom.text',uom.text,'multiplier',multiplier)
+					changed = True
+		except Exception as err:
+			pass
+
+		try:
+			qty = line_item_node.find("E1OIP21/MENGE")
+			if qty is not None:
+				qty.text = str(float(qty.text.strip()) * float(multiplier))
+				changed = True
+		except Exception as err:
+			pass
+
+	return changed
 	
 def __line_item_prod_idx(line_item_node, idx):
 	changed = False
@@ -253,8 +315,6 @@ def __line_item_prod_idx(line_item_node, idx):
 			prodidx.text = '0' + str(idx)
 		else:
 			prodidx.text = str(idx)
-
-		print('prodidx.text',prodidx.text)
 
 		changed = True
 	except Exception as err:
@@ -315,6 +375,7 @@ def __line_item_from_to(line_item_node):
 	changed = False
 
 	storeloc_map = __load_store_loc_map('./om_msg_parser/store_loc.map')
+	print('storeloc_map',storeloc_map)
 	conpat_map = __load_conpat_map('./om_msg_parser/conpat.map')
 
 	node = line_item_node.find("E1OIPA1[PARVW='TL']")
@@ -332,11 +393,11 @@ def __line_item_from_to(line_item_node):
 				from_pc = etree.SubElement(line_item_node, 'FROM_PLANTCODE')
 				from_pc.text = plantcode
 				from_supp = etree.SubElement(line_item_node, 'FROM_SUPPLIER')
-				if storeloc in storeloc_map:
+				if storeloc_map is not None and storeloc in storeloc_map:
 					#TODO: Journal: Supplier code %s derived from storage location code %s."
 					from_supp.text = storeloc_map[storeloc][1]
 				from_store_loc = etree.SubElement(line_item_node, 'FROM_STORE_LOC')
-				if storeloc in storeloc_map:
+				if storeloc_map is not None and storeloc in storeloc_map:
 					#TODO: Journal: Storage location code %s mapped to company code %s."
 					from_store_loc.text = storeloc_map[storeloc][2]
 				from_desc = etree.SubElement(line_item_node, 'FROM_DESC')
@@ -376,11 +437,11 @@ def __line_item_from_to(line_item_node):
 				to_pc = etree.SubElement(line_item_node, 'TO_PLANTCODE')
 				to_pc.text = plantcode
 				to_supp = etree.SubElement(line_item_node, 'TO_SUPPLIER')
-				if storeloc in storeloc_map:
+				if storeloc_map is not None and storeloc in storeloc_map:
 					#TODO: Journal: Supplier code %s derived from storage location code %s."
 					to_supp.text = storeloc_map[storeloc][1]
 				to_store_loc = etree.SubElement(line_item_node, 'TO_STORE_LOC')
-				if storeloc in storeloc_map:
+				if storeloc_map is not None and storeloc in storeloc_map:
 					#TODO: Journal: Storage location code %s mapped to company code %s."
 					to_store_loc.text = storeloc_map[storeloc][2]
 				to_desc = etree.SubElement(line_item_node, 'TO_DESC')
@@ -418,22 +479,27 @@ def __line_items(xmltree):
 		changed |= __line_item_prod_idx(node, i)
 		changed |= __line_item_from_to(node)
 		changed |= __line_item_loc_type(node)
+		changed |= __line_item_uom_qty(node)
 	return changed
 
 def __update(xmltree, fieldnm, match_values, qualifier_node, data_node):
 	changed = False
 	found = False
-	res = xmltree.xpath(qualifier_node)
-	if res is not None and len(res) == 1:
-		if res[0].text in match_values:
-			found = True
 
-	res = xmltree.xpath(data_node)
-	if res is not None and len(res) == 1:
-		if not found:
-			res[0].text = ''
-			changed = True
-		print(fieldnm, data_node, changed, res[0].text)
+	try:
+		res = xmltree.xpath(qualifier_node)
+		if res is not None:
+			if res[0].text in match_values:
+				found = True
+
+		res = xmltree.xpath(data_node)
+		if res is not None:
+			if not found:
+				res[0].text = ''
+				changed = True
+			#print(fieldnm, data_node, changed, res[0].text)
+	except Exception as err:
+		print('while updating xml, err',err)
 
 	return changed
 

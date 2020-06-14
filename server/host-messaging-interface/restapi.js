@@ -69,9 +69,8 @@ app.use(function(req, res, next) {
 */
 
 app.use (function (req, res, next) {
-	console.log('here');
 	//if (req.headers['x-forwarded-proto'] === 'https') {
-    //if((req.secure) && (req.get('X-Forwarded-Proto') === 'https')) {
+	//if((req.secure) && (req.get('X-Forwarded-Proto') === 'https')) {
 	if (req.secure) {
 		//request was via https, so do no special handling
 		//console.log('next ...');

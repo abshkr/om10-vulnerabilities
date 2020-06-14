@@ -92,7 +92,8 @@
 					"fld_idx" : 0
 				},
 				"route_to" : [
-					{ "CNS" : { "ip" : "localhost", "dir" : "/usr/omega/data/gsap/outbox/P251", "file_nm_fmt" : "SAP" } }
+					{ "CNS" : { "ip" : "localhost", "dir" : "/usr/omega/data/gsap/outbox/P251", "file_nm_fmt" : "SAP" } },
+					{ "T048" : { "ip" : "localhost", "dir" : "/usr/omega/data/gsap/outbox/P251", "file_nm_fmt" : "SAP" } }
                 ],
 				"msg_parse_rules" : {
 					"file_name_field" : "msg_type",

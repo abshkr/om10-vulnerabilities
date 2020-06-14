@@ -1,0 +1,15 @@
+# The format of each entry in this file is as follows:
+# Partner storage location code, mapped-to Company name, mapped-to Company code, mapped-to Storage location code
+#
+# The first field forms the key of one entry in the mapping table. The remainder fields become the value list.
+# This mapping table is used to translate the specified partner storage location code (1st field) to
+# 1. an Omega company code (3rd field, which is used as the product company), and
+# 2. an alternate storage location (4th field, which is actually a company).
+#
+
+MY05,Shell,7640102,7640102
+P0010,Caltex,76401,76401
+0007,BP,0001,0002
+0105,Mobil,0001,0004
+
+
