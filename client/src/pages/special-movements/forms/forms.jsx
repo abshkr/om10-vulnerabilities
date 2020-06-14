@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   EditOutlined,
@@ -11,10 +11,11 @@ import {
   SaveOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Divider, message } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Divider, message, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import axios from 'axios';
+import _ from 'lodash';
 
 import { MovementType, ReasonCode, MovementTime, Comments, To, From } from './fields';
 import { SPECIAL_MOVEMENTS } from '../../../api';
@@ -23,9 +24,10 @@ import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value }) => {
+const FormModal = ({ value, visible, handleFormState, auth }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const { resetFields } = form;
 
   const [type, setType] = useState(null);
   const [tab, setTab] = useState('1');
@@ -37,7 +39,14 @@ const FormModal = ({ value }) => {
   const FROM = ['1', '2'];
   const TO = ['0', '2'];
 
-  const onFinish = (values) => {
+  const onComplete = () => {
+    handleFormState(false, null); 
+    mutate(SPECIAL_MOVEMENTS.READ);
+  };
+
+  const onFinish = async () => {
+    const values = await form.validateFields();
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -52,19 +61,20 @@ const FormModal = ({ value }) => {
           .post(IS_CREATING ? SPECIAL_MOVEMENTS.CREATE : SPECIAL_MOVEMENTS.UPDATE, values)
           .then(
             axios.spread((response) => {
-              Modal.destroyAll();
+              onComplete();
 
-              mutate(SPECIAL_MOVEMENTS.READ);
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.createSuccess'),
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
@@ -84,18 +94,20 @@ const FormModal = ({ value }) => {
           .post(SPECIAL_MOVEMENTS.DELETE, value)
           .then(
             axios.spread((response) => {
-              mutate(SPECIAL_MOVEMENTS.READ);
-              Modal.destroyAll();
+              onComplete();
+
               notification.success({
                 message: t('messages.deleteSuccess'),
                 description: `${t('descriptions.deleteSuccess')}`,
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.deleteFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
@@ -154,19 +166,20 @@ const FormModal = ({ value }) => {
             .post(SPECIAL_MOVEMENTS.SUBMIT, values)
             .then(
               axios.spread((response) => {
-                Modal.destroyAll();
+                onComplete();
 
-                mutate(SPECIAL_MOVEMENTS.READ);
                 notification.success({
                   message: t('messages.submitSuccess'),
                   description: t('descriptions.submitSuccess'),
                 });
               })
             )
-            .catch((error) => {
-              notification.error({
-                message: error.message,
-                description: t('descriptions.submitFailed'),
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
               });
             });
         } catch (error) {
@@ -192,30 +205,113 @@ const FormModal = ({ value }) => {
           .post(SPECIAL_MOVEMENTS.REVERSE, value)
           .then(
             axios.spread((response) => {
-              mutate(SPECIAL_MOVEMENTS.READ);
+              onComplete();
 
-              Modal.destroyAll();
               notification.success({
                 message: t('messages.movementReverseSuccess'),
                 description: `${t('descriptions.movementReverseSuccess')}`,
               });
             })
           )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.movementReverseFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
     });
   };
 
+  useEffect(() => {
+    if (!value && !visible) {
+      resetFields();
+    } 
+  }, [value, visible]);
+
   return (
-    <div>
+    <Drawer
+      bodyStyle={{ paddingTop: 5 }}
+      onClose={() => handleFormState(false, null)}
+      maskClosable={IS_CREATING}
+      destroyOnClose={true}
+      mask={IS_CREATING}
+      placement="right"
+      width="50vw"
+      visible={visible}
+      footer={
+        <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
+
+          {!DISABLED && (
+            <Button
+              htmlType="button"
+              icon={<CalculatorOutlined />}
+              style={{ marginRight: 5 }}
+              onClick={onCalculate}
+            >
+              {t('operations.calculate')}
+            </Button>
+          )}
+
+          {DISABLED && (
+            <Button htmlType="button" onClick={onReverse} icon={<ReloadOutlined />}>
+              {t('operations.reverse')}
+            </Button>
+          )}
+
+          <Button
+            type="primary"
+            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            htmlType="submit"
+            disabled={DISABLED}
+            style={{ float: 'right', marginRight: 5 }}
+            onClick={onFinish}
+            style={{ float: 'right', marginRight: 5 }}
+            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
+          >
+            {IS_CREATING ? t('operations.create') : t('operations.update')}
+          </Button>
+
+          <Button
+            type="ghost"
+            icon={<SaveOutlined />}
+            htmlType="button"
+            disabled={DISABLED}
+            onClick={onSubmit}
+            style={{ float: 'right', marginRight: 5 }}
+            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
+          >
+            {t('operations.submit')}
+          </Button>
+
+          {!IS_CREATING && (
+            <Button
+              type="danger"
+              icon={<DeleteOutlined />}
+              disabled={DISABLED}
+              style={{ float: 'right', marginRight: 5 }}
+              onClick={onDelete}
+              disabled={!auth?.canDelete}
+            >
+              {t('operations.delete')}
+            </Button>
+          )}
+        </>
+      }
+    >
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey={tab} onChange={setTab} animated={false}>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
+          <TabPane tab={t('tabColumns.general')} forceRender={true} key="1">
             <MovementType form={form} value={value} onChange={setType} disabled={DISABLED} />
 
             <ReasonCode form={form} value={value} type={type} disabled={DISABLED} />
@@ -237,69 +333,8 @@ const FormModal = ({ value }) => {
             <Calculate form={form} value={value} type={type} disabled={DISABLED} tank={tank} />
           </TabPane>
         </Tabs>
-
-        <Form.Item>
-          {!DISABLED && (
-            <Button
-              htmlType="button"
-              icon={<CalculatorOutlined />}
-              style={{ marginRight: 5 }}
-              onClick={onCalculate}
-            >
-              {t('operations.calculate')}
-            </Button>
-          )}
-
-          {DISABLED && (
-            <Button htmlType="button" onClick={onReverse} icon={<ReloadOutlined />}>
-              {t('operations.reverse')}
-            </Button>
-          )}
-
-          <Button
-            htmlType="button"
-            icon={<CloseOutlined />}
-            style={{ float: 'right' }}
-            onClick={() => Modal.destroyAll()}
-          >
-            {t('operations.cancel')}
-          </Button>
-
-          <Button
-            type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-            htmlType="submit"
-            disabled={DISABLED}
-            style={{ float: 'right', marginRight: 5 }}
-          >
-            {IS_CREATING ? t('operations.create') : t('operations.update')}
-          </Button>
-
-          <Button
-            type="ghost"
-            icon={<SaveOutlined />}
-            htmlType="button"
-            disabled={DISABLED}
-            onClick={onSubmit}
-            style={{ float: 'right', marginRight: 5 }}
-          >
-            {t('operations.submit')}
-          </Button>
-
-          {!IS_CREATING && (
-            <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              disabled={DISABLED}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={onDelete}
-            >
-              {t('operations.delete')}
-            </Button>
-          )}
-        </Form.Item>
       </Form>
-    </div>
+    </Drawer>
   );
 };
 
