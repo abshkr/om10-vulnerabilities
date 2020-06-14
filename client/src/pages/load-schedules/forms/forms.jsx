@@ -7,6 +7,7 @@ import {
   QuestionCircleOutlined,
   PrinterOutlined,
   RedoOutlined,
+  CloseOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Radio, Checkbox } from 'antd';
@@ -78,6 +79,14 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
     handleFormState(false, null);
     mutate(url);
   };
+
+  const changeSupplier = (supplier) => {
+    setSupplier(supplier);
+    setDrawer(supplier);
+    setFieldsValue({
+      drawer_code: supplier,
+    })
+  }
 
   const onFinish = async () => {
     const record = await form.validateFields();
@@ -279,6 +288,12 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
   };
 
   useEffect(() => {
+    if (!value) {
+      setTab('0');
+    }
+  }, [value]);
+
+  useEffect(() => {
     if (value) {
       setTab('0');
 
@@ -318,6 +333,15 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
       visible={visible}
       footer={
         <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
+
           {!READ_ONLY && (
             <Button
               type="primary"
@@ -403,7 +427,7 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
 
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                <Supplier form={form} value={value} onChange={setSupplier} />
+                <Supplier form={form} value={value} onChange={changeSupplier} />
               </Col>
 
               <Col span={12}>

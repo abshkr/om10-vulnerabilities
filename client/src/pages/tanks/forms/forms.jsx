@@ -368,7 +368,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => Modal.destroyAll()}
+            onClick={() => handleFormState(false, null)}
           >
             {t('operations.cancel')}
           </Button>

@@ -770,13 +770,13 @@ class IDAssignment extends CommonClass
                 KYA_TXT = :kya_txt,
                 KYA_LOCK = :kya_lock,
                 KYA_ADHOC = :kya_adhoc,
-                KYA_TIMECD = :kya_timecd,
                 KYA_PSN = DECODE(:kya_psn, '-1', NULL, :kya_psn),
                 KYA_ROLE = DECODE(:kya_role, -1, NULL, :kya_role),
                 KYA_DRAWER = DECODE(:kya_drawer, '-1', NULL, :kya_drawer),
                 KYA_TANKER = DECODE(:kya_tanker, '-1', NULL, :kya_tanker),
                 KYA_EQUIPMENT = DECODE(:kya_equipment,-1, NULL, :kya_equipment),
                 KYA_SP_SUPPLIER = DECODE(:kya_sp_supplier, '-1', NULL, :kya_sp_supplier),
+                KYA_TIMECD = :kya_timecode,
                 KYA_DMY = SYSDATE
             WHERE KYA_KEY_ISSUER = :kya_key_issuer AND KYA_KEY_NO = :kya_key_no";
         $stmt = oci_parse($this->conn, $query);
@@ -784,15 +784,15 @@ class IDAssignment extends CommonClass
         oci_bind_by_name($stmt, ':kya_key_issuer', $this->kya_key_issuer);
         oci_bind_by_name($stmt, ':kya_txt', $this->kya_txt);
         oci_bind_by_name($stmt, ':kya_phys_type', $this->kya_phys_type);
-        oci_bind_by_name($stmt, ':kya_timecd', $this->kya_timecd);
         oci_bind_by_name($stmt, ':kya_lock', $this->kya_lock);
         oci_bind_by_name($stmt, ':kya_adhoc', $this->kya_adhoc);
-        oci_bind_by_name($stmt, ':kya_psn', $this->kya_psn);
+        oci_bind_by_name($stmt, ':kya_psn', $this->kya_personnel);
         oci_bind_by_name($stmt, ':kya_role', $this->kya_role);
         oci_bind_by_name($stmt, ':kya_drawer', $this->kya_drawer);
         oci_bind_by_name($stmt, ':kya_tanker', $this->kya_tanker);
         oci_bind_by_name($stmt, ':kya_equipment', $this->kya_equipment);
-        oci_bind_by_name($stmt, ':kya_sp_supplier', $this->kya_sp_supplier);
+        oci_bind_by_name($stmt, ':kya_sp_supplier', $this->kya_supplier);
+        oci_bind_by_name($stmt, ':kya_timecode', $this->kya_timecode);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);

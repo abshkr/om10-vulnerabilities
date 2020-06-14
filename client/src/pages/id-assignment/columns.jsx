@@ -5,6 +5,9 @@ const columns = t => [
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 140,
+    pinned: "left",
   },
   {
     headerName: t('fields.issuer'),
@@ -12,6 +15,8 @@ const columns = t => [
     sortable: true,
     filter: 'MultiFilter',
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 110,
   },
   {
     headerName: t('fields.assignmentType'),
@@ -19,6 +24,8 @@ const columns = t => [
     sortable: true,
     filter: 'MultiFilter',
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 150,
   },
   {
     headerName: t('fields.physicalType'),
@@ -26,6 +33,8 @@ const columns = t => [
     sortable: true,
     filter: 'MultiFilter',
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 150,
   },
   {
     headerName: t('fields.timeCode'),
@@ -33,6 +42,8 @@ const columns = t => [
     sortable: true,
     filter: 'MultiFilter',
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 110,
   },
   {
     headerName: t('fields.locked'),
@@ -41,6 +52,8 @@ const columns = t => [
     filter: 'BooleanFilter',
     cellRenderer: 'LockRenderer',
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 100,
   },
   {
     headerName: t('fields.adhoc'),
@@ -49,6 +62,8 @@ const columns = t => [
     filter: 'BooleanFilter',
     cellRenderer: 'LockRenderer',
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 100,
   },
   {
     headerName: t('fields.physicalTagText'),
@@ -56,6 +71,17 @@ const columns = t => [
     sortable: true,
     filter: 'FuzzySearch',
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 160,
+  },
+  {
+    headerName: t('fields.personnelCode'),
+    field: 'kya_personnel',
+    sortable: true,
+    filter: 'MultiFilter',
+    resizable: true,
+    suppressSizeToFit: true, 
+    width: 140,
   },
   {
     headerName: t('fields.personnel'),
@@ -63,6 +89,8 @@ const columns = t => [
     sortable: true,
     filter: 'MultiFilter',
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 110,
   },
   {
     headerName: t('fields.role'),
@@ -70,6 +98,8 @@ const columns = t => [
     sortable: true,
     filter: 'BooleanFilter',
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 100,
   },
   {
     headerName: t('fields.drawer'),
@@ -77,6 +107,8 @@ const columns = t => [
     sortable: true,
     filter: 'BooleanFilter',
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 110,
   },
   {
     headerName: t('fields.supplier'),
@@ -84,6 +116,8 @@ const columns = t => [
     sortable: true,
     filter: 'BooleanFilter',
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 110,
   },
   {
     headerName: t('fields.tankerCode'),
@@ -91,13 +125,8 @@ const columns = t => [
     sortable: true,
     filter: 'BooleanFilter',
     resizable: true,
-  },
-  {
-    headerName: t('fields.tankerCode'),
-    field: 'kya_tanker',
-    sortable: true,
-    filter: 'BooleanFilter',
-    resizable: true,
+    suppressSizeToFit: true, 
+    width: 140,
   },
   {
     headerName: t('fields.tanker'),
@@ -105,6 +134,8 @@ const columns = t => [
     sortable: true,
     filter: 'BooleanFilter',
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 140,
   },
   {
     headerName: t('fields.equipment'),
@@ -112,6 +143,8 @@ const columns = t => [
     sortable: true,
     filter: 'BooleanFilter',
     resizable: true,
+    suppressSizeToFit: true, 
+    width: 140,
   },
 ];
 

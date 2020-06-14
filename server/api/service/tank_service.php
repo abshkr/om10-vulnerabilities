@@ -44,13 +44,22 @@ class TankService
 
     public function tanks_by_base($base_code)
     {
-        $query = "
-            SELECT TANK_CODE
-            FROM GUI_TANKS
-            WHERE TANK_BASE = :tank_base
-            ORDER BY TANK_CODE";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':tank_base', $base_code);
+        if (isset($base_code)) {
+            $query = "
+                SELECT TANK_CODE, TANK_BASE
+                FROM GUI_TANKS
+                WHERE TANK_BASE = :tank_base
+                ORDER BY TANK_CODE";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':tank_base', $base_code);
+        } else {
+            $query = "
+                SELECT TANK_CODE, TANK_BASE
+                FROM GUI_TANKS
+                ORDER BY TANK_CODE";
+            $stmt = oci_parse($this->conn, $query);
+        }
+        
         if (oci_execute($stmt)) {
             return $stmt;
         } else {

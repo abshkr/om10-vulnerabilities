@@ -64,6 +64,25 @@ function parse(conn, file, content_format)
 	// Example of the command line:
 	// ./pomsg.py -s msg_def.emm_load_ord_ack -d 0ZP2_ACK_68_7113266_20190826203221.dat -n EMM_LOAD_ACK -o 0ZP2_ACK_68_7113266_20190826203221.dat.parsed
 
+	if (content_format == 5)
+	{
+		// Use file name extension to determine
+		var list = file.split(conn.file_name_format.extension_prefix);
+		if (list.length == 2)
+		{
+			var extn = list[-1];
+			if (extn == 'dat')
+			{
+				content_format = 1;
+			}
+			else if (extn == 'xml')
+			{
+				content_format = 2;
+			}
+		}
+	}
+
+	console.log('file:'+file);
 	var src_file = file;
 	var src_filenm = path.basename(file);
 	//console.log('src_filenm:'+src_filenm);
@@ -78,7 +97,47 @@ function parse(conn, file, content_format)
 		var fmt_cmd = '-m ' + parseInt(content_format); 
 		var output_file = './om_msg_parser/' + src_filenm + '.parsed';
 		var output_cmd = '-o ' + output_file; 
-		var cmd = exe_cmd + ' ' + schemaf_cmd + ' ' + dataf_cmd + ' ' + msgnm_cmd + ' ' + fmt_cmd + ' ' + output_cmd;
+
+		var fld_map_cmd = '';
+		var fld_map = '';
+		try
+		{
+			fld_map = rule.field_map;
+			if (fld_map)
+			{ 
+				fld_map_cmd = '-f ' + './om_msg_parser/' + fld_map;
+			}
+			else
+			{
+				fld_map_cmd = '';
+			}
+		}
+		catch (err)
+		{
+			// Do nothing
+		}
+
+		var preproc_cmd = '';
+		var preproc_map = '';
+		try
+		{
+			preproc = rule.preprocess;
+			if (preproc)
+			{
+				preproc_cmd = '-p ' + './om_msg_parser/' + preproc;
+			}
+			else
+			{
+				preproc_cmd = '';
+			}
+		}
+		catch (err)
+		{
+			// Do nothing
+		}
+
+		var cmd = exe_cmd + ' ' + schemaf_cmd + ' ' + dataf_cmd + ' ' + msgnm_cmd + ' ' + fld_map_cmd + ' ' + preproc_cmd + ' ' + fmt_cmd + ' ' + output_cmd;
+		console.log('cmd: ' + cmd);
 
 		var eres = [];
 		try
@@ -106,16 +165,25 @@ function parse(conn, file, content_format)
 		catch (ex)
 		{
 			//logr.write_to_console(__filename, __line, ex.message);
-			console.error('a:Failed to parse file ' + src_filenm + ', error:' + ex.message);
+			console.error('a:Failed to parse file ' + src_filenm + ', error:' + ex.message + ', send raw content instead');
 			remove_file(output_file);
-			return ([false,ex.message]);
+			//return ([false,ex.message]);
+
+			// Return raw content if parsing fails
+			msg = fs.readFileSync(file, 'utf8');
+			return ([true,msg]);
 		}
 	}
 	else
 	{
 		//logr.write_to_console(__filename, __line, ex.message);
-		console.error('b:Failed to parse file ' + src_filenm + ', error:' + 'search key missing');
-		return ([false,'search key missing']);
+		console.error('b:Failed to parse file ' + src_filenm + ', error:' + 'search key missing. send raw content instead');
+		//return ([false,'search key missing']);
+
+		// Return raw content if parsing fails
+		console.log('file2:'+file);
+		msg = fs.readFileSync(file, 'utf8');
+		return ([true,msg]);
 	}
 }
 

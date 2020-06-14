@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input, Select } from 'antd';
 import useSWR from 'swr';
+import _ from 'lodash';
 
 import { PRODUCT_MOVEMENTS } from '../../../../api';
 
-const Source = ({ form, value }) => {
+const Source = ({ form, value, base }) => {
   const { t } = useTranslation();
 
   const { data: types, typesLoading } = useSWR(PRODUCT_MOVEMENTS.TYPES);
@@ -85,9 +86,11 @@ const Source = ({ form, value }) => {
               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
           >
-            {tanks?.records.map((item, index) => (
-              <Select.Option key={index} value={item.pmv_id}>
-                {item.pmv_name}
+            {_.filter(tanks?.records, (item) => {
+              return item.tank_base === base
+            }).map((item, index) => (
+              <Select.Option key={index} value={item.tank_code}>
+                {item.tank_code}
               </Select.Option>
             ))}
           </Select>

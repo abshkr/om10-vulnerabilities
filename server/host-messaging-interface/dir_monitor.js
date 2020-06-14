@@ -132,21 +132,6 @@ function remove_file(file)
 }
 
 
-/* Return the first value in the extension list.
-** If not found, return xxx.
-*/
-function file_name_extension(file_name_format)
-{
-	try
-	{
-		return file_name_format.extension[0];
-	}
-	catch(err)
-	{
-		return "xxx";
-	}
-}
-
 /* If file exists in archive_dir, return new filename.
 ** Otherwise, return same file name
 */
@@ -261,7 +246,6 @@ function write_data_to_file_now(jsmsg, file_fd)
 		var val = jsmsg.value;
 		if (typeof val !== 'undefined' && val !== '')
 		{
-console.log('val:'+val);
 			fs.writeSync(file_fd, val);
 		}
 	}
@@ -513,11 +497,16 @@ function acknowledge(conn, origin, message_id, file, out_rec_id, callback)
 		if (typeof rule !== 'undefined' && rule != '')
 		{
 			// location of message id field
-			var idx = rule.msg_id_idx;
+			//var idx = rule.msg_id_idx;
 
 			try
 			{
-				msg_id = jsmsg.fields[0].fields[idx].value.trim();
+				var idxlist = rule.msg_id_idx.split('.');
+				var idx = retrieve_idx_field(idxlist, 0, jsmsg);
+				//console.log('idxfield:'+JSON.stringify(idxfield,null,'\t'));
+				console.log('idx:'+idx);
+				msg_id = idx.trim();
+				//msg_id = jsmsg.fields[0].fields[idx].value.trim();
 			}
 			catch (err)
 			{
@@ -567,9 +556,46 @@ function acknowledge(conn, origin, message_id, file, out_rec_id, callback)
 
 }
 
+function file_name_extension(file)
+{
+	var list = file.split(conn.file_name_format.extension_prefix);
+	if (list.length == 2)
+	{
+		var extn = list[1];
+		console.log('extn:'+extn);
+		return extn;
+	}
+	return None;
+}
+
+function retrieve_idx_field(msg_idx_list, idx, jsobj)
+{
+	if (idx < msg_idx_list.length)
+	{
+		return retrieve_idx_field(msg_idx_list, idx + 1, jsobj.fields[msg_idx_list[idx]]);
+	}
+	else
+	{
+		console.log('jsobj:'+JSON.stringify(jsobj,null,'\t'));
+		return jsobj.value;
+	}
+}
+
+function update_idx_field(recv_time, msg_idx_list, idx, jsobj)
+{
+	if (idx < msg_idx_list.length)
+	{
+		update_idx_field(recv_time, msg_idx_list, idx + 1, jsobj.fields[msg_idx_list[idx]]);
+	}
+	else
+	{
+		jsobj.value = recv_time.padEnd(jsobj.size, ' ');
+	}
+}
 
 function update_message_id(file, conn, recv_time)
 {
+	console.log('update_message_id:'+file);
 	var prsres = parser.parse(conn, file, 2);
 	if (prsres[0])
 	{
@@ -579,15 +605,32 @@ function update_message_id(file, conn, recv_time)
 		if (typeof rule !== 'undefined' && rule != '')
 		{
 			// location of message id field
-			var idx = rule.msg_id_idx;
-
-			jsmsg.fields[0].fields[idx].value = recv_time.padEnd(jsmsg.fields[0].fields[idx].size, ' ');
-			console.log('jsmsg:'+JSON.stringify(jsmsg, null, '\t'));
+			var idxlist = rule.msg_id_idx.split('.');
+			var jsfield = update_idx_field(recv_time, idxlist, 0, jsmsg);
+			//console.log('jsmsg:'+JSON.stringify(jsmsg, null, '\t'));
 		}
 
-		//var output_file = path.basename(file);
-		write_data_to_file(jsmsg, file);
-		return [true,file];
+		var list = file.split(conn.file_name_format.extension_prefix);
+		var base = '';
+		var extn = '';
+		if (list.length == 2)
+		{
+			var idx = list[0].lastIndexOf('/');
+			base = list[0].substring(0, idx);
+			extn = list[1];
+		}
+
+		var now = new Date().toISOString();
+		now = now.replace(/[T\-:.Z]/g, '');
+		dest_file = base + '/' + now + '.xml';
+		write_data_to_file(jsmsg, dest_file);
+		return [true,dest_file];
+/*
+		{
+			write_data_to_file(jsmsg, file);
+			return [true,file];
+		}
+*/
 	}
 	else
 	{
@@ -1004,7 +1047,6 @@ function start_monitoring()
 													//status_desc = res[1].trim();
 													status_desc = 'parse error';
 												}
-file_to_trf = file;
 											}
 											else
 											{
@@ -1135,7 +1177,7 @@ file_to_trf = file;
 										var dformat = 'YYYY-MM-DDHH24:MI:SS.FF';
 										var is_valid = false;
 										var status = 3;
-										var status_desc = 'no route criteria';
+										var status_desc = 'route criteria is missing';
 
 										var sql = "INSERT INTO in_msgs "
 												+ "(origin, message_id, recv_time, destination, dest_site, message_type, file_name, file_format, validity, status, status_description, archived_file, transferred_file)"

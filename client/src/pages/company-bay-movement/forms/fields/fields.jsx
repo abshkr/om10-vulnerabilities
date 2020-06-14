@@ -24,7 +24,7 @@ const Fields = ({ form, value }) => {
       bacl_bay_type: t('fields.bayType'),
     };
 
-    if (value === '' || !value) {
+    if (value === '' || (value !== 0 && !value)) {
       return Promise.reject(`${t('validate.select')} ─ ${mapper[rule.field]}`);
     }
 

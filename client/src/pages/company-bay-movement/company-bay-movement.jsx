@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import useSWR from 'swr';
 import { Button } from 'antd';
@@ -9,25 +9,25 @@ import { Page, DataTable, Download, FormModal } from '../../components';
 import { COMPANY_BAY_MOVEMENT } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
+import { useAuth } from 'hooks';
 
 import Forms from './forms';
 
 const CompanyBayMovement = () => {
   const { t } = useTranslation();
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
+
+  const auth = useAuth('M_BAYMOVEMENT');
 
   const { data: payload, isValidating, revalidate } = useSWR(COMPANY_BAY_MOVEMENT.READ);
 
   const fields = columns(t);
   const data = payload?.records;
 
-  const handleClick = (value) => {
-    FormModal({
-      value,
-      form: <Forms value={value} />,
-      id: value?.bacl_bay_code,
-      name: value?.bacl_bay_type_name,
-      t,
-    });
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
   };
 
   const modifiers = (
@@ -36,7 +36,13 @@ const CompanyBayMovement = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
+      <Button 
+        type="primary" 
+        icon={<PlusOutlined />} 
+        onClick={() => handleFormState(true, null)}
+        loading={isValidating}
+        disabled={!auth.canCreate}
+      >
         {t('operations.create')}
       </Button>
     </>
@@ -44,7 +50,14 @@ const CompanyBayMovement = () => {
 
   return (
     <Page page={t('pageMenu.gantry')} name={t('pageNames.companyBayMovement')} modifiers={modifiers}>
-      <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
+      <DataTable 
+        columns={fields} 
+        data={data} 
+        isLoading={isValidating} 
+        onClick={(payload) => handleFormState(true, payload)}
+        handleSelect={(payload) => handleFormState(true, payload[0])}
+      />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
     </Page>
   );
 };

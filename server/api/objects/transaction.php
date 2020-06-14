@@ -83,6 +83,19 @@ class Transaction extends CommonClass
             return;
         }
 
+        $query = "UPDATE SCHEDULE
+            SET STATS = 'A'
+            WHERE SHLSLOAD_LOAD_ID = (SELECT TRSALDID_LOAD_ID FROM TRANSACTIONS WHERE TRSA_ID = :trsa_id)
+                AND STATS = 'L'";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trsa_id', $this->trsa_id);
+
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
         $journal = new Journal($this->conn, false);
         $jnl_data[0] = sprintf("User %s ended transaction %d", Utilities::getCurrPsn(), $this->trsa_id);
         if (!$journal->jnlLogEvent(Lookup::TMM_TEXT_ONLY, $jnl_data,

@@ -109,8 +109,6 @@ const ManualTransactions = () => {
           setSelectedTanker={setSelectedTanker}
         />
 
-        <Divider style={{ margin: '0px 0' }}>{t('divider.drawerProductTransfer')}</Divider>
-
         <DrawerProductTransfers 
           form={form} 
           sourceType={sourceType} 

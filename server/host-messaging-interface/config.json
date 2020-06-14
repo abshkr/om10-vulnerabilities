@@ -29,10 +29,10 @@
 				"msg_parse_rules" : {
 					"file_name_field" : "msg_type",
 					"rules" : [
-						{ "SHP" : { "schema" : "msg_def.emb_load_spec", "name" : "EMB_LOAD_SPEC", "msg_id_idx" : 7 } },
-						{ "ORD" : { "schema" : "msg_def.emb_load_ord", "name" : "EMB_LOAD_ORDER", "msg_id_idx" : 7 } },
-						{ "CON" : { "schema" : "msg_def.emb_open_ord", "name" : "EMB_OPEN_ORDER", "msg_id_idx" : 7 } },
-						{ "DEL" : { "schema" : "msg_def.emb_load_del", "name" : "EMB_LOAD_DELETE", "msg_id_idx" : 7 } }
+						{ "SHP" : { "schema" : "msg_def.emb_load_spec", "name" : "EMB_LOAD_SPEC", "msg_id_idx" : "0.7" } },
+						{ "ORD" : { "schema" : "msg_def.emb_load_ord", "name" : "EMB_LOAD_ORDER", "msg_id_idx" : "0.7" } },
+						{ "CON" : { "schema" : "msg_def.emb_open_ord", "name" : "EMB_OPEN_ORDER", "msg_id_idx" : "0.7" } },
+						{ "DEL" : { "schema" : "msg_def.emb_load_del", "name" : "EMB_LOAD_DELETE", "msg_id_idx" : "0.7" } }
 					]
 				}
 			},
@@ -60,9 +60,9 @@
 				"msg_parse_rules" : {
 					"file_name_field" : "msg_type",
 					"rules" : [
-						{ "ACK" : { "schema" : "msg_def.emb_load_ack", "name" : "EMB_LOAD_ACK", "msg_id_idx" : 7, "status_idx" : 2, "status_desc_idx" : 3 } },
-						{ "LDS" : { "schema" : "msg_def.emb_load_start", "name" : "EMB_LOAD_STARTED", "msg_id_idx" : 7 } },
-						{ "LDD" : { "schema" : "msg_def.emb_load_det", "name" : "EMB_LOAD_DETAILS", "msg_id_idx" : 7 } }
+						{ "ACK" : { "schema" : "msg_def.emb_load_ack", "name" : "EMB_LOAD_ACK", "msg_id_idx" : "0.4", "status_idx" : 3, "status_desc_idx" : 4 } },
+						{ "LDS" : { "schema" : "msg_def.emb_load_start", "name" : "EMB_LOAD_STARTED", "msg_id_idx" : "0.7" } },
+						{ "LDD" : { "schema" : "msg_def.emb_load_det", "name" : "EMB_LOAD_DETAILS", "msg_id_idx" : "0.7" } }
 					]
 				}
 			}
@@ -92,16 +92,17 @@
 					"fld_idx" : 0
 				},
 				"route_to" : [
+					{ "CNS" : { "ip" : "localhost", "dir" : "/usr/omega/data/gsap/outbox/P251", "file_nm_fmt" : "SAP" } },
 					{ "T048" : { "ip" : "localhost", "dir" : "/usr/omega/data/gsap/outbox/P251", "file_nm_fmt" : "SAP" } }
                 ],
 				"msg_parse_rules" : {
 					"file_name_field" : "msg_type",
 					"rules" : [
-						{ "SHP" : { "schema" : "msg_def.sgb_load_spec", "name" : "SGB_LOAD_SPEC", "msg_id_idx" : 4 } },
-						{ "ORD" : { "schema" : "msg_def.sgb_load_ord", "name" : "SGB_LOAD_ORDER", "msg_id_idx" : 4 } },
-						{ "CON" : { "schema" : "msg_def.sgb_open_ord", "name" : "SGB_OPEN_ORDER", "msg_id_idx" : 4 } },
-						{ "DEL" : { "schema" : "msg_def.sgb_load_del", "name" : "SGB_LOAD_DELETE", "msg_id_idx" : 4 } },
-						{ "NOM" : { "schema" : "msg_def.sgb_nom", "name" : "SGB_NOM", "msg_id_idx" : 4, "preprocess" : "sgb_nom.py" } }
+						{ "SHP" : { "schema" : "msg_def.sgb_load_spec", "name" : "SGB_LOAD_SPEC", "msg_id_idx" : "0.4" } },
+						{ "ORD" : { "schema" : "msg_def.sgb_load_ord", "name" : "SGB_LOAD_ORDER", "msg_id_idx" : "0.4" } },
+						{ "CON" : { "schema" : "msg_def.sgb_open_ord", "name" : "SGB_OPEN_ORDER", "msg_id_idx" : "0.4" } },
+						{ "DEL" : { "schema" : "msg_def.sgb_load_del", "name" : "SGB_LOAD_DELETE", "msg_id_idx" : "0.4" } },
+						{ "NOM" : { "schema" : "msg_def.sgb_nom", "name" : "SGB_NOM", "msg_id_idx" : "0.0.4", "field_map" : "sgb_nom.fmap", "preprocess" : "sgb_nom.py" } }
 					]
 				}
 			},
@@ -124,16 +125,16 @@
 					"fld_idx" : 0
 				},
 				"route_to" : [
-                    { "CNS" : { "ip" : "10.1.10.244", "dir" : "/usr/omega/data/gsap/tas/T048", "file_nm_fmt" : "ORIG" },
-                      "MKY" : { "ip" : "10.1.10.244", "dir" : "/usr/omega/data/gsap/tas/T048", "file_nm_fmt" : "ORIG" }
+                    { "CNS" : { "ip" : "10.1.10.244", "dir" : "/usr/omega/data/gsap/tas/CNS", "file_nm_fmt" : "ORIG" },
+                      "MKY" : { "ip" : "10.1.10.244", "dir" : "/usr/omega/data/gsap/tas/CNS", "file_nm_fmt" : "ORIG" }
  					}
                 ],
 				"msg_parse_rules" : {
 					"file_name_field" : "msg_type",
 					"rules" : [
-						{ "ACK" : { "schema" : "msg_def.sgb_load_ack", "name" : "SGB_LOAD_ACK", "msg_id_idx" : 4, "status_idx" : 3, "status_desc_idx" : 4 } },
-						{ "LDS" : { "schema" : "msg_def.sgb_load_start", "name" : "SGB_LOAD_STARTED", "msg_id_idx" : 4 } },
-						{ "LDD" : { "schema" : "msg_def.sgb_load_det", "name" : "SGB_LOAD_DETAILS", "msg_id_idx" : 4 } }
+						{ "ACK" : { "schema" : "msg_def.sgb_load_ack", "name" : "SGB_LOAD_ACK", "msg_id_idx" : "0.4", "status_idx" : 3, "status_desc_idx" : 4 } },
+						{ "LDS" : { "schema" : "msg_def.sgb_load_start", "name" : "SGB_LOAD_STARTED", "msg_id_idx" : "0.4" } },
+						{ "LDD" : { "schema" : "msg_def.sgb_load_det", "name" : "SGB_LOAD_DETAILS", "msg_id_idx" : "0.4" } }
 					]
 				}
 			}

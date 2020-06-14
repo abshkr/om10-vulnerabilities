@@ -9,6 +9,7 @@ import { Page, DataTable, Download, FormModal } from '../../components';
 import { PRODUCT_GROUPS } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
+import { useAuth } from '../../hooks';
 
 import GroupForm from './groups-form';
 import MessageGroupForm from './message-group-form';
@@ -18,39 +19,57 @@ const ProductGroups = () => {
   const [endpoint, setEndpoint] = useState(PRODUCT_GROUPS.READ_GROUPS);
 
   const { t } = useTranslation();
+  const auth = useAuth('M_PRODUCTS');
+
+  const [groupVisible, setGroupVisible] = useState(false);
+  const [messageVisible, setMessageVisible] = useState(false);
+  const [messageGrpVisible, setMessageGrpVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
 
   const { data: payload, isValidating, revalidate } = useSWR(endpoint);
-
-  const data = payload?.records;
+  const data = payload? payload.records : [];
+  
   const fields = columns(endpoint, t);
 
-  const handleClick = (value) => {
+  const handleFormState = (visibility, value) => {
+    setSelected(value);
     if (endpoint === PRODUCT_GROUPS.READ_GROUPS) {
-      FormModal({
-        value,
-        form: <GroupForm value={value} />,
-        id: value?.pgr_code,
-        name: value?.pgr_description,
-        t,
-      });
+      setGroupVisible(visibility);
     } else if (endpoint === PRODUCT_GROUPS.READ_MESSAGES) {
-      FormModal({
-        value,
-        form: <MessageForm value={value} />,
-        id: value?.cm_msg_id,
-        name: value?.cm_msg_name,
-        t,
-      });
+      setMessageVisible(visibility);
     } else {
-      FormModal({
-        value,
-        form: <MessageGroupForm value={value} />,
-        id: value?.cpm_msg_id,
-        name: value?.cm_msg_name,
-        t,
-      });
+      setMessageGrpVisible(visibility);
     }
   };
+
+
+  // const handleClick = (value) => {
+  //   if (endpoint === PRODUCT_GROUPS.READ_GROUPS) {
+  //     FormModal({
+  //       value,
+  //       form: <GroupForm value={value} />,
+  //       id: value?.pgr_code,
+  //       name: value?.pgr_description,
+  //       t,
+  //     });
+  //   } else if (endpoint === PRODUCT_GROUPS.READ_MESSAGES) {
+  //     FormModal({
+  //       value,
+  //       form: <MessageForm value={value} />,
+  //       id: value?.cm_msg_id,
+  //       name: value?.cm_msg_name,
+  //       t,
+  //     });
+  //   } else {
+  //     FormModal({
+  //       value,
+  //       form: <MessageGroupForm value={value} />,
+  //       id: value?.cpm_msg_id,
+  //       name: value?.cm_msg_name,
+  //       t,
+  //     });
+  //   }
+  // };
 
   const modifiers = (
     <>
@@ -58,7 +77,12 @@ const ProductGroups = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
+      <Button type="primary" 
+        icon={<PlusOutlined />} 
+        onClick={() => handleFormState(true, null)}
+        loading={isValidating}
+        disabled={!auth.canCreate}
+      >
         {t('operations.create')}
       </Button>
     </>
@@ -72,9 +96,12 @@ const ProductGroups = () => {
             columns={fields}
             data={data}
             isLoading={isValidating}
-            onClick={handleClick}
+            // onClick={handleClick}
             height="320px"
+            onClick={(payload) => handleFormState(true, payload)}
+            handleSelect={(payload) => handleFormState(true, payload[0])}
           />
+          <GroupForm value={selected} visible={groupVisible} handleFormState={handleFormState} auth={auth} />
         </Tabs.TabPane>
 
         <Tabs.TabPane tab={t('tabColumns.messages')} key={PRODUCT_GROUPS.READ_MESSAGES} forceRender>
@@ -82,9 +109,12 @@ const ProductGroups = () => {
             columns={fields}
             data={data}
             isLoading={isValidating}
-            onClick={handleClick}
+            // onClick={handleClick}
             height="320px"
+            onClick={(payload) => handleFormState(true, payload)}
+            handleSelect={(payload) => handleFormState(true, payload[0])}
           />
+          <MessageForm value={selected} visible={messageVisible} handleFormState={handleFormState} auth={auth} />
         </Tabs.TabPane>
 
         <Tabs.TabPane
@@ -97,9 +127,12 @@ const ProductGroups = () => {
             data={data}
             fields
             isLoading={isValidating}
-            onClick={handleClick}
+            // onClick={handleClick}
             height="320px"
+            onClick={(payload) => handleFormState(true, payload)}
+            handleSelect={(payload) => handleFormState(true, payload[0])}
           />
+          <MessageGroupForm value={selected} visible={messageGrpVisible} handleFormState={handleFormState} auth={auth} />
         </Tabs.TabPane>
       </Tabs>
     </Page>

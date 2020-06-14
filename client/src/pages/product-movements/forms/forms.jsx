@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   EditOutlined,
@@ -27,6 +27,8 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   const IS_CREATING = !value;
   const CAN_DELETE = value?.pmv_status_name === 'NEW';
 
+  const [base, setBase] = useState(null);
+
   const onComplete = () => {
     handleFormState(false, null); 
     mutate(PRODUCT_MOVEMENTS.READ);
@@ -35,6 +37,14 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   const onFinish = async () => {
     const values = await form.validateFields();
     
+    if (values.pmv_srctype !== '3' && values.pmv_dsttype !== '3') {
+      notification.error({
+        message: t('messages.validationFailed'),
+        description: t('validate.prodMoveSrcAndDst'),
+      });
+      return;
+    }
+
     Modal.confirm({
       title: t('prompts.create'),
       okText: t('operations.create'),
@@ -247,16 +257,20 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
         form={form}
         onFinish={onFinish}
         scrollToFirstError
-        initialValues={{ pmv_state_name: 'NEW', pmv_unit_name: 'l' }}
+        initialValues={{ 
+          pmv_state_name: 'NEW', 
+          pmv_unit_name: 'l',
+          pmv_unit: '28',
+        }}
       >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <MovementType value={value} />
-            <Unit value={value} />
-            <BaseProduct form={form} value={value} />
+            <Unit form={form} value={value} />
+            <BaseProduct form={form} value={value} setBase={setBase} />
             <Class form={form} value={value} />
-            <Source form={form} value={value} />
-            <Destination form={form} value={value} />
+            <Source form={form} value={value} base={base} />
+            <Destination form={form} value={value} base={base} />
             <BatchCode form={form} value={value} />
             <Quantity form={form} value={value} />
           </TabPane>

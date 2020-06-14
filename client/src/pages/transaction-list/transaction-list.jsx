@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import moment from 'moment';
@@ -12,13 +12,16 @@ import { SETTINGS } from '../../constants';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
+import { useAuth, useConfig } from 'hooks';
+import { getDateRangeOffset } from 'utils';
 
 const TransactionList = () => {
+  const { transactionsDateRange } = useConfig();
   const { t } = useTranslation();
-
-  const [start, setStart] = useState(moment().subtract(3, 'years').format(SETTINGS.DATE_TIME_FORMAT));
-
-  const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
+  const access = useAuth('M_SFTRANSACTIONLIST');
+  
+  const [start, setStart] = useState(moment().subtract(0, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  const [end, setEnd] = useState(moment().add(0, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
   const { data: transactions, isValidating, revalidate } = useSWR(
     `${TRANSACTION_LIST.READ}?start_date=${start}&end_date=${end}`
@@ -37,13 +40,23 @@ const TransactionList = () => {
   const handleClick = (value) => {
     FormModal({
       value,
-      form: <Forms value={value} start={start} end={end} />,
+      form: <Forms value={value} start={start} end={end} access={access} />,
       id: value?.trsa_id,
       name: value?.trsa_trip,
       t,
       width: '90vw',
     });
   };
+
+  useEffect(() => {
+    const ranges = getDateRangeOffset(String(transactionsDateRange), "7");
+    setStart(
+      moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT)
+    );
+    setEnd(
+      moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT)
+    );
+  }, [transactionsDateRange]);
 
   const modifiers = (
     <>

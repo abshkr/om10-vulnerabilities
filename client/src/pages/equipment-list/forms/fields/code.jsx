@@ -15,7 +15,8 @@ const Code = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        eqpt_code: value.eqpt_code
+        eqpt_code: value.eqpt_code,
+        eqpt_id: value.eqpt_id,
       });
     }
   }, [value, setFieldsValue]);
@@ -39,9 +40,14 @@ const Code = ({ form, value }) => {
   };
 
   return (
-    <Form.Item name="eqpt_code" label={t('fields.code')} rules={[{ required: true, validator: validate }]}>
-      <Input disabled={!!value || isValidating} />
-    </Form.Item>
+    <div>
+      <Form.Item name="eqpt_code" label={t('fields.code')} rules={[{ required: true, validator: validate }]}>
+        <Input disabled={!!value || isValidating} />
+      </Form.Item>
+      <Form.Item name="eqpt_id" noStyle>
+        <Input type="hidden" />
+      </Form.Item>
+    </div>
   );
 };
 

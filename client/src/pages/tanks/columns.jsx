@@ -174,7 +174,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 100,
+    width: 110,
     suppressSizeToFit: true,
   },
 

@@ -2,7 +2,6 @@ import React from 'react';
 import { Component } from 'react';
 import $ from 'jquery';
 import NativeMenu from 'native-menu';
-//import lunr from 'lunr';
 import jpath from 'node-jpath';
 //import NewWindow from 'react-new-window';
 import { Button, Table } from 'antd';
@@ -401,7 +400,10 @@ class HostMessages extends Component
 		}
 		else
 		{
-			newMessages.push(newMsg);
+			if (newMessages)
+			{
+				newMessages.push(newMsg);
+			}
 		}
 
 		this.setState({ messages: newMessages });
@@ -460,11 +462,14 @@ class HostMessages extends Component
 
 	messageExists(msg)
 	{
-		for (var i = 0; i < this.state.messages.length; ++i)
+		if (this.state.messages)
 		{
-			if (msg.REC_ID === this.state.messages[i].REC_ID)
+			for (var i = 0; i < this.state.messages.length; ++i)
 			{
-				return true;
+				if (msg.REC_ID === this.state.messages[i].REC_ID)
+				{
+					return true;
+				}
 			}
 		}
 

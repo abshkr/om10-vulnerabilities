@@ -169,10 +169,16 @@ const Forms = ({
       order_no: undefined,
     });
 
-    const trips = await getTripsBySupplier(supplier);
+    if (sourceType === 'SCHEDULE') {
+      const trips = await getTripsBySupplier(supplier);
+      setTrips(trips);
+    }
+    else {
+      setTrips(null);
+    }
+    
     const customers = await getCustomersBySupplier(supplier);
 
-    setTrips(trips);
     setCustomers(customers);
     setSelectedSupplier(supplier);
   };

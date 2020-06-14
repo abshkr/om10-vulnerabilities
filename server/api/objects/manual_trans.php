@@ -522,14 +522,49 @@ class ManualTrans extends CommonClass
                     FROM DUAL
                 ) as SHLS_SUPP,
                 TC.TNKR_CMPT_NO,
-                TC.TRAILERCOMP,
+                TC.TRAILERCOMP AS  TLR_CMPT,
                 (NVL(SF.ADJ_AMNT, 0) + TC.CMPT_CAPACIT) AS CMPT_CAPACIT,
                 TC.CMPT_UNITS,
                 TC.UNIT,
                 TC.EQPT_CODE,
                 TC.TC_EQPT,
                 NULL AS PROD_CODE,
-                NULL AS ALLOWED_QTY
+                NULL AS PROD_NAME,
+                NULL AS ALLOWED_QTY,
+                0 AS LOAD_QTY,
+                0 AS PRELD_QTY,
+                0 AS SCHORDER_QTY,
+                NULL AS PREV_PROD,
+                NULL AS PREV_PRODCODE,
+                NULL AS SHLSLOAD_LOAD_ID,
+                NULL AS ARM_NAME,
+                NULL AS ARMCODE,
+                0 AS QTY_LOADED,
+                0 AS QTY_PRELOAD,
+                0 AS QTY_AMB,
+                0 AS QTY_STD,
+                0 AS QTY_KG,
+                :order_cust_no AS ORDER_CUST_ORDNO,
+                (
+                    SELECT ORDER_REF_CODE 
+                    FROM CUST_ORDER 
+                    WHERE ORDER_CUST_ORDNO = :order_cust_no
+                ) AS ORDER_REF_CODE,
+                (
+                    SELECT (CO.ORD_SOLD_TO_NUM || NVL2(CMPY.CMPY_NAME,' - ','') || CMPY.CMPY_NAME) 
+                      FROM CUST_ORDER CO, CUSTOMER CUST, COMPANYS CMPY
+                     WHERE CO.ORDER_CUST_ORDNO = :order_cust_no
+                       AND CO.ORDER_CUST in (select CUST_ACCT from CUSTOMER where CUST_SUPP=:supplier)
+                       AND (CO.ORD_SOLD_TO_NUM = CUST.CUST_CODE(+) AND CUST.CUST_CODE = CMPY.CMPY_CODE(+))
+                ) AS CUSTOMER_CODE,
+                (
+                    SELECT (CO.ORD_SHIP_TO_NUM || NVL2(DL.DLV_NAME,' - ','') || DL.DLV_NAME)
+                      FROM CUST_ORDER CO, DELV_LOCATION DL
+                     WHERE CO.ORDER_CUST_ORDNO = :order_cust_no
+                       AND CO.ORDER_CUST in (select CUST_ACCT from CUSTOMER where CUST_SUPP=:supplier)
+                       AND CO.ORD_SHIP_TO_NUM = DL.DLV_CODE(+)
+                ) AS DELIVERY_LOCATION，
+                NULL AS DELIVERY_NUM
             FROM
                 (
                 SELECT 
@@ -556,14 +591,14 @@ class ManualTrans extends CommonClass
                         AND trs.EQPT_ETP = C.ETYP_ID_RT
                         AND un.UNIT_ID = c.CMPT_UNITS
                         AND te.TC_TANKER = :tanker
-                    ORDER BY te.TC_SEQNO,c.TRAILERCOMP
+                    ORDER BY te.TC_SEQNO,TO_NUMBER(c.TRAILERCOMP)
                     ) tc_tmp
                 ) tc,
                 SFILL_ADJUST sf
             WHERE 
                 tc.TC_EQPT = sf.ADJ_EQP(+)
                 AND tc.TRAILERCOMP = sf.ADJ_CMPT(+)
-            ORDER BY tc.TNKR_CMPT_NO
+            ORDER BY TO_NUMBER(tc.TNKR_CMPT_NO)
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':supplier', $this->supplier);
@@ -588,12 +623,15 @@ class ManualTrans extends CommonClass
                 P.PROD_NAME as SUPP_PROD_NAME, 
                 P.PROD_CLASS as SUPP_PROD_CLASS, 
                 OPD.OSPROD_PRODCMPY SUPP_PROD_CMPY, 
-                OPD.ORDER_PROD_QTY SCHP_SPECQTY, 
-                decode(OPD.ORDER_PROD_UNIT,'5','l(amb)','11','l(cor)','17','kg','unknown') UNIT_NAME, 
-                NVL(OO_QTY.QTY_LOADED,0) QTY_LOADED, 
-                NVL(OO_QTY.QTY_AMB,0) QTY_AMB, 
-                NVL(OO_QTY.QTY_STD,0) QTY_STD, 
-                NVL(OO_QTY.QTY_KG,0) QTY_KG,
+                OPD.ORDER_PROD_QTY as SCHP_SPECQTY, 
+                OPD.ORDER_PROD_UNIT as UNIT_CODE,
+                decode(OPD.ORDER_PROD_UNIT,'5','l(amb)','11','l(cor)','17','kg','unknown') as UNIT_NAME, 
+                NVL(OO_QTY.QTY_SCHEDULED,0) as QTY_SCHEDULED, 
+                NVL(OO_QTY.QTY_PRELOADED,0) as QTY_PRELOADED, 
+                NVL(OO_QTY.QTY_LOADED,0) as QTY_LOADED, 
+                NVL(OO_QTY.QTY_AMB,0) as QTY_AMB, 
+                NVL(OO_QTY.QTY_STD,0) as QTY_STD, 
+                NVL(OO_QTY.QTY_KG,0) as QTY_KG,
                 DRAWER_P.PROD_CMPY as PROD_CMPY, 
                 DRAWER_P.PROD_CODE as PROD_CODE, 
                 DRAWER_P.PROD_NAME as PROD_NAME, 
@@ -606,6 +644,8 @@ class ManualTrans extends CommonClass
                 (
                 select 
                     TRIP_PROD.PROD_CODE,
+                    sum(TRIP_PROD.QTY_SCHED) QTY_SCHEDULED,
+                    sum(TRIP_PROD.QTY_PRELOADED) QTY_PRELOADED,
                     sum(TRIP_PROD.QTY_LOADED) QTY_LOADED,
                     sum(TRIP_PROD.QTY_AMB) QTY_AMB,
                     sum(TRIP_PROD.QTY_STD) QTY_STD,
@@ -623,6 +663,7 @@ class ManualTrans extends CommonClass
                         , spec.SCHP_SPECQTY as SCHP_SPECQTY
                         , NVL(DECODE(spec.SCHP_UNITS, 5, trsf.TRIP_QTY_AMB, 11, trsf.TRIP_QTY_STD, 17, trsf.TRIP_QTY_KG, trsf.TRIP_QTY_DELIVERED),0) as QTY_LOADED
                         , cmpt.TRIP_QTY_PRELOAD QTY_PRELOADED
+                        , cmpt.TRIP_QTY_SCHED QTY_SCHED
                         , trsf.TRIP_QTY_AMB QTY_AMB
                         , trsf.TRIP_QTY_STD QTY_STD
                         , trsf.TRIP_QTY_KG QTY_KG
@@ -803,7 +844,7 @@ class ManualTrans extends CommonClass
                                         AND trs.EQPT_ETP = C.ETYP_ID_RT
                                         AND un.UNIT_ID = c.CMPT_UNITS
                                         AND te.TC_TANKER = :tanker
-                                    ORDER BY te.TC_SEQNO,c.TRAILERCOMP
+                                    ORDER BY te.TC_SEQNO,TO_NUMBER(c.TRAILERCOMP)
                                 ) tc_tmp
                             ) tc, SFILL_ADJUST sf
                         WHERE tc.TC_EQPT = sf.ADJ_EQP(+)
@@ -948,12 +989,12 @@ class ManualTrans extends CommonClass
                     'BY_PRODUCT' as SCHD_TYPE,
                     et.EQPT_CODE,
                     et.TNKR_CMPT_NO,
-                    null as UNIT,
+                    et.UNIT as UNIT,
                     et.TRAILERCOMP TLR_CMPT,
                     sd2.SHLS_SUPP,
                     null as PROD_CODE,
                     null as PROD_NAME,
-                    null as CMPT_UNITS,
+                    et.CMPT_UNITS as CMPT_UNITS,
                     null as ALLOWED_QTY,
                     0 LOAD_QTY,
                     0 PRELD_QTY,
@@ -1010,7 +1051,7 @@ class ManualTrans extends CommonClass
                                             AND trs.EQPT_ETP = C.ETYP_ID_RT
                                             AND un.UNIT_ID = c.CMPT_UNITS
                                             AND te.TC_TANKER = :tanker
-                                        ORDER BY te.TC_SEQNO,c.TRAILERCOMP
+                                        ORDER BY te.TC_SEQNO,TO_NUMBER(c.TRAILERCOMP)
                                     ) tc_tmp
                             ) tc,
                             SFILL_ADJUST sf

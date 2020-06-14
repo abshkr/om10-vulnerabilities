@@ -2,6 +2,8 @@ from lxml import etree
 #import cPickle
 import sys, re, traceback, csv, msg_def_defaults
 from errors import *
+from xmlvalidator import XmlValidator
+
 
 #1. Read one line at a time
 #2. For each line, look for keywords, "main_message_def" or "sub_message_def".
@@ -74,7 +76,7 @@ class TreeParser(object):
 					tmp6 = tmp2[0]
 				except IndexError as err:
 					# Can't find data segment, must be bad schema
-					contxt = 'When parsing schema: Cannot find data segment for enum entry <%s> in schema, %s' % (item,repr(err))
+					contxt = 'When parsing schema: Cannot find data segment for enum entry <%s> in schema, %s' % (item,str(err))
 					raise Error(contxt)
 
 				try:
@@ -86,7 +88,7 @@ class TreeParser(object):
 						raise Error(contxt)
 				except IndexError as err:
 					# Can't find data segment, must be bad schema
-					contxt = 'When parsing schema: Cannot find data segment for enum entry <%s> in schema, %s' % (item,repr(err))
+					contxt = 'When parsing schema: Cannot find data segment for enum entry <%s> in schema, %s' % (item,str(err))
 					raise Error(contxt)
 				tmp3 = tmp6[strt_idx+1:end_idx]
 
@@ -424,7 +426,7 @@ class TreeParser(object):
 	def _process_sub_def_comp(self, comp):
 		"""Split the contents in the curly braces of a main or sub message definition into a list of entries using semicolon."""
 
-		msg = '_process_sub_def_comp(%s)' % comp
+		#msg = '_process_sub_def_comp(%s)' % comp
 		#self._logr.write_debug(msg)
 
 		ent_no_cl = ""
@@ -444,7 +446,7 @@ class TreeParser(object):
 		#self._logr.write_debug(dbmsg)
 		res = ent_no_cl.split(';');	
 
-		msg = 'res=<%s>' % res
+		#msg = 'res=<%s>' % res
 		#self._logr.write_debug(msg)
 
 		return res
@@ -455,8 +457,11 @@ class TreeParser(object):
 		msg = 'parse_msg_def_file(%s)' % msg_def_file
 		#self._logr.write_debug(msg)
 
-		with open(msg_def_file, 'r') as mdf:
-			mdf_list = list(mdf)
+		try:
+			with open(msg_def_file, 'r') as mdf:
+				mdf_list = list(mdf)
+		except FileNotFoundError as err:
+			raise 
 
 		self.__sub_def.clear()
 		self.__const_def.clear()
@@ -696,7 +701,7 @@ class TreeParser(object):
 			type = format[0]
 			max_len = int(format[1])
 		except IndexError as err:
-			contxt = 'When parsing message: incorrect format spec, %s' % repr(err)
+			contxt = 'When parsing message: incorrect format spec, %s' % str(err)
 			raise Error(contxt)
 
 		# Check that data length do not exceed the maximum expected length
@@ -734,7 +739,7 @@ class TreeParser(object):
 				try:
 					scale_indice = int(format[6])
 				except ValueError as err:
-					contxt = 'When parsing message: Scale indice <%s> is not numeric, val <%s>, %s' % (format[6], val, repr(err))
+					contxt = 'When parsing message: Scale indice <%s> is not numeric, val <%s>, %s' % (format[6], val, str(err))
 					raise Error(contxt)
 
 				try:
@@ -749,7 +754,7 @@ class TreeParser(object):
 					dummy = int(val)
 				except ValueError as err:
 					# Not an integer
-					contxt='When parsing message: val <%s> is not numeric, %s' % (val,repr(err))
+					contxt='When parsing message: val <%s> is not numeric, %s' % (val,str(err))
 					raise Error(contxt)
 
 				# ... return string representation though.
@@ -878,7 +883,8 @@ class TreeParser(object):
 
 		return default_val
 
-	def __populate2(self, search_key, path, mod, idx, rep_level_list):
+
+	def __populate2(self, search_key, path, mod, idx, rep_level_list, idx_list):
 		"""Helper function that implements the fill functionality.
 
 		- Fill each field in a tree message definition structure using the specified data file.
@@ -903,15 +909,20 @@ class TreeParser(object):
 				  |-------------------------- repeat-level index (zero-based), currently at compartment 2
 		"""
 
-		#msg = '__populate2(%s,%s,%s,%d,%s)' % (search_key, path, mod, idx, rep_level_list)
-		#self._logr.write_debug(msg)
+		msg = '__populate2(%s,%s,%s,%d,%s)' % (search_key, path, mod, idx, rep_level_list)
+		self._logr.write_debug(msg)
 
 		if path:
 			path += '.'
 		path += (search_key+mod)
 
+		if idx_list:
+			idx_list += '.'
+		idx_list += str(idx)
+
 		try:
 			for val in self._msg_def_dict['sub_def'][search_key]:
+
 
 				# Calculate next search key and determine if original search key has been modified
 				unique_key = val[1]
@@ -935,7 +946,7 @@ class TreeParser(object):
 					try:
 						rep_cnt_items = [v for v in self._msg_def_dict['sub_def'][tmp[-1]] if val[3] != '' and v[4] == val[3]]
 					except KeyError as err:
-						contxt = 'When populating message: Cannot find repeat count item for search key <%s>, %s' % (val[0],repr(err))
+						contxt = 'When populating message: Cannot find repeat count item for search key <%s>, %s' % (val[0],str(err))
 						raise Error(contxt)
 					#dbgmsg = 'rep_cnt_items=<%s>' % (rep_cnt_items)
 					#self._logr.write_debug(dbgmsg)
@@ -958,7 +969,7 @@ class TreeParser(object):
 						rep_level_list.append([idx,rci[6]])
 						added_to_list = True
 					except Exception as err:
-						contxt = 'When populating message: Unable to retrieve repeat count for <%s>, %s' % (val[0],repr(err))
+						contxt = 'When populating message: Unable to retrieve repeat count for <%s>, %s' % (val[0],str(err))
 						raise Error(contxt)
 
 				# Determine if the current element has a "max_repeats" property
@@ -981,12 +992,11 @@ class TreeParser(object):
 
 				rIdx = 0
 				while rIdx < limit:
-
 					# Update the progress of the repeat section
 					if has_rep_cnt and rep_level_list:
 						rep_level_list[-1][0] = rIdx
 
-					self.__populate2(search_key, path, mod, rIdx, rep_level_list)
+					self.__populate2(search_key, path, mod, rIdx, rep_level_list, idx_list)
 					rIdx += 1
 
 				# Remove the repeat level once the repeating ceases
@@ -994,6 +1004,7 @@ class TreeParser(object):
 					del rep_level_list[-1]
 
 		except KeyError as err:
+
 			# Must be in either const_def, std_fld_def or enum_def dictionaries
 			found = False
 			try:
@@ -1001,7 +1012,7 @@ class TreeParser(object):
 					self._fld_len = len(self._msg_def_dict['const_def'][search_key])
 					self.__add_default_value(path, str(' ' * self._fld_len))
 					#TODO: Check that value is valid
-					self.__add_value_list(path, self._retrieve_data(path, idx, False))
+					self.__add_value_list(path, self._retrieve_data(path, idx_list, False))
 					self._update_index()
 					found = True
 			except KeyError as err:
@@ -1015,7 +1026,7 @@ class TreeParser(object):
 					self.__add_default_value(path, self.__get_default_value(to_fld_spec, path))
 					# Add the value even if it is empty. It means the field has no data. Not adding it means the field
 					# does not exist which is not the same.
-					final_val = self.__apply_padding(search_key, to_fld_spec, self._retrieve_data(path, idx, False))
+					final_val = self.__apply_padding(search_key, to_fld_spec, self._retrieve_data(path, idx_list, False))
 					self.__add_value_list(path, final_val)
 					self._update_index()
 					found = True
@@ -1025,12 +1036,11 @@ class TreeParser(object):
 			try:
 				if not found and self._msg_def_dict['enum_def'][search_key]:
 					self._fld_len = len(self._msg_def_dict['enum_def'][search_key][0])
-
 					#val = self._msg_def_dict['enum_def'][search_key][0]
 
 					self.__add_default_value(path, str(' ' * self._fld_len))
 					#TODO: Check that value is valid
-					self.__add_value_list(path, self._retrieve_data(path, idx, False))
+					self.__add_value_list(path, self._retrieve_data(path, idx_list, False))
 					self._update_index()
 					found = True
 			except KeyError as err:
@@ -1041,7 +1051,7 @@ class TreeParser(object):
 					self._fld_len = len(self._msg_def_dict['truth_def'][search_key][0])
 					self.__add_default_value(path, str(' ' * self._fld_len))
 					#TODO: Check that value is valid
-					self.__add_value_list(path, self._retrieve_data(path, idx, False))
+					self.__add_value_list(path, self._retrieve_data(path, idx_list, False))
 					self._update_index()
 					found = True
 			except KeyError as err:
@@ -1049,9 +1059,10 @@ class TreeParser(object):
 
 			if not found:
 				# Cannot find search key at all, must be bad schema
-				#contxt = 'When populating message: Cannot find field <%s> in schema, %s' % (search_key,repr(err))
+				#contxt = 'When populating message: Cannot find field <%s> in schema, %s' % (search_key,str(err))
 				contxt = 'When populating message: Cannot find field <%s> in schema' % (search_key)
 				raise Error(contxt)
+
 		return idx
 
 
@@ -1063,7 +1074,7 @@ class TreeParser(object):
 		contxt = 'When parsing data: function _restructure_data() must be overridden.'
 		raise Error(contxt)
 
-	def _retrieve_data(self, path='', idx=-1, strip=False):
+	def _retrieve_data(self, path='', idx_list="", strip=False):
 		"""
 		* Retrieves data from the data structure in memory that was initially read from file.
 		* Must be overridden.
@@ -1087,13 +1098,13 @@ class TreeParser(object):
 
 		#msg = 'parse_data_file(%s,%s,%s)' % (data_file, msg_def_dict, msg_main)
 		msg = 'parse_data_file(%s,%s,%s)' % (data_file, 'msg_def_dict', msg_main)
-		#self._logr.write_debug(msg)
+		self._logr.write_debug(msg)
 
 		self._restructure_data(data_file)
 
 		self._msg_def_dict.clear()
 		self._msg_def_dict = msg_def_dict
-		self.__populate2(msg_main, "", "", 0, [])
+		self.__populate2(msg_main, "", "", 0, [], "")
 		return self._msg_def_dict
 
 	def print_dict(self, msg_def_dict):
@@ -1165,7 +1176,7 @@ class OmMsgParser(TreeParser):
 		with open(data_file, 'r') as dataf:
 			self._msg_str = dataf.read()
 
-	def _retrieve_data(self, path='', idx=-1, strip=False):
+	def _retrieve_data(self, path='', idx_list="", strip=False):
 		"""
 		In the case of length-based tree message, since there was no restructuring of data, the data will be from the current index point to
 		the point that equals the current index plus the field length.
@@ -1225,7 +1236,7 @@ class DlimSRecParser(TreeParser):
 			#self._logr.write_debug(data[0])
 			self._msg_str = data[0]
 
-	def _retrieve_data(self, path='', idx=-1, strip=False):
+	def _retrieve_data(self, path='', idx_list="", strip=False):
 		"""
 		In the case of delimited message, the data will be the current index of the restructured data list.
 		"""
@@ -1276,21 +1287,53 @@ class XmlParser(TreeParser):
 			with open(data_file, 'r') as dataf:
 				self._msg_str = dataf.read()
 				self._xmltree = etree.parse(data_file).getroot()
+				msg = 'xmltree:\n%s' % (etree.tostring(self._xmltree, pretty_print=True).decode())
+				self._logr.write_debug(msg)
 		except Exception as err:
 			raise
 
-	def _retrieve_data(self, path, idx, strip=False):
+	def _retrieve_data(self, path, idx_list, strip=False):
 		"""
-		In the case of XML data, no indexing is required. The field map value defines the path that leads to the XML data node.
+		In the case of XML data, the field map value defines the path that leads to the XML data node.
+		In addition, the idx_list, a dot-delimited index list, indicates the repeatability of the corresponding field.
 		"""
+		res = ''
+
+		try:
+			fields = self._fld_map[path].split('.')
+			#print('fields',fields,'idx_list',idx_list)
+			idxs = idx_list.split('.')
+			xpq = ""
+
+			# TODO: check that len(fields) == len(idxs)
+			for i,fld in enumerate(fields):
+				xpq += ('/' + fld + '[' + str(int(idxs[i])+1) + ']')
+			#print('xpq',xpq)
+			qres = self._xmltree.xpath(xpq)
+			if qres and len(qres) > 0 and qres[0].text:
+				res = qres[0].text
+			#print('path',path,'res',res)
+			return res
+
+		except KeyError as err:
+			pass
+
+		return res
+
+		"""
+		# TODO for testing only. change to xpath 
+		idx = 0
 
 		res = ''
 		curIdx = 0
 		cur = self._xmltree
-		print('path',path)
-		print('_fld_map',self._fld_map)
-		flds = self._fld_map[path].split('.')
-		print('flds',flds)
+
+		try:
+			flds = self._fld_map[path].split('.')
+		except KeyError as err:
+			# path is not specified in field map, just return blank.
+			return res;
+
 		if cur is not None:
 			j = 0
 			while j < len(flds):
@@ -1321,15 +1364,16 @@ class XmlParser(TreeParser):
 						cur = sibling
 					else:
 						# Can't find it, maybe wrong mapping path in configuration file?
-						break
+						return '';
 			if len(cur) == 0 and cur.text is not None:
 				res = cur.text
 
 		if strip:
 			res = res.strip()
 
-		print('res',res)
+		print('path',path,'res',res)
 		return res
+		"""
 
 	def _update_index(self):
 		"""
@@ -1358,30 +1402,39 @@ class XmlParser(TreeParser):
 	# Copied from converter.py
 	def _get_next_sibling(self, tree, node):
 		found = False
-		for child in list(tree):
-			if found:
-				return child
-			if child.tag == node.tag:
-				if tree[len(list(tree))-1].tag == node.tag:
-					return None
-				else:
-					found = True
+		if tree is not None:
+			for child in list(tree):
+				if found:
+					return child
+				if child == node:
+					if tree[len(list(tree))-1] == node:
+						return None
+					else:
+						found = True
+		else:
+			return None
 
 	# Copied from converter.py
 	def _get_nth_match(self, tree, node, index):
 		# Find the n'th node on tree that follows node and return it if it matches node name 
 		found = False
 		idx = 0
-		for child in list(tree):
-			if not found and child.tag == node.tag:
-				found = True
-			elif found and child.tag == node.tag:
-				idx += 1	
+		if tree is not None:
+			for child in list(tree):
+				if not found and child == node:
+					found = True
+				elif found and child == node:
+					idx += 1	
 
-			if found and idx == index:
-				if child.tag == node.tag:
-					return child
-				else:
-					return None
+				if found and idx == index:
+					if child == node:
+						return child
+					else:
+						return None
 
 		return None
+
+	def validate_xml(self, xsd_file, xml_file):
+		xv = XmlValidator
+		is_valid = xv.do_it(xsd_file, xml_file)
+		return is_valid

@@ -36,7 +36,7 @@ const ProductInventory = () => {
         {t('operations.refresh')}
       </Button>
 
-      <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+      <Download data={payload} isLoading={isValidating} columns={fields} />
     </>
   );
 

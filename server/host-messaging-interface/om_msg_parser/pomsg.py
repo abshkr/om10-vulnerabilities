@@ -7,7 +7,7 @@ from lxml import etree
 import os, sys, time, csv
 from datetime import datetime
 from logger import *
-import signal
+import signal, subprocess
 from optparse import OptionParser
 from errors import *
 from tree_parser import OmMsgParser, XmlParser
@@ -30,6 +30,7 @@ def __get_cmd_line_arguments():
 	cmd_arg_parser.add_option('-n', dest='message_name', help='the start message name; if not specified, automatically retrieve from message.')
 	cmd_arg_parser.add_option('-m', dest='content_format', help='0=string,1=human-readable,2=json,3=xml')
 	cmd_arg_parser.add_option('-f', dest='field_map', help='map data points from input format to output format')
+	cmd_arg_parser.add_option('-p', dest='preprocess', help='preprocess data file with this script first')
 	cmd_arg_parser.add_option('-o', dest='output_file', help='file that contains the result')
 	options,args = cmd_arg_parser.parse_args()
 	#print 'cmd_args=<',options,args,'>'
@@ -108,6 +109,30 @@ def __check_opt(options):
 	if content_format == 3 and options.field_map is None:
 		print ("ERROR: field map \(option -f\) must be specified when using option '-m 3'")
 		exit()
+
+
+def __preprocess(script_file, data_file):
+	if script_file != None and os.path.isfile(script_file):
+
+		#idx = data_file.rfind('/')
+
+		#if idx > 0:
+		#	base = data_file[:idx+1]
+		#	filenm = data_file[idx+1:]
+		#else:
+		#	base = './'
+		#	filenm = data_file
+
+		#idx = filenm.rfind('_')
+		#prefix = filenm[:idx+1]
+
+		now = datetime.now()
+		#dest_file = base + prefix + now.strftime("%Y%m%d%H%M%S") + '.xml'
+		dest_file = now.strftime("%Y%m%d%H%M%S") + '.xml'
+		subprocess.call([script_file, data_file, dest_file])
+		return (True,dest_file)
+	else:
+		return (False,data_file)
 
 
 def __parse_method():
@@ -209,6 +234,8 @@ if __name__ == "__main__":
 	# Create logger instance
 	logr = Logger(config.log_disable, config.log_path, config.log_debug_level, config.log_backup_count)
 
+	(pre,data_file) = __preprocess(options.preprocess, options.data_file)
+
 	parse_method = __parse_method()
 
 	schema_file = __schema_file(options)
@@ -219,13 +246,13 @@ if __name__ == "__main__":
 	if parse_method == 1:
 		om_msg_parser = OmMsgParser(logr)
 		om_md_dict = om_msg_parser.parse_msg_def_file(schema_file)
-		in_data_dict = om_msg_parser.parse_data_file(options.data_file, om_md_dict, msg_name)
+		in_data_dict = om_msg_parser.parse_data_file(data_file, om_md_dict, msg_name)
 		om_msg_parser.print_dict(om_md_dict)
 	elif parse_method == 2:
 		xml_parser = XmlParser(logr, options.field_map, True)
 		om_md_dict = xml_parser.parse_msg_def_file(schema_file)
 		xml_parser.print_dict(om_md_dict)
-		in_data_dict = xml_parser.parse_data_file(options.data_file, om_md_dict, msg_name)
+		in_data_dict = xml_parser.parse_data_file(data_file, om_md_dict, msg_name)
 		xml_parser.print_dict(in_data_dict)
 	elif parse_method == 3:
 		# reserved for json
@@ -234,7 +261,7 @@ if __name__ == "__main__":
 		om_msg_parser = OmMsgParser(logr)
 		om_md_dict = om_msg_parser.parse_msg_def_file(schema_file)
 		#in_data_dict = om_md_dict
-		in_data_dict = om_msg_parser.parse_data_file(options.data_file, om_md_dict, msg_name)
+		in_data_dict = om_msg_parser.parse_data_file(data_file, om_md_dict, msg_name)
 		om_msg_parser.print_dict(om_md_dict)
 
 	cvtr = LenMRecToOmTreeConverter(in_data_dict, om_md_dict, msg_name, logr, options.field_map)
@@ -243,3 +270,5 @@ if __name__ == "__main__":
 
 	__save_result(options, msg_str)
 
+	if pre:
+		os.remove(data_file)

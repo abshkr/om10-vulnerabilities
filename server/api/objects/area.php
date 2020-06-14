@@ -162,7 +162,7 @@ class Area extends CommonClass
             __FILE__, __LINE__);
 
         if (!isset($this->gates)) {
-            return false;
+            return true;
         }
 
         foreach ($this->gates as $value) {
