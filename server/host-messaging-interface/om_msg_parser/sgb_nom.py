@@ -288,7 +288,7 @@ def __line_item_uom_qty(line_item_node):
 		try:
 			qty = line_item_node.find("E1OIP21/MENGE")
 			if qty is not None:
-				qty.text = str(float(qty.text.strip()) * float(multiplier))
+				qty.text = str(int(round(float(qty.text.strip()) * float(multiplier))))
 				changed = True
 		except Exception as err:
 			pass
@@ -388,8 +388,9 @@ def __line_item_from_to(line_item_node):
 		if pstyp_node is not None:
 			pstyp = pstyp_node.text.strip()
 			if pstyp == 'O':
-				changed = True
+				# This is Disposal, fill the 'FROM' fields
 
+				changed = True
 				from_pc = etree.SubElement(line_item_node, 'FROM_PLANTCODE')
 				from_pc.text = plantcode
 				from_supp = etree.SubElement(line_item_node, 'FROM_SUPPLIER')
@@ -420,8 +421,9 @@ def __line_item_from_to(line_item_node):
 				pstyp_node.text = 'O '
 
 			elif pstyp == 'D':
-				changed = True
+				# This is Receipt, fill the 'TO' fields
 
+				changed = True
 				# Set FROM fields blank
 				from_pc = etree.SubElement(line_item_node, 'FROM_PLANTCODE')
 				from_pc.text = ''
@@ -454,13 +456,78 @@ def __line_item_from_to(line_item_node):
 			elif pstyp == 'IT':
 				changed = True
 
-				# TODO: need to match the number of subelement in SGB message group, drop _DS1_MM_C_Z1OIP01
-				loc_type = node.find("_DS1_MM_C_Z1OIP01/LOC_TYPE").text
+				loc_type = line_item_node.find("_-DS1_-MM_C_Z1OIP01/LOC_TYPE")
 				print('LOC_TYPE:',loc_type)
-				if loc_type == 'O':
-					print('transfer-disposal')
-				elif loc_type == 'D':
-					print('transfer-receipt')
+
+				conpat = line_item_node.find("E1OIP12/CONPAT")
+				conpat_text = line_item_node.find("E1OIP12/CONPAT_TEXT[QUALF='010']")
+
+				if loc_type is not None:
+					loctyp = loc_type.text.strip()
+
+					from_pc = etree.SubElement(line_item_node, 'FROM_PLANTCODE')
+					from_supp = etree.SubElement(line_item_node, 'FROM_SUPPLIER')
+					from_store_loc = etree.SubElement(line_item_node, 'FROM_STORE_LOC')
+					from_desc = etree.SubElement(line_item_node, 'FROM_DESC')
+					from_desc2 = etree.SubElement(line_item_node, 'FROM_DESC2')
+
+					to_pc = etree.SubElement(line_item_node, 'TO_PLANTCODE')
+					to_supp = etree.SubElement(line_item_node, 'TO_SUPPLIER')
+					to_store_loc = etree.SubElement(line_item_node, 'TO_STORE_LOC')
+					to_desc = etree.SubElement(line_item_node, 'TO_DESC')
+					to_desc2 = etree.SubElement(line_item_node, 'TO_DESC2')
+
+					# When filling 'FROM' fields,
+					# if loc_type is disposal(O), same as pstyp = O
+					# if loc_type is receipt(D), use contact partner mapping
+					if loctyp == 'O':
+						from_pc.text = plantcode
+						if storeloc_map is not None and storeloc in storeloc_map:
+							#TODO: Journal: Supplier code %s derived from storage location code %s."
+							from_supp.text = storeloc_map[storeloc][1]
+						if storeloc_map is not None and storeloc in storeloc_map:
+							#TODO: Journal: Storage location code %s mapped to company code %s."
+							from_store_loc.text = storeloc_map[storeloc][2]
+						from_desc.text = val
+						from_desc2.text = ''
+					elif loctyp == 'D':
+						if conpat_map is not None and conpat is not None:
+							conpatval = conpat.text.strip()
+
+							if conpatval in conpat_map:
+								from_pc.text = conpat_map[conpat.text.strip()][2]
+								from_supp.text = conpat_map[conpat.text.strip()][1]
+								from_store_loc.text = conpat_map[conpat.text.strip()][3]
+								from_desc.text = ''
+								if conpat_text is not None: 
+									from_desc2.text = conpat_text.text.strip()
+
+					# When filling 'TO' fields,
+					# if loc_type is disposal(O), use contact partner mapping
+					# if loc_type is receipt(D), same as pstyp = D
+					if loctyp == 'O':
+						if conpat_map is not None and conpat is not None:
+							conpatval = conpat.text.strip()
+
+							if conpatval in conpat_map:
+								to_pc.text = conpat_map[conpat.text.strip()][2]
+								to_supp.text = conpat_map[conpat.text.strip()][1]
+								to_store_loc.text = conpat_map[conpat.text.strip()][3]
+								to_desc.text = ''	
+								if conpat_text is not None: 
+									to_desc2.text = conpat_text.text.strip()
+
+
+					elif loctyp == 'D':
+						to_pc.text = plantcode
+						if storeloc_map is not None and storeloc in storeloc_map:
+							#TODO: Journal: Supplier code %s derived from storage location code %s."
+							to_supp.text = storeloc_map[storeloc][1]
+						if storeloc_map is not None and storeloc in storeloc_map:
+							#TODO: Journal: Storage location code %s mapped to company code %s."
+							to_store_loc.text = storeloc_map[storeloc][2]
+						to_desc.text = val
+						to_desc2.text = ''
 
 				pstyp_node.text = 'IT'
 		else:

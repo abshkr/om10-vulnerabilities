@@ -71,6 +71,22 @@ class Personnel extends CommonClass
         }
     }
 
+    public function read_dep()
+    {
+        if (!isset($this->per_code)) {
+            $this->per_code = Utilities::getCurrPsn();
+        }
+
+        $query = "SELECT PER_DEPARTMENT FROM PERSONNEL WHERE PER_CODE = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            return null;
+        }
+    }
+
     public function read_hook(&$hook_item)
     {
         // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
