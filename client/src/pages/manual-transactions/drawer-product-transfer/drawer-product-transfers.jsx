@@ -10,6 +10,7 @@ import columns from './columns';
 import useSWR from 'swr';
 
 import { MANUAL_TRANSACTIONS } from '../../../api';
+import {calcBaseRatios} from '../../../utils'
 
 import BaseProductTransfers from './base-product-transfers';
 import BaseProductTotals from './base-product-totals';
@@ -62,6 +63,7 @@ const DrawerProductTransfers = ({
   const [selected, setSelected] = useState(null);
   const [fields, setFields] = useState([]);
   const [clicked, setClicked] = useState(null);
+  const [tableAPI, setTableAPI] = useState(null);
 
   const onDelete = () => {
     const filtered = _.reject(payload, ['trsf_cmpt_no', clicked?.trsf_cmpt_no]);
@@ -75,20 +77,69 @@ const DrawerProductTransfers = ({
     setPayload(filtered);
   };
 
-  const onCalculate = (api) => {
-    const payload = form.getFieldValue('products');
+  const onCalculate = () => {
+    /* const transfers = form.getFieldValue('transfers');
+    const bases = form.getFieldValue('base_transfers');
+    const base_totals = form.getFieldValue('base_totals');
+    const meter_totals = form.getFieldValue('meter_totals');
 
-    console.log(payload);
+    console.log('onCalculate', transfers, bases, base_totals, meter_totals); */
+
+    const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
+    console.log('onCalculate', items);
+  };
+
+  const onRestore = () => {
+    console.log('onRestore');
+    //const option = selected;
+    //setSelected(null);
+    //setSelected(option);
   };
 
   const onCellUpdate = (value) => {
+    console.log('onCellUpdate', value);
     setSelected({
       ...value?.data,
     });
   };
 
+  const adjustProduct = (cmpt, bases) => {
+    if (!bases || !cmpt) {
+      return;
+    }
+    console.log('adjustProdcut', cmpt, bases);
+
+    let index = undefined;
+    let prodDens = 0.0;
+
+    // calculate drawer product density
+    for (index = 0; index < bases.length; index++) {
+      const item = bases[index];
+      if (item.trsf_bs_cmpt_no === cmpt) {
+        prodDens = prodDens + calcBaseRatios(item?.trsf_bs_den, item?.trsf_bs_ratio_value, item?.trsf_bs_ratio_total);
+      }
+    }
+    console.log('prod dens', prodDens);
+
+    for (index = 0; index < payload.length; index++) {
+      const transfer = payload[index];
+      if (transfer.trsf_cmpt_no === cmpt && prodDens > 0) {
+        transfer.trsf_density = prodDens;
+        payload[index] = transfer;
+        break;
+      }
+    }
+
+    setPayload(payload);
+    //tableAPI.updateRowData({ update: [payload[index]] });
+
+  };
+
   useEffect(() => {
     console.log("dptrsf selected", selected);
+    if (selected) {
+      //adjustProduct(selected.trsf_cmpt_no, form.getFieldValue('base_transfers'));
+    }
   }, [selected]);
 
   useEffect(() => {
@@ -170,12 +221,22 @@ const DrawerProductTransfers = ({
         icon={<UndoOutlined />}
         onClick={onCalculate}
         style={{ marginRight: 5 }}
-        disabled={!selected}
+        disabled={
+          !clicked || 
+          !clicked?.trsf_temp || 
+          !clicked?.trsf_density || 
+          (!clicked?.trsf_qty_amb && !clicked?.trsf_qty_cor && !clicked?.trsf_load_kg)
+        }
       >
         {t('operations.calculateDrawer')}
       </Button>
 
-      <Button type="primary" icon={<UndoOutlined />} style={{ marginRight: 5 }} disabled={!selected}>
+      <Button 
+        type="primary" 
+        icon={<UndoOutlined />} 
+        onClick={onRestore}
+        style={{ marginRight: 5 }} 
+        disabled={!selected}>
         {t('operations.getTankDensities')}
       </Button>
     </>
@@ -195,6 +256,7 @@ const DrawerProductTransfers = ({
             extra={modifiers}
             columns={fields}
             components={components}
+            apiContext={setTableAPI}
             onCellUpdate={(value) => onCellUpdate(value)}
             handleSelect={(value) => setClicked(value[0])}
           />
@@ -213,6 +275,7 @@ const DrawerProductTransfers = ({
               sourceType={sourceType} 
               selected={selected} 
               transfers={payload} 
+              clicked={clicked}
             />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="2">

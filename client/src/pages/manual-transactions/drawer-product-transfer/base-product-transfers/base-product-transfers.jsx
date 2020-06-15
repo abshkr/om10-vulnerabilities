@@ -13,7 +13,8 @@ const BaseProductTransfers = ({
   form, 
   sourceType, 
   selected, 
-  transfers 
+  transfers,
+  clicked
 }) => {
   const { t } = useTranslation();
 
@@ -31,7 +32,7 @@ const BaseProductTransfers = ({
       const transfer = transfers[index];
 
       if (selected?.trsf_cmpt_no !== transfer?.trsf_cmpt_no) {
-        continue;
+        //continue;
       }
 
       if (!transfer?.trsf_arm_cd.includes(' ')) {
@@ -49,15 +50,19 @@ const BaseProductTransfers = ({
             if (res.data?.records?.length > 0) {
               _.forEach(res?.data?.records, (product) => {
                 pre.push({
+                  trsf_bs_cmpt_no: transfer?.trsf_cmpt_no,
                   trsf_bs_prodcd: product?.stream_basecode,
                   trsf_bs_prodname: `${product?.stream_basecode} - ${product.stream_basename}`,
                   trsf_bs_tk_cd: product?.stream_tankcode,
                   trsf_bs_prodcls: product.stream_bclass_nmae,
                   trsf_bs_den: product?.stream_tankden,
-                  trsf_bs_temp: null,
+                  trsf_bs_temp: transfer?.trsf_temp,
                   trsf_bs_qty_amb: calcBaseRatios(transfer?.trsf_qty_amb, product?.ratio_value, product?.ratio_total),
                   trsf_bs_qty_cor: calcBaseRatios(transfer?.trsf_qty_cor, product?.ratio_value, product?.ratio_total),
                   trsf_bs_load_kg: calcBaseRatios(transfer?.trsf_load_kg, product?.ratio_value, product?.ratio_total),
+                  trsf_bs_adtv_flag: product?.adtv_flag,
+                  trsf_bs_ratio_value: product?.ratio_value,
+                  trsf_bs_ratio_total: product?.ratio_total,
                   is_updated: false,
                 });
               });
@@ -77,7 +82,7 @@ const BaseProductTransfers = ({
   useEffect(() => {
     if (data) {
       form.setFieldsValue({
-        base_totals: data,
+        base_transfers: data,
       });
     }
   }, [data]);
@@ -91,7 +96,7 @@ const BaseProductTransfers = ({
     <>
     <Spin indicator={null} spinning={isLoading}>
       <Form.Item name="base_transfers">
-        <DataTable data={data} height="80vh" columns={fields} />
+        <DataTable data={data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no))} height="80vh" columns={fields} />
       </Form.Item>
 
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
