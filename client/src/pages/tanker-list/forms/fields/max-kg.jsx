@@ -29,7 +29,7 @@ const MaxKg = ({ form, value }) => {
       label={t('fields.maxKg')}
       rules={[{ required: false, validator: validate }]}
     >
-      <InputNumber min={0} />
+      <InputNumber min={0} style={{ width: '100%' }} />
     </Form.Item>
   );
 };

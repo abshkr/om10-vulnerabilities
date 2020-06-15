@@ -18,7 +18,7 @@ const TankerList = () => {
   const [selected, setSelected] = useState(null);
 
   const auth = useAuth('M_TANKERS');
-  
+
   const { data: payload, isValidating, revalidate } = useSWR(TANKER_LIST.READ);
 
   const fields = columns(t);
@@ -35,9 +35,9 @@ const TankerList = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
         disabled={!auth.canCreate}
@@ -48,13 +48,14 @@ const TankerList = () => {
   );
 
   return (
-    <Page page={t('pageMenu.schedules')} name={t('pageNames.tankerList')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={data} 
-        isLoading={isValidating} 
+    <Page page={t('pageMenu.schedules')} name={t('pageNames.tankerList')} modifiers={modifiers} access={auth}>
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        selectionMode="single"
       />
       <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
     </Page>

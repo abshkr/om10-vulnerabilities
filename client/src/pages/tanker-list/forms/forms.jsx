@@ -9,7 +9,7 @@ import {
   UnlockOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Drawer } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import axios from 'axios';
@@ -34,7 +34,7 @@ import {
   Locks,
   SLP,
 } from './fields';
-import { TANKER_LIST } from '../../../api';
+import api, { TANKER_LIST } from '../../../api';
 import Compartments from './compartments';
 import { Expiry, CheckList } from '../../../components';
 import columns from './columns';
@@ -95,7 +95,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
           <CheckList form={form} matches={matches} columns={fields} rowKey="tnkr_code" />
         ) : null,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? TANKER_LIST.CREATE : TANKER_LIST.UPDATE, values)
           .then(
             axios.spread((response) => {
@@ -120,7 +120,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   };
 
   const onUnlock = () => {
-    axios
+    api
       .post(`${TANKER_LIST.UNLOCK_ALL}?tnkr_code=${value.tnkr_code}`)
       .then((response) => {
         onComplete();
@@ -148,7 +148,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TANKER_LIST.DELETE, value)
           .then(
             axios.spread((response) => {
@@ -237,24 +237,35 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
     >
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane
-            // className="ant-tab-window"
-            tab={t('tabColumns.identification')}
-            forceRender={true}
-            key="1"
-            style={{ height: '80vh', overflowY: 'auto' }}
-          >
+          <TabPane tab={t('tabColumns.identification')} forceRender={true} key="1">
             <Depot form={form} value={value} />
             <Owner form={form} value={value} />
             <Code form={form} value={value} />
             <Carrier form={form} value={value} />
             <Name form={form} value={value} />
-            <TotalTrips form={form} value={value} />
-            <LastTrip form={form} value={value} />
+
+            <Row gutter={[12, 0]}>
+              <Col span={12}>
+                <TotalTrips form={form} value={value} />
+              </Col>
+
+              <Col span={12}>
+                <LastTrip form={form} value={value} />
+              </Col>
+            </Row>
+
             <Comments form={form} value={value} />
             <TankerPrompt form={form} value={value} />
-            <Pin form={form} value={value} />
-            <MaxKg form={form} value={value} />
+
+            <Row gutter={[12, 0]}>
+              <Col span={12}>
+                <Pin form={form} value={value} />
+              </Col>
+
+              <Col span={12}>
+                <MaxKg form={form} value={value} />
+              </Col>
+            </Row>
 
             <Destination form={form} value={value} />
             <LastDepot form={form} value={value} />
@@ -264,22 +275,12 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             <SLP form={form} value={value} />
           </TabPane>
 
-          <TabPane
-            // className="ant-tab-window-no-margin"
-            tab={t('tabColumns.configuration')}
-            forceRender={true}
-            key="3"
-          >
+          <TabPane tab={t('tabColumns.configuration')} forceRender={true} key="3">
             <EquipmentType form={form} value={value} onChange={setEquipment} />
             <Compartments form={form} value={value} equipment={equipment} />
           </TabPane>
 
-          <TabPane
-            // className="ant-tab-window-no-margin"
-            tab={t('tabColumns.expiryDates')}
-            forceRender={true}
-            key="4"
-          >
+          <TabPane tab={t('tabColumns.expiryDates')} forceRender={true} key="4">
             <Expiry form={form} value={value} type={TANKER_LIST.EXPIRY} />
           </TabPane>
         </Tabs>

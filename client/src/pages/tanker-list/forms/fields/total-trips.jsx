@@ -29,7 +29,7 @@ const TotalTrips = ({ form, value }) => {
       label={t('fields.totalTrips')}
       rules={[{ required: false, validator: validate }]}
     >
-      <InputNumber min={0} />
+      <InputNumber min={0} style={{ width: '100%' }} />
     </Form.Item>
   );
 };

@@ -10,14 +10,14 @@ const LastTrip = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tnkr_last_trip: value.tnkr_last_trip
+        tnkr_last_trip: value.tnkr_last_trip,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item name="tnkr_last_trip" label={t('fields.lastTrip')}>
-      <InputNumber disabled />
+      <InputNumber disabled style={{ width: '100%' }} />
     </Form.Item>
   );
 };

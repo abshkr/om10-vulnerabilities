@@ -24,7 +24,7 @@ const Pin = ({ form, value }) => {
 
   return (
     <Form.Item name="tnkr_pin" label={t('fields.pin')} rules={[{ required: false, validator: validate }]}>
-      <InputNumber min={0} />
+      <InputNumber min={0} style={{ width: '100%' }} />
     </Form.Item>
   );
 };
