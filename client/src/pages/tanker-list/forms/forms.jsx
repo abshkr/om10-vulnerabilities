@@ -242,8 +242,9 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             tab={t('tabColumns.identification')}
             forceRender={true}
             key="1"
+            style={{ height: '80vh', overflowY: 'auto' }}
           >
-            {/* <Depot form={form} value={value} /> */}
+            <Depot form={form} value={value} />
             <Owner form={form} value={value} />
             <Code form={form} value={value} />
             <Carrier form={form} value={value} />
@@ -254,9 +255,11 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             <TankerPrompt form={form} value={value} />
             <Pin form={form} value={value} />
             <MaxKg form={form} value={value} />
-            {/* <Destination form={form} value={value} />
+
+            <Destination form={form} value={value} />
             <LastDepot form={form} value={value} />
-            <CurrentDepot form={form} value={value} /> */}
+            <CurrentDepot form={form} value={value} />
+
             <Locks form={form} value={value} />
             <SLP form={form} value={value} />
           </TabPane>
