@@ -44,6 +44,12 @@ const LoadSchedules = () => {
     revalidate();
   };
 
+  const locateTrip = (value) => {
+    setSearch({
+      shls_trip_no: value,
+    })
+  }
+
   const setSearch = (values) => {
     if (!values.shls_trip_no && 
       !values.supplier_code &&
@@ -144,7 +150,12 @@ const LoadSchedules = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
 
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} url={url} />
+      <Forms 
+        value={selected} 
+        visible={visible} 
+        handleFormState={handleFormState} 
+        access={access} url={url}
+        locateTrip={locateTrip} />
     </Page>
   );
 };
