@@ -103,7 +103,7 @@ class SpecialMovement extends CommonClass
                     MLITM_DTIM_POSTED, 
                     MLITM_OPER_POSTED, 
                     MLITM_COMMENT 
-                FROM " . $this->VIEW_NAME . ", MOVITEM_TYPES, , MOV_REASONS
+                FROM " . $this->VIEW_NAME . ", MOVITEM_TYPES, MOV_REASONS
                 WHERE MLITM_TYPE = MOVITEM_TYPES.MOVITEM_TYPE_ID (+)
                     AND MLITM_REASON_CODE = MOV_REASONS.MR_ID(+)
                     AND MLITM_DTIM_START > :start_date
@@ -172,12 +172,20 @@ class SpecialMovement extends CommonClass
 
     public function mv_reasons() 
     {
-        $query = "SELECT MR_ID, MR_ACTION 
-            FROM MOV_REASONS 
-            WHERE MR_TYPE = :mr_type
-            ORDER BY MR_ID";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':mr_type', $this->mr_type);
+        if (isset($this->mr_type)) {
+            $query = "SELECT MR_ID, MR_ACTION, MR_TYPE
+                FROM MOV_REASONS 
+                WHERE MR_TYPE = :mr_type
+                ORDER BY MR_ID";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':mr_type', $this->mr_type);
+        } else {
+            $query = "SELECT MR_ID, MR_ACTION, MR_TYPE
+                FROM MOV_REASONS 
+                ORDER BY MR_ID";
+            $stmt = oci_parse($this->conn, $query);
+        }
+        
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {

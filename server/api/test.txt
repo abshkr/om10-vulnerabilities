@@ -3183,6 +3183,7 @@ https://10.1.10.66/api/pages/special_mv/tank_proddata.php?tank_code=SP-18
 https://10.1.10.66/api/pages/special_mv/mv_status.php
 https://10.1.10.66/api/pages/special_mv/mv_types.php
 https://10.1.10.66/api/pages/special_mv/mv_reasons.php?mr_type=T
+https://10.1.10.66/api/pages/special_mv/mv_reasons.php
 https://10.1.10.66/api/pages/special_mv/reverse.php?mlitm_id=62
 https://10.1.10.66/api/pages/special_mv/calc_vcf.php
 {

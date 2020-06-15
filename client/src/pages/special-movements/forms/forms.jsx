@@ -24,7 +24,7 @@ import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, auth }) => {
+const FormModal = ({ value, visible, handleFormState, auth, url }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -47,7 +47,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
 
   const onComplete = () => {
     handleFormState(false, null); 
-    mutate(SPECIAL_MOVEMENTS.READ);
+    mutate(url);
   };
 
   const onFinish = async () => {
@@ -282,7 +282,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             type="primary"
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
             htmlType="submit"
-            disabled={DISABLED}
+            // disabled={DISABLED}
             style={{ float: 'right', marginRight: 5 }}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
@@ -295,7 +295,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             type="ghost"
             icon={<SaveOutlined />}
             htmlType="button"
-            disabled={DISABLED}
+            // disabled={DISABLED}
             onClick={onSubmit}
             style={{ float: 'right', marginRight: 5 }}
             disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate || value.mlitm_status !== '0'}
@@ -307,7 +307,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             <Button
               type="danger"
               icon={<DeleteOutlined />}
-              disabled={DISABLED}
+              // disabled={DISABLED}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
               disabled={!auth?.canDelete || value.mlitm_status !== '0'}

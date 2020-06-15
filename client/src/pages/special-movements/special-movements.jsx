@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 
 import useSWR from 'swr';
+import moment from 'moment';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download } from '../../components';
+import { Page, DataTable, Download, Calendar } from '../../components';
 import { SPECIAL_MOVEMENTS } from '../../api';
-
+import { SETTINGS } from '../../constants';
 import columns from './columns';
 import auth from '../../auth';
 import { useAuth } from 'hooks';
@@ -20,18 +21,31 @@ const SpecialMovements = () => {
 
   const auth = useAuth('M_SPECIALMOVEMENTS');
 
-  const { data: payload, isValidating, revalidate } = useSWR(SPECIAL_MOVEMENTS.READ);
+  const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  const url = `${SPECIAL_MOVEMENTS.READ}?start_date=${start}&end_date=${end}`;
+  const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
+
+  // const { data: payload, isValidating, revalidate } = useSWR(SPECIAL_MOVEMENTS.READ);
 
   const fields = columns(t);
   const data = payload?.records;
 
   const handleFormState = (visibility, value) => {
+    console.log("handleFormState")
     setVisible(visibility);
     setSelected(value);
   };
 
+  const setRange = (start, end) => {
+    setStart(start);
+    setEnd(end);
+    revalidate();
+  };
+
   const modifiers = (
     <>
+      <Calendar handleChange={setRange} start={start} end={end} />
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
@@ -60,7 +74,7 @@ const SpecialMovements = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} url={url} />
     </Page>
   );
 };
