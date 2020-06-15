@@ -229,7 +229,7 @@ class CompanyService
     {
         $query = "";
         if ($plus_any) {
-            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME FROM DUAL UNION ";
+            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME, 'ANY - ALL' CMPY_DESC FROM DUAL UNION ";
         }
         $query .= "
             SELECT CMPY_CODE, CMPY_NAME,
@@ -252,7 +252,7 @@ class CompanyService
     {
         $query = "";
         if ($plus_any) {
-            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME FROM DUAL UNION ";
+            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME, 'ANY - ALL' CMPY_DESC FROM DUAL UNION ";
         }
         $query .= "
             SELECT CMPY_CODE, CMPY_NAME,
@@ -275,7 +275,7 @@ class CompanyService
     {
         $query = "";
         if ($plus_any) {
-            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME FROM DUAL UNION ";
+            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME, 'ANY - ALL' CMPY_DESC FROM DUAL UNION ";
         }
         $query .= "
             SELECT CMPY_CODE, CMPY_NAME,
