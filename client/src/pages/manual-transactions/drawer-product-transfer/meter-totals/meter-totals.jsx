@@ -85,7 +85,11 @@ const MeterTotals = ({
   return (
     <Spin indicator={null} spinning={isLoading}>
       <Form.Item name="meter_totals">
-        <DataTable data={data} height="80vh" columns={fields} />
+        <DataTable 
+          data={data} 
+          height="70vh" 
+          columns={fields} 
+        />
       </Form.Item>
     </Spin>
   );

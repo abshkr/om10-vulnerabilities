@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Spin } from 'antd';
+import { Form, Spin, Row, Col } from 'antd';
 import axios from 'axios';
 import _ from 'lodash';
 
@@ -134,14 +134,26 @@ const BaseProductTotals = ({
   return (
     <Spin indicator={null} spinning={isLoading}>
       <Form.Item name="base_totals">
-        <DataTable data={data} height="80vh" columns={fields} />
+        <DataTable 
+          data={data} 
+          height="70vh" 
+          columns={fields} 
+        />
       </Form.Item>
 
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
-        <div style={{ marginRight: 20 }}>
-          <strong>Base Obsered Total: {500}</strong>
-        </div>
-      </div>
+      <Row gutter={[8,8]}>
+        <Col span={9}>
+        </Col>
+        <Col span={5}>
+          <strong>{t('fields.nomtranObsTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_amb_tot'), 3)}</strong>
+        </Col>
+        <Col span={5}>
+          <strong>{t('fields.nomtranStdTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_cor_tot'), 3)}</strong>
+        </Col>
+        <Col span={5}>
+          <strong>{t('fields.nomtranMassTotal')} {_.round(_.sumBy(data, 'trsf_bs_load_kg_tot'), 3)}</strong>
+        </Col>
+      </Row>
     </Spin>
   );
 };
