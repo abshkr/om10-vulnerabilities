@@ -45,7 +45,7 @@ const BaseProduct = ({ form, value, setBase }) => {
         >
         {baseProducts? baseProducts.records.map((item, index) => (
             <Select.Option key={index} value={item.base_code}>
-            {item.base_name}
+            {item.base_desc}
             </Select.Option>
         )):null}
       </Select>
