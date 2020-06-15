@@ -252,14 +252,15 @@ class Dashboard extends CommonClass
             SELECT NVL(DECODE(TRSB_UNT, 34, SUM(TRSB_AVL) / 1000, SUM(TRSB_AVL)), 0) / 1000 QTY_AMB, 
                 NVL(DECODE(TRSB_UNT, 34, SUM(TRSB_CVL) / 1000, SUM(TRSB_CVL)), 0) / 1000 QTY_CMB, 
                 BASE_CODE TRSF_BASE_P, 
-                BASE_NAME
-            FROM TRANSACTIONS, TRANSFERS, CLOSEOUTS, TRANBASE, BASE_PRODS
+                BASE_NAME, BCLASS_DESC
+            FROM TRANSACTIONS, TRANSFERS, CLOSEOUTS, TRANBASE, BASE_PRODS, BASECLASS
             WHERE TRSA_ID = TRSFTRID_TRSA_ID
                 AND STATUS = 0
                 AND TRSB_ID_TRSF_ID = TRSF_ID
                 AND TRSB_BS = BASE_CODE
+                AND BASE_CAT = BCLASS_NO
                 AND TRSA_ED_DMY > PREV_CLOSEOUT_DATE
-            GROUP BY BASE_CODE, BASE_NAME, TRSB_UNT
+            GROUP BY BASE_CODE, BASE_NAME, TRSB_UNT, BCLASS_DESC
             ORDER BY BASE_NAME";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
