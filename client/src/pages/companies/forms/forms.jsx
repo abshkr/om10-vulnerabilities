@@ -5,7 +5,9 @@ import {
   PlusOutlined,
   CloseOutlined,
   DeleteOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
+  FormOutlined,
+  ApiOutlined
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Input, Select, Checkbox, Divider, Row, Col } from 'antd';
@@ -20,7 +22,7 @@ import _ from 'lodash';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, auth }) => {
+const FormModal = ({ value, visible, handleFormState, auth, specialActions, companyRelations }) => {
   const { t } = useTranslation();
   const { data: addresses, isValidating, revalidate } = useSWR(COMPANIES.ADDRESSES);
 
@@ -217,10 +219,33 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="35vw"
+      width="40vw"
       visible={visible}
       footer={
         <>
+          <Button 
+            type="primary" 
+            icon={<FormOutlined />}  
+            style={{ float: 'left' }}
+            loading={isValidating}
+            // style={{float:"left", marginRight:500}}
+            onClick={() => specialActions()}
+            disabled={!auth.canUpdate}
+          >
+            {t('operations.specialAction')}
+          </Button>
+          <Button 
+            type="primary" 
+            icon={<ApiOutlined />}  
+            style={{ float: 'left', marginLeft: 5 }}
+            loading={isValidating}
+            // style={{float:"left", marginRight:500}}
+            onClick={() => companyRelations()}
+            disabled={!auth.canUpdate}
+          >
+            {t('operations.companyRelation')}
+          </Button>
+        
           <Button
             htmlType="button"
             icon={<CloseOutlined />}
