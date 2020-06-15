@@ -1035,8 +1035,8 @@
     "mtSoldTo": "Sold To",
     "mtShipTo": "Ship To",
     "mtDelvNum": "Delv No.",
-	"massUnit": "Mass Unit",
-	"volumeUnit": "Volume Unit"
+    "massUnit": "Mass Unit",
+    "volumeUnit": "Volume Unit"
   },
 
   "pageMenu": {
@@ -1413,7 +1413,8 @@
     "approve": "Are you sure you want to approve this open order?",
     "unapprove": "Are you sure you want to unapprove this open order?",
     "confirmReverse": "Confirm Schedule Reversal?",
-    "confirmArchive": "Confirm Schedule is to be Archived?"
+    "confirmArchive": "Confirm Schedule is to be Archived?",
+    "zeroEquipmentSelected": "You have not selected equipment for some Tankers. If you do not want to choose the existing one, system will create a new one for you automatically. Please confirm to process"
   },
 
   "divider": {
@@ -1501,8 +1502,9 @@
     "selectAllocationItem": "Please select allocation product item to reset",
     "deliveredBeingZero": "Delivered volume is 0, reset is not required",
     "mustBeAlphaNumeric": "Must be Alphanumeric.",
-	"timecodeAL": "Cannot delete time code AL",
-	"maxExpTarget": "Maximum expiry date type under this target is 10"
+    "timecodeAL": "Cannot delete time code AL",
+    "maxExpTarget": "Maximum expiry date type under this target is 10",
+	"searchTrip": "Please type in trip number to search"
   },
 
   "placeholder": {

@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { Select, Button } from 'antd';
-import { useTranslation } from 'react-i18next';
-import useSWR from 'swr';
-import { SyncOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download } from '../../components';
-import { STOCK_MANAGEMENT } from '../../api';
+import useSWR from 'swr';
+import { Select, Button } from 'antd';
+import { SyncOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
+
+import { useAuth } from 'hooks';
+import { Page, DataTable, Download } from 'components';
+import { STOCK_MANAGEMENT } from 'api';
+import auth from 'auth';
+
 import transform from './transform';
 import columns from './columns';
-import auth from '../../auth';
 
 const Metering = () => {
   const [unit, setUnit] = useState('Litres');
@@ -16,6 +19,7 @@ const Metering = () => {
 
   const { t } = useTranslation();
   const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.METERING);
+  const access = useAuth('M_METERING');
 
   const fields = columns(t);
   const payload = transform(data?.records, unit, massUnit);
@@ -35,12 +39,12 @@ const Metering = () => {
 
   const extra = (
     <>
-      <div style={{float: "left"}}>
-        <p style={{float: "left", fontSize: "0.7rem", marginRight: "0.2rem", paddingTop: "0.3rem"}}>
-          {t("fields.massUnit") + ":"}
-        </p> 
+      <div style={{ float: 'left' }}>
+        <p style={{ float: 'left', fontSize: '0.7rem', marginRight: '0.2rem', paddingTop: '0.3rem' }}>
+          {t('fields.massUnit') + ':'}
+        </p>
         <Select key="1" style={{ width: 200 }} defaultValue={massUnit} onChange={setMassUnit}>
-          {massUnits.map(item => {
+          {massUnits.map((item) => {
             return (
               <Select.Option key={item} value={item}>
                 {item}
@@ -49,14 +53,21 @@ const Metering = () => {
           })}
         </Select>
       </div>
-      
-      <div style={{float: "left"}}>
-        <p style={{float: "left", fontSize: "0.7rem", marginRight: "0.2rem", marginLeft: "0.4rem", paddingTop: "0.3rem"}}
+
+      <div style={{ float: 'left' }}>
+        <p
+          style={{
+            float: 'left',
+            fontSize: '0.7rem',
+            marginRight: '0.2rem',
+            marginLeft: '0.4rem',
+            paddingTop: '0.3rem',
+          }}
         >
-          {t("fields.volumeUnit") + ":"} 
-        </p> 
+          {t('fields.volumeUnit') + ':'}
+        </p>
         <Select key="1" style={{ width: 200 }} defaultValue={unit} onChange={setUnit}>
-          {units.map(item => {
+          {units.map((item) => {
             return (
               <Select.Option key={item} value={item}>
                 {item}
@@ -69,13 +80,13 @@ const Metering = () => {
   );
 
   return (
-    <Page page={t('pageMenu.stockManagement')} name={t('pageNames.metering')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={payload} 
-        isLoading={isValidating} 
-        extra={extra}
-      />
+    <Page
+      page={t('pageMenu.stockManagement')}
+      name={t('pageNames.metering')}
+      modifiers={modifiers}
+      access={access}
+    >
+      <DataTable columns={fields} data={payload} isLoading={isValidating} extra={extra} />
     </Page>
   );
 };

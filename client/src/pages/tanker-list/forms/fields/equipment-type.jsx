@@ -22,7 +22,7 @@ const EquipmentType = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tnkr_etp: value.tnkr_etp
+        tnkr_etp: value.tnkr_etp,
       });
     }
   }, [value, setFieldsValue]);

@@ -5,10 +5,10 @@ import { ReloadOutlined } from '@ant-design/icons';
 import { Button, Select, Radio, Form, InputNumber, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
-import axios from 'axios';
 
+import { useAuth } from '../../hooks';
 import { Page, DataTable, Calendar } from '../../components';
-import { ON_DEMAND_REPORTS } from '../../api';
+import api, { ON_DEMAND_REPORTS } from '../../api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
 import auth from '../../auth';
@@ -16,6 +16,8 @@ import auth from '../../auth';
 const OnDemandReports = () => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+
+  const access = useAuth('M_JASPERREPORTS');
 
   const [loading, setLoading] = useState(false);
   const [supplier, setSupplier] = useState(null);
@@ -46,12 +48,25 @@ const OnDemandReports = () => {
 
     setLoading(true);
 
-    axios
+    api
       .post(ON_DEMAND_REPORTS.CREATE, payload)
       .then((response) => {
         setLoading(false);
+        const file = response?.data?.filepath;
 
-        window.open(response?.data?.filepath, '_blank');
+        if (file) {
+          const name = file?.split('/')[1];
+
+          api.get(file).then((res) => {
+            const type = res.headers['content-type'];
+            const blob = new Blob([res.data], { type: type, encoding: 'UTF-8' });
+            const link = document.createElement('a');
+
+            link.href = window.URL.createObjectURL(blob);
+            link.download = name;
+            link.click();
+          });
+        }
 
         notification.success({
           message: t('messages.reportGenerationSuccessful'),
@@ -89,7 +104,7 @@ const OnDemandReports = () => {
   const extra = <Calendar handleChange={onRangeSelect} start={start} end={end} />;
 
   return (
-    <Page page={t('pageMenu.reports')} name={t('pageNames.onDemandReports')}>
+    <Page page={t('pageMenu.reports')} name={t('pageNames.onDemandReports')} access={access}>
       <Form
         layout="vertical"
         form={form}

@@ -80,7 +80,7 @@ const EquipmentTypes = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} auth={auth}>
+    <Page page={page} name={name} modifiers={modifiers} access={auth}>
       <DataTable
         data={data}
         columns={fields}

@@ -22,6 +22,32 @@ const BaseProductTotals = ({
 
   const fields = columns(t);
 
+  const adjustBaseTotals = (items) => {
+    const totals = [];
+    console.log('adjustBaseTotals', items);
+    let itemExisted = false;
+
+    _.forEach(items, (item) => {
+      itemExisted = false;
+      for (let index = 0; index < totals.length; index++) {
+        const total = totals[index];
+        if (total.trsf_bs_prodcd_tot === item.trsf_bs_prodcd_tot && total.trsf_bs_tk_cd_tot === item.trsf_bs_tk_cd_tot) {
+          total.trsf_bs_qty_amb_tot = _.toNumber(total.trsf_bs_qty_amb_tot) + _.toNumber(item.trsf_bs_qty_amb_tot);
+          total.trsf_bs_qty_cor_tot = _.toNumber(total.trsf_bs_qty_cor_tot) + _.toNumber(item.trsf_bs_qty_cor_tot);
+          total.trsf_bs_load_kg_tot = _.toNumber(total.trsf_bs_load_kg_tot) + _.toNumber(item.trsf_bs_load_kg_tot);
+          totals[index] = total;
+          itemExisted = true;
+        }
+      }
+      if (!itemExisted) {
+        totals.push(item);
+      }
+    });
+    console.log('adjustBaseTotals', totals);
+
+    return totals;
+  }
+
   const getBaseTotals = async () => {
     const pre = [];
     //const transfers = form.getFieldValue('transfers');
@@ -50,8 +76,11 @@ const BaseProductTotals = ({
                   trsf_bs_tk_cd_tot: product?.stream_tankcode,
                   trsf_bs_prodcls_tot: product.stream_bclass_nmae,
                   trsf_bs_den_tot: product?.stream_tankden,
-                  trsf_bs_temp_tot: null,
-                  trsf_bs_qty_amb_tot: _.sumBy(transfers, (o) => {
+                  trsf_bs_temp_tot: transfer?.trsf_temp,
+                  trsf_bs_qty_amb_tot: calcBaseRatios(transfer?.trsf_qty_amb, product?.ratio_value, product?.ratio_total),
+                  trsf_bs_qty_cor_tot: calcBaseRatios(transfer?.trsf_qty_cor, product?.ratio_value, product?.ratio_total),
+                  trsf_bs_load_kg_tot: calcBaseRatios(transfer?.trsf_load_kg, product?.ratio_value, product?.ratio_total),
+                  /* trsf_bs_qty_amb_tot: _.sumBy(transfers, (o) => {
                     if (o?.trsf_prod_code === product?.rat_prod_prodcode) {
                       return calcBaseRatios(o?.trsf_qty_amb, product?.ratio_value, product?.ratio_total); //????
                     } else {
@@ -71,7 +100,7 @@ const BaseProductTotals = ({
                     } else {
                       return 0;
                     }
-                  }),
+                  }), */
                   is_updated: false,
                 });
               });
@@ -81,7 +110,8 @@ const BaseProductTotals = ({
     }
 
     setLoading(false);
-    setData(pre);
+    setData(adjustBaseTotals(pre));
+    //setData(pre);
   };
 
   useEffect(() => {

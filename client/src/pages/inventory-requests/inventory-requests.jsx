@@ -19,13 +19,17 @@ import tankColumns from './tank-columns';
 import generator from './generator';
 import columns from './columns';
 import auth from '../../auth';
-
+import { useAuth } from 'hooks';
 import Forms from './forms';
 
 const { TabPane } = Tabs;
 
 const InventoryRequests = () => {
   const { t } = useTranslation();
+  const [visible, setVisible] = useState(false);
+  const [invSelected, setInvSelected] = useState(null);
+
+  const auth = useAuth('M_INVENTORYREQUEST');
 
   const { data: requests, isValidating: requestsLoading, revalidate } = useSWR(INVENTORY_REQUESTS.READ);
   const { data: tanks, isValidating: tanksLoading } = useSWR(INVENTORY_REQUESTS.TANKS);
@@ -87,6 +91,11 @@ const InventoryRequests = () => {
     });
   };
 
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setInvSelected(value);
+  };
+
   const modifiers = (
     <>
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
@@ -99,7 +108,13 @@ const InventoryRequests = () => {
       />
 
       {!CAN_SET_REQUIRED && (
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isLoading}>
+        <Button 
+          type="primary" 
+          icon={<PlusOutlined />}
+          onClick={() => handleFormState(true, null)} 
+          loading={isLoading}
+          disabled={!auth.canCreate}
+        >
           {t('operations.create')}
         </Button>
       )}
@@ -149,9 +164,11 @@ const InventoryRequests = () => {
             columns={fields}
             data={requestsData}
             isLoading={isLoading}
-            onClick={handleClick}
             height="320px"
+            onClick={(payload) => handleFormState(true, payload)}
+            handleSelect={(payload) => handleFormState(true, payload[0])}
           />
+          <Forms value={invSelected} visible={visible} handleFormState={handleFormState} auth={auth} />
         </TabPane>
         <TabPane tab={t('tabColumns.tankSelection')} key="2">
           <DataTable

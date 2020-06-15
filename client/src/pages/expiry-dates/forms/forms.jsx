@@ -160,7 +160,7 @@ const FormModal = ({ value, visible, handleFormState, auth, all }) => {
     >
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} key="1">
+          <TabPane tab={t('tabColumns.general')} key="1">
             <ExpiryDateTarget form={form} value={value} all={all} />
             <TypeCode form={form} value={value} />
             <TypeDescription form={form} value={value} />

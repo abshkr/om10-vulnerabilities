@@ -10,17 +10,19 @@ import { useIdle } from '../hooks';
 
 export default (Authenticated) => {
   const ComposedComponent = ({ token }) => {
-    const [user, setUser] = useState(null);
-
     const isIdle = useIdle();
+    let history = useHistory();
 
-    const history = useHistory();
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
       if (token) {
         try {
           const decoded = jwtDecode(token);
-          setUser(decoded);
+
+          if (decoded?.sess_id !== user?.sess_id) {
+            setUser(decoded);
+          }
         } catch (error) {
           // invalid jwt
           history.push(ROUTES.LOG_OUT);
@@ -30,7 +32,7 @@ export default (Authenticated) => {
       if (!token) {
         history.push(ROUTES.LOG_IN);
       }
-    }, [token, history]);
+    }, [token]);
 
     useEffect(() => {
       if (isIdle) {

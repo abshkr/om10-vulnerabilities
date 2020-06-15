@@ -61,6 +61,17 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
 
     let matches = [];
 
+    const compartmentCounter = {};
+
+    _.forEach(values?.tnkr_equips, (equipment, index) => {
+      compartmentCounter[index + 1] = equipment?.compartments?.length;
+    });
+
+    const compartmentArray = Object.values(compartmentCounter);
+    const noCompartments = compartmentArray.includes(0) || compartmentArray?.length === 0;
+
+    const createPrompt = noCompartments ? t('prompts.zeroEquipmentSelected') : t('prompts.create');
+
     if (!IS_CREATING) {
       matches = _.filter(payload?.records, (object) => {
         return (
@@ -72,9 +83,10 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
     }
 
     Modal.confirm({
-      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+      title: IS_CREATING ? createPrompt : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
       okType: 'primary',
+      width: noCompartments ? '40vw' : null,
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
@@ -230,8 +242,9 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             tab={t('tabColumns.identification')}
             forceRender={true}
             key="1"
+            style={{ height: '80vh', overflowY: 'auto' }}
           >
-            {/* <Depot form={form} value={value} /> */}
+            <Depot form={form} value={value} />
             <Owner form={form} value={value} />
             <Code form={form} value={value} />
             <Carrier form={form} value={value} />
@@ -242,9 +255,11 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             <TankerPrompt form={form} value={value} />
             <Pin form={form} value={value} />
             <MaxKg form={form} value={value} />
-            {/* <Destination form={form} value={value} />
+
+            <Destination form={form} value={value} />
             <LastDepot form={form} value={value} />
-            <CurrentDepot form={form} value={value} /> */}
+            <CurrentDepot form={form} value={value} />
+
             <Locks form={form} value={value} />
             <SLP form={form} value={value} />
           </TabPane>

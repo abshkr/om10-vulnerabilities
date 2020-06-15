@@ -51,7 +51,7 @@ import BOL from './bol';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, url, locateTrip }) => {
   const { manageMakeManualTransaction, showSeals, manageAdditionalHostData } = useConfig();
 
   const { t } = useTranslation();
@@ -75,9 +75,10 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const { resetFields, setFieldsValue } = form;
 
-  const onComplete = () => {
+  const onComplete = (shls_trip_no) => {
     handleFormState(false, null);
-    mutate(LOAD_SCHEDULES.READ);
+    // mutate(url);
+    locateTrip(shls_trip_no);
   };
 
   const changeSupplier = (supplier) => {
@@ -108,7 +109,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await axios
           .post(IS_CREATING ? LOAD_SCHEDULES.CREATE : LOAD_SCHEDULES.UPDATE, values)
           .then(() => {
-            onComplete();
+            onComplete(values.shls_trip_no);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
@@ -305,7 +306,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   }, [setFieldsValue, value]);
 
   useEffect(() => {
-    if (!value) {
+    if (!value && !visible) {
       setSupplier(undefined);
       setDrawer(undefined);
       setCarrier(undefined);

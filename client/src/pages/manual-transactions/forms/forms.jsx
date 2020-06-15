@@ -176,7 +176,7 @@ const Forms = ({
     else {
       setTrips(null);
     }
-    
+
     const customers = await getCustomersBySupplier(supplier);
 
     setCustomers(customers);
@@ -315,7 +315,7 @@ const Forms = ({
             >
               {suppliers?.records.map((item, index) => (
                 <Select.Option key={index} value={item.supplier}>
-                  {item.supplier_name}
+                  {item.supplier + ' - ' + item.supplier_name}
                 </Select.Option>
               ))}
             </Select>
@@ -337,7 +337,7 @@ const Forms = ({
             >
               {carriers?.records?.map((item, index) => (
                 <Select.Option key={index} value={item.cmpy_code}>
-                  {item.cmpy_name}
+                  {item.cmpy_code + ' - ' + item.cmpy_name}
                 </Select.Option>
               ))}
             </Select>
@@ -371,7 +371,7 @@ const Forms = ({
             >
               {customers?.records?.map((item, index) => (
                 <Select.Option key={index} value={item.customer}>
-                  {item.customer_name}
+                  {item.customer + ' - ' + item.customer_name}
                 </Select.Option>
               ))}
             </Select>
@@ -394,7 +394,7 @@ const Forms = ({
             >
               {drivers?.records?.map((item, index) => (
                 <Select.Option key={index} value={item.per_code}>
-                  {item.per_name}
+                  {item.per_code + ' - ' + item.per_name}
                 </Select.Option>
               ))}
             </Select>

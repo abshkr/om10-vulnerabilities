@@ -17,7 +17,7 @@ const MovementReasons = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const auth = useAuth('M_MOVEMENTREASON');
+  const access = useAuth('M_MOVEMENTREASON');
 
   const { data: payload, isValidating, revalidate } = useSWR(MOVEMENT_REASONS.READ);
 
@@ -45,9 +45,9 @@ const MovementReasons = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
         disabled={!auth.canCreate}
@@ -62,15 +62,22 @@ const MovementReasons = () => {
       page={t('pageMenu.stockReconciliation')}
       name={t('pageNames.movementReasons')}
       modifiers={modifiers}
+      access={access}
     >
-      <DataTable 
-        columns={fields} 
-        data={data} 
-        isLoading={isValidating} 
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} length={payload?.records?.length} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms
+        value={selected}
+        length={payload?.records?.length}
+        visible={visible}
+        handleFormState={handleFormState}
+        auth={access}
+      />
     </Page>
   );
 };

@@ -173,7 +173,7 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
               htmlType="button"
               icon={<CloseOutlined />}
               style={{ float: 'right' }}
-              onClick={() => Modal.destroyAll()}
+              onClick={() => handleFormState(false, null)}
             >
               {t('operations.cancel')}
             </Button>
@@ -210,11 +210,11 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
                 </Select>
               </Form.Item>
 
-              <Form.Item name="strap_height" label={t('fields.level')}>
+              <Form.Item name="strap_height" label={`${t('fields.level')} (${t('units.mm')})`}>
                 <Input type="number" style={{ width: '100%' }} min={0} addonAfter="mm" />
               </Form.Item>
 
-              <Form.Item name="strap_volume" label={t('fields.observedVolume')}>
+              <Form.Item name="strap_volume" label={`${t('fields.observedVolume')} (${t('units.litres')})`}>
                 <Input type="number" style={{ width: '100%' }} min={0} addonAfter="Litres" />
               </Form.Item>
             </TabPane>

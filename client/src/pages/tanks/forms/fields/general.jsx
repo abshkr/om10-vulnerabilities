@@ -109,7 +109,7 @@ const General = ({ form, value }) => {
             >
               {products?.records.map((item, index) => (
                 <Select.Option key={index} value={item.base_code}>
-                  {item.base_name}
+                  {item.base_desc}
                 </Select.Option>
               ))}
             </Select>
