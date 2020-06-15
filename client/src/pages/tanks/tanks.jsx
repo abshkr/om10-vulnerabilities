@@ -38,6 +38,9 @@ const Tanks = () => {
 
   const [selected, setSelected] = useState(null);
   const [payload, setPayload] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [listSelected, setlistSelected] = useState(null);
+
   const [mode, setMode] = useState('1');
 
   const simple = mode === '1';
@@ -52,13 +55,8 @@ const Tanks = () => {
   };
 
   const onCreate = (value) => {
-    FormModal({
-      value,
-      form: <TankConfigurationForm value={value} config={config} />,
-      id: value?.tank_code,
-      name: value?.tank_name,
-      t,
-    });
+    setVisible(true);
+    setlistSelected(null);
   };
 
   const onViewChange = () => {
@@ -84,7 +82,7 @@ const Tanks = () => {
         icon={<PlusOutlined />}
         onClick={() => onCreate(null)}
         loading={isLoading}
-        disabled={!access.canCreate}
+        disabled={!access.canCreate || mode === '1'}
       >
         {t('operations.create')}
       </Button>
@@ -170,7 +168,13 @@ const Tanks = () => {
           </Tabs>
         </ListView>
       ) : (
-        <Table data={read?.records} />
+        <Table 
+          data={read?.records} 
+          visible={visible} 
+          setVisible={setVisible}
+          selected={listSelected}
+          setSelected={setlistSelected} 
+        />
       )}
     </Page>
   );
