@@ -10,6 +10,7 @@ module.exports = function (app) {
     })
   );
 
+/*
   // for host messaging interface
   app.use(
     '/hmi',
@@ -19,4 +20,6 @@ module.exports = function (app) {
       secure: false, // for self-signed cert to work
     })
   );
+*/
+
 };
