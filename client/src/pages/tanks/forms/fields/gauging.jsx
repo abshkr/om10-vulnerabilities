@@ -30,7 +30,7 @@ const Gauging = ({ form, value }) => {
       <Form.Item
         name="tank_identifier"
         label={t('fields.identifierForGauge')}
-        rules={[{ required: false, validator: validate }]}
+        rules={[{ required: true }]}
       >
         <Input />
       </Form.Item>
