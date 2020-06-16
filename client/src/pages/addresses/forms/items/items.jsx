@@ -3,6 +3,7 @@ import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Button, Form } from 'antd';
 import _ from 'lodash';
+import useSWR from 'swr';
 
 import { DataTable } from '../../../../components';
 import { ADDRESSES } from '../../../../api';
@@ -10,6 +11,9 @@ import { ADDRESSES } from '../../../../api';
 import columns from './columns';
 
 const Items = ({ setTableAPIContext, value, addressCode }) => {
+
+  const { data: payload } = useSWR(`${ADDRESSES.READ_TEMPLATE}?config_key=${'SITE_ADDRESS_TEMPLATE'}`);
+
   const [lineAddDisabled, setLineAddDisabled] = useState(false);
   const [lineEditDisabled, setLineEditDisabled] = useState(true);
   const [lineDeleteDisabled, setLineDeleteDisabled] = useState(true);
@@ -19,6 +23,8 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
   const [size, setSize] = useState(value?.length);
 
   const { t } = useTranslation();
+
+  const template = payload?.records?.[0]?.config_value;
 
   const disabled = selected.length === 0;
   const canModifyFurther =
@@ -64,11 +70,38 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
     adjustModifiers(options);
   };
 
+  const addOneLine = (type='') => {
+    const length = getNextLineNo();
+
+    const option = {
+      address_action: '+',
+      db_addr_line_id: addressCode,
+      db_addrline_no: length,
+      db_addr_line_type: type,
+      db_addr_line_typename: '',
+      db_addr_line: '',
+      editable: true,
+    };
+
+    setSize(length);
+
+    tableAPI.updateRowData({ add: [option] });
+  };
+
   const handleItemAdd = () => {
     setLineDeleteDisabled(true);
     setLineEditDisabled(true);
 
     //setSize(value?.length);
+    const length = getNextLineNo()
+    if (length > 1 || !template) {
+      addOneLine('');
+    }
+    else {
+      const types = template.split(',');
+      types.forEach((type) => addOneLine(_.toNumber(type)));
+    }
+    /*
     const length = getNextLineNo();
 
     const option = {
@@ -84,6 +117,7 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
     setSize(length);
 
     tableAPI.updateRowData({ add: [option] });
+    */
     //adjustModifiers([option]);
     //handleItemSelect([option]);
   };

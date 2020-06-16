@@ -74,13 +74,14 @@ const Table = ({
   rowHeight,
   onCellUpdate,
   autoColWidth,
+  filterValue
 }) => {
   const [payload, setPayload] = useState([]);
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(filterValue);
   const [api, setAPI] = useState('');
 
   const isLoading = !data;
-
+  
   const handleMultipleSelection = () => {
     if (handleSelect) {
       const payload = api.getSelectedRows();
@@ -89,6 +90,7 @@ const Table = ({
   };
 
   const handleGridReady = (params) => {
+    console.log("handleGridReady")
     setAPI(params.api);
 
     if (apiContext) {
@@ -107,9 +109,8 @@ const Table = ({
       return;
     }
 
-    // params.api.sizeColumnsToFit();
-    let allColumnIds = [];
-    let skipHeader = false;
+    const allColumnIds = [];
+    const skipHeader = false;
     params.columnApi.getAllColumns().forEach(function(column) {
       allColumnIds.push(column.colId);
     });
@@ -142,6 +143,12 @@ const Table = ({
       setPayload(data);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (!!filterValue) {
+      setValue('' + filterValue);
+    }
+  }, [filterValue]);
 
   const icon = (
     <LoadingOutlined

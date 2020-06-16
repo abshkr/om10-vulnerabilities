@@ -74,6 +74,7 @@ class DetailsArea extends Component
 
 	viewDetails()
 	{
+		console.log('from:'+ this.state.from + ', action:'+this.state.action + ', message:'+JSON.stringify(this.state.message,null,'\t'));
 		var txt;
 
 		if (this.state.from === 'host')
@@ -168,7 +169,9 @@ class DetailsArea extends Component
 
 		return (
 			<div>
+{/*
 				<b id="detailsAreaHeading">Details</b>
+*/}
 				<div id="detailsArea" className="detailsArea">
 					Click a message on the left to see the message details
 				</div>

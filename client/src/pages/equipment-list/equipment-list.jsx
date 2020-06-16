@@ -30,6 +30,8 @@ const EquipmentList = () => {
     setSelected(value);
   };
 
+  const [filterValue, setFilterValue] = useState('');
+  
   const page = t('pageMenu.operations');
   const name = t('pageNames.equipmentList');
 
@@ -41,7 +43,12 @@ const EquipmentList = () => {
 
   const modifiers = (
     <>
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
+      <Button 
+        icon={<SyncOutlined />} 
+        onClick={() => setFilterValue('89')} 
+        // onClick={() => revalidate()} 
+        loading={isValidating}
+      >
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
@@ -67,8 +74,15 @@ const EquipmentList = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         selectionMode="single"
         autoColWidth
+        filterValue={filterValue}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
+      <Forms 
+        value={selected} 
+        visible={visible} 
+        handleFormState={handleFormState} 
+        access={access} 
+        setFilterValue={setFilterValue} 
+      />
     </Page>
   );
 };

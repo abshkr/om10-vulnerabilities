@@ -326,4 +326,21 @@ class Address extends CommonClass
 
         return true;
     }
+
+    public function update_address_template()
+    {
+        $query = "
+            UPDATE SITE_CONFIG SET CONFIG_VALUE=:cfg_value WHERE CONFIG_KEY='SITE_ADDRESS_TEMPLATE'
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':cfg_value', $this->address_template);
+
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
 }

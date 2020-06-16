@@ -96,10 +96,16 @@ thead {
   padding-left: 6px;
 }
 
-.detailsArea {
+.infoGroup {
+  border: 1px solid;
+  border-radius: 10px;
+}
+
+.detailsArea,
+.contentsArea {
   display: block;
-  height: 300px;
-  width: 820px;
+  height: 160px;
+  width: 100%;
   text-align: left;
   border: 2px solid;
   border-color: lightgrey;
@@ -107,17 +113,19 @@ thead {
   background-color: #e5eaed;
 }
 
-.detailsAreaPre {
+.detailsAreaPre,
+.contentsAreaPre {
   display: block;
   height: 100%;
   width: 100%;
   text-align: left;
 }
 
-.detailsAreaFilledByHostMsg {
+.detailsAreaFilledByHostMsg,
+.contentsAreaFilledByHostMsg {
   display: block;
-  height: 300px;
-  width: 820px;
+  height: 160px;
+  width: 100%;
   text-align: left;
   border: 4px solid;
   border-color: blue;
@@ -126,10 +134,11 @@ thead {
   padding: 6px;
 }
 
-.detailsAreaFilledByOmMsg {
+.detailsAreaFilledByOmMsg,
+.contentsAreaFilledByOmMsg {
   display: block;
-  height: 300px;
-  width: 820px;
+  height: 160px;
+  width: 100%;
   text-align: left;
   border: 4px solid;
   border-color: coral;
@@ -138,10 +147,10 @@ thead {
   padding: 6px;
 }
 
-.contentsArea {
+.messageArea {
   display: block;
-  height: 480px;
-  width: 820px;
+  height: 100%;
+  width: 100%;
   text-align: left;
   border: 2px solid;
   border-color: lightgrey;
@@ -149,14 +158,14 @@ thead {
   background-color: #e5eaed;
 }
 
-.contentsAreaPre {
+.messageAreaPre {
   display: block;
   height: 450px;
   width: 100%;
   text-align: left;
 }
 
-.contentsAreaPreBody {
+.messageAreaPreBody {
   display: block;
   height: 100%;
   width: 100%;
@@ -165,13 +174,14 @@ thead {
   overflow: auto;
 }
 
-.contentsAreaPreBodyInputFld {
+.messageAreaPreBodyInputFld {
   size: 40%;
 }
 
-.contentsAreaFilledByHostMsg {
+.messageAreaFilledByHostMsg {
   display: block;
-  width: 820px;
+  height: 100%;
+  width: 100%;
   text-align: left;
   border: 4px solid;
   border-color: blue;
@@ -180,9 +190,10 @@ thead {
   padding: 6px;
 }
 
-.contentsAreaFilledByOmMsg {
+.messageAreaFilledByOmMsg {
   display: block;
-  width: 820px;
+  height: 100%;
+  width: 100%;
   text-align: left;
   border: 4px solid;
   border-color: coral;
