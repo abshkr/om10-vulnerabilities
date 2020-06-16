@@ -28,6 +28,8 @@ const Forms = ({
   setCustomers,
   selectedSupplier,
   setSelectedSupplier,
+  selectedCustomer,
+  setSelectedCustomer,
   setSelectedTrip,
   setSelectedOrder,
   setSelectedTanker,
@@ -185,6 +187,8 @@ const Forms = ({
 
   const handleCustomerSelect = async (customer) => {
     const orders = await getOrdersByCustomer(customer);
+
+    setSelectedCustomer(customer);
 
     setOrders(orders);
   };

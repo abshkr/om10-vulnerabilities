@@ -22,7 +22,7 @@ const StatusSerach = ({ value, onChange }) => {
         onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectSupplier') : null}
+        // placeholder={!value ? t('placeholder.selectSupplier') : null}
         filterOption={(value, option) =>
           option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
         }

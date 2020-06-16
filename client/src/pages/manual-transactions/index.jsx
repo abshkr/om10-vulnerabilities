@@ -1,2 +1,4 @@
+import auth from '../../auth';
 import ManualTransactions from './manual-transactions';
-export default ManualTransactions;
+export {ManualTransactions as ManualTransactionsPopup};
+export default auth(ManualTransactions);

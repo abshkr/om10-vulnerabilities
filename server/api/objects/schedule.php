@@ -461,9 +461,33 @@ class Schedule extends CommonClass
         return true;
     }
 
+    private function setSHLS_SRCTYPE()
+    {
+        $query = "
+            UPDATE SCHEDULE 
+            SET SHLS_SRCTYPE = 1
+            WHERE SHLS_TRIP_NO = :trip 
+                AND SHLS_SUPP = :supp ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supp', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return true;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+    }
+
     public function create()
     {
-        return $this->create_n_update("ADD");
+        if (!$this->create_n_update("ADD")) {
+            return false;
+        }
+
+        return $this->setSHLS_SRCTYPE();
     }
 
     public function update()
