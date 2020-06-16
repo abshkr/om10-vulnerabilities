@@ -48,6 +48,7 @@ import OrderItemTrips from './item-trips';
 
 import DeliveryDetails from '../../delivery-details';
 import { ItemEffectTime } from '../../movement-nominations/forms/items/nomination-transactions/forms/head-fields';
+import { ManualTransactionsPopup } from '../../manual-transactions';
 
 const TabPane = Tabs.TabPane;
 
@@ -582,6 +583,19 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
                 dd_supp_code: value?.order_supp_code,
                 dd_tripord_no: value?.order_cust_no,
                 dd_ld_type: 3,
+              }}
+            />
+          </TabPane>
+          <TabPane tab={t('pageNames.manualTransactions')} disabled={IS_CREATING} key="5">
+            <ManualTransactionsPopup 
+              popup={true}
+              params={{
+                supplier: value?.order_supp_code,
+                customer: value?.order_cust_acnt,
+                carrier: value?.order_carr_code,
+                order_cust_no: value?.order_cust_no,
+                trans_type: 'OPENORDER',
+                repost: false,
               }}
             />
           </TabPane>

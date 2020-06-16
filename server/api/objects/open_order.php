@@ -898,13 +898,15 @@ class OpenOrder extends CommonClass
         }
 
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-        return $row['CNT'];
+        return (int)$row['CNT'];
     }
 
     public function order_item_schedules()
     {
         $query = "";
-		$singleOO = $this->isSingleOrderToOneTripCmpt();
+        $singleOO = $this->order_assign_mode();
+        
+        //write_log("singleOO:" . $singleOO, __FILE__, __LINE__, LogLevel::ERROR);
 		
 		if ( $singleOO === 1 ) { // assign single order to one trip compartment
             $query = "

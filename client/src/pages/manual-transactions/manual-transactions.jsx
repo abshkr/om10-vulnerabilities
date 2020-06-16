@@ -14,14 +14,14 @@ import { MANUAL_TRANSACTIONS } from '../../api';
 
 const { confirm } = Modal;
 
-const ManualTransactions = () => {
+const ManualTransactions = ({popup, params}) => {
   const { t } = useTranslation();
 
   const [form] = Form.useForm();
 
   // SCHEDULE: doing manual transaction with Load Schedule
   // OPENORDER: doing manual transaction with Open Order
-  const [sourceType, setSourceType] = useState(undefined);
+  const [sourceType, setSourceType] = useState(params?.trans_type);
   // BY_PRODUCT: doing manual transaction with Pre-Order
   // BY_COMPARTMENT: doing manual transaction with Pre-Schedule
   const [loadType, setLoadType] = useState(undefined);
@@ -33,9 +33,10 @@ const ManualTransactions = () => {
   const [orders, setOrders] = useState(null);
 
   const [customers, setCustomers] = useState(null);
-  const [selectedSupplier, setSelectedSupplier] = useState(null);
-  const [selectedTrip, setSelectedTrip] = useState(null);
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedSupplier, setSelectedSupplier] = useState(params?.supplier);
+  const [selectedCustomer, setSelectedCustomer] = useState(params?.customer);
+  const [selectedTrip, setSelectedTrip] = useState(params?.trip_no);
+  const [selectedOrder, setSelectedOrder] = useState(params?.order_cust_no);
   const [selectedTanker, setSelectedTanker] = useState(null);
 
   const resetFormData = () => {
@@ -46,6 +47,7 @@ const ManualTransactions = () => {
     setOrders(null);
     setCustomers(null);
     setSelectedSupplier(null);
+    setSelectedCustomer(null);
     setSelectedTrip(null);
     setSelectedOrder(null);
     setSelectedTanker(null);
@@ -211,6 +213,23 @@ const ManualTransactions = () => {
     resetFormData();
   }, [sourceType]);
 
+  useEffect(() => {
+    if (params && popup) {
+      /* form.setFieldsValue({
+        source_type: params?.trans_type,
+        supplier: params?.supplier,
+        customer: params?.customer,
+        order_no: params?.order_cust_no,
+        trip_no: params?.trip_no,
+      }); */
+      setSourceType(params?.trans_type);
+      setSelectedSupplier(params?.supplier);
+      setSelectedCustomer(params?.customer);
+      setSelectedOrder(params?.order_cust_no);
+      setSelectedTrip(params?.trip_no);
+    }
+  }, [popup, params]);
+
   const modifiers = (
     <>
       <Button type="danger" icon={<DeleteOutlined />} onClick={onReset}>
@@ -228,6 +247,7 @@ const ManualTransactions = () => {
       page={t('pageMenu.stockReconciliation')}
       name={t('pageNames.manualTransactions')}
       modifiers={modifiers}
+      standalone={popup}
     >
       <Form layout="vertical" form={form} scrollToFirstError>
         <Forms
@@ -248,6 +268,8 @@ const ManualTransactions = () => {
           setCustomers={setCustomers}
           selectedSupplier={selectedSupplier}
           setSelectedSupplier={setSelectedSupplier}
+          selectedCustomer={selectedCustomer}
+          setSelectedCustomer={setSelectedCustomer}
           setSelectedTrip={setSelectedTrip}
           setSelectedOrder={setSelectedOrder}
           setSelectedTanker={setSelectedTanker}
@@ -268,4 +290,5 @@ const ManualTransactions = () => {
   );
 };
 
-export default auth(ManualTransactions);
+//export default auth(ManualTransactions);
+export default ManualTransactions;
