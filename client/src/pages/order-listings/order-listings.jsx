@@ -16,7 +16,7 @@ import Forms from './forms';
 import { useConfig } from '../../hooks';
 import { getDateRangeOffset } from '../../utils';
 
-const OrderListings = ({ popup }) => {
+const OrderListings = ({popup, params}) => {
   const config = useConfig();
 
   const ranges = getDateRangeOffset(String(config.openOrderDateRange), '365');
@@ -25,6 +25,9 @@ const OrderListings = ({ popup }) => {
   const [selected, setSelected] = useState(null);
   const [timeOption, setTimeOption] = useState('ORDER_ORD_TIME');
   const [pageState, setPageState] = useState('view');
+  const [supplier, setSupplier] = useState(null);
+  const [customer, setCustomer] = useState(null);
+  const [data, setData] = useState(null);
 
   const { t } = useTranslation();
 
@@ -47,9 +50,18 @@ const OrderListings = ({ popup }) => {
   const [end, setEnd] = useState(null);
 
   const url =
-    start && end
-      ? `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
-      : null;
+    popup && supplier && customer
+      ? (
+        start && end
+        ? `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}
+          &order_supp_code=${supplier}&order_cust_acnt=${customer}`
+        : null
+      )
+      : (
+        start && end
+        ? `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
+        : null
+      );
 
   const { data: payload, isValidating, revalidate } = useSWR(url);
 
@@ -82,7 +94,7 @@ const OrderListings = ({ popup }) => {
 
   const fields = columns(t);
 
-  const data = payload?.records;
+  //const data = payload?.records;
   const isLoading = isValidating || !data;
 
   const page = t('pageMenu.customers');
@@ -97,6 +109,19 @@ const OrderListings = ({ popup }) => {
       setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     }
   }, [ranges, start, end]);
+
+  useEffect(() => {
+    if (popup && params) {
+      setSupplier(params?.order_supp_code);
+      setCustomer(params?.order_cust_acnt);
+    }
+  }, [popup, params]);
+
+  useEffect(() => {
+    if (payload) {
+      setData(payload?.records);
+    }
+  }, [payload]);
 
   const modifiers = (
     <>

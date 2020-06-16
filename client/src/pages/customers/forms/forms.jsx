@@ -227,7 +227,13 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             <Allocations />
           </TabPane>
           <TabPane tab={t('tabColumns.orderListing')} disabled={IS_CREATING} key="5">
-            <OrderListingsPopup popup={true}/>
+            <OrderListingsPopup 
+              popup={true}
+              params={{
+                order_supp_code: value?.cust_supp_code,
+                order_cust_acnt: value?.cust_account,
+              }}
+            />
           </TabPane>
           <TabPane tab={t('tabColumns.deliveryLocations')} disabled={IS_CREATING} key="6">
             <DelvLocationsPopup  
