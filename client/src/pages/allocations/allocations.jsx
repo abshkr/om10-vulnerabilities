@@ -19,7 +19,7 @@ const Allocations = () => {
 
   const { t } = useTranslation();
 
-  const auth = useAuth('M_ALLOCATIONS');
+  const access = useAuth('M_ALLOCATIONS');
 
   const { data: payload, isValidating, revalidate } = useSWR(ALLOCATIONS.READ);
 
@@ -49,7 +49,7 @@ const Allocations = () => {
         icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isLoading}
-        disabled={!auth.canCreate}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -57,7 +57,7 @@ const Allocations = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} auth={auth}>
+    <Page page={page} name={name} modifiers={modifiers} access={access}>
       <DataTable
         data={data}
         columns={fields}
@@ -66,7 +66,7 @@ const Allocations = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };

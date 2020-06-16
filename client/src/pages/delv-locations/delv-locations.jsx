@@ -33,7 +33,7 @@ const DelvLocations = () => {
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
-  const page = t('pageMenu.customers');
+  const page = t('pageMenu.companies');
   const name = t('pageNames.deliveryLocations');
 
   const modifiers = (
@@ -57,7 +57,7 @@ const DelvLocations = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access}>
+    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="deliveryLocations">
       <DataTable
         data={data}
         columns={fields}

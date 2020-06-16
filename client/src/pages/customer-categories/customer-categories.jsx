@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import useSWR from 'swr';
 
-import { Page, DataTable, Download, FormModal } from '../../components';
+import { Page, DataTable, Download } from '../../components';
 import { CUSTOMER_CATEGORIES } from '../../api';
 
 import columns from './columns';
@@ -15,11 +15,16 @@ import Forms from './forms';
 
 const CustomerCategories = () => {
   const { t } = useTranslation();
-  const [visible, setVisible] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const auth = useAuth('M_CUSTOMERCATEGORIES');
+
+  const access = useAuth('M_CUSTOMERCATEGORIES');
 
   const { data: payload, isValidating, revalidate } = useSWR(CUSTOMER_CATEGORIES.READ);
+
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
+
+  const page = t('pageMenu.companies');
+  const name = t('pageNames.customerCategories');
 
   const fields = columns(t);
 
@@ -34,12 +39,12 @@ const CustomerCategories = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
-        onClick={() => handleFormState(true, null)} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => handleFormState(true, null)}
         loading={isValidating}
-        disabled={!auth.canCreate}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -47,15 +52,16 @@ const CustomerCategories = () => {
   );
 
   return (
-    <Page page={t('pageMenu.customers')} name={t('pageNames.customerCategories')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={payload?.records} 
-        isLoading={isValidating} 
+    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="customerCategories">
+      <DataTable
+        columns={fields}
+        data={payload?.records}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        selectionMode="single"
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };

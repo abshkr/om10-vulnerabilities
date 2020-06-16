@@ -6,13 +6,16 @@ import { useTranslation } from 'react-i18next';
 import { SyncOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
-import { Page, DataTable, Download, Calendar } from '../../components';
-import { AUDITING_DATA } from '../../api';
-import { SETTINGS } from '../../constants';
+import { Page, DataTable, Download, Calendar } from 'components';
+import * as SETTINGS from 'constants/settings';
+import { AUDITING_DATA } from 'api';
+import useAuth from 'hooks/use-auth';
+import auth from 'auth';
+
 import columns from './columns';
-import auth from '../../auth';
 
 const AuditingData = () => {
+  const access = useAuth('M_AUDITREPORT');
   const { t } = useTranslation();
 
   const [start, setStart] = useState(moment().subtract(1, 'days').format(SETTINGS.DATE_TIME_FORMAT));
@@ -22,6 +25,9 @@ const AuditingData = () => {
   const { data: payload, isValidating, revalidate } = useSWR(
     `${AUDITING_DATA.READ}?start_date=${start}&end_date=${end}`
   );
+
+  const page = t('pageMenu.security');
+  const name = t('pageNames.area');
 
   const data = payload?.records;
   const fields = columns(t);
@@ -44,7 +50,7 @@ const AuditingData = () => {
   );
 
   return (
-    <Page page={t('pageMenu.reports')} name={t('pageNames.auditingData')} modifiers={modifiers}>
+    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="auditingData">
       <DataTable columns={fields} data={data} isLoading={isValidating} />
     </Page>
   );

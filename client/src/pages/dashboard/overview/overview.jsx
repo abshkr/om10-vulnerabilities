@@ -226,14 +226,14 @@ const Overview = () => {
         if (folioClass === 'All') {
           payload.push({
             name: base.base_name,
-            data: [_.toNumber(base.qty_cor)],
+            data: [_.toNumber(base.qty_cmb)],
           });
         }
 
         if (base.bclass_desc === folioClass) {
           payload.push({
             name: base.base_name,
-            data: [_.toNumber(base.qty_cor)],
+            data: [_.toNumber(base.qty_cmb)],
           });
         }
       }
@@ -260,6 +260,16 @@ const Overview = () => {
 
           markers: {
             radius: 12,
+          },
+        },
+
+        yaxis: {
+          forceNiceScale: true,
+
+          labels: {
+            formatter: function (value, timestamp) {
+              return value?.toFixed(2);
+            },
           },
         },
 
@@ -293,6 +303,16 @@ const Overview = () => {
         chart: {
           zoom: {
             enabled: false,
+          },
+        },
+
+        yaxis: {
+          forceNiceScale: true,
+
+          labels: {
+            formatter: function (value, timestamp) {
+              return value?.toFixed(2);
+            },
           },
         },
 

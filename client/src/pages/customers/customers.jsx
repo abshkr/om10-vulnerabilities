@@ -33,7 +33,7 @@ const Customers = () => {
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
-  const page = t('pageMenu.customers');
+  const page = t('pageMenu.companies');
   const name = t('pageNames.customers');
 
   const modifiers = (
@@ -57,7 +57,7 @@ const Customers = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access}>
+    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="companies">
       <DataTable
         data={data}
         columns={fields}

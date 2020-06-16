@@ -6,7 +6,20 @@ const { Panel } = Collapse;
 
 const data = [
   {
-    title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 12/06/2020`,
+    title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 15/06/2020`,
+    content: (
+      <>
+        <>
+          <Divider>Bug Fixes</Divider>
+          <p>- Please Refer to all the bug fixes in the version document on Confluence.</p>
+          <p>- Please Refer to all the tasks marked "To Be Tested" on JIRA.</p>
+        </>
+      </>
+    ),
+  },
+
+  {
+    title: `Release Version Notes (10.0.10-dev) - 12/06/2020`,
     content: (
       <>
         <>

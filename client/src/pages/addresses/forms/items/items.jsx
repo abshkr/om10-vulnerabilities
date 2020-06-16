@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  EditOutlined,
-  PlusOutlined,
-  MinusOutlined,
-  EyeOutlined,
-  CarryOutOutlined,
-  LockOutlined,
-} from '@ant-design/icons';
+import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Button, Form } from 'antd';
 import _ from 'lodash';
@@ -17,10 +10,6 @@ import { ADDRESSES } from '../../../../api';
 import columns from './columns';
 
 const Items = ({ setTableAPIContext, value, addressCode }) => {
-  console.log("I am here!!! ", addressCode);
-
-  console.log("lines: ", value);
-
   const [lineAddDisabled, setLineAddDisabled] = useState(false);
   const [lineEditDisabled, setLineEditDisabled] = useState(true);
   const [lineDeleteDisabled, setLineDeleteDisabled] = useState(true);
@@ -37,14 +26,14 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
   const fields = columns(value, selected);
 
   const getNextLineNo = () => {
-    let nextNo=0;
+    let nextNo = 0;
     tableAPI.forEachNode((rowNode, index) => {
-      if ( nextNo < _.toNumber(rowNode?.data?.db_addrline_no)){
+      if (nextNo < _.toNumber(rowNode?.data?.db_addrline_no)) {
         nextNo = _.toNumber(rowNode?.data?.db_addrline_no);
       }
     });
     return nextNo + 1;
-  }
+  };
 
   const adjustModifiers = (options) => {
     if (options === null || options === undefined || options?.length === 0) {
@@ -123,12 +112,16 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
     } else if (option?.address_action === '-') {
       option.address_action = '';
       tableAPI.updateRowData({ update: [value] });
-    } else if (option?.address_action === '' || option?.address_action === null || option?.address_action === undefined) {
+    } else if (
+      option?.address_action === '' ||
+      option?.address_action === null ||
+      option?.address_action === undefined
+    ) {
       option.address_action = '-';
       tableAPI.updateRowData({ update: [option] });
     } else {
     }
-    
+
     adjustModifiers([option]);
   };
 

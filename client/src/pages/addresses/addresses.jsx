@@ -10,7 +10,6 @@ import { ADDRESSES } from '../../api';
 import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
-import axios from 'axios';
 
 import Forms from './forms';
 
@@ -25,10 +24,8 @@ const Addresses = () => {
   const { data: payload, isValidating, revalidate } = useSWR(ADDRESSES.READ);
 
   const handleFormState = (visibility, value) => {
-    console.log("handleFormState.value:", value);
     setVisible(visibility);
     setSelected(value);
-    console.log("handleFormState.selected:", selected);
   };
 
   const fields = columns(t);
@@ -36,7 +33,7 @@ const Addresses = () => {
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
-  const page = t('pageMenu.customers');
+  const page = t('pageMenu.companies');
   const name = t('pageNames.addresses');
 
   const modifiers = (
@@ -60,7 +57,7 @@ const Addresses = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access}>
+    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="addresses">
       <DataTable
         data={data}
         columns={fields}

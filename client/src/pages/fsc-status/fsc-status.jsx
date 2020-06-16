@@ -33,10 +33,11 @@ const FSCStatus = () => {
 
   return (
     <Page
-      page={t('pageMenu.operations')}
+      page={t('pageMenu.modules')}
       name={t('pageNames.fscStatus')}
       modifiers={modifiers}
       access={access}
+      avatar="fscStatus"
     >
       <DataTable columns={fields} data={data} isLoading={isValidating} />
     </Page>

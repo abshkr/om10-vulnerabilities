@@ -26,15 +26,14 @@ import {
 } from '@ant-design/icons';
 
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
-import _ from 'lodash';
-import useSWR from 'swr';
 import moment from 'moment';
+import useSWR from 'swr';
+import _ from 'lodash';
 
+import { SETTINGS } from '../../../../constants';
 import { FormModal } from '../../../../components/';
 import { getDateTimeFormat } from '../../../../utils';
-import { SETTINGS } from '../../../../constants';
-import { ALLOCATIONS } from '../../../../api';
+import api, { ALLOCATIONS } from '../../../../api';
 
 const { TabPane } = Tabs;
 
@@ -66,19 +65,17 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? ALLOCATIONS.PERIOD_CREATE : ALLOCATIONS.PERIOD_UPDATE, record)
-          .then(
-            axios.spread((response) => {
-              Modal.destroyAll();
+          .then(() => {
+            Modal.destroyAll();
 
-              revalidate();
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-              });
-            })
-          )
+            revalidate();
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -100,7 +97,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(ALLOCATIONS.PERIOD_DELETE, value)
           .then(() => {
             Modal.destroyAll();

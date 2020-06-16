@@ -3,39 +3,42 @@ import React, { useState } from 'react';
 import { SyncOutlined, UnlockOutlined } from '@ant-design/icons';
 import { Button, notification } from 'antd';
 import useSWR, { mutate } from 'swr';
-import axios from 'axios';
+import _ from 'lodash';
 
 import { Page, DataTable } from '../../components';
-import { GATE_CONTROL } from '../../api';
+import api, { GATE_CONTROL } from '../../api';
 
 import columns from './columns';
 import auth from '../../auth';
 import { useTranslation } from 'react-i18next';
+import useAuth from 'hooks/use-auth';
 
 const GateControl = () => {
   const { t } = useTranslation();
   const { data: payload, isValidating, revalidate } = useSWR(GATE_CONTROL.READ);
+  const { canUpdate } = useAuth('M_GATECONTROL');
 
   const [selected, setSelected] = useState([]);
 
   const fields = columns(t);
 
   const handleGateOpening = () => {
-    axios
+    api
       .post(GATE_CONTROL.OPEN_ALL_GATES, selected)
-      .then(
-        axios.spread(response => {
-          mutate(GATE_CONTROL.READ);
+      .then((response) => {
+        mutate(GATE_CONTROL.READ);
 
-          notification.success({
-            message: t('messages.unlockSuccess')
+        notification.success({
+          message: t('messages.unlockSuccess'),
+        });
+      })
+
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
           });
-        })
-      )
-      .catch(error => {
-        notification.error({
-          message: error.message,
-          description: t('descriptions.unlockFailed')
         });
       });
   };
@@ -45,11 +48,12 @@ const GateControl = () => {
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
+
       <Button
         type="primary"
         icon={<UnlockOutlined />}
         loading={isValidating}
-        disabled={selected.length === 0}
+        disabled={selected.length === 0 || !canUpdate}
         onClick={handleGateOpening}
       >
         {payload?.records.length === selected.length
@@ -60,7 +64,12 @@ const GateControl = () => {
   );
 
   return (
-    <Page page={t('pageMenu.accessControl')} name={t('pageNames.gateControl')} modifiers={modifiers}>
+    <Page
+      page={t('pageMenu.operations')}
+      name={t('pageNames.gateControl')}
+      modifiers={modifiers}
+      avatar="gateControl"
+    >
       <DataTable
         columns={fields}
         data={payload?.records}

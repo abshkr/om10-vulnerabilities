@@ -4,15 +4,14 @@ import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } fr
 import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
-import { EQUIPMENT_TYPES } from '../../../api';
+import api, { EQUIPMENT_TYPES } from '../../../api';
 import { Code, NonCombination, Compartments, Combination } from './fields';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, isCombination }) => {
+const FormModal = ({ value, visible, handleFormState, isCombination, access }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -77,7 +76,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? EQUIPMENT_TYPES.CREATE : EQUIPMENT_TYPES.UPDATE, values)
           .then(() => {
             onComplete();
@@ -108,7 +107,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(EQUIPMENT_TYPES.DELETE, value)
           .then(() => {
             onComplete();
@@ -153,7 +152,9 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={!IS_CREATING && IS_COMBINATION}
+            disabled={
+              (!IS_CREATING && IS_COMBINATION) || IS_CREATING ? !access?.canCreate : !access?.canUpdate
+            }
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -163,6 +164,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination }) => {
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
+              disabled={!access?.canUpdate}
               onClick={onDelete}
             >
               {t('operations.delete')}

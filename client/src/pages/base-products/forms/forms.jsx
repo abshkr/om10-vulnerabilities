@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  QuestionCircleOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
+
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
+
 import _ from 'lodash';
 
 import {
@@ -19,7 +26,7 @@ import {
   HotTempFlag,
 } from './fields';
 
-import { BASE_PRODUCTS } from '../../../api';
+import api, { BASE_PRODUCTS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -50,7 +57,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? BASE_PRODUCTS.CREATE : BASE_PRODUCTS.UPDATE, values)
           .then(() => {
             onComplete();
@@ -81,7 +88,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(BASE_PRODUCTS.DELETE, value)
           .then(() => {
             onComplete();
@@ -104,10 +111,10 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
   };
 
   useEffect(() => {
-    if (!value) {
+    if (!value & !visible) {
       resetFields();
     }
-  }, [resetFields, value]);
+  }, [resetFields, value, visible]);
 
   return (
     <Drawer

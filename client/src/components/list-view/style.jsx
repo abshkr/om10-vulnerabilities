@@ -55,7 +55,7 @@ const CardContainer = styled.div`
     margin-bottom: 5px;
     border-radius: 5px;
     background: ${(props) => props.background || '#fff'};
-    border: ${(props) => (props.selected ? '1px solid #0054A4' : '#fff')} !important;
+    border: ${(props) => (props.selected ? '5px solid #0054A4' : '#fff')} !important;
   }
 
   .ant-avatar {

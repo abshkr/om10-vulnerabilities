@@ -1,4 +1,4 @@
 export const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 export const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export const DEFAULT_LANGUAGE = 'en';
-export const VERSION = '10.0.10-dev';
+export const VERSION = '10.0.11-dev';

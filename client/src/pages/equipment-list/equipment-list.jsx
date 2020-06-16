@@ -13,21 +13,24 @@ import auth from '../../auth';
 import { useAuth } from 'hooks';
 import Forms from './forms';
 
-const BaseProducts = () => {
+const EquipmentList = () => {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const auth = useAuth('M_EQUIPMENTLIST');
+  const access = useAuth('M_EQUIPMENTLIST');
 
   const { data: payload, isValidating, revalidate } = useSWR(EQUIPMENT_LIST.READ);
-
-  const fields = columns(t);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
   };
+
+  const fields = columns(t);
+
+  const page = t('pageMenu.operations');
+  const name = t('pageNames.equipmentList');
 
   const modifiers = (
     <>
@@ -48,22 +51,18 @@ const BaseProducts = () => {
   );
 
   return (
-    <Page
-      page={t('pageMenu.schedules')}
-      name={t('pageNames.equipmentList')}
-      modifiers={modifiers}
-      access={auth}
-    >
+    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="equipmentList">
       <DataTable
         columns={fields}
         data={payload?.records}
         isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        selectionMode="single"
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };
 
-export default auth(BaseProducts);
+export default auth(EquipmentList);

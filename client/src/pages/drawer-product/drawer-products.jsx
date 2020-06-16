@@ -33,7 +33,7 @@ const DrawerProduct = () => {
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
-  const page = t('pageMenu.gantry');
+  const page = t('pageMenu.products');
   const name = t('pageNames.drawerProducts');
 
   const modifiers = (
@@ -57,7 +57,7 @@ const DrawerProduct = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access}>
+    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="drawerProducts">
       <DataTable
         data={data}
         columns={fields}

@@ -24,6 +24,9 @@ const ExpiryDates = () => {
 
   const fields = columns(t);
 
+  const page = t('pageMenu.security');
+  const name = t('pageNames.expiryDates');
+
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
@@ -40,7 +43,7 @@ const ExpiryDates = () => {
         icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
-        disabled={!auth.canCreate}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -48,24 +51,20 @@ const ExpiryDates = () => {
   );
 
   return (
-    <Page
-      page={t('pageMenu.accessControl')}
-      name={t('pageNames.expiryDates')}
-      modifiers={modifiers}
-      access={access}
-    >
+    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="expiryDates">
       <DataTable
         columns={fields}
         data={payload?.records}
         isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        selectionMode="single"
       />
       <Forms
         value={selected}
         visible={visible}
         handleFormState={handleFormState}
-        auth={access}
+        access={access}
         all={payload?.records}
       />
     </Page>

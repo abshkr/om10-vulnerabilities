@@ -30,14 +30,14 @@ const AdaptiveFlowControl = () => {
   const isLoading = !baseProducts || !flowRate || !currentRate;
 
   useEffect(() => {
-    if (!isLoading) {
+    if (baseProducts?.records && flowRate?.records && currentRate) {
       const payload = generator(baseProducts?.records, flowRate?.records, currentRate);
       setData(payload);
     }
   }, [isLoading, flowRate, currentRate, baseProducts]);
 
   return (
-    <Page page={t('pageMenu.operations')} name={t('pageNames.adaptiveFlow')} access={access}>
+    <Page page={t('pageMenu.modules')} name={t('pageNames.adaptiveFlow')} access={access}>
       <Table
         dataSource={data}
         rowKey="baseCode"

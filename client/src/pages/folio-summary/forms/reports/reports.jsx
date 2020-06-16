@@ -1,11 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import useSWR from 'swr';
-import axios from 'axios';
 import { RedoOutlined, CloseOutlined } from '@ant-design/icons';
 
 import { Modal, Button, Table, message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { FOLIO_SUMMARY } from '../../../../api';
+import api, { FOLIO_SUMMARY } from '../../../../api';
 import generator from './generator';
 import columns from './columns';
 
@@ -21,12 +20,10 @@ const Reports = ({ id, enabled }) => {
 
     message.loading({ content: t('messages.regenerating'), id });
 
-    axios.post(`${FOLIO_SUMMARY.CREATE_REPORTS}?closeout_nr=${id}`).then(
-      axios.spread(response => {
-        message.success({ content: t('messages.regeneratingComplete'), id });
-        setRegenerate(false);
-      })
-    );
+    api.post(`${FOLIO_SUMMARY.CREATE_REPORTS}?closeout_nr=${id}`).then((response) => {
+      message.success({ content: t('messages.regeneratingComplete'), id });
+      setRegenerate(false);
+    });
   }, [id, t]);
 
   const payload = generator(id, data?.records);

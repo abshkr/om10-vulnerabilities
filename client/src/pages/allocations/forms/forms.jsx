@@ -11,19 +11,18 @@ import {
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 import useSWR from 'swr';
 
 import { Type, Company, Supplier, LockType, Period as PeriodItem, Unit } from './fields';
 import { DataTable } from '../../../components';
-import { ALLOCATIONS } from '../../../api';
+import api, { ALLOCATIONS } from '../../../api';
 import columns from './columns';
 import Period from './period';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, auth }) => {
+const FormModal = ({ value, visible, handleFormState, access }) => {
   const { data: units } = useSWR(ALLOCATIONS.PERIOD_TYPES);
 
   const { t } = useTranslation();
@@ -53,7 +52,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       ? `${ALLOCATIONS.ITEMS}?supplier=${supplier}`
       : `${ALLOCATIONS.ITEMS}?alloc_type=${type}&alloc_cmpycode=${company}&alloc_suppcode=${supplier}`;
 
-    axios.get(url).then((response) => {
+    api.get(url).then((response) => {
       const payload = response.data?.records || [];
 
       form.setFieldsValue({
@@ -86,14 +85,16 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? ALLOCATIONS.CREATE : ALLOCATIONS.UPDATE, values)
           .then(() => {
             onComplete();
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING
+                ? t('descriptions.createSuccess')
+                : `${t('descriptions.updateSuccess')} ${values?.alloc_type}`,
             });
           })
           .catch((errors) => {
@@ -117,14 +118,14 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(ALLOCATIONS.DELETE, value)
           .then(() => {
             onComplete();
 
             notification.success({
               message: t('messages.deleteSuccess'),
-              description: `${t('descriptions.deleteSuccess')}`,
+              description: `${t('descriptions.deleteSuccess')} ${value?.alloc_type}`,
             });
           })
           .catch((errors) => {
@@ -143,16 +144,16 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
     if (!selected) {
       notification.error({
         message: t('pageNames.allocations'),
-        description: t("descriptions.selectAllocationItem"),
-      })
+        description: t('descriptions.selectAllocationItem'),
+      });
       return;
     }
 
     if (selected.aitem_qtyused === 0) {
       notification.error({
         message: t('pageNames.allocations'),
-        description: t("descriptions.deliveredBeingZero"),
-      })
+        description: t('descriptions.deliveredBeingZero'),
+      });
       return;
     }
 
@@ -164,13 +165,8 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
-          // .post(ALLOCATIONS.RESET, {
-          //   aitem_type: type,
-          //   aitem_cmpycode: company,
-          //   aitem_suppcode: supplier,
-          //   // aitem_prodcode: selected.
-          // })
+        await api
+
           .post(ALLOCATIONS.RESET, selected)
           .then(() => {
             getAllocations();
@@ -216,9 +212,10 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       visible={visible}
       footer={
         <>
-          <Button type="primary" 
-            disabled={IS_CREATING || !selected} 
-            icon={<RedoOutlined />} 
+          <Button
+            type="primary"
+            disabled={IS_CREATING || !selected}
+            icon={<RedoOutlined />}
             onClick={onReset}
           >
             {t('operations.reset')}
@@ -229,7 +226,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !auth.canCreate : !auth.canUpdate}
+            disabled={IS_CREATING ? !access.canCreate : !access.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -252,7 +249,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!auth.canDelete}
+              disabled={!access.canDelete}
             >
               {t('operations.delete')}
             </Button>

@@ -5,17 +5,16 @@ import {
   PlusOutlined,
   CloseOutlined,
   DeleteOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 
 // import Rules from './rules';
 import { Id, Gate, Name } from './fields';
-import { GATE_PERMISSION } from '../../../api';
+import api, { GATE_PERMISSION } from '../../../api';
 import _ from 'lodash';
 import { DataTable, FormModal } from '../../../components';
 import columns from './columns';
@@ -31,12 +30,12 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
   const [selected, setSelected] = useState(null);
 
   let next_id = null;
-  axios.get(`${GATE_PERMISSION.NEXT_PRM_ID}`)
-    .then((response) => {
-      const payload = response.data?.records || [];
-      next_id = payload[0].next_prm_id;
-    });
-  
+
+  api.get(`${GATE_PERMISSION.NEXT_PRM_ID}`).then((response) => {
+    const payload = response.data?.records || [];
+    next_id = payload[0].next_prm_id;
+  });
+
   const onComplete = () => {
     handleFormState(false, null);
     mutate(GATE_PERMISSION.READ);
@@ -51,17 +50,13 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
     } else {
       if (values.rules.length === 0) {
         Modal.info({
-          title: t('pageNames.gatePermission') ,
-          content: (
-            <div>
-              {t('descriptions.gatePermissionRule')}
-            </div>
-          ),
-        })
+          title: t('pageNames.gatePermission'),
+          content: <div>{t('descriptions.gatePermissionRule')}</div>,
+        });
         return;
       }
     }
-    
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -70,18 +65,17 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? GATE_PERMISSION.CREATE : GATE_PERMISSION.UPDATE, values)
-          .then(
-            axios.spread(response => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
-              });
-            })
-          )
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -90,7 +84,7 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
               });
             });
           });
-      }
+      },
     });
   };
 
@@ -102,18 +96,17 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(GATE_PERMISSION.DELETE, value)
-          .then(
-            axios.spread(response => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`
-              });
-            })
-          )
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -122,7 +115,7 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
               });
             });
           });
-      }
+      },
     });
   };
 
@@ -132,11 +125,11 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
       if (!value) {
         prmssn_k = next_id;
       } else {
-        prmssn_k = value.prmssn_k
+        prmssn_k = value.prmssn_k;
       }
 
       const payload = {
-        rule_id: rules.length == 0? prmssn_k : prmssn_k * 1000 + rules.length + 1,
+        rule_id: rules.length == 0 ? prmssn_k : prmssn_k * 1000 + rules.length + 1,
         rule_case: values.rule_case,
         rule_casename: values.rule_casename,
         rule_etyp: values.rule_etyp,
@@ -156,7 +149,7 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
     } else {
       const filtered = _.filter(rules, (item) => {
         return item.rule_id !== values.rule_id;
-      })
+      });
       const payload = {
         rule_id: values.rule_id,
         rule_case: values.rule_case,
@@ -176,7 +169,7 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
         rules: [...filtered, payload],
       });
     }
-  }
+  };
 
   const deleteRule = () => {
     if (selected.rule_first) {
@@ -188,32 +181,32 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
     }
 
     let payload = _.filter(rules, (item) => {
-      return item.rule_id !== selected.rule_id
+      return item.rule_id !== selected.rule_id;
     });
     setFieldsValue({
       rules: payload,
     });
 
     setRules(payload);
-    setSelected(null)
-  }
+    setSelected(null);
+  };
 
   const handleRule = (v) => {
     FormModal({
-      width: "50vh",
+      width: '50vh',
       value: v,
-      form: <RuleForm value={v} handleCallBack={handleCallBack}/>,
+      form: <RuleForm value={v} handleCallBack={handleCallBack} />,
       id: v?.rule_id,
-      name: "",
-      t
+      name: '',
+      t,
     });
-  }
+  };
 
   useEffect(() => {
     if (value && visible) {
       setRules(value?.rules);
-    } 
-    
+    }
+
     if (!value && visible) {
       // resetFields();
       setRules([]);
@@ -273,7 +266,7 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
             <Gate form={form} value={value} />
             <Name form={form} value={value} />
             <Divider orientation="left">{t('tabColumns.rules')}</Divider>
-            <Form.Item name="rules" noStyle >
+            <Form.Item name="rules" noStyle>
               <DataTable
                 data={rules}
                 height="78vh"
@@ -287,7 +280,7 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
               type="primary"
               icon={<PlusOutlined />}
               // loading={baseLoading && !IS_CREATING}
-              onClick={()=>handleRule(null)}
+              onClick={() => handleRule(null)}
               style={{ float: 'right', marginRight: 5, marginTop: 10 }}
             >
               {t('operations.addRule')}
@@ -296,7 +289,7 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
             <Button
               type="primary"
               icon={<EditOutlined />}
-              onClick={()=>handleRule(selected)}
+              onClick={() => handleRule(selected)}
               style={{ float: 'right', marginRight: 5, marginTop: 10 }}
               disabled={!selected}
             >
@@ -312,7 +305,6 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
             >
               {t('operations.deleteRule')}
             </Button>
-
           </TabPane>
         </Tabs>
       </Form>

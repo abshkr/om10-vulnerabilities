@@ -5,12 +5,12 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, FormModal } from '../../components';
-import { COMPANY_BAY_MOVEMENT } from '../../api';
-import columns from './columns';
-import auth from '../../auth';
-import { useAuth } from 'hooks';
+import { Page, DataTable, Download } from 'components';
+import { COMPANY_BAY_MOVEMENT } from 'api';
+import useAuth from 'hooks/use-auth';
+import auth from 'auth';
 
+import columns from './columns';
 import Forms from './forms';
 
 const CompanyBayMovement = () => {
@@ -18,12 +18,15 @@ const CompanyBayMovement = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const auth = useAuth('M_BAYMOVEMENT');
+  const access = useAuth('M_BAYMOVEMENT');
 
   const { data: payload, isValidating, revalidate } = useSWR(COMPANY_BAY_MOVEMENT.READ);
 
   const fields = columns(t);
   const data = payload?.records;
+
+  const page = t('pageMenu.config');
+  const name = t('pageNames.companyBayMovement');
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -36,12 +39,12 @@ const CompanyBayMovement = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
-        disabled={!auth.canCreate}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -49,15 +52,15 @@ const CompanyBayMovement = () => {
   );
 
   return (
-    <Page page={t('pageMenu.gantry')} name={t('pageNames.companyBayMovement')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={data} 
-        isLoading={isValidating} 
+    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="companyBayMovement">
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };

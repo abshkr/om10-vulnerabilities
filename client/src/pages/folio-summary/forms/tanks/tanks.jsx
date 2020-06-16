@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { Modal, Button, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { EditOutlined, SaveOutlined, RedoOutlined, CloseOutlined } from '@ant-design/icons';
-import { FOLIO_SUMMARY } from '../../../../api';
+import api, { FOLIO_SUMMARY } from '../../../../api';
 import { DataTable } from '../../../../components';
 
 import generator from './generator';
@@ -25,7 +25,7 @@ const Tanks = ({ id, enabled, access }) => {
   const fetch = useCallback(() => {
     setLoading(true);
 
-    axios.get(`${FOLIO_SUMMARY.TANKS}?closeout_nr=${id}`).then(response => {
+    api.get(`${FOLIO_SUMMARY.TANKS}?closeout_nr=${id}`).then((response) => {
       setLoading(false);
 
       const values = generator(response.data.records);
@@ -46,25 +46,27 @@ const Tanks = ({ id, enabled, access }) => {
       centered: true,
       content: t('descriptions.saveToFolioWarning'),
       onOk: async () => {
-        await axios
+        await api
           .post(FOLIO_SUMMARY.SAVE_TANKS, data)
           .then(
-            axios.spread(response => {
+            axios.spread((response) => {
               fetch();
 
               notification.success({
                 message: t('messages.saveSuccess'),
-                description: t('descriptions.saveSuccess')
+                description: t('descriptions.saveSuccess'),
               });
             })
           )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.saveSuccess')
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
-      }
+      },
     });
   };
 
@@ -76,52 +78,53 @@ const Tanks = ({ id, enabled, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(FOLIO_SUMMARY.CALCULATE, selected)
-          .then(
-            axios.spread(response => {
-              const payload = [];
+          .then((response) => {
+            const payload = [];
 
-              api.forEachNodeAfterFilterAndSort((rowNode, index) => {
-                const filtered = _.find(response.data.data, ['tank_code', rowNode.data.tank_code]);
+            api.forEachNodeAfterFilterAndSort((rowNode, index) => {
+              const filtered = _.find(response.data.data, ['tank_code', rowNode.data.tank_code]);
 
-                if (filtered) {
-                  rowNode.data.close_amb_tot = filtered.close_amb_tot;
-                  rowNode.data.close_std_tot = filtered.close_std_tot;
-                  rowNode.data.close_mass_tot = filtered.close_mass_tot;
-                  rowNode.data.tank_prod_lvl = filtered.tank_prod_lvl;
-                  rowNode.data.close_temp = filtered.close_temp;
-                  rowNode.data.close_density = filtered.close_density;
+              if (filtered) {
+                rowNode.data.close_amb_tot = filtered.close_amb_tot;
+                rowNode.data.close_std_tot = filtered.close_std_tot;
+                rowNode.data.close_mass_tot = filtered.close_mass_tot;
+                rowNode.data.tank_prod_lvl = filtered.tank_prod_lvl;
+                rowNode.data.close_temp = filtered.close_temp;
+                rowNode.data.close_density = filtered.close_density;
 
-                  payload.push(rowNode.data);
-                }
+                payload.push(rowNode.data);
+              }
+            });
+
+            api.updateRowData({ update: payload });
+
+            if (response.data.calc_issues === 0) {
+              notification.success({
+                message: t('messages.calculateSuccess'),
+                description: t('descriptions.calculateSuccess'),
               });
+            }
 
-              api.updateRowData({ update: payload });
-
-              if (response.data.calc_issues === 0) {
-                notification.success({
-                  message: t('messages.calculateSuccess'),
-                  description: t('descriptions.calculateSuccess')
+            if (response.data.desc.length > 0) {
+              _.forEach(response.data.desc, (error) => {
+                notification.error({
+                  message: error,
                 });
-              }
+              });
+            }
+          })
 
-              if (response.data.desc.length > 0) {
-                _.forEach(response.data.desc, error => {
-                  notification.error({
-                    message: error
-                  });
-                });
-              }
-            })
-          )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.calculateFailed')
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
-      }
+      },
     });
   };
 
@@ -134,30 +137,31 @@ const Tanks = ({ id, enabled, access }) => {
       centered: true,
       content: t('descriptions.saveToTanksWarning'),
       onOk: async () => {
-        await axios
+        await api
           .post(FOLIO_SUMMARY.SAVE_TANKS, data)
-          .then(
-            axios.spread(response => {
-              notification.success({
-                message: t('messages.saveSuccess'),
-                description: t('descriptions.saveSuccess')
+          .then((response) => {
+            notification.success({
+              message: t('messages.saveSuccess'),
+              description: t('descriptions.saveSuccess'),
+            });
+          })
+
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
               });
-            })
-          )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.saveFailed')
             });
           });
-      }
+      },
     });
   };
 
-  const onEditingFinished = values => {
+  const onEditingFinished = (values) => {
     const payload = [];
 
-    values.api.forEachNode(node => payload.push(node.data));
+    values.api.forEachNode((node) => payload.push(node.data));
 
     setData(payload);
   };

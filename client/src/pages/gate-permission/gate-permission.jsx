@@ -5,7 +5,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, FormModal } from '../../components';
+import { Page, DataTable, Download } from '../../components';
 import { GATE_PERMISSION } from '../../api';
 import { useAuth } from '../../hooks';
 import columns from './columns';
@@ -36,20 +36,36 @@ const GatePermission = () => {
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
+
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleFormState(true, null)}  loading={isValidating}>
+
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        disabled={!access?.canCreate}
+        onClick={() => handleFormState(true, null)}
+        loading={isValidating}
+      >
         {t('operations.create')}
       </Button>
     </>
   );
 
   return (
-    <Page page={t('pageMenu.accessControl')} name={t('pageNames.gatePermission')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} data={data} 
-        isLoading={isValidating} 
+    <Page
+      page={t('pageMenu.security')}
+      name={t('pageNames.gatePermission')}
+      modifiers={modifiers}
+      avatar="gatePermission"
+    >
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
-        handleSelect={(payload) => handleFormState(true, payload[0])} />
+        handleSelect={(payload) => handleFormState(true, payload[0])}
+        selectionMode="single"
+      />
       <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );

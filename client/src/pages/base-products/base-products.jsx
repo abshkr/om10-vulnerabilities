@@ -14,15 +14,15 @@ import auth from '../../auth';
 import Forms from './forms';
 
 const BaseProducts = () => {
-  const [visible, setVisible] = useState(false);
-  const [selected, setSelected] = useState(null);
-
   const { t } = useTranslation();
 
   const config = useConfig();
   const access = useAuth('M_BASEPRODUCTS');
 
   const { data: payload, isValidating, revalidate } = useSWR(BASE_PRODUCTS.READ);
+
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -34,7 +34,7 @@ const BaseProducts = () => {
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
-  const page = t('pageMenu.gantry');
+  const page = t('pageMenu.products');
   const name = t('pageNames.baseProducts');
 
   const modifiers = (
@@ -58,7 +58,7 @@ const BaseProducts = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access}>
+    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="baseProducts">
       <DataTable
         data={data}
         columns={fields}

@@ -14,14 +14,14 @@ import auth from '../../auth';
 import Forms from './forms';
 
 const Area = () => {
-  const [visible, setVisible] = useState(false);
-  const [selected, setSelected] = useState(null);
-
   const { t } = useTranslation();
 
   const access = useAuth('M_AREA');
 
   const { data: payload, isValidating, revalidate } = useSWR(AREA.READ);
+
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -33,7 +33,7 @@ const Area = () => {
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
-  const page = t('pageMenu.accessControl');
+  const page = t('pageMenu.security');
   const name = t('pageNames.area');
 
   const modifiers = (
@@ -57,7 +57,7 @@ const Area = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access}>
+    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="area">
       <DataTable
         data={data}
         columns={fields}

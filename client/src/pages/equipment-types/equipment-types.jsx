@@ -20,7 +20,7 @@ const EquipmentTypes = () => {
 
   const { t } = useTranslation();
 
-  const auth = useAuth('M_EQUIPMENT');
+  const access = useAuth('M_EQUIPMENT');
 
   const { data: payload, isValidating, revalidate } = useSWR(EQUIPMENT_TYPES.READ);
 
@@ -56,7 +56,7 @@ const EquipmentTypes = () => {
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
-  const page = t('pageMenu.schedules');
+  const page = t('pageMenu.operations');
   const name = t('pageNames.equipmentTypes');
 
   const modifiers = (
@@ -72,7 +72,7 @@ const EquipmentTypes = () => {
         icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isLoading}
-        disabled={!auth.canCreate}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -80,7 +80,7 @@ const EquipmentTypes = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={auth}>
+    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="equipmentTypes">
       <DataTable
         data={data}
         columns={fields}
@@ -94,7 +94,7 @@ const EquipmentTypes = () => {
         value={selected}
         visible={visible}
         handleFormState={handleFormState}
-        auth={auth}
+        access={access}
         isCombination={isCombination}
       />
     </Page>

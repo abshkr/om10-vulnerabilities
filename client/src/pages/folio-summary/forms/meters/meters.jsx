@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import useSWR from 'swr';
-import axios from 'axios';
 import { Modal, Button, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { EditOutlined, CloseOutlined } from '@ant-design/icons';
+import _ from 'lodash';
 
-import { FOLIO_SUMMARY } from '../../../../api';
+import api, { FOLIO_SUMMARY } from '../../../../api';
 import { DataTable } from '../../../../components';
 
 import columns from './columns';
@@ -16,7 +16,7 @@ const Meters = ({ id, enabled, access }) => {
   const [data, setData] = useState([]);
 
   const { data: payload, isValidating, revalidate } = useSWR(`${FOLIO_SUMMARY.METERS}?closeout_nr=${id}`, {
-    revalidateOnFocus: false
+    revalidateOnFocus: false,
   });
 
   const fields = columns(t);
@@ -29,30 +29,32 @@ const Meters = ({ id, enabled, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(FOLIO_SUMMARY.UPDATE_METERS, data)
-          .then(response => {
+          .then((response) => {
             revalidate();
 
             notification.success({
               message: t('messages.updateSuccess'),
-              description: t('descriptions.updateSuccess')
+              description: t('descriptions.updateSuccess'),
             });
           })
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.updateFailed')
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
-      }
+      },
     });
   };
 
-  const onEditingFinished = values => {
+  const onEditingFinished = (values) => {
     const changed = [];
 
-    values.api.forEachNode(node => changed.push(node.data));
+    values.api.forEachNode((node) => changed.push(node.data));
 
     setData(changed);
   };

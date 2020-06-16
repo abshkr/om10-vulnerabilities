@@ -8,6 +8,7 @@ import useSWR, { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 
+import { ConfigurationContainer } from './styles';
 import { SITE_CONFIGURATION } from '../../api';
 import { Page } from '../../components';
 import auth from '../../auth';
@@ -77,13 +78,13 @@ const FormSwitch = ({ config, onChange }) => {
 
 const ConfigurationItems = ({ data, onChange }) => (
   <List
-    style={{ height: '75vh', overflowY: 'scroll' }}
+    style={{ height: 'calc(100vh - 200px)', overflowY: 'auto' }}
     itemLayout="horizontal"
     size="small"
     dataSource={data}
     renderItem={(item) => {
       return (
-        <List.Item style={{ background: 'white', marginBottom: 5 }}>
+        <List.Item style={{ background: 'white', marginBottom: 10, marginRight: 10, borderRadius: 5 }}>
           <List.Item.Meta
             style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}
             avatar={
@@ -107,13 +108,13 @@ const ConfigurationItems = ({ data, onChange }) => (
 
 const FeatureItems = ({ data, onChange }) => (
   <List
-    style={{ height: '75vh', overflowY: 'scroll' }}
+    style={{ height: 'calc(100vh - 200px)', overflowY: 'auto' }}
     itemLayout="horizontal"
     size="small"
     dataSource={data}
     renderItem={(item) => {
       return (
-        <List.Item style={{ background: 'white', marginBottom: 5 }}>
+        <List.Item style={{ background: 'white', marginBottom: 10, marginRight: 10, borderRadius: 5 }}>
           <List.Item.Meta
             style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}
             avatar={
@@ -239,43 +240,45 @@ const Configuration = () => {
   const page = t('pageMenu.configuration');
 
   return (
-    <Page page={page} auth={auth} minimal modifiers={modifiers}>
-      <Tabs defaultActiveKey={tab} onChange={setTab} style={{ marginLeft: 5 }}>
-        <TabPane tab={t('tabColumns.screenAccess')} key="1">
-          <ConfigurationItems
-            data={_.filter(configuration, ['config_required_by_gui', 'Y'])}
-            onChange={onConfigurationEdit}
-          />
-        </TabPane>
-        <TabPane tab={t('tabColumns.general')} key="2">
-          <ConfigurationItems
-            data={_.filter(configuration, ['config_required_by_gui', 'R'])}
-            onChange={onConfigurationEdit}
-          />
-        </TabPane>
-        <TabPane tab={t('tabColumns.driverPin')} key="3">
-          <ConfigurationItems
-            data={_.filter(configuration, ['config_required_by_gui', 'P'])}
-            onChange={onConfigurationEdit}
-          />
-        </TabPane>
+    <ConfigurationContainer>
+      <Page page={page} auth={auth} minimal modifiers={modifiers}>
+        <Tabs defaultActiveKey={tab} type="card" onChange={setTab}>
+          <TabPane tab={t('tabColumns.screenAccess')} key="1">
+            <ConfigurationItems
+              data={_.filter(configuration, ['config_required_by_gui', 'Y'])}
+              onChange={onConfigurationEdit}
+            />
+          </TabPane>
+          <TabPane tab={t('tabColumns.general')} key="2">
+            <ConfigurationItems
+              data={_.filter(configuration, ['config_required_by_gui', 'R'])}
+              onChange={onConfigurationEdit}
+            />
+          </TabPane>
+          <TabPane tab={t('tabColumns.driverPin')} key="3">
+            <ConfigurationItems
+              data={_.filter(configuration, ['config_required_by_gui', 'P'])}
+              onChange={onConfigurationEdit}
+            />
+          </TabPane>
 
-        <TabPane tab={t('tabColumns.closeoutOptions')} key="4">
-          <ConfigurationItems data={_.filter(configuration, ['config_required_by_gui', ''])} />
-        </TabPane>
+          <TabPane tab={t('tabColumns.closeoutOptions')} key="4">
+            <ConfigurationItems data={_.filter(configuration, ['config_required_by_gui', ''])} />
+          </TabPane>
 
-        <TabPane tab={t('tabColumns.seals')} key="5">
-          <ConfigurationItems
-            data={_.filter(configuration, ['config_required_by_gui', 'S'])}
-            onChange={onConfigurationEdit}
-          />
-        </TabPane>
+          <TabPane tab={t('tabColumns.seals')} key="5">
+            <ConfigurationItems
+              data={_.filter(configuration, ['config_required_by_gui', 'S'])}
+              onChange={onConfigurationEdit}
+            />
+          </TabPane>
 
-        <TabPane tab={t('tabColumns.features')} key="6">
-          <FeatureItems data={features} onChange={onFeatureEdit} />
-        </TabPane>
-      </Tabs>
-    </Page>
+          <TabPane tab={t('tabColumns.features')} key="6">
+            <FeatureItems data={features} onChange={onFeatureEdit} />
+          </TabPane>
+        </Tabs>
+      </Page>
+    </ConfigurationContainer>
   );
 };
 
