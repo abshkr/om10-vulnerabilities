@@ -214,7 +214,7 @@
     "adhoc": "Adhoc?",
     "physicalTagText": "Physical Tag Text",
     "personnel": "Personnel",
-	"personnelCode": "Personnel Code",
+    "personnelCode": "Personnel Code",
     "drawer": "Drawer",
     "tankerCode": "Tanker Code",
     "tanker": "Tanker",
@@ -1036,24 +1036,21 @@
     "mtShipTo": "Ship To",
     "mtDelvNum": "Delv No.",
     "massUnit": "Mass Unit",
-    "volumeUnit": "Volume Unit"
-		"rec_id": "Record ID",
-		"origin": "Origin",
-		"message_id": "Message ID",
-		"recv_time": "Receive Time,
-		"destination": "Destination",
-		"dest_site": "Destinated Site",
-		"message_type": "Message Type",
-		"file_name": "File Name",
-		"file_format": "File Format",
-		"validity": "Valid",
-		"status": "Status",
-		"status_description": "Status Description",
-		"acknowledged": "Acknowledged",
-		"ack_id": "Ack ID",
-		"archived_file": "Archived File",
-		"transferred_file": "Transferred File",
-		"resubmitted": "Resubmitted"
+    "volumeUnit": "Volume Unit",
+    "rec_id": "Record ID",
+    "message_id": "Message ID",
+    "recv_time": "Receive Time",
+    "dest_site": "Destinated Site",
+    "message_type": "Message Type",
+    "file_name": "File Name",
+    "file_format": "File Format",
+    "validity": "Valid",
+    "status_description": "Status Description",
+    "acknowledged": "Acknowledged",
+    "ack_id": "Ack ID",
+    "archived_file": "Archived File",
+    "transferred_file": "Transferred File",
+    "resubmitted": "Resubmitted"
   },
 
   "pageMenu": {
@@ -1522,7 +1519,7 @@
     "mustBeAlphaNumeric": "Must be Alphanumeric.",
     "timecodeAL": "Cannot delete time code AL",
     "maxExpTarget": "Maximum expiry date type under this target is 10",
-	"searchTrip": "Please type in trip number to search"
+    "searchTrip": "Please type in trip number to search"
   },
 
   "placeholder": {
@@ -1629,9 +1626,9 @@
     "selectArmCode": "Select Arm Code",
     "selectTransType": "Please Select Transaction Type",
     "setSourceUnit": "Please Select Source Unit",
-	"setDestinationUnit": "Please Select Destination Unit",
-	"selectLocale": "Please Select Locale",
-	"selectMessage": "Please Select Message"
+    "setDestinationUnit": "Please Select Destination Unit",
+    "selectLocale": "Please Select Locale",
+    "selectMessage": "Please Select Message"
   },
 
   "validate": {
@@ -1641,8 +1638,8 @@
     "mustBeNumber": "Must Be Number",
     "outOfRange": "Value Out of Range",
     "mustBeBetween": "Must Be Between",
-	"prodMoveSrcAndDst": "Source and/or destination must be a tank and specified",
-	"invalidInput": "Invalid Input"
+    "prodMoveSrcAndDst": "Source and/or destination must be a tank and specified",
+    "invalidInput": "Invalid Input"
   },
 
   "units": {

@@ -34,7 +34,7 @@ import columns from './columns';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -46,9 +46,16 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const fields = columns(t);
   const IS_CREATING = !value;
 
-  const onComplete = () => {
+  const onComplete = (eqpt_id) => {
     handleFormState(false, null);
-    mutate(EQUIPMENT_LIST.READ);
+    if (eqpt_id) {
+      if (IS_CREATING) {
+        mutate(EQUIPMENT_LIST.READ);
+      }
+      setFilterValue("" + eqpt_id);
+    } else {
+      mutate(EQUIPMENT_LIST.READ);
+    }
   };
 
   const onFinish = async () => {
@@ -81,7 +88,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(IS_CREATING ? EQUIPMENT_LIST.CREATE : EQUIPMENT_LIST.UPDATE, values)
           .then((response) => {
-            onComplete();
+            onComplete(value.eqpt_id);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
@@ -105,7 +112,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     api
       .post(`${EQUIPMENT_LIST.TOGGLE_LOCKS}?eqpt_id=${value.eqpt_id}`)
       .then((response) => {
-        onComplete();
+        onComplete(value.eqpt_id);
 
         notification.success({
           message: t('messages.unlockSuccess'),
