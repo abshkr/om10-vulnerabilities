@@ -73,6 +73,7 @@ const Table = ({
   parentHeight,
   rowHeight,
   onCellUpdate,
+  noAutoSize,
 }) => {
   const [payload, setPayload] = useState([]);
   const [value, setValue] = useState('');
@@ -99,6 +100,21 @@ const Table = ({
     api.setFilterModel(null);
     api.onFilterChanged();
     setValue('');
+  };
+
+  const handleFirstDataRendered = params => {
+    if (noAutoSize) {
+      return;
+    }
+    
+    // params.api.sizeColumnsToFit();
+    let allColumnIds = [];
+    let skipHeader = false;
+    params.columnApi.getAllColumns().forEach(function(column) {
+      allColumnIds.push(column.colId);
+    });
+
+    params.columnApi.autoSizeColumns(allColumnIds, skipHeader);
   };
 
   useEffect(() => {
@@ -184,6 +200,7 @@ const Table = ({
             onCellDoubleClicked={onCellClick}
             rowHeight={rowHeight || null}
             onCellValueChanged={onCellUpdate}
+            onFirstDataRendered={handleFirstDataRendered}
           />
         </div>
       </div>
