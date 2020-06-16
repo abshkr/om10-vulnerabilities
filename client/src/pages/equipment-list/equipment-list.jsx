@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -21,16 +21,23 @@ const EquipmentList = () => {
   const access = useAuth('M_EQUIPMENTLIST');
 
   const { data: payload, isValidating, revalidate } = useSWR(EQUIPMENT_LIST.READ);
+  const { data: expiryTypes } = useSWR(EQUIPMENT_LIST.EXPIRY);
+
+  const [fields, setFields] = useState(columns(expiryTypes?.records, t));
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
   };
 
-  const fields = columns(t);
-
   const page = t('pageMenu.operations');
   const name = t('pageNames.equipmentList');
+
+  useEffect(() => {
+    if (expiryTypes) {
+      setFields(columns(expiryTypes?.records, t));
+    }
+  }, [expiryTypes]);
 
   const modifiers = (
     <>

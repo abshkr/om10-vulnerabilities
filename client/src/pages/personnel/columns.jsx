@@ -1,4 +1,24 @@
-const columns = (t) => {
+const columns = (expiryTypes, t) => {
+  const expiryColumns = [];
+
+  if (!!expiryColumns) {
+    for (let i = 0; i < expiryTypes?.length; i++) {
+      expiryColumns.push({
+        headerName: expiryTypes[i].edt_type_desc,
+        field: "expiry_dates",
+        sortable: true,
+        resizable: true,
+        filter: 'FuzzyFilter',
+        cellRenderer: 'ExpiryDateRenderer',
+        suppressSizeToFit: true,
+        width: 180,
+        cellRendererParams: {
+          sequence: i
+        }
+      });
+    }
+  }
+  
   return [
     {
       headerName: t('fields.code'),
@@ -6,7 +26,9 @@ const columns = (t) => {
       filter: 'FuzzyFilter',
       sortable: true,
       resizable: true,
-      width: 100,
+      suppressSizeToFit: true,
+      width: 110,
+      pinned: "left",
     },
     {
       headerName: t('fields.name'),
@@ -14,6 +36,9 @@ const columns = (t) => {
       filter: 'FuzzyFilter',
       sortable: true,
       resizable: true,
+      suppressSizeToFit: true,
+      width: 140,
+      pinned: "left",
     },
     {
       headerName: t('fields.employerCode'),
@@ -21,6 +46,8 @@ const columns = (t) => {
       sortable: true,
       resizable: true,
       filter: 'FuzzyFilter',
+      suppressSizeToFit: true,
+      width: 150,
     },
     {
       headerName: t('fields.employer'),
@@ -28,6 +55,8 @@ const columns = (t) => {
       sortable: true,
       resizable: true,
       filter: 'MultiFilter',
+      suppressSizeToFit: true,
+      width: 160,
     },
     {
       headerName: t('fields.role'),
@@ -35,6 +64,8 @@ const columns = (t) => {
       sortable: true,
       resizable: true,
       filter: 'MultiFilter',
+      suppressSizeToFit: true,
+      width: 120,
     },
     {
       headerName: t('fields.licenceNumber'),
@@ -42,7 +73,10 @@ const columns = (t) => {
       sortable: true,
       resizable: true,
       filter: 'FuzzyFilter',
+      suppressSizeToFit: true,
+      width: 140,
     },
+    ...expiryColumns,
     {
       headerName: t('fields.areaAccess'),
       field: 'per_lock',
@@ -50,6 +84,8 @@ const columns = (t) => {
       resizable: true,
       filter: 'BooleanFilter',
       cellRenderer: 'LockRenderer',
+      suppressSizeToFit: true,
+      width: 130,
     },
     {
       headerName: t('fields.status'),
@@ -57,6 +93,8 @@ const columns = (t) => {
       sortable: true,
       resizable: true,
       filter: 'MultiFilter',
+      suppressSizeToFit: true,
+      width: 110,
     },
     {
       headerName: t('fields.department'),
@@ -64,6 +102,8 @@ const columns = (t) => {
       sortable: true,
       resizable: true,
       filter: 'FuzzyFilter',
+      suppressSizeToFit: true,
+      width: 140,
     },
     {
       headerName: t('fields.email'),
@@ -71,6 +111,8 @@ const columns = (t) => {
       sortable: true,
       resizable: true,
       filter: 'FuzzyFilter',
+      suppressSizeToFit: true,
+      width: 140,
     },
     {
       headerName: t('fields.lastModified'),
@@ -78,6 +120,8 @@ const columns = (t) => {
       sortable: true,
       resizable: true,
       cellRenderer: 'DateRenderer',
+      suppressSizeToFit: true,
+      width: 160,
     },
     {
       headerName: t('fields.lastUsed'),
@@ -85,6 +129,8 @@ const columns = (t) => {
       sortable: true,
       resizable: true,
       cellRenderer: 'DateRenderer',
+      suppressSizeToFit: true,
+      width: 160,
     },
   ];
 };

@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, FormModal } from '../../components';
-import { PERSONNEL } from '../../api';
+import { Page, DataTable, Download } from '../../components';
+import { PERSONNEL } from 'api';
 
 import columns from './columns';
 import auth from '../../auth';
@@ -21,13 +21,20 @@ const Personnel = () => {
   const auth = useAuth('M_PERSONNEL');
 
   const { data: payload, isValidating, revalidate } = useSWR(PERSONNEL.READ);
+  const { data: expiryTypes } = useSWR(PERSONNEL.EXPIRY_TYPES);
 
-  const fields = columns(t);
+  const [fields, setFields] = useState(columns(expiryTypes?.records, t));
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
   };
+
+  useEffect(() => {
+    if (expiryTypes) {
+      setFields(columns(expiryTypes?.records, t));
+    }
+  }, [expiryTypes]);
 
   const modifiers = (
     <>
