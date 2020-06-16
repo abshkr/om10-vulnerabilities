@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
 import { AddressCode } from './fields';
@@ -25,6 +25,55 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const IS_CREATING = !value;
 
   const { resetFields } = form;
+
+  const addressCode = value?.db_address_key;
+
+  // use onSuccess option to handle some settings after data is retrieved successfully.
+  // note: Tne component of Table Transfer requires the data source to have an index key. 
+  const { data: payload, isValidating } = useSWR(
+    `${ADDRESSES.LINES}?address_code=${addressCode}`,
+    { refreshInterval: 0,
+      onSuccess: 
+        (data, key, config) => {
+          console.log('Entered onSuccess!!!'); 
+          console.log({data}); 
+          data.records.forEach((item) => {
+            item.db_addr_line_type = _.toNumber(item.db_addr_line_type);
+          });
+          setLines(data?.records);
+      }
+    }
+  );
+  
+  /* const onItemValidation = items => {
+    const errors = [];
+
+    _.forEach(items, item => {
+      const keys = Object.keys(item);
+      const values = Object.values(item);
+
+      _.forEach(values, (value, index) => {
+        if (value === 'Please Select') {
+          errors.push({
+            field: _.find(fields, ['field', keys[index]])?.headerName,
+            message: `Please Fill This Field on Line Item ${values[0]}`
+          });
+        }
+      });
+    });
+
+    if (errors.length > 0) {
+      _.forEach(errors, error => {
+        notification.error({
+          message: error.field,
+          description: error.message,
+          key: error.field
+        });
+      });
+    }
+
+    return errors;
+  }; */
 
   const onComplete = () => {
     handleFormState(false, null);

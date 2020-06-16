@@ -13,7 +13,7 @@ import auth from '../../auth';
 
 import Forms from './forms';
 
-const Addresses = () => {
+const Addresses = ({popup}) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
@@ -57,7 +57,7 @@ const Addresses = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="addresses">
+    <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup} avatar="addresses">
       <DataTable
         data={data}
         columns={fields}
@@ -71,4 +71,5 @@ const Addresses = () => {
   );
 };
 
-export default auth(Addresses);
+//export default auth(Addresses);
+export default Addresses;

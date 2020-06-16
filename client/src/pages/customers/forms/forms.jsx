@@ -27,13 +27,11 @@ import {
 } from './fields';
 
 import { CUSTOMERS } from '../../../api';
-import Addresses from '../../../pages/addresses';
-import CustomerCategories from '../../../pages/customer-categories';
 import Allocations from '../../../pages/allocations';
 import {OrderListingsPopup} from '../../../pages/order-listings';
-import DelvLocations from '../../../pages/delv-locations';
 import { DelvLocationsPopup } from 'pages/delv-locations';
 import { CustomerCategoriesPopup } from 'pages/customer-categories';
+import { AddressesPopup } from 'pages/addresses';
 
 const TabPane = Tabs.TabPane;
 
@@ -219,7 +217,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             {!IS_CREATING && <CreditLimit form={form} value={value} />}
           </TabPane>
           <TabPane tab={t('tabColumns.addresses')} key="2">
-            <Addresses />
+            <AddressesPopup popup={true} />
           </TabPane>
           <TabPane tab={t('tabColumns.customerCategories')} disabled={IS_CREATING} key="3">
             <CustomerCategoriesPopup popup={true}/>

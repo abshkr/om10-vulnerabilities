@@ -1,2 +1,4 @@
+import auth from '../../auth';
 import Addresses from './addresses';
-export default Addresses;
+export {Addresses as AddressesPopup};
+export default auth(Addresses);
