@@ -77,8 +77,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
   const onComplete = (shls_trip_no) => {
     handleFormState(false, null);
-    // mutate(url);
-    locateTrip(shls_trip_no);
+    if (shls_trip_no) {
+      locateTrip(shls_trip_no);
+    } else {
+      mutate(url);
+    }
   };
 
   const changeSupplier = (supplier) => {
