@@ -174,6 +174,7 @@ const OrderListings = ({popup, params}) => {
         selectionMode="single"
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        autoColWidth
       />
       {pageState !== 'view' && (
         <Forms

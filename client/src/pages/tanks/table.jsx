@@ -28,6 +28,7 @@ const Table = ({ data, access, visible, setVisible, selected, setSelected }) => 
         components={{
           TemperatureRender: TemperatureRender,
         }}
+        autoColWidth
       />
 
       <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />

@@ -65,6 +65,7 @@ const TankerList = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         selectionMode="single"
+        autoColWidth
       />
       <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
     </Page>

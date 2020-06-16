@@ -73,7 +73,7 @@ const Table = ({
   parentHeight,
   rowHeight,
   onCellUpdate,
-  noAutoSize,
+  autoColWidth,
 }) => {
   const [payload, setPayload] = useState([]);
   const [value, setValue] = useState('');
@@ -103,10 +103,10 @@ const Table = ({
   };
 
   const handleFirstDataRendered = params => {
-    if (noAutoSize) {
+    if (!autoColWidth) {
       return;
     }
-    
+
     // params.api.sizeColumnsToFit();
     let allColumnIds = [];
     let skipHeader = false;

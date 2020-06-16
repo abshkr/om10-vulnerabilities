@@ -5,6 +5,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    width: 220,
   },
   {
     headerName: t('fields.companyName'),
@@ -12,7 +13,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 350,
+    width: 380,
   },
   {
     headerName: t('fields.plantCode'),

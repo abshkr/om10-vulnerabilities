@@ -14,7 +14,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 150,
+    width: 160,
     suppressSizeToFit: true,
   },
   {
@@ -23,7 +23,7 @@ const columns = (t) => [
     filterable: true,
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 140,
     suppressSizeToFit: true,
   },
   {
@@ -40,7 +40,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     cellRenderer: 'BooleanRenderer',
-    width: 120,
+    width: 150,
     suppressSizeToFit: true,
   },
   {
