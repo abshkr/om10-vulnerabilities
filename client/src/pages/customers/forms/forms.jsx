@@ -32,6 +32,7 @@ import CustomerCategories from '../../../pages/customer-categories';
 import Allocations from '../../../pages/allocations';
 import {OrderListingsPopup} from '../../../pages/order-listings';
 import DelvLocations from '../../../pages/delv-locations';
+import { DelvLocationsPopup } from 'pages/delv-locations';
 
 const TabPane = Tabs.TabPane;
 
@@ -229,7 +230,13 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             <OrderListingsPopup popup={true}/>
           </TabPane>
           <TabPane tab={t('tabColumns.deliveryLocations')} disabled={IS_CREATING} key="6">
-            <DelvLocations pure />
+            <DelvLocationsPopup  
+              popup={true}
+              params={{
+                delv_cust_suppcode: value?.cust_supp_code,
+                delv_cust_acct: value?.cust_account,
+              }}
+            />
           </TabPane>
         </Tabs>
       </Form>

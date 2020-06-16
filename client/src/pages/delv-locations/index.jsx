@@ -1,2 +1,4 @@
+import auth from '../../auth';
 import DelvLocations from './delv-locations';
-export default DelvLocations;
+export {DelvLocations as DelvLocationsPopup};
+export default auth(DelvLocations);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import useSWR from 'swr';
 import { Button } from 'antd';
@@ -13,15 +13,23 @@ import auth from '../../auth';
 
 import Forms from './forms';
 
-const DelvLocations = () => {
+const DelvLocations = ({popup, params}) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [customer, setCustomer] = useState(null);
+  const [data, setData] = useState(null);
 
   const { t } = useTranslation();
 
   const access = useAuth('M_DELIVERYLOCATIONS');
 
-  const { data: payload, isValidating, revalidate } = useSWR(DELV_LOCATIONS.READ);
+  const url =
+    popup && customer
+      ? `${DELV_LOCATIONS.READ}?delv_cust_acct=${customer}`
+      : DELV_LOCATIONS.READ;
+
+  const { data: payload, isValidating, revalidate } = useSWR(url);
+  //const { data: payload, isValidating, revalidate } = useSWR(DELV_LOCATIONS.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -30,11 +38,23 @@ const DelvLocations = () => {
 
   const fields = columns(t);
 
-  const data = payload?.records;
+  //const data = payload?.records;
   const isLoading = isValidating || !data;
 
   const page = t('pageMenu.companies');
   const name = t('pageNames.deliveryLocations');
+
+  useEffect(() => {
+    if (popup && params) {
+      setCustomer(params?.delv_cust_acct);
+    }
+  }, [popup, params]);
+
+  useEffect(() => {
+    if (payload) {
+      setData(payload?.records);
+    }
+  }, [payload]);
 
   const modifiers = (
     <>
@@ -57,7 +77,7 @@ const DelvLocations = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="deliveryLocations">
+    <Page page={page} name={name} modifiers={modifiers} access={access} popop={popup} avatar="deliveryLocations">
       <DataTable
         data={data}
         columns={fields}
@@ -71,4 +91,5 @@ const DelvLocations = () => {
   );
 };
 
-export default auth(DelvLocations);
+//export default auth(DelvLocations);
+export default DelvLocations;

@@ -236,10 +236,12 @@ class DelvLocation extends CommonClass
                 AND DL.DLV_PROF = PR.PRF_CODE(+)
                 AND DL.DLV_CODE = DCNT.DLC_DELV_LOC(+)
                 AND DL.DLV_CODE = CO.ORDER_DLV_CODE(+)
+                and ('-1' = :customer OR DC.DLC_CUSTOMER = :customer)
             ORDER BY DELV_CODE
         ";
 
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':customer', $this->delv_cust_acct);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
