@@ -6,6 +6,7 @@ const columns = (t, values, form) => [
     sortable: true,
     resizable: true,
     width: 90,
+    suppressSizeToFit: true,
     cellRenderer: 'SwitchRender',
   },
   {
@@ -14,7 +15,8 @@ const columns = (t, values, form) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 150,
+    suppressSizeToFit: true,
+    width: 160,
   },
   {
     headerName: t('fields.locale'),
@@ -22,6 +24,7 @@ const columns = (t, values, form) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
     width: 90,
   },
   {
@@ -30,7 +33,8 @@ const columns = (t, values, form) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 110,
+    suppressSizeToFit: true,
+    width: 140,
   },
   {
     headerName: t('fields.defaultTemplate'),
@@ -39,7 +43,8 @@ const columns = (t, values, form) => [
     sortable: true,
     resizable: true,
     cellRenderer: 'SwitchRender',
-    width: 120,
+    suppressSizeToFit: true,
+    width: 150,
   },
   {
     headerName: t('fields.numOfCopies'),
@@ -47,7 +52,8 @@ const columns = (t, values, form) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 110,
+    suppressSizeToFit: true,
+    width: 140,
   },
   {
     headerName: t('fields.footerText'),
@@ -57,10 +63,11 @@ const columns = (t, values, form) => [
     sortable: true,
     resizable: true,
     editable: true,
+    suppressSizeToFit: true,
     cellEditorParams: {
       form: form,
     },
-    width: 120,
+    width: 150,
   },
   {
     headerName: t('fields.email'),
@@ -69,6 +76,8 @@ const columns = (t, values, form) => [
     sortable: true,
     resizable: true,
     editable: true,
+    suppressSizeToFit: true,
+    width: 220,
     valueParser: (params) => {
       const regEx = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
       const result = params.newValue.replace(/\s/g, "").split(/:|;/);   
@@ -83,13 +92,23 @@ const columns = (t, values, form) => [
     }
   },
   {
+    headerName: t('fields.tiggerPoint'),
+    field: 'warning_percent',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true,
+    width: 160,
+  },
+  {
     headerName: t('fields.print'),
     field: 'send_to_printer',
     filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
     cellRenderer: 'SwitchRender',
-    width: 80,
+    suppressSizeToFit: true,
+    width: 90,
   },
 ];
 

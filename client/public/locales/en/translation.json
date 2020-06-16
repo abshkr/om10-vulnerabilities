@@ -984,7 +984,7 @@
     "print": "Print",
     "numOfCopies": "Num of Copies",
     "footerText": "Footer Text",
-    "tiggerPoint": "Trigger Point",
+    "tiggerPoint": "Trigger Point (%)",
     "vetNone": "Vet None",
     "vetCarrier": "Vet Carrier",
     "vetPM": "Vet Primemover",
