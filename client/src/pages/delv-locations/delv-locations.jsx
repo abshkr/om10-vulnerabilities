@@ -77,7 +77,7 @@ const DelvLocations = ({popup, params}) => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access} popop={popup} avatar="deliveryLocations">
+    <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup} avatar="deliveryLocations">
       <DataTable
         data={data}
         columns={fields}
