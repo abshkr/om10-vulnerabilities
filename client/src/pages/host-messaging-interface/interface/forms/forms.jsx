@@ -12,7 +12,6 @@ import {
 } from '@ant-design/icons';
 
 
-import columns from './columns';
 
 
 import DetailsArea from '../DetailsArea';
@@ -25,7 +24,6 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
 
   const IS_CREATING = !value;
 
-  const fields = columns(t);
 
 	const onFinish = async () => {
 
