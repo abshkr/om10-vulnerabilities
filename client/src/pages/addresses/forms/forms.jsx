@@ -44,22 +44,41 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       }
     }
   );
-  
-  /* const onItemValidation = items => {
+
+  const onItemValidation = items => {
     const errors = [];
 
     _.forEach(items, item => {
-      const keys = Object.keys(item);
-      const values = Object.values(item);
-
-      _.forEach(values, (value, index) => {
-        if (value === 'Please Select') {
+      //check the column 'db_addr_line_type' and column 'db_addr_line'
+      if (item.db_addrline_no) {
+        if (!item.db_addr_line_type) {
           errors.push({
-            field: _.find(fields, ['field', keys[index]])?.headerName,
-            message: `Please Fill This Field on Line Item ${values[0]}`
+            key: String(item.db_addrline_no)+':'+t('fields.addressLineType'),
+            field: t('fields.addressLineType'),
+            message: `Please Fill This Field on Line Item ${item.db_addrline_no}`
           });
         }
-      });
+        if (!item.db_addr_line) {
+          errors.push({
+            key: String(item.db_addrline_no)+':'+t('fields.addressLineText'),
+            field: t('fields.addressLineText'),
+            message: `Please Fill This Field on Line Item ${item.db_addrline_no}`
+          });
+        }
+        else {
+          const len = (new TextEncoder().encode(item.db_addr_line)).length;
+          if (len > 210) {
+            errors.push({
+              key: String(item.db_addrline_no)+':'+t('fields.addressLineText'),
+              field: t('fields.addressLineText'),
+              message: `${t('placeholder.maxCharacters')}: 210 ─ ${t('descriptions.maxCharacters')}`
+            });
+          }
+        }
+      }
+
+      // TODO, validate the 'db_addr_line' according to the line type in 'db_addr_line_type'
+
     });
 
     if (errors.length > 0) {
@@ -67,13 +86,13 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         notification.error({
           message: error.field,
           description: error.message,
-          key: error.field
+          key: error.key
         });
       });
     }
 
     return errors;
-  }; */
+  };
 
   const onComplete = () => {
     handleFormState(false, null);
@@ -90,43 +109,47 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       }
     });
 
-    items.forEach((item) => {
-      item.db_addr_line_id = addressKey;
-      if (item.address_action !== '+' && item.address_action !== '-') {
-        item.address_action = '*';
-      }
-    });
+    const errors = onItemValidation(items);
 
-    values.addr_lines = items;
+    if (errors.length === 0) {
+      items.forEach((item) => {
+        item.db_addr_line_id = addressKey;
+        if (item.address_action !== '+' && item.address_action !== '-') {
+          item.address_action = '*';
+        }
+      });
 
-    Modal.confirm({
-      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
-      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
-      okType: 'primary',
-      icon: <QuestionCircleOutlined />,
-      cancelText: t('operations.no'),
-      centered: true,
-      onOk: async () => {
-        await api
-          .post(IS_CREATING ? ADDRESSES.CREATE : ADDRESSES.UPDATE, values)
-          .then(() => {
-            onComplete();
+      values.addr_lines = items;
 
-            notification.success({
-              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-            });
-          })
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
+      Modal.confirm({
+        title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+        okText: IS_CREATING ? t('operations.create') : t('operations.update'),
+        okType: 'primary',
+        icon: <QuestionCircleOutlined />,
+        cancelText: t('operations.no'),
+        centered: true,
+        onOk: async () => {
+          await api
+            .post(IS_CREATING ? ADDRESSES.CREATE : ADDRESSES.UPDATE, values)
+            .then(() => {
+              onComplete();
+
+              notification.success({
+                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+              });
+            })
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
               });
             });
-          });
-      },
-    });
+        },
+      });
+    }
   };
 
   const onDelete = () => {
