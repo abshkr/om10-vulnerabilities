@@ -19,9 +19,6 @@ import {
 import useSWR from 'swr';
 
 const Compartments = ({ form, value, tanker, drawer }) => {
-  console.log("Compartments")
-  console.log(tanker)
-  console.log(value)
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
