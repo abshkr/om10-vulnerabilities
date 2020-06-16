@@ -6,7 +6,30 @@ const { Panel } = Collapse;
 
 const data = [
   {
-    title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 15/06/2020`,
+    title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 17/06/2020`,
+    content: (
+      <>
+        <>
+          <Divider>Features</Divider>
+
+          <p>- Manual Transaction Completion</p>
+        </>
+
+        <>
+          <Divider>Enhancements</Divider>
+
+          <p>- New Versioning </p>
+        </>
+
+        <>
+          <Divider>Bug Fixes</Divider>
+        </>
+      </>
+    ),
+  },
+
+  {
+    title: `Latest Release Version Notes (10.0.11-dev) - 15/06/2020`,
     content: (
       <>
         <>
