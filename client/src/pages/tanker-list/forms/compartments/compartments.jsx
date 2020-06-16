@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Scrollbars } from 'react-custom-scrollbars';
+
 import { Equipment } from '../../../../components';
-import { TANKER_LIST } from '../../../../api';
+import api, { TANKER_LIST } from '../../../../api';
 import { Table, Select, Form } from 'antd';
 import columns from './columns';
-import axios from 'axios';
 import Cell from './cell';
 import Row from './row';
 import _ from 'lodash';
@@ -20,7 +21,7 @@ const Compartments = ({ form, value, equipment }) => {
   const fetch = useCallback((id) => {
     setIsLoading(true);
 
-    axios.get(`${TANKER_LIST.COMPOSITION}?tnkr_code=${id}`).then((response) => {
+    api.get(`${TANKER_LIST.COMPOSITION}?tnkr_code=${id}`).then((response) => {
       setdata(response.data.records);
       setIsLoading(false);
     });
@@ -29,7 +30,7 @@ const Compartments = ({ form, value, equipment }) => {
   const fetchComposition = useCallback((id) => {
     setIsLoading(true);
 
-    axios.get(`${TANKER_LIST.TYPE_COMPOSITION}?etyp_id=${id}`).then((response) => {
+    api.get(`${TANKER_LIST.TYPE_COMPOSITION}?etyp_id=${id}`).then((response) => {
       setdata(response.data.records);
       setIsLoading(false);
     });
@@ -96,7 +97,7 @@ const Compartments = ({ form, value, equipment }) => {
   };
 
   const changeType = (tanker, code) => {
-    axios.get(`${TANKER_LIST.COMPARTMENT}?eqpt_id=${code}`).then((response) => {
+    api.get(`${TANKER_LIST.COMPARTMENT}?eqpt_id=${code}`).then((response) => {
       const payload = [...data];
       const index = _.findIndex(payload, ['tc_eqpt', tanker.tc_eqpt]);
       let compartment = _.find(tanker.eqpt_list, ['eqpt_id', code]);
@@ -112,7 +113,7 @@ const Compartments = ({ form, value, equipment }) => {
         tnkr_equips: _.map(payload, (value) => {
           return _.omit(value, ['eqpt_list']);
         }),
-      });;
+      });
     });
   };
 
@@ -136,72 +137,60 @@ const Compartments = ({ form, value, equipment }) => {
 
   return (
     <Form.Item name="tnkr_equips">
-      {data.length === 0 && (
-        <Table
-          size="middle"
-          rowKey="cmpt_no"
-          loading={isLoading}
-          components={{
-            body: {
-              row: Row,
-              cell: Cell,
-            },
-          }}
-          style={{ marginBottom: 5 }}
-          scroll={{ y: '25vh' }}
-          rowClassName={() => 'editable-row'}
-          bordered
-          dataSource={[]}
-          columns={fields}
-          pagination={false}
-        />
-      )}
-      <div style={{ display: 'flex' }}>
-        {data.map((item, index) => (
-          <div key={index} style={{ marginRight: 10 }}>
-            <Equipment image={_.toLower(item.image)} isLoading={isLoading} />
-            <Select
-              onChange={(value) => changeType(item, value)}
-              placeholder={item.eqpt_code || 'Select Equipment'}
-              style={{ marginBottom: 10, marginTop: 30 }}
-              disabled={item.eqpt_list.length === 0}
-              showSearch
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {!isLoading &&
-                item.eqpt_list.map((item, index) => (
-                  <Select.Option key={index} value={item.eqpt_id}>
-                    {item.eqpt_code}
-                  </Select.Option>
-                ))}
-            </Select>
+      <Scrollbars
+        style={{
+          width: '100%',
+          padding: 5,
+          height: '50vh',
+        }}
+      >
+        <div style={{ display: 'flex' }}>
+          {[...data, ...data].map((item, index) => (
+            <div key={index} style={{ marginRight: 10 }}>
+              <Equipment image={_.toLower(item.image)} isLoading={isLoading} />
+              <Select
+                onChange={(value) => changeType(item, value)}
+                placeholder={item.eqpt_code || 'Select Equipment'}
+                style={{ marginBottom: 10, marginTop: 30 }}
+                disabled={item.eqpt_list.length === 0}
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                {!isLoading &&
+                  item.eqpt_list.map((item, index) => (
+                    <Select.Option key={index} value={item.eqpt_id}>
+                      {item.eqpt_code}
+                    </Select.Option>
+                  ))}
+              </Select>
 
-            {item.compartments.length !== 0 && (
-              <Table
-                size="small"
-                rowKey="cmpt_no"
-                loading={isLoading}
-                components={{
-                  body: {
-                    row: Row,
-                    cell: Cell,
-                  },
-                }}
-                style={{ marginBottom: 5, width: '30vw' }}
-                scroll={{ y: '35vh' }}
-                rowClassName={() => 'editable-row'}
-                bordered
-                dataSource={item.compartments}
-                columns={fields}
-                pagination={false}
-              />
-            )}
-          </div>
-        ))}
-      </div>
+              {item.compartments.length !== 0 && (
+                <Table
+                  size="small"
+                  rowKey="cmpt_no"
+                  loading={isLoading}
+                  components={{
+                    body: {
+                      row: Row,
+                      cell: Cell,
+                    },
+                  }}
+                  style={{ marginBottom: 5, width: '30vw' }}
+                  scroll={{ y: '35vh' }}
+                  rowClassName={() => 'editable-row'}
+                  bordered
+                  dataSource={item.compartments}
+                  columns={fields}
+                  pagination={false}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </Scrollbars>
     </Form.Item>
   );
 };

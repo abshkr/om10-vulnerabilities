@@ -18,13 +18,13 @@ const HazchemCodes = () => {
 
   const fields = columns(t);
 
-  const handleClick = value => {
+  const handleClick = (value) => {
     FormModal({
       value,
       form: <Forms value={value} />,
       id: value?.hzcf_id,
       name: value?.hzcf_name,
-      t
+      t,
     });
   };
 
@@ -33,7 +33,9 @@ const HazchemCodes = () => {
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
+
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+
       <Button type="primary" icon={<PlusOutlined />} onClick={() => handleClick(null)} loading={isValidating}>
         {t('operations.create')}
       </Button>
