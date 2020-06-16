@@ -586,7 +586,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               }}
             />
           </TabPane>
-          <TabPane tab={t('pageNames.manualTransactions')} disabled={IS_CREATING} key="5">
+          <TabPane tab={t('pageNames.manualTransactions')} disabled={IS_CREATING || !value?.order_approved} key="5">
             <ManualTransactionsPopup 
               popup={true}
               params={{

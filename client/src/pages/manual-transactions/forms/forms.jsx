@@ -30,9 +30,13 @@ const Forms = ({
   setSelectedSupplier,
   selectedCustomer,
   setSelectedCustomer,
+  selectedTrip,
   setSelectedTrip,
+  selectedOrder,
   setSelectedOrder,
   setSelectedTanker,
+  params,
+  popup,
 }) => {
   const { setFieldsValue, resetFields } = form;
 
@@ -68,29 +72,6 @@ const Forms = ({
     );
 
     return results?.data;
-  };
-
-  const getTankerAndCarrierByTrip = async (trip) => {
-    const results = await axios.get(
-      `${MANUAL_TRANSACTIONS.CARRIER_AND_TANKER}?supplier=${selectedSupplier}&trip_no=${trip}`
-    );
-
-    const value = results?.data.records[0];
-
-    const tankerResults = await getTankersByCarrier(value?.carrier);
-
-    setTankers(tankerResults);
-    setSelectedTrip(trip);
-    setLoadNumber(trip);
-    setSelectedTanker(value?.tnkr_code);
-
-    setFieldsValue({
-      tanker: value?.tnkr_code,
-      carrier: value?.carrier,
-      driver: drivers?.records[0].per_code,
-    });
-
-    return value;
   };
 
   const getTripTypeByTrip = async (trip) => {
@@ -188,9 +169,8 @@ const Forms = ({
   const handleCustomerSelect = async (customer) => {
     const orders = await getOrdersByCustomer(customer);
 
-    setSelectedCustomer(customer);
-
     setOrders(orders);
+    setSelectedCustomer(customer);
   };
 
   const handleTankerSelect = (tanker) => {
@@ -252,6 +232,51 @@ const Forms = ({
     // pop up the dialog to manage seals for the open order
     alert("TODO: manage seals for the open order");
   };
+
+  useEffect(() => {
+    if (params && popup && !sourceType) {
+      form.setFieldsValue({
+        source_type: params?.trans_type,
+      });
+      handleTypeSelect(params?.trans_type);      
+    }
+  }, [popup, params, sourceType]);
+
+  useEffect(() => {
+    if (params && popup && !selectedSupplier) {
+      form.setFieldsValue({
+        supplier: params?.supplier,
+      });
+      handleSupplierSelect(params?.supplier);
+    }
+  }, [popup, params, selectedSupplier]);
+
+  useEffect(() => {
+    if (params && popup && sourceType === 'OPENORDER' && selectedSupplier && !selectedCustomer) {
+      form.setFieldsValue({
+        customer: params?.customer,
+      });
+      handleCustomerSelect(params?.customer);
+    }
+  }, [popup, params, sourceType, selectedSupplier, selectedCustomer]);
+
+  useEffect(() => {
+    if (params && popup && sourceType === 'OPENORDER' && selectedSupplier && !selectedOrder) {
+      form.setFieldsValue({
+        order_no: params?.order_cust_no,
+      });
+      handleOrderSelect(params?.order_cust_no);
+    }
+  }, [popup, params, sourceType, selectedSupplier, selectedOrder]);
+
+  useEffect(() => {
+    if (params && popup && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
+      form.setFieldsValue({
+        trip_no: params?.trip_no,
+      });
+      handleTripSelect(params?.trip_no);
+    }
+  }, [popup, params, sourceType && selectedSupplier, selectedTrip]);
 
   useEffect(() => {
     setFieldsValue({

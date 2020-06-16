@@ -21,7 +21,7 @@ const ManualTransactions = ({popup, params}) => {
 
   // SCHEDULE: doing manual transaction with Load Schedule
   // OPENORDER: doing manual transaction with Open Order
-  const [sourceType, setSourceType] = useState(params?.trans_type);
+  const [sourceType, setSourceType] = useState(undefined);
   // BY_PRODUCT: doing manual transaction with Pre-Order
   // BY_COMPARTMENT: doing manual transaction with Pre-Schedule
   const [loadType, setLoadType] = useState(undefined);
@@ -33,10 +33,10 @@ const ManualTransactions = ({popup, params}) => {
   const [orders, setOrders] = useState(null);
 
   const [customers, setCustomers] = useState(null);
-  const [selectedSupplier, setSelectedSupplier] = useState(params?.supplier);
-  const [selectedCustomer, setSelectedCustomer] = useState(params?.customer);
-  const [selectedTrip, setSelectedTrip] = useState(params?.trip_no);
-  const [selectedOrder, setSelectedOrder] = useState(params?.order_cust_no);
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedTrip, setSelectedTrip] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedTanker, setSelectedTanker] = useState(null);
 
   const resetFormData = () => {
@@ -213,22 +213,22 @@ const ManualTransactions = ({popup, params}) => {
     resetFormData();
   }, [sourceType]);
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (params && popup) {
-      /* form.setFieldsValue({
+      form.setFieldsValue({
         source_type: params?.trans_type,
         supplier: params?.supplier,
         customer: params?.customer,
         order_no: params?.order_cust_no,
         trip_no: params?.trip_no,
-      }); */
+      });
       setSourceType(params?.trans_type);
       setSelectedSupplier(params?.supplier);
       setSelectedCustomer(params?.customer);
       setSelectedOrder(params?.order_cust_no);
       setSelectedTrip(params?.trip_no);
     }
-  }, [popup, params]);
+  }, [popup, params]); */
 
   const modifiers = (
     <>
@@ -270,9 +270,13 @@ const ManualTransactions = ({popup, params}) => {
           setSelectedSupplier={setSelectedSupplier}
           selectedCustomer={selectedCustomer}
           setSelectedCustomer={setSelectedCustomer}
+          selectedTrip={selectedTrip}
           setSelectedTrip={setSelectedTrip}
+          selectedOrder={selectedOrder}
           setSelectedOrder={setSelectedOrder}
           setSelectedTanker={setSelectedTanker}
+          params={params}
+          popup={popup}
         />
 
         <DrawerProductTransfers 
