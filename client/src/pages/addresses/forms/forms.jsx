@@ -183,6 +183,49 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     });
   };
 
+  const onUpdateTemplate = () => {
+    let template = '';
+    tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
+      if (rowNode?.data?.address_action !== '-') {
+        const item = rowNode.data;
+        if ( template.length > 0 )
+        {
+          template += ",";	
+        }
+        template += String(item.db_addr_line_type);
+      }
+    });
+
+    Modal.confirm({
+      title: t('prompts.update'),
+      okText: t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await api
+          .post(ADDRESSES.UPDATE_TEMPLATE, {config_key: 'SITE_ADDRESS_TEMPLATE', config_value: template})
+          .then(() => {
+            //onComplete();
+
+            notification.success({
+              message: t('messages.updateSuccess'),
+              description: t('messages.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+
   useEffect(() => {
     if (!value) {
       resetFields();
@@ -222,6 +265,16 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               {t('operations.delete')}
             </Button>
           )}
+
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={onUpdateTemplate}
+            style={{ float: 'right', marginRight: 5 }}
+            disabled={false}
+          >
+            {t('operations.setAddressTemplat')}
+          </Button>
         </>
       }
     >

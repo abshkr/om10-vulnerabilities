@@ -1256,7 +1256,8 @@
     "view": "View",
     "viewSeals": "View Seals",
     "viewTripSeals": "View Schedule Seals",
-    "viewOrderSeals": "View Order Seals"
+    "viewOrderSeals": "View Order Seals",
+    "setAddressTemplate": "Set As Default Template"
   },
 
   "tabColumns": {

@@ -29,4 +29,20 @@ class SiteConfig extends CommonClass
             return $stmt;
         }
     }
+    
+    public function read_by_key()
+    {
+        $query = "
+            SELECT * FROM SITE_CONFIG WHERE CONFIG_KEY = :config_key
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':config_key', $this->config_key);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }
