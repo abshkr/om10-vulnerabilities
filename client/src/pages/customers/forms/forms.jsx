@@ -33,6 +33,7 @@ import Allocations from '../../../pages/allocations';
 import {OrderListingsPopup} from '../../../pages/order-listings';
 import DelvLocations from '../../../pages/delv-locations';
 import { DelvLocationsPopup } from 'pages/delv-locations';
+import { CustomerCategoriesPopup } from 'pages/customer-categories';
 
 const TabPane = Tabs.TabPane;
 
@@ -221,7 +222,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             <Addresses />
           </TabPane>
           <TabPane tab={t('tabColumns.customerCategories')} disabled={IS_CREATING} key="3">
-            <CustomerCategories />
+            <CustomerCategoriesPopup popup={true}/>
           </TabPane>
           <TabPane tab={t('tabColumns.allocations')} disabled={IS_CREATING} key="4">
             <Allocations />

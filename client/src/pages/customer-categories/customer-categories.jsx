@@ -13,7 +13,7 @@ import auth from '../../auth';
 import { useAuth } from '../../hooks';
 import Forms from './forms';
 
-const CustomerCategories = () => {
+const CustomerCategories = ({popup}) => {
   const { t } = useTranslation();
 
   const access = useAuth('M_CUSTOMERCATEGORIES');
@@ -52,7 +52,7 @@ const CustomerCategories = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="customerCategories">
+    <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup} avatar="customerCategories">
       <DataTable
         columns={fields}
         data={payload?.records}
@@ -66,4 +66,5 @@ const CustomerCategories = () => {
   );
 };
 
-export default auth(CustomerCategories);
+//export default auth(CustomerCategories);
+export default CustomerCategories;

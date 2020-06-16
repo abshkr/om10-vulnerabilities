@@ -1,3 +1,4 @@
+import auth from '../../auth';
 import CustomerCategories from './customer-categories';
-
-export default CustomerCategories;
+export {CustomerCategories as CustomerCategoriesPopup};
+export default auth(CustomerCategories);
