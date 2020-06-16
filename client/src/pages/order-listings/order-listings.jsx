@@ -89,11 +89,11 @@ const OrderListings = ({ popup }) => {
   const name = t('pageNames.orderListing');
 
   useEffect(() => {
-    if (!start && ranges?.beforeToday) {
+    if (!end && ranges?.beforeToday) {
       setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     }
 
-    if (!end && ranges.afterToday) {
+    if (!start && ranges?.afterToday) {
       setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     }
   }, [ranges, start, end]);

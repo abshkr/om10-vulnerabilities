@@ -15,7 +15,7 @@ const Calendar = ({ handleChange, start, end, disabled }) => {
 
   return (
     <RangePicker
-      disabled={disabled}
+      disabled={disabled || (!start && !end)}
       allowClear={false}
       showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
       format={format}
