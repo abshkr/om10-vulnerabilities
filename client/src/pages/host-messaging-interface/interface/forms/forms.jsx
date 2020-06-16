@@ -16,6 +16,7 @@ import {
 
 import DetailsArea from '../DetailsArea';
 import ContentsArea from '../ContentsArea';
+import MessageArea from '../MessageArea';
 
 const TabPane = Tabs.TabPane;
 
@@ -51,7 +52,7 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="58vw"
+      width="68vw"
       visible={visible}
       footer={
         <>
@@ -90,17 +91,31 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
     >
 			<PageContainer
 				hidden={!visible}>
-				<div>
-					<DetailsArea
-						from={from}
-						action={action}
-						message={value}
-						content_format={content_format}
-					/>
-				</div>
 
 				<div>
-					<ContentsArea
+					<Tabs defaultActiveKey="1" type="card">
+						<TabPane key="1" tab={'Details'}>
+							<DetailsArea
+								from={from}
+								action={action}
+								message={value}
+								content_format={content_format}
+							/>
+						</TabPane>
+
+						<TabPane key="2" tab={'Contents'}>
+							<ContentsArea
+								from={from}
+								action={action}
+								message={value}
+								content_format={content_format}
+							/>
+						</TabPane>
+					</Tabs>
+				</div>
+				<div><br/></div>
+				<div>
+					<MessageArea
 						from={from}
 						action={action}
 						message={value}

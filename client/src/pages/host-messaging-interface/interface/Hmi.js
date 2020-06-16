@@ -5,7 +5,7 @@ import './Hmi.css';
 import HostMessages from './HostMessage';
 import OmegaMessages from './OmegaMessage';
 import DetailsArea from './DetailsArea';
-import ContentsArea from './ContentsArea';
+import MessageArea from './MessageArea';
 import StatusArea from './StatusArea';
 import { Button, Tabs } from 'antd';
 
@@ -130,7 +130,7 @@ class Hmi extends Component {
 
 	render() {
 		return (
-			<Tabs defaultActiveKey="1" type="card">
+			<Tabs defaultActiveKey="1" type="card" style={{margin:0, padding:0}}>
 				<TabPane key="1" tab={'Incoming Messages'}>
 					{this.renderHostMessages()}
 				</TabPane>

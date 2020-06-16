@@ -169,7 +169,9 @@ class DetailsArea extends Component
 
 		return (
 			<div>
+{/*
 				<b id="detailsAreaHeading">Details</b>
+*/}
 				<div id="detailsArea" className="detailsArea">
 					Click a message on the left to see the message details
 				</div>
