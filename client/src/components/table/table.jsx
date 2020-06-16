@@ -18,6 +18,7 @@ import {
   ListRenderer,
   AffixRenderer,
   QuantityRenderer,
+  ExpiryDateRenderer
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -50,6 +51,7 @@ const defaultComponents = {
   SelectEditor,
   BooleanEditor,
   ListEditor,
+  ExpiryDateRenderer,
 };
 
 const defaultColumnDef = {};

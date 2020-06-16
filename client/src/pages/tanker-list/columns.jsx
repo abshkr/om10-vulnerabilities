@@ -1,10 +1,34 @@
-const columns = t => [
+const columns = (expiryTypes, t) => {
+  const expiryColumns = [];
+
+  if (!!expiryColumns) {
+    for (let i = 0; i < expiryTypes?.length; i++) {
+      expiryColumns.push({
+        headerName: expiryTypes[i].edt_type_desc,
+        field: "expiry_dates",
+        sortable: true,
+        resizable: true,
+        filter: 'FuzzyFilter',
+        cellRenderer: 'ExpiryDateRenderer',
+        suppressSizeToFit: true,
+        width: 180,
+        cellRendererParams: {
+          sequence: i
+        }
+      });
+    }
+  }
+  
+  return [
   {
     headerName: t('fields.code'),
     field: 'tnkr_code',
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
+    suppressSizeToFit: true,
+    width: 110,
+    pinned: "left",
   },
   {
     headerName: t('fields.name'),
@@ -12,6 +36,9 @@ const columns = t => [
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
+    suppressSizeToFit: true,
+    width: 120,
+    pinned: "left",
   },
   {
     headerName: t('fields.carrier'),
@@ -19,6 +46,8 @@ const columns = t => [
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',
+    suppressSizeToFit: true,
+    width: 180,
   },
   {
     headerName: t('fields.owner'),
@@ -26,6 +55,8 @@ const columns = t => [
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',
+    suppressSizeToFit: true,
+    width: 180,
   },
   {
     headerName: t('fields.equipmentType'),
@@ -33,6 +64,8 @@ const columns = t => [
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',
+    suppressSizeToFit: true,
+    width: 160,
   },
   {
     headerName: t('fields.baseDepot'),
@@ -40,6 +73,8 @@ const columns = t => [
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',
+    suppressSizeToFit: true,
+    width: 140,
   },
   {
     headerName: t('fields.locked'),
@@ -48,6 +83,8 @@ const columns = t => [
     resizable: true,
     cellRenderer: 'LockRenderer',
     filter: 'BooleanFilter',
+    suppressSizeToFit: true,
+    width: 110,
   },
   {
     headerName: t('fields.active'),
@@ -56,6 +93,8 @@ const columns = t => [
     resizable: true,
     cellRenderer: 'BooleanRenderer',
     filter: 'BooleanFilter',
+    suppressSizeToFit: true,
+    width: 110,
   },
   {
     headerName: t('fields.bayCheck'),
@@ -64,6 +103,8 @@ const columns = t => [
     resizable: true,
     cellRenderer: 'BooleanRenderer',
     filter: 'BooleanFilter',
+    suppressSizeToFit: true,
+    width: 120,
   },
   {
     headerName: t('fields.archived'),
@@ -72,13 +113,18 @@ const columns = t => [
     resizable: true,
     cellRenderer: 'BooleanRenderer',
     filter: 'BooleanFilter',
+    suppressSizeToFit: true,
+    width: 120,
   },
+  ...expiryColumns,
   {
     headerName: t('fields.lastModified'),
     field: 'tnkr_last_modified',
     sortable: true,
     resizable: true,
     cellRenderer: 'DateRenderer',
+    suppressSizeToFit: true,
+    width: 160,
   },
   {
     headerName: t('fields.lastUsed'),
@@ -86,7 +132,10 @@ const columns = t => [
     sortable: true,
     resizable: true,
     cellRenderer: 'DateRenderer',
+    suppressSizeToFit: true,
+    width: 160,
   },
-];
+]
+};
 
 export default columns;

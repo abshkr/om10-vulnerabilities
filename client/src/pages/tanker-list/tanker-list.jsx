@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import { Button } from 'antd';
@@ -11,6 +11,7 @@ import columns from './columns';
 import { useAuth } from '../../hooks';
 import auth from '../../auth';
 import Forms from './forms';
+// import { useEffect } from 'react';
 
 const TankerList = () => {
   const { t } = useTranslation();
@@ -20,14 +21,22 @@ const TankerList = () => {
   const auth = useAuth('M_TANKERS');
 
   const { data: payload, isValidating, revalidate } = useSWR(TANKER_LIST.READ);
+  const { data: expiryTypes } = useSWR(TANKER_LIST.EXPIRY);
 
-  const fields = columns(t);
+  const [fields, setFields] = useState(columns(expiryTypes?.records, t));
+  
   const data = payload?.records;
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
   };
+
+  useEffect(() => {
+    if (expiryTypes) {
+      setFields(columns(expiryTypes?.records, t));
+    }
+  }, [expiryTypes]);
 
   const modifiers = (
     <>

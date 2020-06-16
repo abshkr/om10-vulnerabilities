@@ -11,6 +11,7 @@ import EquipmentRenderer from './equipment';
 import ListRenderer from './list';
 import AffixRenderer from './affix';
 import QuantityRenderer from './quantity';
+import ExpiryDateRenderer from './expiry-date-renderer';
 
 export {
   BooleanRenderer,
@@ -26,4 +27,5 @@ export {
   ListRenderer,
   AffixRenderer,
   QuantityRenderer,
+  ExpiryDateRenderer
 };
