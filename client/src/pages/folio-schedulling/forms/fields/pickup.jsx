@@ -201,11 +201,11 @@ const Pickup = ({ form, value }) => {
                     disabled={!IS_CREATING}
                     onChange={sequenceDayChanged}
                   >
-                    <Option key="1" value="First">First</Option>
-                    <Option key="2" value="Second">Second</Option>
-                    <Option key="3" value="Thrid">Thrid</Option>
-                    <Option key="4" value="Fourth">Fourth</Option>
-                    <Option key="5" value="Fifth">Fifth</Option>
+                    <Option key="1" value="0">First</Option>
+                    <Option key="2" value="1">Second</Option>
+                    <Option key="3" value="2">Thrid</Option>
+                    <Option key="4" value="3">Fourth</Option>
+                    <Option key="5" value="4">Fifth</Option>
                   </Select>
                   <Select 
                     name="week_day" 

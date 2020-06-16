@@ -17,7 +17,6 @@ const FolioCalendar = ({ access, value }) => {
   let curDate = null;
   
   const onComplete = () => {
-    console.log("onComplete")
     mutate(FOLIO_SCHEDULING.READ)
   }
 
@@ -123,18 +122,24 @@ const FolioCalendar = ({ access, value }) => {
         let interval = exceptions[i].repeat_interval.split("_");
         if (v.format('dddd') !== interval[1]) {
           continue;
-        } else if (v.format('M') != interval[2]) {
+        } else if (v.format('M') !== interval[2]) {
           continue;
         }
         
+        let sequnceOfMonth = 1;
         for (let j = 1; j <= 5; j ++) {
           const cloneMoment = v.clone();
-          if (cloneMoment.subtract(7 * j, 'days').format('M') != v.format('M') 
-            && interval[0] === j) {
-              ret.closeoutEnabled = false;
-              ret.exception = t("fields.exception") + ": " + exceptions[i].description;
-              break;
+          cloneMoment.subtract(7 * j, 'days');
+          if (parseInt(cloneMoment.format('M')) !== parseInt(v.format('M'))) {
+            sequnceOfMonth = j;
+            break;
           }
+        }
+
+        if (sequnceOfMonth === parseInt(interval[0]) + 1) {
+          ret.closeoutEnabled = false;
+          ret.exception = t("fields.exception") + ": " + exceptions[i].description;
+          break;
         }
       }
 

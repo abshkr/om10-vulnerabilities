@@ -39,7 +39,7 @@ const columns = t => [
       } else if (params.data.window_name === "YEAR_WINDOW") {
         let data = params.data.repeat_interval.split("_");
         return t("generic.every") + 
-          ["First","Second","Third","Fourth","Fifth"][data[0] - 1] + " " +
+          ["First","Second","Third","Fourth","Fifth"][data[0]] + " " +
           data[1] + " of " + 
           ["January","February","March","April","May","June","July",
           "August","September","October","November","December"][data[2] - 1];
