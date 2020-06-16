@@ -18,7 +18,6 @@ import {
   ListRenderer,
   AffixRenderer,
   QuantityRenderer,
-  ExpiryDateRenderer
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -51,7 +50,6 @@ const defaultComponents = {
   SelectEditor,
   BooleanEditor,
   ListEditor,
-  ExpiryDateRenderer,
 };
 
 const defaultColumnDef = {};
@@ -73,8 +71,10 @@ const Table = ({
   parentHeight,
   rowHeight,
   onCellUpdate,
-  autoColWidth,
+  modifiers
 }) => {
+
+
   const [payload, setPayload] = useState([]);
   const [value, setValue] = useState('');
   const [api, setAPI] = useState('');
@@ -100,21 +100,6 @@ const Table = ({
     api.setFilterModel(null);
     api.onFilterChanged();
     setValue('');
-  };
-
-  const handleFirstDataRendered = params => {
-    if (!autoColWidth) {
-      return;
-    }
-
-    // params.api.sizeColumnsToFit();
-    let allColumnIds = [];
-    let skipHeader = false;
-    params.columnApi.getAllColumns().forEach(function(column) {
-      allColumnIds.push(column.colId);
-    });
-
-    params.columnApi.autoSizeColumns(allColumnIds, skipHeader);
   };
 
   useEffect(() => {
@@ -169,21 +154,27 @@ const Table = ({
       >
         {!minimal && (
           <>
-            <Search value={value} search={setValue} isLoading={isLoading && !data} />
-
-            <Button
-              icon={<ClearOutlined />}
-              style={{ float: 'right', marginLeft: 5 }}
-              onClick={onFilterClear}
-            >
-              Clear Filters
-            </Button>
+						<div 
+							style={{ textAlign: 'bottom' }}
+						>
+							<Search value={value} search={setValue} isLoading={isLoading && !data} />
+							<Button
+								icon={<ClearOutlined />}
+								style={{ marginBottom: 0, marginLeft: 5 }}
+								onClick={onFilterClear}
+							>
+								Clear Filters
+							</Button>
+        			<div style={{ float: 'right' }}>
+								{modifiers}
+							</div>
+						</div>
           </>
         )}
 
         <div style={{ float: 'right' }}>{extra}</div>
 
-        <div style={{ height: parentHeight || `calc(100vh - ${height || '250px'})`, marginTop: 5 }}>
+        <div style={{ height: parentHeight || `calc(100vh - ${height || '250px'})`, marginTop: 0 }}>
           <AgGridReact
             columnDefs={columns}
             rowData={payload}
@@ -200,7 +191,6 @@ const Table = ({
             onCellDoubleClicked={onCellClick}
             rowHeight={rowHeight || null}
             onCellValueChanged={onCellUpdate}
-            onFirstDataRendered={handleFirstDataRendered}
           />
         </div>
       </div>
