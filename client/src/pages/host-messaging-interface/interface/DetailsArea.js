@@ -74,6 +74,7 @@ class DetailsArea extends Component
 
 	viewDetails()
 	{
+		console.log('from:'+ this.state.from + ', action:'+this.state.action + ', message:'+JSON.stringify(this.state.message,null,'\t'));
 		var txt;
 
 		if (this.state.from === 'host')

@@ -984,7 +984,7 @@
     "print": "Print",
     "numOfCopies": "Num of Copies",
     "footerText": "Footer Text",
-    "tiggerPoint": "Trigger Point (%)",
+    "tiggerPoint": "Trigger Point",
     "vetNone": "Vet None",
     "vetCarrier": "Vet Carrier",
     "vetPM": "Vet Primemover",
@@ -1037,6 +1037,23 @@
     "mtDelvNum": "Delv No.",
     "massUnit": "Mass Unit",
     "volumeUnit": "Volume Unit"
+		"rec_id": "Record ID",
+		"origin": "Origin",
+		"message_id": "Message ID",
+		"recv_time": "Receive Time,
+		"destination": "Destination",
+		"dest_site": "Destinated Site",
+		"message_type": "Message Type",
+		"file_name": "File Name",
+		"file_format": "File Format",
+		"validity": "Valid",
+		"status": "Status",
+		"status_description": "Status Description",
+		"acknowledged": "Acknowledged",
+		"ack_id": "Ack ID",
+		"archived_file": "Archived File",
+		"transferred_file": "Transferred File",
+		"resubmitted": "Resubmitted"
   },
 
   "pageMenu": {
