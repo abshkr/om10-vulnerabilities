@@ -1,5 +1,14 @@
 const columns = (t) => [
   {
+    headerName: t('fields.compartmentNumber'),
+    field: 'trsf_cmpt_no',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+    width: 50,
+  },
+  {
     headerName: t('fields.meter'),
     field: 'trsf_mtr_cd',
     filter: 'FuzzyFilter',

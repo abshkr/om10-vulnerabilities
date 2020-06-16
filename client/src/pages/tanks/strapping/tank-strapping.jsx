@@ -142,6 +142,11 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
         strap_height: selected?.strap_height,
         strap_volume: selected?.strap_volume,
       });
+    } else {
+      setFieldsValue({
+        strap_height: 0,
+        strap_volume: 0,
+      });
     }
   }, [resetFields, selected]);
 
@@ -173,7 +178,7 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
               htmlType="button"
               icon={<CloseOutlined />}
               style={{ float: 'right' }}
-              onClick={() => Modal.destroyAll()}
+              onClick={() => handleFormState(false, null)}
             >
               {t('operations.cancel')}
             </Button>
@@ -187,6 +192,17 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
             >
               {IS_CREATING ? t('operations.create') : t('operations.update')}
             </Button>
+
+            {!IS_CREATING && (
+              <Button
+                type="danger"
+                icon={<DeleteOutlined />}
+                onClick={onDelete}
+                style={{ float: 'right', marginRight: 5 }}
+              >
+                {t('operations.delete')}
+              </Button>
+            )}
           </>
         }
       >
@@ -196,6 +212,7 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
               <Form.Item name="strap_tankcode" label={t('fields.tank')}>
                 <Select
                   loading={isLoading}
+                  disabled={true}
                   showSearch
                   optionFilterProp="children"
                   filterOption={(input, option) =>

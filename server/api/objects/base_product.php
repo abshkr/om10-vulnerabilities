@@ -33,9 +33,10 @@ class BaseProduct extends CommonClass
 
         $query = "
             SELECT BASE_CODE,
-                BASE_NAME
+                BASE_NAME,
+                BASE_CODE||' - '||BASE_NAME AS BASE_DESC
             FROM BASE_PRODS
-            ORDER BY BASE_NAME";
+            ORDER BY BASE_CODE";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;

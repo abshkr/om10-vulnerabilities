@@ -1503,7 +1503,8 @@
     "deliveredBeingZero": "Delivered volume is 0, reset is not required",
     "mustBeAlphaNumeric": "Must be Alphanumeric.",
     "timecodeAL": "Cannot delete time code AL",
-    "maxExpTarget": "Maximum expiry date type under this target is 10"
+    "maxExpTarget": "Maximum expiry date type under this target is 10",
+	"searchTrip": "Please type in trip number to search"
   },
 
   "placeholder": {

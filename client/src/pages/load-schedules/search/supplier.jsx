@@ -4,38 +4,17 @@ import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 
-import { LOAD_SCHEDULES } from '../../../../api';
+import { LOAD_SCHEDULES } from 'api';
 
-const Supplier = ({ form, value, onChange }) => {
+const Supplier = ({ value, onChange }) => {
   const { t } = useTranslation();
 
-  const { setFieldsValue } = form;
-
   const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.SUPPLIERS);
-
-  const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.supplier')}`);
-    }
-
-    return Promise.resolve();
-  };
-
-  useEffect(() => {
-    if (value) {
-      setFieldsValue({
-        supplier_code: value.supplier_code,
-      });
-
-      onChange(value.supplier_code);
-    }
-  }, [value, setFieldsValue, onChange]);
 
   return (
     <Form.Item
       name="supplier_code"
       label={t('fields.supplier')}
-      rules={[{ required: true, validator: validate }]}
     >
       <Select
         loading={isValidating}

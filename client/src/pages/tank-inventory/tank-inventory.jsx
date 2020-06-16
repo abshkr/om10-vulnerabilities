@@ -15,14 +15,15 @@ const TankInventory = () => {
   const { t } = useTranslation();
   const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.TANK_INVENTORY);
 
-  const payload = transform(data?.records, unit);
+  // const payload = transform(data?.records, unit);
+  const payload = data?.records;
   const fields = columns(t);
 
-  const units = ['Litres', 'Cubic Metre', 'Imperial Gallon', 'U.S Gallon', 'Imperial Barrel', 'U.S Barrel'];
+  // const units = ['Litres', 'Cubic Metre', 'Imperial Gallon', 'U.S Gallon', 'Imperial Barrel', 'U.S Barrel'];
 
   const modifiers = (
     <>
-      <Select key="1" style={{ width: 200 }} defaultValue={unit} onChange={setUnit}>
+      {/* <Select key="1" style={{ width: 200 }} defaultValue={unit} onChange={setUnit}>
         {units.map(item => {
           return (
             <Select.Option key={item} value={item}>
@@ -30,7 +31,7 @@ const TankInventory = () => {
             </Select.Option>
           );
         })}
-      </Select>
+      </Select> */}
 
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}

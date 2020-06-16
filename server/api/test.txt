@@ -134,6 +134,7 @@ https://10.2.20.53/api/pages/schedule/get_tnkr_cmpts.php?tnkr_code=PK_323TMGCV
 https://10.2.20.53/api/pages/schedule/get_cmpt_details.php?shls_trip_no=4967232&supplier_code=1001
 https://10.2.20.53/api/pages/schedule/suppliers.php
 https://10.2.20.53/api/pages/schedule/drawers.php
+https://10.1.10.66/api/pages/schedule/status.php
 https://10.1.10.66/api/pages/schedule/sold_tos.php
 https://10.1.10.66/api/pages/schedule/ship_tos.php
 https://10.2.20.53/api/pages/schedule/carriers.php
@@ -141,7 +142,13 @@ https://10.2.20.53/api/pages/schedule/tankers_by_carrier.php?tnkr_carrier=HABC
 https://10.2.20.53/api/pages/schedule/next_trip_no.php?supplier_code=1001
 https://10.2.20.53/api/pages/schedule/drawer_products.php?drawer_code=1001
 https://10.2.20.53/api/pages/schedule/unit_types.php
-https://10.2.20.53/api/pages/schedule/search.php?shls_trip_no=319
+https://10.1.10.66/api/pages/schedule/search.php
+{
+    "shls_trip_no": 319,
+	"supplier": "13",
+	"status": "E",
+	"tnkr_code: "01"
+}
 https://{{server_ip}}/api/pages/schedule/create.php    //Preschedule
 {
     "shls_ld_type": "6",
@@ -3176,6 +3183,7 @@ https://10.1.10.66/api/pages/special_mv/tank_proddata.php?tank_code=SP-18
 https://10.1.10.66/api/pages/special_mv/mv_status.php
 https://10.1.10.66/api/pages/special_mv/mv_types.php
 https://10.1.10.66/api/pages/special_mv/mv_reasons.php?mr_type=T
+https://10.1.10.66/api/pages/special_mv/mv_reasons.php
 https://10.1.10.66/api/pages/special_mv/reverse.php?mlitm_id=62
 https://10.1.10.66/api/pages/special_mv/calc_vcf.php
 {

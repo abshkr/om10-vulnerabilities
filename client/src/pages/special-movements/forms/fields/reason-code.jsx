@@ -18,6 +18,7 @@ const ReasonCode = ({ form, value, type, disabled }) => {
   const { setFieldsValue } = form;
 
   const { data: options, isValidating } = useSWR(`${SPECIAL_MOVEMENTS.REASONS}?mr_type=${index[type]}`);
+  // const { data: options, isValidating } = useSWR(`${SPECIAL_MOVEMENTS.REASONS}?mr_type=${index[type]}`);
 
   const IS_DISABLED = disabled || !type;
 

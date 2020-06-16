@@ -11,19 +11,9 @@ const Usage = ({ form, value, company }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(LOGICAL_PRINTERS.USAGES);
-  const { data: logicalPrinters } = useSWR(LOGICAL_PRINTERS.READ);
-
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    const match = _.find(logicalPrinters?.records, (object) => {
-      return object.prt_usage === input && object.prt_cmpy === company;
-    });
-
-    if (input && !!match && !value) {
-      return Promise.reject(t('descriptions.alreadyExists'));
-    }
-
     if (input === '' && !value) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.usage')}`);
     }

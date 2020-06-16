@@ -9,6 +9,7 @@ include_once __DIR__ . '/../service/unit_service.php';
 include_once __DIR__ . '/../service/site_service.php';
 include_once __DIR__ . '/../service/partnership_service.php';
 include_once __DIR__ . '/../service/manual_trans_service.php';
+include_once __DIR__ . '/../service/enum_service.php';
 include_once 'common_class.php';
 
 //Old PHP: LoadSchedules.class.php
@@ -88,6 +89,12 @@ class Schedule extends CommonClass
     {
         $unit_service = new UnitService($this->conn);
         return $unit_service->loadable_unit_types();
+    }
+
+    public function status()
+    {
+        $unit_service = new EnumService($this->conn);
+        return $unit_service->schedule_status();
     }
 
     public function sold_tos()
@@ -223,14 +230,48 @@ class Schedule extends CommonClass
     {
         if (isset($this->shls_trip_no)) {
             $shls_trip_no = '%' . $this->shls_trip_no . '%';
+        } else {
+            $shls_trip_no = '%';
         }
 
         $query = "
                 SELECT * FROM " . $this->VIEW_NAME . "
-                WHERE SHLS_TRIP_NO LIKE :shls_trip_no
-                ORDER BY SHLS_TRIP_NO";
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':shls_trip_no', $shls_trip_no);
+                WHERE SHLS_TRIP_NO LIKE :shls_trip_no " ;
+
+        if (isset($this->supplier_code)) {
+            $query = $query . " AND SUPPLIER_CODE LIKE :supplier_code";
+        }
+
+        if (isset($this->tnkr_code)) {
+            $query = $query . " AND TNKR_CODE LIKE :tnkr_code";
+        }
+
+        if (isset($this->status)) {
+            $query = $query . " AND STATUS = :status";
+        }
+
+        $query = $query . " ORDER BY SHLS_TRIP_NO";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':shls_trip_no', $shls_trip_no);
+
+        if (isset($this->supplier_code)) {
+            $supplier_code = '%' . $this->supplier_code . '%';
+            oci_bind_by_name($stmt, ':supplier_code', $supplier_code);
+        }
+
+        if (isset($this->supplier_code)) {
+            $supplier_code = '%' . $this->supplier_code . '%';
+            oci_bind_by_name($stmt, ':supplier_code', $supplier_code);
+        }
+
+        if (isset($this->tnkr_code)) {
+            $tnkr_code = '%' . $this->tnkr_code . '%';
+            oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
+        }
+
+        if (isset($this->status)) {
+            oci_bind_by_name($stmt, ':status', $this->status);
+        }
         
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;

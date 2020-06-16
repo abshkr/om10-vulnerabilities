@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { UndoOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Form, Tabs, Divider, Card, Row, Col } from 'antd';
+import { Button, Form, Tabs, Divider, Card, Row, Col, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
 import _ from 'lodash';
 
 import { BayArm, DrawerProducts, Equipment, Temperature, Observed, Standard, Mass } from './fields';
@@ -10,6 +11,7 @@ import columns from './columns';
 import useSWR from 'swr';
 
 import { MANUAL_TRANSACTIONS } from '../../../api';
+import {calcBaseRatios} from '../../../utils'
 
 import BaseProductTransfers from './base-product-transfers';
 import BaseProductTotals from './base-product-totals';
@@ -62,6 +64,8 @@ const DrawerProductTransfers = ({
   const [selected, setSelected] = useState(null);
   const [fields, setFields] = useState([]);
   const [clicked, setClicked] = useState(null);
+  const [tableAPI, setTableAPI] = useState(null);
+  const [tableBaseTransfersAPI, setTableBaseTransfersAPI] = useState(null);
 
   const onDelete = () => {
     const filtered = _.reject(payload, ['trsf_cmpt_no', clicked?.trsf_cmpt_no]);
@@ -75,20 +79,153 @@ const DrawerProductTransfers = ({
     setPayload(filtered);
   };
 
-  const onCalculate = (api) => {
-    const payload = form.getFieldValue('products');
+  const calcBaseQuantity = async (base) => {
+    // decide the calc type: LT, L15, KG
+    let type = 'LT';
+    let amount = 0;
+    if (base?.trsf_bs_qty_amb) {
+      type = 'LT';
+      amount = base?.trsf_bs_qty_amb;
+    }
+    else if (base?.trsf_bs_qty_cor) {
+      type = 'L15';
+      amount = base?.trsf_bs_qty_cor;
+    }
+    else if (base?.trsf_bs_load_kg) {
+      type = 'KG';
+      amount = base?.trsf_bs_load_kg;
+    }
+    else {
+      type = 'LT';
+      amount = base?.trsf_bs_qty_amb;
+    }
 
-    console.log(payload);
+    await axios
+    .post(MANUAL_TRANSACTIONS.CALCULATE, {
+      frm_baseCd: base?.trsf_bs_prodcd,
+      frm_which_type: type, //'LT',
+      frm_real_amount: amount,
+      frm_real_temp: base?.trsf_bs_temp,
+      frm_real_dens: base?.trsf_bs_den,
+    })
+    .then((response) => {
+      if (type === 'LT') {
+        base.trsf_bs_qty_cor = _.toNumber(response?.data?.real_litre15);
+        base.trsf_bs_load_kg = _.toNumber(response?.data?.real_kg);
+      }
+      if (type === 'L15') {
+        base.trsf_bs_qty_amb = _.toNumber(response?.data?.real_litre);
+        base.trsf_bs_load_kg = _.toNumber(response?.data?.real_kg);
+      }
+      if (type === 'KG') {
+        base.trsf_bs_qty_amb = _.toNumber(response?.data?.real_litre);
+        base.trsf_bs_qty_cor = _.toNumber(response?.data?.real_litre15);
+      }
+      console.log('calcBaseQuantity', base);
+    });
+
+  }
+
+  const onCalculate = async () => {
+    //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
+    //console.log('onCalculate', items);
+
+    const qtys = {amb: 0, cor: 0, kg: 0};
+    const bases = form.getFieldValue('base_transfers');
+    let index=0;
+    for (index=0; index<bases.length; index++) {
+      const base = bases[index];
+      if (base.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no) {
+        await calcBaseQuantity(base);
+        bases[index] = base;
+        qtys.amb += _.toNumber(base?.trsf_bs_qty_amb);
+        qtys.cor += _.toNumber(base?.trsf_bs_qty_cor);
+        qtys.kg += _.toNumber(base?.trsf_bs_load_kg);
+        tableBaseTransfersAPI.updateRowData({ update: [base] });
+      }
+    }
+
+
+    for (index = 0; index < payload.length; index++) {
+      const transfer = payload[index];
+      if (transfer.trsf_cmpt_no === clicked?.trsf_cmpt_no) {
+        transfer.trsf_qty_amb = qtys.amb;
+        transfer.trsf_qty_cor = qtys.cor;
+        transfer.trsf_load_kg = qtys.kg;
+        payload[index] = transfer;
+        tableAPI.updateRowData({ update: [transfer] });
+        break;
+      }
+    }
+
+    setPayload(payload);
+  };
+
+  const onRestore = () => {
+    console.log('onRestore');
+    //const option = selected;
+    //setSelected(null);
+    //setSelected(option);
   };
 
   const onCellUpdate = (value) => {
+    console.log('onCellUpdate', value);
+    console.log('onCellUpdate2', value?.colDef?.field, value?.colDef?.headerName, value?.value, value?.newValue, value?.data.trsf_cmpt_capacit);
+    if (
+      value?.colDef?.field === 'trsf_qty_amb' || 
+      value?.colDef?.field === 'trsf_qty_cor' ||
+      value?.colDef?.field === 'trsf_load_kg' 
+    ) {
+      if (_.toNumber(value?.newValue) > _.toNumber(value?.data.trsf_cmpt_capacit)) {
+        notification.error({
+          message: t('validate.outOfRange'),
+          description: value?.colDef?.headerName + ': ' + value?.newValue + ', ' + 
+          t('fields.compartment') + ' ' + t('fields.capacity') + ': ' + value?.data.trsf_cmpt_capacit,
+        });
+      }
+    }
     setSelected({
       ...value?.data,
     });
   };
 
+  const adjustProduct = (cmpt, bases) => {
+    if (!bases || !cmpt) {
+      return;
+    }
+    console.log('adjustProdcut', cmpt, bases);
+
+    let index = undefined;
+    let prodDens = 0.0;
+
+    // calculate drawer product density
+    for (index = 0; index < bases.length; index++) {
+      const item = bases[index];
+      if (item.trsf_bs_cmpt_no === cmpt) {
+        prodDens = prodDens + calcBaseRatios(item?.trsf_bs_den, item?.trsf_bs_ratio_value, item?.trsf_bs_ratio_total);
+      }
+    }
+    console.log('prod dens', prodDens);
+
+    for (index = 0; index < payload.length; index++) {
+      const transfer = payload[index];
+      if (transfer.trsf_cmpt_no === cmpt && prodDens > 0) {
+        transfer.trsf_density = prodDens;
+        payload[index] = transfer;
+        break;
+      }
+    }
+
+    setPayload(payload);
+    //tableAPI.updateRowData({ update: [payload[index]] });
+
+  };
+
   useEffect(() => {
     console.log("dptrsf selected", selected);
+    if (selected) {
+      //adjustProduct(selected.trsf_cmpt_no, form.getFieldValue('base_transfers'));
+    }
   }, [selected]);
 
   useEffect(() => {
@@ -125,9 +262,10 @@ const DrawerProductTransfers = ({
             trsf_sold_to: record?.customer_code,
             trsf_delv_num: record?.delivery_number,
             trsf_delv_loc: record?.delivery_location,
-            trsf_equip_id: record.eqpt_code,
-            trsf_cmpt_no: record.tnkr_cmpt_no,
-            trsf_drwr_cd: record.shls_supp,
+            trsf_equip_id: record?.eqpt_code,
+            trsf_cmpt_no: record?.tnkr_cmpt_no,
+            trsf_cmpt_capacit: record?.cmpt_capacit,
+            trsf_drwr_cd: record?.shls_supp,
             trsf_prod_code: record?.prod_code,
             trsf_prod_name: record?.prod_name === '' ? t('placeholder.selectDrawerProduct') : record?.prod_name,
             trsf_prod_cmpy: record?.shls_supp,
@@ -170,12 +308,22 @@ const DrawerProductTransfers = ({
         icon={<UndoOutlined />}
         onClick={onCalculate}
         style={{ marginRight: 5 }}
-        disabled={!selected}
+        disabled={
+          !clicked || 
+          !clicked?.trsf_temp || 
+          !clicked?.trsf_density || 
+          (!clicked?.trsf_qty_amb && !clicked?.trsf_qty_cor && !clicked?.trsf_load_kg)
+        }
       >
         {t('operations.calculateDrawer')}
       </Button>
 
-      <Button type="primary" icon={<UndoOutlined />} style={{ marginRight: 5 }} disabled={!selected}>
+      <Button 
+        type="primary" 
+        icon={<UndoOutlined />} 
+        onClick={onRestore}
+        style={{ marginRight: 5 }} 
+        disabled={!selected}>
         {t('operations.getTankDensities')}
       </Button>
     </>
@@ -195,6 +343,7 @@ const DrawerProductTransfers = ({
             extra={modifiers}
             columns={fields}
             components={components}
+            apiContext={setTableAPI}
             onCellUpdate={(value) => onCellUpdate(value)}
             handleSelect={(value) => setClicked(value[0])}
           />
@@ -213,6 +362,8 @@ const DrawerProductTransfers = ({
               sourceType={sourceType} 
               selected={selected} 
               transfers={payload} 
+              clicked={clicked}
+              setChildTableAPI={setTableBaseTransfersAPI}
             />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="2">

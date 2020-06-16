@@ -84,7 +84,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
   {
     headerName: t('fields.drawerProduct'),
     field: 'trsf_prod_code',
-    width: ((sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') ? 200 : 400),
+    width: ((sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') ? 200 : 360),
     hide: true,
   },
 
@@ -223,6 +223,12 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
       min: 0,
       max: 999999999,
     },
+  },
+
+  {
+    headerName: 'Capacity',
+    field: 'trsf_cmpt_capacit',
+    hide: true,
   },
 ];
 

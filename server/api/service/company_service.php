@@ -229,10 +229,11 @@ class CompanyService
     {
         $query = "";
         if ($plus_any) {
-            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME FROM DUAL UNION ";
+            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME, 'ANY - ALL' CMPY_DESC FROM DUAL UNION ";
         }
         $query .= "
-            SELECT CMPY_CODE, CMPY_NAME
+            SELECT CMPY_CODE, CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
             FROM GUI_COMPANYS
             WHERE BITAND(CMPY_TYPE, POWER(2, 1)) != 0
             ORDER BY CMPY_NAME ASC";
@@ -251,10 +252,11 @@ class CompanyService
     {
         $query = "";
         if ($plus_any) {
-            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME FROM DUAL UNION ";
+            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME, 'ANY - ALL' CMPY_DESC FROM DUAL UNION ";
         }
         $query .= "
-            SELECT CMPY_CODE, CMPY_NAME
+            SELECT CMPY_CODE, CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
             FROM GUI_COMPANYS
             WHERE BITAND(CMPY_TYPE, POWER(2, 4)) != 0
             ORDER BY CMPY_NAME ASC";
@@ -273,10 +275,11 @@ class CompanyService
     {
         $query = "";
         if ($plus_any) {
-            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME FROM DUAL UNION ";
+            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME, 'ANY - ALL' CMPY_DESC FROM DUAL UNION ";
         }
         $query .= "
-            SELECT CMPY_CODE, CMPY_NAME
+            SELECT CMPY_CODE, CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
             FROM GUI_COMPANYS
             WHERE BITAND(CMPY_TYPE, POWER(2, 2)) != 0
             ORDER BY CMPY_NAME ASC";
@@ -311,7 +314,8 @@ class CompanyService
     public function companys_by_role($cmpy_role_id)
     {
         $query = "
-            SELECT CMPY_CODE, CMPY_NAME
+            SELECT CMPY_CODE, CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
             FROM GUI_COMPANYS
             WHERE BITAND(CMPY_TYPE, POWER(2, :role_id)) != 0
             ORDER BY CMPY_NAME ASC";

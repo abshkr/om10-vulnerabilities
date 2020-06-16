@@ -21,6 +21,24 @@ export default class BayArm extends Component {
     return this.state.value;
   }
 
+  calcDensity = (stream) => {
+    const { values } = this.state;
+
+    let index = undefined;
+    let prodDens = 0.0;
+
+    // calculate drawer product density
+    for (index = 0; index < values.length; index++) {
+      const item = values[index];
+      if (item.stream_index === stream) {
+        prodDens = prodDens + calcBaseRatios(item?.stream_tankden, item?.ratio_value, item?.ratio_total);
+      }
+    }
+    console.log('prod dens2', prodDens);
+
+    return prodDens;
+  };
+
   onClick = (value, record) => {
     const { form, setPayload } = this.props;
 
@@ -32,11 +50,12 @@ export default class BayArm extends Component {
     current[index].trsf_arm_cd = record?.item?.stream_armcode;
     current[index].trsf_qty_plan = null;
     current[index].trsf_qty_left = null;
-    current[index].trsf_density = calcBaseRatios(record?.item?.stream_tankden, record?.item?.ratio_total, record?.item?.ratio_value);
-    current[index].trsf_temp = null;
-    current[index].trsf_qty_amb = null;
-    current[index].trsf_qty_cor = null;
-    current[index].trsf_load_kg = null;
+    //current[index].trsf_density = record?.item?.stream_tankden;
+    current[index].trsf_density = this.calcDensity(record?.item?.stream_index);
+    //current[index].trsf_temp = null;
+    //current[index].trsf_qty_amb = null;
+    //current[index].trsf_qty_cor = null;
+    //current[index].trsf_load_kg = null;
 
 
 

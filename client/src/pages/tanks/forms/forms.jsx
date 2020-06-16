@@ -40,12 +40,14 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
     mutate(TANKS.READ);
   };
 
-  const onFinish = (values) => {
+  const onFinish = async () => {
+    const values = await form.validateFields();
+
     const payload = _.omit(
       {
         ...values,
         tank_temp:
-          values.tank_temp.tank_temp_unit === 'degC'
+          values.tank_temp?.tank_temp_unit === 'degC'
             ? values.tank_temp
             : VCFManager.temperatureF2C(values.tank_temp),
       },
@@ -64,9 +66,8 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
           .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, payload)
           .then(
             axios.spread((response) => {
-              Modal.destroyAll();
-
-              mutate(TANK_STATUS.READ);
+              onComplete();
+              
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
@@ -378,6 +379,8 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
             htmlType="submit"
             style={{ float: 'right', marginRight: 5 }}
+            onClick={onFinish}
+            // disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>

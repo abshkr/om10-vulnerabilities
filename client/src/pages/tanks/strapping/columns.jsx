@@ -6,7 +6,7 @@ const columns = (t) => [
     resizable: true,
     filter: 'FuzzyFilter',
     pinned: 'left',
-    width: 50,
+    width: 80,
   },
   {
     headerName: `${t('fields.observedVolume')} (${t('units.litres')})`,
@@ -17,8 +17,16 @@ const columns = (t) => [
   },
 
   {
-    headerName: `${t('fields.productLevel')} (${t('units.mm')})`,
-    field: 'strap_tanklevel',
+    headerName: t('fields.baseProductCode'),
+    field: 'strap_basecode',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
+  },
+
+  {
+    headerName: t('fields.baseProductName'),
+    field: 'strap_basename',
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',

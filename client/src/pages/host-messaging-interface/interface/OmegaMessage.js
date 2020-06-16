@@ -363,15 +363,36 @@ class OmegaMessages extends Component
 		this.sendStatusUpdate(2, 'received error from omega sse');
 
 		// Attempt to reconnect after waiting a configurable time (default is 10 seconds)
-		this.sseCleanup();
+		//this.sseCleanup();
 		var wait = process.env.REACT_APP_SSE_RECONNECT || 10;
-		this.sseTimer = setTimeout(this.sseReconnect, wait * 1000);
+		this.sseTimer = setTimeout(this.sseReconnect(e), wait * 1000);
 	}
 
-	sseReconnect()
+	sseReconnect(e)
 	{
 		clearTimeout(this.sseTimer);
-		this.sseSetup();
+		switch (e.readyState)
+		{
+		case 0:
+			// connecting, wait.
+			console.log('host sse is connecting...');
+			break;
+		case 1:
+			// open, do nothing.
+			break;
+		case 2:
+			// closed, try to reconnect.
+			console.log('omega sse closed. trying to reconnect...');
+			this.sseCleanup();
+			this.sseSetup();
+			break;
+		default:
+			// unknown, try to reconnect.
+			console.log('omega sse invalid. trying to reconnect...');
+			this.sseCleanup();
+			this.sseSetup();
+			break;
+		}
 	}
 
 	sseAdd(e)
@@ -464,11 +485,14 @@ class OmegaMessages extends Component
 
 	messageExists(msg)
 	{
-		for (var i = 0; i < this.state.messages.length; ++i)
+		if (this.state.messages)
 		{
-			if (msg.REC_ID === this.state.messages[i].REC_ID)
+			for (var i = 0; i < this.state.messages.length; ++i)
 			{
-				return true;
+				if (msg.REC_ID === this.state.messages[i].REC_ID)
+				{
+					return true;
+				}
 			}
 		}
 

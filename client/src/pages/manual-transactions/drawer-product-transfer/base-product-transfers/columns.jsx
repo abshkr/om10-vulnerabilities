@@ -1,5 +1,14 @@
 const columns = (t) => [
   {
+    headerName: t('fields.compartmentNumber'),
+    field: 'trsf_bs_cmpt_no',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: false,
+    width: 50,
+  },
+  {
     headerName: t('fields.product'),
     field: 'trsf_bs_prodcd',
     filter: 'FuzzyFilter',
@@ -61,6 +70,30 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+  },
+  {
+    headerName: 'Additive?',
+    field: 'trsf_bs_adtv_flag',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
+    headerName: 'Base Ratio Value',
+    field: 'trsf_bs_ratio_value',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
+    headerName: 'Base Ratio Total',
+    field: 'trsf_bs_ratio_total',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
   },
 ];
 
