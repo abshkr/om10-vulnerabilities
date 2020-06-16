@@ -29,7 +29,7 @@ const data = [
   },
 
   {
-    title: `Latest Release Version Notes (10.0.11-dev) - 15/06/2020`,
+    title: `Release Version Notes (10.0.11-dev) - 15/06/2020`,
     content: (
       <>
         <>

@@ -16,12 +16,10 @@ import Forms from './forms';
 import { useConfig } from '../../hooks';
 import { getDateRangeOffset } from '../../utils';
 
-const OrderListings = ({popup}) => {
-  //console.log('popup', popup);
+const OrderListings = ({ popup }) => {
   const config = useConfig();
-  //console.log('config', config);
-  const ranges = getDateRangeOffset( String(config.openOrderDateRange), "365");
-  //console.log("ranges", config.openOrderDateRange, ranges);
+
+  const ranges = getDateRangeOffset(String(config.openOrderDateRange), '365');
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -29,45 +27,47 @@ const OrderListings = ({popup}) => {
   const [pageState, setPageState] = useState('view');
 
   const { t } = useTranslation();
-  const timeOptions = [{
-    index: 1,
-    code: 'ORDER_ORD_TIME', 
-    name: t('fields.orderOrdTime')
-  }, {
-    index: 2,
-    code: 'ORDER_EXP_TIME', 
-    name: t('fields.orderExpTime')
-  }];
+
+  const timeOptions = [
+    {
+      index: 1,
+      code: 'ORDER_ORD_TIME',
+      name: t('fields.orderOrdTime'),
+    },
+    {
+      index: 2,
+      code: 'ORDER_EXP_TIME',
+      name: t('fields.orderExpTime'),
+    },
+  ];
 
   const access = useAuth('M_ORDERLISTING');
 
-  //const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-  //const [end, setEnd] = useState(moment().add(1, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-  const [start, setStart] = useState(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-  const [end, setEnd] = useState(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  const [start, setStart] = useState(null);
+  const [end, setEnd] = useState(null);
 
-  const { data: payload, isValidating, revalidate } = useSWR(
-    `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
-  );
+  const url =
+    start && end
+      ? `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
+      : null;
+
+  const { data: payload, isValidating, revalidate } = useSWR(url);
 
   const adjustPageState = (visibility, value) => {
     if (visibility) {
       if (!value) {
         setPageState('create');
-      }
-      else {
-        if(value.order_approved) {
+      } else {
+        if (value.order_approved) {
           setPageState('detail');
-        }
-        else {
+        } else {
           setPageState('edit');
         }
       }
-    }
-    else {
+    } else {
       setPageState('view');
     }
-  }
+  };
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -78,7 +78,6 @@ const OrderListings = ({popup}) => {
   const setRange = (start, end) => {
     setStart(start);
     setEnd(end);
-    revalidate();
   };
 
   const fields = columns(t);
@@ -90,64 +89,37 @@ const OrderListings = ({popup}) => {
   const name = t('pageNames.orderListing');
 
   useEffect(() => {
-    if (!!ranges && !!ranges.beforeToday) {
-      setStart(
-        moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT)
-      );
+    if (!start && ranges?.beforeToday) {
+      setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     }
-    if (!!ranges && !!ranges.beforeToday && !!ranges.afterToday) {
-      setEnd(
-        moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT)
-      );
-    }
-    
-  }, [ranges, setStart, setEnd]);
 
-  /* useEffect(() => {
-    revalidate();
-  }, [start, end]); */
-
-  /* useEffect(() => {
-    if (visible) {
-      if (!selected) {
-        setPageState('create');
-      }
-      else {
-        if(selected.order_approved) {
-          setPageState('detail');
-        }
-        else {
-          setPageState('edit');
-        }
-      }
+    if (!end && ranges.afterToday) {
+      setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     }
-    else {
-      setPageState('view');
-    }
-  }, [visible, selected]); */
+  }, [ranges, start, end]);
 
   const modifiers = (
     <>
       <div style={{ float: 'left' }}>
-      <Select
-        defaultValue="ORDER_ORD_TIME"
-        onChange={setTimeOption}
-        optionFilterProp="children"
-        placeholder={null}
-        filterOption={(input, option) =>
-          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-        }
-      >
-        {timeOptions.map((item, index) => (
-          <Select.Option key={index} value={item.code}>
-            {item.name}
-          </Select.Option>
-        ))}
-      </Select>
+        <Select
+          defaultValue="ORDER_ORD_TIME"
+          onChange={setTimeOption}
+          optionFilterProp="children"
+          placeholder={null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {timeOptions.map((item, index) => (
+            <Select.Option key={index} value={item.code}>
+              {item.name}
+            </Select.Option>
+          ))}
+        </Select>
       </div>
 
       <div style={{ float: 'left', width: '420px' }}>
-      <Calendar handleChange={setRange} start={start} end={end} />
+        <Calendar handleChange={setRange} start={start} end={end} />
       </div>
 
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
@@ -179,13 +151,13 @@ const OrderListings = ({popup}) => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
       {pageState !== 'view' && (
-        <Forms 
-          value={selected} 
-          visible={visible} 
-          handleFormState={handleFormState} 
-          access={access} 
-          pageState={pageState} 
-          revalidate={revalidate} 
+        <Forms
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          pageState={pageState}
+          revalidate={revalidate}
         />
       )}
     </Page>
