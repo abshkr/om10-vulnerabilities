@@ -285,7 +285,7 @@ const Overview = () => {
       setFolioOptions(options);
       setFolioSeries(payload);
     }
-  }, [payload]);
+  }, [payload, folioClass]);
 
   useEffect(() => {
     const entry = payload?.records && payload?.records[0];

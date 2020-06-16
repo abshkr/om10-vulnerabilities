@@ -11,8 +11,103 @@ const data = [
       <>
         <>
           <Divider>Bug Fixes</Divider>
-          <p>- Please Refer to all the bug fixes in the version document on Confluence.</p>
-          <p>- Please Refer to all the tasks marked "To Be Tested" on JIRA.</p>
+          <p>
+            OM5K-6311 - <a>https://dev.diamondkey.com/browse/OM5K-6311</a>
+          </p>
+          <p>
+            OM5K-6598 - <a>https://dev.diamondkey.com/browse/OM5K-6598</a>
+          </p>
+          <p>
+            OM5K-6197 - <a>https://dev.diamondkey.com/browse/OM5K-6197</a>
+          </p>
+          <p>
+            OM5K-6456 - <a>https://dev.diamondkey.com/browse/OM5K-6456</a>
+          </p>
+          <p>
+            OM5K-6491 - <a>https://dev.diamondkey.com/browse/OM5K-6491</a>
+          </p>
+          <p>
+            OM5K-6125 - <a>https://dev.diamondkey.com/browse/OM5K-6125</a>
+          </p>
+          <p>
+            OM5K-6500 - <a>https://dev.diamondkey.com/browse/OM5K-6500</a>
+          </p>
+          <p>
+            OM5K-6507 - <a>https://dev.diamondkey.com/browse/OM5K-6507</a>
+          </p>
+          <p>
+            OM5K-6478 - <a>https://dev.diamondkey.com/browse/OM5K-6478</a>
+          </p>
+          <p>
+            OM5K-6498 - <a>https://dev.diamondkey.com/browse/OM5K-6498</a>
+          </p>
+          <p>
+            OM5K-6637 - <a>https://dev.diamondkey.com/browse/OM5K-6637</a>
+          </p>
+          <p>
+            OM5K-6470 - <a>https://dev.diamondkey.com/browse/OM5K-6470</a>
+          </p>
+          <p>
+            OM5K-6461 - <a>https://dev.diamondkey.com/browse/OM5K-6461</a>
+          </p>
+          <p>
+            OM5K-6461 - <a>https://dev.diamondkey.com/browse/OM5K-6461</a>
+          </p>
+          <p>
+            OM5K-6640 - <a>https://dev.diamondkey.com/browse/OM5K-6640</a>
+          </p>
+          <p>
+            OM5K-6620 - <a>https://dev.diamondkey.com/browse/OM5K-6620</a>
+          </p>
+          <p>
+            OM5K-6325 - <a>https://dev.diamondkey.com/browse/OM5K-6325</a>
+          </p>
+          <p>
+            OM5K-6626 - <a>https://dev.diamondkey.com/browse/OM5K-6626</a>
+          </p>
+          <p>
+            OM5K-6305 - <a>https://dev.diamondkey.com/browse/OM5K-6305</a>
+          </p>
+          <p>
+            OM5K-6372 - <a>https://dev.diamondkey.com/browse/OM5K-6372</a>
+          </p>
+          <p>
+            OM5K-6510 - <a>https://dev.diamondkey.com/browse/OM5K-6510</a>
+          </p>
+          <p>
+            OM5K-6108 - <a>https://dev.diamondkey.com/browse/OM5K-6108</a>
+          </p>
+          <p>
+            OM5K-6445 - <a>https://dev.diamondkey.com/browse/OM5K-6445</a>
+          </p>
+          <p>
+            OM5K-6486 - <a>https://dev.diamondkey.com/browse/OM5K-6486</a>
+          </p>
+          <p>
+            OM5K-6315 - <a>https://dev.diamondkey.com/browse/OM5K-6315</a>
+          </p>
+          <p>
+            OM5K-6369 - <a>https://dev.diamondkey.com/browse/OM5K-6369</a>
+          </p>
+          <p>
+            OM5K-6611 - <a>https://dev.diamondkey.com/browse/OM5K-6611</a>
+          </p>
+
+          <p>
+            OM5K-6454 - <a>https://dev.diamondkey.com/browse/OM5K-6454</a>
+          </p>
+
+          <p>
+            OM5K-6342 - <a>https://dev.diamondkey.com/browse/OM5K-6342</a>
+          </p>
+
+          <p>
+            OM5K-6371 - <a>https://dev.diamondkey.com/browse/OM5K-6371</a>
+          </p>
+
+          <p>
+            OM5K-6518 - <a>https://dev.diamondkey.com/browse/OM5K-6518</a>
+          </p>
         </>
       </>
     ),
