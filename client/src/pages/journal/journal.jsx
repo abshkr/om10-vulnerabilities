@@ -8,7 +8,7 @@ import Live from './live';
 import auth from '../../auth';
 import Historical from './historical';
 
-import { Page, Calendar } from '../../components';
+import { Page, Calendar, Download } from '../../components';
 import { JournalContainer } from './style';
 import { SETTINGS } from '../../constants';
 
@@ -16,12 +16,9 @@ const Journal = () => {
   const { t } = useTranslation();
 
   const [selected, setSelected] = useState('1');
-
-  const [start, setStart] = useState(
-    moment()
-      .subtract(3, 'hour')
-      .format(SETTINGS.DATE_TIME_FORMAT)
-  );
+  const [data, setData] = useState([]);
+  const [fields, setFields] = useState([]);
+  const [start, setStart] = useState(moment().subtract(3, 'hour').format(SETTINGS.DATE_TIME_FORMAT));
 
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
 
@@ -34,11 +31,13 @@ const Journal = () => {
     <>
       <Calendar handleChange={setRange} start={start} end={end} disabled={selected === '1'} />
 
+      <Download data={data} columns={fields} />
+
       <Radio.Group
-        style={{ marginLeft: 10 }}
+        style={{ marginLeft: 5 }}
         value={selected}
         buttonStyle="solid"
-        onChange={val => setSelected(val.target.value)}
+        onChange={(val) => setSelected(val.target.value)}
       >
         <Radio.Button value="1"> {t('tabColumns.liveJournal')}</Radio.Button>
         <Radio.Button value="2"> {t('tabColumns.historicalJournal')} </Radio.Button>
@@ -51,10 +50,10 @@ const Journal = () => {
       <JournalContainer>
         <Tabs activeKey={selected} defaultActiveKey="1" animated={false}>
           <Tabs.TabPane tab={t('tabColumns.liveJournal')} key="1">
-            <Live t={t} />
+            <Live t={t} setData={setData} setFields={setFields} />
           </Tabs.TabPane>
           <Tabs.TabPane tab={t('tabColumns.historicalJournal')} key="2">
-            <Historical t={t} start={start} end={end} />
+            <Historical t={t} start={start} end={end} setData={setData} setFields={setFields} />
           </Tabs.TabPane>
         </Tabs>
       </JournalContainer>
