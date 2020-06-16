@@ -5,31 +5,31 @@ import { SETTINGS } from '../../../constants';
 const { Panel } = Collapse;
 
 const data = [
+  // {
+  //   title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 17/06/2020`,
+  //   content: (
+  //     <>
+  //       <>
+  //         <Divider>Features</Divider>
+
+  //         <p>- Manual Transaction Completion</p>
+  //       </>
+
+  //       <>
+  //         <Divider>Enhancements</Divider>
+
+  //         <p>- New Versioning </p>
+  //       </>
+
+  //       <>
+  //         <Divider>Bug Fixes</Divider>
+  //       </>
+  //     </>
+  //   ),
+  // },
+
   {
-    title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 17/06/2020`,
-    content: (
-      <>
-        <>
-          <Divider>Features</Divider>
-
-          <p>- Manual Transaction Completion</p>
-        </>
-
-        <>
-          <Divider>Enhancements</Divider>
-
-          <p>- New Versioning </p>
-        </>
-
-        <>
-          <Divider>Bug Fixes</Divider>
-        </>
-      </>
-    ),
-  },
-
-  {
-    title: `Release Version Notes (10.0.11-dev) - 15/06/2020`,
+    title: ` Latest Release Version Notes (10.0.11-dev) - 15/06/2020`,
     content: (
       <>
         <>
@@ -146,6 +146,30 @@ const data = [
 
           <p>
             OM5K-6195 - <a>https://dev.diamondkey.com/browse/OM5K-6195</a>
+          </p>
+
+          <p>
+            OM5K-6612 - <a>https://dev.diamondkey.com/browse/OM5K-6612</a>
+          </p>
+
+          <p>
+            OM5K-6647 - <a>https://dev.diamondkey.com/browse/OM5K-6647</a>
+          </p>
+
+          <p>
+            OM5K-6621 - <a>https://dev.diamondkey.com/browse/OM5K-6621</a>
+          </p>
+
+          <p>
+            OM5K-6628 - <a>https://dev.diamondkey.com/browse/OM5K-6628</a>
+          </p>
+
+          <p>
+            OM5K-6599 - <a>https://dev.diamondkey.com/browse/OM5K-6599</a>
+          </p>
+
+          <p>
+            OM5K-6597 - <a>https://dev.diamondkey.com/browse/OM5K-6597</a>
           </p>
         </>
       </>
