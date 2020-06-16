@@ -70,7 +70,6 @@ const NonCombination = ({ form, value }) => {
 
                       borderRadius: 5,
                     }}
-                    hoverable
                   >
                     <Equipment
                       image={item}

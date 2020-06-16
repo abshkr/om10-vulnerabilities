@@ -550,7 +550,7 @@ const ReleaseNotes = () => {
   return (
     <Collapse defaultActiveKey={['0']}>
       {data.map((entry, index) => (
-        <Panel header={entry.title} key={index}>
+        <Panel header={entry.title} key={index} forceRender>
           {entry.content}
         </Panel>
       ))}

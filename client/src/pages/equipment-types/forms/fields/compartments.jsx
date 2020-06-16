@@ -9,15 +9,35 @@ import _ from 'lodash';
 
 import { EQUIPMENT_TYPES } from '../../../../api';
 import { Equipment, DataTable } from '../../../../components';
+import { useConfig } from '../../../../hooks';
 
 const Compartments = ({ form, value, isCombination }) => {
-  const CAN_CHANGE_EQUIPMENT = !isCombination;
-
-  const equipment = ['p', 'f', 't', 'r', 's', 'e'];
+  const { railTankAvailable, rigidShipAvailable } = useConfig();
 
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
+
+  const CAN_CHANGE_EQUIPMENT = !isCombination;
+
+  const equipment = _.reject(['p', 'f', 't', 'r', 's', 'e'], (equipment) => {
+    if (!railTankAvailable) {
+      return equipment === 'e';
+    }
+
+    if (!rigidShipAvailable) {
+      return equipment === 's';
+    }
+  });
+
+  const names = {
+    p: t('fields.primeMover'),
+    f: t('fields.flatBed'),
+    t: t('fields.trailer'),
+    r: t('fields.ridgid'),
+    s: t('fields.rigidShip'),
+    e: t('fields.railTank'),
+  };
 
   const { data: composition, isValidating } = useSWR(
     `${EQUIPMENT_TYPES.COMPOSITION}?etyp_id=${value.etyp_id}`
@@ -94,7 +114,7 @@ const Compartments = ({ form, value, isCombination }) => {
                       }}
                     />
                     <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                      <Radio value={item} />
+                      <Radio value={item}>{names[item]}</Radio>
                     </div>
                   </div>
                 ))}
@@ -113,7 +133,7 @@ const Compartments = ({ form, value, isCombination }) => {
       >
         <div style={{ display: 'flex', flexDirection: 'row' }}>
           {composition?.records?.map((item) => (
-            <div style={{ marginRight: 10 }}>
+            <div key={item} style={{ marginRight: 10 }}>
               <Equipment image={item?.etyp_category?.toLowerCase()} showName={item.etyp_title} />
               {item.etyp_category !== 'P' && item.etyp_category !== 'F' && (
                 <DataTable data={item?.compartments} columns={columns} minimal height="80vh" />
