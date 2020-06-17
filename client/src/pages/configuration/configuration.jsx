@@ -78,7 +78,7 @@ const FormSwitch = ({ config, onChange }) => {
 
 const ConfigurationItems = ({ data, onChange }) => (
   <List
-    style={{ height: 'calc(100vh - 200px)', overflowY: 'auto' }}
+    style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}
     itemLayout="horizontal"
     size="small"
     dataSource={data}
@@ -108,7 +108,7 @@ const ConfigurationItems = ({ data, onChange }) => (
 
 const FeatureItems = ({ data, onChange }) => (
   <List
-    style={{ height: 'calc(100vh - 200px)', overflowY: 'auto' }}
+    style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}
     itemLayout="horizontal"
     size="small"
     dataSource={data}
@@ -241,7 +241,7 @@ const Configuration = () => {
 
   return (
     <ConfigurationContainer>
-      <Page page={page} auth={auth} minimal modifiers={modifiers}>
+      <Page page={page} auth={auth} transparent modifiers={modifiers}>
         <Tabs defaultActiveKey={tab} type="card" onChange={setTab}>
           <TabPane tab={t('tabColumns.screenAccess')} key="1">
             <ConfigurationItems
