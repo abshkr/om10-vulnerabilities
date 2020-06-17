@@ -157,6 +157,60 @@ class Transaction extends CommonClass
         }
     }
 
+    public function search()
+    {
+        // write_log(json_encode($this), __FILE__, __LINE__);
+
+        if (isset($this->trsa_id)) {
+            $trsa_id = '%' . $this->trsa_id . '%';
+        } else {
+            $trsa_id = '%';
+        }
+
+        $query = "
+            SELECT * FROM " . $this->VIEW_NAME . "
+            WHERE TRSA_ID LIKE :trsa_id " ;
+
+        if (isset($this->trsa_trip)) {
+            $query = $query . " AND TRSA_TRIP LIKE :trsa_trip";
+        }
+
+        if (isset($this->trsa_tanker)) {
+            $query = $query . " AND TRSA_TANKER LIKE :trsa_tanker";
+        }
+
+        if (isset($this->load_id)) {
+            $query = $query . " AND LOAD_ID LIKE :load_id";
+        }
+
+        $query = $query . " ORDER BY TRSA_ST_DMY DESC";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trsa_id', $trsa_id);
+
+        if (isset($this->trsa_trip)) {
+            $trsa_trip = '%' . $this->trsa_trip . '%';
+            oci_bind_by_name($stmt, ':trsa_trip', $trsa_trip);
+        }
+
+        if (isset($this->trsa_tanker)) {
+            $trsa_tanker = '%' . $this->trsa_tanker . '%';
+            oci_bind_by_name($stmt, ':trsa_tanker', $trsa_tanker);
+        }
+
+        if (isset($this->load_id)) {
+            $load_id = '%' . $this->load_id . '%';
+            oci_bind_by_name($stmt, ':load_id', $load_id);
+        }
+        
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function read()
     {
         if (!isset($this->start_date)) {

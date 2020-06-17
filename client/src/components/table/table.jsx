@@ -90,7 +90,6 @@ const Table = ({
   };
 
   const handleGridReady = (params) => {
-    console.log("handleGridReady")
     setAPI(params.api);
 
     if (apiContext) {
@@ -139,9 +138,7 @@ const Table = ({
   }, [data, api]);
 
   useEffect(() => {
-    if (data?.length > 0) {
-      setPayload(data);
-    }
+    setPayload(data);
   }, [data]);
 
   useEffect(() => {

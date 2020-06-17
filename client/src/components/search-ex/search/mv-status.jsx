@@ -1,20 +1,20 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 
-import { LOAD_SCHEDULES } from 'api';
+import { SPECIAL_MOVEMENTS } from 'api';
 
-const Supplier = ({ value, onChange }) => {
+const StatusSerach = ({ value, onChange }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.SUPPLIERS);
+  const { data: options, isValidating } = useSWR(SPECIAL_MOVEMENTS.STATUS);
 
   return (
     <Form.Item
-      name="supplier_code"
-      label={t('fields.supplier')}
+      name="mlitm_status"
+      label={t('fields.movementStatus')}
     >
       <Select
         loading={isValidating}
@@ -22,14 +22,14 @@ const Supplier = ({ value, onChange }) => {
         onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectSupplier') : null}
+        // placeholder={!value ? t('placeholder.selectSupplier') : null}
         filterOption={(value, option) =>
           option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.cmpy_code}>
-            {item.cmpy_desc}
+          <Select.Option key={index} value={item.mlitm_status}>
+            {item.mv_status_name}
           </Select.Option>
         ))}
       </Select>
@@ -37,4 +37,4 @@ const Supplier = ({ value, onChange }) => {
   );
 };
 
-export default Supplier;
+export default StatusSerach;

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ const StatusSerach = ({ value, onChange }) => {
 
   return (
     <Form.Item
-      name="status"
+      name="trip_status"
       label={t('fields.schdStatus')}
     >
       <Select

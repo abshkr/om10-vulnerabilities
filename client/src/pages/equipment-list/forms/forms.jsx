@@ -48,14 +48,11 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
   const onComplete = (eqpt_id) => {
     handleFormState(false, null);
+    // need read the data again no matter if it is created or updated, otherwise user could not see changes after updating.
+    mutate(EQUIPMENT_LIST.READ);
     if (eqpt_id) {
-      if (IS_CREATING) {
-        mutate(EQUIPMENT_LIST.READ);
-      }
       setFilterValue("" + eqpt_id);
-    } else {
-      mutate(EQUIPMENT_LIST.READ);
-    }
+    } 
   };
 
   const onFinish = async () => {
@@ -88,7 +85,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
         await api
           .post(IS_CREATING ? EQUIPMENT_LIST.CREATE : EQUIPMENT_LIST.UPDATE, values)
           .then((response) => {
-            onComplete(value.eqpt_id);
+            onComplete(value?.eqpt_id);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
@@ -146,8 +143,8 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
         await api
           .post(EQUIPMENT_LIST.DELETE, value)
           .then((response) => {
-            mutate(EQUIPMENT_LIST.READ);
-            Modal.destroyAll();
+            onComplete(null);
+
             notification.success({
               message: t('messages.deleteSuccess'),
               description: `${t('descriptions.deleteSuccess')}`,

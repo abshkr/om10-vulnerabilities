@@ -20,6 +20,76 @@ class SpecialMovement extends CommonClass
         "MLITM_DENS_COR"
     );
 
+    public function search()
+    {
+        if (isset($this->mlitm_id)) {
+            $mlitm_id = '%' . $this->mlitm_id . '%';
+        } else {
+            $mlitm_id = '%';
+        }
+
+        $query = "
+            SELECT MLITM_ID, 
+                MLITM_TERMINAL, 
+                MLITM_MOV_NUM, 
+                MLITM_TYPE, 
+                MOVITEM_TYPE_NAME MLITM_TYPE_NAME,
+                MLITM_PRODCODE, 
+                MLITM_TANKCODE, 
+                MLITM_QTY_AMB, 
+                MLITM_MOV_TYPE, 
+                MLITM_MOV_KEY,
+                MLITM_UNIT_AMB, 
+                MLITM_TEMP_AMB, 
+                MLITM_TMPUNIT_AMB, 
+                MLITM_DENS_COR, 
+                MLITM_DNSUNIT_COR, 
+                MLITM_DTIM_START, 
+                MLITM_REASON_CODE,  
+                MR_ACTION MLITM_REASON,
+                MLITM_TANKDEPO, 
+                MLITM_PRODCMPY_TO, 
+                MLITM_PRODCMPY, 
+                MLITM_TANKDEPO_TO, 
+                MLITM_PRODCODE_TO, 
+                MLITM_TANKCODE_TO, 
+                MLITM_QTY_COR, 
+                MLITM_QTY_KG, 
+                MLITM_UNIT_COR, 
+                MLITM_TEMP_COR, 
+                MLITM_TMPUNIT_COR,  
+                MLITM_QTY_RPT, 
+                MLITM_UNIT_RPT, 
+                MLITM_STATUS, 
+                DECODE(MLITM_STATUS, 0, 'Entering', 5, 'Completed', 9, 'Reversed', 'Invalid') MV_STATUS_NAME,
+                MLITM_DTIM_POSTED, 
+                MLITM_OPER_POSTED, 
+                MLITM_COMMENT 
+            FROM " . $this->VIEW_NAME . ", MOVITEM_TYPES, MOV_REASONS
+            WHERE MLITM_ID LIKE :mlitm_id ";
+        $stmt = oci_parse($this->conn, $query);
+
+        if (isset($this->mlitm_status)) {
+            $query = $query . " AND MLITM_STATUS = :status";
+        }
+
+        $query = $query . " ORDER BY MLITM_DTIM_START DESC";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mlitm_id', $mlitm_id);
+
+        if (isset($this->status)) {
+            oci_bind_by_name($stmt, ':status', $this->mlitm_status);
+        }
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function read()
     {
         if (!isset($this->start_date)) {

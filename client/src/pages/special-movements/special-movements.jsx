@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import moment from 'moment';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, Calendar } from '../../components';
+import { Page, DataTable, Download, Calendar, WindowSearch } from '../../components';
 import { SPECIAL_MOVEMENTS } from '../../api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
 import auth from '../../auth';
 import { useAuth } from 'hooks';
 import Forms from './forms';
+import axios from 'axios';
 
 const SpecialMovements = () => {
   const { t } = useTranslation();
@@ -27,7 +28,8 @@ const SpecialMovements = () => {
   const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
 
   const fields = columns(t);
-  const data = payload?.records;
+  // const data = payload?.records;
+  const [data, setData] = useState(payload?.records);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -40,13 +42,53 @@ const SpecialMovements = () => {
     revalidate();
   };
 
+  const setSearch = (values) => {
+    if (!values.mlitm_id && 
+      !values.mlitm_status) {
+      return;
+    }
+
+    axios
+      .get(SPECIAL_MOVEMENTS.SEARCH, {
+        params: {
+          mlitm_id: values.mlitm_id,
+          mlitm_status: values.mlitm_status,
+        },
+      })
+      .then((res) => {
+        // setCompartments(res.data.records);
+        setData(res.data.records);
+      });
+  };
+
+  useEffect(() => {
+    if (payload?.records) {
+      setData(payload?.records);
+      payload.records = null;
+    } 
+    
+  }, [payload]);
+
   const modifiers = (
     <>
       <Calendar handleChange={setRange} start={start} end={end} />
+      
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+
+      <Button 
+        type="primary"
+        icon={<FileSearchOutlined />} 
+        onClick={() => WindowSearch(setSearch, t('operations.search'), {
+          mlitm_id: true,
+          mlitm_status: true,
+        })}
+      >
+        {t('operations.search')}
+      </Button>
+
       <Button
         type="primary"
         icon={<PlusOutlined />}

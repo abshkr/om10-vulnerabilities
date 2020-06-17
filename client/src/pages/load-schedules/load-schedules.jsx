@@ -2,20 +2,17 @@ import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import moment from 'moment';
-import { Button, Modal } from 'antd';
+import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, Calendar } from '../../components';
+import { Page, DataTable, Download, Calendar, WindowSearch } from '../../components';
 import { LOAD_SCHEDULES } from '../../api';
 import { SETTINGS } from '../../constants';
 import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
-import SearchForm from './search/search';
-import { SWRConfig } from 'swr';
-import { fetcher } from 'utils';
 import axios from 'axios';
 
 const LoadSchedules = () => {
@@ -54,7 +51,7 @@ const LoadSchedules = () => {
     if (!values.shls_trip_no && 
       !values.supplier_code &&
       !values.tnkr_code && 
-      !values.status) {
+      !values.trip_status) {
       return;
     }
     axios
@@ -63,38 +60,13 @@ const LoadSchedules = () => {
           shls_trip_no: values.shls_trip_no,
           supplier_code: values.supplier_code,
           tnkr_code: values.tnkr_code,
-          status: values.status,
+          status: values.trip_status,
         },
       })
       .then((res) => {
         // setCompartments(res.data.records);
         setData(res.data.records);
       });
-  };
-
-  const handleTagLookUp = () => {
-    Modal.info({
-      className: 'form-container',
-      title: t('operations.search'),
-      centered: true,
-      width: '20vw',
-      icon: <FileSearchOutlined />,
-      content: (
-        <SWRConfig
-          value={{
-            refreshInterval: 0,
-            fetcher,
-          }}
-        >
-          <SearchForm onSearch={setSearch} />
-        </SWRConfig>
-      ),
-      okButtonProps: {
-        style: { display: 'none' },
-      },
-    });
-  
-    return null;
   };
 
   const fields = columns(false, t);
@@ -111,21 +83,30 @@ const LoadSchedules = () => {
       payload.records = null;
     } 
     
-  }, [payload, setData]);
+  }, [payload]);
 
   const modifiers = (
     <>
       
       <Calendar handleChange={setRange} start={start} end={end} />
-      <Button icon={<FileSearchOutlined />} onClick={() => handleTagLookUp()}>
-        {t('operations.search')}
-      </Button>
-
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
 
       <Download data={data} isLoading={isLoading} columns={fields} />
+
+      <Button 
+        type="primary"
+        icon={<FileSearchOutlined />} 
+        onClick={() => WindowSearch(setSearch, t('operations.search'), {
+          shls_trip_no: true,
+          supplier_code: true,
+          trip_status: true,
+          tnkr_code: true,
+        })}
+      >
+        {t('operations.search')}
+      </Button>
 
       <Button
         type="primary"

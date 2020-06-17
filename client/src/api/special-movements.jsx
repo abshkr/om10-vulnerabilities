@@ -1,4 +1,5 @@
 export const READ = '/api/pages/special_mv/read.php';
+export const SEARCH = '/api/pages/special_mv/search.php';
 export const STATUS = '/api/pages/special_mv/mv_status.php';
 export const TYPES = '/api/pages/special_mv/mv_types.php';
 export const REASONS = '/api/pages/special_mv/mv_reasons.php';

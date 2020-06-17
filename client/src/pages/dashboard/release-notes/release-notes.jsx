@@ -5,28 +5,57 @@ import { SETTINGS } from '../../../constants';
 const { Panel } = Collapse;
 
 const data = [
-  // {
-  //   title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 17/06/2020`,
-  //   content: (
-  //     <>
-  //       <>
-  //         <Divider>Features</Divider>
+  {
+    title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 17/06/2020`,
+    content: (
+      <>
+        <>
+          <Divider>Features</Divider>
 
-  //         <p>- Manual Transaction Completion</p>
-  //       </>
+          <p>- Manual Transaction Completion</p>
 
-  //       <>
-  //         <Divider>Enhancements</Divider>
+          <p>Links from Order Listings to Manual Transactions</p>
+        </>
 
-  //         <p>- New Versioning </p>
-  //       </>
+        <>
+          <Divider>Enhancements</Divider>
 
-  //       <>
-  //         <Divider>Bug Fixes</Divider>
-  //       </>
-  //     </>
-  //   ),
-  // },
+          <p>- New Versioning </p>
+
+          <p>Links from Customers to Order Listings with parameters</p>
+
+          <p>Links from Customers to Delivery Locations with parameters</p>
+
+          <p>Manage Address Templates in Addresses</p>
+        </>
+
+         <>
+           <Divider>Bug Fixes</Divider>
+            <p>
+              OM5K-6305 - <a>https://dev.diamondkey.com/browse/OM5K-6305</a>
+            </p>
+            <p>
+              OM5K-6455 - <a>https://dev.diamondkey.com/browse/OM5K-6455</a>
+            </p>
+            <p>
+              OM5K-6554 - <a>https://dev.diamondkey.com/browse/OM5K-6554</a>
+            </p>
+            <p>
+              OM5K-6555 - <a>https://dev.diamondkey.com/browse/OM5K-6555</a>
+            </p>
+            <p>
+              OM5K-6558 - <a>https://dev.diamondkey.com/browse/OM5K-6558</a>
+            </p>
+            <p>
+              OM5K-6562 - <a>https://dev.diamondkey.com/browse/OM5K-6562</a>
+            </p>
+            <p>
+              OM5K-6563 - <a>https://dev.diamondkey.com/browse/OM5K-6563</a>
+            </p>
+         </>
+       </>
+    ),
+  },
 
   {
     title: ` Latest Release Version Notes (10.0.11-dev) - 15/06/2020`,
