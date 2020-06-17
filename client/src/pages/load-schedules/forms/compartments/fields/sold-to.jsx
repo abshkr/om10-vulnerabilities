@@ -37,7 +37,7 @@ export default class SoldTo extends Component {
     const { values } = this.props;
 
     return (
-      <div style={{ display: 'flex' }}>
+      <div style={{ width: '150%', display: 'flex' }}>
         <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick} bordered={false}>
           {values?.map((item) => (
             <Select.Option key={item.partner_code} value={item.partner_code}>

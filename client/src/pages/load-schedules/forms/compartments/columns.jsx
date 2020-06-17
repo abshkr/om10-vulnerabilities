@@ -3,7 +3,7 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     headerName: t('fields.compartment'),
     field: 'compartment',
     resizable: true,
-    width: 110,
+    width: 130,
     suppressSizeToFit: true,
     pinned: 'left',
   },
@@ -12,7 +12,7 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     headerName: t('fields.code'),
     field: 'prod_code',
     resizable: true,
-    width: 110,
+    width: 120,
     suppressSizeToFit: true,
   },
 
@@ -60,7 +60,7 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
   },
 
   {
-    headerName: t('fields.orderNumber'),
+    headerName: t('fields.orderNo'),
     field: 'shls_srctype',
     resizable: true,
     width: 110,
@@ -71,7 +71,7 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     headerName: t('fields.safeFill'),
     field: 'safefill',
     resizable: true,
-    width: 90,
+    width: 110,
     suppressSizeToFit: true,
   },
 
@@ -79,7 +79,7 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     headerName: t('fields.prevProduct'),
     field: 'shls_srctype',
     resizable: true,
-    width: 110,
+    width: 140,
     suppressSizeToFit: true,
   },
 
@@ -87,7 +87,7 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     headerName: t('fields.soldTo'),
     field: 'schd_sold_to_num',
     resizable: true,
-    width: 90,
+    width: 140,
     suppressSizeToFit: true,
     editable: true,
     cellEditor: 'SoldToEditor',
@@ -114,7 +114,7 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     headerName: t('fields.shipTo'),
     field: 'schd_ship_to_num',
     resizable: true,
-    width: 90,
+    width: 140,
     suppressSizeToFit: true,
     editable: true,
     cellEditor: 'ShipToEditor',
