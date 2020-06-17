@@ -273,7 +273,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             style={{ float: 'right', marginRight: 5 }}
             disabled={false}
           >
-            {t('operations.setAddressTemplat')}
+            {t('operations.setAddressTemplate')}
           </Button>
         </>
       }
