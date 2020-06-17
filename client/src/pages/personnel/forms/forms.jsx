@@ -33,7 +33,7 @@ import columns from './columns';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -44,9 +44,16 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const IS_CREATING = !value;
 
-  const onComplete = () => {
+  const onComplete = (per_code) => {
     handleFormState(false, null);
-    mutate(PERSONNEL.READ);
+    if (per_code) {
+      if (IS_CREATING) {
+        mutate(PERSONNEL.READ);
+      }
+      setFilterValue("" + per_code);
+    } else {
+      mutate(PERSONNEL.READ);
+    }
   };
 
   const onFinish = async () => {
@@ -77,7 +84,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(IS_CREATING ? PERSONNEL.CREATE : PERSONNEL.UPDATE, values)
           .then((response) => {
-            onComplete();
+            onComplete(values.per_code);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
