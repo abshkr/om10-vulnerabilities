@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, setFilterValue } from 'antd';
 
 import {
   EditOutlined,
@@ -35,7 +35,7 @@ import _ from 'lodash';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -47,9 +47,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const IS_CREATING = !value;
 
-  const onComplete = () => {
+  const onComplete = (kya_txt) => {
     handleFormState(false, null);
     mutate(ID_ASSIGNMENT.READ);
+    if (kya_txt) {
+      setFilterValue("" + kya_txt);
+    }
   };
 
   const onFinish = async () => {
@@ -66,7 +69,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(IS_CREATING ? ID_ASSIGNMENT.CREATE : ID_ASSIGNMENT.UPDATE, values)
           .then((response) => {
-            onComplete();
+            onComplete(values.kya_txt);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
