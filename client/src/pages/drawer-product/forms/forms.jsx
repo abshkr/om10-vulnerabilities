@@ -129,10 +129,10 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
   const onComplete = (prod_code) => {
     handleFormState(false, null); 
     setSelected(null);
-    mutate(DRAWER_PRODUCTS.READ);
     if (prod_code) {
       setFilterValue("" + prod_code);
     }
+    mutate(DRAWER_PRODUCTS.READ);
   };
 
   const onFinish = async () => {

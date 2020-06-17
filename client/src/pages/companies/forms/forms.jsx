@@ -42,10 +42,10 @@ const FormModal = ({ value, visible, handleFormState, auth, specialActions, comp
 
   const onComplete = (cmpy_code) => {
     handleFormState(false, null);
-    mutate(COMPANIES.READ);
     if (cmpy_code) {
       setFilterValue("" + cmpy_code);
     }
+    mutate(COMPANIES.READ);
   };
 
   const onManagerChange = v => {
