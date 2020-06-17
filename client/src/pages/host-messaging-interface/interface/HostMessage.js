@@ -21,7 +21,7 @@ const HostMessages = () => {
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
-		console.log('selected row:'+JSON.stringify(selected,null,'\t'));
+		console.log('selected row:'+JSON.stringify(value,null,'\t'));
   };
 
   const fields = columns(t);
@@ -67,9 +67,8 @@ const HostMessages = () => {
 
 	const exportToCSV = () => { };	
 
-  const modifiers = (
+  const extras = (
     <>
-      
       <Calendar handleChange={setRange} start={start} end={end} />
       <Button onClick={() => exportToCSV()}>
         {t('operations.export')}
@@ -90,7 +89,7 @@ const HostMessages = () => {
 				isLoading={isValidating}
 				onClick={(message) => handleFormState(true, message)}
 				handleSelect={(message) => handleFormState(true, message[0])}
-				modifiers={modifiers}
+				extra={extras}
 			/>
 			<Forms
 				value={selected}

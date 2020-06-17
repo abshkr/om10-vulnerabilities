@@ -30,10 +30,6 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
 
 	};
 
-	const onDelete = async () => {
-
-	};
-
 	const onEdit = async () => {
 
 	};
@@ -72,20 +68,8 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
             style={{ float: 'right', marginRight: 5 }}
             disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
           >
-            {IS_CREATING ? t('operations.create') : t('operations.update')}
+            {t('operations.update')}
           </Button>
-
-          {!IS_CREATING && (
-            <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              disabled={!auth?.canDelete}
-              onClick={onDelete}
-            >
-              {t('operations.delete')}
-            </Button>
-          )}
         </>
       }
     >
@@ -93,7 +77,7 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
 				hidden={!visible}>
 
 				<div>
-					<Tabs defaultActiveKey="1" type="card">
+					<Tabs defaultActiveKey="1" size="small" type="line" animated={false}>
 						<TabPane key="1" tab={'Details'}>
 							<DetailsArea
 								from={from}
@@ -109,6 +93,7 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
 								action={action}
 								message={value}
 								content_format={content_format}
+								handleFormState={handleFormState}
 							/>
 						</TabPane>
 					</Tabs>

@@ -104,7 +104,7 @@ thead {
 .detailsArea,
 .contentsArea {
   display: block;
-  height: 160px;
+  height: 200px;
   width: 100%;
   text-align: left;
   border: 2px solid;
@@ -124,7 +124,7 @@ thead {
 .detailsAreaFilledByHostMsg,
 .contentsAreaFilledByHostMsg {
   display: block;
-  height: 160px;
+  height: 200px;
   width: 100%;
   text-align: left;
   border: 4px solid;
@@ -137,7 +137,7 @@ thead {
 .detailsAreaFilledByOmMsg,
 .contentsAreaFilledByOmMsg {
   display: block;
-  height: 160px;
+  height: 200px;
   width: 100%;
   text-align: left;
   border: 4px solid;

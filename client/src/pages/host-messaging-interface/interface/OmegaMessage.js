@@ -2,11 +2,14 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import NativeMenu from 'native-menu';
-import { Button, Table } from 'antd';
+import { Button } from 'antd';
+import useSWR from 'swr';
+import moment from 'moment';
+
 import columns from './columns';
 import { DataTable, Calendar } from '../../../components';
-import useSWR from 'swr';
 import Forms from './forms';
+import { SETTINGS } from '../../../constants';
 
 const OmegaMessages = () => {
 
@@ -52,6 +55,26 @@ const OmegaMessages = () => {
 	const action = 'view';
 	const cformat = 1;
 
+  const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+
+  const setRange = (start, end) => {
+    setStart(start);
+    setEnd(end);
+    revalidate();
+  };
+
+	const exportToCSV = () => { };	
+
+  const extras = (
+    <>
+      <Calendar handleChange={setRange} start={start} end={end} />
+      <Button onClick={() => exportToCSV()}>
+        {t('operations.export')}
+      </Button>
+    </>
+  );
+
 
 	return (
 		<div>
@@ -62,7 +85,7 @@ const OmegaMessages = () => {
 				isLoading={isValidating}
 				onClick={(message) => handleFormState(true, message)}
 				handleSelect={(message) => handleFormState(true, message[0])}
-
+				extra={extras}
 			/>
 			<Forms
 				value={selected}
