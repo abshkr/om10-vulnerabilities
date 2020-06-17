@@ -12,7 +12,7 @@ import {
 import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
-import axios from 'axios';
+
 import _ from 'lodash';
 
 import {
@@ -41,7 +41,7 @@ import columns from './columns';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, auth }) => {
+const FormModal = ({ value, visible, handleFormState, access }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -97,16 +97,15 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       onOk: async () => {
         await api
           .post(IS_CREATING ? TANKER_LIST.CREATE : TANKER_LIST.UPDATE, values)
-          .then(
-            axios.spread((response) => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-              });
-            })
-          )
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -150,16 +149,15 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       onOk: async () => {
         await api
           .post(TANKER_LIST.DELETE, value)
-          .then(
-            axios.spread((response) => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`,
-              });
-            })
-          )
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -205,7 +203,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             htmlType="submit"
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -216,7 +214,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               icon={<UnlockOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onUnlock}
-              disabled={!auth?.canUpdate}
+              disabled={!access?.canUpdate}
             >
               {t('operations.unlockAll')}
             </Button>
@@ -227,7 +225,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!auth?.canDelete}
+              disabled={!access?.canDelete}
             >
               {t('operations.delete')}
             </Button>

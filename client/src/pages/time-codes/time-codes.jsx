@@ -4,14 +4,21 @@ import useSWR from 'swr';
 import { mutate } from 'swr';
 import { Button, Select, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { CheckOutlined, MinusOutlined, EditOutlined, PlusOutlined, QuestionCircleOutlined, DeleteOutlined } from '@ant-design/icons';
+import {
+  CheckOutlined,
+  MinusOutlined,
+  EditOutlined,
+  PlusOutlined,
+  QuestionCircleOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 import axios from 'axios';
 import _ from 'lodash';
 import { useAuth } from '../../hooks';
 
 import { Page, DataTable } from '../../components';
 import { TIME_CODES } from '../../api';
-import {generator, degenerate} from './generator';
+import { generator, degenerate } from './generator';
 import columns from './columns';
 import auth from '../../auth';
 import TimecodeForm from './forms/forms';
@@ -157,15 +164,15 @@ const TimeCodes = () => {
   const onDelete = () => {
     if (code === 'AL') {
       notification.error({
-        message: t("messages.validationFailed"),
-        description: t("descriptions.timecodeAL"),
+        message: t('messages.validationFailed'),
+        description: t('descriptions.timecodeAL'),
       });
       return;
     }
 
     const value = {
       tcd_title: code,
-    }
+    };
     Modal.confirm({
       title: t('prompts.delete'),
       okText: t('operations.yes'),
@@ -208,10 +215,7 @@ const TimeCodes = () => {
         {t('operations.delete')}
       </Button>
 
-      <Button type="primary" 
-        icon={<EditOutlined />} 
-        onClick={onUpdate}
-        disabled={!access?.canUpdate}>
+      <Button type="primary" icon={<EditOutlined />} onClick={onUpdate} disabled={!access?.canUpdate}>
         {t('operations.update')}
       </Button>
 
@@ -219,7 +223,7 @@ const TimeCodes = () => {
         icon={<PlusOutlined />}
         style={{ marginLeft: 10 }}
         // disabled={!access?.canCreate}
-        onClick={()=>setVisible(true)}
+        onClick={() => setVisible(true)}
       >
         {t('operations.create')}
       </Button>
@@ -257,12 +261,16 @@ const TimeCodes = () => {
       >
         {t('operations.deselectAllTimes')}
       </Button>
-      
     </>
   );
 
   return (
-    <Page page={t('pageMenu.accessControl')} name={t('pageNames.timeCodes')} modifiers={modifiers}>
+    <Page
+      page={t('pageMenu.security')}
+      name={t('pageNames.timeCodes')}
+      modifiers={modifiers}
+      avatar="timeCodes"
+    >
       <DataTable
         columns={fields}
         data={data}

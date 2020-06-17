@@ -124,7 +124,14 @@ const Tanks = () => {
   }, [location]);
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access} transparent={simple}>
+    <Page
+      page={page}
+      name={name}
+      modifiers={modifiers}
+      access={access}
+      transparent={simple}
+      avatar="tankScreen"
+    >
       {simple ? (
         <ListView
           data={payload}
@@ -168,12 +175,12 @@ const Tanks = () => {
           </Tabs>
         </ListView>
       ) : (
-        <Table 
-          data={read?.records} 
-          visible={visible} 
+        <Table
+          data={read?.records}
+          visible={visible}
           setVisible={setVisible}
           selected={listSelected}
-          setSelected={setlistSelected} 
+          setSelected={setlistSelected}
         />
       )}
     </Page>

@@ -5,7 +5,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, FormModal } from '../../components';
+import { Page, DataTable, Download } from '../../components';
 import { TANK_GROUPS } from '../../api';
 import { useAuth } from '../../hooks';
 
@@ -31,36 +31,38 @@ const TankGroups = () => {
   const fields = columns(t);
   const data = payload?.records;
 
-  const handleClick = (value) => {
-    FormModal({
-      value,
-      form: <Forms value={value} />,
-      id: value?.mlitm_id,
-      name: value?.mlitm_mov_key,
-      t,
-    });
-  };
-
   const modifiers = (
     <>
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => handleFormState(true, null)} loading={isValidating}>
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => handleFormState(true, null)}
+        loading={isValidating}
+      >
         {t('operations.create')}
       </Button>
     </>
   );
 
   return (
-    <Page page={t('pageMenu.gantry')} name={t('pageNames.tankGroups')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={data} 
-        isLoading={isValidating} 
+    <Page
+      page={t('pageMenu.gantry')}
+      name={t('pageNames.tankGroups')}
+      modifiers={modifiers}
+      access={access}
+      avatar="tankGroups"
+    >
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
-        handleSelect={(payload) => handleFormState(true, payload[0])} />
+        handleSelect={(payload) => handleFormState(true, payload[0])}
+      />
       <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
