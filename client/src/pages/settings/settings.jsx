@@ -10,8 +10,11 @@ import api, { PERSONNEL } from '../../api';
 // import { useAuth } from '../../hooks';
 import auth from '../../auth';
 import useSWR from 'swr';
+import { useConfig } from '../../hooks';
 
 const Settings = ({ user }) => {
+  const config = useConfig();
+
   const { t } = useTranslation();
   const { data: payload } = useSWR(PERSONNEL.READ_DEPARTMENT);
 
@@ -39,8 +42,12 @@ const Settings = ({ user }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.password')}`);
     }
 
-    if (input && input.length < 5) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 5 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && input.length < _.toNumber(config.passwordLenMin)) {
+      return Promise.reject(`${t('placeholder.minCharacters')}: ${config.passwordLenMin} ─ ${t('descriptions.minCharacters')}`);
+    }
+
+    if (input && input.length > _.toNumber(config.passwordLenMax)) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: ${config.passwordLenMax} ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();
@@ -51,8 +58,12 @@ const Settings = ({ user }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.confirmPassword')}`);
     }
 
-    if (input && input.length < 5) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 5 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && input.length < _.toNumber(config.passwordLenMin)) {
+      return Promise.reject(`${t('placeholder.minCharacters')}: ${config.passwordLenMin} ─ ${t('descriptions.minCharacters')}`);
+    }
+
+    if (input && input.length > _.toNumber(config.passwordLenMax)) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: ${config.passwordLenMax} ─ ${t('descriptions.maxCharacters')}`);
     }
 
     if (input && input !== password) {
