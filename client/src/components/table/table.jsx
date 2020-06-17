@@ -90,7 +90,6 @@ const Table = ({
   };
 
   const handleGridReady = (params) => {
-    console.log("handleGridReady")
     setAPI(params.api);
 
     if (apiContext) {

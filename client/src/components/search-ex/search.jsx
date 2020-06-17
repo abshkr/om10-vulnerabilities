@@ -1,25 +1,13 @@
 import React from 'react';
+import { FileSearchOutlined, CloseOutlined } from '@ant-design/icons';
+import { SWRConfig } from 'swr';
+import { fetcher } from 'utils';
 
-import {
-  EditOutlined,
-  PlusOutlined,
-  CloseOutlined,
-  DeleteOutlined,
-  QuestionCircleOutlined,
-} from '@ant-design/icons';
-
-import { Form, Button, Tabs, Modal, notification, Input } from 'antd';
+import { Form, Button, Modal, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
-import Supplier from './supplier';
-import Status from './status';
-import Tanker from './tanker';
-
-// import { Code, Type, Use } from './fields';
-
-import { KEY_READER_DEVICES } from 'api';
-
-const TabPane = Tabs.TabPane;
+import Supplier from './search/supplier';
+import Status from './search/status';
+import Tanker from './search/tanker';
 
 const emptyFunc = () => {
 
@@ -37,9 +25,6 @@ const SearchForm = ({onSearch}) => {
 
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{marginTop: "1rem"}}>
-          {/* <Code form={form} value={value} />
-          <Type form={form} value={value} />
-          <Use form={form} value={value} /> */}
       <Form.Item
         name="shls_trip_no"
         label={t('fields.tripNumber')}
@@ -73,4 +58,32 @@ const SearchForm = ({onSearch}) => {
   );
 };
 
-export default SearchForm;
+const WindowSearch = (onSearch, title) => {
+  Modal.info({
+    className: 'form-container',
+    // title: t('operations.search'),
+    title: title? title: 'Search',
+    centered: true,
+    width: '20vw',
+    icon: <FileSearchOutlined />,
+    content: (
+    <SWRConfig
+        value={{
+        refreshInterval: 0,
+        fetcher,
+        }}
+    >
+      <SearchForm onSearch={onSearch} />
+    </SWRConfig>
+    ),
+    okButtonProps: {
+    style: { display: 'none' },
+    },
+  });
+
+  return null;
+};
+
+
+export default WindowSearch;
+  

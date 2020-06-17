@@ -8,6 +8,7 @@ import Equipment from './equipment';
 import Expiry from './expiry';
 import Tank from './tank';
 import Search from './search';
+import WindowSearch from './search-ex';
 import NavBar from './nav-bar';
 import Interface from './interface';
 import FormModal from './form-modal';
@@ -46,4 +47,5 @@ export {
   TableTransfer,
   ListView,
   Favourites,
+  WindowSearch,
 };
