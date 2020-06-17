@@ -9,12 +9,12 @@ const columns = (t) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.equipmentCode'),
+    headerName: t('fields.equipmentTypeCode'),
     field: 'etyp_title',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 160,
+    width: 220,
     suppressSizeToFit: true,
   },
   {

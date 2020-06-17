@@ -17,6 +17,7 @@ const EquipmentTypes = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [isCombination, setCombination] = useState(false);
+  const [filterValue, setFilterValue] = useState('');
 
   const { t } = useTranslation();
 
@@ -89,6 +90,7 @@ const EquipmentTypes = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         rowHeight={60}
+        filterValue={filterValue}
       />
       <Forms
         value={selected}
@@ -96,6 +98,7 @@ const EquipmentTypes = () => {
         handleFormState={handleFormState}
         access={access}
         isCombination={isCombination}
+        setFilterValue={setFilterValue}
       />
     </Page>
   );

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
@@ -11,7 +11,7 @@ import { Code, NonCombination, Compartments, Combination } from './fields';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, isCombination, access }) => {
+const FormModal = ({ value, visible, handleFormState, isCombination, access, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -20,9 +20,12 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access }) =
 
   const { resetFields } = form;
 
-  const onComplete = () => {
+  const onComplete = (etyp_title) => {
     handleFormState(false, null);
     mutate(EQUIPMENT_TYPES.READ);
+    if (etyp_title) {
+      setFilterValue("" + etyp_title);
+    }
   };
 
   const onFinish = async () => {
@@ -31,6 +34,8 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access }) =
     const compartments = [];
 
     const record = await form.validateFields();
+
+    console.log(record);
 
     _.forEach(record.names, (value, key) => {
       const payload = {
@@ -46,6 +51,12 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access }) =
       values = {
         etyp_id: value.etyp_id,
         etyp_category: record.etyp_category?.toUpperCase(),
+      };
+    }
+
+    if (IS_COMBINATION && !IS_CREATING) {
+      values = {
+        etyp_id: value.etyp_id,
       };
     }
 
@@ -79,7 +90,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access }) =
         await api
           .post(IS_CREATING ? EQUIPMENT_TYPES.CREATE : EQUIPMENT_TYPES.UPDATE, values)
           .then(() => {
-            onComplete();
+            onComplete(value? value.etyp_title : values.etyp_title);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
@@ -147,6 +158,15 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access }) =
       visible={visible}
       footer={
         <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
+          
           <Button
             type="primary"
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
