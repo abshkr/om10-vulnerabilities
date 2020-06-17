@@ -16,7 +16,8 @@ import Forms from './forms';
 const DrawerProduct = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
-
+  const [filterValue, setFilterValue] = useState('');
+  
   const { t } = useTranslation();
 
   const access = useAuth('M_DRAWERPRODUCTS');
@@ -65,8 +66,16 @@ const DrawerProduct = () => {
         selectionMode="single"
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        autoColWidth
+        filterValue={filterValue}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={access} />
+      <Forms 
+        value={selected} 
+        visible={visible} 
+        handleFormState={handleFormState} 
+        auth={access}
+        setFilterValue={setFilterValue}
+      />
     </Page>
   );
 };
