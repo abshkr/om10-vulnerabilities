@@ -41,6 +41,11 @@ const Compartments = ({ form, value, equipment, onChange }) => {
       setLoading(true);
 
       axios.get(`${EQUIPMENT_LIST.COMPARTMENT_EQUIPMENT}?etyp_id=${id}`).then((response) => {
+        // loop through the eqpt type compartment list, add column safefill and sfl with the value of cmpt_capacit
+          _.forEach(response?.data?.records, (item)=>{
+          item.safefill = item.cmpt_capacit;
+          item.sfl = item.cmpt_capacit;
+        });
         setData(response.data.records);
         setFieldsValue({ compartments: response.data.records });
         setLoading(false);
@@ -69,7 +74,7 @@ const Compartments = ({ form, value, equipment, onChange }) => {
   };
 
   useEffect(() => {
-    const predicate = value ? ['eqpt_etp_title', value.eqpt_etp_title] : ['eqpt_etp', equipment];
+    const predicate = value ? ['eqpt_etp_title', value.eqpt_etp_title] : ['eqpt_etp', String(equipment)];
     const options = _.filter(payload?.records, predicate) || [];
 
     setOptions(options);
@@ -86,10 +91,12 @@ const Compartments = ({ form, value, equipment, onChange }) => {
 
   useEffect(() => {
     if (value) {
+      console.log('fetchByCompartment', value.eqpt_id, value);
       fetchByCompartment(value.eqpt_id);
     }
 
     if (!value && equipment) {
+      console.log('fetchByEquipment', equipment, value);
       fetchByEquipment(equipment);
     }
   }, [value, equipment, fetchByEquipment, fetchByCompartment]);
