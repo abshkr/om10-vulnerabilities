@@ -1239,6 +1239,7 @@
     "close": "Close",
     "locked": "Locked",
     "selectAll": "Select All",
+    "deselectAll": "Deselect All",
     "print": "Print",
     "preOrder": "Pre Order",
     "preSchedule": "Pre Schedule",
