@@ -138,9 +138,7 @@ const Table = ({
   }, [data, api]);
 
   useEffect(() => {
-    if (data?.length > 0) {
-      setPayload(data);
-    }
+    setPayload(data);
   }, [data]);
 
   useEffect(() => {

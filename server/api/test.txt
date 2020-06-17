@@ -464,6 +464,13 @@ https://10.1.10.66/api/pages/tanker/delete.php?tnkr_code=TEST
 
 //Transaction List
 https://10.2.20.53/api/pages/transaction/read.php?start_date=2014-09-04%04:07:15&end_date=2014-09-06%04:07:15
+https://10.2.20.53/api/pages/transaction/search.php
+{
+    "trsa_id": 9003508,
+	"trsa_tanker": "12",
+	"load_id": 1,
+	"trsa_trip": 2,
+}
 https://10.2.20.53/api/pages/transaction/get_trsa_details.php?trsa_id=545647
 https://10.2.20.53/api/pages/transaction/get_meter_details.php?trsa_id=545647
 https://10.2.20.53/api/pages/transaction/close_trsa.php?trsa_id=9000961

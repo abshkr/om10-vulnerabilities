@@ -8,8 +8,8 @@ const TripSearch = () => {
 
   return (
     <Form.Item
-        name="shls_trip_no"
-        label={t('fields.tripNumber')}
+        name="load_id"
+        label={t('fields.loadId')}
       >
         <Input type="number" />
       </Form.Item>

@@ -83,7 +83,7 @@ const LoadSchedules = () => {
       payload.records = null;
     } 
     
-  }, [payload, setData]);
+  }, [payload]);
 
   const modifiers = (
     <>

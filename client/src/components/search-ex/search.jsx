@@ -9,6 +9,8 @@ import Supplier from './search/supplier';
 import TripStatus from './search/trip-status';
 import Tanker from './search/tanker';
 import Trip from './search/trip-number';
+import LoadID from './search/load-id';
+import TrsaID from './search/trsa-id';
 
 const SearchForm = ({onSearch, items}) => {
   const { t } = useTranslation();
@@ -23,6 +25,8 @@ const SearchForm = ({onSearch, items}) => {
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{marginTop: "1rem"}}>
       {items?.shls_trip_no && <Trip />}
+      {items?.load_id && <LoadID />}
+      {items?.trsa_id && <TrsaID />}
       {items?.supplier_code && <Supplier />}
       {items?.trip_status && <TripStatus />}
       {items?.tnkr_code && <Tanker />}
