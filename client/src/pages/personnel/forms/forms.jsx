@@ -47,9 +47,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   const onComplete = (per_code) => {
     handleFormState(false, null);
     if (per_code) {
-      if (IS_CREATING) {
-        mutate(PERSONNEL.READ);
-      }
+      mutate(PERSONNEL.READ);
       setFilterValue("" + per_code);
     } else {
       mutate(PERSONNEL.READ);
