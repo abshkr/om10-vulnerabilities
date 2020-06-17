@@ -54,19 +54,7 @@ const OnDemandReports = () => {
         setLoading(false);
         const file = response?.data?.filepath;
 
-        if (file) {
-          const name = file?.split('/')[1];
-
-          api.get(file).then((res) => {
-            const type = res.headers['content-type'];
-            const blob = new Blob([res.data], { type: type, encoding: 'UTF-8' });
-            const link = document.createElement('a');
-
-            link.href = window.URL.createObjectURL(blob);
-            link.download = name;
-            link.click();
-          });
-        }
+        window.open(file, '_blank');
 
         notification.success({
           message: t('messages.reportGenerationSuccessful'),
