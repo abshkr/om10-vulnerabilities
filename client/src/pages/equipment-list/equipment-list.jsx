@@ -45,8 +45,7 @@ const EquipmentList = () => {
     <>
       <Button
         icon={<SyncOutlined />}
-        onClick={() => setFilterValue('89')}
-        // onClick={() => revalidate()}
+        onClick={() => revalidate()}
         loading={isValidating}
       >
         {t('operations.refresh')}
