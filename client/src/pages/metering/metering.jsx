@@ -14,12 +14,14 @@ import transform from './transform';
 import columns from './columns';
 
 const Metering = () => {
+  const { t } = useTranslation();
+
+  const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.METERING);
+
+  const access = useAuth('M_METERING');
+
   const [unit, setUnit] = useState('Litres');
   const [massUnit, setMassUnit] = useState('KG');
-
-  const { t } = useTranslation();
-  const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.METERING);
-  const access = useAuth('M_METERING');
 
   const fields = columns(t);
   const payload = transform(data?.records, unit, massUnit);
@@ -81,10 +83,11 @@ const Metering = () => {
 
   return (
     <Page
-      page={t('pageMenu.stockManagement')}
+      page={t('pageMenu.reports')}
       name={t('pageNames.metering')}
       modifiers={modifiers}
       access={access}
+      avatar="metering"
     >
       <DataTable columns={fields} data={payload} isLoading={isValidating} extra={extra} />
     </Page>

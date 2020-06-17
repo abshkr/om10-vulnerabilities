@@ -18,7 +18,7 @@ const RoleAccessManagement = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const auth = useAuth('M_ROLEACCESS');
+  const access = useAuth('M_ROLEACCESS');
 
   const { data: payload, isValidating, revalidate } = useSWR(ROLE_ACCESS_MANAGEMENT.READ);
 
@@ -36,12 +36,12 @@ const RoleAccessManagement = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
-        onClick={() => handleFormState(true, null)} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => handleFormState(true, null)}
         loading={isValidating}
-        disabled={!auth.canCreate}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -49,15 +49,22 @@ const RoleAccessManagement = () => {
   );
 
   return (
-    <Page page={t('pageMenu.accessControl')} name={t('pageNames.roleAccessManagement')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={data} 
-        isLoading={isValidating} 
+    <Page
+      page={t('pageMenu.security')}
+      name={t('pageNames.roleAccessManagement')}
+      modifiers={modifiers}
+      access={access}
+      avatar="roleAccessManagement"
+    >
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        selectionMode="single"
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };

@@ -5,7 +5,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SecurityScanOutlined, SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, IButton, FormModal } from '../../components';
+import { Page, DataTable, Download, IButton } from '../../components';
 import { ID_ASSIGNMENT } from '../../api';
 
 import columns from './columns';
@@ -20,11 +20,14 @@ const IdAssignment = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const auth = useAuth('M_IDENTIFICATIONASSIGNMENT');
+  const access = useAuth('M_IDENTIFICATIONASSIGNMENT');
 
   const { data: payload, isValidating, revalidate } = useSWR(ID_ASSIGNMENT.READ);
 
   const fields = columns(t);
+
+  const page = t('pageMenu.security');
+  const name = t('pageNames.idAssignment');
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -34,7 +37,7 @@ const IdAssignment = () => {
   const handleTagLookUp = () => {
     IButton({
       setSearch,
-      t
+      t,
     });
   };
 
@@ -47,12 +50,14 @@ const IdAssignment = () => {
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
+
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button 
-        icon={<PlusOutlined />} 
+
+      <Button
+        icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
-        disabled={!auth.canCreate}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -60,7 +65,7 @@ const IdAssignment = () => {
   );
 
   return (
-    <Page page={t('pageMenu.accessControl')} name={t('pageNames.idAssignment')} modifiers={modifiers}>
+    <Page page={page} name={name} modifiers={modifiers} avatar="idAssignment">
       <DataTable
         columns={fields}
         data={payload?.records}
@@ -68,9 +73,10 @@ const IdAssignment = () => {
         search={search}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        selectionMode="single"
         autoColWidth
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };

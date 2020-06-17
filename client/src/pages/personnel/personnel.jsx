@@ -15,15 +15,15 @@ import { useAuth } from 'hooks';
 
 const Personnel = () => {
   const { t } = useTranslation();
-  const [visible, setVisible] = useState(false);
-  const [selected, setSelected] = useState(null);
 
-  const auth = useAuth('M_PERSONNEL');
+  const access = useAuth('M_PERSONNEL');
 
   const { data: payload, isValidating, revalidate } = useSWR(PERSONNEL.READ);
   const { data: expiryTypes } = useSWR(PERSONNEL.EXPIRY_TYPES);
 
   const [fields, setFields] = useState(columns(expiryTypes?.records, t));
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -42,12 +42,12 @@ const Personnel = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
-        disabled={!auth.canCreate}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -55,16 +55,22 @@ const Personnel = () => {
   );
 
   return (
-    <Page page={t('pageMenu.accessControl')} name={t('pageNames.personnel')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={payload?.records} 
-        isLoading={isValidating} 
+    <Page
+      page={t('pageMenu.security')}
+      name={t('pageNames.personnel')}
+      modifiers={modifiers}
+      access={access}
+      avatar="personnel"
+    >
+      <DataTable
+        columns={fields}
+        data={payload?.records}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         autoColWidth
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };

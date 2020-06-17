@@ -19,20 +19,17 @@ const SpecialMovements = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const auth = useAuth('M_SPECIALMOVEMENTS');
+  const access = useAuth('M_SPECIALMOVEMENTS');
 
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const url = `${SPECIAL_MOVEMENTS.READ}?start_date=${start}&end_date=${end}`;
   const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
 
-  // const { data: payload, isValidating, revalidate } = useSWR(SPECIAL_MOVEMENTS.READ);
-
   const fields = columns(t);
   const data = payload?.records;
 
   const handleFormState = (visibility, value) => {
-    console.log("handleFormState")
     setVisible(visibility);
     setSelected(value);
   };
@@ -50,11 +47,12 @@ const SpecialMovements = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
+        disabled={!access?.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -63,18 +61,20 @@ const SpecialMovements = () => {
 
   return (
     <Page
-      page={t('pageMenu.stockReconciliation')}
+      page={t('pageMenu.operations')}
       name={t('pageNames.specialMovements')}
       modifiers={modifiers}
+      access={access}
+      avatar="specialMovements"
     >
-      <DataTable 
-        columns={fields} 
-        data={data} 
-        isLoading={isValidating} 
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} url={url} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} url={url} />
     </Page>
   );
 };

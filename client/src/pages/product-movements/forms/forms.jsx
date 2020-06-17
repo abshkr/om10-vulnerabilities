@@ -8,18 +8,18 @@ import {
   DeleteOutlined,
   RedoOutlined,
 } from '@ant-design/icons';
+
 import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { MovementType, Unit, Source, Destination, BatchCode, Quantity, Class, BaseProduct } from './fields';
-import { PRODUCT_MOVEMENTS } from '../../../api';
+import api, { PRODUCT_MOVEMENTS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, auth }) => {
+const FormModal = ({ value, visible, handleFormState, access }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -30,13 +30,13 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   const [base, setBase] = useState(null);
 
   const onComplete = () => {
-    handleFormState(false, null); 
+    handleFormState(false, null);
     mutate(PRODUCT_MOVEMENTS.READ);
   };
 
   const onFinish = async () => {
     const values = await form.validateFields();
-    
+
     if (values.pmv_srctype !== '3' && values.pmv_dsttype !== '3') {
       notification.error({
         message: t('messages.validationFailed'),
@@ -53,18 +53,17 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(PRODUCT_MOVEMENTS.CREATE, values)
-          .then(
-            axios.spread((response) => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: t('messages.createSuccess'),
-                description: t('descriptions.createSuccess'),
-              });
-            })
-          )
+            notification.success({
+              message: t('messages.createSuccess'),
+              description: t('descriptions.createSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -86,18 +85,17 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(PRODUCT_MOVEMENTS.HALT, value)
-          .then(
-            axios.spread((response) => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: t('messages.haltSuccess'),
-                description: t('descriptions.haltSuccess'),
-              });
-            })
-          )
+            notification.success({
+              message: t('messages.haltSuccess'),
+              description: t('descriptions.haltSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -119,18 +117,17 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(PRODUCT_MOVEMENTS.START, value)
-          .then(
-            axios.spread((response) => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: t('messages.startSuccess'),
-                description: t('descriptions.startSuccess'),
-              });
-            })
-          )
+            notification.success({
+              message: t('messages.startSuccess'),
+              description: t('descriptions.startSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -152,18 +149,17 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       icon: <DeleteOutlined />,
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(PRODUCT_MOVEMENTS.DELETE, value)
-          .then(
-            axios.spread((response) => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`,
-              });
-            })
-          )
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -179,7 +175,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
-    } 
+    }
   }, [value, visible]);
 
   return (
@@ -210,7 +206,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               htmlType="submit"
               style={{ float: 'right', marginRight: 5 }}
               onClick={onFinish}
-              disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
+              disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
             >
               {t('operations.create')}
             </Button>
@@ -223,7 +219,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
                 icon={<RedoOutlined />}
                 onClick={onStart}
                 style={{ float: 'right', marginRight: 5 }}
-                disabled={!auth?.canDelete}
+                disabled={!access?.canDelete}
               >
                 {t('operations.start')}
               </Button>
@@ -232,7 +228,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
                 icon={<DeleteOutlined />}
                 onClick={onDelete}
                 style={{ float: 'right', marginRight: 5 }}
-                disabled={!auth?.canDelete}
+                disabled={!access?.canDelete}
               >
                 {t('operations.delete')}
               </Button>
@@ -257,8 +253,8 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
         form={form}
         onFinish={onFinish}
         scrollToFirstError
-        initialValues={{ 
-          pmv_state_name: 'NEW', 
+        initialValues={{
+          pmv_state_name: 'NEW',
           pmv_unit_name: 'l',
           pmv_unit: '28',
         }}

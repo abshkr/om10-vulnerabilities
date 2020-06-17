@@ -14,7 +14,7 @@ import { useAuth } from '../../hooks';
 
 const Partners = () => {
   const { t } = useTranslation();
-  const auth = useAuth('M_PARTNERS');
+  const access = useAuth('M_PARTNERS');
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -35,9 +35,9 @@ const Partners = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button  
-        type="primary" 
-        icon={<PlusOutlined />} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
       >
@@ -47,15 +47,15 @@ const Partners = () => {
   );
 
   return (
-    <Page page={t('pageMenu.customers')} name={t('pageNames.partners')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={data} 
-        isLoading={isValidating} 
+    <Page page={t('pageMenu.companies')} name={t('pageNames.partners')} modifiers={modifiers} access={access}>
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };

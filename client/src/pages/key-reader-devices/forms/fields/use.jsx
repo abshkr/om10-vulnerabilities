@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 import useSWR from 'swr';
 
 import { KEY_READER_DEVICES } from '../../../../api';
 
-const Use = ({ value }) => {
+const Use = ({ form, value }) => {
   const { t } = useTranslation();
   const { data: options, isValidating } = useSWR(KEY_READER_DEVICES.USAGES);
+
+  const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
@@ -16,6 +18,14 @@ const Use = ({ value }) => {
 
     return Promise.resolve();
   };
+
+  useEffect(() => {
+    if (value) {
+      setFieldsValue({
+        krdc_use: value.krdc_use,
+      });
+    }
+  }, [value, setFieldsValue]);
 
   return (
     <Form.Item name="krdc_use" label={t('fields.use')} rules={[{ required: true, validator: validate }]}>

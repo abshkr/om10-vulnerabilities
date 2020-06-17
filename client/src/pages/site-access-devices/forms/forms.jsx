@@ -5,28 +5,27 @@ import {
   PlusOutlined,
   CloseOutlined,
   DeleteOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { DeviceCode, DeviceType, DevicePort, DeviceArea, DeviceSecurity, AccessType, Flags } from './fields';
-import { SITE_ACCESS_DEVICES } from '../../../api';
+import api, { SITE_ACCESS_DEVICES } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, auth }) => {
+const FormModal = ({ value, visible, handleFormState, access }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const IS_CREATING = !value;
 
   const onComplete = () => {
-    handleFormState(false, null); 
+    handleFormState(false, null);
     mutate(SITE_ACCESS_DEVICES.READ);
   };
 
@@ -41,18 +40,17 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? SITE_ACCESS_DEVICES.CREATE : SITE_ACCESS_DEVICES.UPDATE, values)
-          .then(
-            axios.spread(response => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess')
-              });
-            })
-          )
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -61,7 +59,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               });
             });
           });
-      }
+      },
     });
   };
 
@@ -73,18 +71,17 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(SITE_ACCESS_DEVICES.DELETE, value)
-          .then(
-            axios.spread(response => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`
-              });
-            })
-          )
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -93,7 +90,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               });
             });
           });
-      }
+      },
     });
   };
 
@@ -124,7 +121,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             htmlType="submit"
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -135,7 +132,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!auth?.canDelete}
+              disabled={!access?.canDelete}
             >
               {t('operations.delete')}
             </Button>
@@ -155,7 +152,6 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             <Flags form={form} value={value} />
           </TabPane>
         </Tabs>
-
       </Form>
     </Drawer>
   );

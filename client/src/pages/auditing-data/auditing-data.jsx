@@ -27,7 +27,7 @@ const AuditingData = () => {
   );
 
   const page = t('pageMenu.security');
-  const name = t('pageNames.area');
+  const name = t('pageNames.auditingData');
 
   const data = payload?.records;
   const fields = columns(t);

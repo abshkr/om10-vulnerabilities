@@ -14,7 +14,8 @@ import Forms from './forms';
 
 const SiteAccessDevices = () => {
   const { t } = useTranslation();
-  const auth = useAuth('M_SITEACCESSDEVICES');
+
+  const access = useAuth('M_SITEACCESSDEVICES');
 
   const { data: payload, isValidating, revalidate } = useSWR(SITE_ACCESS_DEVICES.READ);
   const { data: codes } = useSWR(SITE_ACCESS_DEVICES.DEVICE_CODES);
@@ -41,7 +42,7 @@ const SiteAccessDevices = () => {
         icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
-        disabled={codes?.records?.length === 0}
+        disabled={codes?.records?.length === 0 || !access?.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -49,15 +50,22 @@ const SiteAccessDevices = () => {
   );
 
   return (
-    <Page page={t('pageMenu.accessControl')} name={t('pageNames.siteAccessDevices')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={data} 
-        isLoading={isValidating} 
+    <Page
+      page={t('pageMenu.config')}
+      name={t('pageNames.siteAccessDevices')}
+      modifiers={modifiers}
+      access={access}
+      avatar="siteAccessDevices"
+    >
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        selectionMode="single"
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };

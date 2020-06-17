@@ -11,11 +11,10 @@ import {
 import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { MessageName, MessageId, MessageDetails, MessageLocale } from './fields';
-import { PRODUCT_GROUPS } from '../../../api';
+import api, { PRODUCT_GROUPS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -27,7 +26,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   const IS_CREATING = !value;
 
   const onComplete = () => {
-    handleFormState(false, null); 
+    handleFormState(false, null);
     mutate(PRODUCT_GROUPS.READ_MESSAGES);
   };
 
@@ -42,18 +41,17 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? PRODUCT_GROUPS.CREATE_COMPLIANCE : PRODUCT_GROUPS.UPDATE_COMPLIANCE, values)
-          .then(
-            axios.spread((response) => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-              });
-            })
-          )
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -74,18 +72,17 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(PRODUCT_GROUPS.DELETE_COMPLIANCE, value)
-          .then(
-            axios.spread((response) => {
-              onComplete();
-              
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`,
-              });
-            })
-          )
+          .then((response) => {
+            onComplete();
+
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -101,7 +98,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
-    }    
+    }
   }, [value, visible]);
 
   return (

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import useSWR from 'swr';
 
-import { Page, DataTable, Download, FormModal } from '../../components';
+import { Page, DataTable, Download } from '../../components';
 import { PRODUCT_MOVEMENTS } from '../../api';
 import generator from './generator';
 import columns from './columns';
@@ -15,12 +15,14 @@ import Forms from './forms';
 
 const ProductMovements = () => {
   const { t } = useTranslation();
+
+  const access = useAuth('M_PRODUCTMOVEMENT');
+
+  const { data: payload, isValidating, revalidate } = useSWR(PRODUCT_MOVEMENTS.READ);
+
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const auth = useAuth('M_PRODUCTMOVEMENT');
-
-  const { data: payload, isValidating, revalidate } = useSWR(PRODUCT_MOVEMENTS.READ);
   const fields = columns(t);
   const data = generator(payload?.records);
 
@@ -35,18 +37,26 @@ const ProductMovements = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={data} isLoading={isValidating} columns={fields} />
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
-        onClick={() => handleFormState(true, null)} 
-        loading={isValidating}>
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => handleFormState(true, null)}
+        loading={isValidating}
+        disabled={!access?.canCreate}
+      >
         {t('operations.create')}
       </Button>
     </>
   );
 
   return (
-    <Page page={t('pageMenu.stockManagement')} name={t('pageNames.productMovements')} modifiers={modifiers}>
+    <Page
+      page={t('pageMenu.operations')}
+      name={t('pageNames.productMovements')}
+      modifiers={modifiers}
+      access={access}
+      avatar="productMovements"
+    >
       <DataTable
         columns={fields}
         data={data}
@@ -55,7 +65,7 @@ const ProductMovements = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };

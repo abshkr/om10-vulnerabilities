@@ -31,7 +31,7 @@ const EquipmentList = () => {
   };
 
   const [filterValue, setFilterValue] = useState('');
-  
+
   const page = t('pageMenu.operations');
   const name = t('pageNames.equipmentList');
 
@@ -43,10 +43,10 @@ const EquipmentList = () => {
 
   const modifiers = (
     <>
-      <Button 
-        icon={<SyncOutlined />} 
-        onClick={() => setFilterValue('89')} 
-        // onClick={() => revalidate()} 
+      <Button
+        icon={<SyncOutlined />}
+        onClick={() => setFilterValue('89')}
+        // onClick={() => revalidate()}
         loading={isValidating}
       >
         {t('operations.refresh')}
@@ -57,7 +57,7 @@ const EquipmentList = () => {
         icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
-        disabled={!auth.canCreate}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -76,12 +76,12 @@ const EquipmentList = () => {
         autoColWidth
         filterValue={filterValue}
       />
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
-        access={access} 
-        setFilterValue={setFilterValue} 
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        access={access}
+        setFilterValue={setFilterValue}
       />
     </Page>
   );

@@ -4,11 +4,10 @@ import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } fr
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { Company, Name, Email, Flags } from './fields';
-import { REPORT_CONFIGURATION } from '../../../api';
+import api, { REPORT_CONFIGURATION } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -40,7 +39,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? REPORT_CONFIGURATION.CREATE : REPORT_CONFIGURATION.UPDATE, values)
           .then(() => {
             onComplete();
@@ -71,7 +70,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(REPORT_CONFIGURATION.DELETE, value)
           .then(() => {
             onComplete();
@@ -100,10 +99,10 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   }, [enabled]);
 
   useEffect(() => {
-    if (!value) {
+    if (!value && !visible) {
       resetFields();
     }
-  }, [resetFields, value]);
+  }, [resetFields, value, visible]);
 
   return (
     <Drawer

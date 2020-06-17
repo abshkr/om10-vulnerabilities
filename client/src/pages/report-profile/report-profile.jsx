@@ -5,7 +5,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, FormModal } from '../../components';
+import { Page, DataTable, Download } from '../../components';
 import { REPORT_PROFILE } from '../../api';
 import transfrom from './transform';
 import columns from './columns';
@@ -18,7 +18,7 @@ const ReportProfile = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const auth = useAuth('M_REPOPROFILE');
+  const access = useAuth('M_REPOPROFILE');
 
   const { data: payload, isValidating, revalidate } = useSWR(REPORT_PROFILE.READ);
 
@@ -35,13 +35,15 @@ const ReportProfile = () => {
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
+
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
+
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
-        disabled={!auth.canCreate}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -49,15 +51,22 @@ const ReportProfile = () => {
   );
 
   return (
-    <Page page={t('pageMenu.reports')} name={t('pageNames.reportProfile')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={data} 
-        isLoading={isValidating} 
+    <Page
+      page={t('pageMenu.config')}
+      name={t('pageNames.reportProfile')}
+      modifiers={modifiers}
+      access={access}
+      avatar="reportProfile"
+    >
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        selectionMode="single"
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };

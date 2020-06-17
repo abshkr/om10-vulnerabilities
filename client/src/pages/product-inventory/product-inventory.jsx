@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
-import { Select, Button } from 'antd';
-import { useTranslation } from 'react-i18next';
-import useSWR from 'swr';
+
 import { SyncOutlined } from '@ant-design/icons';
-import { Page, DataTable, Download } from '../../components';
-import { STOCK_MANAGEMENT } from '../../api';
+import { useTranslation } from 'react-i18next';
+import { Select, Button } from 'antd';
+import useSWR from 'swr';
+
+import { Page, DataTable, Download } from 'components';
+import { STOCK_MANAGEMENT } from 'api';
+import useAuth from 'hooks/use-auth';
+import auth from 'auth';
+
 import transform from './transform';
 import columns from './columns';
-import auth from '../../auth';
 
 const ProductInventory = () => {
   const [unit, setUnit] = useState('Litres');
 
   const { t } = useTranslation();
   const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.PRODUCT_INVENTORY);
+
+  const access = useAuth('M_PRODUCTINVENTORY');
 
   const fields = columns(t);
   const payload = transform(data?.records, unit);
@@ -23,7 +29,7 @@ const ProductInventory = () => {
   const modifiers = (
     <>
       <Select key="1" style={{ width: 200 }} defaultValue={unit} onChange={setUnit}>
-        {units.map(item => {
+        {units.map((item) => {
           return (
             <Select.Option key={item} value={item}>
               {item}
@@ -41,7 +47,13 @@ const ProductInventory = () => {
   );
 
   return (
-    <Page page={t('pageMenu.stockManagement')} name={t('pageNames.productInventory')} modifiers={modifiers}>
+    <Page
+      page={t('pageMenu.stock')}
+      name={t('pageNames.productInventory')}
+      avatar="productInventory"
+      modifiers={modifiers}
+      access={access}
+    >
       <DataTable columns={fields} data={payload} isLoading={isValidating} />
     </Page>
   );

@@ -24,7 +24,7 @@ import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, auth, url }) => {
+const FormModal = ({ value, visible, handleFormState, access, url }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -34,10 +34,10 @@ const FormModal = ({ value, visible, handleFormState, auth, url }) => {
   const [tank, setTank] = useState(undefined);
 
   const changeToTank = (tank) => {
-    if (type !== '2'){
+    if (type !== '2') {
       setTank(tank);
     }
-  }
+  };
 
   const IS_CREATING = !value;
   const DISABLED = value?.mlitm_status === '5';
@@ -46,7 +46,7 @@ const FormModal = ({ value, visible, handleFormState, auth, url }) => {
   const TO = ['0', '2'];
 
   const onComplete = () => {
-    handleFormState(false, null); 
+    handleFormState(false, null);
     mutate(url);
   };
 
@@ -234,7 +234,7 @@ const FormModal = ({ value, visible, handleFormState, auth, url }) => {
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
-    } 
+    }
   }, [value, visible]);
 
   return (
@@ -270,10 +270,7 @@ const FormModal = ({ value, visible, handleFormState, auth, url }) => {
           )}
 
           {DISABLED && (
-            <Button htmlType="button" 
-              onClick={onReverse} 
-              icon={<ReloadOutlined />}
-            >
+            <Button htmlType="button" onClick={onReverse} icon={<ReloadOutlined />}>
               {t('operations.reverse')}
             </Button>
           )}
@@ -286,7 +283,7 @@ const FormModal = ({ value, visible, handleFormState, auth, url }) => {
             style={{ float: 'right', marginRight: 5 }}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate || value.mlitm_status !== '0'}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate || value.mlitm_status !== '0'}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -298,7 +295,7 @@ const FormModal = ({ value, visible, handleFormState, auth, url }) => {
             // disabled={DISABLED}
             onClick={onSubmit}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate || value.mlitm_status !== '0'}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate || value.mlitm_status !== '0'}
           >
             {t('operations.submit')}
           </Button>
@@ -310,7 +307,7 @@ const FormModal = ({ value, visible, handleFormState, auth, url }) => {
               // disabled={DISABLED}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!auth?.canDelete || value.mlitm_status !== '0'}
+              disabled={!access?.canDelete || value.mlitm_status !== '0'}
             >
               {t('operations.delete')}
             </Button>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 import useSWR from 'swr';
@@ -6,9 +6,11 @@ import _ from 'lodash';
 
 import { KEY_READER_DEVICES } from '../../../../api';
 
-const Code = ({ value }) => {
+const Code = ({ form, value }) => {
   const { t } = useTranslation();
   const { data: payload, isValidating } = useSWR(KEY_READER_DEVICES.READ);
+
+  const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
     const match = _.find(payload?.records, (object) => {
@@ -29,6 +31,14 @@ const Code = ({ value }) => {
 
     return Promise.resolve();
   };
+
+  useEffect(() => {
+    if (value) {
+      setFieldsValue({
+        adv_code: value.adv_code,
+      });
+    }
+  }, [value, setFieldsValue]);
 
   return (
     <Form.Item name="adv_code" label={t('fields.code')} rules={[{ required: true, validator: validate }]}>

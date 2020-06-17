@@ -18,8 +18,9 @@ import { getDateRangeOffset } from 'utils';
 const TransactionList = () => {
   const { transactionsDateRange } = useConfig();
   const { t } = useTranslation();
-  const access = useAuth('M_SFTRANSACTIONLIST');
-  
+
+  const access = useAuth('M_TRANSACTIONLIST');
+
   const [start, setStart] = useState(moment().subtract(0, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(0, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
@@ -49,13 +50,10 @@ const TransactionList = () => {
   };
 
   useEffect(() => {
-    const ranges = getDateRangeOffset(String(transactionsDateRange), "7");
-    setStart(
-      moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT)
-    );
-    setEnd(
-      moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT)
-    );
+    const ranges = getDateRangeOffset(String(transactionsDateRange), '7');
+
+    setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   }, [transactionsDateRange]);
 
   const modifiers = (
@@ -70,7 +68,13 @@ const TransactionList = () => {
   );
 
   return (
-    <Page page={t('pageMenu.schedules')} name={t('pageNames.transactionList')} modifiers={modifiers}>
+    <Page
+      page={t('pageMenu.operations')}
+      name={t('pageNames.transactionList')}
+      modifiers={modifiers}
+      avatar="transactionList"
+      access={access}
+    >
       <DataTable columns={fields} data={data} isLoading={isLoading} onClick={handleClick} />
     </Page>
   );

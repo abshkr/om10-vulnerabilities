@@ -19,7 +19,7 @@ const TankConfiguration = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const auth = useAuth('M_TANKCONFIGURATION');
+  const access = useAuth('M_TANKCONFIGURATION');
 
   const { data: payload, isValidating, revalidate } = useSWR(TANKS.READ);
   const { data: configuration } = useSWR(COMMON.CONFIG);
@@ -38,12 +38,12 @@ const TankConfiguration = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={data} isLoading={isValidating} columns={fields} />
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
-        disabled={!auth.canCreate}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -51,15 +51,21 @@ const TankConfiguration = () => {
   );
 
   return (
-    <Page page={t('pageMenu.gantry')} name={t('pageNames.tankConfiguration')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={data} 
-        isLoading={isValidating} 
+    <Page
+      page={t('pageMenu.config')}
+      name={t('pageNames.tankConfiguration')}
+      modifiers={modifiers}
+      access={access}
+      avatar="tankConfiguration"
+    >
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>
   );
 };

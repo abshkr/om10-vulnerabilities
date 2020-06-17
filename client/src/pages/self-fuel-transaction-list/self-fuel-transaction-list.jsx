@@ -9,9 +9,12 @@ import { Page, DataTable, Download } from '../../components';
 import { SELF_FUEL_TRANSACTION_LIST } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
+import useAuth from 'hooks/use-auth';
 
 const SelfFuelTransactionList = () => {
   const { t } = useTranslation();
+
+  const access = useAuth('M_SFTRANSACTIONLIST');
 
   const { data: payload, isValidating, revalidate } = useSWR(SELF_FUEL_TRANSACTION_LIST.READ);
 
@@ -28,7 +31,13 @@ const SelfFuelTransactionList = () => {
   );
 
   return (
-    <Page page={t('pageMenu.schedules')} name={t('pageNames.selfFuelTransactionList')} modifiers={modifiers}>
+    <Page
+      page={t('pageMenu.stock')}
+      name={t('pageNames.selfFuelTransactionList')}
+      modifiers={modifiers}
+      access={access}
+      avatar="selfFuelTransactionList"
+    >
       <DataTable columns={fields} data={data} isLoading={isValidating} />
     </Page>
   );

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 
 import _ from 'lodash';
 import useSWR, { mutate } from 'swr';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Button, Tabs, notification, Modal } from 'antd';
+
 import {
   SyncOutlined,
   PlusOutlined,
@@ -13,8 +13,8 @@ import {
   CloseOutlined,
 } from '@ant-design/icons';
 
-import { Page, DataTable, Download, FormModal } from '../../components';
-import { INVENTORY_REQUESTS } from '../../api';
+import { Page, DataTable, Download } from '../../components';
+import api, { INVENTORY_REQUESTS } from '../../api';
 import tankColumns from './tank-columns';
 import generator from './generator';
 import columns from './columns';
@@ -29,13 +29,13 @@ const InventoryRequests = () => {
   const [visible, setVisible] = useState(false);
   const [invSelected, setInvSelected] = useState(null);
 
-  const auth = useAuth('M_INVENTORYREQUEST');
+  const access = useAuth('M_INVENTORYREQUEST');
 
   const { data: requests, isValidating: requestsLoading, revalidate } = useSWR(INVENTORY_REQUESTS.READ);
   const { data: tanks, isValidating: tanksLoading } = useSWR(INVENTORY_REQUESTS.TANKS);
 
   const [selected, setSelected] = useState([]);
-  const [api, setAPI] = useState(null);
+  const [tableAPI, setTableAPI] = useState(null);
   const [tab, setTab] = useState('1');
 
   const isLoading = requestsLoading || tanksLoading;
@@ -46,16 +46,6 @@ const InventoryRequests = () => {
 
   const CAN_SET_REQUIRED = tab === '2';
   const IS_REQUIRED = selected.length > 0 && selected[0]?.tank_inv_needed;
-
-  const handleClick = (value) => {
-    FormModal({
-      value,
-      form: <Forms value={value} />,
-      id: value?.tkrq_type_name,
-      name: value?.tkrq_period_name,
-      t,
-    });
-  };
 
   const onTankUpdate = () => {
     const value = {
@@ -71,7 +61,7 @@ const InventoryRequests = () => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(INVENTORY_REQUESTS.UPDATE_TANKS, value)
           .then(() => {
             mutate(INVENTORY_REQUESTS.TANKS);
@@ -81,10 +71,12 @@ const InventoryRequests = () => {
               description: t('descriptions.updateSuccess'),
             });
           })
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.updateFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
@@ -108,12 +100,12 @@ const InventoryRequests = () => {
       />
 
       {!CAN_SET_REQUIRED && (
-        <Button 
-          type="primary" 
+        <Button
+          type="primary"
           icon={<PlusOutlined />}
-          onClick={() => handleFormState(true, null)} 
+          onClick={() => handleFormState(true, null)}
           loading={isLoading}
-          disabled={!auth.canCreate}
+          disabled={!access.canCreate}
         >
           {t('operations.create')}
         </Button>
@@ -134,30 +126,33 @@ const InventoryRequests = () => {
   );
 
   useEffect(() => {
-    // Preset all the selected values on the Tanks Tab
-
     if (!selected) {
       const filtered = _.filter(tanks?.records, ['tank_inv_needed', true]);
       const mapped = _.uniq(_.map(filtered, 'tank_code'));
 
-      if (api) {
-        api.forEachNode((node) => {
+      if (tableAPI) {
+        tableAPI.forEachNode((node) => {
           node.setSelected(mapped.includes(node.data['tank_code']));
         });
       }
     }
 
-    if (api && selected) {
+    if (tableAPI && selected) {
       const mapped = _.uniq(_.map(selected, 'tank_code'));
 
-      api.forEachNode((node) => {
+      tableAPI.forEachNode((node) => {
         node.setSelected(mapped.includes(node.data['tank_code']));
       });
     }
-  }, [tanks, selected, api]);
+  }, [tanks, selected, tableAPI]);
 
   return (
-    <Page page={t('pageMenu.stockManagement')} name={t('pageNames.inventoryRequests')} modifiers={modifiers}>
+    <Page
+      page={t('pageMenu.operations')}
+      name={t('pageNames.inventoryRequests')}
+      modifiers={modifiers}
+      avatar="inventoryRequests"
+    >
       <Tabs defaultActiveKey={tab} animated={false} onChange={setTab}>
         <TabPane tab={t('tabColumns.requests')} key="1">
           <DataTable
@@ -168,7 +163,7 @@ const InventoryRequests = () => {
             onClick={(payload) => handleFormState(true, payload)}
             handleSelect={(payload) => handleFormState(true, payload[0])}
           />
-          <Forms value={invSelected} visible={visible} handleFormState={handleFormState} auth={auth} />
+          <Forms value={invSelected} visible={visible} handleFormState={handleFormState} access={access} />
         </TabPane>
         <TabPane tab={t('tabColumns.tankSelection')} key="2">
           <DataTable
@@ -176,7 +171,7 @@ const InventoryRequests = () => {
             data={tanksData}
             isLoading={isLoading}
             height="320px"
-            apiContext={setAPI}
+            apiContext={setTableAPI}
             handleSelect={setSelected}
             selectionMode="single"
           />

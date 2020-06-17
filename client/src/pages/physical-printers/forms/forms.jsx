@@ -1,14 +1,20 @@
 import React, { useEffect } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  QuestionCircleOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
+
 import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { Area, Lock, Printer, SystemPrinter } from './fields';
-import { PHYSICAL_PRINTERS } from '../../../api';
+import api, { PHYSICAL_PRINTERS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -36,7 +42,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? PHYSICAL_PRINTERS.CREATE : PHYSICAL_PRINTERS.UPDATE, values)
           .then(() => {
             onComplete();
@@ -67,7 +73,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(PHYSICAL_PRINTERS.DELETE, value)
           .then(() => {
             onComplete();
@@ -90,10 +96,10 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   };
 
   useEffect(() => {
-    if (!value) {
+    if (!value && !visible) {
       resetFields();
     }
-  }, [resetFields, value]);
+  }, [resetFields, value, visible]);
 
   return (
     <Drawer
