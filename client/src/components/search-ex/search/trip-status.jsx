@@ -13,7 +13,7 @@ const StatusSerach = ({ value, onChange }) => {
 
   return (
     <Form.Item
-      name="status"
+      name="trip_status"
       label={t('fields.schdStatus')}
     >
       <Select

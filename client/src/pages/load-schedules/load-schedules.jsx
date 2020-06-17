@@ -51,7 +51,7 @@ const LoadSchedules = () => {
     if (!values.shls_trip_no && 
       !values.supplier_code &&
       !values.tnkr_code && 
-      !values.status) {
+      !values.trip_status) {
       return;
     }
     axios
@@ -60,7 +60,7 @@ const LoadSchedules = () => {
           shls_trip_no: values.shls_trip_no,
           supplier_code: values.supplier_code,
           tnkr_code: values.tnkr_code,
-          status: values.status,
+          status: values.trip_status,
         },
       })
       .then((res) => {
@@ -89,7 +89,15 @@ const LoadSchedules = () => {
     <>
       
       <Calendar handleChange={setRange} start={start} end={end} />
-      <Button icon={<FileSearchOutlined />} onClick={() => WindowSearch(setSearch)}>
+      <Button 
+        icon={<FileSearchOutlined />} 
+        onClick={() => WindowSearch(setSearch, t('operations.search'), {
+          shls_trip_no: true,
+          supplier_code: true,
+          trip_status: true,
+          tnkr_code: true,
+        })}
+      >
         {t('operations.search')}
       </Button>
 

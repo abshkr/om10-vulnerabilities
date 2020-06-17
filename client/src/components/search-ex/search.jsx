@@ -3,17 +3,14 @@ import { FileSearchOutlined, CloseOutlined } from '@ant-design/icons';
 import { SWRConfig } from 'swr';
 import { fetcher } from 'utils';
 
-import { Form, Button, Modal, Input } from 'antd';
+import { Form, Button, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import Supplier from './search/supplier';
-import Status from './search/status';
+import TripStatus from './search/trip-status';
 import Tanker from './search/tanker';
+import Trip from './search/trip-number';
 
-const emptyFunc = () => {
-
-}
-
-const SearchForm = ({onSearch}) => {
+const SearchForm = ({onSearch, items}) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -25,16 +22,10 @@ const SearchForm = ({onSearch}) => {
 
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{marginTop: "1rem"}}>
-      <Form.Item
-        name="shls_trip_no"
-        label={t('fields.tripNumber')}
-      >
-        <Input />
-      </Form.Item>
-
-      <Supplier value={null} onChange={emptyFunc} />
-      <Status value={null} onChange={emptyFunc} />
-      <Tanker value={null} onChange={emptyFunc} />
+      {items?.shls_trip_no && <Trip />}
+      {items?.supplier_code && <Supplier />}
+      {items?.trip_status && <TripStatus />}
+      {items?.tnkr_code && <Tanker />}
       
       <div style={{marginTop: "2rem"}}>
         <Button
@@ -58,7 +49,12 @@ const SearchForm = ({onSearch}) => {
   );
 };
 
-const WindowSearch = (onSearch, title) => {
+const WindowSearch = (
+    onSearch, 
+    title, 
+    items,
+  ) => {
+  console.log(items)
   Modal.info({
     className: 'form-container',
     // title: t('operations.search'),
@@ -73,7 +69,7 @@ const WindowSearch = (onSearch, title) => {
         fetcher,
         }}
     >
-      <SearchForm onSearch={onSearch} />
+      <SearchForm onSearch={onSearch} items={items} />
     </SWRConfig>
     ),
     okButtonProps: {
