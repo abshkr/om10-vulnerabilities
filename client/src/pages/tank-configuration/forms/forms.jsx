@@ -11,7 +11,6 @@ import {
 import { Form, Button, Tabs, notification, Modal, Divider, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { Name, Code, Product, Density, Flags, DailyVariance, MontlhyVariance } from './fields';
