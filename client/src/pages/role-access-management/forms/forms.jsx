@@ -238,7 +238,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!access?.canDelete}
+              disabled={!access?.canDelete || value.role_id < 20}
             >
               {t('operations.delete')}
             </Button>
