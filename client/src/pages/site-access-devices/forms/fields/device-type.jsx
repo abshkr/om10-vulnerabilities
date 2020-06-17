@@ -39,7 +39,7 @@ const DeviceType = ({ form, value }) => {
         loading={isValidating}
         showSearch
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectDeviceType') : null}
+        // placeholder={!value ? t('placeholder.selectDeviceType') : null}
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }

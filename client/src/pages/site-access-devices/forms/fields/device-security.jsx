@@ -39,7 +39,7 @@ const DeviceSecurity = ({ form, value }) => {
         loading={isValidating}
         showSearch
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectDeviceSecurity') : null}
+        // placeholder={!value ? t('placeholder.selectDeviceSecurity') : null}
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
