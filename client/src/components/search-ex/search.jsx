@@ -11,13 +11,14 @@ import Tanker from './search/tanker';
 import Trip from './search/trip-number';
 import LoadID from './search/load-id';
 import TrsaID from './search/trsa-id';
+import MovementID from './search/mv-id';
+import MovementStatus from './search/mv-status';
 
 const SearchForm = ({onSearch, items}) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
-    console.log(values)
     Modal.destroyAll();
     onSearch(values);
   };
@@ -25,10 +26,12 @@ const SearchForm = ({onSearch, items}) => {
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{marginTop: "1rem"}}>
       {items?.shls_trip_no && <Trip />}
+      {items?.mlitm_id && <MovementID />}
       {items?.load_id && <LoadID />}
       {items?.trsa_id && <TrsaID />}
       {items?.supplier_code && <Supplier />}
       {items?.trip_status && <TripStatus />}
+      {items?.mlitm_status && <MovementStatus />}
       {items?.tnkr_code && <Tanker />}
       
       <div style={{marginTop: "2rem"}}>
@@ -58,7 +61,6 @@ const WindowSearch = (
     title, 
     items,
   ) => {
-  console.log(items)
   Modal.info({
     className: 'form-container',
     // title: t('operations.search'),

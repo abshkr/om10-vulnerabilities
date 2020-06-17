@@ -3152,6 +3152,11 @@ https://10.1.10.66/api/pages/special_mv/read.php
     "start_date" : "2020-02-13 04:07:15",
     "end_date" : "2020-02-15 04:07:15"
 }
+https://10.1.10.66/api/pages/special_mv/search.php
+{
+    "mlitm_id" : 123,
+    "mlitm_status" : "0"
+}
 https://10.1.10.66/api/pages/special_mv/create.php
 {
       "mlitm_terminal": "C860",

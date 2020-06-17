@@ -89,7 +89,14 @@ const LoadSchedules = () => {
     <>
       
       <Calendar handleChange={setRange} start={start} end={end} />
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
+        {t('operations.refresh')}
+      </Button>
+
+      <Download data={data} isLoading={isLoading} columns={fields} />
+
       <Button 
+        type="primary"
         icon={<FileSearchOutlined />} 
         onClick={() => WindowSearch(setSearch, t('operations.search'), {
           shls_trip_no: true,
@@ -100,12 +107,6 @@ const LoadSchedules = () => {
       >
         {t('operations.search')}
       </Button>
-
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
-        {t('operations.refresh')}
-      </Button>
-
-      <Download data={data} isLoading={isLoading} columns={fields} />
 
       <Button
         type="primary"
