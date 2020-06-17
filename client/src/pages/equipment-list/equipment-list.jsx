@@ -75,13 +75,15 @@ const EquipmentList = () => {
         autoColWidth
         filterValue={filterValue}
       />
-      <Forms
-        value={selected}
-        visible={visible}
-        handleFormState={handleFormState}
-        access={access}
-        setFilterValue={setFilterValue}
-      />
+      {visible && (
+        <Forms
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          setFilterValue={setFilterValue}
+        />
+      )}
     </Page>
   );
 };

@@ -23,6 +23,7 @@ const BaseProducts = () => {
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [filterValue, setFilterValue] = useState('');
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -67,6 +68,7 @@ const BaseProducts = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         autoColWidth
+        filterValue={filterValue}
       />
 
       <Forms
@@ -75,6 +77,7 @@ const BaseProducts = () => {
         handleFormState={handleFormState}
         access={access}
         config={config}
+        setFilterValue={setFilterValue}
       />
     </Page>
   );

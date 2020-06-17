@@ -30,7 +30,7 @@ import api, { BASE_PRODUCTS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, config }) => {
+const FormModal = ({ value, visible, handleFormState, access, config, setFilterValue }) => {
   const { manageHotProduct, manageBaseProductDensityRange } = config;
   const [classification, setClassification] = useState(undefined);
 
@@ -41,9 +41,13 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
 
   const { resetFields } = form;
 
-  const onComplete = () => {
+  const onComplete = (base_code) => {
     handleFormState(false, null);
     mutate(BASE_PRODUCTS.READ);
+    handleFormState(false, null);
+    if (base_code) {
+      setFilterValue("" + base_code);
+    }
   };
 
   const onFinish = async () => {
@@ -60,7 +64,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
         await api
           .post(IS_CREATING ? BASE_PRODUCTS.CREATE : BASE_PRODUCTS.UPDATE, values)
           .then(() => {
-            onComplete();
+            onComplete(values.base_code);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),

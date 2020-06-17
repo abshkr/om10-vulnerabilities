@@ -75,7 +75,7 @@ const columns = (t) => [
       hide: true,
     },
     {
-      headerName: t('fields.custAddrDesc'),
+      headerName: t('fields.custAddress'),
       field: 'cust_addr_desc',
       filter: 'FuzzyFilter',
       sortable: true,

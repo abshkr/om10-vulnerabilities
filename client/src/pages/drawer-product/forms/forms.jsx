@@ -23,7 +23,7 @@ import HotLitresForm from './hot-litres';
 
 const TabPane = Tabs.TabPane;
 
-const DrawerForm = ({ value, visible, handleFormState, auth }) => {
+const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const config = useConfig();
@@ -126,9 +126,12 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
       });
   });
   
-  const onComplete = () => {
+  const onComplete = (prod_code) => {
     handleFormState(false, null); 
     setSelected(null);
+    if (prod_code) {
+      setFilterValue("" + prod_code);
+    }
     mutate(DRAWER_PRODUCTS.READ);
   };
 
@@ -154,7 +157,7 @@ const DrawerForm = ({ value, visible, handleFormState, auth }) => {
         await axios
           .post(IS_CREATING ? DRAWER_PRODUCTS.CREATE : DRAWER_PRODUCTS.UPDATE, values)
           .then(() => {
-            onComplete();
+            onComplete(values.prod_code);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),

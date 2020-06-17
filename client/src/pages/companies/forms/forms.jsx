@@ -22,9 +22,9 @@ import _ from 'lodash';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, auth, specialActions, companyRelations }) => {
+const FormModal = ({ value, visible, handleFormState, auth, specialActions, companyRelations, setFilterValue }) => {
   const { t } = useTranslation();
-  const { data: addresses, isValidating, revalidate } = useSWR(COMPANIES.ADDRESSES);
+  const { data: addresses, isValidating } = useSWR(COMPANIES.ADDRESSES);
 
   const [form] = Form.useForm();
   const { resetFields, setFieldsValue } = form;
@@ -40,8 +40,11 @@ const FormModal = ({ value, visible, handleFormState, auth, specialActions, comp
 
   const IS_CREATING = !value;
 
-  const onComplete = () => {
+  const onComplete = (cmpy_code) => {
     handleFormState(false, null);
+    if (cmpy_code) {
+      setFilterValue("" + cmpy_code);
+    }
     mutate(COMPANIES.READ);
   };
 
@@ -158,7 +161,7 @@ const FormModal = ({ value, visible, handleFormState, auth, specialActions, comp
           .post(IS_CREATING ? COMPANIES.CREATE : COMPANIES.UPDATE, values)
           .then(
             axios.spread(response => {
-              onComplete();
+              onComplete(values.cmpy_code);
 
               mutate(COMPANIES.READ);
               notification.success({

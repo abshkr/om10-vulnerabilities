@@ -54,6 +54,7 @@ const Partners = () => {
         isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        autoColWidth
       />
       <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>

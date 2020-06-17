@@ -18,7 +18,7 @@ import api, { REPORT_PROFILE } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -28,9 +28,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const IS_CREATING = !value;
 
-  const onComplete = () => {
+  const onComplete = (report_jasper_file) => {
     handleFormState(false, null);
     mutate(REPORT_PROFILE.READ);
+    if (report_jasper_file) {
+      setFilterValue("" + report_jasper_file);
+    }
   };
 
   const onFinish = async () => {
@@ -51,7 +54,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(IS_CREATING ? REPORT_PROFILE.CREATE : REPORT_PROFILE.UPDATE, values)
           .then((response) => {
-            onComplete();
+            onComplete(values.report_jasper_file);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),

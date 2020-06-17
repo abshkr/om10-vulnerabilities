@@ -692,7 +692,7 @@ class IDAssignment extends CommonClass
         oci_bind_by_name($stmt, ':kya_txt', $this->kya_txt);
         oci_bind_by_name($stmt, ':kya_phys_type', $this->kya_phys_type);
         oci_bind_by_name($stmt, ':kya_type', $this->kya_type);
-        oci_bind_by_name($stmt, ':kya_timecd', $this->kya_timecd);
+        oci_bind_by_name($stmt, ':kya_timecd', $this->kya_timecode);
         oci_bind_by_name($stmt, ':kya_lock', $this->kya_lock);
         oci_bind_by_name($stmt, ':kya_adhoc', $this->kya_adhoc);
         oci_bind_by_name($stmt, ':kya_psn', $this->kya_psn);
