@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 import useSWR from 'swr';
+import _ from 'lodash';
 
 import { EQUIPMENT_LIST } from '../../../../api';
 
@@ -22,10 +23,10 @@ const EquipmentType = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        eqpt_etp: value.eqpt_etp,
+        eqpt_etp: _.toNumber(value.eqpt_etp),
       });
 
-      onChange(value.eqpt_etp);
+      onChange(_.toNumber(value.eqpt_etp));
     }
   }, [value, setFieldsValue, onChange]);
 

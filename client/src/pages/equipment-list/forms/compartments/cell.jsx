@@ -20,7 +20,7 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
     let values = await form.validateFields();
 
     if (values?.safefill) {
-      if (_.toNumber(values?.safefill) <= record?.sfl) {
+      if (!record?.sfl || _.toNumber(values?.safefill) <= record?.sfl) {
         onEdit();
 
         handleSave({ ...record, ...values });
@@ -34,7 +34,7 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
         message.error('Safefill Cannot be higher than capacity');
       }
     } else if (values?.sfl) {
-      if (_.toNumber(values?.sfl) >= record?.safefill) {
+      if (!record?.safefill || _.toNumber(values?.sfl) >= record?.safefill) {
         onEdit();
 
         handleSave({ ...record, ...values });
