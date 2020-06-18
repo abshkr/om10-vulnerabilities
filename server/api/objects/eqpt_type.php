@@ -187,9 +187,11 @@ class EquipmentType extends CommonClass
     {
         $query = "
             SELECT CMPT_NO,
+                CMPT_UNITS CMPT_UNIT_ID,
                 DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS,
                 CMPT_CAPACIT,
-                COMPARTMENT.CMPT_ETYP ETYP_ID
+                COMPARTMENT.CMPT_ETYP ETYP_ID,
+                CMPT_N_SEALS
             FROM COMPARTMENT
             WHERE COMPARTMENT.CMPT_ETYP = :etyp_id
             ORDER BY CMPT_NO";

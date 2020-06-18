@@ -12,7 +12,7 @@ import { Equipment, DataTable } from '../../../../components';
 import { useConfig } from '../../../../hooks';
 
 const Compartments = ({ form, value, isCombination }) => {
-  const { railTankAvailable, rigidShipAvailable } = useConfig();
+  const { railTankAvailable, rigidShipAvailable, showSeals } = useConfig();
 
   const { t } = useTranslation();
 
@@ -84,22 +84,45 @@ const Compartments = ({ form, value, isCombination }) => {
 
   const columns = [
     {
-      headerName: t('fields.compartment'),
+      headerName: t('fields.columnNo'),
       field: 'cmpt_no',
       sortable: true,
       resizable: true,
+      width: 50,
+      suppressSizeToFit: true,
     },
     {
       headerName: t('fields.capacity'),
       field: 'cmpt_capacit',
       sortable: true,
       resizable: true,
+      width: showSeals ? 100 : 250,
+      suppressSizeToFit: true,
     },
     {
       headerName: t('fields.unit'),
       field: 'cmpt_units',
       sortable: true,
       resizable: true,
+      width: showSeals ? 100 : 100,
+      suppressSizeToFit: true,
+    },
+    {
+      headerName: t('fields.unit'),
+      field: 'cmpt_unit_id',
+      sortable: true,
+      resizable: true,
+      hide: true,
+    },
+    {
+      headerName: t('fields.numOfSeals'),
+      field: 'cmpt_n_seals',
+      sortable: true,
+      resizable: true,
+      width: showSeals ? 150 : 1,
+      hide: !showSeals,
+      editable: showSeals,
+      suppressSizeToFit: true,
     },
   ];
 
@@ -164,7 +187,7 @@ const Compartments = ({ form, value, isCombination }) => {
       >
         <div style={{ display: 'flex', flexDirection: 'row' }}>
           {composition?.records?.map((item) => (
-            <div key={item} style={{ marginRight: 10 }}>
+            <div key={item} style={{ marginRight: 10, width: '400px' }}>
               <Equipment image={item?.etyp_category?.toLowerCase()} showName={item.etyp_title} />
               { item.etyp_category.toUpperCase() !== 'P' && 
                 item.etyp_category.toUpperCase() !== 'F' && (

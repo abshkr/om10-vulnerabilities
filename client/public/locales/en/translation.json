@@ -81,6 +81,8 @@
     "safeFill": "Safe Fill",
     "safeFillUnit": "Safe Fill Unit",
     "capacity": "Capacity",
+    "numOfSeals": "Num of Seals",
+    "columnNo": "No.",
     "status": "Status",
     "typeDescription": "Type Description",
     "expiryDate": "Expiry Date",
