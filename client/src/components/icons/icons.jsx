@@ -366,6 +366,10 @@ const loader = (key) => {
 const Icons = (props) => {
   const component = loader(props.type);
 
+  if (props.hidden) {
+    return null;
+  }
+
   return (
     <Icon
       component={component}

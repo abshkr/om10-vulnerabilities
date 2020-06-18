@@ -48,7 +48,7 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
               title={name || page}
               style={{ width: '30vw' }}
               breadcrumb={{ routes: filtered }}
-              avatar={avatar ? { icon: <Icons type={avatar} size={32} /> } : null}
+              // avatar={avatar ? { icon: <Icons type={avatar} size={32} /> } : null}
             />
 
             <PageHeaderExtras>{modifiers}</PageHeaderExtras>

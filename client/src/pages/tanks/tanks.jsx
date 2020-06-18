@@ -9,7 +9,7 @@ import { useLocation } from 'react-router-dom';
 
 import { TANKS } from '../../api';
 import { useAuth, useConfig } from '../../hooks';
-import { Page, Download, ListView, FormModal } from '../../components';
+import { Page, Download, ListView } from '../../components';
 
 import TankConfigurationForm from '../tank-configuration/forms';
 

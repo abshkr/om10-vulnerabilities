@@ -62,6 +62,7 @@ import * as CUSTOMERS from './customers';
 import * as DRAWER_PRODUCTS from './drawer-products';
 import * as DELIVERY_DETAILS from './delivery-details';
 import * as NOMINATION_TRANSACTIONS from './nomination-transactions';
+import * as LOAD_BAYS from './load-bays';
 
 export {
   AUTH,
@@ -126,6 +127,7 @@ export {
   DRAWER_PRODUCTS,
   DELIVERY_DETAILS,
   NOMINATION_TRANSACTIONS,
+  LOAD_BAYS,
 };
 
 export default api;

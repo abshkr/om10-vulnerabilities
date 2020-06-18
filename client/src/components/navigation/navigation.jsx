@@ -61,59 +61,59 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.LOAD_SCHEDULES} style={{ display: 'flex', marginTop: 10 }}>
-            <Icons size={40} type="loadSchedules" /> {t('pageNames.loadSchedules')}
+            <Icons size={40} hidden type="loadSchedules" /> {t('pageNames.loadSchedules')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ORDER_LISTING} style={{ display: 'flex' }}>
-            <Icons size={40} type="orderListing" /> {t('pageNames.orderListing')}
+            <Icons size={40} hidden type="orderListing" /> {t('pageNames.orderListing')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TRANSACTION_LIST} style={{ display: 'flex' }}>
-            <Icons size={40} type="transactionList" /> {t('pageNames.transactionList')}
+            <Icons size={40} hidden type="transactionList" /> {t('pageNames.transactionList')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.MOVEMENT_NOMINATIONS} style={{ display: 'flex' }}>
-            <Icons size={40} type="movementNominations" />
+            <Icons size={40} hidden type="movementNominations" />
             {t('pageNames.movementNominations')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.SPECIAL_MOVEMENTS} style={{ display: 'flex' }}>
-            <Icons size={40} type="specialMovements" />
+            <Icons size={40} hidden type="specialMovements" />
             {t('pageNames.specialMovements')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.MANUAL_TRANSACTIONS} style={{ display: 'flex' }}>
-            <Icons size={40} type="manualTransactions" />
+            <Icons size={40} hidden type="manualTransactions" />
             {t('pageNames.manualTransactions')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.PRODUCT_MOVEMENTS} style={{ display: 'flex' }}>
-            <Icons size={40} type="productMovements" />
+            <Icons size={40} hidden type="productMovements" />
             {t('pageNames.productMovements')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.INVENTORY_REQUESTS} style={{ display: 'flex' }}>
-            <Icons size={40} type="inventoryRequests" />
+            <Icons size={40} hidden type="inventoryRequests" />
             {t('pageNames.inventoryRequests')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.GATE_CONTROL} style={{ display: 'flex' }}>
-            <Icons size={40} type="gateControl" />
+            <Icons size={40} hidden type="gateControl" />
             {t('pageNames.gateControl')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.EQUIPMENT_TYPES} style={{ display: 'flex' }}>
-            <Icons size={40} type="equipmentTypes" />
+            <Icons size={40} hidden type="equipmentTypes" />
             {t('pageNames.equipmentTypes')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.EQUIPMENT_LIST} style={{ display: 'flex' }}>
-            <Icons size={40} type="equipmentList" />
+            <Icons size={40} hidden type="equipmentList" />
             {t('pageNames.equipmentList')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANKER_LIST} style={{ display: 'flex', marginBottom: 10 }}>
-            <Icons size={40} type="tankerList" />
+            <Icons size={40} hidden type="tankerList" />
             {t('pageNames.tankerList')}
           </Menu.Item>
         </SubMenu>
@@ -131,42 +131,42 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANKS} style={{ display: 'flex', marginTop: 10 }}>
-            <Icons size={40} type="tankScreen" />
+            <Icons size={40} hidden type="tankScreen" />
             {t('pageNames.tanks')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANK_GROUPS} style={{ display: 'flex' }}>
-            <Icons size={40} type="tankGroups" />
+            <Icons size={40} hidden type="tankGroups" />
             {t('pageNames.tankGroups')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.SITE_BALANCE} style={{ display: 'flex' }}>
-            <Icons size={40} type="siteBalance" />
+            <Icons size={40} hidden type="siteBalance" />
             {t('pageNames.siteBalance')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANK_INVENTORY} style={{ display: 'flex' }}>
-            <Icons size={40} type="tankInventory" />
+            <Icons size={40} hidden type="tankInventory" />
             {t('pageNames.tankInventory')}
           </Menu.Item>
 
           {/* <Menu.Item key={ROUTES.TANK_STRAPPING} style={{ display: 'flex' }}>
-            <Icons size={40} type="tankInventory" />
+            <Icons size={40}  hidden type="tankInventory" />
             {t('pageNames.tankStrapping')}
           </Menu.Item> */}
 
           <Menu.Item key={ROUTES.PRODUCT_INVENTORY} style={{ display: 'flex' }}>
-            <Icons size={40} type="productInventory" />
+            <Icons size={40} hidden type="productInventory" />
             <span>{t('pageNames.productInventory')}</span>
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANK_STATUS} style={{ display: 'flex' }}>
-            <Icons size={40} type="tankStatus" />
+            <Icons size={40} hidden type="tankStatus" />
             {t('pageNames.tankStatus')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.SELF_FUEL_TRANSACTION_LIST} style={{ display: 'flex', marginBottom: 10 }}>
-            <Icons size={40} type="selfFuelTransactionList" />
+            <Icons size={40} hidden type="selfFuelTransactionList" />
             {t('pageNames.selfFuelTransactionList')}
           </Menu.Item>
         </SubMenu>
@@ -184,31 +184,31 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.FOLIO_SUMMARY} style={{ display: 'flex', marginTop: 10 }}>
-            <Icons size={40} type="folioSummary" /> {t('pageNames.folioSummary')}
+            <Icons size={40} hidden type="folioSummary" /> {t('pageNames.folioSummary')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ON_DEMAND_REPORTS} style={{ display: 'flex' }}>
-            <Icons size={40} type="onDemandReports" /> {t('pageNames.onDemandReports')}
+            <Icons size={40} hidden type="onDemandReports" /> {t('pageNames.onDemandReports')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.JOURNAL} style={{ display: 'flex' }}>
-            <Icons size={40} type="journal" /> {t('pageNames.journal')}
+            <Icons size={40} hidden type="journal" /> {t('pageNames.journal')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.HOST_MESSAGING_INTERFACE} style={{ display: 'flex' }}>
-            <Icons size={40} type="hostMessagingInterface" /> {t('pageNames.hostMessagingInterface')}
+            <Icons size={40} hidden type="hostMessagingInterface" /> {t('pageNames.hostMessagingInterface')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.PERSONNEL_ON_SITE} style={{ display: 'flex' }}>
-            <Icons size={40} type="personnelOnSite" /> {t('pageNames.personnelOnSite')}
+            <Icons size={40} hidden type="personnelOnSite" /> {t('pageNames.personnelOnSite')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.AUDITING_DATA} style={{ display: 'flex' }}>
-            <Icons size={40} type="auditingData" /> {t('pageNames.auditingData')}
+            <Icons size={40} hidden type="auditingData" /> {t('pageNames.auditingData')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.METERING} style={{ display: 'flex', marginBottom: 10 }}>
-            <Icons size={40} type="metering" /> {t('pageNames.metering')}
+            <Icons size={40} hidden type="metering" /> {t('pageNames.metering')}
           </Menu.Item>
         </SubMenu>
 
@@ -225,31 +225,31 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.PERSONNEL} style={{ display: 'flex', marginTop: 10 }}>
-            <Icons size={40} type="personnel" /> {t('pageNames.personnel')}
+            <Icons size={40} hidden type="personnel" /> {t('pageNames.personnel')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ID_ASSIGNMENT} style={{ display: 'flex' }}>
-            <Icons size={40} type="idAssignment" /> {t('pageNames.idAssignment')}
+            <Icons size={40} hidden type="idAssignment" /> {t('pageNames.idAssignment')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.EXPIRY_DATES} style={{ display: 'flex' }}>
-            <Icons size={40} type="expiryDates" /> {t('pageNames.expiryDates')}
+            <Icons size={40} hidden type="expiryDates" /> {t('pageNames.expiryDates')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TIME_CODES} style={{ display: 'flex' }}>
-            <Icons size={40} type="timeCodes" /> {t('pageNames.timeCodes')}
+            <Icons size={40} hidden type="timeCodes" /> {t('pageNames.timeCodes')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ROLE_ACCESS_MANAGEMENT} style={{ display: 'flex' }}>
-            <Icons size={40} type="roleAccessManagement" /> {t('pageNames.roleAccessManagement')}
+            <Icons size={40} hidden type="roleAccessManagement" /> {t('pageNames.roleAccessManagement')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.AREA} style={{ display: 'flex' }}>
-            <Icons size={40} type="area" /> {t('pageNames.area')}
+            <Icons size={40} hidden type="area" /> {t('pageNames.area')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.GATE_PERMISSION} style={{ display: 'flex', marginBottom: 10 }}>
-            <Icons size={40} type="gatePermission" /> {t('pageNames.gatePermission')}
+            <Icons size={40} hidden type="gatePermission" /> {t('pageNames.gatePermission')}
           </Menu.Item>
         </SubMenu>
 
@@ -266,23 +266,23 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.BASE_PRODUCTS} style={{ display: 'flex', marginTop: 10 }}>
-            <Icons size={40} type="baseProducts" /> {t('pageNames.baseProducts')}
+            <Icons size={40} hidden type="baseProducts" /> {t('pageNames.baseProducts')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.DRAWER_PRODUCTS} style={{ display: 'flex' }}>
-            <Icons size={40} type="drawerProducts" /> {t('pageNames.drawerProducts')}
+            <Icons size={40} hidden type="drawerProducts" /> {t('pageNames.drawerProducts')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.HAZCHEM_CODES} style={{ display: 'flex' }}>
-            <Icons size={40} type="hazchemCodes" /> {t('pageNames.hazchemCodes')}
+            <Icons size={40} hidden type="hazchemCodes" /> {t('pageNames.hazchemCodes')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.DANGEROUS_GOODS} style={{ display: 'flex' }}>
-            <Icons size={40} type="dangerousGoods" /> {t('pageNames.dangerousGoods')}
+            <Icons size={40} hidden type="dangerousGoods" /> {t('pageNames.dangerousGoods')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.PRODUCT_GROUPS} style={{ display: 'flex', marginBottom: 10 }}>
-            <Icons size={40} type="productGroups" /> {t('pageNames.productGroups')}
+            <Icons size={40} hidden type="productGroups" /> {t('pageNames.productGroups')}
           </Menu.Item>
         </SubMenu>
 
@@ -299,42 +299,42 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.COMPANIES} style={{ display: 'flex', marginTop: 10 }}>
-            <Icons size={40} type="companies" />
+            <Icons size={40} hidden type="companies" />
             {t('pageNames.companies')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ALLOCATIONS} style={{ display: 'flex' }}>
-            <Icons size={40} type="allocations" />
+            <Icons size={40} hidden type="allocations" />
             {t('pageNames.allocations')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.CUSTOMERS} style={{ display: 'flex' }}>
-            <Icons size={40} type="customerScreen" />
+            <Icons size={40} hidden type="customerScreen" />
             {t('pageNames.customers')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ADDRESSES} style={{ display: 'flex' }}>
-            <Icons size={40} type="addresses" />
+            <Icons size={40} hidden type="addresses" />
             {t('pageNames.addresses')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.DELIVERY_LOCATIONS} style={{ display: 'flex' }}>
-            <Icons size={40} type="deliveryLocations" />
+            <Icons size={40} hidden type="deliveryLocations" />
             {t('pageNames.deliveryLocations')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.PARTNERS} style={{ display: 'flex' }}>
-            <Icons size={40} type="partners" />
+            <Icons size={40} hidden type="partners" />
             {t('pageNames.partners')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.PARTNERSHIP} style={{ display: 'flex' }}>
-            <Icons size={40} type="partnership" />
+            <Icons size={40} hidden type="partnership" />
             {t('pageNames.partnership')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.CUSTOMER_CATEGORIES} style={{ display: 'flex', marginBottom: 10 }}>
-            <Icons size={40} type="customerCategories" />
+            <Icons size={40} hidden type="customerCategories" />
             {t('pageNames.customerCategories')}
           </Menu.Item>
         </SubMenu>
@@ -352,59 +352,59 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.LOAD_BAYS} style={{ display: 'flex', marginTop: 10 }}>
-            <Icons size={40} type="loadBays" />
+            <Icons size={40} hidden type="loadBays" />
             {t('pageNames.loadBays')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.COMPANY_BAY_MOVEMENT} style={{ display: 'flex' }}>
-            <Icons size={40} type="companyBayMovement" />
+            <Icons size={40} hidden type="companyBayMovement" />
             {t('pageNames.companyBayMovement')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.LOAD_METERS} style={{ display: 'flex' }}>
-            <Icons size={40} type="loadMeters" />
+            <Icons size={40} hidden type="loadMeters" />
             {t('pageNames.loadMeters')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.METER_DEVICES} style={{ display: 'flex' }}>
-            <Icons size={40} type="meterDevices" />
+            <Icons size={40} hidden type="meterDevices" />
             {t('pageNames.meterDevices')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.PHYSICAL_PRINTERS} style={{ display: 'flex' }}>
-            <Icons size={40} type="physicalPrinters" /> {t('pageNames.physicalPrinters')}
+            <Icons size={40} hidden type="physicalPrinters" /> {t('pageNames.physicalPrinters')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.SITE_ACCESS_DEVICES} style={{ display: 'flex' }}>
-            <Icons size={40} type="siteAccessDevices" /> {t('pageNames.siteAccessDevices')}
+            <Icons size={40} hidden type="siteAccessDevices" /> {t('pageNames.siteAccessDevices')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.KEY_READER_DEVICES} style={{ display: 'flex' }}>
-            <Icons size={40} type="keyReaderDevices" /> {t('pageNames.keyReaderDevices')}
+            <Icons size={40} hidden type="keyReaderDevices" /> {t('pageNames.keyReaderDevices')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.TANK_CONFIGURATION} style={{ display: 'flex' }}>
-            <Icons size={40} type="tankConfiguration" /> {t('pageNames.tankConfiguration')}
+            <Icons size={40} hidden type="tankConfiguration" /> {t('pageNames.tankConfiguration')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.LOGICAL_PRINTERS} style={{ display: 'flex' }}>
-            <Icons size={40} type="logicalPrinters" /> {t('pageNames.logicalPrinters')}
+            <Icons size={40} hidden type="logicalPrinters" /> {t('pageNames.logicalPrinters')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.REPORT_CONFIGURATION} style={{ display: 'flex' }}>
-            <Icons size={40} type="reportConfiguration" /> {t('pageNames.reportConfiguration')}
+            <Icons size={40} hidden type="reportConfiguration" /> {t('pageNames.reportConfiguration')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.REPORT_PROFILE} style={{ display: 'flex' }}>
-            <Icons size={40} type="reportProfile" /> {t('pageNames.reportProfile')}
+            <Icons size={40} hidden type="reportProfile" /> {t('pageNames.reportProfile')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.FOLIO_SCHEDULLING} style={{ display: 'flex' }}>
-            <Icons size={40} type="folioScheduling" /> {t('pageNames.folioScheduling')}
+            <Icons size={40} hidden type="folioScheduling" /> {t('pageNames.folioScheduling')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.MOVEMENT_REASONS} style={{ display: 'flex', marginBottom: 10 }}>
-            <Icons size={40} type="movementReasons" /> {t('pageNames.movementReasons')}
+            <Icons size={40} hidden type="movementReasons" /> {t('pageNames.movementReasons')}
           </Menu.Item>
         </SubMenu>
 
@@ -421,17 +421,17 @@ const Navigation = () => {
           </Menu.Item>
 
           <Menu.Item key={ROUTES.BAY_VIEW} style={{ display: 'flex', marginTop: 10 }}>
-            <Icons size={40} type="bayView" />
+            <Icons size={40} hidden type="bayView" />
             {t('pageNames.bayView')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.ADAPTIVE_FLOW_CONTROL} style={{ display: 'flex' }}>
-            <Icons size={40} type="adaptiveFlowControl" />
+            <Icons size={40} hidden type="adaptiveFlowControl" />
             {t('pageNames.adaptiveFlowControl')}
           </Menu.Item>
 
           <Menu.Item key={ROUTES.FSC_STATUS} style={{ display: 'flex', marginBottom: 10 }}>
-            <Icons size={40} type="fscStatus" />
+            <Icons size={40} hidden type="fscStatus" />
             {t('pageNames.fscStatus')}
           </Menu.Item>
         </SubMenu>
