@@ -104,7 +104,6 @@ const Calculation = ({ form, value, range, config }) => {
         }`}
       >
         <InputNumber
-          disabled
           min={value?.tank_base_dens_lo}
           max={value?.tank_base_dens_hi}
           style={{ width: '100%' }}
