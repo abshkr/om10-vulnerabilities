@@ -1170,6 +1170,7 @@
   },
 
   "operations": {
+    "edit": "Edit",
     "editing": "Editing",
     "create": "Create",
     "activate": "Activate",

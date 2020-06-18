@@ -165,25 +165,16 @@ function parse(conn, file, content_format)
 		catch (ex)
 		{
 			//logr.write_to_console(__filename, __line, ex.message);
-			console.error('a:Failed to parse file ' + src_filenm + ', error:' + ex.message + ', send raw content instead');
+			console.error('a:Failed to parse file ' + src_filenm + ', error:' + ex.message);
 			remove_file(output_file);
-			//return ([false,ex.message]);
-
-			// Return raw content if parsing fails
-			msg = fs.readFileSync(file, 'utf8');
-			return ([true,msg]);
+			return ([false,ex.message]);
 		}
 	}
 	else
 	{
 		//logr.write_to_console(__filename, __line, ex.message);
-		console.error('b:Failed to parse file ' + src_filenm + ', error:' + 'search key missing. send raw content instead');
-		//return ([false,'search key missing']);
-
-		// Return raw content if parsing fails
-		console.log('file2:'+file);
-		msg = fs.readFileSync(file, 'utf8');
-		return ([true,msg]);
+		console.error('b:Failed to parse file ' + src_filenm + ', error:' + 'search key missing.');
+		return ([false,'search key missing']);
 	}
 }
 

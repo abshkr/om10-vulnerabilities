@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import NativeMenu from 'native-menu';
 import { Button } from 'antd';
@@ -25,31 +25,8 @@ const OmegaMessages = () => {
 
   const fields = columns(t);
 	const url = process.env.REACT_APP_API_URL + '/hmi/omega_message';
-/*
-	const fetcher = url =>
-		fetch(url).then(response => {
-			response.json().then(body => {
-				console.log('host messages:'+JSON.stringify(body,null,'\t')); 
-				return body;
-			});
-			//response.json();
-		});
-*/
   const { data: payload, isValidating, revalidate } = useSWR(url);
   const messages = payload?.message;
-  //const [messages, setData] = useState(payload?.message);
-  //const isLoading = isValidating || !messages;
-
-/*
-  useEffect(() => {
-    if (payload?.message) {
-			console.log('here:'+JSON.stringify(payload.message,null,'\t')); 
-      setData(payload?.message);
-			payload.message = null;
-		}
-  });
-  //}, [messages, setData]);
-*/
 
 	const from = 'omega';
 	const action = 'view';
