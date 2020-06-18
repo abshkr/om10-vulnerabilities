@@ -46,12 +46,12 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   const fields = columns(t);
   const IS_CREATING = !value;
 
-  const onComplete = (eqpt_id) => {
+  const onComplete = (eqpt_code) => {
     handleFormState(false, null);
     // need read the data again no matter if it is created or updated, otherwise user could not see changes after updating.
     mutate(EQUIPMENT_LIST.READ);
-    if (eqpt_id) {
-      setFilterValue("" + eqpt_id);
+    if (eqpt_code) {
+      setFilterValue("" + eqpt_code);
     } 
   };
 
@@ -85,7 +85,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
         await api
           .post(IS_CREATING ? EQUIPMENT_LIST.CREATE : EQUIPMENT_LIST.UPDATE, values)
           .then((response) => {
-            onComplete(value?.eqpt_id);
+            onComplete(values?.eqpt_code);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),

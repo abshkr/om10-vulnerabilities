@@ -31,10 +31,12 @@ const PasswordReset = ({ value }) => {
             description: response.data.message
           });
         })
-        .catch(error => {
-          notification.error({
-            message: t('messages.updateFailed'),
-            description: error.data.message
+        .catch((errors) => {
+          _.forEach(errors.response.data.errors, (error) => {
+            notification.error({
+              message: error.type,
+              description: error.message,
+            });
           });
         });
     }
