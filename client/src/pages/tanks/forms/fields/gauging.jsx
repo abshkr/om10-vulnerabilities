@@ -21,6 +21,10 @@ const Gauging = ({ form, value }) => {
         tank_identifier: value.tank_identifier,
         tank_drv_type: value.tank_drv_type,
         tank_drv_aux: value.tank_drv_aux,
+        tank_instance: value.tank_instance,
+        tank_channel: value.tank_channel,
+        tank_poll_gap: value.tank_poll_gap,
+        tank_address: value.tank_address,
       });
     }
   }, [value, setFieldsValue]);

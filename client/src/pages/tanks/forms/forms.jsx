@@ -46,6 +46,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   const onFinish = async () => {
     const values = await form.validateFields();
 
+    if (!IS_CREATING) {
+      values.tank_code = value.tank_code;
+    }
+
     const payload = _.omit(
       {
         ...values,
