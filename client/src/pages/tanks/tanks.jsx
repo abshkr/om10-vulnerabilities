@@ -77,7 +77,7 @@ const Tanks = () => {
 
       <Download data={payload} isLoading={isLoading} columns={fields} />
 
-      <Button
+      {/* <Button
         type="primary"
         icon={<PlusOutlined />}
         onClick={() => onCreate(null)}
@@ -85,7 +85,7 @@ const Tanks = () => {
         disabled={!access.canCreate || mode === '1'}
       >
         {t('operations.create')}
-      </Button>
+      </Button> */}
     </>
   );
 
