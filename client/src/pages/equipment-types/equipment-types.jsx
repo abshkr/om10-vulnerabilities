@@ -93,14 +93,16 @@ const EquipmentTypes = () => {
         rowHeight={60}
         filterValue={filterValue}
       />
-      <Forms
-        value={selected}
-        visible={visible}
-        handleFormState={handleFormState}
-        access={access}
-        isCombination={isCombination}
-        setFilterValue={setFilterValue}
-      />
+      {visible && (
+        <Forms
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          isCombination={isCombination}
+          setFilterValue={setFilterValue}
+        />
+      )}
     </Page>
   );
 };

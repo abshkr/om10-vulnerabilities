@@ -166,7 +166,8 @@ const Compartments = ({ form, value, isCombination }) => {
           {composition?.records?.map((item) => (
             <div key={item} style={{ marginRight: 10 }}>
               <Equipment image={item?.etyp_category?.toLowerCase()} showName={item.etyp_title} />
-              {item.etyp_category !== 'P' && item.etyp_category !== 'F' && (
+              { item.etyp_category.toUpperCase() !== 'P' && 
+                item.etyp_category.toUpperCase() !== 'F' && (
                 <DataTable data={item?.compartments} columns={columns} minimal height="80vh" />
               )}
             </div>

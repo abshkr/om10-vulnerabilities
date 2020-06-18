@@ -16,7 +16,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
   const [form] = Form.useForm();
 
   const IS_CREATING = !value;
-  const IS_COMBINATION = isCombination || value?.image?.split(',')?.length > 1;
+  const IS_COMBINATION = isCombination || value?.image?.split(',')?.length > 1 || _.toNumber(value?.etyp_class) > 0;
 
   const { resetFields } = form;
 
@@ -63,7 +63,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
     if (IS_CREATING && !IS_COMBINATION) {
       values = {
         etyp_title: record.etyp_title,
-        etyp_category: record.etyp_category,
+        etyp_category: record.etyp_category?.toUpperCase(),
         etyp_isrigid: false,
         etyp_schedul: compartments.length > 0,
         compartments,
@@ -167,19 +167,18 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
             {t('operations.cancel')}
           </Button>
           
-          {IS_CREATING && (
-            <Button
-              type="primary"
-              icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-              onClick={onFinish}
-              style={{ float: 'right', marginRight: 5 }}
-              disabled={
-                (!IS_CREATING && IS_COMBINATION) || IS_CREATING ? !access?.canCreate : !access?.canUpdate
-              }
-            >
-              {t('operations.create')}
-            </Button>
-          )}
+          <Button
+            type="primary"
+            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            onClick={onFinish}
+            style={{ float: 'right', marginRight: 5 }}
+            disabled={
+              (!IS_CREATING && IS_COMBINATION) || IS_CREATING ? !access?.canCreate : !access?.canUpdate
+            }
+          >
+            {IS_CREATING ? t('operations.create') : t('operations.update')}
+          </Button>
+
           {!IS_CREATING && (
             <Button
               type="danger"
