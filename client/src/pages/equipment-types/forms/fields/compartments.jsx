@@ -20,7 +20,7 @@ const Compartments = ({ form, value, isCombination }) => {
 
   const CAN_CHANGE_EQUIPMENT = !isCombination;
 
-  const equipment = _.reject(['p', 'f', 't', 'r', 's', 'e'], (equipment) => {
+  /* const equipment = _.reject(['p', 'f', 't', 'r', 's', 'e'], (equipment) => {
     if (!railTankAvailable) {
       return equipment === 'e';
     }
@@ -28,7 +28,38 @@ const Compartments = ({ form, value, isCombination }) => {
     if (!rigidShipAvailable) {
       return equipment === 's';
     }
-  });
+
+    if (!(_.toNumber(value?.etyp_n_items) === 0)) {
+      return (equipment === 'p' || equipment === 'f');
+    }
+
+    if (!(_.toNumber(value?.etyp_n_items) > 0)) {
+      return (equipment === 't' || equipment === 'r' || equipment === 's' || equipment === 'e');
+    }
+  }); */
+
+  const makeEquipmentImageList = (cmpt) => {
+    const list = [];
+
+    if (cmpt === 0) {
+      list.push('p');
+      list.push('f');
+    }
+    else {
+      list.push('t');
+      list.push('r');
+      if (railTankAvailable) {
+        list.push('e');
+      }
+      if (rigidShipAvailable) {
+        list.push('s');
+      }
+    }
+
+    return list;
+  };
+
+  const equipment = makeEquipmentImageList(value?.etyp_n_items);
 
   const names = {
     p: t('fields.primeMover'),
