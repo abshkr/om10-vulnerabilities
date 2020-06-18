@@ -157,9 +157,11 @@ class EquipmentType extends CommonClass
 
         $query = "
             SELECT CMPT_NO,
+                CMPT_UNITS CMPT_UNIT_ID,
                 DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS,
                 CMPT_CAPACIT,
-                COMPARTMENT.CMPT_ETYP ETYP_ID
+                COMPARTMENT.CMPT_ETYP ETYP_ID,
+                CMPT_N_SEALS
             FROM COMPARTMENT
             WHERE COMPARTMENT.CMPT_ETYP = :etyp_id
             ORDER BY CMPT_NO";
@@ -651,5 +653,26 @@ class EquipmentType extends CommonClass
     {
         $serv = new EqptService($this->conn);
         return $serv->dropdown_eqpt_types();
+    }
+
+    public function update_compartment_seals()
+    {
+        $query = "
+            UPDATE COMPARTMENT
+            SET CMPT_N_SEALS = :num_seals
+            WHERE CMPT_ETYP = :etyp_id AND CMPT_NO = :cmpt_id
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':num_seals', $this->cmpt_n_seals);
+        oci_bind_by_name($stmt, ':etyp_id', $this->etyp_id);
+        oci_bind_by_name($stmt, ':cmpt_id', $this->cmpt_no);
+
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
     }
 }

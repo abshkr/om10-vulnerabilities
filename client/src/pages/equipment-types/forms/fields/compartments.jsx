@@ -4,15 +4,15 @@ import useSWR from 'swr';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useTranslation } from 'react-i18next';
-import { Form, Radio } from 'antd';
+import { Form, Radio, notification } from 'antd';
 import _ from 'lodash';
 
-import { EQUIPMENT_TYPES } from '../../../../api';
+import api, { EQUIPMENT_TYPES } from '../../../../api';
 import { Equipment, DataTable } from '../../../../components';
 import { useConfig } from '../../../../hooks';
 
 const Compartments = ({ form, value, isCombination }) => {
-  const { railTankAvailable, rigidShipAvailable, showSeals } = useConfig();
+  const { railTankAvailable, rigidShipAvailable, showSeals, maxSealsPerCompartment } = useConfig();
 
   const { t } = useTranslation();
 
@@ -82,7 +82,49 @@ const Compartments = ({ form, value, isCombination }) => {
     }
   }, [value, setFieldsValue]);
 
+  const onCellUpdate = async (value) => {
+    console.log('onCellUpdate', value?.data);
+
+    if (!_.isInteger(_.toNumber(value?.newValue))) {
+      notification.error({
+        message: t('descriptions.mustBeInteger'),
+        description: value?.colDef?.headerName + ': ' + value?.newValue + ', ' + 
+        t('fields.compartment') + ': ' + value?.data.cmpt_no,
+      });
+
+      return;
+    }
+
+    if (_.toNumber(value?.newValue) > _.toNumber(maxSealsPerCompartment)) {
+      notification.error({
+        message: t('descriptions.exceedMaxNumber'),
+        description: value?.colDef?.headerName + ': ' + value?.newValue + ', ' + 
+        t('fields.maxNumber') + ': ' + String(maxSealsPerCompartment),
+      });
+
+      return;
+    }
+
+    if (_.toNumber(value?.newValue) < 0) {
+      notification.error({
+        message: t('descriptions.mustBePositive'),
+        description: value?.colDef?.headerName + ': ' + value?.newValue,
+      });
+
+      return;
+    }
+
+    await api.post(EQUIPMENT_TYPES.UPDATE_NUMSEALS, value?.data);
+  };
+
   const columns = [
+    {
+      headerName: t('fields.equipmentType'),
+      field: 'etyp_id',
+      sortable: true,
+      resizable: true,
+      hide: true,
+    },
     {
       headerName: t('fields.columnNo'),
       field: 'cmpt_no',
@@ -106,6 +148,13 @@ const Compartments = ({ form, value, isCombination }) => {
       resizable: true,
       width: showSeals ? 100 : 100,
       suppressSizeToFit: true,
+    },
+    {
+      headerName: t('fields.unit'),
+      field: 'cmpt_unit_id',
+      sortable: true,
+      resizable: true,
+      hide: true,
     },
     {
       headerName: t('fields.unit'),
@@ -191,7 +240,13 @@ const Compartments = ({ form, value, isCombination }) => {
               <Equipment image={item?.etyp_category?.toLowerCase()} showName={item.etyp_title} />
               { item.etyp_category.toUpperCase() !== 'P' && 
                 item.etyp_category.toUpperCase() !== 'F' && (
-                <DataTable data={item?.compartments} columns={columns} minimal height="80vh" />
+                <DataTable 
+                  data={item?.compartments} 
+                  columns={columns} 
+                  minimal 
+                  height="80vh" 
+                  onCellUpdate={(value) => onCellUpdate(value)}
+                  />
               )}
             </div>
           ))}
