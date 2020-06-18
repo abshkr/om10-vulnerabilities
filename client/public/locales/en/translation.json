@@ -1168,7 +1168,8 @@
     "tanks": "Tanks",
     "dangerousGoods": "Dangerous Goods",
     "deliveryDetails": "Delivery Details",
-    "nominationTransactions": "Manual Transactions For Nominations"
+    "nominationTransactions": "Manual Transactions For Nominations",
+	"dangerousGoods": "Dangerous Goods"
   },
 
   "operations": {

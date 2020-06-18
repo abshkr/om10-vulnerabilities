@@ -271,7 +271,6 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           </TabPane>
 
           <TabPane
-            // className="ant-tab-window-no-margin"
             tab={t('tabColumns.all')}
             key="1"
           >
@@ -279,7 +278,11 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="MENU_SCHEDULE" label={t('pageMenu.schedules')}>
+            <Form.Item name="M_SITECONFIG" label={t('pageNames.siteConfiguration')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            {/* <Form.Item name="MENU_SCHEDULE" label={t('pageMenu.schedules')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
@@ -313,12 +316,11 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
             <Form.Item name="MENU_OPERATIONS" label={t('pageMenu.operations')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
+            </Form.Item> */}
           </TabPane>
 
           <TabPane
-            // className="ant-tab-window-no-margin"
-            tab={t('pageMenu.schedules')}
+            tab={t('pageMenu.operations')}
             key="2"
             disabled={IS_CREATING}
           >
@@ -327,6 +329,38 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
                 options={loadScheduleOptions}
                 style={{ flexDirection: 'row', marginBottom: '.7rem' }}
               />
+            </Form.Item>
+
+            <Form.Item name="M_ORDERLISTING" label={t('pageNames.orderListing')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_TRANSACTIONLIST" label={t('pageNames.transactionList')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_NOMINATION" label={t('pageNames.movementNominations')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_SPECIALMOVEMENTS" label={t('pageNames.specialMovements')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_MANUALTRANSACTIONS" label={t('pageNames.manualTransactions')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_PRODUCTMOVEMENT" label={t('pageNames.productMovements')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_INVENTORYREQUEST" label={t('pageNames.inventoryRequests')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_GATECONTROL" label={t('pageNames.gateControl')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
             <Form.Item name="M_EQUIPMENT" label={t('pageNames.equipmentTypes')}>
@@ -340,221 +374,18 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             <Form.Item name="M_TANKERS" label={t('pageNames.tankerList')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
-
-            <Form.Item name="M_TRANSACTIONLIST" label={t('pageNames.transactionList')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_SFTRANSACTIONLIST" label={t('pageNames.selfFuelTransactionList')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
           </TabPane>
 
           <TabPane
-            // className="ant-tab-window-no-margin"
-            tab={t('pageMenu.gantry')}
+            tab={t('pageMenu.stock')}
             key="3"
             disabled={IS_CREATING}
           >
-            <Form.Item name="M_LOADBAYS" label={t('pageNames.loadBays')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_COMPANIES" label={t('pageNames.companies')}>
+            <Form.Item name="M_TANKSTATUS" label={t('pageNames.tanks')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
             <Form.Item name="M_TANKGROUPS" label={t('pageNames.tankGroups')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_BASEPRODUCTS" label={t('pageNames.baseProducts')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_DRAWERPRODUCTS" label={t('pageNames.drawerProducts')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_TANKCONFIGURATION" label={t('pageNames.tankConfiguration')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_PRODUCTS" label={t('pageNames.productGroups')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_ALLOCATIONS" label={t('pageNames.allocations')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_HAZCHEM" label={t('pageNames.hazchemCodes')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_LOADMETERS" label={t('pageNames.loadMeters')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_BAYMOVEMENT" label={t('pageNames.companyBayMovement')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-          </TabPane>
-
-          <TabPane
-            // className="ant-tab-window-no-margin"
-            tab={t('pageMenu.reports')}
-            key="4"
-            disabled={IS_CREATING}
-          >
-            <Form.Item name="M_JOURNALREPORT" label={t('pageNames.journal')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_REPOPROFILE" label={t('pageNames.reportProfile')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_JASPERREPORTS" label={t('pageNames.onDemandReports')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_REPOCONFIGURATION" label={t('pageNames.reportConfiguration')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_ONSITEREPORT" label={t('pageNames.personnelOnSite')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_FOLIOMANAGEMENT" label={t('pageNames.folioSummary')}>
-              <Checkbox.Group
-                options={folioOptions}
-                style={{ flexDirection: 'row', marginBottom: '.7rem' }}
-              />
-            </Form.Item>
-
-            <Form.Item name="M_FOLIOSCHEDULING" label={t('pageNames.folioScheduling')}>
-              <Checkbox.Group
-                options={folioOptions}
-                style={{ flexDirection: 'row', marginBottom: '.7rem' }}
-              />
-            </Form.Item>
-
-            <Form.Item name="M_GSAPMESSAGING" label={t('pageNames.hostMessagingInterface')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_AUDITREPORT" label={t('pageNames.auditingData')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-          </TabPane>
-
-          <TabPane
-            // className="ant-tab-window-no-margin"
-            tab={t('pageMenu.accessControl')}
-            key="5"
-            disabled={IS_CREATING}
-          >
-            <Form.Item name="M_IDENTIFICATIONASSIGNMENT" label={t('pageNames.idAssignment')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_PERSONNEL" label={t('pageNames.personnel')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_ROLEACCESS" label={t('pageNames.roleAccessManagement')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_SITECONFIG" label={t('pageNames.siteConfiguration')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_EXPIRYDATES" label={t('pageNames.expiryDates')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_AREA" label={t('pageNames.area')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_SITEACCESSDEVICES" label={t('pageNames.siteAccessDevices')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_KEYREADERDEVICES" label={t('pageNames.keyReaderDevices')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_GATEPERMISSION" label={t('pageNames.gatePermission')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_GATECONTROL" label={t('pageNames.gateControl')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_TIMECODES" label={t('pageNames.timeCodes')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-          </TabPane>
-
-          <TabPane
-            // className="ant-tab-window-no-margin"
-            tab={t('pageMenu.customers')}
-            key="6"
-            disabled={IS_CREATING}
-          >
-            <Form.Item name="M_CUSTOMERS" label={t('pageNames.customers')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_ORDERLISTING" label={t('pageNames.orderListing')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_ADDRESSES" label={t('pageNames.addresses')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_CUSTOMERCATEGORIES" label={t('pageNames.customerCategories')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_DELIVERYLOCATIONS" label={t('pageNames.deliveryLocations')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_PRICEOFFSETS" label={t('pageNames.priceOffsets')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_CUSTOMERPRICING" label={t('pageNames.customerPricing')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_ORDERPRODUCTPRICING" label={t('pageNames.orderProductPricing')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_PARTNERS" label={t('pageNames.partners')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_PARTNERSHIP" label={t('pageNames.partnership')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-          </TabPane>
-
-          <TabPane
-            // className="ant-tab-window-no-margin"
-            tab={t('pageMenu.stockManagement')}
-            key="7"
-            disabled={IS_CREATING}
-          >
-            <Form.Item name="M_METERING" label={t('pageNames.metering')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
@@ -570,64 +401,227 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_TANKSTATUS" label={t('pageNames.tankStatus')}>
+            <Form.Item name="M_SFTRANSACTIONLIST" label={t('pageNames.selfFuelTransactionList')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+          </TabPane>
+
+          <TabPane
+            // className="ant-tab-window-no-margin"
+            tab={t('pageMenu.reports')}
+            key="4"
+            disabled={IS_CREATING}
+          >
+            <Form.Item name="M_FOLIOMANAGEMENT" label={t('pageNames.folioSummary')}>
+              <Checkbox.Group
+                options={folioOptions}
+                style={{ flexDirection: 'row', marginBottom: '.7rem' }}
+              />
+            </Form.Item>
+
+            <Form.Item name="M_JASPERREPORTS" label={t('pageNames.onDemandReports')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_PRODUCTMOVEMENT" label={t('pageNames.productMovements')}>
+            <Form.Item name="M_JOURNALREPORT" label={t('pageNames.journal')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_INVENTORYREQUEST" label={t('pageNames.inventoryRequests')}>
+            <Form.Item name="M_GSAPMESSAGING" label={t('pageNames.hostMessagingInterface')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_ONSITEREPORT" label={t('pageNames.personnelOnSite')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_AUDITREPORT" label={t('pageNames.auditingData')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_METERING" label={t('pageNames.metering')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+          </TabPane>
+
+          <TabPane
+            // className="ant-tab-window-no-margin"
+            tab={t('pageMenu.security')}
+            key="5"
+            disabled={IS_CREATING}
+          >
+            <Form.Item name="M_PERSONNEL" label={t('pageNames.personnel')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_IDENTIFICATIONASSIGNMENT" label={t('pageNames.idAssignment')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_EXPIRYDATES" label={t('pageNames.expiryDates')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>  
+            
+            <Form.Item name="M_TIMECODES" label={t('pageNames.timeCodes')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_ROLEACCESS" label={t('pageNames.roleAccessManagement')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_AREA" label={t('pageNames.area')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_GATEPERMISSION" label={t('pageNames.gatePermission')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+          </TabPane>
+
+          <TabPane
+            // className="ant-tab-window-no-margin"
+            tab={t('pageMenu.products')}
+            key="6"
+            disabled={IS_CREATING}
+          >
+            <Form.Item name="M_BASEPRODUCTS" label={t('pageNames.baseProducts')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_DRAWERPRODUCTS" label={t('pageNames.drawerProducts')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_HAZCHEM" label={t('pageNames.hazchemCodes')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_DANGEROUSGOODS" label={t('pageNames.dangerousGoods')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_PRODUCTS" label={t('pageNames.productGroups')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            {/* <Form.Item name="M_PRICEOFFSETS" label={t('pageNames.priceOffsets')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_CUSTOMERPRICING" label={t('pageNames.customerPricing')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_ORDERPRODUCTPRICING" label={t('pageNames.orderProductPricing')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item> */}
+          </TabPane>
+
+          <TabPane
+            // className="ant-tab-window-no-margin"
+            tab={t('pageMenu.companies')}
+            key="7"
+            disabled={IS_CREATING}
+          >
+            <Form.Item name="M_COMPANIES" label={t('pageNames.companies')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_ALLOCATIONS" label={t('pageNames.allocations')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_CUSTOMERS" label={t('pageNames.customers')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_ADDRESSES" label={t('pageNames.addresses')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_DELIVERYLOCATIONS" label={t('pageNames.deliveryLocations')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_PARTNERS" label={t('pageNames.partners')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_PARTNERSHIP" label={t('pageNames.partnership')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+            
+            <Form.Item name="M_CUSTOMERCATEGORIES" label={t('pageNames.customerCategories')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+          </TabPane>
+
+          <TabPane
+            // className="ant-tab-window-no-margin"
+            tab={t('pageMenu.config')}
+            key="8"
+            disabled={IS_CREATING}
+          >
+            <Form.Item name="M_LOADBAYS" label={t('pageNames.loadBays')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_BAYMOVEMENT" label={t('pageNames.companyBayMovement')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_LOADMETERS" label={t('pageNames.loadMeters')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
             <Form.Item name="M_METERINGDEVICES" label={t('pageNames.meterDevices')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
-          </TabPane>
-
-          <TabPane
-            // className="ant-tab-window-no-margin"
-            tab={t('pageMenu.printerConfiguration')}
-            key="8"
-            disabled={IS_CREATING}
-          >
-            <Form.Item name="M_LOGICALPRINTERS" label={t('pageNames.logicalPrinters')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
 
             <Form.Item name="M_PHYSICALPRINTERS" label={t('pageNames.physicalPrinters')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
-          </TabPane>
 
-          <TabPane
-            // className="ant-tab-window-no-margin"
-            tab={t('pageMenu.stockReconciliation')}
-            key="9"
-            disabled={IS_CREATING}
-          >
-            <Form.Item name="M_NOMINATION" label={t('pageNames.movementNominations')}>
+            <Form.Item name="M_SITEACCESSDEVICES" label={t('pageNames.siteAccessDevices')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_KEYREADERDEVICES" label={t('pageNames.keyReaderDevices')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_TANKCONFIGURATION" label={t('pageNames.tankConfiguration')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+            
+            <Form.Item name="M_LOGICALPRINTERS" label={t('pageNames.logicalPrinters')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_REPOCONFIGURATION" label={t('pageNames.reportConfiguration')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_REPOPROFILE" label={t('pageNames.reportProfile')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            <Form.Item name="M_FOLIOSCHEDULING" label={t('pageNames.folioScheduling')}>
+              <Checkbox.Group
+                options={folioOptions}
+                style={{ flexDirection: 'row', marginBottom: '.7rem' }}
+              />
             </Form.Item>
 
             <Form.Item name="M_MOVEMENTREASON" label={t('pageNames.movementReasons')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
-
-            <Form.Item name="M_MANUALTRANSACTIONS" label={t('pageNames.manualTransactions')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
-
-            <Form.Item name="M_SPECIALMOVEMENTS" label={t('pageNames.specialMovements')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>
           </TabPane>
 
           <TabPane
             // className="ant-tab-window-no-margin"
-            tab={t('pageMenu.operations')}
+            tab={t('pageMenu.modules')}
             key="10"
             disabled={IS_CREATING}
           >
@@ -639,9 +633,13 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_PRODUCTASSETS" label={t('pageNames.drawerProductAssets')}>
+            <Form.Item name="M_FSCSTATUS" label={t('pageNames.fscStatus')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
+
+            {/* <Form.Item name="M_PRODUCTASSETS" label={t('pageNames.drawerProductAssets')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item> */}
           </TabPane>
         </Tabs>
       </Form>
