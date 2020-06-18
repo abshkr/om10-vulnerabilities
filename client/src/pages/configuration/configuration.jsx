@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { EditOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { EditOutlined, PlusOutlined, MinusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 
 import { Tabs, List, Switch, InputNumber, Button, Modal, notification, Select, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -180,6 +180,16 @@ const Configuration = () => {
     setFeatures(payload);
   };
 
+  const onFeatureDeselectAll = () => {
+    let payload = [...features];
+
+    _.map(payload, (object) => {
+      return (object.feature_gui = false);
+    });
+
+    setFeatures(payload);
+  };
+
   useEffect(() => {
     if (configPayload?.records) {
       setConfiguration(configPayload.records);
@@ -232,6 +242,12 @@ const Configuration = () => {
       {UPDATING_FEATURES && (
         <Button icon={<PlusOutlined />} onClick={onFeatureSelectAll} type="primary">
           {t('operations.selectAll')}
+        </Button>
+      )}
+
+      {UPDATING_FEATURES && (
+        <Button icon={<MinusOutlined />} onClick={onFeatureDeselectAll} type="primary">
+          {t('operations.deselectAll')}
         </Button>
       )}
     </>

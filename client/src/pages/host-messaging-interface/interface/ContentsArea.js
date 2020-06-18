@@ -1,108 +1,71 @@
 import React from 'react';
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
 
 
-class ContentsArea extends Component
-{
-	constructor(props)
+const ContentsArea = ({from, action, message, contentFormat, handleFormState}) => {
+
+  const [ifrom, setFrom] = useState(from);
+  const [iaction, setAction] = useState(action);
+  const [imessage, setMessage] = useState(message);
+  const [icontentFormat, setContentFormat] = useState(contentFormat);
+  const [icontent, setContent] = useState('');
+
+  const { t } = useTranslation();
+
+	const url = process.env.REACT_APP_API_URL + '/hmi/read_file';
+
+	var getData = async () => {
+		fetch(url, {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/text',
+				'Content-Type': 'application/json'
+			},
+			credentials: 'include',
+			body: JSON.stringify({rec_id: message.REC_ID, from: from})
+		}).then(response => {
+			response.json().then(body => {
+				console.log('Content:'+JSON.stringify(body,null,'\t')); 
+				setContent(body.message);
+				return body;
+			});
+		});
+	};
+
+  const { data: payload, isValidating, revalidate } = useSWR(url, getData);
+
+
+  useEffect(() => {
+		if (	 (message && imessage && message.REC_ID != imessage.REC_ID)
+				|| (from && ifrom && from != ifrom)
+			 )
+		{
+			console.log('message:'+message.REC_ID+', imessage:'+imessage.REC_ID);
+			setFrom(from);
+			setMessage(message);
+			setContent('');
+			getData();
+		}
+  }, [from, message]);
+
+	if (from === 'host')
 	{
-		super(props);
-
-		this.state = {
-			from: this.props.from,
-			action: this.props.action,
-			message: this.props.message,
-			content_fomat: this.props.content_format 
-		};
-
-
-		this.viewContents = this.viewContents.bind(this);
-	}
-
-	// This allows state change in parent component to initiate state change in child component
-/*
-	componentWillReceiveProps(nextProps)
-	{
-		if (this.props.from !== nextProps.from)
-		{
-			this.setState({ from: nextProps.from });  
-		}
-
-		if (this.props.action !== nextProps.action)
-		{
-			this.setState({ action: nextProps.action });  
-		}
-
-		// TODO: need to check individual field?
-		if (this.props.message !== nextProps.message)
-		{
-			this.setState({ message: nextProps.message });  
-		}
-
-		if (this.props.content_format !== nextProps.content_format)
-		{
-			this.setState({ content_format: nextProps.content_format });  
-		}
-	}
-*/
-
-	static getDerivedStateFromProps(nextProps, prevState)
-	{
-		var res = {};
-		if (nextProps.from !== prevState.from)
-		{
-			res['from'] = nextProps.from;  
-		}
-
-		if (nextProps.action !== prevState.action)
-		{
-			res['action'] = nextProps.action;  
-		}
-
-		if (nextProps.message !== prevState.message)
-		{
-			res['message'] = nextProps.message;  
-		}
-
-		if (nextProps.content_format !== prevState.content_format)
-		{
-			res['content_format'] = nextProps.content_format;  
-		}
-
-		return res;
-	}
-
-	viewContents()
-	{
-	}
-
-	render()
-	{
-		if (this.state.from && this.state.action && this.state.message)
-		{
-			if (this.state.action === 'view')
-			{
-				this.viewContents();
-			}
-			else if (this.state.action === 'edit')
-			{
-				// TODO: for now, just display
-				this.viewContents();
-			}
-		}
-
-		return (
-			<div>
-{/*
-				<b id="contentsAreaHeading">Contents</b>
-*/}
-				<div id="contentsArea" className="contentsArea">
-					Work In Progress
-				</div>
+		return(
+			<div id="contentsArea" className="contentsAreaFilledByHostMsg">
+					<pre className="contentsAreaPre" >{icontent}</pre>
 			</div>
 		);
 	}
-
+	else if (from === 'omega')
+	{
+		return(
+			<div id="contentsArea" className="contentsAreaFilledByOmMsg">
+					<pre className="contentsAreaPre" >{icontent}</pre>
+			</div>
+		);
+	}
 }
 
 

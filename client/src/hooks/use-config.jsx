@@ -167,6 +167,18 @@ const useConfig = () => {
         showSeals: configurationObject?.SITE_USE_SEAL,
         safefillCheckByHighTemp: configurationObject?.SITE_LOAD_SAFEFILL_CHECK_BY_HIGHTEMP,
 
+        userAutoLogoff: configurationObject?.URBAC_AUTO_LOGOFF,
+        passwordAutoExpire: configurationObject?.URBAC_PWD_AUTO_EXPIRE,
+        passwordAutoLock: configurationObject?.URBAC_PWD_AUTO_LOCK,
+        passwordComplexity: configurationObject?.URBAC_PWD_COMPLEXITY,
+        passwordLenMax: configurationObject?.URBAC_PWD_LEN_MAX,
+        passwordLenMin: configurationObject?.URBAC_PWD_LEN_MIN,
+        passwordReuse: configurationObject?.URBAC_PWD_REUSE,
+        passwordUpdInterval: configurationObject?.URBAC_PWD_UPD_INTERVAL,
+        sessionPerUser: configurationObject?.URBAC_SESSION_PER_USER,
+        userAutoDelete: configurationObject?.URBAC_USER_AUTO_DELETE,
+        userAutoLock: configurationObject?.URBAC_USER_AUTO_LOCK,
+        
         loading: false,
       });
     }

@@ -221,7 +221,7 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
                 >
                   {tanks?.records.map((item, index) => (
                     <Select.Option key={index} value={item.tank_code}>
-                      {item.tank_name}
+                      {item.tank_code + ': ' + item.tank_name + ' [' + item.tank_base + ' - ' + item.tank_base_name + ' - ' + item.tank_bclass_name + ']'}
                     </Select.Option>
                   ))}
                 </Select>

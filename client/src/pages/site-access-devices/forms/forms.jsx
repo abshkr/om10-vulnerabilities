@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import {
   EditOutlined,
@@ -21,6 +21,7 @@ const TabPane = Tabs.TabPane;
 const FormModal = ({ value, visible, handleFormState, access }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const { resetFields } = form;
 
   const IS_CREATING = !value;
 
@@ -93,6 +94,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       },
     });
   };
+
+  useEffect(() => {
+    if (!value && !visible) {
+      resetFields();
+    }
+  }, [value, visible]);
 
   return (
     <Drawer

@@ -27,6 +27,12 @@ const General = ({ form, value }) => {
         tank_sulphur: value.tank_sulphur,
         tank_flashpoint: value.tank_flashpoint,
         tank_code: value.tank_code,
+        tank_base: value.tank_base,
+        tank_name: value.tank_name,
+        tank_dtol_volume: value.tank_dtol_volume,
+        tank_mtol_percent: value.tank_mtol_percent,
+        tank_mtol_volume: value.tank_mtol_volume,
+        tank_dtol_percent: value.tank_dtol_percent,
       });
     }
   }, [value, setFieldsValue]);
@@ -152,7 +158,7 @@ const General = ({ form, value }) => {
 
       <Row gutter={[8, 8]}>
         <Col span={12}>
-          <Form.Item name="tank_flashpoint" label={`${t('fields.flashPoint')} (${t('units.celsius')})`}>
+          <Form.Item name="tank_flashpoint" label={`${t('fields.flashPoint')} (${t('units.degC')})`}>
             <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
           </Form.Item>
         </Col>

@@ -22,7 +22,7 @@ import { VCFManager } from '../../../utils';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, config }) => {
+const FormModal = ({ value, visible, handleFormState, access, config, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -35,13 +35,20 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
   const IS_CREATING = !value;
   const CAN_CALCULATE = tab === '2';
 
-  const onComplete = () => {
+  const onComplete = (tank_code) => {
     handleFormState(false, null);
     mutate(TANKS.READ);
+    if (tank_code) {
+      setFilterValue("" + tank_code);
+    }
   };
 
   const onFinish = async () => {
     const values = await form.validateFields();
+
+    if (!IS_CREATING) {
+      values.tank_code = value.tank_code;
+    }
 
     const payload = _.omit(
       {
@@ -66,7 +73,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
           .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, payload)
           .then(
             axios.spread((response) => {
-              onComplete();
+              onComplete(values.tank_code);
               
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),

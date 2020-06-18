@@ -88,9 +88,7 @@ app.use (function (req, res, next) {
 		else
 		{	
 			// request was via http and is from unexpected origin
-			// therefore, redirect it to https
-			//console.log('req.headers: '+JSON.stringify(req.headers,null,'\t'));
-			//console.log('req.url: '+req.url);
+			// therefore, redirect it to origin url 
 			console.log('redirecting to ' + originURL);
 			res.redirect(originURL);
 		}
@@ -335,6 +333,7 @@ app.on('connection', (client) => {
 app.get('/',
 	function (request, res)
 	{
+/*
  		let result = {};
 		let endpoints = [];
 		endpoints.push('ping');
@@ -349,13 +348,14 @@ app.get('/',
 		endpoints.push('submit/host_message');
 		endpoints.push('submit/omega_message');
 
-		// TODO: Add http response code 200
-
 		var resp = {};
 		resp["message"] = endpoints;
 		res.setHeader('Content-Type', 'application/json');
 		res.status(200);
 		res.send(resp);
+*/
+		console.log('redirecting to ' + originURL);
+		res.redirect(originURL);
 	}
 );
 
@@ -1056,6 +1056,66 @@ app.post('/hmi/parse/host_message', withAuth, express.json(),
 	}
 );
 
+app.post('/hmi/read/host_file', withAuth, express.json(),
+	function (req, res)
+	{
+		var sql = "SELECT origin, archived_file FROM in_msgs WHERE rec_id=" + "'" + req.body.rec_id + "'";
+		oradb.run_sql(sql, 
+			function(sqlres) {
+				//console.log('sqlres:'+JSON.stringify(sqlres, null, '\t'));
+
+				if (sqlres.ok)
+				{
+					// TODO: May have to check if result contain multiple entries
+					if (typeof sqlres.result[0] !== 'undefined' && sqlres.result[0] !== [])
+					{
+						var conn = cfg.find_conn_data_for_host_msg(sqlres.result[0].ORIGIN, hosts_cfg.hosts);
+						if (typeof conn !== 'undefined' && conn != [])
+						{
+							var src_filenm = sqlres.result[0].ARCHIVED_FILE;
+							var src_file = conn.archive_dir + '/' + src_filenm;
+
+							msg = fs.readFileSync(src_file, 'utf8');
+							res.setHeader('Content-Type', 'application/text');
+							res.status(200);
+							var resp = {};
+							resp["message"] = msg;
+							res.send(resp);
+						}
+						else
+						{
+							var resp = {};
+							resp["message"] = "can't find connection data of origin of requested message";
+							res.setHeader('Content-Type', 'application/json');
+							res.status(500);
+							res.send(resp);
+						}
+					}
+					else
+					{
+						var resp = {};
+						resp["message"] = 'no data found';
+						res.setHeader('Content-Type', 'application/json');
+						res.status(400);
+						res.send(resp);
+					}
+				}
+				else
+				{
+					// TODO: sqlerr could be caused by user input => 4xx code
+					// but how to distinguish it from 5xx code?
+
+					var resp = {};
+					resp["message"] = sqlres.result;
+					res.setHeader('Content-Type', 'application/json');
+					res.status(400);
+					res.send(resp);
+				}
+			}
+		);
+	}
+);
+
 
 // BEWARE: when using post method with body data, must:
 // 1. on client side, set content type in header, AND
@@ -1150,6 +1210,154 @@ app.post('/hmi/parse/omega_message', withAuth, express.json(),
 		);
 	}
 );
+
+
+app.post('/hmi/read/omega_file', withAuth, express.json(),
+	function (req, res)
+	{
+		var sql = "SELECT origin, destination, archived_file FROM out_msgs WHERE rec_id=" + "'" + req.body.rec_id + "'";
+		oradb.run_sql(sql, 
+			function(sqlres) {
+				//console.log('sqlres:'+JSON.stringify(sqlres, null, '\t'));
+
+				if (sqlres.ok)
+				{
+					// TODO: May have to check if result contain multiple entries
+					if (typeof sqlres.result[0] !== 'undefined' && sqlres.result[0] !== [])
+					{
+						var conn = cfg.find_conn_data_for_om_msg(
+									sqlres.result[0].ORIGIN,
+									sqlres.result[0].DESTINATION,
+									hosts_cfg.hosts);
+						if (typeof conn !== 'undefined' && conn != [])
+						{
+							var src_filenm = sqlres.result[0].ARCHIVED_FILE;
+							var src_file = conn.archive_dir + '/' + src_filenm;
+
+							msg = fs.readFileSync(src_file, 'utf8');
+							res.setHeader('Content-Type', 'application/text');
+							res.status(200);
+							var resp = {};
+							resp["message"] = msg;
+							res.send(resp);
+						}
+						else
+						{
+							var resp = {};
+							resp["message"] = "can't find connection data of origin of requested message";
+							res.setHeader('Content-Type', 'application/json');
+							res.status(500);
+							res.send(resp);
+						}
+					}
+					else
+					{
+						var resp = {};
+						resp["message"] = 'no data found';
+						res.setHeader('Content-Type', 'application/json');
+						res.status(400);
+						res.send(resp);
+					}
+				}
+				else
+				{
+					// TODO: sqlerr could be caused by user input => 4xx code
+					// but how to distinguish it from 5xx code?
+
+					var resp = {};
+					resp["message"] = sqlres.result;
+					res.setHeader('Content-Type', 'application/json');
+					res.status(400);
+					res.send(resp);
+				}
+			}
+		);
+	}
+);
+
+
+app.post('/hmi/read_file', withAuth, express.json(),
+	function (req, res)
+	{
+		var sql = '';
+		if (req.body.from === 'host')
+		{
+			sql = "SELECT origin, archived_file FROM in_msgs WHERE rec_id=" + "'" + req.body.rec_id + "'";
+		}
+		else if (req.body.from === 'omega')
+		{
+			sql = "SELECT origin, destination, archived_file FROM out_msgs WHERE rec_id=" + "'" + req.body.rec_id + "'";
+		}
+
+		oradb.run_sql(sql, 
+			function(sqlres) {
+				//console.log('sqlres:'+JSON.stringify(sqlres, null, '\t'));
+
+				if (sqlres.ok)
+				{
+					// TODO: May have to check if result contain multiple entries
+					if (typeof sqlres.result[0] !== 'undefined' && sqlres.result[0] !== [])
+					{
+						var conn = undefined;
+						if (req.body.from === 'host')
+						{
+							conn = cfg.find_conn_data_for_host_msg(sqlres.result[0].ORIGIN, hosts_cfg.hosts);
+						}
+						else if (req.body.from === 'omega')
+						{
+							conn = cfg.find_conn_data_for_om_msg(
+												sqlres.result[0].ORIGIN,
+												sqlres.result[0].DESTINATION,
+												hosts_cfg.hosts);
+						}
+
+						if (typeof conn !== 'undefined' && conn != [])
+						{
+							var src_filenm = sqlres.result[0].ARCHIVED_FILE;
+							var src_file = conn.archive_dir + '/' + src_filenm;
+
+							msg = fs.readFileSync(src_file, 'utf8');
+							res.setHeader('Content-Type', 'application/text');
+							res.status(200);
+							var resp = {};
+							resp["message"] = msg;
+							res.send(resp);
+						}
+						else
+						{
+							var resp = {};
+							resp["message"] = "can't find connection data of origin of requested message";
+							res.setHeader('Content-Type', 'application/json');
+							res.status(500);
+							res.send(resp);
+						}
+					}
+					else
+					{
+						var resp = {};
+						resp["message"] = 'no data found';
+						res.setHeader('Content-Type', 'application/json');
+						res.status(400);
+						res.send(resp);
+					}
+				}
+				else
+				{
+					// TODO: sqlerr could be caused by user input => 4xx code
+					// but how to distinguish it from 5xx code?
+
+					var resp = {};
+					resp["message"] = sqlres.result;
+					res.setHeader('Content-Type', 'application/json');
+					res.status(400);
+					res.send(resp);
+				}
+			}
+		);
+	}
+);
+
+
 
 
 // BEWARE: when using post method with body data, must:
