@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Badge, Modal, Input, Tooltip, Form } from 'antd';
+import { Badge, Divider, Modal, Input, Tag, Tooltip, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -153,6 +153,8 @@ const Combination = ({ form }) => {
 
     const equipments = equipment?.data?.records[index];
 
+    console.log("onShowCompartments", index, item, equipment?.data?.records, equipments);
+
     const columns = [
       {
         headerName: t('fields.compartment'),
@@ -179,10 +181,35 @@ const Combination = ({ form }) => {
       width: '30vw',
       content: (
         <div style={{ marginBottom: 10 }}>
-          <DataTable data={equipments?.compartments || []} columns={columns} minimal height="800px" />
+          <DataTable data={equipments?.compartments || []} columns={columns} minimal height='70vh' />
         </div>
       ),
     });
+  };
+
+  const getCompartmentNumber = (item, index) => {
+    const cmptList = item?.cmpts?.split(',');
+
+    if (index < cmptList.length) {
+      return cmptList[index];
+    } else {
+      return 0;
+    }
+  };
+
+  // adhoc retriving
+  const getCompartmentNumber2 = async (item, index) => {
+    const equipment = await axios.get(EQUIPMENT_TYPES.COMPOSITION, {
+      params: {
+        etyp_id: item.etyp_id,
+      },
+    });
+
+    const equipments = equipment?.data?.records[index];
+
+    console.log("getCompartmentNumber2", index, item, equipments);
+
+    return equipments?.cmptnu;
   };
 
   useEffect(() => {
@@ -231,7 +258,7 @@ const Combination = ({ form }) => {
                               <div
                                 style={{
                                   display: 'flex',
-                                  height: 75,
+                                  height: 73,
                                 }}
                               >
                                 {item?.image?.split(',')?.map((image, index) => (
@@ -239,7 +266,8 @@ const Combination = ({ form }) => {
                                     <Equipment
                                       image={image}
                                       key={index}
-                                      showName={item.etyp_title}
+                                      //this showed same title under every trailer
+                                      //showName={item.etyp_title}
                                       style={{
                                         height: '100%',
                                         objectFit: 'contain',
@@ -252,7 +280,7 @@ const Combination = ({ form }) => {
                                     {image !== 'P' && image !== 'F' && (
                                       <>
                                         <a onClick={() => onShowCompartments(item, index)}>
-                                          <Badge count={item.etyp_n_items} offset={[-50, 15]} />
+                                          <Badge count={getCompartmentNumber(item, index)} offset={[-50, 15]} />
                                         </a>
                                       </>
                                     )}
@@ -270,6 +298,8 @@ const Combination = ({ form }) => {
                                 )}
                               </div>
                             </div>
+                            {/* <Divider orientation="center"><b>{item.etyp_title}</b></Divider> */}
+                            <div style={{textAlign: 'center'}}><b>{item.etyp_title}</b></div>
                           </Tooltip>
                         </div>
                       )}

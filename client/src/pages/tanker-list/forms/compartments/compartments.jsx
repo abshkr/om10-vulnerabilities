@@ -99,7 +99,12 @@ const Compartments = ({ form, value, equipment }) => {
   const changeType = (tanker, code) => {
     api.get(`${TANKER_LIST.COMPARTMENT}?eqpt_id=${code}`).then((response) => {
       const payload = [...data];
-      const index = _.findIndex(payload, ['tc_eqpt', tanker.tc_eqpt]);
+      let index = 0;
+      if (!!value) {
+        index = _.findIndex(payload, ['tc_eqpt', tanker.tc_eqpt]);
+      } else {
+        index = _.findIndex(payload, ['etyp_id', tanker.etyp_id]);
+      }
       let compartment = _.find(tanker.eqpt_list, ['eqpt_id', code]);
 
       compartment['compartments'] = response.data.records;
@@ -109,6 +114,7 @@ const Compartments = ({ form, value, equipment }) => {
 
       payload.splice(index, 1, compartment);
       setdata(payload);
+      console.log(payload)
       setFieldsValue({
         tnkr_equips: _.map(payload, (value) => {
           return _.omit(value, ['eqpt_list']);
@@ -145,7 +151,7 @@ const Compartments = ({ form, value, equipment }) => {
         }}
       >
         <div style={{ display: 'flex' }}>
-          {[...data, ...data].map((item, index) => (
+          {[...data].map((item, index) => (
             <div key={index} style={{ marginRight: 10 }}>
               <Equipment image={_.toLower(item.image)} isLoading={isLoading} />
               <Select

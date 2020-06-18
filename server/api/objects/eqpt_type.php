@@ -311,11 +311,12 @@ class EquipmentType extends CommonClass
                         DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
                     ) ETYP_CATEGORY,
                 NVL(IMAGES, NVL(ETYP_CATEGORY,
-                    DECODE(ECNCT_ETYP,
+                    DECODE(ECNCT_ETYP, 
                         NULL,
                         DECODE(UPPER(EQUIP_TYPES_VW.ETYP_ISRIGID), 'Y', 'R', DECODE(UPPER(EQUIP_TYPES_VW.ETYP_SCHEDUL), 'Y', 'T', 'P')),
                         DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
                     )) IMAGE,
+                NVL(EQUIP_CMPTS.CMPTS, EQUIP_TYPES_VW.ETYP_N_ITEMS) CMPTS,
                 EQUIP_TYPES_VW.CMPTNU
             FROM EQUIP_TYPES_VW,
                 (SELECT NVL(ETYP_SCHEDUL, 'N') ETYP_SCHEDUL, NVL(ETYP_ISRIGID, 'N') ETYP_ISRIGID, CMPTNU, ECNCT_ETYP
@@ -337,9 +338,24 @@ class EquipmentType extends CommonClass
                         WHERE EQC_SUB_ITEM = EQUIP_TYPES.ETYP_ID AND EQUIP_ISLEAF = 1
                     )
                     GROUP BY ETYP_ID_RT
-                ) EQUIP_IMAGES
+                ) EQUIP_IMAGES,
+                (
+                    SELECT ETYP_ID_RT COMBO_ETYP, LISTAGG(CMPTNUM, ',') WITHIN GROUP(ORDER BY EQC_COUNT_RT, EQC_COUNT) CMPTS
+                    FROM
+                    (
+                        SELECT ETYP_ID_RT, 
+                            EQUIP_TYPES.ETYP_ID, 
+                            EQUIP_TYPES.ETYP_N_ITEMS CMPTNUM,
+                            EQC_COUNT_RT, 
+                            EQC_COUNT
+                        FROM EQUIP_VW, EQUIP_TYPES
+                        WHERE EQC_SUB_ITEM = EQUIP_TYPES.ETYP_ID AND EQUIP_ISLEAF = 1
+                    )
+                    GROUP BY ETYP_ID_RT
+                ) EQUIP_CMPTS
             WHERE FIRST_SUB_ITEM.ECNCT_ETYP(+) = EQUIP_TYPES_VW.ETYP_ID
                 AND EQUIP_TYPES_VW.ETYP_ID = EQUIP_IMAGES.COMBO_ETYP(+)
+                AND EQUIP_TYPES_VW.ETYP_ID = EQUIP_CMPTS.COMBO_ETYP(+)
                 AND ETYP_TITLE like :etyp_title";
 
         if (isset($this->cmptnu)) {
