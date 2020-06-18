@@ -229,7 +229,7 @@ process.on('message', (msg) => {
 });
 
 
-
+/* Create a copy of file with a current timestamp */
 function copy_file(file, from_dir, to_dir, file_name_format)
 {
 
@@ -239,15 +239,16 @@ function copy_file(file, from_dir, to_dir, file_name_format)
 
 	var file_nm = path.basename(file);
 	var idx = file_nm.lastIndexOf(file_name_format.extension_prefix);
-	file_nm = file_nm.substring(0, idx);
-	idx = file_nm.lastIndexOf(file_name_format.field_separator);
-	file_nm = file_nm.substring(0, idx);
+	var file_nm_base = file_nm.substring(0, idx);
+	var file_extn = file_nm.substring(idx+1);
+	idx = file_nm_base.lastIndexOf(file_name_format.field_separator);
+	var file_nm_stem = file_nm_base.substring(0, idx);
 	var src_file = from_dir + '/' + file;
 	var now = new Date().toISOString();
 	now = now.replace(/[T\-:.Z]/g, '');
-	var dest_filenm =  file_nm + file_name_format.field_separator + now
+	var dest_filenm =  file_nm_stem + file_name_format.field_separator + now
 				+ file_name_format.extension_prefix
-				+ file_name_format.extension;
+				+ file_extn;
 	var dest_file = to_dir + '/' + dest_filenm;
 
 	fs.copyFile(src_file, dest_file, (err) => {
