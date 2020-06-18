@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { TANK_STATUS, TANKS } from '../../../../api';
 
-const General = ({ form, value }) => {
+const General = ({ form, value, config }) => {
   const { t } = useTranslation();
 
   const { data: areas, isValidating: areasLoading } = useSWR(TANK_STATUS.AREAS);
@@ -146,7 +146,10 @@ const General = ({ form, value }) => {
 
       <Row gutter={[8, 8]}>
         <Col span={12}>
-          <Form.Item name="tank_flashpoint" label={`${t('fields.flashPoint')} (${t('units.celsius')})`}>
+          <Form.Item
+            name="tank_flashpoint"
+            label={`${t('fields.flashPoint')} (${t(`units.${config?.temperatureUnit}`)})`}
+          >
             <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
           </Form.Item>
         </Col>

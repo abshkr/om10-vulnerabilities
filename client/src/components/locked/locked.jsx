@@ -1,14 +1,17 @@
 import React from 'react';
-import { FileProtectOutlined } from '@ant-design/icons';
-import './locked.css';
+import { Result } from 'antd';
+
+import LockedContainer from './style';
+import { Icons } from '..';
 
 const Locked = () => (
-  <div>
-    <div className="text">Unauthorized</div>
-    <div className="lock">
-      <FileProtectOutlined style={{ color: '#538aef', fontSize: 70 }} />{' '}
-    </div>
-  </div>
+  <LockedContainer>
+    <Result
+      title="Unauthorized"
+      icon={<Icons type="unauthorized" size={256} />}
+      subTitle="Sorry, you are not authorized to access this page."
+    />
+  </LockedContainer>
 );
 
 export default Locked;

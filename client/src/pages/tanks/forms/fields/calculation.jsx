@@ -9,6 +9,7 @@ const { Option } = Select;
 const Calculation = ({ form, value, range, config }) => {
   const { t } = useTranslation();
 
+  console.log(config);
   const { setFieldsValue } = form;
 
   const [tempBounds, setTempBounds] = useState({

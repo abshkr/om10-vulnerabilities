@@ -456,7 +456,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey={tab} animated={false} onChange={setTab}>
           <TabPane tab={t('tabColumns.general')} key="1">
-            <General form={form} value={value} refTempC={refTempC} refTempF={refTempF} />
+            <General form={form} value={value} refTempC={refTempC} refTempF={refTempF} config={config} />
           </TabPane>
 
           <TabPane tab={t('tabColumns.calculations')} key="2">

@@ -28,6 +28,7 @@ import { ReactComponent as Office } from './office.svg';
 import { ReactComponent as Modules } from './modules.svg';
 import { ReactComponent as Config } from './settings.svg';
 
+import { ReactComponent as Unauthorized } from './unauthorized.svg';
 import { ReactComponent as Lock } from './lock.svg';
 import { ReactComponent as Unlock } from './unlock.svg';
 
@@ -357,6 +358,9 @@ const loader = (key) => {
 
     case 'transactionList':
       return TransactionList;
+
+    case 'unauthorized':
+      return Unauthorized;
 
     default:
       return null;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SyncOutlined, PlusOutlined, SwapOutlined } from '@ant-design/icons';
+import { SyncOutlined, SwapOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Button, Tabs } from 'antd';
 import useSWR from 'swr';
@@ -10,8 +10,6 @@ import { useLocation } from 'react-router-dom';
 import { TANKS } from '../../api';
 import { useAuth, useConfig } from '../../hooks';
 import { Page, Download, ListView } from '../../components';
-
-import TankConfigurationForm from '../tank-configuration/forms';
 
 import ConnectedArms from './connected-arms';
 import Calculations from './calculations';
@@ -181,6 +179,7 @@ const Tanks = () => {
           setVisible={setVisible}
           selected={listSelected}
           setSelected={setlistSelected}
+          config={config}
         />
       )}
     </Page>

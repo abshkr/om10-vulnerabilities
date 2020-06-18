@@ -7,7 +7,7 @@ import columns from './columns';
 import Forms from './forms';
 import TemperatureRender from './temperature-render';
 
-const Table = ({ data, access, visible, setVisible, selected, setSelected }) => {
+const Table = ({ data, access, visible, setVisible, selected, setSelected, config }) => {
   const { t } = useTranslation();
 
   const fields = columns(t);
@@ -32,12 +32,13 @@ const Table = ({ data, access, visible, setVisible, selected, setSelected }) => 
         filterValue={filterValue}
       />
 
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
-        access={access} 
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        access={access}
         setFilterValue={setFilterValue}
+        config={config}
       />
     </>
   );

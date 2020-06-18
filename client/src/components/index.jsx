@@ -22,6 +22,7 @@ import Events from './events';
 import TableTransfer from './table-transfer';
 import ListView from './list-view';
 import Favourites from './favourites';
+import Locked from './locked';
 
 export {
   Expiry,
@@ -48,4 +49,5 @@ export {
   ListView,
   Favourites,
   WindowSearch,
+  Locked,
 };
