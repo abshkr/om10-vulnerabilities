@@ -1529,7 +1529,9 @@
     "mustBeAlphaNumeric": "Must be Alphanumeric.",
     "timecodeAL": "Cannot delete time code AL",
     "maxExpTarget": "Maximum expiry date type under this target is 10",
-    "searchTrip": "Please type in trip number to search"
+    "searchTrip": "Please type in trip number to search",
+	"cannotDeleteLocked": "Locked equipment cannot be deleted",
+	"cannotDeleteTareIn": "Must-tare-in equipment cannot be deleted"
   },
 
   "placeholder": {

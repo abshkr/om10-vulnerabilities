@@ -133,6 +133,22 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   }, [value, visible]);
 
   const onDelete = () => {
+    if (value.eqpt_lock) {
+      notification.error({
+        message: t('descriptions.deleteFailed'),
+        description: t('descriptions.cannotDeleteLocked'),
+      });
+      return;
+    }
+
+    if (value.eqp_must_tare_in) {
+      notification.error({
+        message: t('descriptions.deleteFailed'),
+        description: t('descriptions.cannotDeleteTareIn'),
+      });
+      return;
+    }
+
     Modal.confirm({
       title: t('prompts.delete'),
       okText: t('operations.yes'),
@@ -150,11 +166,12 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               description: `${t('descriptions.deleteSuccess')}`,
             });
           })
-
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.deleteFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
