@@ -236,26 +236,65 @@ const Calculations = ({ selected, access, isLoading, config }) => {
   const onCalculateByQuantity = () => {
     const { getFieldsValue, setFieldsValue } = form;
 
-    const payload = getFieldsValue(['tank_temp', 'tank_density', 'tank_amb_vol', 'tank_prod_lvl']);
-
-    const values = {
-      tank_base: selected?.tank_base,
-      tank_qty_type: 'LT',
-      tank_qty_amount: payload?.tank_amb_vol,
-      tank_temp: payload?.tank_temp,
-      tank_density: payload?.tank_density,
-      tank_prod_lvl: payload?.tank_prod_lvl,
-      tank_code: selected?.tank_code,
-    };
+    const payload = getFieldsValue([
+      'tank_temp',
+      'tank_density',
+      'tank_amb_vol',
+      'tank_prod_lvl',
+      'tank_cor_vol',
+      'tank_liquid_kg',
+    ]);
 
     Modal.confirm({
       title: t('prompts.calculate'),
       okText: t('operations.calculate'),
       okType: 'primary',
+      width: '30vw',
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
+
+      content: (
+        <Form form={form} initialValues={{ volume_type: 'LT' }}>
+          <Form.Item name="volume_type">
+            <Radio.Group style={{ width: '30vw', marginBottom: 10, marginTop: 10 }}>
+              <Radio value="LT">Use Ambient Volume</Radio>
+              <Radio value="L15">Use Standard Volume</Radio>
+              <Radio value="KG">Use Liquid Mass</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Form>
+      ),
+
       onOk: async () => {
+        const type = form.getFieldValue('volume_type');
+
+        const getLevel = (calculateBy) => {
+          switch (calculateBy) {
+            case 'LT':
+              return payload?.tank_amb_vol;
+
+            case 'L15':
+              return payload?.tank_cor_vol;
+
+            case 'KG':
+              return payload?.tank_liquid_kg;
+
+            default:
+              return 0;
+          }
+        };
+
+        const values = {
+          tank_base: selected?.tank_base,
+          tank_qty_type: type,
+          tank_qty_amount: getLevel(type),
+          tank_temp: payload?.tank_temp,
+          tank_density: payload?.tank_density,
+          tank_prod_lvl: payload?.tank_prod_lvl,
+          tank_code: selected?.tank_code,
+        };
+
         await axios
           .post(TANK_STATUS.CALCULATE_QUANTITY, values)
           .then((response) => {

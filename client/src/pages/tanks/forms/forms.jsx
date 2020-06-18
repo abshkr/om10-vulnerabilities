@@ -39,7 +39,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     handleFormState(false, null);
     mutate(TANKS.READ);
     if (tank_code) {
-      setFilterValue("" + tank_code);
+      setFilterValue('' + tank_code);
     }
   };
 
@@ -74,7 +74,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
           .then(
             axios.spread((response) => {
               onComplete(values.tank_code);
-              
+
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
@@ -264,14 +264,6 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
     const payload = getFieldsValue(['tank_temp', 'tank_density', 'tank_amb_vol', 'tank_liquid_kg']);
 
-    const values = {
-      tank_base: value?.tank_base,
-      tank_qty_type: 'KG',
-      tank_qty_amount: payload?.tank_liquid_kg,
-      tank_temp: payload?.tank_temp,
-      tank_density: payload?.tank_density,
-    };
-
     Modal.confirm({
       title: t('prompts.calculate'),
       okText: t('operations.calculate'),
@@ -279,14 +271,35 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
+      content: (
+        <Form form={form} initialValues={{ level_type: 'LT' }}>
+          <Form.Item name="level_type">
+            <Radio.Group style={{ width: '25vw', marginBottom: 15, marginTop: 5 }}>
+              <Radio value="LT">Use Ambient Volume</Radio>
+              <Radio value="L15">Use Standard Volume</Radio>
+              <Radio value="KG">Use Liquid Mass</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Form>
+      ),
       onOk: async () => {
+        const type = form.getFieldValue('level_type');
+
+        const values = {
+          tank_base: value?.tank_base,
+          tank_qty_type: type,
+          tank_qty_amount: payload?.tank_liquid_kg,
+          tank_temp: payload?.tank_temp,
+          tank_density: payload?.tank_density,
+        };
+
         await axios
           .post(TANK_STATUS.CALCULATE_QUANTITY, values)
           .then((response) => {
             setFieldsValue({
-              tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
-              tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
-              tank_liquid_kg: _.round(response?.data?.REAL_KG, 2),
+              tank_amb_vol: _.round(response?.data?.REAL_LITRE, 1),
+              tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 1),
+              tank_liquid_kg: _.round(response?.data?.REAL_KG, 1),
             });
             notification.success({
               message: t('messages.calculateSuccess'),
@@ -309,16 +322,6 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
     const payload = getFieldsValue(['tank_temp', 'tank_density', 'tank_amb_vol', 'tank_prod_lvl']);
 
-    const values = {
-      tank_base: value?.tank_base,
-      tank_qty_type: 'LT',
-      tank_qty_amount: payload?.tank_amb_vol,
-      tank_temp: payload?.tank_temp,
-      tank_density: payload?.tank_density,
-      tank_prod_lvl: payload?.tank_prod_lvl,
-      tank_code: value?.tank_code,
-    };
-
     Modal.confirm({
       title: t('prompts.calculate'),
       okText: t('operations.calculate'),
@@ -326,7 +329,32 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
+
+      content: (
+        <Form form={form} initialValues={{ volume_type: 'LT' }}>
+          <Form.Item name="volume_type">
+            <Radio.Group style={{ width: '25vw', marginBottom: 15, marginTop: 5 }}>
+              <Radio value="LT">Use Ambient Volume</Radio>
+              <Radio value="L15">Use Standard Volume</Radio>
+              <Radio value="KG">Use Liquid Mass</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Form>
+      ),
+
       onOk: async () => {
+        const type = form.getFieldValue('volume_type');
+
+        const values = {
+          tank_base: value?.tank_base,
+          tank_qty_type: type,
+          tank_qty_amount: payload?.tank_amb_vol,
+          tank_temp: payload?.tank_temp,
+          tank_density: payload?.tank_density,
+          tank_prod_lvl: payload?.tank_prod_lvl,
+          tank_code: value?.tank_code,
+        };
+
         await axios
           .post(TANK_STATUS.CALCULATE_QUANTITY, values)
           .then((response) => {

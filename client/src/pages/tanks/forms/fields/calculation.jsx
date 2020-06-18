@@ -94,6 +94,7 @@ const Calculation = ({ form, value, range, config }) => {
           min={value?.tank_base_dens_lo}
           max={value?.tank_base_dens_hi}
           style={{ width: '100%' }}
+          precision={1}
         />
       </Form.Item>
 
@@ -108,6 +109,7 @@ const Calculation = ({ form, value, range, config }) => {
           min={value?.tank_base_dens_lo}
           max={value?.tank_base_dens_hi}
           style={{ width: '100%' }}
+          precision={1}
         />
       </Form.Item>
 
@@ -115,7 +117,7 @@ const Calculation = ({ form, value, range, config }) => {
         name="tank_api"
         label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 90}) @60ºF`}
       >
-        <InputNumber min={range?.low || 0} max={range?.high || 90} style={{ width: '100%' }} />
+        <InputNumber min={range?.low || 0} max={range?.high || 90} style={{ width: '100%' }} precision={1} />
       </Form.Item>
 
       <Form.Item name="tank_prod_lvl" label={`${t('fields.productLevel')} (mm)`}>
