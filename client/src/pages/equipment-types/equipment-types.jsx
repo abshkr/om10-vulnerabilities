@@ -49,6 +49,7 @@ const EquipmentTypes = () => {
     } else {
       setVisible(visibility);
       setSelected(value);
+      setCombination(false);
     }
   };
 
