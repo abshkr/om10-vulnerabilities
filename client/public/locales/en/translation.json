@@ -1437,7 +1437,8 @@
     "unapprove": "Are you sure you want to unapprove this open order?",
     "confirmReverse": "Confirm Schedule Reversal?",
     "confirmArchive": "Confirm Schedule is to be Archived?",
-    "zeroEquipmentSelected": "You have not selected equipment for some Tankers. If you do not want to choose the existing one, system will create a new one for you automatically. Please confirm to process"
+    "zeroEquipmentSelected": "You have not selected equipment for some Tankers. If you do not want to choose the existing one, system will create a new one for you automatically. Please confirm to process",
+	"unlockAll": "Are you sure you want to unlock all compartments?"
   },
 
   "divider": {

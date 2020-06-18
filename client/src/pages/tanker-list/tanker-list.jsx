@@ -17,8 +17,9 @@ const TankerList = () => {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [filterValue, setFilterValue] = useState('');
 
-  const auth = useAuth('M_TANKERS');
+  const access = useAuth('M_TANKERS');
 
   const { data: payload, isValidating, revalidate } = useSWR(TANKER_LIST.READ);
   const { data: expiryTypes } = useSWR(TANKER_LIST.EXPIRY);
@@ -49,7 +50,7 @@ const TankerList = () => {
         icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
-        disabled={!auth.canCreate}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>
@@ -57,7 +58,7 @@ const TankerList = () => {
   );
 
   return (
-    <Page page={t('pageMenu.schedules')} name={t('pageNames.tankerList')} modifiers={modifiers} access={auth}>
+    <Page page={t('pageMenu.schedules')} name={t('pageNames.tankerList')} modifiers={modifiers} access={access}>
       <DataTable
         columns={fields}
         data={data}
@@ -66,8 +67,15 @@ const TankerList = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         selectionMode="single"
         autoColWidth
+        filterValue={filterValue}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} auth={auth} />
+      <Forms 
+        value={selected} 
+        visible={visible} 
+        handleFormState={handleFormState} 
+        access={access} 
+        setFilterValue={setFilterValue}
+      />
     </Page>
   );
 };

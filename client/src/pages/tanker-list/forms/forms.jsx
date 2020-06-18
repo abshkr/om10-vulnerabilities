@@ -41,7 +41,7 @@ import columns from './columns';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, auth }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -51,9 +51,12 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   const fields = columns(t);
   const IS_CREATING = !value;
 
-  const onComplete = () => {
+  const onComplete = (tnkr_code) => {
     handleFormState(false, null);
     mutate(TANKER_LIST.READ);
+    if (tnkr_code) {
+      setFilterValue("" + tnkr_code);
+    }
   };
 
   const onFinish = async () => {
@@ -99,7 +102,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
           .post(IS_CREATING ? TANKER_LIST.CREATE : TANKER_LIST.UPDATE, values)
           .then(
             axios.spread((response) => {
-              onComplete();
+              onComplete(values.tnkr_code);
 
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
@@ -120,24 +123,33 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   };
 
   const onUnlock = () => {
-    api
-      .post(`${TANKER_LIST.UNLOCK_ALL}?tnkr_code=${value.tnkr_code}`)
-      .then((response) => {
-        onComplete();
+    Modal.confirm({
+      title: t('prompts.unlockAll'),
+      okText: t('operations.yes'),
+      // okType: 'danger',
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        api
+          .post(`${TANKER_LIST.UNLOCK_ALL}?tnkr_code=${value.tnkr_code}`)
+          .then((response) => {
+            onComplete(value.tnkr_code);
 
-        notification.success({
-          message: t('messages.unlockSuccess'),
-          description: `${t('descriptions.unlockSuccess')}`,
-        });
-      })
-      .catch((errors) => {
-        _.forEach(errors.response.data.errors, (error) => {
-          notification.error({
-            message: error.type,
-            description: error.message,
+            notification.success({
+              message: t('messages.unlockSuccess'),
+              description: `${t('descriptions.unlockSuccess')}`,
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
           });
-        });
-      });
+        }
+      })
   };
 
   const onDelete = () => {
@@ -205,7 +217,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             htmlType="submit"
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -216,7 +228,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               icon={<UnlockOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onUnlock}
-              disabled={!auth?.canUpdate}
+              disabled={!access?.canUpdate}
             >
               {t('operations.unlockAll')}
             </Button>
@@ -227,7 +239,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!auth?.canDelete}
+              disabled={!access?.canDelete}
             >
               {t('operations.delete')}
             </Button>
