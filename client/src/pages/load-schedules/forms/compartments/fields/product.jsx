@@ -18,9 +18,11 @@ export default class Product extends Component {
     const { form, rowIndex } = this.props;
 
     let current = form.getFieldValue('compartments');
-
+    
     current[rowIndex].prod_code = record.key;
     current[rowIndex].prod_name = record.value;
+    current[rowIndex].qty_scheduled = (current[rowIndex].qty_scheduled > 0 ? 
+      current[rowIndex].qty_scheduled : parseInt(current[rowIndex].safefill));
 
     form.setFieldsValue({
       compartments: current,
@@ -38,11 +40,11 @@ export default class Product extends Component {
     const { values } = this.props;
 
     return (
-      <div style={{ width: '150%',  display: 'flex' }}>
+      <div style={{ width: '180%',  display: 'flex' }}>
         <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick} bordered={false}>
           {values?.map((item) => (
             <Select.Option key={item.prod_code} value={item.prod_name}>
-              {item.prod_name}
+              {item.prod_code + " - " + item.prod_name}
             </Select.Option>
           ))}
         </Select>
