@@ -16,8 +16,9 @@ export default class EquipmentRenderer extends Component {
           justifyContent: 'flex-start !important',
         }}
       >
-        {payload.map((item) => (
+        {payload.map((item, index) => (
           <div
+            key={index}
             style={{
               height: 50,
               width: '100%',
