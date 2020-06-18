@@ -1038,6 +1038,8 @@
     "mtDelvNum": "Delv No.",
     "massUnit": "Mass Unit",
     "volumeUnit": "Volume Unit",
+    "incomingMessages": "Incoming Messages",
+    "outgoingMessages": "Outgoing Messages",
     "rec_id": "Record ID",
     "message_id": "Message ID",
     "recv_time": "Receive Time",

@@ -32,7 +32,17 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
 		return () => clearTimeout(timer);
 	}, [notice]);
 
-	const onEditUpdate = async () => {
+
+/*
+	useEffect(() => {
+		if (!notEdit)
+		{
+			setLabel(t('operations.edit'));
+		}
+	}, [label]);
+*/
+
+	const onEditSave = async () => {
 		if (notEdit)
 		{
 			setLabel(t('operations.save'));
@@ -46,8 +56,9 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
 	};
 
 
-	const onEdit = async () => {
-
+	const onCancel = async () => {
+		setLabel(t('operations.edit'));
+		setNotEdit(true);
 	};
 
 	const onSubmit = async () => {
@@ -94,14 +105,15 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={() => onCancel()}
+						disabled={notEdit}
           >
             {t('operations.cancel')}
           </Button>
 
 					<Button
 						icon={notEdit ? <PlusOutlined /> : <EditOutlined />}
-						onClick={onEditUpdate}
+						onClick={onEditSave}
 						style={{ float: 'right', marginRight: 5 }}
 					>
 						{ label }

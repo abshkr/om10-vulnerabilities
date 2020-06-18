@@ -11,7 +11,7 @@ import { DataTable, Calendar } from '../../../components';
 import Forms from './forms';
 import { SETTINGS } from '../../../constants';
 
-const OmegaMessages = () => {
+const OmegaMessages = ({handleClick}) => {
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -60,10 +60,11 @@ const OmegaMessages = () => {
 				columns={fields}
 				selectionMode="single"
 				isLoading={isValidating}
-				onClick={(message) => handleFormState(true, message)}
-				handleSelect={(message) => handleFormState(true, message[0])}
+				onClick={(message) => handleClick(true, from, action, cformat, message[0])}
+				handleSelect={(message) => handleClick(true, from, action, cformat, message[0])}
 				extra={extras}
 			/>
+{/*
 			<Forms
 				value={selected}
 				visible={visible}
@@ -71,6 +72,7 @@ const OmegaMessages = () => {
 				action={action}
 				content_format={cformat}
 				handleFormState={handleFormState} />
+*/}
 		</div>
 	);
 

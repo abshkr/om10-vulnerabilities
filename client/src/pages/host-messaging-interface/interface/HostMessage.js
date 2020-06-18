@@ -10,7 +10,7 @@ import { DataTable, Calendar } from '../../../components';
 import Forms from './forms';
 import { SETTINGS } from '../../../constants';
 
-const HostMessages = () => {
+const HostMessages = ({handleClick}) => {
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -63,10 +63,11 @@ const HostMessages = () => {
 				columns={fields}
 				selectionMode="single"
 				isLoading={isValidating}
-				onClick={(message) => handleFormState(true, message)}
-				handleSelect={(message) => handleFormState(true, message[0])}
+				onClick={(message) => handleClick(true, from, action, cformat, message[0])}
+				handleSelect={(message) => handleClick(true, from, action, cformat, message[0])}
 				extra={extras}
 			/>
+{/*
 			<Forms
 				value={selected}
 				visible={visible}
@@ -74,6 +75,7 @@ const HostMessages = () => {
 				action={action}
 				content_format={cformat}
 				handleFormState={handleFormState} />
+*/}
 		</div>
 	);
 

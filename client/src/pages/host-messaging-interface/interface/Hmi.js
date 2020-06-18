@@ -1,50 +1,49 @@
 import React from 'react';
-import { Component } from 'react';
-import logo from './logo.svg';
+import { useState } from 'react';
+import { Tabs } from 'antd';
+import { useTranslation } from 'react-i18next';
+
+
 import './Hmi.css';
 import HostMessages from './HostMessage';
 import OmegaMessages from './OmegaMessage';
-import DetailsArea from './DetailsArea';
-import MessageArea from './MessageArea';
-import StatusArea from './StatusArea';
-import { Button, Tabs } from 'antd';
-
-import { DataTable, Calendar } from '../../../components';
-import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } from '../../../components/page/style';
 import columns from './columns';
-const { TabPane } = Tabs;
+import Forms from './forms';
 
 
-class Hmi extends Component {
-  constructor(props) {
-    super(props);
+const Hmi = () => {
 
-    this.state = {
-      startUp: false,
-      selectedChild: '',
-      selectedRecId: '',
-      selectedAckId: '',
+	const { TabPane } = Tabs;
 
-      from: undefined,
-      action: undefined,
-      message: undefined,
-      content_format: undefined,
+  const { t } = useTranslation();
 
-      statusMsgList: [],
-    };
+  const [ivisible, setVisible] = useState(false);
+  const [ifrom, setFrom] = useState(null);
+  const [iaction, setAction] = useState(null);
+  const [icontentFormat, setContentFormat] = useState(null);
+  const [imessage, setMessage] = useState(null);
 
-    this.renderHostMessages = this.renderHostMessages.bind(this);
-    this.renderOmegaMessages = this.renderOmegaMessages.bind(this);
+	const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setMessage(value);
+	};
+
+	const handleClicked = (visibility, from, action, contentFormat, message) => {
+    setVisible(visibility);
+    setFrom(from);
+    setAction(action);
+    setContentFormat(contentFormat);
+    setMessage(message);
+		console.log('clicked:'+ivisible);
+	};
+
+
+/*
     this.viewDetails = this.viewDetails.bind(this);
     this.editAndSubmit = this.editAndSubmit.bind(this);
     this.messageSelected = this.messageSelected.bind(this);
     this.statusUpdate = this.statusUpdate.bind(this);
-		this.getData = this.getData.bind(this);
-  }
 
-  componentDidMount() {
-    this.setState({ startUp: true });
-  }
 
 
   viewDetails(from, msg, content_fmt) {
@@ -75,73 +74,32 @@ class Hmi extends Component {
       this.setState({ statusMsgList: statusMsg });
     }
   }
-
-  renderHostMessages() {
-
-    return (
-      <PageContainer>
-        <HostMessages
-          startUp={this.state.startUp}
-          onViewDetails={this.viewDetails}
-          onEditAndSubmit={this.editAndSubmit}
-          onMessageSelected={this.messageSelected}
-          onStatusUpdate={this.statusUpdate}
-          selectedRecId={this.state.selectedRecId}
-          selectedAckId={this.state.selectedAckId}
-        />
-      </PageContainer>
-    );
-  }
+*/
 
 
 
-
-
-  renderOmegaMessages() {
-    return (
-      <div>
-        <OmegaMessages
-          startUp={this.state.startUp}
-          onViewDetails={this.viewDetails}
-          onEditAndSubmit={this.editAndSubmit}
-          onMessageSelected={this.messageSelected}
-          onStatusUpdate={this.statusUpdate}
-          selectedRecId={this.state.selectedAckId}
-        />
-      </div>
-    );
-  }
-
-	getData()
-	{
-		var url = process.env.REACT_APP_API_URL + '/hmi/host_message';
-		fetch(url, {
-			method: 'GET',
-			credentials: 'include'
-		}).then(response => {
-			response.json().then(body => {
-				//console.log('data:'+JSON.stringify(body.message,null,'\t'));
-				console.log('message:'+JSON.stringify(body.message[0],null,'\t'));
-				this.setState({ message: body.message[0] });
-			});
-		});
-	}
-
-
-	render() {
-		return (
+	return (
+		<div>
 			<Tabs defaultActiveKey="1" type="card" style={{margin:0, padding:0}}>
-				<TabPane key="1" tab={'Incoming Messages'}>
-					{this.renderHostMessages()}
+				<TabPane key="1" tab={t('fields.incomingMessages')}>
+					<HostMessages handleClick={handleClicked} />
 				</TabPane>
 
-				<TabPane key="2" tab={'Outgoing Messages'}>
-					{this.renderOmegaMessages()}
+				<TabPane key="2" tab={t('fields.outgoingMessages')}>
+					<OmegaMessages handleClick={handleClicked} />
 				</TabPane>
 			</Tabs>
-		);
+			<Forms
+				value={imessage}
+				visible={ivisible}
+				from={ifrom}
+				action={iaction}
+				content_format={icontentFormat}
+				handleFormState={handleFormState}
+			/>
+		</div>
+	);
 
-  }
 }
 
 export default Hmi;
