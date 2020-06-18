@@ -65,7 +65,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
         etyp_title: record.etyp_title,
         etyp_category: record.etyp_category,
         etyp_isrigid: false,
-        etyp_schedul: false,
+        etyp_schedul: compartments.length > 0,
         compartments,
       };
     }
@@ -74,7 +74,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
       values = {
         ...record,
         etyp_isrigid: false,
-        etyp_schedul: false,
+        etyp_schedul: true,
         etyp_category: 'C',
       };
     }
@@ -167,18 +167,19 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
             {t('operations.cancel')}
           </Button>
           
-          <Button
-            type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-            onClick={onFinish}
-            style={{ float: 'right', marginRight: 5 }}
-            disabled={
-              (!IS_CREATING && IS_COMBINATION) || IS_CREATING ? !access?.canCreate : !access?.canUpdate
-            }
-          >
-            {IS_CREATING ? t('operations.create') : t('operations.update')}
-          </Button>
-
+          {IS_CREATING && (
+            <Button
+              type="primary"
+              icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+              onClick={onFinish}
+              style={{ float: 'right', marginRight: 5 }}
+              disabled={
+                (!IS_CREATING && IS_COMBINATION) || IS_CREATING ? !access?.canCreate : !access?.canUpdate
+              }
+            >
+              {t('operations.create')}
+            </Button>
+          )}
           {!IS_CREATING && (
             <Button
               type="danger"
