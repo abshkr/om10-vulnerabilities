@@ -10,11 +10,14 @@ import auth from 'auth';
 
 import columns from './columns';
 import Forms from './forms';
+import useAuth from 'hooks/use-auth';
 
 const HazchemCodes = () => {
   const { t } = useTranslation();
 
   const { data: payload, isValidating, revalidate } = useSWR(DANGEROUS_GOODS.READ);
+
+  const access = useAuth('M_DANGEROUSGOODS');
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -44,7 +47,12 @@ const HazchemCodes = () => {
   );
 
   return (
-    <Page page={t('pageMenu.gantry')} name={t('pageNames.dangerousGoods')} modifiers={modifiers}>
+    <Page
+      page={t('pageMenu.gantry')}
+      name={t('pageNames.dangerousGoods')}
+      modifiers={modifiers}
+      access={access}
+    >
       <DataTable
         columns={fields}
         data={payload?.records}

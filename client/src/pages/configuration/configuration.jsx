@@ -8,6 +8,7 @@ import useSWR, { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 
+import { useAuth } from '../../hooks';
 import { ConfigurationContainer } from './styles';
 import { SITE_CONFIGURATION } from '../../api';
 import { Page } from '../../components';
@@ -138,6 +139,8 @@ const Configuration = () => {
   const { data: configPayload } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
   const { data: featuresPayload } = useSWR(SITE_CONFIGURATION.FEATURES, { revalidateOnFocus: false });
 
+  const access = useAuth('MENU_HOME');
+
   const [configuration, setConfiguration] = useState([]);
   const [features, setFeatures] = useState([]);
   const [tab, setTab] = useState('1');
@@ -257,7 +260,7 @@ const Configuration = () => {
 
   return (
     <ConfigurationContainer>
-      <Page page={page} auth={auth} transparent modifiers={modifiers}>
+      <Page page={page} auth={auth} transparent modifiers={modifiers} access={access}>
         <Tabs defaultActiveKey={tab} type="card" onChange={setTab}>
           <TabPane tab={t('tabColumns.screenAccess')} key="1">
             <ConfigurationItems

@@ -43,7 +43,12 @@ const FolioSummary = () => {
   // }, [data]);
 
   return (
-    <Page page={t('pageMenu.config')} name={t('pageNames.folioScheduling')} avatar="folioScheduling">
+    <Page
+      page={t('pageMenu.config')}
+      name={t('pageNames.folioScheduling')}
+      avatar="folioScheduling"
+      access={access}
+    >
       <Tabs
         defaultActiveKey="1"
         // style={{ height: '72vh' }}

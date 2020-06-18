@@ -270,6 +270,7 @@ const TimeCodes = () => {
       name={t('pageNames.timeCodes')}
       modifiers={modifiers}
       avatar="timeCodes"
+      access={access}
     >
       <DataTable
         columns={fields}

@@ -29,7 +29,7 @@ const Companies = () => {
 
   const handleFormState = (visibility, value) => {
     if (value) {
-      setCurrentCmpy(value)
+      setCurrentCmpy(value);
     }
     setVisible(visibility);
     setSelected(value);
@@ -38,24 +38,24 @@ const Companies = () => {
   const specialActions = () => {
     FormModal({
       value: currentCmpy,
-      width: "120vh",
-      form: <SpecialActionForm value={currentCmpy} handleFormState={handleFormState}/>,
+      width: '120vh',
+      form: <SpecialActionForm value={currentCmpy} handleFormState={handleFormState} />,
       id: currentCmpy.cmpy_code,
       name: currentCmpy.cmpy_name,
-      t
+      t,
     });
-  }
+  };
 
   const companyRelations = () => {
     FormModal({
       value: currentCmpy,
-      width: "120vh",
-      form: <RelationsForm value={currentCmpy} handleFormState={handleFormState}/>,
+      width: '120vh',
+      form: <RelationsForm value={currentCmpy} handleFormState={handleFormState} />,
       id: currentCmpy.cmpy_code,
       name: currentCmpy.cmpy_name,
-      t
+      t,
     });
-  }
+  };
 
   const modifiers = (
     <>
@@ -63,9 +63,9 @@ const Companies = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button 
-        type="primary" 
-        icon={<FormOutlined />}  
+      <Button
+        type="primary"
+        icon={<FormOutlined />}
         loading={isValidating}
         // style={{float:"left", marginRight:500}}
         onClick={() => specialActions()}
@@ -73,9 +73,9 @@ const Companies = () => {
       >
         {t('operations.specialAction')}
       </Button>
-      <Button 
-        type="primary" 
-        icon={<ApiOutlined />}  
+      <Button
+        type="primary"
+        icon={<ApiOutlined />}
         loading={isValidating}
         // style={{float:"left", marginRight:500}}
         onClick={() => companyRelations()}
@@ -83,9 +83,9 @@ const Companies = () => {
       >
         {t('operations.companyRelation')}
       </Button>
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />}  
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
         loading={isValidating}
         onClick={() => handleFormState(true, null)}
         disabled={!auth.canCreate}
@@ -96,22 +96,22 @@ const Companies = () => {
   );
 
   return (
-    <Page page={t('pageMenu.gantry')} name={t('pageNames.companies')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={data} 
-        isLoading={isValidating} 
+    <Page page={t('pageMenu.gantry')} name={t('pageNames.companies')} modifiers={modifiers} access={auth}>
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         filterValue={filterValue}
       />
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
         auth={auth}
         specialActions={specialActions}
-        companyRelations={companyRelations} 
+        companyRelations={companyRelations}
         setFilterValue={setFilterValue}
       />
     </Page>

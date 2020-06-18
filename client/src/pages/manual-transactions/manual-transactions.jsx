@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { PlusOutlined, DeleteOutlined, ExclamationCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  ExclamationCircleOutlined,
+  QuestionCircleOutlined,
+} from '@ant-design/icons';
 import { Button, Divider, Form, Modal, notification, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
@@ -11,12 +16,13 @@ import DrawerProductTransfers from './drawer-product-transfer';
 import Forms from './forms';
 import { SETTINGS } from '../../constants';
 import { MANUAL_TRANSACTIONS } from '../../api';
+import useAuth from 'hooks/use-auth';
 
 const { confirm } = Modal;
 
-const ManualTransactions = ({popup, params}) => {
+const ManualTransactions = ({ popup, params }) => {
   const { t } = useTranslation();
-
+  const access = useAuth('M_MANUALTRANSACTIONS');
   const [form] = Form.useForm();
 
   // SCHEDULE: doing manual transaction with Load Schedule
@@ -51,7 +57,7 @@ const ManualTransactions = ({popup, params}) => {
     setSelectedTrip(null);
     setSelectedOrder(null);
     setSelectedTanker(null);
-    form.setFieldsValue({transfers:[], base_transfers:[], base_totals:[], meter_totals:[]});
+    form.setFieldsValue({ transfers: [], base_transfers: [], base_totals: [], meter_totals: [] });
   };
 
   const preparePayload = (values) => {
@@ -60,8 +66,7 @@ const ManualTransactions = ({popup, params}) => {
     payload.supplier = values?.supplier;
     if (sourceType === 'SCHEDULE') {
       payload.trip_no = values?.trip_no;
-    }
-    else {
+    } else {
       payload.order_cust_no = values?.order_no;
     }
     payload.tanker = values?.tanker;
@@ -74,7 +79,7 @@ const ManualTransactions = ({popup, params}) => {
     let midx = 0;
     let bidx = 0;
     payload.transfers = [];
-    for (tidx=0; tidx<values?.transfers?.length; tidx++) {
+    for (tidx = 0; tidx < values?.transfers?.length; tidx++) {
       const titem = values?.transfers?.[tidx];
 
       if (titem.trsf_arm_cd === t('placeholder.selectArmCode')) {
@@ -93,7 +98,7 @@ const ManualTransactions = ({popup, params}) => {
       transfer.liq_kg = titem.trsf_load_kg;
 
       transfer.meters = [];
-      for (midx=0; midx<values?.meter_totals?.length; midx++) {
+      for (midx = 0; midx < values?.meter_totals?.length; midx++) {
         const mitem = values?.meter_totals?.[midx];
         if (titem.trsf_cmpt_no === mitem.trsf_cmpt_no) {
           const meter = {};
@@ -110,7 +115,7 @@ const ManualTransactions = ({popup, params}) => {
       }
 
       transfer.bases = [];
-      for (bidx=0; bidx<values?.base_transfers?.length; bidx++) {
+      for (bidx = 0; bidx < values?.base_transfers?.length; bidx++) {
         const bitem = values?.base_transfers?.[bidx];
         if (titem.trsf_cmpt_no === bitem.trsf_bs_cmpt_no) {
           const base = {};
@@ -168,7 +173,7 @@ const ManualTransactions = ({popup, params}) => {
               axios.spread((response) => {
                 setSourceType(null);
                 resetFormData();
-        
+
                 notification.success({
                   message: t('messages.submitSuccess'),
                   description: t('descriptions.submitSuccess'),
@@ -209,7 +214,7 @@ const ManualTransactions = ({popup, params}) => {
   };
 
   useEffect(() => {
-    console.log("MT entry page sourceType", sourceType);
+    console.log('MT entry page sourceType', sourceType);
     resetFormData();
   }, [sourceType]);
 
@@ -248,6 +253,7 @@ const ManualTransactions = ({popup, params}) => {
       name={t('pageNames.manualTransactions')}
       modifiers={modifiers}
       standalone={popup}
+      access={access}
     >
       <Form layout="vertical" form={form} scrollToFirstError>
         <Forms
@@ -279,14 +285,14 @@ const ManualTransactions = ({popup, params}) => {
           popup={popup}
         />
 
-        <DrawerProductTransfers 
-          form={form} 
-          sourceType={sourceType} 
-          loadType={loadType} 
-          loadNumber={loadNumber} 
-          supplier={selectedSupplier} 
-          trip={selectedTrip} 
-          order={selectedOrder} 
+        <DrawerProductTransfers
+          form={form}
+          sourceType={sourceType}
+          loadType={loadType}
+          loadNumber={loadNumber}
+          supplier={selectedSupplier}
+          trip={selectedTrip}
+          order={selectedOrder}
           tanker={selectedTanker}
         />
       </Form>

@@ -16,7 +16,7 @@ import useAuth from 'hooks/use-auth';
 const GateControl = () => {
   const { t } = useTranslation();
   const { data: payload, isValidating, revalidate } = useSWR(GATE_CONTROL.READ);
-  const { canUpdate } = useAuth('M_GATECONTROL');
+  const access = useAuth('M_GATECONTROL');
 
   const [selected, setSelected] = useState([]);
 
@@ -53,7 +53,7 @@ const GateControl = () => {
         type="primary"
         icon={<UnlockOutlined />}
         loading={isValidating}
-        disabled={selected.length === 0 || !canUpdate}
+        disabled={selected.length === 0 || !access?.canUpdate}
         onClick={handleGateOpening}
       >
         {payload?.records.length === selected.length
@@ -69,6 +69,7 @@ const GateControl = () => {
       name={t('pageNames.gateControl')}
       modifiers={modifiers}
       avatar="gateControl"
+      access={access}
     >
       <DataTable
         columns={fields}

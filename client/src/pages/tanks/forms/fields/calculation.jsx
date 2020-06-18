@@ -113,12 +113,19 @@ const Calculation = ({ form, value, range, config }) => {
         />
       </Form.Item>
 
-      <Form.Item
-        name="tank_api"
-        label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 90}) @60ºF`}
-      >
-        <InputNumber min={range?.low || 0} max={range?.high || 90} style={{ width: '100%' }} precision={1} />
-      </Form.Item>
+      {config?.manageAPI && (
+        <Form.Item
+          name="tank_api"
+          label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 90}) @60ºF`}
+        >
+          <InputNumber
+            min={range?.low || 0}
+            max={range?.high || 90}
+            style={{ width: '100%' }}
+            precision={1}
+          />
+        </Form.Item>
+      )}
 
       <Form.Item name="tank_prod_lvl" label={`${t('fields.productLevel')} (mm)`}>
         <InputNumber min={0} max={999999999} style={{ width: '100%' }} />

@@ -11,11 +11,14 @@ import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
+import useAuth from 'hooks/use-auth';
 
 const LoadMeters = () => {
   const { t } = useTranslation();
 
   const { data: payload, isValidating, revalidate } = useSWR(LOAD_METERS.READ);
+
+  const access = useAuth('M_LOADMETERS');
 
   const fields = columns(t);
   const data = payload?.records;
@@ -43,7 +46,7 @@ const LoadMeters = () => {
   );
 
   return (
-    <Page page={t('pageMenu.gantry')} name={t('pageNames.loadMeters')} modifiers={modifiers}>
+    <Page page={t('pageMenu.gantry')} name={t('pageNames.loadMeters')} modifiers={modifiers} access={access}>
       <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );

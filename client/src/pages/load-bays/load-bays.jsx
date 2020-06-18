@@ -6,6 +6,7 @@ import useSWR from 'swr';
 import { Page, ListView } from 'components';
 import auth from 'auth';
 
+import useAuth from 'hooks/use-auth';
 import * as LOAD_BAYS from 'api/load-bays';
 import * as SETTINGS from 'constants/settings';
 
@@ -13,6 +14,8 @@ const LoadBays = () => {
   const { t } = useTranslation();
 
   const { data: payload, revalidate } = useSWR(LOAD_BAYS.READ);
+
+  const access = useAuth('M_LOADBAYS');
 
   const page = t('pageMenu.config');
   const name = t('pageNames.loadBays');
@@ -49,7 +52,7 @@ const LoadBays = () => {
   }
 
   return (
-    <Page page={page} name={name} transparent avatar="loadBays">
+    <Page page={page} name={name} transparent avatar="loadBays" access={access}>
       <ListView
         data={payload?.records}
         id="ba_code"

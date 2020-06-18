@@ -152,6 +152,7 @@ const InventoryRequests = () => {
       name={t('pageNames.inventoryRequests')}
       modifiers={modifiers}
       avatar="inventoryRequests"
+      access={access}
     >
       <Tabs defaultActiveKey={tab} animated={false} onChange={setTab}>
         <TabPane tab={t('tabColumns.requests')} key="1">

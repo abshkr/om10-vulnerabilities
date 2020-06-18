@@ -7,14 +7,13 @@ import _ from 'lodash';
 
 import { Page } from '../../components';
 import api, { PERSONNEL } from '../../api';
-// import { useAuth } from '../../hooks';
 import auth from '../../auth';
 import useSWR from 'swr';
-import { useConfig } from '../../hooks';
+import { useConfig, useAuth } from '../../hooks';
 
 const Settings = ({ user }) => {
   const config = useConfig();
-
+  const access = useAuth('MENU_HOME');
   const { t } = useTranslation();
   const { data: payload } = useSWR(PERSONNEL.READ_DEPARTMENT);
 
@@ -43,11 +42,15 @@ const Settings = ({ user }) => {
     }
 
     if (input && input.length < _.toNumber(config.passwordLenMin)) {
-      return Promise.reject(`${t('placeholder.minCharacters')}: ${config.passwordLenMin} ─ ${t('descriptions.minCharacters')}`);
+      return Promise.reject(
+        `${t('placeholder.minCharacters')}: ${config.passwordLenMin} ─ ${t('descriptions.minCharacters')}`
+      );
     }
 
     if (input && input.length > _.toNumber(config.passwordLenMax)) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: ${config.passwordLenMax} ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${config.passwordLenMax} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     return Promise.resolve();
@@ -59,11 +62,15 @@ const Settings = ({ user }) => {
     }
 
     if (input && input.length < _.toNumber(config.passwordLenMin)) {
-      return Promise.reject(`${t('placeholder.minCharacters')}: ${config.passwordLenMin} ─ ${t('descriptions.minCharacters')}`);
+      return Promise.reject(
+        `${t('placeholder.minCharacters')}: ${config.passwordLenMin} ─ ${t('descriptions.minCharacters')}`
+      );
     }
 
     if (input && input.length > _.toNumber(config.passwordLenMax)) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: ${config.passwordLenMax} ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${config.passwordLenMax} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     if (input && input !== password) {
@@ -141,7 +148,7 @@ const Settings = ({ user }) => {
         per_code: user?.per_code,
       });
     }
-    
+
     if (payload) {
       setFieldsValue({
         per_department: payload?.records[0].per_department,
@@ -150,7 +157,7 @@ const Settings = ({ user }) => {
   }, [setFieldsValue, setPasswordFields, user, payload]);
 
   return (
-    <Page page={page} minimal>
+    <Page page={page} transparent access={access}>
       <Form
         layout="horizontal"
         form={profileForm}

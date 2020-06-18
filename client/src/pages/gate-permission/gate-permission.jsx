@@ -57,6 +57,7 @@ const GatePermission = () => {
       name={t('pageNames.gatePermission')}
       modifiers={modifiers}
       avatar="gatePermission"
+      access={access}
     >
       <DataTable
         columns={fields}
