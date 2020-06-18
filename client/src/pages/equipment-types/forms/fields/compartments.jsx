@@ -107,7 +107,7 @@ const Compartments = ({ form, value, isCombination }) => {
 
     if (_.toNumber(value?.newValue) < 0) {
       notification.error({
-        message: t('descriptions.mustBePositive'),
+        message: t('descriptions.CannotBeNegative'),
         description: value?.colDef?.headerName + ': ' + value?.newValue,
       });
 

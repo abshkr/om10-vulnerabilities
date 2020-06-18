@@ -1468,6 +1468,12 @@
     "alreadyExists": "This value already exists. Please Try Another.",
     "maxCharacters": "This character count is too high.",
     "minCharacters": "This character count is too low.",
+    "minNumber": "This number is too low.",
+    "maxNumber": "This number is too high.",
+    "exceedMaxNumber": "Value exceeds the max number.",
+    "mustBeNumber": "Value must be a number",
+    "mustBePositive": "Value must be a positive number",
+    "CannotBeNegative": "Value cannot be a negative number",
     "unlockSuccess": "You have unlocked all compartments for",
     "unlockFailed": "Failed to unlock.",
     "totalFlow": "Total Flow of All Products",
@@ -1530,8 +1536,8 @@
     "timecodeAL": "Cannot delete time code AL",
     "maxExpTarget": "Maximum expiry date type under this target is 10",
     "searchTrip": "Please type in trip number to search",
-	"cannotDeleteLocked": "Locked equipment cannot be deleted",
-	"cannotDeleteTareIn": "Must-tare-in equipment cannot be deleted"
+    "cannotDeleteLocked": "Locked equipment cannot be deleted",
+    "cannotDeleteTareIn": "Must-tare-in equipment cannot be deleted"
   },
 
   "placeholder": {
@@ -1559,6 +1565,8 @@
     "selectBaseProduct": "Select Base Product",
     "maxCharacters": "Max Characters",
     "minCharacters": "Min Characters",
+    "maxNumber": "Max Number",
+    "minNumber": "Min Number",
     "maxPlaces": "Max Places",
     "limit": "Limit",
     "wrongType": "Incorrect Type",
