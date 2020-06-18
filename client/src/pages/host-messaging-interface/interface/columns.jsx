@@ -1,21 +1,39 @@
+import React from 'react';
+import {Tag} from 'antd';
+
 const columns = (t) => [
-  {
-    headerName: t('fields.rec_id'),
-    field: 'REC_ID',
+	{
+    headerName: '',
+    field: 'STATUS',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true
-  },
+		width: 20,
+    suppressSizeToFit: true,
+		pinned: 'left',
+  	cellStyle: function(params) {
+			//console.log({ "params": params });
+			var status = params.data.STATUS;
 
-  {
-    headerName: t('fields.origin'),
-    field: 'ORIGIN',
-    filter: 'FuzzyFilter',
-    sortable: true,
-    resizable: true,
-    suppressSizeToFit: true
-  },
+			var color = "";
+			if (parseInt(status) == 2)
+			{
+				color = "lightgreen";
+			}
+			else if (parseInt(status) == 3)
+			{
+				color = "coral";
+			}
+			else
+			{
+				color = "white";
+			}
 
+			return {
+				background: color,
+				color: color
+			};
+		}
+  },
   {
     headerName: t('fields.message_id'),
     field: 'MESSAGE_ID',
@@ -34,6 +52,14 @@ const columns = (t) => [
     cellRenderer: 'DateRenderer'
   },
   {
+    headerName: t('fields.origin'),
+    field: 'ORIGIN',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true
+  },
+  {
     headerName: t('fields.destination'),
     field: 'DESTINATION',
     filter: 'FuzzyFilter',
@@ -45,6 +71,13 @@ const columns = (t) => [
     headerName: t('fields.dest_site'),
     field: 'DEST_SITE',
     filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true
+  },
+  {
+    headerName: t('fields.rec_id'),
+    field: 'REC_ID',
     sortable: true,
     resizable: true,
     suppressSizeToFit: true
