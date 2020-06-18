@@ -33,6 +33,7 @@ const General = ({ form, value }) => {
         tank_mtol_percent: value.tank_mtol_percent,
         tank_mtol_volume: value.tank_mtol_volume,
         tank_dtol_percent: value.tank_dtol_percent,
+        tank_density: value.tank_density,
       });
     }
   }, [value, setFieldsValue]);
@@ -47,21 +48,8 @@ const General = ({ form, value }) => {
         </Col>
 
         <Col span={12}>
-          <Form.Item name="tank_location" label={t('fields.area')}>
-            <Select
-              loading={isLoading}
-              showSearch
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {areas?.records.map((item, index) => (
-                <Select.Option key={index} value={item.area_k}>
-                  {item.area_name}
-                </Select.Option>
-              ))}
-            </Select>
+          <Form.Item name="tank_name" label={t('fields.tankName')}>
+            <Input style={{ width: '100%' }} />
           </Form.Item>
         </Col>
       </Row>
@@ -158,14 +146,27 @@ const General = ({ form, value }) => {
 
       <Row gutter={[8, 8]}>
         <Col span={12}>
-          <Form.Item name="tank_flashpoint" label={`${t('fields.flashPoint')} (${t('units.degC')})`}>
+          <Form.Item name="tank_flashpoint" label={`${t('fields.flashPoint')} (${t('units.celsius')})`}>
             <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
 
         <Col span={12}>
-          <Form.Item name="tank_name" label={t('fields.tankName')}>
-            <Input style={{ width: '100%' }} />
+          <Form.Item name="tank_location" label={t('fields.area')}>
+            <Select
+              loading={isLoading}
+              showSearch
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {areas?.records.map((item, index) => (
+                <Select.Option key={index} value={item.area_k}>
+                  {item.area_name}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Col>
       </Row>

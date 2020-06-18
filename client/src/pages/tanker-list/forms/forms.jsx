@@ -41,7 +41,7 @@ import columns from './columns';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -51,9 +51,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const fields = columns(t);
   const IS_CREATING = !value;
 
-  const onComplete = () => {
+  const onComplete = (tnkr_code) => {
     handleFormState(false, null);
     mutate(TANKER_LIST.READ);
+    if (tnkr_code) {
+      setFilterValue('' + tnkr_code);
+    }
   };
 
   const onFinish = async () => {
@@ -98,7 +101,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(IS_CREATING ? TANKER_LIST.CREATE : TANKER_LIST.UPDATE, values)
           .then((response) => {
-            onComplete();
+            onComplete(values.tnkr_code);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
@@ -119,24 +122,33 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   };
 
   const onUnlock = () => {
-    api
-      .post(`${TANKER_LIST.UNLOCK_ALL}?tnkr_code=${value.tnkr_code}`)
-      .then((response) => {
-        onComplete();
+    Modal.confirm({
+      title: t('prompts.unlockAll'),
+      okText: t('operations.yes'),
+      // okType: 'danger',
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        api
+          .post(`${TANKER_LIST.UNLOCK_ALL}?tnkr_code=${value.tnkr_code}`)
+          .then((response) => {
+            onComplete(value.tnkr_code);
 
-        notification.success({
-          message: t('messages.unlockSuccess'),
-          description: `${t('descriptions.unlockSuccess')}`,
-        });
-      })
-      .catch((errors) => {
-        _.forEach(errors.response.data.errors, (error) => {
-          notification.error({
-            message: error.type,
-            description: error.message,
+            notification.success({
+              message: t('messages.unlockSuccess'),
+              description: `${t('descriptions.unlockSuccess')}`,
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
           });
-        });
-      });
+      },
+    });
   };
 
   const onDelete = () => {

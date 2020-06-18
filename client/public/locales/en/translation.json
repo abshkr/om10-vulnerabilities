@@ -81,6 +81,8 @@
     "safeFill": "Safe Fill",
     "safeFillUnit": "Safe Fill Unit",
     "capacity": "Capacity",
+    "numOfSeals": "Num of Seals",
+    "columnNo": "No.",
     "status": "Status",
     "typeDescription": "Type Description",
     "expiryDate": "Expiry Date",
@@ -1168,7 +1170,8 @@
     "tanks": "Tanks",
     "dangerousGoods": "Dangerous Goods",
     "deliveryDetails": "Delivery Details",
-    "nominationTransactions": "Manual Transactions For Nominations"
+    "nominationTransactions": "Manual Transactions For Nominations",
+	"dangerousGoods": "Dangerous Goods"
   },
 
   "operations": {
@@ -1434,7 +1437,8 @@
     "unapprove": "Are you sure you want to unapprove this open order?",
     "confirmReverse": "Confirm Schedule Reversal?",
     "confirmArchive": "Confirm Schedule is to be Archived?",
-    "zeroEquipmentSelected": "You have not selected equipment for some Tankers. If you do not want to choose the existing one, system will create a new one for you automatically. Please confirm to process"
+    "zeroEquipmentSelected": "You have not selected equipment for some Tankers. If you do not want to choose the existing one, system will create a new one for you automatically. Please confirm to process",
+	"unlockAll": "Are you sure you want to unlock all compartments?"
   },
 
   "divider": {
@@ -1464,6 +1468,12 @@
     "alreadyExists": "This value already exists. Please Try Another.",
     "maxCharacters": "This character count is too high.",
     "minCharacters": "This character count is too low.",
+    "minNumber": "This number is too low.",
+    "maxNumber": "This number is too high.",
+    "exceedMaxNumber": "Value exceeds the max number.",
+    "mustBeNumber": "Value must be a number",
+    "mustBePositive": "Value must be a positive number",
+    "CannotBeNegative": "Value cannot be a negative number",
     "unlockSuccess": "You have unlocked all compartments for",
     "unlockFailed": "Failed to unlock.",
     "totalFlow": "Total Flow of All Products",
@@ -1525,7 +1535,9 @@
     "mustBeAlphaNumeric": "Must be Alphanumeric.",
     "timecodeAL": "Cannot delete time code AL",
     "maxExpTarget": "Maximum expiry date type under this target is 10",
-    "searchTrip": "Please type in trip number to search"
+    "searchTrip": "Please type in trip number to search",
+    "cannotDeleteLocked": "Locked equipment cannot be deleted",
+    "cannotDeleteTareIn": "Must-tare-in equipment cannot be deleted"
   },
 
   "placeholder": {
@@ -1553,6 +1565,8 @@
     "selectBaseProduct": "Select Base Product",
     "maxCharacters": "Max Characters",
     "minCharacters": "Min Characters",
+    "maxNumber": "Max Number",
+    "minNumber": "Min Number",
     "maxPlaces": "Max Places",
     "limit": "Limit",
     "wrongType": "Incorrect Type",
