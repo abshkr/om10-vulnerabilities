@@ -82,9 +82,13 @@ const Compartments = ({ form, value, equipment, onChange }) => {
   }, [value, payload, equipment]);
 
   useEffect(() => {
+    // the eqpttype in value?.eqpt_etp is String and equipment is Number, 
+    // so etp will be a String in EDIT mode, a Number in CREATE mode.
+    // But etyp_id in eqpt types is a Number, so we must force etp to Number. 
     const etp = value?.eqpt_etp || equipment;
-    const type = _.find(types?.records, ['etyp_id', etp]);
+    const type = _.find(types?.records, ['etyp_id', _.toNumber(etp)]);
     const image = type?.image?.toLowerCase() || null;
+    console.log('compartments - image', equipment, value?.eqpt_etp, etp, type, type?.image, image);
 
     onChange(image);
   }, [value, types, equipment, onChange]);
