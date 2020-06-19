@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import './Hmi.css';
 import HostMessages from './HostMessage';
 import OmegaMessages from './OmegaMessage';
-import columns from './columns';
 import Forms from './forms';
 
 
@@ -34,7 +33,6 @@ const Hmi = () => {
     setAction(action);
     setContentFormat(contentFormat);
     setMessage(message);
-		console.log('clicked:'+ivisible);
 	};
 
 

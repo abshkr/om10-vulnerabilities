@@ -5,7 +5,7 @@ import { Button } from 'antd';
 import useSWR from 'swr';
 import moment from 'moment';
 
-import columns from './columns';
+import columns from './OmegaColumns';
 import { DataTable, Calendar } from '../../../components';
 import Forms from './forms';
 import { SETTINGS } from '../../../constants';

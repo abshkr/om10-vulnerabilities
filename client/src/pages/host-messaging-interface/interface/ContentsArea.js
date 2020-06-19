@@ -1,6 +1,5 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 
 
@@ -32,8 +31,8 @@ const ContentsArea = ({from, action, message, contentFormat, handleFormState}) =
   const { data: payload } = useSWR(url, getData);
 
   useEffect(() => {
-		if (	 (message && imessage && message.REC_ID != imessage.REC_ID)
-				|| (from && ifrom && from != ifrom)
+		if (	 (message && imessage && message.REC_ID !== imessage.REC_ID)
+				|| (from && ifrom && from !== ifrom)
 			 )
 		{
 			setFrom(from);
