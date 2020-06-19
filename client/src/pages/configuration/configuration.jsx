@@ -112,7 +112,7 @@ const FeatureItems = ({ data, onChange }) => (
     style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}
     itemLayout="horizontal"
     size="small"
-    dataSource={data}
+    dataSource={data.filter((item)=>(item.feature_gui===true))}
     renderItem={(item) => {
       return (
         <List.Item style={{ background: 'white', marginBottom: 10, marginRight: 10, borderRadius: 5 }}>
@@ -120,7 +120,7 @@ const FeatureItems = ({ data, onChange }) => (
             style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}
             avatar={
               <Switch
-                checked={item.feature_gui}
+                checked={item.feature_flag}
                 checkedChildren={<span>On</span>}
                 unCheckedChildren={<span>Off</span>}
                 onChange={(value) => onChange(item, value)}
@@ -164,7 +164,7 @@ const Configuration = ({ config }) => {
   const onFeatureEdit = (object, value) => {
     let payload = [...features];
 
-    object.feature_gui = value;
+    object.feature_flag = value;
 
     const index = _.findIndex(payload, ['feature_code', object.feature_code]);
 
