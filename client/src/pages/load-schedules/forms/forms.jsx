@@ -48,6 +48,7 @@ import Transactions from './transactions';
 import Summary from './summary';
 import Seals from './seals';
 import BOL from './bol';
+import { ManualTransactionsPopup } from '../../manual-transactions';
 
 const TabPane = Tabs.TabPane;
 
@@ -70,7 +71,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const CAN_PRINT = ['2', '3', '4'].includes(tab);
   const READ_ONLY = value?.shls_status !== 'NEW SCHEDULE' && !IS_CREATING;
   const CAN_VIEW_REPORTS = value?.shlsload_load_id !== '0';
-  const CAN_MAKE_TRANSACTIONS = value?.shls_status !== 'NEW SCHEDULE' && manageMakeManualTransaction;
+  const CAN_VIEW_TRANSACTIONS = value?.shls_status !== 'NEW SCHEDULE';
+  const CAN_MAKE_TRANSACTIONS = value?.shls_status === 'NEW SCHEDULE' && manageMakeManualTransaction;
   const CAN_ADD_HOST_DATA = value?.shls_ld_type === '2' && manageAdditionalHostData;
 
   const { resetFields, setFieldsValue } = form;
@@ -495,7 +497,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
           <TabPane
             tab={t('tabColumns.transactions')}
-            disabled={IS_CREATING || !CAN_MAKE_TRANSACTIONS}
+            disabled={IS_CREATING || !CAN_VIEW_TRANSACTIONS}
             key="1"
           >
             <Transactions value={value} />
@@ -533,6 +535,23 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             key="7"
           >
             <AdditionalHostData value={value} />
+          </TabPane>
+
+          <TabPane 
+            tab={t('pageNames.manualTransactions')} 
+            disabled={IS_CREATING || !CAN_MAKE_TRANSACTIONS || !access.canCreate} 
+            key="8"
+          >
+            <ManualTransactionsPopup 
+              popup={true}
+              params={{
+                supplier: value?.supplier_code,
+                trip_no: value?.shls_trip_no,
+                trans_type: 'SCHEDULE',
+                repost: false,
+                title: 'Create Transaction',
+              }}
+            />
           </TabPane>
         </Tabs>
       </Form>
