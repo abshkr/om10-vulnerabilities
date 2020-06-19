@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { Card, Col, Row, Select, Radio } from 'antd';
 
 import ReactApexChart from 'react-apexcharts';
@@ -250,6 +250,7 @@ const Overview = () => {
             columnWidth: '100%',
           },
         },
+
         dataLabels: {
           enabled: false,
         },
@@ -257,6 +258,12 @@ const Overview = () => {
         legend: {
           show: true,
           position: 'right',
+
+          verticalAlign: 'top',
+          containerMargin: {
+            left: 35,
+            right: 60,
+          },
 
           markers: {
             radius: 12,
@@ -339,7 +346,7 @@ const Overview = () => {
   }, [payload]);
 
   return (
-    <>
+    <div>
       <Row gutter={[16, 16]}>
         <Col span={12}>
           <Card title="Daily Throughput Totals (m3)" hoverable size="small" loading={!payload}>
@@ -380,6 +387,7 @@ const Overview = () => {
             hoverable
             size="small"
             loading={!payload}
+            bodyStyle={{ overflow: 'hidden' }}
             extra={
               <Select
                 value={folioClass}
@@ -420,7 +428,7 @@ const Overview = () => {
           </Card>
         </Col>
       </Row>
-    </>
+    </div>
   );
 };
 

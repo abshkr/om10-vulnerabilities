@@ -5,7 +5,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, FormModal } from '../../components';
+import { Page, DataTable, Download } from '../../components';
 import { ROLE_ACCESS_MANAGEMENT } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
@@ -35,7 +35,9 @@ const RoleAccessManagement = () => {
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
+
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+
       <Button
         type="primary"
         icon={<PlusOutlined />}
@@ -64,7 +66,14 @@ const RoleAccessManagement = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         selectionMode="single"
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
+
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        access={access}
+        data={payload?.records}
+      />
     </Page>
   );
 };

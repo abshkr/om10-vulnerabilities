@@ -16,10 +16,11 @@ import _ from 'lodash';
 import { setter, generator } from './generator';
 
 import api, { ROLE_ACCESS_MANAGEMENT } from '../../../api';
+import { ALPHANUMERIC } from 'constants/regex';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, data }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -106,6 +107,21 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   };
 
   const validate = (rule, input) => {
+    const match = _.find(data, (record) => {
+      return record.auth_level_name.toLowerCase() === input?.toLowerCase();
+    });
+
+    const regex = new RegExp(ALPHANUMERIC);
+    const validated = regex.exec(input);
+
+    if (!validated) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('descriptions.mustBeAlphaNumeric')}`);
+    }
+
+    if (!!match && !value) {
+      return Promise.reject(t('descriptions.alreadyExists'));
+    }
+
     if (input === '' || !input) {
       if (rule.field === 'auth_level_name') {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.roleName')}`);
@@ -270,10 +286,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             </Form.Item>
           </TabPane>
 
-          <TabPane
-            tab={t('tabColumns.all')}
-            key="1"
-          >
+          <TabPane tab={t('tabColumns.all')} key="1">
             <Form.Item name="MENU_HOME" label={t('pageMenu.home')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
@@ -319,11 +332,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             </Form.Item> */}
           </TabPane>
 
-          <TabPane
-            tab={t('pageMenu.operations')}
-            key="2"
-            disabled={IS_CREATING}
-          >
+          <TabPane tab={t('pageMenu.operations')} key="2" disabled={IS_CREATING}>
             <Form.Item name="M_LOADSCHEDULES" label={t('pageNames.loadSchedules')}>
               <Checkbox.Group
                 options={loadScheduleOptions}
@@ -376,11 +385,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             </Form.Item>
           </TabPane>
 
-          <TabPane
-            tab={t('pageMenu.stock')}
-            key="3"
-            disabled={IS_CREATING}
-          >
+          <TabPane tab={t('pageMenu.stock')} key="3" disabled={IS_CREATING}>
             <Form.Item name="M_TANKSTATUS" label={t('pageNames.tanks')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
@@ -460,8 +465,8 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
             <Form.Item name="M_EXPIRYDATES" label={t('pageNames.expiryDates')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item>  
-            
+            </Form.Item>
+
             <Form.Item name="M_TIMECODES" label={t('pageNames.timeCodes')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
@@ -551,7 +556,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             <Form.Item name="M_PARTNERSHIP" label={t('pageNames.partnership')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
-            
+
             <Form.Item name="M_CUSTOMERCATEGORIES" label={t('pageNames.customerCategories')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
@@ -594,7 +599,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             <Form.Item name="M_TANKCONFIGURATION" label={t('pageNames.tankConfiguration')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
-            
+
             <Form.Item name="M_LOGICALPRINTERS" label={t('pageNames.logicalPrinters')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
