@@ -1,12 +1,14 @@
+/* eslint-disable */
+
 import React from 'react';
 import { Divider, Collapse } from 'antd';
-import { SETTINGS } from '../../../constants';
+import { VERSION } from 'constants/settings';
 
 const { Panel } = Collapse;
 
 const data = [
   {
-    title: `Latest Release Version Notes (${SETTINGS.VERSION}) - 19/06/2020`,
+    title: `Latest Release Version Notes (${VERSION}) - 19/06/2020`,
     content: (
       <>
         <>

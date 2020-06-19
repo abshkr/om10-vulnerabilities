@@ -111,9 +111,9 @@ const useConfig = () => {
 
       setConfig({
         ...config,
-        temperatureUnit: environment?.SITE_TEMPERATURE_UNIT,
-        densityUnit: environment?.SITE_DENSITY_UNIT,
-        referenceTemperature: environment?.TEMP_COMP_REF_TEMPERATURE,
+        temperatureUnit: environment?.SITE_TEMPERATURE_UNIT || 'degC',
+        densityUnit: environment?.SITE_DENSITY_UNIT || 'kg/m3',
+        referenceTemperature: environment?.TEMP_COMP_REF_TEMPERATURE || '15',
         vsmCompensation: environment?.VSM_COMPENSATION_PT,
         scheduledUnit: environment?.SCHEDUNITS,
         manageBaseProductDensityRange: featuresObject?.BASE_PROD__DENS_RANGE,
@@ -166,7 +166,6 @@ const useConfig = () => {
         showLSI: configurationObject?.SITE_USE_LSI,
         showSeals: configurationObject?.SITE_USE_SEAL,
         safefillCheckByHighTemp: configurationObject?.SITE_LOAD_SAFEFILL_CHECK_BY_HIGHTEMP,
-
         userAutoLogoff: configurationObject?.URBAC_AUTO_LOGOFF,
         passwordAutoExpire: configurationObject?.URBAC_PWD_AUTO_EXPIRE,
         passwordAutoLock: configurationObject?.URBAC_PWD_AUTO_LOCK,
@@ -178,7 +177,6 @@ const useConfig = () => {
         sessionPerUser: configurationObject?.URBAC_SESSION_PER_USER,
         userAutoDelete: configurationObject?.URBAC_USER_AUTO_DELETE,
         userAutoLock: configurationObject?.URBAC_USER_AUTO_LOCK,
-        
         loading: false,
       });
     }
