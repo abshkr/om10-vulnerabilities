@@ -6,7 +6,7 @@ import useSWR from 'swr';
 import moment from 'moment';
 
 import columns from './OmegaColumns';
-import { DataTable, Calendar } from '../../../components';
+import { DataTable, Calendar, Download } from '../../../components';
 import Forms from './forms';
 import { SETTINGS } from '../../../constants';
 
@@ -65,9 +65,7 @@ const OmegaMessages = ({handleClick}) => {
   const extras = (
     <>
       <Calendar handleChange={setRange} start={start} end={end} />
-      <Button onClick={() => exportToCSV()}>
-        {t('operations.export')}
-      </Button>
+      <Download data={messages} isLoading={isValidating} columns={fields} />
     </>
   );
 
