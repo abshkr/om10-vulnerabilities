@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { QuestionCircleOutlined, EditOutlined, RedoOutlined } from '@ant-design/icons';
 import { Form, Modal, Button, Card, notification, Radio } from 'antd';
@@ -12,9 +12,30 @@ import { VCFManager } from '../../../utils';
 import { TANKS, TANK_STATUS } from '../../../api';
 
 const Calculations = ({ selected, access, isLoading, config }) => {
+  const [quantitySource, setQuantitySource] = useState(null);
+  const [densitySource, setDensitySource] = useState(null);
   const { t } = useTranslation();
 
   const [form] = Form.useForm();
+
+  const handleDensitySource = (source) => {
+    const payload = {
+      reference: _.toNumber(config?.vsmCompensation) || 15,
+    };
+
+    const converted = _.toNumber(source?.dens);
+    const valid = _.isNumber(converted);
+
+    if (valid) {
+      payload.value = converted;
+      payload.type = source?.type;
+    } else {
+      payload.value = converted;
+      payload.type = 'NA';
+    }
+
+    return payload;
+  };
 
   const handleDensityType = (type) => {
     const { tank_15_density, tank_density, tank_api } = form.getFieldsValue([
@@ -99,13 +120,14 @@ const Calculations = ({ selected, access, isLoading, config }) => {
 
   const onCalculateByDensity = () => {
     Modal.confirm({
-      title: t('prompts.calculate'),
+      title: t('prompts.calculate') + ' (' + t('descriptions.lastFieldChanged') + ': ' + densitySource?.title + ')',
       okText: t('operations.calculate'),
       okType: 'primary',
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
-      content: (
+
+      /* content: (
         <Form form={form} initialValues={{ type: 'D15C' }}>
           <Form.Item name="type">
             <Radio.Group style={{ width: '25vw', marginBottom: 15, marginTop: 5 }}>
@@ -115,11 +137,14 @@ const Calculations = ({ selected, access, isLoading, config }) => {
             </Radio.Group>
           </Form.Item>
         </Form>
-      ),
+      ), */
+
       onOk: () => {
         const base = selected?.tank_base_class;
-        const type = form.getFieldValue('type');
-        const payload = handleDensityType(type);
+        //const type = form.getFieldValue('type');
+        const type = densitySource?.type;
+        //const payload = handleDensityType(type);
+        const payload = handleDensitySource(densitySource);
 
         if (base !== '6') {
           if (payload.type === 'D15C') {
@@ -246,7 +271,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
     ]);
 
     Modal.confirm({
-      title: t('prompts.calculate'),
+      title: t('prompts.calculate') + ' (' + t('descriptions.lastFieldChanged') + ': ' + quantitySource?.title + ')',
       okText: t('operations.calculate'),
       okType: 'primary',
       width: '30vw',
@@ -254,7 +279,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
       cancelText: t('operations.no'),
       centered: true,
 
-      content: (
+      /* content: (
         <Form form={form} initialValues={{ volume_type: 'LT' }}>
           <Form.Item name="volume_type">
             <Radio.Group style={{ width: '30vw', marginBottom: 10, marginTop: 10 }}>
@@ -264,10 +289,10 @@ const Calculations = ({ selected, access, isLoading, config }) => {
             </Radio.Group>
           </Form.Item>
         </Form>
-      ),
+      ), */
 
       onOk: async () => {
-        const type = form.getFieldValue('volume_type');
+        /* const type = form.getFieldValue('volume_type');
 
         const getLevel = (calculateBy) => {
           switch (calculateBy) {
@@ -283,12 +308,14 @@ const Calculations = ({ selected, access, isLoading, config }) => {
             default:
               return 0;
           }
-        };
+        }; */
 
         const values = {
           tank_base: selected?.tank_base,
-          tank_qty_type: type,
-          tank_qty_amount: getLevel(type),
+          // tank_qty_type: type,
+          // tank_qty_amount: getLevel(type),
+          tank_qty_type: quantitySource?.type,
+          tank_qty_amount: quantitySource?.qty,
           tank_temp: payload?.tank_temp,
           tank_density: payload?.tank_density,
           tank_prod_lvl: payload?.tank_prod_lvl,
@@ -336,14 +363,16 @@ const Calculations = ({ selected, access, isLoading, config }) => {
               {t('operations.update')}
             </Button>
 
-            <Button
-              type="primary"
-              icon={<RedoOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={onCalculateByDensity}
-            >
-              {t('operations.calculateDensity')}
-            </Button>
+            {config?.manageAPI && (
+              <Button
+                type="primary"
+                icon={<RedoOutlined />}
+                style={{ float: 'right', marginRight: 5 }}
+                onClick={onCalculateByDensity}
+              >
+                {t('operations.calculateDensity')}
+              </Button>
+            )}
 
             <Button
               type="primary"
@@ -366,7 +395,13 @@ const Calculations = ({ selected, access, isLoading, config }) => {
         ]}
       >
         <Form.Item name="tank_code" noStyle />
-        <Calculation form={form} value={selected} config={config} />
+        <Calculation 
+          form={form} 
+          value={selected} 
+          config={config} 
+          pinQuantity={setQuantitySource} 
+          pinDensity={setDensitySource}
+        />
       </Card>
     </Form>
   );
