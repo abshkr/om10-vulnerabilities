@@ -78,7 +78,15 @@ const MovementNominations = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
 
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} url={url} />
+      {visible && (
+        <Forms 
+          value={selected} 
+          visible={visible} 
+          handleFormState={handleFormState} 
+          access={access} 
+          url={url} 
+        />
+      )}
     </Page>
   );
 };
