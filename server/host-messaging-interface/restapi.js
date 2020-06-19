@@ -660,20 +660,36 @@ app.get('/hmi/config', withAuth,
 
 
 
-app.get('/hmi/omega_message', withAuth,
+app.post('/hmi/omega_message', withAuth, express.json(),
 //app.get('/hmi/omega_message',
 	function (request, res)
 	{
 		var now = new Date();
-		var rtime = new Date(now.setMonth(now.getMonth() - 1)).toISOString();
-		var sql = "SELECT * FROM out_msgs where recv_time >= '" + rtime + "' order by recv_time;";
+		//var rtime = new Date(now.setMonth(now.getMonth() - 1)).toISOString();
+		//var sql = "SELECT * FROM out_msgs where recv_time >= '" + rtime + "' order by recv_time;";
 		//var sql = "SELECT * FROM out_msgs order by recv_time;";
 
 		//For Oracle
 		//WARNING: oracledb does not like semicolon at the end of sql
-		var rtime = new Date(now.setMonth(now.getMonth() - 1)).toISOString().replace(/[TZ]/g, '');
-		var dformat = 'YYYY-MM-DDHH24:MI:SS.FF';
-		var sql = "SELECT * FROM out_msgs where recv_time >= to_timestamp('" + rtime + "','" + dformat + "') order by recv_time";
+
+		var dstart = request.body.start;
+		var dend = request.body.end;
+		var dformat = '';
+		var sql = '';
+		if (dstart != undefined && dend != undefined)
+		{
+			dformat = 'YYYY-MM-DD HH24:MI:SS';
+			sql = "SELECT * FROM out_msgs where recv_time >= to_timestamp('" + dstart + "','" + dformat + "') and " + 
+						"recv_time <= to_timestamp('" + dend + "','" + dformat + "') order by recv_time";
+		}
+		else
+		{
+			var rtime = new Date(now.setMonth(now.getMonth() - 1)).toISOString().replace(/[TZ]/g, '');
+			dformat = 'YYYY-MM-DDHH24:MI:SS.FF';
+			sql = "SELECT * FROM out_msgs where recv_time >= to_timestamp('" + rtime + "','" + dformat + "') order by recv_time";
+		}
+
+
 
 		try
 		{
@@ -735,7 +751,7 @@ app.post('/hmi/omega_message/:rec_id', withAuth,
 	}
 );
 
-app.get('/hmi/host_message', withAuth,
+app.post('/hmi/host_message', withAuth, express.json(),
 //app.get('/hmi/host_message',
 	function (request, res)
 	{
@@ -746,9 +762,24 @@ app.get('/hmi/host_message', withAuth,
 
 		//For Oracle
 		//WARNING: oracledb does not like semicolon at the end of the sql
-		var rtime = new Date(now.setMonth(now.getMonth() - 1)).toISOString().replace(/[TZ]/g, '');
-		var dformat = 'YYYY-MM-DDHH24:MI:SS.FF';
-		var sql = "SELECT * FROM in_msgs where recv_time >= to_timestamp('" + rtime + "','" + dformat + "') order by recv_time";
+
+
+		var dstart = request.body.start;
+		var dend = request.body.end;
+		var dformat = '';
+		var sql = '';
+		if (dstart != undefined && dend != undefined)
+		{
+			dformat = 'YYYY-MM-DD HH24:MI:SS';
+			sql = "SELECT * FROM in_msgs where recv_time >= to_timestamp('" + dstart + "','" + dformat + "') and " + 
+						"recv_time <= to_timestamp('" + dend + "','" + dformat + "') order by recv_time";
+		}
+		else
+		{
+			var rtime = new Date(now.setMonth(now.getMonth() - 1)).toISOString().replace(/[TZ]/g, '');
+			dformat = 'YYYY-MM-DDHH24:MI:SS.FF';
+			sql = "SELECT * FROM in_msgs where recv_time >= to_timestamp('" + rtime + "','" + dformat + "') order by recv_time";
+		}
 
 		//var sql = "SELECT * FROM in_msgs order by recv_time;";
 		//var sql = "SELECT in_msgs.*,COUNT(resubmitted_file) FROM in_msgs LEFT JOIN resubmitted_in_msgs ON in_msgs.file_name = resubmitted_in_msgs.source_file GROUP BY in_msgs.rec_id ORDER BY recv_time;";
