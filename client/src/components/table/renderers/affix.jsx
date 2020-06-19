@@ -20,7 +20,7 @@ export default class AffixRenderer extends Component {
     return (
       <div>
         {value}
-        {affix}
+        {value ? affix : ''}
       </div>
     );
   }

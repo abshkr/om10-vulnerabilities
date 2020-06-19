@@ -18,7 +18,7 @@ import {
   ListRenderer,
   AffixRenderer,
   QuantityRenderer,
-  ExpiryDateRenderer
+  ExpiryDateRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -74,14 +74,15 @@ const Table = ({
   rowHeight,
   onCellUpdate,
   autoColWidth,
-  filterValue
+  filterValue,
+  footer,
 }) => {
   const [payload, setPayload] = useState([]);
   const [value, setValue] = useState(filterValue);
   const [api, setAPI] = useState('');
 
   const isLoading = !data;
-  
+
   const handleMultipleSelection = () => {
     if (handleSelect) {
       const payload = api.getSelectedRows();
@@ -103,14 +104,14 @@ const Table = ({
     setValue('');
   };
 
-  const handleFirstDataRendered = params => {
+  const handleFirstDataRendered = (params) => {
     if (!autoColWidth) {
       return;
     }
 
     const allColumnIds = [];
     const skipHeader = false;
-    params.columnApi.getAllColumns().forEach(function(column) {
+    params.columnApi.getAllColumns().forEach(function (column) {
       allColumnIds.push(column.colId);
     });
 
@@ -205,6 +206,7 @@ const Table = ({
             rowHeight={rowHeight || null}
             onCellValueChanged={onCellUpdate}
             onFirstDataRendered={handleFirstDataRendered}
+            pinnedBottomRowData={footer}
           />
         </div>
       </div>

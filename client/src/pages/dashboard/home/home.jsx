@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Col, Row, Descriptions, Divider } from 'antd';
+import { Card, Col, Row } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -165,13 +165,44 @@ const Home = () => {
       <Row gutter={[16, 16]}>
         <Col span={8}>
           <Card title="Current Folio" hoverable size="small" loading={isLoading}>
-            <DataTable data={data?.folio_loads} columns={folio(t)} parentHeight="450px" minimal />
+            <DataTable
+              data={data?.folio_loads}
+              columns={folio(t)}
+              parentHeight="450px"
+              minimal
+              footer={[
+                {
+                  trsa_bay_cd: 'Total: ',
+                  loads: _.sumBy(data?.folio, (object) => {
+                    return _.toNumber(object?.loads) || 0;
+                  }),
+                  sum_amb: _.sumBy(data?.folio, (object) => {
+                    return _.toNumber(object?.sum_amb) || 0;
+                  }),
+                  avgamb_per_load: null,
+                },
+              ]}
+            />
           </Card>
         </Col>
 
         <Col span={8}>
           <Card title="Tanker Movement" hoverable size="small" loading={isLoading}>
-            <DataTable data={data?.tanker_movement} columns={movement(t)} parentHeight="450px" minimal />
+            <DataTable
+              data={data?.tanker_movement}
+              columns={movement(t)}
+              parentHeight="450px"
+              minimal
+              footer={[
+                {
+                  bays_per_load: 'Total: ',
+                  loads: _.sumBy(data?.tanker_movement, (object) => {
+                    return _.toNumber(object?.loads) || 0;
+                  }),
+                  percent: null,
+                },
+              ]}
+            />
           </Card>
         </Col>
 

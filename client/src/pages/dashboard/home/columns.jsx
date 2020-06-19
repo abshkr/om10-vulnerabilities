@@ -1,7 +1,7 @@
 const folio = (t) => [
   {
     headerName: t('fields.bayNumber'),
-    field: 'audit_datetime',
+    field: 'trsa_bay_cd',
     sortable: true,
     resizable: true,
     suppressSizeToFit: true,
@@ -9,7 +9,7 @@ const folio = (t) => [
   },
   {
     headerName: t('fields.numberOfUnloads'),
-    field: 'audit_record_key',
+    field: 'loads',
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
@@ -18,7 +18,7 @@ const folio = (t) => [
   },
   {
     headerName: t('fields.totalProducts'),
-    field: 'audit_action_name',
+    field: 'sum_amb',
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',
@@ -27,7 +27,7 @@ const folio = (t) => [
   },
   {
     headerName: t('fields.averageQuantityLoad'),
-    field: 'audit_category_name',
+    field: 'avgamb_per_load',
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
