@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import useSWR from 'swr';
@@ -13,24 +13,38 @@ import { SETTINGS } from '../../../constants';
 const HostMessages = ({handleClick}) => {
 
   const [visible, setVisible] = useState(false);
-  const [selected, setSelected] = useState(null);
+  const [select, setSelected] = useState(null);
 
   const { t } = useTranslation();
 
-  const handleFormState = (visibility, value) => {
-    setVisible(visibility);
-    setSelected(value);
-  };
 
   const fields = columns(t);
 	const url = process.env.REACT_APP_API_URL + '/hmi/host_message';
-  const { data: payload, isValidating, revalidate } = useSWR(url);
-  const messages = payload?.message;
 
+	const getData = async () => {
+		fetch(url, {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			credentials: 'include',
+			body: JSON.stringify({start: start, end: end})
+		}).then(response => {
+			response.json().then(body => {
+				setMessages(body.message);
+				return body;
+			});
+		});
+	};
+
+  const { data: payload, isValidating, revalidate } = useSWR(url, getData);
+  const [messages, setMessages] = useState(payload?.message);
 
 	const from = 'host';
 	const action = 'view';
 	const cformat = 1;
+
 
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
@@ -38,8 +52,14 @@ const HostMessages = ({handleClick}) => {
   const setRange = (start, end) => {
     setStart(start);
     setEnd(end);
-    revalidate();
+
+		// TODO: is this really working?
+		revalidate();
   };
+
+  useEffect(() => {
+		getData();
+  }, [start, end]);
 
 	const exportToCSV = () => { };	
 
@@ -53,9 +73,6 @@ const HostMessages = ({handleClick}) => {
   );
 
 
-
-
-
 	return (
 		<div>
 			<DataTable
@@ -67,15 +84,6 @@ const HostMessages = ({handleClick}) => {
 				handleSelect={(message) => handleClick(true, from, action, cformat, message[0])}
 				extra={extras}
 			/>
-{/*
-			<Forms
-				value={selected}
-				visible={visible}
-				from={from}
-				action={action}
-				content_format={cformat}
-				handleFormState={handleFormState} />
-*/}
 		</div>
 	);
 
