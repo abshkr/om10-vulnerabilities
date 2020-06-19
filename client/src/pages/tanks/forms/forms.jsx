@@ -23,6 +23,8 @@ import { VCFManager } from '../../../utils';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, config, setFilterValue }) => {
+  const [quantitySource, setQuantitySource] = useState(null);
+  const [densitySource, setDensitySource] = useState(null);
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -103,6 +105,25 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     }
   };
 
+  const handleDensitySource = (source) => {
+    const payload = {
+      reference: _.toNumber(config?.vsmCompensation) || 15,
+    };
+
+    const converted = _.toNumber(source?.dens);
+    const valid = _.isNumber(converted);
+
+    if (valid) {
+      payload.value = converted;
+      payload.type = source?.type;
+    } else {
+      payload.value = converted;
+      payload.type = 'NA';
+    }
+
+    return payload;
+  };
+
   const handleDensityType = (type) => {
     const { tank_15_density, tank_density, tank_api } = form.getFieldsValue([
       'tank_15_density',
@@ -170,13 +191,15 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
   const onCalculateByDensity = () => {
     Modal.confirm({
-      title: t('prompts.calculate'),
+      title: t('prompts.calculate') + ' (' + t('descriptions.lastFieldChanged') + ': ' + densitySource?.title + ')',
       okText: t('operations.calculate'),
       okType: 'primary',
+      width: '30vw',
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
-      content: (
+
+      /* content: (
         <Form form={form} initialValues={{ type: 'D15C' }}>
           <Form.Item name="type">
             <Radio.Group style={{ width: '25vw', marginBottom: 15, marginTop: 5 }}>
@@ -186,11 +209,14 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             </Radio.Group>
           </Form.Item>
         </Form>
-      ),
+      ), */
+
       onOk: () => {
         const base = value?.tank_base_class;
-        const type = form.getFieldValue('type');
-        const payload = handleDensityType(type);
+        //const type = form.getFieldValue('type');
+        const type = densitySource?.type;
+        //const payload = handleDensityType(type);
+        const payload = handleDensitySource(densitySource);
 
         if (base !== '6') {
           if (payload.type === 'D15C') {
@@ -264,42 +290,30 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
     const payload = getFieldsValue(['tank_temp', 'tank_density', 'tank_amb_vol', 'tank_liquid_kg']);
 
+    const values = {
+      tank_base: value?.tank_base,
+      tank_qty_type: 'KG',
+      tank_qty_amount: payload?.tank_liquid_kg,
+      tank_temp: payload?.tank_temp,
+      tank_density: payload?.tank_density,
+    };
+
     Modal.confirm({
       title: t('prompts.calculate'),
       okText: t('operations.calculate'),
       okType: 'primary',
+      width: '30vw',
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
-      content: (
-        <Form form={form} initialValues={{ level_type: 'LT' }}>
-          <Form.Item name="level_type">
-            <Radio.Group style={{ width: '25vw', marginBottom: 15, marginTop: 5 }}>
-              <Radio value="LT">Use Ambient Volume</Radio>
-              <Radio value="L15">Use Standard Volume</Radio>
-              <Radio value="KG">Use Liquid Mass</Radio>
-            </Radio.Group>
-          </Form.Item>
-        </Form>
-      ),
       onOk: async () => {
-        const type = form.getFieldValue('level_type');
-
-        const values = {
-          tank_base: value?.tank_base,
-          tank_qty_type: type,
-          tank_qty_amount: payload?.tank_liquid_kg,
-          tank_temp: payload?.tank_temp,
-          tank_density: payload?.tank_density,
-        };
-
         await axios
           .post(TANK_STATUS.CALCULATE_QUANTITY, values)
           .then((response) => {
             setFieldsValue({
-              tank_amb_vol: _.round(response?.data?.REAL_LITRE, 1),
-              tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 1),
-              tank_liquid_kg: _.round(response?.data?.REAL_KG, 1),
+              tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
+              tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
+              tank_liquid_kg: _.round(response?.data?.REAL_KG, 2),
             });
             notification.success({
               message: t('messages.calculateSuccess'),
@@ -320,35 +334,61 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   const onCalculateByQuantity = () => {
     const { getFieldsValue, setFieldsValue } = form;
 
-    const payload = getFieldsValue(['tank_temp', 'tank_density', 'tank_amb_vol', 'tank_prod_lvl']);
+    const payload = getFieldsValue([
+      'tank_temp',
+      'tank_density',
+      'tank_amb_vol',
+      'tank_prod_lvl',
+      'tank_cor_vol',
+      'tank_liquid_kg',
+    ]);
 
     Modal.confirm({
-      title: t('prompts.calculate'),
+      title: t('prompts.calculate') + ' (' + t('descriptions.lastFieldChanged') + ': ' + quantitySource?.title + ')',
       okText: t('operations.calculate'),
       okType: 'primary',
+      width: '30vw',
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
 
-      content: (
+      /* content: (
         <Form form={form} initialValues={{ volume_type: 'LT' }}>
           <Form.Item name="volume_type">
-            <Radio.Group style={{ width: '25vw', marginBottom: 15, marginTop: 5 }}>
+            <Radio.Group style={{ width: '30vw', marginBottom: 10, marginTop: 10 }}>
               <Radio value="LT">Use Ambient Volume</Radio>
               <Radio value="L15">Use Standard Volume</Radio>
               <Radio value="KG">Use Liquid Mass</Radio>
             </Radio.Group>
           </Form.Item>
         </Form>
-      ),
+      ), */
 
       onOk: async () => {
-        const type = form.getFieldValue('volume_type');
+        /* const type = form.getFieldValue('volume_type');
+
+        const getLevel = (calculateBy) => {
+          switch (calculateBy) {
+            case 'LT':
+              return payload?.tank_amb_vol;
+
+            case 'L15':
+              return payload?.tank_cor_vol;
+
+            case 'KG':
+              return payload?.tank_liquid_kg;
+
+            default:
+              return 0;
+          }
+        }; */
 
         const values = {
           tank_base: value?.tank_base,
-          tank_qty_type: type,
-          tank_qty_amount: payload?.tank_amb_vol,
+          // tank_qty_type: type,
+          // tank_qty_amount: payload?.tank_amb_vol,
+          tank_qty_type: quantitySource?.type,
+          tank_qty_amount: quantitySource?.qty,
           tank_temp: payload?.tank_temp,
           tank_density: payload?.tank_density,
           tank_prod_lvl: payload?.tank_prod_lvl,
@@ -460,7 +500,14 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
           </TabPane>
 
           <TabPane tab={t('tabColumns.calculations')} key="2">
-            <Calculation form={form} value={value} range={range} config={config} />
+            <Calculation 
+              form={form} 
+              value={value} 
+              range={range} 
+              config={config} 
+              pinQuantity={setQuantitySource}
+              pinDensity={setDensitySource}
+            />
           </TabPane>
 
           <TabPane tab={t('tabColumns.gauging')} key="3">
