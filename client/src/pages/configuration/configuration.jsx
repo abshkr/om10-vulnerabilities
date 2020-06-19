@@ -135,7 +135,7 @@ const FeatureItems = ({ data, onChange }) => (
   />
 );
 
-const Configuration = () => {
+const Configuration = ({ config }) => {
   const { data: configPayload } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
   const { data: featuresPayload } = useSWR(SITE_CONFIGURATION.FEATURES, { revalidateOnFocus: false });
 
@@ -219,6 +219,8 @@ const Configuration = () => {
           .then(
             axios.spread((response) => {
               Modal.destroyAll();
+              config.revalidate();
+
               mutate(UPDATING_FEATURES ? SITE_CONFIGURATION.FEATURES : SITE_CONFIGURATION.READ);
 
               notification.success({

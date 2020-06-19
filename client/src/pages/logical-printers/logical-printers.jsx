@@ -13,7 +13,7 @@ import auth from '../../auth';
 import Forms from './forms';
 import columns from './columns';
 
-const LogicalPrinters = () => {
+const LogicalPrinters = ({ config }) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 

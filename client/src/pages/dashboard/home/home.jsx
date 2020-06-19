@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Card, Col, Row } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { DataTable } from '../../../components';
+import { DataTable } from 'components';
+import { DASHBOARD } from 'api';
+
 import { folio, movement, ids } from './columns';
-import { DASHBOARD } from '../../../api';
 
 const Home = () => {
   const { t } = useTranslation();

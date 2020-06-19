@@ -1,35 +1,49 @@
-import React, { useEffect } from 'react';
-import { DatePicker } from 'antd';
+import React from 'react';
+import { DatePicker, notification } from 'antd';
 import moment from 'moment';
 
 import { getDateTimeFormat } from '../../utils';
 
+import { useTranslation } from 'react-i18next';
+import { DATE_TIME_FORMAT } from 'constants/settings';
+
 const { RangePicker } = DatePicker;
 
-const Calendar = ({ handleChange, start, end, disabled }) => {
-  const format = getDateTimeFormat();
+const Calendar = ({ handleChange, start, end, disabled, format }) => {
+  const { t } = useTranslation();
 
-  const handleDateChange = (dates) => {
-    handleChange(dates[0].format('YYYY-MM-DD HH:mm:ss'), dates[1].format('YYYY-MM-DD HH:mm:ss'));
+  const dateFormat = format || getDateTimeFormat();
+
+  const ranges = {
+    [t('fields.today')]: [moment(), moment()],
+    [t('fields.thisWeek')]: [moment().startOf('week'), moment().endOf('week')],
+    [t('fields.thisMonth')]: [moment().startOf('month'), moment().endOf('month')],
+  };
+
+  const onChange = (dates) => {
+    const difference = dates[1]?.diff(dates[0], 'days');
+
+    if (difference <= 30) {
+      handleChange(dates[0].format(DATE_TIME_FORMAT), dates[1].format(DATE_TIME_FORMAT));
+    } else {
+      notification.warning({
+        key: 'date-range-warning',
+        message: t('messages.maxDateRange'),
+        description: t('descriptions.maxDateRange'),
+      });
+    }
   };
 
   return (
     <RangePicker
-      disabled={disabled || (!start && !end)}
       allowClear={false}
+      format={dateFormat}
+      disabled={disabled || (!start && !end)}
       showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-      format={format}
-      defaultValue={[moment(start, 'YYYY-MM-DD HH:mm:ss'), moment(end, 'YYYY-MM-DD HH:mm:ss')]}
-      value={[moment(start, 'YYYY-MM-DD HH:mm:ss'), moment(end, 'YYYY-MM-DD HH:mm:ss')]}
-      onChange={(dates) => handleDateChange(dates)}
-      onOk={(dates) => handleDateChange(dates)}
-      onPanelChange={(value) => console.log(value)}
-      ranges={{
-        Today: [moment(), moment()],
-        'This Week': [moment().startOf('week'), moment().endOf('week')],
-        'This Month': [moment().startOf('month'), moment().endOf('month')],
-        'This Year': [moment().startOf('year'), moment().endOf('year')],
-      }}
+      defaultValue={[moment(start, DATE_TIME_FORMAT), moment(end, DATE_TIME_FORMAT)]}
+      value={[moment(start, DATE_TIME_FORMAT), moment(end, DATE_TIME_FORMAT)]}
+      onOk={(dates) => onChange(dates)}
+      ranges={ranges}
     />
   );
 };

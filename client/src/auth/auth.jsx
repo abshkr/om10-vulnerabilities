@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import jwtDecode from 'jwt-decode';
 
-import { ROUTES } from '../constants';
-
-import { useIdle } from '../hooks';
+import ConfigStore from 'stores/config-store';
+import * as ROUTES from 'constants/routes';
+import useIdle from 'hooks/use-idle';
 
 export default (Authenticated) => {
   const ComposedComponent = ({ token }) => {
+    const config = useContext(ConfigStore);
     const isIdle = useIdle();
+
     let history = useHistory();
 
     const [user, setUser] = useState(null);
@@ -40,7 +42,7 @@ export default (Authenticated) => {
       }
     }, [isIdle, history]);
 
-    return <Authenticated user={user} />;
+    return <Authenticated user={user} config={config} />;
   };
 
   const mapStateToProps = (state) => {

@@ -89,8 +89,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     setDrawer(supplier);
     setFieldsValue({
       drawer_code: supplier,
-    })
-  }
+    });
+  };
 
   const onFinish = async () => {
     const record = await form.validateFields();
@@ -383,7 +383,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               <Button
                 type="primary"
                 icon={<RedoOutlined />}
-                onClick={onPrint}
                 disabled={!access?.canUpdate}
                 style={{ marginRight: 5 }}
               >

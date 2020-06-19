@@ -3,6 +3,8 @@ import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Layout } from 'antd';
 
+import ConfigProvider from 'context/config-context';
+
 import { InterfaceContainer } from './style';
 import { NavBar, Navigation, Status } from '..';
 
@@ -10,20 +12,22 @@ const { Content, Sider, Footer } = Layout;
 
 const Interface = ({ auth, children }) => {
   return auth ? (
-    <InterfaceContainer>
-      <Layout className="layout">
-        <Sider width={250} collapsedWidth={120} collapsible defaultCollapsed>
-          <Navigation />
-        </Sider>
-        <Layout className="omega">
-          <NavBar />
-          <Content className="content">{children}</Content>
-          <Footer>
-            <Status />
-          </Footer>
+    <ConfigProvider>
+      <InterfaceContainer>
+        <Layout className="layout">
+          <Sider width={250} collapsedWidth={120} collapsible defaultCollapsed>
+            <Navigation />
+          </Sider>
+          <Layout className="omega">
+            <NavBar />
+            <Content className="content">{children}</Content>
+            <Footer>
+              <Status />
+            </Footer>
+          </Layout>
         </Layout>
-      </Layout>
-    </InterfaceContainer>
+      </InterfaceContainer>
+    </ConfigProvider>
   ) : (
     <Fragment>{children}</Fragment>
   );

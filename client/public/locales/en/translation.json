@@ -362,7 +362,7 @@
     "sourceUnit": "Source Unit",
     "transactionType": "Transaction Type",
     "orderNumber": "Order Number",
-	"orderNo": "Order No.",
+    "orderNo": "Order No.",
     "customer": "Customer",
     "driver": "Driver",
     "loadSecurityInformation": "Load Security Information",
@@ -1055,7 +1055,10 @@
     "ack_id": "Ack ID",
     "archived_file": "Archived File",
     "transferred_file": "Transferred File",
-    "resubmitted": "Resubmitted"
+    "resubmitted": "Resubmitted",
+    "today": "Today",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month"
   },
 
   "pageMenu": {
@@ -1170,8 +1173,7 @@
     "tanks": "Tanks",
     "dangerousGoods": "Dangerous Goods",
     "deliveryDetails": "Delivery Details",
-    "nominationTransactions": "Manual Transactions For Nominations",
-	"dangerousGoods": "Dangerous Goods"
+    "nominationTransactions": "Manual Transactions For Nominations"
   },
 
   "operations": {
@@ -1404,7 +1406,8 @@
     "manualOverride": "Manual Closeout Override",
     "favouriteAddded": "Successfully Favourited.",
     "favouriteRemoved": "Successfully Removed.",
-    "lockSuccess": "Successfully Locked."
+    "lockSuccess": "Successfully Locked.",
+    "maxDateRange": "Max Date Change Exceeded."
   },
 
   "prompts": {
@@ -1438,7 +1441,7 @@
     "confirmReverse": "Confirm Schedule Reversal?",
     "confirmArchive": "Confirm Schedule is to be Archived?",
     "zeroEquipmentSelected": "You have not selected equipment for some Tankers. If you do not want to choose the existing one, system will create a new one for you automatically. Please confirm to process",
-	"unlockAll": "Are you sure you want to unlock all compartments?"
+    "unlockAll": "Are you sure you want to unlock all compartments?"
   },
 
   "divider": {
@@ -1538,7 +1541,8 @@
     "searchTrip": "Please type in trip number to search",
     "cannotDeleteLocked": "Locked equipment cannot be deleted",
     "cannotDeleteTareIn": "Must-tare-in equipment cannot be deleted",
-    "lastFieldChanged": "Last field changed"
+    "lastFieldChanged": "Last field changed",
+    "maxDateRange": "Please keep the range to within the 30 days of the starting and ending date."
   },
 
   "placeholder": {
