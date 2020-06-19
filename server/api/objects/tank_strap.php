@@ -43,7 +43,7 @@ class TankStrap extends CommonClass
             WHERE
                 STR_TK_TANKCODE = TANK_CODE
                 AND STR_TK_TANKDEPO = TANK_TERMINAL
-            ORDER BY STR_TK_TANKCODE, STRAP_HEIGHT";
+            ";
 
         if (isset($this->strap_tankcode)) {
             $query = $query . " AND STR_TK_TANKCODE = :strap_tankcode ";
@@ -52,7 +52,7 @@ class TankStrap extends CommonClass
             $query = $query . " AND STRAP_HEIGHT >= :start_height ";
         }
         if (isset($this->end_height)) {
-            $query = $query . " AND STRAP_HEIGHT >= :end_height ";
+            $query = $query . " AND STRAP_HEIGHT <= :end_height ";
         }
 
         $query = $query . " ORDER BY STRAP_TANKCODE, STRAP_SITECODE, STRAP_HEIGHT";
@@ -67,6 +67,27 @@ class TankStrap extends CommonClass
         if (isset($this->end_height)) {
             oci_bind_by_name($stmt, ':end_height', $this->end_height);
         }
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function count_tank_straps()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT 
+            FROM STRAPS 
+			WHERE 
+				STR_TK_TANKCODE = :str_tk_tankcode 
+				and STR_TK_TANKDEPO = :str_tk_tankdepo 
+       ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':str_tk_tankcode', $this->tank_code);
+        oci_bind_by_name($stmt, ':str_tk_tankdepo', $this->tank_terminal);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {

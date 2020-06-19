@@ -1,4 +1,5 @@
 export const READ = '/api/pages/tank_status/read.php';
+export const COUNT_STRAPS = '/api/pages/tank_status/count_straps.php';
 
 export const CATEGORIES = '/api/pages/tank_status/prod_categories.php';
 export const BASE_LIST = '/api/pages/tank_status/base_list.php';

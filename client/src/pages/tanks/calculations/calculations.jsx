@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { QuestionCircleOutlined, EditOutlined, RedoOutlined } from '@ant-design/icons';
 import { Form, Modal, Button, Card, notification, Radio } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import useSWR, { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
 
@@ -12,6 +12,8 @@ import { VCFManager } from '../../../utils';
 import { TANKS, TANK_STATUS } from '../../../api';
 
 const Calculations = ({ selected, access, isLoading, config }) => {
+  const { data: counter} = useSWR(`${TANK_STATUS.COUNT_STRAPS}?tank_code=${selected?.tank_code}&tank_terminal=${selected?.tank_terminal}`);
+
   const [quantitySource, setQuantitySource] = useState(null);
   const [densitySource, setDensitySource] = useState(null);
   const { t } = useTranslation();
@@ -217,16 +219,19 @@ const Calculations = ({ selected, access, isLoading, config }) => {
   const onCalculateByLevel = () => {
     const { getFieldsValue, setFieldsValue } = form;
 
-    const payload = getFieldsValue(['tank_temp', 'tank_density', 'tank_amb_vol', 'tank_liquid_kg']);
+    const payload = getFieldsValue(['tank_amb_vol', 'tank_temp', 'tank_density', 'tank_15_density', 'tank_prod_lvl']);
 
     const values = {
+      tank_code: selected?.tank_code,
       tank_base: selected?.tank_base,
-      tank_qty_type: 'KG',
-      tank_qty_amount: payload?.tank_liquid_kg,
+      tank_qty_type: 'LT',
+      tank_qty_amount: payload?.tank_amb_vol,
       tank_temp: payload?.tank_temp,
       tank_density: payload?.tank_density,
+      tank_15_density: payload?.tank_15_density,
+      tank_prod_lvl: payload?.tank_prod_lvl,
     };
-
+    
     Modal.confirm({
       title: t('prompts.calculate'),
       okText: t('operations.calculate'),
@@ -237,17 +242,25 @@ const Calculations = ({ selected, access, isLoading, config }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(TANK_STATUS.CALCULATE_QUANTITY, values)
+          .post(TANK_STATUS.CALCULATE_BY_LEVEL, values)
           .then((response) => {
-            setFieldsValue({
-              tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
-              tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
-              tank_liquid_kg: _.round(response?.data?.REAL_KG, 2),
-            });
-            notification.success({
-              message: t('messages.calculateSuccess'),
-              description: t('descriptions.calculateSuccess'),
-            });
+            if (!response?.data?.REAL_LITRE) {
+              notification.error({
+                message: t('descriptions.calculateFailed'),
+                description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
+              });
+            }
+            else {
+              setFieldsValue({
+                tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
+                tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
+                tank_liquid_kg: _.round(response?.data?.REAL_KG, 2),
+              });
+              notification.success({
+                message: t('messages.calculateSuccess'),
+                description: t('descriptions.calculateSuccess'),
+              });
+            }
           })
 
           .catch((error) => {
@@ -327,16 +340,23 @@ const Calculations = ({ selected, access, isLoading, config }) => {
         await axios
           .post(TANK_STATUS.CALCULATE_QUANTITY, values)
           .then((response) => {
-            setFieldsValue({
-              tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
-              tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
-              tank_liquid_kg: _.round(response?.data?.REAL_KG, 2),
-            });
-
-            notification.success({
-              message: t('messages.calculateSuccess'),
-              description: t('descriptions.calculateSuccess'),
-            });
+            if (!response?.data?.REAL_LITRE) {
+              notification.error({
+                message: t('descriptions.calculateFailed'),
+                description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
+              });
+            }
+            else {
+              setFieldsValue({
+                tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
+                tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
+                tank_liquid_kg: _.round(response?.data?.REAL_KG, 2),
+              });
+              notification.success({
+                message: t('messages.calculateSuccess'),
+                description: t('descriptions.calculateSuccess'),
+              });
+            }
           })
 
           .catch((error) => {
@@ -381,6 +401,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
               icon={<RedoOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onCalculateByLevel}
+              disabled={_.toNumber(counter?.records?.[0]?.cnt) === 0}
             >
               {t('operations.calculateQuantityByLevel')}
             </Button>
