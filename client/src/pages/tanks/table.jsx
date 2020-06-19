@@ -10,7 +10,7 @@ import TemperatureRender from './temperature-render';
 const Table = ({ data, access, visible, setVisible, selected, setSelected, config }) => {
   const { t } = useTranslation();
 
-  const fields = columns(t);
+  const fields = columns(t, config);
   const [filterValue, setFilterValue] = useState('');
 
   const handleFormState = (visibility, value) => {

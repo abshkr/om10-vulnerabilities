@@ -1,4 +1,4 @@
-const columns = (t) => [
+const columns = (t, config) => [
   {
     headerName: t('fields.tankCode'),
     field: 'tank_code',
@@ -7,7 +7,7 @@ const columns = (t) => [
     resizable: true,
     width: 120,
     suppressSizeToFit: true,
-    pinned: "left",
+    pinned: 'left',
   },
   {
     width: 120,
@@ -38,15 +38,7 @@ const columns = (t) => [
     width: 120,
     suppressSizeToFit: true,
   },
-  // {
-  //   headerName: t('fields.terminal'),
-  //   field: 'tank_sitename',
-  //   filter: 'FuzzyFilter',
-  //   sortable: true,
-  //   resizable: true,
-  //   width: 120,
-  //   suppressSizeToFit: true,
-  // },
+
   {
     headerName: t('fields.productCode'),
     field: 'tank_base',
@@ -176,6 +168,7 @@ const columns = (t) => [
     resizable: true,
     width: 110,
     suppressSizeToFit: true,
+    hide: !config?.manageAPI,
   },
 
   {

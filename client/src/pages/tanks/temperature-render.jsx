@@ -8,7 +8,7 @@ export default class TemperatureRender extends Component {
 
     this.state = {
       cValue: this.props.value,
-      fValue: (this.props.value * 1.8 + 32).toFixed(2),
+      fValue: (this.props.value * 1.8 + 32).toFixed(1),
     };
   }
 
@@ -20,10 +20,6 @@ export default class TemperatureRender extends Component {
     const { form, values } = this.props;
     // const { t } = useTranslation();
 
-    return (
-      <div>
-        {this.state.cValue + "ºC/" + this.state.fValue + "ºF" }
-      </div>
-    );
+    return <div>{this.state.cValue + 'ºC/' + this.state.fValue + 'ºF'}</div>;
   }
 }

@@ -77,9 +77,7 @@ const General = ({ form, value, config }) => {
         <Col span={12}>
           <Form.Item
             name="tank_density"
-            label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${
-              `@30ºC` || '@15ºC/59ºF'
-            }`}
+            label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi})`}
           >
             <InputNumber
               min={value?.tank_base_dens_lo}
