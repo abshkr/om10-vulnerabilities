@@ -1542,7 +1542,8 @@
     "cannotDeleteLocked": "Locked equipment cannot be deleted",
     "cannotDeleteTareIn": "Must-tare-in equipment cannot be deleted",
     "lastFieldChanged": "Last field changed",
-    "maxDateRange": "Please keep the range to within the 30 days of the starting and ending date."
+    "maxDateRange": "Please keep the range to within the 30 days of the starting and ending date.",
+	"ignoreTolerance": "Ignore tolerance check"
   },
 
   "placeholder": {

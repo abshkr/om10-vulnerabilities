@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import ReactHtmlParser from 'react-html-parser';
-import { LoadingOutlined } from '@ant-design/icons';
-import { Spin } from 'antd';
+import { LoadingOutlined, AuditOutlined } from '@ant-design/icons';
+import { Spin, Button, notification } from 'antd';
 import axios from 'axios';
+import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { LOAD_SCHEDULES } from '../../../../api';
 
-const BOL = ({ value }) => {
+const BOL = ({ value, redo, supermode }) => {
+  const { t } = useTranslation();
+
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -18,15 +22,26 @@ const BOL = ({ value }) => {
           params: {
             supplier: value.supplier_code,
             trip_no: value.shls_trip_no,
+            supermode: supermode ? "on" : "off"
           },
         })
-        .then((res) => setData(res.data));
+        .then((res) => {
+          setData(res.data)
+        })
+        .catch((errors) => {
+          _.forEach(errors.response.data.errors, (error) => {
+            notification.error({
+              message: error.type,
+              description: error.message,
+            });
+          });
+        });
     }
-  }, [value]);
+  }, [value, redo]);
 
   return (
     <Spin spinning={!data} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
-      <div style={{ height: '80vh', overflowY: 'scroll' }}>{ReactHtmlParser(data)}</div>
+      <div style={{ height: '82vh', overflowY: 'scroll' }}>{ReactHtmlParser(data)}</div>
     </Spin>
   );
 };

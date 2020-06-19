@@ -8,6 +8,7 @@ import {
   PrinterOutlined,
   RedoOutlined,
   CloseOutlined,
+  AuditOutlined
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Radio, Checkbox } from 'antd';
@@ -66,6 +67,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [carrier, setCarrier] = useState(undefined);
   const [tanker, setTanker] = useState(undefined);
   const [trip, setTrip] = useState(undefined);
+  const [redoBOL, setRedoBOL] = useState(0);
 
   const IS_CREATING = !value;
   const CAN_PRINT = ['2', '3', '4'].includes(tab);
@@ -262,18 +264,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       icon: <PrinterOutlined />,
       cancelText: t('operations.no'),
       centered: true,
-      content: tab === '3' && (
-        <Checkbox onChange={(e) => setFieldsValue({ supermode: e.target.checked })}>
-          Ignore Tolerance Check
-        </Checkbox>
-      ),
       onOk: async () => {
         await axios
           .get(selected?.url, {
             params: {
               supplier: value.supplier_code,
               trip_no: value.shls_trip_no,
-              supermode: form.getFieldValue('supermode'),
+              supermode: !!form.getFieldValue('supermode') ? "on":"off",
             },
           })
           .then(() => {
@@ -291,6 +288,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
           });
       },
     });
+  };
+
+  const onView = () => {
+    if (tab === "3") {
+      setRedoBOL(redoBOL + 1);
+    }
   };
 
   useEffect(() => {
@@ -374,8 +377,31 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             </>
           )}
 
+          {tab === '3' && !IS_CREATING && (
+            <Checkbox onChange={(e) => setFieldsValue({ supermode: e.target.checked })}>
+              {t('descriptions.ignoreTolerance')}
+            </Checkbox>
+          )}
+
+          {CAN_PRINT && !IS_CREATING && tab === "3" && (
+            <Button type="primary" 
+              icon={<AuditOutlined />} 
+              onClick={onView} 
+              style={{ marginRight: 5 }}
+              disabled={!access?.canUpdate}
+            >
+              {t('operations.view')}
+            </Button>
+          )}
+
           {CAN_PRINT && !IS_CREATING && (
-            <Button type="primary" icon={<PrinterOutlined />} onClick={onPrint} disabled={!access?.canUpdate}>
+            <Button 
+              type="primary" 
+              icon={<PrinterOutlined />} 
+              onClick={onPrint} 
+              style={{ marginRight: 5 }}
+              disabled={!access?.canUpdate}
+            >
               {t('operations.print')}
             </Button>
           )}
@@ -508,7 +534,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
           </TabPane>
 
           <TabPane tab={t('tabColumns.bol')} disabled={IS_CREATING || !CAN_VIEW_REPORTS} key="3">
-            <BOL value={value} />
+            <BOL value={value} redo={redoBOL} supermode={form.getFieldValue('supermode')} />
           </TabPane>
 
           <TabPane tab={t('tabColumns.loadReport')} disabled={IS_CREATING || !CAN_VIEW_REPORTS} key="4">

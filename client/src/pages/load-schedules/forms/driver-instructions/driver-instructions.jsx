@@ -26,7 +26,7 @@ const DriverInstructions = ({ value }) => {
 
   return (
     <Spin spinning={!data} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
-      <div style={{ height: '80vh', overflowY: 'scroll' }}>{ReactHtmlParser(data)}</div>
+      <div style={{ height: '82vh', overflowY: 'scroll' }}>{ReactHtmlParser(data)}</div>
     </Spin>
   );
 };
