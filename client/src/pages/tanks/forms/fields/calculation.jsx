@@ -6,7 +6,7 @@ import { VCFManager } from '../../../../utils';
 
 const { Option } = Select;
 
-const Calculation = ({ form, value, range, config }) => {
+const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -82,21 +82,48 @@ const Calculation = ({ form, value, range, config }) => {
     return Promise.resolve();
   };
 
+  const handleAmbVolFieldChange = (value) => {
+    pinQuantity({qty: value, type: 'LT', title: t('fields.ambientVolume')});
+  }
+
+  const handleCorVolFieldChange = (value) => {
+    pinQuantity({qty: value, type: 'L15', title: t('fields.standardVolume')});
+  }
+
+  const handleMassQtyFieldChange = (value) => {
+    pinQuantity({qty: value, type: 'KG', title: t('fields.liquidMass')});
+  }
+
+  const handleStdDensFieldChange = (value) => {
+    pinDensity({dens: value, type: 'D15C', title: t('fields.standardDensity')});
+  }
+
+  const handleCorDensFieldChange = (value) => {
+    pinDensity({dens: value, type: 'D30C', title: t('fields.density')});
+  }
+
+  const handleApiDensFieldChange = (value) => {
+    pinDensity({dens: value, type: 'A60F', title: t('fields.api')});
+  }
+
   return (
     <>
-      <Form.Item
-        name="tank_15_density"
-        label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${
-          `@${config?.referenceTemperature}ºC` || '@15ºC/59ºF'
-        }`}
-      >
-        <InputNumber
-          min={value?.tank_base_dens_lo}
-          max={value?.tank_base_dens_hi}
-          style={{ width: '100%' }}
-          precision={1}
-        />
-      </Form.Item>
+      {config?.manageAPI && (
+        <Form.Item
+          name="tank_15_density"
+          label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${
+            `@${config?.referenceTemperature}ºC` || '@15ºC/59ºF'
+          }`}
+        >
+          <InputNumber
+            min={value?.tank_base_dens_lo}
+            max={value?.tank_base_dens_hi}
+            style={{ width: '100%' }}
+            precision={1}
+            onChange={handleStdDensFieldChange}
+          />
+        </Form.Item>
+      )}
 
       <Form.Item
         name="tank_density"
@@ -109,6 +136,7 @@ const Calculation = ({ form, value, range, config }) => {
           max={value?.tank_base_dens_hi}
           style={{ width: '100%' }}
           precision={1}
+          onChange={handleCorDensFieldChange}
         />
       </Form.Item>
 
@@ -122,6 +150,7 @@ const Calculation = ({ form, value, range, config }) => {
             max={range?.high || 90}
             style={{ width: '100%' }}
             precision={1}
+            onChange={handleApiDensFieldChange}
           />
         </Form.Item>
       )}
@@ -145,15 +174,30 @@ const Calculation = ({ form, value, range, config }) => {
       </Form.Item>
 
       <Form.Item name="tank_amb_vol" label={`${t('fields.ambientVolume')} (Litres)`}>
-        <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
+        <InputNumber 
+          min={0} 
+          max={999999999} 
+          style={{ width: '100%' }} 
+          onChange={handleAmbVolFieldChange} 
+        />
       </Form.Item>
 
       <Form.Item name="tank_cor_vol" label={`${t('fields.standardVolume')} (Litres)`}>
-        <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
+        <InputNumber 
+          min={0} 
+          max={999999999} 
+          style={{ width: '100%' }} 
+          onChange={handleCorVolFieldChange} 
+        />
       </Form.Item>
 
       <Form.Item name="tank_liquid_kg" label={`${t('fields.liquidMass')} (Kg)`}>
-        <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
+        <InputNumber 
+          min={0} 
+          max={999999999} 
+          style={{ width: '100%' }} 
+          onChange={handleMassQtyFieldChange} 
+        />
       </Form.Item>
     </>
   );
