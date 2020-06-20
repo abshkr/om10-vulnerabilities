@@ -309,6 +309,10 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Mass Quantity Adjustment (KG)",
             "CHN" => "质量调整(公斤)"
         ),
+        "__PARTNERSHIP_EXISTS__" => array(
+            "ENG" => "Cannot delete partner because there are partnership under it",
+            "CHN" => "不能删除合作商，存在有合作商关系"
+        ),
     );
 
     $lang = Utilities::getCurrLang();
