@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FileSearchOutlined, CloseOutlined } from '@ant-design/icons';
 import { SWRConfig } from 'swr';
 import { fetcher } from 'utils';
@@ -26,6 +26,7 @@ import NominationNumber from './search/nomination-number';
 
 
 const SearchForm = ({onSearch, items}) => {
+  const [orderSupplier, setOrderSupplier] = useState(null);
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -45,8 +46,8 @@ const SearchForm = ({onSearch, items}) => {
       {items?.mlitm_status && <MovementStatus />}
       {items?.tnkr_code && <Tanker />}
       {items?.order_cust_no && <OrderNumber />}
-      {items?.order_supp_code && <OrderSupplier />}
-      {items?.order_cust_acnt && <OrderCustomer />}
+      {items?.order_supp_code && <OrderSupplier onChange={setOrderSupplier} />}
+      {items?.order_cust_acnt && <OrderCustomer supplier={orderSupplier} />}
       {items?.order_stat_id && <OrderStatus />}
       {items?.order_ref_code && <OrderRefCode />}
       {items?.mv_key && <NominationKey />}

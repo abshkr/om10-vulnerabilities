@@ -56,7 +56,7 @@ const OrderListings = ({popup, params}) => {
         start && end
         ? `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}
           &order_supp_code=${supplier}&order_cust_acnt=${customer}`
-        : null
+        : null // `${ORDER_LISTINGS.READ}?order_supp_code=${supplier}&order_cust_acnt=${customer}`
       )
       : (
         start && end
@@ -102,20 +102,23 @@ const OrderListings = ({popup, params}) => {
   const runSearch = (values) => {
     if (
       !values?.order_cust_no && 
-      !values?.order_supp_code && 
-      !values?.order_cust_acnt &&
+      (!supplier && !values?.order_supp_code) && 
+      (!customer && !values?.order_cust_acnt) &&
       !values?.order_stat_id &&
       !values?.order_ref_code) {
+      revalidate();
       return;
     }
     axios
       .get(ORDER_LISTINGS.READ, {
         params: {
           order_cust_no: values?.order_cust_no,
-          order_supp_code: values?.order_supp_code,
-          order_cust_acnt: values?.order_cust_acnt,
+          order_supp_code: !supplier ? values?.order_supp_code : supplier,
+          order_cust_acnt: !customer ? values?.order_cust_acnt : customer,
           order_stat_id: values?.order_stat_id,
           order_ref_code: values?.order_ref_code,
+          //start_date: start,
+          //end_date: end,
         },
       })
       .then((res) => {
@@ -151,6 +154,7 @@ const OrderListings = ({popup, params}) => {
   useEffect(() => {
     if (payload) {
       setData(payload?.records);
+      payload.records = null;
     }
   }, [payload]);
 
@@ -188,8 +192,8 @@ const OrderListings = ({popup, params}) => {
         type="primary"
         icon={<FileSearchOutlined />} 
         onClick={() => WindowSearch(runSearch, t('operations.search'), {
-          order_supp_code: true,
-          order_cust_acnt: true,
+          order_supp_code: !supplier, // true,
+          order_cust_acnt: !customer, // true,
           order_stat_id: true,
           order_cust_no: true,
           order_ref_code: true,
