@@ -19,7 +19,6 @@ import { getDateRangeOffset } from '../../utils';
 
 const OrderListings = ({popup, params}) => {
   const config = useConfig();
-
   const ranges = getDateRangeOffset(String(config.openOrderDateRange), '365');
 
   const [visible, setVisible] = useState(false);
@@ -65,6 +64,13 @@ const OrderListings = ({popup, params}) => {
       );
 
   const { data: payload, isValidating, revalidate } = useSWR(url);
+
+  //const data = payload?.records;
+  const isLoading = isValidating || !data;
+  const fields = columns(t);
+
+  const page = t('pageMenu.customers');
+  const name = t('pageNames.orderListing');
 
   const adjustPageState = (visibility, value) => {
     if (visibility) {
@@ -125,14 +131,6 @@ const OrderListings = ({popup, params}) => {
         setData(res.data.records);
       });
   };
-
-  const fields = columns(t);
-
-  //const data = payload?.records;
-  const isLoading = isValidating || !data;
-
-  const page = t('pageMenu.customers');
-  const name = t('pageNames.orderListing');
 
   useEffect(() => {
     if (!start && ranges?.beforeToday) {
@@ -233,6 +231,7 @@ const OrderListings = ({popup, params}) => {
           access={access}
           pageState={pageState}
           revalidate={revalidate}
+          locateOrder={locateOrder}
         />
       )}
     </Page>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import useSWR from 'swr';
 import moment from 'moment';
-import { Button } from 'antd';
+import { Button, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 import axios from 'axios';
@@ -15,20 +15,56 @@ import auth from '../../auth';
 
 import Forms from './forms';
 import { useAuth } from '../../hooks';
+import { useConfig } from '../../hooks';
+import { getDateRangeOffset } from '../../utils';
 
 const MovementNominations = () => {
-  const { t } = useTranslation();
-  const access = useAuth('M_NOMINATION');
-
-  const [data, setData] = useState(null);
-  const [start, setStart] = useState(moment().subtract(60, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-  const [end, setEnd] = useState(moment().add(360, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-
-  const url = `${MOVEMENT_NOMIATIONS.READ}?start_date=${start}&end_date=${end}`;
-  const { data: payload, isValidating, revalidate } = useSWR(url);
+  const config = useConfig();
+  const ranges = getDateRangeOffset(String(config.openOrderDateRange), '365');
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [timeOption, setTimeOption] = useState('MV_DTIM_EFFECT');
+  const [data, setData] = useState(null);
+
+  const { t } = useTranslation();
+
+  const timeOptions = [
+    {
+      index: 1,
+      code: 'MV_DTIM_EFFECT',
+      name: t('fields.effectiveFrom'),
+    },
+    {
+      index: 2,
+      code: 'MV_DTIM_EXPIRY',
+      name: t('fields.expiredAfter'),
+    },
+    /* {
+      index: 3,
+      code: 'MV_DTIM_CREATE',
+      name: t('fields.createdAt'),
+    },
+    {
+      index: 4,
+      code: 'MV_DTIM_CHANGE',
+      name: t('fields.lastModified'),
+    }, */
+  ];
+
+  const access = useAuth('M_NOMINATION');
+
+  const [start, setStart] = useState(null);
+  const [end, setEnd] = useState(null);
+  //const [start, setStart] = useState(moment().subtract(60, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  //const [end, setEnd] = useState(moment().add(360, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+
+  const url =
+    start && end
+    ? `${MOVEMENT_NOMIATIONS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
+    : null
+
+  const { data: payload, isValidating, revalidate } = useSWR(url);
 
   //const data = payload?.records;
   const isLoading = isValidating || !data;
@@ -60,6 +96,7 @@ const MovementNominations = () => {
       !values?.mv_srctype && 
       !values?.mv_terminal && 
       !values?.mv_number) {
+      revalidate();
       return;
     }
     axios
@@ -70,23 +107,55 @@ const MovementNominations = () => {
           mv_srctype: values?.mv_srctype,
           mv_terminal: values?.mv_terminal,
           mv_number: values?.mv_number,
+          //start_date: start,
+          //end_date: end,
         },
       })
       .then((res) => {
-        // setCompartments(res.data.records);
         setData(res.data.records);
       });
   };
 
   useEffect(() => {
+    if (!start && ranges?.beforeToday) {
+      setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    }
+
+    if (!end && ranges?.afterToday) {
+      setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    }
+  }, [ranges, start, end]);
+
+  useEffect(() => {
     if (payload) {
       setData(payload?.records);
+      payload.records = null;
     }
   }, [payload]);
 
   const modifiers = (
     <>
-      <Calendar handleChange={setRange} start={start} end={end} />
+      <div style={{ float: 'left' }}>
+        <Select
+          defaultValue="MV_DTIM_EFFECT"
+          onChange={setTimeOption}
+          optionFilterProp="children"
+          placeholder={null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {timeOptions.map((item, index) => (
+            <Select.Option key={index} value={item.code}>
+              {item.name}
+            </Select.Option>
+          ))}
+        </Select>
+      </div>
+
+      <div style={{ float: 'left', width: '420px' }}>
+        <Calendar handleChange={setRange} start={start} end={end} />
+      </div>
 
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
@@ -138,6 +207,7 @@ const MovementNominations = () => {
           handleFormState={handleFormState} 
           access={access} 
           url={url} 
+          locateNomination={locateNomination}
         />
       )}
     </Page>
