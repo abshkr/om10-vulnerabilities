@@ -13,6 +13,17 @@ import LoadID from './search/load-id';
 import TrsaID from './search/trsa-id';
 import MovementID from './search/mv-id';
 import MovementStatus from './search/mv-status';
+import OrderNumber from './search/order-number';
+import OrderSupplier from './search/order-supplier';
+import OrderCustomer from './search/order-customer';
+import OrderStatus from './search/order-status';
+import OrderRefCode from './search/order-ref-code';
+import NominationKey from './search/nomination-key';
+import NominationStatus from './search/nomination-status';
+import NominationSource from './search/nomination-source';
+import NominationTerminal from './search/nomination-terminal';
+import NominationNumber from './search/nomination-number';
+
 
 const SearchForm = ({onSearch, items}) => {
   const { t } = useTranslation();
@@ -33,6 +44,16 @@ const SearchForm = ({onSearch, items}) => {
       {items?.trip_status && <TripStatus />}
       {items?.mlitm_status && <MovementStatus />}
       {items?.tnkr_code && <Tanker />}
+      {items?.order_cust_no && <OrderNumber />}
+      {items?.order_supp_code && <OrderSupplier />}
+      {items?.order_cust_acnt && <OrderCustomer />}
+      {items?.order_stat_id && <OrderStatus />}
+      {items?.order_ref_code && <OrderRefCode />}
+      {items?.mv_key && <NominationKey />}
+      {items?.mv_status && <NominationStatus />}
+      {items?.mv_srctype && <NominationSource />}
+      {items?.mv_terminal && <NominationTerminal />}
+      {items?.mv_number && <NominationNumber />}
       
       <div style={{marginTop: "2rem"}}>
         <Button

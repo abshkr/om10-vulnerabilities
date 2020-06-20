@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import useSWR from 'swr';
 import moment from 'moment';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
+import axios from 'axios';
 
-import { Page, DataTable, Download, Calendar } from '../../components';
+import { Page, DataTable, Download, Calendar, WindowSearch } from '../../components';
 import { MOVEMENT_NOMIATIONS } from '../../api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
@@ -19,6 +20,7 @@ const MovementNominations = () => {
   const { t } = useTranslation();
   const access = useAuth('M_NOMINATION');
 
+  const [data, setData] = useState(null);
   const [start, setStart] = useState(moment().subtract(60, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(360, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
@@ -28,7 +30,7 @@ const MovementNominations = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const data = payload?.records;
+  //const data = payload?.records;
   const isLoading = isValidating || !data;
   const fields = columns(t);
 
@@ -45,6 +47,43 @@ const MovementNominations = () => {
     setEnd(end);
   };
 
+  const locateNomination = (value) => {
+    runSearch({
+      mv_key: value,
+    })
+  }
+
+  const runSearch = (values) => {
+    if (
+      !values?.mv_key && 
+      !values?.mv_status && 
+      !values?.mv_srctype && 
+      !values?.mv_terminal && 
+      !values?.mv_number) {
+      return;
+    }
+    axios
+      .get(MOVEMENT_NOMIATIONS.READ, {
+        params: {
+          mv_key: values?.mv_key,
+          mv_status: values?.mv_status,
+          mv_srctype: values?.mv_srctype,
+          mv_terminal: values?.mv_terminal,
+          mv_number: values?.mv_number,
+        },
+      })
+      .then((res) => {
+        // setCompartments(res.data.records);
+        setData(res.data.records);
+      });
+  };
+
+  useEffect(() => {
+    if (payload) {
+      setData(payload?.records);
+    }
+  }, [payload]);
+
   const modifiers = (
     <>
       <Calendar handleChange={setRange} start={start} end={end} />
@@ -54,6 +93,20 @@ const MovementNominations = () => {
       </Button>
 
       <Download data={data} isLoading={isLoading} columns={fields} />
+
+      <Button 
+        type="primary"
+        icon={<FileSearchOutlined />} 
+        onClick={() => WindowSearch(runSearch, t('operations.search'), {
+          mv_key: true,
+          mv_status: true,
+          mv_srctype: true,
+          mv_terminal: true,
+          mv_number: true,
+        })}
+      >
+        {t('operations.search')}
+      </Button>
 
       <Button
         type="primary"

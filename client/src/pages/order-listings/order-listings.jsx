@@ -4,9 +4,10 @@ import useSWR from 'swr';
 import moment from 'moment';
 import { Button, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
+import axios from 'axios';
 
-import { Page, DataTable, Download, Calendar } from '../../components';
+import { Page, DataTable, Download, Calendar, WindowSearch } from '../../components';
 import { ORDER_LISTINGS } from '../../api';
 import { SETTINGS } from '../../constants';
 import { useAuth } from '../../hooks';
@@ -92,6 +93,36 @@ const OrderListings = ({popup, params}) => {
     setEnd(end);
   };
 
+  const locateOrder = (value) => {
+    runSearch({
+      order_cust_no: value,
+    })
+  }
+
+  const runSearch = (values) => {
+    if (
+      !values?.order_cust_no && 
+      !values?.order_supp_code && 
+      !values?.order_cust_acnt &&
+      !values?.order_stat_id &&
+      !values?.order_ref_code) {
+      return;
+    }
+    axios
+      .get(ORDER_LISTINGS.READ, {
+        params: {
+          order_cust_no: values?.order_cust_no,
+          order_supp_code: values?.order_supp_code,
+          order_cust_acnt: values?.order_cust_acnt,
+          order_stat_id: values?.order_stat_id,
+          order_ref_code: values?.order_ref_code,
+        },
+      })
+      .then((res) => {
+        setData(res.data.records);
+      });
+  };
+
   const fields = columns(t);
 
   //const data = payload?.records;
@@ -152,6 +183,20 @@ const OrderListings = ({popup, params}) => {
       </Button>
 
       <Download data={data} isLoading={isLoading} columns={fields} />
+
+      <Button 
+        type="primary"
+        icon={<FileSearchOutlined />} 
+        onClick={() => WindowSearch(runSearch, t('operations.search'), {
+          order_supp_code: true,
+          order_cust_acnt: true,
+          order_stat_id: true,
+          order_cust_no: true,
+          order_ref_code: true,
+        })}
+      >
+        {t('operations.search')}
+      </Button>
 
       <Button
         type="primary"
