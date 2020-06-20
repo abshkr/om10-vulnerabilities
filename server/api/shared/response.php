@@ -297,6 +297,18 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Internal error, check logs/php_rest_*.log file for details",
             "CHN" => "内部错误，请检查日志文件获取详情"
         ),
+        "__AMB_ADJUSTMENT__" => array(
+            "ENG" => "Ambient Quantity Adjustment (L)",
+            "CHN" => "视量调整(升)"
+        ),
+        "__STD_ADJUSTMENT__" => array(
+            "ENG" => "Standard Quantity Adjustment (L)",
+            "CHN" => "标量调整(升)"
+        ),
+        "__MASS_ADJUSTMENT__" => array(
+            "ENG" => "Mass Quantity Adjustment (KG)",
+            "CHN" => "质量调整(公斤)"
+        ),
     );
 
     $lang = Utilities::getCurrLang();
