@@ -63,7 +63,17 @@ const FormModal = ({ value, handleFormState }) => {
       {
         cmpy_code: value.cmpy_code,
         config_key: 'LOAD_VEHICLE_WEIGHT_TOLERANCE',
-        config_value: values.weightTolerance
+        config_value: values.weightTolerance,
+      },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'CMPY_2ND_DRAWER_FLAG',
+        config_value: values.cmpy_2nd_drawer_flag ? "Y" : "N",
+      },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'CMPY_2ND_DRAWER',
+        config_value: values.cmpy_2nd_drawer,
       },
     ]
     
