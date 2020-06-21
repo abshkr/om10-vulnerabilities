@@ -12,7 +12,6 @@ import generator from './generator';
 import columns from './columns';
 
 const Tanks = ({ id, enabled, access, handleFormState }) => {
-  // console.log()
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -25,8 +24,6 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
 
   const fetch = useCallback(() => {
     setLoading(true);
-    console.log("fetch");
-    console.log(FOLIO_SUMMARY.TANKS);
     axios.get(`${FOLIO_SUMMARY.TANKS}?closeout_nr=${id}`).then((response) => {
       setLoading(false);
 
