@@ -939,7 +939,7 @@ class Movement extends CommonClass
 
     public function pre_create()
     {
-        $query = "SELECT MAX(MV_ID) + 1 NEXT_ID FROM MOVEMENTS";
+        $query = "SELECT NVL(MAX(MV_ID), 0) + 1 NEXT_ID FROM MOVEMENTS";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
