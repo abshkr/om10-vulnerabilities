@@ -18,8 +18,13 @@ import { useConfig } from '../../hooks';
 import { getDateRangeOffset } from '../../utils';
 
 const OrderListings = ({popup, params}) => {
+  const [rangeStart, setRangeStart] = useState(0);
+  const [rangeEnd, setRangeEnd] = useState(0);
+
   const config = useConfig();
-  const ranges = getDateRangeOffset(String(config.openOrderDateRange), '365');
+  const ranges = getDateRangeOffset(config.openOrderDateRange, '30');
+  //const ranges = getDateRangeOffset(false, '30');
+  //const ranges = getDateRangeOffset("7~~0", '30');
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -99,6 +104,12 @@ const OrderListings = ({popup, params}) => {
     setEnd(end);
   };
 
+  const onRefresh = () => {
+    setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    //revalidate();
+  };
+
   const locateOrder = (value) => {
     runSearch({
       order_cust_no: value,
@@ -132,15 +143,35 @@ const OrderListings = ({popup, params}) => {
       });
   };
 
-  useEffect(() => {
+  /* useEffect(() => {
+    console.log("I am here 888", start, end, ranges);
+    //if (!start && (ranges?.beforeToday || ranges?.beforeToday===0)) {
     if (!start && ranges?.beforeToday) {
       setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     }
 
+    //if (!end && (ranges?.afterToday || ranges?.afterToday===0)) {
     if (!end && ranges?.afterToday) {
       setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     }
-  }, [ranges, start, end]);
+  }, [ranges, start, end]); */
+
+  useEffect(() => {
+    console.log("I am here: rangeStart, start", start, rangeStart);
+    setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  }, [rangeStart]);
+
+  useEffect(() => {
+    console.log("I am here: rangeEnd, end", end, rangeEnd);
+    setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  }, [rangeEnd]);
+
+  useEffect(() => {
+    if (ranges) {
+      setRangeStart(ranges?.beforeToday);
+      setRangeEnd(ranges?.afterToday);
+    }
+  }, [ranges]);
 
   useEffect(() => {
     if (popup && params) {
@@ -180,7 +211,7 @@ const OrderListings = ({popup, params}) => {
         <Calendar handleChange={setRange} start={start} end={end} />
       </div>
 
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
+      <Button icon={<SyncOutlined />} onClick={onRefresh} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
 

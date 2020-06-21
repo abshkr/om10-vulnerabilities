@@ -8,6 +8,35 @@ const { Panel } = Collapse;
 
 const data = [
   {
+    title: `Latest Release Version Notes (${VERSION}) - 23/06/2020`,
+    content: (
+      <>
+        <>
+          <Divider>Features</Divider>
+
+          <p></p>
+
+          <p></p>
+        </>
+
+        <>
+          <Divider>Enhancements</Divider>
+
+          <p></p>
+
+          <p></p>
+        </>
+
+        <>
+          <Divider>Bug Fixes</Divider>
+          <p>
+            OM5K-6708 - <a>https://dev.diamondkey.com/browse/OM5K-6708</a>
+          </p>
+        </>
+      </>
+    ),
+  },
+  {
     title: `Latest Release Version Notes (${VERSION}) - 19/06/2020`,
     content: (
       <>

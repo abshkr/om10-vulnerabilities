@@ -19,7 +19,7 @@ class SiteConfig extends CommonClass
             oci_bind_by_name($stmt, ':config_required_by_gui', $this->config_required_by_gui);
         } else {
             $query = "SELECT * FROM SITE_CONFIG 
-                WHERE CONFIG_REQUIRED_BY_GUI IS NOT NULl
+                -- WHERE CONFIG_REQUIRED_BY_GUI IS NOT NULl
                 ORDER BY CONFIG_KEY";
             $stmt = oci_parse($this->conn, $query);
         }

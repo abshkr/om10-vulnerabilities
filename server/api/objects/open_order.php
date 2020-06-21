@@ -107,7 +107,8 @@ class OpenOrder extends CommonClass
 
         $query = "
             SELECT * FROM " . $this->VIEW_NAME . "
-            WHERE 1 = 1
+            WHERE 
+                1 = 1
                 AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
                 AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
                 AND ('-1' = :supplier OR ORDER_SUPP_CODE = :supplier)
