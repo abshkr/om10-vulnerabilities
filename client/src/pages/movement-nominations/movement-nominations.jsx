@@ -20,7 +20,7 @@ import { getDateRangeOffset } from '../../utils';
 
 const MovementNominations = () => {
   const config = useConfig();
-  const ranges = getDateRangeOffset(String(config.openOrderDateRange), '365');
+  const ranges = getDateRangeOffset(String(config.openOrderDateRange), '30');
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);

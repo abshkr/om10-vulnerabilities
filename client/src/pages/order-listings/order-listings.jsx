@@ -18,8 +18,10 @@ import { useConfig } from '../../hooks';
 import { getDateRangeOffset } from '../../utils';
 
 const OrderListings = ({popup, params}) => {
+  console.log("OO starting1");
   const config = useConfig();
-  const ranges = getDateRangeOffset(String(config.openOrderDateRange), '365');
+  const ranges = getDateRangeOffset(String(config.openOrderDateRange), '30');
+  console.log("OO starting3", ranges, config.openOrderDateRange);
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -55,13 +57,14 @@ const OrderListings = ({popup, params}) => {
         start && end
         ? `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}
           &order_supp_code=${supplier}&order_cust_acnt=${customer}`
-        : null // `${ORDER_LISTINGS.READ}?order_supp_code=${supplier}&order_cust_acnt=${customer}`
+        : `${ORDER_LISTINGS.READ}?order_supp_code=${supplier}&order_cust_acnt=${customer}`
       )
       : (
         start && end
         ? `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
         : null
       );
+  console.log("OO starting2", url);
 
   const { data: payload, isValidating, revalidate } = useSWR(url);
 

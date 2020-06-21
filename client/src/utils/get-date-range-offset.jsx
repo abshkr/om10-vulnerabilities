@@ -3,7 +3,7 @@ import _ from 'lodash';
 const getDateRangeOffset = (rangeSetting, maxRange) => {
   //return the days before and after today
   let value="";
-  if (rangeSetting === "") {
+  if (rangeSetting === "" || !rangeSetting) {
     value = "1~~0";
   }
   else {
