@@ -452,8 +452,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                 onChange={(event) => setMode(event.target.value)}
                 disabled={!!value}
               >
-                {(!value || value?.shls_ld_type !== '2') && <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>}
-                {(!value || value?.shls_ld_type === '2') && <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button>}
+                {(IS_CREATING || value?.shls_ld_type !== '2') && <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>}
+                {(IS_CREATING || value?.shls_ld_type === '2') && <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button>}
                 {/* <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>
                 <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button> */}
               </Radio.Group>
