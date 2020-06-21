@@ -68,7 +68,7 @@ const OrderListings = ({popup, params}) => {
         : null
       );
 
-  const { data: payload, isValidating, revalidate } = useSWR(url);
+  const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
 
   //const data = payload?.records;
   const isLoading = isValidating || !data;

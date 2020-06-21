@@ -69,7 +69,7 @@ const MovementNominations = () => {
     ? `${MOVEMENT_NOMIATIONS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
     : null
 
-  const { data: payload, isValidating, revalidate } = useSWR(url);
+  const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
 
   //const data = payload?.records;
   const isLoading = isValidating || !data;
