@@ -8,7 +8,7 @@ import api, { FOLIO_SUMMARY } from '../../../../api';
 import generator from './generator';
 import columns from './columns';
 
-const Reports = ({ id, enabled }) => {
+const Reports = ({ id, enabled, handleFormState }) => {
   const { t } = useTranslation();
 
   const [isRegenerating, setRegenerate] = useState(false);
@@ -35,12 +35,16 @@ const Reports = ({ id, enabled }) => {
         size="small"
         dataSource={payload}
         columns={fields}
-        scroll={{ y: '30vw' }}
-        pagination={{ pageSize: 50 }}
+        // scroll={{ y: '120vh' }}
+        pagination={{ pageSize: 22 }}
       />
 
       <div className="operations">
-        <Button icon={<CloseOutlined />} style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
+        <Button 
+          icon={<CloseOutlined />} 
+          style={{ float: 'right' }} 
+          onClick={() => handleFormState(false, null)}
+        >
           {t('operations.cancel')}
         </Button>
 
