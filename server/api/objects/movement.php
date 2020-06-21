@@ -469,7 +469,8 @@ class Movement extends CommonClass
                 MOVEMENTS, 
                 MOVSTATUS_TYPES, 
                 MOVSOURCE_TYPES
-            WHERE 1 = 1 
+            WHERE 
+                1 = 1 
                 AND MV_STATUS = MOVSTATUS_TYPES.MOVSTATUS_TYPE_ID (+)
                 AND MV_SRCTYPE = MOVSOURCE_TYPES.MOVSOURCE_TYPE_ID
                 AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
