@@ -20,12 +20,15 @@ import { mutate } from 'swr';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, handleFormState }) => {
+const FormModal = ({ value, handleFormState, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const onComplete = () => {
     handleFormState(false, null);
+    if (value.cmpy_code) {
+      setFilterValue("" + value.cmpy_code);
+    }
     mutate(COMPANIES.READ);
     Modal.destroyAll();
   };
