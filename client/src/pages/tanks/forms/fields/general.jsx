@@ -18,12 +18,16 @@ const General = ({ form, value, config }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
+    const limit = rule?.max || 256;
+
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${rule?.label}`);
     }
 
-    if (input && input.length > 30) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 30 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && input.length > limit) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${limit} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     return Promise.resolve();
@@ -63,7 +67,7 @@ const General = ({ form, value, config }) => {
           <Form.Item
             name="tank_name"
             label={t('fields.tankName')}
-            rules={[{ required: true, validator: validate, label: t('fields.tankName') }]}
+            rules={[{ required: true, validator: validate, label: t('fields.tankName'), max: 30 }]}
           >
             <Input style={{ width: '100%' }} />
           </Form.Item>
@@ -125,7 +129,11 @@ const General = ({ form, value, config }) => {
         </Col>
 
         <Col span={12}>
-          <Form.Item name="tank_gaugingmthd" label={t('fields.gaugingMethod')}>
+          <Form.Item
+            name="tank_gaugingmthd"
+            label={t('fields.gaugingMethod')}
+            rules={[{ required: true, validator: validate, label: t('fields.gaugingMethod') }]}
+          >
             <Select
               loading={isLoading}
               showSearch
@@ -146,7 +154,11 @@ const General = ({ form, value, config }) => {
 
       <Row gutter={[8, 8]}>
         <Col span={12}>
-          <Form.Item name="tank_ullage" label={t('fields.ullage')}>
+          <Form.Item
+            name="tank_ullage"
+            label={t('fields.ullage')}
+            rules={[{ required: true, validator: validate, label: t('fields.ullage') }]}
+          >
             <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
