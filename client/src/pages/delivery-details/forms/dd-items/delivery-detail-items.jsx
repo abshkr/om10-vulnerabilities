@@ -26,10 +26,7 @@ const DeliveryDetailItems = ({ form, value, pageState }) => {
   const fields = columns(t, pageState, form);
 
   const { data: payload, isValidating } = useSWR(
-    `${DELIVERY_DETAILS.DD_ITEMS}?dd_number=${value?.dd_number}
-                                 &dd_supp_code=${value?.dd_supp_code}
-                                 &dd_tripord_no=${value?.dd_tripord_no}
-                                 &dd_ld_type=${value?.dd_ld_type}`
+    `${DELIVERY_DETAILS.DD_ITEMS}?dd_number=${value?.dd_number}&dd_supp_code=${value?.dd_supp_code}&dd_tripord_no=${value?.dd_tripord_no}&dd_ld_type=${value?.dd_ld_type}`
   );
 
   const data = payload?.records;
@@ -42,7 +39,6 @@ const DeliveryDetailItems = ({ form, value, pageState }) => {
 
   return (
     <>
-
       <Form.Item name="ddi_items">
         <DataTable
           columns={fields}
@@ -54,6 +50,7 @@ const DeliveryDetailItems = ({ form, value, pageState }) => {
           //apiContext={setTableAPI}
           selectionMode="single"
           minimal
+          autoColWidth
           //onEditingFinished={onEditingFinished}
         />
       </Form.Item>

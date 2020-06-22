@@ -64,24 +64,6 @@ function parse(conn, file, content_format)
 	// Example of the command line:
 	// ./pomsg.py -s msg_def.emm_load_ord_ack -d 0ZP2_ACK_68_7113266_20190826203221.dat -n EMM_LOAD_ACK -o 0ZP2_ACK_68_7113266_20190826203221.dat.parsed
 
-	if (content_format == 5)
-	{
-		// Use file name extension to determine
-		var list = file.split(conn.file_name_format.extension_prefix);
-		if (list.length == 2)
-		{
-			var extn = list[-1];
-			if (extn == 'dat')
-			{
-				content_format = 1;
-			}
-			else if (extn == 'xml')
-			{
-				content_format = 2;
-			}
-		}
-	}
-
 	console.log('file:'+file);
 	var src_file = file;
 	var src_filenm = path.basename(file);
@@ -89,6 +71,35 @@ function parse(conn, file, content_format)
 	var rule = find_msg_parse_criteria(src_filenm, conn.file_name_format, conn.msg_parse_rules);
 	if (typeof rule !== 'undefined' && rule != '')
 	{
+		if (content_format > 0)
+		{
+			if (content_format == 5)
+			{
+				// Use file name extension to determine
+				var list = file.split(conn.file_name_format.extension_prefix);
+				if (list.length == 2)
+				{
+					var extn = list[-1];
+					if (extn == 'dat')
+					{
+						content_format = 1;
+					}
+					else if (extn == 'xml')
+					{
+						content_format = 2;
+					}
+				}
+			}
+		}
+		else if (rule.content_format)
+		{
+			content_format = parseInt(rule.content_format);
+		}
+		else
+		{
+			content_format = 1;
+		}
+
 		const execSync = require('child_process').execSync;
 		var exe_cmd = './om_msg_parser/pomsg.py';
 		var schemaf_cmd = '-s ' + './om_msg_parser/' + rule.schema;
@@ -118,7 +129,6 @@ function parse(conn, file, content_format)
 		}
 
 		var preproc_cmd = '';
-		var preproc_map = '';
 		try
 		{
 			preproc = rule.preprocess;
@@ -136,7 +146,28 @@ function parse(conn, file, content_format)
 			// Do nothing
 		}
 
-		var cmd = exe_cmd + ' ' + schemaf_cmd + ' ' + dataf_cmd + ' ' + msgnm_cmd + ' ' + fld_map_cmd + ' ' + preproc_cmd + ' ' + fmt_cmd + ' ' + output_cmd;
+		var postproc_cmd = '';
+		try
+		{
+			if (content_format == 3)
+			{
+				postproc = rule.postprocess;
+				if (postproc)
+				{
+					postproc_cmd = '-q ' + './om_msg_parser/' + postproc;
+				}
+				else
+				{
+					postproc_cmd = '';
+				}
+			}
+		}
+		catch (err)
+		{
+			// Do nothing
+		}
+
+		var cmd = exe_cmd + ' ' + schemaf_cmd + ' ' + dataf_cmd + ' ' + msgnm_cmd + ' ' + fld_map_cmd + ' ' + preproc_cmd + ' ' + postproc_cmd + ' ' + fmt_cmd + ' ' + output_cmd;
 		console.log('cmd: ' + cmd);
 
 		var eres = [];
@@ -145,7 +176,10 @@ function parse(conn, file, content_format)
 			eres = execSync(cmd);
 			//console.log('Parsed result: ' + output_file);
 			var msg;
-			if (content_format == 1)
+			if (	 content_format == 0
+					|| content_format == 1
+					|| content_format == 3
+				 )
 			{
 				msg = fs.readFileSync(output_file, 'utf8');
 			}

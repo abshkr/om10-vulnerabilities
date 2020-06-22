@@ -1253,6 +1253,7 @@
     "deselectAll": "Deselect All",
     "print": "Print",
     "preOrder": "Pre Order",
+	"openOrder": "Open Order",
     "preSchedule": "Pre Schedule",
     "add": "Add",
     "simple": "Simple",

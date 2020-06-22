@@ -353,6 +353,39 @@ https://10.1.10.66/api/pages/schedule/deallocate_all.php?supplier=7640114&trip_n
 https://10.1.10.66/api/pages/schedule/set_prefix.php?seal_nr=335&prefix=NEWPRE
 https://10.1.10.66/api/pages/schedule/set_suffix.php?seal_nr=335&prefix=NEWSUF
 
+//Delivery details related 
+https://10.1.10.66/api/pages/delivery_detail/read.php?dd_supp_code=7640113&dd_tripord_no=900000004&dd_ld_type=2
+https://{{server_ip}}/api/pages/delivery_detail/update.php
+{
+    "dd_number": "111",
+    "dd_supp_code": "7640113",
+    "dd_supp_name": "GSAP BITUMEN",
+    "dd_tripord_no": 900000004,
+    "dd_ld_type": 2,
+    "dd_load_typename": "PRESCHEDULE",
+    "dd_delv_type": "",
+    "dd_delv_typename": "",
+    "dd_route": "",
+    "dd_ship_cond": "",
+    "dd_veh_arr_time": "2021-06-21 00:37:04",
+    "dd_phone": "2345",
+    "dd_instruction": "",
+    "dd_lpg_remark": "",
+    "dd_sales_ord_num": 0,
+    "dd_cust_po": "",
+    "dd_sale_ord_type": "",
+    "dd_vat_id": "",
+    "dd_sold_to": "22323",
+    "dd_sold_to_desc": "",
+    "dd_ship_to": "232323",
+    "dd_ship_to_desc": "",
+    "dd_custom_code": "",
+    "dd_lpg_dest_type": "",
+    "dd_permit_num": "",
+    "dd_sell_cmpy_code": ""
+}
+https://10.1.10.66/api/pages/delivery_detail/templates.php?tmpl_type=1 //1 means bol, 2 means dn
+
 //Equipment Types
 https://10.1.10.66/api/pages/equipment_type/read.php
 https://10.1.10.66/api/pages/equipment_type/unit_types.php

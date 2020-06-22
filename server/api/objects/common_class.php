@@ -213,7 +213,7 @@ class CommonClass
             }
         }
         $set_query = rtrim($set_query, ', ');
-        // write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
+        // write_log($set_query, __FILE__, __LINE__, LogLevel::DEBUG);
         if (strlen($set_query) <= 0) {
             write_log("Nothing to update", __FILE__, __LINE__, LogLevel::WARNING);
             return null;

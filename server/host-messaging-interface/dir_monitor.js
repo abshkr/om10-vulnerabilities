@@ -84,6 +84,7 @@ function verify_file_name_format(filenm, conn)
 		return [false,"invalid name field separator"];
 	}
 
+/* TODO: need to add ability to handle multiple set of field names
 	if (tokens.length != conn.file_name_format.fields.length)
 	{
 		// Parsed tokens not equal to expected tokens
@@ -91,6 +92,7 @@ function verify_file_name_format(filenm, conn)
 					+ tokens.length;
 		return [false,err];
 	}
+*/
 
 	str_to_compare = '';
 	var match_idx = tokens.findIndex(string_match);
@@ -642,6 +644,20 @@ function update_message_id(file, conn, recv_time)
 
 }
 
+function convert(file, conn)
+{
+	console.log('convert:'+file);
+	var prsres = parser.parse(conn, file, 3);
+	if (prsres[0])
+	{
+		var now = new Date().toISOString();
+		now = now.replace(/[T\-:.Z]/g, '');
+		dest_file = now + '.xml';
+		return dest_file;
+	}
+	return '';
+}
+
 function transfer_file(file, ip_addr, dest_dir, file_nm_fmt)
 {
 	// TODO: Need to transfer to a temp directory first.
@@ -911,7 +927,7 @@ function start_monitoring()
 
 							if (!tokens[0])
 							{
-								console.error('Invalid file name: ' + filenm);
+								console.error('Invalid file name: ' + filenm + ', err: ' + tokens[1]);
 
 								var archfile = archive_file(file, conn.archive_dir, conn.file_name_format);
 
@@ -1050,7 +1066,8 @@ function start_monitoring()
 											}
 											else
 											{
-												file_to_trf = file;
+												var res_file = convert(file, conn);
+												file_to_trf = res_file;
 											}
 
 											var archfile;
