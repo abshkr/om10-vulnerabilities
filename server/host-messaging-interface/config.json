@@ -126,7 +126,7 @@
 				},
 				"route_to" : [
                     { "CNS" : { "ip" : "10.1.10.244", "dir" : "/usr/omega/data/gsap/tas/CNS", "file_nm_fmt" : "ORIG" },
-                      "MKY" : { "ip" : "10.1.10.244", "dir" : "/usr/omega/data/gsap/tas/CNS", "file_nm_fmt" : "ORIG" }
+                      "T048" : { "ip" : "10.1.10.244", "dir" : "/usr/omega/data/gsap/tas/CNS", "file_nm_fmt" : "ORIG" }
  					}
                 ],
 				"msg_parse_rules" : {
@@ -134,7 +134,8 @@
 					"rules" : [
 						{ "ACK" : { "schema" : "msg_def.sgb_load_ack", "name" : "SGB_LOAD_ACK", "msg_id_idx" : "0.4", "status_idx" : 3, "status_desc_idx" : 4 } },
 						{ "LDS" : { "schema" : "msg_def.sgb_load_start", "name" : "SGB_LOAD_STARTED", "msg_id_idx" : "0.4" } },
-						{ "LDD" : { "schema" : "msg_def.sgb_load_det", "name" : "SGB_LOAD_DETAILS", "msg_id_idx" : "0.4" } }
+						{ "LDD" : { "schema" : "msg_def.sgb_load_det", "name" : "SGB_LOAD_DETAILS", "msg_id_idx" : "0.4" } },
+						{ "TKT" : { "schema" : "msg_def.sgb_tkt", "name" : "SGB_TICKET", "msg_id_idx" : "0.4", "field_map" : "sgb_tkt.fmap", "postprocess" : "sgb_tkt.py", "content_format" : 3 } }
 					]
 				}
 			}
