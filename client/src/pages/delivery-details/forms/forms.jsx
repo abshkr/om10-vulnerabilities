@@ -109,8 +109,8 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const onFinish = async () => {
     const values = await validateFields();
     const orderItems = [];
-    // TODO
-    return;
+    // // TODO
+    // return;
 
     _.forEach(values?.order_items, (order_item) => {
       if (order_item.oitem_prod_qty > 0) {
@@ -140,6 +140,8 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
     values.order_ord_time = values?.order_ord_time?.format(SETTINGS.DATE_TIME_FORMAT);
     values.order_dlv_time = values?.order_dlv_time?.format(SETTINGS.DATE_TIME_FORMAT);
     values.order_exp_time = values?.order_exp_time?.format(SETTINGS.DATE_TIME_FORMAT);
+    values.dd_veh_arr_time = values?.dd_veh_arr_time?.format(SETTINGS.DATE_TIME_FORMAT);
+
     console.log("date after", values.order_ord_time, values.order_dlv_time, values.order_exp_time);
 
     values.order_styp_id = 0;

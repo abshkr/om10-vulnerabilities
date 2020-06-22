@@ -26,9 +26,7 @@ const DeliveryBolTemplates = ({ form, value, pageState }) => {
   const fields = columns(t, pageState, form);
 
   const { data: payload, isValidating } = useSWR(
-    `${DELIVERY_DETAILS.DLV_BOL_TEMPLATES}?dd_supp_code=${value?.dd_supp_code}
-                                 &dd_tripord_no=${value?.dd_tripord_no}
-                                 &dd_ld_type=${value?.dd_ld_type}`
+    `${DELIVERY_DETAILS.DLV_BOL_TEMPLATES}?dd_supp_code=${value?.dd_supp_code}&dd_tripord_no=${value?.dd_tripord_no}&dd_ld_type=${value?.dd_ld_type}`
   );
 
   const data = payload?.records;
