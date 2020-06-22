@@ -52,11 +52,6 @@ const Tanks = () => {
     setSelected(value);
   };
 
-  const onCreate = (value) => {
-    setVisible(true);
-    setlistSelected(null);
-  };
-
   const onViewChange = () => {
     const view = simple ? '2' : '1';
 
@@ -74,16 +69,6 @@ const Tanks = () => {
       </Button>
 
       <Download data={payload} isLoading={isLoading} columns={fields} />
-
-      {/* <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={() => onCreate(null)}
-        loading={isLoading}
-        disabled={!access.canCreate || mode === '1'}
-      >
-        {t('operations.create')}
-      </Button> */}
     </>
   );
 
@@ -110,8 +95,12 @@ const Tanks = () => {
     if (read) {
       const records = transform(read?.records);
 
-      setSelected(records[0]);
       setPayload(records);
+
+      if (!selected) {
+        console.log('new record set');
+        setSelected(records[0]);
+      }
     }
   }, [read]);
 

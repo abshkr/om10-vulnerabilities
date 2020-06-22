@@ -20,18 +20,15 @@ const ItemDescription = ({ descriptions, item }) => {
 
 const ListView = ({ id, data, onSelect, name, description, content, children, isLoading, selected }) => {
   const [payload, setPayload] = useState(undefined);
-
-  const onSearch = (value) => {
-    const results = search(value, data);
-
-    setPayload(results);
-  };
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
     if (data) {
-      setPayload(data);
+      const results = search(query, data);
+
+      setPayload(results);
     }
-  }, [data]);
+  }, [data, query]);
 
   return (
     <Spin spinning={isLoading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
@@ -41,7 +38,7 @@ const ListView = ({ id, data, onSelect, name, description, content, children, is
             <Input.Search
               style={{ borderRadius: 5 }}
               placeholder="Search Tanks"
-              onSearch={onSearch}
+              onSearch={setQuery}
               size="large"
             />
           </div>
