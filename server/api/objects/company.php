@@ -304,7 +304,10 @@ class Company extends CommonClass
     {
         //5 == issuer
         $query = "
-            SELECT CMPY_CODE, CMPY_NAME
+            SELECT 
+                CMPY_CODE, 
+                CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
             FROM GUI_COMPANYS
             WHERE BITAND(CMPY_TYPE, POWER(2, 5)) != 0
             ORDER BY CMPY_NAME ASC";
@@ -323,7 +326,10 @@ class Company extends CommonClass
     {
         //5 == issuer
         $query = "
-            SELECT CMPY_CODE, CMPY_NAME
+            SELECT 
+                CMPY_CODE, 
+                CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
             FROM GUI_COMPANYS
             WHERE BITAND(CMPY_TYPE, POWER(2, 4)) != 0
             ORDER BY CMPY_NAME ASC";
@@ -342,7 +348,10 @@ class Company extends CommonClass
     {
         //5 == issuer
         $query = "
-            SELECT CMPY_CODE, CMPY_NAME
+            SELECT 
+                CMPY_CODE, 
+                CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
             FROM GUI_COMPANYS
             WHERE BITAND(CMPY_TYPE, POWER(2, 1)) != 0
             ORDER BY CMPY_NAME ASC";
@@ -386,8 +395,10 @@ class Company extends CommonClass
     public function customers()
     {
         $query = "
-            SELECT CMPY_CODE,
-                CMPY_NAME
+            SELECT 
+                CMPY_CODE, 
+                CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
             FROM
                 COMPANYS
             WHERE BITAND(CMPY_TYPE, POWER(2, 3)) <> 0
@@ -405,7 +416,10 @@ class Company extends CommonClass
     {
         //5 == issuer
         $query = "
-            SELECT CMPY_CODE, CMPY_NAME
+            SELECT 
+                CMPY_CODE, 
+                CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
             FROM GUI_COMPANYS
             WHERE BITAND(CMPY_TYPE, POWER(2, 6)) != 0
             ORDER BY CMPY_NAME ASC";
@@ -423,7 +437,10 @@ class Company extends CommonClass
     public function carriers()
     {
         $query = "
-            SELECT CMPY_CODE, CMPY_NAME
+            SELECT 
+                CMPY_CODE, 
+                CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
             FROM GUI_COMPANYS
             WHERE BITAND(CMPY_TYPE, POWER(2, 2)) != 0
             ORDER BY CMPY_NAME ASC";

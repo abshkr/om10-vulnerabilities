@@ -1,47 +1,26 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 
-import { ORDER_LISTINGS } from '../../../../api';
+import { ORDER_LISTINGS } from 'api';
 
-const Supplier = ({ form, value, onChange, pageState }) => {
+const OrderSupplier = ({ value, onChange }) => {
   const { t } = useTranslation();
 
-  const { setFieldsValue } = form;
-
   const { data: options, isValidating } = useSWR(ORDER_LISTINGS.SUPPLIERS);
-
-  const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.orderSuppName')}`);
-    }
-
-    return Promise.resolve();
-  };
-
-  useEffect(() => {
-    if (value) {
-      setFieldsValue({
-        order_supp_code: value.order_supp_code,
-      });
-
-      onChange(value.order_supp_code);
-    }
-  }, [value, setFieldsValue, onChange]);
 
   return (
     <Form.Item
       name="order_supp_code"
-      label={t('fields.orderSuppName')}
-      rules={[{ required: true, validator: validate }]}
+      label={t('fields.supplier')}
     >
       <Select
         loading={isValidating}
         showSearch
         onChange={onChange}
-        disabled={(pageState==='create')? false : true}
+        disabled={!!value}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectSupplier') : null}
         filterOption={(value, option) =>
@@ -58,4 +37,4 @@ const Supplier = ({ form, value, onChange, pageState }) => {
   );
 };
 
-export default Supplier;
+export default OrderSupplier;

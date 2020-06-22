@@ -13,34 +13,38 @@ import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import axios from 'axios';
 import _ from 'lodash';
+import { useConfig } from 'hooks';
 
 import { COMPANIES } from '../../../api';
 
 const SupplierForm = ({ value, form }) => {
   const { data: payload } = useSWR(`${COMPANIES.CONFIG}?cmpy_code=${value?.cmpy_code}`);
+  const { externalBlendAllowed } = useConfig();
   
   const { t } = useTranslation();
   const { resetFields, setFieldsValue, getFieldDecorator } = form;
   
-  const [ cmpy_auto_reconc, setReconc ] = useState(value?.cmpy_auto_reconc)
-  const [ cmpy_host_docs, setHostDocs ] = useState(value?.cmpy_host_docs)
-  const [ cmpy_comms_ok, setComms ] = useState(value?.cmpy_comms_ok)
-  const [ cmpy_flag_2, setFlag2 ] = useState(value?.cmpy_flag_2)
-  const [ cmpy_log_ld_del, setLogDel ] = useState(value?.cmpy_log_ld_del)
-  const [ cmpy_ldtol_flag, setLoadTol ] = useState(value?.cmpy_ldtol_flag)
-  const [ cmpy_auto_ld, setAutoLoad ] = useState(value?.cmpy_auto_ld)
-  const [ cmpy_bltol_flag, setBlendTol ] = useState(value?.cmpy_bltol_flag)
-  const [ cmpy_ord_carrier, setOrdCarrier ] = useState(value?.cmpy_ord_carrier)
-  const [ cmpy_wgh_complet, setWghComplete ] = useState(value?.cmpy_wgh_complet)
-  const [ cmpy_schd_rev_repost, setReverseRepost ] = useState(value?.cmpy_schd_rev_repost)
-  const [ cmpy_movements_rev, setMovementRev ] = useState(value?.cmpy_movements_rev)
-  const [ cmpy_schd_archive, setArchive ] = useState(value?.cmpy_schd_archive)
+  const [cmpy_auto_reconc, setReconc] = useState(value?.cmpy_auto_reconc)
+  const [cmpy_host_docs, setHostDocs] = useState(value?.cmpy_host_docs)
+  const [cmpy_comms_ok, setComms] = useState(value?.cmpy_comms_ok)
+  const [cmpy_flag_2, setFlag2] = useState(value?.cmpy_flag_2)
+  const [cmpy_log_ld_del, setLogDel] = useState(value?.cmpy_log_ld_del)
+  const [cmpy_ldtol_flag, setLoadTol] = useState(value?.cmpy_ldtol_flag)
+  const [cmpy_auto_ld, setAutoLoad] = useState(value?.cmpy_auto_ld)
+  const [cmpy_bltol_flag, setBlendTol] = useState(value?.cmpy_bltol_flag)
+  const [cmpy_ord_carrier, setOrdCarrier] = useState(value?.cmpy_ord_carrier)
+  const [cmpy_wgh_complet, setWghComplete] = useState(value?.cmpy_wgh_complet)
+  const [cmpy_schd_rev_repost, setReverseRepost] = useState(value?.cmpy_schd_rev_repost)
+  const [cmpy_movements_rev, setMovementRev] = useState(value?.cmpy_movements_rev)
+  const [cmpy_schd_archive, setArchive] = useState(value?.cmpy_schd_archive)
   const [auto_complete_non_preschd_loads, setAutoNonSchedule] = useState(false)
   const [safefill_tolerance_check, setSafefillCheck] = useState(false)
   const [validate_schedule_max_weight, setValidateScheduleWeight] = useState(false)
   const [auth_at_gate, setAuthAtGate] = useState(false)
-  const [validate_schedule_availabitilty, setValidateSchd] = useState(false)
+  const [validate_schedule_availabitilty, setValidateSchd] = useState(false) 
+  const [cmpy_2nd_drawer_flag, setCmpy2ndDrawerFlag] = useState(false) 
   const [weightTolerance, setWeightTol] = useState(0)
+  const [drawers, setDrawers] = useState([])
   
   const IS_CREATING = !value;
   
@@ -162,6 +166,13 @@ const SupplierForm = ({ value, form }) => {
     });
   }
 
+  const onLink2ndDrawer = v => {
+    setCmpy2ndDrawerFlag(v)
+    setFieldsValue({
+      cmpy_2nd_drawer_flag: v,
+    });
+  }
+
   const onValidateSchd = v => {
     setValidateSchd(v)
     setFieldsValue({
@@ -224,6 +235,12 @@ const SupplierForm = ({ value, form }) => {
       const weightTolConfig = _.find(payload?.records, (item) => {
         return item.config_key === "LOAD_VEHICLE_WEIGHT_TOLERANCE"
       });
+      const cmpy2ndDrawerConfig = _.find(payload?.records, (item) => {
+        return item.config_key === "CMPY_2ND_DRAWER_FLAG"
+      });
+      const secondDrawerConfig = _.find(payload?.records, (item) => {
+        return item.config_key === "CMPY_2ND_DRAWER"
+      });
       setFieldsValue({
         auto_complete_non_preschd_loads: autoNonSchduleConfig && autoNonSchduleConfig.config_value === "Y" ? true:false,
         safefill_tolerance_check: safefillConfig && safefillConfig.config_value === "Y" ? true:false,
@@ -231,15 +248,37 @@ const SupplierForm = ({ value, form }) => {
         auth_at_gate: authAtGateConfig && authAtGateConfig.config_value === "Y" ? true:false,
         validate_schedule_availabitilty: validateSchdConfig && validateSchdConfig.config_value === "Y" ? true:false,
         weightTolerance: weightTolConfig?.config_value,
+        cmpy_2nd_drawer_flag: cmpy2ndDrawerConfig && cmpy2ndDrawerConfig.config_value === "Y" ? true:false,
+        cmpy_2nd_drawer: secondDrawerConfig?.config_value,
       })
-      setAutoNonSchedule(autoNonSchduleConfig && autoNonSchduleConfig.config_value === "Y" ? true:false)
-      setSafefillCheck(safefillConfig && safefillConfig.config_value === "Y" ? true:false)
-      setValidateScheduleWeight(validateWeightConfig && validateWeightConfig.config_value === "Y" ? true:false)
-      setAuthAtGate(authAtGateConfig && authAtGateConfig.config_value === "Y" ? true:false)
-      setValidateSchd(validateSchdConfig && validateSchdConfig.config_value === "Y" ? true:false)
-      setWeightTol(weightTolConfig?.config_value)
+      setAutoNonSchedule(autoNonSchduleConfig && autoNonSchduleConfig.config_value === "Y" ? true:false);
+      setSafefillCheck(safefillConfig && safefillConfig.config_value === "Y" ? true:false);
+      setValidateScheduleWeight(validateWeightConfig && validateWeightConfig.config_value === "Y" ? true:false);
+      setAuthAtGate(authAtGateConfig && authAtGateConfig.config_value === "Y" ? true:false);
+      setValidateSchd(validateSchdConfig && validateSchdConfig.config_value === "Y" ? true:false);
+      setWeightTol(weightTolConfig?.config_value);
+      setCmpy2ndDrawerFlag(cmpy2ndDrawerConfig && cmpy2ndDrawerConfig.config_value === "Y" ? true:false);
     }
   }, [value, setFieldsValue, payload, resetFields]);
+
+  useEffect(() => {
+    if (externalBlendAllowed) {
+      axios
+        .get(`${COMPANIES.DRAWERS}`)
+        .then((response) => {
+          const payload = response.data?.records || [];
+          setDrawers(payload);
+        })
+        .catch((errors) => {
+          _.forEach(errors.response.data.errors, (error) => {
+            notification.error({
+              message: error.type,
+              description: error.message,
+            });
+          });
+        });
+    }
+  }, [externalBlendAllowed]);
 
   const validate = (rule, input) => {
     // if (input === '' || !input) {
@@ -407,14 +446,52 @@ const SupplierForm = ({ value, form }) => {
       </Row>
 
       <Row justify="center">
-        <Col span={24}>
-          <Form.Item name="weightTolerance" label={t('fields.weightTolerance')} {...singleLineLayout} >
+        <Col span={12}>
+          <Form.Item name="weightTolerance" label={t('fields.weightTolerance')} {...leftItemLayout} >
             <InputNumber 
               min={0} 
               max={20} 
               formatter={value => `${value}%`}
               parser={value => value.replace('%', '')}/>
           </Form.Item>
+        </Col>
+        <Col span={12}>
+        {externalBlendAllowed && <Form.Item name="cmpy_2nd_drawer_flag" label={t('fields.linkToSecondDrawer')} {...rightItemLayout} >
+            <Switch 
+              checkedChildren={t('operations.yes')} 
+              unCheckedChildren={t('operations.no')} 
+              checked={cmpy_2nd_drawer_flag}
+              onChange={onLink2ndDrawer}
+            />
+          </Form.Item>
+        }
+        </Col>
+      </Row>
+
+      <Row justify="center">
+        <Col span={24}>
+          {externalBlendAllowed &&
+          <Form.Item name="cmpy_2nd_drawer" label={t('fields.linkedDrawer')} {...singleLineLayout} >
+            <Select
+              // loading={isValidating}
+              style={{width:"14vh"}}
+              showSearch
+              dropdownMatchSelectWidth={false}
+              optionFilterProp="children"
+              disabled={!cmpy_2nd_drawer_flag}
+              // placeholder={!value ? t('placeholder.selectHostDataType') : null}
+              filterOption={(value, option) =>
+                option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
+              }
+            >
+              {drawers.map((item, index) => (
+                <Select.Option key={index} value={item?.cmpy_code}>
+                  {item?.cmpy_desc}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          }
         </Col>
       </Row>
     </div>

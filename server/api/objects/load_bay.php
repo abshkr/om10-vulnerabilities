@@ -21,6 +21,16 @@ class LoadBay extends CommonClass
         "BA_LDCOMPL_TRAN" => 'Y',
     );
 
+    public $NUMBER_FIELDS = array(
+        "BAF_MIN_QTY",
+        "BAF_MAX_QTY",
+        "BAF_HI_RATE",
+        "BAF_LO_RATE",
+        "BAF_UP_QTY",
+        "BAF_DN_QTY",
+        "BAF_OVER_ORD"
+    );
+
     public function areas()
     {
         $serv = new AreaService($this->conn);
@@ -81,43 +91,37 @@ class LoadBay extends CommonClass
     public function details()
     {
         $query = "
-            SELECT BA_CODE, 
+            SELECT BAY_AREA.BA_CODE,
+                BAY_AREA.BA_LOCK,
+                BAY_AREA.BA_LDCOMPL_TRAN,
+                BAY_AREA.BA_TKR_FROM_SPEC,
+                BAD_HOSTNAME,
+                BA_DEVICE.BAD_PHYSCODE,
+                BA_DEVICE.BAD_LOCK,
+                BAY_AREA.BA_SEQ, BA_DEVICE.BAD_NAME, BAY_AREA.BA_INSTANCE,
                 BA_TYPE_VW.BA_TYPE,
-                BA_TYPE_VW.DESCRIPTION BA_TYPE_NAME,  
+                BA_TYPE_VW.DESCRIPTION BA_TYPE_NAME,
                 BA_AREA, 
                 AREA_NAME BA_AREA_NAME,
-                BA_HOSTNAME, 
-                BA_SERVER, 
-                BAD_PHYSCODE DEVICE_CODE, 
-                BAD_NAME DEVICE_NAME, 
-                BAT_DEV_ID DEV_TYPE_ID, 
-                BAT_DEV_NAME DEV_TYPE_NAME, 
-                BAT_BYTES DESCRIPTION, 
-                BAD_INSTANCE, 
-                BAD_CHANNEL, 
-                BAD_HOSTNAME, 
-                BAD_AUX, 
-                BAD_SERVER
-            FROM BAY_AREA BA, 
-                BA_TYPE_VW, 
-                BAD_BA, 
-                BA_DEVICE BD, 
-                BAT_DEV_TYP BT, 
-                BAT_ATTRIB BA, 
-                AREA_RC
-            WHERE BA.BA_TYPE = BA_TYPE_VW.BA_TYPE 
-                AND BA.BA_TYPE <> 0 
-                AND BA.BA_CODE = :bay_code
-                AND BD.BAD_LNKTYPE = BT.BAT_DEV_ID 
-                AND BA.BAT_DESIGNATION = BT.BAT_DEV_ID 
-                AND BAD_PHYSCODE <> 'NONE' 
-                AND BAD_PHYSCODE = :device_code
-                AND BA_CODE_LNK = BA_CODE
-                AND BAD_LNK = BAD_PHYSCODE
-                AND BA_AREA = AREA_K";
+                BAD_SERVER,
+                BAD_AUX,
+                BAD_CHANNEL,
+                BAT_DEV_ID DEV_TYPE_ID,
+                BAT_DEV_NAME DEV_TYPE_NAME
+            FROM BAY_AREA, 
+                BA_DEVICE,
+                BAD_BA,
+                BA_TYPE_VW,
+                AREA_RC,
+                BAT_DEV_TYP
+            WHERE BAY_AREA.BA_CODE = BAD_BA.BA_CODE_LNK
+                AND BA_DEVICE.BAD_PHYSCODE = BAD_BA.BAD_LNK
+                AND BAY_AREA.BA_TYPE = BA_TYPE_VW.BA_TYPE 
+                AND BA_AREA = AREA_K
+                AND BAD_LNKTYPE = BAT_DEV_ID 
+                AND BA_CODE = :bay_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':bay_code', $this->ba_code);
-        oci_bind_by_name($stmt, ':device_code', $this->bad_physcode);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -126,6 +130,55 @@ class LoadBay extends CommonClass
             return null;
         }
     }
+
+    // public function details()
+    // {
+    //     $query = "
+    //         SELECT BA_CODE, 
+    //             BA_TYPE_VW.BA_TYPE,
+    //             BA_TYPE_VW.DESCRIPTION BA_TYPE_NAME,  
+    //             BA_AREA, 
+    //             AREA_NAME BA_AREA_NAME,
+    //             BA_HOSTNAME, 
+    //             BA_SERVER, 
+    //             BAD_PHYSCODE DEVICE_CODE, 
+    //             BAD_NAME DEVICE_NAME, 
+    //             BAT_DEV_ID DEV_TYPE_ID, 
+    //             BAT_DEV_NAME DEV_TYPE_NAME, 
+    //             BAT_BYTES DESCRIPTION, 
+    //             BAD_INSTANCE, 
+    //             BAD_CHANNEL, 
+    //             BAD_HOSTNAME, 
+    //             BAD_AUX, 
+    //             BAD_SERVER
+    //         FROM BAY_AREA BA, 
+    //             BA_TYPE_VW, 
+    //             BAD_BA, 
+    //             BA_DEVICE BD, 
+    //             BAT_DEV_TYP BT, 
+    //             BAT_ATTRIB BA, 
+    //             AREA_RC
+    //         WHERE BA.BA_TYPE = BA_TYPE_VW.BA_TYPE 
+    //             AND BA.BA_TYPE <> 0 
+    //             AND BA.BA_CODE = :bay_code
+    //             AND BD.BAD_LNKTYPE = BT.BAT_DEV_ID 
+    //             AND BA.BAT_DESIGNATION = BT.BAT_DEV_ID 
+    //             AND BAD_PHYSCODE <> 'NONE' 
+    //             AND BAD_PHYSCODE = :device_code
+    //             AND BA_CODE_LNK = BA_CODE
+    //             AND BAD_LNK = BAD_PHYSCODE
+    //             AND BA_AREA = AREA_K";
+    //     $stmt = oci_parse($this->conn, $query);
+    //     oci_bind_by_name($stmt, ':bay_code', $this->ba_code);
+    //     oci_bind_by_name($stmt, ':device_code', $this->bad_physcode);
+    //     if (oci_execute($stmt, $this->commit_mode)) {
+    //         return $stmt;
+    //     } else {
+    //         $e = oci_error($stmt);
+    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         return null;
+    //     }
+    // }
 
     public function details_hook(&$hook_item)
     {
@@ -136,27 +189,129 @@ class LoadBay extends CommonClass
         // write_log(json_encode($hook_item), __FILE__, __LINE__);
 
         $query = "
-            SELECT ARM_NODE.PN_ARM,
-                SUBSTR(ARM_NODE.PN_ARM, -1) ARM_SEQ,
-                0 NUM_OF_BLEND,
-                METER_NODE.PN_MTR METER_CODE,
-                TANK_NODE.PN_TANK_TANKCODE TANK_CODE 
-            FROM PIPENODE ARM_NODE,
-                PIPENODE METER_NODE,
-                PIPENODE TANK_NODE,
-                STREAM_LINKS METER_TO_ARM,
-                STREAM_LINKS TANK_TO_METER
-            WHERE ARM_NODE.PN_TYPE = 8
-                AND METER_NODE.PN_TYPE = 2
-                AND TANK_NODE.PN_TYPE = 1
-                AND METER_TO_ARM.STREAM_LINK_UP = METER_NODE.PN_ID
-                AND METER_TO_ARM.STREAM_LINK_DOWN = ARM_NODE.PN_ID
-                AND TANK_TO_METER.STREAM_LINK_UP = TANK_NODE.PN_ID
-                AND TANK_TO_METER.STREAM_LINK_DOWN = METER_NODE.PN_ID
-                AND ARM_NODE.PN_ARM = :arm_code
-            GROUP BY ARM_NODE.PN_ARM, METER_NODE.PN_MTR, TANK_NODE.PN_TANK_TANKCODE";
+            SELECT *
+            FROM
+            (
+                SELECT BA.BAA_CODE AS STREAM_ARMCODE,
+                    BA.BAA_CODE AS STREAM_ARMNAME,
+                    BM.BAM_CODE AS STREAM_MTRCODE,
+                    BM.BAM_NAME AS STREAM_MTRNAME,
+                    BAF_MIN_QTY, 
+                    BAF_MAX_QTY, 
+                    BAF_HI_RATE, 
+                    BAF_LO_RATE, 
+                    BAF_UP_QTY, 
+                    BAF_DN_QTY, 
+                    BAF_OVER_ORD,
+                    BI.BAI_CODE AS STREAM_INJCODE,
+                    BI.BAI_CODE AS STREAM_INJNAME,
+                    TK.TANK_CODE AS STREAM_TANKCODE,
+                    TK.TANK_TERMINAL AS STREAM_TANKSITE,
+                    TK.TANK_NAME AS STREAM_TANKNAME,
+                    BS.BASE_CODE AS STREAM_BASECODE,
+                    BS.BASE_NAME AS STREAM_BASENAME,
+                    BS.BASE_CAT AS STREAM_BCLASS_CODE,
+                    BC.BCLASS_DESC AS STREAM_BCLASS_NMAE,
+                    BC.BCLASS_DENS_LO AS STREAM_BCLASS_LODENS,
+                    BC.BCLASS_DENS_HI AS STREAM_BCLASS_HIDENS,
+                    BC.BCLASS_VCF_ALG AS STREAM_BCLASS_VCFALG,
+                    PNM.PN_STREAM_SEQ AS STREAM_SEQ
+                FROM BA_ARMS BA,
+                    BA_METERS BM,
+                    BA_INJECTORS BI,
+                    TANKS TK,
+                    BASE_PRODS BS,
+                    BASECLASS BC,
+                    PIPENODE PNA,
+                    PIPENODE PNM,
+                    PIPENODE PNI,
+                    PIPENODE PNT,
+                    STREAM STR,
+                    STREAM_LINKS SLA,
+                    STREAM_LINKS SLM,
+                    STREAM_LINKS SLI,
+                    BA_FLOW_PROFS
+                WHERE BA.BAA_BAD_LNK = :bay_code
+                    AND PNA.PN_STREAM = STR.PS_ID
+                    AND STR.PS_ACTIVE = 'Y'
+                    AND BA.BAA_CODE = PNA.PN_ARM
+                    AND PNA.PN_STREAM = PNM.PN_STREAM
+                    AND PNM.PN_MTR = BM.BAM_CODE
+                    AND BA.BAA_CODE = PNA.PN_ARM
+                    AND PNA.PN_STREAM = PNT.PN_STREAM
+                    AND PNT.PN_TANK_TANKCODE = TK.TANK_CODE
+                    AND PNT.PN_TANK_TANKDEPO = TK.TANK_TERMINAL
+                    AND TK.TANK_BASE = BS.BASE_CODE
+                    AND BS.BASE_CAT = BC.BCLASS_NO
+                    AND BA.BAA_CODE = PNA.PN_ARM
+                    AND PNA.PN_STREAM = PNI.PN_STREAM
+                    AND PNI.PN_INJ = BI.BAI_CODE
+                    AND PNA.PN_ID = SLA.STREAM_LINK_DOWN
+                    AND SLA.STREAM_LINK_UP = PNM.PN_ID
+                    AND PNM.PN_ID = SLM.STREAM_LINK_DOWN
+                    AND SLM.STREAM_LINK_UP = PNT.PN_ID
+                    AND PNM.PN_ID = SLI.STREAM_LINK_DOWN
+                    AND SLI.STREAM_LINK_UP = PNI.PN_ID
+                    AND BA.BAA_CODE = BA_FLOW_PROFS.BAF_ARM_LINK 
+                UNION
+                SELECT BA.BAA_CODE AS STREAM_ARMCODE,
+                    BA.BAA_CODE AS STREAM_ARMNAME,
+                    BM.BAM_CODE AS STREAM_MTRCODE,
+                    BM.BAM_NAME AS STREAM_MTRNAME,
+                    BAF_MIN_QTY, 
+                    BAF_MAX_QTY, 
+                    BAF_HI_RATE, 
+                    BAF_LO_RATE, 
+                    BAF_UP_QTY, 
+                    BAF_DN_QTY, 
+                    BAF_OVER_ORD,
+                    NULL AS STREAM_INJCODE,
+                    NULL AS STREAM_INJNAME,
+                    TK.TANK_CODE AS STREAM_TANKCODE,
+                    TK.TANK_TERMINAL AS STREAM_TANKSITE,
+                    TK.TANK_NAME AS STREAM_TANKNAME,
+                    BS.BASE_CODE AS STREAM_BASECODE,
+                    BS.BASE_NAME AS STREAM_BASENAME,
+                    BS.BASE_CAT AS STREAM_BCLASS_CODE,
+                    BC.BCLASS_DESC AS STREAM_BCLASS_NMAE,
+                    BC.BCLASS_DENS_LO AS STREAM_BCLASS_LODENS,
+                    BC.BCLASS_DENS_HI AS STREAM_BCLASS_HIDENS,
+                    BC.BCLASS_VCF_ALG AS STREAM_BCLASS_VCFALG,
+                    PNM.PN_STREAM_SEQ AS STREAM_SEQ
+                FROM BA_ARMS BA,
+                    BA_METERS BM,
+                    TANKS TK,
+                    BASE_PRODS BS,
+                    BASECLASS BC,
+                    STREAM STR,
+                    PIPENODE PNA,
+                    PIPENODE PNM,
+                    PIPENODE PNT,
+                    STREAM_LINKS SLA,
+                    STREAM_LINKS SLM,
+                    BA_FLOW_PROFS
+                WHERE BA.BAA_BAD_LNK = :bay_code
+                    AND PNA.PN_STREAM = STR.PS_ID
+                    AND STR.PS_ACTIVE = 'Y'
+                    AND BA.BAA_CODE = PNA.PN_ARM
+                    AND PNA.PN_STREAM = PNM.PN_STREAM
+                    AND PNM.PN_MTR = BM.BAM_CODE
+                    AND BA.BAA_CODE = PNA.PN_ARM
+                    AND PNA.PN_STREAM = PNT.PN_STREAM
+                    AND PNT.PN_TANK_TANKCODE = TK.TANK_CODE
+                    AND PNT.PN_TANK_TANKDEPO = TK.TANK_TERMINAL
+                    AND TK.TANK_BASE = BS.BASE_CODE
+                    AND BS.BASE_CAT = BC.BCLASS_NO 
+                    AND PNA.PN_ID = SLA.STREAM_LINK_DOWN
+                    AND SLA.STREAM_LINK_UP = PNM.PN_ID
+                    AND PNM.PN_ID = SLM.STREAM_LINK_DOWN
+                    AND SLM.STREAM_LINK_UP = PNT.PN_ID
+                    AND BA.BAA_CODE = BA_FLOW_PROFS.BAF_ARM_LINK 
+                    AND 1 = (SELECT COUNT(*) FROM STREAM_LINKS SLNK WHERE SLNK.STREAM_LINK_DOWN = PNM.PN_ID)
+            )
+            ORDER BY STREAM_ARMCODE, STREAM_MTRCODE, STREAM_INJCODE";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':arm_code', $this->baa_code);
+        oci_bind_by_name($stmt, ':bay_code', $this->ba_code);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -167,6 +322,46 @@ class LoadBay extends CommonClass
         Utilities::retrieve($result, $this, $stmt, $method='NonExistHook');
         $hook_item['arm_meters'] = $result;
     }
+    // public function details_hook(&$hook_item)
+    // {
+    //     write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+    //         __FILE__, __LINE__);
+
+    //     $result = array();
+    //     // write_log(json_encode($hook_item), __FILE__, __LINE__);
+
+    //     $query = "
+    //         SELECT ARM_NODE.PN_ARM,
+    //             SUBSTR(ARM_NODE.PN_ARM, -1) ARM_SEQ,
+    //             0 NUM_OF_BLEND,
+    //             METER_NODE.PN_MTR METER_CODE,
+    //             TANK_NODE.PN_TANK_TANKCODE TANK_CODE 
+    //         FROM PIPENODE ARM_NODE,
+    //             PIPENODE METER_NODE,
+    //             PIPENODE TANK_NODE,
+    //             STREAM_LINKS METER_TO_ARM,
+    //             STREAM_LINKS TANK_TO_METER
+    //         WHERE ARM_NODE.PN_TYPE = 8
+    //             AND METER_NODE.PN_TYPE = 2
+    //             AND TANK_NODE.PN_TYPE = 1
+    //             AND METER_TO_ARM.STREAM_LINK_UP = METER_NODE.PN_ID
+    //             AND METER_TO_ARM.STREAM_LINK_DOWN = ARM_NODE.PN_ID
+    //             AND TANK_TO_METER.STREAM_LINK_UP = TANK_NODE.PN_ID
+    //             AND TANK_TO_METER.STREAM_LINK_DOWN = METER_NODE.PN_ID
+    //             AND ARM_NODE.PN_ARM = :arm_code
+    //         GROUP BY ARM_NODE.PN_ARM, METER_NODE.PN_MTR, TANK_NODE.PN_TANK_TANKCODE";
+    //     $stmt = oci_parse($this->conn, $query);
+    //     oci_bind_by_name($stmt, ':arm_code', $this->baa_code);
+    //     if (!oci_execute($stmt, $this->commit_mode)) {
+    //         $e = oci_error($stmt);
+    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         return;
+    //     }
+
+    //     //The last $method parameter need to be NonExistHook to prevent 
+    //     Utilities::retrieve($result, $this, $stmt, $method='NonExistHook');
+    //     $hook_item['arm_meters'] = $result;
+    // }
 
     public function details_decorate(&$result_array)
     {

@@ -7,6 +7,7 @@ const columns = (t) => [
     resizable: true,
     width: 150,
     suppressSizeToFit: true,
+    pinned: "left",
   },
   {
     headerName: t('fields.ddSuppCode'),

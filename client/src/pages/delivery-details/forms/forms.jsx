@@ -5,11 +5,10 @@ import {
   PlusOutlined,
   DeleteOutlined,
   QuestionCircleOutlined,
-  RedoOutlined,
-  ClockCircleOutlined,
+  CloseOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import _ from 'lodash';
@@ -234,6 +233,15 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
       footer={
         <>
           <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={onFormClosed}
+          >
+            {t('operations.cancel')}
+          </Button>
+
+          <Button
             type="primary"
             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             onClick={onFinish}
@@ -269,7 +277,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
       >
         <Tabs defaultActiveKey="1" onChange={doTabChanges}>
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Row gutter={[8, 8]}>
+            <Row gutter={[8, 2]}>
               <Col span={6}>
                 <Supplier form={form} value={value} onChange={setSupplier} pageState={pageState} />
               </Col>
@@ -287,7 +295,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               </Col>
             </Row>
 
-            <Row gutter={[8, 8]}>
+            <Row gutter={[8, 2]}>
               <Col span={6}>
                 <DeliveryType form={form} value={value} pageState={pageState} />
               </Col>
@@ -305,7 +313,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               </Col>
             </Row>
 
-            <Row gutter={[8, 8]}>
+            <Row gutter={[8, 2]}>
               <Col span={12}>
                 <Instruction form={form} value={value} pageState={pageState} />
               </Col>
@@ -315,7 +323,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               </Col>
             </Row>
 
-            <Row gutter={[8, 8]}>
+            <Row gutter={[8, 2]}>
               <Col span={6}>
                 <Phone form={form} value={value} pageState={pageState} />
               </Col>
@@ -333,7 +341,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               </Col>
             </Row>
 
-            <Row gutter={[8, 8]}>
+            <Row gutter={[8, 2]}>
               <Col span={6}>
                 <VatId form={form} value={value} pageState={pageState} />
               </Col>
@@ -347,7 +355,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               </Col>
             </Row>
 
-            <Row gutter={[8, 8]}>
+            <Row gutter={[8, 2]}>
               <Col span={6}>
                 <CustomCode form={form} value={value} pageState={pageState} />
               </Col>
@@ -365,15 +373,15 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               </Col>
             </Row>
 
-            <Divider />
+            {/* <Divider /> */}
 
-            <Row gutter={[8, 8]}>
+            <Row gutter={[8, 2]}>
               <Col span={24}>
                 <DeliveryDetailItems form={form} value={value} pageState={pageState} />
               </Col>
             </Row>
 
-            <Row gutter={[8, 8]}>
+            <Row gutter={[8, 2]}>
               <Col span={12}>
                 <DeliveryNoteTemplates form={form} value={value} pageState={pageState} />
               </Col>

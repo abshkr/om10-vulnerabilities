@@ -52,7 +52,7 @@ import { ManualTransactionsPopup } from '../../manual-transactions';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, pageState, revalidate }) => {
+const FormModal = ({ value, visible, handleFormState, access, pageState, revalidate, locateOrder }) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [mainTabOn, setMainTabOn] = useState(true);
   const [tableAPI, setTableAPI] = useState(undefined);
@@ -105,15 +105,19 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
     setMainTabOn(true);
   };
 
-  const onComplete = () => {
+  const onComplete = (order) => {
     console.log('start of onComplete');
-    handleFormState(false, null);
     setDrawerWidth('80vw');
     setMainTabOn(true);
-    revalidate();
+    if (order) {
+      locateOrder(order);
+    } else {
+      revalidate();
+    }
     setSupplier(undefined);
     setDrawer(undefined);
     setSelected(null);
+    handleFormState(false, null);
     console.log('end of onComplete');
   };
 
@@ -216,7 +220,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
         await axios
           .post(IS_CREATING ? ORDER_LISTINGS.CREATE : ORDER_LISTINGS.UPDATE, values)
           .then(() => {
-            onComplete();
+            onComplete(values?.order_cust_no);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
@@ -247,7 +251,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
         await axios
           .post(ORDER_LISTINGS.DELETE, value)
           .then(() => {
-            onComplete();
+            onComplete(null);
 
             notification.success({
               message: t('messages.deleteSuccess'),
@@ -281,7 +285,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
           })
           .then(() => {
             //getOrderItems();
-            onComplete();
+            onComplete(value?.order_cust_no);
 
             notification.success({
               message: t('messages.updateSuccess'),
@@ -315,7 +319,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
           })
           .then(() => {
             //getOrderItems();
-            onComplete();
+            onComplete(value?.order_cust_no);
 
             notification.success({
               message: t('messages.updateSuccess'),
@@ -592,7 +596,9 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               params={{
                 supplier: value?.order_supp_code,
                 customer: value?.order_cust_acnt,
+                cust_cmpy: value?.order_cust_code,
                 carrier: value?.order_carr_code,
+                order_sys_no: value?.order_sys_no,
                 order_cust_no: value?.order_cust_no,
                 trans_type: 'OPENORDER',
                 repost: false,

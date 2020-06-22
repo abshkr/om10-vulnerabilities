@@ -1,18 +1,18 @@
 import React from 'react';
 import { DatePicker, notification } from 'antd';
+import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 
-import { getDateTimeFormat } from '../../utils';
-
-import { useTranslation } from 'react-i18next';
+import getDateTimeFormat from 'utils/get-date-time-format';
 import { DATE_TIME_FORMAT } from 'constants/settings';
 
 const { RangePicker } = DatePicker;
 
-const Calendar = ({ handleChange, start, end, disabled, format }) => {
+const Calendar = ({ handleChange, start, end, disabled, format, max }) => {
   const { t } = useTranslation();
 
-  const dateFormat = format || getDateTimeFormat();
+  const formatted = format || getDateTimeFormat();
+  const limit = max || 1095;
 
   const ranges = {
     [t('fields.today')]: [moment(), moment()],
@@ -23,13 +23,13 @@ const Calendar = ({ handleChange, start, end, disabled, format }) => {
   const onChange = (dates) => {
     const difference = dates[1]?.diff(dates[0], 'days');
 
-    if (difference <= 30) {
+    if (difference <= limit) {
       handleChange(dates[0].format(DATE_TIME_FORMAT), dates[1].format(DATE_TIME_FORMAT));
     } else {
       notification.warning({
         key: 'date-range-warning',
         message: t('messages.maxDateRange'),
-        description: t('descriptions.maxDateRange'),
+        description: `${t('descriptions.maxDateRange')} ${limit}`,
       });
     }
   };
@@ -37,7 +37,7 @@ const Calendar = ({ handleChange, start, end, disabled, format }) => {
   return (
     <RangePicker
       allowClear={false}
-      format={dateFormat}
+      format={formatted}
       disabled={disabled || (!start && !end)}
       showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
       defaultValue={[moment(start, DATE_TIME_FORMAT), moment(end, DATE_TIME_FORMAT)]}

@@ -126,7 +126,8 @@ class Partner extends CommonClass
 
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         if ($row['CN'] > 0) {
-            throw new UndeletableException(sprintf("Partner %s cannot be deleted because it partnership", $this->prtnr_seq));
+            throw new UndeletableException(response("__PARTNERSHIP_EXISTS__"));
+            // throw new UndeletableException(sprintf("Partner %s cannot be deleted because it partnership", $this->prtnr_seq));
         }
 
         return true;

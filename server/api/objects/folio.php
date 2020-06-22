@@ -608,6 +608,8 @@ class Folio extends CommonClass
                 $count += 1;
             }
         }
+        sort($reports);
+
         // write_log(json_encode($reports), __FILE__, __LINE__);
         $result = array();
         $result["records"] = $reports;

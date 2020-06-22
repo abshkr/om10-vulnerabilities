@@ -368,6 +368,142 @@ class Movement extends CommonClass
     
     public function read()
     {
+        if (!isset($this->time_option)) {
+            $this->time_option = "MV_DTIM_EFFECT";
+        }
+        if (!isset($this->mv_key)) {
+            $this->mv_key = "-1";
+        }
+        if (!isset($this->mv_number)) {
+            $this->mv_number = "-1";
+        }
+        if (!isset($this->mv_status)) {
+            $this->mv_status = -1;
+        }
+        if (!isset($this->mv_srctype)) {
+            $this->mv_srctype = -1;
+        }
+        if (!isset($this->mv_terminal)) {
+            $this->mv_terminal = "-1";
+        }
+        if (!isset($this->start_date)) {
+            $this->start_date = "-1";
+        }
+        if (!isset($this->end_date)) {
+            $this->end_date = "-1";
+        }
+        if (isset($this->mv_key) && $this->mv_key !== "-1") {
+            $this->start_date = "-1";
+            $this->end_date = "-1";
+        }
+        if (isset($this->mv_number) && $this->mv_number !== "-1") {
+            $this->start_date = "-1";
+            $this->end_date = "-1";
+        }
+
+        $query = "
+            SELECT 
+                MV_ID,
+                MV_TERMINAL,
+                MV_NUMBER,
+                MV_KEY,
+                MV_IDOC_NUM,
+                MV_TYPE,
+                MV_CLASS,
+                MV_SRCTYPE,
+                MOVSOURCE_TYPE_NAME MV_SRCTYPE_NAME,
+                MV_STATUS,
+                MOVSTATUS_TYPE_NAME MV_STATUS_NAME,
+                MV_FOLIO,
+                MV_DTIM_CREATE,
+                MV_OPER_CREATE,
+                MV_DTIM_CHANGE,
+                MV_OPER_CHANGE,
+                MV_DTIM_EFFECT,
+                MV_OPER_EFFECT,
+                MV_DTIM_EXPIRY,
+                MV_CARRIER,
+                MV_SHIPPER,
+                MV_DRAWER,
+                MV_SUPPLIER,
+                MV_CUSTOMER,
+                MV_TPPOINT,
+                MV_TPP_TEXT,
+                MV_SHIPTYPE,
+                MV_SHIPTYPE_TEXT,
+                MV_SHIPMENT,
+                MV_SHIPMENT_TEXT,
+                MV_TPMODE,
+                MV_TPMODE_TEXT,
+                MV_ZVET_SRC,
+                MV_ZVET_NUM,
+                MV_TPSYSTEM,
+                MV_VEHICLE,
+                MV_VEH_TYPE,
+                MV_VEH_ID,
+                MV_COMMENTS,
+                MV_TSIT_PLANT,
+                MV_TSIT_STORE,
+                MV_NMIT_PLANT,
+                MV_NMIT_STORE,
+                MV_RAT_UPTOL,
+                MV_QTY_UPTOL,
+                MV_UNIT_UPTOL,
+                MV_RAT_DNTOL,
+                MV_QTY_DNTOL,
+                MV_UNIT_DNTOL,
+                MV_CUST_ORDNO,
+                MV_DLV_CODE,
+                MV_REF_CODE,
+                MV_DELDATE,
+                MV_APPROVED,
+                MV_INV_NO,
+                MV_TOTAL,
+                MV_LIMIT,
+                MV_APPR_NO,
+                MV_TRANSFER_TYP,
+                MV_PRINT_PRICE,
+                MV_PAY_DESC,
+                MV_SOURCE
+            FROM 
+                MOVEMENTS, 
+                MOVSTATUS_TYPES, 
+                MOVSOURCE_TYPES
+            WHERE 
+                1 = 1 
+                AND MV_STATUS = MOVSTATUS_TYPES.MOVSTATUS_TYPE_ID (+)
+                AND MV_SRCTYPE = MOVSOURCE_TYPES.MOVSOURCE_TYPE_ID
+                AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+                AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+                AND ('-1' = :mv_key OR MV_KEY LIKE '%'||:mv_key||'%')
+                AND ('-1' = :mv_number OR MV_NUMBER LIKE '%'||:mv_number||'%')
+                AND (-1 = :mv_status OR MV_STATUS = :mv_status)
+                AND (-1 = :mv_srctype OR MV_SRCTYPE = :mv_srctype)
+                AND (-1 = :mv_terminal OR MV_TERMINAL = :mv_terminal)
+            ORDER BY " . $this->time_option . " DESC
+            -- ORDER BY MV_ID DESC
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':start_date', $this->start_date);
+        oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        oci_bind_by_name($stmt, ':mv_key', $this->mv_key);
+        oci_bind_by_name($stmt, ':mv_number', $this->mv_number);
+        oci_bind_by_name($stmt, ':mv_status', $this->mv_status);
+        oci_bind_by_name($stmt, ':mv_srctype', $this->mv_srctype);
+        oci_bind_by_name($stmt, ':mv_terminal', $this->mv_terminal);
+        
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            write_log("DB error2:" . $this->start_date . $this->end_date, __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+    
+    public function read_by_time()
+    {
         if (isset($this->start_date)) {
             $query = "
                 SELECT MV_ID,
@@ -804,7 +940,7 @@ class Movement extends CommonClass
 
     public function pre_create()
     {
-        $query = "SELECT MAX(MV_ID) + 1 NEXT_ID FROM MOVEMENTS";
+        $query = "SELECT NVL(MAX(MV_ID), 0) + 1 NEXT_ID FROM MOVEMENTS";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);

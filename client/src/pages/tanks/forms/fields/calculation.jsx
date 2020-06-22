@@ -30,7 +30,29 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         tank_cor_vol: value?.tank_cor_vol,
         tank_liquid_kg: value?.tank_liquid_kg,
       });
+
+      // initialize the density source for calculation
+      if (value?.tank_density) {
+        pinDensity({ dens: value?.tank_density, type: 'D30C', title: t('fields.density') });
+      }
+      else if (value?.tank_api) {
+        pinDensity({ dens: value?.tank_api, type: 'A60F', title: t('fields.api') });
+      }
+      else {
+        pinDensity({ dens: value?.tank_15_density, type: 'D15C', title: t('fields.standardDensity') });
+      }
+      // initialize the quantity source for calculation
+      if (value?.tank_amb_vol) {
+        pinQuantity({ qty: value?.tank_amb_vol, type: 'LT', title: t('fields.ambientVolume') });
+      }
+      else if (value?.tank_cor_vol) {
+        pinQuantity({ qty: value?.tank_cor_vol, type: 'L15', title: t('fields.standardVolume') });
+      } 
+      else {
+        pinQuantity({ qty: value?.tank_liquid_kg, type: 'KG', title: t('fields.liquidMass') });
+      }
     }
+
   }, [value, setFieldsValue]);
 
   const handleTemperature = (selected) => {

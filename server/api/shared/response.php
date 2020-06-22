@@ -297,6 +297,42 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Internal error, check logs/php_rest_*.log file for details",
             "CHN" => "内部错误，请检查日志文件获取详情"
         ),
+        "__AMB_ADJUSTMENT__" => array(
+            "ENG" => "Ambient Quantity Adjustment (L)",
+            "CHN" => "视量调整(升)"
+        ),
+        "__STD_ADJUSTMENT__" => array(
+            "ENG" => "Standard Quantity Adjustment (L)",
+            "CHN" => "标量调整(升)"
+        ),
+        "__MASS_ADJUSTMENT__" => array(
+            "ENG" => "Mass Quantity Adjustment (KG)",
+            "CHN" => "质量调整(公斤)"
+        ),
+        "__LOAD_RETENTION__" => array(
+            "ENG" => "Load Retention Period (days) [60 - 1830]",
+            "CHN" => "发油账单保存时间(天)"
+        ),
+        "__LOAD_NEW_RETENTION__" => array(
+            "ENG" => "Load Retention New Loads (days) [1 - 365]",
+            "CHN" => "新发油账单保存时间(天)"
+        ),
+        "__LOAD_NEW_MOV_RETENTION__" => array(
+            "ENG" => "Load Retention New Movement (days) [60 - 1830]",
+            "CHN" => "新货单保存时间(天)"
+        ),
+        "__LOAD_MOV_RETENTION__" => array(
+            "ENG" => "Load Retention Used Movement (days) [60 - 1830]",
+            "CHN" => "已使用货单保存时间(天)"
+        ),
+        "__PERSONNEL_EXP_MONTHS__" => array(
+            "ENG" => "Personnel Expiry Months [0 - 12]",
+            "CHN" => "用户过期时间(月)"
+        ),
+        "__PARTNERSHIP_EXISTS__" => array(
+            "ENG" => "Cannot delete partner because there are partnership under it",
+            "CHN" => "不能删除合作商，存在有合作商关系"
+        ),
     );
 
     $lang = Utilities::getCurrLang();

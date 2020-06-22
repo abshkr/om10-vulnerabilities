@@ -482,14 +482,16 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
           {CAN_CALCULATE && (
             <>
-              <Button
-                type="primary"
-                icon={<RedoOutlined />}
-                style={{ marginRight: 5 }}
-                onClick={onCalculateByDensity}
-              >
-                {t('operations.calculateDensity')}
-              </Button>
+              {config?.manageAPI && (
+                <Button
+                  type="primary"
+                  icon={<RedoOutlined />}
+                  style={{ marginRight: 5 }}
+                  onClick={onCalculateByDensity}
+                >
+                  {t('operations.calculateDensity')}
+                </Button>
+              )}
 
               <Button
                 type="primary"
@@ -535,9 +537,11 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             <Gauging form={form} value={value} />
           </TabPane>
 
-          <TabPane tab={t('tabColumns.levels')} key="4">
-            <Levels form={form} value={value} />
-          </TabPane>
+          {config?.manageTankLevelAlarms && (
+            <TabPane tab={t('tabColumns.alarms')} key="4">
+              <Levels form={form} value={value} />
+            </TabPane>
+          )}
         </Tabs>
       </Form>
     </Drawer>

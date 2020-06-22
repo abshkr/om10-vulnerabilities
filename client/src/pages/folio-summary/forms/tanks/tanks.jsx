@@ -11,7 +11,7 @@ import { DataTable } from '../../../../components';
 import generator from './generator';
 import columns from './columns';
 
-const Tanks = ({ id, enabled, access }) => {
+const Tanks = ({ id, enabled, access, handleFormState }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -24,8 +24,7 @@ const Tanks = ({ id, enabled, access }) => {
 
   const fetch = useCallback(() => {
     setLoading(true);
-
-    api.get(`${FOLIO_SUMMARY.TANKS}?closeout_nr=${id}`).then((response) => {
+    axios.get(`${FOLIO_SUMMARY.TANKS}?closeout_nr=${id}`).then((response) => {
       setLoading(false);
 
       const values = generator(response.data.records);
@@ -177,15 +176,16 @@ const Tanks = ({ id, enabled, access }) => {
         data={data}
         isLoading={isLoading}
         t={t}
-        height="44vh"
+        height="25vh"
         onEditingFinished={onEditingFinished}
         handleSelect={setSelected}
         preSelected={preSelected}
         idKey="tank_code"
         apiContext={setAPI}
+        autoColWidth
       />
       <div className="operations">
-        <Button icon={<CloseOutlined />} style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
+        <Button icon={<CloseOutlined />} style={{ float: 'right' }} onClick={() => handleFormState(false, null)}>
           {t('operations.cancel')}
         </Button>
 

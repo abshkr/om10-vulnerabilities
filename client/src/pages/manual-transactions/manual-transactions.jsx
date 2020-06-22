@@ -21,10 +21,12 @@ import useAuth from 'hooks/use-auth';
 const { confirm } = Modal;
 
 const ManualTransactions = ({ popup, params }) => {
+  //console.log("params", params);
   const { t } = useTranslation();
   const access = useAuth('M_MANUALTRANSACTIONS');
   const [form] = Form.useForm();
 
+  const [repost, setRepost] = useState(false);
   // SCHEDULE: doing manual transaction with Load Schedule
   // OPENORDER: doing manual transaction with Open Order
   const [sourceType, setSourceType] = useState(undefined);
@@ -217,6 +219,12 @@ const ManualTransactions = ({ popup, params }) => {
     console.log('MT entry page sourceType', sourceType);
     resetFormData();
   }, [sourceType]);
+
+  useEffect(() => {
+    if (params && popup && !repost) {
+      setRepost(params?.repost);
+    }
+  }, [popup, params, repost]);
 
   /* useEffect(() => {
     if (params && popup) {

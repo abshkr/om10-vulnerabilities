@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import { Layout } from 'antd';
 
 import ConfigProvider from 'context/config-context';
+import { NavBar, Navigation, Status } from '..';
 
 import { InterfaceContainer } from './style';
-import { NavBar, Navigation, Status } from '..';
 
 const { Content, Sider, Footer } = Layout;
 

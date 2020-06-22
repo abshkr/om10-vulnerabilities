@@ -4,21 +4,25 @@ const columns = t => [
     field: 'meter_code',
     sortable: true,
     resizable: true,
-    width: 100
+    width: 100,
+    suppressSizeToFit: true, 
+    pinned: "left",
   },
   {
     headerName: t('fields.productCode'),
     field: 'stream_basecode',
     sortable: true,
     resizable: true,
-    width: 100
+    width: 110,
+    suppressSizeToFit: true, 
   },
   {
     headerName: t('fields.productName'),
     field: 'stream_basename',
     sortable: true,
     resizable: true,
-    width: 100
+    width: 140,
+    suppressSizeToFit: true, 
   },
   {
     headerName: t('fields.closingAmbient'),
@@ -27,14 +31,16 @@ const columns = t => [
     resizable: true,
     editable: true,
     width: 100,
-    cellEditor: 'NumericEditor'
+    cellEditor: 'NumericEditor',
+    suppressSizeToFit: true, 
   },
   {
     headerName: t('fields.closingMass'),
     field: 'close_mass_tot',
     sortable: true,
     resizable: true,
-    width: 100
+    width: 100,
+    suppressSizeToFit: true, 
   },
 
   {
@@ -44,7 +50,8 @@ const columns = t => [
     resizable: true,
     editable: true,
     width: 100,
-    cellEditor: 'NumericEditor'
+    cellEditor: 'NumericEditor',
+    suppressSizeToFit: true, 
   },
 
   {
@@ -52,7 +59,8 @@ const columns = t => [
     field: 'adj_mass_tot',
     sortable: true,
     resizable: true,
-    width: 100
+    width: 100,
+    suppressSizeToFit: true, 
   },
 
   {
@@ -61,7 +69,8 @@ const columns = t => [
     sortable: true,
     resizable: true,
     editable: true,
-    width: 300
+    width: 300,
+    suppressSizeToFit: true, 
   },
 
   {
@@ -70,7 +79,8 @@ const columns = t => [
     sortable: true,
     resizable: true,
     editable: true,
-    width: 250
+    width: 250,
+    suppressSizeToFit: true, 
   },
 
   {
@@ -78,7 +88,8 @@ const columns = t => [
     field: 'bam_qty_type_str',
     sortable: true,
     resizable: true,
-    width: 80
+    width: 80,
+    suppressSizeToFit: true, 
   },
 
   {
@@ -86,7 +97,8 @@ const columns = t => [
     field: 'user_code',
     sortable: true,
     resizable: true,
-    width: 100
+    width: 100,
+    suppressSizeToFit: true, 
   },
 
   {
@@ -95,7 +107,8 @@ const columns = t => [
     sortable: true,
     resizable: true,
     width: 190,
-    cellRenderer: 'DateRenderer'
+    cellRenderer: 'DateRenderer',
+    suppressSizeToFit: true, 
   }
 ];
 

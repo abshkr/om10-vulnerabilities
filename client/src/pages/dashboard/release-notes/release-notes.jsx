@@ -33,6 +33,17 @@ const data = [
 
         <>
           <Divider>Bug Fixes</Divider>
+
+          <p>
+            OM5K-6652 - <a>https://dev.diamondkey.com/browse/OM5K-6652</a>
+          </p>
+          <p>
+            OM5K-6705 - <a>https://dev.diamondkey.com/browse/OM5K-6705</a>
+          </p>
+          <p>
+            OM5K-6708 - <a>https://dev.diamondkey.com/browse/OM5K-6708</a>
+          </p>
+
           <p>
             OM5K-6455 - <a>https://dev.diamondkey.com/browse/OM5K-6455</a>
           </p>

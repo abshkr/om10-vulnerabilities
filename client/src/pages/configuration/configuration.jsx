@@ -72,6 +72,36 @@ const FormSwitch = ({ config, onChange }) => {
         />
       );
 
+    case 'SITE_LD_RETNPRD', 'SITE_LD_RETNPRD_NEW_MOV', 'SITE_LD_RETNPRD_USED_MOV':
+      return (
+        <InputNumber
+          min={60}
+          max={1830}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'SITE_EXP_MONTHS':
+      return (
+        <InputNumber
+          min={0}
+          max={12}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'SITE_LD_RETN_NEWLDS':
+      return (
+        <InputNumber
+          min={0}
+          max={12}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
     default:
       return <InputNumber value={config.config_value} onChange={(value) => onChange(config, value)} />;
   }
@@ -112,7 +142,7 @@ const FeatureItems = ({ data, onChange }) => (
     style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}
     itemLayout="horizontal"
     size="small"
-    dataSource={data}
+    dataSource={data.filter((item)=>(item.feature_gui===true))}
     renderItem={(item) => {
       return (
         <List.Item style={{ background: 'white', marginBottom: 10, marginRight: 10, borderRadius: 5 }}>
@@ -120,7 +150,7 @@ const FeatureItems = ({ data, onChange }) => (
             style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}
             avatar={
               <Switch
-                checked={item.feature_gui}
+                checked={item.feature_flag}
                 checkedChildren={<span>On</span>}
                 unCheckedChildren={<span>Off</span>}
                 onChange={(value) => onChange(item, value)}
@@ -164,7 +194,7 @@ const Configuration = ({ config }) => {
   const onFeatureEdit = (object, value) => {
     let payload = [...features];
 
-    object.feature_gui = value;
+    object.feature_flag = value;
 
     const index = _.findIndex(payload, ['feature_code', object.feature_code]);
 
@@ -284,7 +314,10 @@ const Configuration = ({ config }) => {
           </TabPane>
 
           <TabPane tab={t('tabColumns.closeoutOptions')} key="4">
-            <ConfigurationItems data={_.filter(configuration, ['config_required_by_gui', ''])} />
+            <ConfigurationItems 
+              data={_.filter(configuration, ['config_required_by_gui', 'M'])}
+              onChange={onConfigurationEdit}
+            />
           </TabPane>
 
           <TabPane tab={t('tabColumns.seals')} key="5">

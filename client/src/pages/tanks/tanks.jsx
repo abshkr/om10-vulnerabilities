@@ -157,9 +157,11 @@ const Tanks = () => {
               <Calculations selected={selected} access={access} config={config} />
             </TabPane>
 
-            <TabPane key="5" tab={t('tabColumns.alarms')} disabled={isLoading}>
-              <Alarms selected={selected} access={access} />
-            </TabPane>
+            {config?.manageTankLevelAlarms && (
+              <TabPane key="5" tab={t('tabColumns.alarms')} disabled={isLoading}>
+                <Alarms selected={selected} access={access} />
+              </TabPane>
+            )}
 
             <TabPane key="6" tab={t('tabColumns.gauge')} disabled={isLoading}>
               <Gauging selected={selected} access={access} />
