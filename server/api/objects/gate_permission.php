@@ -333,7 +333,7 @@ class GatePermission extends CommonClass
 
     private function next_id()
     {
-        $query = "SELECT MAX(PRMSSN_K) + 1 NEXT_NO
+        $query = "SELECT NVL(MAX(PRMSSN_K), 0) + 1 NEXT_NO
             FROM PRMSSN_RC";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
@@ -348,7 +348,7 @@ class GatePermission extends CommonClass
 
     public function next_prm_id()
     {
-        $query = "SELECT MAX(PRMSSN_K) + 1 NEXT_PRM_ID
+        $query = "SELECT NVL(MAX(PRMSSN_K), 0) + 1 NEXT_PRM_ID
             FROM PRMSSN_RC";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {

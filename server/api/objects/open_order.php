@@ -606,7 +606,7 @@ class OpenOrder extends CommonClass
 
     private function next_order_no()
     {
-        $query = "SELECT MAX(ORDER_NO) + 1 NEXT_NO
+        $query = "SELECT NVL(MAX(ORDER_NO), 0) + 1 NEXT_NO
             FROM CUST_ORDER";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
