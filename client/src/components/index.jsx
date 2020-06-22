@@ -1,52 +1,23 @@
-import Calendar from './calendar';
-import Download from './download';
-import Loading from './loading';
-import Navigation from './navigation';
-import Page from './page';
-import DataTable from './table';
-import Equipment from './equipment';
-import Expiry from './expiry';
-import Tank from './tank';
-import Search from './search';
-import WindowSearch from './search-ex';
-import NavBar from './nav-bar';
-import Interface from './interface';
-import FormModal from './form-modal';
-import IButton from './i-button';
-import CheckList from './check-list';
-import PasswordReset from './password-reset';
-
-import Icons from './icons';
-import Status from './status';
-import Events from './events';
-import TableTransfer from './table-transfer';
-import ListView from './list-view';
-import Favourites from './favourites';
-import Locked from './locked';
-
-export {
-  Expiry,
-  Calendar,
-  Download,
-  Loading,
-  Navigation,
-  Page,
-  DataTable,
-  Equipment,
-  Tank,
-  Search,
-  NavBar,
-  Interface,
-  FormModal,
-  IButton,
-  CheckList,
-  PasswordReset,
-  Icons,
-  Status,
-  Events,
-  TableTransfer,
-  ListView,
-  Favourites,
-  WindowSearch,
-  Locked,
-};
+export { default as Calendar } from './calendar';
+export { default as Expiry } from './expiry';
+export { default as Download } from './download';
+export { default as Loading } from './loading';
+export { default as Navigation } from './navigation';
+export { default as Page } from './page';
+export { default as DataTable } from './table';
+export { default as Equipment } from './equipment';
+export { default as Search } from './search';
+export { default as NavBar } from './nav-bar';
+export { default as Interface } from './interface';
+export { default as FormModal } from './form-modal';
+export { default as IButton } from './i-button';
+export { default as CheckList } from './check-list';
+export { default as PasswordReset } from './password-reset';
+export { default as Icons } from './icons';
+export { default as Status } from './status';
+export { default as Events } from './events';
+export { default as TableTransfer } from './table-transfer';
+export { default as ListView } from './list-view';
+export { default as Favourites } from './favourites';
+export { default as WindowSearch } from './search-ex';
+export { default as Locked } from './locked';

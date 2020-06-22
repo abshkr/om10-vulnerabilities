@@ -1407,7 +1407,8 @@
     "favouriteAddded": "Successfully Favourited.",
     "favouriteRemoved": "Successfully Removed.",
     "lockSuccess": "Successfully Locked.",
-    "maxDateRange": "Max Date Change Exceeded."
+    "maxDateRange": "Max Date Change Exceeded.",
+    "unauthorized": "Unauthorized"
   },
 
   "prompts": {
@@ -1542,8 +1543,9 @@
     "cannotDeleteLocked": "Locked equipment cannot be deleted",
     "cannotDeleteTareIn": "Must-tare-in equipment cannot be deleted",
     "lastFieldChanged": "Last field changed",
-    "maxDateRange": "Please keep the range to within the 30 days of the starting and ending date.",
-	"ignoreTolerance": "Ignore tolerance check"
+    "maxDateRange": "Date Range Limited to: ",
+    "ignoreTolerance": "Ignore tolerance check",
+    "unauthorized": "Sorry, you are not authorized to access this page."
   },
 
   "placeholder": {

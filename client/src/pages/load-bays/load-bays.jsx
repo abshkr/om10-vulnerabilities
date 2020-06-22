@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button, Tabs } from 'antd';
 import Iframe from 'react-iframe';
 import useSWR from 'swr';
 
@@ -10,12 +11,18 @@ import useAuth from 'hooks/use-auth';
 import * as LOAD_BAYS from 'api/load-bays';
 import * as SETTINGS from 'constants/settings';
 
+import Bay from './bay';
+
+const { TabPane } = Tabs;
+
 const LoadBays = () => {
   const { t } = useTranslation();
 
   const { data: payload, revalidate } = useSWR(LOAD_BAYS.READ);
 
   const access = useAuth('M_LOADBAYS');
+
+  const [selected, setSelected] = useState(null);
 
   const page = t('pageMenu.config');
   const name = t('pageNames.loadBays');
@@ -59,7 +66,14 @@ const LoadBays = () => {
         name="bad_name"
         description={description}
         isLoading={isLoading}
-      ></ListView>
+        onSelect={setSelected}
+      >
+        <Tabs defaultActiveKey="1" type="card">
+          <TabPane key="1" tab={t('tabColumns.overview')} disabled={isLoading}>
+            <Bay selected={selected} />
+          </TabPane>
+        </Tabs>
+      </ListView>
     </Page>
   );
 };
