@@ -6,14 +6,10 @@ const OverviewContainer = styled.div`
   align-items: center;
   height: -webkit-fill-available;
   overflow-y: auto;
+
+  & .rd3t-tree-container {
+    height: calc(100vh - 300px);
+  }
 `;
 
-const Container = styled.div`
-  width: 50%;
-  display: flex;
-  justify-content: ${(props) => (props.centered ? 'center' : null)};
-  align-content: center;
-  align-items: center;
-`;
-
-export { OverviewContainer, Container };
+export { OverviewContainer };
