@@ -39,8 +39,9 @@ const FormModal = ({ value, visible, handleFormState, access, data }) => {
     const privilege = IS_CREATING ? [] : generator(value.privilege, values);
 
     const payload = {
-      ...value,
-      role_note: values.role_note,
+      auth_level_name: IS_CREATING ? values?.auth_level_name : value?.auth_level_name,
+      role_note: IS_CREATING ? values?.role_note : value?.role_note,
+      role_code: IS_CREATING ? undefined : value?.role_code,
       privilege,
     };
 
