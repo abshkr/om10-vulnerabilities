@@ -72,6 +72,36 @@ const FormSwitch = ({ config, onChange }) => {
         />
       );
 
+    case 'SITE_LD_RETNPRD', 'SITE_LD_RETNPRD_NEW_MOV', 'SITE_LD_RETNPRD_USED_MOV':
+      return (
+        <InputNumber
+          min={60}
+          max={1830}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'SITE_EXP_MONTHS':
+      return (
+        <InputNumber
+          min={0}
+          max={12}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'SITE_LD_RETN_NEWLDS':
+      return (
+        <InputNumber
+          min={0}
+          max={12}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
     default:
       return <InputNumber value={config.config_value} onChange={(value) => onChange(config, value)} />;
   }
@@ -284,7 +314,10 @@ const Configuration = ({ config }) => {
           </TabPane>
 
           <TabPane tab={t('tabColumns.closeoutOptions')} key="4">
-            <ConfigurationItems data={_.filter(configuration, ['config_required_by_gui', ''])} />
+            <ConfigurationItems 
+              data={_.filter(configuration, ['config_required_by_gui', 'M'])}
+              onChange={onConfigurationEdit}
+            />
           </TabPane>
 
           <TabPane tab={t('tabColumns.seals')} key="5">

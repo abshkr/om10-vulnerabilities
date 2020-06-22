@@ -48,11 +48,12 @@ const DeliveryDetailItems = ({ form, value, pageState }) => {
           columns={fields}
           data={data}
           isLoading={isLoading}
-          height="42vh"
+          parentHeight="20vh"
           onClick={(payload) => handleItemSelect([payload])}
           handleSelect={(payload) => handleItemSelect(payload)}
           //apiContext={setTableAPI}
           selectionMode="single"
+          minimal
           //onEditingFinished={onEditingFinished}
         />
       </Form.Item>

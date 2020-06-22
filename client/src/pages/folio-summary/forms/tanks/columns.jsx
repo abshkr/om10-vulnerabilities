@@ -4,14 +4,17 @@ const columns = (t) => [
     field: 'tank_code',
     sortable: true,
     resizable: true,
-    width: 80,
+    width: 100,
+    suppressSizeToFit: true, 
+    pinned: "left",
   },
   {
     headerName: t('fields.productCode'),
     field: 'tank_base',
     sortable: true,
     resizable: true,
-    width: 80,
+    width: 100,
+    suppressSizeToFit: true, 
   },
 
   {
@@ -20,6 +23,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 100,
+    suppressSizeToFit: true, 
   },
 
   {
@@ -28,6 +32,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 100,
+    suppressSizeToFit: true, 
   },
 
   {
@@ -38,6 +43,7 @@ const columns = (t) => [
     editable: true,
     width: 100,
     cellEditor: 'NumericEditor',
+    suppressSizeToFit: true, 
   },
 
   {
@@ -48,6 +54,7 @@ const columns = (t) => [
     editable: true,
     width: 100,
     cellEditor: 'NumericEditor',
+    suppressSizeToFit: true, 
   },
 
   {
@@ -58,6 +65,7 @@ const columns = (t) => [
     editable: true,
     width: 100,
     cellEditor: 'NumericEditor',
+    suppressSizeToFit: true, 
   },
 
   {
@@ -68,6 +76,7 @@ const columns = (t) => [
     checkboxSelection: true,
     headerCheckboxSelection: true,
     cellRenderer: 'NullRenderer',
+    suppressSizeToFit: true, 
   },
 
   {
@@ -81,6 +90,7 @@ const columns = (t) => [
     cellEditorParams: {
       values: ['123', '555', 'test'],
     },
+    suppressSizeToFit: true, 
   },
 
   {
@@ -95,6 +105,7 @@ const columns = (t) => [
       max: 'max_temp',
       min: 'min_temp',
     },
+    suppressSizeToFit: true, 
   },
 
   {
@@ -109,6 +120,7 @@ const columns = (t) => [
       max: 'bclass_dens_hi',
       min: 'bclass_dens_lo',
     },
+    suppressSizeToFit: true, 
   },
 
   {
@@ -118,6 +130,7 @@ const columns = (t) => [
     resizable: true,
     editable: true,
     width: 160,
+    suppressSizeToFit: true, 
   },
 
   {
@@ -126,6 +139,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 100,
+    suppressSizeToFit: true, 
   },
 
   {
@@ -135,6 +149,7 @@ const columns = (t) => [
     resizable: true,
     width: 160,
     cellRenderer: 'DateRenderer',
+    suppressSizeToFit: true, 
   },
 ];
 

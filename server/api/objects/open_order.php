@@ -107,7 +107,8 @@ class OpenOrder extends CommonClass
 
         $query = "
             SELECT * FROM " . $this->VIEW_NAME . "
-            WHERE 1 = 1
+            WHERE 
+                1 = 1
                 AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
                 AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
                 AND ('-1' = :supplier OR ORDER_SUPP_CODE = :supplier)
@@ -605,7 +606,7 @@ class OpenOrder extends CommonClass
 
     private function next_order_no()
     {
-        $query = "SELECT MAX(ORDER_NO) + 1 NEXT_NO
+        $query = "SELECT NVL(MAX(ORDER_NO), 0) + 1 NEXT_NO
             FROM CUST_ORDER";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {

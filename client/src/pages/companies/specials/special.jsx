@@ -20,12 +20,15 @@ import { mutate } from 'swr';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, handleFormState }) => {
+const FormModal = ({ value, handleFormState, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const onComplete = () => {
     handleFormState(false, null);
+    if (value.cmpy_code) {
+      setFilterValue("" + value.cmpy_code);
+    }
     mutate(COMPANIES.READ);
     Modal.destroyAll();
   };
@@ -63,7 +66,17 @@ const FormModal = ({ value, handleFormState }) => {
       {
         cmpy_code: value.cmpy_code,
         config_key: 'LOAD_VEHICLE_WEIGHT_TOLERANCE',
-        config_value: values.weightTolerance
+        config_value: values.weightTolerance,
+      },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'CMPY_2ND_DRAWER_FLAG',
+        config_value: values.cmpy_2nd_drawer_flag ? "Y" : "N",
+      },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'CMPY_2ND_DRAWER',
+        config_value: values.cmpy_2nd_drawer,
       },
     ]
     

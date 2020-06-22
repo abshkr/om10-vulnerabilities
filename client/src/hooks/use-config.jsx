@@ -62,6 +62,7 @@ const useConfig = () => {
     safefillCheckByHighTemp: false,
     showLSI: false,
     showSeals: false,
+    externalBlendAllowed: false,
     loading: true,
   });
 
@@ -177,6 +178,7 @@ const useConfig = () => {
         sessionPerUser: configurationObject?.URBAC_SESSION_PER_USER,
         userAutoDelete: configurationObject?.URBAC_USER_AUTO_DELETE,
         userAutoLock: configurationObject?.URBAC_USER_AUTO_LOCK,
+        externalBlendAllowed: configurationObject?.SITE_EXTERNAL_BLENDING_ALLOWED,
         loading: false,
       });
     }

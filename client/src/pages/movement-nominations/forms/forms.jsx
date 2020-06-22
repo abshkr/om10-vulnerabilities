@@ -40,7 +40,7 @@ import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, url }) => {
+const FormModal = ({ value, visible, handleFormState, access, url, locateNomination }) => {
   const [tableAPI, setTableAPI] = useState(null);
   const [carrier, setCarrier] = useState(null);
   const { t } = useTranslation();
@@ -55,9 +55,13 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
     handleFormState(false, null);
   };
 
-  const onComplete = () => {
+  const onComplete = (nomination) => {
     handleFormState(false, null);
-    mutate(url);
+    if (nomination) {
+      locateNomination(nomination);
+    } else {
+      mutate(url);
+    }
   };
 
   const onItemValidation = (items) => {
@@ -123,7 +127,7 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
             .post(IS_CREATING ? MOVEMENT_NOMIATIONS.CREATE : MOVEMENT_NOMIATIONS.UPDATE, values)
             .then(
               axios.spread((response) => {
-                onComplete();
+                onComplete(values?.mv_key);
                 //Modal.destroyAll();
 
                 //mutate(url);
@@ -156,7 +160,7 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
           .post(MOVEMENT_NOMIATIONS.DELETE, value)
           .then(
             axios.spread((response) => {
-              onComplete();
+              onComplete(null);
               //mutate(MOVEMENT_NOMIATIONS.READ);
               //Modal.destroyAll();
               notification.success({

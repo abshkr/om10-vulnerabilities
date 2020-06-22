@@ -10,7 +10,7 @@ import { DataTable } from '../../../../components';
 
 import columns from './columns';
 
-const Meters = ({ id, enabled, access }) => {
+const Meters = ({ id, enabled, access, handleFormState }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -65,11 +65,12 @@ const Meters = ({ id, enabled, access }) => {
         columns={fields}
         data={payload?.records}
         isLoading={isValidating}
-        height="40vh"
+        height="25vh"
         onEditingFinished={onEditingFinished}
+        autoColWidth
       />
       <div className="operations">
-        <Button icon={<CloseOutlined />} style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
+        <Button icon={<CloseOutlined />} style={{ float: 'right' }} onClick={() => handleFormState(false, null)}>
           {t('operations.cancel')}
         </Button>
 

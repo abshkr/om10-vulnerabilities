@@ -54,6 +54,7 @@ import { ManualTransactionsPopup } from '../../manual-transactions';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, url, locateTrip }) => {
+  console.log(value)
   const { manageMakeManualTransaction, showSeals, manageAdditionalHostData } = useConfig();
 
   const { t } = useTranslation();
@@ -307,7 +308,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       setTab('0');
 
       setFieldsValue({
-        shls_ld_type: value.shls_ld_type,
+        shls_ld_type: value.shls_ld_type? value.shls_ld_type : "3",
       });
       setMode(value.shls_ld_type);
     }
@@ -451,8 +452,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                 onChange={(event) => setMode(event.target.value)}
                 disabled={!!value}
               >
-                <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>
-                <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button>
+                {(IS_CREATING || value?.shls_ld_type !== '2') && <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>}
+                {(IS_CREATING || value?.shls_ld_type === '2') && <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button>}
+                {/* <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>
+                <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button> */}
               </Radio.Group>
             </Form.Item>
 
