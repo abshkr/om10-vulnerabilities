@@ -233,6 +233,23 @@ const General = ({ form, value, config }) => {
           </Form.Item>
         </Col>
       </Row>
+
+      <Row gutter={[8, 8]}>
+        <Col span={12}>
+          <Form.Item name="tank_dtol_percent" label={`${t('fields.dailyVarianceLimit')} (%)`}>
+            <InputNumber style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+
+        <Col span={12}>
+          <Form.Item
+            name="tank_dtol_volume"
+            label={`${t('fields.dailyVarianceLimit')} (${t('units.volume')})`}
+          >
+            <Input style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+      </Row>
     </>
   );
 };

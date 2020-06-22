@@ -963,8 +963,8 @@
     "authAtDLI": "Load authorisation at DLI",
     "archiveSchedules": "Archive schedules",
     "validateSchdAtDLI": "Validate load schedle availability at DLI",
-	"linkToSecondDrawer": "Link to second drawer company",
-	"linkedDrawer": "Linked drawer company",
+    "linkToSecondDrawer": "Link to second drawer company",
+    "linkedDrawer": "Linked drawer company",
     "weightTolerance": "Tolerance % of the total load vehicle weight (0-20)",
     "vetFlag": "Load specification vet flag",
     "equipMustInArea": "Equipment must be in area of load authorisation",
@@ -1060,7 +1060,8 @@
     "resubmitted": "Resubmitted",
     "today": "Today",
     "thisWeek": "This Week",
-    "thisMonth": "This Month"
+    "thisMonth": "This Month",
+    "leakDetection": "Leak Detection"
   },
 
   "pageMenu": {
@@ -1253,7 +1254,7 @@
     "deselectAll": "Deselect All",
     "print": "Print",
     "preOrder": "Pre Order",
-	"openOrder": "Open Order",
+    "openOrder": "Open Order",
     "preSchedule": "Pre Schedule",
     "add": "Add",
     "simple": "Simple",
