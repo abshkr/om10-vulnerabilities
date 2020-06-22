@@ -19,7 +19,7 @@ define("HTTP_CODE_ENABLED", true);
 define('AUTH_CHECK', true);
 
 //Set it to true to use Token-based authentication. false uses table HTTP_SESSION_TRACE
-define('JWT_AUTH', false);
+define('JWT_AUTH', true);
 
 //Set it to true to call ini_set('display_errors', 1) and error_reporting(E_ALL)
 define('DISPLAY_ALL_ERROS', false);
@@ -45,7 +45,7 @@ define('JWT_SECRET', 'dki_jwt');
 //if it is true, store $token['sess_id'] in db, and when check token
 //also check if $token['sess_id'] is in db. Because when logout, $token['sess_id']
 //will be delete from db, so it invalidate this token
-define('INVALIDATE_TOKEN_ENABLED', false);
+define('INVALIDATE_TOKEN_ENABLED', true);
 
 //If it is false, when token is expired, do not reject 
 define('EXPIRY_TOKEN_ENABLED', false);

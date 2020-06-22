@@ -23,19 +23,21 @@ function get_http_token()
     if (AUTH_IN_HEADER) {
         $headers = apache_request_headers();
 
-        if (!isset($headers['Authorization'])) {
+        $authorization = isset($headers['Authorization']) ? $headers['Authorization'] : $headers['authorization'];
+        if (!isset($authorization)) {
             write_log('JWT auth error: Authorization not set in http header',
                 __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
 
-        $strs = explode(" ", $headers['Authorization']);
+        $strs = explode(" ", $authorization);
 
-        if (!($strs[0] === "Bearer")) {
-            write_log('JWT auth error: Authorization type is not Bearer', __FILE__, __LINE__);
-            return false;
+        if ($strs[0] === "Bearer") {
+            $token = $strs[1];
+        } else{
+            // write_log('JWT auth error: Authorization type is not Bearer', __FILE__, __LINE__);
+            $token = $strs[0];
         }
-        $token = $strs[1];
         // write_log($token, __FILE__, __LINE__);
     } else {
         if (!isset($_GET["token"])) {
@@ -57,7 +59,7 @@ function get_http_token()
 //Check if a token is valid. Returns payload
 function check_token($token)
 {
-    write_log('check_token START. $token:' . $token, __FILE__, __LINE__);
+    // write_log('check_token START. $token:' . $token, __FILE__, __LINE__);
 
     try {
         $payload = JWT::decode($token, JWT_SECRET);
