@@ -5,7 +5,7 @@ import { Form, Input } from 'antd';
 import _ from 'lodash';
 import { MOVEMENT_NOMIATIONS } from '../../../../api';
 
-import {validatorStatus} from '../../../../utils';
+import { validatorStatus } from '../../../../utils';
 
 const NominationKey = ({ form, value }) => {
   const [nomkey, setNomkey] = useState(value?.mv_key);
@@ -13,9 +13,12 @@ const NominationKey = ({ form, value }) => {
   const { t } = useTranslation();
   const { setFieldsValue, validateFields } = form;
 
-  const { data, isValidating, revalidate } = useSWR(`${MOVEMENT_NOMIATIONS.CHECK_NOMKEY}?nomination_key=${nomkey}`, {
-    refreshInterval: 0,
-  });
+  const { data, isValidating, revalidate } = useSWR(
+    `${MOVEMENT_NOMIATIONS.CHECK_NOMKEY}?nomination_key=${nomkey}`,
+    {
+      refreshInterval: 0,
+    }
+  );
 
   useEffect(() => {
     if (value) {
@@ -67,7 +70,7 @@ const NominationKey = ({ form, value }) => {
       label={t('fields.nominationKey')}
       hasFeedback
       rules={[{ required: true, validator: validate }]}
-      validateStatus={status}
+      validateStatus={nomkey ? status : null}
       shouldUpdate
     >
       <Input disabled={!!value} onChange={handleFieldChange} />

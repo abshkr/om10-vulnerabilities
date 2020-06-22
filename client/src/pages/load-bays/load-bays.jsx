@@ -18,7 +18,7 @@ const { TabPane } = Tabs;
 const LoadBays = () => {
   const { t } = useTranslation();
 
-  const { data: payload, revalidate } = useSWR(LOAD_BAYS.READ);
+  const { data: payload } = useSWR(LOAD_BAYS.READ);
 
   const access = useAuth('M_LOADBAYS');
 
@@ -29,16 +29,7 @@ const LoadBays = () => {
 
   const isLoading = !payload;
 
-  const description = [
-    {
-      field: t('fields.tank'),
-      key: 'pn_tank',
-    },
-    {
-      field: t('fields.arm'),
-      key: 'baa_code',
-    },
-  ];
+  const description = [];
 
   if (!SETTINGS.IS_DEVELOPMENT) {
     return (
@@ -70,6 +61,14 @@ const LoadBays = () => {
       >
         <Tabs defaultActiveKey="1" type="card">
           <TabPane key="1" tab={t('tabColumns.overview')} disabled={isLoading}>
+            <Bay selected={selected} />
+          </TabPane>
+
+          <TabPane key="2" tab={t('tabColumns.details')} disabled={isLoading}>
+            <Bay selected={selected} />
+          </TabPane>
+
+          <TabPane key="3" tab={t('tabColumns.arms')} disabled={isLoading}>
             <Bay selected={selected} />
           </TabPane>
         </Tabs>
