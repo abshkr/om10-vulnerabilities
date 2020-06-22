@@ -596,7 +596,9 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               params={{
                 supplier: value?.order_supp_code,
                 customer: value?.order_cust_acnt,
+                cust_cmpy: value?.order_cust_code,
                 carrier: value?.order_carr_code,
+                order_sys_no: value?.order_sys_no,
                 order_cust_no: value?.order_cust_no,
                 trans_type: 'OPENORDER',
                 repost: false,
