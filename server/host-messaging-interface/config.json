@@ -135,7 +135,8 @@
 						{ "ACK" : { "schema" : "msg_def.sgb_load_ack", "name" : "SGB_LOAD_ACK", "msg_id_idx" : "0.4", "status_idx" : 3, "status_desc_idx" : 4 } },
 						{ "LDS" : { "schema" : "msg_def.sgb_load_start", "name" : "SGB_LOAD_STARTED", "msg_id_idx" : "0.4" } },
 						{ "LDD" : { "schema" : "msg_def.sgb_load_det", "name" : "SGB_LOAD_DETAILS", "msg_id_idx" : "0.4" } },
-						{ "TKT" : { "schema" : "msg_def.sgb_tkt", "name" : "SGB_TICKET", "msg_id_idx" : "0.4", "field_map" : "sgb_tkt.fmap", "postprocess" : "sgb_tkt.py", "content_format" : 3 } }
+						{ "TKT" : { "schema" : "msg_def.sgb_tkt", "name" : "SGB_TICKET", "msg_id_idx" : "0.4", "field_map" : "sgb_tkt.fmap", "postprocess" : "sgb_tkt.py", "content_format" : 3 } },
+						{ "SPM" : { "schema" : "msg_def.sgb_spm", "name" : "SGB_SPMVMT_REQUEST", "msg_id_idx" : "0.4", "field_map" : "sgb_spm.fmap", "postprocess" : "sgb_spm.py", "content_format" : 3 } }
 					]
 				}
 			}
