@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, InputNumber, Input, Select, Divider, Row, Col } from 'antd';
+import { Form, InputNumber, Input, Select, Row, Col } from 'antd';
 import useSWR from 'swr';
 
 import { TANK_STATUS, TANKS } from '../../../../api';
@@ -16,6 +16,18 @@ const General = ({ form, value, config }) => {
   const isLoading = areasLoading || statusLoading || methodsLoading || baseLoading;
 
   const { setFieldsValue } = form;
+
+  const validate = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${rule?.label}`);
+    }
+
+    if (input && input.length > 30) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 30 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
 
   useEffect(() => {
     if (value) {
@@ -48,7 +60,11 @@ const General = ({ form, value, config }) => {
         </Col>
 
         <Col span={12}>
-          <Form.Item name="tank_name" label={t('fields.tankName')}>
+          <Form.Item
+            name="tank_name"
+            label={t('fields.tankName')}
+            rules={[{ required: true, validator: validate, label: t('fields.tankName') }]}
+          >
             <Input style={{ width: '100%' }} />
           </Form.Item>
         </Col>
