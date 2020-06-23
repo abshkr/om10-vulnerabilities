@@ -112,6 +112,22 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
     });
   };
 
+  const validate = (rule, input) => {
+    const limit = rule?.max || 256;
+
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${rule?.label}`);
+    }
+
+    if (input && input.length > limit) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${limit} ─ ${t('descriptions.maxCharacters')}`
+      );
+    }
+
+    return Promise.resolve();
+  };
+
   const modifiers = (
     <Button
       type="primary"
@@ -129,8 +145,6 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
 
       setFieldsValue({
         strap_tankcode: code,
-        strap_height: 0,
-        strap_volume: 0,
       });
     }
   }, [resetFields, setFieldsValue, code, selected]);
@@ -143,10 +157,6 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
         strap_volume: selected?.strap_volume,
       });
     } else {
-      setFieldsValue({
-        strap_height: 0,
-        strap_volume: 0,
-      });
     }
   }, [resetFields, selected]);
 
@@ -209,7 +219,11 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
         <Form layout="vertical" form={form} scrollToFirstError>
           <Tabs defaultActiveKey="1">
             <TabPane tab={t('tabColumns.general')} key="1">
-              <Form.Item name="strap_tankcode" label={t('fields.tank')}>
+              <Form.Item
+                name="strap_tankcode"
+                label={t('fields.tank')}
+                rules={[{ required: true, validator: validate, label: t('fields.tank') }]}
+              >
                 <Select
                   loading={isLoading}
                   disabled={true}
@@ -221,17 +235,34 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
                 >
                   {tanks?.records.map((item, index) => (
                     <Select.Option key={index} value={item.tank_code}>
-                      {item.tank_code + ': ' + item.tank_name + ' [' + item.tank_base + ' - ' + item.tank_base_name + ' - ' + item.tank_bclass_name + ']'}
+                      {item.tank_code +
+                        ': ' +
+                        item.tank_name +
+                        ' [' +
+                        item.tank_base +
+                        ' - ' +
+                        item.tank_base_name +
+                        ' - ' +
+                        item.tank_bclass_name +
+                        ']'}
                     </Select.Option>
                   ))}
                 </Select>
               </Form.Item>
 
-              <Form.Item name="strap_height" label={t('fields.level')}>
+              <Form.Item
+                name="strap_height"
+                label={t('fields.level')}
+                rules={[{ required: true, validator: validate, label: t('fields.level') }]}
+              >
                 <Input type="number" style={{ width: '100%' }} min={0} addonAfter="mm" />
               </Form.Item>
 
-              <Form.Item name="strap_volume" label={t('fields.observedVolume')}>
+              <Form.Item
+                name="strap_volume"
+                label={t('fields.observedVolume')}
+                rules={[{ required: true, validator: validate, label: t('fields.observedVolume') }]}
+              >
                 <Input type="number" style={{ width: '100%' }} min={0} addonAfter="Litres" />
               </Form.Item>
             </TabPane>

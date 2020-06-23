@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, InputNumber, Input, Select, Divider, Row, Col } from 'antd';
+import { Form, InputNumber, Input, Select, Row, Col } from 'antd';
 import useSWR from 'swr';
 
 import { TANK_STATUS, TANKS } from '../../../../api';
@@ -16,6 +16,22 @@ const General = ({ form, value, config }) => {
   const isLoading = areasLoading || statusLoading || methodsLoading || baseLoading;
 
   const { setFieldsValue } = form;
+
+  const validate = (rule, input) => {
+    const limit = rule?.max || 256;
+
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${rule?.label}`);
+    }
+
+    if (input && input.length > limit) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${limit} ─ ${t('descriptions.maxCharacters')}`
+      );
+    }
+
+    return Promise.resolve();
+  };
 
   useEffect(() => {
     if (value) {
@@ -48,7 +64,11 @@ const General = ({ form, value, config }) => {
         </Col>
 
         <Col span={12}>
-          <Form.Item name="tank_name" label={t('fields.tankName')}>
+          <Form.Item
+            name="tank_name"
+            label={t('fields.tankName')}
+            rules={[{ required: true, validator: validate, label: t('fields.tankName'), max: 30 }]}
+          >
             <Input style={{ width: '100%' }} />
           </Form.Item>
         </Col>
@@ -109,7 +129,11 @@ const General = ({ form, value, config }) => {
         </Col>
 
         <Col span={12}>
-          <Form.Item name="tank_gaugingmthd" label={t('fields.gaugingMethod')}>
+          <Form.Item
+            name="tank_gaugingmthd"
+            label={t('fields.gaugingMethod')}
+            rules={[{ required: true, validator: validate, label: t('fields.gaugingMethod') }]}
+          >
             <Select
               loading={isLoading}
               showSearch
@@ -130,7 +154,11 @@ const General = ({ form, value, config }) => {
 
       <Row gutter={[8, 8]}>
         <Col span={12}>
-          <Form.Item name="tank_ullage" label={t('fields.ullage')}>
+          <Form.Item
+            name="tank_ullage"
+            label={t('fields.ullage')}
+            rules={[{ required: true, validator: validate, label: t('fields.ullage') }]}
+          >
             <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
@@ -202,6 +230,23 @@ const General = ({ form, value, config }) => {
             label={`${t('fields.monthlyVarianceLimit')} (${t('units.volume')})`}
           >
             <InputNumber style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Row gutter={[8, 8]}>
+        <Col span={12}>
+          <Form.Item name="tank_dtol_percent" label={`${t('fields.dailyVarianceLimit')} (%)`}>
+            <InputNumber style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+
+        <Col span={12}>
+          <Form.Item
+            name="tank_dtol_volume"
+            label={`${t('fields.dailyVarianceLimit')} (${t('units.volume')})`}
+          >
+            <Input style={{ width: '100%' }} />
           </Form.Item>
         </Col>
       </Row>

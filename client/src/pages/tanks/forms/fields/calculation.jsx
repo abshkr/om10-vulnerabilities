@@ -105,27 +105,39 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
   };
 
   const handleAmbVolFieldChange = (value) => {
-    pinQuantity({ qty: value, type: 'LT', title: t('fields.ambientVolume') });
+    if (value!==undefined && value!==null && String(value).trim().length>0){
+      pinQuantity({ qty: value, type: 'LT', title: t('fields.ambientVolume') });
+    }
   };
 
   const handleCorVolFieldChange = (value) => {
-    pinQuantity({ qty: value, type: 'L15', title: t('fields.standardVolume') });
+    if (value!==undefined && value!==null  && String(value).trim().length>0){
+      pinQuantity({ qty: value, type: 'L15', title: t('fields.standardVolume') });
+    }
   };
 
   const handleMassQtyFieldChange = (value) => {
-    pinQuantity({ qty: value, type: 'KG', title: t('fields.liquidMass') });
+    if (value!==undefined && value!==null  && String(value).trim().length>0){
+      pinQuantity({ qty: value, type: 'KG', title: t('fields.liquidMass') });
+    }
   };
 
   const handleStdDensFieldChange = (value) => {
-    pinDensity({ dens: value, type: 'D15C', title: t('fields.standardDensity') });
+    if (value!==undefined && value!==null  && String(value).trim().length>0){
+      pinDensity({ dens: value, type: 'D15C', title: t('fields.standardDensity') });
+    }
   };
 
   const handleCorDensFieldChange = (value) => {
-    pinDensity({ dens: value, type: 'D30C', title: t('fields.density') });
+    if (value!==undefined && value!==null  && String(value).trim().length>0){
+      pinDensity({ dens: value, type: 'D30C', title: t('fields.density') });
+    }
   };
 
   const handleApiDensFieldChange = (value) => {
-    pinDensity({ dens: value, type: 'A60F', title: t('fields.api') });
+    if (value!==undefined && value!==null  && String(value).trim().length>0){
+      pinDensity({ dens: value, type: 'A60F', title: t('fields.api') });
+    }
   };
 
   return (
@@ -169,11 +181,11 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
       {config?.manageAPI && (
         <Form.Item
           name="tank_api"
-          label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 90}) @60ºF`}
+          label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 85}) @60ºF`}
         >
           <InputNumber
             min={range?.low || 0}
-            max={range?.high || 90}
+            max={range?.high || 85}
             style={{ width: '100%' }}
             precision={1}
             onChange={handleApiDensFieldChange}

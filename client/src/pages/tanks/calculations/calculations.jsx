@@ -120,6 +120,23 @@ const Calculations = ({ selected, access, isLoading, config }) => {
     });
   };
 
+  const handleAPIRange = (low, high) => {
+    if (low && high) {
+      const end = VCFManager.api(low);
+      const start = VCFManager.api(high);
+
+      return {
+        low: _.round(start, 2),
+        high: _.round(end, 2),
+      };
+    } else {
+      return {
+        low: 0,
+        high: 85,
+      };
+    }
+  };
+
   const onCalculateByDensity = () => {
     Modal.confirm({
       title: t('prompts.calculate') + ' (' + t('descriptions.lastFieldChanged') + ': ' + densitySource?.title + ')',
@@ -148,6 +165,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
         const type = densitySource?.type;
         //const payload = handleDensityType(type);
         const payload = handleDensitySource(densitySource);
+        console.log("calculation simple", payload);
 
         if (base !== '6') {
           if (payload.type === 'D15C') {
@@ -165,6 +183,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
             const density15C = VCFManager.density15CFromXC(payload.value, payload.reference, 3);
             const densityAt60F = VCFManager.densityAt60F(density15C);
             const api = VCFManager.api(densityAt60F);
+            console.log('D30C', density15C, densityAt60F, api);
 
             form.setFieldsValue({
               tank_15_density: density15C.toFixed(3),
@@ -369,6 +388,8 @@ const Calculations = ({ selected, access, isLoading, config }) => {
     });
   };
 
+  const range = handleAPIRange(selected?.tank_base_dens_lo, selected?.tank_base_dens_hi);
+
   return (
     <Form layout="vertical" onFinish={onFinish} form={form} scrollToFirstError initialValues={selected}>
       <Card
@@ -421,6 +442,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
         <Calculation 
           form={form} 
           value={selected} 
+          range={range} 
           config={config} 
           pinQuantity={setQuantitySource} 
           pinDensity={setDensitySource}

@@ -73,6 +73,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
 
       _.forEach(values, (value, index) => {
         if (value === t('placeholder.selectPlease')) {
+          if (!_.find(fields, ['field', keys[index]])) {
+            console.log(fields, keys[index], value);
+          }
+
           errors.push({
             field: _.find(fields, ['field', keys[index]])?.headerName,
             message: `Please Fill This Field on Line Item ${values[0]}`,
@@ -97,7 +101,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
   //const onFinish = (values) => {
   const onFinish = async () => {
     const values = await validateFields();
-    console.log("form values", values);
+    console.log('form values', values);
     const items = [];
 
     tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
@@ -111,7 +115,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
 
       values.mv_dtim_effect = values.mv_dtim_effect?.format(SETTINGS.DATE_TIME_FORMAT);
       values.mv_dtim_expiry = values.mv_dtim_expiry?.format(SETTINGS.DATE_TIME_FORMAT);
-      if (!!value && !!(value.mv_id)) {
+      if (!!value && !!value.mv_id) {
         values.mv_id = value.mv_id;
       }
 
@@ -222,10 +226,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
         </>
       }
     >
-      <Form 
-        layout="vertical" 
-        form={form} 
-        //onFinish={onFinish} 
+      <Form
+        layout="vertical"
+        form={form}
+        //onFinish={onFinish}
         scrollToFirstError
         initialValues={{
           mv_key: '',
@@ -253,7 +257,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
                 <NominationSource form={form} value={value} />
               </Col>
             </Row>
-
 
             <Row gutter={[12, 3]}>
               <Col span={12}>
