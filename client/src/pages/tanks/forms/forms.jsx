@@ -219,6 +219,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
         const type = densitySource?.type;
         //const payload = handleDensityType(type);
         const payload = handleDensitySource(densitySource);
+        console.log("calculation list", payload);
 
         if (base !== '6') {
           if (payload.type === 'D15C') {
@@ -236,6 +237,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             const density15C = VCFManager.density15CFromXC(payload.value, payload.reference, 3);
             const densityAt60F = VCFManager.densityAt60F(density15C);
             const api = VCFManager.api(densityAt60F);
+            console.log('D30C', density15C, densityAt60F, api);
 
             form.setFieldsValue({
               tank_15_density: density15C.toFixed(3),

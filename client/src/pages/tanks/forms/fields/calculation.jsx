@@ -181,11 +181,11 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
       {config?.manageAPI && (
         <Form.Item
           name="tank_api"
-          label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 90}) @60ºF`}
+          label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 85}) @60ºF`}
         >
           <InputNumber
             min={range?.low || 0}
-            max={range?.high || 90}
+            max={range?.high || 85}
             style={{ width: '100%' }}
             precision={1}
             onChange={handleApiDensFieldChange}
