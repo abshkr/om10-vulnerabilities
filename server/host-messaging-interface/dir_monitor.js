@@ -233,14 +233,14 @@ function move_file(file, to_dir)
 
 
 
-function write_data_to_file_now(jsmsg, file_fd)
+function extract_data(jsmsg, res)
 {
 	var flds = jsmsg.fields;
 	if (typeof flds !== 'undefined' && flds !== [] && flds !== '')
 	{
 		for (var fld of flds)
 		{
-			write_data_to_file_now(fld, file_fd);
+			res = extract_data(fld, res);
 		}
 	}
 	else
@@ -248,17 +248,19 @@ function write_data_to_file_now(jsmsg, file_fd)
 		var val = jsmsg.value;
 		if (typeof val !== 'undefined' && val !== '')
 		{
-			fs.writeSync(file_fd, val);
+			res += val;
 		}
 	}
+
+	return res;
 }
 
-function write_data_to_file(jsmsg, src_file)
+function write_data_to_file(jsmsg, dst_file)
 {
 	var fd;
 	try
 	{
-		fs.truncateSync(src_file, 0);
+		fs.truncateSync(dst_file, 0);
 	}
 	catch (err)
 	{
@@ -268,7 +270,7 @@ function write_data_to_file(jsmsg, src_file)
 	try
 	{
 		// 'w' flag ensures that file is created if it does not exist.
-		fd = fs.openSync(src_file, 'w')
+		fd = fs.openSync(dst_file, 'w')
 	}
 	catch (err)
 	{
@@ -276,7 +278,10 @@ function write_data_to_file(jsmsg, src_file)
 		return;
 	}
 
-	write_data_to_file_now(jsmsg, fd);
+	var resstr = '';
+	resstr = extract_data(jsmsg, resstr);
+	//console.log('resstr:'+resstr);
+	fs.writeSync(fd, resstr);
 
 	fs.closeSync(fd);
 }
@@ -609,7 +614,7 @@ function update_message_id(file, conn, recv_time)
 			// location of message id field
 			var idxlist = rule.msg_id_idx.split('.');
 			var jsfield = update_idx_field(recv_time, idxlist, 0, jsmsg);
-			//console.log('jsmsg:'+JSON.stringify(jsmsg, null, '\t'));
+			console.log('jsmsg:'+JSON.stringify(jsmsg, null, '\t'));
 		}
 
 		var list = file.split(conn.file_name_format.extension_prefix);
@@ -624,7 +629,7 @@ function update_message_id(file, conn, recv_time)
 
 		var now = new Date().toISOString();
 		now = now.replace(/[T\-:.Z]/g, '');
-		dest_file = base + '/' + now + '.xml';
+		dest_file = base + '/' + now + extn;
 		write_data_to_file(jsmsg, dest_file);
 		return [true,dest_file];
 /*

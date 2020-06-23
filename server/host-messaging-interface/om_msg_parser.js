@@ -149,7 +149,13 @@ function parse(conn, file, content_format)
 		var postproc_cmd = '';
 		try
 		{
-			if (content_format == 3)
+			// TODO: shouldn't have to do this. Need to do this at the moment to
+			// prevent frontend setting content format to 1; but conflicts with the need to
+			// do post processing to convert the file to xml format.
+			// This error arise because currently, parser is given this conflicting inputs
+			if (   content_format == 2
+			    || content_format == 3
+				 )
 			{
 				postproc = rule.postprocess;
 				if (postproc)
