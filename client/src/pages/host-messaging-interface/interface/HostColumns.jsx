@@ -9,6 +9,23 @@ const columns = (t) => [
 		width: 20,
     suppressSizeToFit: true,
 		pinned: 'left',
+		tooltip: function(params) {
+			var status = params.data.STATUS;
+			var desc = "";
+			if (parseInt(status) == 2)
+			{
+				desc = "good";
+			}
+			else if (parseInt(status) == 3)
+			{
+				desc = "bad";
+			}
+			else
+			{
+				desc = "processing";
+			}
+			return desc;
+		},
   	cellStyle: function(params) {
 			//console.log({ "params": params });
 			var status = params.data.STATUS;
