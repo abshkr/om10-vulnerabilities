@@ -98,10 +98,10 @@
 				"msg_parse_rules" : {
 					"file_name_field" : "msg_type",
 					"rules" : [
-						{ "SHP" : { "schema" : "msg_def.sgb_load_spec", "name" : "SGB_LOAD_SPEC", "msg_id_idx" : "0.4" } },
-						{ "ORD" : { "schema" : "msg_def.sgb_load_ord", "name" : "SGB_LOAD_ORDER", "msg_id_idx" : "0.4" } },
-						{ "CON" : { "schema" : "msg_def.sgb_open_ord", "name" : "SGB_OPEN_ORDER", "msg_id_idx" : "0.4" } },
-						{ "DEL" : { "schema" : "msg_def.sgb_load_del", "name" : "SGB_LOAD_DELETE", "msg_id_idx" : "0.4" } },
+						{ "SHP" : { "schema" : "msg_def.sgb_load_spec", "name" : "SGB_LOAD_SPEC", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid.py" } },
+						{ "ORD" : { "schema" : "msg_def.sgb_load_ord", "name" : "SGB_LOAD_ORDER", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid.py" } },
+						{ "CON" : { "schema" : "msg_def.sgb_open_ord", "name" : "SGB_OPEN_ORDER", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid.py" } },
+						{ "DEL" : { "schema" : "msg_def.sgb_load_del", "name" : "SGB_LOAD_DELETE", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid.py" } },
 						{ "NOM" : { "schema" : "msg_def.sgb_nom", "name" : "SGB_NOM", "msg_id_idx" : "0.0.4", "field_map" : "sgb_nom.fmap", "preprocess" : "sgb_nom.py" } }
 					]
 				}
