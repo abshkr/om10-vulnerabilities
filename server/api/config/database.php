@@ -69,9 +69,11 @@ class Database
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
+        $this->setSessionData();
+   
         // write_log(sprintf("%s::%s() END", __CLASS__, __FUNCTION__),
         //     __FILE__, __LINE__);
-
+        
         return $this->conn;
     }
 
@@ -159,6 +161,77 @@ class Database
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $per_code);
         oci_bind_by_name($stmt, ':sess_id', $sess_id);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        return true;
+    }
+
+    //Audit data needs this
+    private function setSessionData() 
+    {
+        // write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__), 
+        //     __FILE__, __LINE__);
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
+        $lang = $_SESSION['LANGUAGE'];
+        $ismanager = ($_SESSION['MANAGER'] === 'T') ? 'Y' : 'N';
+        $cmpycode = $_SESSION['COMPANY'];
+        $percode = $_SESSION['PERCODE'];
+        $clientip = $_SERVER['REMOTE_ADDR'];
+
+        write_log(json_encode($_SESSION), __FILE__, __LINE__);
+
+        $query = "BEGIN ADT.SET_LANG(:lang); END;";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':lang', $lang);
+        // write_log(oci_execute($stmt, OCI_NO_AUTO_COMMIT), __FILE__, __LINE__);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $query = "BEGIN adt.SET_ISMANAGER(:ismanager); END;";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':ismanager', $ismanager);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $query = "BEGIN adt.SET_CMPYCODE(:cmpycode); END;";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':cmpycode', $cmpycode);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+        
+        $query = "BEGIN adt.SET_PERCODE(:percode); END;";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':percode', $percode);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $query = "BEGIN adt.SET_CLIENTIP(:clientip); END;";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':clientip', $clientip);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
