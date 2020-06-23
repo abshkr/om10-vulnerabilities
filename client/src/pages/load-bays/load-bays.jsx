@@ -33,7 +33,7 @@ const LoadBays = () => {
 
   if (!SETTINGS.IS_DEVELOPMENT) {
     return (
-      <Page page={page} name={name}>
+      <Page page={page} name={name} access={access}>
         <div style={{ height: 'calc(100vh - 200px)' }}>
           <Iframe
             url={`https://${window.location.hostname}/phpwrapper/load_bays.php`}
