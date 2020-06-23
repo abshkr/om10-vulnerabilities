@@ -23,9 +23,7 @@ const parser = (column, value) => {
 
 const transform = (data, columns) => {
   const collection = [];
-  console.log("transform")
-  console.log(columns);
-
+  
   _.forEach(data, (element) => {
     const record = {};
 
