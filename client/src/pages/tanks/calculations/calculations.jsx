@@ -90,6 +90,17 @@ const Calculations = ({ selected, access, isLoading, config }) => {
   const onFinish = async () => {
     const values = await form.validateFields();
 
+    const payload = _.omit(
+      {
+        ...values,
+        tank_temp:
+          values?.tank_temp_unit !== 'degF'
+            ? values.tank_temp
+            : VCFManager.temperatureF2C(values.tank_temp),
+      },
+      ['tank_temp_unit']
+    );
+
     Modal.confirm({
       title: t('prompts.update'),
       okText: t('operations.update'),
@@ -99,7 +110,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(TANKS.UPDATE, values)
+          .post(TANKS.UPDATE, payload)
           .then(() => {
             mutate(TANKS.READ);
 

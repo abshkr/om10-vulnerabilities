@@ -97,8 +97,8 @@ const Tanks = () => {
 
       setPayload(records);
 
-      if (!selected) {
-        console.log('new record set');
+      if (!selected || mode === '2') {
+        setSelected(null);
         setSelected(records[0]);
       }
     }
