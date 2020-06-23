@@ -102,19 +102,26 @@ const Compartments = ({ form, value, equipment }) => {
       let index = 0;
       if (!!value) {
         index = _.findIndex(payload, ['tc_eqpt', tanker.tc_eqpt]);
+        let compartment = _.find(tanker.eqpt_list, ['eqpt_id', code]);
+        compartment['compartments'] = response.data.records;
+        compartment['eqpt_list'] = tanker.eqpt_list;
+        compartment['tc_eqpt'] = tanker.tc_eqpt;
+        compartment['image'] = tanker.image;
+
+        payload.splice(index, 1, compartment);
+        setdata(payload);
       } else {
         index = _.findIndex(payload, ['etyp_id', tanker.etyp_id]);
+        let compartment = _.find(tanker.eqpt_list, ['eqpt_id', code]);
+        compartment['compartments'] = response.data.records;
+        compartment['eqpt_list'] = tanker.eqpt_list;
+        compartment['etyp_id'] = tanker.etyp_id;
+        compartment['image'] = tanker.image;
+
+        payload.splice(index, 1, compartment);
+        setdata(payload);
       }
-      let compartment = _.find(tanker.eqpt_list, ['eqpt_id', code]);
-
-      compartment['compartments'] = response.data.records;
-      compartment['eqpt_list'] = tanker.eqpt_list;
-      compartment['tc_eqpt'] = tanker.tc_eqpt;
-      compartment['image'] = tanker.image;
-
-      payload.splice(index, 1, compartment);
-      setdata(payload);
-      console.log(payload)
+      
       setFieldsValue({
         tnkr_equips: _.map(payload, (value) => {
           return _.omit(value, ['eqpt_list']);

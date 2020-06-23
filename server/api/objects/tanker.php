@@ -519,31 +519,97 @@ class Tanker extends CommonClass
         if (!isset($this->tnkr_equips) || count($this->tnkr_equips) <= 0) {
             write_log("Equipment list (tnkr_equips) is not provided.", __FILE__, __LINE__, LogLevel::ERROR);
             // throw new IncompleteParameterException("Equipment list (tnkr_equips) is not provided.");
-            $eqpt = new Equipment($this->conn);
-            $eqpt->eqpt_code = $this->tnkr_code;
-            $eqpt->eqpt_area = 1;
-            $eqpt->eqpt_title = $this->tnkr_code;
-            $eqpt->eqpt_load_type = 'A';
-            $eqpt->eqpt_owner = $this->tnkr_owner;
-            $eqpt->eqpt_etp = $this->tnkr_etp;
-            $eqpt->eqpt_lock = 'N';
-            $eqpt->eqp_must_tare_in = 'N';
-            if (!$eqpt->create()) {
-                write_log("Cannot create equipment", __FILE__, __LINE__, LogLevel::ERROR);
-                oci_rollback($this->conn);
+
+            $query = "SELECT COUNT(*) CN FROM EQP_CONNECT WHERE ECNCT_ETYP = :ecnct_etyp";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':ecnct_etyp', $this->tnkr_etp);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 return false;
             }
 
-            $this->tnkr_equips = array();
-            $eqpt_item = new stdClass();
-            $eqpt_item->eqpt_id = $eqpt->eqpt_id;
-            $eqpt_item->tc_seqno = 1;
-            $eqpt_item->eqpt_code = $eqpt->eqpt_code;
-            array_push($this->tnkr_equips, $eqpt_item);
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            if (intval($row['CN']) <= 0) {
+                $eqpt = new Equipment($this->conn);
+                $eqpt->eqpt_code = $this->tnkr_code;
+                $eqpt->eqpt_area = 1;
+                $eqpt->eqpt_title = $this->tnkr_code;
+                $eqpt->eqpt_load_type = 'A';
+                $eqpt->eqpt_owner = $this->tnkr_owner;
+                $eqpt->eqpt_etp = $this->tnkr_etp;
+                $eqpt->eqpt_lock = 'N';
+                $eqpt->eqp_must_tare_in = 'N';
+                if (!$eqpt->create()) {
+                    write_log("Cannot create equipment", __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+
+                $this->tnkr_equips = array();
+                $eqpt_item = new stdClass();
+                $eqpt_item->eqpt_id = $eqpt->eqpt_id;
+                $eqpt_item->tc_seqno = 1;
+                $eqpt_item->eqpt_code = $eqpt->eqpt_code;
+                array_push($this->tnkr_equips, $eqpt_item);
+            } else {
+                $query = "SELECT EQC_SUB_ITEM, EQC_COUNT FROM EQP_CONNECT WHERE ECNCT_ETYP = :ecnct_etyp ORDER BY EQC_COUNT";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':ecnct_etyp', $this->tnkr_etp);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+
+                $this->tnkr_equips = array();
+                while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+                    $eqpt = new Equipment($this->conn);
+                    $eqpt->eqpt_code = $this->tnkr_code . '_' . $row['EQC_SUB_ITEM'] . '_' . $row['EQC_COUNT'];
+                    $eqpt->eqpt_area = 1;
+                    $eqpt->eqpt_title = $this->tnkr_code . '_' . $row['EQC_SUB_ITEM'] . '_' . $row['EQC_COUNT'];
+                    $eqpt->eqpt_load_type = 'A';
+                    $eqpt->eqpt_owner = $this->tnkr_owner;
+                    $eqpt->eqpt_etp = $row['EQC_SUB_ITEM'];
+                    $eqpt->eqpt_lock = 'N';
+                    $eqpt->eqp_must_tare_in = 'N';
+                    if (!$eqpt->create()) {
+                        write_log("Cannot create equipment", __FILE__, __LINE__, LogLevel::ERROR);
+                        oci_rollback($this->conn);
+                        return false;
+                    }
+
+                    $eqpt_item = new stdClass();
+                    $eqpt_item->eqpt_id = $eqpt->eqpt_id;
+                    $eqpt_item->tc_seqno = 1;
+                    $eqpt_item->eqpt_code = $eqpt->eqpt_code;
+                    array_push($this->tnkr_equips, $eqpt_item);
+                }
+            }
         }
         
         $seqno = 1;
         foreach ($this->tnkr_equips as $key => $value) {
+            if (!property_exists($value, 'eqpt_id') && property_exists($value, 'etyp_id')) {
+                write_log("Equipment ID not provided", __FILE__, __LINE__);
+                $eqpt = new Equipment($this->conn);
+                $eqpt->eqpt_code = $this->tnkr_code . '_' . $value->etyp_id . '_' . $key;
+                $eqpt->eqpt_area = 1;
+                $eqpt->eqpt_title = $this->tnkr_code . '_' . $value->etyp_id . '_' . $key;
+                $eqpt->eqpt_load_type = 'A';
+                $eqpt->eqpt_owner = $this->tnkr_owner;
+                $eqpt->eqpt_etp = $value->etyp_id;
+                $eqpt->eqpt_lock = 'N';
+                $eqpt->eqp_must_tare_in = 'N';
+                if (!$eqpt->create()) {
+                    write_log("Cannot create equipment", __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+
+                $this->tnkr_equips[$key]->eqpt_id = $eqpt->eqpt_id;
+            }
+
             $query = "INSERT INTO TNKR_EQUIP (TC_TANKER, TC_EQPT, TC_SEQNO)
                 VALUES (:tnkr_code, :tc_eqpt, :tc_seqno)";
             $stmt = oci_parse($this->conn, $query);

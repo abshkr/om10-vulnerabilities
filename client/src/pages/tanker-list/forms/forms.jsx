@@ -64,16 +64,18 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
     let matches = [];
 
-    const compartmentCounter = {};
-
-    _.forEach(values?.tnkr_equips, (equipment, index) => {
-      compartmentCounter[index + 1] = equipment?.compartments?.length;
-    });
-
-    const compartmentArray = Object.values(compartmentCounter);
-    const noCompartments = compartmentArray.includes(0) || compartmentArray?.length === 0;
-
-    const createPrompt = noCompartments ? t('prompts.zeroEquipmentSelected') : t('prompts.create');
+    let eqpt_selected = true;
+    if (!!values?.tnkr_equips) {
+      eqpt_selected = false;
+    } else {
+      _.forEach(values?.tnkr_equips, (equipment, index) => {
+        if (!equipment.eqpt_id) {
+          eqpt_selected = false;
+        }
+      });
+    }
+    
+    const createPrompt = !eqpt_selected ? t('prompts.zeroEquipmentSelected') : t('prompts.create');
 
     if (!IS_CREATING) {
       matches = _.filter(payload?.records, (object) => {
@@ -89,7 +91,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       title: IS_CREATING ? createPrompt : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
       okType: 'primary',
-      width: noCompartments ? '40vw' : null,
+      width: !eqpt_selected ? '40vw' : null,
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
