@@ -35,8 +35,6 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
 
     const record = await form.validateFields();
 
-    console.log(record);
-
     _.forEach(record.names, (value, key) => {
       const payload = {
         cmpt_no: String(key + 1),
@@ -71,10 +69,15 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
     }
 
     if (IS_CREATING && IS_COMBINATION) {
+      let sum = 0
+      for (let i = 0; i < record.composition.length; i ++) {
+        sum += record.composition[i].cmptnu;
+      }
+
       values = {
         ...record,
         etyp_isrigid: false,
-        etyp_schedul: true,
+        etyp_schedul: sum > 0,
         etyp_category: 'C',
       };
     }
