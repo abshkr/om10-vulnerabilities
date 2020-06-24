@@ -6,7 +6,6 @@ const PageContainer = styled.div`
     padding-left: 5px;
     padding-right: 0px;
     padding-bottom: 3px;
-    width: 35vw !important;
   }
 
   .ant-breadcrumb a {
