@@ -12,14 +12,6 @@ const DrawerCompany = ({ form, value }) => {
 
   const { data: options, isValidating } = useSWR(DRAWER_PRODUCTS.DRAWERS);
 
-  const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.drawer')}`);
-    }
-
-    return Promise.resolve();
-  };
-
   const handleChange = (value) => {
     setFieldsValue({
       prod_cmpycode: value,
@@ -35,10 +27,10 @@ const DrawerCompany = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="prod_cmpycode" label={t('fields.drawer')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item name="prod_cmpycode" label={t('fields.drawer')} >
       <Select
         loading={isValidating}
-        disabled={!!value}
+        disabled
         showSearch
         onChange={handleChange}
         optionFilterProp="children"

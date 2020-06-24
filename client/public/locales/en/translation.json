@@ -917,6 +917,9 @@
     "closeoutOperatingDate": "Operating Date",
     "prodCompliant": "Is Compliant",
     "genericName": "Generic Name",
+	"backColor": "Back Color",
+	"textColor": "Text Color",
+	"prodImage": "Product Image",
     "isBlend": "Is Blended",
     "loadToleranceCheck": "Load Tolerance Check",
     "lowerLimit": "Lower Limit %",
@@ -1388,7 +1391,8 @@
     "transactionForNomination": "Transactions For Nomination",
     "meterDetails": "Meter Details",
     "baseProductDetails": "Base Product Details",
-    "loadSchedulesForNomination": "Schdules For Nomination"
+    "loadSchedulesForNomination": "Schdules For Nomination",
+	"drawerProductAssets": "Drawer Product Assets"
   },
 
   "messages": {
