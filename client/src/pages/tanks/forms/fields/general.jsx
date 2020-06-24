@@ -4,9 +4,12 @@ import { Form, InputNumber, Input, Select, Row, Col } from 'antd';
 import useSWR from 'swr';
 
 import { TANK_STATUS, TANKS } from '../../../../api';
+import { VCFManager } from '../../../../utils';
 
 const General = ({ form, value, config }) => {
   const { t } = useTranslation();
+
+  console.log(config);
 
   const { data: areas, isValidating: areasLoading } = useSWR(TANK_STATUS.AREAS);
   const { data: status, isValidating: statusLoading } = useSWR(TANK_STATUS.STATUS);
@@ -97,7 +100,9 @@ const General = ({ form, value, config }) => {
         <Col span={12}>
           <Form.Item
             name="tank_density"
-            label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi})`}
+            label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@${
+              config?.vsmCompensation || config?.referenceTemperature
+            }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
           >
             <InputNumber
               min={value?.tank_base_dens_lo}

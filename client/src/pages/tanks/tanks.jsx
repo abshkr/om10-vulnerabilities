@@ -135,7 +135,7 @@ const Tanks = () => {
             </TabPane>
 
             <TabPane key="2" tab={t('tabColumns.details')} disabled={isLoading}>
-              <Details selected={selected} access={access} />
+              <Details selected={selected} access={access} config={config} />
             </TabPane>
 
             <TabPane key="3" tab={t('tabColumns.connectedArms')} disabled={isLoading}>

@@ -10,7 +10,7 @@ import _ from 'lodash';
 import General from '../forms/fields/general';
 import { TANKS } from '../../../api';
 
-const Details = ({ selected, access, isLoading }) => {
+const Details = ({ selected, access, isLoading, config }) => {
   const { t } = useTranslation();
 
   const [form] = Form.useForm();
@@ -107,7 +107,7 @@ const Details = ({ selected, access, isLoading }) => {
           </Form.Item>,
         ]}
       >
-        <General form={form} value={selected} refTempC={0} refTempF={30} />
+        <General form={form} value={selected} refTempC={0} refTempF={30} config={config} />
       </Card>
     </Form>
   );
