@@ -12,7 +12,7 @@ import { Form, Button, Tabs, notification, Modal, Checkbox, Input, Drawer } from
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
-
+import useSWR from 'swr';
 import { setter, generator } from './generator';
 
 import api, { ROLE_ACCESS_MANAGEMENT } from '../../../api';
@@ -20,23 +20,28 @@ import { ALPHANUMERIC } from 'constants/regex';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, data }) => {
+const FormModal = ({ value, visible, handleFormState, access, data, setFilterValue  }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const { resetFields, setFieldsValue } = form;
+  const { data: privileges } = useSWR(`${ROLE_ACCESS_MANAGEMENT.PRIVILEGES}`);
 
   const IS_CREATING = !value;
 
-  const onComplete = () => {
+  const onComplete = (auth_level_name) => {
     handleFormState(false, null);
     mutate(ROLE_ACCESS_MANAGEMENT.READ);
+    if (auth_level_name) {
+      setFilterValue("" + auth_level_name);
+    }
   };
 
   const onFinish = async () => {
     const values = await form.validateFields();
-
-    const privilege = IS_CREATING ? [] : generator(value.privilege, values);
+    
+    const privTemplate = IS_CREATING ? privileges?.records : value?.privilege;
+    const privilege = generator(privTemplate, values);
 
     const payload = {
       auth_level_name: IS_CREATING ? values?.auth_level_name : value?.auth_level_name,
@@ -56,7 +61,7 @@ const FormModal = ({ value, visible, handleFormState, access, data }) => {
         await api
           .post(IS_CREATING ? ROLE_ACCESS_MANAGEMENT.CREATE : ROLE_ACCESS_MANAGEMENT.UPDATE, payload)
           .then((response) => {
-            onComplete();
+            onComplete(values?.auth_level_name);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
@@ -149,6 +154,10 @@ const FormModal = ({ value, visible, handleFormState, access, data }) => {
       });
     } else {
       resetFields();
+      const defaultPriv = ['View'];
+      setFieldsValue({
+        MENU_HOME: defaultPriv,
+      });
     }
   }, [value, IS_CREATING, setFieldsValue]);
 
@@ -156,65 +165,65 @@ const FormModal = ({ value, visible, handleFormState, access, data }) => {
   const loadScheduleOptions = [...options, 'Schedule Product'];
   const folioOptions = [...options, 'Close/Freeze Folio'];
 
-  if (IS_CREATING) {
-    return (
-      <Drawer
-        bodyStyle={{ paddingTop: 5 }}
-        onClose={() => handleFormState(false, null)}
-        maskClosable={IS_CREATING}
-        destroyOnClose={true}
-        mask={IS_CREATING}
-        placement="right"
-        width="50vw"
-        visible={visible}
-        footer={
-          <>
-            <Button
-              htmlType="button"
-              icon={<CloseOutlined />}
-              style={{ float: 'right' }}
-              onClick={() => handleFormState(false, null)}
-            >
-              {t('operations.cancel')}
-            </Button>
+  // if (IS_CREATING) {
+  //   return (
+  //     <Drawer
+  //       bodyStyle={{ paddingTop: 5 }}
+  //       onClose={() => handleFormState(false, null)}
+  //       maskClosable={IS_CREATING}
+  //       destroyOnClose={true}
+  //       mask={IS_CREATING}
+  //       placement="right"
+  //       width="50vw"
+  //       visible={visible}
+  //       footer={
+  //         <>
+  //           <Button
+  //             htmlType="button"
+  //             icon={<CloseOutlined />}
+  //             style={{ float: 'right' }}
+  //             onClick={() => handleFormState(false, null)}
+  //           >
+  //             {t('operations.cancel')}
+  //           </Button>
 
-            <Button
-              type="primary"
-              icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
-              htmlType="submit"
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={onFinish}
-              disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
-            >
-              {IS_CREATING ? t('operations.create') : t('operations.update')}
-            </Button>
-          </>
-        }
-      >
-        <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-          <Tabs defaultActiveKey="1" animated={false}>
-            <TabPane tab={t('tabColumns.general')} key="1" forceRender>
-              <Form.Item
-                name="auth_level_name"
-                label={t('fields.roleName')}
-                rules={[{ required: true, validator: validate }]}
-              >
-                <Input />
-              </Form.Item>
+  //           <Button
+  //             type="primary"
+  //             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+  //             htmlType="submit"
+  //             style={{ float: 'right', marginRight: 5 }}
+  //             onClick={onFinish}
+  //             disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
+  //           >
+  //             {IS_CREATING ? t('operations.create') : t('operations.update')}
+  //           </Button>
+  //         </>
+  //       }
+  //     >
+  //       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+  //         <Tabs defaultActiveKey="1" animated={false}>
+  //           <TabPane tab={t('tabColumns.general')} key="1" forceRender>
+  //             <Form.Item
+  //               name="auth_level_name"
+  //               label={t('fields.roleName')}
+  //               rules={[{ required: true, validator: validate }]}
+  //             >
+  //               <Input />
+  //             </Form.Item>
 
-              <Form.Item
-                name="role_note"
-                label={t('fields.comments')}
-                rules={[{ required: true, validator: validate }]}
-              >
-                <Input.TextArea options={options} style={{ flexDirection: 'row' }} />
-              </Form.Item>
-            </TabPane>
-          </Tabs>
-        </Form>
-      </Drawer>
-    );
-  }
+  //             <Form.Item
+  //               name="role_note"
+  //               label={t('fields.comments')}
+  //               rules={[{ required: true, validator: validate }]}
+  //             >
+  //               <Input.TextArea options={options} style={{ flexDirection: 'row' }} />
+  //             </Form.Item>
+  //           </TabPane>
+  //         </Tabs>
+  //       </Form>
+  //     </Drawer>
+  //   );
+  // }
 
   return (
     <Drawer
@@ -333,7 +342,7 @@ const FormModal = ({ value, visible, handleFormState, access, data }) => {
             </Form.Item> */}
           </TabPane>
 
-          <TabPane tab={t('pageMenu.operations')} key="2" disabled={IS_CREATING}>
+          <TabPane tab={t('pageMenu.operations')} key="2">
             <Form.Item name="M_LOADSCHEDULES" label={t('pageNames.loadSchedules')}>
               <Checkbox.Group
                 options={loadScheduleOptions}
@@ -386,7 +395,7 @@ const FormModal = ({ value, visible, handleFormState, access, data }) => {
             </Form.Item>
           </TabPane>
 
-          <TabPane tab={t('pageMenu.stock')} key="3" disabled={IS_CREATING}>
+          <TabPane tab={t('pageMenu.stock')} key="3">
             <Form.Item name="M_TANKSTATUS" label={t('pageNames.tanks')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
@@ -416,7 +425,6 @@ const FormModal = ({ value, visible, handleFormState, access, data }) => {
             // className="ant-tab-window-no-margin"
             tab={t('pageMenu.reports')}
             key="4"
-            disabled={IS_CREATING}
           >
             <Form.Item name="M_FOLIOMANAGEMENT" label={t('pageNames.folioSummary')}>
               <Checkbox.Group
@@ -454,7 +462,6 @@ const FormModal = ({ value, visible, handleFormState, access, data }) => {
             // className="ant-tab-window-no-margin"
             tab={t('pageMenu.security')}
             key="5"
-            disabled={IS_CREATING}
           >
             <Form.Item name="M_PERSONNEL" label={t('pageNames.personnel')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
@@ -489,7 +496,6 @@ const FormModal = ({ value, visible, handleFormState, access, data }) => {
             // className="ant-tab-window-no-margin"
             tab={t('pageMenu.products')}
             key="6"
-            disabled={IS_CREATING}
           >
             <Form.Item name="M_BASEPRODUCTS" label={t('pageNames.baseProducts')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
@@ -528,7 +534,6 @@ const FormModal = ({ value, visible, handleFormState, access, data }) => {
             // className="ant-tab-window-no-margin"
             tab={t('pageMenu.companies')}
             key="7"
-            disabled={IS_CREATING}
           >
             <Form.Item name="M_COMPANIES" label={t('pageNames.companies')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
@@ -567,7 +572,6 @@ const FormModal = ({ value, visible, handleFormState, access, data }) => {
             // className="ant-tab-window-no-margin"
             tab={t('pageMenu.config')}
             key="8"
-            disabled={IS_CREATING}
           >
             <Form.Item name="M_LOADBAYS" label={t('pageNames.loadBays')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
@@ -629,7 +633,6 @@ const FormModal = ({ value, visible, handleFormState, access, data }) => {
             // className="ant-tab-window-no-margin"
             tab={t('pageMenu.modules')}
             key="10"
-            disabled={IS_CREATING}
           >
             <Form.Item name="M_BAYVIEW" label={t('pageNames.bayView')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />

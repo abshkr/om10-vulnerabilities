@@ -153,7 +153,7 @@ const Combination = ({ form }) => {
 
     const equipments = equipment?.data?.records[index];
 
-    console.log("onShowCompartments", index, item, equipment?.data?.records, equipments);
+    // console.log("onShowCompartments", index, item, equipment?.data?.records, equipments);
 
     const columns = [
       {
@@ -207,7 +207,7 @@ const Combination = ({ form }) => {
 
     const equipments = equipment?.data?.records[index];
 
-    console.log("getCompartmentNumber2", index, item, equipments);
+    // console.log("getCompartmentNumber2", index, item, equipments);
 
     return equipments?.cmptnu;
   };
@@ -215,7 +215,8 @@ const Combination = ({ form }) => {
   useEffect(() => {
     if (state[1]?.length > 0) {
       setFieldsValue({
-        composition: state[1].map(({ etyp_id }) => ({ etyp_id })),
+        // composition: state[1].map(({ etyp_id }) => ({ etyp_id })),
+        composition: state[1],
       });
     } else {
       setFieldsValue({

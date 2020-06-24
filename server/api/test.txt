@@ -1631,6 +1631,7 @@ https://10.1.10.66/api/pages/personnel/delete.php?per_code=cw2
 //Role Access Management
 https://10.1.10.66/api/pages/role_access/read.php
 https://10.1.10.66/api/pages/role_access/features.php
+https://10.1.10.66/api/pages/role_access/privileges.php
 https://10.1.10.66/api/pages/role_access/save_features.php	//Include all the features
 {
     "records": [

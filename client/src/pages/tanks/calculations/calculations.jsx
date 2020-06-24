@@ -89,7 +89,8 @@ const Calculations = ({ selected, access, isLoading, config }) => {
 
   const onFinish = async () => {
     const values = await form.validateFields();
-
+    values.tank_code = selected?.tank_code;
+    
     const payload = _.omit(
       {
         ...values,
@@ -449,7 +450,6 @@ const Calculations = ({ selected, access, isLoading, config }) => {
           </Form.Item>,
         ]}
       >
-        <Form.Item name="tank_code" noStyle />
         <Calculation 
           form={form} 
           value={selected} 

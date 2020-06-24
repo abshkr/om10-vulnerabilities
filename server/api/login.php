@@ -111,9 +111,9 @@ if ($array['MSG_CODE'] === "0") {
     $login_result['email'] = "";
     $login_result['displayName'] = $object->user;
     $login_result['token'] = get_token($object->user, $array['USER_DETAIL']['USER_SESSION'], 
-        $array['USER_DETAIL']['SITE_CODE'], $array['USER_DETAIL']['USER_LANG']);
+        $array['USER_DETAIL']['SITE_CODE'], $array['USER_DETAIL']['SITE_NAME'], $array['USER_DETAIL']['USER_LANG']);
     $login_result['refreshToken'] = get_token($object->user, $array['USER_DETAIL']['USER_SESSION'], 
-        $array['USER_DETAIL']['SITE_CODE'], $array['USER_DETAIL']['USER_LANG'], $exp_seconds = 3600);
+        $array['USER_DETAIL']['SITE_CODE'], $array['USER_DETAIL']['SITE_NAME'], $array['USER_DETAIL']['USER_LANG'], $exp_seconds = 3600);
     $login_result['expiresIn'] = 3600;
 
     //Some old screens like bay view still need session
