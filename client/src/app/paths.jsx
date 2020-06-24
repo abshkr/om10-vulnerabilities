@@ -323,7 +323,7 @@ const paths = [
 
   {
     path: ROUTES.BAY_VIEW,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/bay-view')),
   },
 
   {

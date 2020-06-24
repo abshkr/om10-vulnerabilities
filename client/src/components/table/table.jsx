@@ -191,7 +191,7 @@ const Table = ({
         <div
           style={{
             height: parentHeight || `calc(100vh - ${height || '250px'})`,
-            minHeight: height ? null : 720,
+            minHeight: parentHeight || height ? null : 720,
             marginTop: 5,
           }}
         >

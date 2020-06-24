@@ -72,7 +72,7 @@ const FormSwitch = ({ config, onChange }) => {
         />
       );
 
-    case 'SITE_LD_RETNPRD', 'SITE_LD_RETNPRD_NEW_MOV', 'SITE_LD_RETNPRD_USED_MOV':
+    case ('SITE_LD_RETNPRD', 'SITE_LD_RETNPRD_NEW_MOV', 'SITE_LD_RETNPRD_USED_MOV'):
       return (
         <InputNumber
           min={60}
@@ -103,7 +103,14 @@ const FormSwitch = ({ config, onChange }) => {
       );
 
     default:
-      return <InputNumber value={config.config_value} onChange={(value) => onChange(config, value)} />;
+      return (
+        <InputNumber
+          value={config.config_value}
+          min={0}
+          max={999999}
+          onChange={(value) => onChange(config, value)}
+        />
+      );
   }
 };
 
@@ -142,7 +149,7 @@ const FeatureItems = ({ data, onChange }) => (
     style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}
     itemLayout="horizontal"
     size="small"
-    dataSource={data.filter((item)=>(item.feature_gui===true))}
+    dataSource={data.filter((item) => item.feature_gui === true)}
     renderItem={(item) => {
       return (
         <List.Item style={{ background: 'white', marginBottom: 10, marginRight: 10, borderRadius: 5 }}>
@@ -314,7 +321,7 @@ const Configuration = ({ config }) => {
           </TabPane>
 
           <TabPane tab={t('tabColumns.closeoutOptions')} key="4">
-            <ConfigurationItems 
+            <ConfigurationItems
               data={_.filter(configuration, ['config_required_by_gui', 'M'])}
               onChange={onConfigurationEdit}
             />
