@@ -18,7 +18,7 @@ import api, { PRODUCT_GROUPS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, auth }) => {
+const FormModal = ({ value, visible, handleFormState, access }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -128,7 +128,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             htmlType="submit"
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -139,7 +139,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!auth?.canDelete}
+              disabled={!access?.canDelete}
             >
               {t('operations.delete')}
             </Button>
