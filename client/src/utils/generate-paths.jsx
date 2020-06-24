@@ -356,18 +356,6 @@ const generatePaths = (t) => [
   },
 
   {
-    page: t('pageMenu.config'),
-    name: t('pageNames.tankStrapping'),
-    path: ROUTES.TANK_STRAPPING,
-  },
-
-  {
-    page: t('pageMenu.modules'),
-    name: t('pageNames.tankView'),
-    path: ROUTES.TANK_VIEW,
-  },
-
-  {
     page: t('pageMenu.modules'),
     name: t('pageNames.bayView'),
     path: ROUTES.BAY_VIEW,

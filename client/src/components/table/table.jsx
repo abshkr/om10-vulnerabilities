@@ -188,7 +188,13 @@ const Table = ({
 
         <div style={{ float: 'right' }}>{extra}</div>
 
-        <div style={{ height: parentHeight || `calc(100vh - ${height || '250px'})`, marginTop: 5 }}>
+        <div
+          style={{
+            height: parentHeight || `calc(100vh - ${height || '250px'})`,
+            minHeight: height ? null : 720,
+            marginTop: 5,
+          }}
+        >
           <AgGridReact
             columnDefs={columns}
             rowData={payload}
