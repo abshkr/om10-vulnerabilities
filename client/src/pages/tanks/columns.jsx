@@ -68,7 +68,7 @@ const columns = (t, config) => [
   },
   {
     headerName: t('fields.area'),
-    field: 'tank_terminal',
+    field: 'tank_location',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
