@@ -198,60 +198,62 @@ const Settings = ({ user }) => {
         </Card>
       </Form>
 
-      <Form layout="horizontal" form={passwordForm} onFinish={onPasswordChange} scrollToFirstError>
-        <Card
-          title={t('descriptions.changeYourPassword')}
-          size="small"
-          hoverable
-          style={{ borderColor: '1px solid #0054a43b' }}
-          bordered
-          actions={[
-            <Form.Item>
-              <Button style={{ float: 'right', marginRight: 15 }} type="primary" htmlType="submit">
-                {t('operations.update')}
-              </Button>
-            </Form.Item>,
-          ]}
-        >
-          <Form.Item name="per_code" noStyle />
-
-          <Form.Item name="old_password" rules={[{ required: true, validator: validateOldPassword }]}>
-            <Input
-              prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder={t('fields.currentPassword')}
-              type="password"
-              autoComplete="off"
-            />
-          </Form.Item>
-
-          <Form.Item name="password" rules={[{ required: true, validator: validatePassword }]}>
-            <Input
-              onChange={(e) => setPassword(e.target.value)}
-              prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder={t('fields.newPassword')}
-              type="password"
-              autoComplete="off"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="confirm_password"
-            rules={[
-              {
-                required: true,
-                validator: validatePasswordConfirm,
-              },
+      {user && user?.per_code !== '9999' && (
+        <Form layout="horizontal" form={passwordForm} onFinish={onPasswordChange} scrollToFirstError>
+          <Card
+            title={t('descriptions.changeYourPassword')}
+            size="small"
+            hoverable
+            style={{ borderColor: '1px solid #0054a43b' }}
+            bordered
+            actions={[
+              <Form.Item>
+                <Button style={{ float: 'right', marginRight: 15 }} type="primary" htmlType="submit">
+                  {t('operations.update')}
+                </Button>
+              </Form.Item>,
             ]}
           >
-            <Input
-              prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder={t('fields.confirmPassword')}
-              type="password"
-              autoComplete="off"
-            />
-          </Form.Item>
-        </Card>
-      </Form>
+            <Form.Item name="per_code" noStyle />
+
+            <Form.Item name="old_password" rules={[{ required: true, validator: validateOldPassword }]}>
+              <Input
+                prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                placeholder={t('fields.currentPassword')}
+                type="password"
+                autoComplete="off"
+              />
+            </Form.Item>
+
+            <Form.Item name="password" rules={[{ required: true, validator: validatePassword }]}>
+              <Input
+                onChange={(e) => setPassword(e.target.value)}
+                prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                placeholder={t('fields.newPassword')}
+                type="password"
+                autoComplete="off"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="confirm_password"
+              rules={[
+                {
+                  required: true,
+                  validator: validatePasswordConfirm,
+                },
+              ]}
+            >
+              <Input
+                prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                placeholder={t('fields.confirmPassword')}
+                type="password"
+                autoComplete="off"
+              />
+            </Form.Item>
+          </Card>
+        </Form>
+      )}
     </Page>
   );
 };

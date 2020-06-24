@@ -24,7 +24,7 @@ const Status = ({ user }) => {
       <div style={{ fontSize: 12, textAlign: 'right' }}>
         <strong>Logged In As</strong>:{' '}
         <span>
-          {user?.per_code || 'Loading...'} ({user?.site_code})
+          {user?.per_code || 'Loading...'} ({user?.site_code} /{user?.site_name})
         </span>
       </div>
     </>
