@@ -17,6 +17,7 @@ const RoleAccessManagement = () => {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [filterValue, setFilterValue] = useState('');
 
   const access = useAuth('M_ROLEACCESS');
 
@@ -65,6 +66,7 @@ const RoleAccessManagement = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         selectionMode="single"
+        filterValue={filterValue}
       />
 
       <Forms
@@ -73,6 +75,7 @@ const RoleAccessManagement = () => {
         handleFormState={handleFormState}
         access={access}
         data={payload?.records}
+        setFilterValue={setFilterValue}
       />
     </Page>
   );

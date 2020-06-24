@@ -51,6 +51,31 @@ class Role extends CommonClass
         }
     }
 
+    public function privileges()
+    {
+        $query = "
+            SELECT A.DOMAIN_ID, DOMAIN_TEXT, A.OBJECT_ID, OBJECT_PARENT_ID,
+                OBJECT_TEXT, DOMAIN_OBJECT_ACTIVE,
+                0 PRIV_VIEW,
+                0 PRIV_UPDATE,
+                0 PRIV_CREATE,
+                0 PRIV_DELETE,
+                0 PRIV_PROTECT
+            FROM URBAC_DOMAIN_OBJECTS A, URBAC_DOMAINS, URBAC_OBJECTS
+            WHERE A.DOMAIN_ID != 1
+                AND A.DOMAIN_ID = URBAC_DOMAINS.DOMAIN_ID
+                AND A.OBJECT_ID = URBAC_OBJECTS.OBJECT_ID
+            ORDER BY DOMAIN_ID, OBJECT_ID";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function read_hook(&$hook_item)
     {
         // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -264,6 +289,10 @@ class Role extends CommonClass
         oci_bind_by_name($stmt, ':domain_id', $item->domain_id);
         oci_bind_by_name($stmt, ':object_id', $item->object_id);
         oci_bind_by_name($stmt, ':privilege_id', $privilege_id);
+        write_log($this->role_id, __FILE__, __LINE__);
+        write_log($item->domain_id, __FILE__, __LINE__);
+        write_log($item->object_id, __FILE__, __LINE__);
+        write_log($privilege_id, __FILE__, __LINE__);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -275,6 +304,20 @@ class Role extends CommonClass
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
+
+        if (!isset($this->role_id)) {
+            $query = "SELECT ROLE_ID FROM URBAC_ROLES WHERE ROLE_CODE = :role_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':role_code', $this->role_code);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            write_log(json_encode($row), __FILE__, __LINE__);
+            $this->role_id = $row['ROLE_ID'];
+        }
 
         if (isset($this->privilege)) {
             $lineno = 1;
