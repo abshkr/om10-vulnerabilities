@@ -11,7 +11,7 @@ import { Loading, Locked } from '..';
 const Page = ({ name, page, children, modifiers, minimal, transparent, access, avatar, standalone }) => {
   // const IS_LOCKED = !access?.isLoading && access?.isProtected;
   const CAN_VIEW = !access?.isLoading && access?.canView;
-  const IS_LOADING = access?.isLoading;
+  const IS_LOADING = !access || access?.isLoading;
 
   const routes = [
     {
