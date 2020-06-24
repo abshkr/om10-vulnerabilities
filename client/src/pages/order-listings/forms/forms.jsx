@@ -438,7 +438,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete || !mainTabOn}
+              disabled={!access?.canDelete || !mainTabOn || value?.order_approved}
               onClick={onDelete}
             >
               {t('operations.delete')}
@@ -562,7 +562,10 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
 
             <Form.Item name="order_items">
               <DataTable
-                data={orderItems}
+                data={value?.order_approved 
+                  ? orderItems.filter((item)=>(item.oitem_prod_qty>0)) 
+                  : orderItems
+                }
                 height="60vh"
                 minimal
                 columns={fields}
