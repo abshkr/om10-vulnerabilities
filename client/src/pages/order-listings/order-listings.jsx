@@ -25,10 +25,12 @@ const OrderListings = ({popup, params}) => {
   const ranges = getDateRangeOffset(config.openOrderDateRange, '30');
   //const ranges = getDateRangeOffset(false, '30');
   //const ranges = getDateRangeOffset("7~~0", '30');
+  const filterByExpiry = config.filterOpenOrderByExpiry;
+  console.log('filterByExpiry', filterByExpiry);
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [timeOption, setTimeOption] = useState('ORDER_ORD_TIME');
+  const [timeOption, setTimeOption] = useState(filterByExpiry?'ORDER_EXP_TIME':'ORDER_ORD_TIME');
   const [pageState, setPageState] = useState('view');
   const [supplier, setSupplier] = useState(null);
   const [customer, setCustomer] = useState(null);
@@ -174,6 +176,14 @@ const OrderListings = ({popup, params}) => {
   }, [ranges]);
 
   useEffect(() => {
+    if (filterByExpiry) {
+      setTimeOption('ORDER_EXP_TIME');
+    }else {
+      setTimeOption('ORDER_ORD_TIME');
+    }
+  }, [filterByExpiry]);
+
+  useEffect(() => {
     if (popup && params) {
       setSupplier(params?.order_supp_code);
       setCustomer(params?.order_cust_acnt);
@@ -191,7 +201,7 @@ const OrderListings = ({popup, params}) => {
     <>
       <div style={{ float: 'left' }}>
         <Select
-          defaultValue="ORDER_ORD_TIME"
+          defaultValue={filterByExpiry?'ORDER_EXP_TIME':'ORDER_ORD_TIME'}
           onChange={setTimeOption}
           optionFilterProp="children"
           placeholder={null}
