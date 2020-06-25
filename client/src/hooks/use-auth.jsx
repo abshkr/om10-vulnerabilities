@@ -27,7 +27,7 @@ const useAuth = (module) => {
   useEffect(() => {
     if (payload && !!payload.errors) {
       notification.error({
-        message: t("descriptions.requestFailed"),
+        message: t('descriptions.requestFailed'),
         description: payload.errors[0].message,
       });
     } else if (payload && !!payload.records) {
@@ -40,6 +40,7 @@ const useAuth = (module) => {
           canUpdate: access.priv_update,
           canCreate: access.priv_create,
           canView: access.priv_view,
+          isLoading: false,
         });
       }
     }
@@ -58,7 +59,6 @@ const useAuth = (module) => {
 
   return {
     ...access,
-    isLoading: !payload,
   };
 };
 
