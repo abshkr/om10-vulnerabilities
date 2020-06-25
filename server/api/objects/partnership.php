@@ -137,56 +137,55 @@ class Partnership extends CommonClass
         }
     }
 
-    public function read_hook(&$hook_item)
-    {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-        write_log(json_encode($hook_item), __FILE__, __LINE__);
-
-        $result = array();
-        $hook_item['peers'] = $result;
-        if (!isset($hook_item['partner_cust_acct']) || $hook_item['partner_cust_acct'] === "") {
-            write_log("hook_item does not have partner_cust_acct, cannot do read_hook",
-                __FILE__, __LINE__);
-            // return;
-            $query = "SELECT
-                CCP_PRTNR_SEQ, 
-                PR.PRTNR_CODE PARTNER_CODE,
-                PR.PRTNR_NAME1,
-                PR.PRTNR_NAME2,
-                PR.PRTNR_NAME3,
-                PR.PRTNR_SEQ || ' - ' || PR.PRTNR_CODE || ' - ' || PR.PRTNR_NAME1 PRTNR_DESC
-            FROM CMPY_CUST_PRTNR CCP, PARTNER PR
-            WHERE CCP.CCP_PRTNR_SEQ = PR.PRTNR_SEQ
-                AND CCP_CMPY_CODE = :partner_cmpy_code
-                AND CCP_CUST_ACCT IS NULL";
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':partner_cmpy_code', $hook_item['partner_cmpy_code']);
-        } else {
-            $query = "SELECT CCP_PRTNR_SEQ, 
-                    PR.PRTNR_CODE PARTNER_CODE,
-                    PR.PRTNR_NAME1,
-                    PR.PRTNR_NAME2,
-                    PR.PRTNR_NAME3,
-                    PR.PRTNR_SEQ || ' - ' || PR.PRTNR_CODE || ' - ' || PR.PRTNR_NAME1 PRTNR_DESC
-                FROM CMPY_CUST_PRTNR CCP, PARTNER PR
-                WHERE CCP.CCP_PRTNR_SEQ = PR.PRTNR_SEQ
-                    AND CCP_CMPY_CODE = :partner_cmpy_code
-                    AND CCP_CUST_ACCT = :partner_cust_acct";
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':partner_cmpy_code', $hook_item['partner_cmpy_code']);
-            oci_bind_by_name($stmt, ':partner_cust_acct', $hook_item['partner_cust_acct']);
-        }
+    // public function read_hook(&$hook_item)
+    // {
+    //     write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+    //         __FILE__, __LINE__);
         
-        if (!oci_execute($stmt, $this->commit_mode)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return;
-        }
+    //     $result = array();
+    //     $hook_item['peers'] = $result;
+    //     if (!isset($hook_item['partner_cust_acct']) || $hook_item['partner_cust_acct'] === "") {
+    //         write_log("hook_item does not have partner_cust_acct, cannot do read_hook",
+    //             __FILE__, __LINE__);
+    //         // return;
+    //         $query = "SELECT
+    //             CCP_PRTNR_SEQ, 
+    //             PR.PRTNR_CODE PARTNER_CODE,
+    //             PR.PRTNR_NAME1,
+    //             PR.PRTNR_NAME2,
+    //             PR.PRTNR_NAME3,
+    //             PR.PRTNR_SEQ || ' - ' || PR.PRTNR_CODE || ' - ' || PR.PRTNR_NAME1 PRTNR_DESC
+    //         FROM CMPY_CUST_PRTNR CCP, PARTNER PR
+    //         WHERE CCP.CCP_PRTNR_SEQ = PR.PRTNR_SEQ
+    //             AND CCP_CMPY_CODE = :partner_cmpy_code
+    //             AND CCP_CUST_ACCT IS NULL";
+    //         $stmt = oci_parse($this->conn, $query);
+    //         oci_bind_by_name($stmt, ':partner_cmpy_code', $hook_item['partner_cmpy_code']);
+    //     } else {
+    //         $query = "SELECT CCP_PRTNR_SEQ, 
+    //                 PR.PRTNR_CODE PARTNER_CODE,
+    //                 PR.PRTNR_NAME1,
+    //                 PR.PRTNR_NAME2,
+    //                 PR.PRTNR_NAME3,
+    //                 PR.PRTNR_SEQ || ' - ' || PR.PRTNR_CODE || ' - ' || PR.PRTNR_NAME1 PRTNR_DESC
+    //             FROM CMPY_CUST_PRTNR CCP, PARTNER PR
+    //             WHERE CCP.CCP_PRTNR_SEQ = PR.PRTNR_SEQ
+    //                 AND CCP_CMPY_CODE = :partner_cmpy_code
+    //                 AND CCP_CUST_ACCT = :partner_cust_acct";
+    //         $stmt = oci_parse($this->conn, $query);
+    //         oci_bind_by_name($stmt, ':partner_cmpy_code', $hook_item['partner_cmpy_code']);
+    //         oci_bind_by_name($stmt, ':partner_cust_acct', $hook_item['partner_cust_acct']);
+    //     }
+        
+    //     if (!oci_execute($stmt, $this->commit_mode)) {
+    //         $e = oci_error($stmt);
+    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         return;
+    //     }
 
-        Utilities::retrieve($result, $this, $stmt, $method=__FUNCTION__);
-        $hook_item['peers'] = $result;
-    }
+    //     Utilities::retrieve($result, $this, $stmt, $method=__FUNCTION__);
+    //     $hook_item['peers'] = $result;
+    // }
 
     protected function insert_children()
     {

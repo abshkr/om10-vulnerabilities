@@ -31,7 +31,7 @@ const Partner = ({ form, value, company, setSelected }) => {
       <Form.Item name="partners" noStyle >
         <DataTable
           data={company ? partners?.records : []}
-          height="78vh"
+          height="38vh"
           minimal
           columns={columns(t)}
           handleSelect={handleSelect}
