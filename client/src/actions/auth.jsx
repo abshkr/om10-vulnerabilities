@@ -15,6 +15,12 @@ export const login = (values, callback) => async (dispatch) => {
         if (token) {
           dispatch({ type: AUTHORIZED, payload: response.data.token });
 
+          api.interceptors.request.use(function (config) {
+            config.headers.Authorization = response.data.token;
+
+            return config;
+          });
+
           sessionStorage.setItem('token', response.data.token);
         }
 
