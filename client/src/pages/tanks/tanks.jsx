@@ -156,9 +156,11 @@ const Tanks = () => {
               <Gauging selected={selected} access={access} />
             </TabPane>
 
-            <TabPane key="7" tab={t('tabColumns.strapping')} disabled={!config.manageTankStrapping}>
-              <TankStrapping code={selected?.tank_code} tanks={read} access={access} />
-            </TabPane>
+            {config.manageTankStrapping && (
+              <TabPane key="7" tab={t('tabColumns.strapping')}>
+                <TankStrapping code={selected?.tank_code} tanks={read} access={access} />
+              </TabPane>
+            )}
 
             <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')} disabled />
           </Tabs>
