@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 import {
   EditOutlined,
-  PlusOutlined,
-  DeleteOutlined,
+  ReconciliationOutlined,
   QuestionCircleOutlined,
   CloseOutlined,
 } from '@ant-design/icons';
@@ -15,7 +14,8 @@ import _ from 'lodash';
 import { DRAWER_PRODUCTS } from 'api';
 import useSWR from 'swr';
 import { DrawerCompany, ProductCode, ProductName } from './fields';
-import './style.css';
+import ImageDisplay from './image-display'
+// import './style.css';
 
 const TabPane = Tabs.TabPane;
 
@@ -165,6 +165,8 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
           >
             {t('operations.update')}
           </Button>
+
+          
         </>
       }
     >
@@ -180,7 +182,7 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
             </Form.Item>
 
             <Form.Item name="prod_textcolor" label={t('fields.textColor')} >
-              <Input style={{ width: '100%' }}  addonAfter={textcolorPostfix}></Input>
+              <Input style={{ width: '100%' }} addonAfter={textcolorPostfix}></Input>
             </Form.Item>
 
             <Divider orientation="left">{t("fields.prodImage")}</Divider>
@@ -205,7 +207,8 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
                   </Card>
                 ))}
             </div> */}
-            <div class="flex-container">
+            <ImageDisplay onImageClick={onImageClick}></ImageDisplay>
+            {/* <div class="flex-container">
                 {payload?.records.map((item, index) => (
                   <div style={{
                     display: 'flex', 
@@ -222,7 +225,7 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
                     </div>
                   </div>
                 ))}
-            </div>
+            </div> */}
           </TabPane>
         </Tabs>
       </Form>

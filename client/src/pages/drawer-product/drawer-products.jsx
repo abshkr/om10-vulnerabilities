@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import useSWR from 'swr';
 import { Button, Tabs } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, ReconciliationOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download } from '../../components';
+import { Page, DataTable, Download, FormModal } from 'components';
 import { DRAWER_PRODUCTS } from '../../api';
 import { useAuth } from '../../hooks';
 import columns from './columns';
@@ -13,6 +13,7 @@ import auth from '../../auth';
 
 import Forms from './forms';
 import Assets from './assets/assets'
+import ManageImgForm from './assets/manage-images'
 
 const DrawerProduct = () => {
   const [visible, setVisible] = useState(false);
@@ -30,6 +31,17 @@ const DrawerProduct = () => {
     setSelected(value);
   };
 
+  const manageImages = () => {
+    FormModal({
+      // value: currentCmpy,
+      width: '80vh',
+      form: <ManageImgForm />,
+      // id: currentCmpy.cmpy_code,
+      // name: currentCmpy.cmpy_name,
+      t,
+    });
+  };
+
   const fields = columns(t);
 
   const data = payload?.records;
@@ -45,6 +57,16 @@ const DrawerProduct = () => {
       </Button>
 
       <Download data={data} isLoading={isLoading} columns={fields} />
+
+      <Button
+        type="primary"
+        icon={<ReconciliationOutlined />}
+        onClick={manageImages}
+        // style={{ float: 'right', marginRight: 5 }}
+        disabled={!access?.canUpdate}
+      >
+        {t('operations.manageImage')}
+      </Button>
 
       <Button
         type="primary"
