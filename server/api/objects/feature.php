@@ -15,8 +15,8 @@ class Feature extends CommonClass
         $feature_array = json_decode(file_get_contents("../../config/FeatureSettings.json"));
         foreach ($feature_array as $item) {
             foreach ($item as $key => $value) {
-                if ($key == "feature_gui" || $key == "feature_flag") {
-                    if ($value == "Y") {
+                if ($key === "feature_gui" || $key === "feature_flag") {
+                    if ($value === "Y") {
                         $item->$key = true;
                     } else {
                         $item->$key = false;
