@@ -19,7 +19,8 @@ const HostMessages = ({handleClick}) => {
 
 
   const fields = columns(t);
-	const url = process.env.REACT_APP_API_URL + '/hmi/host_message';
+	//const url = process.env.REACT_APP_API_URL + '/hmi/host_message';
+	const url = '/hmi/host_message';
 
 	const getData = async () => {
 		fetch(url, {
@@ -32,6 +33,7 @@ const HostMessages = ({handleClick}) => {
 			body: JSON.stringify({start: start, end: end})
 		}).then(response => {
 			response.json().then(body => {
+				console.log('body:'+body);
 				setMessages(body.message);
 				return body;
 			});
