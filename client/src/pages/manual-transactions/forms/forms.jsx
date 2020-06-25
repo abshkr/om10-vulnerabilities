@@ -292,7 +292,11 @@ const Forms = ({
       <Row gutter={24}>
         <Col span={8}>
           <Form.Item name="source_type" label={t('fields.transactionType')} rules={[{ required: true }]}>
-            <Select onChange={handleTypeSelect} placeholder={t('placeholder.selectTransType')}>
+            <Select 
+              disabled={popup}
+              onChange={handleTypeSelect} 
+              placeholder={t('placeholder.selectTransType')}
+            >
               <Option value="SCHEDULE">{t('fields.mtTypeSchedule')}</Option>
               <Option value="OPENORDER">{t('fields.mtTypeOrder')}</Option>
             </Select>
@@ -334,7 +338,7 @@ const Forms = ({
               loading={suppliersLoading}
               allowClear
               showSearch
-              disabled={!sourceType}
+              disabled={!sourceType || popup}
               onChange={handleSupplierSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectSupplier')}
@@ -390,7 +394,7 @@ const Forms = ({
             <Select
               allowClear
               showSearch
-              disabled={sourceType !== 'OPENORDER' || !selectedSupplier}
+              disabled={sourceType !== 'OPENORDER' || !selectedSupplier || popup}
               optionFilterProp="children"
               placeholder={t('placeholder.selectCustomer')}
               onChange={handleCustomerSelect}
@@ -450,7 +454,7 @@ const Forms = ({
               optionFilterProp="children"
               placeholder={t('placeholder.selectTripNumber')}
               onChange={handleTripSelect}
-              disabled={!trips || sourceType !== 'SCHEDULE'}
+              disabled={!trips || sourceType !== 'SCHEDULE' || popup}
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
@@ -504,7 +508,7 @@ const Forms = ({
               //loading={driversLoading}
               allowClear
               showSearch
-              disabled={!orders || sourceType !== 'OPENORDER'}
+              disabled={!orders || sourceType !== 'OPENORDER' || popup}
               onChange={handleOrderSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectOrderNumber')}

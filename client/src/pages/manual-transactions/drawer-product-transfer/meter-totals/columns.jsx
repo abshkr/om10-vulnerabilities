@@ -17,6 +17,14 @@ const columns = (t) => [
   },
   {
     headerName: t('fields.type'),
+    field: 'injector_or_meter',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
+    headerName: t('fields.type'),
     field: 'trsf_mtr_typ',
     filter: 'FuzzyFilter',
     sortable: true,

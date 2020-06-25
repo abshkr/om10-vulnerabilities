@@ -249,6 +249,8 @@ class CommonClass
         // if (isset($this->table_view_map)) {
         //     $view_table_map = array_flip($this->table_view_map);
         // }
+        $clob_fields_query = "";
+        $clob_para_query = "";
 
         foreach ($this as $key => $value) {
             if (in_array($key, $this->primary_keys)) {
@@ -257,7 +259,22 @@ class CommonClass
                 $to_insert[$key] = $value;
             } else if (in_array($key, $this->updatable_fields)) {
                 $fields_query .= $key . ", ";
-                $para_query .= " :" . $key . ", ";
+                if (isset($this->CLOB_FIELDS) &&
+                    (array_key_exists(strtoupper($key), $this->CLOB_FIELDS) ||
+                    in_array(strtoupper($key), $this->CLOB_FIELDS, true))) {
+                        $para_query .= " EMPTY_CLOB(), ";
+                        if (strlen($clob_fields_query) > 0) {
+                            $clob_fields_query .= ", ";
+                        }
+                        $clob_fields_query .= $key;
+                        if (strlen($clob_para_query) > 0) {
+                            $clob_para_query .= ", ";
+                        }
+                        $clob_para_query .= " :myclob_" . $key;
+                } else {
+                    $para_query .= " :" . $key . ", ";
+                }
+                // $para_query .= " :" . $key . ", ";
                 $to_insert[$key] = $value;
             }
         }
@@ -270,7 +287,11 @@ class CommonClass
         }
 
         $query = "INSERT INTO " . $this->TABLE_NAME . $fields_query . " VALUES " . $para_query;
-        // write_log($query, __FILE__, __LINE__, LogLevel::DEBUG);
+        if (strlen($clob_fields_query) > 0 && strlen($clob_para_query) > 0) {
+            // example: RETURNING GUD_HEAD_DATA,GUD_BODY_DATA INTO :mylob_loc_head, :mylob_loc_body
+            $query .= " RETURNING " . $clob_fields_query . " INTO " . $clob_para_query;
+            write_log("CLOB query: " . $query, __FILE__, __LINE__, LogLevel::DEBUG);
+        }
         $stmt = oci_parse($this->conn, $query);
 
         foreach ($this->primary_keys as $value) {
@@ -280,8 +301,30 @@ class CommonClass
 
         foreach ($to_insert as $key => $value) {
             // write_log(sprintf("%s:%s:%s", $key, $value, $this->$key), __FILE__, __LINE__);
-            oci_bind_by_name($stmt, ':' . $key, $this->$key);
+            if (isset($this->CLOB_FIELDS) &&
+                (array_key_exists(strtoupper($key), $this->CLOB_FIELDS) ||
+                in_array(strtoupper($key), $this->CLOB_FIELDS, true))) {
+                // example:
+                // Creates an "empty" OCI-Lob object to bind to the locator
+                // $myLOB_hd = oci_new_descriptor($db->connect, OCI_D_LOB);
+                // NOTE!!!!!! need define this variable in class level
+                //$clobkey = "myclob_".$key;
+                $clobkey = $key;
+                if (!isset($this->CLOB_LOCATORS)) {
+                    $this->CLOB_LOCATORS = array();
+                }
+                $this->CLOB_LOCATORS[$clobkey] = oci_new_descriptor($this->conn, OCI_D_LOB);
+                // Bind the returned Oracle LOB locator to the PHP LOB object
+                // oci_bind_by_name($stmt, ":mylob_loc_body", $myLOB_by, -1, OCI_B_CLOB);
+                oci_bind_by_name($stmt, ':myclob_' . $key, $this->CLOB_LOCATORS[$clobkey], -1, OCI_B_CLOB);
+                write_log('we have clob: '. $key, __FILE__, __LINE__, LogLevel::DEBUG);
+            } else {
+                oci_bind_by_name($stmt, ':' . $key, $this->$key);
+            }
+            // oci_bind_by_name($stmt, ':' . $key, $this->$key);
         }
+
+        write_log('prepare_insert successfully', __FILE__, __LINE__, LogLevel::DEBUG);
 
         return $stmt;
     }
@@ -528,10 +571,19 @@ class CommonClass
 
         Utilities::sanitize($this);
 
-        $this->commit_mode = OCI_NO_AUTO_COMMIT;
+        if (isset($this->CLOB_FIELDS) && count($this->CLOB_FIELDS)>0 ) {
+            $this->commit_mode = OCI_DEFAULT;
+            write_log("CLOB commit_mode " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
+        } else {
+            $this->commit_mode = OCI_NO_AUTO_COMMIT;
+        }
+        //$this->commit_mode = OCI_NO_AUTO_COMMIT;
 
         $stmt = $this->prepare_insert();
+        write_log("after prepare_insert " . $stmt, __FILE__, __LINE__, LogLevel::ERROR);
+
         if (!$stmt) {
+            write_log("stmt error" . $stmt, __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         } else if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
@@ -539,18 +591,49 @@ class CommonClass
             oci_rollback($this->conn);
             return false;
         }
+        write_log("after oci_execute " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
+
+        // save clob data
+        if (isset($this->CLOB_FIELDS) && 
+            count($this->CLOB_FIELDS) > 0 && 
+            isset($this->CLOB_LOCATORS) && 
+            count($this->CLOB_LOCATORS) > 0 ) {
+            write_log('we have clob fields ', __FILE__, __LINE__, LogLevel::DEBUG);
+            foreach ($this->CLOB_LOCATORS as $key => $locator) {
+                write_log('CLOB locators '. $key . ' - ' . $this->$key, __FILE__, __LINE__, LogLevel::DEBUG);
+                if (isset($locator)){
+                    if (!$locator->save($this->$key)) {
+                        // On error, rollback the transaction
+                        write_log("DB LOB failed:", __FILE__, __LINE__, LogLevel::ERROR);
+                        oci_rollback($this->conn);
+                        //$locator->free();
+                        return false;
+                    } else {
+                        //$locator->free();
+                        write_log("DB LOB succeeded:", __FILE__, __LINE__, LogLevel::DEBUG);
+                    }
+                }
+            }
+            write_log('we have clob fields2 ', __FILE__, __LINE__, LogLevel::DEBUG);
+        }
+        
+        write_log("after clob save " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
 
         if ($this->post_create() === false) {
             write_log("Failed to execute post_create", __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
+        
+        write_log("after post create " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
 
         if (!$this->insert_children()) {
             write_log("Failed to execute insert_children", __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
+        
+        write_log("after insert children " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
 
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
@@ -578,6 +661,21 @@ class CommonClass
         // }
 
         oci_commit($this->conn);
+
+        // free the resources
+        if (isset($this->CLOB_FIELDS) && 
+            count($this->CLOB_FIELDS) > 0 && 
+            isset($this->CLOB_LOCATORS) && 
+            count($this->CLOB_LOCATORS) > 0 ) {
+            foreach ($this->CLOB_LOCATORS as $key => $locator) {
+                write_log('i am here to free resource '. $key . ' - ' . $this->$key, __FILE__, __LINE__, LogLevel::DEBUG);
+                if (isset($locator)){
+                    $locator->free();
+                }
+            }
+        }
+        unset($this->CLOB_LOCATORS);
+
         return true;
     }
 

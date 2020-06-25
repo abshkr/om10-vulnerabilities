@@ -1,0 +1,47 @@
+import React from 'react';
+import { FileSearchOutlined} from '@ant-design/icons';
+import { SWRConfig } from 'swr';
+import { fetcher } from 'utils';
+
+import { Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
+
+import LoadForm from './load-form';
+
+const DataManager = (
+    title, 
+    fields,
+    url,
+    onLoad, 
+    width,
+    height,
+  ) => {
+  Modal.info({
+    className: 'form-container',
+    title: title? title: 'Search',
+    centered: true,
+    closable: true,
+    width: width,
+    height: height,
+    icon: <FileSearchOutlined />,
+    content: (
+    <SWRConfig
+        value={{
+        refreshInterval: 0,
+        fetcher,
+        }}
+    >
+      <LoadForm onLoad={onLoad} fields={fields} url={url} />
+    </SWRConfig>
+    ),
+    okButtonProps: {
+    style: { display: 'none' },
+    },
+  });
+
+  return null;
+};
+
+
+export default DataManager;
+  

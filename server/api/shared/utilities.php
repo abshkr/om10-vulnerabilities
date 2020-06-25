@@ -51,7 +51,15 @@ class Utilities
                 continue;
             }
 
-            $obj->{$key} = htmlspecialchars(strip_tags($value));
+            // do not strip tags if the data type is in $this->TAG_FIELDS
+            if (isset($obj->TAG_FIELDS) &&
+                (array_key_exists(strtoupper($key), $obj->TAG_FIELDS) ||
+                in_array(strtoupper($key), $obj->TAG_FIELDS, true))) {
+                $obj->{$key} = htmlspecialchars(($value));
+            } else {
+                $obj->{$key} = htmlspecialchars(strip_tags($value));
+            }
+            // $obj->{$key} = htmlspecialchars(strip_tags($value));
         }
     }
 
@@ -177,6 +185,14 @@ class Utilities
         $stmt = $object->$method();
         if (is_array($stmt)) {
             //means it is handled inside $object->$method()
+            // feel like it should echo the result if $stmt is an array return from $object->$method()
+            /* http_response_code(200);
+            if (count($stmt) > 0) {
+                echo json_encode($stmt, JSON_PRETTY_PRINT);
+            } else {
+                $result["message"] = response("__NO_RECORD_FOUND__");
+                echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            } */
             return;
         } else if (!$stmt) {
             $error = new EchoSchema(500, response("__INTERNAL_ERROR__"));
@@ -383,6 +399,7 @@ class Utilities
         //     __FILE__, __LINE__);
 
         $num = 0;
+        //while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS + OCI_RETURN_LOBS)) {
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
             $num += 1;
 
@@ -399,18 +416,29 @@ class Utilities
                     } else {
                         $base_item[$lower_key] = false;
                     }
-                } else {
-                    if (isset($object->NUMBER_FIELDS)) {
-                        if (array_key_exists($key, $object->NUMBER_FIELDS)) {
-                            $base_item[$lower_key] = round((float) $value, $object->NUMBER_FIELDS[$key]);
-                        } else if (in_array($key, $object->NUMBER_FIELDS, true)) {
-                            $base_item[$lower_key] = (float) $value;
-                        } else {
-                            $base_item[$lower_key] = $value;
-                        }
-                    } else {
-                        $base_item[$lower_key] = $value;
+                } 
+                else if (isset($object->NUMBER_FIELDS) &&
+                    (array_key_exists($key, $object->NUMBER_FIELDS) || 
+                    in_array($key, $object->NUMBER_FIELDS, true))) {
+                    if (array_key_exists($key, $object->NUMBER_FIELDS)) {
+                        $base_item[$lower_key] = round((float) $value, $object->NUMBER_FIELDS[$key]);
                     }
+                    if (in_array($key, $object->NUMBER_FIELDS, true)) {
+                        $base_item[$lower_key] = (float) $value;
+                    }
+                }
+                else if (isset($object->CLOB_FIELDS) &&
+                    (array_key_exists($key, $object->CLOB_FIELDS) ||
+                    in_array($key, $object->CLOB_FIELDS, true))) {
+                    if ($value !== null) {
+                        $base_item[$lower_key] = $value->load();
+                        $base_item[$lower_key] = self::xml_to_json($base_item[$lower_key]);
+                        //$base_item[$lower_key] = self::xml_to_json($value);
+                    } else {
+                        $base_item[$lower_key] = null;
+                    }
+                } else {
+                    $base_item[$lower_key] = $value;
                 }
             }
 
@@ -992,4 +1020,125 @@ class Utilities
         $pos_2 = strpos($xml_str, "<", $pos_1);
         return substr($xml_str, $pos_1 + $pattern_len, $pos_2 - $pos_1 - $pattern_len);
     }
+
+	public static function xml_to_json ($contents) {
+        //write_log("xml_to_json: ".$contents, __FILE__, __LINE__);
+        if ($contents === null) {
+            return null;
+        }
+        $contents = htmlspecialchars_decode($contents);
+		$contents = str_replace(array("\n", "\r", "\t"), '', $contents);
+        //write_log("xml_to_json2: ".$contents, __FILE__, __LINE__);
+
+		$contents = trim(str_replace('"', "'", $contents));
+        //write_log("xml_to_json3: ".$contents, __FILE__, __LINE__);
+
+        $simpleXml = simplexml_load_string($contents);
+        //write_log("xml_to_json4: ".$simpleXml, __FILE__, __LINE__);
+        if ($simpleXml === FALSE) {
+            return null;
+        }
+
+		//$json = (array)$simpleXml;
+		//$json = $simpleXml;
+        $json = json_encode($simpleXml);
+        //write_log("xml_to_json5: ".$json, __FILE__, __LINE__);
+        $json = str_replace('{}', '""', $json);
+
+		return $json;
+    }
+    
+    // Copyright: Maurits van der Schee <maurits@vdschee.nl>
+    // Description: Convert from JSON to XML and back.
+    // License: MIT
+
+    public static function json2xml($json, $root='root') {
+        $a = json_decode($json);
+        $d = new DOMDocument();
+        $c = $d->createElement($root);
+        $d->appendChild($c);
+        $t = function($v) {
+            $type = gettype($v);
+            switch($type) {
+                case 'integer': return 'number';
+                case 'double':  return 'number';
+                default: return strtolower($type);
+            }
+        };
+        $f = function($f,$c,$a,$s=false) use ($t,$d) {
+            $c->setAttribute('type', $t($a));
+            if ($t($a) != 'array' && $t($a) != 'object') {
+                if ($t($a) == 'boolean') {
+                    $c->appendChild($d->createTextNode($a?'true':'false'));
+                } else {
+                    $c->appendChild($d->createTextNode($a));
+                }
+            } else {
+                foreach($a as $k=>$v) {
+                    if ($k == '__type' && $t($a) == 'object') {
+                        $c->setAttribute('__type', $v);
+                    } else {
+                        if ($t($v) == 'object') {
+                            $ch = $c->appendChild($d->createElementNS(null, $s ? 'item' : $k));
+                            $f($f, $ch, $v);
+                        } else if ($t($v) == 'array') {
+                            $ch = $c->appendChild($d->createElementNS(null, $s ? 'item' : $k));
+                            $f($f, $ch, $v, true);
+                        } else {
+                            $va = $d->createElementNS(null, $s ? 'item' : $k);
+                            if ($t($v) == 'boolean') {
+                                $va->appendChild($d->createTextNode($v?'true':'false'));
+                            } else {
+                                $va->appendChild($d->createTextNode($v));
+                            }
+                            $ch = $c->appendChild($va);
+                            $ch->setAttribute('type', $t($v));
+                        }
+                    }
+                }
+            }
+        };
+        $f($f,$c,$a,$t($a)=='array');
+        return $d->saveXML($d->documentElement);
+    }
+
+    public static function xml2json($xml) {
+        $a = dom_import_simplexml(simplexml_load_string($xml));
+        $t = function($v) {
+            return $v->getAttribute('type');
+        };
+        $f = function($f,$a) use ($t) {
+            $c = null;
+            if ($t($a)=='null') {
+                $c = null; 
+            } else if ($t($a)=='boolean') {
+                $b = substr(strtolower($a->textContent),0,1);
+                $c = in_array($b,array('1','t'));
+            } else if ($t($a)=='number') {
+                $c = $a->textContent+0; 
+            } else if ($t($a)=='string') {
+                $c = $a->textContent;
+            } else if ($t($a)=='object') {
+                $c = array();
+                if ($a->getAttribute('__type')) {
+                    $c['__type'] = $a->getAttribute('__type');
+                }
+                for ($i=0;$i<$a->childNodes->length;$i++) {
+                    $v = $a->childNodes[$i];
+                    $c[$v->nodeName] = $f($f,$v);
+                }
+                $c = (object)$c;
+            } else if ($t($a)=='array') {
+                $c = array();
+                for ($i=0;$i<$a->childNodes->length;$i++) {
+                    $v = $a->childNodes[$i];
+                    $c[$i] = $f($f,$v);
+                }
+            }
+            return $c;
+        };
+        $c = $f($f,$a);
+        return json_encode($c,64);//64=JSON_UNESCAPED_SLASHES
+    }
+
 }

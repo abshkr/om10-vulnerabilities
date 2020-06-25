@@ -80,6 +80,9 @@ const BaseProductTotals = ({
                   trsf_bs_qty_amb_tot: calcBaseRatios(transfer?.trsf_qty_amb, product?.ratio_value, product?.ratio_total),
                   trsf_bs_qty_cor_tot: calcBaseRatios(transfer?.trsf_qty_cor, product?.ratio_value, product?.ratio_total),
                   trsf_bs_load_kg_tot: calcBaseRatios(transfer?.trsf_load_kg, product?.ratio_value, product?.ratio_total),
+                  trsf_bs_adtv_flag_tot: product?.adtv_flag,
+                  trsf_bs_ratio_value_tot: product?.ratio_value,
+                  trsf_bs_ratio_total_tot: product?.ratio_total,
                   /* trsf_bs_qty_amb_tot: _.sumBy(transfers, (o) => {
                     if (o?.trsf_prod_code === product?.rat_prod_prodcode) {
                       return calcBaseRatios(o?.trsf_qty_amb, product?.ratio_value, product?.ratio_total); //????
