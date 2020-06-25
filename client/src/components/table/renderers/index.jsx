@@ -1,6 +1,8 @@
 import BooleanRenderer from './boolean';
 import LockRenderer from './lock';
 import DateRenderer from './date';
+import ColorRenderer from './color';
+import ImageRenderer from './image';
 import StatusRenderer from './status';
 import TagRenderer from './tag';
 import NullRenderer from './null';
@@ -17,6 +19,8 @@ export {
   BooleanRenderer,
   LockRenderer,
   DateRenderer,
+  ColorRenderer,
+  ImageRenderer,
   StatusRenderer,
   TagRenderer,
   NullRenderer,

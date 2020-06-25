@@ -16,3 +16,7 @@ export const BASES = '/api/pages/product/prod_ratios.php';
 export const CREATE = '/api/pages/product/create.php';
 export const UPDATE = '/api/pages/product/update.php';
 export const DELETE = '/api/pages/product/delete.php';
+
+export const ASSETS = '/api/pages/product_asset/read.php';
+export const IMAGES = '/api/pages/product_asset/images.php';
+export const ASSETS_UPDATE = '/api/pages/product_asset/update.php';
