@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import createActivityDetector from 'activity-detector';
-import axios from 'axios';
+
 import _ from 'lodash';
 
-import { SITE_CONFIGURATION } from '../api';
+import api, { SITE_CONFIGURATION } from '../api';
 
 const useIdle = () => {
   const [isIdle, setIdle] = useState(false);
@@ -36,7 +36,7 @@ const useIdle = () => {
   }, [timeToIdle]);
 
   useEffect(() => {
-    axios.get(SITE_CONFIGURATION.READ).then((res) => {
+    api.get(SITE_CONFIGURATION.READ).then((res) => {
       const payload = res?.data;
 
       if (payload) {
