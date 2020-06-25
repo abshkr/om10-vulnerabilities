@@ -20,7 +20,7 @@ import { ALPHANUMERIC } from 'constants/regex';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, data, setFilterValue  }) => {
+const FormModal = ({ value, visible, handleFormState, access, data, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -32,14 +32,15 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
   const onComplete = (auth_level_name) => {
     handleFormState(false, null);
     mutate(ROLE_ACCESS_MANAGEMENT.READ);
+
     if (auth_level_name) {
-      setFilterValue("" + auth_level_name);
+      setFilterValue('' + auth_level_name);
     }
   };
 
   const onFinish = async () => {
     const values = await form.validateFields();
-    
+
     const privTemplate = IS_CREATING ? privileges?.records : value?.privilege;
     const privilege = generator(privTemplate, values);
 
@@ -113,19 +114,21 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
   };
 
   const validate = (rule, input) => {
-    const match = _.find(data, (record) => {
-      return record.auth_level_name.toLowerCase() === input?.toLowerCase();
-    });
+    if (rule?.field === 'auth_level_name') {
+      const match = _.find(data, (record) => {
+        return record.auth_level_name.toLowerCase() === input?.toLowerCase();
+      });
 
-    const regex = new RegExp(ALPHANUMERIC);
-    const validated = regex.exec(input);
+      const regex = new RegExp(ALPHANUMERIC);
+      const validated = regex.exec(input);
 
-    if (!validated) {
-      return Promise.reject(`${t('validate.invalidInput')}: ${t('descriptions.mustBeAlphaNumeric')}`);
-    }
+      if (!validated) {
+        return Promise.reject(`${t('validate.invalidInput')}: ${t('descriptions.mustBeAlphaNumeric')}`);
+      }
 
-    if (!!match && !value) {
-      return Promise.reject(t('descriptions.alreadyExists'));
+      if (!!match && !value) {
+        return Promise.reject(t('descriptions.alreadyExists'));
+      }
     }
 
     if (input === '' || !input) {

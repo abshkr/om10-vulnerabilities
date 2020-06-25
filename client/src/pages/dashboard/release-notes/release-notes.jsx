@@ -15,79 +15,151 @@ const data = [
           <Divider>Bug Fixes</Divider>
 
           <p>
-            OM5K-6747 - <a>https://dev.diamondkey.com/browse/OM5K-6747</a>
+            OM5K-6310 - <a>https://dev.diamondkey.com/browse/OM5K-6310</a>
           </p>
           <p>
-            OM5K-6746 - <a>https://dev.diamondkey.com/browse/OM5K-6746</a>
+            OM5K-6640 - <a>https://dev.diamondkey.com/browse/OM5K-6640</a>
           </p>
           <p>
-            OM5K-6745 - <a>https://dev.diamondkey.com/browse/OM5K-6745</a>
+            OM5K-6697 - <a>https://dev.diamondkey.com/browse/OM5K-6697</a>
           </p>
           <p>
-            OM5K-6743 - <a>https://dev.diamondkey.com/browse/OM5K-6743</a>
+            OM5K-6698 - <a>https://dev.diamondkey.com/browse/OM5K-6698</a>
+          </p>
+          <p>
+            OM5K-6699 - <a>https://dev.diamondkey.com/browse/OM5K-6699</a>
           </p>
           <p>
             OM5K-6739 - <a>https://dev.diamondkey.com/browse/OM5K-6739</a>
           </p>
           <p>
-            OM5K-6737 - <a>https://dev.diamondkey.com/browse/OM5K-6737</a>
+            OM5K-6751 - <a>https://dev.diamondkey.com/browse/OM5K-6751</a>
           </p>
           <p>
-            OM5K-6736 - <a>https://dev.diamondkey.com/browse/OM5K-6736</a>
-          </p>
-          <p>
-            OM5K-6715 - <a>https://dev.diamondkey.com/browse/OM5K-6715</a>
-          </p>
-          <p>
-            OM5K-6684 - <a>https://dev.diamondkey.com/browse/OM5K-6684</a>
-          </p>
-          <p>
-            OM5K-6661 - <a>https://dev.diamondkey.com/browse/OM5K-6661</a>
-          </p>
-          <p>
-            OM5K-6660 - <a>https://dev.diamondkey.com/browse/OM5K-6660</a>
-          </p>
-          <p>
-            OM5K-6659 - <a>https://dev.diamondkey.com/browse/OM5K-6659</a>
-          </p>
-          <p>
-            OM5K-6656 - <a>https://dev.diamondkey.com/browse/OM5K-6656</a>
-          </p>
-          <p>
-            OM5K-6654 - <a>https://dev.diamondkey.com/browse/OM5K-6654</a>
-          </p>
-          <p>
-            OM5K-6653 - <a>https://dev.diamondkey.com/browse/OM5K-6653</a>
-          </p>
-          <p>
-            OM5K-6648 - <a>https://dev.diamondkey.com/browse/OM5K-6648</a>
-          </p>
-          <p>
-            OM5K-6646 - <a>https://dev.diamondkey.com/browse/OM5K-6646</a>
-          </p>
-          <p>
-            OM5K-6638 - <a>https://dev.diamondkey.com/browse/OM5K-6638</a>
-          </p>
-          <p>
-            OM5K-6613 - <a>https://dev.diamondkey.com/browse/OM5K-6613</a>
-          </p>
-          <p>
-            OM5K-6505 - <a>https://dev.diamondkey.com/browse/OM5K-6505</a>
-          </p>
-          <p>
-            OM5K-6492 - <a>https://dev.diamondkey.com/browse/OM5K-6492</a>
-          </p>
-          <p>
-            OM5K-6487 - <a>https://dev.diamondkey.com/browse/OM5K-6487</a>
+            OM5K-6316 - <a>https://dev.diamondkey.com/browse/OM5K-6316</a>
           </p>
           <p>
             OM5K-6468 - <a>https://dev.diamondkey.com/browse/OM5K-6468</a>
           </p>
           <p>
+            OM5K-6487 - <a>https://dev.diamondkey.com/browse/OM5K-6487</a>
+          </p>
+          <p>
+            OM5K-6593 - <a>https://dev.diamondkey.com/browse/OM5K-6593</a>
+          </p>
+          <p>
+            OM5K-6594 - <a>https://dev.diamondkey.com/browse/OM5K-6594</a>
+          </p>
+          <p>
+            OM5K-6596 - <a>https://dev.diamondkey.com/browse/OM5K-6596</a>
+          </p>
+          <p>
+            OM5K-6608 - <a>https://dev.diamondkey.com/browse/OM5K-6608</a>
+          </p>
+          <p>
+            OM5K-6613 - <a>https://dev.diamondkey.com/browse/OM5K-6613</a>
+          </p>
+          <p>
+            OM5K-6622 - <a>https://dev.diamondkey.com/browse/OM5K-6622</a>
+          </p>
+          <p>
+            OM5K-6633 - <a>https://dev.diamondkey.com/browse/OM5K-6633</a>
+          </p>
+          <p>
+            OM5K-6634 - <a>https://dev.diamondkey.com/browse/OM5K-6634</a>
+          </p>
+          <p>
+            OM5K-6635 - <a>https://dev.diamondkey.com/browse/OM5K-6635</a>
+          </p>
+          <p>
+            OM5K-6638 - <a>https://dev.diamondkey.com/browse/OM5K-6638</a>
+          </p>
+          <p>
+            OM5K-6639 - <a>https://dev.diamondkey.com/browse/OM5K-6639</a>
+          </p>
+          <p>
+            OM5K-6643 - <a>https://dev.diamondkey.com/browse/OM5K-6643</a>
+          </p>
+          <p>
+            OM5K-6646 - <a>https://dev.diamondkey.com/browse/OM5K-6646</a>
+          </p>
+          <p>
+            OM5K-6656 - <a>https://dev.diamondkey.com/browse/OM5K-6656</a>
+          </p>
+          <p>
+            OM5K-6668 - <a>https://dev.diamondkey.com/browse/OM5K-6668</a>
+          </p>
+          <p>
+            OM5K-6693 - <a>https://dev.diamondkey.com/browse/OM5K-6693</a>
+          </p>
+          <p>
+            OM5K-6695 - <a>https://dev.diamondkey.com/browse/OM5K-6695</a>
+          </p>
+          <p>
+            OM5K-6704 - <a>https://dev.diamondkey.com/browse/OM5K-6704</a>
+          </p>
+          <p>
+            OM5K-6710 - <a>https://dev.diamondkey.com/browse/OM5K-6710</a>
+          </p>
+          <p>
+            OM5K-6714 - <a>https://dev.diamondkey.com/browse/OM5K-6714</a>
+          </p>
+          <p>
+            OM5K-6721 - <a>https://dev.diamondkey.com/browse/OM5K-6721</a>
+          </p>
+          <p>
+            OM5K-6724 - <a>https://dev.diamondkey.com/browse/OM5K-6724</a>
+          </p>
+          <p>
+            OM5K-6737 - <a>https://dev.diamondkey.com/browse/OM5K-6737</a>
+          </p>
+          <p>
+            OM5K-6742 - <a>https://dev.diamondkey.com/browse/OM5K-6742</a>
+          </p>
+          <p>
+            OM5K-6744 - <a>https://dev.diamondkey.com/browse/OM5K-6744</a>
+          </p>
+          <p>
+            OM5K-6745 - <a>https://dev.diamondkey.com/browse/OM5K-6745</a>
+          </p>
+          <p>
             OM5K-6464 - <a>https://dev.diamondkey.com/browse/OM5K-6464</a>
           </p>
           <p>
-            OM5K-6316 - <a>https://dev.diamondkey.com/browse/OM5K-6316</a>
+            OM5K-6492 - <a>https://dev.diamondkey.com/browse/OM5K-6492</a>
+          </p>
+          <p>
+            OM5K-6505 - <a>https://dev.diamondkey.com/browse/OM5K-6505</a>
+          </p>
+          <p>
+            OM5K-6648 - <a>https://dev.diamondkey.com/browse/OM5K-6648</a>
+          </p>
+          <p>
+            OM5K-6650 - <a>https://dev.diamondkey.com/browse/OM5K-6650</a>
+          </p>
+          <p>
+            OM5K-6653 - <a>https://dev.diamondkey.com/browse/OM5K-6653</a>
+          </p>
+          <p>
+            OM5K-6654 - <a>https://dev.diamondkey.com/browse/OM5K-6654</a>
+          </p>
+          <p>
+            OM5K-6659 - <a>https://dev.diamondkey.com/browse/OM5K-6659</a>
+          </p>
+          <p>
+            OM5K-6660 - <a>https://dev.diamondkey.com/browse/OM5K-6660</a>
+          </p>
+          <p>
+            OM5K-6661 - <a>https://dev.diamondkey.com/browse/OM5K-6661</a>
+          </p>
+          <p>
+            OM5K-6684 - <a>https://dev.diamondkey.com/browse/OM5K-6684</a>
+          </p>
+          <p>
+            OM5K-6715 - <a>https://dev.diamondkey.com/browse/OM5K-6715</a>
+          </p>
+          <p>
+            OM5K-6736 - <a>https://dev.diamondkey.com/browse/OM5K-6736</a>
           </p>
         </>
       </>

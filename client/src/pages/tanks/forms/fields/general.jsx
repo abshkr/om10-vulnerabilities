@@ -9,8 +9,6 @@ import { VCFManager } from '../../../../utils';
 const General = ({ form, value, config }) => {
   const { t } = useTranslation();
 
-  console.log(config);
-
   const { data: areas, isValidating: areasLoading } = useSWR(TANK_STATUS.AREAS);
   const { data: status, isValidating: statusLoading } = useSWR(TANK_STATUS.STATUS);
   const { data: methods, isValidating: methodsLoading } = useSWR(TANK_STATUS.METHODS);

@@ -1692,7 +1692,8 @@
     "outOfRange": "Value Out of Range",
     "mustBeBetween": "Must Be Between",
     "prodMoveSrcAndDst": "Source and/or destination must be a tank and specified",
-    "invalidInput": "Invalid Input"
+    "invalidInput": "Invalid Input",
+    "decimalPlacesExceeded": "Decimal Places Exceeded."
   },
 
   "units": {

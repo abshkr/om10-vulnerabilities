@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Form, InputNumber, Input, Select } from 'antd';
 import _ from 'lodash';
 import { VCFManager } from '../../../../utils';
+import CheckboxGroup from 'antd/es/checkbox/Group';
 
 const { Option } = Select;
 
@@ -34,25 +35,20 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
       // initialize the density source for calculation
       if (value?.tank_density) {
         pinDensity({ dens: value?.tank_density, type: 'D30C', title: t('fields.density') });
-      }
-      else if (value?.tank_api) {
+      } else if (value?.tank_api) {
         pinDensity({ dens: value?.tank_api, type: 'A60F', title: t('fields.api') });
-      }
-      else {
+      } else {
         pinDensity({ dens: value?.tank_15_density, type: 'D15C', title: t('fields.standardDensity') });
       }
       // initialize the quantity source for calculation
       if (value?.tank_amb_vol) {
         pinQuantity({ qty: value?.tank_amb_vol, type: 'LT', title: t('fields.ambientVolume') });
-      }
-      else if (value?.tank_cor_vol) {
+      } else if (value?.tank_cor_vol) {
         pinQuantity({ qty: value?.tank_cor_vol, type: 'L15', title: t('fields.standardVolume') });
-      } 
-      else {
+      } else {
         pinQuantity({ qty: value?.tank_liquid_kg, type: 'KG', title: t('fields.liquidMass') });
       }
     }
-
   }, [value, setFieldsValue]);
 
   const handleTemperature = (selected) => {
@@ -91,13 +87,19 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
     const number = _.toNumber(input);
     const invalid = _.isNaN(number);
 
+    const precision = _.toString(number).split('.')[1]?.length || 0;
+
     if (invalid) {
       return Promise.reject(`${t('validate.wrongType')} ─ ${t('validate.mustBeNumber')}`);
     }
 
-    if ((!invalid && number < _.toNumber(tempBounds.min)) || number > _.toNumber(tempBounds.hi)) {
+    if (precision > 1) {
+      return Promise.reject(`${t('validate.outOfRange')} ─ ${t('validate.decimalPlacesExceeded')}`);
+    }
+
+    if (number < tempBounds.min || number > tempBounds.max) {
       return Promise.reject(
-        `${t('validate.outOfRange')} ─ ${t('validate.mustBeBetween')} ${tempBounds.min} & ${tempBounds.hi}`
+        `${t('validate.outOfRange')} ─ ${t('validate.mustBeBetween')} ${tempBounds.min} & ${tempBounds.max}`
       );
     }
 
@@ -105,37 +107,37 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
   };
 
   const handleAmbVolFieldChange = (value) => {
-    if (value!==undefined && value!==null && String(value).trim().length>0){
+    if (value !== undefined && value !== null && String(value).trim().length > 0) {
       pinQuantity({ qty: value, type: 'LT', title: t('fields.ambientVolume') });
     }
   };
 
   const handleCorVolFieldChange = (value) => {
-    if (value!==undefined && value!==null  && String(value).trim().length>0){
+    if (value !== undefined && value !== null && String(value).trim().length > 0) {
       pinQuantity({ qty: value, type: 'L15', title: t('fields.standardVolume') });
     }
   };
 
   const handleMassQtyFieldChange = (value) => {
-    if (value!==undefined && value!==null  && String(value).trim().length>0){
+    if (value !== undefined && value !== null && String(value).trim().length > 0) {
       pinQuantity({ qty: value, type: 'KG', title: t('fields.liquidMass') });
     }
   };
 
   const handleStdDensFieldChange = (value) => {
-    if (value!==undefined && value!==null  && String(value).trim().length>0){
+    if (value !== undefined && value !== null && String(value).trim().length > 0) {
       pinDensity({ dens: value, type: 'D15C', title: t('fields.standardDensity') });
     }
   };
 
   const handleCorDensFieldChange = (value) => {
-    if (value!==undefined && value!==null  && String(value).trim().length>0){
+    if (value !== undefined && value !== null && String(value).trim().length > 0) {
       pinDensity({ dens: value, type: 'D30C', title: t('fields.density') });
     }
   };
 
   const handleApiDensFieldChange = (value) => {
-    if (value!==undefined && value!==null  && String(value).trim().length>0){
+    if (value !== undefined && value !== null && String(value).trim().length > 0) {
       pinDensity({ dens: value, type: 'A60F', title: t('fields.api') });
     }
   };
@@ -208,19 +210,37 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         })`}
         rules={[{ validator: validateTemperature }]}
       >
-        <Input style={{ width: '100%' }} addonAfter={temperaturePostfix} />
+        <Input style={{ width: '100%' }} addonAfter={temperaturePostfix} type="number" />
       </Form.Item>
 
       <Form.Item name="tank_amb_vol" label={`${t('fields.ambientVolume')} (Litres)`}>
-        <InputNumber min={0} max={999999999} style={{ width: '100%' }} onChange={handleAmbVolFieldChange} />
+        <InputNumber
+          min={0}
+          max={999999999}
+          style={{ width: '100%' }}
+          precision={1}
+          onChange={handleAmbVolFieldChange}
+        />
       </Form.Item>
 
       <Form.Item name="tank_cor_vol" label={`${t('fields.standardVolume')} (Litres)`}>
-        <InputNumber min={0} max={999999999} style={{ width: '100%' }} onChange={handleCorVolFieldChange} />
+        <InputNumber
+          min={0}
+          max={999999999}
+          style={{ width: '100%' }}
+          precision={1}
+          onChange={handleCorVolFieldChange}
+        />
       </Form.Item>
 
       <Form.Item name="tank_liquid_kg" label={`${t('fields.liquidMass')} (Kg)`}>
-        <InputNumber min={0} max={999999999} style={{ width: '100%' }} onChange={handleMassQtyFieldChange} />
+        <InputNumber
+          min={0}
+          max={999999999}
+          style={{ width: '100%' }}
+          precision={1}
+          onChange={handleMassQtyFieldChange}
+        />
       </Form.Item>
     </>
   );
