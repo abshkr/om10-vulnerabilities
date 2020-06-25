@@ -20,3 +20,5 @@ export const DELETE = '/api/pages/product/delete.php';
 export const ASSETS = '/api/pages/product_asset/read.php';
 export const IMAGES = '/api/pages/product_asset/images.php';
 export const ASSETS_UPDATE = '/api/pages/product_asset/update.php';
+export const UPLOAD_IMAGE = '/api/pages/product_asset/upload.php';
+export const TEST = '/api/pages/product_asset/test.php';

@@ -186,7 +186,7 @@ class Partnership extends CommonClass
     //     Utilities::retrieve($result, $this, $stmt, $method=__FUNCTION__);
     //     $hook_item['peers'] = $result;
     // }
-
+ 
     protected function insert_children()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),

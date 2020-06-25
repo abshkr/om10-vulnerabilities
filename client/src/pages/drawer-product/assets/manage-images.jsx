@@ -11,7 +11,7 @@ import { Form, Button, Tabs, Modal, notification, Divider, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import axios from 'axios';
-import { COMPANIES } from 'api';
+import { DRAWER_PRODUCTS } from 'api';
 import { mutate } from 'swr';
 import ImageDisplay from './forms/image-display';
 
@@ -29,10 +29,13 @@ const FormModal = ({ }) => {
     // mutate(COMPANIES.READ);
     // Modal.destroyAll();
   };
-  
-  const onFinish = async () => {
+
+  const onUpload = async () => {
     const values = await form.validateFields();
     // values.cmpy_code = value.cmpy_code
+
+    console.log("onUpload")
+    console.log(values)
     
     Modal.confirm({
       title: t('prompts.update'),
@@ -43,14 +46,11 @@ const FormModal = ({ }) => {
       centered: true,
       onOk: async () => {
         await axios
-          .post(COMPANIES.UPDATE, values)
+          .post(DRAWER_PRODUCTS.UPLOAD_IMAGE)
           .then(
             axios.spread(response => {
-              // mutate(COMPANIES.READ);
-              // Modal.destroyAll();
               onComplete()
 
-              // mutate(COMPANIES.READ);
               notification.success({
                 message: t('messages.updateSuccess'),
                 description: t('messages.updateSuccess')
@@ -74,10 +74,12 @@ const FormModal = ({ }) => {
   }
 
   const fileSelectorPostfix = (
-    <Form.Item name="textcolorpicker" noStyle >
+    <Form.Item name="fileToUpload" noStyle >
       <input 
         type="file" 
-        onChange={fileSelected} 
+        // onChange={fileSelected} 
+        name="fileToUpload" 
+        id="fileToUpload"
         style={{width:'5rem'}}
       />
     </Form.Item>
@@ -87,24 +89,9 @@ const FormModal = ({ }) => {
     <div>
       <Form 
         form={form} 
-        onFinish={onFinish} 
+        onFinish={onUpload} 
         scrollToFirstError
       >
-        {/* <Tabs defaultActiveKey="1">
-          <TabPane tab={t('tabColumns.supplierSettings')} key="1" style={{ height: '65vh' }}>
-            <SupplierForm value={value} form={form}></SupplierForm>
-          </TabPane>
-          <TabPane tab={t('tabColumns.others')} key="2" style={{ height: '60vh' }}>
-            <OtherForm value={value} form={form}></OtherForm>
-          </TabPane>
-          <TabPane tab={t('tabColumns.printerSettings')} key="3" style={{ height: '60vh' }}>
-            <PrinterForm value={value} form={form}></PrinterForm>
-          </TabPane>
-          <TabPane tab={t('tabColumns.transportationDoc')} key="4" style={{ height: '60vh' }}>
-            <TemplateForm value={value} form={form}></TemplateForm>
-          </TabPane>
-        </Tabs> */}
-
         <ImageDisplay onImageClick={null}></ImageDisplay>
 
         <Divider></Divider>
@@ -127,6 +114,7 @@ const FormModal = ({ }) => {
             type="primary"
             icon={<UploadOutlined />}
             htmlType="submit"
+            // onClick={onUpload}
             style={{ float: 'right', marginRight: 5 }}
           >
             {t('operations.uploadImg')}

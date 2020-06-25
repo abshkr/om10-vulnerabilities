@@ -58,7 +58,7 @@ const DrawerProduct = () => {
 
       <Download data={data} isLoading={isLoading} columns={fields} />
 
-      <Button
+      {/* <Button
         type="primary"
         icon={<ReconciliationOutlined />}
         onClick={manageImages}
@@ -66,7 +66,7 @@ const DrawerProduct = () => {
         disabled={!access?.canUpdate}
       >
         {t('operations.manageImage')}
-      </Button>
+      </Button> */}
 
       <Button
         type="primary"

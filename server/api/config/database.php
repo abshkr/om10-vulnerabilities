@@ -101,7 +101,7 @@ class Database
             (isset($_SERVER['HTTP_USER_AGENT']) && substr($_SERVER['HTTP_USER_AGENT'], 0, 7) != 'Postman')) {
             if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'localhost')) {
                 // write_log("localhotst", __FILE__, __LINE__);
-                return $this->conn;
+                // return $this->conn;
             }
 
             if (JWT_AUTH) {
