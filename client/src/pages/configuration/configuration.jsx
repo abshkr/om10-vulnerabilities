@@ -5,12 +5,11 @@ import { EditOutlined, PlusOutlined, MinusOutlined, QuestionCircleOutlined } fro
 import { Tabs, List, Switch, InputNumber, Button, Modal, notification, Select, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { useAuth } from '../../hooks';
 import { ConfigurationContainer } from './styles';
-import { SITE_CONFIGURATION } from '../../api';
+import api, { SITE_CONFIGURATION } from '../../api';
 import { Page } from '../../components';
 import auth from '../../auth';
 
@@ -251,20 +250,19 @@ const Configuration = ({ config }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(UPDATING_FEATURES ? SITE_CONFIGURATION.UPDATE_FEATURES : SITE_CONFIGURATION.UPDATE, values)
-          .then(
-            axios.spread((response) => {
-              Modal.destroyAll();
-              config.revalidate();
+          .then((response) => {
+            Modal.destroyAll();
+            config.revalidate();
 
-              mutate(UPDATING_FEATURES ? SITE_CONFIGURATION.FEATURES : SITE_CONFIGURATION.READ);
+            mutate(UPDATING_FEATURES ? SITE_CONFIGURATION.FEATURES : SITE_CONFIGURATION.READ);
 
-              notification.success({
-                message: t('messages.updateSuccess'),
-              });
-            })
-          )
+            notification.success({
+              message: t('messages.updateSuccess'),
+            });
+          })
+
           .catch((error) => {
             notification.error({
               message: error.message,
