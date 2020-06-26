@@ -89,6 +89,7 @@ const useColumns = (value, selected) => {
       filter: 'FuzzyFilter',
       sortable: true,
       resizable: true,
+      width: 500,
       suppressSizeToFit: true,
       editable: selected[0]?.addresss_action==='+' || selected[0]?.addresss_action==='*' || !!value,
     }

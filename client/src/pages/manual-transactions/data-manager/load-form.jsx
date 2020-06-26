@@ -79,20 +79,20 @@ const LoadForm = ({onLoad, fields, url}) => {
       item.mt_status        = record.gud_status;
       if (record.gud_head_data !== "" && record.gud_head_data !== null && record.gud_head_data !== false ) {
         const header = JSON.parse(_.replace(record.gud_head_data, '{}', '""'));
-        item.mt_type          = (header.TRANSACTION_TYPE == 'S') 
+        item.mt_type          = (header?.TRANSACTION_TYPE == 'S') 
                                 ? t('fields.mtTypeSchedule') 
-                                : ((header.TRANSACTION_TYPE == 'O') ? t('fields.mtTypeOrder') : '');
-        item.mt_supplier      = String(header.SUPPLIER);
-        item.mt_customer      = String(header.CUSTOMER);
-        item.mt_trip_no       = String(header.LOAD_NUMBER);
-        item.mt_order_no      = String(header.ORDER_TRIP_IND);
-        item.mt_carrier       = String(header.CARRIER);
-        item.mt_tanker        = String(header.TANKER_CODE);
-        item.mt_driver        = String(header.OPERATOR_CODE);
-        item.mt_tas_ref       = String(header.TAS_REF);
-        item.mt_user_comments = String(header.USER_COMMENTS);
-        item.mt_datetime_st   = moment(header.START_TIME).format(SETTINGS.DATE_TIME_FORMAT);
-        item.mt_datetime_ed   = moment(header.FINISH_TIME).format(SETTINGS.DATE_TIME_FORMAT);
+                                : ((header?.TRANSACTION_TYPE == 'O') ? t('fields.mtTypeOrder') : '');
+        item.mt_supplier      = String(header?.SUPPLIER);
+        item.mt_customer      = String(header?.CUSTOMER);
+        item.mt_trip_no       = String(header?.LOAD_NUMBER);
+        item.mt_order_no      = String(header?.ORDER_TRIP_IND);
+        item.mt_carrier       = String(header?.CARRIER);
+        item.mt_tanker        = String(header?.TANKER_CODE);
+        item.mt_driver        = String(header?.OPERATOR_CODE);
+        item.mt_tas_ref       = String(header?.TAS_REF);
+        item.mt_user_comments = String(header?.USER_COMMENTS);
+        item.mt_datetime_st   = moment(header?.START_TIME).format(SETTINGS.DATE_TIME_FORMAT);
+        item.mt_datetime_ed   = moment(header?.FINISH_TIME).format(SETTINGS.DATE_TIME_FORMAT);
       }
       item.mt_user          = record.gud_user;
       item.mt_create_date   = record.gud_create_date;

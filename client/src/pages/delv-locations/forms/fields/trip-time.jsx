@@ -9,7 +9,7 @@ const TripTime = ({ form, value }) => {
 
   const validate = (rule, input) => {
     console.log("rule", rule.required);
-    if (input === '' || !input) {
+    if (input === '' || (input!==0 && !input)) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvTripTime')}`);
     }
 

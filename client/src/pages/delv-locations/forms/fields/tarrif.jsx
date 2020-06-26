@@ -8,7 +8,7 @@ const Tarrif = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    if (input === '' || !input) {
+    if (input === '' || (input!==0 && !input)) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvTarrif')}`);
     }
 
