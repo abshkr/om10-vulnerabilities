@@ -51,13 +51,13 @@ const columns = t => [
     sortable: true,
     resizable: true
   },
-  {
-    headerName: t('fields.dateTimeFormat'),
-    field: 'edt_date_fmt',
-    filter: 'FuzzyFilter',
-    sortable: true,
-    resizable: true
-  },
+  // {
+  //   headerName: t('fields.dateTimeFormat'),
+  //   field: 'edt_date_fmt',
+  //   filter: 'FuzzyFilter',
+  //   sortable: true,
+  //   resizable: true
+  // },
   {
     headerName: t('fields.timeEnabled'),
     field: 'edt_time_enabled',
