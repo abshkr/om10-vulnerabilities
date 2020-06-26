@@ -102,6 +102,7 @@
 						{ "ORD" : { "schema" : "msg_def.sgb_load_ord", "name" : "SGB_LOAD_ORDER", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid.py" } },
 						{ "CON" : { "schema" : "msg_def.sgb_open_ord", "name" : "SGB_OPEN_ORDER", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid.py" } },
 						{ "DEL" : { "schema" : "msg_def.sgb_load_del", "name" : "SGB_LOAD_DELETE", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid.py" } },
+						{ "CUS" : { "schema" : "msg_def.sgb_cust", "name" : "SGB_CUSTOMER_DETAIL", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid_hdr1.py" } },
 						{ "NOM" : { "schema" : "msg_def.sgb_nom", "name" : "SGB_NOM", "msg_id_idx" : "0.0.4", "field_map" : "sgb_nom.fmap", "preprocess" : "sgb_nom.py" } }
 					]
 				}

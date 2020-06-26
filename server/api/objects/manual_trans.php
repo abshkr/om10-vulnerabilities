@@ -55,7 +55,7 @@ class ManualTrans extends CommonClass
         $query = "SELECT DISTINCT ORDER_CUST_NO
             FROM GUI_ORDERS
             WHERE ORDER_STAT_ID NOT IN (2, 3, 5, 6)
-                AND ORDER_CUST_CODE = :customer
+                AND ORDER_CUST_ACNT = :customer
                 AND ORDER_SUPP_CODE = :supplier
                 AND ORDER_APPROVED = 'Y'
             ORDER BY ORDER_CUST_NO";
@@ -73,11 +73,14 @@ class ManualTrans extends CommonClass
 
     public function get_customers()
     {
-        $query = "SELECT DISTINCT ORDER_CUST_CODE CUSTOMER,
+        $query = "
+            SELECT DISTINCT 
+                ORDER_CUST_CODE COMPANY,
+                ORDER_CUST_ACNT CUSTOMER,
                 ORDER_CUST_NAME CUSTOMER_NAME
             FROM GUI_ORDERS
             WHERE ORDER_SUPP_CODE = :supplier
-            ORDER BY ORDER_CUST_CODE";
+            ORDER BY ORDER_CUST_ACNT";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':supplier', $this->supplier);
         if (oci_execute($stmt, $this->commit_mode)) {

@@ -21,3 +21,8 @@ export const SCHEDULE_SUPPLIERS = '/api/pages/manual_trans/get_schd_suppliers.ph
 export const CALCULATE = '/api/pages/manual_trans/calc_vcf.php';
 export const SUBMIT = '/api/pages/manual_trans/submit.php';
 export const SAVE = '/api/pages/manual_trans/save.php ';
+
+export const READ_MT_HEAD_DATA = '/api/pages/manual_trans/read_mt_head_data.php';
+export const READ_MT_DATA = '/api/pages/manual_trans/read_mt_data.php';
+export const SAVE_MT_DATA = '/api/pages/manual_trans/save_mt_data.php';
+export const DELETE_MT_DATA = '/api/pages/manual_trans/delete_mt_data.php';
