@@ -186,7 +186,7 @@ class Database
         $percode = $_SESSION['PERCODE'];
         $clientip = $_SERVER['REMOTE_ADDR'];
 
-        write_log(json_encode($_SESSION), __FILE__, __LINE__);
+        // write_log(json_encode($_SESSION), __FILE__, __LINE__);
 
         $query = "BEGIN ADT.SET_LANG(:lang); END;";
         $stmt = oci_parse($this->conn, $query);
