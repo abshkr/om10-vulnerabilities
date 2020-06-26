@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
@@ -14,7 +14,7 @@ import api, { ADDRESSES } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const [tableAPI, setTableAPI] = useState(null);
   const [lines, setLines] = useState([]);
   const [addressKey, setAddressKey] = useState('');
@@ -94,9 +94,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     return errors;
   };
 
-  const onComplete = () => {
+  const onComplete = (db_address_key) => {
     handleFormState(false, null);
     mutate(ADDRESSES.READ);
+    if (db_address_key) {
+      setFilterValue("" + db_address_key);
+    }
   };
 
   const onFinish = async () => {
@@ -132,7 +135,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           await api
             .post(IS_CREATING ? ADDRESSES.CREATE : ADDRESSES.UPDATE, values)
             .then(() => {
-              onComplete();
+              onComplete(values?.db_address_key);
 
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
@@ -244,6 +247,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       visible={visible}
       footer={
         <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
+
           <Button
             type="primary"
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
