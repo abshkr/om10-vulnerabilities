@@ -13,7 +13,7 @@ const columns = (expiryTypes, t) => {
         suppressSizeToFit: true,
         width: 180,
         cellRendererParams: {
-          sequence: i
+          edt_type_code: expiryTypes[i].edt_type_code,
         }
       });
     }
