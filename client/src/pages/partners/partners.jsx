@@ -18,6 +18,7 @@ const Partners = () => {
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [filterValue, setFilterValue] = useState('');
 
   const { data: payload, isValidating, revalidate } = useSWR(PARTNERS.READ);
 
@@ -55,8 +56,15 @@ const Partners = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         autoColWidth
+        filterValue={filterValue}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
+      <Forms 
+        value={selected} 
+        visible={visible} 
+        handleFormState={handleFormState} 
+        access={access} 
+        setFilterValue={setFilterValue}
+      />
     </Page>
   );
 };

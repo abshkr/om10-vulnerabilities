@@ -17,7 +17,7 @@ import api, { PARTNERS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields, setFieldsValue } = form;
@@ -65,9 +65,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     return Promise.resolve();
   };
 
-  const onComplete = () => {
+  const onComplete = (prtnr_code) => {
     handleFormState(false, null);
     mutate(PARTNERS.READ);
+    if (prtnr_code) {
+      setFilterValue("" + prtnr_code);
+    }
   };
 
   const onFinish = async () => {
@@ -88,7 +91,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(IS_CREATING ? PARTNERS.CREATE : PARTNERS.UPDATE, values)
           .then((response) => {
-            onComplete();
+            onComplete(values.prtnr_code);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
