@@ -1021,6 +1021,25 @@ class Utilities
         return substr($xml_str, $pos_1 + $pattern_len, $pos_2 - $pos_1 - $pattern_len);
     }
 
+    //validate only XML. HTML will be ignored.
+    function is_valid_xml($content) {
+        $content = trim($content);
+        if (empty($content)) {
+            return false;
+        }
+        //html go to hell!
+        if (stripos($content, '<!DOCTYPE html>') !== false) {
+            return false;
+        }
+
+        libxml_use_internal_errors(true);
+        simplexml_load_string($content);
+        $errors = libxml_get_errors();          
+        libxml_clear_errors();  
+
+        return empty($errors);
+    }
+
 	public static function xml_to_json ($contents) {
         //write_log("xml_to_json: ".$contents, __FILE__, __LINE__);
         if ($contents === null) {
@@ -1036,7 +1055,7 @@ class Utilities
         $simpleXml = simplexml_load_string($contents);
         //write_log("xml_to_json4: ".$simpleXml, __FILE__, __LINE__);
         if ($simpleXml === FALSE) {
-            return null;
+            $simpleXml = $contents;
         }
 
 		//$json = (array)$simpleXml;

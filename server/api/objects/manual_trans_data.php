@@ -88,10 +88,19 @@ class ManualTransData extends CommonClass
         write_log('in read_mt_head_data_decorate', __FILE__, __LINE__);
         foreach ($result_array as $key => $value) {
             //write_log($value['gud_id'], __FILE__, __LINE__);
+            //write_log('validate xml ' . Utilities::is_valid_xml(htmlspecialchars_decode($value['gud_head_data'])) . ' - '. $value['gud_id'] , __FILE__, __LINE__);
 
             if (isset($value) && isset($value['gud_head_data'])) {
-                //write_log('read_mt_head_data_decorate xml_to_json gud_head_data '.$value['gud_id'], __FILE__, __LINE__);
-                $result_array[$key]['gud_head_data'] = Utilities::xml_to_json($result_array[$key]['gud_head_data']);
+                if (strstr($value['gud_head_data'], '<') === FALSE && 
+                strstr($value['gud_head_data'], '>') === FALSE && 
+                strstr($value['gud_head_data'], '&lt;') === FALSE && 
+                strstr($value['gud_head_data'], '&gt;') === FALSE) {
+                    $result_array[$key]['gud_head_data'] = str_replace('&amp;quot;', '"', $result_array[$key]['gud_head_data']);
+                    $result_array[$key]['gud_head_data'] = str_replace('&quot;', '"', $result_array[$key]['gud_head_data']);
+                } else {
+                    //write_log('read_mt_head_data_decorate xml_to_json gud_head_data '.$value['gud_id'], __FILE__, __LINE__);
+                    $result_array[$key]['gud_head_data'] = Utilities::xml_to_json($result_array[$key]['gud_head_data']);
+                }
             }
             
         }
@@ -142,13 +151,29 @@ class ManualTransData extends CommonClass
             //write_log($value['gud_id'], __FILE__, __LINE__);
 
             if (isset($value) && isset($value['gud_head_data'])) {
-                //write_log('read_mt_data_decorate xml_to_json gud_head_data '.$value['gud_id'], __FILE__, __LINE__);
-                $result_array[$key]['gud_head_data'] = Utilities::xml_to_json($result_array[$key]['gud_head_data']);
+                if (strstr($value['gud_head_data'], '<') === FALSE && 
+                strstr($value['gud_head_data'], '>') === FALSE && 
+                strstr($value['gud_head_data'], '&lt;') === FALSE && 
+                strstr($value['gud_head_data'], '&gt;') === FALSE) {
+                    $result_array[$key]['gud_head_data'] = str_replace('&amp;quot;', '"', $result_array[$key]['gud_head_data']);
+                    $result_array[$key]['gud_head_data'] = str_replace('&quot;', '"', $result_array[$key]['gud_head_data']);
+                } else {
+                    //write_log('read_mt_head_data_decorate xml_to_json gud_head_data '.$value['gud_id'], __FILE__, __LINE__);
+                    $result_array[$key]['gud_head_data'] = Utilities::xml_to_json($result_array[$key]['gud_head_data']);
+                }
             }
-            
+
             if (isset($value) && isset($value['gud_body_data'])) {
-                //write_log('read_mt_data_decorate xml_to_json gud_body_data '.$value['gud_id'], __FILE__, __LINE__);
-                $result_array[$key]['gud_body_data'] = Utilities::xml_to_json($result_array[$key]['gud_body_data']);
+                if (strstr($value['gud_body_data'], '<') === FALSE && 
+                strstr($value['gud_body_data'], '>') === FALSE && 
+                strstr($value['gud_body_data'], '&lt;') === FALSE && 
+                strstr($value['gud_body_data'], '&gt;') === FALSE) {
+                    $result_array[$key]['gud_body_data'] = str_replace('&amp;quot;', '"', $result_array[$key]['gud_body_data']);
+                    $result_array[$key]['gud_body_data'] = str_replace('&quot;', '"', $result_array[$key]['gud_body_data']);
+                } else {
+                    //write_log('read_mt_data_decorate xml_to_json gud_body_data '.$value['gud_id'], __FILE__, __LINE__);
+                    $result_array[$key]['gud_body_data'] = Utilities::xml_to_json($result_array[$key]['gud_body_data']);
+                }
             }
             
         }
@@ -156,6 +181,11 @@ class ManualTransData extends CommonClass
 
     public function pre_create()
     {
+        if (isset($this->save_format) && $this->save_format === "JSON") {
+            write_log("SAVE FORMAT: " . $this->save_format . '****' . $this->gud_head_data, __FILE__, __LINE__);
+            return;
+        }
+
         $query = "SELECT NVL(MAX(GUD_ID), 0) + 1 NEW_SEQ FROM GUI_USER_DATA";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {

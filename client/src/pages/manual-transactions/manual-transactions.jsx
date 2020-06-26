@@ -7,7 +7,7 @@ import {
   SaveOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import { Button, Divider, Form, Modal, notification, message } from 'antd';
+import { Button, Divider, Form, Radio, Modal, notification, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import axios from 'axios';
@@ -262,7 +262,7 @@ const ManualTransactions = ({ popup, params }) => {
     );
   };
 
-  const preparePayloadToSave = (values) => {
+  const preparePayloadToSave = (values, save_format) => {
     const payload = {};
     
     // php API need this field to verify but the actual value will be created by a DB trigger
@@ -289,6 +289,10 @@ const ManualTransactions = ({ popup, params }) => {
     mthead.SEAL_RANGE = values?.seal_range;
     mthead.SCHD_SUB_TYPE = '';
     mthead.TRANSACTION_REPOST = repost ? '1' : '0';
+    mthead.MT_MNGR_OO = values?.mt_mngr_oo;
+    mthead.MT_CUST_CODE = values?.mt_cust_code;
+    mthead.MT_DELV_LOC = values?.mt_delv_loc;
+    mthead.MT_DELV_NUM = values?.mt_delv_num;
     // the following requires the calculations of transfer records
     const obsQty = _.sumBy(values?.base_transfers, 'trsf_bs_qty_amb');
     const stdQty = _.sumBy(values?.base_transfers, 'trsf_bs_qty_cor');
@@ -359,8 +363,8 @@ const ManualTransactions = ({ popup, params }) => {
       transfer.PRODUCT_NAME = titem.trsf_prod_name;
       transfer.SOLD_TO = titem.trsf_sold_to;
       transfer.SHIP_TO = titem.trsf_delv_loc;
-      const baseCount = _.filter(values?.base_transfers, (o)=>(titem.trsf_cmpt_no === o.trsf_cmpt_no))?.length;
-      const meterCount = _.filter(values?.meter_totals, (o)=>(titem.trsf_cmpt_no === o.trsf_bs_cmpt_no))?.length;
+      const baseCount = _.filter(values?.base_transfers, (o)=>(titem.trsf_cmpt_no === o.trsf_bs_cmpt_no))?.length;
+      const meterCount = _.filter(values?.meter_totals, (o)=>(titem.trsf_cmpt_no === o.trsf_cmpt_no))?.length;
       transfer.NUMBER_OF_BASES = baseCount;
       transfer.NUMBER_OF_METERS = meterCount;
 
@@ -523,6 +527,7 @@ const ManualTransactions = ({ popup, params }) => {
 
     payload.gud_head_data = JSON.stringify(payload.gud_head_data);
     payload.gud_body_data = JSON.stringify(payload.gud_body_data);
+    payload.save_format = save_format;
   
     return payload;
   };
@@ -535,12 +540,23 @@ const ManualTransactions = ({ popup, params }) => {
       cancelText: t('operations.no'),
       icon: <QuestionCircleOutlined />,
       centered: true,
+      content: (
+        <Form form={form} initialValues={{ save_format: 'JSON' }}>
+          <Form.Item name="save_format">
+            <Radio.Group style={{ width: '30vw', marginBottom: 10, marginTop: 10 }}>
+              <Radio value="JSON">JSON</Radio>
+              <Radio value="XML">XML</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Form>
+      ),
       onOk: async () => {
         try {
+          const save_format = form.getFieldValue('save_format')
           const values = await form.validateFields();
           console.log('await values', values);
           await axios
-            .post(MANUAL_TRANSACTIONS.SAVE_MT_DATA, preparePayloadToSave(values))
+            .post(MANUAL_TRANSACTIONS.SAVE_MT_DATA, preparePayloadToSave(values, save_format))
             .then(
               axios.spread((response) => {
                 //setSourceType(null);
