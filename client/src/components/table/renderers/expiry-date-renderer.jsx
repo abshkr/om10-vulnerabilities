@@ -15,7 +15,6 @@ export default class ExpiryDateRenderer extends Component {
     });
 
     if (targetDate) {
-      console.log(targetDate);
       return <div>{convertToLocale(targetDate.ed_exp_date)}</div>
     }
 
