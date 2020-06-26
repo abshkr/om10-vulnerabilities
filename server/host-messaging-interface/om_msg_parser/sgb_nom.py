@@ -87,11 +87,11 @@ def __header(xmltree):
 			ver = res[0]
 		else:
 			ver = etree.SubElement(hdr, 'VERSION')
-		ver.text = '10.00.00'
+		ver.text = '11.00.00'
 
 
 		idoc = xmltree.xpath("/_-DS1_-MM_C_ZOILNOM02/IDOC")
-		node = idoc[0].xpath("E1OIK03[IDDAT='001']")
+		node = idoc[0].xpath("E1OIK03[IDDAT='002']")
 		res = hdr.find("EVTDATE")
 		if res is not None and len(res) > 0:
 			evtdate = res[0]
@@ -255,7 +255,12 @@ def __line_item_loc_type(line_item_node):
 		else:
 			loc_type = etree.SubElement(line_item_node, 'LOCTYPE')
 
-		loc_type.text = line_item_node.find("_-DS1_-MM_C_Z1OIP01/LOC_TYPE").text
+		loctype = line_item_node.find("_-DS1_-MM_C_Z1OIP01/LOC_TYPE").text
+		if loctype is not None and loctype != '': 
+			loc_type.text = loctype
+		else:
+			loc_type.text = '  '
+
 		changed = True
 	except Exception as err:
 		loc_type.text = '  '
@@ -279,7 +284,18 @@ def __line_item_uom_qty(line_item_node):
 				print('uom_map.keys()',uom_map.keys())
 				if uom.text.strip() in uom_map.keys():
 					multiplier = uom_map[uom.text.strip()][1]
-					uom.text = uom_map[uom.text.strip()][0]
+					mappedval = uom_map[uom.text.strip()][0]
+					mappedval_len = len(mappedval)
+					padding = ''
+					if mappedval_len < 3:
+						padding = ' ' * (3 - mappedval_len)
+						uom.text = uom_map[uom.text.strip()][0] + padding
+					elif mappedval_len > 3:
+						# this is bad but this script has no capability of producing ACK Message.
+						# just truncate it, send it to Omega Standard Hostcomm and let it do the
+						# error handling
+						uom.text = uom_map[uom.text.strip()][0][:2]
+					
 					print('uom.text',uom.text,'multiplier',multiplier)
 					changed = True
 		except Exception as err:

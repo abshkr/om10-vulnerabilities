@@ -46,7 +46,7 @@ message_group_def MGR_SGS;
 
 //[--- SGS: Common Stuff
 
-const_def SGS_VERSION_N			("11.00.01");
+const_def SGS_VERSION_N			("11.00.00");
 const_def SGS_OM_PORT			("A000000070");
 const_def SGS_OM_PRTNR_TYP		("LS");
 const_def SGS_OM_PRTNR_NR		("CAPQASHPH0");
