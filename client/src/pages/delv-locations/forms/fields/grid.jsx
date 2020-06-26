@@ -8,10 +8,6 @@ const Grid = ({ form, value, flag }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvGrid')}`);
-    }
-
     if (input && input.length > 60) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 60 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -34,7 +30,7 @@ const Grid = ({ form, value, flag }) => {
   };
 */
   return (
-    <Form.Item name="delv_grid" label={t('fields.delvGrid')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item name="delv_grid" label={t('fields.delvGrid')} rules={[{ validator: validate }]}>
       <Input disabled={flag}/>
     </Form.Item>
   );

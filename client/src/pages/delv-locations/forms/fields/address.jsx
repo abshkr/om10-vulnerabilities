@@ -3,13 +3,13 @@ import React, { useEffect } from 'react';
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 
-import { ADDRESSES } from '../../../../api';
+import { PARTNERS } from 'api';
 import { Form, Select } from 'antd';
 
 const Address = ({ form, value }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(ADDRESSES.READ);
+  const { data: options, isValidating } = useSWR(PARTNERS.ADDRESSES);
 
   const { setFieldsValue } = form;
 
@@ -33,7 +33,7 @@ const Address = ({ form, value }) => {
     <Form.Item
       name="delv_addr"
       label={t('fields.delvAddr')}
-      rules={[{ required: true, validator: validate }]}
+      rules={[{ validator: validate }]}
     >
       <Select
         loading={isValidating}
