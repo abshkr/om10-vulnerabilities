@@ -896,6 +896,7 @@ class Schedule extends CommonClass
                     AND SPEC_PROD.PROD_CLASS = TRSF.PROD_CLASS (+)
             ) SPEC_INFO
             WHERE TANKER_INFO.COMPARTMENT = SPEC_INFO.COMPARTMENT(+)
+            ORDER BY COMPARTMENT
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':shls_trip_no', $this->shls_trip_no);
