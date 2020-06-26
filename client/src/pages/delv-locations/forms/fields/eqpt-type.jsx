@@ -24,7 +24,7 @@ const EquipmentType = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        delv_etyp_id: String(value.delv_etyp_id),
+        delv_etyp_id: value.delv_etyp_id,
       });
     }
   }, [value, setFieldsValue]);
