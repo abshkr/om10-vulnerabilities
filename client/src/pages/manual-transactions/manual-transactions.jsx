@@ -281,7 +281,9 @@ const ManualTransactions = ({ popup, params }) => {
     mthead.START_TIME = values?.start_date?.format(SETTINGS.DATE_TIME_FORMAT);
     mthead.FINISH_TIME = values?.end_date?.format(SETTINGS.DATE_TIME_FORMAT);
     mthead.CUSTOMER = values?.customer; // Customer Account
-    mthead.CUSTOMER_CODE = !values?.customer ? '' : _.find(customers, (o)=>(o.customer === values?.customer))?.company;
+    //console.log('mthead.CUSTOMER_CODE', _.find(customers?.records, (o)=>(o.customer === values?.customer)));
+    //console.log('mthead.CUSTOMER_CODE', _.find(customers?.records, (o)=>(o.customer === values?.customer))?.company);
+    mthead.CUSTOMER_CODE = !values?.customer ? '' : _.find(customers?.records, (o)=>(o.customer === values?.customer))?.company;
     mthead.TAS_REF = values?.load_security;
     mthead.USER_COMMENTS = values?.user_comments;
     mthead.SEAL_RANGE = values?.seal_range;
