@@ -258,7 +258,7 @@ const ManualTransactions = ({ popup, params }) => {
       null,
       loadMTData,
       '80vw',
-      '200',
+      200,
     );
   };
 
