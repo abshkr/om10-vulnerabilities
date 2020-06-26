@@ -61,14 +61,14 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
   const onFinish = async () => {
     const values = await form.validateFields();
-
     let matches = [];
 
     let eqpt_selected = true;
-    if (!!values?.tnkr_equips) {
+    if (!values.tnkr_equips) {
       eqpt_selected = false;
     } else {
       _.forEach(values?.tnkr_equips, (equipment, index) => {
+        console.log(equipment)
         if (!equipment.eqpt_id) {
           eqpt_selected = false;
         }
