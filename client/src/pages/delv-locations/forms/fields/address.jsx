@@ -33,7 +33,7 @@ const Address = ({ form, value }) => {
     <Form.Item
       name="delv_addr"
       label={t('fields.delvAddr')}
-      rules={[{ validator: validate }]}
+      rules={[{ required: true, validator: validate }]}
     >
       <Select
         loading={isValidating}
