@@ -83,6 +83,20 @@ class ManualTransData extends CommonClass
         }
     }
 
+    public function read_mt_head_data_decorate(&$result_array)
+    {
+        write_log('in read_mt_head_data_decorate', __FILE__, __LINE__);
+        foreach ($result_array as $key => $value) {
+            //write_log($value['gud_id'], __FILE__, __LINE__);
+
+            if (isset($value) && isset($value['gud_head_data'])) {
+                //write_log('read_mt_head_data_decorate xml_to_json gud_head_data '.$value['gud_id'], __FILE__, __LINE__);
+                $result_array[$key]['gud_head_data'] = Utilities::xml_to_json($result_array[$key]['gud_head_data']);
+            }
+            
+        }
+    }
+
     // Read manual transaction data
     public function read_mt_data()
     {
@@ -118,6 +132,25 @@ class ManualTransData extends CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
+        }
+    }
+
+    public function read_mt_data_decorate(&$result_array)
+    {
+        write_log('in read_mt_data_decorate', __FILE__, __LINE__);
+        foreach ($result_array as $key => $value) {
+            //write_log($value['gud_id'], __FILE__, __LINE__);
+
+            if (isset($value) && isset($value['gud_head_data'])) {
+                //write_log('read_mt_data_decorate xml_to_json gud_head_data '.$value['gud_id'], __FILE__, __LINE__);
+                $result_array[$key]['gud_head_data'] = Utilities::xml_to_json($result_array[$key]['gud_head_data']);
+            }
+            
+            if (isset($value) && isset($value['gud_body_data'])) {
+                //write_log('read_mt_data_decorate xml_to_json gud_body_data '.$value['gud_id'], __FILE__, __LINE__);
+                $result_array[$key]['gud_body_data'] = Utilities::xml_to_json($result_array[$key]['gud_body_data']);
+            }
+            
         }
     }
 

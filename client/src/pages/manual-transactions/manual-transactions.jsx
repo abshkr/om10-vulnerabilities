@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import axios from 'axios';
 import _ from 'lodash';
+import jwtDecode from 'jwt-decode';
 
 import { Page } from '../../components';
 import auth from '../../auth';
@@ -26,13 +27,15 @@ import useAuth from 'hooks/use-auth';
 
 const { confirm } = Modal;
 
-const ManualTransactions = ({ popup, params, user }) => {
+const ManualTransactions = ({ popup, params }) => {
   //console.log("params", params);
   const { t } = useTranslation();
   const access = useAuth('M_MANUALTRANSACTIONS');
   const [form] = Form.useForm();
 
-  //console.log("user", user);
+  const token = sessionStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const user_code = decoded?.per_code;
 
   const [dataLoaded, setDataLoaded] = useState(null);
   const [dataSaved, setDataSaved] = useState(null);
@@ -509,7 +512,7 @@ const ManualTransactions = ({ popup, params, user }) => {
 
     payload.gud_body_data = mtbody;
 
-    payload.gud_user = user?.per_code;
+    payload.gud_user = user_code;
     payload.gud_create_date = moment().format(SETTINGS.DATE_TIME_FORMAT);
     payload.gud_update_date = '';
     payload.gud_status = 'N';

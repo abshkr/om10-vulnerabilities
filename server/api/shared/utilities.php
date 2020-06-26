@@ -432,7 +432,7 @@ class Utilities
                     in_array($key, $object->CLOB_FIELDS, true))) {
                     if ($value !== null) {
                         $base_item[$lower_key] = $value->load();
-                        $base_item[$lower_key] = self::xml_to_json($base_item[$lower_key]);
+                        //$base_item[$lower_key] = self::xml_to_json($base_item[$lower_key]);
                         //$base_item[$lower_key] = self::xml_to_json($value);
                     } else {
                         $base_item[$lower_key] = null;
