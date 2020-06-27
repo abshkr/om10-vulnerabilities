@@ -15,7 +15,7 @@ const DensityRange = ({ form, value, classification }) => {
   }, [value, setFieldsValue]);
 
   useEffect(() => {
-    if (classification) {
+    if (classification && !value.base_dens_lo && !value.base_dens_hi) {
       setFieldsValue({
         base_dens_lo: classification.bclass_dens_lo,
         base_dens_hi: classification.bclass_dens_hi,
