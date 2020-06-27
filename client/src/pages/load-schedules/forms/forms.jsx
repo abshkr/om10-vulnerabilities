@@ -16,7 +16,7 @@ import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Radio, Check
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { mutate } from 'swr';
-import axios from 'axios';
+import api from 'api';
 import _ from 'lodash';
 
 import {
@@ -113,7 +113,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? LOAD_SCHEDULES.CREATE : LOAD_SCHEDULES.UPDATE, values)
           .then(() => {
             onComplete(values.shls_trip_no);
@@ -144,7 +144,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(LOAD_SCHEDULES.DELETE, value)
           .then(() => {
             onComplete();
@@ -175,7 +175,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .get(LOAD_SCHEDULES.REVERSE, {
             params: {
               supplier: value.supplier_code,
@@ -208,7 +208,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .get(LOAD_SCHEDULES.ARCHIVE, {
             params: {
               supplier: value.supplier_code,
@@ -265,7 +265,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .get(selected?.url, {
             params: {
               supplier: value.supplier_code,

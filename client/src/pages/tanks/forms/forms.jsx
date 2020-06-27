@@ -12,7 +12,7 @@ import {
 import { Form, Button, Tabs, notification, Modal, Radio, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
-import axios from 'axios';
+import api from 'api';
 import _ from 'lodash';
 
 import { Gauging, General, Calculation, Levels } from './fields';
@@ -73,10 +73,9 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, payload)
-          .then(
-            axios.spread((response) => {
+          .then(() => {
               onComplete(values.tank_code);
 
               notification.success({
@@ -84,13 +83,14 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
               });
             })
-          )
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
+              });
             });
-          });
       },
     });
   };
@@ -313,7 +313,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TANK_STATUS.CALCULATE_BY_LEVEL, values)
           .then((response) => {
             if (!response?.data?.REAL_LITRE) {
@@ -409,7 +409,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
           tank_code: value?.tank_code,
         };
 
-        await axios
+        await api
           .post(TANK_STATUS.CALCULATE_QUANTITY, values)
           .then((response) => {
             if (!response?.data?.REAL_LITRE) {
