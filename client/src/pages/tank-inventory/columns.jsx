@@ -5,6 +5,8 @@ const columns = t => [
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
+    width: 90,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.location'),
@@ -12,6 +14,8 @@ const columns = t => [
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',
+    width: 100,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.baseProductName'),
@@ -33,13 +37,13 @@ const columns = t => [
     resizable: true,
   },
   {
-    headerName: t('fields.standardVolume'),
+    headerName: `${t('fields.standardVolume')} (L)`,
     field: 'netvol',
     sortable: true,
     resizable: true,
   },
   {
-    headerName: t('fields.observedVolume'),
+    headerName: `${t('fields.observedVolume')} (L)`,
     field: 'grossvol',
     sortable: true,
     resizable: true,
