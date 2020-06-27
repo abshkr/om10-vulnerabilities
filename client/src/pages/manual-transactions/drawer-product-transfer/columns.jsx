@@ -182,6 +182,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     cellEditorParams: {
       min: -18,
       max: 150,
+      txt: t,
     },
   },
   {
@@ -195,6 +196,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     cellEditorParams: {
       min: 0,
       max: 999999999,
+      txt: t,
     },
   },
   {
@@ -208,6 +210,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     cellEditorParams: {
       min: 0,
       max: 999999999,
+      txt: t,
     },
   },
   {
@@ -222,6 +225,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     cellEditorParams: {
       min: 0,
       max: 999999999,
+      txt: t,
     },
   },
 

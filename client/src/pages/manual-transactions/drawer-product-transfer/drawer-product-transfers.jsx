@@ -31,6 +31,8 @@ const { TabPane } = Tabs;
 
 const DrawerProductTransfers = ({
   form, 
+  dataBoard,
+  setDataBoard,
   sourceType, 
   loadType, 
   loadNumber, 
@@ -67,6 +69,7 @@ const DrawerProductTransfers = ({
   const [clicked, setClicked] = useState(null);
   const [tableAPI, setTableAPI] = useState(null);
   const [tableBaseTransfersAPI, setTableBaseTransfersAPI] = useState(null);
+  const [baseSummary, setBaseSummary] = useState([]);
 
   const onDelete = () => {
     const filtered = _.reject(payload, ['trsf_cmpt_no', clicked?.trsf_cmpt_no]);
@@ -131,6 +134,8 @@ const DrawerProductTransfers = ({
     //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
     //console.log('onCalculate', items);
 
+    //setBaseSummary([]);
+
     const qtys = {amb: 0, cor: 0, kg: 0};
     const bases = form.getFieldValue('base_transfers');
     let index=0;
@@ -146,7 +151,6 @@ const DrawerProductTransfers = ({
       }
     }
 
-
     for (index = 0; index < payload.length; index++) {
       const transfer = payload[index];
       if (transfer.trsf_cmpt_no === clicked?.trsf_cmpt_no) {
@@ -160,6 +164,33 @@ const DrawerProductTransfers = ({
     }
 
     setPayload(payload);
+
+    const temp = clicked;
+    setClicked(null);
+    setClicked(temp);
+    
+    /* const totals = baseSummary;
+    let found = false;
+    for (index=0; index<totals.length; index++) {
+      const item = totals[index];
+      if (item.cmpt === clicked?.trsf_cmpt_no) {
+        item.amb = qtys.amb;
+        item.cor = qtys.cor;
+        item.kg = qtys.kg;
+        totals[index] = item;
+        found = true;
+        break;
+      }
+    }
+    if (found === false) {
+      totals.push({
+        cmpt: clicked?.trsf_cmpt_no,
+        amb: qtys.amb,
+        cor: qtys.cor,
+        kg: qtys.kg
+      });
+    }
+    setBaseSummary(totals); */
   };
 
   const onRestore = () => {
@@ -292,6 +323,15 @@ const DrawerProductTransfers = ({
     }
   }, [data, supplier]);
 
+  useEffect(() => {
+    let board = dataBoard;
+    if (!board) {
+      board = {};
+    }
+    board.transfers = payload;
+    setDataBoard(board);
+  }, [payload]);
+
   const modifiers = (
     <>
       <Button
@@ -357,19 +397,24 @@ const DrawerProductTransfers = ({
       </Row>
       <Card size="small" title={t('divider.baseProducts')}>
         <Tabs defaultActiveKey="1" animated={false} type="card">
-          <TabPane tab={t('tabColumns.transferDetails')} key="1">
+          <TabPane tab={t('tabColumns.transferDetails')} key="1" forceRender={true}>
             <BaseProductTransfers 
               form={form} 
+              dataBoard={dataBoard}
+              setDataBoard={setDataBoard}
               sourceType={sourceType} 
               selected={selected} 
               transfers={payload} 
               clicked={clicked}
               setChildTableAPI={setTableBaseTransfersAPI}
+              baseSummary={baseSummary}
             />
           </TabPane>
-          <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="2">
+          <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="2" forceRender={true}>
             <BaseProductTotals 
               form={form} 
+              dataBoard={dataBoard}
+              setDataBoard={setDataBoard}
               sourceType={sourceType} 
               selected={selected} 
               transfers={payload} 
@@ -387,6 +432,8 @@ const DrawerProductTransfers = ({
           <TabPane tab={t('tabColumns.cumulativeMeterTotals')} key="1">
             <MeterTotals 
               form={form} 
+              dataBoard={dataBoard}
+              setDataBoard={setDataBoard}
               sourceType={sourceType} 
               selected={selected} 
               transfers={payload} 

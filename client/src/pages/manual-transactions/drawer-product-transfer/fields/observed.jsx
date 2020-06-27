@@ -102,16 +102,23 @@ export default class Observed extends Component {
   }
 
   handleChange(value) {
-    const { min, max } = this.props;
+    const { min, max, txt, data, colDef } = this.props;
 
-    if (min <= value && max >= value) {
+    let capacity=max;
+    if (data?.trsf_cmpt_capacit !== undefined) {
+      capacity = _.toNumber(data?.trsf_cmpt_capacit);
+    }
+
+    if (min <= value && capacity >= value) {
       this.setState({
         value,
       });
     } else {
       notification.error({
-        key: 'temp',
-        message: 'Standard Density must be between 0 and 999999999',
+        key: 'obsqty',
+        //message: 'Observed Quantity must be between ' + min + ' and ' + capacity + '',
+        message: colDef.headerName + ' ' + txt('validate.mustBeBetween') + ' (' + min + ' ~ ' + capacity + ')',
+        //message: colDef.headerName + ' must be between (' + min + ' ~ ' + capacity + ')',
       });
     }
   }
