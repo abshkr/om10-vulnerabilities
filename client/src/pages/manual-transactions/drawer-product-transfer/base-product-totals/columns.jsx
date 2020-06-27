@@ -33,6 +33,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    editable: true,
   },
   {
     headerName: t('fields.temperature'),
@@ -47,6 +48,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    editable: true,
   },
   {
     headerName: t('fields.standardQuantity'),
@@ -61,6 +63,38 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+  },
+  {
+    headerName: 'Additive?',
+    field: 'trsf_bs_adtv_flag_tot',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
+    headerName: 'Base Ratio Value',
+    field: 'trsf_bs_ratio_value_tot',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
+    headerName: 'Base Ratio Total',
+    field: 'trsf_bs_ratio_total_tot',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
+    headerName: 'Base Ratio Total',
+    field: 'trsf_bs_ratio_total2_tot',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
   },
 ];
 

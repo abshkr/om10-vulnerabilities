@@ -11,20 +11,26 @@ import {calcBaseRatios} from '../../../../utils'
 
 const BaseProductTransfers = ({
   form, 
+  dataBoard,
+  setDataBoard,
   sourceType, 
   selected, 
   transfers,
   clicked,
-  setChildTableAPI
+  setChildTableAPI,
+  dataLoaded
 }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
+  const [obsTotal, setObsTotal] = useState(0);
+  const [stdTotal, setStdTotal] = useState(0);
+  const [massTotal, setMassTotal] = useState(0);
   const [isLoading, setLoading] = useState(true);
 
   const fields = columns(t);
 
-  const getBaseTransfers = async () => {
+  const getBaseTransfers = async (selected) => {
     const pre = [];
     //const transfers = form.getFieldValue('transfers');
     setLoading(true);
@@ -49,7 +55,12 @@ const BaseProductTransfers = ({
           })
           .then((res) => {
             if (res.data?.records?.length > 0) {
+              const sum_ratios = _.sumBy(res?.data?.records, (o)=>{return _.toNumber(o.ratio_value)});
               _.forEach(res?.data?.records, (product) => {
+                let ratio_total = product?.ratio_total;
+                if (_.toNumber(ratio_total) > sum_ratios) {
+                  ratio_total = String(sum_ratios);
+                }
                 pre.push({
                   trsf_bs_cmpt_no: transfer?.trsf_cmpt_no,
                   trsf_bs_prodcd: product?.stream_basecode,
@@ -58,12 +69,13 @@ const BaseProductTransfers = ({
                   trsf_bs_prodcls: product.stream_bclass_nmae,
                   trsf_bs_den: product?.stream_tankden,
                   trsf_bs_temp: transfer?.trsf_temp,
-                  trsf_bs_qty_amb: calcBaseRatios(transfer?.trsf_qty_amb, product?.ratio_value, product?.ratio_total),
-                  trsf_bs_qty_cor: calcBaseRatios(transfer?.trsf_qty_cor, product?.ratio_value, product?.ratio_total),
-                  trsf_bs_load_kg: calcBaseRatios(transfer?.trsf_load_kg, product?.ratio_value, product?.ratio_total),
+                  trsf_bs_qty_amb: calcBaseRatios(transfer?.trsf_qty_amb, product?.ratio_value, ratio_total),
+                  trsf_bs_qty_cor: calcBaseRatios(transfer?.trsf_qty_cor, product?.ratio_value, ratio_total),
+                  trsf_bs_load_kg: calcBaseRatios(transfer?.trsf_load_kg, product?.ratio_value, ratio_total),
                   trsf_bs_adtv_flag: product?.adtv_flag,
                   trsf_bs_ratio_value: product?.ratio_value,
-                  trsf_bs_ratio_total: product?.ratio_total,
+                  trsf_bs_ratio_total: ratio_total,
+                  trsf_bs_ratio_total2: product?.ratio_total,
                   is_updated: false,
                 });
               });
@@ -73,11 +85,19 @@ const BaseProductTransfers = ({
     }
 
     setLoading(false);
+
+    const obs = _.sumBy(pre.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_amb');
+    const std = _.sumBy(pre.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_cor');
+    const mass = _.sumBy(pre.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_load_kg');
+    setObsTotal(obs);
+    setStdTotal(std);
+    setMassTotal(mass);
+
     setData(pre);
   };
 
   useEffect(() => {
-    getBaseTransfers();
+    getBaseTransfers(selected);
   }, [selected]);
 
   useEffect(() => {
@@ -89,7 +109,50 @@ const BaseProductTransfers = ({
   }, [data]);
 
   useEffect(() => {
-    console.log("base-transfers sourceType", sourceType);
+    let board = dataBoard;
+    if (!board) {
+      board = {};
+    }
+    board.base_transfers = data;
+    setDataBoard(board);
+  }, [data]);
+
+  /* useEffect(() => {
+    console.log('BaseProductTransfers: base quantity totals changed on data and clicked', clicked);
+    getBaseTransfers(clicked);
+  }, [clicked]); */
+
+  useEffect(() => {
+    console.log('BaseProductTransfers: base quantity totals changed on data and clicked', clicked);
+    if (data) {
+      const obs = _.sumBy(data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no)), 'trsf_bs_qty_amb');
+      const std = _.sumBy(data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no)), 'trsf_bs_qty_cor');
+      const mass = _.sumBy(data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no)), 'trsf_bs_load_kg');
+      setObsTotal(obs);
+      setStdTotal(std);
+      setMassTotal(mass);
+    } else {
+      setObsTotal(0);
+      setStdTotal(0);
+      setMassTotal(0);
+    }
+  }, [data, clicked]);
+
+  useEffect(() => {
+    setData([]);
+
+    if (dataLoaded && dataLoaded?.base_transfers) {
+
+      form.setFieldsValue({
+        base_transfers: dataLoaded?.base_transfers,
+      });
+
+      setData(dataLoaded?.base_transfers);
+    }
+  }, [dataLoaded]);
+
+  useEffect(() => {
+    console.log("BaseProductTransfers: base-transfers sourceType ", sourceType);
     setData([]);
   }, [sourceType]);
 
@@ -109,13 +172,13 @@ const BaseProductTransfers = ({
         <Col span={9}>
         </Col>
         <Col span={5}>
-          <strong>{t('fields.nomtranObsTotal')} {_.round(_.sumBy(data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no)), 'trsf_bs_qty_amb'), 3)}</strong>
+          <strong>{t('fields.nomtranObsTotal')} {_.round(obsTotal, 3)}</strong>
         </Col>
         <Col span={5}>
-          <strong>{t('fields.nomtranStdTotal')} {_.round(_.sumBy(data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no)), 'trsf_bs_qty_cor'), 3)}</strong>
+          <strong>{t('fields.nomtranStdTotal')} {_.round(stdTotal, 3)}</strong>
         </Col>
         <Col span={5}>
-          <strong>{t('fields.nomtranMassTotal')} {_.round(_.sumBy(data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no)), 'trsf_bs_load_kg'), 3)}</strong>
+          <strong>{t('fields.nomtranMassTotal')} {_.round(massTotal, 3)}</strong>
         </Col>
       </Row>
       {/* <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>

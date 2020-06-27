@@ -9,13 +9,16 @@ import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icon
 import { Page, DataTable, Download, Calendar, WindowSearch } from '../../components';
 import { LOAD_SCHEDULES } from '../../api';
 import { SETTINGS } from '../../constants';
-import { useAuth } from '../../hooks';
+import { useAuth, useConfig } from 'hooks';
+import { getDateRangeOffset } from 'utils';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
-import axios from 'axios';
+import api from 'api';
 
 const LoadSchedules = () => {
+  const { scheduleDateRange } = useConfig();
+  
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
@@ -38,7 +41,7 @@ const LoadSchedules = () => {
   const setRange = (start, end) => {
     setStart(start);
     setEnd(end);
-    revalidate();
+    // revalidate();
   };
 
   const locateTrip = (value) => {
@@ -54,7 +57,7 @@ const LoadSchedules = () => {
       !values.trip_status) {
       return;
     }
-    axios
+    api
       .get(LOAD_SCHEDULES.SEARCH, {
         params: {
           shls_trip_no: values.shls_trip_no,
@@ -84,6 +87,20 @@ const LoadSchedules = () => {
     } 
     
   }, [payload]);
+
+  useEffect(() => {
+    if (scheduleDateRange !== false) {
+      const ranges = getDateRangeOffset(String(scheduleDateRange), '7');
+      
+      if (ranges.beforeToday !== 7) {
+        setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      }
+
+      if (ranges.afterToday !== 7) {
+        setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      }
+    }
+  }, [scheduleDateRange]);
 
   const modifiers = (
     <>

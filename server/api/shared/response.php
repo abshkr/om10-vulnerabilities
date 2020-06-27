@@ -5,7 +5,7 @@ include_once __DIR__ . '/utilities.php';
 //Reponse mssage with multiple lang support
 function response($case_name, $default = null, $params = null) 
 {
-    // write_log(sprintf("%s() START. case_name:%s", __FUNCTION__, $case_name),
+    // write_log(sprintf("%s() START. case_name:%s, default:%s", __FUNCTION__, $case_name, $default),
     //     __FILE__, __LINE__);
 
     $case_response_map = array(

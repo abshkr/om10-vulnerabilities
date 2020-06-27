@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
-import axios from 'axios';
+import api from 'api';
 
-import { SPECIAL_MOVEMENTS } from '../../../../api';
+import { SPECIAL_MOVEMENTS } from 'api';
 
 const From = ({ onChange, form, value, disabled }) => {
   const { t } = useTranslation();
@@ -24,7 +24,7 @@ const From = ({ onChange, form, value, disabled }) => {
   const getSuppliers = useCallback(() => {
     setLoading(true);
 
-    axios
+    api
       .get(SPECIAL_MOVEMENTS.SUPPLIERS)
       .then(response => {
         setSuppliers(response.data.records);
@@ -38,7 +38,7 @@ const From = ({ onChange, form, value, disabled }) => {
   const getTanks = useCallback(id => {
     setLoading(true);
 
-    axios
+    api
       .get(SPECIAL_MOVEMENTS.TANKS, {
         params: {
           supplier: id
@@ -57,7 +57,7 @@ const From = ({ onChange, form, value, disabled }) => {
     id => {
       setLoading(true);
 
-      axios
+      api
         .get(SPECIAL_MOVEMENTS.PRODUCTS, {
           params: {
             tank_code: id

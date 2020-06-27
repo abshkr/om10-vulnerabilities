@@ -112,6 +112,12 @@ const Pickup = ({ form, value }) => {
     return Promise.resolve();
   };
 
+  const onceChange = (date) => {
+    setFieldsValue({
+      repeat_interval: date.format("D_M_YYYY"),
+    });
+  }
+
   return (
     <Form.Item
       name="repeat_interval"
@@ -139,7 +145,10 @@ const Pickup = ({ form, value }) => {
         (
           value.window_name == "ONCE_WINDOW" ? (
             <div>
-              <Input disabled={!IS_CREATING} value={data.datestring}/>
+              {!IS_CREATING ? 
+                <Input disabled value={data.datestring}/> :
+                <DatePicker onChange={onceChange}/>
+              }
             </div>
           )
             :

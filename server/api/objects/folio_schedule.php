@@ -101,6 +101,10 @@ class FolioSchedule extends CommonClass
         if (!isset($this->user_code)) {
             $this->user_code = Utilities::getCurrPsn();
         }
+
+        if (!isset($this->status)) {
+            $this->status = 1;
+        }
     }
 
     protected function post_create()
@@ -110,16 +114,23 @@ class FolioSchedule extends CommonClass
 
     protected function post_update()
     {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        write_log(json_encode($this), __FILE__, __LINE__);
+
         $this->user_code = Utilities::getCurrPsn();
         
         $query = "UPDATE FOLIOCALENDAR
             SET LAST_CHG_TIME = SYSDATE,
                 USER_CODE = :last_chg_user
-            WHERE SEQ = :seq";
+            WHERE WINDOW_NAME = :window_name
+                AND REPEAT_INTERVAL = :repeat_interval";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':seq', $this->seq);
+        oci_bind_by_name($stmt, ':window_name', $this->window_name);
+        oci_bind_by_name($stmt, ':repeat_interval', $this->repeat_interval);
         oci_bind_by_name($stmt, ':last_chg_user', $this->user_code);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;

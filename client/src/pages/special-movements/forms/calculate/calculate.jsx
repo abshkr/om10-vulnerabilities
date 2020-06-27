@@ -1,10 +1,10 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import useSWR from 'swr';
-import axios from 'axios';
+import api from 'api';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber, Select } from 'antd';
 
-import { SPECIAL_MOVEMENTS } from '../../../../api';
+import { SPECIAL_MOVEMENTS } from 'api';
 
 const Calculate = ({ form, value, disabled, type, tank }) => {
   const { t } = useTranslation();
@@ -20,7 +20,7 @@ const Calculate = ({ form, value, disabled, type, tank }) => {
   const getLimit = useCallback((tank) => {
     setLoading(true);
 
-    axios
+    api
       .get(SPECIAL_MOVEMENTS.PRODUCTS, {
         params: {
           tank_code: tank,

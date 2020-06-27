@@ -11,11 +11,11 @@ const columns = (IS_NOMINATION, t) => [
 
   {
     headerName: t('fields.source'),
-    field: 'shls_srctype',
+    field: 'shls_srctype_desc',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 90,
+    width: 130,
     suppressSizeToFit: true,
     hide: IS_NOMINATION,
   },

@@ -154,7 +154,7 @@ const Compartments = ({ form, value, equipment }) => {
         style={{
           width: '100%',
           padding: 5,
-          height: '50vh',
+          height: '70vh',
         }}
       >
         <div style={{ display: 'flex' }}>
@@ -192,7 +192,7 @@ const Compartments = ({ form, value, equipment }) => {
                     },
                   }}
                   style={{ marginBottom: 5, width: '30vw' }}
-                  scroll={{ y: '35vh' }}
+                  scroll={{ y: '45vh' }}
                   rowClassName={() => 'editable-row'}
                   bordered
                   dataSource={item.compartments}

@@ -93,7 +93,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
       return Promise.reject(`${t('validate.wrongType')} ─ ${t('validate.mustBeNumber')}`);
     }
 
-    if (precision > 1) {
+    if (precision > 2) {
       return Promise.reject(`${t('validate.outOfRange')} ─ ${t('validate.decimalPlacesExceeded')}`);
     }
 

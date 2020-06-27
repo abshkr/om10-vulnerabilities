@@ -105,7 +105,13 @@ class Database
             }
 
             if (JWT_AUTH) {
-                $pay_load = check_token(get_http_token());
+                try {
+                    $token = get_http_token();
+                } catch (UnauthException $e) {
+                    throw $e;
+                }
+                
+                $pay_load = check_token($token);
                 if (!$pay_load) {
                     write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
                     throw new UnauthException('Authentication check failed, cannot continue');
@@ -186,7 +192,7 @@ class Database
         $percode = $_SESSION['PERCODE'];
         $clientip = $_SERVER['REMOTE_ADDR'];
 
-        write_log(json_encode($_SESSION), __FILE__, __LINE__);
+        // write_log(json_encode($_SESSION), __FILE__, __LINE__);
 
         $query = "BEGIN ADT.SET_LANG(:lang); END;";
         $stmt = oci_parse($this->conn, $query);

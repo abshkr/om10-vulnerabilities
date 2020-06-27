@@ -52,7 +52,13 @@ class ExpiryDateType extends CommonClass
 
     public function read($target_code = ExpiryTarget::ALL)
     {
-        $query = "SELECT EXPIRY_DATE_TYPES.*, DECODE(COUNT(*), 1, 0, COUNT(*)) CHILD_COUNT
+        $query = "SELECT EXPIRY_DATE_TYPES.*, 
+                    DECODE(EDT_TARGET_CODE, 
+                        'TANKERS', 'Expiry Dates For Tankers',
+                        'PERSONNEL', 'Expiry Dates For Personnel',
+                        'TRANSP_EQUIP', 'Expiry Dates For Equipment',
+                        'Unknown') EDT_TARGET_DESC,
+                    DECODE(COUNT(*), 1, 0, COUNT(*)) CHILD_COUNT
                 FROM EXPIRY_DATE_TYPES, EXPIRY_DATE_DETAILS
                 WHERE EDT_TARGET_CODE LIKE :target_code
                     AND ED_TYPE_CODE(+) = EDT_TYPE_CODE

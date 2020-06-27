@@ -169,7 +169,7 @@ const FormModal = ({ value, visible, handleFormState, access, all }) => {
 
             <DefaultValue form={form} value={value} />
 
-            <DateTimeFormat form={form} value={value} />
+            {/* <DateTimeFormat form={form} value={value} /> */}
           </TabPane>
         </Tabs>
       </Form>

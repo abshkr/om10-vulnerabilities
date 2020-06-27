@@ -102,16 +102,23 @@ export default class Mass extends Component {
   }
 
   handleChange(value) {
-    const { min, max } = this.props;
+    const { min, max, txt, data, colDef } = this.props;
+    
+    let capacity=max;
+    if (data?.trsf_cmpt_capacit !== undefined) {
+      capacity = _.toNumber(data?.trsf_cmpt_capacit);
+    }
 
-    if (min <= value && max >= value) {
+    if (min <= value && capacity >= value) {
       this.setState({
         value,
       });
     } else {
       notification.error({
-        key: 'temp',
-        message: 'Mass must be between 0 and 999999999',
+        key: 'massqty',
+        //message: 'Mass must be between ' + min + ' and ' + capacity + '',
+        message: colDef.headerName + ' ' + txt('validate.mustBeBetween') + ' (' + min + ' ~ ' + capacity + ')',
+        //message: colDef.headerName + ' must be between (' + min + ' ~ ' + capacity + ')',
       });
     }
   }

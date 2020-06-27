@@ -7,8 +7,8 @@
 # 2. an alternate storage location (4th field, which is actually a company).
 #
 
-MY05,Shell,7640102,7640102
-P0010,Caltex,76401,76401
+0001,Shell,0001,0001
+0010,Caltex,0001,0003
 0007,BP,0001,0002
 0105,Mobil,0001,0004
 

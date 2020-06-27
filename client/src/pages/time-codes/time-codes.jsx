@@ -12,7 +12,7 @@ import {
   QuestionCircleOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
-import axios from 'axios';
+import api from 'api';
 import _ from 'lodash';
 import { useAuth } from '../../hooks';
 
@@ -29,7 +29,7 @@ const TimeCodes = () => {
 
   const { data: payload, isValidating } = useSWR(TIME_CODES.READ);
 
-  const [code, setCode] = useState(null);
+  const [code, setCode] = useState("");
   const [data, setData] = useState(null);
   const [selected, setSelected] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -115,7 +115,9 @@ const TimeCodes = () => {
 
   useEffect(() => {
     if (payload?.records.length > 0) {
-      setCode(payload?.records[0].tcd_title);
+      if (code === "") {
+        setCode(payload?.records[0].tcd_title);
+      }
     }
   }, [payload]);
 
@@ -125,8 +127,11 @@ const TimeCodes = () => {
     setData(values);
   }, [code, payload, t]);
 
-  const onComplete = () => {
+  const onComplete = (tcd_title) => {
     mutate(TIME_CODES.READ);
+    if (tcd_title) {
+      setCode(tcd_title);
+    }
   };
 
   const onUpdate = async () => {
@@ -139,10 +144,10 @@ const TimeCodes = () => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TIME_CODES.UPDATE, postdata)
           .then(() => {
-            onComplete();
+            onComplete(postdata.tcd_title);
 
             notification.success({
               message: t('messages.updateSuccess'),
@@ -181,7 +186,7 @@ const TimeCodes = () => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TIME_CODES.DELETE, value)
           .then(() => {
             onComplete();

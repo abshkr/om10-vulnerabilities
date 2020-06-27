@@ -20,8 +20,6 @@ import ImageDisplay from './image-display'
 const TabPane = Tabs.TabPane;
 
 const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) => {
-  const { data: payload } = useSWR(DRAWER_PRODUCTS.IMAGES);
-  
   const { t } = useTranslation();
   const [form] = Form.useForm();
 

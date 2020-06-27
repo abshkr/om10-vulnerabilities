@@ -235,8 +235,15 @@ class Schedule extends CommonClass
         }
 
         $query = "
-                SELECT * FROM " . $this->VIEW_NAME . "
-                WHERE SHLS_TRIP_NO LIKE :shls_trip_no " ;
+            SELECT " . $this->VIEW_NAME . ".*, 
+                DECODE(SHLS_SRCTYPE, 
+                    1, 'Manually Created',
+                    2, 'From Host',
+                    3, 'Open Order',
+                    4, 'Standalone or Special',
+                    'Unknown'
+            ) SHLS_SRCTYPE_DESC FROM " . $this->VIEW_NAME . "
+            WHERE SHLS_TRIP_NO LIKE :shls_trip_no " ;
 
         if (isset($this->supplier_code)) {
             $query = $query . " AND SUPPLIER_CODE LIKE :supplier_code";
@@ -499,14 +506,28 @@ class Schedule extends CommonClass
     {
         if (!isset($this->start_date)) {
             $query = "
-            SELECT * FROM " . $this->VIEW_NAME . "
+            SELECT " . $this->VIEW_NAME . ".*, 
+                DECODE(SHLS_SRCTYPE, 
+                    1, 'Manually Created',
+                    2, 'From Host',
+                    3, 'Open Order',
+                    4, 'Standalone or Special',
+                    'Unknown'
+                ) SHLS_SRCTYPE_DESC FROM " . $this->VIEW_NAME . "
             WHERE SHLS_CALDATE > TO_CHAR(SYSDATE - 7, 'YYYY-MM-DD HH24:MI:SS')
             ORDER BY SHLS_CALDATE DESC";
             $stmt = oci_parse($this->conn, $query);
         
         } else {
             $query = "
-                SELECT * FROM " . $this->VIEW_NAME . "
+                SELECT " . $this->VIEW_NAME . ".*, 
+                DECODE(SHLS_SRCTYPE, 
+                    1, 'Manually Created',
+                    2, 'From Host',
+                    3, 'Open Order',
+                    4, 'Standalone or Special',
+                    'Unknown'
+                ) SHLS_SRCTYPE_DESC FROM " . $this->VIEW_NAME . "
                 WHERE SHLS_CALDATE > :start_date AND SHLS_CALDATE < :end_date
                 ORDER BY SHLS_CALDATE DESC";
             $stmt = oci_parse($this->conn, $query);
@@ -896,6 +917,7 @@ class Schedule extends CommonClass
                     AND SPEC_PROD.PROD_CLASS = TRSF.PROD_CLASS (+)
             ) SPEC_INFO
             WHERE TANKER_INFO.COMPARTMENT = SPEC_INFO.COMPARTMENT(+)
+            ORDER BY COMPARTMENT
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':shls_trip_no', $this->shls_trip_no);

@@ -46,7 +46,7 @@ message_group_def MGR_SGB;
 
 //[--- SGB: Common Stuff
 
-const_def SGB_VERSION_N			("10.00.00");
+const_def SGB_VERSION_N			("11.00.00");
 const_def SGB_OM_PORT			("A000000070");
 const_def SGB_OM_PRTNR_TYP		("LS");
 const_def SGB_OM_PRTNR_NR		("CAPQASHPH0");

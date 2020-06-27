@@ -9,7 +9,7 @@ import {
 import { Form, Button, Tabs, Modal, notification, Drawer, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
+import api from 'api';
 import _ from 'lodash';
 import { TIME_CODES } from '../../../api';
 
@@ -37,7 +37,7 @@ const TimecodeForm = ({ value, visible, handleFormState }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TIME_CODES.CREATE, values)
           .then(() => {
             onComplete();

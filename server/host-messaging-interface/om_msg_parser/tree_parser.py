@@ -1023,10 +1023,14 @@ class TreeParser(object):
 					# Get length, retrieve value from file and add to dict
 					to_fld_spec = self._msg_def_dict['std_fld_def'][search_key]
 					self._fld_len = int(to_fld_spec[1])
-					self.__add_default_value(path, self.__get_default_value(to_fld_spec, path))
+					dflt_val = self.__get_default_value(to_fld_spec, path)
+					self.__add_default_value(path, dflt_val)
 					# Add the value even if it is empty. It means the field has no data. Not adding it means the field
 					# does not exist which is not the same.
+					# If the field value is blank, fill it with the default value.
 					final_val = self.__apply_padding(search_key, to_fld_spec, self._retrieve_data(path, idx_list, False))
+					if final_val is None or final_val.strip() == '':
+						final_val = dflt_val
 					self.__add_value_list(path, final_val)
 					self._update_index()
 					found = True

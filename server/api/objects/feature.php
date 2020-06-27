@@ -16,7 +16,7 @@ class Feature extends CommonClass
         foreach ($feature_array as $item) {
             foreach ($item as $key => $value) {
                 if ($key === "feature_gui" || $key === "feature_flag") {
-                    if ($value === "Y") {
+                    if ($value === "Y" || $value === true) {
                         $item->$key = true;
                     } else {
                         $item->$key = false;

@@ -38,10 +38,11 @@ const WindowName = ({ form, value, onTypeChange }) => {
         disabled={!IS_CREATING}
         onChange={onTypeChange}
       >
-        {IS_CREATING ? 
+        {/* {IS_CREATING ? 
           <Option value="ONCE_WINDOW" disabled >Once off Date</Option> :
           <Option value="ONCE_WINDOW" >Once off Date</Option>
-          }
+          } */}
+        <Option value="ONCE_WINDOW" >Once off Date</Option>
         <Option value="WEEK_WINDOW">Day of Week</Option>
         <Option value="MONTH_WINDOW">Date of Month</Option>
         <Option value="DATE_YEAR_WINDOW">Date of Year</Option>

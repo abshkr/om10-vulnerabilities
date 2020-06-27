@@ -21,7 +21,16 @@ let originIP = process.env.HMI_ORIGIN_IP || '127.0.0.1';
 let originPort = process.env.HMI_ORIGIN_PORT || 8000;
 let proto = process.env.HMI_PROTO || 'https';
 let portnum = process.env.HMI_PORT || 8443;
-let originURL = originProto + '://' + originIP + ':' + originPort;
+//let originURL = originProto + '://' + originIP + ':' + originPort;
+let originURL;
+if (originPort != '')
+{
+        originURL = originProto + '://' + originIP + ':' + originPort;
+}
+else
+{
+        originURL = originProto + '://' + originIP;
+}
 console.log('originURL: '+originURL);
 let db_conn_ok = false;
 

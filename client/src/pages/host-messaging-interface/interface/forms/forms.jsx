@@ -65,11 +65,13 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
 		var url = '';
 		if (from === 'host')
 		{
-			url = process.env.REACT_APP_API_URL + '/hmi/resubmit/host_message';
+			//url = process.env.REACT_APP_API_URL + '/hmi/resubmit/host_message';
+			url = '/hmi/resubmit/host_message';
 		}
 		else if (from === 'omega')
 		{
-			url = process.env.REACT_APP_API_URL + '/hmi/resubmit/omega_message';
+			//url = process.env.REACT_APP_API_URL + '/hmi/resubmit/omega_message';
+			url = '/hmi/resubmit/omega_message';
 		}
 
 		fetch(url, {

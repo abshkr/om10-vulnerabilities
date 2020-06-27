@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
-import axios from 'axios';
+import api from 'api';
 
 import { LOAD_SCHEDULES } from '../../../../api';
 
@@ -20,7 +20,7 @@ const TripNumber = ({ form, value, supplier, onChange }) => {
 
       onChange(value.shls_trip_no);
     } else if (supplier) {
-      axios
+      api
         .get(LOAD_SCHEDULES.NEXT_TRIP, {
           params: {
             supplier_code: supplier,

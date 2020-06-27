@@ -12,6 +12,8 @@ const { Option } = Select;
 
 const Forms = ({
   form,
+  dataBoard,
+  setDataBoard,
   sourceType,
   setSourceType,
   loadType,
@@ -37,6 +39,7 @@ const Forms = ({
   setSelectedTanker,
   params,
   popup,
+  dataLoaded,
 }) => {
   const { setFieldsValue, resetFields } = form;
 
@@ -287,12 +290,73 @@ const Forms = ({
 
   const format = getDateTimeFormat();
 
+
+  useEffect(() => {
+    if (dataLoaded && !sourceType) {
+      form.setFieldsValue({
+        source_type: dataLoaded?.source_type,
+      });
+      handleTypeSelect(dataLoaded?.source_type);      
+    }
+  }, [dataLoaded, sourceType]);
+
+  useEffect(() => {
+    if (dataLoaded && !selectedSupplier) {
+      form.setFieldsValue({
+        supplier: dataLoaded?.supplier,
+      });
+      handleSupplierSelect(dataLoaded?.supplier);
+    }
+  }, [dataLoaded, selectedSupplier]);
+
+  useEffect(() => {
+    if (dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedCustomer) {
+      form.setFieldsValue({
+        customer: dataLoaded?.customer,
+      });
+      handleCustomerSelect(dataLoaded?.customer);
+    }
+  }, [dataLoaded, sourceType, selectedSupplier, selectedCustomer]);
+
+  useEffect(() => {
+    if (dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedOrder) {
+      form.setFieldsValue({
+        order_no: dataLoaded?.order_no,
+      });
+      handleOrderSelect(dataLoaded?.order_no);
+    }
+  }, [dataLoaded, sourceType, selectedSupplier, selectedOrder]);
+
+  useEffect(() => {
+    if (dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
+      form.setFieldsValue({
+        trip_no: dataLoaded?.trip_no,
+      });
+      handleTripSelect(dataLoaded?.trip_no);
+    }
+  }, [dataLoaded, sourceType && selectedSupplier, selectedTrip]);
+
+  useEffect(() => {
+    if (dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
+      form.setFieldsValue({
+        trip_no: dataLoaded?.trip_no,
+      });
+      handleTripSelect(dataLoaded?.trip_no);
+    }
+  }, [dataLoaded, sourceType && selectedSupplier, selectedTrip]);
+
+
+
   return (
     <>
       <Row gutter={24}>
         <Col span={8}>
           <Form.Item name="source_type" label={t('fields.transactionType')} rules={[{ required: true }]}>
-            <Select onChange={handleTypeSelect} placeholder={t('placeholder.selectTransType')}>
+            <Select 
+              disabled={popup}
+              onChange={handleTypeSelect} 
+              placeholder={t('placeholder.selectTransType')}
+            >
               <Option value="SCHEDULE">{t('fields.mtTypeSchedule')}</Option>
               <Option value="OPENORDER">{t('fields.mtTypeOrder')}</Option>
             </Select>
@@ -334,7 +398,7 @@ const Forms = ({
               loading={suppliersLoading}
               allowClear
               showSearch
-              disabled={!sourceType}
+              disabled={!sourceType || popup}
               onChange={handleSupplierSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectSupplier')}
@@ -390,7 +454,7 @@ const Forms = ({
             <Select
               allowClear
               showSearch
-              disabled={sourceType !== 'OPENORDER' || !selectedSupplier}
+              disabled={sourceType !== 'OPENORDER' || !selectedSupplier || popup}
               optionFilterProp="children"
               placeholder={t('placeholder.selectCustomer')}
               onChange={handleCustomerSelect}
@@ -450,7 +514,7 @@ const Forms = ({
               optionFilterProp="children"
               placeholder={t('placeholder.selectTripNumber')}
               onChange={handleTripSelect}
-              disabled={!trips || sourceType !== 'SCHEDULE'}
+              disabled={!trips || sourceType !== 'SCHEDULE' || popup}
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
@@ -504,7 +568,7 @@ const Forms = ({
               //loading={driversLoading}
               allowClear
               showSearch
-              disabled={!orders || sourceType !== 'OPENORDER'}
+              disabled={!orders || sourceType !== 'OPENORDER' || popup}
               onChange={handleOrderSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectOrderNumber')}

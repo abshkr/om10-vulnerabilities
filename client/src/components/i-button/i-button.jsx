@@ -1,10 +1,7 @@
 import React from 'react';
 import { Modal, Input } from 'antd';
-import { useTranslation } from 'react-i18next';
 
-const IButton = ({ setSearch }) => {
-  const { t } = useTranslation();
-
+const IButton = ({ setSearch, t }) => {
   Modal.info({
     title: t('prompts.iButtonLookUp'),
     centered: true,

@@ -1,62 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   EditOutlined,
   QuestionCircleOutlined,
   CloseOutlined,
-  UploadOutlined
+  UploadOutlined,
+  DeleteOutlined
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Divider, Input } from 'antd';
+import { Form, Button, Modal, notification, Divider, Upload } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import axios from 'axios';
 import { DRAWER_PRODUCTS } from 'api';
-import { mutate } from 'swr';
 import ImageDisplay from './forms/image-display';
-
-const TabPane = Tabs.TabPane;
 
 const FormModal = ({ }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const [selected, setSelected] = useState("");
 
-  const onComplete = () => {
-    // handleFormState(false, null);
-    // if (value.cmpy_code) {
-    //   setFilterValue("" + value.cmpy_code);
-    // }
-    // mutate(COMPANIES.READ);
-    // Modal.destroyAll();
-  };
+  const onRemove = () => {
+    console.log("onRemove")
 
-  const onUpload = async () => {
-    const values = await form.validateFields();
-    // values.cmpy_code = value.cmpy_code
+    if (selected === "") {
+      notification.error({
+        message: t('descriptions.requestFailed'),
+        description: t('prompts.noImageSeleted'),
+      });
+      return;
+    }
 
-    console.log("onUpload")
-    console.log(values)
-    
+    const value = {
+      image_file: selected,
+    }
     Modal.confirm({
-      title: t('prompts.update'),
-      okText: t('operations.update'),
-      okType: 'primary',
-      icon: <QuestionCircleOutlined />,
+      title: t('prompts.deleteImage'),
+      okText: t('operations.yes'),
+      okType: 'danger',
+      icon: <DeleteOutlined />,
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
         await axios
-          .post(DRAWER_PRODUCTS.UPLOAD_IMAGE)
-          .then(
-            axios.spread(response => {
-              onComplete()
+          .post(DRAWER_PRODUCTS.DELETE_IMAGE, value)
+          .then(() => {
+            setSelected("");
 
-              notification.success({
-                message: t('messages.updateSuccess'),
-                description: t('messages.updateSuccess')
-              });
-            })
-          )
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -65,42 +60,55 @@ const FormModal = ({ }) => {
               });
             });
           });
-      }
+      },
     });
   };
 
-  const fileSelected = (v) => {
-    console.log(v.target.value);
+  const onImageClick = (v) => {
+    setSelected(v.target.getAttribute("value"));
   }
 
-  const fileSelectorPostfix = (
-    <Form.Item name="fileToUpload" noStyle >
-      <input 
-        type="file" 
-        // onChange={fileSelected} 
-        name="fileToUpload" 
-        id="fileToUpload"
-        style={{width:'5rem'}}
-      />
-    </Form.Item>
-  );
+  const props = {
+    name: 'file',
+    action: DRAWER_PRODUCTS.UPLOAD_IMAGE,
+    // action: '/api/pages/product_asset/upload.php',
+    // headers: {
+    //   authorization: 'authorization-text',
+    // },
+    onChange(info) {
+      console.log(info)
+      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }
+      if (info.file.status === 'done') {
+        // message.success(`${info.file.name} file uploaded successfully`);
+        notification.success({
+          message: t('messages.createSuccess'),
+          description: `${t('descriptions.uploadSuccess')} ${info.file.name}`,
+        });
+        setSelected(info.file.name);
+      } else if (info.file.status === 'error') {
+        // message.error(`${info.file.name} file upload failed.`);
+        notification.success({
+          message: t('messages.submitFailed'),
+          description: `${t('descriptions.uploadFailed')} ${info.file.name}`,
+        });
+      }
+    },
+  };
 
   return (
     <div>
       <Form 
         form={form} 
-        onFinish={onUpload} 
         scrollToFirstError
       >
-        <ImageDisplay onImageClick={null}></ImageDisplay>
+        <ImageDisplay onImageClick={onImageClick} refresh={selected}></ImageDisplay>
 
         <Divider></Divider>
 
-        <Form.Item name="prod_image" label={t('fields.prodImage')} >
-          <Input addonAfter={fileSelectorPostfix}></Input>
-        </Form.Item>
-
         <Form.Item style={{marginTop: "1rem"}}>
+          
           <Button
             htmlType="button"
             icon={<CloseOutlined />}
@@ -113,12 +121,20 @@ const FormModal = ({ }) => {
           <Button
             type="primary"
             icon={<UploadOutlined />}
-            htmlType="submit"
-            // onClick={onUpload}
+            // htmlType="submit"
+            disabled={selected === ""}
+            onClick={onRemove}
             style={{ float: 'right', marginRight: 5 }}
           >
-            {t('operations.uploadImg')}
+            {t('operations.removeImg')}
           </Button>
+
+          <Upload {...props}>
+            <Button>
+              <UploadOutlined /> {t('operations.uploadImg')}
+            </Button>
+          </Upload>
+
         </Form.Item>
       </Form>
     </div>

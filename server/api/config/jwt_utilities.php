@@ -3,7 +3,7 @@
 include_once "jwt.php";
 include_once __DIR__ . '/../shared/log.php';
 
-function get_token($per_code, $sess_id = null, $site_code = null, $site_name = null, $lang = null, $exp_seconds = 1800)
+function get_token($per_code, $sess_id = null, $site_code = null, $site_name = null, $lang = null, $exp_seconds = 7200)
 {
     write_log('get_token START. per_code:' . $per_code . ' sess_id:' . $sess_id,
         __FILE__, __LINE__);
@@ -28,6 +28,7 @@ function get_http_token()
         if (!isset($authorization)) {
             write_log('JWT auth error: Authorization not set in http header',
                 __FILE__, __LINE__, LogLevel::ERROR);
+            throw new UnauthException('JWT auth error: Authorization not set in http header');
             return false;
         }
 
@@ -46,6 +47,7 @@ function get_http_token()
             if (!isset($data["token"])) {
                 write_log('JWT auth error: Authorization not set in http request',
                     __FILE__, __LINE__, LogLevel::ERROR);
+                throw new UnauthException('JWT auth error: Authorization not set in http request');
                 return false;
             }
             $token = $data["token"];

@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import { LoadingOutlined, AuditOutlined } from '@ant-design/icons';
 import { Spin, Button, notification } from 'antd';
-import axios from 'axios';
+import api from 'api';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { LOAD_SCHEDULES } from '../../../../api';
 
-const BOL = ({ value, redo, supermode }) => {
+const BOL = ({ value, redo, supermode, locateTrip }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState(null);
@@ -17,7 +17,7 @@ const BOL = ({ value, redo, supermode }) => {
     setData(null);
 
     if (value) {
-      axios
+      api
         .get(LOAD_SCHEDULES.VIEW_BOL, {
           params: {
             supplier: value.supplier_code,
@@ -27,6 +27,7 @@ const BOL = ({ value, redo, supermode }) => {
         })
         .then((res) => {
           setData(res.data)
+          locateTrip(value.shls_trip_no);
         })
         .catch((errors) => {
           _.forEach(errors.response.data.errors, (error) => {

@@ -80,24 +80,27 @@ class ProductAsset extends CommonClass
         echo json_encode($error, JSON_PRETTY_PRINT);
     }
 
-    public function upload($field = 'fileToUpload')
+    public function upload($field = 'file')
     {
         write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
         $target_dir = __DIR__ . $this->image_path;
-        $target_file = $target_dir . basename($_FILES[$field]["name"]);;
+        $target_file = $target_dir . basename($_FILES[$field]["name"]);
+        write_log(json_encode($_FILES), __FILE__, __LINE__);
+        write_log($_FILES[$field]["name"], __FILE__, __LINE__);
         $uploadOk = 1;
         // $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+        write_log(json_encode($_FILES), __FILE__, __LINE__);
 
         // Check if image file is a actual image or fake image
-        if(isset($_POST["submit"])) {
+        if (isset($_POST["submit"])) {
             $check = getimagesize($_FILES[$field]["tmp_name"]);
+            write_log($check, __FILE__, __LINE__);
             if($check !== false) {
                 write_log("File is an image - " . $check["mime"], __FILE__, __LINE__);
-                
-
             } else {
+                write_log(sprintf("File %s is not an image", $_FILES[$field]["tmp_name"]), __FILE__, __LINE__);
                 $error = new EchoSchema(500, response("__NOT_IMAGE__"));
                 echo json_encode($error, JSON_PRETTY_PRINT);
 
@@ -106,6 +109,7 @@ class ProductAsset extends CommonClass
         }
         // Check if file already exists
         if (file_exists($target_file)) {
+            write_log("Target file " . $target_file . " already exists.", __FILE__, __LINE__);
             $error = new EchoSchema(500, response("__FILE_ALREADY_EXIST__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
 
@@ -127,12 +131,16 @@ class ProductAsset extends CommonClass
         // }
         
         if (move_uploaded_file($_FILES[$field]["tmp_name"], $target_file)) {
-            $error = new EchoSchema(200, reponse("__FILE_UPLOADED__",
+            write_log("The file ". basename($_FILES[$field]["name"]). " has been uploaded.", __FILE__, __LINE__);
+            $error = new EchoSchema(200, response("__FILE_UPLOADED__",
                 "The file ". basename($_FILES[$field]["name"]). " has been uploaded."));
             echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
         } else {
+            write_log("The file ". basename($_FILES[$field]["name"]). " upload failed", __FILE__, __LINE__, LogLevel::ERROR);
             $error = new EchoSchema(500, response("__FILE_UPLOAD_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
         }
     }
 }
