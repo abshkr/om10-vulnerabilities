@@ -8,15 +8,12 @@ import {
   DeleteOutlined
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Divider, Input, message, Upload } from 'antd';
+import { Form, Button, Modal, notification, Divider, Upload } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import axios from 'axios';
 import { DRAWER_PRODUCTS } from 'api';
-import { mutate } from 'swr';
 import ImageDisplay from './forms/image-display';
-
-const TabPane = Tabs.TabPane;
 
 const FormModal = ({ }) => {
   const { t } = useTranslation();
@@ -48,7 +45,7 @@ const FormModal = ({ }) => {
         await axios
           .post(DRAWER_PRODUCTS.DELETE_IMAGE, value)
           .then(() => {
-            setSelected("ImPossiBle.jpg");
+            setSelected("");
 
             notification.success({
               message: t('messages.deleteSuccess'),
@@ -125,6 +122,7 @@ const FormModal = ({ }) => {
             type="primary"
             icon={<UploadOutlined />}
             // htmlType="submit"
+            disabled={selected === ""}
             onClick={onRemove}
             style={{ float: 'right', marginRight: 5 }}
           >

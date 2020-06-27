@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 
 import useSWR from 'swr';
-import { Button, Tabs } from 'antd';
+import { SWRConfig } from 'swr';
+import { Button, Tabs, Modal } from 'antd';
+import { fetcher } from 'utils';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined, ReconciliationOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, ReconciliationOutlined, EditOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, FormModal } from 'components';
 import { DRAWER_PRODUCTS } from '../../api';
@@ -32,13 +34,25 @@ const DrawerProduct = () => {
   };
 
   const manageImages = () => {
-    FormModal({
-      // value: currentCmpy,
-      width: '90vh',
-      form: <ManageImgForm />,
-      // id: currentCmpy.cmpy_code,
-      // name: currentCmpy.cmpy_name,
-      t,
+    Modal.info({
+      className: 'form-container',
+      title: t('operations.manageImage'),
+      centered: true,
+      width: '40vw',
+      icon: <EditOutlined />,
+      content: (
+        <SWRConfig
+          value={{
+            refreshInterval: 0,
+            fetcher,
+          }}
+        >
+          <ManageImgForm />
+        </SWRConfig>
+      ),
+      okButtonProps: {
+        style: { display: 'none' },
+      },
     });
   };
 
