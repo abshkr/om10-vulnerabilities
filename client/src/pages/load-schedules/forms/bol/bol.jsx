@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { LOAD_SCHEDULES } from '../../../../api';
 
-const BOL = ({ value, redo, supermode }) => {
+const BOL = ({ value, redo, supermode, locateTrip }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState(null);
@@ -27,6 +27,7 @@ const BOL = ({ value, redo, supermode }) => {
         })
         .then((res) => {
           setData(res.data)
+          locateTrip(value.shls_trip_no);
         })
         .catch((errors) => {
           _.forEach(errors.response.data.errors, (error) => {

@@ -538,7 +538,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
           </TabPane>
 
           <TabPane tab={t('tabColumns.bol')} disabled={IS_CREATING || !CAN_VIEW_REPORTS} key="3">
-            <BOL value={value} redo={redoBOL} supermode={form.getFieldValue('supermode')} />
+            <BOL value={value} redo={redoBOL} supermode={form.getFieldValue('supermode')} locateTrip={locateTrip} />
           </TabPane>
 
           <TabPane tab={t('tabColumns.loadReport')} disabled={IS_CREATING || !CAN_VIEW_REPORTS} key="4">

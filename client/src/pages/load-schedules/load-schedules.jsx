@@ -14,7 +14,7 @@ import { getDateRangeOffset } from 'utils';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
-import axios from 'axios';
+import api from 'api';
 
 const LoadSchedules = () => {
   const { scheduleDateRange } = useConfig();
@@ -57,7 +57,7 @@ const LoadSchedules = () => {
       !values.trip_status) {
       return;
     }
-    axios
+    api
       .get(LOAD_SCHEDULES.SEARCH, {
         params: {
           shls_trip_no: values.shls_trip_no,
