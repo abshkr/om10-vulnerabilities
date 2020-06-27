@@ -120,7 +120,13 @@ class SpecialMvService
             __FILE__, __LINE__);
 
         $special_msg = $this->populate_specmove_det($this->mlitm_id);
-        $client = new SocketClient($this->conn);
+        try {
+            $client = new SocketClient($this->conn);
+        } catch (Bay999Exception $e) {
+            $err_msg = $e->getMessage();
+            return false;
+        }
+        
         $client->send($special_msg);
         $response = $client->get_repond();
 
