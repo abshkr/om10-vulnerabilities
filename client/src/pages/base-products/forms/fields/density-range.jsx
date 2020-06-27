@@ -31,13 +31,21 @@ const DensityRange = ({ form, value, classification }) => {
       <Row gutter={[12, 12]}>
         <Col span={12}>
           <Form.Item name="base_dens_lo" label={`Low Density ${classification ? `(${low} - ${high})` : ''}`}>
-            <InputNumber min={low} max={high} style={{ width: '100%' }} />
+            <InputNumber 
+              // min={low} 
+              // max={high} 
+              style={{ width: '100%' }} 
+            />
           </Form.Item>
         </Col>
 
         <Col span={12}>
           <Form.Item name="base_dens_hi" label={`High Density ${classification ? `(${low} - ${high})` : ''}`}>
-            <InputNumber min={low} max={high} style={{ width: '100%' }} />
+            <InputNumber 
+              // min={low} 
+              // max={high} 
+              style={{ width: '100%' }} 
+            />
           </Form.Item>
         </Col>
       </Row>
