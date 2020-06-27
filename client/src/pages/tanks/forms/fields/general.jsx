@@ -103,8 +103,8 @@ const General = ({ form, value, config }) => {
             }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
           >
             <InputNumber
-              min={value?.tank_base_dens_lo}
-              max={value?.tank_base_dens_hi}
+              // min={value?.tank_base_dens_lo}
+              // max={value?.tank_base_dens_hi}
               style={{ width: '100%' }}
             />
           </Form.Item>
