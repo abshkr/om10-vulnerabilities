@@ -73,7 +73,7 @@ const ManualTransactions = ({ popup, params }) => {
     setSelectedTrip(null);
     setSelectedOrder(null);
     setSelectedTanker(null);
-    form.setFieldsValue({ transfers: [], base_transfers: [], base_totals: [], meter_totals: [] });
+    form.setFieldsValue({ transfers: [], base_transfers: [], base_totals: [], meter_transfers: [], meter_totals: [] });
   };
 
   const preparePayloadToSubmit = (values) => {
@@ -114,8 +114,9 @@ const ManualTransactions = ({ popup, params }) => {
       transfer.liq_kg = titem.trsf_load_kg;
 
       transfer.meters = [];
-      for (midx = 0; midx < values?.meter_totals?.length; midx++) {
-        const mitem = values?.meter_totals?.[midx];
+      // meter for transfers, should use meter_transfers
+      for (midx = 0; midx < values?.meter_transfers?.length; midx++) {
+        const mitem = values?.meter_transfers?.[midx];
         if (titem.trsf_cmpt_no === mitem.trsf_cmpt_no) {
           const meter = {};
           meter.open_amb = mitem.trsf_mtr_opn_amb;
@@ -459,7 +460,7 @@ const ManualTransactions = ({ popup, params }) => {
       const meter = {};
       /*
       Available fields inn meter totals level
-        field: 'trsf_cmpt_no',
+        //field: 'trsf_cmpt_no',
         field: 'trsf_mtr_cd',
         field: 'injector_or_meter',
         field: 'trsf_mtr_typ',
@@ -478,13 +479,12 @@ const ManualTransactions = ({ popup, params }) => {
       meter.trsf_mtr_close_kg = mitem?.CLOSE_KG;
       meter.injector_or_meter = mitem?.INJECTOR_OR_METER;
       meter.trsf_mtr_cd = mitem?.METER_INJECTOR_CODE;
-      meter.trsf_cmpt_no = mitem?.METER_CMPT_NO;
+      //meter.trsf_cmpt_no = mitem?.METER_CMPT_NO;
       meter.trsf_mtr_typ = mitem?.METER_TYPE;
       //console.log(mcount, midx, meter);
     
       values.meter_totals.push(meter);
     }
-    //console.log('values.meter_totals:', values.meter_totals, values['meter_totals']);
   
     return values;
   };
@@ -511,13 +511,15 @@ const ManualTransactions = ({ popup, params }) => {
 
       const values = prepareValuesToLoad(record);
       console.log('prepareValuesToLoad', values);
+      setDataLoaded(values);
 
-      form.setFieldsValue({
+      /* form.setFieldsValue({
         transfers: values?.transfers,
         base_transfers: values?.base_transfers,
         base_totals: values?.base_totals,
+        meter_transfers: values?.meter_transfers,
         meter_totals: values?.meter_totals,
-      })
+      }) */
 
       console.log("set form fields done!");
     });
@@ -589,13 +591,8 @@ const ManualTransactions = ({ popup, params }) => {
     let tidx = 0;
     let midx = 0;
     let bidx = 0;
-    //payload.transfers = [];
     for (tidx = 0; tidx < values?.transfers?.length; tidx++) {
       const titem = values?.transfers?.[tidx];
-
-      //if (titem.trsf_arm_cd === t('placeholder.selectArmCode')) {
-      //  continue;
-      //}
 
       const transfer = {};
       /*
@@ -637,7 +634,7 @@ const ManualTransactions = ({ popup, params }) => {
       transfer.SOLD_TO = titem.trsf_sold_to;
       transfer.SHIP_TO = titem.trsf_delv_loc;
       const baseCount = _.filter(values?.base_transfers, (o)=>(titem.trsf_cmpt_no === o.trsf_bs_cmpt_no))?.length;
-      const meterCount = _.filter(values?.meter_totals, (o)=>(titem.trsf_cmpt_no === o.trsf_cmpt_no))?.length;
+      const meterCount = _.filter(values?.meter_transfers, (o)=>(titem.trsf_cmpt_no === o.trsf_cmpt_no))?.length;
       transfer.NUMBER_OF_BASES = baseCount;
       transfer.NUMBER_OF_METERS = meterCount;
 
@@ -686,8 +683,9 @@ const ManualTransactions = ({ popup, params }) => {
 
       if (meterCount > 0) {
         transfer.METER = [];
-        for (midx = 0; midx < values?.meter_totals?.length; midx++) {
-          const mitem = values?.meter_totals?.[midx];
+        // meters for transfer, should use meter_transfers
+        for (midx = 0; midx < values?.meter_transfers?.length; midx++) {
+          const mitem = values?.meter_transfers?.[midx];
           if (titem.trsf_cmpt_no === mitem.trsf_cmpt_no) {
             const meter = {};
             /*
@@ -719,7 +717,6 @@ const ManualTransactions = ({ popup, params }) => {
         }
       }
 
-      //payload.transfers.push(transfer);
       mtbody.TRNASFERS.TRANSFER.push(transfer);
     }
 
@@ -768,7 +765,7 @@ const ManualTransactions = ({ popup, params }) => {
       const meter = {};
       /*
       Available fields inn meter totals level
-        field: 'trsf_cmpt_no',
+        //field: 'trsf_cmpt_no',
         field: 'trsf_mtr_cd',
         field: 'injector_or_meter',
         field: 'trsf_mtr_typ',
@@ -787,7 +784,7 @@ const ManualTransactions = ({ popup, params }) => {
       meter.CLOSE_KG = mitem.trsf_mtr_close_kg;
       meter.INJECTOR_OR_METER = mitem.injector_or_meter;
       meter.METER_INJECTOR_CODE = mitem.trsf_mtr_cd;
-      meter.METER_CMPT_NO = mitem.trsf_cmpt_no;
+      //meter.METER_CMPT_NO = mitem.trsf_cmpt_no;
       meter.METER_TYPE = mitem.trsf_mtr_typ;
     
       mtbody.METERTOTALS.METERTOTAL.push(meter);
@@ -948,6 +945,7 @@ const ManualTransactions = ({ popup, params }) => {
           setSelectedTanker={setSelectedTanker}
           params={params}
           popup={popup}
+          dataLoaded={null}
         />
 
         <DrawerProductTransfers
@@ -962,6 +960,7 @@ const ManualTransactions = ({ popup, params }) => {
           order={selectedOrder}
           tanker={selectedTanker}
           repost={repost}
+          dataLoaded={dataLoaded}
         />
       </Form>
     </Page>

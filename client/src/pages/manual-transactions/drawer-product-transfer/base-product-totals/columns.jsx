@@ -33,6 +33,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    editable: true,
   },
   {
     headerName: t('fields.temperature'),
@@ -47,6 +48,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    editable: true,
   },
   {
     headerName: t('fields.standardQuantity'),

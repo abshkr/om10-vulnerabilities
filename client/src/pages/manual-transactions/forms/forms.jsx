@@ -39,6 +39,7 @@ const Forms = ({
   setSelectedTanker,
   params,
   popup,
+  dataLoaded,
 }) => {
   const { setFieldsValue, resetFields } = form;
 
@@ -288,6 +289,63 @@ const Forms = ({
   }, [setFieldsValue]);
 
   const format = getDateTimeFormat();
+
+
+  useEffect(() => {
+    if (dataLoaded && !sourceType) {
+      form.setFieldsValue({
+        source_type: dataLoaded?.source_type,
+      });
+      handleTypeSelect(dataLoaded?.source_type);      
+    }
+  }, [dataLoaded, sourceType]);
+
+  useEffect(() => {
+    if (dataLoaded && !selectedSupplier) {
+      form.setFieldsValue({
+        supplier: dataLoaded?.supplier,
+      });
+      handleSupplierSelect(dataLoaded?.supplier);
+    }
+  }, [dataLoaded, selectedSupplier]);
+
+  useEffect(() => {
+    if (dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedCustomer) {
+      form.setFieldsValue({
+        customer: dataLoaded?.customer,
+      });
+      handleCustomerSelect(dataLoaded?.customer);
+    }
+  }, [dataLoaded, sourceType, selectedSupplier, selectedCustomer]);
+
+  useEffect(() => {
+    if (dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedOrder) {
+      form.setFieldsValue({
+        order_no: dataLoaded?.order_no,
+      });
+      handleOrderSelect(dataLoaded?.order_no);
+    }
+  }, [dataLoaded, sourceType, selectedSupplier, selectedOrder]);
+
+  useEffect(() => {
+    if (dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
+      form.setFieldsValue({
+        trip_no: dataLoaded?.trip_no,
+      });
+      handleTripSelect(dataLoaded?.trip_no);
+    }
+  }, [dataLoaded, sourceType && selectedSupplier, selectedTrip]);
+
+  useEffect(() => {
+    if (dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
+      form.setFieldsValue({
+        trip_no: dataLoaded?.trip_no,
+      });
+      handleTripSelect(dataLoaded?.trip_no);
+    }
+  }, [dataLoaded, sourceType && selectedSupplier, selectedTrip]);
+
+
 
   return (
     <>

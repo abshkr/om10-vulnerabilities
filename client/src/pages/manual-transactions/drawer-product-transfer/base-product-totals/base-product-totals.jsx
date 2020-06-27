@@ -15,18 +15,23 @@ const BaseProductTotals = ({
   setDataBoard,
   sourceType, 
   selected, 
-  transfers 
+  transfers,
+  clicked,
+  dataLoaded
 }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
+  const [obsTotal, setObsTotal] = useState(0);
+  const [stdTotal, setStdTotal] = useState(0);
+  const [massTotal, setMassTotal] = useState(0);
   const [isLoading, setLoading] = useState(true);
 
   const fields = columns(t);
 
   const adjustBaseTotals = (items) => {
     const totals = [];
-    console.log('adjustBaseTotals', items);
+    console.log('BaseProductTotals: adjustBaseTotals', items);
     let itemExisted = false;
 
     _.forEach(items, (item) => {
@@ -37,6 +42,7 @@ const BaseProductTotals = ({
           total.trsf_bs_qty_amb_tot = _.toNumber(total.trsf_bs_qty_amb_tot) + _.toNumber(item.trsf_bs_qty_amb_tot);
           total.trsf_bs_qty_cor_tot = _.toNumber(total.trsf_bs_qty_cor_tot) + _.toNumber(item.trsf_bs_qty_cor_tot);
           total.trsf_bs_load_kg_tot = _.toNumber(total.trsf_bs_load_kg_tot) + _.toNumber(item.trsf_bs_load_kg_tot);
+          total.trsf_bs_temp_tot = null;
           totals[index] = total;
           itemExisted = true;
         }
@@ -45,7 +51,15 @@ const BaseProductTotals = ({
         totals.push(item);
       }
     });
-    console.log('adjustBaseTotals', totals);
+    console.log('BaseProductTotals: adjustBaseTotals', totals);
+
+    // adjust sum totals
+    const obs = _.sumBy(totals, 'trsf_bs_qty_amb_tot');
+    const std = _.sumBy(totals, 'trsf_bs_qty_cor_tot');
+    const mass = _.sumBy(totals, 'trsf_bs_load_kg_tot');
+    setObsTotal(obs);
+    setStdTotal(std);
+    setMassTotal(mass);
 
     return totals;
   }
@@ -147,7 +161,41 @@ const BaseProductTotals = ({
   }, [data]);
 
   useEffect(() => {
-    console.log("base-totals sourceType", sourceType);
+    console.log('BaseProductTotals: base quantity totals changed on data and clicked', clicked);
+    getBaseTotals();
+  }, [clicked]);
+
+  /* useEffect(() => {
+    console.log('BaseProductTotals: base quantity totals changed on data and clicked', clicked);
+    if (data) {
+      const obs = _.sumBy(data, 'trsf_bs_qty_amb_tot');
+      const std = _.sumBy(data, 'trsf_bs_qty_cor_tot');
+      const mass = _.sumBy(data, 'trsf_bs_load_kg_tot');
+      setObsTotal(obs);
+      setStdTotal(std);
+      setMassTotal(mass);
+    } else {
+      setObsTotal(0);
+      setStdTotal(0);
+      setMassTotal(0);
+    }
+  }, [data, clicked]); */
+
+  useEffect(() => {
+    setData([]);
+
+    if (dataLoaded && dataLoaded?.base_totals) {
+
+      form.setFieldsValue({
+        base_totals: dataLoaded?.base_totals,
+      });
+
+      setData(dataLoaded?.base_totals);
+    }
+  }, [dataLoaded]);
+
+  useEffect(() => {
+    console.log("BaseProductTotals: base-totals sourceType ", sourceType);
     setData([]);
   }, [sourceType]);
 
@@ -165,13 +213,13 @@ const BaseProductTotals = ({
         <Col span={9}>
         </Col>
         <Col span={5}>
-          <strong>{t('fields.nomtranObsTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_amb_tot'), 3)}</strong>
+          <strong>{t('fields.nomtranObsTotal')} {_.round(obsTotal, 3)}</strong>
         </Col>
         <Col span={5}>
-          <strong>{t('fields.nomtranStdTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_cor_tot'), 3)}</strong>
+          <strong>{t('fields.nomtranStdTotal')} {_.round(stdTotal, 3)}</strong>
         </Col>
         <Col span={5}>
-          <strong>{t('fields.nomtranMassTotal')} {_.round(_.sumBy(data, 'trsf_bs_load_kg_tot'), 3)}</strong>
+          <strong>{t('fields.nomtranMassTotal')} {_.round(massTotal, 3)}</strong>
         </Col>
       </Row>
     </Spin>

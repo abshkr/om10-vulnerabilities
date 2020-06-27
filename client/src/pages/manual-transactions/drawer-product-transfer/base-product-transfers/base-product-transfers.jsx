@@ -18,7 +18,7 @@ const BaseProductTransfers = ({
   transfers,
   clicked,
   setChildTableAPI,
-  baseSummary
+  dataLoaded
 }) => {
   const { t } = useTranslation();
 
@@ -30,7 +30,7 @@ const BaseProductTransfers = ({
 
   const fields = columns(t);
 
-  const getBaseTransfers = async () => {
+  const getBaseTransfers = async (selected) => {
     const pre = [];
     //const transfers = form.getFieldValue('transfers');
     setLoading(true);
@@ -85,11 +85,19 @@ const BaseProductTransfers = ({
     }
 
     setLoading(false);
+
+    const obs = _.sumBy(pre.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_amb');
+    const std = _.sumBy(pre.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_cor');
+    const mass = _.sumBy(pre.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_load_kg');
+    setObsTotal(obs);
+    setStdTotal(std);
+    setMassTotal(mass);
+
     setData(pre);
   };
 
   useEffect(() => {
-    getBaseTransfers();
+    getBaseTransfers(selected);
   }, [selected]);
 
   useEffect(() => {
@@ -109,8 +117,13 @@ const BaseProductTransfers = ({
     setDataBoard(board);
   }, [data]);
 
+  /* useEffect(() => {
+    console.log('BaseProductTransfers: base quantity totals changed on data and clicked', clicked);
+    getBaseTransfers(clicked);
+  }, [clicked]); */
+
   useEffect(() => {
-    console.log('baseSummary changed on data and clicked', clicked);
+    console.log('BaseProductTransfers: base quantity totals changed on data and clicked', clicked);
     if (data) {
       const obs = _.sumBy(data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no)), 'trsf_bs_qty_amb');
       const std = _.sumBy(data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no)), 'trsf_bs_qty_cor');
@@ -126,24 +139,20 @@ const BaseProductTransfers = ({
   }, [data, clicked]);
 
   useEffect(() => {
-    const item = baseSummary?.filter((o)=>(o?.cmpt === clicked?.trsf_cmpt_no))?.[0];
-    console.log('baseSummary changed', clicked);
-    console.log('baseSummary changed', baseSummary);
-    console.log('baseSummary changed', item);
+    setData([]);
 
-    if (item) {
-      setObsTotal(item.amb);
-      setStdTotal(item.cor);
-      setMassTotal(item.kg);
-    } else {
-      setObsTotal(0);
-      setStdTotal(0);
-      setMassTotal(0);
+    if (dataLoaded && dataLoaded?.base_transfers) {
+
+      form.setFieldsValue({
+        base_transfers: dataLoaded?.base_transfers,
+      });
+
+      setData(dataLoaded?.base_transfers);
     }
-  }, [baseSummary]);
+  }, [dataLoaded]);
 
   useEffect(() => {
-    console.log("base-transfers sourceType", sourceType);
+    console.log("BaseProductTransfers: base-transfers sourceType ", sourceType);
     setData([]);
   }, [sourceType]);
 
