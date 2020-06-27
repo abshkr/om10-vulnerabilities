@@ -22,8 +22,6 @@ const TransactionList = () => {
 
   const access = useAuth('M_TRANSACTIONLIST');
 
-  // const [start, setStart] = useState(moment().subtract(0, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-  // const [end, setEnd] = useState(moment().add(0, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
@@ -39,7 +37,7 @@ const TransactionList = () => {
   const setRange = (start, end) => {
     setStart(start);
     setEnd(end);
-    revalidate();
+    // revalidate();
   };
 
   const setSearch = (values) => {
@@ -76,12 +74,19 @@ const TransactionList = () => {
     });
   };
 
-  // useEffect(() => {
-  //   const ranges = getDateRangeOffset(String(transactionsDateRange), '7');
+  useEffect(() => {
+    if (transactionsDateRange !== false) {
+      const ranges = getDateRangeOffset(String(transactionsDateRange), '7');
+      
+      if (ranges.beforeToday !== 7) {
+        setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      }
 
-  //   setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-  //   setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-  // }, [transactionsDateRange]);
+      if (ranges.afterToday !== 7) {
+        setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      }
+    }
+  }, [transactionsDateRange]);
 
   useEffect(() => {
     if (payload?.records) {
