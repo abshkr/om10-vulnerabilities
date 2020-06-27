@@ -6,7 +6,7 @@ import ConfigStore from 'stores/config-store';
 
 const ConfigProvider = ({ children }) => {
   const [config, setConfig] = useState({
-    dateTimeFormat: 'DD/MM/YYYY HH:mm:ss',
+    dateTimeFormat: null,
     temperatureUnit: null,
     densityUnit: null,
     referenceTemperature: null,
@@ -192,6 +192,7 @@ const ConfigProvider = ({ children }) => {
         sessionPerUser: configurationObject?.URBAC_SESSION_PER_USER,
         userAutoDelete: configurationObject?.URBAC_USER_AUTO_DELETE,
         userAutoLock: configurationObject?.URBAC_USER_AUTO_LOCK,
+        dateTimeFormat: configurationObject?.SITE_DATETIME_FORMAT || 'DD/MM/YYYY HH:mm:ss',
 
         loading: false,
         revalidate: () => onRevalidate(),

@@ -1,9 +1,19 @@
-import React, { Component } from 'react';
-import { convertToLocale } from '../../../utils';
+import React, { useContext } from 'react';
+import moment from 'moment';
 
-export default class DateRenderer extends Component {
-  render() {
-    const { value } = this.props;
-    return <div>{convertToLocale(value)}</div>;
+import { DATE_TIME_FORMAT } from 'constants/settings';
+import ConfigStore from 'stores/config-store';
+
+const DateRenderer = ({ value }) => {
+  const { dateTimeFormat } = useContext(ConfigStore);
+
+  if (value !== '') {
+    const payload = moment(value, DATE_TIME_FORMAT).format(dateTimeFormat);
+
+    return <div>{payload}</div>;
   }
-}
+
+  return null;
+};
+
+export default DateRenderer;
