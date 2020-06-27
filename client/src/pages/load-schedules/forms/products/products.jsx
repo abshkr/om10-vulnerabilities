@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import { Form } from 'antd';
-import axios from 'axios';
+import api from 'api';
 
 import { Unit, Schedule } from './fields';
 import { DataTable } from '../../../../components';
@@ -29,7 +29,7 @@ const Products = ({ value, form, drawer }) => {
   useEffect(() => {
     setData([]);
     if (drawer && !value) {
-      axios
+      api
         .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
           params: {
             drawer_code: drawer,
@@ -50,7 +50,7 @@ const Products = ({ value, form, drawer }) => {
   useEffect(() => {
     setData([]);
     if (value) {
-      axios
+      api
         .get(LOAD_SCHEDULES.PRODUCTS, {
           params: {
             supplier_code: value.supplier_code,
