@@ -102,7 +102,8 @@ export default class Temperature extends Component {
   }
 
   handleChange(value) {
-    const { min, max } = this.props;
+    const { min, max, txt, colDef } = this.props;
+    //console.log('this.props', this.props);
 
     if (min <= value && max >= value) {
       this.setState({
@@ -111,7 +112,8 @@ export default class Temperature extends Component {
     } else {
       notification.error({
         key: 'temp',
-        message: 'Temperature must be between -18c and 150c',
+        message: colDef.headerName + ' ' + txt('validate.mustBeBetween') + ' (' + min + 'C ~ ' + max + 'C)',
+        //message: colDef.headerName + ' must be between (' + min + 'C ~ ' + max + 'C)',
       });
     }
   }

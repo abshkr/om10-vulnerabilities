@@ -12,7 +12,7 @@ import { SETTINGS } from '../../../constants';
 import { DataTable } from '../../../components';
 import { MANUAL_TRANSACTIONS } from '../../../api';
 
-const LoadForm = ({onLoad, fields, url}) => {
+const LoadForm = ({onLoad, fields, url, height}) => {
   const [data, setData] = useState(null);
   const [records, setRecords] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -127,6 +127,7 @@ const LoadForm = ({onLoad, fields, url}) => {
         onClick={(payload) => onDoubleClick(payload)}
         handleSelect={(payload) => setSelected(payload[0])}
         autoColWidth
+        height={height}
       />
       
       <div style={{marginTop: "2rem"}}>

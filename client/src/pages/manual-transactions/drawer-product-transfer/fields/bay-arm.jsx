@@ -26,12 +26,21 @@ export default class BayArm extends Component {
 
     let index = undefined;
     let prodDens = 0.0;
+    const sum_ratios = _.sumBy(values, (o)=>{
+      if (o.stream_index === stream) {
+        return _.toNumber(o.ratio_value);
+      }
+    });
 
     // calculate drawer product density
     for (index = 0; index < values.length; index++) {
       const item = values[index];
       if (item.stream_index === stream) {
-        prodDens = prodDens + calcBaseRatios(item?.stream_tankden, item?.ratio_value, item?.ratio_total);
+        let ratio_total = item?.ratio_total;
+        if (_.toNumber(ratio_total) > sum_ratios) {
+          ratio_total = String(sum_ratios);
+        }
+        prodDens = prodDens + calcBaseRatios(item?.stream_tankden, item?.ratio_value, ratio_total);
       }
     }
     console.log('prod dens2', prodDens);

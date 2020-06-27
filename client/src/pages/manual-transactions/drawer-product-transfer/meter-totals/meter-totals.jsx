@@ -10,6 +10,8 @@ import { MANUAL_TRANSACTIONS } from '../../../../api';
 
 const MeterTotals = ({ 
   form, 
+  dataBoard,
+  setDataBoard,
   sourceType, 
   selected, 
   transfers 
@@ -75,6 +77,15 @@ const MeterTotals = ({
         meter_totals: data,
       });
     }
+  }, [data]);
+
+  useEffect(() => {
+    let board = dataBoard;
+    if (!board) {
+      board = {};
+    }
+    board.meter_totals = data;
+    setDataBoard(board);
   }, [data]);
 
   useEffect(() => {

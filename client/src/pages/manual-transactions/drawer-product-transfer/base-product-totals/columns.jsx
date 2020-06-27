@@ -86,6 +86,14 @@ const columns = (t) => [
     resizable: true,
     hide: true,
   },
+  {
+    headerName: 'Base Ratio Total',
+    field: 'trsf_bs_ratio_total2_tot',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
 ];
 
 export default columns;

@@ -12,6 +12,8 @@ const { Option } = Select;
 
 const Forms = ({
   form,
+  dataBoard,
+  setDataBoard,
   sourceType,
   setSourceType,
   loadType,

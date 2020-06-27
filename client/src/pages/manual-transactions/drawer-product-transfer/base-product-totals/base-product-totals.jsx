@@ -11,6 +11,8 @@ import {calcBaseRatios} from '../../../../utils'
 
 const BaseProductTotals = ({ 
   form, 
+  dataBoard,
+  setDataBoard,
   sourceType, 
   selected, 
   transfers 
@@ -69,7 +71,12 @@ const BaseProductTotals = ({
           })
           .then((res) => {
             if (res.data?.records?.length > 0) {
+              const sum_ratios = _.sumBy(res?.data?.records, (o)=>{return _.toNumber(o.ratio_value)});
               _.forEach(res?.data?.records, (product) => {
+                let ratio_total = product?.ratio_total;
+                if (_.toNumber(ratio_total) > sum_ratios) {
+                  ratio_total = String(sum_ratios);
+                }
                 pre.push({
                   trsf_bs_prodcd_tot: product?.stream_basecode,
                   trsf_bs_prodname_tot: `${product?.stream_basecode} - ${product.stream_basename}`,
@@ -77,12 +84,13 @@ const BaseProductTotals = ({
                   trsf_bs_prodcls_tot: product.stream_bclass_nmae,
                   trsf_bs_den_tot: product?.stream_tankden,
                   trsf_bs_temp_tot: transfer?.trsf_temp,
-                  trsf_bs_qty_amb_tot: calcBaseRatios(transfer?.trsf_qty_amb, product?.ratio_value, product?.ratio_total),
-                  trsf_bs_qty_cor_tot: calcBaseRatios(transfer?.trsf_qty_cor, product?.ratio_value, product?.ratio_total),
-                  trsf_bs_load_kg_tot: calcBaseRatios(transfer?.trsf_load_kg, product?.ratio_value, product?.ratio_total),
+                  trsf_bs_qty_amb_tot: calcBaseRatios(transfer?.trsf_qty_amb, product?.ratio_value, ratio_total),
+                  trsf_bs_qty_cor_tot: calcBaseRatios(transfer?.trsf_qty_cor, product?.ratio_value, ratio_total),
+                  trsf_bs_load_kg_tot: calcBaseRatios(transfer?.trsf_load_kg, product?.ratio_value, ratio_total),
                   trsf_bs_adtv_flag_tot: product?.adtv_flag,
                   trsf_bs_ratio_value_tot: product?.ratio_value,
-                  trsf_bs_ratio_total_tot: product?.ratio_total,
+                  trsf_bs_ratio_total_tot: ratio_total,
+                  trsf_bs_ratio_total2_tot: product?.ratio_total,
                   /* trsf_bs_qty_amb_tot: _.sumBy(transfers, (o) => {
                     if (o?.trsf_prod_code === product?.rat_prod_prodcode) {
                       return calcBaseRatios(o?.trsf_qty_amb, product?.ratio_value, product?.ratio_total); //????
@@ -127,6 +135,15 @@ const BaseProductTotals = ({
         base_totals: data,
       });
     }
+  }, [data]);
+
+  useEffect(() => {
+    let board = dataBoard;
+    if (!board) {
+      board = {};
+    }
+    board.base_totals = data;
+    setDataBoard(board);
   }, [data]);
 
   useEffect(() => {

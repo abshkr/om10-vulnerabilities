@@ -22,7 +22,6 @@ const DataManager = (
     centered: true,
     closable: true,
     width: width,
-    height: height,
     icon: <FileSearchOutlined />,
     content: (
     <SWRConfig
@@ -31,7 +30,7 @@ const DataManager = (
         fetcher,
         }}
     >
-      <LoadForm onLoad={onLoad} fields={fields} url={url} />
+      <LoadForm onLoad={onLoad} fields={fields} url={url} height={height} />
     </SWRConfig>
     ),
     okButtonProps: {
