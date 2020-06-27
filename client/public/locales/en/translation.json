@@ -1308,7 +1308,8 @@
     "viewOrderSeals": "View Order Seals",
     "setAddressTemplate": "Set As Default Template",	
 	"manageImage": "Manage Images",
-	"uploadImg": "Upload Image"
+	"uploadImg": "Upload Image",
+	"removeImg": "Remove From Server"
   },
 
   "tabColumns": {
@@ -1470,7 +1471,9 @@
     "confirmReverse": "Confirm Schedule Reversal?",
     "confirmArchive": "Confirm Schedule is to be Archived?",
     "zeroEquipmentSelected": "You have not selected equipment for some Tankers. If you do not want to choose the existing one, system will create a new one for you automatically. Please confirm to process",
-    "unlockAll": "Are you sure you want to unlock all compartments?"
+    "unlockAll": "Are you sure you want to unlock all compartments?",
+	"noImageSeleted": "Please select an image",
+	"deleteImage": "Are you sure you want to remove image from server?"
   },
 
   "divider": {
@@ -1573,7 +1576,9 @@
     "lastFieldChanged": "Last field changed",
     "maxDateRange": "Date Range Limited to: ",
     "ignoreTolerance": "Ignore tolerance check",
-    "unauthorized": "Sorry, you are not authorized to access this page."
+    "unauthorized": "Sorry, you are not authorized to access this page.",
+	"uploadSuccess": "You have uploaded image: ",
+	"uploadFailed": "Failed to upload image: "
   },
 
   "placeholder": {

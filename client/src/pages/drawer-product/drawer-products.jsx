@@ -34,7 +34,7 @@ const DrawerProduct = () => {
   const manageImages = () => {
     FormModal({
       // value: currentCmpy,
-      width: '80vh',
+      width: '90vh',
       form: <ManageImgForm />,
       // id: currentCmpy.cmpy_code,
       // name: currentCmpy.cmpy_name,
@@ -58,7 +58,7 @@ const DrawerProduct = () => {
 
       <Download data={data} isLoading={isLoading} columns={fields} />
 
-      {/* <Button
+      <Button
         type="primary"
         icon={<ReconciliationOutlined />}
         onClick={manageImages}
@@ -66,7 +66,7 @@ const DrawerProduct = () => {
         disabled={!access?.canUpdate}
       >
         {t('operations.manageImage')}
-      </Button> */}
+      </Button>
 
       <Button
         type="primary"
