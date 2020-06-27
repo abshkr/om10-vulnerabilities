@@ -14,7 +14,7 @@ import {
 import { Form, Button, Tabs, notification, Modal, Divider, message, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
+import api from 'api';
 import _ from 'lodash';
 
 import { MovementType, ReasonCode, MovementTime, Comments, To, From } from './fields';
@@ -63,17 +63,17 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
       onOk: async () => {
         values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
 
-        await axios
+        await api
           .post(IS_CREATING ? SPECIAL_MOVEMENTS.CREATE : SPECIAL_MOVEMENTS.UPDATE, values)
           .then(
-            axios.spread((response) => {
+            () => {
               onComplete();
 
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.createSuccess'),
               });
-            })
+            }
           )
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
@@ -96,10 +96,10 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
       icon: <QuestionCircleOutlined />,
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(SPECIAL_MOVEMENTS.DELETE, value)
           .then(
-            axios.spread((response) => {
+            () => {
               onComplete();
 
               notification.success({
@@ -107,15 +107,14 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
                 description: `${t('descriptions.deleteSuccess')}`,
               });
             })
-          )
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
               });
             });
-          });
       },
     });
   };
@@ -131,7 +130,7 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
       onOk: async () => {
         try {
           const values = await form.validateFields();
-          await axios
+          await api
             .post(SPECIAL_MOVEMENTS.CALCULATE, {
               frm_baseCd: values.mlitm_prodcode_to,
               frm_which_type: 'LT',
@@ -168,10 +167,9 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
         try {
           const values = await form.validateFields();
 
-          await axios
+          await api
             .post(SPECIAL_MOVEMENTS.SUBMIT, values)
-            .then(
-              axios.spread((response) => {
+            .then(()=> {
                 onComplete();
 
                 notification.success({
@@ -179,15 +177,14 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
                   description: t('descriptions.submitSuccess'),
                 });
               })
-            )
-            .catch((errors) => {
-              _.forEach(errors.response.data.errors, (error) => {
-                notification.error({
-                  message: error.type,
-                  description: error.message,
+              .catch((errors) => {
+                _.forEach(errors.response.data.errors, (error) => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message,
+                  });
                 });
               });
-            });
         } catch (error) {
           message.error({
             key: 'submit',
@@ -207,10 +204,10 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
       icon: <QuestionCircleOutlined />,
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(SPECIAL_MOVEMENTS.REVERSE, value)
           .then(
-            axios.spread((response) => {
+            () => {
               onComplete();
 
               notification.success({
@@ -218,15 +215,14 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
                 description: `${t('descriptions.movementReverseSuccess')}`,
               });
             })
-          )
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
               });
             });
-          });
       },
     });
   };
