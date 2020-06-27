@@ -105,7 +105,13 @@ class Database
             }
 
             if (JWT_AUTH) {
-                $pay_load = check_token(get_http_token());
+                try {
+                    $token = get_http_token();
+                } catch (UnauthException $e) {
+                    throw $e;
+                }
+                
+                $pay_load = check_token($token);
                 if (!$pay_load) {
                     write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
                     throw new UnauthException('Authentication check failed, cannot continue');

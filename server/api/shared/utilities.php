@@ -87,7 +87,9 @@ class Utilities
     {
         if (!isset($_SESSION)) { 
             session_start(); 
+            // write_log(json_encode($_SESSION), __FILE__, __LINE__);
         } 
+        // write_log(json_encode($_SESSION), __FILE__, __LINE__);
 
         $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/" . $cgi . "?";
         if ($query_string) {

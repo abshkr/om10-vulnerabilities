@@ -19,7 +19,7 @@ define("HTTP_CODE_ENABLED", true);
 define('AUTH_CHECK', true);
 
 //Set it to true to use Token-based authentication. false uses table HTTP_SESSION_TRACE
-define('JWT_AUTH', false);
+define('JWT_AUTH', true);
 
 //Set it to true to call ini_set('display_errors', 1) and error_reporting(E_ALL)
 define('DISPLAY_ALL_ERROS', false);

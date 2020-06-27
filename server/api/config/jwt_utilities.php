@@ -28,6 +28,7 @@ function get_http_token()
         if (!isset($authorization)) {
             write_log('JWT auth error: Authorization not set in http header',
                 __FILE__, __LINE__, LogLevel::ERROR);
+            throw new UnauthException('JWT auth error: Authorization not set in http header');
             return false;
         }
 
@@ -46,6 +47,7 @@ function get_http_token()
             if (!isset($data["token"])) {
                 write_log('JWT auth error: Authorization not set in http request',
                     __FILE__, __LINE__, LogLevel::ERROR);
+                throw new UnauthException('JWT auth error: Authorization not set in http request');
                 return false;
             }
             $token = $data["token"];

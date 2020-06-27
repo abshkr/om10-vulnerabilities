@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import { LoadingOutlined, AuditOutlined } from '@ant-design/icons';
 import { Spin, Button, notification } from 'antd';
-import axios from 'axios';
+import api from 'api';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -17,7 +17,7 @@ const BOL = ({ value, redo, supermode }) => {
     setData(null);
 
     if (value) {
-      axios
+      api
         .get(LOAD_SCHEDULES.VIEW_BOL, {
           params: {
             supplier: value.supplier_code,

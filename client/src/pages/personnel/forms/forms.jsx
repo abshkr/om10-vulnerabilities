@@ -65,8 +65,6 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       });
     }
 
-    console.log(values);
-
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
