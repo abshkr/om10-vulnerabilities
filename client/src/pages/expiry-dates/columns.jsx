@@ -1,10 +1,12 @@
 const columns = t => [
   {
     headerName: t('fields.type'),
-    field: 'edt_target_code',
+    field: 'edt_target_desc',
     filter: 'MultiFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
+    suppressSizeToFit: true, 
+    width: 240,
   },
   {
     headerName: t('fields.typeCode'),
@@ -18,7 +20,9 @@ const columns = t => [
     field: 'edt_type_desc',
     filter: 'FuzzyFilter',
     sortable: true,
-    resizable: true
+    resizable: true,
+    suppressSizeToFit: true, 
+    width: 240,
   },
   {
     headerName: t('fields.enabled'),
@@ -26,7 +30,9 @@ const columns = t => [
     filter: 'BooleanFilter',
     cellRenderer: 'BooleanRenderer',
     sortable: true,
-    resizable: true
+    resizable: true,
+    suppressSizeToFit: true, 
+    width: 110,
   },
   {
     headerName: t('fields.rejectAuthorization'),
@@ -42,7 +48,9 @@ const columns = t => [
     filter: 'BooleanFilter',
     cellRenderer: 'BooleanRenderer',
     sortable: true,
-    resizable: true
+    resizable: true,
+    suppressSizeToFit: true, 
+    width: 110,
   },
   {
     headerName: t('fields.defaultValue'),
