@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Form, Drawer, Modal, notification } from 'antd';
 
 import useSWR, { mutate } from 'swr';
-import axios from 'axios';
+
 import moment from 'moment';
 
 import Schedules from './schedules';
@@ -13,7 +13,7 @@ import TransactionList from './transaction-list';
 import NominationTransactions from './nomination-transactions';
 
 import { DataTable } from '../../../../components';
-import { MOVEMENT_NOMIATIONS } from '../../../../api';
+import api, { MOVEMENT_NOMIATIONS } from '../../../../api';
 
 import columns from './columns';
 
@@ -285,7 +285,7 @@ const Items = ({ setTableAPIContext, value }) => {
           mvitm_completed: !selected?.[0]?.mvitm_completed,
         };
 
-        await axios
+        await api
           .post(MOVEMENT_NOMIATIONS.TOGGLE_ITEM, itemValue)
           .then((response) => {
             mutate(url);

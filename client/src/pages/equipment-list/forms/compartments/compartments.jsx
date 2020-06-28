@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, Select, Form } from 'antd';
-import axios from 'axios';
+
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { EQUIPMENT_LIST } from '../../../../api';
+import api, { EQUIPMENT_LIST } from '../../../../api';
 import columns from './columns';
 import Cell from './cell';
 import Row from './row';
@@ -27,7 +27,7 @@ const Compartments = ({ form, value, equipment, onChange }) => {
     (id) => {
       setLoading(true);
 
-      axios.get(`${EQUIPMENT_LIST.COMPARTMENTS}?eqpt_id=${id}`).then((response) => {
+      api.get(`${EQUIPMENT_LIST.COMPARTMENTS}?eqpt_id=${id}`).then((response) => {
         setData(response.data.records);
         setFieldsValue({ compartments: response.data.records });
         setLoading(false);
@@ -40,9 +40,9 @@ const Compartments = ({ form, value, equipment, onChange }) => {
     (id) => {
       setLoading(true);
 
-      axios.get(`${EQUIPMENT_LIST.COMPARTMENT_EQUIPMENT}?etyp_id=${id}`).then((response) => {
+      api.get(`${EQUIPMENT_LIST.COMPARTMENT_EQUIPMENT}?etyp_id=${id}`).then((response) => {
         // loop through the eqpt type compartment list, add column safefill and sfl with the value of cmpt_capacit
-          _.forEach(response?.data?.records, (item)=>{
+        _.forEach(response?.data?.records, (item) => {
           item.safefill = item.cmpt_capacit;
           item.sfl = item.cmpt_capacit;
         });
@@ -82,9 +82,9 @@ const Compartments = ({ form, value, equipment, onChange }) => {
   }, [value, payload, equipment]);
 
   useEffect(() => {
-    // the eqpttype in value?.eqpt_etp is String and equipment is Number, 
+    // the eqpttype in value?.eqpt_etp is String and equipment is Number,
     // so etp will be a String in EDIT mode, a Number in CREATE mode.
-    // But etyp_id in eqpt types is a Number, so we must force etp to Number. 
+    // But etyp_id in eqpt types is a Number, so we must force etp to Number.
     const etp = value?.eqpt_etp || equipment;
     const type = _.find(types?.records, ['etyp_id', _.toNumber(etp)]);
     const image = type?.image?.toLowerCase() || null;

@@ -1,17 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-import {
-  EditOutlined,
-  PlusOutlined,
-  DeleteOutlined,
-  QuestionCircleOutlined,
-  CloseOutlined,
-} from '@ant-design/icons';
-
+import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Form, Button, Tabs, notification, Modal, Divider, Drawer, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
 import {
@@ -35,7 +27,7 @@ import columns from './columns';
 
 import Items from './items';
 
-import { MOVEMENT_NOMIATIONS } from '../../../api';
+import api, { MOVEMENT_NOMIATIONS } from '../../../api';
 import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
@@ -127,7 +119,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
         cancelText: t('operations.no'),
         centered: true,
         onOk: async () => {
-          await axios
+          await api
             .post(IS_CREATING ? MOVEMENT_NOMIATIONS.CREATE : MOVEMENT_NOMIATIONS.UPDATE, values)
             .then((response) => {
               onComplete(values?.mv_key);
@@ -159,7 +151,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(MOVEMENT_NOMIATIONS.DELETE, value)
           .then((response) => {
             onComplete(null);

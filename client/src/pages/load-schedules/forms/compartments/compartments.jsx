@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form } from 'antd';
 import { DataTable } from '../../../../components';
-import axios from 'axios';
 
-import { LOAD_SCHEDULES } from '../../../../api';
+import api, { LOAD_SCHEDULES } from '../../../../api';
 import columns from './columns';
 
 import {
@@ -47,7 +46,7 @@ const Compartments = ({ form, value, tanker, drawer }) => {
     setProducts([]);
 
     if (value) {
-      axios
+      api
         .get(LOAD_SCHEDULES.COMPARTMENTS, {
           params: {
             shls_trip_no: value.shls_trip_no,
@@ -65,7 +64,7 @@ const Compartments = ({ form, value, tanker, drawer }) => {
   }, [value, setFieldsValue]);
 
   useEffect(() => {
-    axios
+    api
       .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
         params: {
           drawer_code: drawer,
@@ -79,7 +78,7 @@ const Compartments = ({ form, value, tanker, drawer }) => {
     setProducts([]);
 
     if (!value && tanker) {
-      axios
+      api
         .get(LOAD_SCHEDULES.COMPARTMENTS_BY_TANKER, {
           params: {
             tnkr_code: tanker,

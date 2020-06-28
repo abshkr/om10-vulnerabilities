@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { LoadingOutlined, PlusOutlined, QuestionCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Spin, Button, Drawer, Tabs, Form, Select, InputNumber, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
+
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
 import { DataTable } from '../../../../components';
 import columns from './columns';
 
-import { LOAD_SCHEDULES } from '../../../../api';
+import api, { LOAD_SCHEDULES } from '../../../../api';
 
 const { useForm } = Form;
 
@@ -57,7 +57,7 @@ const AdditionalHostData = ({ value }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(LOAD_SCHEDULES.HOST_DATA_UPDATE, record)
           .then(() => {
             onComplete();
@@ -87,7 +87,7 @@ const AdditionalHostData = ({ value }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(LOAD_SCHEDULES.HOST_DATA_DELETE, selected)
           .then(() => {
             onComplete();

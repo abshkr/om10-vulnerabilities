@@ -6,9 +6,8 @@ import useSWR from 'swr';
 import _ from 'lodash';
 
 import { Equipment, DataTable } from '../../../../components';
-import { EQUIPMENT_TYPES } from '../../../../api';
+import api, { EQUIPMENT_TYPES } from '../../../../api';
 import { search } from '../../../../utils';
-import axios from 'axios';
 
 const getRandomNumbers = () => {
   const typedArray = new Uint8Array(5);
@@ -145,7 +144,7 @@ const Combination = ({ form }) => {
   };
 
   const onShowCompartments = async (item, index) => {
-    const equipment = await axios.get(EQUIPMENT_TYPES.COMPOSITION, {
+    const equipment = await api.get(EQUIPMENT_TYPES.COMPOSITION, {
       params: {
         etyp_id: item.etyp_id,
       },
@@ -181,7 +180,7 @@ const Combination = ({ form }) => {
       width: '30vw',
       content: (
         <div style={{ marginBottom: 10 }}>
-          <DataTable data={equipments?.compartments || []} columns={columns} minimal height='70vh' />
+          <DataTable data={equipments?.compartments || []} columns={columns} minimal height="70vh" />
         </div>
       ),
     });
@@ -199,7 +198,7 @@ const Combination = ({ form }) => {
 
   // adhoc retriving
   const getCompartmentNumber2 = async (item, index) => {
-    const equipment = await axios.get(EQUIPMENT_TYPES.COMPOSITION, {
+    const equipment = await api.get(EQUIPMENT_TYPES.COMPOSITION, {
       params: {
         etyp_id: item.etyp_id,
       },
@@ -281,7 +280,10 @@ const Combination = ({ form }) => {
                                     {image !== 'P' && image !== 'F' && (
                                       <>
                                         <a onClick={() => onShowCompartments(item, index)}>
-                                          <Badge count={getCompartmentNumber(item, index)} offset={[-50, 15]} />
+                                          <Badge
+                                            count={getCompartmentNumber(item, index)}
+                                            offset={[-50, 15]}
+                                          />
                                         </a>
                                       </>
                                     )}
@@ -300,7 +302,9 @@ const Combination = ({ form }) => {
                               </div>
                             </div>
                             {/* <Divider orientation="center"><b>{item.etyp_title}</b></Divider> */}
-                            <div style={{textAlign: 'center'}}><b>{item.etyp_title}</b></div>
+                            <div style={{ textAlign: 'center' }}>
+                              <b>{item.etyp_title}</b>
+                            </div>
                           </Tooltip>
                         </div>
                       )}

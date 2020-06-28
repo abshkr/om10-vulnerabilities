@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
-import axios from 'axios';
 
 const AltQty = ({ form, value, onChange, pageState }) => {
   const { t } = useTranslation();
@@ -14,7 +13,7 @@ const AltQty = ({ form, value, onChange, pageState }) => {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.nomtranAltQty')}`);
       }
     }
-    
+
     if (input && input.length > 100) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -32,15 +31,15 @@ const AltQty = ({ form, value, onChange, pageState }) => {
   }, [value, setFieldsValue, onChange]);
 
   return (
-    <Form.Item 
-      name="mlitm_qty_rpt" 
+    <Form.Item
+      name="mlitm_qty_rpt"
       label={t('fields.nomtranAltQty')}
       rules={[{ required: false, validator: validate }]}
     >
-      <InputNumber 
-        style={{ width: '100%' }} 
+      <InputNumber
+        style={{ width: '100%' }}
         onChange={onChange}
-        disabled={pageState==='transfer'? false : false}
+        disabled={pageState === 'transfer' ? false : false}
       />
     </Form.Item>
   );

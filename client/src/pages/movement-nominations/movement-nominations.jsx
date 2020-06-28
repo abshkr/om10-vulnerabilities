@@ -5,10 +5,9 @@ import moment from 'moment';
 import { Button, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
-import axios from 'axios';
 
 import { Page, DataTable, Download, Calendar, WindowSearch } from '../../components';
-import { MOVEMENT_NOMIATIONS } from '../../api';
+import api, { MOVEMENT_NOMIATIONS } from '../../api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
 import auth from '../../auth';
@@ -66,8 +65,8 @@ const MovementNominations = () => {
 
   const url =
     start && end
-    ? `${MOVEMENT_NOMIATIONS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
-    : null
+      ? `${MOVEMENT_NOMIATIONS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
+      : null;
 
   const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
 
@@ -97,20 +96,21 @@ const MovementNominations = () => {
   const locateNomination = (value) => {
     runSearch({
       mv_key: value,
-    })
-  }
+    });
+  };
 
   const runSearch = (values) => {
     if (
-      !values?.mv_key && 
-      !values?.mv_status && 
-      !values?.mv_srctype && 
-      !values?.mv_terminal && 
-      !values?.mv_number) {
+      !values?.mv_key &&
+      !values?.mv_status &&
+      !values?.mv_srctype &&
+      !values?.mv_terminal &&
+      !values?.mv_number
+    ) {
       revalidate();
       return;
     }
-    axios
+    api
       .get(MOVEMENT_NOMIATIONS.READ, {
         params: {
           mv_key: values?.mv_key,
@@ -138,12 +138,12 @@ const MovementNominations = () => {
   }, [ranges, start, end]); */
 
   useEffect(() => {
-    console.log("I am here: rangeStart, start", start, rangeStart);
+    console.log('I am here: rangeStart, start', start, rangeStart);
     setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   }, [rangeStart]);
 
   useEffect(() => {
-    console.log("I am here: rangeEnd, end", end, rangeEnd);
+    console.log('I am here: rangeEnd, end', end, rangeEnd);
     setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   }, [rangeEnd]);
 
@@ -191,16 +191,18 @@ const MovementNominations = () => {
 
       <Download data={data} isLoading={isLoading} columns={fields} />
 
-      <Button 
+      <Button
         type="primary"
-        icon={<FileSearchOutlined />} 
-        onClick={() => WindowSearch(runSearch, t('operations.search'), {
-          mv_key: true,
-          mv_status: true,
-          mv_srctype: true,
-          mv_terminal: true,
-          mv_number: true,
-        })}
+        icon={<FileSearchOutlined />}
+        onClick={() =>
+          WindowSearch(runSearch, t('operations.search'), {
+            mv_key: true,
+            mv_status: true,
+            mv_srctype: true,
+            mv_terminal: true,
+            mv_number: true,
+          })
+        }
       >
         {t('operations.search')}
       </Button>
@@ -229,12 +231,12 @@ const MovementNominations = () => {
       />
 
       {visible && (
-        <Forms 
-          value={selected} 
-          visible={visible} 
-          handleFormState={handleFormState} 
-          access={access} 
-          url={url} 
+        <Forms
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          url={url}
           locateNomination={locateNomination}
         />
       )}

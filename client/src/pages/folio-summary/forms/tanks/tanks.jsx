@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
-import axios from 'axios';
 import _ from 'lodash';
 import { Modal, Button, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -18,13 +17,14 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
   const [isLoading, setLoading] = useState(false);
   const [selected, setSelected] = useState([]);
   const [preSelected, setPreSelected] = useState([]);
-  const [api, setAPI] = useState(null);
+  const [tableAPI, setTableAPI] = useState(null);
 
   const fields = columns(t);
 
   const fetch = useCallback(() => {
     setLoading(true);
-    axios.get(`${FOLIO_SUMMARY.TANKS}?closeout_nr=${id}`).then((response) => {
+
+    api.get(`${FOLIO_SUMMARY.TANKS}?closeout_nr=${id}`).then((response) => {
       setLoading(false);
 
       const values = generator(response.data.records);
@@ -81,7 +81,7 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
           .then((response) => {
             const payload = [];
 
-            api.forEachNodeAfterFilterAndSort((rowNode, index) => {
+            tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
               const filtered = _.find(response.data.data, ['tank_code', rowNode.data.tank_code]);
 
               if (filtered) {
@@ -96,7 +96,7 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
               }
             });
 
-            api.updateRowData({ update: payload });
+            tableAPI.updateRowData({ update: payload });
 
             if (response.data.calc_issues === 0) {
               notification.success({
@@ -159,7 +159,7 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
   const onEditingFinished = (values) => {
     const payload = [];
 
-    values.api.forEachNode((node) => payload.push(node.data));
+    values.tableAPI.forEachNode((node) => payload.push(node.data));
 
     setData(payload);
   };
@@ -180,7 +180,7 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
         handleSelect={setSelected}
         preSelected={preSelected}
         idKey="tank_code"
-        apiContext={setAPI}
+        apiContext={setTableAPI}
         autoColWidth
       />
       <div className="operations">

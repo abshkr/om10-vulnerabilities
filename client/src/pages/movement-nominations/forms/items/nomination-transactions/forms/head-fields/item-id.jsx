@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
-import axios from 'axios';
 
 const NominationItemId = ({ form, value, pageState }) => {
   const { t } = useTranslation();
@@ -14,7 +13,7 @@ const NominationItemId = ({ form, value, pageState }) => {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.nomtranItemId')}`);
       }
     }
-    
+
     if (input && input.length > 9) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 9 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -31,15 +30,12 @@ const NominationItemId = ({ form, value, pageState }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="mvitm_item_id" 
+    <Form.Item
+      name="mvitm_item_id"
       label={t('fields.nomtranItemId')}
       rules={[{ required: false, validator: validate }]}
     >
-      <Input 
-        style={{ width: '100%' }} 
-        disabled={pageState==='create'? true : true}
-      />
+      <Input style={{ width: '100%' }} disabled={pageState === 'create' ? true : true} />
     </Form.Item>
   );
 };

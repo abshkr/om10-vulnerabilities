@@ -3,9 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Spin, Tabs } from 'antd';
-import axios from 'axios';
 
-import { LOAD_SCHEDULES } from '../../../../api';
+import api, { LOAD_SCHEDULES } from '../../../../api';
 import { DataTable } from '../../../../components';
 
 import productColumns from './product-columns';
@@ -40,7 +39,7 @@ const Transactions = ({ value }) => {
     setMeters(null);
 
     if (value) {
-      axios
+      api
         .get(LOAD_SCHEDULES.TRANSACTIONS, {
           params: {
             supplier: value.supplier_code,

@@ -5,9 +5,8 @@ import useSWR from 'swr';
 import _ from 'lodash';
 
 import { DataTable } from '../../../../components';
-import { LOAD_SCHEDULES } from '../../../../api';
+import api, { LOAD_SCHEDULES } from '../../../../api';
 import columns from './columns';
-import axios from 'axios';
 
 const { Search } = Input;
 
@@ -27,7 +26,7 @@ const Seals = ({ value }) => {
   const fields = columns(t);
 
   const onSealUpdate = (value) => {
-    axios
+    api
       .post(LOAD_SCHEDULES.SET_NEXT_SEAL, {
         next_seal: value,
       })
@@ -50,7 +49,7 @@ const Seals = ({ value }) => {
 
   const onAllocation = (val) => {
     if (payload?.records?.length === 0) {
-      axios
+      api
         .post(LOAD_SCHEDULES.ALLOCATE_ALL, {
           supplier: value.supplier_code,
           trip_no: value.shls_trip_no,
@@ -72,7 +71,7 @@ const Seals = ({ value }) => {
           });
         });
     } else {
-      axios
+      api
         .post(LOAD_SCHEDULES.ALLOCATE_ONE, {
           supplier: value.supplier_code,
           trip_no: value.shls_trip_no,
@@ -98,7 +97,7 @@ const Seals = ({ value }) => {
   };
 
   const onReallocateSelected = () => {
-    axios
+    api
       .post(LOAD_SCHEDULES.REALLOCATE, {
         supplier: value.supplier_code,
         trip_no: value.shls_trip_no,
@@ -124,7 +123,7 @@ const Seals = ({ value }) => {
   };
 
   const onDellocateAllSelected = () => {
-    axios
+    api
       .post(LOAD_SCHEDULES.DELETE_SEAL, {
         seal_nr: selected?.seal_nr,
       })
@@ -147,7 +146,7 @@ const Seals = ({ value }) => {
   };
 
   const onDellocateAll = () => {
-    axios
+    api
       .post(LOAD_SCHEDULES.DEALLOCATE, {
         supplier: value.supplier_code,
         trip_no: value.shls_trip_no,
@@ -176,7 +175,7 @@ const Seals = ({ value }) => {
 
     const prefix = val?.colDef?.field === 'seal_prefix' ? val?.data?.seal_prefix : val?.data?.seal_suffix;
 
-    axios
+    api
       .post(endpoint, {
         seal_nr: val?.data?.seal_nr,
         prefix,

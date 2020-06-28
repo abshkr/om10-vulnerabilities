@@ -1,29 +1,35 @@
 import React, { useEffect, useState } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  QuestionCircleOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
+
 import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { WindowName, Pickup, Description } from './fields';
 
-import { FOLIO_SCHEDULING } from '../../../api';
+import api, { FOLIO_SCHEDULING } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access }) => {
-  const [data, setData] = useState(value?value:[]);
+  const [data, setData] = useState(value ? value : []);
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  
+
   const IS_CREATING = !value;
 
   const { resetFields } = form;
 
   const onTypeChange = (window_name) => {
-    setData({...value, ...{"window_name": window_name}})
+    setData({ ...value, ...{ window_name: window_name } });
   };
 
   const onComplete = () => {
@@ -33,7 +39,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const onFinish = async () => {
     const values = await form.validateFields();
-    
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -42,7 +48,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? FOLIO_SCHEDULING.CREATE : FOLIO_SCHEDULING.UPDATE, values)
           .then(() => {
             onComplete();
@@ -75,7 +81,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(FOLIO_SCHEDULING.DELETE, values)
           .then(() => {
             onComplete();
@@ -100,9 +106,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   useEffect(() => {
     if (!value) {
       resetFields();
-      setData([])
+      setData([]);
     } else {
-      setData(value)
+      setData(value);
     }
   }, [resetFields, value]);
 
@@ -154,8 +160,8 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <WindowName form={form} value={data} onTypeChange={onTypeChange}/>
-            <Pickup form={form} value={data}  />
+            <WindowName form={form} value={data} onTypeChange={onTypeChange} />
+            <Pickup form={form} value={data} />
             <Description form={form} value={data} />
           </TabPane>
         </Tabs>

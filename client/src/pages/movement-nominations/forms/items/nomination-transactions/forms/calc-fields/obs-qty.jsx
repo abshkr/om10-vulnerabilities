@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
-import axios from 'axios';
 
 const ObsQty = ({ form, value, onChange, pageState }) => {
   const { t } = useTranslation();
@@ -14,7 +13,7 @@ const ObsQty = ({ form, value, onChange, pageState }) => {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.nomtranObsQty')}`);
       }
     }
-    
+
     if (input && input.length > 100) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -28,24 +27,24 @@ const ObsQty = ({ form, value, onChange, pageState }) => {
         mlitm_qty_amb: value.mlitm_qty_amb,
       });
 
-      onChange({qty: value.mlitm_qty_amb, type: 'LT'});
+      onChange({ qty: value.mlitm_qty_amb, type: 'LT' });
     }
   }, [value, setFieldsValue, onChange]);
 
   const handleFieldChange = (value) => {
-    onChange({qty: value, type: 'LT'});
-  }
+    onChange({ qty: value, type: 'LT' });
+  };
 
   return (
-    <Form.Item 
-      name="mlitm_qty_amb" 
-      label={t('fields.nomtranObsQty')+'('+t('fields.nomtranObsQtyUnit')+')'}
+    <Form.Item
+      name="mlitm_qty_amb"
+      label={t('fields.nomtranObsQty') + '(' + t('fields.nomtranObsQtyUnit') + ')'}
       rules={[{ required: false, validator: validate }]}
     >
-      <InputNumber 
-        style={{ width: '100%' }} 
+      <InputNumber
+        style={{ width: '100%' }}
         onChange={handleFieldChange}
-        disabled={pageState==='transfer'? false : false}
+        disabled={pageState === 'transfer' ? false : false}
       />
     </Form.Item>
   );

@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
-import axios from 'axios';
 
 const DestinationProduct = ({ form, value, pageState }) => {
   const { t } = useTranslation();
@@ -14,7 +13,7 @@ const DestinationProduct = ({ form, value, pageState }) => {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.nomtranToDrawProd')}`);
       }
     }
-    
+
     if (input && input.length > 256) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 256 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -31,15 +30,12 @@ const DestinationProduct = ({ form, value, pageState }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="mvitm_prodname_to" 
+    <Form.Item
+      name="mvitm_prodname_to"
       label={t('fields.nomtranToDrawProd')}
       rules={[{ required: false, validator: validate }]}
     >
-      <Input 
-        style={{ width: '100%' }} 
-        disabled={pageState==='transfer'? true : true}
-      />
+      <Input style={{ width: '100%' }} disabled={pageState === 'transfer' ? true : true} />
     </Form.Item>
   );
 };

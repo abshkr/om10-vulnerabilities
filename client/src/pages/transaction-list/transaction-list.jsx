@@ -7,14 +7,13 @@ import { useTranslation } from 'react-i18next';
 import { SyncOutlined, FileSearchOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, Calendar, FormModal, WindowSearch } from '../../components';
-import { TRANSACTION_LIST } from '../../api';
+import api, { TRANSACTION_LIST } from '../../api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 import { useAuth, useConfig } from 'hooks';
 import { getDateRangeOffset } from 'utils';
-import axios from 'axios';
 
 const TransactionList = () => {
   const { transactionsDateRange } = useConfig();
@@ -25,9 +24,11 @@ const TransactionList = () => {
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
-  const { data: payload, isValidating, revalidate } = useSWR(
-    `${TRANSACTION_LIST.READ}?start_date=${start}&end_date=${end}`, { revalidateOnFocus: false }
-  );
+  const {
+    data: payload,
+    isValidating,
+    revalidate,
+  } = useSWR(`${TRANSACTION_LIST.READ}?start_date=${start}&end_date=${end}`, { revalidateOnFocus: false });
 
   // const data = transactions?.records;
   const isLoading = isValidating;
@@ -41,14 +42,11 @@ const TransactionList = () => {
   };
 
   const setSearch = (values) => {
-    console.log(values)
-    if (!values.shls_trip_no && 
-      !values.trsa_id &&
-      !values.tnkr_code && 
-      !values.load_id) {
+    console.log(values);
+    if (!values.shls_trip_no && !values.trsa_id && !values.tnkr_code && !values.load_id) {
       return;
     }
-    axios
+    api
       .get(TRANSACTION_LIST.SEARCH, {
         params: {
           trsa_trip: values.shls_trip_no,
@@ -77,7 +75,7 @@ const TransactionList = () => {
   useEffect(() => {
     if (transactionsDateRange !== false) {
       const ranges = getDateRangeOffset(String(transactionsDateRange), '7');
-      
+
       if (ranges.beforeToday !== 7) {
         setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
       }
@@ -92,8 +90,7 @@ const TransactionList = () => {
     if (payload?.records) {
       setData(payload?.records);
       payload.records = null;
-    } 
-    
+    }
   }, [payload, setData]);
 
   const modifiers = (
@@ -106,19 +103,20 @@ const TransactionList = () => {
 
       <Download data={data} isLoading={isLoading} columns={fields} />
 
-      <Button 
+      <Button
         type="primary"
-        icon={<FileSearchOutlined />} 
-        onClick={() => WindowSearch(setSearch, t('operations.search'), {
-          shls_trip_no: true,
-          load_id: true,
-          trsa_id: true,
-          tnkr_code: true,
-        })}
+        icon={<FileSearchOutlined />}
+        onClick={() =>
+          WindowSearch(setSearch, t('operations.search'), {
+            shls_trip_no: true,
+            load_id: true,
+            trsa_id: true,
+            tnkr_code: true,
+          })
+        }
       >
         {t('operations.search')}
       </Button>
-
     </>
   );
 

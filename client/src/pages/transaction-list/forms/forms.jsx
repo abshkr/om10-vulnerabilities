@@ -5,9 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Tabs, Modal, notification, Button } from 'antd';
 import _ from 'lodash';
 import useSWR, { mutate } from 'swr';
-import axios from 'axios';
 
-import { TRANSACTION_LIST } from '../../../api';
+import api, { TRANSACTION_LIST } from '../../../api';
 import transferColumns from './transfer-columns';
 import { DataTable } from '../../../components';
 import detailColumns from './detail.columns';
@@ -82,7 +81,7 @@ const Forms = ({ value, isFromNomination, start, end, access }) => {
       centered: true,
       onOk: async () => {
         setLoading(true);
-        await axios
+        await api
           .post(TRANSACTION_LIST.CANCEL_TRANSACTION, {
             trsa_id: value.trsa_id,
           })

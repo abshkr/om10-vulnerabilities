@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
-import axios from 'axios';
 
 const ObsMass = ({ form, value, onChange, pageState }) => {
   const { t } = useTranslation();
@@ -14,7 +13,7 @@ const ObsMass = ({ form, value, onChange, pageState }) => {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.nomtranMass')}`);
       }
     }
-    
+
     if (input && input.length > 100) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -27,25 +26,25 @@ const ObsMass = ({ form, value, onChange, pageState }) => {
       setFieldsValue({
         mlitm_qty_kg: value.mlitm_qty_kg,
       });
-      
-      onChange({qty: value.mlitm_qty_kg, type: 'KG'});
+
+      onChange({ qty: value.mlitm_qty_kg, type: 'KG' });
     }
   }, [value, setFieldsValue]);
 
   const handleFieldChange = (value) => {
-    onChange({qty: value, type: 'KG'});
-  }
+    onChange({ qty: value, type: 'KG' });
+  };
 
   return (
-    <Form.Item 
-      name="mlitm_qty_kg" 
-      label={t('fields.nomtranMass')+'('+t('fields.nomtranMassUnit')+')'}
+    <Form.Item
+      name="mlitm_qty_kg"
+      label={t('fields.nomtranMass') + '(' + t('fields.nomtranMassUnit') + ')'}
       rules={[{ required: false, validator: validate }]}
     >
-      <InputNumber 
-        style={{ width: '100%' }} 
+      <InputNumber
+        style={{ width: '100%' }}
         onChange={handleFieldChange}
-        disabled={pageState==='transfer'? false : false}
+        disabled={pageState === 'transfer' ? false : false}
       />
     </Form.Item>
   );

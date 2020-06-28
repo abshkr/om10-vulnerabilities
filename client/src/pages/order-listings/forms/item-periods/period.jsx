@@ -28,7 +28,7 @@ import {
 } from '@ant-design/icons';
 
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
+
 import _ from 'lodash';
 import useSWR from 'swr';
 import moment from 'moment';
@@ -36,7 +36,7 @@ import moment from 'moment';
 import { FormModal } from '../../../../components/';
 import { getDateTimeFormat } from '../../../../utils';
 import { SETTINGS } from '../../../../constants';
-import { ORDER_LISTINGS } from '../../../../api';
+import api, { ORDER_LISTINGS } from '../../../../api';
 
 const { TabPane } = Tabs;
 
@@ -69,7 +69,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data, form }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? ORDER_LISTINGS.PERIOD_CREATE : ORDER_LISTINGS.PERIOD_UPDATE, record)
           .then((response) => {
             Modal.destroyAll();
@@ -102,7 +102,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data, form }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(ORDER_LISTINGS.PERIOD_DELETE, value)
           .then(() => {
             Modal.destroyAll();

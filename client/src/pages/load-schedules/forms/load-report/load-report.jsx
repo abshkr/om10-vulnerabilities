@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
-import axios from 'axios';
 
-import { LOAD_SCHEDULES } from '../../../../api';
+import api, { LOAD_SCHEDULES } from '../../../../api';
 
 const LoadReport = ({ value }) => {
   const [data, setData] = useState(null);
@@ -13,7 +12,7 @@ const LoadReport = ({ value }) => {
     setData(null);
 
     if (value) {
-      axios
+      api
         .get(LOAD_SCHEDULES.VIEW_LOAD_REPORT, {
           params: {
             supplier: value.supplier_code,

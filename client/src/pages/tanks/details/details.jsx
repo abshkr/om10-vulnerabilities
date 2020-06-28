@@ -4,11 +4,10 @@ import { DeleteOutlined, QuestionCircleOutlined, EditOutlined } from '@ant-desig
 import { Form, Modal, Button, Card, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
 import General from '../forms/fields/general';
-import { TANKS } from '../../../api';
+import api, { TANKS } from '../../../api';
 
 const Details = ({ selected, access, isLoading, config }) => {
   const { t } = useTranslation();
@@ -26,7 +25,7 @@ const Details = ({ selected, access, isLoading, config }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TANKS.UPDATE, values)
           .then(() => {
             mutate(TANKS.READ);
@@ -57,7 +56,7 @@ const Details = ({ selected, access, isLoading, config }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TANKS.DELETE, selected)
           .then(() => {
             mutate(TANKS.READ);

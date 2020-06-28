@@ -11,10 +11,9 @@ import {
 import { Form, Button, Tabs, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 
 import { Usage, Type, QuantityType, Code, Name, Flow } from './fields';
-import { LOAD_METERS } from '../../../api';
+import api, { LOAD_METERS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -33,7 +32,7 @@ const FormModal = ({ value }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? LOAD_METERS.CREATE : LOAD_METERS.UPDATE, values)
           .then((response) => {
             Modal.destroyAll();
@@ -63,7 +62,7 @@ const FormModal = ({ value }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(LOAD_METERS.DELETE, value)
           .then((response) => {
             mutate(LOAD_METERS.READ);

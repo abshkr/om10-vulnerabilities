@@ -10,12 +10,22 @@ import {
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Checkbox, Col, Row, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
+
 import _ from 'lodash';
-import { DRAWER_PRODUCTS } from '../../../api';
+import api, { DRAWER_PRODUCTS } from '../../../api';
 import { useConfig } from '../../../hooks';
 
-import { DrawerCompany, LoadTolerance, ProductCode, ProductName, Group, Hazchem, Generic, DangerousGoods } from './fields';
+import {
+  DrawerCompany,
+  LoadTolerance,
+  ProductCode,
+  ProductName,
+  Group,
+  Hazchem,
+  Generic,
+  DangerousGoods,
+} from './fields';
+
 import { DataTable, FormModal } from '../../../components';
 import columns from './columns';
 import BaseProductForm from './base-form';
@@ -29,10 +39,10 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
   const config = useConfig();
 
   const { TextArea } = Input;
-  
+
   const [bases, setBases] = useState([]);
-  const [prod_is_compliant, setCompliant] = useState(value?.prod_ldtol_flag)
-  const [prod_is_locked, setLocked] = useState(value?.prod_is_locked)
+  const [prod_is_compliant, setCompliant] = useState(value?.prod_ldtol_flag);
+  const [prod_is_locked, setLocked] = useState(value?.prod_is_locked);
   const [selected, setSelected] = useState(null);
 
   const [baseLoading, setBaseLoading] = useState(true);
@@ -48,72 +58,80 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
 
     let payload = null;
     if (!values.to_create) {
-      payload = [..._.filter(bases, (item) => {
-        return item.pitem_base_code !== selected.pitem_base_code
-      }), {
-        pitem_base_code: values.pitem_base_code,
-        pitem_bltol_ntol: values.pitem_bltol_ntol,
-        pitem_bltol_flag: values.pitem_bltol_flag,
-        pitem_bltol_ptol: values.pitem_bltol_ptol,
-        pitem_ratio_value: values.pitem_ratio_value,
-        pitem_base_name: values.pitem_base_name,
-        pitem_bclass_name: values.pitem_bclass_name,
-      }]
-      setSelected(null)
+      payload = [
+        ..._.filter(bases, (item) => {
+          return item.pitem_base_code !== selected.pitem_base_code;
+        }),
+        {
+          pitem_base_code: values.pitem_base_code,
+          pitem_bltol_ntol: values.pitem_bltol_ntol,
+          pitem_bltol_flag: values.pitem_bltol_flag,
+          pitem_bltol_ptol: values.pitem_bltol_ptol,
+          pitem_ratio_value: values.pitem_ratio_value,
+          pitem_base_name: values.pitem_base_name,
+          pitem_bclass_name: values.pitem_bclass_name,
+        },
+      ];
+      setSelected(null);
     } else {
-      if (_.find(bases, (item) => {
-        return item.pitem_base_code === values.pitem_base_code
-      })) {
+      if (
+        _.find(bases, (item) => {
+          return item.pitem_base_code === values.pitem_base_code;
+        })
+      ) {
         notification.error({
           message: t('messages.validationFailed'),
           description: t('descriptions.alreadyExists'),
         });
         return;
       }
-      
-      payload = [...bases, {
-        pitem_base_code: values.pitem_base_code,
-        pitem_bltol_ntol: values.pitem_bltol_ntol,
-        pitem_bltol_flag: values.pitem_bltol_flag,
-        pitem_bltol_ptol: values.pitem_bltol_ptol,
-        pitem_ratio_value: values.pitem_ratio_value,
-        pitem_base_name: values.pitem_base_name,
-        pitem_bclass_name: values.pitem_bclass_name,
-      }]
+
+      payload = [
+        ...bases,
+        {
+          pitem_base_code: values.pitem_base_code,
+          pitem_bltol_ntol: values.pitem_bltol_ntol,
+          pitem_bltol_flag: values.pitem_bltol_flag,
+          pitem_bltol_ptol: values.pitem_bltol_ptol,
+          pitem_ratio_value: values.pitem_ratio_value,
+          pitem_base_name: values.pitem_base_name,
+          pitem_bclass_name: values.pitem_bclass_name,
+        },
+      ];
     }
-      
+
     form.setFieldsValue({
       bases: payload,
     });
 
     setBases(payload);
-  }
+  };
 
   const deleteBase = () => {
     let payload = _.filter(bases, (item) => {
-      return item.pitem_base_code !== selected.pitem_base_code
+      return item.pitem_base_code !== selected.pitem_base_code;
     });
     form.setFieldsValue({
       bases: payload,
     });
 
     setBases(payload);
-    setSelected(null)
-  }
+    setSelected(null);
+  };
 
   const handleBase = (v) => {
     FormModal({
-      width: "50vh",
+      width: '50vh',
       value: v,
-      form: <BaseProductForm value={v} handleBaseCallBack={handleBaseCallBack}/>,
+      form: <BaseProductForm value={v} handleBaseCallBack={handleBaseCallBack} />,
       id: v?.pitem_base_code,
       name: v?.pitem_base_name,
-      t
+      t,
     });
-  }
+  };
 
   const getBases = useCallback(() => {
-    axios
+    api
       .get(`${DRAWER_PRODUCTS.BASES}?prod_code=${value?.prod_code}&prod_cmpycode=${value?.prod_cmpycode}`)
       .then((response) => {
         const payload = response.data?.records || [];
@@ -125,12 +143,12 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
         setBaseLoading(false);
       });
   });
-  
+
   const onComplete = (prod_code) => {
-    handleFormState(false, null); 
+    handleFormState(false, null);
     setSelected(null);
     if (prod_code) {
-      setFilterValue("" + prod_code);
+      setFilterValue('' + prod_code);
     }
     mutate(DRAWER_PRODUCTS.READ);
   };
@@ -141,8 +159,8 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
     if (values.bases === undefined || values.bases.length <= 0) {
       Modal.info({
         title: t('prompts.notEnoughBase'),
-        okText: t('operations.close')
-      })
+        okText: t('operations.close'),
+      });
       return;
     }
 
@@ -154,7 +172,7 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? DRAWER_PRODUCTS.CREATE : DRAWER_PRODUCTS.UPDATE, values)
           .then(() => {
             onComplete(values.prod_code);
@@ -185,7 +203,7 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(DRAWER_PRODUCTS.DELETE, value)
           .then(() => {
             onComplete();
@@ -213,19 +231,18 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
       setBases([]);
       setCompliant(false);
       setLocked(false);
-    } 
+    }
 
     if (value) {
       setFieldsValue({
         prod_desc: value.prod_desc,
         prod_is_compliant: value.prod_is_compliant,
-        prod_is_locked: value.prod_is_locked
+        prod_is_locked: value.prod_is_locked,
       });
-      setCompliant(value.prod_is_compliant)
-      setLocked(value.prod_is_locked)
+      setCompliant(value.prod_is_compliant);
+      setLocked(value.prod_is_locked);
       getBases();
     }
-    
   }, [resetFields, value, visible]);
 
   const layout = {
@@ -292,14 +309,14 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
             <Generic form={form} value={value} />
             <LoadTolerance form={form} value={value} />
             <Form.Item label={t('fields.prodCompliant')}>
-              <Row >
+              <Row>
                 <Col span={4}>
-                  <Form.Item noStyle name="prod_is_compliant" >
-                    <Checkbox 
+                  <Form.Item noStyle name="prod_is_compliant">
+                    <Checkbox
                       valuePropName="checked"
-                      checked={prod_is_compliant} 
+                      checked={prod_is_compliant}
                       onChange={(v) => {
-                        setCompliant(v.target.checked)
+                        setCompliant(v.target.checked);
                         setFieldsValue({
                           prod_is_compliant: v.target.checked,
                         });
@@ -308,12 +325,12 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
                   </Form.Item>
                 </Col>
                 <Col span={20}>
-                  <Form.Item name="prod_is_locked" label={t('fields.locked')} >
-                    <Checkbox 
+                  <Form.Item name="prod_is_locked" label={t('fields.locked')}>
+                    <Checkbox
                       valuePropName="checked"
                       checked={prod_is_locked}
                       onChange={(v) => {
-                        setLocked(v.target.checked)
+                        setLocked(v.target.checked);
                         setFieldsValue({
                           prod_is_locked: v.target.checked,
                         });
@@ -322,13 +339,13 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
                   </Form.Item>
                 </Col>
               </Row>
-            </Form.Item >
+            </Form.Item>
             <DangerousGoods form={form} value={value} />
-            <Form.Item name="prod_desc" label={t('fields.description')} >
+            <Form.Item name="prod_desc" label={t('fields.description')}>
               <TextArea rows={2} />
             </Form.Item>
             <Divider orientation="left">{t('fields.baseProducts')}</Divider>
-            <Form.Item name="bases" noStyle >
+            <Form.Item name="bases" noStyle>
               <DataTable
                 data={bases}
                 height="78vh"
@@ -337,12 +354,12 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
                 handleSelect={(value) => setSelected(value[0])}
               />
             </Form.Item>
-            
+
             <Button
               type="primary"
               icon={<PlusOutlined />}
               loading={baseLoading && !IS_CREATING}
-              onClick={()=>handleBase(null)}
+              onClick={() => handleBase(null)}
               style={{ float: 'right', marginRight: 5, marginTop: 10 }}
             >
               {t('operations.addBase')}
@@ -351,7 +368,7 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
             <Button
               type="primary"
               icon={<EditOutlined />}
-              onClick={()=>handleBase(selected)}
+              onClick={() => handleBase(selected)}
               style={{ float: 'right', marginRight: 5, marginTop: 10 }}
               disabled={!selected}
             >
@@ -367,13 +384,12 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
             >
               {t('operations.deleteBase')}
             </Button>
-
           </TabPane>
-          {config.safefillCheckByHighTemp && 
+          {config.safefillCheckByHighTemp && (
             <TabPane tab={t('tabColumns.companyHotLitres')} key="2">
               <HotLitresForm value={value} form={form}></HotLitresForm>
             </TabPane>
-          }
+          )}
         </Tabs>
       </Form>
     </Drawer>

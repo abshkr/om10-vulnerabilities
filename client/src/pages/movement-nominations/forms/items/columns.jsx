@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
+
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -12,7 +12,7 @@ const groupTo = [2, 0];
 //const to = ['Transfer', 'Receipt'];
 
 const useColumns = (value, selected) => {
-  console.log("i am here", value, selected);
+  console.log('i am here', value, selected);
 
   //const [type, setType] = useState('Receipt');
   const [type, setType] = useState(0);
@@ -36,21 +36,21 @@ const useColumns = (value, selected) => {
 
   useEffect(() => {
     //if (!!products) {
-      console.log("useEffect, setProducts...", products);
-      setProductsFrom(products);
-      setProductsTo(products);
+    console.log('useEffect, setProducts...', products);
+    setProductsFrom(products);
+    setProductsTo(products);
     //}
   }, [products, setProductsFrom, setProductsTo]);
 
   useEffect(() => {
     //if (!!tanks) {
-      console.log("useEffect, setTanks...", tanks);
-      setTanksFrom(tanks);
-      setTanksTo(tanks);
+    console.log('useEffect, setTanks...', tanks);
+    setTanksFrom(tanks);
+    setTanksTo(tanks);
     //}
   }, [tanks, setTanksFrom, setTanksTo]);
 
-/*
+  /*
   const getProductsFromBySupplier = useCallback((supplier) => {
     if (supplier) {
       axios.get(`${MOVEMENT_NOMIATIONS.PRODUCTS}?prod_cmpy=${supplier}`).then((response) => {
@@ -124,12 +124,11 @@ const useColumns = (value, selected) => {
   useEffect(() => {
     const value = selected[0]?.mvitm_type;
 
-    console.log("before type", type, value);
+    console.log('before type', type, value);
     if (value) {
       setType(_.toNumber(value));
     }
-    console.log("after type", type);
-    
+    console.log('after type', type);
   }, [selected, setType]);
 
   return [
@@ -185,12 +184,20 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable || !value,
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
-        values: _.uniq(_.map(types?.records, (item)=>{return {code: _.toNumber(item.movitem_type_id), name: item.movitem_type_name};}))
+        values: _.uniq(
+          _.map(types?.records, (item) => {
+            return { code: _.toNumber(item.movitem_type_id), name: item.movitem_type_name };
+          })
+        ),
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(types?.records, (item)=>{return {code: _.toNumber(item.movitem_type_id), name: item.movitem_type_name};}))
-      }
+        values: _.uniq(
+          _.map(types?.records, (item) => {
+            return { code: _.toNumber(item.movitem_type_id), name: item.movitem_type_name };
+          })
+        ),
+      },
     },
     {
       headerName: t('fields.itemKey'),
@@ -231,12 +238,20 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable || !value,
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
-        values: _.uniq(_.map(units?.records, (item)=>{return {code: _.toNumber(item.unit_id), name: item.description};}))
+        values: _.uniq(
+          _.map(units?.records, (item) => {
+            return { code: _.toNumber(item.unit_id), name: item.description };
+          })
+        ),
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(units?.records, (item)=>{return {code: _.toNumber(item.unit_id), name: item.description};}))
-      }
+        values: _.uniq(
+          _.map(units?.records, (item) => {
+            return { code: _.toNumber(item.unit_id), name: item.description };
+          })
+        ),
+      },
     },
     {
       headerName: t('fields.fromPlant'),
@@ -261,12 +276,20 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable && groupFrom.includes(selected[0]?.mvitm_type),
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
-        values: _.uniq(_.map(suppliers?.records, (item)=>{return {code: item.cmpy_code, name: item.cmpy_name};}))
+        values: _.uniq(
+          _.map(suppliers?.records, (item) => {
+            return { code: item.cmpy_code, name: item.cmpy_name };
+          })
+        ),
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(suppliers?.records, (item)=>{return {code: item.cmpy_code, name: item.cmpy_name};}))
-      }
+        values: _.uniq(
+          _.map(suppliers?.records, (item) => {
+            return { code: item.cmpy_code, name: item.cmpy_name };
+          })
+        ),
+      },
     },
     {
       headerName: t('fields.fromProduct'),
@@ -278,14 +301,26 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable && groupFrom.includes(selected[0]?.mvitm_type),
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
-        values: _.uniq(_.map(productsFrom?.records?.filter((item)=>(item.prod_cmpy===selected[0]?.mvitm_prodcmpy_from)), 
-                (item)=>{return {code: item.prod_code, name: item.prod_name};}))
+        values: _.uniq(
+          _.map(
+            productsFrom?.records?.filter((item) => item.prod_cmpy === selected[0]?.mvitm_prodcmpy_from),
+            (item) => {
+              return { code: item.prod_code, name: item.prod_name };
+            }
+          )
+        ),
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(productsFrom?.records?.filter((item)=>(item.prod_cmpy===selected[0]?.mvitm_prodcmpy_from)), 
-                (item)=>{return {code: item.prod_code, name: item.prod_name};}))
-      }
+        values: _.uniq(
+          _.map(
+            productsFrom?.records?.filter((item) => item.prod_cmpy === selected[0]?.mvitm_prodcmpy_from),
+            (item) => {
+              return { code: item.prod_code, name: item.prod_name };
+            }
+          )
+        ),
+      },
     },
     {
       headerName: t('fields.fromTank'),
@@ -297,14 +332,34 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable && groupFrom.includes(selected[0]?.mvitm_type),
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
-        values: _.uniq(_.map(tanksFrom?.records?.filter((item)=>(item.prod_cmpy===selected[0]?.mvitm_prodcmpy_from && item.prod_code===selected[0]?.mvitm_prodcode_from)), 
-                (item)=>{return {code: item.tank_code, name: item.tank_name};}))
+        values: _.uniq(
+          _.map(
+            tanksFrom?.records?.filter(
+              (item) =>
+                item.prod_cmpy === selected[0]?.mvitm_prodcmpy_from &&
+                item.prod_code === selected[0]?.mvitm_prodcode_from
+            ),
+            (item) => {
+              return { code: item.tank_code, name: item.tank_name };
+            }
+          )
+        ),
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(tanksFrom?.records?.filter((item)=>(item.prod_cmpy===selected[0]?.mvitm_prodcmpy_from && item.prod_code===selected[0]?.mvitm_prodcode_from)), 
-                (item)=>{return {code: item.tank_code, name: item.tank_name};}))
-      }
+        values: _.uniq(
+          _.map(
+            tanksFrom?.records?.filter(
+              (item) =>
+                item.prod_cmpy === selected[0]?.mvitm_prodcmpy_from &&
+                item.prod_code === selected[0]?.mvitm_prodcode_from
+            ),
+            (item) => {
+              return { code: item.tank_code, name: item.tank_name };
+            }
+          )
+        ),
+      },
     },
     {
       headerName: t('fields.fromStoreLocationCompany'),
@@ -353,12 +408,20 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable && groupTo.includes(selected[0]?.mvitm_type),
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
-        values: _.uniq(_.map(suppliers?.records, (item)=>{return {code: item.cmpy_code, name: item.cmpy_name};}))
+        values: _.uniq(
+          _.map(suppliers?.records, (item) => {
+            return { code: item.cmpy_code, name: item.cmpy_name };
+          })
+        ),
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(suppliers?.records, (item)=>{return {code: item.cmpy_code, name: item.cmpy_name};}))
-      }
+        values: _.uniq(
+          _.map(suppliers?.records, (item) => {
+            return { code: item.cmpy_code, name: item.cmpy_name };
+          })
+        ),
+      },
     },
     {
       headerName: t('fields.toProduct'),
@@ -370,14 +433,26 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable && groupTo.includes(selected[0]?.mvitm_type),
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
-        values: _.uniq(_.map(productsTo?.records?.filter((item)=>(item.prod_cmpy===selected[0]?.mvitm_prodcmpy_to)), 
-                (item)=>{return {code: item.prod_code, name: item.prod_name};}))
+        values: _.uniq(
+          _.map(
+            productsTo?.records?.filter((item) => item.prod_cmpy === selected[0]?.mvitm_prodcmpy_to),
+            (item) => {
+              return { code: item.prod_code, name: item.prod_name };
+            }
+          )
+        ),
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(productsTo?.records?.filter((item)=>(item.prod_cmpy===selected[0]?.mvitm_prodcmpy_to)), 
-                (item)=>{return {code: item.prod_code, name: item.prod_name};}))
-      }
+        values: _.uniq(
+          _.map(
+            productsTo?.records?.filter((item) => item.prod_cmpy === selected[0]?.mvitm_prodcmpy_to),
+            (item) => {
+              return { code: item.prod_code, name: item.prod_name };
+            }
+          )
+        ),
+      },
     },
     {
       headerName: t('fields.toTank'),
@@ -389,14 +464,34 @@ const useColumns = (value, selected) => {
       editable: selected[0]?.editable && groupTo.includes(selected[0]?.mvitm_type),
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
-        values: _.uniq(_.map(tanksTo?.records?.filter((item)=>(item.prod_cmpy===selected[0]?.mvitm_prodcmpy_to && item.prod_code===selected[0]?.mvitm_prodcode_to)), 
-                (item)=>{return {code: item.tank_code, name: item.tank_name};}))
+        values: _.uniq(
+          _.map(
+            tanksTo?.records?.filter(
+              (item) =>
+                item.prod_cmpy === selected[0]?.mvitm_prodcmpy_to &&
+                item.prod_code === selected[0]?.mvitm_prodcode_to
+            ),
+            (item) => {
+              return { code: item.tank_code, name: item.tank_name };
+            }
+          )
+        ),
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(tanksTo?.records?.filter((item)=>(item.prod_cmpy===selected[0]?.mvitm_prodcmpy_to && item.prod_code===selected[0]?.mvitm_prodcode_to)), 
-                (item)=>{return {code: item.tank_code, name: item.tank_name};}))
-      }
+        values: _.uniq(
+          _.map(
+            tanksTo?.records?.filter(
+              (item) =>
+                item.prod_cmpy === selected[0]?.mvitm_prodcmpy_to &&
+                item.prod_code === selected[0]?.mvitm_prodcode_to
+            ),
+            (item) => {
+              return { code: item.tank_code, name: item.tank_name };
+            }
+          )
+        ),
+      },
     },
     {
       headerName: t('fields.toStoreLocationCompany'),
@@ -446,7 +541,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: false,//selected[0]?.editable || !value,
+      editable: false, //selected[0]?.editable || !value,
       cellEditor: 'NumericEditor',
     },
     {

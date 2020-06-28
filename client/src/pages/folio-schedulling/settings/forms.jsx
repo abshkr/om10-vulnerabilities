@@ -21,11 +21,11 @@ import {
 } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
-import axios from 'axios';
+
 import _ from 'lodash';
 import moment from 'moment';
 
-import { FOLIO_SCHEDULING } from '../../../api';
+import api, { FOLIO_SCHEDULING } from '../../../api';
 
 const Settings = ({ value, access }) => {
   const { data: payload } = useSWR(FOLIO_SCHEDULING.SETTINGS);
@@ -52,7 +52,7 @@ const Settings = ({ value, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(FOLIO_SCHEDULING.UPDATE_SETTINGS, newSettings)
           .then(() => {
             onComplete();
@@ -88,7 +88,7 @@ const Settings = ({ value, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(FOLIO_SCHEDULING.RUN_N_OVERRIDE, values)
           .then(() => {
             onComplete();
@@ -119,7 +119,7 @@ const Settings = ({ value, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(FOLIO_SCHEDULING.FREEZE_CLOSEOUT)
           .then(() => {
             onComplete();
@@ -150,7 +150,7 @@ const Settings = ({ value, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(FOLIO_SCHEDULING.FREEZE_CLOSEOUT)
           .then(() => {
             onComplete();

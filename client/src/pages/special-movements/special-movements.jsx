@@ -7,13 +7,12 @@ import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, Calendar, WindowSearch } from '../../components';
-import { SPECIAL_MOVEMENTS } from '../../api';
+import api, { SPECIAL_MOVEMENTS } from '../../api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
 import auth from '../../auth';
 import { useAuth } from 'hooks';
 import Forms from './forms';
-import axios from 'axios';
 
 const SpecialMovements = () => {
   const { t } = useTranslation();
@@ -43,12 +42,11 @@ const SpecialMovements = () => {
   };
 
   const setSearch = (values) => {
-    if (!values.mlitm_id && 
-      !values.mlitm_status) {
+    if (!values.mlitm_id && !values.mlitm_status) {
       return;
     }
 
-    axios
+    api
       .get(SPECIAL_MOVEMENTS.SEARCH, {
         params: {
           mlitm_id: values.mlitm_id,
@@ -65,26 +63,27 @@ const SpecialMovements = () => {
     if (payload?.records) {
       setData(payload?.records);
       payload.records = null;
-    } 
-    
+    }
   }, [payload]);
 
   const modifiers = (
     <>
       <Calendar handleChange={setRange} start={start} end={end} />
-      
+
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
 
-      <Button 
+      <Button
         type="primary"
-        icon={<FileSearchOutlined />} 
-        onClick={() => WindowSearch(setSearch, t('operations.search'), {
-          mlitm_id: true,
-          mlitm_status: true,
-        })}
+        icon={<FileSearchOutlined />}
+        onClick={() =>
+          WindowSearch(setSearch, t('operations.search'), {
+            mlitm_id: true,
+            mlitm_status: true,
+          })
+        }
       >
         {t('operations.search')}
       </Button>

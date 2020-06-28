@@ -1,32 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import {
-  EditOutlined,
-  PlusOutlined,
-  DeleteOutlined,
-  QuestionCircleOutlined,
-  CloseOutlined,
-  CalculatorOutlined,
-  ReloadOutlined,
-  SaveOutlined,
-} from '@ant-design/icons';
+import { QuestionCircleOutlined, CloseOutlined, CalculatorOutlined, SaveOutlined } from '@ant-design/icons';
 
-import {
-  Form,
-  Button,
-  Tabs,
-  Modal,
-  notification,
-  message,
-  Drawer,
-  Divider,
-  Row,
-  Col,
-  Space,
-  Card,
-} from 'antd';
+import { Form, Button, Tabs, Modal, notification, message, Divider, Row, Col, Card } from 'antd';
+
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
+
 import _ from 'lodash';
 import useSWR from 'swr';
 import jwtDecode from 'jwt-decode';
@@ -71,7 +50,7 @@ import {
 
 import { DataTable } from '../../../../../../components';
 import { SETTINGS } from '../../../../../../constants';
-import { NOMINATION_TRANSACTIONS } from '../../../../../../api';
+import api, { NOMINATION_TRANSACTIONS } from '../../../../../../api';
 import BaseDetails from './base-details/base-details';
 import MeterDetails from './meter-details/meter-details';
 
@@ -192,7 +171,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
           const values = await form.validateFields();
           console.log('await values', values);
           console.log('await value', value);
-          await axios
+          await api
             .post(NOMINATION_TRANSACTIONS.SUBMIT, preparePayload(values))
             .then((response) => {
               //Modal.destroyAll();
@@ -231,7 +210,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
       onOk: async () => {
         try {
           const values = await form.validateFields();
-          await axios
+          await api
             .post(NOMINATION_TRANSACTIONS.CALCULATE, {
               frm_baseCd: pageState === 'receipt' ? value?.mvitm_prodcode_to : value?.mvitm_prodcode_from,
               frm_which_type: calcSource?.type, //'LT',

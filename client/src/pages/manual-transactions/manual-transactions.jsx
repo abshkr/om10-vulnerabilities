@@ -7,15 +7,14 @@ import {
   SaveOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import { Button, Divider, Form, Radio, Modal, notification, message } from 'antd';
+import { Button, Form, Radio, Modal, notification, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
-import axios from 'axios';
+
 import _ from 'lodash';
 import jwtDecode from 'jwt-decode';
 
 import { Page } from '../../components';
-import auth from '../../auth';
 
 import DataManager from './data-manager';
 import DataColumns from './data-manager/columns';

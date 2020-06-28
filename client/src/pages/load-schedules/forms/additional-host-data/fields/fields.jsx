@@ -26,7 +26,6 @@ import {
 } from '@ant-design/icons';
 
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
 import _ from 'lodash';
 import useSWR from 'swr';
 import moment from 'moment';
@@ -34,7 +33,7 @@ import moment from 'moment';
 import { FormModal } from '../../../../components/';
 import { getDateTimeFormat } from '../../../../utils';
 import { SETTINGS } from '../../../../constants';
-import { ALLOCATIONS } from '../../../../api';
+import api, { ALLOCATIONS } from '../../../../api';
 
 const { TabPane } = Tabs;
 
@@ -58,7 +57,7 @@ const Fields = ({ value, units, revalidate, data }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? ALLOCATIONS.PERIOD_CREATE : ALLOCATIONS.PERIOD_UPDATE, record)
           .then((response) => {
             Modal.destroyAll();
@@ -91,7 +90,7 @@ const Fields = ({ value, units, revalidate, data }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(ALLOCATIONS.PERIOD_DELETE, value)
           .then(() => {
             Modal.destroyAll();

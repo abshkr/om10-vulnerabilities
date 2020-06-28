@@ -1,20 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 
-import {
-  EditOutlined,
-  ReconciliationOutlined,
-  QuestionCircleOutlined,
-  CloseOutlined,
-} from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Card, Row, Input } from 'antd';
+import { EditOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
+
 import _ from 'lodash';
-import { DRAWER_PRODUCTS } from 'api';
-import useSWR from 'swr';
+
+import api, { DRAWER_PRODUCTS } from 'api';
+
 import { DrawerCompany, ProductCode, ProductName } from './fields';
-import ImageDisplay from './image-display'
+import ImageDisplay from './image-display';
 // import './style.css';
 
 const TabPane = Tabs.TabPane;
@@ -24,12 +20,12 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
   const [form] = Form.useForm();
 
   const { resetFields, setFieldsValue } = form;
-  
+
   const onComplete = (prod_code) => {
-    handleFormState(false, null); 
+    handleFormState(false, null);
     // setSelected(null);
     if (prod_code) {
-      setFilterValue("" + prod_code);
+      setFilterValue('' + prod_code);
     }
     mutate(DRAWER_PRODUCTS.READ);
   };
@@ -45,7 +41,7 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(DRAWER_PRODUCTS.ASSETS_UPDATE, values)
           .then(() => {
             onComplete(values.prod_code);
@@ -70,16 +66,15 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
-    } 
+    }
 
     if (value) {
       setFieldsValue({
         prod_desc: value.prod_desc,
         prod_is_compliant: value.prod_is_compliant,
-        prod_is_locked: value.prod_is_locked
+        prod_is_locked: value.prod_is_locked,
       });
     }
-    
   }, [resetFields, value, visible]);
 
   const layout = {
@@ -95,11 +90,11 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
     setFieldsValue({
       prod_backcolor: v.target.value,
     });
-  }
+  };
 
   const backcolorPostfix = (
-    <Form.Item name="backcolorpicker" noStyle >
-      <input type="color" onChange={backcolorChange} style={{width:'3rem'}}/>
+    <Form.Item name="backcolorpicker" noStyle>
+      <input type="color" onChange={backcolorChange} style={{ width: '3rem' }} />
     </Form.Item>
   );
 
@@ -107,19 +102,19 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
     setFieldsValue({
       prod_textcolor: v.target.value,
     });
-  }
+  };
 
   const textcolorPostfix = (
-    <Form.Item name="textcolorpicker" noStyle >
-      <input type="color" onChange={textcolorChange} style={{width:'3rem'}}/>
+    <Form.Item name="textcolorpicker" noStyle>
+      <input type="color" onChange={textcolorChange} style={{ width: '3rem' }} />
     </Form.Item>
   );
 
-  const onImageClick = (v) =>  {
+  const onImageClick = (v) => {
     setFieldsValue({
-      prod_image: v.target.getAttribute("value"),
+      prod_image: v.target.getAttribute('value'),
     });
-  }
+  };
 
   useEffect(() => {
     if (value) {
@@ -163,8 +158,6 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
           >
             {t('operations.update')}
           </Button>
-
-          
         </>
       }
     >
@@ -175,17 +168,17 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
             <ProductCode form={form} value={value} />
             <ProductName form={form} value={value} />
 
-            <Form.Item name="prod_backcolor" label={t('fields.backColor')} >
-              <Input style={{ width: '100%' }}  addonAfter={backcolorPostfix}></Input>
+            <Form.Item name="prod_backcolor" label={t('fields.backColor')}>
+              <Input style={{ width: '100%' }} addonAfter={backcolorPostfix}></Input>
             </Form.Item>
 
-            <Form.Item name="prod_textcolor" label={t('fields.textColor')} >
+            <Form.Item name="prod_textcolor" label={t('fields.textColor')}>
               <Input style={{ width: '100%' }} addonAfter={textcolorPostfix}></Input>
             </Form.Item>
 
-            <Divider orientation="left">{t("fields.prodImage")}</Divider>
+            <Divider orientation="left">{t('fields.prodImage')}</Divider>
 
-            <Form.Item name="prod_image" label={t('fields.prodImage')} >
+            <Form.Item name="prod_image" label={t('fields.prodImage')}>
               <Input disabled></Input>
             </Form.Item>
 
