@@ -5,10 +5,9 @@ import moment from 'moment';
 import { Button, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
-import axios from 'axios';
 
 import { Page, DataTable, Download, Calendar, WindowSearch } from '../../components';
-import { ORDER_LISTINGS } from '../../api';
+import api, { ORDER_LISTINGS } from '../../api';
 import { SETTINGS } from '../../constants';
 import { useAuth } from '../../hooks';
 import columns from './columns';
@@ -128,21 +127,21 @@ const OrderListings = ({popup, params}) => {
       revalidate();
       return;
     }
-    axios
-      .get(ORDER_LISTINGS.READ, {
-        params: {
-          order_cust_no: values?.order_cust_no,
-          order_supp_code: !supplier ? values?.order_supp_code : supplier,
-          order_cust_acnt: !customer ? values?.order_cust_acnt : customer,
-          order_stat_id: values?.order_stat_id,
-          order_ref_code: values?.order_ref_code,
-          //start_date: start,
-          //end_date: end,
-        },
-      })
-      .then((res) => {
-        setData(res.data.records);
-      });
+    api
+    .get(ORDER_LISTINGS.READ, {
+      params: {
+        order_cust_no: values?.order_cust_no,
+        order_supp_code: !supplier ? values?.order_supp_code : supplier,
+        order_cust_acnt: !customer ? values?.order_cust_acnt : customer,
+        order_stat_id: values?.order_stat_id,
+        order_ref_code: values?.order_ref_code,
+        //start_date: start,
+        //end_date: end,
+      },
+    })
+    .then((res) => {
+      setData(res.data.records);
+    });
   };
 
   /* useEffect(() => {

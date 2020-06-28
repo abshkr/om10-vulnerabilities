@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ORDER_LISTINGS } from '../../../../api';
 import { Form, Select } from 'antd';
 import useSWR from 'swr';
+import jwtDecode from 'jwt-decode';
 
 const Terminal = ({ form, value, pageState }) => {
   const { t } = useTranslation();
@@ -10,6 +11,10 @@ const Terminal = ({ form, value, pageState }) => {
   const { data: options, isValidating } = useSWR(ORDER_LISTINGS.TERMINAL);
 
   const { setFieldsValue } = form;
+
+  const token = sessionStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const site_code = decoded?.site_code
 
   const validate = (rule, input) => {
     if (rule.required) {
@@ -29,7 +34,7 @@ const Terminal = ({ form, value, pageState }) => {
     }
     else {
       setFieldsValue({
-        mv_terminal: options?.records?.[0].term_code,
+        mv_terminal: site_code, // options?.records?.[0].term_code,
       });
     }
   }, [value, options, setFieldsValue]);

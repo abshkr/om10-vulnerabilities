@@ -26,3 +26,5 @@ export const READ_MT_HEAD_DATA = '/api/pages/manual_trans/read_mt_head_data.php'
 export const READ_MT_DATA = '/api/pages/manual_trans/read_mt_data.php';
 export const SAVE_MT_DATA = '/api/pages/manual_trans/save_mt_data.php';
 export const DELETE_MT_DATA = '/api/pages/manual_trans/delete_mt_data.php';
+
+export const GET_TRIP_SEAL = '/api/pages/manual_trans/get_trip_seal.php';

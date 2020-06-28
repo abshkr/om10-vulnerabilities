@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
-import axios from 'axios';
 
-import { ORDER_LISTINGS } from '../../../../api';
+import api, { ORDER_LISTINGS } from '../../../../api';
 
 const OrderCustNo = ({ form, value, supplier, pageState }) => {
   const { t } = useTranslation();
@@ -29,7 +28,7 @@ const OrderCustNo = ({ form, value, supplier, pageState }) => {
         order_cust_no: value.order_cust_no,
       });
     } else if (supplier) {
-      axios
+      api
         .get(ORDER_LISTINGS.NEXT_CUST_ORDER, {
           params: {
             order_supp_code: supplier,

@@ -11,7 +11,6 @@ import {
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
 import _ from 'lodash';
 import useSWR from 'swr';
 import jwtDecode from 'jwt-decode';
@@ -40,7 +39,7 @@ import {
 
 import { DataTable } from '../../../components';
 import { SETTINGS } from '../../../constants';
-import { ORDER_LISTINGS } from '../../../api';
+import api, { ORDER_LISTINGS } from '../../../api';
 import columns from './columns';
 import Period from './item-periods';
 import OrderTrips from './order-trips';
@@ -58,7 +57,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const [tableAPI, setTableAPI] = useState(undefined);
 
   const { data: units } = useSWR(ORDER_LISTINGS.UNIT_TYPES);
-  const { data: siteData } = useSWR(ORDER_LISTINGS.SITE_CODE);
+  // const { data: siteData } = useSWR(ORDER_LISTINGS.SITE_CODE);
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -88,6 +87,8 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
   const user_code = decoded?.per_code;
+  console.log("jwtDecode", decoded);
+  const site_code = decoded?.site_code
 
   const doTabChanges = (tabPaneKey) => {
     if (tabPaneKey === '1') {
@@ -100,9 +101,9 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   };
 
   const onFormClosed = () => {
-    handleFormState(false, null);
     setDrawerWidth('80vw');
     setMainTabOn(true);
+    handleFormState(false, null);
   };
 
   const onComplete = (order) => {
@@ -128,7 +129,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
         : `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${orderNo}`;
     //: `${ORDER_LISTINGS.ORDER_ITEMS}?order_sys_no=${value?.order_sys_no}`;
 
-    axios.get(url).then((response) => {
+    api.get(url).then((response) => {
       const payload = response.data?.records || [];
 
       /* setFieldsValue({
@@ -217,7 +218,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? ORDER_LISTINGS.CREATE : ORDER_LISTINGS.UPDATE, values)
           .then(() => {
             onComplete(values?.order_cust_no);
@@ -248,7 +249,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(ORDER_LISTINGS.DELETE, value)
           .then(() => {
             onComplete(null);
@@ -279,7 +280,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(ORDER_LISTINGS.APPROVE, {
             order_sys_no: value?.order_sys_no,
           })
@@ -313,7 +314,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(ORDER_LISTINGS.UNAPPROVE, {
             order_sys_no: value?.order_sys_no,
           })
@@ -454,8 +455,8 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
         initialValues={{
           order_cust_no: null,
           order_ttyp_id: '0',
-          order_dtrm_code: siteData?.records[0].site_code,
-          order_strm_code: siteData?.records[0].site_code,
+          order_dtrm_code: site_code,
+          order_strm_code: site_code,
           order_stat_id: '0',
         }}
       >

@@ -917,9 +917,9 @@
     "closeoutOperatingDate": "Operating Date",
     "prodCompliant": "Is Compliant",
     "genericName": "Generic Name",
-	"backColor": "Back Color",
-	"textColor": "Text Color",
-	"prodImage": "Product Image",
+    "backColor": "Back Color",
+    "textColor": "Text Color",
+    "prodImage": "Product Image",
     "isBlend": "Is Blended",
     "loadToleranceCheck": "Load Tolerance Check",
     "lowerLimit": "Lower Limit %",
@@ -1211,6 +1211,10 @@
     "update": "Update",
     "yes": "Yes",
     "no": "No",
+    "ok": "Ok",
+    "allocate": "Allocate",
+    "allocation": "Allocate",
+    "addOne": "Add One",
     "addNewExpiry": "Add New Expiry",
     "freezeCloseout": "Run Manual Closeout",
     "closeCloseout": "Close First Frozen Folio",
@@ -1307,9 +1311,9 @@
     "viewTripSeals": "View Schedule Seals",
     "viewOrderSeals": "View Order Seals",
     "setAddressTemplate": "Set As Default Template",	
-	"manageImage": "Manage Images",
-	"uploadImg": "Upload Image",
-	"removeImg": "Remove From Server"
+    "manageImage": "Manage Images",
+    "uploadImg": "Upload Image",
+    "removeImg": "Remove From Server"
   },
 
   "tabColumns": {
@@ -1384,6 +1388,8 @@
     "strapping": "Strapping",
     "adaptiveFlowControl": "Adaptive Flow Control",
     "seals": "Seals",
+    "tripSeals": "schedule Seals",
+    "orderSeals": "order Seals",
     "supplierSettings": "Supplier Company Settings",
     "others": "Others",
     "printerSettings": "Printer Settings",
@@ -1395,7 +1401,7 @@
     "meterDetails": "Meter Details",
     "baseProductDetails": "Base Product Details",
     "loadSchedulesForNomination": "Schdules For Nomination",
-	"drawerProductAssets": "Drawer Product Assets"
+	  "drawerProductAssets": "Drawer Product Assets"
   },
 
   "messages": {
