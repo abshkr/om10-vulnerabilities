@@ -84,8 +84,15 @@
 					"extension" : "dat",
 					"accept_extension" : ["dat", "xml"],
 					"ignore_extension" : ".lck",
+					"inserted_message_id_field" : "SGB_MSG_ID",
 					"fields" : ["site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ],
-					"fe_fields" : ["SGB_SITE_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NO", "SGB_LOAD_NO", "SGB_DATE_TIME:yyyymmddhhmmssfff" ]
+					"fe_fields" : [
+						{ "SHP": [ "SGB_TRM_LOC_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NUM", "SGB_LOAD_NO", "SGB_DATE_TIME_2:yyyymmddhhmmssfff" ] },
+						{ "ORD": [ "SGB_TRM_LOC_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NUM", "SGB_LOAD_NO", "SGB_DATE_TIME_2:yyyymmddhhmmssfff" ] },
+						{ "CON": [ "SGB_TRM_LOC_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NUM", "SGB_LOAD_NO", "SGB_DATE_TIME:yyyymmddhhmmssfff" ] },
+						{ "DEL": [ "SGB_TRM_LOC_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NUM", "SGB_LOAD_NO", "SGB_DATE_TIME:yyyymmddhhmmssfff" ] },
+						{ "NOM": [ "SGB_TRM_LOC_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NUM", "SGB_NOM_TECH_KEY", "SGB_DATE_TIME_2:yyyymmddhhmmssfff" ] }
+					]
 				},
 				"routing_rules" : {
 					"method" : "by_file_name",
@@ -98,11 +105,10 @@
 				"msg_parse_rules" : {
 					"file_name_field" : "msg_type",
 					"rules" : [
-						{ "SHP" : { "schema" : "msg_def.sgb_load_spec", "name" : "SGB_LOAD_SPEC", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid.py" } },
-						{ "ORD" : { "schema" : "msg_def.sgb_load_ord", "name" : "SGB_LOAD_ORDER", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid.py" } },
+						{ "SHP" : { "schema" : "msg_def.sgb_load_spec", "name" : "SGB_LOAD_SPEC", "msg_id_idx" : "0.5", "preprocess" : "sgb_insert_msgid.py" } },
+						{ "ORD" : { "schema" : "msg_def.sgb_load_ord", "name" : "SGB_LOAD_ORDER", "msg_id_idx" : "0.5", "preprocess" : "sgb_insert_msgid.py" } },
 						{ "CON" : { "schema" : "msg_def.sgb_open_ord", "name" : "SGB_OPEN_ORDER", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid.py" } },
 						{ "DEL" : { "schema" : "msg_def.sgb_load_del", "name" : "SGB_LOAD_DELETE", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid.py" } },
-						{ "CUS" : { "schema" : "msg_def.sgb_cust", "name" : "SGB_CUSTOMER_DETAIL", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid_hdr1.py" } },
 						{ "NOM" : { "schema" : "msg_def.sgb_nom", "name" : "SGB_NOM", "msg_id_idx" : "0.0.4", "field_map" : "sgb_nom.fmap", "preprocess" : "sgb_nom.py" } }
 					]
 				}
@@ -133,7 +139,7 @@
 				"msg_parse_rules" : {
 					"file_name_field" : "msg_type",
 					"rules" : [
-						{ "ACK" : { "schema" : "msg_def.sgb_load_ack", "name" : "SGB_LOAD_ACK", "msg_id_idx" : "0.4", "status_idx" : 3, "status_desc_idx" : 4 } },
+						{ "ACK" : { "schema" : "msg_def.sgb_load_ack", "name" : "SGB_LOAD_ACK", "msg_id_idx" : "0.5", "status_idx" : 3, "status_desc_idx" : 4 } },
 						{ "LDS" : { "schema" : "msg_def.sgb_load_start", "name" : "SGB_LOAD_STARTED", "msg_id_idx" : "0.4" } },
 						{ "LDD" : { "schema" : "msg_def.sgb_load_det", "name" : "SGB_LOAD_DETAILS", "msg_id_idx" : "0.4" } },
 						{ "TKT" : { "schema" : "msg_def.sgb_tkt", "name" : "SGB_TICKET", "msg_id_idx" : "0.4", "field_map" : "sgb_tkt.fmap", "postprocess" : "sgb_tkt.py", "content_format" : 3 } },

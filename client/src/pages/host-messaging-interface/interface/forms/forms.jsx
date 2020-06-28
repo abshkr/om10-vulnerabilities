@@ -18,12 +18,14 @@ import MessageArea from '../MessageArea';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, from, action, content_format, handleFormState, auth }) => {
+const FormModal = ({ msg, visible, from, action, content_format, handleFormState, auth }) => {
   const { t } = useTranslation();
 
-	const [notEdit, setNotEdit] = useState(!value);
+	const [notEdit, setNotEdit] = useState(!msg);
 	const [label, setLabel] = useState(t('operations.edit'));
 	const [notice, setNotice] = useState('');
+	const [iaction, setAction] = useState(action);
+	const [cFormat, setContentFormat] = useState(content_format);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -45,13 +47,11 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
 	const onEditSave = async () => {
 		if (notEdit)
 		{
-			setLabel(t('operations.save'));
+			//setLabel(t('operations.save'));
 			setNotEdit(false);
-		}
-		else
-		{
-			setLabel(t('operations.edit'));
-			setNotEdit(true);
+			console.log('start editing...');
+			setAction('edit');
+			setContentFormat(2);
 		}
 	};
 
@@ -59,35 +59,44 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
 	const onCancel = async () => {
 		setLabel(t('operations.edit'));
 		setNotEdit(true);
+		setAction('view');
+		setContentFormat(1);
 	};
 
 	const onSubmit = async () => {
-		var url = '';
-		if (from === 'host')
+		if (notEdit)
 		{
-			//url = process.env.REACT_APP_API_URL + '/hmi/resubmit/host_message';
-			url = '/hmi/resubmit/host_message';
-		}
-		else if (from === 'omega')
-		{
-			//url = process.env.REACT_APP_API_URL + '/hmi/resubmit/omega_message';
-			url = '/hmi/resubmit/omega_message';
-		}
+			var url = '';
+			if (from === 'host')
+			{
+				url = process.env.REACT_APP_API_URL + '/hmi/resubmit/host_message';
+				//url = '/hmi/resubmit/host_message';
+			}
+			else if (from === 'omega')
+			{
+				url = process.env.REACT_APP_API_URL + '/hmi/resubmit/omega_message';
+				//url = '/hmi/resubmit/omega_message';
+			}
 
-		fetch(url, {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			credentials: 'include',
-			body: JSON.stringify({rec_id: value.REC_ID, content_format: content_format })
-		}).then(response => {
-			response.json().then(body => {
-				console.log('Response of resubmit:'+JSON.stringify(body,null,'\t')); 
-				setNotice(body.message);
+			fetch(url, {
+				method: 'POST',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				credentials: 'include',
+				body: JSON.stringify({rec_id: msg.REC_ID, content_format: content_format })
+			}).then(response => {
+				response.json().then(body => {
+					console.log('Response of resubmit:'+JSON.stringify(body,null,'\t')); 
+					setNotice(body.message);
+				});
 			});
-		});
+		}
+		else
+		{
+			setAction('submit');
+		}
 	};
 
   return (
@@ -114,9 +123,11 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
           </Button>
 
 					<Button
-						icon={notEdit ? <PlusOutlined /> : <EditOutlined />}
+						//icon={notEdit ? <PlusOutlined /> : <EditOutlined />}
+						icon={<EditOutlined />}
 						onClick={onEditSave}
 						style={{ float: 'right', marginRight: 5 }}
+						disabled={!notEdit}
 					>
 						{ label }
 					</Button>
@@ -125,7 +136,7 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
             icon={<EditOutlined />}
             onClick={onSubmit}
             style={{ float: 'right', marginRight: 5 }}
-						disabled={!notEdit}
+						//disabled={!notEdit}
           >
             {t('operations.submit')}
           </Button>
@@ -137,18 +148,18 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
 					<TabPane key="1" tab={'Details'}>
 						<DetailsArea
 							from={from}
-							action={action}
-							message={value}
-							content_format={content_format}
+							action={iaction}
+							message={msg}
+							content_format={cFormat}
 						/>
 					</TabPane>
 
 					<TabPane key="2" tab={'Contents'}>
 						<ContentsArea
 							from={from}
-							action={action}
-							message={value}
-							content_format={content_format}
+							action={iaction}
+							message={msg}
+							content_format={cFormat}
 							handleFormState={handleFormState}
 						/>
 					</TabPane>
@@ -158,9 +169,9 @@ const FormModal = ({ value, visible, from, action, content_format, handleFormSta
 			<div>
 				<MessageArea
 					from={from}
-					action={action}
-					message={value}
-					content_format={content_format}
+					action={iaction}
+					message={msg}
+					content_format={cFormat}
 				/>
 			</div>
 

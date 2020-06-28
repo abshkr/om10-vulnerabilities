@@ -23,7 +23,11 @@ class MessageArea extends Component
 		this.traverse = this.traverse.bind(this);
 		this.convert = this.convert.bind(this);
 		this.getData = this.getData.bind(this);
+		this.getConnObj = this.getConnObj.bind(this);
 		this.extractValues = this.extractValues.bind(this);
+		this.create_filename_from_content = this.create_filename_from_content.bind(this);
+		this.find_conn_data_for_host_msg = this.find_conn_data_for_host_msg.bind(this);
+		this.find_conn_data_for_om_msg = this.find_conn_data_for_om_msg.bind(this);
 	}
 
 
@@ -182,7 +186,7 @@ class MessageArea extends Component
 		res += '</table></div>';
 		res += '<hr/>';
 		res += '<div class="adjacent">';
-		res += '<button id="submit" class=submitButton onClick={this.onSubmitChange}>Submit</button>';
+		//res += '<button id="submit" class=submitButton onClick={this.onSubmitChange}>Submit</button>';
 		res += '&nbsp';
 		res += '<p id="submitConfirmation" />';
 		res += '</div>';
@@ -238,19 +242,20 @@ class MessageArea extends Component
 		var url;
 		if (this.state.from === 'host')
 		{
-			//url = process.env.REACT_APP_API_URL + '/hmi/parse/host_message';
-			url = '/hmi/parse/host_message';
+			url = process.env.REACT_APP_API_URL + '/hmi/parse/host_message';
+			//url = '/hmi/parse/host_message';
 		}
 		else if (this.state.from === 'omega')
 		{
 			//url = "http://10.2.20.53:6443/hmi/parse/omega_message/";
-			//url = process.env.REACT_APP_API_URL + '/hmi/parse/omega_message';
-			url = '/hmi/parse/omega_message';
+			url = process.env.REACT_APP_API_URL + '/hmi/parse/omega_message';
+			//url = '/hmi/parse/omega_message';
 		}
 
 		var act = this.state.action;
 		var viewFn = this.viewMessage;
 		var editFn = this.convert;
+		var submitFn = this.onSubmitChange;
 
 		if (this.state.content_format === 1)
 		{
@@ -274,7 +279,7 @@ class MessageArea extends Component
 						{
 							viewFn(text);
 						}
-						else
+						else if (act === 'edit')
 						{
 							var err = 'Cannot edit text version of message';
 							console.error('ERROR:' + err);
@@ -317,6 +322,10 @@ class MessageArea extends Component
 						{
 							editFn(body);
 						}
+						else if (this.state.action === 'submit')
+						{
+							submitFn(body);
+						}
 					}
 					else
 					{
@@ -330,16 +339,31 @@ class MessageArea extends Component
 	}
 
 
-	extractValues()
+	extractValues(conn)
 	{
 		var elem = document.getElementById("messageArea");
 		var valstr='';
 		if (elem)
 		{
 			var valueList = elem.getElementsByTagName("input");
-			for (var i=0; i<valueList.length; i++)
+			var inserted_msgid_fld = conn.file_name_format.inserted_message_id_field;
+
+			if (inserted_msgid_fld == '')
 			{
-				valstr += valueList[i].value;
+				for (var i=0; i<valueList.length; i++)
+				{
+					valstr += valueList[i].value;
+				}
+			}
+			else
+			{
+				for (var i=0; i<valueList.length; i++)
+				{
+					if (inserted_msgid_fld != valueList[i].id)
+					{
+						valstr += valueList[i].value;
+					}
+				}
 			}
 		}
 
@@ -357,15 +381,16 @@ class MessageArea extends Component
 
 
 
-	onSubmitChange(ev)
+	//onSubmitChange(ev)
+	onSubmitChange()
 	{
 		//console.log('onSubmitChange:'+ev.target.id + ',' + ev.type + ',' + ev.target.value);
-		if (ev) { ev.preventDefault(); }
-		if (ev.target.id === "submit")
+		//if (ev) { ev.preventDefault(); }
+		//if (ev.target.id === "submit")
 		{
 			// TODO: do this once only
-			//var url = process.env.REACT_APP_API_URL + '/hmi/config';
-			var url = '/hmi/config';
+			var url = process.env.REACT_APP_API_URL + '/hmi/config';
+			//var url = '/hmi/config';
 			fetch(url, {
 				method: 'GET',
 				credentials: 'include'
@@ -373,25 +398,35 @@ class MessageArea extends Component
 				response.json().then(body => {
 					if (response.ok)
 					{
+						var conn = this.getConnObj(body.message.hosts);
+
 						var jsval = {};
 						jsval['origin'] = this.state.message.ORIGIN;
 						jsval['file_name'] = this.state.message.FILE_NAME; 
-						jsval['content'] = this.extractValues();
+						jsval['content'] = this.extractValues(conn);
 
 						// BEWARE: when using post method with json body data, must:
-						// 1. on client side, set jsoncontent type in header, AND
+						// 1. on client side, set json content type in header, AND
 						// 2. on server side, specify json body in second arg in the route
 						if (this.state.from === 'host')
 						{
-							//url = process.env.REACT_APP_API_URL + '/hmi/edit/host_message';
-							url = '/hmi/edit/host_message';
+							url = process.env.REACT_APP_API_URL + '/hmi/edit/host_message';
+							//url = '/hmi/edit/host_message';
 
-							jsval['file_name'] = this.create_filename_from_content(body.message.hosts);
+							var res = this.create_filename_from_content(conn);
+							if (res.ok)
+							{
+								jsval['file_name'] = res.result;
+							}
+							else
+							{
+									return;
+							}
 						}
 						else if (this.state.from === 'omega')
 						{
-							//url = process.env.REACT_APP_API_URL + '/hmi/edit/omega_message';
-							url = '/hmi/edit/omega_message';
+							url = process.env.REACT_APP_API_URL + '/hmi/edit/omega_message';
+							//url = '/hmi/edit/omega_message';
 						}
 
 						fetch(url, {
@@ -452,7 +487,8 @@ class MessageArea extends Component
 				<b id="messageAreaHeading">Message</b>
 				<div id="messageArea" className="messageArea"
 						onInput={this.onEditChange}
-						onClick={this.onSubmitChange}>
+						//onClick={this.onSubmitChange}
+				>
 					Click a message on the left to see the message contents
 				</div>
 			</div>
@@ -549,7 +585,23 @@ class MessageArea extends Component
 		return conn;
 	}
 
-	create_filename_from_content(host_list)
+	getConnObj(host_list)
+	{
+		if (this.state.from === 'host')
+		{
+			return this.find_conn_data_for_host_msg(this.state.message.ORIGIN, host_list);
+		}
+		else if (this.state.from === 'omega')
+		{
+			return this.find_conn_data_for_om_msg(this.state.message.ORIGIN, host_list);
+		}
+		else
+		{
+			return {};
+		}
+	}
+
+	create_filename_from_content(conn)
 	{
 		var file_nm = '';
 
@@ -557,161 +609,184 @@ class MessageArea extends Component
 		{
 			//console.log('origin:'+this.state.message.ORIGIN);
 			//console.log('host_list:'+JSON.stringify(host_list,null,'\t'));
-			var conn = this.find_conn_data_for_host_msg(this.state.message.ORIGIN, host_list);
+			//var conn = this.find_conn_data_for_host_msg(this.state.message.ORIGIN, host_list);
 			//console.log('conn:'+JSON.stringify(conn,null,'\t'));
 			var err;
 			var elem;
 			var elemTyp;
 			var fldnm;
 			var fldfmt;
-			var fefields = conn.file_name_format.fe_fields;
-			for (var f = 0; f < fefields.length; ++f)
+			var fe_fields = conn.file_name_format.fe_fields;
+			var search_key = this.state.message.MESSAGE_TYPE;
+
+			for (var fef = 0; fef < fe_fields.length; ++fef)
 			{
-				//console.log('fefields['+f+']:<'+fefields[f]+'>');
-				var idx = fefields[f].indexOf(":");
-				if (idx === -1)
+				var objkey = Object.keys(fe_fields[fef]);
+				if (objkey[0] != search_key)
 				{
-					elem = document.getElementById(fefields[f]);
-					if (elem)
+					continue;
+				}
+
+				var fefields = fe_fields[fef][search_key];
+
+				for (var f = 0; f < fe_fields.length; ++f)
+				{	
+					//console.log('fefields['+f+']:<'+fefields[f]+'>');
+					var idx = fefields[f].indexOf(":");
+					if (idx === -1)
 					{
-						fldnm = fefields[f];
-						elemTyp = document.getElementById(fldnm + '_TYP');
-						if (elemTyp)
+						elem = document.getElementById(fefields[f]);
+						if (elem)
 						{
-							if (elemTyp.textContent === 'ASCII_9')
+							fldnm = fefields[f];
+							elemTyp = document.getElementById(fldnm + '_TYP');
+							if (elemTyp)
 							{
-								file_nm += parseInt(elem.value.trim(), 10);
+								if (elemTyp.textContent === 'ASCII_9')
+								{
+									file_nm += parseInt(elem.value.trim(), 10);
+								}
+								else
+								{
+									file_nm += elem.value.trim();
+								}
 							}
 							else
-							{
+							{	
 								file_nm += elem.value.trim();
 							}
-						}
-						else
-						{	
-							file_nm += elem.value.trim();
-						}
-						//console.log('file_nm:<'+file_nm+'>');
-					}
-					else
-					{
-						err = 'ERROR: element with id ' + fefields[f] + ' do not exist';
-						console.error('ERROR:' + err);
-						// TODO: clear message area
-						alert(err);
-						return;
-					}
-				}
-				else
-				{
-					fldnm = fefields[f].substr(0, idx);
-					fldfmt = fefields[f].substr(idx+1);
-					//console.log('fldnm:<'+fldnm+'>');
-					//console.log('fldfmt:<'+fldfmt+'>');
-
-
-					elem = document.getElementById(fldnm);
-					var fldVal;
-					if (elem)
-					{
-						fldVal = elem.value.trim();
-						//console.log('fldVal:<'+fldVal+'>');
-					}
-					else
-					{
-						err = 'ERROR: element with id ' + fldnm + ' do not exist';
-						console.error('ERROR:' + err);
-						// TODO: clear message area
-						alert(err);
-						return;
-					}
-
-					var newFmt = 'yyyymmddhhmmssfff';
-					if (fldfmt === 'SHORT')
-					{
-						var shortnames = {};
-						shortnames['LOAD:SPEC'] = 'SHP';
-						shortnames['LOAD:ORDER'] = 'ORD';
-						shortnames['OPEN:ORD'] = 'CON';
-						shortnames['LOAD:DELETE'] = 'LDE';
-						shortnames['TANKER:DET'] = 'TKC';
-						shortnames['TANKER:DELETE'] = 'TKD';
-						shortnames['PARTNER:DET'] = 'PARD';
-						shortnames['DELIVERY:DET'] = 'DLV';
-
-						var shortnm = shortnames[fldVal];
-						//console.log('shortnm:'+shortnm);
-						if (typeof shortnm !== undefined && shortnm !== '')
-						{
-							file_nm += shortnm;
 							//console.log('file_nm:<'+file_nm+'>');
 						}
 						else
 						{
-							err = 'ERROR: No short name exist';
+							err = 'ERROR: element with id ' + fefields[f] + ' do not exist';
 							console.error('ERROR:' + err);
 							// TODO: clear message area
 							alert(err);
-							return;
+							return {'ok': false, 'result': ''};
 						}
 					}
-					else if (fldfmt === newFmt)
+					else
 					{
-						//console.log('elemTyp:<'+fldnm+'_TYP>');
-						elemTyp = document.getElementById(fldnm + '_TYP');
-						if (elemTyp)
-						{
-							//console.log('elemTyp.value:<'+elemTyp.textContent+'>');
-							var origFmt = 'ASCII_DDdMMdCCYYHHcMMcSS';
-							if (elemTyp.textContent === origFmt)
-							{
-								var day = fldVal.substr(0,2);
-								var month = fldVal.substr(3,2);
-								var year = fldVal.substr(6,4);
-								var hour = fldVal.substr(10,2);
-								var min = fldVal.substr(13,2);
-								var sec = fldVal.substr(16,2);
+						fldnm = fefields[f].substr(0, idx);
+						fldfmt = fefields[f].substr(idx+1);
+						//console.log('fldnm:<'+fldnm+'>');
+						//console.log('fldfmt:<'+fldfmt+'>');
 
-								var now = new Date().toISOString();
-								now = now.replace(/[T\-:.Z]/g, '');
-								//console.log('now:'+now);
-								var msec = parseInt(now.substr(now.length - 3));
-								var newFmtVal = year + month + day + hour + min + sec + msec;
-								//console.log('newFmtVal:'+newFmtVal);
-								file_nm += newFmtVal;
+
+						elem = document.getElementById(fldnm);
+						var fldVal;
+						if (elem)
+						{
+							fldVal = elem.value.trim();
+							//console.log('fldVal:<'+fldVal+'>');
+						}
+						else
+						{
+							err = 'ERROR: element with id ' + fldnm + ' do not exist';
+							console.error('ERROR:' + err);
+							// TODO: clear message area
+							alert(err);
+							return {'ok': false, 'result': ''};
+						}
+
+						var newFmt = 'yyyymmddhhmmssfff';
+						if (fldfmt === 'SHORT')
+						{
+							var shortnames = {};
+							shortnames['LOAD:SPEC'] = 'SHP';
+							shortnames['LOAD:ORDER'] = 'ORD';
+							shortnames['OPEN:ORD'] = 'CON';
+							shortnames['LOAD:DELETE'] = 'LDE';
+							shortnames['LOAD:DETAIL'] = 'LDD';
+							shortnames['LOAD:REJECT'] = 'REJ';
+							shortnames['ALEAUD:UPLOAD'] = 'ACK';
+							shortnames['DOC:REQUEST'] = 'DOC';
+							shortnames['TANKER:DET'] = 'TKC';
+							shortnames['OILNOM'] = 'NOM';
+							shortnames['OILTKT'] = 'TKT';
+							shortnames['PID:REQUEST'] = 'EOD';
+							shortnames['PDS:REQUEST'] = 'PDS';
+							shortnames['SPCL:MVMENT'] = 'SPM';
+							shortnames['CUSTOMER:DET'] = 'CUS';
+							shortnames['TANKER:DELETE'] = 'TKD';
+							shortnames['PARTNER:DET'] = 'PARD';
+							shortnames['DELIVERY:DET'] = 'DLV';
+
+							var shortnm = shortnames[fldVal];
+							//console.log('shortnm:'+shortnm);
+							if (typeof shortnm !== undefined && shortnm !== '')
+							{
+								file_nm += shortnm;
 								//console.log('file_nm:<'+file_nm+'>');
 							}
 							else
 							{
-								err = 'ERROR: Don\'t know how to convert ' + elem.value + ' from format '
-											+ origFmt + ' to ' + newFmt;
+								err = 'ERROR: No short name exist';
 								console.error('ERROR:' + err);
 								// TODO: clear message area
 								alert(err);
-								return;
+								return {'ok': false, 'result': ''};
 							}
 						}
-						else
+						else if (fldfmt === newFmt)
 						{
-							err = 'ERROR: element with id ' + fldnm + '_TYP do not exist';
-							console.error('ERROR:' + err);
-							// TODO: clear message area
-							alert(err);
-							return;
+							//console.log('elemTyp:<'+fldnm+'_TYP>');
+							elemTyp = document.getElementById(fldnm + '_TYP');
+							if (elemTyp)
+							{
+								//console.log('elemTyp.value:<'+elemTyp.textContent+'>');
+								var origFmt = 'ASCII_DDdMMdCCYYHHcMMcSS';
+								if (elemTyp.textContent === origFmt)
+								{
+									var day = fldVal.substr(0,2);
+									var month = fldVal.substr(3,2);
+									var year = fldVal.substr(6,4);
+									var hour = fldVal.substr(10,2);
+									var min = fldVal.substr(13,2);
+									var sec = fldVal.substr(16,2);
+
+									var now = new Date().toISOString();
+									now = now.replace(/[T\-:.Z]/g, '');
+									//console.log('now:'+now);
+									var msec = parseInt(now.substr(now.length - 3));
+									var newFmtVal = year + month + day + hour + min + sec + msec;
+									//console.log('newFmtVal:'+newFmtVal);
+									file_nm += newFmtVal;
+									//console.log('file_nm:<'+file_nm+'>');
+								}
+								else
+								{
+									err = 'ERROR: Don\'t know how to convert ' + elem.value + ' from format '
+												+ origFmt + ' to ' + newFmt;
+									console.error('ERROR:' + err);
+									// TODO: clear message area
+									alert(err);
+									return {'ok': false, 'result': ''};
+								}
+							}
+							else
+							{
+								err = 'ERROR: element with id ' + fldnm + '_TYP do not exist';
+								console.error('ERROR:' + err);
+								// TODO: clear message area
+								alert(err);
+								return {'ok': false, 'result': ''};
+							}
 						}
 					}
-				}
 
-				if (f < fefields.length - 1)
-				{
-					file_nm += conn.file_name_format.field_separator;
+					if (f < fefields.length - 1)
+					{
+						file_nm += conn.file_name_format.field_separator;
+					}
 				}
 			}
 			file_nm += (conn.file_name_format.extension_prefix + conn.file_name_format.extension);
 			//console.log('final file_nm:'+file_nm);
 		}
 
-		return file_nm;
+		return {'ok': true, 'result': file_nm};
 	}
 }
 

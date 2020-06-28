@@ -257,6 +257,7 @@ sub_message_def SGB_MSG_HEADER_2
 	SGB_VERSION_N		("Version Number");
 	SGB_DATE_TIME_2		("Event Date and Time",		event_time);
 	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
+	STD_FILLER2		("Filler");
 	SGB_MSG_ID		("Message ID", msg_id) optional;
 };
 
@@ -267,6 +268,7 @@ sub_message_def SGB_MSG_HEADER_3
 	SGB_VERSION_N		("Version Number");
 	SGB_DATE_TIME_2		("Event Date and Time",		event_time);
 	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
+	STD_FILLER2		("Filler");
 };
 
 sub_message_def SGB_MSG_HEADER_4
@@ -276,6 +278,7 @@ sub_message_def SGB_MSG_HEADER_4
 	SGB_VERSION_N		("Version Number");
 	SGB_DATE_TIME_2		("Event Date and Time",		event_time);
 	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
+	STD_FILLER2		("Filler");
 	SGB_MSG_ID		("Message ID", msg_id) optional;
 };
 
@@ -286,6 +289,7 @@ sub_message_def SGB_MSG_HEADER_5
 	SGB_VERSION_N		("Version Number");
 	SGB_DATE_TIME_2		("Event Date and Time",		event_time);
 	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
+	STD_FILLER2		("Filler");
 };
 
 sub_message_def SGB_MSG_HEADER_6
@@ -301,6 +305,7 @@ sub_message_def SGB_MSG_HEADER_7
 	SGB_VERSION_N		("Version Number");
 	SGB_DATE_TIME_2		("Event Date and Time",		event_time) optional;
 	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd) optional;
+	STD_FILLER2		("Filler");
 	SGB_MSG_ID		("Message Id", 			msg_id) optional;
 };
 

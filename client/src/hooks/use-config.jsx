@@ -141,6 +141,7 @@ const useConfig = () => {
         showDOR: configurationObject?.SITE_DOR_HISTORY_AVAILABLE,
         manageADHOC: configurationObject?.ID_ADHOC_FLAG_ENABLED,
         sealNumSource: configurationObject?.SEALNUM_SOURCE,
+        sealPreFix: configurationObject?.SEAL_PREFIX,
         sealPostFix: configurationObject?.SEAL_POSTFIX,
         manage2FA: configurationObject?.SITE_2FA_ENABLED,
         manageAuditingScreen: configurationObject?.SITE_AUDIT_SCREEN_ENABLED,
