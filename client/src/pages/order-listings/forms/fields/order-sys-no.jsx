@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
-//import axios from 'axios';
 
-//import { ORDER_LISTINGS } from '../../../../api';
+//import api, { ORDER_LISTINGS } from '../../../../api';
 
 const OrderSysNo = ({ form, value, pageState }) => {
   const { t } = useTranslation();
