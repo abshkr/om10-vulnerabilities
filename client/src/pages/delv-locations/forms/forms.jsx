@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  QuestionCircleOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
+
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
+
 import _ from 'lodash';
 
 import {
@@ -25,15 +32,9 @@ import {
   Profile,
 } from './fields';
 
-import {
-  LocationCode,
-  LocationName,
-  CustomerSupplier,
-  CustomerCategory,
-  CustomerLink
-} from './links';
-  
-import { DELV_LOCATIONS } from '../../../api';
+import { LocationCode, LocationName, CustomerSupplier, CustomerCategory, CustomerLink } from './links';
+
+import api, { DELV_LOCATIONS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -57,15 +58,14 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const { resetFields } = form;
 
   const doTabChanges = (tabPaneKey) => {
-    if (tabPaneKey === "2") {
+    if (tabPaneKey === '2') {
       setDrawerWidth('90vw');
       setMainTabOn(false);
-    }
-    else {
+    } else {
       setDrawerWidth('30vw');
       setMainTabOn(true);
     }
-  }
+  };
 
   const onFormClosed = () => {
     handleFormState(false, null);
@@ -91,7 +91,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? DELV_LOCATIONS.CREATE : DELV_LOCATIONS.UPDATE, values)
           .then(() => {
             onComplete();
@@ -122,7 +122,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(DELV_LOCATIONS.DELETE, value)
           .then(() => {
             onComplete();
@@ -149,7 +149,6 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       resetFields();
     }
   }, [resetFields, value]);
-
 
   return (
     <Drawer
@@ -187,7 +186,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={(!access?.canDelete) ||  !mainTabOn}
+              disabled={!access?.canDelete || !mainTabOn}
               onClick={onDelete}
             >
               {t('operations.delete')}
@@ -196,15 +195,19 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError 
-      initialValues={{ 
-        delv_qty_typeid: '0'
-        , delv_trsp_typeid:'0'
-        , delv_doc_typeid:'0'
-        , delv_trip_time:0
-        , delv_distance:0
-        , delv_tarrif:0
-      }}>
+      <Form
+        layout="vertical"
+        form={form}
+        scrollToFirstError
+        initialValues={{
+          delv_qty_typeid: '0',
+          delv_trsp_typeid: '0',
+          delv_doc_typeid: '0',
+          delv_trip_time: 0,
+          delv_distance: 0,
+          delv_tarrif: 0,
+        }}
+      >
         <Tabs onChange={doTabChanges}>
           <TabPane tab={t('tabColumns.general')} key="1">
             <Flag form={form} value={value} onChange={setFlag} />
@@ -241,8 +244,13 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               </Col>
             </Row>
             <Divider />
-            <CustomerLink form={form} value={value} supplier={supplier} category={category} 
-            location={value?.delv_code} />
+            <CustomerLink
+              form={form}
+              value={value}
+              supplier={supplier}
+              category={category}
+              location={value?.delv_code}
+            />
           </TabPane>
         </Tabs>
       </Form>

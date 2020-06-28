@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { Input, Button, Modal, notification, Form } from 'antd';
-import { useTranslation } from 'react-i18next';
 
 import { WalletOutlined, CopyOutlined, CheckOutlined } from '@ant-design/icons';
-
-import axios from 'axios';
+import { Input, Button, Modal, notification, Form } from 'antd';
+import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-import { PERSONNEL } from '../../api';
+import api, { PERSONNEL } from '../../api';
 
 const PasswordReset = ({ value }) => {
   const { t } = useTranslation();
@@ -22,13 +20,13 @@ const PasswordReset = ({ value }) => {
     if (value) {
       const user = value.per_code;
 
-      axios
+      api
         .post(`${PERSONNEL.UPDATE_PASSWORD}?per_code=${user}&password=${password}`)
-        .then(response => {
+        .then((response) => {
           Modal.destroyAll();
           notification.success({
             message: t('messages.updateSuccess'),
-            description: response.data.message
+            description: response.data.message,
           });
         })
         .catch((errors) => {
@@ -58,7 +56,7 @@ const PasswordReset = ({ value }) => {
       </Form.Item>
 
       <Form.Item label={t('fields.password')}>
-        <Input value={password} onChange={event => setPassword(event.target.value)} />
+        <Input value={password} onChange={(event) => setPassword(event.target.value)} />
       </Form.Item>
 
       <div style={{ marginTop: 30, display: 'flex', justifyContent: 'space-around' }}>

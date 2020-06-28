@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
-import axios from 'axios';
 
 const Phone = ({ form, value, pageState }) => {
   const { t } = useTranslation();
@@ -14,7 +13,7 @@ const Phone = ({ form, value, pageState }) => {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.ddPhone')}`);
       }
     }
-    
+
     if (input && input.length > 40) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -31,15 +30,8 @@ const Phone = ({ form, value, pageState }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="dd_phone" 
-      label={t('fields.ddPhone')}
-      rules={[{ required: false, validator: validate }]}
-    >
-      <Input 
-        style={{ width: '100%' }} 
-        disabled={pageState==='create'? false : false}
-      />
+    <Form.Item name="dd_phone" label={t('fields.ddPhone')} rules={[{ required: false, validator: validate }]}>
+      <Input style={{ width: '100%' }} disabled={pageState === 'create' ? false : false} />
     </Form.Item>
   );
 };

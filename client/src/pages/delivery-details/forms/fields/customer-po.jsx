@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
-import axios from 'axios';
 
 const CustomerPurchaseOrder = ({ form, value, pageState }) => {
   const { t } = useTranslation();
@@ -14,7 +13,7 @@ const CustomerPurchaseOrder = ({ form, value, pageState }) => {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.ddCustPo')}`);
       }
     }
-    
+
     if (input && input.length > 20) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -31,15 +30,12 @@ const CustomerPurchaseOrder = ({ form, value, pageState }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="dd_cust_po" 
+    <Form.Item
+      name="dd_cust_po"
       label={t('fields.ddCustPo')}
       rules={[{ required: false, validator: validate }]}
     >
-      <Input 
-        style={{ width: '100%' }} 
-        disabled={pageState==='create'? false : false}
-      />
+      <Input style={{ width: '100%' }} disabled={pageState === 'create' ? false : false} />
     </Form.Item>
   );
 };

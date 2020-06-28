@@ -4,7 +4,7 @@ import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } fr
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
+
 import _ from 'lodash';
 
 import {
@@ -26,9 +26,9 @@ import {
   CreditLimit,
 } from './fields';
 
-import { CUSTOMERS } from '../../../api';
+import api, { CUSTOMERS } from '../../../api';
 import Allocations from '../../../pages/allocations';
-import {OrderListingsPopup} from '../../../pages/order-listings';
+import { OrderListingsPopup } from '../../../pages/order-listings';
 import { DelvLocationsPopup } from 'pages/delv-locations';
 import { CustomerCategoriesPopup } from 'pages/customer-categories';
 import { AddressesPopup } from 'pages/addresses';
@@ -79,7 +79,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? CUSTOMERS.CREATE : CUSTOMERS.UPDATE, values)
           .then(() => {
             onComplete();
@@ -110,7 +110,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(CUSTOMERS.DELETE, value)
           .then(() => {
             onComplete();
@@ -220,13 +220,13 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             <AddressesPopup popup={true} />
           </TabPane>
           <TabPane tab={t('tabColumns.customerCategories')} disabled={IS_CREATING} key="3">
-            <CustomerCategoriesPopup popup={true}/>
+            <CustomerCategoriesPopup popup={true} />
           </TabPane>
           <TabPane tab={t('tabColumns.allocations')} disabled={IS_CREATING} key="4">
             <Allocations />
           </TabPane>
           <TabPane tab={t('tabColumns.orderListing')} disabled={IS_CREATING} key="5">
-            <OrderListingsPopup 
+            <OrderListingsPopup
               popup={true}
               params={{
                 order_supp_code: value?.cust_supp_code,
@@ -235,7 +235,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             />
           </TabPane>
           <TabPane tab={t('tabColumns.deliveryLocations')} disabled={IS_CREATING} key="6">
-            <DelvLocationsPopup  
+            <DelvLocationsPopup
               popup={true}
               params={{
                 delv_cust_suppcode: value?.cust_supp_code,

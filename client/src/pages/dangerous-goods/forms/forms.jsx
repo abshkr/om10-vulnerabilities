@@ -11,11 +11,11 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Form, Button, Tabs, notification, Modal, Input, Drawer } from 'antd';
 import { mutate } from 'swr';
-import axios from 'axios';
+
 import _ from 'lodash';
 import useSWR from 'swr';
 
-import { DANGEROUS_GOODS } from '../../../api';
+import api, { DANGEROUS_GOODS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -42,7 +42,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? DANGEROUS_GOODS.CREATE : DANGEROUS_GOODS.UPDATE, values)
           .then((response) => {
             onComplete();
@@ -71,7 +71,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(DANGEROUS_GOODS.DELETE, value)
           .then((response) => {
             onComplete();

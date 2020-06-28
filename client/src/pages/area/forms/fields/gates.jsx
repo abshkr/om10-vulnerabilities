@@ -2,11 +2,11 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LoadingOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Form, List, Avatar, Tag, Card, Button, Modal, Divider, Input, Select } from 'antd';
-import axios from 'axios';
+
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { AREA } from '../../../../api';
+import api, { AREA } from '../../../../api';
 
 const FormModal = ({ visible, onCreate, onCancel, gates }) => {
   const { data: devices, isValidating: devicesLoading } = useSWR(AREA.DEVICES);
@@ -148,7 +148,7 @@ const Gates = ({ form, value }) => {
   const getGates = useCallback(
     (area) => {
       setLoading(true);
-      axios
+      api
         .get(AREA.GATES, {
           params: {
             area_k: area,

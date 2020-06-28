@@ -27,9 +27,8 @@ import {
 import 'antd/dist/antd.css';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 
-import { COMPANIES } from '../../../api';
+import api, { COMPANIES } from '../../../api';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -178,7 +177,7 @@ const FormModal = ({
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? COMPANIES.CREATE : COMPANIES.UPDATE, values)
           .then((response) => {
             onComplete(values.cmpy_code);
@@ -210,7 +209,7 @@ const FormModal = ({
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(COMPANIES.DELETE, value)
           .then((response) => {
             onComplete();

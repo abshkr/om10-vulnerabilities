@@ -1,46 +1,40 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import {
-  EditOutlined,
-  PlusOutlined,
-  CloseOutlined,
-  DeleteOutlined,
-  QuestionCircleOutlined
-} from '@ant-design/icons';
-
-import { Form, Button, Tabs, Modal, notification, Select, InputNumber, Input, Divider, Row, Col, Switch } from 'antd';
+import { Form, Select, Input, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
-import useSWR, { mutate } from 'swr';
-import axios from 'axios';
+import useSWR from 'swr';
+
 import _ from 'lodash';
 
 import { COMPANIES } from '../../../api';
 
 const PrinterForm = ({ value, form }) => {
-  const { data: docPrinters, isValidating } = useSWR(`${COMPANIES.DOC_PRINTERS}?cmpy_code=${value?.cmpy_code}`);
+  const { data: docPrinters, isValidating } = useSWR(
+    `${COMPANIES.DOC_PRINTERS}?cmpy_code=${value?.cmpy_code}`
+  );
   const { data: reportPrinters } = useSWR(`${COMPANIES.REPORT_PRINTERS}?cmpy_code=${value?.cmpy_code}`);
   const { data: dliPrinters } = useSWR(`${COMPANIES.DLI_PRINTERS}?cmpy_code=${value?.cmpy_code}`);
-  
+
   const { t } = useTranslation();
   const { TextArea } = Input;
   const { resetFields, setFieldsValue, getFieldDecorator } = form;
   // const [ pitem_bltol_flag, setFlag ] = useState(value?.pitem_bltol_flag)
-  
-  const [ cmpy_bol_vp_name, setReconc ] = useState(value?.cmpy_bol_vp_name)
-  const [ cmpy_ld_rep_vp, setLDprinter ] = useState(value?.cmpy_ld_rep_vp)
-  const [ cmpy_drv_inst_vp, setDLIPrinter ] = useState(value?.cmpy_drv_inst_vp)
-  
+
+  const [cmpy_bol_vp_name, setReconc] = useState(value?.cmpy_bol_vp_name);
+  const [cmpy_ld_rep_vp, setLDprinter] = useState(value?.cmpy_ld_rep_vp);
+  const [cmpy_drv_inst_vp, setDLIPrinter] = useState(value?.cmpy_drv_inst_vp);
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
         cmpy_bol_vp_name: value.cmpy_bol_vp_name,
         cmpy_ld_rep_vp: value.cmpy_ld_rep_vp,
         cmpy_drv_inst_vp: value.cmpy_drv_inst_vp,
-      })
-  
-      setReconc(value.cmpy_bol_vp_name)
-      setLDprinter(value.cmpy_ld_rep_vp)
-      setDLIPrinter(value.cmpy_drv_inst_vp)
+      });
+
+      setReconc(value.cmpy_bol_vp_name);
+      setLDprinter(value.cmpy_ld_rep_vp);
+      setDLIPrinter(value.cmpy_drv_inst_vp);
     }
   }, [value, setFieldsValue]);
 
@@ -58,12 +52,12 @@ const PrinterForm = ({ value, form }) => {
   };
 
   return (
-    <div>    
+    <div>
       <Divider></Divider>
-      <Form.Item name="cmpy_bol_vp_name" label={t('fields.defaultDocPrinter')} {...swithLayout} >
+      <Form.Item name="cmpy_bol_vp_name" label={t('fields.defaultDocPrinter')} {...swithLayout}>
         <Select
           loading={isValidating}
-          style={{width:"25vw"}}
+          style={{ width: '25vw' }}
           // onChange={handleChange}
         >
           {docPrinters?.records.map((item, index) => (
@@ -74,10 +68,10 @@ const PrinterForm = ({ value, form }) => {
         </Select>
       </Form.Item>
 
-      <Form.Item name="cmpy_ld_rep_vp" label={t('fields.defaultLDPrinter')} {...swithLayout} >
+      <Form.Item name="cmpy_ld_rep_vp" label={t('fields.defaultLDPrinter')} {...swithLayout}>
         <Select
           loading={isValidating}
-          style={{width:"25vw"}}
+          style={{ width: '25vw' }}
           // onChange={handleChange}
         >
           {reportPrinters?.records.map((item, index) => (
@@ -88,10 +82,10 @@ const PrinterForm = ({ value, form }) => {
         </Select>
       </Form.Item>
 
-      <Form.Item name="cmpy_drv_inst_vp" label={t('fields.defaultDLIPrinter')} {...swithLayout} >
+      <Form.Item name="cmpy_drv_inst_vp" label={t('fields.defaultDLIPrinter')} {...swithLayout}>
         <Select
           loading={isValidating}
-          style={{width:"25vw"}}
+          style={{ width: '25vw' }}
           // onChange={handleChange}
         >
           {dliPrinters?.records.map((item, index) => (

@@ -9,8 +9,8 @@ import useSWR, { mutate } from 'swr';
 import columns from './columns';
 import _ from 'lodash';
 import { FooterEditor, SwitchRender } from './fields';
-import axios from 'axios';
-import { COMPANIES } from '../../../api';
+
+import api, { COMPANIES } from '../../../api';
 
 const TemplateForm = ({ value }) => {
   const { data: payload, isValidating } = useSWR(`${COMPANIES.TEMPLATES}?cmpy_code=${value?.cmpy_code}`);
@@ -39,7 +39,7 @@ const TemplateForm = ({ value }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(COMPANIES.UPDATE_TEMPLATES, values.templates)
           .then((response) => {
             mutate(COMPANIES.TEMPLATES);

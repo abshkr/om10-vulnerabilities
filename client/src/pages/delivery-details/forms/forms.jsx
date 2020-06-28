@@ -10,7 +10,7 @@ import {
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
+
 import _ from 'lodash';
 import useSWR from 'swr';
 import jwtDecode from 'jwt-decode';
@@ -41,7 +41,7 @@ import {
 
 import { DataTable } from '../../../components';
 import { SETTINGS } from '../../../constants';
-import { DELIVERY_DETAILS } from '../../../api';
+import api, { DELIVERY_DETAILS } from '../../../api';
 import DeliveryDetailItems from './dd-items/delivery-detail-items';
 import DeliveryNoteTemplates from './dd-dn-templates/delivery-note-templates';
 import DeliveryBolTemplates from './dlv-bol-templates/delivery-bol-templates';
@@ -71,7 +71,6 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const [showPeriod, setShowPeriod] = useState(false);
   const [showDeliveryDetails, setShowDeliveryDetails] = useState(false);
 
-
   const IS_CREATING = !value;
 
   const token = sessionStorage.getItem('token');
@@ -79,15 +78,14 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const user_code = decoded?.per_code;
 
   const doTabChanges = (tabPaneKey) => {
-    if (tabPaneKey === "1") {
+    if (tabPaneKey === '1') {
       setDrawerWidth('80vw');
       setMainTabOn(true);
-    }
-    else {
+    } else {
       setDrawerWidth('90vw');
       setMainTabOn(false);
     }
-  }
+  };
 
   const onFormClosed = () => {
     handleFormState(false, null);
@@ -96,14 +94,14 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   };
 
   const onComplete = () => {
-    console.log("start of onComplete");
+    console.log('start of onComplete');
     handleFormState(false, null);
     setDrawerWidth('80vw');
     setMainTabOn(true);
     revalidate();
     setSupplier(undefined);
     setSelected(null);
-    console.log("end of onComplete");
+    console.log('end of onComplete');
   };
 
   const onFinish = async () => {
@@ -123,7 +121,6 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
           oitem_prod_price: _.toNumber(order_item.oitem_prod_price),
           oitem_exempt_no: order_item.oitem_exempt_no,
           oitem_padj_code: order_item.oitem_padj_code,
-  
         });
       }
     });
@@ -131,18 +128,17 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
     values.order_items = orderItems;
     if (value?.order_sys_no === undefined) {
       values.order_sys_no = -1;
-    }
-    else {
+    } else {
       values.order_sys_no = value?.order_sys_no;
     }
-    console.log("values:", value?.order_sys_no, orderNo, values)
-    console.log("date before", values.order_ord_time, values.order_dlv_time, values.order_exp_time);
+    console.log('values:', value?.order_sys_no, orderNo, values);
+    console.log('date before', values.order_ord_time, values.order_dlv_time, values.order_exp_time);
     values.order_ord_time = values?.order_ord_time?.format(SETTINGS.DATE_TIME_FORMAT);
     values.order_dlv_time = values?.order_dlv_time?.format(SETTINGS.DATE_TIME_FORMAT);
     values.order_exp_time = values?.order_exp_time?.format(SETTINGS.DATE_TIME_FORMAT);
     values.dd_veh_arr_time = values?.dd_veh_arr_time?.format(SETTINGS.DATE_TIME_FORMAT);
 
-    console.log("date after", values.order_ord_time, values.order_dlv_time, values.order_exp_time);
+    console.log('date after', values.order_ord_time, values.order_dlv_time, values.order_exp_time);
 
     values.order_styp_id = 0;
     values.order_totals = 0;
@@ -160,7 +156,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? DELIVERY_DETAILS.CREATE : DELIVERY_DETAILS.UPDATE, values)
           .then(() => {
             onComplete();
@@ -191,7 +187,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(DELIVERY_DETAILS.DELETE, value)
           .then(() => {
             onComplete();
@@ -248,7 +244,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || !mainTabOn }
+            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || !mainTabOn}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -258,7 +254,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={(!access?.canDelete) || !mainTabOn}
+              disabled={!access?.canDelete || !mainTabOn}
               onClick={onDelete}
             >
               {t('operations.delete')}
@@ -267,10 +263,10 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
         </>
       }
     >
-      <Form 
-        layout="vertical" 
-        form={form} 
-        scrollToFirstError 
+      <Form
+        layout="vertical"
+        form={form}
+        scrollToFirstError
         initialValues={{
           dd_supp_code: params?.dd_supp_code,
           dd_tripord_no: params?.dd_tripord_no,
@@ -392,7 +388,6 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
                 <DeliveryBolTemplates form={form} value={value} pageState={pageState} />
               </Col>
             </Row>
-
           </TabPane>
           {/* <TabPane tab={t('tabColumns.orderTrips')} disabled={IS_CREATING} key="2">
           </TabPane>

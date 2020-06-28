@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import axios from 'axios';
+
 import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Button, Tabs, notification, Modal, Drawer } from 'antd';
@@ -14,7 +14,7 @@ import {
 
 import { Code, Name, CategoryCount, CategoryCustomers } from './fields';
 
-import { CUSTOMER_CATEGORIES } from '../../../api';
+import api, { CUSTOMER_CATEGORIES } from '../../../api';
 import _ from 'lodash';
 
 const TabPane = Tabs.TabPane;
@@ -42,7 +42,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? CUSTOMER_CATEGORIES.CREATE : CUSTOMER_CATEGORIES.UPDATE, values)
           .then((response) => {
             onComplete();
@@ -73,7 +73,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(CUSTOMER_CATEGORIES.DELETE, value)
           .then((response) => {
             onComplete();

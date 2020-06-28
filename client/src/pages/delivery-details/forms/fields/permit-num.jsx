@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
-import axios from 'axios';
 
 const PermitNumber = ({ form, value, pageState }) => {
   const { t } = useTranslation();
@@ -14,7 +13,7 @@ const PermitNumber = ({ form, value, pageState }) => {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.ddPermitNum')}`);
       }
     }
-    
+
     if (input && input.length > 210) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 210 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -31,15 +30,12 @@ const PermitNumber = ({ form, value, pageState }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="dd_permit_num" 
+    <Form.Item
+      name="dd_permit_num"
       label={t('fields.ddPermitNum')}
       rules={[{ required: false, validator: validate }]}
     >
-      <Input 
-        style={{ width: '100%' }} 
-        disabled={pageState==='create'? false : false}
-      />
+      <Input style={{ width: '100%' }} disabled={pageState === 'create' ? false : false} />
     </Form.Item>
   );
 };

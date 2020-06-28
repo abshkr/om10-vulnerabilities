@@ -4,13 +4,13 @@ import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select, notification } from 'antd';
 import { mutate } from 'swr';
-import axios from 'axios';
+
 import _ from 'lodash';
 
 import { TableTransfer } from '../../../../components';
 import columns from './columns';
 
-import { DELV_LOCATIONS } from '../../../../api';
+import api, { DELV_LOCATIONS } from '../../../../api';
 
 const CustomerLink = ({ form, value, supplier, category, location }) => {
   const [targetKeys, setTargetKeys] = useState([]);
@@ -58,32 +58,33 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
   ];
 
   // use onSuccess option to handle some settings after data is retrieved successfully.
-  // note: Tne component of Table Transfer requires the data source to have an index key. 
+  // note: Tne component of Table Transfer requires the data source to have an index key.
   const { data: allCustomers, isValidating } = useSWR(
     `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`,
-    { refreshInterval: 0,
-      onSuccess: 
-        (data, key, config) => {
-          console.log('Entered onSuccess!!!'); 
-          console.log({data}); 
-          //const originTargetKeys = data?.filter(item => item.delv_code === location).map(item => item.cust_acnt);
-          const originTargetKeys = data?.records.filter(item => item.delv_code === location).map(item => item.key);
-          console.log("originTargetKeys", originTargetKeys);
-          setTargetKeys(originTargetKeys);
-          console.log("targetKeys", targetKeys);
-      }
+    {
+      refreshInterval: 0,
+      onSuccess: (data, key, config) => {
+        console.log('Entered onSuccess!!!');
+        console.log({ data });
+        //const originTargetKeys = data?.filter(item => item.delv_code === location).map(item => item.cust_acnt);
+        const originTargetKeys = data?.records
+          .filter((item) => item.delv_code === location)
+          .map((item) => item.key);
+        console.log('originTargetKeys', originTargetKeys);
+        setTargetKeys(originTargetKeys);
+        console.log('targetKeys', targetKeys);
+      },
     }
   );
   let data = allCustomers?.records;
-  
+
   useEffect(() => {
     if (!!allCustomers) {
-      data = (allCustomers?.records);
+      data = allCustomers?.records;
     }
   }, [allCustomers]);
-  
 
-/*   const { data: allCustomers } = useSWR(
+  /*   const { data: allCustomers } = useSWR(
     `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`,
     { refreshInterval: 0,
     }
@@ -106,15 +107,76 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
  */
   const createLinksForEach = async (keys) => {
     console.log('keys:', keys);
-    const items = data.filter(item => _.indexOf(keys,item.key) >= 0);
+    const items = data.filter((item) => _.indexOf(keys, item.key) >= 0);
     console.log('items:', items);
-    items.forEach((item)=>{
-      item.delv_code=location;
+    items.forEach((item) => {
+      item.delv_code = location;
       console.log('item:', item);
-       axios
-      .post( DELV_LOCATIONS.CREATE_LINK, item)
+      api
+        .post(DELV_LOCATIONS.CREATE_LINK, item)
+        .then(() => {
+          mutate(
+            `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`
+          );
+          notification.success({
+            message: t('messages.createSuccess'),
+            description: t('descriptions.createSuccess'),
+          });
+        })
+        .catch((errors) => {
+          _.forEach(errors.response.data.errors, (error) => {
+            notification.error({
+              message: error.type,
+              description: error.message,
+            });
+          });
+        });
+    });
+  };
+
+  const deleteLinksForEach = async (keys) => {
+    console.log('keys:', keys);
+    const items = data.filter((item) => _.indexOf(keys, item.key) >= 0);
+    console.log('items:', items);
+    items.forEach((item) => {
+      item.delv_code = location;
+      console.log('item:', item);
+      api
+        .post(DELV_LOCATIONS.DELETE_LINK, item)
+        .then(() => {
+          mutate(
+            `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`
+          );
+          notification.success({
+            message: t('messages.deleteSuccess'),
+            description: t('descriptions.deleteSuccess'),
+          });
+        })
+        .catch((errors) => {
+          _.forEach(errors.response.data.errors, (error) => {
+            notification.error({
+              message: error.type,
+              description: error.message,
+            });
+          });
+        });
+    });
+  };
+
+  const createLinks = async (keys) => {
+    console.log('keys:', keys);
+    const items = data.filter((item) => _.indexOf(keys, item.key) >= 0);
+    console.log('items:', items);
+    items.forEach((item) => {
+      item.delv_code = location;
+      console.log('item:', item);
+    });
+    api
+      .post(DELV_LOCATIONS.CREATE_LINKS, items)
       .then(() => {
-        mutate(`${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`);
+        mutate(
+          `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`
+        );
         notification.success({
           message: t('messages.createSuccess'),
           description: t('descriptions.createSuccess'),
@@ -128,20 +190,22 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
           });
         });
       });
-    });
   };
 
-  const deleteLinksForEach = async (keys) => {
+  const deleteLinks = async (keys) => {
     console.log('keys:', keys);
-    const items = data.filter(item => _.indexOf(keys,item.key) >= 0);
+    const items = data.filter((item) => _.indexOf(keys, item.key) >= 0);
     console.log('items:', items);
-    items.forEach((item)=>{
-      item.delv_code=location;
+    items.forEach((item) => {
+      item.delv_code = location;
       console.log('item:', item);
-       axios
-      .post( DELV_LOCATIONS.DELETE_LINK, item)
+    });
+    api
+      .post(DELV_LOCATIONS.DELETE_LINKS, items)
       .then(() => {
-        mutate(`${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`);
+        mutate(
+          `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`
+        );
         notification.success({
           message: t('messages.deleteSuccess'),
           description: t('descriptions.deleteSuccess'),
@@ -155,61 +219,6 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
           });
         });
       });
-    });
-  };
-
-  const createLinks = async (keys) => {
-    console.log('keys:', keys);
-    const items = data.filter(item => _.indexOf(keys,item.key) >= 0);
-    console.log('items:', items);
-    items.forEach((item)=>{
-      item.delv_code = location;
-      console.log('item:', item);
-    });
-    axios
-    .post( DELV_LOCATIONS.CREATE_LINKS, items)
-    .then(() => {
-      mutate(`${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`);
-      notification.success({
-        message: t('messages.createSuccess'),
-        description: t('descriptions.createSuccess'),
-      });
-    })
-    .catch((errors) => {
-      _.forEach(errors.response.data.errors, (error) => {
-        notification.error({
-          message: error.type,
-          description: error.message,
-        });
-      });
-    });
-  };
-
-  const deleteLinks = async (keys) => {
-    console.log('keys:', keys);
-    const items = data.filter(item => _.indexOf(keys,item.key) >= 0);
-    console.log('items:', items);
-    items.forEach((item)=>{
-      item.delv_code = location;
-      console.log('item:', item);
-    });
-    axios
-    .post( DELV_LOCATIONS.DELETE_LINKS, items)
-    .then(() => {
-      mutate(`${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`);
-      notification.success({
-        message: t('messages.deleteSuccess'),
-        description: t('descriptions.deleteSuccess'),
-      });
-    })
-    .catch((errors) => {
-      _.forEach(errors.response.data.errors, (error) => {
-        notification.error({
-          message: error.type,
-          description: error.message,
-        });
-      });
-    });
   };
 
   const changeTargetKeys = (nextTargetKeys) => {
@@ -218,7 +227,7 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
     // if new target key is shorter, then item is moved from right to left, therefore need to remove a link
     let currTargetKeys = targetKeys;
     if (currTargetKeys === undefined) {
-      currTargetKeys = data?.filter(item => item.delv_code === location).map(item => item.key);
+      currTargetKeys = data?.filter((item) => item.delv_code === location).map((item) => item.key);
     }
     console.log(currTargetKeys);
     let keys;
@@ -235,20 +244,26 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
     setTargetKeys(nextTargetKeys);
   };
 
-  const linkTitle = t('fields.delvCustomerLinks') + '  [ ' + t('fields.delvAvailableCustomers') + '  <<->>  ' + t('fields.delvLinkedCustomers') + ' ]';
+  const linkTitle =
+    t('fields.delvCustomerLinks') +
+    '  [ ' +
+    t('fields.delvAvailableCustomers') +
+    '  <<->>  ' +
+    t('fields.delvLinkedCustomers') +
+    ' ]';
 
   return (
     <Form.Item name="customer_link" label={linkTitle} rules={[{ required: false }]}>
-        <TableTransfer
-          dataSource={data}
-          targetKeys={targetKeys}
-          onChange={changeTargetKeys}
-          filterOption={(inputValue, item) =>
-            item.cust_desc.indexOf(inputValue) !== -1 || item.cust_cmpy_name.indexOf(inputValue) !== -1
-          }
-          leftColumns={leftTableColumns}
-          rightColumns={rightTableColumns}
-        />
+      <TableTransfer
+        dataSource={data}
+        targetKeys={targetKeys}
+        onChange={changeTargetKeys}
+        filterOption={(inputValue, item) =>
+          item.cust_desc.indexOf(inputValue) !== -1 || item.cust_cmpy_name.indexOf(inputValue) !== -1
+        }
+        leftColumns={leftTableColumns}
+        rightColumns={rightTableColumns}
+      />
     </Form.Item>
   );
 };

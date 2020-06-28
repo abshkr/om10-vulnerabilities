@@ -9,8 +9,8 @@ import OtherForm from './other';
 import PrinterForm from './printer';
 import TemplateForm from './template';
 import _ from 'lodash';
-import axios from 'axios';
-import { COMPANIES } from '../../../api';
+
+import api, { COMPANIES } from '../../../api';
 import { mutate } from 'swr';
 
 const TabPane = Tabs.TabPane;
@@ -83,7 +83,7 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(COMPANIES.UPDATE, values)
           .then((response) => {
             // mutate(COMPANIES.READ);

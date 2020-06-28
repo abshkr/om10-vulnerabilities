@@ -6,8 +6,8 @@ import { Form, Button, Tabs, Modal, notification } from 'antd';
 import { DataTable } from '../../../components';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import axios from 'axios';
-import { COMPANIES } from '../../../api';
+
+import api, { COMPANIES } from '../../../api';
 import useSWR, { mutate } from 'swr';
 import columns from './columns';
 import ChildForm from './child-form/forms';
@@ -46,7 +46,7 @@ const RelationForm = ({ value, handleFormState }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(COMPANIES.UPDATE_RELATIONS, values)
           .then((response) => {
             // mutate(COMPANIES.READ);
