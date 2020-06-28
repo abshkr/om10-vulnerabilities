@@ -62,6 +62,7 @@ const defaultColumnDef = {};
 
 const Table = ({
   data,
+  isLoading,
   onClick,
   columns,
   onEditingFinished,
@@ -85,7 +86,7 @@ const Table = ({
   const [value, setValue] = useState(filterValue);
   const [api, setAPI] = useState('');
 
-  const isLoading = !data;
+  // const loading = !data || isLoading;
 
   const handleMultipleSelection = () => {
     if (handleSelect) {
@@ -163,7 +164,7 @@ const Table = ({
 
   return (
     <Spin
-      spinning={isLoading}
+      spinning={!data || !!isLoading}
       style={{
         width: '100%',
         minHeight: height || '100%',
@@ -178,7 +179,7 @@ const Table = ({
       >
         {!minimal && (
           <>
-            <Search value={value} search={setValue} isLoading={isLoading && !data} />
+            <Search value={value} search={setValue} isLoading={!!isLoading && !data} />
 
             <Button
               icon={<ClearOutlined />}
