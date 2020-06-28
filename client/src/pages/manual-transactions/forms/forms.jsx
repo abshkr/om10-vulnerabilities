@@ -7,6 +7,7 @@ import moment from 'moment';
 import api, { MANUAL_TRANSACTIONS } from '../../../api';
 import { getDateTimeFormat } from '../../../utils';
 import TripSealManager from './trip-seals';
+import OrderSealManager from './order-seals';
 
 const { Option } = Select;
 
@@ -247,9 +248,9 @@ const Forms = ({
 
   const onViewTripSeals = () => {
     // pop up the dialog to manage seals for the schedule
-    //alert("TODO: manage seals for the schedule");
+    //alert('TODO: manage seals for the schedule');
     TripSealManager(
-      t('tabColumns.seals'),
+      t('tabColumns.tripSeals'),
       {supplier_code: selectedSupplier, shls_trip_no: selectedTrip},
       loadTripSeal,
       '80vw',
@@ -257,9 +258,25 @@ const Forms = ({
     );
   };
 
+  const loadOrderSeal = async () => {
+    const sealResults = await getTripSealByTrip(selectedTrip);
+
+    setFieldsValue({
+      seal_range: sealResults?.records[0].shls_seal_no,
+    });
+
+  }
+
   const onViewOrderSeals = () => {
     // pop up the dialog to manage seals for the open order
-    alert('TODO: manage seals for the open order');
+    //alert('TODO: manage seals for the open order');
+    OrderSealManager(
+      t('tabColumns.orderSeals'),
+      {supplier_code: selectedSupplier, shls_trip_no: selectedTrip},
+      loadOrderSeal,
+      '80vw',
+      '40vh',
+    );
   };
 
   useEffect(() => {
