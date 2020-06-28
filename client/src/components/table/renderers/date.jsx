@@ -13,7 +13,7 @@ const DateRenderer = ({ value }) => {
     return <div>{payload}</div>;
   }
 
-  return null;
+  return <div />;
 };
 
 export default DateRenderer;
