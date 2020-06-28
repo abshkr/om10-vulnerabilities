@@ -26,6 +26,9 @@ class EchoSchema
                 case 405:
                     $type = "Method Not Allowed";
                     break;
+                case 498:
+                    $type = "Invalid Token";
+                    break;
                 case 500:
                     $type = "Internal Server Error";
                     break;

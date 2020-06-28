@@ -24,13 +24,14 @@ function get_http_token()
     if (AUTH_IN_HEADER) {
         $headers = apache_request_headers();
 
-        $authorization = isset($headers['Authorization']) ? $headers['Authorization'] : $headers['authorization'];
-        if (!isset($authorization)) {
+        if (!array_key_exists('Authorization', $headers) && !array_key_exists('authorization', $headers)) {
             write_log('JWT auth error: Authorization not set in http header',
                 __FILE__, __LINE__, LogLevel::ERROR);
             throw new UnauthException('JWT auth error: Authorization not set in http header');
             return false;
         }
+
+        $authorization = isset($headers['Authorization']) ? $headers['Authorization'] : $headers['authorization'];
 
         $strs = explode(" ", $authorization);
 

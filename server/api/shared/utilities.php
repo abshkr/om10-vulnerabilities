@@ -116,7 +116,7 @@ class Utilities
         if (isset($_SESSION["SESSION"])) {
             $url .= "sess_id=" . $_SESSION["SESSION"];
         } else {
-            // $url .= "sess_id=LgMvAqIIpPfN";
+            // $url .= "sess_id=rljLkPnHhSEN";
             $url = rtrim($url, '&');
         }
 
@@ -145,6 +145,10 @@ class Utilities
         // initialize object
         try {
             $db = $database->getConnection($class, $method);
+        } catch (InvalidToeknException $e) {
+            $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
         } catch (UnauthException $e) {
             $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
             echo json_encode($error, JSON_PRETTY_PRINT);
@@ -695,7 +699,13 @@ class Utilities
             __FILE__, __LINE__);
 
         $database = new Database();
-        $db = $database->getConnection($class, $method);
+        try {
+            $db = $database->getConnection($class, $method);
+        } catch (UnauthException $e) {
+            $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
 
         $access_check = new AccessCheck($db);
         if (!$access_check->check($class, $method, self::getCurrPsn())) {

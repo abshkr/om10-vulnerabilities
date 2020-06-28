@@ -111,25 +111,30 @@ class Database
                     throw $e;
                 }
                 
-                $pay_load = check_token($token);
-                if (!$pay_load) {
-                    write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
-                    throw new UnauthException('Authentication check failed, cannot continue');
-                } else {
-                    if (INVALIDATE_TOKEN_ENABLED &&
-                        !$this->checkSessionStatus($pay_load->per_code, $pay_load->sess_id)) {
-                        write_log(
-                            sprintf(
-                                "Token already invalidated, cannot continue. per_code:%s, sess_id:%s",
-                                $pay_load->per_code, $pay_load->sess_id),
-                            __FILE__, __LINE__, LogLevel::ERROR);
-                        throw new UnauthException('Token already invalidated, cannot continue');
+                try {
+                    $pay_load = check_token($token);
+                    if (!$pay_load) {
+                        write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
+                        throw new InvalidToeknException('Authentication check failed, cannot continue');
+                    } else {
+                        if (INVALIDATE_TOKEN_ENABLED &&
+                            !$this->checkSessionStatus($pay_load->per_code, $pay_load->sess_id)) {
+                            write_log(
+                                sprintf(
+                                    "Token already invalidated, cannot continue. per_code:%s, sess_id:%s",
+                                    $pay_load->per_code, $pay_load->sess_id),
+                                __FILE__, __LINE__, LogLevel::ERROR);
+                            throw new InvalidToeknException('Token already invalidated, cannot continue');
+                        }
                     }
+                } catch (UnexpectedValueException $e) {
+                    throw new InvalidToeknException($e->getMessage());
                 }
+                
             } else {
                 if (!$this->getSessionStatus($class, $method)) {
                     write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
-                    throw new UnauthException('Authentication check failed, cannot continue');
+                    throw new InvalidToeknException('Authentication check failed, cannot continue');
                 }
             }
         }

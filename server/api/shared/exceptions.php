@@ -1,5 +1,8 @@
 <?php
 
+class InvalidToeknException extends Exception
+{}
+
 class UnauthException extends Exception
 {}
 
