@@ -30,10 +30,10 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const tgr_name = value?.tgr_name;
   const old_active = value?.tgr_tankcode;
-  
+
   const { data: items } = useSWR(`${TANK_GROUPS.ITEMS}?tgr_name=${tgr_name}`);
   const { data: avilableTanks } = useSWR(`${TANK_GROUPS.AVAILABLES}?tgr_name=${tgr_name}`);
-  
+
   const { setFieldsValue, resetFields } = form;
   const IS_CREATING = !value;
 
@@ -44,8 +44,8 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     let tank_items = [];
     for (let i = 0; i < values.tgr_tanklist.length; i++) {
       tank_items.push({
-        "tgr_tankcode" : values.tgr_tanklist[i],
-        "tgr_ntk": values.tgr_tanklist[i] == old_active ? 1: 0
+        tgr_tankcode: values.tgr_tanklist[i],
+        tgr_ntk: values.tgr_tanklist[i] == old_active ? 1 : 0,
       });
     }
     values.tank_items = tank_items;
@@ -61,17 +61,16 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       onOk: async () => {
         await axios
           .post(IS_CREATING ? TANK_GROUPS.CREATE : TANK_GROUPS.UPDATE, values)
-          .then(
-            axios.spread((response) => {
-              handleFormState(false, null);
+          .then((response) => {
+            handleFormState(false, null);
 
-              mutate(TANK_GROUPS.READ);
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
-              });
-            })
-          )
+            mutate(TANK_GROUPS.READ);
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -86,11 +85,11 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const onActivate = () => {
     const activateData = {
-      "tgr_name": tgr_name,
-      "tgr_tankcode": selected[0].tank_code,
+      tgr_name: tgr_name,
+      tgr_tankcode: selected[0].tank_code,
       // "old_active": old_active,
-      "old_active": old_active || selected[0].tank_code,
-    }
+      old_active: old_active || selected[0].tank_code,
+    };
     Modal.confirm({
       title: t('prompts.activate'),
       okText: t('operations.yes'),
@@ -100,16 +99,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       onOk: async () => {
         await axios
           .post(TANK_GROUPS.ACTIVATE, activateData)
-          .then(
-            axios.spread((response) => {
-              mutate(TANK_GROUPS.READ);
-              handleFormState(false, null);
-              notification.success({
-                message: t('messages.saveSuccess'),
-                description: `${t('descriptions.saveSuccess')}`,
-              });
-            })
-          )
+          .then((response) => {
+            mutate(TANK_GROUPS.READ);
+            handleFormState(false, null);
+            notification.success({
+              message: t('messages.saveSuccess'),
+              description: `${t('descriptions.saveSuccess')}`,
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -132,16 +130,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       onOk: async () => {
         await axios
           .post(TANK_GROUPS.DELETE, value)
-          .then(
-            axios.spread((response) => {
-              mutate(TANK_GROUPS.READ);
-              handleFormState(false, null);
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`,
-              });
-            })
-          )
+          .then((response) => {
+            mutate(TANK_GROUPS.READ);
+            handleFormState(false, null);
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -163,17 +160,21 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     } else {
       setPicks(avilableTanks?.records);
     }
-    
-    const payload = _.filter(tanks, (item)=> {return value.includes(item.tank_code)});
-    const remainingTanks = payload.map(payload => payload.tank_code);
-    const newlyAdded = _.filter(value, (item)=> {return !remainingTanks.includes(item)});
+
+    const payload = _.filter(tanks, (item) => {
+      return value.includes(item.tank_code);
+    });
+    const remainingTanks = payload.map((payload) => payload.tank_code);
+    const newlyAdded = _.filter(value, (item) => {
+      return !remainingTanks.includes(item);
+    });
     if (newlyAdded.length > 0) {
       const target = _.filter(pickups, ['tank_code', newlyAdded[0]]);
       payload.push({
         ...target[0],
-        "tank_active": false,
-        "tank_group": tgr_name
-      })
+        tank_active: false,
+        tank_group: tgr_name,
+      });
     }
     setTanks(payload);
   };
@@ -196,7 +197,6 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     } else {
       setTanks(items?.records || []);
     }
-    
   }, [value, items]);
 
   useEffect(() => {
@@ -238,7 +238,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               htmlType="button"
               icon={<CloseOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={IS_CREATING || selected.length <= 0 || (selected[0].tank_code == old_active)}
+              disabled={IS_CREATING || selected.length <= 0 || selected[0].tank_code == old_active}
               onClick={onActivate}
             >
               {t('operations.activate')}
@@ -274,8 +274,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
             <Form.Item name="tgr_name" label={t('fields.groupName')}>
-              <Input disabled={!!value}>
-              </Input>
+              <Input disabled={!!value}></Input>
             </Form.Item>
 
             <Form.Item name="tgr_tanklist">
@@ -298,12 +297,8 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
                 ))}
               </Select>
             </Form.Item>
-            
-            <DataTable height="60vh" 
-              data={tanks} 
-              columns={fields} 
-              handleSelect={setSelected}
-              minimal />
+
+            <DataTable height="60vh" data={tanks} columns={fields} handleSelect={setSelected} minimal />
           </TabPane>
         </Tabs>
       </Form>

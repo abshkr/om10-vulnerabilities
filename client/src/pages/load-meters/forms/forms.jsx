@@ -35,17 +35,16 @@ const FormModal = ({ value }) => {
       onOk: async () => {
         await axios
           .post(IS_CREATING ? LOAD_METERS.CREATE : LOAD_METERS.UPDATE, values)
-          .then(
-            axios.spread((response) => {
-              Modal.destroyAll();
+          .then((response) => {
+            Modal.destroyAll();
 
-              mutate(LOAD_METERS.READ);
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-              });
-            })
-          )
+            mutate(LOAD_METERS.READ);
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
+
           .catch((error) => {
             notification.error({
               message: error.message,
@@ -66,16 +65,15 @@ const FormModal = ({ value }) => {
       onOk: async () => {
         await axios
           .post(LOAD_METERS.DELETE, value)
-          .then(
-            axios.spread((response) => {
-              mutate(LOAD_METERS.READ);
-              Modal.destroyAll();
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`,
-              });
-            })
-          )
+          .then((response) => {
+            mutate(LOAD_METERS.READ);
+            Modal.destroyAll();
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+
           .catch((error) => {
             notification.error({
               message: error.message,

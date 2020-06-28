@@ -194,17 +194,16 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
           console.log('await value', value);
           await axios
             .post(NOMINATION_TRANSACTIONS.SUBMIT, preparePayload(values))
-            .then(
-              axios.spread((response) => {
-                //Modal.destroyAll();
-                onComplete();
+            .then((response) => {
+              //Modal.destroyAll();
+              onComplete();
 
-                notification.success({
-                  message: t('messages.submitSuccess'),
-                  description: t('descriptions.submitSuccess'),
-                });
-              })
-            )
+              notification.success({
+                message: t('messages.submitSuccess'),
+                description: t('descriptions.submitSuccess'),
+              });
+            })
+
             .catch((error) => {
               notification.error({
                 message: error.message,
@@ -234,7 +233,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
           const values = await form.validateFields();
           await axios
             .post(NOMINATION_TRANSACTIONS.CALCULATE, {
-              frm_baseCd: (pageState==='receipt'? value?.mvitm_prodcode_to : value?.mvitm_prodcode_from),
+              frm_baseCd: pageState === 'receipt' ? value?.mvitm_prodcode_to : value?.mvitm_prodcode_from,
               frm_which_type: calcSource?.type, //'LT',
               frm_real_amount: calcSource?.qty, //values.mlitm_qty_amb,
               frm_real_temp: values?.mlitm_temp_amb,
@@ -272,7 +271,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
   }, [value, visible, resetFields, setSelected]);
 
   useEffect(() => {
-    if ( !!defaultTanker && !carrier) {
+    if (!!defaultTanker && !carrier) {
       setCarrier(defaultTanker.tnkr_carrier);
       if (value) {
         value.mvitm_carrier = defaultTanker.tnkr_carrier;
@@ -281,7 +280,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
   }, [defaultTanker, value, carrier, setCarrier]);
 
   useEffect(() => {
-    if ( !!defaultTanker && !tanker) {
+    if (!!defaultTanker && !tanker) {
       setTanker(defaultTanker.tnkr_code);
       if (value) {
         value.mvitm_tanker = defaultTanker.tnkr_code;
@@ -369,12 +368,13 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
 
           <Row gutter={[8, 1]}>
             <Col span={8}>
-              <Carrier 
-                form={form} 
-                value={value} 
-                onChange={setCarrier} 
+              <Carrier
+                form={form}
+                value={value}
+                onChange={setCarrier}
                 carrier={carrier}
-                pageState={pageState} />
+                pageState={pageState}
+              />
             </Col>
 
             <Col span={8}>

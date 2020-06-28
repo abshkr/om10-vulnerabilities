@@ -5,7 +5,7 @@ import {
   PlusOutlined,
   CloseOutlined,
   DeleteOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 
 import { useTranslation } from 'react-i18next';
@@ -44,23 +44,22 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       onOk: async () => {
         await axios
           .post(IS_CREATING ? DANGEROUS_GOODS.CREATE : DANGEROUS_GOODS.UPDATE, values)
-          .then(
-            axios.spread(response => {
-              onComplete()
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
-              });
-            })
-          )
-          .catch(error => {
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
+
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed')
+              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
             });
           });
-      }
+      },
     });
   };
 
@@ -74,23 +73,22 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       onOk: async () => {
         await axios
           .post(DANGEROUS_GOODS.DELETE, value)
-          .then(
-            axios.spread(response => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`
-              });
-            })
-          )
-          .catch(error => {
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+
+          .catch((error) => {
             notification.error({
               message: error.message,
-              description: t('descriptions.deleteFailed')
+              description: t('descriptions.deleteFailed'),
             });
           });
-      }
+      },
     });
   };
 
@@ -112,8 +110,8 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
         placard_notation3: value.placard_notation3,
         placard_notation4: value.placard_notation4,
         stcc_code: value.stcc_code,
-      })
-  
+      });
+
       // setMaterial(value.material)
     }
   }, [value, setFieldsValue, payload]);
@@ -134,7 +132,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
 
   const formLayout = {
     labelCol: { span: 8 },
-    labelAlign: "left",
+    labelAlign: 'left',
     // marginRight: 10
     // wrapperCol: { span: 16 },
   };
@@ -183,69 +181,77 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
         </>
       }
     >
-      <Form form={form} scrollToFirstError  {...formLayout}>
+      <Form form={form} scrollToFirstError {...formLayout}>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} key="1" style={{ height: '80vh' }}>
-            <Form.Item name="material" label={t('fields.material')} rules={[{ required: true, validator: materialValidate}]}>
+          <TabPane
+            className="ant-tab-window"
+            tab={t('tabColumns.general')}
+            key="1"
+            style={{ height: '80vh' }}
+          >
+            <Form.Item
+              name="material"
+              label={t('fields.material')}
+              rules={[{ required: true, validator: materialValidate }]}
+            >
               <Input />
             </Form.Item>
-            
-            <Form.Item name="adr_name" label={t('fields.adrName')} rules={[{ required: true}]}>
+
+            <Form.Item name="adr_name" label={t('fields.adrName')} rules={[{ required: true }]}>
               <Input />
             </Form.Item>
-            
-            <Form.Item name="adr_type" label={t('fields.adrType')} rules={[{ required: true}]}>
+
+            <Form.Item name="adr_type" label={t('fields.adrType')} rules={[{ required: true }]}>
               <Input />
             </Form.Item>
-            
-            <Form.Item name="adr_desc1" label={t('fields.adrDesc')} rules={[{ required: true}]}>
+
+            <Form.Item name="adr_desc1" label={t('fields.adrDesc')} rules={[{ required: true }]}>
               <Input />
             </Form.Item>
-            
-            <Form.Item name="adr_desc2" label={t('fields.adrDesc2')} >
+
+            <Form.Item name="adr_desc2" label={t('fields.adrDesc2')}>
               <Input />
             </Form.Item>
-            
-            <Form.Item name="adr_desc3" label={t('fields.adrDesc3')} >
+
+            <Form.Item name="adr_desc3" label={t('fields.adrDesc3')}>
               <Input />
             </Form.Item>
-            
-            <Form.Item name="adr_fareklasse" label={t('fields.adrFareklasse')} >
+
+            <Form.Item name="adr_fareklasse" label={t('fields.adrFareklasse')}>
               <Input />
             </Form.Item>
-            
-            <Form.Item name="protect_freeze" label={t('fields.protectFreeze')} >
+
+            <Form.Item name="protect_freeze" label={t('fields.protectFreeze')}>
               <Input />
             </Form.Item>
-            
-            <Form.Item name="certific_of_analysis" label={t('fields.certificOfAnalysis')} >
+
+            <Form.Item name="certific_of_analysis" label={t('fields.certificOfAnalysis')}>
               <Input />
             </Form.Item>
-            
-            <Form.Item name="additional_txt" label={t('fields.additionalTxt')} >
+
+            <Form.Item name="additional_txt" label={t('fields.additionalTxt')}>
               <Input />
             </Form.Item>
-            
-            <Form.Item name="placard_notation1" label={t('fields.placardNotation1')} >
+
+            <Form.Item name="placard_notation1" label={t('fields.placardNotation1')}>
               <Input />
             </Form.Item>
-            
-            <Form.Item name="placard_notation2" label={t('fields.placardNotation2')} >
+
+            <Form.Item name="placard_notation2" label={t('fields.placardNotation2')}>
               <Input />
             </Form.Item>
-            
-            <Form.Item name="placard_notation3" label={t('fields.placardNotation3')} >
+
+            <Form.Item name="placard_notation3" label={t('fields.placardNotation3')}>
               <Input />
             </Form.Item>
-            
-            <Form.Item name="placard_notation4" label={t('fields.placardNotation4')} >
+
+            <Form.Item name="placard_notation4" label={t('fields.placardNotation4')}>
               <Input />
             </Form.Item>
-            
-            <Form.Item name="stcc_code" label={t('fields.stccCode')} >
+
+            <Form.Item name="stcc_code" label={t('fields.stccCode')}>
               <Input />
             </Form.Item>
-            
           </TabPane>
         </Tabs>
       </Form>

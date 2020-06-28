@@ -1,18 +1,13 @@
 import React from 'react';
 
-import {
-  EditOutlined,
-  QuestionCircleOutlined,
-  CloseOutlined,
-  DeleteOutlined
-} from '@ant-design/icons';
+import { EditOutlined, QuestionCircleOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
-import SupplierForm from './supplier-settings'
-import OtherForm from './other'
-import PrinterForm from './printer'
-import TemplateForm from './template'
+import SupplierForm from './supplier-settings';
+import OtherForm from './other';
+import PrinterForm from './printer';
+import TemplateForm from './template';
 import _ from 'lodash';
 import axios from 'axios';
 import { COMPANIES } from '../../../api';
@@ -27,41 +22,41 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
   const onComplete = () => {
     handleFormState(false, null);
     if (value.cmpy_code) {
-      setFilterValue("" + value.cmpy_code);
+      setFilterValue('' + value.cmpy_code);
     }
     mutate(COMPANIES.READ);
     Modal.destroyAll();
   };
-  
+
   const onFinish = async () => {
     const values = await form.validateFields();
-    values.cmpy_code = value.cmpy_code
-    
+    values.cmpy_code = value.cmpy_code;
+
     values.company_configs = [
       {
         cmpy_code: value.cmpy_code,
         config_key: 'AUTO_COMPLETE_NON_PRESCHD_LOADS',
-        config_value: values.auto_complete_non_preschd_loads ? "Y" : "N",
+        config_value: values.auto_complete_non_preschd_loads ? 'Y' : 'N',
       },
       {
         cmpy_code: value.cmpy_code,
         config_key: 'SAFEFILL_TOLERANCE_CHECK',
-        config_value: values.safefill_tolerance_check ? "Y" : "N",
+        config_value: values.safefill_tolerance_check ? 'Y' : 'N',
       },
       {
         cmpy_code: value.cmpy_code,
         config_key: 'VALIDATE_SCHEDULE_MAX_WEIGHT',
-        config_value: values.validate_schedule_max_weight ? "Y" : "N",
+        config_value: values.validate_schedule_max_weight ? 'Y' : 'N',
       },
       {
         cmpy_code: value.cmpy_code,
         config_key: 'AUTH_AT_GATE',
-        config_value: values.auth_at_gate ? "Y" : "N",
+        config_value: values.auth_at_gate ? 'Y' : 'N',
       },
       {
         cmpy_code: value.cmpy_code,
         config_key: 'VALIDATE_SCHEDULE_AVAILABITILTY',
-        config_value: values.validate_schedule_availabitilty ? "Y" : "N",
+        config_value: values.validate_schedule_availabitilty ? 'Y' : 'N',
       },
       {
         cmpy_code: value.cmpy_code,
@@ -71,15 +66,15 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
       {
         cmpy_code: value.cmpy_code,
         config_key: 'CMPY_2ND_DRAWER_FLAG',
-        config_value: values.cmpy_2nd_drawer_flag ? "Y" : "N",
+        config_value: values.cmpy_2nd_drawer_flag ? 'Y' : 'N',
       },
       {
         cmpy_code: value.cmpy_code,
         config_key: 'CMPY_2ND_DRAWER',
         config_value: values.cmpy_2nd_drawer,
       },
-    ]
-    
+    ];
+
     Modal.confirm({
       title: t('prompts.update'),
       okText: t('operations.update'),
@@ -90,19 +85,18 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
       onOk: async () => {
         await axios
           .post(COMPANIES.UPDATE, values)
-          .then(
-            axios.spread(response => {
-              // mutate(COMPANIES.READ);
-              // Modal.destroyAll();
-              onComplete()
+          .then((response) => {
+            // mutate(COMPANIES.READ);
+            // Modal.destroyAll();
+            onComplete();
 
-              // mutate(COMPANIES.READ);
-              notification.success({
-                message: t('messages.updateSuccess'),
-                description: t('messages.updateSuccess')
-              });
-            })
-          )
+            // mutate(COMPANIES.READ);
+            notification.success({
+              message: t('messages.updateSuccess'),
+              description: t('messages.updateSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -111,17 +105,13 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
               });
             });
           });
-      }
+      },
     });
   };
 
   return (
     <div>
-      <Form 
-        form={form} 
-        onFinish={onFinish} 
-        scrollToFirstError
-      >
+      <Form form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.supplierSettings')} key="1" style={{ height: '65vh' }}>
             <SupplierForm value={value} form={form}></SupplierForm>

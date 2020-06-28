@@ -238,14 +238,14 @@ const Items = ({ setTableAPIContext, value }) => {
         payload.mvitm_plant_to = t('placeholder.selectPlease');
         payload.mvitm_prodcmpy_to = t('placeholder.selectPlease');
         payload.mvitm_prodcode_to = t('placeholder.selectPlease');
-        payload.mvitm_tank_to = '';//t('placeholder.selectPlease');
+        payload.mvitm_tank_to = ''; //t('placeholder.selectPlease');
       }
 
       if (value.value === 1) {
         payload.mvitm_plant_from = t('placeholder.selectPlease');
         payload.mvitm_prodcmpy_from = t('placeholder.selectPlease');
         payload.mvitm_prodcode_from = t('placeholder.selectPlease');
-        payload.mvitm_tank_from = '';//t('placeholder.selectPlease');
+        payload.mvitm_tank_from = ''; //t('placeholder.selectPlease');
 
         payload.mvitm_tank_to = '';
         payload.mvitm_prodcode_to = '';
@@ -257,12 +257,12 @@ const Items = ({ setTableAPIContext, value }) => {
         payload.mvitm_plant_from = t('placeholder.selectPlease');
         payload.mvitm_prodcmpy_from = t('placeholder.selectPlease');
         payload.mvitm_prodcode_from = t('placeholder.selectPlease');
-        payload.mvitm_tank_from = '';//t('placeholder.selectPlease');
+        payload.mvitm_tank_from = ''; //t('placeholder.selectPlease');
 
         payload.mvitm_plant_to = t('placeholder.selectPlease');
         payload.mvitm_prodcmpy_to = t('placeholder.selectPlease');
         payload.mvitm_prodcode_to = t('placeholder.selectPlease');
-        payload.mvitm_tank_to = '';//t('placeholder.selectPlease');
+        payload.mvitm_tank_to = ''; //t('placeholder.selectPlease');
       }
     }
 
@@ -287,16 +287,15 @@ const Items = ({ setTableAPIContext, value }) => {
 
         await axios
           .post(MOVEMENT_NOMIATIONS.TOGGLE_ITEM, itemValue)
-          .then(
-            axios.spread((response) => {
-              mutate(url);
+          .then((response) => {
+            mutate(url);
 
-              notification.success({
-                message: t('messages.updateSuccess'),
-                description: `${t('messages.updateSuccess')}`,
-              });
-            })
-          )
+            notification.success({
+              message: t('messages.updateSuccess'),
+              description: `${t('messages.updateSuccess')}`,
+            });
+          })
+
           .catch((error) => {
             notification.error({
               message: error.message,
@@ -311,11 +310,11 @@ const Items = ({ setTableAPIContext, value }) => {
 
   useEffect(() => {
     if (payload?.records) {
-       setData(payload?.records);
-     }
-            
+      setData(payload?.records);
+    }
+
     setSize(payload?.records?.length || 0);
-  }, [payload]);  
+  }, [payload]);
 
   useEffect(() => {
     if (tableAPI) {

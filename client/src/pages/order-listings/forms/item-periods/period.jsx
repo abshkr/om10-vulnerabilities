@@ -51,7 +51,6 @@ const PeriodForm = ({ value, units, parent, revalidate, data, form }) => {
   const IS_CREATING = !value;
 
   const onFinish = (values) => {
-    
     const record = {
       oprd_order_id: parent?.oitem_order_id,
       oprd_prod_code: parent?.oitem_prod_code,
@@ -72,17 +71,16 @@ const PeriodForm = ({ value, units, parent, revalidate, data, form }) => {
       onOk: async () => {
         await axios
           .post(IS_CREATING ? ORDER_LISTINGS.PERIOD_CREATE : ORDER_LISTINGS.PERIOD_UPDATE, record)
-          .then(
-            axios.spread((response) => {
-              Modal.destroyAll();
+          .then((response) => {
+            Modal.destroyAll();
 
-              revalidate();
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-              });
-            })
-          )
+            revalidate();
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -146,11 +144,11 @@ const PeriodForm = ({ value, units, parent, revalidate, data, form }) => {
   }, [IS_CREATING, value, data, setFieldsValue]);
 
   return (
-    <Form 
-      layout="vertical" 
-      form={form} 
-      onFinish={onFinish} 
-      initialValues={{oprd_prod_unit: String(parent?.oitem_prod_unit)}}
+    <Form
+      layout="vertical"
+      form={form}
+      onFinish={onFinish}
+      initialValues={{ oprd_prod_unit: String(parent?.oitem_prod_unit) }}
     >
       <Tabs defaultActiveKey="1" animated={false}>
         <TabPane tab={t('tabColumns.general')} key="1">
@@ -355,10 +353,10 @@ const Period = ({ visible, setVisibility, selected, order, form }) => {
                       // eslint-disable-next-line
                       title={
                         <Row gutter={[8, 8]}>
-                          <Col span={12} style={{color: '#00FF00'}}>
+                          <Col span={12} style={{ color: '#00FF00' }}>
                             {`${t('fields.oprdProdQty')}: ${item.oprd_prod_qty} ${item.oprd_unit_name}`}{' '}
                           </Col>
-                          <Col span={12} style={{color: '#FF0000'}}>
+                          <Col span={12} style={{ color: '#FF0000' }}>
                             {`${t('fields.oprdProdUsed')}: ${item.oprd_prod_used} ${item.oprd_unit_name}`}{' '}
                           </Col>
                         </Row>

@@ -1,15 +1,22 @@
 import React, { useEffect } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  QuestionCircleOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
+
 import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
+
 import _ from 'lodash';
 
 import { Area, AreaName, Gates } from './fields';
 
-import { AREA } from '../../../api';
+import api, { AREA } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -37,7 +44,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? AREA.CREATE : AREA.UPDATE, values)
           .then(() => {
             onComplete();
@@ -70,7 +77,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(AREA.DELETE, values)
           .then(() => {
             onComplete();

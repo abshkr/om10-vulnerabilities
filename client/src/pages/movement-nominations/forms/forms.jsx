@@ -129,18 +129,17 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
         onOk: async () => {
           await axios
             .post(IS_CREATING ? MOVEMENT_NOMIATIONS.CREATE : MOVEMENT_NOMIATIONS.UPDATE, values)
-            .then(
-              axios.spread((response) => {
-                onComplete(values?.mv_key);
-                //Modal.destroyAll();
+            .then((response) => {
+              onComplete(values?.mv_key);
+              //Modal.destroyAll();
 
-                //mutate(url);
-                notification.success({
-                  message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                  description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-                });
-              })
-            )
+              //mutate(url);
+              notification.success({
+                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+              });
+            })
+
             .catch((error) => {
               notification.error({
                 message: error.message,
@@ -162,17 +161,16 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
       onOk: async () => {
         await axios
           .post(MOVEMENT_NOMIATIONS.DELETE, value)
-          .then(
-            axios.spread((response) => {
-              onComplete(null);
-              //mutate(MOVEMENT_NOMIATIONS.READ);
-              //Modal.destroyAll();
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`,
-              });
-            })
-          )
+          .then((response) => {
+            onComplete(null);
+            //mutate(MOVEMENT_NOMIATIONS.READ);
+            //Modal.destroyAll();
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+
           .catch((error) => {
             notification.error({
               message: error.message,

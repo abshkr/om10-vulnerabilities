@@ -86,16 +86,15 @@ const Forms = ({ value, isFromNomination, start, end, access }) => {
           .post(TRANSACTION_LIST.CANCEL_TRANSACTION, {
             trsa_id: value.trsa_id,
           })
-          .then(
-            axios.spread((response) => {
-              Modal.destroyAll();
-              mutate(`${TRANSACTION_LIST.READ}?start_date=${start}&end_date=${end}`);
-              notification.success({
-                message: t('messages.closeSuccess'),
-                description: t('descriptions.closeSuccess'),
-              });
-            })
-          )
+          .then((response) => {
+            Modal.destroyAll();
+            mutate(`${TRANSACTION_LIST.READ}?start_date=${start}&end_date=${end}`);
+            notification.success({
+              message: t('messages.closeSuccess'),
+              description: t('descriptions.closeSuccess'),
+            });
+          })
+
           .catch((error) => {
             notification.error({
               message: error.message,
@@ -142,7 +141,7 @@ const Forms = ({ value, isFromNomination, start, end, access }) => {
           icon={<WarningOutlined />}
           style={{ marginRight: 5, float: 'right' }}
           onClick={onClose}
-          disabled={value.trsa_ed_dmy !== '' || !access.canUpdate }
+          disabled={value.trsa_ed_dmy !== '' || !access.canUpdate}
           loading={isLoading}
         >
           {t('operations.closeTransaction')}

@@ -27,7 +27,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   const CAN_DELETE = !!value;
 
   const onComplete = () => {
-    handleFormState(false, null); 
+    handleFormState(false, null);
     mutate(TANK_STRAPPING.READ);
   };
 
@@ -44,16 +44,15 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       onOk: async () => {
         await axios
           .post(IS_CREATING ? TANK_STRAPPING.CREATE : TANK_STRAPPING.UPDATE, values)
-          .then(
-            axios.spread((response) => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
-              });
-            })
-          )
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -69,7 +68,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
-    } 
+    }
   }, [value, visible]);
 
   const onDelete = () => {
@@ -83,16 +82,15 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       onOk: async () => {
         await axios
           .post(TANK_STRAPPING.DELETE, value)
-          .then(
-            axios.spread((response) => {
-              onComplete();
-              
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`,
-              });
-            })
-          )
+          .then((response) => {
+            onComplete();
+
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+
           .catch((error) => {
             notification.error({
               message: error.message,
