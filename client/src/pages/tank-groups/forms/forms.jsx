@@ -11,10 +11,9 @@ import {
 import { Form, Button, Tabs, notification, Modal, Input, Select, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
-import { TANK_GROUPS } from '../../../api';
+import api, { TANK_GROUPS } from '../../../api';
 import { DataTable } from '../../../components';
 import columns from './columns';
 
@@ -59,7 +58,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? TANK_GROUPS.CREATE : TANK_GROUPS.UPDATE, values)
           .then((response) => {
             handleFormState(false, null);
@@ -97,7 +96,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TANK_GROUPS.ACTIVATE, activateData)
           .then((response) => {
             mutate(TANK_GROUPS.READ);
@@ -128,7 +127,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TANK_GROUPS.DELETE, value)
           .then((response) => {
             mutate(TANK_GROUPS.READ);

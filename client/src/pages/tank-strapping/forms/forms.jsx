@@ -10,10 +10,9 @@ import {
 import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
-import { TANK_STRAPPING } from '../../../api';
+import api, { TANK_STRAPPING } from '../../../api';
 import Fields from './fields';
 
 const TabPane = Tabs.TabPane;
@@ -42,7 +41,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? TANK_STRAPPING.CREATE : TANK_STRAPPING.UPDATE, values)
           .then((response) => {
             onComplete();
@@ -80,7 +79,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       icon: <DeleteOutlined />,
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TANK_STRAPPING.DELETE, value)
           .then((response) => {
             onComplete();

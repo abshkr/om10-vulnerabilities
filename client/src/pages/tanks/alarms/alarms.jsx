@@ -4,11 +4,11 @@ import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons';
 import { Form, Modal, Button, Card, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import axios from 'axios';
+
 import _ from 'lodash';
 
 import Levels from '../forms/fields/levels';
-import { TANKS } from '../../../api';
+import api, { TANKS } from '../../../api';
 
 const Alarms = ({ selected, access, isLoading }) => {
   const { t } = useTranslation();
@@ -26,7 +26,7 @@ const Alarms = ({ selected, access, isLoading }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TANKS.UPDATE, values)
           .then(() => {
             mutate(TANKS.READ);

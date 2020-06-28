@@ -12,12 +12,12 @@ import {
 import { Form, Button, Tabs, notification, Modal, Radio } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
-import axios from 'axios';
+
 import _ from 'lodash';
 
 import { Gauging, General, Calculation, Levels } from './fields';
 
-import { TANKS, TANK_STATUS, AUTH } from '../../../api';
+import api, { TANKS, TANK_STATUS, AUTH } from '../../../api';
 import { VCFManager } from '../../../utils';
 import { ROUTES } from '../../../constants';
 
@@ -57,7 +57,7 @@ const FormModal = ({ value }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, payload)
           .then((response) => {
             Modal.destroyAll();
@@ -268,7 +268,7 @@ const FormModal = ({ value }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TANK_STATUS.CALCULATE_QUANTITY, values)
           .then((response) => {
             setFieldsValue({
@@ -315,7 +315,7 @@ const FormModal = ({ value }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TANK_STATUS.CALCULATE_QUANTITY, values)
           .then((response) => {
             setFieldsValue({

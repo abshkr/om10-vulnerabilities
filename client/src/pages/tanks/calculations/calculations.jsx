@@ -4,15 +4,17 @@ import { QuestionCircleOutlined, EditOutlined, RedoOutlined } from '@ant-design/
 import { Form, Modal, Button, Card, notification, Radio } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
-import axios from 'axios';
+
 import _ from 'lodash';
 
 import Calculation from '../forms/fields/calculation';
 import { VCFManager } from '../../../utils';
-import { TANKS, TANK_STATUS } from '../../../api';
+import api, { TANKS, TANK_STATUS } from '../../../api';
 
 const Calculations = ({ selected, access, isLoading, config }) => {
-  const { data: counter} = useSWR(`${TANK_STATUS.COUNT_STRAPS}?tank_code=${selected?.tank_code}&tank_terminal=${selected?.tank_terminal}`);
+  const { data: counter } = useSWR(
+    `${TANK_STATUS.COUNT_STRAPS}?tank_code=${selected?.tank_code}&tank_terminal=${selected?.tank_terminal}`
+  );
 
   const [quantitySource, setQuantitySource] = useState(null);
   const [densitySource, setDensitySource] = useState(null);
@@ -90,14 +92,12 @@ const Calculations = ({ selected, access, isLoading, config }) => {
   const onFinish = async () => {
     const values = await form.validateFields();
     values.tank_code = selected?.tank_code;
-    
+
     const payload = _.omit(
       {
         ...values,
         tank_temp:
-          values?.tank_temp_unit !== 'degF'
-            ? values.tank_temp
-            : VCFManager.temperatureF2C(values.tank_temp),
+          values?.tank_temp_unit !== 'degF' ? values.tank_temp : VCFManager.temperatureF2C(values.tank_temp),
       },
       ['tank_temp_unit']
     );
@@ -110,7 +110,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TANKS.UPDATE, payload)
           .then(() => {
             mutate(TANKS.READ);
@@ -151,7 +151,13 @@ const Calculations = ({ selected, access, isLoading, config }) => {
 
   const onCalculateByDensity = () => {
     Modal.confirm({
-      title: t('prompts.calculate') + ' (' + t('descriptions.lastFieldChanged') + ': ' + densitySource?.title + ')',
+      title:
+        t('prompts.calculate') +
+        ' (' +
+        t('descriptions.lastFieldChanged') +
+        ': ' +
+        densitySource?.title +
+        ')',
       okText: t('operations.calculate'),
       okType: 'primary',
       width: '30vw',
@@ -177,7 +183,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
         const type = densitySource?.type;
         //const payload = handleDensityType(type);
         const payload = handleDensitySource(densitySource);
-        console.log("calculation simple", payload);
+        console.log('calculation simple', payload);
 
         if (base !== '6') {
           if (payload.type === 'D15C') {
@@ -250,7 +256,13 @@ const Calculations = ({ selected, access, isLoading, config }) => {
   const onCalculateByLevel = () => {
     const { getFieldsValue, setFieldsValue } = form;
 
-    const payload = getFieldsValue(['tank_amb_vol', 'tank_temp', 'tank_density', 'tank_15_density', 'tank_prod_lvl']);
+    const payload = getFieldsValue([
+      'tank_amb_vol',
+      'tank_temp',
+      'tank_density',
+      'tank_15_density',
+      'tank_prod_lvl',
+    ]);
 
     const values = {
       tank_code: selected?.tank_code,
@@ -262,7 +274,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
       tank_15_density: payload?.tank_15_density,
       tank_prod_lvl: payload?.tank_prod_lvl,
     };
-    
+
     Modal.confirm({
       title: t('prompts.calculate'),
       okText: t('operations.calculate'),
@@ -272,7 +284,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TANK_STATUS.CALCULATE_BY_LEVEL, values)
           .then((response) => {
             if (!response?.data?.REAL_LITRE) {
@@ -280,8 +292,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
                 message: t('descriptions.calculateFailed'),
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
-            }
-            else {
+            } else {
               setFieldsValue({
                 tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
                 tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
@@ -317,7 +328,13 @@ const Calculations = ({ selected, access, isLoading, config }) => {
     ]);
 
     Modal.confirm({
-      title: t('prompts.calculate') + ' (' + t('descriptions.lastFieldChanged') + ': ' + quantitySource?.title + ')',
+      title:
+        t('prompts.calculate') +
+        ' (' +
+        t('descriptions.lastFieldChanged') +
+        ': ' +
+        quantitySource?.title +
+        ')',
       okText: t('operations.calculate'),
       okType: 'primary',
       width: '30vw',
@@ -368,7 +385,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
           tank_code: selected?.tank_code,
         };
 
-        await axios
+        await api
           .post(TANK_STATUS.CALCULATE_QUANTITY, values)
           .then((response) => {
             if (!response?.data?.REAL_LITRE) {
@@ -376,8 +393,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
                 message: t('descriptions.calculateFailed'),
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
-            }
-            else {
+            } else {
               setFieldsValue({
                 tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
                 tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
@@ -450,12 +466,12 @@ const Calculations = ({ selected, access, isLoading, config }) => {
           </Form.Item>,
         ]}
       >
-        <Calculation 
-          form={form} 
-          value={selected} 
-          range={range} 
-          config={config} 
-          pinQuantity={setQuantitySource} 
+        <Calculation
+          form={form}
+          value={selected}
+          range={range}
+          config={config}
+          pinQuantity={setQuantitySource}
           pinDensity={setDensitySource}
         />
       </Card>

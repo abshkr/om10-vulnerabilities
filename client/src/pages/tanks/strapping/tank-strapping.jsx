@@ -12,11 +12,10 @@ import {
 
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { DataTable } from '../../../components';
-import { TANK_STRAPPING } from '../../../api';
+import api, { TANK_STRAPPING } from '../../../api';
 import columns from './columns';
 
 const { TabPane } = Tabs;
@@ -59,7 +58,7 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(IS_CREATING ? TANK_STRAPPING.CREATE : TANK_STRAPPING.UPDATE, values)
           .then(() => {
             onComplete();
@@ -90,7 +89,7 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await axios
+        await api
           .post(TANK_STRAPPING.DELETE, selected)
           .then(() => {
             onComplete();
