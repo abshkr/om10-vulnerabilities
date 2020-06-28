@@ -12,7 +12,7 @@ import columns from './columns';
 const { Search } = Input;
 
 const TripSeals = ({ value, onClose }) => {
-  const url = value
+  const url = value && value?.shls_trip_no && value.supplier_code
     ? `${LOAD_SCHEDULES.SEALS}?supplier=${value.supplier_code}&trip_no=${value?.shls_trip_no}`
     : null;
 
@@ -129,7 +129,7 @@ const TripSeals = ({ value, onClose }) => {
       });
   };
 
-  const onDellocateAllSelected = () => {
+  const onDellocateSelected = () => {
     api
       .post(LOAD_SCHEDULES.DELETE_SEAL, {
         seal_nr: selected?.seal_nr,
@@ -220,12 +220,7 @@ const TripSeals = ({ value, onClose }) => {
         {t('operations.reallocateSelected')}
       </Button>
 
-      <Button
-        style={{ marginRight: 10 }}
-        type="primary"
-        disabled={!selected}
-        onClick={onDellocateAllSelected}
-      >
+      <Button style={{ marginRight: 10 }} type="primary" disabled={!selected} onClick={onDellocateSelected}>
         {t('operations.deallocateSelected')}
       </Button>
 

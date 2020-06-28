@@ -8,19 +8,21 @@ import _ from 'lodash';
 import { DataTable } from '../../../../components';
 import api, { LOAD_SCHEDULES } from '../../../../api';
 import columns from './columns';
+import { useConfig } from '../../../../hooks';
 
 const { Search } = Input;
 
 const OrderSeals = ({ value, onClose }) => {
-  const url = value
-    ? `${LOAD_SCHEDULES.SEALS}?supplier=${value.supplier_code}&trip_no=${value?.shls_trip_no}`
-    : null;
+  const config = useConfig();
+  console.log('config', config.sealPrefix, config.sealPostfix, config);
 
   const { t } = useTranslation();
 
-  const { data: payload, revalidate: refreshSeals } = useSWR(url);
   const { data: nextSeal, revalidate: refreshNextSeal } = useSWR(LOAD_SCHEDULES.NEXT_SEAL);
 
+  const [origList, setOrigList] = useState([]);
+  const [sealList, setSealList] = useState([]);
+  const [sealRange, setSealRange] = useState('');
   const [next, setNext] = useState(null);
   const [selected, setSelected] = useState(null);
 
@@ -29,8 +31,36 @@ const OrderSeals = ({ value, onClose }) => {
 
   const onFinish = () => {
     Modal.destroyAll();
-    onClose();
+    onClose({sealRange: sealRange, sealList: sealList});
   };
+
+  const adjustSealRange = (seals) => {
+    let minSeal = '';
+    let maxSeal = '';
+
+    _.forEach(seals, (o) => {
+      if (minSeal.length === 0) {
+        minSeal = o.seal_nr;
+      }
+      if (maxSeal.length === 0) {
+        maxSeal = o.seal_nr;
+      }
+      if (_.toNumber(o.seal_nr) < _.toNumber(minSeal)) {
+        minSeal = o.seal_nr;
+      }
+      if (_.toNumber(o.seal_nr) > _.toNumber(maxSeal)) {
+        maxSeal = o.seal_nr;
+      }
+    });
+
+    if (minSeal === '' && maxSeal === '') {
+      setSealRange('');
+    } else {
+      //setSealRange(minSeal + '=' + String(_.toNumber(maxSeal) - _.toNumber(minSeal)));
+      setSealRange(minSeal + '=' + String(_.toNumber(maxSeal)));
+    }
+  };
+
 
   const onSealUpdate = (value) => {
     api
@@ -55,125 +85,92 @@ const OrderSeals = ({ value, onClose }) => {
   };
 
   const onAllocation = (val) => {
-    if (payload?.records?.length === 0) {
-      api
-        .post(LOAD_SCHEDULES.ALLOCATE_ALL, {
-          supplier: value.supplier_code,
-          trip_no: value.shls_trip_no,
-          seal_num: val,
-        })
-        .then(() => {
-          refreshSeals();
-
-          notification.success({
-            message: t('messages.updateSuccess'),
-          });
-        })
-        .catch((errors) => {
-          _.forEach(errors.response.data.errors, (error) => {
-            notification.error({
-              message: error.type,
-              description: error.message,
-            });
-          });
-        });
-    } else {
-      api
-        .post(LOAD_SCHEDULES.ALLOCATE_ONE, {
-          supplier: value.supplier_code,
-          trip_no: value.shls_trip_no,
-          cmpt_nr: 1,
-        })
-        .then(() => {
-          refreshSeals();
-          refreshNextSeal();
-
-          notification.success({
-            message: t('messages.updateSuccess'),
-          });
-        })
-        .catch((errors) => {
-          _.forEach(errors.response.data.errors, (error) => {
-            notification.error({
-              message: error.type,
-              description: error.message,
-            });
-          });
-        });
+    if (_.toNumber(val) > 0 ) {
+      setSealRange(next + "=" + String(_.toNumber(next)+_.toNumber(val)-1));
     }
+    else {
+      setSealRange('');
+    }
+    
+    const seals = [];
+    const len = _.toNumber(val);
+    let nextNum = _.toNumber(next);
+    for (let i=0; i<len; i++) {
+      const o = {};
+      o.seal_prefix = config.sealPreFix;
+      o.seal_suffix = config.sealPostFix;
+      o.seal_cmpt_nr = i + 1;
+      o.seal_nr = String(nextNum);
+      nextNum += 1;
+      seals.push(o);
+    }
+    setNext(String(nextNum));
+    setOrigList(seals);
+    setSealList(seals);
+    adjustSealRange(seals);
+    onSealUpdate(String(nextNum));
   };
+
+  const onAllocateOneSeal = () => {
+    const tempList = sealList;
+    setSealList([]);
+    const o = {};		
+    o.seal_prefix = config.sealPreFix;
+    o.seal_suffix = config.sealPostFix;
+    o.seal_cmpt_nr = tempList.length+1;
+    o.seal_nr = next;
+    tempList.push(o)
+    setOrigList(tempList);
+    setSealList(tempList);
+    setNext(String(_.toNumber(next)+1));
+    adjustSealRange(tempList);
+    onSealUpdate(String(_.toNumber(next)+1));
+  }
 
   const onReallocateSelected = () => {
-    api
-      .post(LOAD_SCHEDULES.REALLOCATE, {
-        supplier: value.supplier_code,
-        trip_no: value.shls_trip_no,
-        seal_nr: selected?.seal_nr,
-        cmpt_nr: 1,
-      })
-      .then(() => {
-        refreshSeals();
-        refreshNextSeal();
-
-        notification.success({
-          message: t('messages.updateSuccess'),
-        });
-      })
-      .catch((errors) => {
-        _.forEach(errors.response.data.errors, (error) => {
-          notification.error({
-            message: error.type,
-            description: error.message,
-          });
-        });
-      });
+    let len = sealList?.length;
+    const tempList = sealList;
+    let nextNum = _.toNumber(next);
+    for (let i=0; i<len; i++) {
+      const o = tempList[i]
+      if ( o.seal_nr === selected?.seal_nr )
+      {
+        o.seal_nr = String(nextNum);
+        nextNum += 1;
+        _.remove(tempList, (item) => {return item.seal_nr === selected?.seal_nr});
+        tempList.push(o);
+        setNext(String(nextNum));
+        break;
+      }
+    }
+    setSealList(tempList);
+    setOrigList(tempList);
+    adjustSealRange(tempList);
+    onSealUpdate(String(nextNum));
+    // disable button realloc and dealloc_one
   };
 
-  const onDellocateAllSelected = () => {
-    api
-      .post(LOAD_SCHEDULES.DELETE_SEAL, {
-        seal_nr: selected?.seal_nr,
-      })
-      .then(() => {
-        refreshSeals();
-        refreshNextSeal();
-
-        notification.success({
-          message: t('messages.updateSuccess'),
-        });
-      })
-      .catch((errors) => {
-        _.forEach(errors.response.data.errors, (error) => {
-          notification.error({
-            message: error.type,
-            description: error.message,
-          });
-        });
-      });
+  const onDellocateSelected = () => {
+    let len = sealList?.length;
+    const tempList = sealList;
+    for (let i=0; i<len; i++) {
+      const o = tempList[i]
+      if ( o.seal_nr === selected?.seal_nr )
+      {
+        _.remove(tempList, (item) => {return item.seal_nr===selected?.seal_nr});
+        break;
+      }
+    }
+    setSealList(tempList);
+    setOrigList(tempList);
+    adjustSealRange(tempList);
+    setSelected(null);
+    // disable button realloc and dealloc_one
   };
 
   const onDellocateAll = () => {
-    api
-      .post(LOAD_SCHEDULES.DEALLOCATE, {
-        supplier: value.supplier_code,
-        trip_no: value.shls_trip_no,
-      })
-      .then(() => {
-        refreshSeals();
-        refreshNextSeal();
-
-        notification.success({
-          message: t('messages.updateSuccess'),
-        });
-      })
-      .catch((errors) => {
-        _.forEach(errors.response.data.errors, (error) => {
-          notification.error({
-            message: error.type,
-            description: error.message,
-          });
-        });
-      });
+    setOrigList([]);
+    setSealList([]);
   };
 
   const onCellUpdate = (val) => {
@@ -188,7 +185,6 @@ const OrderSeals = ({ value, onClose }) => {
         prefix,
       })
       .then(() => {
-        refreshSeals();
         refreshNextSeal();
 
         notification.success({
@@ -220,12 +216,7 @@ const OrderSeals = ({ value, onClose }) => {
         {t('operations.reallocateSelected')}
       </Button>
 
-      <Button
-        style={{ marginRight: 10 }}
-        type="primary"
-        disabled={!selected}
-        onClick={onDellocateAllSelected}
-      >
+      <Button style={{ marginRight: 10 }} type="primary" disabled={!selected} onClick={onDellocateSelected}>
         {t('operations.deallocateSelected')}
       </Button>
 
@@ -248,7 +239,7 @@ const OrderSeals = ({ value, onClose }) => {
         </Col>
 
         <Col span={12}>
-          {t('fields.tripNumber') + ' : ' + value?.shls_trip_no}
+          {t('fields.orderNumber') + ' : ' + value?.order_no}
         </Col>
       </Row>
 
@@ -264,16 +255,19 @@ const OrderSeals = ({ value, onClose }) => {
 
         <Col span={12}>
           <Search
-            placeholder={payload?.records?.length}
-            enterButton={payload?.records?.length === 0 ? t('operations.allocation') : t('operations.add')}
-            onSearch={(value) => onAllocation(value)}
-            readOnly={!payload || payload?.records?.length > 0}
+            placeholder={sealList?.length}
+            enterButton={sealList?.length === 0 ? t('operations.allocation') : t('operations.add')}
+            onSearch={sealList?.length === 0 
+              ? (value) => onAllocation(value) 
+              : (value) => onAllocateOneSeal(value)
+            }
+            readOnly={!sealList || sealList?.length > 0}
           />
         </Col>
       </Row>
 
       <DataTable
-        data={payload?.records}
+        data={sealList}
         columns={fields}
         extra={extra}
         handleSelect={(value) => setSelected(value[0])}

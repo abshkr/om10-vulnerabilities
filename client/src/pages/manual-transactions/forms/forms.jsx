@@ -41,6 +41,7 @@ const Forms = ({
   params,
   popup,
   dataLoaded,
+  setOrderSeals,
 }) => {
   const { setFieldsValue, resetFields } = form;
 
@@ -178,6 +179,10 @@ const Forms = ({
 
     setCustomers(customers);
     setSelectedSupplier(supplier);
+    setSelectedTrip(null);
+    setFieldsValue({
+      seal_range: '',
+    });
   };
 
   const handleCustomerSelect = async (customer) => {
@@ -185,6 +190,10 @@ const Forms = ({
 
     setOrders(orders);
     setSelectedCustomer(customer);
+    setSelectedOrder(null);
+    setFieldsValue({
+      seal_range: '',
+    });
   };
 
   const handleTankerSelect = (tanker) => {
@@ -258,13 +267,13 @@ const Forms = ({
     );
   };
 
-  const loadOrderSeal = async () => {
-    const sealResults = await getTripSealByTrip(selectedTrip);
-
+  const loadOrderSeal = async (value) => {
+    console.log('loadOrderSeal', value);
     setFieldsValue({
-      seal_range: sealResults?.records[0].shls_seal_no,
+      seal_range: value?.sealRange,
     });
 
+    setOrderSeals(value?.sealList);
   }
 
   const onViewOrderSeals = () => {
@@ -272,7 +281,7 @@ const Forms = ({
     //alert('TODO: manage seals for the open order');
     OrderSealManager(
       t('tabColumns.orderSeals'),
-      {supplier_code: selectedSupplier, shls_trip_no: selectedTrip},
+      {supplier_code: selectedSupplier, order_no: selectedOrder},
       loadOrderSeal,
       '80vw',
       '40vh',
@@ -570,7 +579,7 @@ const Forms = ({
 
         <Col span={8}>
           <Form.Item name="seal_range" label={t('fields.sealRange')} rules={[{ required: false }]}>
-            <Input />
+            <Input disabled={true} />
           </Form.Item>
         </Col>
 
@@ -579,13 +588,13 @@ const Forms = ({
             <Col span={24}></Col>
           </Row>
 
-          {sourceType === 'SCHEDULE' && !!trips && (
+          {sourceType === 'SCHEDULE' && !!trips && selectedTrip && (
             <Button type="primary" onClick={onViewTripSeals}>
               {t('operations.viewTripSeals')}
             </Button>
           )}
 
-          {sourceType === 'OPENORDER' && !!orders && (
+          {sourceType === 'OPENORDER' && !!orders && selectedOrder && (
             <Button type="primary" onClick={onViewOrderSeals}>
               {t('operations.viewOrderSeals')}
             </Button>

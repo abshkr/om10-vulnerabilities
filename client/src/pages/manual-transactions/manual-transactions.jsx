@@ -60,6 +60,8 @@ const ManualTransactions = ({ popup, params }) => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedTanker, setSelectedTanker] = useState(null);
 
+  const [orderSeals, setOrderSeals] = useState([]);
+
   const resetFormData = () => {
     setLoadType(null);
     setLoadNumber(null);
@@ -156,15 +158,9 @@ const ManualTransactions = ({ popup, params }) => {
       payload.transfers.push(transfer);
     }
 
-    /* if (sourceType === 'OPENORDER') {
-      payload.seals = [];
-      payload.seals.push({
-        seal_nr: '',
-        cmpt_nr: 1,
-        seal_prefix: 'pre',
-        seal_suffix: 'suffix'
-      });
-    } */
+    if (sourceType === 'OPENORDER') {
+      payload.seals = orderSeals;
+    }
     /* "seals" : [
       {
           "seal_nr": "123",
@@ -948,6 +944,7 @@ const ManualTransactions = ({ popup, params }) => {
           params={params}
           popup={popup}
           dataLoaded={null}
+          setOrderSeals={setOrderSeals}
         />
 
         <DrawerProductTransfers
