@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { UndoOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Button, Form, Tabs, Divider, Card, Row, Col, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { BayArm, DrawerProducts, Equipment, Temperature, Observed, Standard, Mass } from './fields';
@@ -10,7 +9,7 @@ import { DataTable } from '../../../components';
 import columns from './columns';
 import useSWR from 'swr';
 
-import { MANUAL_TRANSACTIONS } from '../../../api';
+import api, { MANUAL_TRANSACTIONS } from '../../../api';
 import {calcBaseRatios} from '../../../utils'
 
 import BaseProductTransfers from './base-product-transfers';
@@ -105,7 +104,7 @@ const DrawerProductTransfers = ({
       amount = base?.trsf_bs_qty_amb;
     }
 
-    await axios
+    await api
     .post(MANUAL_TRANSACTIONS.CALCULATE, {
       frm_baseCd: base?.trsf_bs_prodcd,
       frm_which_type: type, //'LT',

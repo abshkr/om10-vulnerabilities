@@ -22,7 +22,7 @@ import DataColumns from './data-manager/columns';
 import DrawerProductTransfers from './drawer-product-transfer';
 import Forms from './forms';
 import { SETTINGS } from '../../constants';
-import { MANUAL_TRANSACTIONS } from '../../api';
+import api, { MANUAL_TRANSACTIONS } from '../../api';
 import useAuth from 'hooks/use-auth';
 
 const { confirm } = Modal;
@@ -189,8 +189,8 @@ const ManualTransactions = ({ popup, params }) => {
       onOk: async () => {
         try {
           const values = await form.validateFields();
-
-          await axios
+          console.log('await values', values);
+          await api
             .post(MANUAL_TRANSACTIONS.SUBMIT, preparePayloadToSubmit(values))
             .then((response) => {
               setSourceType(null);
@@ -496,7 +496,7 @@ const ManualTransactions = ({ popup, params }) => {
   };
 
   const loadMTData = (value) => {
-    axios
+    api
       .get(MANUAL_TRANSACTIONS.READ_MT_DATA, {
         params: {
           seq_id: value?.mt_id,
@@ -834,7 +834,7 @@ const ManualTransactions = ({ popup, params }) => {
           const values = await form.validateFields();
           console.log('await values', values);
           console.log('data board', dataBoard);
-          await axios
+          await api
             .post(MANUAL_TRANSACTIONS.SAVE_MT_DATA, preparePayloadToSave(values, save_format))
             .then((response) => {
               //setSourceType(null);
