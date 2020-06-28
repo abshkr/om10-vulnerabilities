@@ -6,6 +6,7 @@ import moment from 'moment';
 
 import api, { MANUAL_TRANSACTIONS } from '../../../api';
 import { getDateTimeFormat } from '../../../utils';
+import TripSealManager from './trip-seals';
 
 const { Option } = Select;
 
@@ -84,6 +85,14 @@ const Forms = ({
     return results?.data;
   };
 
+  const getTripSealByTrip = async (trip) => {
+    const results = await api.get(
+      `${MANUAL_TRANSACTIONS.GET_TRIP_SEAL}?supplier=${selectedSupplier}&trip_no=${trip}`
+    );
+
+    return results?.data;
+  };
+
   const getTripBasicsByTrip = async (trip) => {
     const results = await api.get(
       `${MANUAL_TRANSACTIONS.TRIP_BASICS}?supplier=${selectedSupplier}&trip_no=${trip}`
@@ -109,6 +118,8 @@ const Forms = ({
 
     const typeResults = await getTripTypeByTrip(trip);
 
+    const sealResults = await getTripSealByTrip(trip);
+
     setLoadType(typeResults?.records[0].schd_type);
     setLoadNumber(trip);
 
@@ -120,6 +131,7 @@ const Forms = ({
       tanker: value?.tnkr_code,
       carrier: value?.carrier,
       driver: !value?.driver ? drivers?.records[0].per_code : value?.driver,
+      seal_range: sealResults?.records[0].shls_seal_no,
     });
   };
 
@@ -224,9 +236,25 @@ const Forms = ({
     //resetFields();
   };
 
+  const loadTripSeal = async () => {
+    const sealResults = await getTripSealByTrip(selectedTrip);
+
+    setFieldsValue({
+      seal_range: sealResults?.records[0].shls_seal_no,
+    });
+
+  }
+
   const onViewTripSeals = () => {
     // pop up the dialog to manage seals for the schedule
-    alert('TODO: manage seals for the schedule');
+    //alert("TODO: manage seals for the schedule");
+    TripSealManager(
+      t('tabColumns.seals'),
+      {supplier_code: selectedSupplier, shls_trip_no: selectedTrip},
+      loadTripSeal,
+      '80vw',
+      '40vh',
+    );
   };
 
   const onViewOrderSeals = () => {

@@ -1211,6 +1211,10 @@
     "update": "Update",
     "yes": "Yes",
     "no": "No",
+    "ok": "Ok",
+    "allocate": "Allocate",
+    "allocation": "Allocate",
+    "addOne": "Add One",
     "addNewExpiry": "Add New Expiry",
     "freezeCloseout": "Run Manual Closeout",
     "closeCloseout": "Close First Frozen Folio",
@@ -1307,9 +1311,9 @@
     "viewTripSeals": "View Schedule Seals",
     "viewOrderSeals": "View Order Seals",
     "setAddressTemplate": "Set As Default Template",	
-	"manageImage": "Manage Images",
-	"uploadImg": "Upload Image",
-	"removeImg": "Remove From Server"
+    "manageImage": "Manage Images",
+    "uploadImg": "Upload Image",
+    "removeImg": "Remove From Server"
   },
 
   "tabColumns": {
