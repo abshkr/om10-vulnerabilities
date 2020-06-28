@@ -1,11 +1,11 @@
 #!/bin/sh
 
 export HMI_ORIGIN_IP="10.1.10.66"
-export HMI_ORIGIN_PORT=22443
+export HMI_ORIGIN_PORT=8000
 export HMI_ORIGIN_PROTO="https"
 
-export HMI_PROTO="http"
-export HMI_PORT="8444"
+export HMI_PROTO="https"
+export HMI_PORT="8443"
 
 export OMEGA_USER="test_shellcns0526"
 export OMEGA_PWD="abcd1234"

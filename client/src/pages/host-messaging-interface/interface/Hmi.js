@@ -18,8 +18,8 @@ const Hmi = () => {
 
   const [ivisible, setVisible] = useState(false);
   const [ifrom, setFrom] = useState(null);
-  const [iaction, setAction] = useState(null);
-  const [icontentFormat, setContentFormat] = useState(null);
+  const [iaction, setAction] = useState('view');
+  const [icontentFormat, setContentFormat] = useState(1);
   const [imessage, setMessage] = useState(null);
 
 	const handleFormState = (visibility, value) => {
@@ -30,8 +30,8 @@ const Hmi = () => {
 	const handleClicked = (visibility, from, action, contentFormat, message) => {
     setVisible(visibility);
     setFrom(from);
-    setAction(action);
-    setContentFormat(contentFormat);
+    //setAction(action);
+    //setContentFormat(contentFormat);
     setMessage(message);
 	};
 
@@ -88,7 +88,7 @@ const Hmi = () => {
 				</TabPane>
 			</Tabs>
 			<Forms
-				value={imessage}
+				msg={imessage}
 				visible={ivisible}
 				from={ifrom}
 				action={iaction}

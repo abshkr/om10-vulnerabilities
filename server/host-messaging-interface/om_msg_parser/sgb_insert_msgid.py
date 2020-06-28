@@ -1,4 +1,5 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python
+# WARNING: This script should only be used for SGB_MSG_HEADER_1
 
 import sys
 
@@ -17,8 +18,8 @@ if __name__ == "__main__":
 		# only works for single-byte encoding (ASCII) or binary file
 		# for variable width encoding, need to decode it first
 
-		# Replace filler field (2 bytes) with message id field (36 bytes)
-		first_part = dfile.read(48)
+		# Add message id field (36 bytes)
+		first_part = dfile.read(50)
 		dfile.seek(50)
 		second_part = dfile.read()
 		msg_id_part = ' ' * 36

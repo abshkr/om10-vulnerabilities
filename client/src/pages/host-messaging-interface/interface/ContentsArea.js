@@ -9,8 +9,8 @@ const ContentsArea = ({from, action, message, contentFormat, handleFormState}) =
   const [imessage, setMessage] = useState(message);
   const [icontent, setContent] = useState('');
 
-	//const url = process.env.REACT_APP_API_URL + '/hmi/read_file';
-	const url = '/hmi/read_file';
+	const url = process.env.REACT_APP_API_URL + '/hmi/read_file';
+	//const url = '/hmi/read_file';
 
 	var getData = async () => {
 		fetch(url, {

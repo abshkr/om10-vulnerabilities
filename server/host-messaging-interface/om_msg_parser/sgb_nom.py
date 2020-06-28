@@ -327,7 +327,10 @@ def __line_item_prod_idx(line_item_node, idx):
 		else:
 			prodidx = etree.SubElement(proddet, 'PRODIDX')
 
-		if idx <= 10:
+		# idx is zero-based but the target data is expected to be one-based
+		idx += 1
+
+		if idx < 10:
 			prodidx.text = '0' + str(idx)
 		else:
 			prodidx.text = str(idx)
@@ -338,6 +341,31 @@ def __line_item_prod_idx(line_item_node, idx):
 
 	return changed
 	
+
+def __line_item_prod_code(line_item_node):
+	changed = False
+
+	try:
+		res = line_item_node.find("E1OIP19")
+		if res is not None:
+			e1oip19 = res
+		else:
+			e1oip19 = etree.SubElement(line_item_node, 'E1OIP19')
+
+		res = e1oip19.find("IDTNR")
+		if res is not None:
+			idtnr = res
+		else:
+			idtnr = etree.SubElement(proddet, 'IDTNR')
+
+		idtnr.text = idtnr.text.lstrip('0')
+		changed = True
+
+	except Exception as err:
+		pass
+
+	return changed
+
 
 
 
@@ -413,10 +441,14 @@ def __line_item_from_to(line_item_node):
 				if storeloc_map is not None and storeloc in storeloc_map:
 					#TODO: Journal: Supplier code %s derived from storage location code %s."
 					from_supp.text = storeloc_map[storeloc][1]
+				else:
+					from_supp.text = storeloc
 				from_store_loc = etree.SubElement(line_item_node, 'FROM_STORE_LOC')
 				if storeloc_map is not None and storeloc in storeloc_map:
 					#TODO: Journal: Storage location code %s mapped to company code %s."
 					from_store_loc.text = storeloc_map[storeloc][2]
+				else:
+					from_store_loc.text = storeloc
 				from_desc = etree.SubElement(line_item_node, 'FROM_DESC')
 				from_desc.text = val
 				from_desc2 = etree.SubElement(line_item_node, 'FROM_DESC2')
@@ -458,10 +490,14 @@ def __line_item_from_to(line_item_node):
 				if storeloc_map is not None and storeloc in storeloc_map:
 					#TODO: Journal: Supplier code %s derived from storage location code %s."
 					to_supp.text = storeloc_map[storeloc][1]
+				else:
+					to_supp.text = storeloc
 				to_store_loc = etree.SubElement(line_item_node, 'TO_STORE_LOC')
 				if storeloc_map is not None and storeloc in storeloc_map:
 					#TODO: Journal: Storage location code %s mapped to company code %s."
 					to_store_loc.text = storeloc_map[storeloc][2]
+				else:
+					to_store_loc.text = storeloc
 				to_desc = etree.SubElement(line_item_node, 'TO_DESC')
 				to_desc.text = val
 				to_desc2 = etree.SubElement(line_item_node, 'TO_DESC2')
@@ -560,6 +596,7 @@ def __line_items(xmltree):
 	for i,node in enumerate(res):
 		changed |= __line_item_schd_date(node)
 		changed |= __line_item_prod_idx(node, i)
+		changed |= __line_item_prod_code(node)
 		changed |= __line_item_from_to(node)
 		changed |= __line_item_loc_type(node)
 		changed |= __line_item_uom_qty(node)
