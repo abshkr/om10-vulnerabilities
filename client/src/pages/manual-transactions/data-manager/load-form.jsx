@@ -5,12 +5,11 @@ import { CloseOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 
 import { Form, Button, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { SETTINGS } from '../../../constants';
 import { DataTable } from '../../../components';
-import { MANUAL_TRANSACTIONS } from '../../../api';
+import api, { MANUAL_TRANSACTIONS } from '../../../api';
 
 const LoadForm = ({onLoad, fields, url, height}) => {
   const [data, setData] = useState(null);
@@ -42,7 +41,7 @@ const LoadForm = ({onLoad, fields, url, height}) => {
         //const value = records?.[0];
         //value.gud_id = 999999999;
         //console.log("save_mt_data value", records);
-        await axios
+        await api
           .post(MANUAL_TRANSACTIONS.DELETE_MT_DATA, {gud_id: selected?.mt_id})
           //.post(MANUAL_TRANSACTIONS.SAVE_MT_DATA, value)
           .then(() => {

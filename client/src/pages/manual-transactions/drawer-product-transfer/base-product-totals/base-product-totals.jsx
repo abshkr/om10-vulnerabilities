@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Spin, Row, Col } from 'antd';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { DataTable } from '../../../../components';
 import columns from './columns';
-import { MANUAL_TRANSACTIONS } from '../../../../api';
+import api, { MANUAL_TRANSACTIONS } from '../../../../api';
 import {calcBaseRatios} from '../../../../utils'
 
 const BaseProductTotals = ({ 
@@ -73,7 +72,7 @@ const BaseProductTotals = ({
       const transfer = transfers[index];
 
       if (!transfer?.trsf_arm_cd.includes(' ')) {
-        await axios
+        await api
           .get(MANUAL_TRANSACTIONS.BASE_DETAILS, {
             params: {
               prod_cmpy: transfer?.trsf_prod_cmpy,

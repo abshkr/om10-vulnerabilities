@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { Select } from 'antd';
-import axios from 'axios';
 import _ from 'lodash';
 
-import { MANUAL_TRANSACTIONS } from '../../../../api';
+import api, { MANUAL_TRANSACTIONS } from '../../../../api';
 import {calcBaseRatios} from '../../../../utils'
 
 export default class BayArm extends Component {
@@ -85,19 +84,19 @@ export default class BayArm extends Component {
       isLoading: true,
     });
 
-    axios
-      .get(MANUAL_TRANSACTIONS.GET_ARMS, {
-        params: {
-          prod_cmpy: this.props.data.trsf_prod_cmpy,
-          prod_code: this.props.data.trsf_prod_code,
-        },
-      })
-      .then((res) => {
-        this.setState({
-          isLoading: false,
-          values: res.data?.records,
-        });
+    api
+    .get(MANUAL_TRANSACTIONS.GET_ARMS, {
+      params: {
+        prod_cmpy: this.props.data.trsf_prod_cmpy,
+        prod_code: this.props.data.trsf_prod_code,
+      },
+    })
+    .then((res) => {
+      this.setState({
+        isLoading: false,
+        values: res.data?.records,
       });
+    });
   }
 
   render() {
