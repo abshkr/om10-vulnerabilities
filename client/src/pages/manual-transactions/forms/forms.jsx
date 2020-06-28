@@ -2,11 +2,12 @@ import React, { useEffect } from 'react';
 import { Form, Select, Input, Button, Row, Col, DatePicker, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
-import axios from 'axios';
 import moment from 'moment';
 
-import { MANUAL_TRANSACTIONS } from '../../../api';
+import api, { MANUAL_TRANSACTIONS } from '../../../api';
 import { getDateTimeFormat } from '../../../utils';
+import TripSealManager from './trip-seals';
+import OrderSealManager from './order-seals';
 
 const { Option } = Select;
 
@@ -52,25 +53,25 @@ const Forms = ({
   const { data: carriers, isValidating: carriersLoading } = useSWR(MANUAL_TRANSACTIONS.CARRIERS);
 
   const getTripsBySupplier = async (supplier) => {
-    const results = await axios.get(`${MANUAL_TRANSACTIONS.TRIPS}?supplier=${supplier}`);
+    const results = await api.get(`${MANUAL_TRANSACTIONS.TRIPS}?supplier=${supplier}`);
 
     return results?.data;
   };
 
   const getCustomersBySupplier = async (supplier) => {
-    const results = await axios.get(`${MANUAL_TRANSACTIONS.CUSTOMERS}?supplier=${supplier}`);
+    const results = await api.get(`${MANUAL_TRANSACTIONS.CUSTOMERS}?supplier=${supplier}`);
 
     return results?.data;
   };
 
   const getTankersByCarrier = async (carrier) => {
-    const results = await axios.get(`${MANUAL_TRANSACTIONS.TANKERS}?tnkr_carrier=${carrier}`);
+    const results = await api.get(`${MANUAL_TRANSACTIONS.TANKERS}?tnkr_carrier=${carrier}`);
 
     return results?.data;
   };
 
   const getOrdersByCustomer = async (customer) => {
-    const results = await axios.get(
+    const results = await api.get(
       `${MANUAL_TRANSACTIONS.ORDERS}?supplier=${selectedSupplier}&customer=${customer}`
     );
 
@@ -78,15 +79,23 @@ const Forms = ({
   };
 
   const getTripTypeByTrip = async (trip) => {
-    const results = await axios.get(
+    const results = await api.get(
       `${MANUAL_TRANSACTIONS.TRIP_TYPE}?supplier=${selectedSupplier}&trip_no=${trip}`
     );
 
     return results?.data;
   };
 
+  const getTripSealByTrip = async (trip) => {
+    const results = await api.get(
+      `${MANUAL_TRANSACTIONS.GET_TRIP_SEAL}?supplier=${selectedSupplier}&trip_no=${trip}`
+    );
+
+    return results?.data;
+  };
+
   const getTripBasicsByTrip = async (trip) => {
-    const results = await axios.get(
+    const results = await api.get(
       `${MANUAL_TRANSACTIONS.TRIP_BASICS}?supplier=${selectedSupplier}&trip_no=${trip}`
     );
 
@@ -94,7 +103,7 @@ const Forms = ({
   };
 
   const getOrderBasicsByOrder = async (order) => {
-    const results = await axios.get(
+    const results = await api.get(
       `${MANUAL_TRANSACTIONS.ORDER_BASICS}?supplier=${selectedSupplier}&order_cust_no=${order}`
     );
 
@@ -107,8 +116,10 @@ const Forms = ({
     const value = results?.records[0];
 
     const tankerResults = await getTankersByCarrier(value?.carrier);
-    
+
     const typeResults = await getTripTypeByTrip(trip);
+
+    const sealResults = await getTripSealByTrip(trip);
 
     setLoadType(typeResults?.records[0].schd_type);
     setLoadNumber(trip);
@@ -121,6 +132,7 @@ const Forms = ({
       tanker: value?.tnkr_code,
       carrier: value?.carrier,
       driver: !value?.driver ? drivers?.records[0].per_code : value?.driver,
+      seal_range: sealResults?.records[0].shls_seal_no,
     });
   };
 
@@ -130,7 +142,7 @@ const Forms = ({
     const value = results?.records[0];
 
     const tankerResults = await getTankersByCarrier(value?.order_carrier);
-    
+
     setLoadType('BY_PRODUCT');
     setLoadNumber(order);
 
@@ -158,8 +170,7 @@ const Forms = ({
     if (sourceType === 'SCHEDULE') {
       const trips = await getTripsBySupplier(supplier);
       setTrips(trips);
-    }
-    else {
+    } else {
       setTrips(null);
     }
 
@@ -189,7 +200,7 @@ const Forms = ({
 
   const handleDriverSelect = (tanker) => {
     // get tanker equipment and compartments
-    console.log("Testing Types", sourceType, loadType, loadNumber);
+    console.log('Testing Types', sourceType, loadType, loadNumber);
   };
 
   const handleTypeSelect = (type) => {
@@ -222,18 +233,50 @@ const Forms = ({
     setSelectedTrip(null);
     setSelectedOrder(null);
     setSelectedTanker(null);
-  
+
     //resetFields();
   };
 
+  const loadTripSeal = async () => {
+    const sealResults = await getTripSealByTrip(selectedTrip);
+
+    setFieldsValue({
+      seal_range: sealResults?.records[0].shls_seal_no,
+    });
+
+  }
+
   const onViewTripSeals = () => {
     // pop up the dialog to manage seals for the schedule
-    alert("TODO: manage seals for the schedule");
+    //alert('TODO: manage seals for the schedule');
+    TripSealManager(
+      t('tabColumns.tripSeals'),
+      {supplier_code: selectedSupplier, shls_trip_no: selectedTrip},
+      loadTripSeal,
+      '80vw',
+      '40vh',
+    );
   };
+
+  const loadOrderSeal = async () => {
+    const sealResults = await getTripSealByTrip(selectedTrip);
+
+    setFieldsValue({
+      seal_range: sealResults?.records[0].shls_seal_no,
+    });
+
+  }
 
   const onViewOrderSeals = () => {
     // pop up the dialog to manage seals for the open order
-    alert("TODO: manage seals for the open order");
+    //alert('TODO: manage seals for the open order');
+    OrderSealManager(
+      t('tabColumns.orderSeals'),
+      {supplier_code: selectedSupplier, shls_trip_no: selectedTrip},
+      loadOrderSeal,
+      '80vw',
+      '40vh',
+    );
   };
 
   useEffect(() => {
@@ -241,7 +284,7 @@ const Forms = ({
       form.setFieldsValue({
         source_type: params?.trans_type,
       });
-      handleTypeSelect(params?.trans_type);      
+      handleTypeSelect(params?.trans_type);
     }
   }, [popup, params, sourceType]);
 
@@ -290,13 +333,12 @@ const Forms = ({
 
   const format = getDateTimeFormat();
 
-
   useEffect(() => {
     if (dataLoaded && !sourceType) {
       form.setFieldsValue({
         source_type: dataLoaded?.source_type,
       });
-      handleTypeSelect(dataLoaded?.source_type);      
+      handleTypeSelect(dataLoaded?.source_type);
     }
   }, [dataLoaded, sourceType]);
 
@@ -345,16 +387,14 @@ const Forms = ({
     }
   }, [dataLoaded, sourceType && selectedSupplier, selectedTrip]);
 
-
-
   return (
     <>
       <Row gutter={24}>
         <Col span={8}>
           <Form.Item name="source_type" label={t('fields.transactionType')} rules={[{ required: true }]}>
-            <Select 
+            <Select
               disabled={popup}
-              onChange={handleTypeSelect} 
+              onChange={handleTypeSelect}
               placeholder={t('placeholder.selectTransType')}
             >
               <Option value="SCHEDULE">{t('fields.mtTypeSchedule')}</Option>
@@ -377,7 +417,7 @@ const Forms = ({
             >
               {tankers?.records?.map((item, index) => (
                 <Select.Option key={index} value={item.tnkr_code}>
-                  {item.tnkr_code + (!item.tnkr_name ? '' : (' - ' + item.tnkr_name))}
+                  {item.tnkr_code + (!item.tnkr_name ? '' : ' - ' + item.tnkr_name)}
                 </Select.Option>
               ))}
             </Select>
@@ -529,28 +569,24 @@ const Forms = ({
         </Col>
 
         <Col span={8}>
-          <Form.Item
-            name="seal_range"
-            label={t('fields.sealRange')}
-            rules={[{ required: false }]}
-          >
+          <Form.Item name="seal_range" label={t('fields.sealRange')} rules={[{ required: false }]}>
             <Input />
           </Form.Item>
         </Col>
 
         <Col span={8}>
-          <Row gutter={[8,30]}>
+          <Row gutter={[8, 30]}>
             <Col span={24}></Col>
           </Row>
 
           {sourceType === 'SCHEDULE' && !!trips && (
-            <Button type="primary"  onClick={onViewTripSeals}>
+            <Button type="primary" onClick={onViewTripSeals}>
               {t('operations.viewTripSeals')}
             </Button>
           )}
 
           {sourceType === 'OPENORDER' && !!orders && (
-            <Button type="primary"  onClick={onViewOrderSeals}>
+            <Button type="primary" onClick={onViewOrderSeals}>
               {t('operations.viewOrderSeals')}
             </Button>
           )}
@@ -600,11 +636,7 @@ const Forms = ({
 
       <Row gutter={24}>
         <Col span={6}>
-          <Form.Item
-            name="mt_mngr_oo"
-            label={t('fields.mtMngrOO')}
-            rules={[{ required: false }]}
-          >
+          <Form.Item name="mt_mngr_oo" label={t('fields.mtMngrOO')} rules={[{ required: false }]}>
             <Input disabled={true} />
           </Form.Item>
         </Col>
@@ -613,55 +645,35 @@ const Forms = ({
         {/*(!sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType !== 'BY_COMPARTMENT')) && */}
         {/*(!sourceType || !loadNumber || (sourceType === 'OPENORDER')) && */}
 
-        {(
-          !sourceType || 
-          !loadNumber || 
-          (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') || 
-          (sourceType === 'OPENORDER')
-          ) && 
+        {(!sourceType ||
+          !loadNumber ||
+          (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') ||
+          sourceType === 'OPENORDER') && (
           <Col span={6}>
-            <Form.Item
-              name="mt_cust_code"
-              label={t('fields.mtSoldTo')}
-              rules={[{ required: false }]}
-            >
+            <Form.Item name="mt_cust_code" label={t('fields.mtSoldTo')} rules={[{ required: false }]}>
               <Input />
             </Form.Item>
           </Col>
-        }
+        )}
 
-        {(
-          !sourceType || 
-          !loadNumber || 
-          (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') || 
-          (sourceType === 'OPENORDER')
-          ) && 
+        {(!sourceType ||
+          !loadNumber ||
+          (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') ||
+          sourceType === 'OPENORDER') && (
           <Col span={6}>
-            <Form.Item
-              name="mt_delv_loc"
-              label={t('fields.mtShipTo')}
-              rules={[{ required: false }]}
-            >
+            <Form.Item name="mt_delv_loc" label={t('fields.mtShipTo')} rules={[{ required: false }]}>
               <Input />
             </Form.Item>
           </Col>
-        }
+        )}
 
-        {(
-          !sourceType || 
-          !loadNumber || 
-          (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') 
-          ) && 
+        {(!sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT')) && (
           <Col span={6}>
-            <Form.Item
-              name="mt_delv_num"
-              label={t('fields.mtDelvNum')}
-              rules={[{ required: false }]}
-            >
+            <Form.Item name="mt_delv_num" label={t('fields.mtDelvNum')} rules={[{ required: false }]}>
               <Input />
             </Form.Item>
           </Col>
-        }
+        )}
       </Row>
     </>
   );

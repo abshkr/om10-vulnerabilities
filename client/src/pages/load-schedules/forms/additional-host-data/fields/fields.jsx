@@ -60,17 +60,16 @@ const Fields = ({ value, units, revalidate, data }) => {
       onOk: async () => {
         await axios
           .post(IS_CREATING ? ALLOCATIONS.PERIOD_CREATE : ALLOCATIONS.PERIOD_UPDATE, record)
-          .then(
-            axios.spread((response) => {
-              Modal.destroyAll();
+          .then((response) => {
+            Modal.destroyAll();
 
-              revalidate();
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-              });
-            })
-          )
+            revalidate();
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({

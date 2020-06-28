@@ -1,23 +1,30 @@
-import React, { Component } from 'react';
-import { convertToLocale } from 'utils';
+import React, { useContext, useState, useEffect } from 'react';
+import moment from 'moment';
 import _ from 'lodash';
 
-export default class ExpiryDateRenderer extends Component {
-  render() {
-    const { value, edt_type_code } = this.props;
+import { DATE_TIME_FORMAT } from 'constants/settings';
+import ConfigStore from 'stores/config-store';
 
-    if (value.length <= 0) {
-      return <div></div>;
+const ExpiryDateRenderer = ({ value, edt_type_code }) => {
+  const { dateTimeFormat } = useContext(ConfigStore);
+
+  const [date, setDate] = useState(null);
+
+  useEffect(() => {
+    if (value.length > 0) {
+      const target = _.find(value, (item) => {
+        return item.edt_type_code === edt_type_code;
+      });
+
+      if (moment(target?.ed_exp_date, DATE_TIME_FORMAT).isValid()) {
+        const payload = moment(target?.ed_exp_date, DATE_TIME_FORMAT).format(dateTimeFormat);
+
+        setDate(payload);
+      }
     }
-    
-    const targetDate = _.find(value, (item) => {
-      return item.edt_type_code === edt_type_code
-    });
+  }, [value]);
 
-    if (targetDate) {
-      return <div>{convertToLocale(targetDate.ed_exp_date)}</div>
-    }
+  return <div>{date}</div>;
+};
 
-    return <div></div>;
-  }
-}
+export default ExpiryDateRenderer;

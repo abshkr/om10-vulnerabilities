@@ -1248,4 +1248,23 @@ class ManualTrans extends CommonClass
             return $stmt;
         }
     }
+
+    public function get_trip_seal()
+    {
+        $query = "
+            SELECT s.SHLS_SEAL_NO 
+            FROM SCHEDULE s 
+            WHERE s.SHLS_TRIP_NO=:trip_no and s.SHLS_SUPP=:supplier
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }

@@ -47,16 +47,15 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
       onOk: async () => {
         await api
           .post(FOLIO_SUMMARY.SAVE_TANKS, data)
-          .then(
-            axios.spread((response) => {
-              fetch();
+          .then((response) => {
+            fetch();
 
-              notification.success({
-                message: t('messages.saveSuccess'),
-                description: t('descriptions.saveSuccess'),
-              });
-            })
-          )
+            notification.success({
+              message: t('messages.saveSuccess'),
+              description: t('descriptions.saveSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -185,7 +184,11 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
         autoColWidth
       />
       <div className="operations">
-        <Button icon={<CloseOutlined />} style={{ float: 'right' }} onClick={() => handleFormState(false, null)}>
+        <Button
+          icon={<CloseOutlined />}
+          style={{ float: 'right' }}
+          onClick={() => handleFormState(false, null)}
+        >
           {t('operations.cancel')}
         </Button>
 

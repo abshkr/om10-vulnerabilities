@@ -9,7 +9,7 @@ import {
   PlusOutlined,
   CloseOutlined,
   DeleteOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 
 import { Code, Name, CategoryCount, CategoryCustomers } from './fields';
@@ -27,10 +27,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const IS_CREATING = !value;
 
   const onComplete = () => {
-    handleFormState(false, null); 
+    handleFormState(false, null);
     mutate(CUSTOMER_CATEGORIES.READ);
   };
-
 
   const onFinish = async () => {
     const values = await form.validateFields();
@@ -45,16 +44,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       onOk: async () => {
         await axios
           .post(IS_CREATING ? CUSTOMER_CATEGORIES.CREATE : CUSTOMER_CATEGORIES.UPDATE, values)
-          .then(
-            axios.spread(response => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
-              });
-            })
-          )
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -63,7 +61,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               });
             });
           });
-      }
+      },
     });
   };
 
@@ -77,16 +75,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       onOk: async () => {
         await axios
           .post(CUSTOMER_CATEGORIES.DELETE, value)
-          .then(
-            axios.spread(response => {
-              onComplete();
-              
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`
-              });
-            })
-          )
+          .then((response) => {
+            onComplete();
+
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -95,14 +92,14 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               });
             });
           });
-      }
+      },
     });
   };
 
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
-    } 
+    }
   }, [value]);
 
   return (
@@ -143,7 +140,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={value?.category_count>0 || !access?.canCreate}
+              disabled={value?.category_count > 0 || !access?.canCreate}
             >
               {t('operations.delete')}
             </Button>
@@ -153,23 +150,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     >
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane
-            className="ant-tab-window"
-            tab={t('tabColumns.general')}
-            forceRender={true}
-            key="1"
-          >
+          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
             <Code form={form} value={value} />
             <Name form={form} value={value} />
-            {!IS_CREATING && (
-              <CategoryCount form={form} value={value} />
-            )}
+            {!IS_CREATING && <CategoryCount form={form} value={value} />}
             {/* {!IS_CREATING && (
               <CategoryCustomers form={form} value={value} />
             )} */}
           </TabPane>
         </Tabs>
-
       </Form>
     </Drawer>
   );

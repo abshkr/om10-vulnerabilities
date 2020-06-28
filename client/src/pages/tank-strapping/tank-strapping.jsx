@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 
-import { Button, Select, InputNumber } from 'antd';
+import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
-// import axios from 'axios';
 import _ from 'lodash';
 import useSWR from 'swr';
 import { useAuth } from 'hooks';
@@ -37,8 +36,9 @@ const TankStrapping = () => {
         {t('operations.refresh')}
       </Button>
 
-      <Button type="primary" 
-        icon={<PlusOutlined />} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
         disabled={!auth.canCreate}
@@ -50,10 +50,10 @@ const TankStrapping = () => {
 
   return (
     <Page page={t('pageMenu.gantry')} name={t('pageNames.tankStrapping')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={payload?.records} 
-        isLoading={isValidating} 
+      <DataTable
+        columns={fields}
+        data={payload?.records}
+        isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />

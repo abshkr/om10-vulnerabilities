@@ -22,7 +22,7 @@ import DataColumns from './data-manager/columns';
 import DrawerProductTransfers from './drawer-product-transfer';
 import Forms from './forms';
 import { SETTINGS } from '../../constants';
-import { MANUAL_TRANSACTIONS } from '../../api';
+import api, { MANUAL_TRANSACTIONS } from '../../api';
 import useAuth from 'hooks/use-auth';
 
 const { confirm } = Modal;
@@ -73,7 +73,13 @@ const ManualTransactions = ({ popup, params }) => {
     setSelectedTrip(null);
     setSelectedOrder(null);
     setSelectedTanker(null);
-    form.setFieldsValue({ transfers: [], base_transfers: [], base_totals: [], meter_transfers: [], meter_totals: [] });
+    form.setFieldsValue({
+      transfers: [],
+      base_transfers: [],
+      base_totals: [],
+      meter_transfers: [],
+      meter_totals: [],
+    });
   };
 
   const preparePayloadToSubmit = (values) => {
@@ -184,19 +190,18 @@ const ManualTransactions = ({ popup, params }) => {
         try {
           const values = await form.validateFields();
           console.log('await values', values);
-          await axios
+          await api
             .post(MANUAL_TRANSACTIONS.SUBMIT, preparePayloadToSubmit(values))
-            .then(
-              axios.spread((response) => {
-                setSourceType(null);
-                resetFormData();
+            .then((response) => {
+              setSourceType(null);
+              resetFormData();
 
-                notification.success({
-                  message: t('messages.submitSuccess'),
-                  description: t('descriptions.submitSuccess'),
-                });
-              })
-            )
+              notification.success({
+                message: t('messages.submitSuccess'),
+                description: t('descriptions.submitSuccess'),
+              });
+            })
+
             .catch((error) => {
               notification.error({
                 message: error.message,
@@ -252,7 +257,7 @@ const ManualTransactions = ({ popup, params }) => {
     values.mt_cust_code = mthead?.MT_CUST_CODE;
     values.mt_delv_loc = mthead?.MT_DELV_LOC;
     values.mt_delv_num = mthead?.MT_DELV_NUM;
-    setRepost(mthead.TRANSACTION_REPOST==='1' ? true : false);
+    setRepost(mthead.TRANSACTION_REPOST === '1' ? true : false);
 
     /* mthead.SCHD_SUB_TYPE = '';
     // the following requires the calculations of transfer records
@@ -313,7 +318,8 @@ const ManualTransactions = ({ popup, params }) => {
       transfer.trsf_delv_num = titem?.DELV_NUM;
       transfer.trsf_arm_cd = titem?.ARM_CODE === '' ? t('placeholder.selectArmCode') : titem?.ARM_CODE;
       transfer.trsf_drwr_cd = titem?.DRAWER_CODE;
-      transfer.trsf_prod_code = titem?.PRODUCT_CODE === '' ? t('placeholder.selectDrawerProduct') : titem?.PRODUCT_CODE;
+      transfer.trsf_prod_code =
+        titem?.PRODUCT_CODE === '' ? t('placeholder.selectDrawerProduct') : titem?.PRODUCT_CODE;
       transfer.trsf_density = titem?.DENS;
       transfer.trsf_temp = titem?.TEMPERATURE;
       transfer.trsf_qty_amb = titem?.AMB_VOL;
@@ -403,7 +409,7 @@ const ManualTransactions = ({ popup, params }) => {
         meter.trsf_mtr_cd = mitem?.METER_INJECTOR_CODE;
         meter.trsf_cmpt_no = mitem?.METER_CMPT_NO;
         meter.trsf_mtr_typ = mitem?.METER_TYPE;
-      
+
         values.meter_transfers.push(meter);
       }
     }
@@ -445,7 +451,7 @@ const ManualTransactions = ({ popup, params }) => {
       base.trsf_bs_ratio_total2_tot = bitem?.BASE_RATIO_TOTAL2;
       base.trsf_bs_adtv_flag_tot = bitem?.IS_ADDITIVE;
       base.trsf_bs_prodname_tot = bitem?.PRODUCT_NAME;
-  
+
       values.base_totals.push(base);
     }
 
@@ -482,38 +488,38 @@ const ManualTransactions = ({ popup, params }) => {
       //meter.trsf_cmpt_no = mitem?.METER_CMPT_NO;
       meter.trsf_mtr_typ = mitem?.METER_TYPE;
       //console.log(mcount, midx, meter);
-    
+
       values.meter_totals.push(meter);
     }
-  
+
     return values;
   };
 
   const loadMTData = (value) => {
-    axios
-    .get(MANUAL_TRANSACTIONS.READ_MT_DATA, {
-      params: {
-        seq_id: value?.mt_id,
-      },
-    })
-    .then((res) => {
-      console.log(res.data?.records);
-      const record = res.data?.records?.[0];
-      if (record.gud_head_data !== "" && record.gud_head_data !== null && record.gud_head_data !== false ) {
-        record.gud_head_data = JSON.parse(_.replace(record.gud_head_data, '{}', '""'));
-      }
-      if (record.gud_body_data !== "" && record.gud_body_data !== null && record.gud_body_data !== false ) {
-        record.gud_body_data = JSON.parse(_.replace(record.gud_body_data, '{}', '""'));
-      }
+    api
+      .get(MANUAL_TRANSACTIONS.READ_MT_DATA, {
+        params: {
+          seq_id: value?.mt_id,
+        },
+      })
+      .then((res) => {
+        console.log(res.data?.records);
+        const record = res.data?.records?.[0];
+        if (record.gud_head_data !== '' && record.gud_head_data !== null && record.gud_head_data !== false) {
+          record.gud_head_data = JSON.parse(_.replace(record.gud_head_data, '{}', '""'));
+        }
+        if (record.gud_body_data !== '' && record.gud_body_data !== null && record.gud_body_data !== false) {
+          record.gud_body_data = JSON.parse(_.replace(record.gud_body_data, '{}', '""'));
+        }
 
-      setDataLoaded(record);
-      console.log('DataLoaded', record);
+        setDataLoaded(record);
+        console.log('DataLoaded', record);
 
-      const values = prepareValuesToLoad(record);
-      console.log('prepareValuesToLoad', values);
-      setDataLoaded(values);
+        const values = prepareValuesToLoad(record);
+        console.log('prepareValuesToLoad', values);
+        setDataLoaded(values);
 
-      /* form.setFieldsValue({
+        /* form.setFieldsValue({
         transfers: values?.transfers,
         base_transfers: values?.base_transfers,
         base_totals: values?.base_totals,
@@ -521,25 +527,17 @@ const ManualTransactions = ({ popup, params }) => {
         meter_totals: values?.meter_totals,
       }) */
 
-      console.log("set form fields done!");
-    });
-
+        console.log('set form fields done!');
+      });
   };
 
   const onLoad = () => {
-    DataManager(
-      t('fields.mtDataTitle'),
-      DataColumns(t),
-      null,
-      loadMTData,
-      '80vw',
-      '40vh',
-    );
+    DataManager(t('fields.mtDataTitle'), DataColumns(t), null, loadMTData, '80vw', '40vh');
   };
 
   const preparePayloadToSave = (values, save_format) => {
     const payload = {};
-    
+
     // php API need this field to verify but the actual value will be created by a DB trigger
     payload.gud_id = 999999999;
     payload.gud_module_id = 'MANUAL_TRANSACTIONS';
@@ -558,7 +556,9 @@ const ManualTransactions = ({ popup, params }) => {
     mthead.CUSTOMER = values?.customer; // Customer Account
     //console.log('mthead.CUSTOMER_CODE', _.find(customers?.records, (o)=>(o.customer === values?.customer)));
     //console.log('mthead.CUSTOMER_CODE', _.find(customers?.records, (o)=>(o.customer === values?.customer))?.company);
-    mthead.CUSTOMER_CODE = !values?.customer ? '' : _.find(customers?.records, (o)=>(o.customer === values?.customer))?.company;
+    mthead.CUSTOMER_CODE = !values?.customer
+      ? ''
+      : _.find(customers?.records, (o) => o.customer === values?.customer)?.company;
     mthead.TAS_REF = values?.load_security;
     mthead.USER_COMMENTS = values?.user_comments;
     mthead.SEAL_RANGE = values?.seal_range;
@@ -578,7 +578,8 @@ const ManualTransactions = ({ popup, params }) => {
     mthead.CM_BASE_OBS_TOTAL_DISP = String(_.round(obsQty, 3));
     mthead.CM_BASE_STD_TOTAL_DISP = String(_.round(stdQty, 3));
     mthead.CM_BASE_MASS_TOTAL_DISP = String(_.round(massQty, 3));
-    mthead.CM_BASE_STD_MASS_TOTAL_DISP = 'Base Std Total:' + String(_.round(stdQty, 3)) + '    Base Mass Total:' + String(_.round(massQty, 3));
+    mthead.CM_BASE_STD_MASS_TOTAL_DISP =
+      'Base Std Total:' + String(_.round(stdQty, 3)) + '    Base Mass Total:' + String(_.round(massQty, 3));
     mthead.CM_NEED_REFRESH_BP_TOTAL = '0'; // ACC_BASE_ADJ the base prod total array collection needs refresh flag
     mthead.CM_IS_ACC_BASE_ADJUSTED = '0'; // ACC_BASE_ADJ the Acc Base adjusted flag
 
@@ -618,9 +619,10 @@ const ManualTransactions = ({ popup, params }) => {
       */
       transfer.NR_IN_TKR = titem.trsf_cmpt_no;
       transfer.DELV_NUM = titem.trsf_delv_num;
-      transfer.ARM_CODE = titem.trsf_arm_cd===t('placeholder.selectArmCode') ? '' : titem.trsf_arm_cd;
+      transfer.ARM_CODE = titem.trsf_arm_cd === t('placeholder.selectArmCode') ? '' : titem.trsf_arm_cd;
       transfer.DRAWER_CODE = titem.trsf_drwr_cd;
-      transfer.PRODUCT_CODE = titem.trsf_prod_code===t('placeholder.selectDrawerProduct') ? '' : titem.trsf_prod_code;
+      transfer.PRODUCT_CODE =
+        titem.trsf_prod_code === t('placeholder.selectDrawerProduct') ? '' : titem.trsf_prod_code;
       transfer.DENS = titem.trsf_density;
       transfer.TEMPERATURE = titem.trsf_temp;
       transfer.AMB_VOL = titem.trsf_qty_amb;
@@ -633,8 +635,10 @@ const ManualTransactions = ({ popup, params }) => {
       transfer.PRODUCT_NAME = titem.trsf_prod_name;
       transfer.SOLD_TO = titem.trsf_sold_to;
       transfer.SHIP_TO = titem.trsf_delv_loc;
-      const baseCount = _.filter(values?.base_transfers, (o)=>(titem.trsf_cmpt_no === o.trsf_bs_cmpt_no))?.length;
-      const meterCount = _.filter(values?.meter_transfers, (o)=>(titem.trsf_cmpt_no === o.trsf_cmpt_no))?.length;
+      const baseCount = _.filter(values?.base_transfers, (o) => titem.trsf_cmpt_no === o.trsf_bs_cmpt_no)
+        ?.length;
+      const meterCount = _.filter(values?.meter_transfers, (o) => titem.trsf_cmpt_no === o.trsf_cmpt_no)
+        ?.length;
       transfer.NUMBER_OF_BASES = baseCount;
       transfer.NUMBER_OF_METERS = meterCount;
 
@@ -711,7 +715,7 @@ const ManualTransactions = ({ popup, params }) => {
             meter.METER_INJECTOR_CODE = mitem.trsf_mtr_cd;
             meter.METER_CMPT_NO = mitem.trsf_cmpt_no;
             meter.METER_TYPE = mitem.trsf_mtr_typ;
-          
+
             transfer.METER.push(meter);
           }
         }
@@ -754,7 +758,7 @@ const ManualTransactions = ({ popup, params }) => {
       base.BASE_RATIO_TOTAL2 = bitem.trsf_bs_ratio_total2_tot;
       base.IS_ADDITIVE = bitem.trsf_bs_adtv_flag_tot;
       base.PRODUCT_NAME = bitem.trsf_bs_prodname_tot;
-  
+
       mtbody.BASEPRODTOTALS.BASEPRODTOTAL.push(base);
     }
 
@@ -786,7 +790,7 @@ const ManualTransactions = ({ popup, params }) => {
       meter.METER_INJECTOR_CODE = mitem.trsf_mtr_cd;
       //meter.METER_CMPT_NO = mitem.trsf_cmpt_no;
       meter.METER_TYPE = mitem.trsf_mtr_typ;
-    
+
       mtbody.METERTOTALS.METERTOTAL.push(meter);
     }
 
@@ -802,7 +806,7 @@ const ManualTransactions = ({ popup, params }) => {
     payload.gud_head_data = JSON.stringify(payload.gud_head_data);
     payload.gud_body_data = JSON.stringify(payload.gud_body_data);
     payload.save_format = save_format;
-  
+
     return payload;
   };
 
@@ -826,23 +830,22 @@ const ManualTransactions = ({ popup, params }) => {
       ),
       onOk: async () => {
         try {
-          const save_format = form.getFieldValue('save_format')
+          const save_format = form.getFieldValue('save_format');
           const values = await form.validateFields();
           console.log('await values', values);
           console.log('data board', dataBoard);
-          await axios
+          await api
             .post(MANUAL_TRANSACTIONS.SAVE_MT_DATA, preparePayloadToSave(values, save_format))
-            .then(
-              axios.spread((response) => {
-                //setSourceType(null);
-                //resetFormData();
+            .then((response) => {
+              //setSourceType(null);
+              //resetFormData();
 
-                notification.success({
-                  message: t('messages.saveSuccess'),
-                  description: t('descriptions.saveSuccess'),
-                });
-              })
-            )
+              notification.success({
+                message: t('messages.saveSuccess'),
+                description: t('descriptions.saveSuccess'),
+              });
+            })
+
             .catch((error) => {
               notification.error({
                 message: error.message,

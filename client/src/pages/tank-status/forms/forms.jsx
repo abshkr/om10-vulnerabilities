@@ -59,17 +59,16 @@ const FormModal = ({ value }) => {
       onOk: async () => {
         await axios
           .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, payload)
-          .then(
-            axios.spread((response) => {
-              Modal.destroyAll();
+          .then((response) => {
+            Modal.destroyAll();
 
-              mutate(TANK_STATUS.READ);
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
-              });
-            })
-          )
+            mutate(TANK_STATUS.READ);
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
+            });
+          })
+
           .catch((error) => {
             notification.error({
               message: error.message,

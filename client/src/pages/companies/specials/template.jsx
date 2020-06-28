@@ -1,9 +1,6 @@
-import React, {  useEffect } from 'react';
+import React, { useEffect } from 'react';
 
-import {
-  SaveOutlined,
-  QuestionCircleOutlined
-} from '@ant-design/icons';
+import { SaveOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 
 import { Form, Button, Modal, notification } from 'antd';
 import { DataTable } from '../../../components';
@@ -27,11 +24,10 @@ const TemplateForm = ({ value }) => {
   useEffect(() => {
     if (payload) {
       setFieldsValue({
-        templates: payload?.records
-      })
+        templates: payload?.records,
+      });
     }
-    
-  }, [ setFieldsValue, payload]);
+  }, [setFieldsValue, payload]);
 
   const onSave = async () => {
     const values = await form.validateFields();
@@ -45,17 +41,16 @@ const TemplateForm = ({ value }) => {
       onOk: async () => {
         await axios
           .post(COMPANIES.UPDATE_TEMPLATES, values.templates)
-          .then(
-            axios.spread(response => {
-              mutate(COMPANIES.TEMPLATES);
-              // Modal.destroyAll();
-              // onComplete()
-              notification.success({
-                message: t('messages.updateSuccess'),
-                description: t('messages.updateSuccess')
-              });
-            })
-          )
+          .then((response) => {
+            mutate(COMPANIES.TEMPLATES);
+            // Modal.destroyAll();
+            // onComplete()
+            notification.success({
+              message: t('messages.updateSuccess'),
+              description: t('messages.updateSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -64,7 +59,7 @@ const TemplateForm = ({ value }) => {
               });
             });
           });
-      }
+      },
     });
   };
 
@@ -81,11 +76,11 @@ const TemplateForm = ({ value }) => {
   return (
     <Form form={form}>
       <Form.Item name="templates">
-        <DataTable 
+        <DataTable
           height="70vh"
-          columns={fields} 
-          data={payload?.records} 
-          isLoading={isValidating} 
+          columns={fields}
+          data={payload?.records}
+          isLoading={isValidating}
           components={{
             FooterEditor: FooterEditor,
             SwitchRender: SwitchRender,

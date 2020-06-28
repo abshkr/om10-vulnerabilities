@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   EditOutlined,
@@ -10,17 +10,22 @@ import {
 
 import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
 import { Area, Lock, Printer, SystemPrinter } from './fields';
-import api, { PHYSICAL_PRINTERS } from '../../../api';
+import api, { PHYSICAL_PRINTERS, LOGICAL_PRINTERS } from '../../../api';
+import physicalPrinters from '../physical-printers';
 
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access }) => {
+  const { data: logicalPrinters, revalidate } = useSWR(LOGICAL_PRINTERS.READ, { revalidateOnFocus: false });
+
   const { t } = useTranslation();
   const [form] = Form.useForm();
+
+  const [canDelete, setDeleteState] = useState(true);
 
   const IS_CREATING = !value;
 
@@ -101,6 +106,16 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     }
   }, [resetFields, value, visible]);
 
+  useEffect(() => {
+    if (value && physicalPrinters) {
+      const filtered = _.find(logicalPrinters?.records, ['prt_printer', value?.prntr]);
+
+      const state = !filtered;
+
+      setDeleteState(state);
+    }
+  }, [value, physicalPrinters]);
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -137,7 +152,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete}
+              disabled={!access?.canDelete || !canDelete}
               onClick={onDelete}
             >
               {t('operations.delete')}

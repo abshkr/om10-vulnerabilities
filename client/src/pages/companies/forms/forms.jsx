@@ -7,10 +7,23 @@ import {
   DeleteOutlined,
   QuestionCircleOutlined,
   FormOutlined,
-  ApiOutlined
+  ApiOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer, Input, Select, Checkbox, Divider, Row, Col } from 'antd';
+import {
+  Form,
+  Button,
+  Tabs,
+  Modal,
+  notification,
+  Drawer,
+  Input,
+  Select,
+  Checkbox,
+  Divider,
+  Row,
+  Col,
+} from 'antd';
 import 'antd/dist/antd.css';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
@@ -22,109 +35,117 @@ import _ from 'lodash';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, auth, specialActions, companyRelations, setFilterValue }) => {
+const FormModal = ({
+  value,
+  visible,
+  handleFormState,
+  auth,
+  specialActions,
+  companyRelations,
+  setFilterValue,
+}) => {
   const { t } = useTranslation();
   const { data: addresses, isValidating } = useSWR(COMPANIES.ADDRESSES);
 
   const [form] = Form.useForm();
   const { resetFields, setFieldsValue } = form;
 
-  const [ site_manager, setManager ] = useState(value?.site_manager)
-  const [ supplier, setSupplier ] = useState(value?.supplier)
-  const [ carrier, setCarrier ] = useState(value?.carrier)
-  const [ customer, setCustomer ] = useState(value?.customer)
-  const [ drawer, setDrawer ] = useState(value?.drawer)
-  const [ issuer, setIssuer ] = useState(value?.issuer)
-  const [ employer, setEmployer ] = useState(value?.employer)
-  const [ host, setHost ] = useState(value?.host)
+  const [site_manager, setManager] = useState(value?.site_manager);
+  const [supplier, setSupplier] = useState(value?.supplier);
+  const [carrier, setCarrier] = useState(value?.carrier);
+  const [customer, setCustomer] = useState(value?.customer);
+  const [drawer, setDrawer] = useState(value?.drawer);
+  const [issuer, setIssuer] = useState(value?.issuer);
+  const [employer, setEmployer] = useState(value?.employer);
+  const [host, setHost] = useState(value?.host);
 
   const IS_CREATING = !value;
 
   const onComplete = (cmpy_code) => {
     handleFormState(false, null);
     if (cmpy_code) {
-      setFilterValue("" + cmpy_code);
+      setFilterValue('' + cmpy_code);
     }
     mutate(COMPANIES.READ);
   };
 
-  const onManagerChange = v => {
-    setManager(v.target.checked)
+  const onManagerChange = (v) => {
+    setManager(v.target.checked);
     setFieldsValue({
       site_manager: v.target.checked,
     });
-  }
+  };
 
-  const onSupplierChange = v => {
-    setSupplier(v.target.checked)
+  const onSupplierChange = (v) => {
+    setSupplier(v.target.checked);
     setFieldsValue({
       supplier: v.target.checked,
     });
 
     if (v.target.checked && !drawer) {
-      setDrawer(v.target.checked)
+      setDrawer(v.target.checked);
       setFieldsValue({
         drawer: v.target.checked,
       });
     }
-  }
-  
-  const onCarrierChange = v => {
-    setCarrier(v.target.checked)
+  };
+
+  const onCarrierChange = (v) => {
+    setCarrier(v.target.checked);
     setFieldsValue({
       carrier: v.target.checked,
     });
-  }
+  };
 
-  const onCustomerChange = v => {
-    setCustomer(v.target.checked)
+  const onCustomerChange = (v) => {
+    setCustomer(v.target.checked);
     setFieldsValue({
       customer: v.target.checked,
     });
-  }
+  };
 
-  const onDrawerChange = v => {
+  const onDrawerChange = (v) => {
     if (!v.target.checked && supplier) {
       return;
     }
 
-    setDrawer(v.target.checked)
+    setDrawer(v.target.checked);
     setFieldsValue({
       drawer: v.target.checked,
     });
-  }
+  };
 
-  const onIssuerChange = v => {
-    setIssuer(v.target.checked)
+  const onIssuerChange = (v) => {
+    setIssuer(v.target.checked);
     setFieldsValue({
       issuer: v.target.checked,
     });
-  }
+  };
 
-  const onEmployerChange = v => {
-    setEmployer(v.target.checked)
+  const onEmployerChange = (v) => {
+    setEmployer(v.target.checked);
     setFieldsValue({
       employer: v.target.checked,
     });
-  }
+  };
 
-  const onHostChange = v => {
-    setHost(v.target.checked)
+  const onHostChange = (v) => {
+    setHost(v.target.checked);
     setFieldsValue({
       host: v.target.checked,
     });
-  }
+  };
 
   useEffect(() => {
     if (value) {
-      setManager(value.site_manager)
-      setSupplier(value.supplier)
-      setCarrier(value.carrier)
-      setCustomer(value.customer)
-      setDrawer(value.drawer)
-      setIssuer(value.issuer)
-      setEmployer(value.employer)
-      setHost(value.host)
+      setManager(value.site_manager);
+      setSupplier(value.supplier);
+      setCarrier(value.carrier);
+      setCustomer(value.customer);
+      setDrawer(value.drawer);
+      setIssuer(value.issuer);
+      setEmployer(value.employer);
+      setHost(value.host);
       setFieldsValue({
         cmpy_code: value.cmpy_code,
         cmpy_plant: value.cmpy_plant,
@@ -141,7 +162,7 @@ const FormModal = ({ value, visible, handleFormState, auth, specialActions, comp
         host: value.host,
       });
     } else {
-      resetFields()
+      resetFields();
     }
   }, [value, setFieldsValue, resetFields]);
 
@@ -159,17 +180,16 @@ const FormModal = ({ value, visible, handleFormState, auth, specialActions, comp
       onOk: async () => {
         await axios
           .post(IS_CREATING ? COMPANIES.CREATE : COMPANIES.UPDATE, values)
-          .then(
-            axios.spread(response => {
-              onComplete(values.cmpy_code);
+          .then((response) => {
+            onComplete(values.cmpy_code);
 
-              mutate(COMPANIES.READ);
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess')
-              });
-            })
-          )
+            mutate(COMPANIES.READ);
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -178,7 +198,7 @@ const FormModal = ({ value, visible, handleFormState, auth, specialActions, comp
               });
             });
           });
-      }
+      },
     });
   };
 
@@ -192,16 +212,15 @@ const FormModal = ({ value, visible, handleFormState, auth, specialActions, comp
       onOk: async () => {
         await axios
           .post(COMPANIES.DELETE, value)
-          .then(
-            axios.spread(response => {
-              onComplete();
+          .then((response) => {
+            onComplete();
 
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`
-              });
-            })
-          )
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -210,7 +229,7 @@ const FormModal = ({ value, visible, handleFormState, auth, specialActions, comp
               });
             });
           });
-      }
+      },
     });
   };
 
@@ -226,9 +245,9 @@ const FormModal = ({ value, visible, handleFormState, auth, specialActions, comp
       visible={visible}
       footer={
         <>
-          <Button 
-            type="primary" 
-            icon={<FormOutlined />}  
+          <Button
+            type="primary"
+            icon={<FormOutlined />}
             style={{ float: 'left' }}
             loading={isValidating}
             // style={{float:"left", marginRight:500}}
@@ -237,9 +256,9 @@ const FormModal = ({ value, visible, handleFormState, auth, specialActions, comp
           >
             {t('operations.specialAction')}
           </Button>
-          <Button 
-            type="primary" 
-            icon={<ApiOutlined />}  
+          <Button
+            type="primary"
+            icon={<ApiOutlined />}
             style={{ float: 'left', marginLeft: 5 }}
             loading={isValidating}
             // style={{float:"left", marginRight:500}}
@@ -248,7 +267,7 @@ const FormModal = ({ value, visible, handleFormState, auth, specialActions, comp
           >
             {t('operations.companyRelation')}
           </Button>
-        
+
           <Button
             htmlType="button"
             icon={<CloseOutlined />}
@@ -289,19 +308,16 @@ const FormModal = ({ value, visible, handleFormState, auth, specialActions, comp
             <Form.Item name="cmpy_code" label={t('fields.companyCode')} rules={[{ required: true }]}>
               <Input disabled={!IS_CREATING}></Input>
             </Form.Item>
-            <Form.Item name="cmpy_plant" label={t('fields.plantCode')} >
-              <Input ></Input>
+            <Form.Item name="cmpy_plant" label={t('fields.plantCode')}>
+              <Input></Input>
             </Form.Item>
             <Form.Item name="cmpy_name" label={t('fields.companyName')} rules={[{ required: true }]}>
-              <Input ></Input>
+              <Input></Input>
             </Form.Item>
-            <Form.Item name="cmpy_aoi" label={t('fields.aoiNumber')} >
-              <Input ></Input>
+            <Form.Item name="cmpy_aoi" label={t('fields.aoiNumber')}>
+              <Input></Input>
             </Form.Item>
-            <Form.Item
-              name="cmpy_addr"
-              label={t('fields.address')}
-            >
+            <Form.Item name="cmpy_addr" label={t('fields.address')}>
               <Select
                 loading={isValidating}
                 // onChange={onChange}
@@ -320,56 +336,73 @@ const FormModal = ({ value, visible, handleFormState, auth, specialActions, comp
                 ))}
               </Select>
             </Form.Item>
-            <Divider orientation="left" plain="plain" >{t('fields.companyType')}</Divider>
+            <Divider orientation="left" plain="plain">
+              {t('fields.companyType')}
+            </Divider>
             <Row>
               <Col span={6}>
-                <Form.Item name="site_manager" noStyle >
-                  <Checkbox checked={site_manager && !IS_CREATING} disabled={true} onChange={onManagerChange}>{t('fields.siteManager')}</Checkbox>
+                <Form.Item name="site_manager" noStyle>
+                  <Checkbox checked={site_manager && !IS_CREATING} disabled={true} onChange={onManagerChange}>
+                    {t('fields.siteManager')}
+                  </Checkbox>
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item name="supplier" noStyle>
-                  <Checkbox checked={supplier} onChange={onSupplierChange}>{t('fields.supplier')}</Checkbox>
+                  <Checkbox checked={supplier} onChange={onSupplierChange}>
+                    {t('fields.supplier')}
+                  </Checkbox>
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item name="carrier" noStyle>
-                  <Checkbox checked={carrier} onChange={onCarrierChange}>{t('fields.carrier')}</Checkbox>
-                </Form.Item>
-            </Col>
-              <Col span={6}>
-                <Form.Item name="customer" noStyle>
-                  <Checkbox checked={customer} onChange={onCustomerChange}>{t('fields.customer')}</Checkbox>
+                  <Checkbox checked={carrier} onChange={onCarrierChange}>
+                    {t('fields.carrier')}
+                  </Checkbox>
                 </Form.Item>
               </Col>
-              
+              <Col span={6}>
+                <Form.Item name="customer" noStyle>
+                  <Checkbox checked={customer} onChange={onCustomerChange}>
+                    {t('fields.customer')}
+                  </Checkbox>
+                </Form.Item>
+              </Col>
             </Row>
             <Row>
               <Col span={6}>
                 <Form.Item name="drawer" noStyle>
-                  <Checkbox checked={drawer} onChange={onDrawerChange}>{t('fields.drawer')}</Checkbox>
-              </Form.Item>
+                  <Checkbox checked={drawer} onChange={onDrawerChange}>
+                    {t('fields.drawer')}
+                  </Checkbox>
+                </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item name="issuer" noStyle>
-                  <Checkbox checked={issuer} onChange={onIssuerChange}>{t('fields.issuer')}</Checkbox>
+                  <Checkbox checked={issuer} onChange={onIssuerChange}>
+                    {t('fields.issuer')}
+                  </Checkbox>
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item name="employer" noStyle>
-                  <Checkbox checked={employer} onChange={onEmployerChange}>{t('fields.employer')}</Checkbox>
+                  <Checkbox checked={employer} onChange={onEmployerChange}>
+                    {t('fields.employer')}
+                  </Checkbox>
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item name="host" noStyle>
-                  <Checkbox checked={host} onChange={onHostChange}>{t('fields.host')}</Checkbox>
+                  <Checkbox checked={host} onChange={onHostChange}>
+                    {t('fields.host')}
+                  </Checkbox>
                 </Form.Item>
               </Col>
             </Row>
           </TabPane>
         </Tabs>
       </Form>
-      </Drawer>
+    </Drawer>
   );
 };
 
