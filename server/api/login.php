@@ -107,17 +107,19 @@ if ($array['MSG_DESC'] === 'SUCCESS') {
 if ($array['MSG_CODE'] === "0") {
     Utilities::clean_rusty_files((isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omega') . '/logs');
 
-    $database = new Database();
-    $db = $database->getConnection2();
+    // $database = new Database();
+    // $db = $database->getConnection2();
 
-    $serv = new SiteService($db);
-    $exp_min = $serv->site_config_value("URBAC_AUTO_LOGOFF", "60");
-    write_log($exp_min, __FILE__, __LINE__);
-    if ($exp_min === "-1") {
-        $exp_min = 60 * 24;
-    } else {
-        $exp_min = intval($exp_min);
-    }
+    // $serv = new SiteService($db);
+    // $exp_min = $serv->site_config_value("URBAC_AUTO_LOGOFF", "60");
+    // write_log($exp_min, __FILE__, __LINE__);
+    // if ($exp_min === "-1") {
+    //     $exp_min = 60 * 24;
+    // } else {
+    //     $exp_min = intval($exp_min);
+    // }
+
+    $exp_min = 60;      //Default it is 1 hour
 
     $login_result = array();
     $login_result['userid'] = $object->user;
