@@ -96,7 +96,7 @@ const ManualTransactions = ({ popup, params }) => {
     setSelectedTrip(null);
     setSelectedOrder(null);
     setSelectedTanker(null);
-    //resetFormGrids();
+    resetFormGrids();
   };
 
   const preparePayloadToSubmit = (values) => {
@@ -514,6 +514,8 @@ const ManualTransactions = ({ popup, params }) => {
         },
       })
       .then((res) => {
+        resetFormData();
+
         console.log(res.data?.records);
         const record = res.data?.records?.[0];
         if (record.gud_head_data !== '' && record.gud_head_data !== null && record.gud_head_data !== false) {
@@ -529,13 +531,13 @@ const ManualTransactions = ({ popup, params }) => {
         const values = prepareValuesToLoad(record);
         console.log('prepareValuesToLoad', values);
 
+        setDataLoaded(values);
+
         setDataDrawTransfers(values?.transfers);
         setDataBaseTransfers(values?.base_transfers);
         setDataBaseTotals(values?.base_totals);
         setDataMeterTransfers(values?.meter_transfers);
         setDataMeterTotals(values?.meter_totals);
-
-        //setDataLoaded(values);
 
         /* form.setFieldsValue({
         transfers: values?.transfers,
@@ -836,19 +838,20 @@ const ManualTransactions = ({ popup, params }) => {
       cancelText: t('operations.no'),
       icon: <QuestionCircleOutlined />,
       centered: true,
-      content: (
+      /* content: (
         <Form form={form} initialValues={{ save_format: 'JSON' }}>
           <Form.Item name="save_format">
             <Radio.Group style={{ width: '30vw', marginBottom: 10, marginTop: 10 }}>
               <Radio value="JSON">JSON</Radio>
-              <Radio value="XML">XML</Radio>
+              <Radio value="XML" disabled={true}>XML</Radio>
             </Radio.Group>
           </Form.Item>
         </Form>
-      ),
+      ), */
       onOk: async () => {
         try {
-          const save_format = form.getFieldValue('save_format');
+          // const save_format = form.getFieldValue('save_format');
+          const save_format = 'JSON';
           const values = await form.validateFields();
           console.log('await values', values);
           console.log('data board', dataBoard);
@@ -885,10 +888,11 @@ const ManualTransactions = ({ popup, params }) => {
     resetFormData();
   }, [sourceType]);
 
+  /* // this may conflict with data retrieval
   useEffect(() => {
     console.log('MT selectedTrip, selectedOrder, selectedTanker', selectedTrip, selectedOrder, selectedTanker);
     resetFormGrids();
-  }, [selectedTrip, selectedOrder, selectedTanker]);
+  }, [selectedTrip, selectedOrder, selectedTanker]); */
 
   useEffect(() => {
     if (params && popup && !repost) {
@@ -966,6 +970,7 @@ const ManualTransactions = ({ popup, params }) => {
           setSelectedTrip={setSelectedTrip}
           selectedOrder={selectedOrder}
           setSelectedOrder={setSelectedOrder}
+          selectedTanker={selectedTanker}
           setSelectedTanker={setSelectedTanker}
           params={params}
           popup={popup}

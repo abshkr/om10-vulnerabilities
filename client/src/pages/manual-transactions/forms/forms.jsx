@@ -35,6 +35,7 @@ const Forms = ({
   setSelectedTrip,
   selectedOrder,
   setSelectedOrder,
+  selectedTanker,
   setSelectedTanker,
   params,
   popup,
@@ -331,7 +332,7 @@ const Forms = ({
       });
       handleTripSelect(params?.trip_no);
     }
-  }, [popup, params, sourceType && selectedSupplier, selectedTrip]);
+  }, [popup, params, sourceType, selectedSupplier, selectedTrip]);
 
   useEffect(() => {
     setFieldsValue({
@@ -375,6 +376,14 @@ const Forms = ({
         order_no: dataLoaded?.order_no,
       });
       handleOrderSelect(dataLoaded?.order_no);
+
+      setFieldsValue({
+        carrier: dataLoaded?.carrier,
+        driver: dataLoaded?.driver,
+        seal_range: dataLoaded?.seal_range,
+        mt_cust_code: dataLoaded?.customer_code,
+        mt_delv_loc: dataLoaded?.delivery_location,
+      });
     }
   }, [dataLoaded, sourceType, selectedSupplier, selectedOrder]);
 
@@ -384,17 +393,32 @@ const Forms = ({
         trip_no: dataLoaded?.trip_no,
       });
       handleTripSelect(dataLoaded?.trip_no);
+
+      setFieldsValue({
+        carrier: dataLoaded?.carrier,
+        driver: dataLoaded?.driver,
+        seal_range: dataLoaded?.seal_range,
+      });
     }
-  }, [dataLoaded, sourceType && selectedSupplier, selectedTrip]);
+  }, [dataLoaded, sourceType, selectedSupplier, selectedTrip]);
 
   useEffect(() => {
-    if (dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
+    if (dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && selectedTrip && !selectedTanker) {
       form.setFieldsValue({
-        trip_no: dataLoaded?.trip_no,
+        tanker: dataLoaded?.tanker,
       });
-      handleTripSelect(dataLoaded?.trip_no);
+      setSelectedTanker(dataLoaded?.tanker);
     }
-  }, [dataLoaded, sourceType && selectedSupplier, selectedTrip]);
+  }, [dataLoaded, sourceType, selectedSupplier, selectedTrip, selectedTanker]);
+
+  useEffect(() => {
+    if (dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && selectedOrder && !selectedTanker) {
+      form.setFieldsValue({
+        tanker: dataLoaded?.tanker,
+      });
+      setSelectedTanker(dataLoaded?.tanker);
+    }
+  }, [dataLoaded, sourceType, selectedSupplier, selectedOrder, selectedTanker]);
 
   return (
     <>
