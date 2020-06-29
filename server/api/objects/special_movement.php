@@ -66,7 +66,9 @@ class SpecialMovement extends CommonClass
                 MLITM_OPER_POSTED, 
                 MLITM_COMMENT 
             FROM " . $this->VIEW_NAME . ", MOVITEM_TYPES, MOV_REASONS
-            WHERE MLITM_ID LIKE :mlitm_id ";
+            WHERE MLITM_TYPE = MOVITEM_TYPES.MOVITEM_TYPE_ID (+)
+                AND MLITM_REASON_CODE = MOV_REASONS.MR_ID(+)
+                AND MLITM_ID LIKE :mlitm_id ";
         $stmt = oci_parse($this->conn, $query);
 
         if (isset($this->mlitm_status)) {
