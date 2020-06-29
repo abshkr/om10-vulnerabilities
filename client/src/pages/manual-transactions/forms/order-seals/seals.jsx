@@ -112,14 +112,13 @@ const OrderSeals = ({ value, onClose }) => {
   };
 
   const onAllocateOneSeal = () => {
-    const tempList = sealList;
-    setSealList([]);
+    const tempList = _.clone(sealList);
     const o = {};		
     o.seal_prefix = config.sealPreFix;
     o.seal_suffix = config.sealPostFix;
     o.seal_cmpt_nr = tempList.length+1;
     o.seal_nr = next;
-    tempList.push(o)
+    tempList.push(o);
     setOrigList(tempList);
     setSealList(tempList);
     setNext(String(_.toNumber(next)+1));
