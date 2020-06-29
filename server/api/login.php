@@ -111,7 +111,7 @@ if ($array['MSG_CODE'] === "0") {
     $db = $database->getConnection2();
 
     $serv = new SiteService($db);
-    $exp_min = $serv->site_config_value("URBAC_AUTO_LOGOFF", "30");
+    $exp_min = $serv->site_config_value("URBAC_AUTO_LOGOFF", "60");
     write_log($exp_min, __FILE__, __LINE__);
     if ($exp_min === "-1") {
         $exp_min = 60 * 24;
