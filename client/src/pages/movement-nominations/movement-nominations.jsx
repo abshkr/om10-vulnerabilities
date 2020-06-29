@@ -111,7 +111,7 @@ const MovementNominations = () => {
       return;
     }
     api
-      .get(MOVEMENT_NOMIATIONS.READ, {
+      .get(MOVEMENT_NOMIATIONS.SEARCH, {
         params: {
           mv_key: values?.mv_key,
           mv_status: values?.mv_status,
