@@ -41,6 +41,12 @@ const ProductGroups = () => {
     } else {
       setMessageGrpVisible(visibility);
     }
+
+    if (!visibility) {
+      setGroupVisible(false);
+      setMessageVisible(false);
+      setMessageGrpVisible(false);
+    }
   };
 
   const modifiers = (
