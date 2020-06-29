@@ -21,9 +21,9 @@ import {
   AffixRenderer,
   TwinQuantityRenderer,
   QuantityRenderer,
-  ExpiryDateRenderer,
   TemperatureRenderer,
   DensityRenderer,
+  ExpiryDateRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -52,9 +52,9 @@ const defaultComponents = {
   ListRenderer,
   TwinQuantityRenderer,
   QuantityRenderer,
-  ExpiryDateRenderer,
   TemperatureRenderer,
   DensityRenderer,
+  ExpiryDateRenderer,
   ATGRenderer,
   TagRenderer,
   NullRenderer,

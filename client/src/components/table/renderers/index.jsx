@@ -14,9 +14,9 @@ import ListRenderer from './list';
 import AffixRenderer from './affix';
 import TwinQuantityRenderer from './twin-quantity';
 import QuantityRenderer from './quantity';
-import ExpiryDateRenderer from './expiry-date-renderer';
 import TemperatureRenderer from './temperature';
 import DensityRenderer from './density';
+import ExpiryDateRenderer from './expiry-date-renderer';
 
 export {
   BooleanRenderer,
@@ -35,7 +35,7 @@ export {
   AffixRenderer,
   TwinQuantityRenderer,
   QuantityRenderer,
-  ExpiryDateRenderer,
   TemperatureRenderer,
-  DensityRenderer
+  DensityRenderer,
+  ExpiryDateRenderer
 };

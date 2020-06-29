@@ -13,11 +13,12 @@ export default class DensityRenderer extends Component {
 
   render() {
     const { digits } = this.props;
-    const density = _.round(_.toNumber(this.state.value), (!digits ? 3 : digits));
+    const newDigits = _.toNumber(!digits ? 3 : digits);
+    const density = _.round(_.toNumber(this.state.value), newDigits);
 
     return (
       <div style={{ display: 'flex' }}>
-        {density}
+        {!this.state.value ? this.state.value : density}
       </div>
     );
   }

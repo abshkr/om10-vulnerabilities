@@ -145,6 +145,11 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
       (sourceType === 'OPENORDER')
     ),
     width:120,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '100',
+    },
   },
   {
     headerName: t('fields.oprdProdQty'),
@@ -160,6 +165,11 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
       (sourceType === 'OPENORDER')
     ),
     width:120,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '100',
+    },
   },
 
   {
@@ -169,6 +179,10 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     sortable: true,
     resizable: true,
     width: 120,
+    cellRenderer: 'DensityRenderer',
+    cellRendererParams: {
+      digits: '1',
+    },
   },
   {
     headerName: t('fields.temperature'),
@@ -184,6 +198,10 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
       max: 150,
       txt: t,
     },
+    cellRenderer: 'TemperatureRenderer',
+    cellRendererParams: {
+      digits: '1',
+    },
   },
   {
     headerName: t('fields.observedQuantity'),
@@ -197,6 +215,11 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
       min: 0,
       max: 999999999,
       txt: t,
+    },
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '100',
     },
   },
   {
@@ -212,6 +235,11 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
       max: 999999999,
       txt: t,
     },
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '100',
+    },
   },
   {
     headerName: t('fields.massQuantity'),
@@ -226,6 +254,11 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
       min: 0,
       max: 999999999,
       txt: t,
+    },
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '100',
     },
   },
 

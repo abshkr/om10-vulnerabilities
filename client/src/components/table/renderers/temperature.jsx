@@ -13,11 +13,12 @@ export default class TemperatureRenderer extends Component {
 
   render() {
     const { digits } = this.props;
-    const temperature = _.round(_.toNumber(this.state.value), (!digits ? 2 : digits));
+    const newDigits = _.toNumber(!digits ? 2 : digits);
+    const temperature = _.round(_.toNumber(this.state.value), newDigits);
 
     return (
       <div style={{ display: 'flex' }}>
-        {temperature}
+        {!this.state.value ? this.state.value : temperature}
       </div>
     );
   }

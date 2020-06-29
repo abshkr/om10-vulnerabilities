@@ -13,17 +13,20 @@ export default class QuantityRenderer extends Component {
 
 
   render() {
-    const { colorAvail, colorUsed, data } = this.props;
-    //console.log("quantity renderer, props", this.props);
-    const qtyTotal = data?.oitem_prod_qty;
-    const qtyUsed = this.state.value;
-    const qtyLeft = _.toNumber(qtyTotal) - _.toNumber(qtyUsed);
+    const { digits, min, data } = this.props;
+    let newDigits = _.toNumber(!digits ? 0 : digits);
+    if ( data?.trsf_bs_adtv_flag_tot === true || data?.trsf_bs_adtv_flag === true ) {
+      newDigits = 3;
+    } else {
+      if (_.toNumber(this.state.value) < _.toNumber(min)) {
+        newDigits = 3;
+      }
+    }
+    const quantity = _.round(_.toNumber(this.state.value), newDigits);
 
     return (
       <div style={{ display: 'flex' }}>
-        {/* <span style={{ color: colorUsed }}>{qtyUsed}</span> */}
-        {/* <span style={{ color: colorAvail }}>{qtyLeft}</span> */}
-        <Tag color={colorUsed}>{qtyUsed}</Tag> / &nbsp;&nbsp;<Tag color={colorAvail}>{qtyLeft}</Tag>
+        {!this.state.value ? this.state.value : quantity}
       </div>
     );
   }
