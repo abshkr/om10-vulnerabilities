@@ -112,7 +112,7 @@ class Dashboard extends CommonClass
                 SUM(TRSF_QTY_AMB) SUM_AMB, 
                 SUM(TRSF_QTY_COR) SUM_COR, 
                 SUM(TRSF_LOAD_KG) SUM_KG,
-                SUM(TRSF_QTY_AMB) / COUNT(TRSALDID_LOAD_ID) AVGAMB_PER_LOAD
+                ROUND(SUM(TRSF_QTY_AMB) / COUNT(TRSALDID_LOAD_ID), 3) AVGAMB_PER_LOAD
             FROM TRANSACTIONS, TRANSFERS, CLOSEOUTS
             WHERE TRSA_ID = TRSFTRID_TRSA_ID
                 AND STATUS = 0
