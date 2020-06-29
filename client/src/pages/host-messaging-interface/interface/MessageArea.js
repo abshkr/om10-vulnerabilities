@@ -693,11 +693,12 @@ class MessageArea extends Component
 						var newFmt = 'yyyymmddhhmmssfff';
 						if (fldfmt === 'SHORT')
 						{
+							// TODO: get these from config
 							var shortnames = {};
 							shortnames['LOAD:SPEC'] = 'SHP';
 							shortnames['LOAD:ORDER'] = 'ORD';
 							shortnames['OPEN:ORD'] = 'CON';
-							shortnames['LOAD:DELETE'] = 'LDE';
+							shortnames['LOAD:DELETE'] = 'DEL';
 							shortnames['LOAD:DETAIL'] = 'LDD';
 							shortnames['LOAD:REJECT'] = 'REJ';
 							shortnames['ALEAUD:UPLOAD'] = 'ACK';

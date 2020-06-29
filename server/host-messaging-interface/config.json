@@ -90,7 +90,7 @@
 						{ "SHP": [ "SGB_TRM_LOC_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NUM", "SGB_LOAD_NO", "SGB_DATE_TIME_2:yyyymmddhhmmssfff" ] },
 						{ "ORD": [ "SGB_TRM_LOC_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NUM", "SGB_LOAD_NO", "SGB_DATE_TIME_2:yyyymmddhhmmssfff" ] },
 						{ "CON": [ "SGB_TRM_LOC_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NUM", "SGB_ORDER_NO", "SGB_DATE_TIME_2:yyyymmddhhmmssfff" ] },
-						{ "DEL": [ "SGB_TRM_LOC_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NUM", "SGB_LOAD_NO", "SGB_DATE_TIME:yyyymmddhhmmssfff" ] },
+						{ "DEL": [ "SGB_TRM_LOC_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NUM", "SGB_LOAD_NO", "SGB_DATE_TIME_2:yyyymmddhhmmssfff" ] },
 						{ "NOM": [ "SGB_TRM_LOC_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NUM", "SGB_NOM_TECH_KEY", "SGB_DATE_TIME_2:yyyymmddhhmmssfff" ] }
 					]
 				},
@@ -115,7 +115,7 @@
 								"dat" : { "schema" : "msg_def.sgb_open_ord", "name" : "SGB_OPEN_ORDER", "msg_id_idx" : "0.5", "preprocess" : "sgb_insert_msgid.py" }
 						}},
 						{ "DEL" : {
-								"dat" : { "schema" : "msg_def.sgb_load_del", "name" : "SGB_LOAD_DELETE", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid.py" }
+								"dat" : { "schema" : "msg_def.sgb_load_del", "name" : "SGB_LOAD_DELETE", "msg_id_idx" : "0.4", "preprocess" : "sgb_insert_msgid2.py" }
 						}},
 						{ "NOM" : {
 								"xml" : { "schema" : "msg_def.sgb_nom", "name" : "SGB_NOM", "msg_id_idx" : "0.0.5", "field_map" : "sgb_nom.fmap", "preprocess" : "sgb_nom.py" },

@@ -49,7 +49,6 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 		{
 			//setLabel(t('operations.save'));
 			setNotEdit(false);
-			console.log('start editing...');
 			setAction('edit');
 			setContentFormat(2);
 		}
