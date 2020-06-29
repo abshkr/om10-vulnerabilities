@@ -9,16 +9,16 @@ import api, { MANUAL_TRANSACTIONS } from '../../../../api';
 
 const MeterTransfers = ({ 
   form, 
-  dataBoard,
-  setDataBoard,
   sourceType, 
   selected, 
   transfers,
-  dataLoaded 
+  dataBoard,
+  setDataBoard,
+  data,
+  setData,
 }) => {
   const { t } = useTranslation();
 
-  const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true);
 
   const fields = columns(t);
@@ -72,6 +72,7 @@ const MeterTransfers = ({
   }, [selected, transfers]);
 
   useEffect(() => {
+    console.log('Inside meter transfers to setFieldsValue, the data is ', data);
     if (data) {
       form.setFieldsValue({
         meter_transfers: data,
@@ -87,19 +88,6 @@ const MeterTransfers = ({
     board.meter_transfers = data;
     setDataBoard(board);
   }, [data]);
-
-  useEffect(() => {
-    setData([]);
-
-    if (dataLoaded && dataLoaded?.meter_transfers) {
-
-      form.setFieldsValue({
-        meter_transfers: dataLoaded?.meter_transfers,
-      });
-
-      setData(dataLoaded?.meter_transfers);
-    }
-  }, [dataLoaded]);
 
   useEffect(() => {
     console.log("MeterTransfers.meter-transfers sourceType", sourceType);

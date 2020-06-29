@@ -10,18 +10,18 @@ import {calcBaseRatios} from '../../../../utils'
 
 const BaseProductTransfers = ({
   form, 
-  dataBoard,
-  setDataBoard,
   sourceType, 
   selected, 
   transfers,
   clicked,
   setChildTableAPI,
-  dataLoaded
+  dataBoard,
+  setDataBoard,
+  data,
+  setData,
 }) => {
   const { t } = useTranslation();
 
-  const [data, setData] = useState([]);
   const [obsTotal, setObsTotal] = useState(0);
   const [stdTotal, setStdTotal] = useState(0);
   const [massTotal, setMassTotal] = useState(0);
@@ -100,6 +100,7 @@ const BaseProductTransfers = ({
   }, [selected]);
 
   useEffect(() => {
+    console.log('Inside base transfers to setFieldsValue, the data is ', data);
     if (data) {
       form.setFieldsValue({
         base_transfers: data,
@@ -136,19 +137,6 @@ const BaseProductTransfers = ({
       setMassTotal(0);
     }
   }, [data, clicked]);
-
-  useEffect(() => {
-    setData([]);
-
-    if (dataLoaded && dataLoaded?.base_transfers) {
-
-      form.setFieldsValue({
-        base_transfers: dataLoaded?.base_transfers,
-      });
-
-      setData(dataLoaded?.base_transfers);
-    }
-  }, [dataLoaded]);
 
   useEffect(() => {
     console.log("BaseProductTransfers: base-transfers sourceType ", sourceType);

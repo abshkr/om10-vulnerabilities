@@ -39,6 +39,12 @@ const ManualTransactions = ({ popup, params }) => {
   const [dataLoaded, setDataLoaded] = useState(null);
   const [dataSaved, setDataSaved] = useState(null);
   const [dataBoard, setDataBoard] = useState({});
+  const [dataDrawTransfers, setDataDrawTransfers] = useState([]);
+  const [dataBaseTransfers, setDataBaseTransfers] = useState([]);
+  const [dataBaseTotals, setDataBaseTotals] = useState([]);
+  const [dataMeterTransfers, setDataMeterTransfers] = useState([]);
+  const [dataMeterTotals, setDataMeterTotals] = useState([]);
+
   const [repost, setRepost] = useState(false);
   // SCHEDULE: doing manual transaction with Load Schedule
   // OPENORDER: doing manual transaction with Open Order
@@ -62,6 +68,22 @@ const ManualTransactions = ({ popup, params }) => {
 
   const [orderSeals, setOrderSeals] = useState([]);
 
+  const resetFormGrids = () => {
+    /* form.setFieldsValue({
+      transfers: [],
+      base_transfers: [],
+      base_totals: [],
+      meter_transfers: [],
+      meter_totals: [],
+    }); */
+    setDataDrawTransfers([]);
+    setDataBaseTransfers([]);
+    setDataBaseTotals([]);
+    setDataMeterTransfers([]);
+    setDataMeterTotals([]);
+  
+  };
+
   const resetFormData = () => {
     setLoadType(null);
     setLoadNumber(null);
@@ -74,13 +96,7 @@ const ManualTransactions = ({ popup, params }) => {
     setSelectedTrip(null);
     setSelectedOrder(null);
     setSelectedTanker(null);
-    form.setFieldsValue({
-      transfers: [],
-      base_transfers: [],
-      base_totals: [],
-      meter_transfers: [],
-      meter_totals: [],
-    });
+    //resetFormGrids();
   };
 
   const preparePayloadToSubmit = (values) => {
@@ -507,12 +523,19 @@ const ManualTransactions = ({ popup, params }) => {
           record.gud_body_data = JSON.parse(_.replace(record.gud_body_data, '{}', '""'));
         }
 
-        setDataLoaded(record);
+        //setDataLoaded(record);
         console.log('DataLoaded', record);
 
         const values = prepareValuesToLoad(record);
         console.log('prepareValuesToLoad', values);
-        setDataLoaded(values);
+
+        setDataDrawTransfers(values?.transfers);
+        setDataBaseTransfers(values?.base_transfers);
+        setDataBaseTotals(values?.base_totals);
+        setDataMeterTransfers(values?.meter_transfers);
+        setDataMeterTotals(values?.meter_totals);
+
+        //setDataLoaded(values);
 
         /* form.setFieldsValue({
         transfers: values?.transfers,
@@ -863,6 +886,11 @@ const ManualTransactions = ({ popup, params }) => {
   }, [sourceType]);
 
   useEffect(() => {
+    console.log('MT selectedTrip, selectedOrder, selectedTanker', selectedTrip, selectedOrder, selectedTanker);
+    resetFormGrids();
+  }, [selectedTrip, selectedOrder, selectedTanker]);
+
+  useEffect(() => {
     if (params && popup && !repost) {
       setRepost(params?.repost);
     }
@@ -916,8 +944,6 @@ const ManualTransactions = ({ popup, params }) => {
       <Form layout="vertical" form={form} scrollToFirstError>
         <Forms
           form={form}
-          dataBoard={dataBoard}
-          setDataBoard={setDataBoard}
           sourceType={sourceType}
           setSourceType={setSourceType}
           loadType={loadType}
@@ -945,12 +971,12 @@ const ManualTransactions = ({ popup, params }) => {
           popup={popup}
           dataLoaded={null}
           setOrderSeals={setOrderSeals}
+          dataBoard={dataBoard}
+          setDataBoard={setDataBoard}
         />
 
         <DrawerProductTransfers
           form={form}
-          dataBoard={dataBoard}
-          setDataBoard={setDataBoard}
           sourceType={sourceType}
           loadType={loadType}
           loadNumber={loadNumber}
@@ -959,7 +985,18 @@ const ManualTransactions = ({ popup, params }) => {
           order={selectedOrder}
           tanker={selectedTanker}
           repost={repost}
-          dataLoaded={dataLoaded}
+          dataBoard={dataBoard}
+          setDataBoard={setDataBoard}
+          payload={dataDrawTransfers}
+          setPayload={setDataDrawTransfers}
+          dataBaseTransfers={dataBaseTransfers}
+          setDataBaseTransfers={setDataBaseTransfers}
+          dataBaseTotals={dataBaseTotals}
+          setDataBaseTotals={setDataBaseTotals}
+          dataMeterTransfers={dataMeterTransfers}
+          setDataMeterTransfers={setDataMeterTransfers}
+          dataMeterTotals={dataMeterTotals}
+          setDataMeterTotals={setDataMeterTotals}
         />
       </Form>
     </Page>

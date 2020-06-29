@@ -13,8 +13,6 @@ const { Option } = Select;
 
 const Forms = ({
   form,
-  dataBoard,
-  setDataBoard,
   sourceType,
   setSourceType,
   loadType,
@@ -42,6 +40,8 @@ const Forms = ({
   popup,
   dataLoaded,
   setOrderSeals,
+  dataBoard,
+  setDataBoard,
 }) => {
   const { setFieldsValue, resetFields } = form;
 

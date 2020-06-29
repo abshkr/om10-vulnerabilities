@@ -10,17 +10,17 @@ import {calcBaseRatios} from '../../../../utils'
 
 const BaseProductTotals = ({ 
   form, 
-  dataBoard,
-  setDataBoard,
   sourceType, 
   selected, 
   transfers,
   clicked,
-  dataLoaded
+  dataBoard,
+  setDataBoard,
+  data,
+  setData,
 }) => {
   const { t } = useTranslation();
 
-  const [data, setData] = useState([]);
   const [obsTotal, setObsTotal] = useState(0);
   const [stdTotal, setStdTotal] = useState(0);
   const [massTotal, setMassTotal] = useState(0);
@@ -104,27 +104,6 @@ const BaseProductTotals = ({
                   trsf_bs_ratio_value_tot: product?.ratio_value,
                   trsf_bs_ratio_total_tot: ratio_total,
                   trsf_bs_ratio_total2_tot: product?.ratio_total,
-                  /* trsf_bs_qty_amb_tot: _.sumBy(transfers, (o) => {
-                    if (o?.trsf_prod_code === product?.rat_prod_prodcode) {
-                      return calcBaseRatios(o?.trsf_qty_amb, product?.ratio_value, product?.ratio_total); //????
-                    } else {
-                      return 0;
-                    }
-                  }),
-                  trsf_bs_qty_cor_tot: _.sumBy(res?.data?.records, (o) => {
-                    if (o?.trsf_prod_code === product?.rat_prod_prodcode) {
-                      return calcBaseRatios(o?.trsf_qty_cor, product?.ratio_value, product?.ratio_total); //????
-                    } else {
-                      return 0;
-                    }
-                  }),
-                  trsf_bs_load_kg_tot: _.sumBy(res?.data?.records, (o) => {
-                    if (o?.trsf_prod_code === product?.rat_prod_prodcode) {
-                      return calcBaseRatios(o?.trsf_load_kg, product?.ratio_value, product?.ratio_total); //????
-                    } else {
-                      return 0;
-                    }
-                  }), */
                   is_updated: false,
                 });
               });
@@ -143,6 +122,7 @@ const BaseProductTotals = ({
   }, [selected]);
 
   useEffect(() => {
+    console.log('Inside base totals to setFieldsValue, the data is ', data);
     if (data) {
       form.setFieldsValue({
         base_totals: data,
@@ -179,19 +159,6 @@ const BaseProductTotals = ({
       setMassTotal(0);
     }
   }, [data, clicked]); */
-
-  useEffect(() => {
-    setData([]);
-
-    if (dataLoaded && dataLoaded?.base_totals) {
-
-      form.setFieldsValue({
-        base_totals: dataLoaded?.base_totals,
-      });
-
-      setData(dataLoaded?.base_totals);
-    }
-  }, [dataLoaded]);
 
   useEffect(() => {
     console.log("BaseProductTotals: base-totals sourceType ", sourceType);

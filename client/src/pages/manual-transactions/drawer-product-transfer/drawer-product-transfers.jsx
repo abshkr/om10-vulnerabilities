@@ -31,8 +31,6 @@ const { TabPane } = Tabs;
 
 const DrawerProductTransfers = ({
   form, 
-  dataBoard,
-  setDataBoard,
   sourceType, 
   loadType, 
   loadNumber, 
@@ -41,7 +39,18 @@ const DrawerProductTransfers = ({
   order, 
   tanker,
   repost,
-  dataLoaded
+  dataBoard,
+  setDataBoard,
+  payload,
+  setPayload,
+  dataBaseTransfers,
+  setDataBaseTransfers,
+  dataBaseTotals,
+  setDataBaseTotals,
+  dataMeterTransfers,
+  setDataMeterTransfers,
+  dataMeterTotals,
+  setDataMeterTotals,
 }) => {
   const { data } = useSWR((
       sourceType === 'SCHEDULE' && supplier && trip && 
@@ -64,7 +73,7 @@ const DrawerProductTransfers = ({
   const { t } = useTranslation();
   //const { setFieldsValue } = form;
 
-  const [payload, setPayload] = useState([]);
+  //const [payload, setPayload] = useState([]);
   const [selected, setSelected] = useState(null);
   const [fields, setFields] = useState([]);
   const [clicked, setClicked] = useState(null);
@@ -76,9 +85,9 @@ const DrawerProductTransfers = ({
 
     setClicked(null);
 
-    form.setFieldsValue({
+    /* form.setFieldsValue({
       transfers: filtered,
-    });
+    }); */
 
     setPayload(filtered);
   };
@@ -291,13 +300,22 @@ const DrawerProductTransfers = ({
         }
       });
 
-      form.setFieldsValue({
+      /* form.setFieldsValue({
         transfers: transformed,
-      });
+      }); */
 
       setPayload(transformed);
     }
   }, [data, supplier]);
+
+  useEffect(() => {
+    console.log('Inside drawer transfers to setFieldsValue, the data is ', payload);
+    if (payload) {
+      form.setFieldsValue({
+        transfers: payload,
+      });
+    }
+  }, [payload]);
 
   useEffect(() => {
     let board = dataBoard;
@@ -307,19 +325,6 @@ const DrawerProductTransfers = ({
     board.transfers = payload;
     setDataBoard(board);
   }, [payload]);
-
-  useEffect(() => {
-    setPayload([]);
-
-    if (dataLoaded && dataLoaded?.transfers) {
-
-      form.setFieldsValue({
-        transfers: dataLoaded?.transfers,
-      });
-
-      setPayload(dataLoaded?.transfers);
-    }
-  }, [dataLoaded]);
 
   const modifiers = (
     <>
@@ -389,26 +394,28 @@ const DrawerProductTransfers = ({
           <TabPane tab={t('tabColumns.transferDetails')} key="1" forceRender={true}>
             <BaseProductTransfers 
               form={form} 
-              dataBoard={dataBoard}
-              setDataBoard={setDataBoard}
               sourceType={sourceType} 
               selected={selected} 
               transfers={payload} 
               clicked={clicked}
               setChildTableAPI={setTableBaseTransfersAPI}
-              dataLoaded={dataLoaded}
+              dataBoard={dataBoard}
+              setDataBoard={setDataBoard}
+              data={dataBaseTransfers}
+              setData={setDataBaseTransfers}
             />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="2" forceRender={true}>
             <BaseProductTotals 
               form={form} 
-              dataBoard={dataBoard}
-              setDataBoard={setDataBoard}
               sourceType={sourceType} 
               selected={selected} 
               transfers={payload} 
               clicked={clicked}
-              dataLoaded={dataLoaded}
+              dataBoard={dataBoard}
+              setDataBoard={setDataBoard}
+              data={dataBaseTotals}
+              setData={setDataBaseTotals}
             />
           </TabPane>
         </Tabs>
@@ -423,23 +430,25 @@ const DrawerProductTransfers = ({
           <TabPane tab={t('tabColumns.meterDetail')} key="1" forceRender={true}>
             <MeterTransfers 
               form={form} 
-              dataBoard={dataBoard}
-              setDataBoard={setDataBoard}
               sourceType={sourceType} 
               selected={selected} 
               transfers={payload} 
-              dataLoaded={dataLoaded}
+              dataBoard={dataBoard}
+              setDataBoard={setDataBoard}
+              data={dataMeterTransfers}
+              setData={setDataMeterTransfers}
             />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeMeterTotals')} key="2" forceRender={true}>
             <MeterTotals 
               form={form} 
-              dataBoard={dataBoard}
-              setDataBoard={setDataBoard}
               sourceType={sourceType} 
               selected={selected} 
               transfers={payload} 
-              dataLoaded={dataLoaded}
+              dataBoard={dataBoard}
+              setDataBoard={setDataBoard}
+              data={dataMeterTotals}
+              setData={setDataMeterTotals}
             />
           </TabPane>
         </Tabs>
