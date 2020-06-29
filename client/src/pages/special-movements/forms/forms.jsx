@@ -24,7 +24,7 @@ import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, url }) => {
+const FormModal = ({ value, visible, handleFormState, access, url, locateSpecialMv }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -45,9 +45,13 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
   const FROM = ['1', '2'];
   const TO = ['0', '2'];
 
-  const onComplete = () => {
+  const onComplete = (mlitm_id) => {
     handleFormState(false, null);
-    mutate(url);
+    if (mlitm_id) {
+      locateSpecialMv(mlitm_id);
+    } else {
+      mutate(url);
+    }
   };
 
   const onFinish = async () => {
@@ -67,7 +71,7 @@ const FormModal = ({ value, visible, handleFormState, access, url }) => {
           .post(IS_CREATING ? SPECIAL_MOVEMENTS.CREATE : SPECIAL_MOVEMENTS.UPDATE, values)
           .then(
             () => {
-              onComplete();
+              onComplete(values?.mlitm_id);
 
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),

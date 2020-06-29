@@ -41,6 +41,12 @@ const SpecialMovements = () => {
     revalidate();
   };
 
+  const locateSpecialMv = (value) => {
+    setSearch({
+      mlitm_id: value,
+    })
+  }
+
   const setSearch = (values) => {
     if (!values.mlitm_id && !values.mlitm_status) {
       return;
@@ -115,7 +121,14 @@ const SpecialMovements = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} url={url} />
+      <Forms 
+        value={selected} 
+        visible={visible} 
+        handleFormState={handleFormState} 
+        access={access} 
+        url={url} 
+        locateSpecialMv={locateSpecialMv}
+      />
     </Page>
   );
 };
