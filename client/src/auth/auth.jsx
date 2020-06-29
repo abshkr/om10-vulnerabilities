@@ -6,16 +6,18 @@ import jwtDecode from 'jwt-decode';
 
 import ConfigStore from 'stores/config-store';
 import * as ROUTES from 'constants/routes';
+import * as actions from 'actions/auth';
 import useIdle from 'hooks/use-idle';
 
 export default (Authenticated) => {
-  const ComposedComponent = ({ token }) => {
+  const ComposedComponent = ({ token, onRefresh }) => {
     const config = useContext(ConfigStore);
     const isIdle = useIdle();
 
     let history = useHistory();
 
     const [user, setUser] = useState(null);
+    const [lastRefreshed, setLastRefreshed] = useState(0);
 
     useEffect(() => {
       if (token) {
@@ -37,6 +39,13 @@ export default (Authenticated) => {
     }, [token]);
 
     useEffect(() => {
+      const interval = setInterval(() => {
+        console.log('rendered');
+      }, 15000);
+      return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
       if (isIdle) {
         history.push(ROUTES.LOG_OUT);
       }
@@ -49,5 +58,9 @@ export default (Authenticated) => {
     return { token: state.auth.authenticated };
   };
 
-  return connect(mapStateToProps)(ComposedComponent);
+  const mapActionsToProps = (dispatch) => ({
+    onRefresh: (token) => dispatch(actions.refresh(token)),
+  });
+
+  return connect(mapStateToProps, mapActionsToProps)(ComposedComponent);
 };

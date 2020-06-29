@@ -62,6 +62,8 @@ const ConfigProvider = ({ children }) => {
     safefillCheckByHighTemp: false,
     showLSI: false,
     showSeals: false,
+    offset: null,
+    id: null,
     loading: true,
   });
 
@@ -193,7 +195,8 @@ const ConfigProvider = ({ children }) => {
         userAutoDelete: configurationObject?.URBAC_USER_AUTO_DELETE,
         userAutoLock: configurationObject?.URBAC_USER_AUTO_LOCK,
         dateTimeFormat: configurationObject?.SITE_DATETIME_FORMAT || 'DD/MM/YYYY HH:mm:ss',
-
+        offset: configurationObject?.SERVER_TIME_OFFSET || '+00:00',
+        id: configurationObject?.SITE_IDENTIFIER,
         loading: false,
         revalidate: () => onRevalidate(),
       });

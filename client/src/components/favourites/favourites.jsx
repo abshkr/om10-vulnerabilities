@@ -7,12 +7,10 @@ import { useHistory } from 'react-router-dom';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { useAuth } from '../../hooks';
 import { generatePaths } from '../../utils';
 import api, { AUTH } from '../../api';
-import auth from '../../auth';
 
-const Favourites = ({ user }) => {
+const Favourites = () => {
   const { data, revalidate } = useSWR(AUTH.SETUP);
   const { t } = useTranslation();
   const history = useHistory();
@@ -57,7 +55,6 @@ const Favourites = ({ user }) => {
 
       if (!exists && entry) {
         const record = {
-          per_code: user?.per_code,
           config_key: current,
           config_value: entry.name,
         };
@@ -116,4 +113,4 @@ const Favourites = ({ user }) => {
   );
 };
 
-export default auth(Favourites);
+export default Favourites;

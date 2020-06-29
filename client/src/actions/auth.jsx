@@ -1,7 +1,7 @@
-import { hash } from '../utils';
+import api, { AUTH } from 'api';
+import hash from 'utils/hash';
 
 import { AUTHORIZED, UNAUTHORIZED } from './types';
-import api, { AUTH } from '../api';
 
 export const login = (values, callback) => async (dispatch) => {
   const payload = hash(values.language, values.code, values.password);
@@ -51,20 +51,26 @@ export const signout = () => {
   };
 };
 
-export const refresh = () => {
+export const refresh = (token) => async (dispatch) => {
   api
-    .post(AUTH.LOGOUT, {
-      token: sessionStorage.getItem('token'),
+    .post(AUTH.REFRESH, {
+      token,
     })
-    .then((reponse) => {
-      sessionStorage.removeItem('token');
-    })
-    .catch((error) => {
-      sessionStorage.removeItem('token');
-    });
+    .then((response) => {
+      const token = response?.data?.access_token;
 
-  return {
-    type: AUTHORIZED,
-    payload: '',
-  };
+      if (token) {
+        dispatch({ type: AUTHORIZED, payload: token });
+
+        api.interceptors.request.use(function (config) {
+          config.headers.Authorization = token;
+
+          return config;
+        });
+
+        sessionStorage.setItem('token', token);
+      }
+
+      dispatch({ type: UNAUTHORIZED, payload: 'Invalid login credentials' });
+    });
 };
