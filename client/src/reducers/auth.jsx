@@ -2,10 +2,10 @@ import { AUTHORIZED, UNAUTHORIZED } from '../actions/types';
 
 const INITIAL_STATE = {
   authenticated: '',
-  errorMessage: ''
+  errorMessage: '',
 };
 
-export default function(state = INITIAL_STATE, action) {
+export default function (state = INITIAL_STATE, action) {
   switch (action.type) {
     case AUTHORIZED:
       return { ...state, authenticated: action.payload };

@@ -5,7 +5,7 @@ import reducers from '../reducers';
 const authStore = createStore(
   reducers,
   {
-    auth: { authenticated: sessionStorage.getItem('token') }
+    auth: { authenticated: sessionStorage.getItem('token') },
   },
   applyMiddleware(reduxThunk)
 );

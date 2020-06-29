@@ -17,7 +17,6 @@ export default (Authenticated) => {
     let history = useHistory();
 
     const [user, setUser] = useState(null);
-    const [lastRefreshed, setLastRefreshed] = useState(0);
 
     useEffect(() => {
       if (token) {
@@ -40,8 +39,10 @@ export default (Authenticated) => {
 
     useEffect(() => {
       const interval = setInterval(() => {
-        console.log('rendered');
-      }, 15000);
+        console.log('refreshing token');
+
+        onRefresh(token);
+      }, 900000);
       return () => clearInterval(interval);
     }, []);
 
