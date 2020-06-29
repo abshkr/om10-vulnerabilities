@@ -1502,7 +1502,7 @@ app.post('/hmi/edit/host_message', withAuth, express.json(),
 		else
 		{
 			var resp = {};
-			resp["message"] = "can't find connection data of origin of requested message";
+			resp["message"] = "can't find connection data of origin of requested incoming message";
 			res.setHeader('Content-Type', 'application/json');
 			res.status(500);
 			res.send(resp);
@@ -1612,7 +1612,7 @@ app.post('/hmi/edit/omega_message', withAuth, express.json(),
 		else
 		{
 			var resp = {};
-			resp["message"] = "can't find connection data of origin of requested message";
+			resp["message"] = "can't find connection data of origin of requested outgoing message";
 			res.setHeader('Content-Type', 'application/json');
 			res.status(500);
 			res.send(resp);

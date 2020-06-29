@@ -21,7 +21,7 @@ const OmegaMessages = ({handleClick}) => {
   const fields = columns(t);
 	const url = process.env.REACT_APP_API_URL + '/hmi/omega_message';
 	//const url = '/hmi/omega_message';
-	console.log('omega url:'+url);
+	//console.log('omega url:'+url);
 
 	const getData = async () => {
 		fetch(url, {

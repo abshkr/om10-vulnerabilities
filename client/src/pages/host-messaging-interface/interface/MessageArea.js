@@ -402,6 +402,7 @@ class MessageArea extends Component
 
 						var jsval = {};
 						jsval['origin'] = this.state.message.ORIGIN;
+						jsval['destination'] = this.state.message.DESTINATION;
 						jsval['file_name'] = this.state.message.FILE_NAME; 
 						jsval['content'] = this.extractValues(conn);
 
@@ -417,10 +418,6 @@ class MessageArea extends Component
 							if (res.ok)
 							{
 								jsval['file_name'] = res.result;
-							}
-							else
-							{
-									return;
 							}
 						}
 						else if (this.state.from === 'omega')
@@ -457,7 +454,6 @@ class MessageArea extends Component
 									console.error('ERROR:' + body.message);
 									// TODO: clear message area
 									alert(body.message);
-									return;
 								}
 							});
 						});
@@ -467,7 +463,6 @@ class MessageArea extends Component
 						console.error('ERROR:' + body.message);
 						// TODO: clear message area
 						alert(body.message);
-						return;
 					}
 				})
 			});
