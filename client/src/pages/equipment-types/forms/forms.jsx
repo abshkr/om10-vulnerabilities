@@ -49,6 +49,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
       values = {
         etyp_id: value.etyp_id,
         etyp_category: record.etyp_category?.toUpperCase(),
+        etyp_isrigid: record.etyp_category?.toUpperCase() === "R",
       };
     }
 
@@ -62,7 +63,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
       values = {
         etyp_title: record.etyp_title,
         etyp_category: record.etyp_category?.toUpperCase(),
-        etyp_isrigid: false,
+        etyp_isrigid: record.etyp_category?.toUpperCase() === "R",
         etyp_schedul: compartments.length > 0,
         compartments,
       };
