@@ -88,7 +88,6 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 				body: JSON.stringify({rec_id: msg.REC_ID, content_format: content_format })
 			}).then(response => {
 				response.json().then(body => {
-					console.log('Response of resubmit:'+JSON.stringify(body,null,'\t')); 
 					setNotice(body.message);
 				});
 			});
@@ -111,7 +110,7 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
       visible={visible}
       footer={
         <>
-					<text>{notice}</text>
+					<p>{notice}</p>
           <Button
             htmlType="button"
             icon={<CloseOutlined />}
