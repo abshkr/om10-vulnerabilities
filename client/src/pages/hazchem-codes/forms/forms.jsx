@@ -29,7 +29,7 @@ import {
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -37,8 +37,11 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const { resetFields } = form;
 
-  const onComplete = () => {
+  const onComplete = (hzcf_id) => {
     handleFormState(false, null);
+    if (hzcf_id) {
+      setFilterValue('' + hzcf_id);
+    }
     mutate(HAZCHEM_CODES.READ);
   };
 
@@ -56,7 +59,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(IS_CREATING ? HAZCHEM_CODES.CREATE : HAZCHEM_CODES.UPDATE, values)
           .then(() => {
-            onComplete();
+            onComplete(values?.hzcf_id);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),

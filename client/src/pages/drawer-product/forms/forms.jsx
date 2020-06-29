@@ -33,7 +33,7 @@ import HotLitresForm from './hot-litres';
 
 const TabPane = Tabs.TabPane;
 
-const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) => {
+const DrawerForm = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const config = useConfig();
@@ -280,7 +280,7 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !auth?.canCreate : !auth?.canUpdate}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -290,7 +290,7 @@ const DrawerForm = ({ value, visible, handleFormState, auth, setFilterValue }) =
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!auth?.canDelete}
+              disabled={!access?.canDelete}
             >
               {t('operations.delete')}
             </Button>
