@@ -128,7 +128,7 @@ const OrderSeals = ({ value, onClose }) => {
 
   const onReallocateSelected = () => {
     let len = sealList?.length;
-    const tempList = sealList;
+    const tempList = _.clone(sealList);
     let nextNum = _.toNumber(next);
     for (let i=0; i<len; i++) {
       const o = tempList[i]
@@ -151,7 +151,7 @@ const OrderSeals = ({ value, onClose }) => {
 
   const onDellocateSelected = () => {
     let len = sealList?.length;
-    const tempList = sealList;
+    const tempList = _.clone(sealList);
     for (let i=0; i<len; i++) {
       const o = tempList[i]
       if ( o.seal_nr === selected?.seal_nr )
