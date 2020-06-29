@@ -907,7 +907,7 @@ const ManualTransactions = ({ popup, params }) => {
 
   return (
     <Page
-      page={t('pageMenu.stockReconciliation')}
+      page={t('pageMenu.operations')}
       name={t('pageNames.manualTransactions')}
       modifiers={modifiers}
       standalone={popup}

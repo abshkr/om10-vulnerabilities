@@ -46,7 +46,7 @@ const LoadMeters = () => {
   );
 
   return (
-    <Page page={t('pageMenu.gantry')} name={t('pageNames.loadMeters')} modifiers={modifiers} access={access}>
+    <Page page={t('pageMenu.config')} name={t('pageNames.loadMeters')} modifiers={modifiers} access={access}>
       <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
     </Page>
   );

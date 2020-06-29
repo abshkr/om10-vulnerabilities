@@ -48,7 +48,7 @@ const HazchemCodes = () => {
 
   return (
     <Page
-      page={t('pageMenu.gantry')}
+      page={t('pageMenu.products')}
       name={t('pageNames.dangerousGoods')}
       modifiers={modifiers}
       access={access}

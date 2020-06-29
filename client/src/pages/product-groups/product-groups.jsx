@@ -63,7 +63,7 @@ const ProductGroups = () => {
 
   return (
     <Page
-      page={t('pageMenu.gantry')}
+      page={t('pageMenu.products')}
       name={t('pageNames.productGroups')}
       modifiers={modifiers}
       access={access}

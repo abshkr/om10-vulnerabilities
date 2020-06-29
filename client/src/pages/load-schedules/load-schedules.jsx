@@ -77,7 +77,7 @@ const LoadSchedules = () => {
   const [data, setData] = useState(payload?.records);
   const isLoading = isValidating || !data;
 
-  const page = t('pageMenu.schedules');
+  const page = t('pageMenu.operations');
   const name = t('pageNames.loadSchedules');
 
   useEffect(() => {

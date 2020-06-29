@@ -45,7 +45,7 @@ const Tanks = () => {
   const fields = columns(t);
   const isLoading = !read;
 
-  const page = t('pageMenu.gantry');
+  const page = t('pageMenu.stock');
   const name = t('pageNames.tanks');
 
   const onSelect = (value) => {

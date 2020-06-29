@@ -50,7 +50,7 @@ const TankGroups = () => {
 
   return (
     <Page
-      page={t('pageMenu.gantry')}
+      page={t('pageMenu.stock')}
       name={t('pageNames.tankGroups')}
       modifiers={modifiers}
       access={access}

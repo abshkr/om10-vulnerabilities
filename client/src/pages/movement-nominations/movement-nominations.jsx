@@ -74,7 +74,7 @@ const MovementNominations = () => {
   const isLoading = isValidating || !data;
   const fields = columns(t);
 
-  const page = t('pageMenu.stockReconciliation');
+  const page = t('pageMenu.operations');
   const name = t('pageNames.movementNominations');
 
   const handleFormState = (visibility, value) => {

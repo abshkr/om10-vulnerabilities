@@ -96,7 +96,7 @@ const Companies = () => {
   );
 
   return (
-    <Page page={t('pageMenu.gantry')} name={t('pageNames.companies')} modifiers={modifiers} access={auth}>
+    <Page page={t('pageMenu.companies')} name={t('pageNames.companies')} modifiers={modifiers} access={auth}>
       <DataTable
         columns={fields}
         data={data}

@@ -75,7 +75,7 @@ const OrderListings = ({popup, params}) => {
   const isLoading = isValidating || !data;
   const fields = columns(t);
 
-  const page = t('pageMenu.customers');
+  const page = t('pageMenu.operations');
   const name = t('pageNames.orderListing');
 
   const adjustPageState = (visibility, value) => {

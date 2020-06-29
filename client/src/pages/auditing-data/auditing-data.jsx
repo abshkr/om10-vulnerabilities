@@ -26,7 +26,7 @@ const AuditingData = () => {
     `${AUDITING_DATA.READ}?start_date=${start}&end_date=${end}`
   );
 
-  const page = t('pageMenu.security');
+  const page = t('pageMenu.reports');
   const name = t('pageNames.auditingData');
 
   const data = payload?.records;
