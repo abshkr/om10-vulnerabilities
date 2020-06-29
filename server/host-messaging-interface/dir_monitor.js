@@ -563,15 +563,19 @@ function acknowledge(conn, origin, message_id, file, out_rec_id, callback)
 
 }
 
-function file_name_extension(file)
+/* TODO: put this in a common file? */
+function file_name_extension(file, extension_prefix)
 {
-	var list = file.split(conn.file_name_format.extension_prefix);
+	var list = file.split(extension_prefix);
 	if (list.length == 2)
 	{
-		var extn = list[1];
-		console.log('extn:'+extn);
-		return extn;
+		var idx = list[0].lastIndexOf('/');
+		base = list[0].substring(0, idx);
+		extn = list[1];
+
+		return {'base': base, 'extension': extn};
 	}
+
 	return None;
 }
 
@@ -617,6 +621,7 @@ function update_message_id(file, conn, recv_time)
 			console.log('jsmsg:'+JSON.stringify(jsmsg, null, '\t'));
 		}
 
+/*
 		var list = file.split(conn.file_name_format.extension_prefix);
 		var base = '';
 		var extn = '';
@@ -626,10 +631,15 @@ function update_message_id(file, conn, recv_time)
 			base = list[0].substring(0, idx);
 			extn = list[1];
 		}
+*/
+		var extn_prefix = conn.file_name_format.extension_prefix;
+		var fileattrib = file_name_extension(file, extn_prefix);
+		var base = fileattrib.base;
+		var extn = fileattrib.extension;
 
 		var now = new Date().toISOString();
 		now = now.replace(/[T\-:.Z]/g, '');
-		dest_file = base + '/' + now + extn;
+		dest_file = base + '/' + now + extn_prefix + extn;
 		write_data_to_file(jsmsg, dest_file);
 		return [true,dest_file];
 /*
