@@ -124,11 +124,10 @@ const OrderListings = ({popup, params}) => {
       (!customer && !values?.order_cust_acnt) &&
       !values?.order_stat_id &&
       !values?.order_ref_code) {
-      revalidate();
       return;
     }
     api
-    .get(ORDER_LISTINGS.READ, {
+    .get(ORDER_LISTINGS.SEARCH, {
       params: {
         order_cust_no: values?.order_cust_no,
         order_supp_code: !supplier ? values?.order_supp_code : supplier,

@@ -1,4 +1,5 @@
 export const READ = '/api/pages/open_order/read.php';
+export const SEARCH = '/api/pages/open_order/search.php';
 export const ORDER_ITEMS = '/api/pages/open_order/order_items.php';
 export const ORDER_ITEM_TRIPS = '/api/pages/open_order/order_item_trips.php';
 export const ORDER_TRIPS = '/api/pages/open_order/order_trips.php';

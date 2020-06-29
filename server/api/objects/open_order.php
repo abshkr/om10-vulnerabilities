@@ -70,11 +70,8 @@ class OpenOrder extends CommonClass
         }
     }
 
-    public function read()
+    public function search()
     {
-        if (!isset($this->time_option)) {
-            $this->time_option = "ORDER_ORD_TIME";
-        }
         if (!isset($this->order_supp_code)) {
             $this->order_supp_code = "-1";
         }
@@ -96,31 +93,17 @@ class OpenOrder extends CommonClass
         if (!isset($this->end_date)) {
             $this->end_date = "-1";
         }
-        if (isset($this->order_cust_no) && $this->order_cust_no !== -1) {
-            $this->start_date = "-1";
-            $this->end_date = "-1";
-        }
-        if (isset($this->order_ref_code) && $this->order_ref_code !== "-1") {
-            $this->start_date = "-1";
-            $this->end_date = "-1";
-        }
 
         $query = "
             SELECT * FROM " . $this->VIEW_NAME . "
-            WHERE 
-                1 = 1
-                AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
-                AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
-                AND ('-1' = :supplier OR ORDER_SUPP_CODE = :supplier)
+            WHERE ('-1' = :supplier OR ORDER_SUPP_CODE = :supplier)
                 AND ('-1' = :customer OR ORDER_CUST_ACNT = :customer)
                 AND (-1 = :status OR ORDER_STAT_ID = :status)
                 AND (-1 = :order_cust_no OR ORDER_CUST_NO LIKE '%'||:order_cust_no||'%')
                 AND ('-1' = :order_ref_code OR ORDER_REF_CODE LIKE '%'||:order_ref_code||'%')
-            ORDER BY " . $this->time_option . " DESC
+            ORDER BY ORDER_ORD_TIME DESC
         ";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':start_date', $this->start_date);
-        oci_bind_by_name($stmt, ':end_date', $this->end_date);
         oci_bind_by_name($stmt, ':supplier', $this->order_supp_code);
         oci_bind_by_name($stmt, ':customer', $this->order_cust_acnt);
         oci_bind_by_name($stmt, ':status', $this->order_stat_id);
@@ -182,7 +165,7 @@ class OpenOrder extends CommonClass
         }
     }
 
-    public function read_by_order_time()
+    public function read()
     {
         if (!isset($this->start_date)) {
             $query = "
@@ -193,11 +176,14 @@ class OpenOrder extends CommonClass
             $stmt = oci_parse($this->conn, $query);
         
         } else {
+            if (!isset($this->time_option)) {
+                $this->time_option = "ORDER_ORD_TIME";
+            }
             $query = "
                 SELECT * FROM " . $this->VIEW_NAME . "
-                WHERE ORDER_ORD_TIME > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS') 
-                  AND ORDER_ORD_TIME < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
-                ORDER BY ORDER_ORD_TIME DESC";
+                WHERE " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS') 
+                  AND " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
+                ORDER BY " . $this->time_option . " DESC";
 //                WHERE ORDER_ORD_TIME > :start_date AND ORDER_ORD_TIME < :end_date
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':start_date', $this->start_date);
