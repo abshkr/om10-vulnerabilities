@@ -19,7 +19,7 @@ import api, { DANGEROUS_GOODS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, auth }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { data: payload, isValidating } = useSWR(DANGEROUS_GOODS.READ);
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -27,8 +27,11 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
 
   const IS_CREATING = !value;
 
-  const onComplete = () => {
+  const onComplete = (material) => {
     handleFormState(false, null);
+    if (material) {
+      setFilterValue('' + material);
+    }
     mutate(DANGEROUS_GOODS.READ);
   };
 
@@ -45,7 +48,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
         await api
           .post(IS_CREATING ? DANGEROUS_GOODS.CREATE : DANGEROUS_GOODS.UPDATE, values)
           .then((response) => {
-            onComplete();
+            onComplete(values?.material);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
@@ -113,6 +116,8 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
       });
 
       // setMaterial(value.material)
+    } else if (!value && !visible) {
+      form.resetFields();
     }
   }, [value, setFieldsValue, payload]);
 
@@ -164,6 +169,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
             htmlType="submit"
             style={{ float: 'right', marginRight: 5 }}
             onClick={onFinish}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -173,6 +179,7 @@ const FormModal = ({ value, visible, handleFormState, auth }) => {
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
+              disabled={!access?.canDelete}
               onClick={onDelete}
             >
               {t('operations.delete')}
