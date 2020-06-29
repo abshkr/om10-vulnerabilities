@@ -51,6 +51,27 @@ class SiteService
         return $default;
     }
 
+    public function site_config_value($config_key, $default)
+    {
+        // write_log(sprintf("%s, %s", $config_key, $default), LogLevel::ERROR);
+        $query = "SELECT CONFIG_VALUE
+            FROM SITE_CONFIG WHERE CONFIG_KEY = :config_key";
+        $stmt = oci_parse($this->conn, $query);
+        // oci_bind_by_name($stmt, ':default', $default);
+        oci_bind_by_name($stmt, ':config_key', $config_key);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ($row)
+            return $row['CONFIG_VALUE'];
+
+        return $default;
+    }
+
     public function site_config($config_key, $default)
     {
         $query = "SELECT NVL(MAX(CONFIG_VALUE), :default)
