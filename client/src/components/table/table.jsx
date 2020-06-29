@@ -19,8 +19,11 @@ import {
   EquipmentRenderer,
   ListRenderer,
   AffixRenderer,
+  TwinQuantityRenderer,
   QuantityRenderer,
   ExpiryDateRenderer,
+  TemperatureRenderer,
+  DensityRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -47,7 +50,11 @@ const defaultComponents = {
   EquipmentRenderer,
   AffixRenderer,
   ListRenderer,
+  TwinQuantityRenderer,
   QuantityRenderer,
+  ExpiryDateRenderer,
+  TemperatureRenderer,
+  DensityRenderer,
   ATGRenderer,
   TagRenderer,
   NullRenderer,
@@ -55,7 +62,6 @@ const defaultComponents = {
   SelectEditor,
   BooleanEditor,
   ListEditor,
-  ExpiryDateRenderer,
 };
 
 const defaultColumnDef = {};

@@ -127,7 +127,7 @@ const columns = (t, pageState, form, units) => [
     hide: false,
     editable: false,
     width: 160,
-    cellRenderer: 'QuantityRenderer',
+    cellRenderer: 'TwinQuantityRenderer',
     cellRendererParams: {
       colorAvail: '#009900',
       colorUsed: '#C80000',
@@ -142,7 +142,7 @@ const columns = (t, pageState, form, units) => [
     hide: false,
     editable: false,
     width: 160,
-    cellRenderer: 'QuantityRenderer',
+    cellRenderer: 'TwinQuantityRenderer',
     cellRendererParams: {
       colorAvail: '#009900',
       colorUsed: '#C80000',
@@ -157,7 +157,7 @@ const columns = (t, pageState, form, units) => [
     hide: false,
     editable: false,
     width: 160,
-    cellRenderer: 'QuantityRenderer',
+    cellRenderer: 'TwinQuantityRenderer',
     cellRendererParams: {
       colorAvail: '#009900',
       colorUsed: '#C80000',
