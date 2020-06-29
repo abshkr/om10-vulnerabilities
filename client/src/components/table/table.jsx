@@ -19,7 +19,10 @@ import {
   EquipmentRenderer,
   ListRenderer,
   AffixRenderer,
+  TwinQuantityRenderer,
   QuantityRenderer,
+  TemperatureRenderer,
+  DensityRenderer,
   ExpiryDateRenderer,
 } from './renderers';
 
@@ -47,7 +50,11 @@ const defaultComponents = {
   EquipmentRenderer,
   AffixRenderer,
   ListRenderer,
+  TwinQuantityRenderer,
   QuantityRenderer,
+  TemperatureRenderer,
+  DensityRenderer,
+  ExpiryDateRenderer,
   ATGRenderer,
   TagRenderer,
   NullRenderer,
@@ -55,7 +62,6 @@ const defaultComponents = {
   SelectEditor,
   BooleanEditor,
   ListEditor,
-  ExpiryDateRenderer,
 };
 
 const defaultColumnDef = {};
