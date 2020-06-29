@@ -1079,6 +1079,8 @@
     "archived_file": "Archived File",
     "transferred_file": "Transferred File",
     "resubmitted": "Resubmitted",
+    "related_in_msg_id": "Related Incoming Msg",
+    "transfer_time": "Transfer Time",
     "today": "Today",
     "thisWeek": "This Week",
     "thisMonth": "This Month",
