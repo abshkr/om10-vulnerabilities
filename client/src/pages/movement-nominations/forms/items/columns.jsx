@@ -133,7 +133,8 @@ const useColumns = (value, selected) => {
 
   return [
     {
-      headerName: `${t('fields.select')}`,
+      // headerName: `${t('fields.select')}`,
+      headerName: "",
       field: 'mvitm_line_id',
       width: 40,
       checkboxSelection: true,
