@@ -37,6 +37,22 @@ export const login = (values, callback) => async (dispatch) => {
 
 export const signout = () => {
   api
+    .post(AUTH.LOGOUT)
+    .then((reponse) => {
+      sessionStorage.removeItem('token');
+    })
+    .catch((error) => {
+      sessionStorage.removeItem('token');
+    });
+
+  return {
+    type: AUTHORIZED,
+    payload: '',
+  };
+};
+
+export const refresh = () => {
+  api
     .post(AUTH.LOGOUT, {
       token: sessionStorage.getItem('token'),
     })

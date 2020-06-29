@@ -115,7 +115,7 @@ const FormSwitch = ({ config, onChange }) => {
 
 const ConfigurationItems = ({ data, onChange }) => (
   <List
-    style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}
+    style={{ height: 'calc(100vh - 300px)', overflowY: 'auto', minHeight: 720 }}
     itemLayout="horizontal"
     size="small"
     dataSource={data}
@@ -145,7 +145,7 @@ const ConfigurationItems = ({ data, onChange }) => (
 
 const FeatureItems = ({ data, onChange }) => (
   <List
-    style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}
+    style={{ height: 'calc(100vh - 300px)', overflowY: 'auto', minHeight: 720 }}
     itemLayout="horizontal"
     size="small"
     dataSource={data.filter((item) => item.feature_gui === true)}

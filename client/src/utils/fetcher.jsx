@@ -1,8 +1,5 @@
-const fetcher = (...args) =>
-  fetch(args, {
-    headers: {
-      Authorization: sessionStorage.getItem('token'),
-    },
-  }).then((res) => res.json());
+import api from 'api';
+
+const fetcher = (...args) => api.get(args).then((response) => response.data);
 
 export default fetcher;

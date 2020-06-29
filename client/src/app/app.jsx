@@ -47,9 +47,9 @@ const App = () => {
   const language = locale[i18n.language];
 
   return (
-    <SWRConfig value={fetchConfig}>
-      <ConfigProvider locale={language}>
-        <Provider store={authStore}>
+    <ConfigProvider locale={language}>
+      <Provider store={authStore}>
+        <SWRConfig value={fetchConfig}>
           <BrowserRouter>
             <Interface>
               <GlobalStyleProvider primary="#0054A4" />
@@ -64,9 +64,9 @@ const App = () => {
               </Suspense>
             </Interface>
           </BrowserRouter>
-        </Provider>
-      </ConfigProvider>
-    </SWRConfig>
+        </SWRConfig>
+      </Provider>
+    </ConfigProvider>
   );
 };
 
