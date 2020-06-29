@@ -98,19 +98,6 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
   },
 
   {
-    headerName: t('fields.delvNo'),
-    field: 'schd_deliv_num',
-    resizable: true,
-    width: 90,
-    editable: true,
-    suppressSizeToFit: true,
-    cellEditor: 'DelvNoEditor',
-    cellEditorParams: {
-      form: form,
-    },
-  },
-
-  {
     headerName: t('fields.shipTo'),
     field: 'schd_ship_to_num',
     resizable: true,
@@ -120,6 +107,19 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     cellEditor: 'ShipToEditor',
     cellEditorParams: {
       values: shipTo?.records || [],
+      form: form,
+    },
+  },
+
+  {
+    headerName: t('fields.delvNo'),
+    field: 'schd_deliv_num',
+    resizable: true,
+    width: 90,
+    editable: true,
+    suppressSizeToFit: true,
+    cellEditor: 'DelvNoEditor',
+    cellEditorParams: {
       form: form,
     },
   },
