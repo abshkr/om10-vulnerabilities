@@ -174,7 +174,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
           await api
             .post(SPECIAL_MOVEMENTS.SUBMIT, values)
             .then(()=> {
-                onComplete();
+                onComplete(values?.mlitm_id);
 
                 notification.success({
                   message: t('messages.submitSuccess'),
