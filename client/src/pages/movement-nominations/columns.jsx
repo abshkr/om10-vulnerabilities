@@ -5,7 +5,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 80,
+    width: 90,
   },
 
   {
@@ -16,13 +16,13 @@ const columns = (t) => [
     resizable: true,
   },
 
-  {
-    headerName: t('fields.terminal'),
-    field: 'mv_terminal',
-    filter: 'MultiFilter',
-    sortable: true,
-    resizable: true,
-  },
+  // {
+  //   headerName: t('fields.terminal'),
+  //   field: 'mv_terminal',
+  //   filter: 'MultiFilter',
+  //   sortable: true,
+  //   resizable: true,
+  // },
 
   {
     headerName: t('fields.nominationNumber'),
@@ -30,6 +30,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    width: 210,
   },
   {
     headerName: t('fields.nominationSource'),

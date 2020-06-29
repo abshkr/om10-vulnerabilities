@@ -41,6 +41,12 @@ const ProductGroups = () => {
     } else {
       setMessageGrpVisible(visibility);
     }
+
+    if (!visibility) {
+      setGroupVisible(false);
+      setMessageVisible(false);
+      setMessageGrpVisible(false);
+    }
   };
 
   const modifiers = (
@@ -63,7 +69,7 @@ const ProductGroups = () => {
 
   return (
     <Page
-      page={t('pageMenu.gantry')}
+      page={t('pageMenu.products')}
       name={t('pageNames.productGroups')}
       modifiers={modifiers}
       access={access}

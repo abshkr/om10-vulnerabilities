@@ -7,6 +7,7 @@ import {
   QuestionCircleOutlined,
   RedoOutlined,
   ClockCircleOutlined,
+  CloseOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col } from 'antd';
@@ -378,6 +379,15 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
       visible={visible}
       footer={
         <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
+
           {!IS_CREATING && !approved && (
             <Button
               type="primary"

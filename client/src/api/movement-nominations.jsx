@@ -1,4 +1,5 @@
 export const READ = '/api/pages/movement/read.php';
+export const SEARCH = '/api/pages/movement/search.php';
 export const CHECK_NOMKEY = '/api/pages/movement/check_nom_key.php';
 
 export const SUPPLIERS = '/api/pages/movement/suppliers.php';

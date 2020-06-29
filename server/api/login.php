@@ -47,6 +47,8 @@ include_once './objects/personnel.php';
 include_once './config/setups.php';
 include_once './config/jwt.php';
 include_once './shared/utilities.php';
+include_once './service/site_service.php';
+
 
 // initialize object
 $object = new stdClass();
@@ -64,8 +66,7 @@ if ($data) {
 }
 // write_log(json_encode($data), __FILE__, __LINE__);
 // write_log(json_encode($object), __FILE__, __LINE__);
-if (!isset($object->user) ||
-!isset($object->user)) {
+if (!isset($object->user) || !isset($object->psw)) {
     echo json_encode(
         array("message" => "Parameter (user or password) not provided.")
     );
@@ -106,6 +107,20 @@ if ($array['MSG_DESC'] === 'SUCCESS') {
 if ($array['MSG_CODE'] === "0") {
     Utilities::clean_rusty_files((isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omega') . '/logs');
 
+    // $database = new Database();
+    // $db = $database->getConnection2();
+
+    // $serv = new SiteService($db);
+    // $exp_min = $serv->site_config_value("URBAC_AUTO_LOGOFF", "60");
+    // write_log($exp_min, __FILE__, __LINE__);
+    // if ($exp_min === "-1") {
+    //     $exp_min = 60 * 24;
+    // } else {
+    //     $exp_min = intval($exp_min);
+    // }
+
+    $exp_min = 60;      //Default it is 1 hour
+
     $login_result = array();
     $login_result['userid'] = $object->user;
     $login_result['email'] = "";
@@ -113,8 +128,8 @@ if ($array['MSG_CODE'] === "0") {
     $login_result['token'] = get_token($object->user, $array['USER_DETAIL']['USER_SESSION'], 
         $array['USER_DETAIL']['SITE_CODE'], $array['USER_DETAIL']['SITE_NAME'], $array['USER_DETAIL']['USER_LANG']);
     $login_result['refreshToken'] = get_token($object->user, $array['USER_DETAIL']['USER_SESSION'], 
-        $array['USER_DETAIL']['SITE_CODE'], $array['USER_DETAIL']['SITE_NAME'], $array['USER_DETAIL']['USER_LANG'], $exp_seconds = 3600);
-    $login_result['expiresIn'] = 3600;
+        $array['USER_DETAIL']['SITE_CODE'], $array['USER_DETAIL']['SITE_NAME'], $array['USER_DETAIL']['USER_LANG'], $exp_min * 60);
+    $login_result['expiresIn'] = $exp_min * 60;
 
     //Some old screens like bay view still need session
     if (!isset($_SESSION)) {

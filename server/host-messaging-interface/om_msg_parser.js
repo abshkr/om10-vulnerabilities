@@ -42,19 +42,42 @@ function find_msg_parse_criteria(filenm, file_name_format, msg_parse_rules)
 
 	//console.log('search_key:'+search_key);
 
+
+	var fileattrib = file_name_extension(filenm, file_name_format.extension_prefix);
+
 	for (var r = 0; r < msg_parse_rules.rules.length; r++)
 	{
 		var rule = msg_parse_rules.rules[r];
-		rinfo = rule[search_key];
-		if (typeof rinfo !== 'undefined' && rinfo != '')
+		var rinfos = rule[search_key];
+		if (typeof rinfos !== 'undefined' && rinfos != '')
 		{
-			break;
+			var rinfo = rinfos[fileattrib.extension];
+			if (typeof rinfo !== 'undefined' && rinfo != '')
+			{
+				// found it.
+				break;
+			}
 		}
 	}
 
 	return rinfo;
 }
 
+/* TODO: put this in a common file? */
+function file_name_extension(file, extension_prefix)
+{
+	var list = file.split(extension_prefix);
+	if (list.length == 2)
+	{
+		var idx = list[0].lastIndexOf('/');
+		base = list[0].substring(0, idx);
+		extn = list[1];
+
+		return {'base': base, 'extension': extn};
+	}
+
+	return None;
+}
 
 
 function parse(conn, file, content_format)
@@ -71,23 +94,22 @@ function parse(conn, file, content_format)
 	var rule = find_msg_parse_criteria(src_filenm, conn.file_name_format, conn.msg_parse_rules);
 	if (typeof rule !== 'undefined' && rule != '')
 	{
+		var fileattrib = file_name_extension(src_filenm, conn.file_name_format.extension_prefix);
+
+
+
 		if (content_format > 0)
 		{
 			if (content_format == 5)
 			{
 				// Use file name extension to determine
-				var list = file.split(conn.file_name_format.extension_prefix);
-				if (list.length == 2)
+				if (fileattrib.extn == 'dat')
 				{
-					var extn = list[-1];
-					if (extn == 'dat')
-					{
-						content_format = 1;
-					}
-					else if (extn == 'xml')
-					{
-						content_format = 2;
-					}
+					content_format = 1;
+				}
+				else if (fileattrib.extn == 'xml')
+				{
+					content_format = 2;
 				}
 			}
 		}

@@ -74,7 +74,7 @@ const MovementNominations = () => {
   const isLoading = isValidating || !data;
   const fields = columns(t);
 
-  const page = t('pageMenu.stockReconciliation');
+  const page = t('pageMenu.operations');
   const name = t('pageNames.movementNominations');
 
   const handleFormState = (visibility, value) => {
@@ -111,7 +111,7 @@ const MovementNominations = () => {
       return;
     }
     api
-      .get(MOVEMENT_NOMIATIONS.READ, {
+      .get(MOVEMENT_NOMIATIONS.SEARCH, {
         params: {
           mv_key: values?.mv_key,
           mv_status: values?.mv_status,

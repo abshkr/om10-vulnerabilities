@@ -33,7 +33,7 @@ const PhysicalPrinters = () => {
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
-  const page = t('pageMenu.printers');
+  const page = t('pageMenu.config');
   const name = t('pageNames.physicalPrinters');
 
   const modifiers = (

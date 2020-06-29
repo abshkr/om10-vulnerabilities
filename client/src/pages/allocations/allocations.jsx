@@ -33,7 +33,7 @@ const Allocations = () => {
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
-  const page = t('pageMenu.gantry');
+  const page = t('pageMenu.companies');
   const name = t('pageNames.allocations');
 
   const modifiers = (

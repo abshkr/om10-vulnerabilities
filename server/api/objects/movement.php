@@ -366,11 +366,8 @@ class Movement extends CommonClass
         return $company_service->carriers();
     }
     
-    public function read()
+    public function search()
     {
-        if (!isset($this->time_option)) {
-            $this->time_option = "MV_DTIM_EFFECT";
-        }
         if (!isset($this->mv_key)) {
             $this->mv_key = "-1";
         }
@@ -469,23 +466,16 @@ class Movement extends CommonClass
                 MOVEMENTS, 
                 MOVSTATUS_TYPES, 
                 MOVSOURCE_TYPES
-            WHERE 
-                1 = 1 
-                AND MV_STATUS = MOVSTATUS_TYPES.MOVSTATUS_TYPE_ID (+)
+            WHERE MV_STATUS = MOVSTATUS_TYPES.MOVSTATUS_TYPE_ID (+)
                 AND MV_SRCTYPE = MOVSOURCE_TYPES.MOVSOURCE_TYPE_ID
-                AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
-                AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
                 AND ('-1' = :mv_key OR MV_KEY LIKE '%'||:mv_key||'%')
                 AND ('-1' = :mv_number OR MV_NUMBER LIKE '%'||:mv_number||'%')
                 AND (-1 = :mv_status OR MV_STATUS = :mv_status)
                 AND (-1 = :mv_srctype OR MV_SRCTYPE = :mv_srctype)
                 AND (-1 = :mv_terminal OR MV_TERMINAL = :mv_terminal)
-            ORDER BY " . $this->time_option . " DESC
-            -- ORDER BY MV_ID DESC
+            ORDER BY MV_ID DESC
         ";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':start_date', $this->start_date);
-        oci_bind_by_name($stmt, ':end_date', $this->end_date);
         oci_bind_by_name($stmt, ':mv_key', $this->mv_key);
         oci_bind_by_name($stmt, ':mv_number', $this->mv_number);
         oci_bind_by_name($stmt, ':mv_status', $this->mv_status);
@@ -502,9 +492,13 @@ class Movement extends CommonClass
         }
     }
     
-    public function read_by_time()
+    public function read()
     {
         if (isset($this->start_date)) {
+            if (!isset($this->time_option)) {
+                $this->time_option = "MV_DTIM_EFFECT";
+            }
+            
             $query = "
                 SELECT MV_ID,
                     MV_TERMINAL,
@@ -571,8 +565,8 @@ class Movement extends CommonClass
                 FROM MOVEMENTS, MOVSTATUS_TYPES, MOVSOURCE_TYPES
                 WHERE MV_STATUS = MOVSTATUS_TYPES.MOVSTATUS_TYPE_ID (+)
                     AND MV_SRCTYPE = MOVSOURCE_TYPES.MOVSOURCE_TYPE_ID
-                    AND MV_DTIM_EXPIRY > :start_date
-                    AND MV_DTIM_EXPIRY < :end_date
+                    AND " . $this->time_option . " > :start_date
+                    AND " . $this->time_option . " < :end_date
                 ORDER BY MV_ID DESC";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':start_date', $this->start_date);

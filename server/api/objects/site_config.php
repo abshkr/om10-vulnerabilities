@@ -109,7 +109,10 @@ class SiteConfig extends CommonClass
     public function read_decorate(&$result_array)
     {
         $query = "SELECT SITE_AL_ADJ, SITE_CL_ADJ, SITE_KG_ADJ, SITE_LD_RETNPRD, 
-            SITE_EXP_MONTHS, SITE_LD_RETN_NEWLDS, SITE_LD_RETNPRD_NEW_MOV, SITE_LD_RETNPRD_USED_MOV FROM SITE";
+            SITE_EXP_MONTHS, SITE_LD_RETN_NEWLDS, SITE_LD_RETNPRD_NEW_MOV, SITE_LD_RETNPRD_USED_MOV,
+            SITE_CODE, SITE_NAME,
+            TZ_OFFSET(SESSIONTIMEZONE) SERVER_TIME_OFFSET
+            FROM SITE";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
@@ -165,6 +168,18 @@ class SiteConfig extends CommonClass
             "config_value" => $row['SITE_LD_RETNPRD_USED_MOV'],
             "config_comment" => response("__LOAD_MOV_RETENTION__"),
             "config_required_by_gui" => "M",
+            ));
+        array_push($result_array, array(
+            "config_key" => "SITE_IDENTIFIER",
+            "config_value" => $row['SITE_CODE'] . "/" . $row['SITE_NAME'],
+            "config_comment" => "",
+            "config_required_by_gui" => "",
+            ));
+        array_push($result_array, array(
+            "config_key" => "SERVER_TIME_OFFSET",
+            "config_value" => $row['SERVER_TIME_OFFSET'],
+            "config_comment" => "",
+            "config_required_by_gui" => "",
             ));
     }
     

@@ -114,7 +114,7 @@ const columns = (t, pageState, form, units) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: (pageState==='detail'? true : false),
+    hide: (pageState==='detail'? false : true),
     editable: false,
     width: 60,
   },

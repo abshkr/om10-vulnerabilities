@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { Form, Button, Tabs, notification, Modal, Divider, Drawer, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
@@ -191,6 +191,15 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
       visible={visible}
       footer={
         <>
+        <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
+
           <Button
             type="primary"
             //htmlType="submit"

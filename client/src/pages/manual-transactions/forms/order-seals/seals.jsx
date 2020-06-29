@@ -112,14 +112,13 @@ const OrderSeals = ({ value, onClose }) => {
   };
 
   const onAllocateOneSeal = () => {
-    const tempList = sealList;
-    setSealList([]);
+    const tempList = _.clone(sealList);
     const o = {};		
     o.seal_prefix = config.sealPreFix;
     o.seal_suffix = config.sealPostFix;
     o.seal_cmpt_nr = tempList.length+1;
     o.seal_nr = next;
-    tempList.push(o)
+    tempList.push(o);
     setOrigList(tempList);
     setSealList(tempList);
     setNext(String(_.toNumber(next)+1));
@@ -129,7 +128,7 @@ const OrderSeals = ({ value, onClose }) => {
 
   const onReallocateSelected = () => {
     let len = sealList?.length;
-    const tempList = sealList;
+    const tempList = _.clone(sealList);
     let nextNum = _.toNumber(next);
     for (let i=0; i<len; i++) {
       const o = tempList[i]
@@ -152,7 +151,7 @@ const OrderSeals = ({ value, onClose }) => {
 
   const onDellocateSelected = () => {
     let len = sealList?.length;
-    const tempList = sealList;
+    const tempList = _.clone(sealList);
     for (let i=0; i<len; i++) {
       const o = tempList[i]
       if ( o.seal_nr === selected?.seal_nr )
