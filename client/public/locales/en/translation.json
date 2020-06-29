@@ -1082,7 +1082,9 @@
     "today": "Today",
     "thisWeek": "This Week",
     "thisMonth": "This Month",
-    "leakDetection": "Leak Detection"
+    "leakDetection": "Leak Detection",
+    "serverTime": "Server Time",
+    "loggedInAs": "Logged In As"
   },
 
   "pageMenu": {
@@ -1310,7 +1312,7 @@
     "viewSeals": "View Seals",
     "viewTripSeals": "View Schedule Seals",
     "viewOrderSeals": "View Order Seals",
-    "setAddressTemplate": "Set As Default Template",	
+    "setAddressTemplate": "Set As Default Template",
     "manageImage": "Manage Images",
     "uploadImg": "Upload Image",
     "removeImg": "Remove From Server"
@@ -1401,7 +1403,7 @@
     "meterDetails": "Meter Details",
     "baseProductDetails": "Base Product Details",
     "loadSchedulesForNomination": "Schdules For Nomination",
-	  "drawerProductAssets": "Drawer Product Assets"
+    "drawerProductAssets": "Drawer Product Assets"
   },
 
   "messages": {
@@ -1478,8 +1480,8 @@
     "confirmArchive": "Confirm Schedule is to be Archived?",
     "zeroEquipmentSelected": "You have not selected equipment for some Tankers. If you do not want to choose the existing one, system will create a new one for you automatically. Please confirm to process",
     "unlockAll": "Are you sure you want to unlock all compartments?",
-	"noImageSeleted": "Please select an image",
-	"deleteImage": "Are you sure you want to remove image from server?"
+    "noImageSeleted": "Please select an image",
+    "deleteImage": "Are you sure you want to remove image from server?"
   },
 
   "divider": {
@@ -1583,8 +1585,8 @@
     "maxDateRange": "Date Range Limited to: ",
     "ignoreTolerance": "Ignore tolerance check",
     "unauthorized": "Sorry, you are not authorized to access this page.",
-	"uploadSuccess": "You have uploaded image: ",
-	"uploadFailed": "Failed to upload image: "
+    "uploadSuccess": "You have uploaded image: ",
+    "uploadFailed": "Failed to upload image: "
   },
 
   "placeholder": {
