@@ -50,6 +50,15 @@ const columns = (t) => [
 			};
 		}
   },
+	{
+    headerName: t('fields.id'),
+    field: 'ROW_ID',
+    sortable: true,
+    resizable: true,
+		width: 54,
+    suppressSizeToFit: true,
+		pinned: 'left',
+	},
   {
     headerName: t('fields.message_id'),
     field: 'MESSAGE_ID',
@@ -70,6 +79,15 @@ const columns = (t) => [
     suppressSizeToFit: true,
 		pinned: 'left',
     cellRenderer: 'DateRenderer'
+  },
+  {
+    headerName: t('fields.message_type'),
+    field: 'MESSAGE_TYPE',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
+		width: 80,
+    suppressSizeToFit: true
   },
   {
     headerName: t('fields.origin'),
@@ -98,14 +116,6 @@ const columns = (t) => [
   {
     headerName: t('fields.rec_id'),
     field: 'REC_ID',
-    sortable: true,
-    resizable: true,
-    suppressSizeToFit: true
-  },
-  {
-    headerName: t('fields.message_type'),
-    field: 'MESSAGE_TYPE',
-    filter: 'MultiFilter',
     sortable: true,
     resizable: true,
     suppressSizeToFit: true

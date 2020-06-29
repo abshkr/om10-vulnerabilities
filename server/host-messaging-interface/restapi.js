@@ -204,9 +204,10 @@ process.on('message', (msg) => {
 	// Oracle
 	var dformat = 'YYYY-MM-DDHH24:MI:SS.FF';
 	var rtime = recv_time.replace(/[TZ]/g, '');
-	var sql = "SELECT * FROM " + table + " WHERE origin=" + "'" + origin + "'"
+	var sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, " + table + ".* FROM " + table + " WHERE origin=" + "'" + origin + "'"
 				+ " and " + "message_id=" + "'" + message_id + "'"
-				+ " and " + "recv_time=" + "to_timestamp('" + rtime + "','" + dformat + "')";
+				+ " and " + "recv_time=" + "to_timestamp('" + rtime + "','" + dformat + "')"
+				+ " order by recv_time desc";
 
 	try
 	{
@@ -688,14 +689,15 @@ app.post('/hmi/omega_message', withAuth, express.json(),
 		if (dstart != undefined && dend != undefined)
 		{
 			dformat = 'YYYY-MM-DD HH24:MI:SS';
-			sql = "SELECT * FROM out_msgs where recv_time >= to_timestamp('" + dstart + "','" + dformat + "') and " + 
-						"recv_time <= to_timestamp('" + dend + "','" + dformat + "') order by recv_time";
+			sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, out_msgs.* FROM out_msgs WHERE recv_time >= to_timestamp('"
+						+ dstart + "','" + dformat + "') and " + "recv_time <= to_timestamp('" + dend + "','" + dformat + "') order by recv_time desc";
 		}
 		else
 		{
 			var rtime = new Date(now.setMonth(now.getMonth() - 1)).toISOString().replace(/[TZ]/g, '');
 			dformat = 'YYYY-MM-DDHH24:MI:SS.FF';
-			sql = "SELECT * FROM out_msgs where recv_time >= to_timestamp('" + rtime + "','" + dformat + "') order by recv_time";
+			sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, out_msgs.* FROM out_msgs WHERE recv_time >= to_timestamp('"
+						+ rtime + "','" + dformat + "') order by recv_time desc";
 		}
 
 
@@ -780,14 +782,15 @@ app.post('/hmi/host_message', withAuth, express.json(),
 		if (dstart != undefined && dend != undefined)
 		{
 			dformat = 'YYYY-MM-DD HH24:MI:SS';
-			sql = "SELECT * FROM in_msgs where recv_time >= to_timestamp('" + dstart + "','" + dformat + "') and " + 
-						"recv_time <= to_timestamp('" + dend + "','" + dformat + "') order by recv_time";
+			sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, in_msgs.* FROM in_msgs where recv_time >= to_timestamp('"
+						+ dstart + "','" + dformat + "') and " + "recv_time <= to_timestamp('" + dend + "','" + dformat + "') order by recv_time desc";
 		}
 		else
 		{
 			var rtime = new Date(now.setMonth(now.getMonth() - 1)).toISOString().replace(/[TZ]/g, '');
 			dformat = 'YYYY-MM-DDHH24:MI:SS.FF';
-			sql = "SELECT * FROM in_msgs where recv_time >= to_timestamp('" + rtime + "','" + dformat + "') order by recv_time";
+			sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, in_msgs.* FROM in_msgs where recv_time >= to_timestamp('"
+						+ rtime + "','" + dformat + "') order by recv_time desc";
 		}
 
 		//var sql = "SELECT * FROM in_msgs order by recv_time;";
@@ -1647,11 +1650,11 @@ app.post('/hmi/filter/host_message', withAuth, express.json(),
 			{
 				if (value[0] == '=')
 				{
-					sql = "SELECT * FROM in_msgs WHERE origin = " + "'" + value.substr(1) + "'";
+					sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, in_msgs.* FROM in_msgs WHERE origin = " + "'" + value.substr(1) + "' order by recv_time desc";
 				}
 				else
 				{
-					sql = "SELECT * FROM in_msgs WHERE origin like " + "'%" + value + "%'";
+					sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, in_msgs.* FROM in_msgs WHERE origin like " + "'%" + value + "%' order by recv_time desc";
 				}
 			}
 		}
@@ -1671,11 +1674,11 @@ app.post('/hmi/filter/host_message', withAuth, express.json(),
 			{
 				if (value[0] == '=')
 				{
-					sql = "SELECT * FROM in_msgs WHERE message_id = " + "'" + value.substr(1) + "'";
+					sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, in_msgs.* FROM in_msgs WHERE message_id = " + "'" + value.substr(1) + "' order by recv_time desc";
 				}
 				else
 				{
-					sql = "SELECT * FROM in_msgs WHERE message_id like " + "'%" + value + "%'";
+					sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, in_msgs.* FROM in_msgs WHERE message_id like " + "'%" + value + "%' order by recv_time desc";
 				}
 			}
 
@@ -1697,11 +1700,12 @@ app.post('/hmi/filter/host_message', withAuth, express.json(),
 
 				// Oracle
 				var dformat = 'YYYY-MM-DD HH24:MI';
-				sql = "SELECT * FROM in_msgs WHERE "
+				sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, in_msgs.* FROM in_msgs WHERE "
 						+ "recv_time >= "
 						+ "to_timestamp('" + startDate + " " + startTime + "','" + dformat + "') and "
 						+ "recv_time <= "
-						+ "to_timestamp('" + endDate + " " + endTime + "','" + dformat + "')";
+						+ "to_timestamp('" + endDate + " " + endTime + "','" + dformat + "')"
+						+ " order by recv_time desc";
 			}
 			else
 			{
@@ -1726,11 +1730,11 @@ app.post('/hmi/filter/host_message', withAuth, express.json(),
 			{
 				if (value[0] == '=')
 				{
-					sql = "SELECT * FROM in_msgs WHERE destination = " + "'" + value.substr(1) + "'";
+					sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, in_msgs.* FROM in_msgs WHERE destination = " + "'" + value.substr(1) + "' order by recv_time desc";
 				}
 				else
 				{
-					sql = "SELECT * FROM in_msgs WHERE destination like " + "'%" + value + "%'";
+					sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, in_msgs.* FROM in_msgs WHERE destination like " + "'%" + value + "%' order by recv_time desc";
 				}
 			}
 		}
@@ -1797,11 +1801,11 @@ app.post('/hmi/filter/omega_message', withAuth, express.json(),
 			{
 				if (value[0] == '=')
 				{
-					sql = "SELECT * FROM out_msgs WHERE origin = " + "'" + value.substr(1) + "'";
+					sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, out_msgs.* FROM out_msgs WHERE origin = " + "'" + value.substr(1) + "' order by recv_time desc";
 				}
 				else
 				{
-					sql = "SELECT * FROM out_msgs WHERE origin like " + "'%" + value + "%'";
+					sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, out_msgs.* FROM out_msgs WHERE origin like " + "'%" + value + "%' order by recv_time desc";
 				}
 			}
 		}
@@ -1821,11 +1825,11 @@ app.post('/hmi/filter/omega_message', withAuth, express.json(),
 			{
 				if (value[0] == '=')
 				{
-					sql = "SELECT * FROM out_msgs WHERE message_id = " + "'" + value.substr(1) + "'";
+					sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, out_msgs.* FROM out_msgs WHERE message_id = " + "'" + value.substr(1) + "' order by recv_time desc";
 				}
 				else
 				{
-					sql = "SELECT * FROM out_msgs WHERE message_id like " + "'%" + value + "%'";
+					sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, out_msgs.* FROM out_msgs WHERE message_id like " + "'%" + value + "%' order by recv_time desc";
 				}
 			}
 
@@ -1847,11 +1851,12 @@ app.post('/hmi/filter/omega_message', withAuth, express.json(),
 
 				// Oracle
 				var dformat = 'YYYY-MM-DD HH24:MI';
-				sql = "SELECT * FROM out_msgs WHERE "
+				sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, out_msgs.* FROM out_msgs WHERE "
 						+ "recv_time >= "
 						+ "to_timestamp('" + startDate + " " + startTime + "','" + dformat + "') and "
 						+ "recv_time <= "
-						+ "to_timestamp('" + endDate + " " + endTime + "','" + dformat + "')";
+						+ "to_timestamp('" + endDate + " " + endTime + "','" + dformat + "')"
+						+ " order by recv_time desc";
 			}
 			else
 			{
@@ -1876,11 +1881,11 @@ app.post('/hmi/filter/omega_message', withAuth, express.json(),
 			{
 				if (value[0] == '=')
 				{
-					sql = "SELECT * FROM out_msgs WHERE destination = " + "'" + value.substr(1) + "'";
+					sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, out_msgs.* FROM out_msgs WHERE destination = " + "'" + value.substr(1) + "' order by recv_time desc";
 				}
 				else
 				{
-					sql = "SELECT * FROM out_msgs WHERE destination like " + "'%" + value + "%'";
+					sql = "SELECT ROW_NUMBER() OVER (ORDER BY recv_time desc) as row_id, out_msgs.* FROM out_msgs WHERE destination like " + "'%" + value + "%' order by recv_time desc";
 				}
 			}
 		}
