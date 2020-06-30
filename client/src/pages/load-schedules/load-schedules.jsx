@@ -57,7 +57,7 @@ const LoadSchedules = () => {
       !values.trip_status) {
       return;
     }
-    // isValidating = false;
+    
     api
       .get(LOAD_SCHEDULES.SEARCH, {
         params: {
@@ -72,7 +72,6 @@ const LoadSchedules = () => {
       .then((res) => {
         // setCompartments(res.data.records);
         setData(res.data.records);
-        // isValidating = true;
       });
   };
 

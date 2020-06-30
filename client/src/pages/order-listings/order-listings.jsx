@@ -126,6 +126,7 @@ const OrderListings = ({popup, params}) => {
       !values?.order_ref_code) {
       return;
     }
+
     api
     .get(ORDER_LISTINGS.SEARCH, {
       params: {
@@ -134,6 +135,9 @@ const OrderListings = ({popup, params}) => {
         order_cust_acnt: !customer ? values?.order_cust_acnt : customer,
         order_stat_id: values?.order_stat_id,
         order_ref_code: values?.order_ref_code,
+        start_date: values.use_date_range ? values.start_date : null,
+        end_date: values.use_date_range ? values.end_date : null,
+        time_option: values.time_option,
         //start_date: start,
         //end_date: end,
       },
@@ -234,6 +238,7 @@ const OrderListings = ({popup, params}) => {
           order_stat_id: true,
           order_cust_no: true,
           order_ref_code: true,
+          time_option: "open_order",
         })}
       >
         {t('operations.search')}

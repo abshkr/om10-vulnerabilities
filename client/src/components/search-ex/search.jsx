@@ -30,12 +30,12 @@ import { DateRange,
 } from './fields';
 
 const SearchForm = ({onSearch, fields}) => {
+  console.log(fields)
   const [orderSupplier, setOrderSupplier] = useState(null);
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
-    console.log(values);
     Modal.destroyAll();
     onSearch(values);
   };
@@ -61,7 +61,7 @@ const SearchForm = ({onSearch, fields}) => {
       {fields?.mv_terminal && <NominationTerminal />}
       {fields?.mv_number && <NominationNumber />}
       
-      <DateRange form={form}/>
+      <DateRange form={form} timeOption={fields?.time_option} />
       
       <div style={{marginTop: "2rem"}}>
         <Button

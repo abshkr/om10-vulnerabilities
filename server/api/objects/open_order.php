@@ -93,6 +93,9 @@ class OpenOrder extends CommonClass
         if (!isset($this->end_date)) {
             $this->end_date = "-1";
         }
+        if (!isset($this->time_option)) {
+            $this->time_option = "ORDER_ORD_TIME";
+        }
 
         $query = "
             SELECT * FROM " . $this->VIEW_NAME . "
@@ -101,6 +104,8 @@ class OpenOrder extends CommonClass
                 AND (-1 = :status OR ORDER_STAT_ID = :status)
                 AND (-1 = :order_cust_no OR ORDER_CUST_NO LIKE '%'||:order_cust_no||'%')
                 AND ('-1' = :order_ref_code OR ORDER_REF_CODE LIKE '%'||:order_ref_code||'%')
+                AND ('-1' = :start_date OR " . $this->time_option . " > :start_date)
+                AND ('-1' = :end_date OR " . $this->time_option . " < :end_date)
             ORDER BY ORDER_ORD_TIME DESC
         ";
         $stmt = oci_parse($this->conn, $query);
@@ -109,6 +114,8 @@ class OpenOrder extends CommonClass
         oci_bind_by_name($stmt, ':status', $this->order_stat_id);
         oci_bind_by_name($stmt, ':order_cust_no', $this->order_cust_no);
         oci_bind_by_name($stmt, ':order_ref_code', $this->order_ref_code);
+        oci_bind_by_name($stmt, ':start_date', $this->start_date);
+        oci_bind_by_name($stmt, ':end_date', $this->end_date);
 
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
