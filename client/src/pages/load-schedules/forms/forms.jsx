@@ -92,7 +92,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     value?.cmpy_schd_archive;
   const CAN_MAKE = 
     access.canCreate && 
-    value?.load_reverse_flag === '0' && 
+    value?.load_reverse_flag === '' && 
     (value?.status !== 'D' && value?.status !== 'E');
   const CAN_REPOST = 
     value?.load_reverse_flag === '1' && 
