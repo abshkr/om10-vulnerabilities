@@ -246,7 +246,6 @@ std_fld_def SGB_PHONE_NO        empty_char(' ') (ASCII_X,               25);
 std_fld_def SGB_CONTACT_NM      empty_char(' ') (ASCII_X,               50);
 std_fld_def SGB_EMAIL_ADDR      empty_char(' ') (ASCII_X,               50);
 std_fld_def SGB_FAX_NO          empty_char(' ') (ASCII_X,               25);
-std_fld_def SGB_MSG_REF         empty_char(' ') (ASCII_X,	        			14);
 
 truth_value_def SGB_LD_COMPLETION empty_char(' ')	{ "1",	"0"};
 
@@ -268,6 +267,7 @@ sub_message_def SGB_MSG_HEADER_2
 	SGB_VERSION_N		("Version Number");
 	SGB_DATE_TIME_2		("Event Date and Time",		event_time);
 	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
+	STD_FILLER2		("Filler");
 	SGB_MSG_ID		("Message ID", msg_id);
 };
 
@@ -278,6 +278,7 @@ sub_message_def SGB_MSG_HEADER_3
 	SGB_VERSION_N		("Version Number");
 	SGB_DATE_TIME_2		("Event Date and Time",		event_time);
 	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
+	STD_FILLER2		("Filler");
 	SGB_MSG_ID		("Message ID", msg_id);
 };
 
@@ -288,6 +289,7 @@ sub_message_def SGB_MSG_HEADER_4
 	SGB_VERSION_N		("Version Number");
 	SGB_DATE_TIME_2		("Event Date and Time",		event_time);
 	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
+	STD_FILLER2		("Filler");
 	SGB_MSG_ID		("Message ID", msg_id);
 };
 
@@ -298,7 +300,7 @@ sub_message_def SGB_MSG_HEADER_5
 	SGB_VERSION_N		("Version Number");
 	SGB_DATE_TIME_2		("Event Date and Time",		event_time);
 	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
-	SGB_MSG_ID		("Message ID", msg_id) optional;
+	SGB_MSG_ID		("Message ID", msg_id);
 };
 
 sub_message_def SGB_MSG_HEADER_6
@@ -314,6 +316,7 @@ sub_message_def SGB_MSG_HEADER_7
 	SGB_VERSION_N		("Version Number");
 	SGB_DATE_TIME_2		("Event Date and Time",		event_time) optional;
 	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd) optional;
+	STD_FILLER2		("Filler");
 	SGB_MSG_ID		("Message Id", 			msg_id);
 };
 
@@ -345,144 +348,96 @@ sub_message_def SGB_TKR_CMPT_STRUCT
 	SGB_COMPARTMENT_NO	("Compartment Number", cmpt_no_in_equip);
 };
 
-sub_message_def SGB_MSG_PID_ARCHIVE_KEY
-	struct_name		(HDB_TRANS_HDR)
-{
-	SGB_TRM_ARC_CODE	("Terminal Code", site_cd);
-	SGB_PID_SLASH_STR       ("Slash sign");
-	SGB_DATE_TIME_2		("Date and Time", event_time);
-	SGB_PID_SLASH_STR       ("Slash sign");
-	SGB_PID_TRANSACTION_ID  ("Message Type");
-};
-
 //]--- SGB: Common Stuff
 
 
-//[--- SGB: PID(Physical Inventory Upload)  (OMEGA->SGB)
-const_def SGB_PID_INTCHANGE_REF   ("OILLPD        ");
 
-//following one is 70-2('/')-18(date)-6(SGB_TRM_ARC_CODE) = 44
-const_def SGB_PID_TRANSACTION_ID  ("OILLPD                                      ");
+//[--- SGB: CUSTOMER_DETAIL (SGB->OMEGA)
 
-const_def SGB_PID_SLASH_STR       ("/");
-const_def SGB_PID_LOAD_ID         ("SCMI012 PHYSICAL INVENTORY    ");
-const_def SGB_PID_STOCK_TYPE      ("1");
-const_def SGB_STORAGE_LOCATION    ("0001      ");
-const_def SGB_PID_UOM_AMB	  ("L  ");
-const_def SGB_TRANSACTION_CODE	  ("MI09                ");
-const_def SGB_PID_TEMP_OF_COR	  ("150    ");
-const_def SGB_PID_UOM_TEMP	  ("CEL");
-
-//
-std_fld_def SGB_PID_DATE	empty_char(' ') ( ASCII_YYYYMMDD,	 8);
-std_fld_def SGB_PID_TIME      	empty_char(' ') ( ASCII_HHMMSS,	         6);
-std_fld_def SGB_PID_PLANT_CODE  empty_char(' ') ( ASCII_X,	        10);
-
-std_fld_def SGB_ITEM_NUMBER     empty_char(' ') ( ASCII_X,	        9);
-std_fld_def SGB_MATERIAL_CODE   empty_char(' ') ( ASCII_X,	        18);
-std_fld_def SGB_MATR_LEG_CODE   empty_char(' ') ( ASCII_X,	        18);
-std_fld_def SGB_PID_CORR_QTY     empty_char(' ') ( ASCII_X,	        20);
-std_fld_def SGB_USER_NAME       empty_char(' ') ( ASCII_X,	        12);
-std_fld_def SGB_COMMENTS        empty_char(' ') ( ASCII_X,	        50);
-std_fld_def SGB_PID_ALT_QTY     empty_char(' ') ( ASCII_X,	        17);
-std_fld_def SGB_UOM_TEMP	empty_char(' ') ( ASCII_X,	        3);
-std_fld_def SGB_PID_UOM		empty_char(' ') ( ASCII_X,	        3);
-std_fld_def SGB_PID_TEMP_REF_DEN scale_pow10(1), empty_char(' ') ( ASCII_9, 7);
-
-std_fld_def SGB_DENS_STD     scale_pow10(2), empty_char(' ') ( ASCII_9,  7);
-std_fld_def SGB_TEMP_AMBIENT scale_pow10(1), empty_char(' ') ( ASCII_S9, 7);
-std_fld_def SGB_PID_AIR_BUOY empty_char(' ') ( ASCII_9, 1);
-
-enum_def SGB_ZERO_IND enum_name(IND_FLAG)
+sub_message_def SGB_DELV_CONTACT_DETS
+	struct_name		(ADDR_CONTACT_DETAILS)
 {
-	("X",		IND_SET		);
-	(" ",		IND_NON_SET	);
+	SGB_CONTACT_KEY		("Contact Key", contact_det_key);
+	SGB_STRT_NO_AND_NM	("Street number and name", street_number_and_name) optional;
+	SGB_CITY_LINE_1		("City Line 1", city_line_1) optional;
+	SGB_CITY_LINE_2		("City Line 2", city_line_2) optional;
+	SGB_DISTRICT		("District", district) optional;
+	SGB_POSTAL_CODE		("Postal Code", postal_code) optional;
+	SGB_STATE		("State", state) optional;
+	SGB_COUNTRY		("Country", country) optional;
+	SGB_PHONE_NO		("Telephone Number", phone_number) optional;
+	SGB_CONTACT_NM		("Contact Name", contact_name) optional;
+	SGB_EMAIL_ADDR		("Email Address", email_address) optional;
+	SGB_FAX_NO		("Fax Number", fax_number) optional;
 };
 
-enum_def SGB_PID_MASS_UOM enum_name(QTY_SCALE)
+sub_message_def SGB_CONTACT_DETS
+	struct_name		(ADDR_CONTACT_DETAILS)
 {
-	("KG ",		KGRAM		);
+	SGB_STRT_NO_AND_NM	("Street number and name", street_number_and_name) optional;
+	SGB_CITY_LINE_1		("City Line 1", city_line_1) optional;
+	SGB_CITY_LINE_2		("City Line 2", city_line_2) optional;
+	SGB_DISTRICT		("District", district) optional;
+	SGB_POSTAL_CODE		("Postal Code", postal_code) optional;
+	SGB_STATE		("State", state) optional;
+	SGB_COUNTRY		("Country", country) optional;
+	SGB_PHONE_NO		("Telephone Number", phone_number) optional;
+	SGB_CONTACT_NM		("Contact Name", contact_name) optional;
+	SGB_EMAIL_ADDR		("Email Address", email_address) optional;
+	SGB_FAX_NO		("Fax Number", fax_number) optional;
 };
 
-
-sub_message_def SGB_PRD_1_BASE_ITEM_DET	
-	struct_name		(PRD_1_BASE_ITEM_DET_STRUCT)
+sub_message_def SGB_1_DELV_LOC
+	struct_name		(DLV_1_DELIVERY_LOC)
 {
-	SGB_ITEM_NUMBER         ("Item Number", item_number);
-	SGB_MATERIAL_CODE       ("Product Code", baseprod_cd);
-	SGB_PID_STOCK_TYPE 	("Stock Type");	
-	SGB_PID_CORR_QTY	("Corrected Qty", corr_qty);
-	SGB_PID_UOM		("Corrected Qty UOM", corr_qty_uom);
-	SGB_ZERO_IND            ("Zero count", zero_count);
-
-	SGB_PID_DATE	        ("Posting Date", posting_date);
-	SGB_PID_TIME	        ("Posting Time", posting_time);
-	SGB_TRANSACTION_CODE	("Trasaction Code");
-	SGB_USER_NAME		("User ID", user_id);
-	SGB_PID_PLANT_CODE	("Plant Code", plant_code);		
-	SGB_MATR_LEG_CODE       ("Legacy Prod Code", baseprod_leg_cd);
-	SGB_COMMENTS		("Comments", comment) optional;
-	SGB_PID_ALT_QTY		("Mass Qty", mass_qty);
-	SGB_PID_MASS_UOM	("UOM of Mass Qty", mass_qty_uom);
-	SGB_ZERO_IND		("Ind for ALT items", alt_ind);	
-	SGB_PID_TEMP_REF_DEN	("Temp at ref den", temp_at_ref_den);
-	SGB_PID_UOM		("UOM of Temp at ref den", temp_at_ref_den_uom);
-
-	SGB_DENS_STD		("Density of Standard", std_density);
-	SGB_TEMP_AMBIENT	("Temperature at ambient", temp_ambient);
-	SGB_UOM_TEMP		("Units for Temp at ambient", temp_ambient_uom);
-	SGB_ZERO_IND		("Air buoyancy indicator", air_buoyancy_ind);
+	SGB_DELV_LOC_CODE	("Delivery Location Code", code);
+	SGB_DELV_LOC_NAME	("Delivery Location Name", locationname) optional;
+	SGB_GRID		("Grid", grid) optional;
+	SGB_ETP_ID		("Largest Equip Type ID", etp_id);
+	SGB_TRNSP_TY		("Transport Type", transport) optional;
+	SGB_DOC_TY		("Document Type", document) optional;
+	SGB_QTY_TY		("Quantity Type", unit) optional;
+	SGB_DELV_CONTACT_DETS	("Contact Details", contact_dets);
 };
 
-sub_message_def SGB_MSG_PID_ARCHIVE_KEY
+sub_message_def SGB_DELV_LOC
+	struct_name		(DLV_DELIVERY_LOC_STRUCT)
+{
+	STD_REPEAT_COUNT	("Number of Delivery Locations", n_entries);
+	SGB_1_DELV_LOC		("Delivery Location Details", locations)
+					max_repeats(10),
+					repeat_count("Number of Delivery Locations");
+};
+
+sub_message_def SGB_ORIGIN_ORG_ID
 	struct_name		(HDB_TRANS_HDR)
 {
-	SGB_TRM_ARC_CODE	("Terminal Code", site_cd);
-	SGB_PID_SLASH_STR       ("Slash sign");
-	SGB_DATE_TIME_2		("Date and Time", event_time);
-	SGB_PID_SLASH_STR       ("Slash sign");
-	SGB_PID_TRANSACTION_ID  ("Message Type");
+	STD_CO_CODE		("Origin Organisation ID", trans_cmpy_cd);
 };
 
-sub_message_def SGB_PID_HEADER_INFO
-	struct_name		(HDB_TRANS_HDR)
+sub_message_def SGB_1_CUSTOMER_UPD
+	struct_name		(CST_1_CUSTOMER)
 {
-	SGB_HST_PORT		("Receiver Port");
-	SGB_HST_PRTNR_TYP	("Receiver Partner Type");
-	SGB_HST_PRTNR_NR	("Receiver Partner Number");
-	SGB_OM_PORT		("Sender Port");
-	SGB_OM_PRTNR_TYP	("Sender Partner Type");
-	SGB_OM_PRTNR_NR		("Sender Partner Number");
+	SGB_CST_ACCT_NUMBER	("Account Number", cst_acct);
+	SGB_CUST_CODE		("Customer Code", cst_cd);
+	SGB_SUPP_CODE		("Supplier Code", supp_cd);
+	SGB_ADDRESS_CODE	("Address Code", addr_code) optional;
+	SGB_CUSTOMER_SALE_TYPE	("Sale Type", sale_type) optional;
+	SGB_CUST_INVOICE_TY	("Invoice Type", inv_type) optional;
+	SGB_CONTACT_DETS	("Contact Details", contact_dets);
+	SGB_DELV_LOC		("Delivery Locations", delv_locs);
 };
 
-main_message_def SGB_PID_REQUEST //PHYS_INV_UPLOAD   // PID
-        struct_name             (PRD_PHYS_INV_UPLOAD_STRUCT),
-        name                    ("Physical Inventory Upload"),
-        message_type            (PID_REQUEST),
-        message_group           (MGR_SGB)
+main_message_def SGB_CUSTOMER_DETAIL
+	struct_name		(HDB_1_CUSTOMER),
+	name			("Customer Details"),
+	message_type		(CUSTOMER_UPDATE),
+	message_group		(MGR_SGB)
 {
-	SGB_MSG_HEADER_5            ("Header", trans_hdr);
-	SGB_PID_HEADER_INFO	    ("PID header info", trans_hdr);
-	SGB_PID_INTCHANGE_REF       ("Interchange file ref"); 
-	SGB_MSG_HEADER_8            ("Ref to msg grp - site code", trans_hdr);
-	SGB_MSG_REF                 ("Message Reference", msgref_unique_key);
-	SGB_MSG_PID_ARCHIVE_KEY     ("Archive key", trans_hdr);
-
-	SGB_PID_LOAD_ID		    ("Load Id");
-	SGB_PID_DATE	            ("Gauging Date", last_gauge_date);
-	SGB_PID_TIME	            ("Gauging Time", last_gauge_time);
-	SGB_STORAGE_LOCATION        ("Storage Location"); 
-
-	SGB_PID_DATE                ("Stock Gauge Date", stock_gauge_date);
-	SGB_PID_TIME                ("Stock Gauge Time", stock_gauge_time);
-
-	SGB_PID_PLANT_CODE          ("Plant Code", plant_code);
-	SGB_REPEAT_COUNT            ("Number of line items", n_items);
-	SGB_PRD_1_BASE_ITEM_DET	    ("Material Details", item_dets)
-					max_repeats(99),
-					repeat_count("Number of line items");
+	SGB_MSG_HEADER_1	("Header", trans_hdr);
+	SGB_ORIGIN_ORG_ID	("Origin Organisation", trans_hdr);
+	SGB_1_CUSTOMER_UPD	("Customer Details", customer);
 };
-
-//]--- SGB: PID(Physical Inventory Upload) (OMEGA->SGB)
+//]--- SGB: CUSTOMER_DETAIL (SGB->OMEGA)
 
 
