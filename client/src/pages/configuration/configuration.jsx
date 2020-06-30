@@ -31,6 +31,106 @@ const FormSwitch = ({ config, onChange }) => {
         </Select>
       );
 
+    case 'URBAC_PWD_LEN_MIN':
+      return (
+        <InputNumber
+          min={0}
+          max={40}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'URBAC_PWD_LEN_MAX':
+      return (
+        <InputNumber
+          min={0}
+          max={40}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'URBAC_PWD_AUTO_LOCK':
+      return (
+        <InputNumber
+          min={0}
+          max={99}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'URBAC_PWD_AUTO_EXPIRE':
+      return (
+        <InputNumber
+          min={0}
+          max={365}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'URBAC_PWD_UPD_INTERVAL':
+      return (
+        <InputNumber
+          min={0}
+          max={365}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'URBAC_PWD_REUSE':
+      return (
+        <InputNumber
+          min={0}
+          max={99}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'URBAC_AUTO_LOGOFF':
+      return (
+        <InputNumber
+          min={0}
+          max={2000}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'URBAC_SESSION_PER_USER':
+      return (
+        <InputNumber
+          min={0}
+          max={99}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'URBAC_USER_AUTO_LOCK':
+      return (
+        <InputNumber
+          min={0}
+          max={365}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'URBAC_USER_AUTO_DELETE':
+      return (
+        <InputNumber
+          min={0}
+          max={365}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
     case 'SITE_2FA_DOMAINS':
       return (
         <Input
@@ -91,11 +191,71 @@ const FormSwitch = ({ config, onChange }) => {
         />
       );
 
-    case 'SITE_LD_RETN_NEWLDS':
+    case 'DRIVER_PIN_AUTO_EXPIRE':
+      return (
+        <InputNumber
+          min={0}
+          max={365}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'DRIVER_PIN_AUTO_LOCK':
+      return (
+        <InputNumber
+          min={0}
+          max={99}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'SITE_LD_RETNPRD':
+      return (
+        <InputNumber
+          min={60}
+          max={1830}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'SITE_EXP_MONTHS':
       return (
         <InputNumber
           min={0}
           max={12}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'SITE_LD_RETN_NEWLDS':
+      return (
+        <InputNumber
+          min={1}
+          max={365}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'SITE_LD_RETNPRD_NEW_MOV':
+      return (
+        <InputNumber
+          min={60}
+          max={1830}
+          onChange={(value) => onChange(config, value)}
+          value={config.config_value}
+        />
+      );
+
+    case 'SITE_LD_RETNPRD_USED_MOV':
+      return (
+        <InputNumber
+          min={60}
+          max={1830}
           onChange={(value) => onChange(config, value)}
           value={config.config_value}
         />

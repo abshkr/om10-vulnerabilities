@@ -81,6 +81,7 @@ const Table = ({
   autoColWidth,
   filterValue,
   footer,
+  isPolling,
 }) => {
   const [payload, setPayload] = useState([]);
   const [value, setValue] = useState(filterValue);
