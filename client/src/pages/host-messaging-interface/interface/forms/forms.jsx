@@ -48,9 +48,20 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 */
 
 	useEffect(() => {
-		if (from == 'omega')
+		if (from != ifrom)
 		{
-			setNotice('Edit function is currently disabled for outgoing messages');
+			if (from == 'host')
+			{
+				setNotice('');
+			}
+			else if (from == 'omega')
+			{
+				setNotice('Edit function is currently disabled for outgoing messages');
+				setAction('view');
+				setNotEdit(true);
+				setContentFormat(1);
+			}
+			setFrom(from);
 		}
 	}, [from]);
 
