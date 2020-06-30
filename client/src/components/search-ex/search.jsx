@@ -30,7 +30,6 @@ import { DateRange,
 } from './fields';
 
 const SearchForm = ({onSearch, fields}) => {
-  console.log(fields)
   const [orderSupplier, setOrderSupplier] = useState(null);
   const { t } = useTranslation();
   const [form] = Form.useForm();

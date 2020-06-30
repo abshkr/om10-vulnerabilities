@@ -57,6 +57,8 @@ const SpecialMovements = () => {
         params: {
           mlitm_id: values.mlitm_id,
           mlitm_status: values.mlitm_status,
+          start_date: values.use_date_range ? values.start_date : null,
+          end_date: values.use_date_range ? values.end_date : null,
         },
       })
       .then((res) => {
