@@ -335,7 +335,7 @@ const Configuration = ({ config }) => {
   const { data: configPayload } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
   const { data: featuresPayload } = useSWR(SITE_CONFIGURATION.FEATURES, { revalidateOnFocus: false });
 
-  const access = useAuth('MENU_HOME');
+  const access = useAuth('M_SITECONFIG');
 
   const [configuration, setConfiguration] = useState([]);
   const [features, setFeatures] = useState([]);
@@ -435,18 +435,18 @@ const Configuration = ({ config }) => {
 
   const modifiers = (
     <>
-      <Button icon={<EditOutlined />} type="primary" onClick={onUpdate}>
+      <Button icon={<EditOutlined />} type="primary" onClick={onUpdate} disabled={!access?.canUpdate}>
         {t('operations.update')}
       </Button>
 
       {UPDATING_FEATURES && (
-        <Button icon={<PlusOutlined />} onClick={onFeatureSelectAll} type="primary">
+        <Button icon={<PlusOutlined />} onClick={onFeatureSelectAll} type="primary" disabled={!access?.canUpdate}>
           {t('operations.selectAll')}
         </Button>
       )}
 
       {UPDATING_FEATURES && (
-        <Button icon={<MinusOutlined />} onClick={onFeatureDeselectAll} type="primary">
+        <Button icon={<MinusOutlined />} onClick={onFeatureDeselectAll} type="primary" disabled={!access?.canUpdate}>
           {t('operations.deselectAll')}
         </Button>
       )}
