@@ -42,11 +42,12 @@ const Account = ({ form, value }) => {
     }
   }, [data, setMatched]);
 
-  useEffect(() => {
-    validateFields(['cust_account']);
-  }, [matched, validateFields]);
+  // useEffect(() => {
+  //   validateFields(['cust_account']);
+  // }, [matched, validateFields]);
 
   const validate = (rule, input) => {
+    console.log("account validate")
     if (matched && !value) {
       return Promise.reject(t('descriptions.alreadyExists'));
     }

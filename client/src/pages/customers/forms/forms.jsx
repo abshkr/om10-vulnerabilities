@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
@@ -69,6 +69,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   };
 
   const onFinish = async () => {
+    console.log("OnFinish")
     const values = await form.validateFields();
 
     Modal.confirm({
@@ -138,6 +139,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     }
   }, [resetFields, value]);
 
+  const layout = {
+    labelCol: {
+      span: 6,
+    },
+    wrapperCol: {
+      span: 18,
+    },
+  };
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -150,6 +160,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       visible={visible}
       footer={
         <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
+
           <Button
             type="primary"
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
@@ -175,27 +194,28 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       }
     >
       <Form
-        layout="vertical"
+        // layout="vertical"
+        {...layout}
         form={form}
-        scrollToFirstError
-        initialValues={{
-          cust_account: '',
-          cust_supp_code: null,
-          cust_cmpy_code: null,
-          cust_addr_code: null,
-          cust_ctgr_code: null,
-          cust_delv_code: null,
-          cust_contact: '',
-          cust_phone_no: '',
-          cust_pricetype_id: null,
-          cust_invtype_id: null,
-          cust_saletype_id: null,
-          cust_crd_terms: null,
-          // , cust_ord_days: 0
-          // , cust_crd_days: 0
-          // , cust_balance: 0
-          // , cust_crd_limit: 0
-        }}
+        // scrollToFirstError
+        // initialValues={{
+        //   cust_account: '',
+        //   cust_supp_code: null,
+        //   cust_cmpy_code: null,
+        //   cust_addr_code: null,
+        //   cust_ctgr_code: null,
+        //   cust_delv_code: null,
+        //   cust_contact: '',
+        //   cust_phone_no: '',
+        //   cust_pricetype_id: null,
+        //   cust_invtype_id: null,
+        //   cust_saletype_id: null,
+        //   cust_crd_terms: null,
+        //   // , cust_ord_days: 0
+        //   // , cust_crd_days: 0
+        //   // , cust_balance: 0
+        //   // , cust_crd_limit: 0
+        // }}
       >
         <Tabs onChange={doTabChanges}>
           <TabPane tab={t('tabColumns.general')} key="1">
