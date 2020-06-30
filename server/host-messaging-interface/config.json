@@ -16,15 +16,33 @@
 					"extension" : "dat",
 					"accept_extension" : ["dat", "xml"],
 					"ignore_extension" : ".lck",
-					"fields" : ["site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ],
-					"fe_fields" : ["EMB_SITE_CODE", "EMB_MSG_TYPE:SHORT", "EMB_IDOC_NO", "EMB_LOAD_NO", "EMB_DATE_TIME:yyyymmddhhmmssfff" ]
+					"fields" : {
+						"search_key" : "msg_type",
+						"field_name_list" : [
+							{ "SHP" : [ "site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ] },
+							{ "ORD" : [ "site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ] },
+							{ "CON" : [ "site_code", "msg_type", "idoc_no", "order_no", "yyyymmddhhmmssfff" ] },
+							{ "DEL" : [ "site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ] },
+							{ "CUS" : [ "site_code", "msg_type", "idoc_no", "cust_acct_no", "yyyymmddhhmmssfff" ] },
+							{ "NOM" : [ "site_code", "msg_type", "idoc_no", "nom_tech_key", "yyyymmddhhmmssfff" ] }
+						]
+					},
+					"fe_fields" : [
+						{ "SHP": [ "EMB_SITE_CODE", "EMB_MSG_TYPE:SHORT", "EMB_IDOC_NO", "EMB_LOAD_NO", "EMB_DATE_TIME:yyyymmddhhmmssfff" ] },
+						{ "ORD": [ "EMB_SITE_CODE", "EMB_MSG_TYPE:SHORT", "EMB_IDOC_NO", "EMB_LOAD_NO", "EMB_DATE_TIME:yyyymmddhhmmssfff" ] },
+						{ "CON": [ "EMB_SITE_CODE", "EMB_MSG_TYPE:SHORT", "EMB_IDOC_NO", "EMB_ORDER_NO", "EMB_DATE_TIME:yyyymmddhhmmssfff" ] },
+						{ "DEL": [ "EMB_SITE_CODE", "EMB_MSG_TYPE:SHORT", "EMB_IDOC_NO", "EMB_LOAD_NO", "EMB_DATE_TIME:yyyymmddhhmmssfff" ] },
+						{ "CUS": [ "EMB_SITE_CODE", "EMB_MSG_TYPE:SHORT", "EMB_IDOC_NO", "EMB_CST_ACCT_NUMBER", "EMB_DATE_TIME:yyyymmddhhmmssfff" ] },
+						{ "NOM": [ "EMB_SITE_CODE", "EMB_MSG_TYPE:SHORT", "EMB_IDOC_NO", "EMB_NOM_TECH_KEY", "EMB_DATE_TIME:yyyymmddhhmmssfff" ] }
+					]
 				},
 				"routing_rules" : {
 					"method" : "by_file_name",
 					"fld_idx" : 0
 				},
 				"route_to" : [
-					{ "0ZP2" : { "ip" : "10.1.10.197", "dir" : "/usr/omega/data/mobil/sap", "file_nm_fmt" : "SAP" } }
+					{ "0ZP2" : { "ip" : "10.1.10.197", "dir" : "/usr/omega/data/mobil/sap", "file_nm_fmt" : "SAP" } },
+					{ "XXX" : { "ip" : "10.1.10.197", "dir" : "/usr/omega/data/mobil/sap", "file_nm_fmt" : "SAP" } }
                 ],
 				"msg_parse_rules" : {
 					"file_name_field" : "msg_type",
@@ -48,14 +66,22 @@
 					"extension" : "dat",
 					"accept_extension" : ["dat", "xml"],
 					"ignore_extension" : ".lck",
-					"fields" : ["site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ]
+					"fields" : {
+						"search_key" : "msg_type",
+						"field_name_list" : [
+							{ "ACK" : [ "site_code", "msg_type", "idoc_status", "idoc_no", "yyyymmddhhmmssfff" ] },
+							{ "LDS" : [ "site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ] },
+							{ "LDD" : [ "site_code", "msg_type", "load_type", "load_id", "yyyymmddhhmmssfff" ] }
+						]
+					}
 				},
 				"routing_rules" : {
 					"method" : "by_file_name",
 					"fld_idx" : 0
 				},
 				"route_to" : [
-					{ "P251" : { "ip" : "10.1.10.250", "dir" : "/usr/omega/data/mobil/tas/0zp2", "file_nm_fmt" : "ORIG" } }
+					{ "P251" : { "ip" : "10.1.10.250", "dir" : "/usr/omega/data/mobil/tas/0zp2", "file_nm_fmt" : "ORIG" } },
+					{ "XXX" : { "ip" : "10.1.10.250", "dir" : "/usr/omega/data/mobil/tas/0zp2", "file_nm_fmt" : "ORIG" } }
                 ],
 				"msg_parse_rules" : {
 					"file_name_field" : "msg_type",
@@ -66,7 +92,6 @@
 					]
 				}
 			}
-
 		]
 	},
 	{
@@ -86,6 +111,17 @@
 					"ignore_extension" : ".lck",
 					"inserted_message_id_field" : "SGB_MSG_ID",
 					"fields" : ["site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ],
+					"fields" : {
+						"search_key" : "msg_type",
+						"field_name_list" : [
+							{ "SHP" : [ "site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ] },
+							{ "ORD" : [ "site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ] },
+							{ "CON" : [ "site_code", "msg_type", "idoc_no", "order_no", "yyyymmddhhmmssfff" ] },
+							{ "DEL" : [ "site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ] },
+							{ "CUS" : [ "site_code", "msg_type", "idoc_no", "cust_acct_no", "yyyymmddhhmmssfff" ] },
+							{ "NOM" : [ "site_code", "msg_type", "idoc_no", "nom_tech_key", "yyyymmddhhmmssfff" ] }
+						]
+					},
 					"fe_fields" : [
 						{ "SHP": [ "SGB_TRM_LOC_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NUM", "SGB_LOAD_NO", "SGB_DATE_TIME_2:yyyymmddhhmmssfff" ] },
 						{ "ORD": [ "SGB_TRM_LOC_CODE", "SGB_MSG_TYPE:SHORT", "SGB_IDOC_NUM", "SGB_LOAD_NO", "SGB_DATE_TIME_2:yyyymmddhhmmssfff" ] },
@@ -101,7 +137,8 @@
 				},
 				"route_to" : [
 					{ "CNS" : { "ip" : "localhost", "dir" : "/usr/omega/data/gsap/outbox/P251", "file_nm_fmt" : "SAP" } },
-					{ "T048" : { "ip" : "localhost", "dir" : "/usr/omega/data/gsap/outbox/P251", "file_nm_fmt" : "SAP" } }
+					{ "T048" : { "ip" : "localhost", "dir" : "/usr/omega/data/gsap/outbox/P251", "file_nm_fmt" : "SAP" } },
+					{ "XXX" : { "ip" : "localhost", "dir" : "/usr/omega/data/gsap/outbox/P251", "file_nm_fmt" : "SAP" } }
                 ],
 				"msg_parse_rules" : {
 					"file_name_field" : "msg_type",
@@ -140,7 +177,16 @@
 					"extension" : "dat",
 					"accept_extension" : ["dat", "xml"],
 					"ignore_extension" : ".lck",
-					"fields" : ["site_code", "msg_type", "idoc_status", "idoc_no", "yyyymmddhhmmssfff" ]
+					"fields" : {
+						"search_key" : "msg_type",
+						"field_name_list" : [
+							{ "ACK" : [ "site_code", "msg_type", "idoc_status", "idoc_no", "yyyymmddhhmmssfff" ] },
+							{ "LDS" : [ "site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ] },
+							{ "LDD" : [ "site_code", "msg_type", "load_type", "load_id", "yyyymmddhhmmssfff" ] },
+							{ "SPM" : [ "site_code", "msg_type", "seq_no", "yyyymmddhhmmssfff" ] },
+							{ "TKT" : [ "site_code", "msg_type", "ticket_no", "yyyymmddhhmmssfff" ] }
+						]
+					}
 				},
 				"routing_rules" : {
 					"method" : "by_file_name",
@@ -148,7 +194,8 @@
 				},
 				"route_to" : [
 					{ "CNS" : { "ip" : "10.1.10.244", "dir" : "/usr/omega/data/gsap/tas/CNS", "file_nm_fmt" : "ORIG" },
-         		"T048" : { "ip" : "10.1.10.244", "dir" : "/usr/omega/data/gsap/tas/CNS", "file_nm_fmt" : "ORIG" }
+         		"T048" : { "ip" : "10.1.10.244", "dir" : "/usr/omega/data/gsap/tas/CNS", "file_nm_fmt" : "ORIG" },
+         		"XXX" : { "ip" : "10.1.10.244", "dir" : "/usr/omega/data/gsap/tas/CNS", "file_nm_fmt" : "ORIG" }
  					}
 				],
 				"msg_parse_rules" : {

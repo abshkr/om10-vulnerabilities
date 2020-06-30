@@ -257,7 +257,7 @@ sub_message_def SGB_MSG_HEADER_1
 	SGB_DATE_TIME_2		("Event Date and Time",	event_time);
 	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
 	STD_FILLER2		("Filler");
-	SGB_MSG_ID		("Message ID", msg_id);
+	SGB_MSG_ID		("Message ID", msg_id) optional;
 };
 
 sub_message_def SGB_MSG_HEADER_2
@@ -300,7 +300,7 @@ sub_message_def SGB_MSG_HEADER_5
 	SGB_VERSION_N		("Version Number");
 	SGB_DATE_TIME_2		("Event Date and Time",		event_time);
 	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd);
-	SGB_MSG_ID		("Message ID", msg_id);
+	SGB_MSG_ID		("Message ID", msg_id) optional;
 };
 
 sub_message_def SGB_MSG_HEADER_6
@@ -317,7 +317,7 @@ sub_message_def SGB_MSG_HEADER_7
 	SGB_DATE_TIME_2		("Event Date and Time",		event_time) optional;
 	SGB_TRM_LOC_CODE	("Terminal Location Code",	site_cd) optional;
 	STD_FILLER2		("Filler");
-	SGB_MSG_ID		("Message Id", 			msg_id);
+	SGB_MSG_ID		("Message Id", 			msg_id) optional;
 };
 
 sub_message_def SGB_MSG_HEADER_8
@@ -434,7 +434,7 @@ main_message_def SGB_CUSTOMER_DETAIL
 	message_type		(CUSTOMER_UPDATE),
 	message_group		(MGR_SGB)
 {
-	SGB_MSG_HEADER_1	("Header", trans_hdr);
+	SGB_MSG_HEADER_2	("Header", trans_hdr);
 	SGB_ORIGIN_ORG_ID	("Origin Organisation", trans_hdr);
 	SGB_1_CUSTOMER_UPD	("Customer Details", customer);
 };

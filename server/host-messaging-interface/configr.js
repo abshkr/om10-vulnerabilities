@@ -98,10 +98,63 @@ function find_conn_data_for_om_msg(sk_origin, sk_dest, host_list)
 }
 
 
+var str_to_compare;
+
+function string_match(str)
+{
+	return (str === str_to_compare);
+}
+
+/* Return a json object containing all file name fields with corresponding values */
+function field_names(cfg_file_name_format, filenm)
+{
+
+	var tokens = filenm.split(cfg_file_name_format.extension_prefix);
+	if (tokens == [])
+	{
+		return {};
+	}
+	var filenm_list = tokens[0].split(cfg_file_name_format.field_separator);
+
+
+	// Search key is one of the fields that make up the file name
+	var skey = cfg_file_name_format.fields.search_key;
+	var fnlist = cfg_file_name_format.fields.field_name_list;
+	var fnlistlen = fnlist.length;
+	for (var fn = 0; fn < fnlistlen; ++fn) {
+		var item = fnlist[fn];
+		var itemkey = Object.keys(item)[0];
+		var found = false;
+		{
+			var fns = item[itemkey];
+			str_to_compare = skey;
+			var skey_idx = fns.findIndex(string_match);
+			if (skey_idx != -1 && skey_idx < filenm_list.length)
+			{
+				var skey_val = filenm_list[skey_idx];
+				if (skey_val == itemkey && filenm_list.length == fns.length)
+				{
+					res = {};
+					for (var fnsi = 0; fnsi < fns.length; ++fnsi)
+					{
+						res[fns[fnsi]] = filenm_list[fnsi];
+					}
+					return res;
+				}
+			}
+		}
+	}
+
+	return {};
+}
+
+
+
 
 module.exports = {
 	get_cfg_data: get_cfg_data,
 	find_conn_data_for_host_msg: find_conn_data_for_host_msg,
-	find_conn_data_for_om_msg: find_conn_data_for_om_msg
+	find_conn_data_for_om_msg: find_conn_data_for_om_msg,
+	field_names: field_names
 }
 
