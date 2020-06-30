@@ -184,7 +184,9 @@
 							{ "LDS" : [ "site_code", "msg_type", "idoc_no", "trip_no", "yyyymmddhhmmssfff" ] },
 							{ "LDD" : [ "site_code", "msg_type", "load_type", "load_id", "yyyymmddhhmmssfff" ] },
 							{ "SPM" : [ "site_code", "msg_type", "seq_no", "yyyymmddhhmmssfff" ] },
-							{ "TKT" : [ "site_code", "msg_type", "ticket_no", "yyyymmddhhmmssfff" ] }
+							{ "TKT" : [ "site_code", "msg_type", "ticket_no", "yyyymmddhhmmssfff" ] },
+							{ "EOD" : [ "site_code", "msg_type", "eod_no", "yyyymmddhhmmssfff" ] },
+							{ "PDS" : [ "site_code", "msg_type", "pds_id", "yyyymmddhhmmssfff" ] }
 						]
 					}
 				},
@@ -218,6 +220,9 @@
 						}},
 						{ "EOD" : {
 								"dat": { "schema" : "msg_def.sgb_pid", "name" : "SGB_PID_REQUEST", "msg_id_idx" : "0.4", "field_map" : "sgb_pid.fmap", "postprocess" : "sgb_pid.py", "content_format" : 3 }
+						}},
+						{ "PDS" : {
+								"dat" : { "schema" : "msg_def.sgb_pds", "name" : "SGB_PDS_REQUEST", "msg_id_idx" : "0.4" }
 						}}
 					]
 				}
