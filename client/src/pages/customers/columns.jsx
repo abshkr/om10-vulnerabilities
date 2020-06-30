@@ -27,7 +27,7 @@ const columns = (t) => [
     {
       headerName: t('fields.custCmpyFlag'),
       field: 'cust_cmpy_flag',
-      filter: 'FuzzyFilter',
+      filter: 'BooleanFilter',
       sortable: true,
       resizable: true,
       cellRenderer: 'BooleanRenderer',
@@ -52,7 +52,7 @@ const columns = (t) => [
     {
       headerName: t('fields.custSuppFlag'),
       field: 'cust_supp_flag',
-      filter: 'FuzzyFilter',
+      filter: 'BooleanFilter',
       sortable: true,
       resizable: true,
       cellRenderer: 'BooleanRenderer',
