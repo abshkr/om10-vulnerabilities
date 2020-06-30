@@ -22,7 +22,7 @@ const columns = (t, config) => [
   {
     headerName: t('fields.inUse'),
     field: 'tank_active',
-    filter: 'FuzzyFilter',
+    filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
     width: 110,
