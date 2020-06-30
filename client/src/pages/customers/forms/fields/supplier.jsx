@@ -14,6 +14,7 @@ const Supplier = ({ form, value, onChange }) => {
   const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.SUPPLIERS);
 
   const validate = (rule, input) => {
+    console.log("supplier validate")
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.custSupplier')}`);
     }
@@ -50,7 +51,7 @@ const Supplier = ({ form, value, onChange }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.cmpy_code}>
-            {item.cmpy_name}
+            {item.cmpy_desc}
           </Select.Option>
         ))}
       </Select>

@@ -111,7 +111,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="50vw"
+      width="40vw"
       visible={visible}
       footer={
         <>
@@ -151,7 +151,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     >
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
+          <TabPane tab={t('tabColumns.general')} forceRender={true} key="1">
             <Code form={form} value={value} />
             <Name form={form} value={value} />
             <Product form={form} value={value} onChange={setProduct} />

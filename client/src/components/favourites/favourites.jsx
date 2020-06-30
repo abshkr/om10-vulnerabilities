@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Button, Dropdown, Menu, message, notification } from 'antd';
+import { Button, Dropdown, Menu, message, notification, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { StarOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
@@ -104,11 +104,13 @@ const Favourites = () => {
 
   return (
     <Dropdown overlay={menu} trigger={['click']}>
-      <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <StarOutlined style={{ transform: 'scale(1.5)' }} />
-        </div>
-      </Button>
+      <Tooltip placement="topLeft" title={t("messages.favourites")} >
+        <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <StarOutlined style={{ transform: 'scale(1.5)' }} />
+          </div>
+        </Button>
+      </Tooltip>
     </Dropdown>
   );
 };

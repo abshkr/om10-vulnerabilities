@@ -24,15 +24,18 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 	const [notEdit, setNotEdit] = useState(!msg);
 	const [label, setLabel] = useState(t('operations.edit'));
 	const [notice, setNotice] = useState('');
+	const [ifrom, setFrom] = useState(from);
 	const [iaction, setAction] = useState(action);
 	const [cFormat, setContentFormat] = useState(content_format);
 
+/*
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			setNotice('');
-		}, 5000);
+		}, 30000);
 		return () => clearTimeout(timer);
 	}, [notice]);
+*/
 
 
 /*
@@ -44,13 +47,32 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 	}, [label]);
 */
 
-	const onEditSave = async () => {
+	useEffect(() => {
+		if (from != ifrom)
+		{
+			if (from == 'host')
+			{
+				setNotice('');
+			}
+			else if (from == 'omega')
+			{
+				setNotice('Edit function is currently disabled for outgoing messages');
+				setAction('view');
+				setNotEdit(true);
+				setContentFormat(1);
+			}
+			setFrom(from);
+		}
+	}, [from]);
+
+
+	const onEdit = async () => {
 		if (notEdit)
 		{
-			//setLabel(t('operations.save'));
 			setNotEdit(false);
 			setAction('edit');
 			setContentFormat(2);
+			setNotice('');
 		}
 	};
 
@@ -93,9 +115,19 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 		}
 		else
 		{
+			console.log('changing action to submit');
 			setAction('submit');
 		}
 	};
+
+	const handleTaskComplete = async (result) => {
+		setLabel(t('operations.edit'));
+		setNotEdit(true);
+		setAction('view');
+		setContentFormat(1);
+		setNotice(result);
+	}
+
 
   return (
     <Drawer
@@ -109,35 +141,34 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
       visible={visible}
       footer={
         <>
-					<p>{notice}</p>
-          <Button
-            htmlType="button"
-            icon={<CloseOutlined />}
-            style={{ float: 'right' }}
-            onClick={() => onCancel()}
+					<Button
+						htmlType="button"
+						icon={<CloseOutlined />}
+						style={{ float: 'right', marginRight: 5 }}
+						onClick={() => onCancel()}
 						disabled={notEdit}
-          >
-            {t('operations.cancel')}
-          </Button>
+					>
+						{t('operations.cancel')}
+					</Button>
 
 					<Button
 						//icon={notEdit ? <PlusOutlined /> : <EditOutlined />}
 						icon={<EditOutlined />}
-						onClick={onEditSave}
+						onClick={onEdit}
 						style={{ float: 'right', marginRight: 5 }}
-						disabled={!notEdit}
+						disabled={!notEdit || (from == 'omega')}
 					>
 						{ label }
 					</Button>
 
-          <Button
-            icon={<EditOutlined />}
-            onClick={onSubmit}
-            style={{ float: 'right', marginRight: 5 }}
+					<Button
+						icon={<EditOutlined />}
+						onClick={onSubmit}
+						style={{ float: 'right', marginRight: 5 }}
 						//disabled={!notEdit}
-          >
-            {t('operations.submit')}
-          </Button>
+					>
+						{t('operations.submit')}
+					</Button>
         </>
       }
     >
@@ -170,8 +201,10 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 					action={iaction}
 					message={msg}
 					content_format={cFormat}
+					handleTaskComplete={handleTaskComplete}
 				/>
 			</div>
+			<p>{notice}</p>
 
 		</Drawer>
   );

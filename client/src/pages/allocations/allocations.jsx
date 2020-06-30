@@ -13,7 +13,7 @@ import auth from '../../auth';
 
 import Forms from './forms';
 
-const Allocations = () => {
+const Allocations = ({popup}) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
@@ -57,8 +57,9 @@ const Allocations = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access}>
+    <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup} >
       <DataTable
+        minimal={popup}
         data={data}
         columns={fields}
         isLoading={isLoading}
@@ -71,4 +72,5 @@ const Allocations = () => {
   );
 };
 
-export default auth(Allocations);
+export default Allocations;
+// export default auth(Allocations);

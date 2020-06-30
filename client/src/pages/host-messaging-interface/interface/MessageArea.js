@@ -13,9 +13,17 @@ class MessageArea extends Component
 			from: this.props.from,
 			action: this.props.action,
 			message: this.props.message,
-			content_fomat: this.props.content_format 
+			content_fomat: this.props.content_format,
+			handleTaskComplete: this.props.handleTaskComplete
 		};
 
+		this.urlprefix = process.env.REACT_APP_API_URL;
+		if (this.urlprefix == 'undefined')
+		{
+			this.urlprefix = '';
+		}
+
+		this.state.handleTaskComplete = this.state.handleTaskComplete.bind(this);
 		this.onEditChange = this.onEditChange.bind(this);
 		//this.getCfgData = this.getCfgData.bind(this);
 		this.onSubmitChange = this.onSubmitChange.bind(this);
@@ -184,12 +192,12 @@ class MessageArea extends Component
 		res = this.traverse(jsmsg, res, 0);
 		res += '</tbody>';
 		res += '</table></div>';
-		res += '<hr/>';
-		res += '<div class="adjacent">';
+		//res += '<hr/>';
+		//res += '<div class="adjacent">';
 		//res += '<button id="submit" class=submitButton onClick={this.onSubmitChange}>Submit</button>';
-		res += '&nbsp';
-		res += '<p id="submitConfirmation" />';
-		res += '</div>';
+		//res += '&nbsp';
+		//res += '<p id="submitConfirmation" />';
+		//res += '</div>';
 		//console.log('res:'+res);
 
 /*
@@ -242,13 +250,13 @@ class MessageArea extends Component
 		var url;
 		if (this.state.from === 'host')
 		{
-			url = process.env.REACT_APP_API_URL + '/hmi/parse/host_message';
+			url = this.urlprefix + '/hmi/parse/host_message';
 			//url = '/hmi/parse/host_message';
 		}
 		else if (this.state.from === 'omega')
 		{
 			//url = "http://10.2.20.53:6443/hmi/parse/omega_message/";
-			url = process.env.REACT_APP_API_URL + '/hmi/parse/omega_message';
+			url = this.urlprefix + '/hmi/parse/omega_message';
 			//url = '/hmi/parse/omega_message';
 		}
 
@@ -389,7 +397,7 @@ class MessageArea extends Component
 		//if (ev.target.id === "submit")
 		{
 			// TODO: do this once only
-			var url = process.env.REACT_APP_API_URL + '/hmi/config';
+			var url = this.urlprefix + '/hmi/config';
 			//var url = '/hmi/config';
 			fetch(url, {
 				method: 'GET',
@@ -411,7 +419,7 @@ class MessageArea extends Component
 						// 2. on server side, specify json body in second arg in the route
 						if (this.state.from === 'host')
 						{
-							url = process.env.REACT_APP_API_URL + '/hmi/edit/host_message';
+							url = this.urlprefix + '/hmi/edit/host_message';
 							//url = '/hmi/edit/host_message';
 
 							var res = this.create_filename_from_content(conn);
@@ -422,7 +430,7 @@ class MessageArea extends Component
 						}
 						else if (this.state.from === 'omega')
 						{
-							url = process.env.REACT_APP_API_URL + '/hmi/edit/omega_message';
+							url = this.urlprefix + '/hmi/edit/omega_message';
 							//url = '/hmi/edit/omega_message';
 						}
 
@@ -440,19 +448,20 @@ class MessageArea extends Component
 								{
 									//console.log('resp:'+ JSON.stringify(body, null, '\t'));
 
-									var elem = document.getElementById("submitConfirmation");
-									if (elem != null)
+									//var elem = document.getElementById("submitConfirmation");
+									//if (elem != null)
 									{
 										//var res = '<div>' + body.message + '</div>';
 										//elem.appendChild(document.createElement('div')).innerHTML = res;
-										elem.innerHTML = body.message;
-										elem.setAttribute("class", "blinking");
+										//elem.innerHTML = body.message;
+										//elem.setAttribute("class", "blinking");
+										this.state.handleTaskComplete(body.message);  
 									}
 								}
 								else
 								{
 									console.error('ERROR:' + body.message);
-									// TODO: clear message area
+									this.state.handleTaskComplete(body.message);  
 									alert(body.message);
 								}
 							});
@@ -461,7 +470,7 @@ class MessageArea extends Component
 					else
 					{
 						console.error('ERROR:' + body.message);
-						// TODO: clear message area
+						this.state.handleTaskComplete(body.message);  
 						alert(body.message);
 					}
 				})
@@ -624,7 +633,7 @@ class MessageArea extends Component
 
 				var fefields = fe_fields[fef][search_key];
 
-				for (var f = 0; f < fe_fields.length; ++f)
+				for (var f = 0; f < fefields.length; ++f)
 				{	
 					//console.log('fefields['+f+']:<'+fefields[f]+'>');
 					var idx = fefields[f].indexOf(":");

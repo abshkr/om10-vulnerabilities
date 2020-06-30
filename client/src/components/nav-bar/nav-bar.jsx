@@ -9,7 +9,7 @@ import Icon, {
   CopyrightOutlined,
 } from '@ant-design/icons';
 
-import { Layout, AutoComplete, Button, Input, Modal } from 'antd';
+import { Layout, AutoComplete, Button, Input, Modal, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
@@ -82,59 +82,69 @@ const NavBar = () => {
 
           <Favourites />
 
-          <Button
-            type="primary"
-            size="large"
-            shape="circle"
-            style={{ marginRight: 7 }}
-            onClick={() => history.push(ROUTES.CONFIGURATION)}
-          >
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <SettingOutlined style={{ transform: 'scale(1.5)' }} />
-            </div>
-          </Button>
+          <Tooltip placement="topLeft" title={t("pageMenu.configuration")} >
+            <Button
+              type="primary"
+              size="large"
+              shape="circle"
+              style={{ marginRight: 7 }}
+              onClick={() => history.push(ROUTES.CONFIGURATION)}
+            >
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <SettingOutlined style={{ transform: 'scale(1.5)' }} />
+              </div>
+            </Button>
+          </Tooltip>
 
-          <Button
-            type="primary"
-            size="large"
-            shape="circle"
-            style={{ marginRight: 7 }}
-            onClick={() => window.open(ROUTES.MANUAL, '_blank')}
-          >
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <QuestionCircleOutlined style={{ transform: 'scale(1.5)' }} />
-            </div>
-          </Button>
+          <Tooltip placement="topLeft" title={t("messages.manual")} >
+            <Button
+              type="primary"
+              size="large"
+              shape="circle"
+              style={{ marginRight: 7 }}
+              onClick={() => window.open(ROUTES.MANUAL, '_blank')}
+            >
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <QuestionCircleOutlined style={{ transform: 'scale(1.5)' }} />
+              </div>
+            </Button>
+          </Tooltip>
 
-          <Button
-            type="primary"
-            size="large"
-            shape="circle"
-            style={{ marginRight: 7 }}
-            onClick={() => window.open(ROUTES.EULA, '_blank')}
-          >
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <CopyrightOutlined style={{ transform: 'scale(1.5)' }} />
-            </div>
-          </Button>
+          <Tooltip placement="topLeft" title={t("messages.copyright")} >
+            <Button
+              type="primary"
+              size="large"
+              shape="circle"
+              style={{ marginRight: 7 }}
+              onClick={() => window.open(ROUTES.EULA, '_blank')}
+            >
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <CopyrightOutlined style={{ transform: 'scale(1.5)' }} />
+              </div>
+            </Button>
+          </Tooltip>
 
-          <Button
-            type="primary"
-            size="large"
-            shape="circle"
-            style={{ marginRight: 7 }}
-            onClick={() => history.push(ROUTES.SETTINGS)}
-          >
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <UserOutlined style={{ transform: 'scale(1.5)' }} />
-            </div>
-          </Button>
+          <Tooltip placement="topLeft" title={t("descriptions.changeUseProfile")} >
+            <Button
+              type="primary"
+              size="large"
+              shape="circle"
+              style={{ marginRight: 7 }}
+              onClick={() => history.push(ROUTES.SETTINGS)}
+            >
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <UserOutlined style={{ transform: 'scale(1.5)' }} />
+              </div>
+            </Button>
+          </Tooltip>
 
-          <Button type="primary" size="large" shape="circle" onClick={onLogOut}>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <PoweroffOutlined style={{ transform: 'scale(1.5)' }} />
-            </div>
-          </Button>
+          <Tooltip placement="topLeft" title={t("pageNames.logOut")} >
+            <Button type="primary" size="large" shape="circle" onClick={onLogOut}>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <PoweroffOutlined style={{ transform: 'scale(1.5)' }} />
+              </div>
+            </Button>
+          </Tooltip>
         </div>
       </NavBarContainer>
     </Header>

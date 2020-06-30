@@ -17,9 +17,14 @@ const HostMessages = ({handleClick}) => {
 
   const { t } = useTranslation();
 
-
   const fields = columns(t);
-	const url = process.env.REACT_APP_API_URL + '/hmi/host_message';
+
+	var urlprefix = process.env.REACT_APP_API_URL;
+	if (urlprefix == 'undefined')
+	{
+		urlprefix = '';
+	}
+	const url = urlprefix + '/hmi/host_message';
 	//const url = '/hmi/host_message';
 	//console.log('host url:'+url);
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
@@ -27,7 +27,7 @@ import {
 } from './fields';
 
 import api, { CUSTOMERS } from '../../../api';
-import Allocations from '../../../pages/allocations';
+import { AllocationsPopup } from '../../../pages/allocations';
 import { OrderListingsPopup } from '../../../pages/order-listings';
 import { DelvLocationsPopup } from 'pages/delv-locations';
 import { CustomerCategoriesPopup } from 'pages/customer-categories';
@@ -138,6 +138,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     }
   }, [resetFields, value]);
 
+  const layout = IS_CREATING ? {layout:"vertical"} : {
+    labelCol: {
+      span: 6,
+    },
+    wrapperCol: {
+      span: 18,
+    },
+  };
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -150,6 +159,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       visible={visible}
       footer={
         <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
+
           <Button
             type="primary"
             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
@@ -175,27 +193,28 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       }
     >
       <Form
-        layout="vertical"
+        // layout="vertical"
+        {...layout}
         form={form}
-        scrollToFirstError
-        initialValues={{
-          cust_account: '',
-          cust_supp_code: null,
-          cust_cmpy_code: null,
-          cust_addr_code: null,
-          cust_ctgr_code: null,
-          cust_delv_code: null,
-          cust_contact: '',
-          cust_phone_no: '',
-          cust_pricetype_id: null,
-          cust_invtype_id: null,
-          cust_saletype_id: null,
-          cust_crd_terms: null,
-          // , cust_ord_days: 0
-          // , cust_crd_days: 0
-          // , cust_balance: 0
-          // , cust_crd_limit: 0
-        }}
+        // scrollToFirstError
+        // initialValues={{
+        //   cust_account: '',
+        //   cust_supp_code: null,
+        //   cust_cmpy_code: null,
+        //   cust_addr_code: null,
+        //   cust_ctgr_code: null,
+        //   cust_delv_code: null,
+        //   cust_contact: '',
+        //   cust_phone_no: '',
+        //   cust_pricetype_id: null,
+        //   cust_invtype_id: null,
+        //   cust_saletype_id: null,
+        //   cust_crd_terms: null,
+        //   // , cust_ord_days: 0
+        //   // , cust_crd_days: 0
+        //   // , cust_balance: 0
+        //   // , cust_crd_limit: 0
+        // }}
       >
         <Tabs onChange={doTabChanges}>
           <TabPane tab={t('tabColumns.general')} key="1">
@@ -219,13 +238,18 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           <TabPane tab={t('tabColumns.addresses')} key="2">
             <AddressesPopup popup={true} />
           </TabPane>
-          <TabPane tab={t('tabColumns.customerCategories')} disabled={IS_CREATING} key="3">
+          {!IS_CREATING && 
+          <TabPane tab={t('tabColumns.customerCategories')} key="3">
             <CustomerCategoriesPopup popup={true} />
+          </TabPane> 
+          }
+          {!IS_CREATING && 
+          <TabPane tab={t('tabColumns.allocations')} key="4">
+            <AllocationsPopup popup={true} />
           </TabPane>
-          <TabPane tab={t('tabColumns.allocations')} disabled={IS_CREATING} key="4">
-            <Allocations />
-          </TabPane>
-          <TabPane tab={t('tabColumns.orderListing')} disabled={IS_CREATING} key="5">
+          }
+          {!IS_CREATING && 
+          <TabPane tab={t('tabColumns.orderListing')} key="5">
             <OrderListingsPopup
               popup={true}
               params={{
@@ -234,7 +258,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               }}
             />
           </TabPane>
-          <TabPane tab={t('tabColumns.deliveryLocations')} disabled={IS_CREATING} key="6">
+          }
+          {!IS_CREATING && 
+          <TabPane tab={t('tabColumns.deliveryLocations')} key="6">
             <DelvLocationsPopup
               popup={true}
               params={{
@@ -243,6 +269,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               }}
             />
           </TabPane>
+          }
         </Tabs>
       </Form>
     </Drawer>

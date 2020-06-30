@@ -60,7 +60,7 @@ const Customer = ({ form, value, supplier }) => {
       >
         {options?.records.filter((item)=>(!value?(item.cust_supp===''):(item.cust_supp===supplier))).map((item, index) => (
           <Select.Option key={index} value={item.cmpy_code}>
-            {item.cmpy_name}
+            {item.cmpy_desc}
           </Select.Option>
         ))}
       </Select>

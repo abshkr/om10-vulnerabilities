@@ -2029,6 +2029,10 @@ https://10.1.10.66/api/pages/customer/addresses.php
 
 //Order Listing
 https://10.1.10.66/api/pages/open_order/read.php
+https://10.1.10.66/api/pages/open_order/search.php
+{
+...
+}
 https://10.1.10.66/api/pages/open_order/suppliers.php
 https://10.1.10.66/api/pages/open_order/supp_customers.php?supplier=3440213
 https://10.1.10.66/api/pages/open_order/supp_customers.php

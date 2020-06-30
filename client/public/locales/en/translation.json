@@ -106,7 +106,7 @@
     "password": "Password",
     "slp": "SLP Id",
     "timeCode": "Time Code",
-    "driveLicence": "Drive Licence",
+    "driveLicence": "Drivers Licence",
     "lockOut": "Lock Out",
     "id": "Id",
     "title": "Title",
@@ -1449,7 +1449,10 @@
     "favouriteRemoved": "Successfully Removed.",
     "lockSuccess": "Successfully Locked.",
     "maxDateRange": "Max Date Change Exceeded.",
-    "unauthorized": "Unauthorized"
+    "unauthorized": "Unauthorized",
+	"favourites": "Favourites",
+	"manual": "Manual",
+	"copyright": "Copyright"
   },
 
   "prompts": {
