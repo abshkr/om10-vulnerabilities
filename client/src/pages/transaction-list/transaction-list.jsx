@@ -53,6 +53,8 @@ const TransactionList = () => {
           trsa_id: values.trsa_id,
           trsa_tanker: values.tnkr_code,
           load_id: values.load_id,
+          start_date: values.use_date_range ? values.start_date : null,
+          end_date: values.use_date_range ? values.end_date : null,
         },
       })
       .then((res) => {

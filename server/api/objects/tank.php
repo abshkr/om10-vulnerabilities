@@ -27,7 +27,8 @@ class Tank extends CommonClass
         "TANK_EXC_STCKRPT" => "Y",
         "TANK_AFC_ENABLED" => "Y",
         "TANK_INV_NEEDED" => "Y",
-        "TANK_ADHOC_IVRQ" => "Y"
+        "TANK_ADHOC_IVRQ" => "Y",
+        "TANK_ACTIVE" => 1,
     );
 
     public $NUMBER_FIELDS = array(

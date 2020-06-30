@@ -51,6 +51,16 @@ const DrawerProductTransfers = ({
   setDataMeterTransfers,
   dataMeterTotals,
   setDataMeterTotals,
+  dataLoadFlagDrawTransfers,
+  setDataLoadFlagDrawTransfers,
+  dataLoadFlagBaseTransfers,
+  setDataLoadFlagBaseTransfers,
+  dataLoadFlagBaseTotals,
+  setDataLoadFlagBaseTotals,
+  dataLoadFlagMeterTransfers,
+  setDataLoadFlagMeterTransfers,
+  dataLoadFlagMeterTotals,
+  setDataLoadFlagMeterTotals,
 }) => {
   const { data } = useSWR((
       sourceType === 'SCHEDULE' && supplier && trip && 
@@ -144,7 +154,8 @@ const DrawerProductTransfers = ({
     //console.log('DrawerProductTransfers: onCalculate', items);
 
     const qtys = {amb: 0, cor: 0, kg: 0};
-    const bases = form.getFieldValue('base_transfers');
+    // const bases = form.getFieldValue('base_transfers');
+    const bases = _.clone(dataBaseTransfers);
     let index=0;
     for (index=0; index<bases.length; index++) {
       const base = bases[index];
@@ -154,23 +165,25 @@ const DrawerProductTransfers = ({
         qtys.amb += _.toNumber(base?.trsf_bs_qty_amb);
         qtys.cor += _.toNumber(base?.trsf_bs_qty_cor);
         qtys.kg += _.toNumber(base?.trsf_bs_load_kg);
-        tableBaseTransfersAPI.updateRowData({ update: [base] });
+        // tableBaseTransfersAPI.updateRowData({ update: [base] });
       }
     }
+    setDataBaseTransfers(bases);
 
-    for (index = 0; index < payload.length; index++) {
-      const transfer = payload[index];
+    const payload2 = _.clone(payload);
+    for (index = 0; index < payload2.length; index++) {
+      const transfer = payload2[index];
       if (transfer.trsf_cmpt_no === clicked?.trsf_cmpt_no) {
         transfer.trsf_qty_amb = qtys.amb;
         transfer.trsf_qty_cor = qtys.cor;
         transfer.trsf_load_kg = qtys.kg;
-        payload[index] = transfer;
+        payload2[index] = transfer;
         tableAPI.updateRowData({ update: [transfer] });
         break;
       }
     }
 
-    setPayload(payload);
+    setPayload(payload2);
 
     // trigger the changes in child components caused by clicked
     const option = clicked;
@@ -268,13 +281,23 @@ const DrawerProductTransfers = ({
   }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products]);
 
   useEffect(() => {
+    if (dataLoadFlagDrawTransfers) {
+      console.log("data loading from DB, don't need build the transfers from scratch.");
+      return;
+    }
+
     setPayload([]);
+
+    console.log('watch data, supplier, trip, order, tanker', data, supplier, trip, order, tanker);
 
     if (data) {
       const transformed = [];
+      console.log('watch data, supplier, trip, order, tanker in IF, data not null', data);
 
       _.forEach(data?.records, (record) => {
+        //console.log('watch data, supplier, trip, order, tanker in loop', record?.shls_supp);
         if (record.shls_supp !== '') {
+          //console.log('watch data, supplier, trip, order, tanker in if supplier', record?.shls_supp);
           const object = {
             trsf_sold_to: record?.customer_code,
             trsf_delv_num: record?.delivery_number,
@@ -287,8 +310,8 @@ const DrawerProductTransfers = ({
             trsf_prod_name: record?.prod_name === '' ? t('placeholder.selectDrawerProduct') : record?.prod_name,
             trsf_prod_cmpy: record?.shls_supp,
             trsf_arm_cd: t('placeholder.selectArmCode'),
-            trsf_qty_plan: null,
-            trsf_qty_left: null,
+            trsf_qty_plan: record?.allowed_qty==='' ? null : record?.allowed_qty,
+            trsf_qty_left: record?.allowed_qty==='' ? null : String(_.toNumber(record?.allowed_qty) - _.toNumber(record?.load_qty)),
             trsf_density: null,
             trsf_temp: null,
             trsf_qty_amb: null,
@@ -303,10 +326,11 @@ const DrawerProductTransfers = ({
       /* form.setFieldsValue({
         transfers: transformed,
       }); */
+      console.log('watch data, supplier, trip, order, tanker, transformed', transformed);
 
       setPayload(transformed);
     }
-  }, [data, supplier]);
+  }, [data, supplier, trip, order, tanker]);
 
   useEffect(() => {
     console.log('Inside drawer transfers to setFieldsValue, the data is ', payload);
@@ -316,6 +340,18 @@ const DrawerProductTransfers = ({
       });
     }
   }, [payload]);
+
+  useEffect(() => {
+    console.log('Inside drawer transfers to setFieldsValue, the data is ', dataLoadFlagDrawTransfers);
+    if (dataLoadFlagDrawTransfers) {
+      if (payload) {
+        form.setFieldsValue({
+          transfers: payload,
+        });
+      }
+      setDataLoadFlagDrawTransfers(false);
+    }
+  }, [dataLoadFlagDrawTransfers]);
 
   useEffect(() => {
     let board = dataBoard;
@@ -403,6 +439,8 @@ const DrawerProductTransfers = ({
               setDataBoard={setDataBoard}
               data={dataBaseTransfers}
               setData={setDataBaseTransfers}
+              dataLoadFlag={dataLoadFlagBaseTransfers}
+              setDataLoadFlag={setDataLoadFlagBaseTransfers}
             />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="2" forceRender={true}>
@@ -416,6 +454,8 @@ const DrawerProductTransfers = ({
               setDataBoard={setDataBoard}
               data={dataBaseTotals}
               setData={setDataBaseTotals}
+              dataLoadFlag={dataLoadFlagBaseTotals}
+              setDataLoadFlag={setDataLoadFlagBaseTotals}
             />
           </TabPane>
         </Tabs>
@@ -437,6 +477,8 @@ const DrawerProductTransfers = ({
               setDataBoard={setDataBoard}
               data={dataMeterTransfers}
               setData={setDataMeterTransfers}
+              dataLoadFlag={dataLoadFlagMeterTransfers}
+              setDataLoadFlag={setDataLoadFlagMeterTransfers}
             />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeMeterTotals')} key="2" forceRender={true}>
@@ -449,6 +491,8 @@ const DrawerProductTransfers = ({
               setDataBoard={setDataBoard}
               data={dataMeterTotals}
               setData={setDataMeterTotals}
+              dataLoadFlag={dataLoadFlagMeterTotals}
+              setDataLoadFlag={setDataLoadFlagMeterTotals}
             />
           </TabPane>
         </Tabs>

@@ -183,6 +183,10 @@ class Transaction extends CommonClass
             $query = $query . " AND LOAD_ID LIKE :load_id";
         }
 
+        if (isset($this->start_date) && isset($this->end_date)) {
+            $query = $query . " AND TRSA_ST_DMY > :start_date AND TRSA_ST_DMY < :end_date";
+        }
+
         $query = $query . " ORDER BY TRSA_ST_DMY DESC";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':trsa_id', $trsa_id);
@@ -200,6 +204,11 @@ class Transaction extends CommonClass
         if (isset($this->load_id)) {
             $load_id = '%' . $this->load_id . '%';
             oci_bind_by_name($stmt, ':load_id', $load_id);
+        }
+
+        if (isset($this->start_date) && isset($this->end_date)) {
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
         }
         
         if (oci_execute($stmt, $this->commit_mode)) {

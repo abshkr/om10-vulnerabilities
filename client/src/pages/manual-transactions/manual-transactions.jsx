@@ -37,6 +37,12 @@ const ManualTransactions = ({ popup, params }) => {
   const user_code = decoded?.per_code;
 
   const [dataLoaded, setDataLoaded] = useState(null);
+  const [dataLoadFlagForm, setDataLoadFlagForm] = useState(false);
+  const [dataLoadFlagDrawTransfers, setDataLoadFlagDrawTransfers] = useState(false);
+  const [dataLoadFlagBaseTransfers, setDataLoadFlagBaseTransfers] = useState(false);
+  const [dataLoadFlagBaseTotals, setDataLoadFlagBaseTotals] = useState(false);
+  const [dataLoadFlagMeterTransfers, setDataLoadFlagMeterTransfers] = useState(false);
+  const [dataLoadFlagMeterTotals, setDataLoadFlagMeterTotals] = useState(false);
   const [dataSaved, setDataSaved] = useState(null);
   const [dataBoard, setDataBoard] = useState({});
   const [dataDrawTransfers, setDataDrawTransfers] = useState([]);
@@ -96,7 +102,14 @@ const ManualTransactions = ({ popup, params }) => {
     setSelectedTrip(null);
     setSelectedOrder(null);
     setSelectedTanker(null);
-    //resetFormGrids();
+    resetFormGrids();
+    setDataLoaded(null);
+    setDataLoadFlagForm(false);
+    setDataLoadFlagDrawTransfers(false);
+    setDataLoadFlagBaseTransfers(false);
+    setDataLoadFlagBaseTotals(false);
+    setDataLoadFlagMeterTransfers(false);
+    setDataLoadFlagMeterTotals(false);
   };
 
   const preparePayloadToSubmit = (values) => {
@@ -514,6 +527,8 @@ const ManualTransactions = ({ popup, params }) => {
         },
       })
       .then((res) => {
+        resetFormData();
+
         console.log(res.data?.records);
         const record = res.data?.records?.[0];
         if (record.gud_head_data !== '' && record.gud_head_data !== null && record.gud_head_data !== false) {
@@ -529,13 +544,19 @@ const ManualTransactions = ({ popup, params }) => {
         const values = prepareValuesToLoad(record);
         console.log('prepareValuesToLoad', values);
 
+        setDataLoaded(values);
+        setDataLoadFlagForm(true);
+        setDataLoadFlagDrawTransfers(true);
+        setDataLoadFlagBaseTransfers(true);
+        setDataLoadFlagBaseTotals(true);
+        setDataLoadFlagMeterTransfers(true);
+        setDataLoadFlagMeterTotals(true);
+    
         setDataDrawTransfers(values?.transfers);
         setDataBaseTransfers(values?.base_transfers);
         setDataBaseTotals(values?.base_totals);
         setDataMeterTransfers(values?.meter_transfers);
         setDataMeterTotals(values?.meter_totals);
-
-        //setDataLoaded(values);
 
         /* form.setFieldsValue({
         transfers: values?.transfers,
@@ -836,19 +857,20 @@ const ManualTransactions = ({ popup, params }) => {
       cancelText: t('operations.no'),
       icon: <QuestionCircleOutlined />,
       centered: true,
-      content: (
+      /* content: (
         <Form form={form} initialValues={{ save_format: 'JSON' }}>
           <Form.Item name="save_format">
             <Radio.Group style={{ width: '30vw', marginBottom: 10, marginTop: 10 }}>
               <Radio value="JSON">JSON</Radio>
-              <Radio value="XML">XML</Radio>
+              <Radio value="XML" disabled={true}>XML</Radio>
             </Radio.Group>
           </Form.Item>
         </Form>
-      ),
+      ), */
       onOk: async () => {
         try {
-          const save_format = form.getFieldValue('save_format');
+          // const save_format = form.getFieldValue('save_format');
+          const save_format = 'JSON';
           const values = await form.validateFields();
           console.log('await values', values);
           console.log('data board', dataBoard);
@@ -886,9 +908,17 @@ const ManualTransactions = ({ popup, params }) => {
   }, [sourceType]);
 
   useEffect(() => {
+    console.log('MT entry page dataLoadFlag', dataLoadFlagForm);
+    if (!dataLoadFlagForm) {
+      setDataLoaded(null);
+    }
+  }, [dataLoadFlagForm]);
+
+  /* // this may conflict with data retrieval
+  useEffect(() => {
     console.log('MT selectedTrip, selectedOrder, selectedTanker', selectedTrip, selectedOrder, selectedTanker);
     resetFormGrids();
-  }, [selectedTrip, selectedOrder, selectedTanker]);
+  }, [selectedTrip, selectedOrder, selectedTanker]); */
 
   useEffect(() => {
     if (params && popup && !repost) {
@@ -966,13 +996,16 @@ const ManualTransactions = ({ popup, params }) => {
           setSelectedTrip={setSelectedTrip}
           selectedOrder={selectedOrder}
           setSelectedOrder={setSelectedOrder}
+          selectedTanker={selectedTanker}
           setSelectedTanker={setSelectedTanker}
           params={params}
           popup={popup}
-          dataLoaded={null}
+          dataLoaded={dataLoaded}
           setOrderSeals={setOrderSeals}
           dataBoard={dataBoard}
           setDataBoard={setDataBoard}
+          dataLoadFlag={dataLoadFlagForm}
+          setDataLoadFlag={setDataLoadFlagForm}
         />
 
         <DrawerProductTransfers
@@ -997,6 +1030,16 @@ const ManualTransactions = ({ popup, params }) => {
           setDataMeterTransfers={setDataMeterTransfers}
           dataMeterTotals={dataMeterTotals}
           setDataMeterTotals={setDataMeterTotals}
+          dataLoadFlagDrawTransfers={dataLoadFlagDrawTransfers}
+          setDataLoadFlagDrawTransfers={setDataLoadFlagDrawTransfers}
+          dataLoadFlagBaseTransfers={dataLoadFlagBaseTransfers}
+          setDataLoadFlagBaseTransfers={setDataLoadFlagBaseTransfers}
+          dataLoadFlagBaseTotals={dataLoadFlagBaseTotals}
+          setDataLoadFlagBaseTotals={setDataLoadFlagBaseTotals}
+          dataLoadFlagMeterTransfers={dataLoadFlagMeterTransfers}
+          setDataLoadFlagMeterTransfers={setDataLoadFlagMeterTransfers}
+          dataLoadFlagMeterTotals={dataLoadFlagMeterTotals}
+          setDataLoadFlagMeterTotals={setDataLoadFlagMeterTotals}
         />
       </Form>
     </Page>

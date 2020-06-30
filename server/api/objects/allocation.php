@@ -294,9 +294,11 @@ class Allocation extends CommonClass
 
         //In new but not in old.
         foreach ($this->allocs as $alloc) {
-            if (isset($old_children[$alloc->aitem_prodcode])) {
+            if (isset($old_children[$alloc->aitem_prodcode])
+                || $alloc->aitem_qtylimit === 0) {
                 continue;
             }
+
             $query = "INSERT INTO ALLOCS (
                 ALL_PROD_PRODCODE,
                 ALL_PROD_PRODCMPY,

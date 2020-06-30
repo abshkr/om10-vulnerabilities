@@ -7,6 +7,7 @@ import {
   QuestionCircleOutlined,
   RedoOutlined,
   ClockCircleOutlined,
+  CloseOutlined,
 } from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -219,6 +220,15 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             onClick={onReset}
           >
             {t('operations.reset')}
+          </Button>
+
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
           </Button>
 
           <Button

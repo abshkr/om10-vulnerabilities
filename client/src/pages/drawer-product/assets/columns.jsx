@@ -54,9 +54,9 @@ const columns = t => [
     // filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
-    cellRenderer: 'ColorRenderer',
+    cellRenderer: 'TagRenderer',
     // suppressSizeToFit: true,
-    width: 180,
+    width: 120,
   },
   {
     headerName: t('fields.textColor'),
@@ -64,9 +64,9 @@ const columns = t => [
     // filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
-    cellRenderer: 'ColorRenderer',
+    cellRenderer: 'TagRenderer',
     // suppressSizeToFit: true,
-    width: 180,
+    width: 120,
   },
   {
     headerName: t('fields.prodImage'),

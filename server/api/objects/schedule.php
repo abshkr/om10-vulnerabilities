@@ -257,6 +257,10 @@ class Schedule extends CommonClass
             $query = $query . " AND STATUS = :status";
         }
 
+        if (isset($this->start_date) && isset($this->end_date)) {
+            $query = $query . " AND SHLS_CALDATE > :start_date AND SHLS_CALDATE < :end_date";
+        }
+
         $query = $query . " ORDER BY SHLS_TRIP_NO";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':shls_trip_no', $shls_trip_no);
@@ -278,6 +282,11 @@ class Schedule extends CommonClass
 
         if (isset($this->status)) {
             oci_bind_by_name($stmt, ':status', $this->status);
+        }
+
+        if (isset($this->start_date) && isset($this->end_date)) {
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
         }
         
         if (oci_execute($stmt, $this->commit_mode)) {

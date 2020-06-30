@@ -608,6 +608,22 @@ class Personnel extends CommonClass
             }
         }
 
+        if (isset($this->per_auth)) {
+            $query = "
+                UPDATE URBAC_USER_ROLES
+                SET ROLE_ID = :per_auth
+                WHERE USER_ID = (SELECT USER_ID FROM URBAC_USERS WHERE USER_CODE = :per_code)";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':per_code', $this->per_code);
+            oci_bind_by_name($stmt, ':per_auth', $this->per_auth);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
+        }
+
         if (isset($this->pt_timecd)) {
             $query = "
             UPDATE PER_TIMECODE

@@ -42,6 +42,11 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    editable: true,
+    cellRenderer: 'DensityRenderer',
+    cellRendererParams: {
+      digits: '1',
+    },
   },
   {
     headerName: t('fields.temperature'),
@@ -49,6 +54,10 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    cellRenderer: 'TemperatureRenderer',
+    cellRendererParams: {
+      digits: '1',
+    },
   },
   {
     headerName: t('fields.observedQuantity'),
@@ -56,6 +65,12 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    editable: true,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '100',
+    },
   },
   {
     headerName: t('fields.standardQuantity'),
@@ -63,6 +78,11 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '100',
+    },
   },
   {
     headerName: t('fields.massQuantity'),
@@ -70,6 +90,11 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '100',
+    },
   },
   {
     headerName: 'Additive?',

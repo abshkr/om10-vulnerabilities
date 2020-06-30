@@ -116,7 +116,7 @@ const DrawerProduct = () => {
             value={selected} 
             visible={visible} 
             handleFormState={handleFormState} 
-            auth={access}
+            access={access}
             setFilterValue={setFilterValue}
           />
         </Tabs.TabPane>

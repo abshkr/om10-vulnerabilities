@@ -1079,6 +1079,8 @@
     "archived_file": "Archived File",
     "transferred_file": "Transferred File",
     "resubmitted": "Resubmitted",
+    "related_in_msg_id": "Related Incoming Msg",
+    "transfer_time": "Transfer Time",
     "today": "Today",
     "thisWeek": "This Week",
     "thisMonth": "This Month",
@@ -1399,6 +1401,8 @@
     "companyRelation": "Company Relations",
     "companyHotLitres": "Hot Litres",
     "nominationTransactions": "Manual Transactions For Nominations",
+    "createTripTransactions": "Create Trip Transactions",
+    "repostTripTransactions": "Repost Trip Transactions",
     "transactionForNomination": "Transactions For Nomination",
     "meterDetails": "Meter Details",
     "baseProductDetails": "Base Product Details",
@@ -1586,7 +1590,8 @@
     "ignoreTolerance": "Ignore tolerance check",
     "unauthorized": "Sorry, you are not authorized to access this page.",
     "uploadSuccess": "You have uploaded image: ",
-    "uploadFailed": "Failed to upload image: "
+    "uploadFailed": "Failed to upload image: ",
+	"noCompanyType": "Please select at least one company type"
   },
 
   "placeholder": {

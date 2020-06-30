@@ -624,9 +624,9 @@ class ManualTransactionService
             $msg->cmpt_det[$i]->asm4 = new XASM(); /* loaded proudct quantity */
             for ($j = 0; $j < $this->num_of_transfers; ++$j) /* Find right data to fill in */ {
                 if ($this->transfers[$j]->nr_in_tkr == $i + 1) {
-                    $msg->cmpt_det[$i]->asm4->amb_vol = sprintf("%012d", $this->transfers[$i]->amb_vol);
-                    $msg->cmpt_det[$i]->asm4->cor_vol = sprintf("%012d", $this->transfers[$i]->cor_vol);
-                    $msg->cmpt_det[$i]->asm4->liq_kg = sprintf("%012d", $this->transfers[$i]->liq_kg);
+                    $msg->cmpt_det[$i]->asm4->amb_vol = sprintf("%012d", $this->transfers[$j]->amb_vol);
+                    $msg->cmpt_det[$i]->asm4->cor_vol = sprintf("%012d", $this->transfers[$j]->cor_vol);
+                    $msg->cmpt_det[$i]->asm4->liq_kg = sprintf("%012d", $this->transfers[$j]->liq_kg);
                     break;
                 }
             }

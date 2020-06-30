@@ -19,6 +19,8 @@ const BaseProductTransfers = ({
   setDataBoard,
   data,
   setData,
+  dataLoadFlag,
+  setDataLoadFlag,
 }) => {
   const { t } = useTranslation();
 
@@ -96,7 +98,9 @@ const BaseProductTransfers = ({
   };
 
   useEffect(() => {
-    getBaseTransfers(selected);
+    if (!dataLoadFlag) {
+      getBaseTransfers(selected);
+    }
   }, [selected]);
 
   useEffect(() => {
@@ -107,6 +111,18 @@ const BaseProductTransfers = ({
       });
     }
   }, [data]);
+
+  useEffect(() => {
+    console.log('Inside base transfers to setFieldsValue, the data is ', dataLoadFlag);
+    if (dataLoadFlag) {
+      if (data) {
+        form.setFieldsValue({
+          base_transfers: data,
+        });
+      }
+      setDataLoadFlag(false);
+    }
+  }, [dataLoadFlag]);
 
   useEffect(() => {
     let board = dataBoard;
@@ -143,6 +159,48 @@ const BaseProductTransfers = ({
     setData([]);
   }, [sourceType]);
 
+  const onCellUpdate = (value) => {
+    console.log('BaseProductTransfers: onCellUpdate', value);
+
+    const bases = _.clone(data);
+    let index=0;
+    for (index=0; index<bases.length; index++) {
+      const base = bases[index];
+      if (base.trsf_bs_cmpt_no === value?.data?.trsf_bs_cmpt_no && 
+        base.trsf_bs_prodcd === value?.data?.trsf_bs_prodcd &&
+        base.trsf_bs_tk_cd === value?.data?.trsf_bs_tk_cd 
+        ) {
+        if (
+          value?.colDef?.field === 'trsf_bs_den' || 
+          value?.colDef?.field === 'trsf_bs_qty_amb'
+        ) {
+          bases[index] = value?.data;
+          setData(bases);
+        }
+        break;
+      }
+    }
+    //setChildTableAPI.updateRowData({ update: [base] });
+
+    /* console.log('DrawerProductTransfers: onCellUpdate2', value?.colDef?.field, value?.colDef?.headerName, value?.value, value?.newValue, value?.data.trsf_cmpt_capacit);
+    if (
+      value?.colDef?.field === 'trsf_qty_amb' || 
+      value?.colDef?.field === 'trsf_qty_cor' ||
+      value?.colDef?.field === 'trsf_load_kg' 
+    ) {
+      if (_.toNumber(value?.newValue) > _.toNumber(value?.data.trsf_cmpt_capacit)) {
+        notification.error({
+          message: t('validate.outOfRange'),
+          description: value?.colDef?.headerName + ': ' + value?.newValue + ', ' + 
+          t('fields.compartment') + ' ' + t('fields.capacity') + ': ' + value?.data.trsf_cmpt_capacit,
+        });
+      }
+    }
+    setSelected({
+      ...value?.data,
+    }); */
+  };
+
   return (
     <>
     <Spin indicator={null} spinning={isLoading}>
@@ -152,7 +210,8 @@ const BaseProductTransfers = ({
           height="70vh" 
           columns={fields} 
           apiContext={setChildTableAPI}
-        />
+          onCellUpdate={(value) => onCellUpdate(value)}
+          />
       </Form.Item>
 
       <Row gutter={[8,8]}>

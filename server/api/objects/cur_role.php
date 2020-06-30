@@ -21,6 +21,8 @@ class CurRole extends CommonClass
 
     public function prev_on_page()
     {
+        // write_log(json_encode($this), __FILE__, __LINE__);
+
         $query = "
             SELECT URBAC_USER_ROLES.ROLE_ID
             FROM URBAC_USER_ROLES, URBAC_USERS

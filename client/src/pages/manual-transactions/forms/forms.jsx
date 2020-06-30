@@ -35,6 +35,7 @@ const Forms = ({
   setSelectedTrip,
   selectedOrder,
   setSelectedOrder,
+  selectedTanker,
   setSelectedTanker,
   params,
   popup,
@@ -42,6 +43,8 @@ const Forms = ({
   setOrderSeals,
   dataBoard,
   setDataBoard,
+  dataLoadFlag,
+  setDataLoadFlag,
 }) => {
   const { setFieldsValue, resetFields } = form;
 
@@ -331,7 +334,7 @@ const Forms = ({
       });
       handleTripSelect(params?.trip_no);
     }
-  }, [popup, params, sourceType && selectedSupplier, selectedTrip]);
+  }, [popup, params, sourceType, selectedSupplier, selectedTrip]);
 
   useEffect(() => {
     setFieldsValue({
@@ -343,58 +346,83 @@ const Forms = ({
   const format = getDateTimeFormat();
 
   useEffect(() => {
-    if (dataLoaded && !sourceType) {
+    if (dataLoadFlag && dataLoaded && !sourceType) {
       form.setFieldsValue({
         source_type: dataLoaded?.source_type,
       });
       handleTypeSelect(dataLoaded?.source_type);
     }
-  }, [dataLoaded, sourceType]);
+  }, [dataLoadFlag, dataLoaded, sourceType]);
 
   useEffect(() => {
-    if (dataLoaded && !selectedSupplier) {
+    if (dataLoadFlag && dataLoaded && !selectedSupplier) {
       form.setFieldsValue({
         supplier: dataLoaded?.supplier,
       });
       handleSupplierSelect(dataLoaded?.supplier);
     }
-  }, [dataLoaded, selectedSupplier]);
+  }, [dataLoadFlag, dataLoaded, selectedSupplier]);
 
   useEffect(() => {
-    if (dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedCustomer) {
+    if (dataLoadFlag && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedCustomer) {
       form.setFieldsValue({
         customer: dataLoaded?.customer,
       });
       handleCustomerSelect(dataLoaded?.customer);
     }
-  }, [dataLoaded, sourceType, selectedSupplier, selectedCustomer]);
+  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedCustomer]);
 
   useEffect(() => {
-    if (dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedOrder) {
+    if (dataLoadFlag && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedOrder) {
       form.setFieldsValue({
         order_no: dataLoaded?.order_no,
       });
       handleOrderSelect(dataLoaded?.order_no);
+
+      setFieldsValue({
+        carrier: dataLoaded?.carrier,
+        driver: dataLoaded?.driver,
+        seal_range: dataLoaded?.seal_range,
+        mt_cust_code: dataLoaded?.customer_code,
+        mt_delv_loc: dataLoaded?.delivery_location,
+      });
     }
-  }, [dataLoaded, sourceType, selectedSupplier, selectedOrder]);
+  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedOrder]);
 
   useEffect(() => {
-    if (dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
+    if (dataLoadFlag && dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
       form.setFieldsValue({
         trip_no: dataLoaded?.trip_no,
       });
       handleTripSelect(dataLoaded?.trip_no);
+
+      setFieldsValue({
+        carrier: dataLoaded?.carrier,
+        driver: dataLoaded?.driver,
+        seal_range: dataLoaded?.seal_range,
+      });
     }
-  }, [dataLoaded, sourceType && selectedSupplier, selectedTrip]);
+  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedTrip]);
 
   useEffect(() => {
-    if (dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
+    if (dataLoadFlag && dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && selectedTrip && !selectedTanker) {
       form.setFieldsValue({
-        trip_no: dataLoaded?.trip_no,
+        tanker: dataLoaded?.tanker,
       });
-      handleTripSelect(dataLoaded?.trip_no);
+      setSelectedTanker(dataLoaded?.tanker);
+      setDataLoadFlag(false);
     }
-  }, [dataLoaded, sourceType && selectedSupplier, selectedTrip]);
+  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedTrip, selectedTanker]);
+
+  useEffect(() => {
+    if (dataLoadFlag && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && selectedOrder && !selectedTanker) {
+      form.setFieldsValue({
+        tanker: dataLoaded?.tanker,
+      });
+      setSelectedTanker(dataLoaded?.tanker);
+      setDataLoadFlag(false);
+    }
+  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedOrder, selectedTanker]);
 
   return (
     <>
@@ -417,6 +445,7 @@ const Forms = ({
             <Select
               allowClear
               showSearch
+              disabled={sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'}
               onChange={handleTankerSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectTanker')}
@@ -469,6 +498,7 @@ const Forms = ({
             <Select
               allowClear
               showSearch
+              disabled={sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'}
               loading={carriersLoading}
               onChange={handleCarrierSelect}
               optionFilterProp="children"

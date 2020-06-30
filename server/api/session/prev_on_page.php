@@ -3,11 +3,13 @@
 include_once '../shared/header.php';
 include_once '../objects/cur_role.php';
 
-if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'localhost')) {
-    $psn = '9999';
-} else {
-    $psn = Utilities::getCurrPsn();
-}
+// if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'localhost')) {
+//     $psn = '9999';
+// } else {
+//     $psn = Utilities::getCurrPsn();
+// }
+
+$psn = Utilities::getCurrPsn();
 
 if ($psn === "") {
     $result = array();

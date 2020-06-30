@@ -167,7 +167,16 @@ const FormModal = ({
 
   const onFinish = async () => {
     const values = await form.validateFields();
-    // Attaching the Id to the Updated Object
+    
+    if (!values.carrier && !values.customer &&  !values.drawer &&
+      !values.employer && !values.host && !values.issuer &&
+      !values.site_manager && !values.supplier) {
+      notification.error({
+        message: t("messages.validationFailed"),
+        description: t("descriptions.noCompanyType"),
+      });
+      return;
+    }
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -246,10 +255,9 @@ const FormModal = ({
         <>
           <Button
             type="primary"
-            icon={<FormOutlined />}
+            // icon={<FormOutlined />}
             style={{ float: 'left' }}
             loading={isValidating}
-            // style={{float:"left", marginRight:500}}
             onClick={() => specialActions()}
             disabled={!auth.canUpdate}
           >
@@ -257,10 +265,9 @@ const FormModal = ({
           </Button>
           <Button
             type="primary"
-            icon={<ApiOutlined />}
+            // icon={<ApiOutlined />}
             style={{ float: 'left', marginLeft: 5 }}
             loading={isValidating}
-            // style={{float:"left", marginRight:500}}
             onClick={() => companyRelations()}
             disabled={!auth.canUpdate}
           >
