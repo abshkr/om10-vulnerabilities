@@ -56,8 +56,8 @@ export default class BayArm extends Component {
     const index = _.findIndex(current, ['trsf_cmpt_no', key]);
 
     current[index].trsf_arm_cd = record?.item?.stream_armcode;
-    current[index].trsf_qty_plan = null;
-    current[index].trsf_qty_left = null;
+    //current[index].trsf_qty_plan = null;
+    //current[index].trsf_qty_left = null;
     //current[index].trsf_density = record?.item?.stream_tankden;
     current[index].trsf_density = this.calcDensity(record?.item?.stream_index);
     //current[index].trsf_temp = null;
