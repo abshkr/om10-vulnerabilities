@@ -25,7 +25,7 @@ const LoadSchedules = () => {
   const { t } = useTranslation();
 
   const access = useAuth('M_LOADSCHEDULES');
-
+  
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
@@ -57,7 +57,7 @@ const LoadSchedules = () => {
       !values.trip_status) {
       return;
     }
-    
+
     api
       .get(LOAD_SCHEDULES.SEARCH, {
         params: {
