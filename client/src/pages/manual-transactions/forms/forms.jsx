@@ -43,6 +43,8 @@ const Forms = ({
   setOrderSeals,
   dataBoard,
   setDataBoard,
+  dataLoadFlag,
+  setDataLoadFlag,
 }) => {
   const { setFieldsValue, resetFields } = form;
 
@@ -344,34 +346,34 @@ const Forms = ({
   const format = getDateTimeFormat();
 
   useEffect(() => {
-    if (dataLoaded && !sourceType) {
+    if (dataLoadFlag && dataLoaded && !sourceType) {
       form.setFieldsValue({
         source_type: dataLoaded?.source_type,
       });
       handleTypeSelect(dataLoaded?.source_type);
     }
-  }, [dataLoaded, sourceType]);
+  }, [dataLoadFlag, dataLoaded, sourceType]);
 
   useEffect(() => {
-    if (dataLoaded && !selectedSupplier) {
+    if (dataLoadFlag && dataLoaded && !selectedSupplier) {
       form.setFieldsValue({
         supplier: dataLoaded?.supplier,
       });
       handleSupplierSelect(dataLoaded?.supplier);
     }
-  }, [dataLoaded, selectedSupplier]);
+  }, [dataLoadFlag, dataLoaded, selectedSupplier]);
 
   useEffect(() => {
-    if (dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedCustomer) {
+    if (dataLoadFlag && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedCustomer) {
       form.setFieldsValue({
         customer: dataLoaded?.customer,
       });
       handleCustomerSelect(dataLoaded?.customer);
     }
-  }, [dataLoaded, sourceType, selectedSupplier, selectedCustomer]);
+  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedCustomer]);
 
   useEffect(() => {
-    if (dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedOrder) {
+    if (dataLoadFlag && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedOrder) {
       form.setFieldsValue({
         order_no: dataLoaded?.order_no,
       });
@@ -385,10 +387,10 @@ const Forms = ({
         mt_delv_loc: dataLoaded?.delivery_location,
       });
     }
-  }, [dataLoaded, sourceType, selectedSupplier, selectedOrder]);
+  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedOrder]);
 
   useEffect(() => {
-    if (dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
+    if (dataLoadFlag && dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
       form.setFieldsValue({
         trip_no: dataLoaded?.trip_no,
       });
@@ -400,25 +402,27 @@ const Forms = ({
         seal_range: dataLoaded?.seal_range,
       });
     }
-  }, [dataLoaded, sourceType, selectedSupplier, selectedTrip]);
+  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedTrip]);
 
   useEffect(() => {
-    if (dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && selectedTrip && !selectedTanker) {
+    if (dataLoadFlag && dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && selectedTrip && !selectedTanker) {
       form.setFieldsValue({
         tanker: dataLoaded?.tanker,
       });
       setSelectedTanker(dataLoaded?.tanker);
+      setDataLoadFlag(false);
     }
-  }, [dataLoaded, sourceType, selectedSupplier, selectedTrip, selectedTanker]);
+  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedTrip, selectedTanker]);
 
   useEffect(() => {
-    if (dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && selectedOrder && !selectedTanker) {
+    if (dataLoadFlag && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && selectedOrder && !selectedTanker) {
       form.setFieldsValue({
         tanker: dataLoaded?.tanker,
       });
       setSelectedTanker(dataLoaded?.tanker);
+      setDataLoadFlag(false);
     }
-  }, [dataLoaded, sourceType, selectedSupplier, selectedOrder, selectedTanker]);
+  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedOrder, selectedTanker]);
 
   return (
     <>

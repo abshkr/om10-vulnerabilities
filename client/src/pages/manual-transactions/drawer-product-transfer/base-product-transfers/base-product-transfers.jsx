@@ -19,6 +19,8 @@ const BaseProductTransfers = ({
   setDataBoard,
   data,
   setData,
+  dataLoadFlag,
+  setDataLoadFlag,
 }) => {
   const { t } = useTranslation();
 
@@ -96,7 +98,9 @@ const BaseProductTransfers = ({
   };
 
   useEffect(() => {
-    getBaseTransfers(selected);
+    if (!dataLoadFlag) {
+      getBaseTransfers(selected);
+    }
   }, [selected]);
 
   useEffect(() => {
@@ -107,6 +111,18 @@ const BaseProductTransfers = ({
       });
     }
   }, [data]);
+
+  useEffect(() => {
+    console.log('Inside base transfers to setFieldsValue, the data is ', dataLoadFlag);
+    if (dataLoadFlag) {
+      if (data) {
+        form.setFieldsValue({
+          base_transfers: data,
+        });
+      }
+      setDataLoadFlag(false);
+    }
+  }, [dataLoadFlag]);
 
   useEffect(() => {
     let board = dataBoard;

@@ -51,6 +51,16 @@ const DrawerProductTransfers = ({
   setDataMeterTransfers,
   dataMeterTotals,
   setDataMeterTotals,
+  dataLoadFlagDrawTransfers,
+  setDataLoadFlagDrawTransfers,
+  dataLoadFlagBaseTransfers,
+  setDataLoadFlagBaseTransfers,
+  dataLoadFlagBaseTotals,
+  setDataLoadFlagBaseTotals,
+  dataLoadFlagMeterTransfers,
+  setDataLoadFlagMeterTransfers,
+  dataLoadFlagMeterTotals,
+  setDataLoadFlagMeterTotals,
 }) => {
   const { data } = useSWR((
       sourceType === 'SCHEDULE' && supplier && trip && 
@@ -271,6 +281,11 @@ const DrawerProductTransfers = ({
   }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products]);
 
   useEffect(() => {
+    if (dataLoadFlagDrawTransfers) {
+      console.log("data loading from DB, don't need build the transfers from scratch.");
+      return;
+    }
+
     setPayload([]);
 
     console.log('watch data, supplier, trip, order, tanker', data, supplier, trip, order, tanker);
@@ -325,6 +340,18 @@ const DrawerProductTransfers = ({
       });
     }
   }, [payload]);
+
+  useEffect(() => {
+    console.log('Inside drawer transfers to setFieldsValue, the data is ', dataLoadFlagDrawTransfers);
+    if (dataLoadFlagDrawTransfers) {
+      if (payload) {
+        form.setFieldsValue({
+          transfers: payload,
+        });
+      }
+      setDataLoadFlagDrawTransfers(false);
+    }
+  }, [dataLoadFlagDrawTransfers]);
 
   useEffect(() => {
     let board = dataBoard;
@@ -412,6 +439,8 @@ const DrawerProductTransfers = ({
               setDataBoard={setDataBoard}
               data={dataBaseTransfers}
               setData={setDataBaseTransfers}
+              dataLoadFlag={dataLoadFlagBaseTransfers}
+              setDataLoadFlag={setDataLoadFlagBaseTransfers}
             />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="2" forceRender={true}>
@@ -425,6 +454,8 @@ const DrawerProductTransfers = ({
               setDataBoard={setDataBoard}
               data={dataBaseTotals}
               setData={setDataBaseTotals}
+              dataLoadFlag={dataLoadFlagBaseTotals}
+              setDataLoadFlag={setDataLoadFlagBaseTotals}
             />
           </TabPane>
         </Tabs>
@@ -446,6 +477,8 @@ const DrawerProductTransfers = ({
               setDataBoard={setDataBoard}
               data={dataMeterTransfers}
               setData={setDataMeterTransfers}
+              dataLoadFlag={dataLoadFlagMeterTransfers}
+              setDataLoadFlag={setDataLoadFlagMeterTransfers}
             />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeMeterTotals')} key="2" forceRender={true}>
@@ -458,6 +491,8 @@ const DrawerProductTransfers = ({
               setDataBoard={setDataBoard}
               data={dataMeterTotals}
               setData={setDataMeterTotals}
+              dataLoadFlag={dataLoadFlagMeterTotals}
+              setDataLoadFlag={setDataLoadFlagMeterTotals}
             />
           </TabPane>
         </Tabs>

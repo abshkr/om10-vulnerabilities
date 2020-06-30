@@ -16,6 +16,8 @@ const MeterTransfers = ({
   setDataBoard,
   data,
   setData,
+  dataLoadFlag,
+  setDataLoadFlag,
 }) => {
   const { t } = useTranslation();
 
@@ -68,7 +70,9 @@ const MeterTransfers = ({
       setData(meters);
     }
 
-    getMeters();
+    if (!dataLoadFlag) {
+      getMeters();
+    }
   }, [selected, transfers]);
 
   useEffect(() => {
@@ -79,6 +83,18 @@ const MeterTransfers = ({
       });
     }
   }, [data]);
+
+  useEffect(() => {
+    console.log('Inside meter transfers to setFieldsValue, the data is ', dataLoadFlag);
+    if (dataLoadFlag) {
+      if (data) {
+        form.setFieldsValue({
+          meter_transfers: data,
+        });
+      }
+      setDataLoadFlag(false);
+    }
+  }, [dataLoadFlag]);
 
   useEffect(() => {
     let board = dataBoard;

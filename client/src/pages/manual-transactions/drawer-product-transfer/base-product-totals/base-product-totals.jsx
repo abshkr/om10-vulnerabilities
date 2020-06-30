@@ -18,6 +18,8 @@ const BaseProductTotals = ({
   setDataBoard,
   data,
   setData,
+  dataLoadFlag,
+  setDataLoadFlag,
 }) => {
   const { t } = useTranslation();
 
@@ -118,7 +120,9 @@ const BaseProductTotals = ({
   };
 
   useEffect(() => {
-    getBaseTotals();
+    if (!dataLoadFlag) {
+      getBaseTotals();
+    }
   }, [selected]);
 
   useEffect(() => {
@@ -129,6 +133,18 @@ const BaseProductTotals = ({
       });
     }
   }, [data]);
+
+  useEffect(() => {
+    console.log('Inside base totals to setFieldsValue, the data is ', dataLoadFlag);
+    if (dataLoadFlag) {
+      if (data) {
+        form.setFieldsValue({
+          base_totals: data,
+        });
+      }
+      setDataLoadFlag(false);
+    }
+  }, [dataLoadFlag]);
 
   useEffect(() => {
     let board = dataBoard;
