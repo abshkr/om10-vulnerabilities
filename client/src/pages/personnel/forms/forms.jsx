@@ -211,15 +211,17 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             <Lock form={form} value={value} />
           </TabPane>
 
-          <TabPane
-            // className="ant-tab-window"
-            tab={t('tabColumns.resetPassword')}
-            forceRender={true}
-            key="4"
-            disabled={!value}
-          >
-            <PasswordReset value={value} />
-          </TabPane>
+          {access?.canUpdate && 
+            <TabPane
+              // className="ant-tab-window"
+              tab={t('tabColumns.resetPassword')}
+              forceRender={true}
+              key="4"
+              disabled={!value}
+            >
+              <PasswordReset value={value} />
+            </TabPane>
+          }
         </Tabs>
       </Form>
     </Drawer>
