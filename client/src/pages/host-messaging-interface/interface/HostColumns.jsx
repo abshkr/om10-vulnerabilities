@@ -9,16 +9,16 @@ const columns = (t) => [
 		width: 20,
     suppressSizeToFit: true,
 		pinned: 'left',
-		tooltip: function(params) {
+		tooltipValueGetter: function(params) {
 			var status = params.data.STATUS;
 			var desc = "";
 			if (parseInt(status) == 2)
 			{
-				desc = "good";
+				desc = "ready";
 			}
 			else if (parseInt(status) == 3)
 			{
-				desc = "bad";
+				desc = "rejected";
 			}
 			else
 			{
@@ -33,7 +33,7 @@ const columns = (t) => [
 			var color = "";
 			if (parseInt(status) == 2)
 			{
-				color = "lightgreen";
+				color = "yellow";
 			}
 			else if (parseInt(status) == 3)
 			{

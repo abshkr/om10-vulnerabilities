@@ -1,5 +1,6 @@
 var fs = require('fs');
 let path = require('path');
+var cfg = require('./configr.js');
 
 
 function remove_file(file)
@@ -27,12 +28,16 @@ function find_msg_parse_criteria(filenm, file_name_format, msg_parse_rules)
 
 	try
 	{
+/*
 		var search_idx = file_name_format.fields.indexOf(msg_parse_rules.file_name_field);
 		var file_nm = path.basename(filenm);
 		var idx = file_nm.lastIndexOf(file_name_format.extension_prefix);
 		file_nm = file_nm.substring(0, idx);
 		var fields = file_nm.split(file_name_format.field_separator);
 		var search_key = fields[search_idx];
+*/
+		var fns = cfg.field_names(file_name_format, filenm);
+		var search_key = fns[msg_parse_rules.file_name_field];
 	}
 	catch (err)
 	{

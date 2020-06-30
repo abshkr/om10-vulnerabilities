@@ -5,6 +5,7 @@ var async = require('async');
 //var pgdb = require('./pgdb.js');
 var oradb = require('./oradb.js');
 var parser = require('./om_msg_parser.js');
+var cfg = require('./configr.js');
 
 // First arg is node, second arg is this script, so slice them away.
 var args = process.argv.slice(2);
@@ -887,6 +888,7 @@ function add_out_msg(origin, message_id, recv_time, destination, message_type, f
 }
 
 
+
 function start_monitoring()
 {
 	console.log('monitoring ' + basepath + ' for files ' + conn.data_flow_direction + ' host ' + host_ip);
@@ -1012,6 +1014,7 @@ function start_monitoring()
 
 								var route_criteria = tokens[conn.routing_rules.fld_idx];
 
+/*
 								str_to_compare = "site_code";
 								var match_idx = conn.file_name_format.fields.findIndex(string_match);
 								var sitecode = '';
@@ -1043,6 +1046,11 @@ function start_monitoring()
 								{
 									// TODO: generate uuid
 								}
+*/
+								var fns = cfg.field_names(conn.file_name_format, filenm);
+								var sitecode = fns['site_code'];
+								var msg_ty = fns['msg_type'];
+								var msg_id = fns['idoc_no'];
 
 								var found = false;
 								for (var r = 0; (r < conn.route_to.length) && !found; r++)
