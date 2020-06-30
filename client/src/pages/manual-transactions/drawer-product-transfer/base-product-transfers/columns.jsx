@@ -42,6 +42,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    editable: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
       digits: '1',
@@ -64,6 +65,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    editable: true,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
       digits: '0',

@@ -97,6 +97,7 @@ const ManualTransactions = ({ popup, params }) => {
     setSelectedOrder(null);
     setSelectedTanker(null);
     resetFormGrids();
+    setDataLoaded(null);
   };
 
   const preparePayloadToSubmit = (values) => {
@@ -974,7 +975,7 @@ const ManualTransactions = ({ popup, params }) => {
           setSelectedTanker={setSelectedTanker}
           params={params}
           popup={popup}
-          dataLoaded={null}
+          dataLoaded={dataLoaded}
           setOrderSeals={setOrderSeals}
           dataBoard={dataBoard}
           setDataBoard={setDataBoard}
