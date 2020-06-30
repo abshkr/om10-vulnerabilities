@@ -27,7 +27,7 @@ import {
 } from './fields';
 
 import api, { CUSTOMERS } from '../../../api';
-import Allocations from '../../../pages/allocations';
+import { AllocationsPopup } from '../../../pages/allocations';
 import { OrderListingsPopup } from '../../../pages/order-listings';
 import { DelvLocationsPopup } from 'pages/delv-locations';
 import { CustomerCategoriesPopup } from 'pages/customer-categories';
@@ -69,7 +69,6 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   };
 
   const onFinish = async () => {
-    console.log("OnFinish")
     const values = await form.validateFields();
 
     Modal.confirm({
@@ -239,13 +238,18 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           <TabPane tab={t('tabColumns.addresses')} key="2">
             <AddressesPopup popup={true} />
           </TabPane>
-          <TabPane tab={t('tabColumns.customerCategories')} disabled={IS_CREATING} key="3">
+          {!IS_CREATING && 
+          <TabPane tab={t('tabColumns.customerCategories')} key="3">
             <CustomerCategoriesPopup popup={true} />
+          </TabPane> 
+          }
+          {!IS_CREATING && 
+          <TabPane tab={t('tabColumns.allocations')} key="4">
+            <AllocationsPopup popup={true} />
           </TabPane>
-          <TabPane tab={t('tabColumns.allocations')} disabled={IS_CREATING} key="4">
-            <Allocations />
-          </TabPane>
-          <TabPane tab={t('tabColumns.orderListing')} disabled={IS_CREATING} key="5">
+          }
+          {!IS_CREATING && 
+          <TabPane tab={t('tabColumns.orderListing')} key="5">
             <OrderListingsPopup
               popup={true}
               params={{
@@ -254,7 +258,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               }}
             />
           </TabPane>
-          <TabPane tab={t('tabColumns.deliveryLocations')} disabled={IS_CREATING} key="6">
+          }
+          {!IS_CREATING && 
+          <TabPane tab={t('tabColumns.deliveryLocations')} key="6">
             <DelvLocationsPopup
               popup={true}
               params={{
@@ -263,6 +269,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               }}
             />
           </TabPane>
+          }
         </Tabs>
       </Form>
     </Drawer>

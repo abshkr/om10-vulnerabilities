@@ -79,6 +79,7 @@ const DelvLocations = ({popup, params}) => {
   return (
     <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup} avatar="deliveryLocations">
       <DataTable
+        minimal={popup}
         data={data}
         columns={fields}
         isLoading={isLoading}
