@@ -1048,7 +1048,6 @@ function start_monitoring()
 								}
 */
 								var fns = cfg.field_names(conn.file_name_format, filenm);
-								console.log('res fns:'+JSON.stringify(fns,null,'\t'));
 								var sitecode = fns['site_code'];
 								var msg_ty = fns['msg_type'];
 								var msg_id = fns['idoc_no'];
