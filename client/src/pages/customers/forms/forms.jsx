@@ -138,7 +138,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     }
   }, [resetFields, value]);
 
-  const layout = {
+  const layout = IS_CREATING ? {layout:"vertical"} : {
     labelCol: {
       span: 6,
     },
