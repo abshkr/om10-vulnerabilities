@@ -36,14 +36,17 @@ export const login = (values, callback) => async (dispatch) => {
 };
 
 export const signout = () => {
-  api
-    .post(AUTH.LOGOUT)
-    .then((reponse) => {
-      sessionStorage.removeItem('token');
-    })
-    .catch((error) => {
-      sessionStorage.removeItem('token');
+  api.post(AUTH.LOGOUT).then((reponse) => {
+    api.interceptors.request.use((config) => {
+      config.headers.Authorization = null;
+
+      return config;
     });
+
+    sessionStorage.removeItem('token');
+
+    window.location.reload();
+  });
 
   return {
     type: AUTHORIZED,

@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react';
-
-import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { connect } from 'react-redux';
 import jwtDecode from 'jwt-decode';
 
 import ConfigStore from 'stores/config-store';
+import useIdle from 'hooks/use-idle';
+
 import * as ROUTES from 'constants/routes';
 import * as actions from 'actions/auth';
-import useIdle from 'hooks/use-idle';
 
 export default (Authenticated) => {
   const ComposedComponent = ({ token, onRefresh }) => {
@@ -39,8 +39,6 @@ export default (Authenticated) => {
 
     useEffect(() => {
       const interval = setInterval(() => {
-        console.log('refreshing token');
-
         onRefresh(token);
       }, 900000);
       return () => clearInterval(interval);

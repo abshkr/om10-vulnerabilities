@@ -17,8 +17,6 @@ import { ROUTES } from '../constants';
 import { fetcher } from '../utils';
 import paths from './paths';
 
-import * as auth from 'actions/auth';
-
 /**
  * @description
  * Creating main redux store to authenticate our credentials
