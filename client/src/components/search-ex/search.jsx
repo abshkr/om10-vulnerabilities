@@ -1,60 +1,67 @@
 import React, { useState } from 'react';
-import { FileSearchOutlined, CloseOutlined } from '@ant-design/icons';
+import { FileSearchOutlined, CloseOutlined, CheckOutlined } from '@ant-design/icons';
 import { SWRConfig } from 'swr';
 import { fetcher } from 'utils';
+import { DatePicker } from 'antd';
+
+// import { Calendar } from '../../components';
 
 import { Form, Button, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
-import Supplier from './search/supplier';
-import TripStatus from './search/trip-status';
-import Tanker from './search/tanker';
-import Trip from './search/trip-number';
-import LoadID from './search/load-id';
-import TrsaID from './search/trsa-id';
-import MovementID from './search/mv-id';
-import MovementStatus from './search/mv-status';
-import OrderNumber from './search/order-number';
-import OrderSupplier from './search/order-supplier';
-import OrderCustomer from './search/order-customer';
-import OrderStatus from './search/order-status';
-import OrderRefCode from './search/order-ref-code';
-import NominationKey from './search/nomination-key';
-import NominationStatus from './search/nomination-status';
-import NominationSource from './search/nomination-source';
-import NominationTerminal from './search/nomination-terminal';
-import NominationNumber from './search/nomination-number';
+import { DateRange, 
+  LoadID, 
+  Supplier, 
+  TripStatus, 
+  Tanker, 
+  Trip, 
+  TrsaID,
+  MovementID,
+  MovementStatus,
+  OrderNumber,
+  OrderSupplier,
+  OrderCustomer,
+  OrderStatus,
+  OrderRefCode,
+  NominationKey,
+  NominationStatus,
+  NominationSource,
+  NominationTerminal,
+  NominationNumber,
+} from './fields';
 
-
-const SearchForm = ({onSearch, items}) => {
+const SearchForm = ({onSearch, fields}) => {
   const [orderSupplier, setOrderSupplier] = useState(null);
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
+    console.log(values);
     Modal.destroyAll();
     onSearch(values);
   };
 
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{marginTop: "1rem"}}>
-      {items?.shls_trip_no && <Trip />}
-      {items?.mlitm_id && <MovementID />}
-      {items?.load_id && <LoadID />}
-      {items?.trsa_id && <TrsaID />}
-      {items?.supplier_code && <Supplier />}
-      {items?.trip_status && <TripStatus />}
-      {items?.mlitm_status && <MovementStatus />}
-      {items?.tnkr_code && <Tanker />}
-      {items?.order_cust_no && <OrderNumber />}
-      {items?.order_supp_code && <OrderSupplier onChange={setOrderSupplier} />}
-      {items?.order_cust_acnt && <OrderCustomer supplier={orderSupplier} />}
-      {items?.order_stat_id && <OrderStatus />}
-      {items?.order_ref_code && <OrderRefCode />}
-      {items?.mv_key && <NominationKey />}
-      {items?.mv_status && <NominationStatus />}
-      {items?.mv_srctype && <NominationSource />}
-      {items?.mv_terminal && <NominationTerminal />}
-      {items?.mv_number && <NominationNumber />}
+      {fields?.shls_trip_no && <Trip />}
+      {fields?.mlitm_id && <MovementID />}
+      {fields?.load_id && <LoadID />}
+      {fields?.trsa_id && <TrsaID />}
+      {fields?.supplier_code && <Supplier />}
+      {fields?.trip_status && <TripStatus />}
+      {fields?.mlitm_status && <MovementStatus />}
+      {fields?.tnkr_code && <Tanker />}
+      {fields?.order_cust_no && <OrderNumber />}
+      {fields?.order_supp_code && <OrderSupplier onChange={setOrderSupplier} />}
+      {fields?.order_cust_acnt && <OrderCustomer supplier={orderSupplier} />}
+      {fields?.order_stat_id && <OrderStatus />}
+      {fields?.order_ref_code && <OrderRefCode />}
+      {fields?.mv_key && <NominationKey />}
+      {fields?.mv_status && <NominationStatus />}
+      {fields?.mv_srctype && <NominationSource />}
+      {fields?.mv_terminal && <NominationTerminal />}
+      {fields?.mv_number && <NominationNumber />}
+      
+      <DateRange form={form}/>
       
       <div style={{marginTop: "2rem"}}>
         <Button
@@ -68,6 +75,7 @@ const SearchForm = ({onSearch, items}) => {
 
         <Button
           type="primary"
+          icon={<CheckOutlined />}
           htmlType="submit"
           style={{ float: 'right', marginRight: 5 }}
         >
@@ -81,11 +89,11 @@ const SearchForm = ({onSearch, items}) => {
 const WindowSearch = (
     onSearch, 
     title, 
-    items,
+    fields,
   ) => {
   Modal.info({
     className: 'form-container',
-    // title: t('operations.search'),
+    // title: t('operations.fields'),
     title: title? title: 'Search',
     centered: true,
     width: '20vw',
@@ -97,7 +105,7 @@ const WindowSearch = (
         fetcher,
         }}
     >
-      <SearchForm onSearch={onSearch} items={items} />
+      <SearchForm onSearch={onSearch} fields={fields} />
     </SWRConfig>
     ),
     okButtonProps: {
