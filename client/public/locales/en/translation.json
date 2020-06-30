@@ -1449,7 +1449,10 @@
     "favouriteRemoved": "Successfully Removed.",
     "lockSuccess": "Successfully Locked.",
     "maxDateRange": "Max Date Change Exceeded.",
-    "unauthorized": "Unauthorized"
+    "unauthorized": "Unauthorized",
+	"favourites": "Favourites",
+	"manual": "Manual",
+	"copyright": "Copyright"
   },
 
   "prompts": {
