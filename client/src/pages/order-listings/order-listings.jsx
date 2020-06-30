@@ -137,9 +137,7 @@ const OrderListings = ({popup, params}) => {
         order_ref_code: values?.order_ref_code,
         start_date: values.use_date_range ? values.start_date : null,
         end_date: values.use_date_range ? values.end_date : null,
-        time_option: values.time_option,
-        //start_date: start,
-        //end_date: end,
+        time_option: values.use_date_range ? values.time_option : null,
       },
     })
     .then((res) => {

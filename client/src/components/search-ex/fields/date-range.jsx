@@ -6,17 +6,10 @@ import moment from 'moment';
 import { SETTINGS } from '../../../constants';
 
 const DateRange = ({form, timeOption}) => {
-  console.log(timeOption)
   const { t } = useTranslation(); 
   const { setFieldsValue } = form;
   const [checked, setChecked] = useState(false);
   
-  // const ranges = {
-  //   [t('fields.today')]: [moment(), moment()],
-  //   [t('fields.thisWeek')]: [moment().startOf('week'), moment().endOf('week')],
-  //   [t('fields.thisMonth')]: [moment().startOf('month'), moment().endOf('month')],
-  // };
-
   const openOrderTimeOptions = [
     {
       index: 1,
@@ -30,8 +23,30 @@ const DateRange = ({form, timeOption}) => {
     },
   ];
 
+  const nominationTimeOptions = [
+    {
+      index: 1,
+      code: 'MV_DTIM_EFFECT',
+      name: t('fields.effectiveFrom'),
+    },
+    {
+      index: 2,
+      code: 'MV_DTIM_EXPIRY',
+      name: t('fields.expiredAfter'),
+    },
+    /* {
+      index: 3,
+      code: 'MV_DTIM_CREATE',
+      name: t('fields.createdAt'),
+    },
+    {
+      index: 4,
+      code: 'MV_DTIM_CHANGE',
+      name: t('fields.lastModified'),
+    }, */
+  ];
+
   const onRangeChange = (dates) => {
-    console.log(dates)
     setFieldsValue ({
       start_date: dates[0].format(SETTINGS.DATE_TIME_FORMAT),
       end_date: dates[1].format(SETTINGS.DATE_TIME_FORMAT),
@@ -49,8 +64,16 @@ const DateRange = ({form, timeOption}) => {
     setFieldsValue ({
       start_date: moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT),
       end_date:  moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT),
-      time_option: 'ORDER_ORD_TIME',
     })
+    if (timeOption === "open_order") {
+      setFieldsValue ({
+        time_option: 'ORDER_ORD_TIME',
+      })
+    } else if (timeOption === "movement_nomination") {
+      setFieldsValue ({
+        time_option: 'MV_DTIM_EFFECT',
+      })
+    }
   }, [form]);
   
   return (
@@ -78,6 +101,27 @@ const DateRange = ({form, timeOption}) => {
           }
         >
           {openOrderTimeOptions.map((item, index) => (
+            <Select.Option key={index} value={item.code}>
+              {item.name}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>}
+
+      {timeOption === "movement_nomination" && <Form.Item
+        name="time_option"
+        noStyle
+      >
+        <Select
+          style = {{marginTop: "5px", marginBottom: "3px", width: "100%"}}
+          disabled={!checked}
+          defaultValue="MV_DTIM_EFFECT"
+          // onChange={setTimeOption}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {nominationTimeOptions.map((item, index) => (
             <Select.Option key={index} value={item.code}>
               {item.name}
             </Select.Option>

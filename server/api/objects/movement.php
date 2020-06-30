@@ -389,13 +389,8 @@ class Movement extends CommonClass
         if (!isset($this->end_date)) {
             $this->end_date = "-1";
         }
-        if (isset($this->mv_key) && $this->mv_key !== "-1") {
-            $this->start_date = "-1";
-            $this->end_date = "-1";
-        }
-        if (isset($this->mv_number) && $this->mv_number !== "-1") {
-            $this->start_date = "-1";
-            $this->end_date = "-1";
+        if (!isset($this->time_option)) {
+            $this->time_option = "MV_DTIM_EFFECT";
         }
 
         $query = "
@@ -473,6 +468,8 @@ class Movement extends CommonClass
                 AND (-1 = :mv_status OR MV_STATUS = :mv_status)
                 AND (-1 = :mv_srctype OR MV_SRCTYPE = :mv_srctype)
                 AND (-1 = :mv_terminal OR MV_TERMINAL = :mv_terminal)
+                AND ('-1' = :start_date OR " . $this->time_option . " > :start_date)
+                AND ('-1' = :end_date OR " . $this->time_option . " < :end_date)
             ORDER BY MV_ID DESC
         ";
         $stmt = oci_parse($this->conn, $query);
@@ -481,6 +478,8 @@ class Movement extends CommonClass
         oci_bind_by_name($stmt, ':mv_status', $this->mv_status);
         oci_bind_by_name($stmt, ':mv_srctype', $this->mv_srctype);
         oci_bind_by_name($stmt, ':mv_terminal', $this->mv_terminal);
+        oci_bind_by_name($stmt, ':start_date', $this->start_date);
+        oci_bind_by_name($stmt, ':end_date', $this->end_date);
         
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
