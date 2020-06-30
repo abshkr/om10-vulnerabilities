@@ -89,6 +89,7 @@ const DrawerProductTransfers = ({
   const [clicked, setClicked] = useState(null);
   const [tableAPI, setTableAPI] = useState(null);
   const [tableBaseTransfersAPI, setTableBaseTransfersAPI] = useState(null);
+  const [canCalc, setCanCalc] = useState(false);
 
   const onDelete = () => {
     const filtered = _.reject(payload, ['trsf_cmpt_no', clicked?.trsf_cmpt_no]);
@@ -149,7 +150,97 @@ const DrawerProductTransfers = ({
 
   }
 
+  const CalcDrawQuantityByCompartment = async (cmpt) => {
+    //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
+    //console.log('DrawerProductTransfers: onCalculate', items);
+
+    const qtys = {amb: 0, cor: 0, kg: 0};
+    // const bases = form.getFieldValue('base_transfers');
+    const bases = _.clone(dataBaseTransfers);
+    let index=0;
+    for (index=0; index<bases.length; index++) {
+      const base = bases[index];
+      if (base.trsf_bs_cmpt_no === cmpt) {
+        await calcBaseQuantity(base);
+        bases[index] = base;
+        qtys.amb += _.toNumber(base?.trsf_bs_qty_amb);
+        qtys.cor += _.toNumber(base?.trsf_bs_qty_cor);
+        qtys.kg += _.toNumber(base?.trsf_bs_load_kg);
+        // tableBaseTransfersAPI.updateRowData({ update: [base] });
+      }
+    }
+    setDataBaseTransfers(bases);
+
+    const payload2 = _.clone(payload);
+    for (index = 0; index < payload2.length; index++) {
+      const transfer = payload2[index];
+      if (transfer.trsf_cmpt_no === cmpt) {
+        transfer.trsf_qty_amb = qtys.amb;
+        transfer.trsf_qty_cor = qtys.cor;
+        transfer.trsf_load_kg = qtys.kg;
+        payload2[index] = transfer;
+        tableAPI.updateRowData({ update: [transfer] });
+        break;
+      }
+    }
+
+    setPayload(payload2);
+  };
+
+  const CalcDrawQuantity = async () => {
+    //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
+    //console.log('DrawerProductTransfers: onCalculate', items);
+
+    let tidx = 0;
+    let bidx = 0;
+
+    const draws = _.clone(payload);
+    // const bases = form.getFieldValue('base_transfers');
+    const bases = _.clone(dataBaseTransfers);
+    for (tidx = 0; tidx < draws.length; tidx++) {
+      const transfer = draws[tidx];
+      const cmpt = transfer.trsf_cmpt_no;
+      const qtys = {amb: 0, cor: 0, kg: 0};
+      let matched = false;
+      for (bidx=0; bidx<bases.length; bidx++) {
+        const base = bases[bidx];
+        if (base.trsf_bs_cmpt_no === cmpt) {
+          await calcBaseQuantity(base);
+          bases[bidx] = base;
+          qtys.amb += _.toNumber(base?.trsf_bs_qty_amb);
+          qtys.cor += _.toNumber(base?.trsf_bs_qty_cor);
+          qtys.kg += _.toNumber(base?.trsf_bs_load_kg);
+          matched = true;
+          tableBaseTransfersAPI.updateRowData({ update: [base] });
+        }
+      }
+      if (matched === true) {
+        transfer.trsf_qty_amb = qtys.amb;
+        transfer.trsf_qty_cor = qtys.cor;
+        transfer.trsf_load_kg = qtys.kg;
+        draws[tidx] = transfer;
+        tableAPI.updateRowData({ update: [transfer] });
+      }
+    }
+
+    setDataBaseTransfers(bases);
+    setPayload(draws);
+  };
+
   const onCalculate = async () => {
+    //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
+    //console.log('DrawerProductTransfers: onCalculate', items);
+
+    CalcDrawQuantity();
+    //CalcDrawQuantityByCompartment(clicked?.trsf_cmpt_no);
+
+    // trigger the changes in child components caused by clicked
+    const option = clicked;
+    setClicked(null);
+    setClicked(option);
+  };
+
+  const onCalculateOld = async () => {
     //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
     //console.log('DrawerProductTransfers: onCalculate', items);
 
@@ -198,6 +289,22 @@ const DrawerProductTransfers = ({
     await setSelected(option);
   };
 
+  const toggleCalcButton = () => {
+    console.log('Inside drawer transfers to toggle button Calculate Drawer ', canCalc);
+    const payload = form.getFieldValue('transfers');
+
+    if (payload) {
+      const item = _.find(payload, (o) => (o?.trsf_temp && o?.trsf_density && (o?.trsf_qty_amb || o?.trsf_qty_cor || o?.trsf_load_kg)));
+      if (item) {
+        setCanCalc(true);
+      } else {
+        setCanCalc(false);
+      }
+    } else {
+      setCanCalc(false);
+    }
+  }
+
   const onCellUpdate = (value) => {
     console.log('DrawerProductTransfers: onCellUpdate', value);
     console.log('DrawerProductTransfers: onCellUpdate2', value?.colDef?.field, value?.colDef?.headerName, value?.value, value?.newValue, value?.data.trsf_cmpt_capacit);
@@ -217,6 +324,8 @@ const DrawerProductTransfers = ({
     setSelected({
       ...value?.data,
     });
+
+    toggleCalcButton();
   };
 
   const adjustProduct = (cmpt, bases) => {
@@ -379,12 +488,13 @@ const DrawerProductTransfers = ({
         icon={<UndoOutlined />}
         onClick={onCalculate}
         style={{ marginRight: 5 }}
-        disabled={
+        disabled={!canCalc}
+        /* disabled={
           !clicked || 
           !clicked?.trsf_temp || 
           !clicked?.trsf_density || 
           (!clicked?.trsf_qty_amb && !clicked?.trsf_qty_cor && !clicked?.trsf_load_kg)
-        }
+        } */
       >
         {t('operations.calculateDrawer')}
       </Button>
