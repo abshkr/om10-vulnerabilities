@@ -945,11 +945,11 @@ const ManualTransactions = ({ popup, params }) => {
 
   const modifiers = (
     <>
-      <Button type="primary" icon={<SyncOutlined />} onClick={onLoad}>
+      <Button type="primary" icon={<SyncOutlined />} onClick={onLoad} disabled={!access.canCreate}>
         {t('operations.load')}
       </Button>
 
-      <Button type="primary" icon={<SaveOutlined />} onClick={onSave}>
+      <Button type="primary" icon={<SaveOutlined />} onClick={onSave} disabled={!access.canCreate}>
         {t('operations.save')}
       </Button>
 
@@ -957,7 +957,7 @@ const ManualTransactions = ({ popup, params }) => {
         {t('operations.clear')}
       </Button>
 
-      <Button type="primary" icon={<PlusOutlined />} onClick={onSubmit}>
+      <Button type="primary" icon={<PlusOutlined />} onClick={onSubmit} disabled={!access.canCreate}>
         {t('operations.submit')}
       </Button>
     </>
