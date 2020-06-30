@@ -69,12 +69,38 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [trip, setTrip] = useState(undefined);
   const [redoBOL, setRedoBOL] = useState(0);
 
+  /*
+    1	F	NEW SCHEDULE
+    2	S	SPECED
+    3	A	ACTIVE
+    4	L	LOADING
+    5	E	ENDED
+    6	D	DELIVERED OK
+  */
   const IS_CREATING = !value;
   const CAN_PRINT = ['2', '3', '4'].includes(tab);
-  const READ_ONLY = value?.shls_status !== 'NEW SCHEDULE' && !IS_CREATING;
+  const READ_ONLY = value?.status !== 'F' && !IS_CREATING;
   const CAN_VIEW_REPORTS = value?.shlsload_load_id !== '0';
-  const CAN_VIEW_TRANSACTIONS = value?.shls_status !== 'NEW SCHEDULE';
-  const CAN_MAKE_TRANSACTIONS = value?.shls_status === 'NEW SCHEDULE' && manageMakeManualTransaction;
+  const CAN_VIEW_TRANSACTIONS = value?.status !== 'F';
+
+  const CAN_REVERSE = 
+    (value?.load_reverse_flag === '0' || value?.load_reverse_flag === '2') &&
+    (value?.status !== 'A' && value?.status !== 'L');
+  const CAN_ARCHIVE = 
+    (value?.load_reverse_flag === '0' || value?.load_reverse_flag === '1' || value?.load_reverse_flag === '2') &&
+    (value?.status !== 'A' && value?.status !== 'L') &&
+    value?.cmpy_schd_archive;
+  const CAN_MAKE = 
+    access.canCreate && 
+    value?.load_reverse_flag === '0' && 
+    (value?.status !== 'D' && value?.status !== 'E');
+  const CAN_REPOST = 
+    value?.load_reverse_flag === '1' && 
+    (value?.status !== 'A' && value?.status !== 'L') &&
+    value?.cmpy_schd_rev_repost;
+
+  const CAN_MAKE_TRANSACTIONS = CAN_MAKE && manageMakeManualTransaction;
+  const CAN_REPOST_TRANSACTIONS = CAN_REPOST && manageMakeManualTransaction;
   const CAN_ADD_HOST_DATA = value?.shls_ld_type === '2' && manageAdditionalHostData;
 
   const { resetFields, setFieldsValue } = form;
@@ -408,20 +434,20 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
           {!CAN_PRINT && !IS_CREATING && (
             <>
-              <Button
+              {/* <Button
                 type="primary"
                 icon={<RedoOutlined />}
                 disabled={!access?.canUpdate}
                 style={{ marginRight: 5 }}
               >
                 {t('operations.repost')}
-              </Button>
+              </Button> */}
 
               <Button
                 type="primary"
                 icon={<RedoOutlined />}
                 onClick={onReverse}
-                disabled={!access?.canUpdate || !CAN_MAKE_TRANSACTIONS}
+                disabled={!access?.canUpdate || !CAN_REVERSE}
                 style={{ marginRight: 5 }}
               >
                 {t('operations.reverse')}
@@ -431,7 +457,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                 type="primary"
                 icon={<EditOutlined />}
                 onClick={onArchive}
-                disabled={!access?.canUpdate || !CAN_MAKE_TRANSACTIONS || READ_ONLY}
+                disabled={!access?.canUpdate || !CAN_ARCHIVE}
               >
                 {t('operations.archive')}
               </Button>
@@ -568,7 +594,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
           </TabPane>
 
           <TabPane 
-            tab={t('pageNames.manualTransactions')} 
+            tab={t('tabColumns.createTripTransactions')} 
             disabled={IS_CREATING || !CAN_MAKE_TRANSACTIONS || !access.canCreate} 
             key="8"
           >
@@ -579,7 +605,24 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                 trip_no: value?.shls_trip_no,
                 trans_type: 'SCHEDULE',
                 repost: false,
-                title: 'Create Transaction',
+                title: t('tabColumns.createTripTransactions'),
+              }}
+            />
+          </TabPane>
+
+          <TabPane 
+            tab={t('tabColumns.repostTripTransactions')} 
+            disabled={IS_CREATING || !CAN_REPOST_TRANSACTIONS || !access.canUpdate} 
+            key="9"
+          >
+            <ManualTransactionsPopup 
+              popup={true}
+              params={{
+                supplier: value?.supplier_code,
+                trip_no: value?.shls_trip_no,
+                trans_type: 'SCHEDULE',
+                repost: true,
+                title: t('tabColumns.repostTripTransactions'),
               }}
             />
           </TabPane>

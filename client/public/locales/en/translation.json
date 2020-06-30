@@ -1401,6 +1401,8 @@
     "companyRelation": "Company Relations",
     "companyHotLitres": "Hot Litres",
     "nominationTransactions": "Manual Transactions For Nominations",
+    "createTripTransactions": "Create Trip Transactions",
+    "repostTripTransactions": "Repost Trip Transactions",
     "transactionForNomination": "Transactions For Nomination",
     "meterDetails": "Meter Details",
     "baseProductDetails": "Base Product Details",
