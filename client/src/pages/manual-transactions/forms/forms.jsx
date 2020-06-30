@@ -445,6 +445,7 @@ const Forms = ({
             <Select
               allowClear
               showSearch
+              disabled={sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'}
               onChange={handleTankerSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectTanker')}
@@ -497,6 +498,7 @@ const Forms = ({
             <Select
               allowClear
               showSearch
+              disabled={sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'}
               loading={carriersLoading}
               onChange={handleCarrierSelect}
               optionFilterProp="children"
