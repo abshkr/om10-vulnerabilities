@@ -988,6 +988,20 @@ class Utilities
 
     public static function getCurrentSession()
     {
+        if (JWT_AUTH) {
+            try {
+                $token = get_http_token();
+                $pay_load = check_token($token);
+                if ($pay_load) {
+                    return $pay_load->sess_id;
+                } else {
+                    write_log("Failed to check token", __FILE__, __LINE__, LogLevel::ERROR);
+                }
+            } catch (Exception $e) {
+                write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
+            }
+        }
+
         if (!isset($_SESSION)) {
             session_start();
         }
