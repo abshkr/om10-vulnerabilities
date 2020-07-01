@@ -18,10 +18,13 @@ const MeterTransfers = ({
   setData,
   dataLoadFlag,
   setDataLoadFlag,
+  dataLoaded,
+  setDataLoaded,
 }) => {
   const { t } = useTranslation();
 
   const [isLoading, setLoading] = useState(true);
+  const [dataRendered, setDataRendered] = useState(false);
 
   const fields = columns(t);
 
@@ -67,34 +70,41 @@ const MeterTransfers = ({
       }
 
       setLoading(false);
-      setData(meters);
+      if (dataLoadFlag === 0) {
+        setData(meters);
+      } else {
+        if (dataLoadFlag === 1) {
+          setData(dataLoaded.meter_transfers);
+          setDataLoadFlag(2);
+          console.log('MT 5 - MeterTransfers: data are loaded!', dataLoadFlag);
+        }
+      }
     }
 
-    if (!dataLoadFlag) {
+    //if (dataLoadFlag === 0) {
       getMeters();
-    }
+    //}
   }, [selected, transfers]);
 
   useEffect(() => {
-    console.log('Inside meter transfers to setFieldsValue, the data is ', data);
     if (data) {
+      console.log('MeterTransfers: Data changed and do setFieldsValue. Data:', data);
       form.setFieldsValue({
         meter_transfers: data,
       });
+      setDataRendered(true);
     }
   }, [data]);
 
-  useEffect(() => {
-    console.log('Inside meter transfers to setFieldsValue, the data is ', dataLoadFlag);
-    if (dataLoadFlag) {
-      if (data) {
-        form.setFieldsValue({
-          meter_transfers: data,
-        });
-      }
-      setDataLoadFlag(false);
+  /* useEffect(() => {
+    if (dataLoadFlag === 1 && dataLoaded && dataRendered===true) {
+      console.log('MeterTransfers: Load data by setData. dataLoadFlag', dataLoadFlag);
+      setData(dataLoaded?.meter_transfers);
+      setDataLoadFlag(2);
+      setDataRendered(false);
+      console.log('MT 5 - MeterTransfers: Data are loaded!', dataLoadFlag);
     }
-  }, [dataLoadFlag]);
+  }, [dataLoadFlag, dataLoaded, dataRendered]); */
 
   useEffect(() => {
     let board = dataBoard;
@@ -106,8 +116,10 @@ const MeterTransfers = ({
   }, [data]);
 
   useEffect(() => {
-    console.log("MeterTransfers.meter-transfers sourceType", sourceType);
-    setData([]);
+    if (data?.length > 0) {
+      console.log("MeterTransfers: sourceType changed", sourceType);
+      setData([]);
+    }
   }, [sourceType]);
 
   return (

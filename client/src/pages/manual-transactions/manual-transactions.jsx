@@ -37,12 +37,17 @@ const ManualTransactions = ({ popup, params }) => {
   const user_code = decoded?.per_code;
 
   const [dataLoaded, setDataLoaded] = useState(null);
-  const [dataLoadFlagForm, setDataLoadFlagForm] = useState(false);
-  const [dataLoadFlagDrawTransfers, setDataLoadFlagDrawTransfers] = useState(false);
-  const [dataLoadFlagBaseTransfers, setDataLoadFlagBaseTransfers] = useState(false);
-  const [dataLoadFlagBaseTotals, setDataLoadFlagBaseTotals] = useState(false);
-  const [dataLoadFlagMeterTransfers, setDataLoadFlagMeterTransfers] = useState(false);
-  const [dataLoadFlagMeterTotals, setDataLoadFlagMeterTotals] = useState(false);
+  // dataLoadFlagXYZ values:
+  // 0: no data loading from database, manual operations by user 
+  // 1: start data loading
+  // 2: data loading is done
+  // 3: data loading idle
+  const [dataLoadFlagForm, setDataLoadFlagForm] = useState(0);
+  const [dataLoadFlagDrawTransfers, setDataLoadFlagDrawTransfers] = useState(0);
+  const [dataLoadFlagBaseTransfers, setDataLoadFlagBaseTransfers] = useState(0);
+  const [dataLoadFlagBaseTotals, setDataLoadFlagBaseTotals] = useState(0);
+  const [dataLoadFlagMeterTransfers, setDataLoadFlagMeterTransfers] = useState(0);
+  const [dataLoadFlagMeterTotals, setDataLoadFlagMeterTotals] = useState(0);
   const [dataSaved, setDataSaved] = useState(null);
   const [dataBoard, setDataBoard] = useState({});
   const [dataDrawTransfers, setDataDrawTransfers] = useState([]);
@@ -75,19 +80,21 @@ const ManualTransactions = ({ popup, params }) => {
   const [orderSeals, setOrderSeals] = useState([]);
 
   const resetFormGrids = () => {
-    /* form.setFieldsValue({
-      transfers: [],
-      base_transfers: [],
-      base_totals: [],
-      meter_transfers: [],
-      meter_totals: [],
-    }); */
     setDataDrawTransfers([]);
     setDataBaseTransfers([]);
     setDataBaseTotals([]);
     setDataMeterTransfers([]);
     setDataMeterTotals([]);
-  
+  };
+
+  const resetLoadData = () => {
+    setDataLoaded(null);
+    setDataLoadFlagForm(0);
+    setDataLoadFlagDrawTransfers(0);
+    setDataLoadFlagBaseTransfers(0);
+    setDataLoadFlagBaseTotals(0);
+    setDataLoadFlagMeterTransfers(0);
+    setDataLoadFlagMeterTotals(0);
   };
 
   const resetFormData = () => {
@@ -102,14 +109,8 @@ const ManualTransactions = ({ popup, params }) => {
     setSelectedTrip(null);
     setSelectedOrder(null);
     setSelectedTanker(null);
-    resetFormGrids();
-    setDataLoaded(null);
-    setDataLoadFlagForm(false);
-    setDataLoadFlagDrawTransfers(false);
-    setDataLoadFlagBaseTransfers(false);
-    setDataLoadFlagBaseTotals(false);
-    setDataLoadFlagMeterTransfers(false);
-    setDataLoadFlagMeterTotals(false);
+    // resetFormGrids();
+    // resetLoadData();
   };
 
   const preparePayloadToSubmit = (values) => {
@@ -213,12 +214,14 @@ const ManualTransactions = ({ popup, params }) => {
       onOk: async () => {
         try {
           const values = await form.validateFields();
-          console.log('await values', values);
+          console.log('MTmain: onSubmit - await values', values);
           await api
             .post(MANUAL_TRANSACTIONS.SUBMIT, preparePayloadToSubmit(values))
             .then((response) => {
               setSourceType(null);
               resetFormData();
+              // resetFormGrids();
+              resetLoadData();
 
               notification.success({
                 message: t('messages.submitSuccess'),
@@ -255,6 +258,8 @@ const ManualTransactions = ({ popup, params }) => {
 
         setSourceType(null);
         resetFormData();
+        // resetFormGrids();
+        resetLoadData();
       },
     });
   };
@@ -527,9 +532,12 @@ const ManualTransactions = ({ popup, params }) => {
         },
       })
       .then((res) => {
+        setSourceType(null);
         resetFormData();
+        // resetFormGrids();
+        // resetLoadData();
 
-        console.log(res.data?.records);
+        console.log('MTmain: loadMTData', res.data?.records);
         const record = res.data?.records?.[0];
         if (record.gud_head_data !== '' && record.gud_head_data !== null && record.gud_head_data !== false) {
           record.gud_head_data = JSON.parse(_.replace(record.gud_head_data, '{}', '""'));
@@ -539,24 +547,24 @@ const ManualTransactions = ({ popup, params }) => {
         }
 
         //setDataLoaded(record);
-        console.log('DataLoaded', record);
+        console.log('MTmain: loadMTData - DataLoaded', record);
 
         const values = prepareValuesToLoad(record);
-        console.log('prepareValuesToLoad', values);
+        console.log('MTmain: loadMTData - prepareValuesToLoad', values);
 
         setDataLoaded(values);
-        setDataLoadFlagForm(true);
-        setDataLoadFlagDrawTransfers(true);
-        setDataLoadFlagBaseTransfers(true);
-        setDataLoadFlagBaseTotals(true);
-        setDataLoadFlagMeterTransfers(true);
-        setDataLoadFlagMeterTotals(true);
+        setDataLoadFlagForm(1);
+        setDataLoadFlagDrawTransfers(0);
+        setDataLoadFlagBaseTransfers(0);
+        setDataLoadFlagBaseTotals(0);
+        setDataLoadFlagMeterTransfers(0);
+        setDataLoadFlagMeterTotals(0);
     
-        setDataDrawTransfers(values?.transfers);
-        setDataBaseTransfers(values?.base_transfers);
-        setDataBaseTotals(values?.base_totals);
-        setDataMeterTransfers(values?.meter_transfers);
-        setDataMeterTotals(values?.meter_totals);
+        // setDataDrawTransfers(values?.transfers);
+        // setDataBaseTransfers(values?.base_transfers);
+        // setDataBaseTotals(values?.base_totals);
+        // setDataMeterTransfers(values?.meter_transfers);
+        // setDataMeterTotals(values?.meter_totals);
 
         /* form.setFieldsValue({
         transfers: values?.transfers,
@@ -566,7 +574,7 @@ const ManualTransactions = ({ popup, params }) => {
         meter_totals: values?.meter_totals,
       }) */
 
-        console.log('set form fields done!');
+        console.log('MTmain: loadMTData - start to set form fields by loading data!');
       });
   };
 
@@ -872,13 +880,13 @@ const ManualTransactions = ({ popup, params }) => {
           // const save_format = form.getFieldValue('save_format');
           const save_format = 'JSON';
           const values = await form.validateFields();
-          console.log('await values', values);
-          console.log('data board', dataBoard);
+          console.log('MTmain: onSave - await values', values);
+          console.log('MTmain: onSave - data board', dataBoard);
           await api
             .post(MANUAL_TRANSACTIONS.SAVE_MT_DATA, preparePayloadToSave(values, save_format))
             .then((response) => {
-              //setSourceType(null);
-              //resetFormData();
+              // setSourceType(null);
+              // resetFormData();
 
               notification.success({
                 message: t('messages.saveSuccess'),
@@ -903,16 +911,70 @@ const ManualTransactions = ({ popup, params }) => {
   };
 
   useEffect(() => {
-    console.log('MT entry page sourceType', sourceType);
+    console.log('MTmain: sourceType changed.', sourceType);
     resetFormData();
   }, [sourceType]);
 
+  // following is the sequential data loading
   useEffect(() => {
-    console.log('MT entry page dataLoadFlag', dataLoadFlagForm);
-    if (!dataLoadFlagForm) {
-      setDataLoaded(null);
-    }
+    if (dataLoadFlagForm === 2) {
+      console.log('MTmain: dataLoadFlagForm', dataLoadFlagForm);
+      setDataLoadFlagForm(3);
+      //setDataLoadFlagDrawTransfers(1);
+      console.log('MT 1 - set form fields done! start to set Drawer Transfers');
+      setDataLoadFlagDrawTransfers(1);
+  }
   }, [dataLoadFlagForm]);
+
+  useEffect(() => {
+    if (dataLoadFlagDrawTransfers === 2) {
+      console.log('MTmain: dataLoadFlagDrawTransfers', dataLoadFlagDrawTransfers);
+      setDataLoadFlagDrawTransfers(3);
+      //setDataLoadFlagBaseTransfers(1);
+      setDataLoadFlagBaseTransfers(1);
+      setDataLoadFlagBaseTotals(1);
+      setDataLoadFlagMeterTransfers(1);
+      setDataLoadFlagMeterTotals(1);
+      console.log('MT 2 - set Drawer Transfers done! start to set Base Transfers');
+    }
+  }, [dataLoadFlagDrawTransfers]);
+
+  useEffect(() => {
+    if (dataLoadFlagBaseTransfers === 2) {
+      console.log('MTmain: dataLoadFlagBaseTransfers', dataLoadFlagBaseTransfers);
+      setDataLoadFlagBaseTransfers(3);
+      //setDataLoadFlagBaseTotals(1);
+      console.log('MT 3 - set Base Transfers done! start to set Base Totals');
+    }
+  }, [dataLoadFlagBaseTransfers]);
+
+  useEffect(() => {
+    if (dataLoadFlagBaseTotals === 2) {
+      console.log('MTmain: dataLoadFlagBaseTotals', dataLoadFlagBaseTotals);
+      setDataLoadFlagBaseTotals(3);
+      //setDataLoadFlagMeterTransfers(1);
+      console.log('MT 4 - set Base Totals done! start to set Meter Transfers');
+    }
+  }, [dataLoadFlagBaseTotals]);
+
+  useEffect(() => {
+    if (dataLoadFlagMeterTransfers === 2) {
+      console.log('MTmain: dataLoadFlagMeterTransfers', dataLoadFlagMeterTransfers);
+      setDataLoadFlagMeterTransfers(3);
+      //setDataLoadFlagMeterTotals(1);
+      console.log('MT 5 - set Meter Transfers done! start to set Meter Totals');
+    }
+  }, [dataLoadFlagMeterTransfers]);
+
+  useEffect(() => {
+    if (dataLoadFlagMeterTotals === 2) {
+      console.log('MTmain: dataLoadFlagMeterTotals', dataLoadFlagMeterTotals);
+      setDataLoadFlagMeterTotals(3);
+      // setDataLoaded(null);
+      resetLoadData();
+      console.log('MT 6 - set Meter Totals done! All data loaded! Clean the dataLoaded!');
+    }
+  }, [dataLoadFlagMeterTotals]);
 
   /* // this may conflict with data retrieval
   useEffect(() => {
@@ -1006,6 +1068,8 @@ const ManualTransactions = ({ popup, params }) => {
           setDataBoard={setDataBoard}
           dataLoadFlag={dataLoadFlagForm}
           setDataLoadFlag={setDataLoadFlagForm}
+          dataLoaded={dataLoaded}
+          setDataLoaded={setDataLoaded}
         />
 
         <DrawerProductTransfers
@@ -1040,6 +1104,8 @@ const ManualTransactions = ({ popup, params }) => {
           setDataLoadFlagMeterTransfers={setDataLoadFlagMeterTransfers}
           dataLoadFlagMeterTotals={dataLoadFlagMeterTotals}
           setDataLoadFlagMeterTotals={setDataLoadFlagMeterTotals}
+          dataLoaded={dataLoaded}
+          setDataLoaded={setDataLoaded}
         />
       </Form>
     </Page>

@@ -90,8 +90,10 @@ const LoadForm = ({onLoad, fields, url, height}) => {
         item.mt_driver        = String(header?.OPERATOR_CODE);
         item.mt_tas_ref       = String(header?.TAS_REF);
         item.mt_user_comments = String(header?.USER_COMMENTS);
-        item.mt_datetime_st   = moment(header?.START_TIME).format(SETTINGS.DATE_TIME_FORMAT);
-        item.mt_datetime_ed   = moment(header?.FINISH_TIME).format(SETTINGS.DATE_TIME_FORMAT);
+        item.mt_datetime_st   = moment(header?.START_TIME, 'YYYY-MM-DD HH:mm:ss').format(SETTINGS.DATE_TIME_FORMAT);
+        item.mt_datetime_ed   = moment(header?.FINISH_TIME, 'YYYY-MM-DD HH:mm:ss').format(SETTINGS.DATE_TIME_FORMAT);
+        //item.mt_datetime_st   = moment(header?.START_TIME).format(SETTINGS.DATE_TIME_FORMAT);
+        //item.mt_datetime_ed   = moment(header?.FINISH_TIME).format(SETTINGS.DATE_TIME_FORMAT);
       }
       item.mt_user          = record.gud_user;
       item.mt_create_date   = record.gud_create_date;

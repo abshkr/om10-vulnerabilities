@@ -18,16 +18,19 @@ const MeterTotals = ({
   setData,
   dataLoadFlag,
   setDataLoadFlag,
+  dataLoaded,
+  setDataLoaded,
 }) => {
   const { t } = useTranslation();
 
   const [isLoading, setLoading] = useState(true);
+  const [dataRendered, setDataRendered] = useState(false);
 
   const fields = columns(t);
 
   const adjustMeterTotals = (items) => {
     const totals = [];
-    console.log('MeterTotals: adjustMeterTotals', items);
+    console.log('MeterTotals: adjustMeterTotals - start', items);
     let itemExisted = false;
 
     _.forEach(items, (item) => {
@@ -74,7 +77,7 @@ const MeterTotals = ({
         totals.push(item);
       }
     });
-    console.log('MeterTotals: adjustMeterTotals', totals);
+    console.log('MeterTotals: adjustMeterTotals - end', totals);
 
     return totals;
   }
@@ -120,35 +123,42 @@ const MeterTotals = ({
     }
 
     setLoading(false);
-    setData(adjustMeterTotals(meters));
+    if (dataLoadFlag === 0) {
+      setData(adjustMeterTotals(meters));
+    } else {
+      if (dataLoadFlag === 1) {
+        setData(dataLoaded?.meter_totals);
+        setDataLoadFlag(2);
+        console.log('MT 6 - MeterTotals: data are loaded!', dataLoadFlag);
+      }
+    }
   }
 
   useEffect(() => {
-    if (!dataLoadFlag) {
+    //if (dataLoadFlag === 0) {
       getMeters();
-    }
+    //}
   }, [selected, transfers]);
 
   useEffect(() => {
-    console.log('Inside meter totals to setFieldsValue, the data is ', data);
     if (data) {
+      console.log('MeterTotals: data changed and do setFieldsValue. Data:', data);
       form.setFieldsValue({
         meter_totals: data,
       });
+      setDataRendered(true);
     }
   }, [data]);
 
-  useEffect(() => {
-    console.log('Inside meter totals to setFieldsValue, the data is ', dataLoadFlag);
-    if (dataLoadFlag) {
-      if (data) {
-        form.setFieldsValue({
-          meter_totals: data,
-        });
-      }
-      setDataLoadFlag(false);
+  /* useEffect(() => {
+    if (dataLoadFlag === 1 && dataLoaded && dataRendered===true) {
+      console.log('MeterTotals: Load data by setData. dataLoadFlag:', dataLoadFlag);
+      setData(dataLoaded?.meter_totals);
+      setDataLoadFlag(2);
+      setDataRendered(false);
+      console.log('MT 6 - MeterTotals: data are loaded!', dataLoadFlag);
     }
-  }, [dataLoadFlag]);
+  }, [dataLoadFlag, dataLoaded, dataRendered]); */
 
   useEffect(() => {
     let board = dataBoard;
@@ -160,8 +170,10 @@ const MeterTotals = ({
   }, [data]);
 
   useEffect(() => {
-    console.log("MeterTotals.meter-totals sourceType", sourceType);
-    setData([]);
+    if (data?.length > 0) {
+      console.log("MeterTotals: sourceType changed", sourceType);
+      setData([]);
+    }
   }, [sourceType]);
 
   return (
