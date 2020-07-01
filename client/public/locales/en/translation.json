@@ -15,7 +15,8 @@
     "havingTrouble": "Having Trouble?",
     "every": "Every ",
     "everyMonth": " of every month",
-    "overriderun": "Closeout will run on "
+    "overriderun": "Closeout will run on ",
+    "pleaseAuthenticate": "Please Authenticate to continue."
   },
 
   "fields": {
@@ -1317,7 +1318,8 @@
     "setAddressTemplate": "Set As Default Template",
     "manageImage": "Manage Images",
     "uploadImg": "Upload Image",
-    "removeImg": "Remove From Server"
+    "removeImg": "Remove From Server",
+    "authenticate": "Authenticate"
   },
 
   "tabColumns": {
@@ -1450,9 +1452,9 @@
     "lockSuccess": "Successfully Locked.",
     "maxDateRange": "Max Date Change Exceeded.",
     "unauthorized": "Unauthorized",
-	"favourites": "Favourites",
-	"manual": "Manual",
-	"copyright": "Copyright"
+    "favourites": "Favourites",
+    "manual": "Manual",
+    "copyright": "Copyright"
   },
 
   "prompts": {
@@ -1594,7 +1596,8 @@
     "unauthorized": "Sorry, you are not authorized to access this page.",
     "uploadSuccess": "You have uploaded image: ",
     "uploadFailed": "Failed to upload image: ",
-	"noCompanyType": "Please select at least one company type"
+    "noCompanyType": "Please select at least one company type",
+    "productGrpUsed": "Cannot delete product group that has product in it"
   },
 
   "placeholder": {

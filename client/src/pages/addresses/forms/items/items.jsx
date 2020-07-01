@@ -216,6 +216,7 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
           apiContext={setTableAPI}
           selectionMode="single"
           onEditingFinished={onEditingFinished}
+          minimal
         />
       </Form.Item>
     </>

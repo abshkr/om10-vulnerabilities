@@ -3,6 +3,7 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/company_service.php';
 include_once 'expiry_date.php';
 include_once 'expiry_type.php';
 include_once 'common_class.php';
@@ -126,20 +127,22 @@ class Tanker extends CommonClass
     //Actually it is carriers
     public function owners()
     {
-        $query = "
-            SELECT CMPY_CODE, CMPY_NAME
-            FROM GUI_COMPANYS
-            WHERE BITAND(CMPY_TYPE, POWER(2, 2)) != 0
-            ORDER BY CMPY_NAME ASC";
+        $serv = new CompanyService($this->conn);
+        return $serv->carriers();
+        // $query = "
+        //     SELECT CMPY_CODE, CMPY_NAME
+        //     FROM GUI_COMPANYS
+        //     WHERE BITAND(CMPY_TYPE, POWER(2, 2)) != 0
+        //     ORDER BY CMPY_NAME ASC";
 
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
+        // $stmt = oci_parse($this->conn, $query);
+        // if (oci_execute($stmt, $this->commit_mode)) {
+        //     return $stmt;
+        // } else {
+        //     $e = oci_error($stmt);
+        //     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     return null;
+        // }
     }
 
     public function searchCount()

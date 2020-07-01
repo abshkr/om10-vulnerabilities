@@ -13,15 +13,9 @@ export const login = (values, callback) => async (dispatch) => {
         const token = response.data.token;
 
         if (token) {
-          dispatch({ type: AUTHORIZED, payload: response.data.token });
-
-          api.interceptors.request.use(function (config) {
-            config.headers.Authorization = response.data.token;
-
-            return config;
-          });
-
           sessionStorage.setItem('token', response.data.token);
+
+          dispatch({ type: AUTHORIZED, payload: response.data.token });
         }
 
         dispatch({ type: UNAUTHORIZED, payload: 'Invalid login credentials' });
@@ -37,15 +31,7 @@ export const login = (values, callback) => async (dispatch) => {
 
 export const signout = () => {
   api.post(AUTH.LOGOUT).then((reponse) => {
-    api.interceptors.request.use((config) => {
-      config.headers.Authorization = null;
-
-      return config;
-    });
-
     sessionStorage.removeItem('token');
-
-    window.location.reload();
   });
 
   return {
@@ -60,18 +46,12 @@ export const refresh = (token) => async (dispatch) => {
       token,
     })
     .then((response) => {
-      const token = response?.data?.access_token;
+      const newToken = response?.data?.access_token;
 
-      if (token) {
-        dispatch({ type: AUTHORIZED, payload: token });
+      if (newToken) {
+        sessionStorage.setItem('token', newToken);
 
-        api.interceptors.request.use(function (config) {
-          config.headers.Authorization = token;
-
-          return config;
-        });
-
-        sessionStorage.setItem('token', token);
+        dispatch({ type: AUTHORIZED, payload: newToken });
       }
 
       dispatch({ type: UNAUTHORIZED, payload: 'Invalid login credentials' });

@@ -19,7 +19,7 @@ const Dates = ({ form, value }) => {
     if (value) {
       setFieldsValue({
         shls_caldate: '' ? null : moment(value.shls_caldate, SETTINGS.DATE_TIME_FORMAT),
-        shls_exp2: '' ? null : moment(value.shls_caldate, SETTINGS.DATE_TIME_FORMAT),
+        shls_exp2: '' ? null : moment(value.shls_exp2, SETTINGS.DATE_TIME_FORMAT),
       });
     }
   }, [value, setFieldsValue]);

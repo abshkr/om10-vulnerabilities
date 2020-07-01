@@ -14,8 +14,8 @@ import { GlobalStyleProvider, AntdStyleProvider } from '../styles';
 import { Interface, Loading } from '../components';
 import { authStore } from '../stores';
 import { ROUTES } from '../constants';
-import { fetcher } from '../utils';
 import paths from './paths';
+import api from 'api';
 
 /**
  * @description
@@ -35,12 +35,6 @@ const locale = {
   cn,
 };
 
-const fetchConfig = {
-  refreshInterval: 0,
-  fetcher,
-  errorRetryCount: 3,
-};
-
 const App = () => {
   const { i18n } = useTranslation();
 
@@ -49,7 +43,13 @@ const App = () => {
   return (
     <ConfigProvider locale={language}>
       <Provider store={authStore}>
-        <SWRConfig value={fetchConfig}>
+        <SWRConfig
+          value={{
+            refreshInterval: 0,
+            fetcher: (url) => api.get(url).then((response) => response.data),
+            errorRetryCount: 3,
+          }}
+        >
           <BrowserRouter>
             <Interface>
               <GlobalStyleProvider primary="#0054A4" />

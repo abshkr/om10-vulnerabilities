@@ -61,6 +61,8 @@ const DrawerProductTransfers = ({
   setDataLoadFlagMeterTransfers,
   dataLoadFlagMeterTotals,
   setDataLoadFlagMeterTotals,
+  dataLoaded,
+  setDataLoaded,
 }) => {
   const { data } = useSWR((
       sourceType === 'SCHEDULE' && supplier && trip && 
@@ -83,6 +85,8 @@ const DrawerProductTransfers = ({
   const { t } = useTranslation();
   //const { setFieldsValue } = form;
 
+  const [isLoading, setLoading] = useState(true);
+  const [dataRendered, setDataRendered] = useState(false);
   //const [payload, setPayload] = useState([]);
   const [selected, setSelected] = useState(null);
   const [fields, setFields] = useState([]);
@@ -290,7 +294,7 @@ const DrawerProductTransfers = ({
   };
 
   const toggleCalcButton = () => {
-    console.log('Inside drawer transfers to toggle button Calculate Drawer ', canCalc);
+    console.log('DrawerProductTransfers: toggle button Calculate Drawer ', canCalc);
     const payload = form.getFieldValue('transfers');
 
     if (payload) {
@@ -361,26 +365,29 @@ const DrawerProductTransfers = ({
   };
 
   useEffect(() => {
-    console.log("DrawerProductTransfers: dptrsf selected", selected);
     if (selected) {
+      console.log("DrawerProductTransfers: line selected", selected);
       //adjustProduct(selected.trsf_cmpt_no, form.getFieldValue('base_transfers'));
     }
   }, [selected]);
 
   useEffect(() => {
-    console.log("DrawerProductTransfers: dptrsf clicked", clicked);
+    if (clicked) {
+      console.log("DrawerProductTransfers: line clicked", clicked);
+    }
   }, [clicked]);
 
   useEffect(() => {
-    console.log("DrawerProductTransfers: dptrsf data?.records", data?.records);
+    if (data) {
+      console.log("DrawerProductTransfers: data changed", data?.records);
+    }
   }, [data]);
 
   useEffect(() => {
-    console.log("DrawerProductTransfers: dp transfers sourceType", sourceType);
-    /* form.setFieldsValue({
-      transfers: [],
-    }); */
-    setPayload([]);
+    if (payload?.length > 0) {
+      console.log("DrawerProductTransfers: sourceType changed", sourceType);
+      setPayload([]);
+    }
   }, [sourceType]);
 
   useEffect(() => {
@@ -390,18 +397,19 @@ const DrawerProductTransfers = ({
   }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products]);
 
   useEffect(() => {
-    if (dataLoadFlagDrawTransfers) {
-      console.log("data loading from DB, don't need build the transfers from scratch.");
-      return;
+    if (dataLoadFlagDrawTransfers !== 0) {
+      console.log("DrawerProductTransfers: data loading from DB, don't need build the transfers from scratch.");
+      //return;
     }
 
+    setLoading(true);
     setPayload([]);
 
-    console.log('watch data, supplier, trip, order, tanker', data, supplier, trip, order, tanker);
+    console.log('DrawerProductTransfers: Watch - data, supplier, trip, order, tanker!', data, supplier, trip, order, tanker);
 
     if (data) {
       const transformed = [];
-      console.log('watch data, supplier, trip, order, tanker in IF, data not null', data);
+      console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker! Data not null', data);
 
       _.forEach(data?.records, (record) => {
         //console.log('watch data, supplier, trip, order, tanker in loop', record?.shls_supp);
@@ -432,36 +440,44 @@ const DrawerProductTransfers = ({
         }
       });
 
-      /* form.setFieldsValue({
-        transfers: transformed,
-      }); */
-      console.log('watch data, supplier, trip, order, tanker, transformed', transformed);
+      console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker - transformed', transformed);
 
-      setPayload(transformed);
+      if (dataLoadFlagDrawTransfers === 0) {
+        setPayload(transformed);
+      } else {
+        if (dataLoadFlagDrawTransfers === 1) {
+          setPayload(dataLoaded.transfers);
+          setDataLoadFlagDrawTransfers(2);
+          console.log('MT 2 - DrawProductTransfers: data are loaded!', dataLoadFlagDrawTransfers);
+        }
+      }
+      setLoading(false);
     }
   }, [data, supplier, trip, order, tanker]);
 
   useEffect(() => {
-    console.log('Inside drawer transfers to setFieldsValue, the data is ', payload);
     if (payload) {
+      console.log('DrawerProductTransfers: Payload changed and do setFieldsValue. payload:', payload);
       form.setFieldsValue({
         transfers: payload,
       });
+      setDataRendered(true);
     }
   }, [payload]);
 
-  useEffect(() => {
-    console.log('Inside drawer transfers to setFieldsValue, the data is ', dataLoadFlagDrawTransfers);
-    if (dataLoadFlagDrawTransfers) {
-      if (payload) {
-        form.setFieldsValue({
-          transfers: payload,
-        });
-      }
-      setDataLoadFlagDrawTransfers(false);
+  /* useEffect(() => {
+    if (dataLoadFlagDrawTransfers === 1 && dataLoaded && dataRendered===true) {
+      console.log('DrawerProductTransfers: Load data by setPayload. dataLoadFlagDrawTransfers', dataLoadFlagDrawTransfers);
+      // setPayload(dataLoaded?.transfers);
+      form.setFieldsValue({
+        transfers: dataLoaded?.transfers,
+      });
+      setDataLoadFlagDrawTransfers(2);
+      setDataRendered(false);
+      console.log('MT 2 - DrawerProductTransfers: data are loaded!', dataLoadFlagDrawTransfers);
     }
-  }, [dataLoadFlagDrawTransfers]);
-
+  }, [dataLoadFlagDrawTransfers, dataLoaded, dataRendered]);
+ */
   useEffect(() => {
     let board = dataBoard;
     if (!board) {
@@ -551,7 +567,9 @@ const DrawerProductTransfers = ({
               setData={setDataBaseTransfers}
               dataLoadFlag={dataLoadFlagBaseTransfers}
               setDataLoadFlag={setDataLoadFlagBaseTransfers}
-            />
+              dataLoaded={dataLoaded}
+              setDataLoaded={setDataLoaded}
+                />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="2" forceRender={true}>
             <BaseProductTotals 
@@ -566,7 +584,9 @@ const DrawerProductTransfers = ({
               setData={setDataBaseTotals}
               dataLoadFlag={dataLoadFlagBaseTotals}
               setDataLoadFlag={setDataLoadFlagBaseTotals}
-            />
+              dataLoaded={dataLoaded}
+              setDataLoaded={setDataLoaded}
+                />
           </TabPane>
         </Tabs>
       </Card>
@@ -589,7 +609,9 @@ const DrawerProductTransfers = ({
               setData={setDataMeterTransfers}
               dataLoadFlag={dataLoadFlagMeterTransfers}
               setDataLoadFlag={setDataLoadFlagMeterTransfers}
-            />
+              dataLoaded={dataLoaded}
+              setDataLoaded={setDataLoaded}
+                />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeMeterTotals')} key="2" forceRender={true}>
             <MeterTotals 
@@ -603,7 +625,9 @@ const DrawerProductTransfers = ({
               setData={setDataMeterTotals}
               dataLoadFlag={dataLoadFlagMeterTotals}
               setDataLoadFlag={setDataLoadFlagMeterTotals}
-            />
+              dataLoaded={dataLoaded}
+              setDataLoaded={setDataLoaded}
+                />
           </TabPane>
         </Tabs>
       </Card>

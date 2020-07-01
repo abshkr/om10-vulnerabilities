@@ -3,17 +3,16 @@ import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Layout } from 'antd';
 
-import ConfigProvider from 'context/config-context';
 import { NavBar, Navigation, Status } from '..';
-
+import ConfigProvider from 'context/config-context';
 import { InterfaceContainer } from './style';
 
 const { Content, Sider, Footer } = Layout;
 
 const Interface = ({ auth, children }) => {
   return auth ? (
-    <ConfigProvider>
-      <InterfaceContainer>
+    <InterfaceContainer>
+      <ConfigProvider>
         <Layout className="layout">
           <Sider width={250} collapsedWidth={120} collapsible defaultCollapsed>
             <Navigation />
@@ -26,8 +25,8 @@ const Interface = ({ auth, children }) => {
             </Footer>
           </Layout>
         </Layout>
-      </InterfaceContainer>
-    </ConfigProvider>
+      </ConfigProvider>
+    </InterfaceContainer>
   ) : (
     <Fragment>{children}</Fragment>
   );

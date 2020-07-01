@@ -20,6 +20,8 @@ const BaseProductTotals = ({
   setData,
   dataLoadFlag,
   setDataLoadFlag,
+  dataLoaded,
+  setDataLoaded,
 }) => {
   const { t } = useTranslation();
 
@@ -27,12 +29,13 @@ const BaseProductTotals = ({
   const [stdTotal, setStdTotal] = useState(0);
   const [massTotal, setMassTotal] = useState(0);
   const [isLoading, setLoading] = useState(true);
+  const [dataRendered, setDataRendered] = useState(false);
 
   const fields = columns(t);
 
   const adjustBaseTotals = (items) => {
     const totals = [];
-    console.log('BaseProductTotals: adjustBaseTotals', items);
+    console.log('BaseProductTotals: adjustBaseTotals - start', items);
     let itemExisted = false;
 
     _.forEach(items, (item) => {
@@ -52,7 +55,7 @@ const BaseProductTotals = ({
         totals.push(item);
       }
     });
-    console.log('BaseProductTotals: adjustBaseTotals', totals);
+    console.log('BaseProductTotals: adjustBaseTotals - end', totals);
 
     // adjust sum totals
     const obs = _.sumBy(totals, 'trsf_bs_qty_amb_tot');
@@ -115,36 +118,42 @@ const BaseProductTotals = ({
     }
 
     setLoading(false);
-    setData(adjustBaseTotals(pre));
-    //setData(pre);
+    if (dataLoadFlag === 0) {
+      setData(adjustBaseTotals(pre));
+    } else {
+      if (dataLoadFlag === 1) {
+        setData(dataLoaded.base_totals);
+        setDataLoadFlag(2);
+        console.log('MT 4 - BaseTotals: data are loaded!', dataLoadFlag);
+      }
+    }
   };
 
   useEffect(() => {
-    if (!dataLoadFlag) {
+    //if (dataLoadFlag === 0) {
       getBaseTotals();
-    }
-  }, [selected]);
+    //}
+  }, [selected, transfers]);
 
   useEffect(() => {
-    console.log('Inside base totals to setFieldsValue, the data is ', data);
     if (data) {
+      console.log('BaseProductTotals: data changed and do setFieldsValue. Data:', data);
       form.setFieldsValue({
         base_totals: data,
       });
+      setDataRendered(true);
     }
   }, [data]);
 
-  useEffect(() => {
-    console.log('Inside base totals to setFieldsValue, the data is ', dataLoadFlag);
-    if (dataLoadFlag) {
-      if (data) {
-        form.setFieldsValue({
-          base_totals: data,
-        });
-      }
-      setDataLoadFlag(false);
+  /* useEffect(() => {
+    if (dataLoadFlag === 1 && dataLoaded && dataRendered===true) {
+      console.log('BaseProductTotals: Load data by setData. dataLoadFlag:', dataLoadFlag);
+      setData(dataLoaded?.base_totals);
+      setDataLoadFlag(2);
+      setDataRendered(false);
+      console.log('MT 4 - BaseProductTotals: data are loaded!', dataLoadFlag);
     }
-  }, [dataLoadFlag]);
+  }, [dataLoadFlag, dataLoaded, dataRendered]); */
 
   useEffect(() => {
     let board = dataBoard;
@@ -156,7 +165,7 @@ const BaseProductTotals = ({
   }, [data]);
 
   useEffect(() => {
-    console.log('BaseProductTotals: base quantity totals changed on data and clicked', clicked);
+    console.log('BaseProductTotals: base quantity totals changed on clicked', clicked);
     getBaseTotals();
   }, [clicked]);
 
@@ -177,8 +186,10 @@ const BaseProductTotals = ({
   }, [data, clicked]); */
 
   useEffect(() => {
-    console.log("BaseProductTotals: base-totals sourceType ", sourceType);
-    setData([]);
+    if (data?.length > 0) {
+      console.log("BaseProductTotals: sourceType changed", sourceType);
+      setData([]);
+    }
   }, [sourceType]);
 
   return (

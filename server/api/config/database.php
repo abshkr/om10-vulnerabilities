@@ -191,6 +191,15 @@ class Database
             session_start();
         }
 
+        //TODO: should use token data here. 
+        if (!array_key_exists('LANGUAGE', $_SESSION) ||
+            !array_key_exists('MANAGER', $_SESSION) ||
+            !array_key_exists('PERCODE', $_SESSION) ||
+            !array_key_exists('PERCODE', $_SESSION)) {
+            write_log("Failed to get session data", __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
         $lang = $_SESSION['LANGUAGE'];
         $ismanager = ($_SESSION['MANAGER'] === 'T') ? 'Y' : 'N';
         $cmpycode = $_SESSION['COMPANY'];

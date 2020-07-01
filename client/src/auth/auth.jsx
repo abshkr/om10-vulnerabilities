@@ -5,7 +5,6 @@ import jwtDecode from 'jwt-decode';
 
 import ConfigStore from 'stores/config-store';
 import useIdle from 'hooks/use-idle';
-
 import * as ROUTES from 'constants/routes';
 import * as actions from 'actions/auth';
 
@@ -19,21 +18,14 @@ export default (Authenticated) => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-      if (token) {
-        try {
-          const decoded = jwtDecode(token);
+      try {
+        const decoded = jwtDecode(token);
 
-          if (decoded?.sess_id !== user?.sess_id) {
-            setUser(decoded);
-          }
-        } catch (error) {
-          // invalid jwt
-          history.push(ROUTES.LOG_OUT);
+        if (decoded?.sess_id !== user?.sess_id) {
+          setUser(decoded);
         }
-      }
-
-      if (!token) {
-        history.push(ROUTES.LOG_IN);
+      } catch (error) {
+        history.push(ROUTES.LOG_OUT);
       }
     }, [token]);
 
@@ -41,6 +33,7 @@ export default (Authenticated) => {
       const interval = setInterval(() => {
         onRefresh(token);
       }, 900000);
+
       return () => clearInterval(interval);
     }, []);
 
