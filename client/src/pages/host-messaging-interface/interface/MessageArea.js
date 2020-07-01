@@ -18,7 +18,7 @@ class MessageArea extends Component
 		};
 
 		this.urlprefix = process.env.REACT_APP_API_URL;
-		if (this.urlprefix == 'undefined')
+		if (!this.urlprefix)
 		{
 			this.urlprefix = '';
 		}

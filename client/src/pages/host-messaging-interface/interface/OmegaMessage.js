@@ -20,7 +20,7 @@ const OmegaMessages = ({handleClick}) => {
   const fields = columns(t);
 
 	var urlprefix = process.env.REACT_APP_API_URL;
-	if (urlprefix == 'undefined')
+	if (!urlprefix)
 	{
 		urlprefix = '';
 	}

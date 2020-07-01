@@ -10,7 +10,7 @@ const ContentsArea = ({from, action, message, contentFormat, handleFormState}) =
   const [icontent, setContent] = useState('');
 
 	var urlprefix = process.env.REACT_APP_API_URL;
-	if (urlprefix == 'undefined')
+	if (!urlprefix)
 	{
 		urlprefix = '';
 	}
