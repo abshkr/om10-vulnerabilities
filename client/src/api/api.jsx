@@ -5,6 +5,14 @@ const api = Axios.create({
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
+
+  transformRequest: [
+    function (data, headers) {
+      headers['Authorization'] = sessionStorage.getItem('token');
+
+      return JSON.stringify(data);
+    },
+  ],
 });
 
 export default api;

@@ -2,19 +2,20 @@ import React, { Suspense } from 'react';
 
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
+import { useTranslation } from 'react-i18next';
+import { ConfigProvider } from 'antd';
 import { Provider } from 'react-redux';
 import { SWRConfig } from 'swr';
 
 import en from 'antd/es/locale/en_GB';
 import cn from 'antd/es/locale/zh_CN';
 
-import ConfigProvider from 'context/config-context';
 import { GlobalStyleProvider, AntdStyleProvider } from '../styles';
 import { Interface, Loading } from '../components';
 import { authStore } from '../stores';
 import { ROUTES } from '../constants';
-import { fetcher } from '../utils';
 import paths from './paths';
+import api from 'api';
 
 /**
  * @description
@@ -29,17 +30,26 @@ import paths from './paths';
  * All modules are lazy loaded via the path array.
  */
 
-const fetchConfig = {
-  refreshInterval: 0,
-  fetcher,
-  errorRetryCount: 3,
+const locale = {
+  en,
+  cn,
 };
 
 const App = () => {
+  const { i18n } = useTranslation();
+
+  const language = locale[i18n.language];
+
   return (
-    <Provider store={authStore}>
-      <SWRConfig value={fetchConfig}>
-        <ConfigProvider>
+    <ConfigProvider locale={language}>
+      <Provider store={authStore}>
+        <SWRConfig
+          value={{
+            refreshInterval: 0,
+            fetcher: (url) => api.get(url).then((response) => response.data),
+            errorRetryCount: 3,
+          }}
+        >
           <BrowserRouter>
             <Interface>
               <GlobalStyleProvider primary="#0054A4" />
@@ -54,9 +64,9 @@ const App = () => {
               </Suspense>
             </Interface>
           </BrowserRouter>
-        </ConfigProvider>
-      </SWRConfig>
-    </Provider>
+        </SWRConfig>
+      </Provider>
+    </ConfigProvider>
   );
 };
 
