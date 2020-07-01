@@ -59,9 +59,10 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
           per_code: '9999',
         })
         .then(() => {
+          setViewable(access?.canView);
           setAuthenticated(true);
-          setLocked(false);
           setFetching(false);
+          setLocked(false);
 
           Modal.destroyAll();
         })
@@ -81,19 +82,24 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
   };
 
   useEffect(() => {
-    if (access) {
-      if (!access?.isLoading && access?.canView && !access?.isProtected) {
-        setViewable(true);
-        setLoading(false);
-      }
+    setLoading(access && access?.isLoading);
+    setViewable(access?.canView);
+    setLocked(access?.isProtected);
 
-      if (!access?.isLoading && access?.canView && access?.isProtected && !authenticated) {
-        setViewable(true);
-        setLocked(true);
-        setLoading(false);
-      }
-    }
+    // if (access) {
+    //   if (!access?.isLoading && access?.canView && !access?.isProtected) {
+    //     setViewable(true);
+    //     setLoading(false);
+    //   }
+
+    //   if (!access?.isLoading && access?.isProtected && !authenticated) {
+    //     setLocked(true);
+    //     setLoading(false);
+    //   }
+    // }
   }, [access]);
+
+  console.log(isLocked, isViewable);
 
   if (standalone) {
     return (
@@ -110,10 +116,6 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
 
   if (isLoading) {
     return <Loading />;
-  }
-
-  if (!isViewable) {
-    return <Locked />;
   }
 
   if (isLocked && !authenticated) {
@@ -135,6 +137,10 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
         </Form>
       </Modal>
     );
+  }
+
+  if (!isLoading && !isViewable) {
+    return <Locked />;
   }
 
   if (isViewable && !isLocked) {
