@@ -1,5 +1,6 @@
 export const LOGIN = '/api/login.php';
-// export const LOGOUT = '/api/session/invalidate_token.php';
+export const CHECK_PASSWORD = '/api/session/check_password.php';
+
 export const LOGOUT = '/api/logout.php';
 export const REFRESH = '/api/session/get_token.php';
 
