@@ -65,6 +65,10 @@ class OMJournal extends CommonClass
     public function read()
     {
         // write_log(json_encode($this), __FILE__, __LINE__);
+        if (!isset($this->lang)) {
+            $this->lang = Utilities::getCurrLang();
+        }
+
         if (!isset($this->start_date) || !isset($this->end_date)) {
             //get journal in 30 min
             $query = "
@@ -79,9 +83,10 @@ class OMJournal extends CommonClass
                 JNL_CAT
             FROM GUI_SITE_JOURNAL
             WHERE GEN_DATE >= SYSDATE - 30 / 1440
+                AND REGION_CODE = :lang
             ORDER BY GEN_DATE DESC";
             $stmt = oci_parse($this->conn, $query);
-            // oci_bind_by_name($stmt, ':start_num', $this->start_num);
+            oci_bind_by_name($stmt, ':lang', $this->lang);
         } else {
             if (isset($this->types)) {
                 $tmp_arr = explode(':', $this->types);
@@ -108,7 +113,8 @@ class OMJournal extends CommonClass
                 SEQ,
                 JNL_CAT
             FROM GUI_SITE_JOURNAL
-            WHERE GEN_DATE >= TO_DATE(:start_date, 'yyyy-mm-dd hh24:mi:ss')
+            WHERE REGION_CODE = :lang
+                AND GEN_DATE >= TO_DATE(:start_date, 'yyyy-mm-dd hh24:mi:ss')
                 AND GEN_DATE <= TO_DATE(:end_date, 'yyyy-mm-dd hh24:mi:ss')";
             if (isset($types_str)) {
                 $query .= " AND MSG_EVENT IN (" . $types_str . ")";
@@ -125,6 +131,7 @@ class OMJournal extends CommonClass
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':start_date', $this->start_date);
             oci_bind_by_name($stmt, ':end_date', $this->end_date);
+            oci_bind_by_name($stmt, ':lang', $this->lang);
             if (isset($this->region_code)) {
                 oci_bind_by_name($stmt, ':region_code', $this->region_code);
             }
