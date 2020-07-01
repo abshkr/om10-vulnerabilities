@@ -65,6 +65,14 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   };
 
   const onDelete = () => {
+    if (value?.products_amount > 0) {
+      notification.error({
+        message: t('messages.validationFailed'),
+        description: t('descriptions.productGrpUsed'),
+      });
+      return;
+    }
+
     Modal.confirm({
       title: t('prompts.delete'),
       okText: t('operations.yes'),

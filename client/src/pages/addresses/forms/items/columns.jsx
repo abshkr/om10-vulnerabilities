@@ -29,7 +29,7 @@ const useColumns = (value, selected) => {
       //checkboxSelection: true,
       cellRenderer: 'MarkRenderer',
       suppressSizeToFit: true,
-      pinned: 'left'
+      // pinned: 'left'
     },
     {
       headerName: t('fields.addressLineCode'),
@@ -40,7 +40,7 @@ const useColumns = (value, selected) => {
       hide: true,
       width: 200,
       suppressSizeToFit: true,
-      pinned: 'left'
+      // pinned: 'left'
     },
     {
       headerName: t('fields.addressLineNo'),
@@ -50,7 +50,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 160,
       suppressSizeToFit: true,
-      pinned: 'left'
+      // pinned: 'left'
     },
 
     {

@@ -1596,7 +1596,8 @@
     "unauthorized": "Sorry, you are not authorized to access this page.",
     "uploadSuccess": "You have uploaded image: ",
     "uploadFailed": "Failed to upload image: ",
-    "noCompanyType": "Please select at least one company type"
+    "noCompanyType": "Please select at least one company type",
+    "productGrpUsed": "Cannot delete product group that has product in it"
   },
 
   "placeholder": {
