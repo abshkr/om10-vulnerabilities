@@ -279,9 +279,9 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               </Col>
             </Row>
 
-            <Destination form={form} value={value} />
+            {/* <Destination form={form} value={value} />
             <LastDepot form={form} value={value} />
-            <CurrentDepot form={form} value={value} />
+            <CurrentDepot form={form} value={value} /> */}
 
             <Locks form={form} value={value} />
             <SLP form={form} value={value} />
