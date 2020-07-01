@@ -8,8 +8,9 @@ import jwtDecode from 'jwt-decode';
 import _ from 'lodash';
 
 import { PageContainer, PageInjector, PageHeaderContainer, PageHeaderExtras } from './style';
-import * as ROUTES from 'constants/routes';
 import { Loading, Locked } from '..';
+
+import * as ROUTES from 'constants/routes';
 import api, { AUTH } from 'api';
 import hash from 'utils/hash';
 
@@ -85,21 +86,7 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
     setLoading(access && access?.isLoading);
     setViewable(access?.canView);
     setLocked(access?.isProtected);
-
-    // if (access) {
-    //   if (!access?.isLoading && access?.canView && !access?.isProtected) {
-    //     setViewable(true);
-    //     setLoading(false);
-    //   }
-
-    //   if (!access?.isLoading && access?.isProtected && !authenticated) {
-    //     setLocked(true);
-    //     setLoading(false);
-    //   }
-    // }
   }, [access]);
-
-  console.log(isLocked, isViewable);
 
   if (standalone) {
     return (
