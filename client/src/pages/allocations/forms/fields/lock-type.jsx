@@ -14,7 +14,7 @@ const LockType = ({ form, value, onChange }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.resolve(`${t('validate.select')} ─ ${t('fields.lockType')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.lockType')}`);
     }
 
     return Promise.reject();

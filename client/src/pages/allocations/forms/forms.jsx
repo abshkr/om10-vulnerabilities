@@ -55,11 +55,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
     api.get(url).then((response) => {
       const payload = response.data?.records || [];
-
+      
       form.setFieldsValue({
         allocs: payload,
       });
 
+      setAllocations([]);
       setAllocations(payload);
     });
   }, [company, type, supplier]);
