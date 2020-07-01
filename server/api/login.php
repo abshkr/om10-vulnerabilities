@@ -119,8 +119,7 @@ if ($array['MSG_CODE'] === "0") {
     //     $exp_min = intval($exp_min);
     // }
 
-    $exp_min = 60;      //Default it is 1 hour
-
+    $exp_min = 180; 
     $login_result = array();
     $login_result['userid'] = $object->user;
     $login_result['email'] = "";
