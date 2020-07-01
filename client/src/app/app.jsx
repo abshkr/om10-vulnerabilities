@@ -2,14 +2,13 @@ import React, { Suspense } from 'react';
 
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
-import { useTranslation } from 'react-i18next';
-import { ConfigProvider } from 'antd';
 import { Provider } from 'react-redux';
 import { SWRConfig } from 'swr';
 
 import en from 'antd/es/locale/en_GB';
 import cn from 'antd/es/locale/zh_CN';
 
+import ConfigProvider from 'context/config-context';
 import { GlobalStyleProvider, AntdStyleProvider } from '../styles';
 import { Interface, Loading } from '../components';
 import { authStore } from '../stores';
@@ -30,11 +29,6 @@ import paths from './paths';
  * All modules are lazy loaded via the path array.
  */
 
-const locale = {
-  en,
-  cn,
-};
-
 const fetchConfig = {
   refreshInterval: 0,
   fetcher,
@@ -42,14 +36,10 @@ const fetchConfig = {
 };
 
 const App = () => {
-  const { i18n } = useTranslation();
-
-  const language = locale[i18n.language];
-
   return (
-    <ConfigProvider locale={language}>
-      <Provider store={authStore}>
-        <SWRConfig value={fetchConfig}>
+    <Provider store={authStore}>
+      <SWRConfig value={fetchConfig}>
+        <ConfigProvider>
           <BrowserRouter>
             <Interface>
               <GlobalStyleProvider primary="#0054A4" />
@@ -64,9 +54,9 @@ const App = () => {
               </Suspense>
             </Interface>
           </BrowserRouter>
-        </SWRConfig>
-      </Provider>
-    </ConfigProvider>
+        </ConfigProvider>
+      </SWRConfig>
+    </Provider>
   );
 };
 

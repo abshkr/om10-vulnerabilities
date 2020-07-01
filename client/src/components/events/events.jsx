@@ -6,11 +6,10 @@ import { BellOutlined, CloseOutlined } from '@ant-design/icons';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { fetcher } from '../../utils';
 import { AUTH } from '../../api';
 
 const Events = () => {
-  const { data } = useSWR(AUTH.SESSION, fetcher);
+  const { data } = useSWR(AUTH.SESSION);
 
   const [events, setEvents] = useState([]);
   const [visible, setVisible] = useState(false);

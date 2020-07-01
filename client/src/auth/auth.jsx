@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import jwtDecode from 'jwt-decode';
+import api from 'api';
 
 import ConfigStore from 'stores/config-store';
 import useIdle from 'hooks/use-idle';
@@ -17,6 +18,16 @@ export default (Authenticated) => {
     let history = useHistory();
 
     const [user, setUser] = useState(null);
+
+    useEffect(() => {
+      if (token) {
+        api.interceptors.request.use((config) => {
+          config.headers.Authorization = token;
+
+          return config;
+        });
+      }
+    }, [token]);
 
     useEffect(() => {
       if (token) {

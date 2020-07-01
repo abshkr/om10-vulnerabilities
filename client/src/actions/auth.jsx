@@ -37,13 +37,13 @@ export const login = (values, callback) => async (dispatch) => {
 
 export const signout = () => {
   api.post(AUTH.LOGOUT).then((reponse) => {
+    sessionStorage.removeItem('token');
+
     api.interceptors.request.use((config) => {
       config.headers.Authorization = null;
 
       return config;
     });
-
-    sessionStorage.removeItem('token');
 
     window.location.reload();
   });
