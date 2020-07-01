@@ -346,6 +346,10 @@ class Allocation extends CommonClass
         }
         
         foreach ($this->allocs as $value) {
+            if ($value->aitem_qtylimit <= 0) {
+                continue;
+            }
+            
             // write_log(json_encode($value), __FILE__, __LINE__);
             $query = "INSERT INTO ALLOCS (
                 ALL_PROD_PRODCODE,
