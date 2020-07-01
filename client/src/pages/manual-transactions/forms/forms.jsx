@@ -39,12 +39,13 @@ const Forms = ({
   setSelectedTanker,
   params,
   popup,
-  dataLoaded,
   setOrderSeals,
   dataBoard,
   setDataBoard,
   dataLoadFlag,
   setDataLoadFlag,
+  dataLoaded,
+  setDataLoaded,
 }) => {
   const { setFieldsValue, resetFields } = form;
 
@@ -212,7 +213,7 @@ const Forms = ({
 
   const handleDriverSelect = (tanker) => {
     // get tanker equipment and compartments
-    console.log('Testing Types', sourceType, loadType, loadNumber);
+    console.log('Forms: Testing Types', sourceType, loadType, loadNumber);
   };
 
   const handleTypeSelect = (type) => {
@@ -271,7 +272,7 @@ const Forms = ({
   };
 
   const loadOrderSeal = async (value) => {
-    console.log('loadOrderSeal', value);
+    console.log('Forms: loadOrderSeal', value);
     setFieldsValue({
       seal_range: value?.sealRange,
     });
@@ -346,34 +347,37 @@ const Forms = ({
   const format = getDateTimeFormat();
 
   useEffect(() => {
-    if (dataLoadFlag && dataLoaded && !sourceType) {
+    if (dataLoadFlag === 1 && dataLoaded && !sourceType) {
       form.setFieldsValue({
         source_type: dataLoaded?.source_type,
       });
       handleTypeSelect(dataLoaded?.source_type);
+      console.log('MT 1 - Forms: data loading - sourceType selected!', dataLoadFlag);
     }
   }, [dataLoadFlag, dataLoaded, sourceType]);
 
   useEffect(() => {
-    if (dataLoadFlag && dataLoaded && !selectedSupplier) {
+    if (dataLoadFlag === 1 && dataLoaded && sourceType && !selectedSupplier) {
       form.setFieldsValue({
         supplier: dataLoaded?.supplier,
       });
       handleSupplierSelect(dataLoaded?.supplier);
+      console.log('MT 1 - Forms: data loading - supplier selected!', dataLoadFlag);
     }
-  }, [dataLoadFlag, dataLoaded, selectedSupplier]);
+  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier]);
 
   useEffect(() => {
-    if (dataLoadFlag && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedCustomer) {
+    if (dataLoadFlag === 1 && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedCustomer) {
       form.setFieldsValue({
         customer: dataLoaded?.customer,
       });
       handleCustomerSelect(dataLoaded?.customer);
+      console.log('MT 1 - Forms: data loading - customer selected for order!', dataLoadFlag);
     }
   }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedCustomer]);
 
   useEffect(() => {
-    if (dataLoadFlag && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedOrder) {
+    if (dataLoadFlag === 1 && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedOrder) {
       form.setFieldsValue({
         order_no: dataLoaded?.order_no,
       });
@@ -386,11 +390,12 @@ const Forms = ({
         mt_cust_code: dataLoaded?.customer_code,
         mt_delv_loc: dataLoaded?.delivery_location,
       });
+      console.log('MT 1 - Forms: data loading - order selected! plus carrier, driver, seal_range, mt...', dataLoadFlag);
     }
   }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedOrder]);
 
   useEffect(() => {
-    if (dataLoadFlag && dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
+    if (dataLoadFlag === 1 && dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
       form.setFieldsValue({
         trip_no: dataLoaded?.trip_no,
       });
@@ -401,28 +406,36 @@ const Forms = ({
         driver: dataLoaded?.driver,
         seal_range: dataLoaded?.seal_range,
       });
+      console.log('MT 1 - Forms: data loading - trip selected! plus carrier, driver, seal_range', dataLoadFlag);
     }
   }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedTrip]);
 
   useEffect(() => {
-    if (dataLoadFlag && dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && selectedTrip && !selectedTanker) {
+    if (dataLoadFlag === 1 && dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && selectedTrip && !selectedTanker) {
       form.setFieldsValue({
         tanker: dataLoaded?.tanker,
       });
       setSelectedTanker(dataLoaded?.tanker);
-      setDataLoadFlag(false);
+      console.log('MT 1 - Forms: data loading - tanker selected for trip!', dataLoadFlag);
     }
   }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedTrip, selectedTanker]);
 
   useEffect(() => {
-    if (dataLoadFlag && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && selectedOrder && !selectedTanker) {
+    if (dataLoadFlag === 1 && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && selectedOrder && !selectedTanker) {
       form.setFieldsValue({
         tanker: dataLoaded?.tanker,
       });
       setSelectedTanker(dataLoaded?.tanker);
-      setDataLoadFlag(false);
+      console.log('MT 1 - Forms: data loading - tanker selected for order!', dataLoadFlag);
     }
   }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedOrder, selectedTanker]);
+
+  useEffect(() => {
+    if (dataLoadFlag === 1 && dataLoaded && sourceType && selectedSupplier && selectedTanker) {
+      setDataLoadFlag(2);
+      console.log('MT 1 - Forms: data loading - fields are set!', dataLoadFlag);
+    }
+  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedTanker]);
 
   return (
     <>

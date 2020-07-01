@@ -21,6 +21,8 @@ const BaseProductTransfers = ({
   setData,
   dataLoadFlag,
   setDataLoadFlag,
+  dataLoaded,
+  setDataLoaded,
 }) => {
   const { t } = useTranslation();
 
@@ -28,6 +30,7 @@ const BaseProductTransfers = ({
   const [stdTotal, setStdTotal] = useState(0);
   const [massTotal, setMassTotal] = useState(0);
   const [isLoading, setLoading] = useState(true);
+  const [dataRendered, setDataRendered] = useState(false);
 
   const fields = columns(t);
 
@@ -87,42 +90,51 @@ const BaseProductTransfers = ({
 
     setLoading(false);
 
-    const obs = _.sumBy(pre.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_amb');
-    const std = _.sumBy(pre.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_cor');
-    const mass = _.sumBy(pre.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_load_kg');
+    let tranbases = undefined;
+    if (dataLoadFlag === 1) {
+      tranbases = _.clone(dataLoaded.base_transfers);
+      setDataLoadFlag(2);
+      console.log('MT 3 - BaseProductTransfers: data are loaded!', dataLoadFlag);
+    } else {
+      tranbases = _.clone(pre);
+      console.log('MT 3 - BaseProductTransfers: normal data!', dataLoadFlag);
+    }
+
+    const obs = _.sumBy(tranbases.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_amb');
+    const std = _.sumBy(tranbases.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_cor');
+    const mass = _.sumBy(tranbases.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_load_kg');
     setObsTotal(obs);
     setStdTotal(std);
     setMassTotal(mass);
 
-    setData(pre);
+    setData(tranbases);
   };
 
   useEffect(() => {
-    if (!dataLoadFlag) {
+    //if (dataLoadFlag === 0) {
       getBaseTransfers(selected);
-    }
-  }, [selected]);
+    //}
+  }, [selected, transfers]);
 
   useEffect(() => {
-    console.log('Inside base transfers to setFieldsValue, the data is ', data);
     if (data) {
+      console.log('BaseProductTransfers: data changed and do setFieldsValue. Data:', data);
       form.setFieldsValue({
         base_transfers: data,
       });
+      setDataRendered(true);
     }
   }, [data]);
 
-  useEffect(() => {
-    console.log('Inside base transfers to setFieldsValue, the data is ', dataLoadFlag);
-    if (dataLoadFlag) {
-      if (data) {
-        form.setFieldsValue({
-          base_transfers: data,
-        });
-      }
-      setDataLoadFlag(false);
+  /* useEffect(() => {
+    if (dataLoadFlag === 1 && dataLoaded && dataRendered===true) {
+      console.log('BaseProductTransfers: Load data by setData. dataLoadFlag', dataLoadFlag);
+      setData(dataLoaded?.base_transfers);
+      setDataLoadFlag(2);
+      setDataRendered(false);
+      console.log('MT 3 - BaseProductTransfers: data are loaded!', dataLoadFlag);
     }
-  }, [dataLoadFlag]);
+  }, [dataLoadFlag, dataLoaded, dataRendered]); */
 
   useEffect(() => {
     let board = dataBoard;
@@ -132,11 +144,6 @@ const BaseProductTransfers = ({
     board.base_transfers = data;
     setDataBoard(board);
   }, [data]);
-
-  /* useEffect(() => {
-    console.log('BaseProductTransfers: base quantity totals changed on data and clicked', clicked);
-    getBaseTransfers(clicked);
-  }, [clicked]); */
 
   useEffect(() => {
     console.log('BaseProductTransfers: base quantity totals changed on data and clicked', clicked);
@@ -155,8 +162,10 @@ const BaseProductTransfers = ({
   }, [data, clicked]);
 
   useEffect(() => {
-    console.log("BaseProductTransfers: base-transfers sourceType ", sourceType);
-    setData([]);
+    if (data?.length > 0) {
+      console.log("BaseProductTransfers: sourceType changed.", sourceType);
+      setData([]);
+    }
   }, [sourceType]);
 
   const onCellUpdate = (value) => {
