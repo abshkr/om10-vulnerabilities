@@ -119,8 +119,7 @@ if ($array['MSG_CODE'] === "0") {
     //     $exp_min = intval($exp_min);
     // }
 
-    $exp_min = 60;      //Default it is 1 hour
-
+    $exp_min = 180; 
     $login_result = array();
     $login_result['userid'] = $object->user;
     $login_result['email'] = "";
@@ -130,6 +129,7 @@ if ($array['MSG_CODE'] === "0") {
     $login_result['refreshToken'] = get_token($object->user, $array['USER_DETAIL']['USER_SESSION'], 
         $array['USER_DETAIL']['SITE_CODE'], $array['USER_DETAIL']['SITE_NAME'], $array['USER_DETAIL']['USER_LANG'], $exp_min * 60);
     $login_result['expiresIn'] = $exp_min * 60;
+    $login_result['user_status_flag'] = $array['USER_DETAIL']['USER_STATUS_FLAG'];
 
     //Some old screens like bay view still need session
     if (!isset($_SESSION)) {

@@ -53,6 +53,13 @@ https://10.1.10.66/api/login.php
     "user":"9999",
     "password":"12345"
 }
+https://10.1.10.66/api/activate_login.php
+{
+    "per_code": "DKI",
+    "old_password": "12345",
+    "password": "23456"
+}
+
 
 //Dashboard
 https://10.1.10.66/api/pages/dashboard/widget_data.php
