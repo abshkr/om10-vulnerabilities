@@ -400,7 +400,7 @@ class MessageArea extends Component
 			var url = this.urlprefix + '/hmi/config';
 			//var url = '/hmi/config';
 			fetch(url, {
-				method: 'GET',
+				method: 'POST',
 				credentials: 'include'
 			}).then(response => {
 				response.json().then(body => {
