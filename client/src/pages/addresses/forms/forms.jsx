@@ -99,6 +99,8 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     mutate(ADDRESSES.READ);
     if (db_address_key) {
       setFilterValue("" + db_address_key);
+    } else {
+      setFilterValue(' ');
     }
   };
 

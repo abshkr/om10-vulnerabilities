@@ -18,7 +18,7 @@ import api, { TANKS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -27,9 +27,14 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const IS_CREATING = !value;
 
-  const onComplete = () => {
+  const onComplete = (tank_code) => {
     handleFormState(false, null);
     mutate(TANKS.READ);
+    if (tank_code) {
+      setFilterValue('' + tank_code);
+    } else {
+      setFilterValue(' ');
+    }
   };
 
   const onFinish = async () => {
@@ -46,7 +51,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, values)
           .then((response) => {
-            onComplete();
+            onComplete(values?.tank_code);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
@@ -77,7 +82,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(TANKS.DELETE, value)
           .then((response) => {
-            onComplete();
+            onComplete(null);
 
             notification.success({
               message: t('messages.deleteSuccess'),
