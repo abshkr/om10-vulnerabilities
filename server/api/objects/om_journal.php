@@ -69,6 +69,10 @@ class OMJournal extends CommonClass
             $this->lang = Utilities::getCurrLang();
         }
 
+        if ($this->lang === "" || !isset($this->lang)) {
+            $this->lang = "ENG";
+        }
+        
         if (!isset($this->start_date) || !isset($this->end_date)) {
             //get journal in 30 min
             $query = "

@@ -6,7 +6,7 @@ import { JOURNAL } from '../../../api';
 import { DataTable } from '../../../components';
 
 const Live = ({ t, setData, setFields }) => {
-  const { data: payload, isValidating } = useSWR(JOURNAL.READ, { refreshInterval: 1000 });
+  const { data: payload, isValidating } = useSWR(JOURNAL.READ, { refreshInterval: 5000 });
 
   const fields = columns(t);
 
@@ -17,7 +17,7 @@ const Live = ({ t, setData, setFields }) => {
     }
   }, [payload]);
 
-  return <DataTable columns={fields} data={payload?.records} isLoading={isValidating} />;
+  return <DataTable columns={fields} data={payload?.records} />;
 };
 
 export default Live;
