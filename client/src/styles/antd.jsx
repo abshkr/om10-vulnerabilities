@@ -303,5 +303,9 @@ const AntdStyleProvider = createGlobalStyle`
   .ant-descriptions-bordered .ant-descriptions-item-label, .ant-descriptions-bordered .ant-descriptions-item-content {
     border-color: #BDC3C7 !important;
   }
+  
+  .ant-input-clear-icon {
+    color: #ff6666 !important;
+  }
 `;
 export default AntdStyleProvider;

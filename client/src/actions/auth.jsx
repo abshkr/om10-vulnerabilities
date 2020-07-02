@@ -57,3 +57,21 @@ export const refresh = (token) => async (dispatch) => {
       dispatch({ type: UNAUTHORIZED, payload: 'Invalid login credentials' });
     });
 };
+
+// if (response?.data?.user_status_flag === '0') {
+//   const next = (payload) => {
+//     if (payload) {
+//       sessionStorage.setItem('token', payload);
+
+//       dispatch({ type: AUTHORIZED, payload: payload });
+//     }
+//   };
+
+//   Reset({
+//     code: values.code,
+//     response: response.data,
+//     oldPassword: payload.psw,
+//     language: values.language,
+//     callback: next,
+//   });
+// } else { }

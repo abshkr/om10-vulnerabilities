@@ -18,11 +18,13 @@ import './folio-summary.css';
 
 const FolioSummary = () => {
   const { t } = useTranslation();
-  const [visible, setVisible] = useState(false);
-  const [selected, setSelected] = useState(null);
+
   const { data: payload, isValidating, revalidate } = useSWR(FOLIO_SUMMARY.READ);
 
   const access = useAuth('M_FOLIOMANAGEMENT');
+
+  const [selected, setSelected] = useState(null);
+  const [visible, setVisible] = useState(false);
 
   const fields = columns(t);
 
