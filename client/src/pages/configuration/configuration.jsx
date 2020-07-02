@@ -373,7 +373,7 @@ const Configuration = ({ config }) => {
     let payload = [...features];
 
     _.map(payload, (object) => {
-      return (object.feature_gui = true);
+      return (object.feature_flag = true);
     });
 
     setFeatures(payload);
@@ -383,7 +383,7 @@ const Configuration = ({ config }) => {
     let payload = [...features];
 
     _.map(payload, (object) => {
-      return (object.feature_gui = false);
+      return (object.feature_flag = false);
     });
 
     setFeatures(payload);
