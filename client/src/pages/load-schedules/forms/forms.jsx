@@ -125,6 +125,43 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const onFinish = async () => {
     const record = await form.validateFields();
 
+    if (record?.shls_ld_type === "3" /* Preorder*/) {
+      const b = _.find(record.products, (item) => {
+        return item.qty_scheduled > 0;
+      });
+      if (!b) {
+        notification.error({
+          message: t("messages.validationFailed"),
+          description: t("descriptions.preOrderReady"),
+        });
+        return;
+      }
+
+      const c = _.find(record.products, (item) => {
+        return item.qty_scheduled > 0 && item.unit_code === "";
+      });
+      
+      if (c) {
+        notification.error({
+          message: t("messages.validationFailed"),
+          // description: `${t("descriptions.preOrderProdUnit")} `,
+          description: `${t("descriptions.preOrderProdUnit")} ${c.prod_code}/${c.prod_name} `,
+        });
+        return;
+      }
+    } else if (record?.shls_ld_type === "2" /* PreSchedule*/) {
+      const b = _.find(record.compartments, (item) => {
+        return item.prod_code !== "";
+      });
+      if (!b) {
+        notification.error({
+          message: t("messages.validationFailed"),
+          description: t("descriptions.prescheduleReady"),
+        });
+        return;
+      }
+    }
+
     const values = {
       ...record,
       shls_caldate: record?.shls_caldate?.format(SETTINGS.DATE_TIME_FORMAT),

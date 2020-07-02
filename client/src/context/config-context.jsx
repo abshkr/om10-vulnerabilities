@@ -116,7 +116,7 @@ const ConfigProvider = ({ children }) => {
       const featuresObject = Object.assign(
         {},
         ...features?.records.map((field) => {
-          return { [field.feature_code]: formatter(field.feature_gui) };
+          return { [field.feature_code]: formatter(field.feature_flag) };
         })
       );
 

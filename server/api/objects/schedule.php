@@ -645,10 +645,14 @@ class Schedule extends CommonClass
                 ) TRSF
             WHERE SPEC_PR.SCHPSPID_SHLSSUPP = CMPT.TRIP_SUPPLIER (+)
                 AND SPEC_PR.SCHPSPID_SHLSTRIP = CMPT.TRIP_NO (+)
-                AND SPEC_PR.PROD_CLASS = CMPT.PROD_CLASS (+)
+                --AND SPEC_PR.PROD_CLASS = CMPT.PROD_CLASS (+)
+                AND SPEC_PR.PROD_CODE = CMPT.TRIP_PRODCODE(+)
+                AND SPEC_PR.PROD_CMPY = CMPT.TRIP_PRODCMPY(+)
                 AND CMPT.TRIP_SUPPLIER = TRSF.TRIP_SUPPLIER (+)
                 AND CMPT.TRIP_NO = TRSF.TRIP_NO (+)
-                AND CMPT.PROD_CLASS = TRSF.PROD_CLASS (+)
+                --AND CMPT.PROD_CLASS = TRSF.PROD_CLASS (+)
+                AND CMPT.TRIP_PRODCODE = TRSF.TRIP_PRODCODE(+)
+                AND CMPT.TRIP_PRODCMPY = TRSF.TRIP_PRODCMPY(+)
                 AND UV.UNIT_ID = SPEC_PR.SCHP_UNITS
         ) LOADED
         WHERE PRODUCTS.PROD_CMPY = LOADED.PROD_CMPY(+)

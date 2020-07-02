@@ -114,7 +114,7 @@ const BaseProductTransfers = ({
     //if (dataLoadFlag === 0) {
       getBaseTransfers(selected);
     //}
-  }, [selected, transfers]);
+  }, [selected]);
 
   useEffect(() => {
     if (data) {

@@ -55,6 +55,9 @@ const Expiry = ({ form, value, type }) => {
       };
 
       setData([...data, payload]);
+      setFieldsValue({
+        expiry_dates: [...data, payload],
+      });
       setCount(count + 1);
     }
   };
