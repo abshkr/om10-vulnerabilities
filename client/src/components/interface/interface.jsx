@@ -15,7 +15,7 @@ const Interface = ({ token, onRefresh, children }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       onRefresh(token);
-    }, 15000);
+    }, 900000);
 
     return () => clearInterval(interval);
   }, []);
