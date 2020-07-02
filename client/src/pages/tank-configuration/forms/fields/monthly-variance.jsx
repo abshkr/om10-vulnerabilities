@@ -70,7 +70,7 @@ const MontlhyVariance = ({ form, value }) => {
           }
         ]}
       >
-        <Input addonAfter="Litres" />
+        <Input addonAfter={t('units.litres')} />
       </Form.Item>
     </div>
   );

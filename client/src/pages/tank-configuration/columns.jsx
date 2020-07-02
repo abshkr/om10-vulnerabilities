@@ -37,7 +37,7 @@ const columns = (configuration, t) => [
     filter: 'MultiFilter'
   },
   {
-    headerName: `${t('fields.density')} (${t('units.kgm3')})`,
+    headerName: `${t('fields.density')} (${t('units.kg/m3')})`,
     field: 'tank_density',
     sortable: true,
     resizable: true
@@ -55,7 +55,7 @@ const columns = (configuration, t) => [
     resizable: true
   },
   {
-    headerName: `${t('fields.monthlyVarianceLimit')} (${t('units.kgm3')})`,
+    headerName: `${t('fields.monthlyVarianceLimit')} (${t('units.volume')})`,
     field: 'tank_mtol_volume',
     sortable: true,
     resizable: true

@@ -59,7 +59,7 @@ const Density = ({ form, value, product }) => {
     }
   }, [payload, product]);
 
-  const affix = isValidating ? t('messages.calculating') : `${low} - ${high} ${t('units.kgm3')}`;
+  const affix = isValidating ? t('messages.calculating') : `${low} - ${high} ${t('units.kg/m3')}`;
   const disabled = isValidating || !product;
 
   return (
