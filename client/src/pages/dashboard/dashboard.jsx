@@ -27,9 +27,9 @@ const Dashboard = () => {
             <Overview />
           </Tabs.TabPane>
 
-          <Tabs.TabPane tab="Release Notes" key="3">
+          {/* <Tabs.TabPane tab="Release Notes" key="3">
             <ReleaseNotes />
-          </Tabs.TabPane>
+          </Tabs.TabPane> */}
         </Tabs>
       </DashboardContainer>
     </Page>

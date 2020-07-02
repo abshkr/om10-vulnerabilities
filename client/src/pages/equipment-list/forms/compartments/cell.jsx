@@ -53,7 +53,7 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
       const reverted = {
         ...values,
         safefill: record?.safefill,
-        sfL: record?.sfl,
+        sfl: record?.sfl,
       };
 
       handleSave({ ...record, ...reverted });
