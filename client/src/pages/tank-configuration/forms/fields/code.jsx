@@ -22,7 +22,7 @@ const Code = ({ form, value }) => {
 
   const validate = (rule, input) => {
     const match = _.find(payload?.records, object => {
-      return object.tank_code.toLowerCase() === input.toLowerCase();
+      return object.tank_code.toLowerCase() === input?.toLowerCase();
     });
 
     if (input && match && !value) {

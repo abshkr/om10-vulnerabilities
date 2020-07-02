@@ -14,7 +14,7 @@ const Code = ({ form, value }) => {
 
   const validate = (rule, input) => {
     const match = _.find(payload?.records, (object) => {
-      return object.adv_code.toLowerCase() === input.toLowerCase();
+      return object.adv_code.toLowerCase() === input?.toLowerCase();
     });
 
     if (input && match && !value) {
