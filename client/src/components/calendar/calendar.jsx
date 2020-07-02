@@ -15,9 +15,9 @@ const Calendar = ({ handleChange, start, end, disabled, format, max }) => {
   const limit = max || 1095;
 
   const ranges = {
-    [t('fields.today')]: [moment(), moment()],
-    [t('fields.thisWeek')]: [moment().startOf('week'), moment().endOf('week')],
-    [t('fields.thisMonth')]: [moment().startOf('month'), moment().endOf('month')],
+    [t('fields.today')]: [moment(), moment(), 'range'],
+    [t('fields.thisWeek')]: [moment().startOf('week'), moment().endOf('week'), 'range'],
+    [t('fields.thisMonth')]: [moment().startOf('month'), moment().endOf('month'), 'range'],
   };
 
   const onChange = (dates) => {
@@ -34,6 +34,12 @@ const Calendar = ({ handleChange, start, end, disabled, format, max }) => {
     }
   };
 
+  const onRangeSelect = (dates) => {
+    if (dates[2] === 'range') {
+      handleChange(dates[0].format(DATE_TIME_FORMAT), dates[1].format(DATE_TIME_FORMAT));
+    }
+  };
+
   return (
     <RangePicker
       allowClear={false}
@@ -43,6 +49,7 @@ const Calendar = ({ handleChange, start, end, disabled, format, max }) => {
       defaultValue={[moment(start, DATE_TIME_FORMAT), moment(end, DATE_TIME_FORMAT)]}
       value={[moment(start, DATE_TIME_FORMAT), moment(end, DATE_TIME_FORMAT)]}
       onOk={(dates) => onChange(dates)}
+      onChange={(dates) => onRangeSelect(dates)}
       ranges={ranges}
     />
   );
