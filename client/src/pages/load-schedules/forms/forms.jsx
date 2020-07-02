@@ -136,6 +136,19 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
         });
         return;
       }
+
+      const c = _.find(record.products, (item) => {
+        return item.qty_scheduled > 0 && item.unit_code === "";
+      });
+      
+      if (c) {
+        notification.error({
+          message: t("messages.validationFailed"),
+          // description: `${t("descriptions.preOrderProdUnit")} `,
+          description: `${t("descriptions.preOrderProdUnit")} ${c.prod_code}/${c.prod_name} `,
+        });
+        return;
+      }
     } else if (record?.shls_ld_type === "2" /* PreSchedule*/) {
       const b = _.find(record.compartments, (item) => {
         return item.prod_code !== "";

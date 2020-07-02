@@ -1599,7 +1599,8 @@
     "noCompanyType": "Please select at least one company type",
     "productGrpUsed": "Cannot delete product group that has product in it",
 	"prescheduleReady": "Please select product in at least one compartment",
-	"preOrderReady": "Please input quantity for at least one product"
+	"preOrderReady": "Please input quantity for at least one product",
+	"preOrderProdUnit": "Please select unit for product"
   },
 
   "placeholder": {
