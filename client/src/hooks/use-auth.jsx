@@ -46,11 +46,6 @@ const useAuth = (module) => {
     }
   }, [payload, history, module]);
 
-  // useEffect(() => {
-  //   console.log("user auth error")
-  //   console.log(error);
-  // }, [error])
-
   useEffect(() => {
     // Revalidate Auth Status Upon Window Refocus
 
