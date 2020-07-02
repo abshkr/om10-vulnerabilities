@@ -331,7 +331,7 @@ const FeatureItems = ({ data, onChange }) => (
   />
 );
 
-const Configuration = ({ config }) => {
+const Configuration = ({ user, config }) => {
   const { data: configPayload } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
   const { data: featuresPayload } = useSWR(SITE_CONFIGURATION.FEATURES, { revalidateOnFocus: false });
 
@@ -440,13 +440,23 @@ const Configuration = ({ config }) => {
       </Button>
 
       {UPDATING_FEATURES && (
-        <Button icon={<PlusOutlined />} onClick={onFeatureSelectAll} type="primary" disabled={!access?.canUpdate}>
+        <Button
+          icon={<PlusOutlined />}
+          onClick={onFeatureSelectAll}
+          type="primary"
+          disabled={!access?.canUpdate}
+        >
           {t('operations.selectAll')}
         </Button>
       )}
 
       {UPDATING_FEATURES && (
-        <Button icon={<MinusOutlined />} onClick={onFeatureDeselectAll} type="primary" disabled={!access?.canUpdate}>
+        <Button
+          icon={<MinusOutlined />}
+          onClick={onFeatureDeselectAll}
+          type="primary"
+          disabled={!access?.canUpdate}
+        >
           {t('operations.deselectAll')}
         </Button>
       )}
@@ -492,9 +502,11 @@ const Configuration = ({ config }) => {
             />
           </TabPane>
 
-          <TabPane tab={t('tabColumns.features')} key="6">
-            <FeatureItems data={features} onChange={onFeatureEdit} />
-          </TabPane>
+          {user?.per_code === '9999' && (
+            <TabPane tab={t('tabColumns.features')} key="6">
+              <FeatureItems data={features} onChange={onFeatureEdit} />
+            </TabPane>
+          )}
         </Tabs>
       </Page>
     </ConfigurationContainer>
