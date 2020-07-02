@@ -1,17 +1,20 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { DatePicker, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 
-import getDateTimeFormat from 'utils/get-date-time-format';
+import ConfigStore from 'stores/config-store';
 import { DATE_TIME_FORMAT } from 'constants/settings';
 
 const { RangePicker } = DatePicker;
 
-const Calendar = ({ handleChange, start, end, disabled, format, max }) => {
+const Calendar = ({ handleChange, start, end, disabled, max, format }) => {
+  const { dateTimeFormat } = useContext(ConfigStore);
+
   const { t } = useTranslation();
 
-  const formatted = format || getDateTimeFormat();
+  const formatted = format || dateTimeFormat;
+
   const limit = max || 1095;
 
   const ranges = {
