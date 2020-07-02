@@ -1,16 +1,26 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 
 import { connect } from 'react-redux';
 import { Layout } from 'antd';
 
 import { NavBar, Navigation, Status } from '..';
-import ConfigProvider from 'context/config-context';
 import { InterfaceContainer } from './style';
+
+import ConfigProvider from 'context/config-context';
+import * as actions from 'actions/auth';
 
 const { Content, Sider, Footer } = Layout;
 
-const Interface = ({ auth, children }) => {
-  return auth ? (
+const Interface = ({ token, onRefresh, children }) => {
+  useEffect(() => {
+    const interval = setInterval(() => {
+      onRefresh(token);
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return token ? (
     <InterfaceContainer>
       <ConfigProvider>
         <Layout className="layout">
@@ -32,8 +42,12 @@ const Interface = ({ auth, children }) => {
   );
 };
 
-const AuthStoreMap = (state) => {
-  return { auth: state.auth.authenticated };
+const mapStateToProps = (state) => {
+  return { token: state.auth.authenticated };
 };
 
-export default connect(AuthStoreMap)(Interface);
+const mapActionsToProps = (dispatch) => ({
+  onRefresh: (token) => dispatch(actions.refresh(token)),
+});
+
+export default connect(mapStateToProps, mapActionsToProps)(Interface);

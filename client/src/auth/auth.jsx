@@ -6,10 +6,9 @@ import jwtDecode from 'jwt-decode';
 import ConfigStore from 'stores/config-store';
 import useIdle from 'hooks/use-idle';
 import * as ROUTES from 'constants/routes';
-import * as actions from 'actions/auth';
 
 export default (Authenticated) => {
-  const ComposedComponent = ({ token, onRefresh }) => {
+  const ComposedComponent = ({ token }) => {
     const config = useContext(ConfigStore);
     const isIdle = useIdle();
 
@@ -30,14 +29,6 @@ export default (Authenticated) => {
     }, [token]);
 
     useEffect(() => {
-      const interval = setInterval(() => {
-        onRefresh(token);
-      }, 900000);
-
-      return () => clearInterval(interval);
-    }, []);
-
-    useEffect(() => {
       if (isIdle) {
         history.push(ROUTES.LOG_OUT);
       }
@@ -50,9 +41,5 @@ export default (Authenticated) => {
     return { token: state.auth.authenticated };
   };
 
-  const mapActionsToProps = (dispatch) => ({
-    onRefresh: (token) => dispatch(actions.refresh(token)),
-  });
-
-  return connect(mapStateToProps, mapActionsToProps)(ComposedComponent);
+  return connect(mapStateToProps)(ComposedComponent);
 };

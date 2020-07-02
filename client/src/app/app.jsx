@@ -16,7 +16,8 @@ import { authStore } from '../stores';
 import { ROUTES } from '../constants';
 import paths from './paths';
 import api from 'api';
-
+import * as actions from 'actions/auth';
+import { refresh } from 'actions/auth';
 /**
  * @description
  * Creating main redux store to authenticate our credentials
