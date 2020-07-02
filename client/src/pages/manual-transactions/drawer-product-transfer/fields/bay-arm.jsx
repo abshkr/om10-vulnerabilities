@@ -42,7 +42,7 @@ export default class BayArm extends Component {
         prodDens = prodDens + calcBaseRatios(item?.stream_tankden, item?.ratio_value, ratio_total);
       }
     }
-    console.log('prod dens2', prodDens);
+    console.log('BayArm: prod density - ', prodDens);
 
     return prodDens;
   };
