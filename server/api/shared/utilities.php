@@ -85,12 +85,6 @@ class Utilities
 
     public static function http_cgi_invoke($cgi, $query_string = null)
     {
-        if (!isset($_SESSION)) { 
-            session_start(); 
-            // write_log(json_encode($_SESSION), __FILE__, __LINE__);
-        } 
-        // write_log(json_encode($_SESSION), __FILE__, __LINE__);
-
         $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/" . $cgi . "?";
         if ($query_string) {
             $url .= $query_string . "&";
@@ -113,12 +107,7 @@ class Utilities
             }
         }
         
-        if (isset($_SESSION["SESSION"])) {
-            $url .= "sess_id=" . $_SESSION["SESSION"];
-        } else {
-            // $url .= "sess_id=rljLkPnHhSEN";
-            $url = rtrim($url, '&');
-        }
+        $url .= "sess_id=" . self::getCurrentSession();
 
         write_log(sprintf("%s::%s(), url:%s", __CLASS__, __FUNCTION__, $url),
             __FILE__, __LINE__);
