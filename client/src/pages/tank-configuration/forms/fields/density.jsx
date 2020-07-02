@@ -27,11 +27,11 @@ const Density = ({ form, value, product }) => {
       return Promise.reject(`${t('placeholder.maxPlaces')}: 3 ─ ${t('descriptions.invalidDecimals')}`);
     }
 
-    if (_.toInteger(input) < _.toInteger(low)) {
+    if (_.toNumber(input) < _.toNumber(low)) {
       return Promise.reject(`${t('placeholder.limit')}: ${low} ─ ${t('descriptions.valueTooLow')}`);
     }
 
-    if (_.toInteger(input) > _.toInteger(high)) {
+    if (_.toNumber(input) > _.toNumber(high)) {
       return Promise.reject(`${t('placeholder.limit')}: ${high} ─ ${t('descriptions.valueTooHigh')}`);
     }
 
