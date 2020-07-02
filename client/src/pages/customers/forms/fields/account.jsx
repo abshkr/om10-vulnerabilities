@@ -42,9 +42,12 @@ const Account = ({ form, value }) => {
     }
   }, [data, setMatched]);
 
-  // useEffect(() => {
-  //   validateFields(['cust_account']);
-  // }, [matched, validateFields]);
+  // this part is crucial for the instant verification of value
+  useEffect(() => {
+    if (account?.length>0) {
+      validateFields(['cust_account']);
+    }
+  }, [matched, account, validateFields]);
 
   const validate = (rule, input) => {
     console.log("account validate")
@@ -68,7 +71,7 @@ const Account = ({ form, value }) => {
       label={t('fields.custAccount')}
       hasFeedback
       rules={[{ required: true, validator: validate }]}
-      validateStatus={status}
+      validateStatus={account ? status : null}
       shouldUpdate
     >
       <Input disabled={!!value} onChange={handleFieldChange} />

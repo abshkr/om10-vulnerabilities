@@ -272,6 +272,22 @@ class Equipment extends CommonClass
         }
     }
 
+    public function check_eqpt_code()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM GUI_EQUIPMENT_LIST WHERE EQPT_CODE = :eqpt_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':eqpt_code', $this->eqpt_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function searchCount($eqpt_code, $eqpt_owner = null, $eqpt_etp = null)
     {
         Utilities::sanitize($this);

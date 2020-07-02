@@ -1,4 +1,5 @@
 export const READ = '/api/pages/equipment/read.php';
+export const CHECK_EQPT_CODE = '/api/pages/equipment/check_eqpt_code.php';
 export const CREATE = '/api/pages/equipment/create.php';
 export const UPDATE = '/api/pages/equipment/update.php';
 export const DELETE = '/api/pages/equipment/delete.php';

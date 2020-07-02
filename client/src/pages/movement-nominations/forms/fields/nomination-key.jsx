@@ -46,8 +46,10 @@ const NominationKey = ({ form, value }) => {
   }, [data, setMatched]);
 
   useEffect(() => {
-    validateFields(['mv_key']);
-  }, [matched, validateFields]);
+    if (nomkey?.length>0) {
+      validateFields(['mv_key']);
+    }
+  }, [matched, nomkey, validateFields]);
 
   const validate = (rule, input) => {
     if (matched && !value) {
