@@ -1050,7 +1050,7 @@ const ManualTransactions = ({ popup, params }) => {
 
   const modifiers = (
     <>
-      <Button type="primary" icon={<SyncOutlined />} onClick={onLoad} disabled={!access.canCreate}>
+      <Button type="primary" icon={<SyncOutlined />} onClick={onLoad} disabled={true}>
         {t('operations.load')}
       </Button>
 
