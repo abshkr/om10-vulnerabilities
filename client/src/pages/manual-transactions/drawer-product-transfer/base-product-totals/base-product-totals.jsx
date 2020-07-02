@@ -33,6 +33,15 @@ const BaseProductTotals = ({
 
   const fields = columns(t);
 
+  const sumBaseTotals = (totals) => {
+    const obs = _.sumBy(totals, 'trsf_bs_qty_amb_tot');
+    const std = _.sumBy(totals, 'trsf_bs_qty_cor_tot');
+    const mass = _.sumBy(totals, 'trsf_bs_load_kg_tot');
+    setObsTotal(obs);
+    setStdTotal(std);
+    setMassTotal(mass);
+  };
+
   const adjustBaseTotals = (items) => {
     const totals = [];
     console.log('BaseProductTotals: adjustBaseTotals - start', items);
@@ -58,12 +67,13 @@ const BaseProductTotals = ({
     console.log('BaseProductTotals: adjustBaseTotals - end', totals);
 
     // adjust sum totals
-    const obs = _.sumBy(totals, 'trsf_bs_qty_amb_tot');
+    sumBaseTotals(totals);
+    /* const obs = _.sumBy(totals, 'trsf_bs_qty_amb_tot');
     const std = _.sumBy(totals, 'trsf_bs_qty_cor_tot');
     const mass = _.sumBy(totals, 'trsf_bs_load_kg_tot');
     setObsTotal(obs);
     setStdTotal(std);
-    setMassTotal(mass);
+    setMassTotal(mass); */
 
     return totals;
   }
@@ -123,6 +133,7 @@ const BaseProductTotals = ({
     } else {
       if (dataLoadFlag === 1) {
         setData(dataLoaded.base_totals);
+        sumBaseTotals(dataLoaded.base_totals);
         setDataLoadFlag(2);
         console.log('MT 4 - BaseTotals: data are loaded!', dataLoadFlag);
       }
@@ -133,7 +144,7 @@ const BaseProductTotals = ({
     //if (dataLoadFlag === 0) {
       getBaseTotals();
     //}
-  }, [selected, transfers]);
+  }, [selected]);
 
   useEffect(() => {
     if (data) {

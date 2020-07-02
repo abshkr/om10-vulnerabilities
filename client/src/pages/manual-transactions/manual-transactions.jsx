@@ -923,6 +923,10 @@ const ManualTransactions = ({ popup, params }) => {
       //setDataLoadFlagDrawTransfers(1);
       console.log('MT 1 - set form fields done! start to set Drawer Transfers');
       setDataLoadFlagDrawTransfers(1);
+      setDataLoadFlagBaseTransfers(1);
+      setDataLoadFlagBaseTotals(1);
+      setDataLoadFlagMeterTransfers(1);
+      setDataLoadFlagMeterTotals(1);
   }
   }, [dataLoadFlagForm]);
 
@@ -931,11 +935,16 @@ const ManualTransactions = ({ popup, params }) => {
       console.log('MTmain: dataLoadFlagDrawTransfers', dataLoadFlagDrawTransfers);
       setDataLoadFlagDrawTransfers(3);
       //setDataLoadFlagBaseTransfers(1);
-      setDataLoadFlagBaseTransfers(1);
-      setDataLoadFlagBaseTotals(1);
-      setDataLoadFlagMeterTransfers(1);
-      setDataLoadFlagMeterTotals(1);
       console.log('MT 2 - set Drawer Transfers done! start to set Base Transfers');
+      if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers == 3 &&
+        dataLoadFlagBaseTransfers == 3 &&
+        dataLoadFlagBaseTotals == 3 &&
+        dataLoadFlagMeterTransfers == 3 &&
+        dataLoadFlagMeterTotals == 3
+      ) {
+        resetLoadData();
+      }
     }
   }, [dataLoadFlagDrawTransfers]);
 
@@ -945,6 +954,15 @@ const ManualTransactions = ({ popup, params }) => {
       setDataLoadFlagBaseTransfers(3);
       //setDataLoadFlagBaseTotals(1);
       console.log('MT 3 - set Base Transfers done! start to set Base Totals');
+      if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers == 3 &&
+        dataLoadFlagBaseTransfers == 3 &&
+        dataLoadFlagBaseTotals == 3 &&
+        dataLoadFlagMeterTransfers == 3 &&
+        dataLoadFlagMeterTotals == 3
+      ) {
+        resetLoadData();
+      }
     }
   }, [dataLoadFlagBaseTransfers]);
 
@@ -954,6 +972,15 @@ const ManualTransactions = ({ popup, params }) => {
       setDataLoadFlagBaseTotals(3);
       //setDataLoadFlagMeterTransfers(1);
       console.log('MT 4 - set Base Totals done! start to set Meter Transfers');
+      if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers == 3 &&
+        dataLoadFlagBaseTransfers == 3 &&
+        dataLoadFlagBaseTotals == 3 &&
+        dataLoadFlagMeterTransfers == 3 &&
+        dataLoadFlagMeterTotals == 3
+      ) {
+        resetLoadData();
+      }
     }
   }, [dataLoadFlagBaseTotals]);
 
@@ -963,6 +990,15 @@ const ManualTransactions = ({ popup, params }) => {
       setDataLoadFlagMeterTransfers(3);
       //setDataLoadFlagMeterTotals(1);
       console.log('MT 5 - set Meter Transfers done! start to set Meter Totals');
+      if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers == 3 &&
+        dataLoadFlagBaseTransfers == 3 &&
+        dataLoadFlagBaseTotals == 3 &&
+        dataLoadFlagMeterTransfers == 3 &&
+        dataLoadFlagMeterTotals == 3
+      ) {
+        resetLoadData();
+      }
     }
   }, [dataLoadFlagMeterTransfers]);
 
@@ -970,9 +1006,16 @@ const ManualTransactions = ({ popup, params }) => {
     if (dataLoadFlagMeterTotals === 2) {
       console.log('MTmain: dataLoadFlagMeterTotals', dataLoadFlagMeterTotals);
       setDataLoadFlagMeterTotals(3);
-      // setDataLoaded(null);
-      resetLoadData();
       console.log('MT 6 - set Meter Totals done! All data loaded! Clean the dataLoaded!');
+      if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers == 3 &&
+        dataLoadFlagBaseTransfers == 3 &&
+        dataLoadFlagBaseTotals == 3 &&
+        dataLoadFlagMeterTransfers == 3 &&
+        dataLoadFlagMeterTotals == 3
+      ) {
+        resetLoadData();
+      }
     }
   }, [dataLoadFlagMeterTotals]);
 

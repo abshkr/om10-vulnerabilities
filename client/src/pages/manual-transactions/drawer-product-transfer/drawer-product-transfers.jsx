@@ -446,9 +446,10 @@ const DrawerProductTransfers = ({
         setPayload(transformed);
       } else {
         if (dataLoadFlagDrawTransfers === 1) {
-          setPayload(dataLoaded.transfers);
+          setPayload(dataLoaded?.transfers);
           setDataLoadFlagDrawTransfers(2);
           console.log('MT 2 - DrawProductTransfers: data are loaded!', dataLoadFlagDrawTransfers);
+          setSelected(dataLoaded?.transfers?.[0]);
         }
       }
       setLoading(false);
