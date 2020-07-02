@@ -1069,7 +1069,7 @@
     "rec_id": "Record ID",
     "message_id": "Message ID",
     "recv_time": "Receive Time",
-    "dest_site": "Destinated Site",
+    "dest_site": "Destination Site",
     "message_type": "Message Type",
     "file_name": "File Name",
     "file_format": "File Format",
