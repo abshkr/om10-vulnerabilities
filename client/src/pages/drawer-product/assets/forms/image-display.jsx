@@ -55,7 +55,13 @@ const ImageDisplay = ({onImageClick, refresh = "" }) => {
                 height: 65,
                 width: 50,
               }} 
-              />
+              ><a value={item.name} onClick={onSelect} style={{
+                display: 'block',
+                height: '100%',
+                width: '100%',
+                textDecoration: 'none',
+              }}></a>
+              </div>
               <div style={{ height: 25, textAlign: 'center'}}>
                 <a value={item.name} onClick={onSelect} >{item.name}</a>
               </div>
