@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Input, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-const InputNumber = ({ name, label, min, max, required, decimals }) => {
+const InputNumber = ({ form, value, name, label, min, max, required, decimals }) => {
   const { t } = useTranslation();
+
+  const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
     const number = _.toNumber(input);
@@ -36,6 +38,21 @@ const InputNumber = ({ name, label, min, max, required, decimals }) => {
 
     return Promise.resolve();
   };
+
+  useEffect(() => {
+    if (value && setFieldsValue) {
+      const index = value[name];
+
+      const parsed = index !== '' ? _.toNumber(index) : '';
+      const invalid = index !== '' && _.isNaN(parsed);
+
+      if (!invalid) {
+        setFieldsValue({
+          [name]: parsed,
+        });
+      }
+    }
+  }, [value, setFieldsValue]);
 
   return (
     <Form.Item name={name} label={label} rules={[{ validator: validate }]}>

@@ -7,7 +7,6 @@ import {
   QuestionCircleOutlined,
   CloseOutlined,
 } from '@ant-design/icons';
-
 import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
@@ -16,6 +15,7 @@ import _ from 'lodash';
 import api, { LOGICAL_PRINTERS } from '../../../api';
 
 import { Company, Usage, Printer } from './fields';
+import { InputNumber } from 'components';
 
 const TabPane = Tabs.TabPane;
 
