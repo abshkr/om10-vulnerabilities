@@ -20,11 +20,11 @@ import {
   Input,
   Select,
   Checkbox,
-  Divider,
+  Card,
   Row,
   Col,
 } from 'antd';
-import 'antd/dist/antd.css';
+// import 'antd/dist/antd.css';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 
@@ -377,69 +377,68 @@ const FormModal = ({
                 ))}
               </Select>
             </Form.Item>
-            <Divider orientation="left" plain="plain">
-              {t('fields.companyType')}
-            </Divider>
-            <Row>
-              <Col span={6}>
-                <Form.Item name="site_manager" noStyle>
-                  <Checkbox checked={site_manager && !IS_CREATING} disabled={true} onChange={onManagerChange}>
-                    {t('fields.siteManager')}
-                  </Checkbox>
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item name="supplier" noStyle>
-                  <Checkbox checked={supplier} onChange={onSupplierChange}>
-                    {t('fields.supplier')}
-                  </Checkbox>
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item name="carrier" noStyle>
-                  <Checkbox checked={carrier} onChange={onCarrierChange}>
-                    {t('fields.carrier')}
-                  </Checkbox>
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item name="customer" noStyle>
-                  <Checkbox checked={customer} onChange={onCustomerChange}>
-                    {t('fields.customer')}
-                  </Checkbox>
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={6}>
-                <Form.Item name="drawer" noStyle>
-                  <Checkbox checked={drawer} onChange={onDrawerChange}>
-                    {t('fields.drawer')}
-                  </Checkbox>
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item name="issuer" noStyle>
-                  <Checkbox checked={issuer} onChange={onIssuerChange}>
-                    {t('fields.issuer')}
-                  </Checkbox>
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item name="employer" noStyle>
-                  <Checkbox checked={employer} onChange={onEmployerChange}>
-                    {t('fields.employer')}
-                  </Checkbox>
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item name="host" noStyle>
-                  <Checkbox checked={host} onChange={onHostChange}>
-                    {t('fields.host')}
-                  </Checkbox>
-                </Form.Item>
-              </Col>
-            </Row>
+            <Card size="small" title={t('fields.companyType')}>
+              <Row gutter={[8, 10]}>
+                <Col span={6}>
+                  <Form.Item name="site_manager" noStyle>
+                    <Checkbox checked={site_manager && !IS_CREATING} disabled={true} onChange={onManagerChange}>
+                      {t('fields.siteManager')}
+                    </Checkbox>
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item name="supplier" noStyle>
+                    <Checkbox checked={supplier} onChange={onSupplierChange}>
+                      {t('fields.supplier')}
+                    </Checkbox>
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item name="carrier" noStyle>
+                    <Checkbox checked={carrier} onChange={onCarrierChange}>
+                      {t('fields.carrier')}
+                    </Checkbox>
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item name="customer" noStyle>
+                    <Checkbox checked={customer} onChange={onCustomerChange}>
+                      {t('fields.customer')}
+                    </Checkbox>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={[8, 10]}>
+                <Col span={6}>
+                  <Form.Item name="drawer" noStyle>
+                    <Checkbox checked={drawer} onChange={onDrawerChange}>
+                      {t('fields.drawer')}
+                    </Checkbox>
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item name="issuer" noStyle>
+                    <Checkbox checked={issuer} onChange={onIssuerChange}>
+                      {t('fields.issuer')}
+                    </Checkbox>
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item name="employer" noStyle>
+                    <Checkbox checked={employer} onChange={onEmployerChange}>
+                      {t('fields.employer')}
+                    </Checkbox>
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item name="host" noStyle>
+                    <Checkbox checked={host} onChange={onHostChange}>
+                      {t('fields.host')}
+                    </Checkbox>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Card>
           </TabPane>
         </Tabs>
       </Form>
