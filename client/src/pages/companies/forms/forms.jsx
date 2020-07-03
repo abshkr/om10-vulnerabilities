@@ -279,30 +279,35 @@ const FormModal = ({
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="40vw"
+      width="48vw"
       visible={visible}
       footer={
         <>
-          <Button
-            type="primary"
-            // icon={<FormOutlined />}
-            style={{ float: 'left' }}
-            loading={isValidating}
-            onClick={() => specialActions()}
-            disabled={!auth.canUpdate}
-          >
-            {t('operations.specialAction')}
-          </Button>
-          <Button
-            type="primary"
-            // icon={<ApiOutlined />}
-            style={{ float: 'left', marginLeft: 5 }}
-            loading={isValidating}
-            onClick={() => companyRelations()}
-            disabled={!auth.canUpdate}
-          >
-            {t('operations.companyRelation')}
-          </Button>
+          {!IS_CREATING && (
+            <Button
+              type="primary"
+              // icon={<FormOutlined />}
+              style={{ float: 'left' }}
+              loading={isValidating}
+              onClick={() => specialActions()}
+              disabled={!auth.canUpdate}
+            >
+              {t('operations.specialAction')}
+            </Button>
+          )}
+          
+          {!IS_CREATING && (
+            <Button
+              type="primary"
+              // icon={<ApiOutlined />}
+              style={{ float: 'left', marginLeft: 5 }}
+              loading={isValidating}
+              onClick={() => companyRelations()}
+              disabled={!auth.canUpdate}
+            >
+              {t('operations.companyRelation')}
+            </Button>
+          )}
 
           <Button
             htmlType="button"
