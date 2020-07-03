@@ -18,7 +18,7 @@ import {
   notification,
   Drawer,
   Input,
-  InputNumber,
+  // InputNumber,
   Select,
   Checkbox,
   Card,
@@ -30,6 +30,7 @@ import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 
 import api, { COMPANIES } from '../../../api';
+import { InputNumber } from '../../../components';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -356,9 +357,20 @@ const FormModal = ({
             <Form.Item name="cmpy_name" label={t('fields.companyName')} rules={[{ required: true, validator: validateName }]}>
               <Input></Input>
             </Form.Item>
-            <Form.Item name="cmpy_aoi" label={t('fields.aoiNumber')}>
+            {/* <Form.Item name="cmpy_aoi" label={t('fields.aoiNumber')}>
               <InputNumber maxLength={4} min={0} max={9999} precision={0} style={{ width: '100%' }}></InputNumber>
-            </Form.Item>
+            </Form.Item> */}
+            <InputNumber 
+              form={form}
+              value={value?.cmpy_aoi}
+              name="cmpy_aoi"
+              label={t('fields.aoiNumber')}
+              maxLength={4}
+              min={0}
+              max={9999}
+              precision={0}
+              style={{ width: '100%' }}
+            />
             <Form.Item name="cmpy_addr" label={t('fields.address')}>
               <Select
                 loading={isValidating}

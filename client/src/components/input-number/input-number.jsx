@@ -3,7 +3,22 @@ import { Input, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-const InputNumber = ({ form, value, name, label, min, max, required, decimals }) => {
+const InputNumber = ({ 
+  form,
+  value,
+  name,
+  label,
+  min,
+  max,
+  precision,
+  required,
+  id,
+  disabled,
+  allowClear,
+  maxLength,
+  onChange,
+  onPressEnter
+}) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -12,7 +27,8 @@ const InputNumber = ({ form, value, name, label, min, max, required, decimals })
     const number = _.toNumber(input);
     const invalid = _.isNaN(number);
 
-    const precision = _.toString(number).split('.')[1]?.length || 0;
+    const decimals = _.toString(number).split('.')[1]?.length || 0;
+    console.log('Custom InputNumber Validation', decimals, precision);
 
     if ((required && input === '') || (required && !input)) {
       return Promise.reject(`${t('validate.set')} ─ ${label}`);
@@ -22,10 +38,8 @@ const InputNumber = ({ form, value, name, label, min, max, required, decimals })
       return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
     }
 
-    if (precision > decimals) {
-      return Promise.reject(
-        `${t('validate.outOfRange')}: ${decimals} ─ ${t('validate.decimalPlacesExceeded')}`
-      );
+    if (decimals > precision) {
+      return Promise.reject(`${t('validate.decimalPlacesExceeded')} ${precision} ─ ${t('descriptions.invalidDecimals')}`);
     }
 
     if (!invalid && number > max) {
@@ -55,8 +69,15 @@ const InputNumber = ({ form, value, name, label, min, max, required, decimals })
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name={name} label={label} rules={[{ validator: validate }]}>
-      <Input />
+    <Form.Item name={name} label={label} rules={[{ required: required, validator: validate }]}>
+      <Input 
+        id={id}
+        disabled={disabled}
+        allowClear={allowClear}
+        maxLength={maxLength}
+        onChange={onChange}
+        onPressEnter={onPressEnter}
+      />
     </Form.Item>
   );
 };
