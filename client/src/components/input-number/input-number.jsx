@@ -17,7 +17,7 @@ const InputNumber = ({ name, label, min, max, required, decimals }) => {
     }
 
     if (input && input !== '' && invalid) {
-      return Promise.reject(`${t('placeholder.wrongType')}: ${t('types.integer')}`);
+      return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
     }
 
     if (precision > decimals) {
