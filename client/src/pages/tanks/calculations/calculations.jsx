@@ -394,11 +394,14 @@ const Calculations = ({ selected, access, isLoading, config }) => {
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
             } else {
-              setFieldsValue({
+              /* setFieldsValue({
                 tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
                 tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
                 tank_liquid_kg: _.round(response?.data?.REAL_KG, 2),
-              });
+              }); */
+              selected.tank_amb_vol = _.round(response?.data?.REAL_LITRE, 2);
+              selected.tank_cor_vol = _.round(response?.data?.REAL_LITRE15, 2);
+              selected.tank_liquid_kg = _.round(response?.data?.REAL_LITRE15, 2);
               notification.success({
                 message: t('messages.calculateSuccess'),
                 description: t('descriptions.calculateSuccess'),
