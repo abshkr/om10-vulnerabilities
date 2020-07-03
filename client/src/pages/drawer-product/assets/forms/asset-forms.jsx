@@ -27,7 +27,7 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
     if (prod_code) {
       setFilterValue('' + prod_code);
     }
-    mutate(DRAWER_PRODUCTS.READ);
+    mutate(DRAWER_PRODUCTS.ASSETS);
   };
 
   const onFinish = async () => {
