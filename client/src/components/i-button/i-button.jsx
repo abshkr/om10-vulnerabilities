@@ -20,6 +20,7 @@ const IButton = ({ setSearch, t }) => {
             Modal.destroyAll();
           }}
           onPressEnter={Modal.destroyAll()}
+          autoFocus={true}
         />
       </>
     ),
