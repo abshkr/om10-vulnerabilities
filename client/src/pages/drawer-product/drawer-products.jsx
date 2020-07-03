@@ -26,7 +26,7 @@ const DrawerProduct = () => {
 
   const access = useAuth('M_DRAWERPRODUCTS');
   
-  const { data: payload, isValidating, revalidate } = useSWR(DRAWER_PRODUCTS.ASSETS);
+  const { data: payload, isValidating, revalidate } = useSWR(DRAWER_PRODUCTS.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

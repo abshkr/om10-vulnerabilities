@@ -16,7 +16,7 @@ const Assets = ({access}) => {
   
   const { t } = useTranslation();
 
-  const { data: payload, isValidating, revalidate } = useSWR(DRAWER_PRODUCTS.READ);
+  const { data: payload, isValidating, revalidate } = useSWR(DRAWER_PRODUCTS.ASSETS);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
