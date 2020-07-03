@@ -241,6 +241,36 @@ const FormModal = ({
     });
   };
 
+  const validateCode = (rule, input) => {
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.companyCode')}`);
+      }
+    }
+
+    const len = (new TextEncoder().encode(input)).length;
+    if (input && len > 16) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateName = (rule, input) => {
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.companyName')}`);
+      }
+    }
+
+    const len = (new TextEncoder().encode(input)).length;
+    if (input && len > 300) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 300 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -311,13 +341,13 @@ const FormModal = ({
       <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1" style={{ height: '60vh' }}>
-            <Form.Item name="cmpy_code" label={t('fields.companyCode')} rules={[{ required: true }]}>
+            <Form.Item name="cmpy_code" label={t('fields.companyCode')} rules={[{ required: true, validator: validateCode }]}>
               <Input disabled={!IS_CREATING}></Input>
             </Form.Item>
             <Form.Item name="cmpy_plant" label={t('fields.plantCode')}>
               <Input></Input>
             </Form.Item>
-            <Form.Item name="cmpy_name" label={t('fields.companyName')} rules={[{ required: true }]}>
+            <Form.Item name="cmpy_name" label={t('fields.companyName')} rules={[{ required: true, validator: validateName }]}>
               <Input></Input>
             </Form.Item>
             <Form.Item name="cmpy_aoi" label={t('fields.aoiNumber')}>
