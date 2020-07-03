@@ -27,6 +27,9 @@ import { DateRange,
   NominationSource,
   NominationTerminal,
   NominationNumber,
+  JournalSearch,
+  JournalEvent,
+  JournalCategory,
 } from './fields';
 
 const SearchForm = ({onSearch, fields}) => {
@@ -59,8 +62,11 @@ const SearchForm = ({onSearch, fields}) => {
       {fields?.mv_srctype && <NominationSource />}
       {fields?.mv_terminal && <NominationTerminal />}
       {fields?.mv_number && <NominationNumber />}
+      {fields?.journal_msg && <JournalSearch />}
+      {fields?.journal_event && <JournalEvent />}
+      {fields?.journal_category && <JournalCategory />}
       
-      <DateRange form={form} timeOption={fields?.time_option} />
+      <DateRange form={form} timeOption={fields?.time_option} force={fields?.journal_msg}/>
       
       <div style={{marginTop: "2rem"}}>
         <Button

@@ -1306,7 +1306,8 @@ https://{{server_ip}}/api/pages/company_bay/delete.php
 https://10.1.10.66/api/pages/journal/read.php
 https://10.1.10.66/api/pages/journal/read.php?start_date=2019-05-25%2014:11&end_date=2019-05-26%2014:11&target_str=Log&types=SYSTEM:CONF
 https://10.1.10.66/api/pages/journal/current_seq.php
-https://10.1.10.66/api/pages/journal/types.php
+https://10.1.10.66/api/pages/journal/event_types.php
+https://10.1.10.66/api/pages/journal/categories.php
 https://10.1.10.66/api/pages/journal/search.php?start_date=2018-11-25%2014:11:01&end_date=2018-11-26%2014:11:01&target_str=Log&types=SYSTEM:CONF&start_num=1&end_num=10
 
 //Profile

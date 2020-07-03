@@ -5,10 +5,10 @@ import { Form, DatePicker, Checkbox, Input, Select } from 'antd';
 import moment from 'moment';
 import { SETTINGS } from '../../../constants';
 
-const DateRange = ({form, timeOption}) => {
+const DateRange = ({form, timeOption, force}) => {
   const { t } = useTranslation(); 
   const { setFieldsValue } = form;
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(force);
   
   const openOrderTimeOptions = [
     {
@@ -82,7 +82,14 @@ const DateRange = ({form, timeOption}) => {
         name="use_date_range"
         noStyle
       >
-        <Checkbox style = {{marginTop: "3px", display: "block"}} onChange={onCheckBox}>{t('descriptions.maxDateRange')}</Checkbox>
+        <Checkbox 
+          style = {{marginTop: "3px", display: "block"}} 
+          onChange={onCheckBox}
+          disabled={force}
+          defaultChecked={force}
+        >
+          {t('descriptions.maxDateRange')}
+        </Checkbox>
       </Form.Item>
 
       {timeOption === "open_order" && <Form.Item
