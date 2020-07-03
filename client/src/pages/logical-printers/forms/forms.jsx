@@ -15,6 +15,7 @@ import _ from 'lodash';
 import api, { LOGICAL_PRINTERS } from '../../../api';
 
 import { Company, Usage, Printer } from './fields';
+import { InputNumber } from 'components';
 
 const TabPane = Tabs.TabPane;
 

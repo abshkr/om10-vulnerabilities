@@ -1598,9 +1598,9 @@
     "uploadFailed": "Failed to upload image: ",
     "noCompanyType": "Please select at least one company type",
     "productGrpUsed": "Cannot delete product group that has product in it",
-	"prescheduleReady": "Please select product in at least one compartment",
-	"preOrderReady": "Please input quantity for at least one product",
-	"preOrderProdUnit": "Please select unit for product"
+    "prescheduleReady": "Please select product in at least one compartment",
+    "preOrderReady": "Please input quantity for at least one product",
+    "preOrderProdUnit": "Please select unit for product"
   },
 
   "placeholder": {
@@ -1723,6 +1723,8 @@
     "wrongType": "Incorrect Type",
     "mustBeNumber": "Must Be Number",
     "outOfRange": "Value Out of Range",
+    "outOfRangeMin": "Value Out of Range, Min Value:",
+    "outOfRangeMax": "Value Out of Range, Max Value:",
     "mustBeBetween": "Must Be Between",
     "prodMoveSrcAndDst": "Source and/or destination must be a tank and specified",
     "invalidInput": "Invalid Input",

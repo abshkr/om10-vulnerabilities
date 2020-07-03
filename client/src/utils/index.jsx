@@ -1,5 +1,4 @@
 import search from './search';
-import authLevel from './auth-level';
 import { unitConverter, massConverter } from './unit-converter';
 import generateOptions from './generate-options';
 import convertToLocale from './convert-to-locale';
@@ -19,7 +18,6 @@ export {
   convertToLocale,
   unitConverter,
   massConverter,
-  authLevel,
   getDateTimeFormat,
   getDateRangeOffset,
   calcBaseRatios,

@@ -98,15 +98,13 @@ const General = ({ form, value, config }) => {
         <Col span={12}>
           <Form.Item
             name="tank_density"
-            label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@${
-              config?.vsmCompensation || config?.referenceTemperature
-            }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
+            label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
+              value?.tank_base_dens_hi
+            }) ${`@${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
+              config?.referenceTemperature
+            )}ºF`}`}
           >
-            <InputNumber
-              // min={value?.tank_base_dens_lo}
-              // max={value?.tank_base_dens_hi}
-              style={{ width: '100%' }}
-            />
+            <InputNumber style={{ width: '100%' }} />
           </Form.Item>
         </Col>
       </Row>

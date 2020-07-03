@@ -18,7 +18,7 @@ const Calendar = ({ handleChange, start, end, disabled, max, format }) => {
   const limit = max || 1095;
 
   const ranges = {
-    [t('fields.today')]: [moment(), moment(), 'range'],
+    [t('fields.today')]: [moment().startOf('day'), moment().endOf('day'), 'range'],
     [t('fields.thisWeek')]: [moment().startOf('week'), moment().endOf('week'), 'range'],
     [t('fields.thisMonth')]: [moment().startOf('month'), moment().endOf('month'), 'range'],
   };
