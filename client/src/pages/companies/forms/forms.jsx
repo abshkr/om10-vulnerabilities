@@ -18,6 +18,7 @@ import {
   notification,
   Drawer,
   Input,
+  InputNumber,
   Select,
   Checkbox,
   Card,
@@ -356,7 +357,7 @@ const FormModal = ({
               <Input></Input>
             </Form.Item>
             <Form.Item name="cmpy_aoi" label={t('fields.aoiNumber')}>
-              <Input></Input>
+              <InputNumber maxLength={4} min={0} max={9999} precision={0} style={{ width: '100%' }}></InputNumber>
             </Form.Item>
             <Form.Item name="cmpy_addr" label={t('fields.address')}>
               <Select
