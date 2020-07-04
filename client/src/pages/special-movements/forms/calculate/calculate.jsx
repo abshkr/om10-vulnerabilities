@@ -3,10 +3,13 @@ import useSWR from 'swr';
 import api from 'api';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber, Select } from 'antd';
+import _ from 'lodash';
 
 import { SPECIAL_MOVEMENTS } from 'api';
+import { useConfig } from '../../../../hooks';
 
 const Calculate = ({ form, value, disabled, type, tank }) => {
+  const config = useConfig();
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(SPECIAL_MOVEMENTS.UNITS);
@@ -50,6 +53,11 @@ const Calculate = ({ form, value, disabled, type, tank }) => {
         mlitm_qty_kg: value?.mlitm_qty_kg,
         mlitm_temp_amb: value?.mlitm_temp_amb,
         mlitm_dens_cor: value?.mlitm_dens_cor,
+        // mlitm_qty_amb: _.round(_.toNumber(value?.mlitm_qty_amb), config.precisionVolume),
+        // mlitm_qty_cor: _.round(_.toNumber(value?.mlitm_qty_cor), config.precisionVolume),
+        // mlitm_qty_kg: _.round(_.toNumber(value?.mlitm_qty_kg), config.precisionMass),
+        // mlitm_temp_amb: _.round(_.toNumber(value?.mlitm_temp_amb), config.precisionTemperature),
+        // mlitm_dens_cor: _.round(_.toNumber(value?.mlitm_dens_cor), config.precisionDensity),
       });
     }
   }, [value, setFieldsValue]);
@@ -71,15 +79,15 @@ const Calculate = ({ form, value, disabled, type, tank }) => {
   return (
     <div>
       <Form.Item name="mlitm_qty_amb" label={t('fields.observedQuantity')}>
-        <InputNumber disabled={IS_DISALBED} style={{ width: '100%' }} />
+        <InputNumber precision={config.precisionVolume} disabled={IS_DISALBED} style={{ width: '100%' }} />
       </Form.Item>
 
       <Form.Item name="mlitm_qty_cor" label={t('fields.standardQuantity')}>
-        <InputNumber disabled={IS_DISALBED} style={{ width: '100%' }} />
+        <InputNumber precision={config.precisionVolume} disabled={IS_DISALBED} style={{ width: '100%' }} />
       </Form.Item>
 
       <Form.Item name="mlitm_qty_kg" label={t('fields.observedMass')}>
-        <InputNumber disabled={IS_DISALBED} style={{ width: '100%' }} />
+        <InputNumber precision={config.precisionMass} disabled={IS_DISALBED} style={{ width: '100%' }} />
       </Form.Item>
 
       <Form.Item
@@ -87,6 +95,7 @@ const Calculate = ({ form, value, disabled, type, tank }) => {
         label={`${t('fields.observedTemperature')} [${limit ? `${limit.temp_lo} - ${limit.temp_hi}` : ''}]`}
       >
         <InputNumber
+          precision={config.precisionTemperature}
           min={limit?.temp_lo}
           max={limit?.temp_hi}
           disabled={IS_DISALBED}
@@ -99,6 +108,7 @@ const Calculate = ({ form, value, disabled, type, tank }) => {
         label={`${t('fields.standardDensity')} [${limit ? `${limit.density_lo} - ${limit.density_hi}` : ''}]`}
       >
         <InputNumber
+          precision={config.precisionDensity}
           min={limit?.density_lo}
           max={limit?.density_hi}
           disabled={IS_DISALBED}
@@ -108,7 +118,7 @@ const Calculate = ({ form, value, disabled, type, tank }) => {
 
       <div style={{ display: 'flex' }}>
         <Form.Item name="mlitm_qty_rpt" label={t('fields.alternateQuantity')} style={{ width: '75%' }}>
-          <InputNumber disabled={IS_DISALBED} style={{ width: '100%' }} />
+          <InputNumber precision={config.precisionVolume} disabled={IS_DISALBED} style={{ width: '100%' }} />
         </Form.Item>
 
         <Form.Item name="mlitm_unit_rpt" label={t('fields.unit')} style={{ width: '25%', marginLeft: 5 }}>
