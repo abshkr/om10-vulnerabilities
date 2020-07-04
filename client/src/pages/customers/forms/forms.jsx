@@ -221,9 +221,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             <Account form={form} value={value} />
             <Supplier form={form} value={value} onChange={setSupplier} />
             <Customer form={form} value={value} supplier={supplier} />
-            <Address form={form} value={value} />
-            {!IS_CREATING && <Category form={form} value={value} />}
-            {!IS_CREATING && <Location form={form} value={value} />}
+            <Address form={form} value={value} reload={mainTabOn} />
+            {!IS_CREATING && <Category form={form} value={value} reload={mainTabOn} />}
+            {!IS_CREATING && <Location form={form} value={value} reload={mainTabOn} />}
             {!IS_CREATING && <Contact form={form} value={value} />}
             {!IS_CREATING && <Phone form={form} value={value} />}
             {!IS_CREATING && <PriceType form={form} value={value} />}

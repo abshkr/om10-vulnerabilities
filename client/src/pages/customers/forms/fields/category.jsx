@@ -6,10 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { CUSTOMER_CATEGORIES } from '../../../../api';
 import { Form, Select } from 'antd';
 
-const Category = ({ form, value }) => {
+const Category = ({ form, value, reload }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(CUSTOMER_CATEGORIES.READ);
+  const { data: options, isValidating, revalidate } = useSWR(CUSTOMER_CATEGORIES.READ);
 
   const { setFieldsValue } = form;
 
@@ -30,6 +30,12 @@ const Category = ({ form, value }) => {
       });
     }
   }, [value, setFieldsValue]);
+
+  useEffect(() => {
+    if (reload && revalidate) {
+      revalidate();
+    }
+  }, [reload, revalidate]);
 
   const handChange = (value) => {
     console.log('selection',value);
