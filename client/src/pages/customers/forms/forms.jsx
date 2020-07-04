@@ -68,6 +68,8 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     resetFields();
     handleFormState(false, null);
     mutate(CUSTOMERS.READ);
+    setDrawerWidth('60vw');
+    setMainTabOn(true);
   };
 
   const onFinish = async () => {

@@ -42,7 +42,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const [flag, setFlag] = useState(undefined);
   const [supplier, setSupplier] = useState(undefined);
   const [category, setCategory] = useState(undefined);
-  const [drawerWidth, setDrawerWidth] = useState('30vw');
+  const [drawerWidth, setDrawerWidth] = useState('50vw');
   const [mainTabOn, setMainTabOn] = useState(true);
 
   if (!!value) {
@@ -62,21 +62,23 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       setDrawerWidth('90vw');
       setMainTabOn(false);
     } else {
-      setDrawerWidth('30vw');
+      setDrawerWidth('50vw');
       setMainTabOn(true);
     }
   };
 
   const onFormClosed = () => {
+    resetFields();
     handleFormState(false, null);
-    setDrawerWidth('30vw');
+    setDrawerWidth('50vw');
     setMainTabOn(true);
   };
 
   const onComplete = () => {
+    resetFields();
     handleFormState(false, null);
     mutate(DELV_LOCATIONS.READ);
-    setDrawerWidth('30vw');
+    setDrawerWidth('50vw');
     setMainTabOn(true);
   };
 
@@ -144,11 +146,11 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     });
   };
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (!value) {
       resetFields();
     }
-  }, [resetFields, value]);
+  }, [resetFields, value]); */
 
   return (
     <Drawer
@@ -166,7 +168,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={() => onFormClosed()}
           >
             {t('operations.cancel')}
           </Button>
@@ -210,21 +212,67 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       >
         <Tabs onChange={doTabChanges}>
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Flag form={form} value={value} onChange={setFlag} />
-            <Code form={form} value={value} />
-            <Name form={form} value={value} />
-            <Address form={form} value={value} />
-            <Grid form={form} value={value} flag={flag} />
-            <TransportType form={form} value={value} />
-            <DocumentType form={form} value={value} />
-            <QuantityType form={form} value={value} />
-            <EquipmentType form={form} value={value} />
-            <TripTime form={form} value={value} />
-            <Distance form={form} value={value} />
-            <Tarrif form={form} value={value} />
-            <Contact form={form} value={value} />
-            <Phone form={form} value={value} />
-            <Profile form={form} value={value} />
+            <Row gutter={[8, 2]}>
+              <Col span={24}>
+                <Flag form={form} value={value} onChange={setFlag} />
+              </Col>
+            </Row>
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                <Code form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <Name form={form} value={value} />
+              </Col>
+            </Row>
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                <Address form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <Grid form={form} value={value} flag={flag} />
+              </Col>
+            </Row>
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                <TransportType form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <DocumentType form={form} value={value} />
+              </Col>
+            </Row>
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                <QuantityType form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <EquipmentType form={form} value={value} />
+              </Col>
+            </Row>
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                <TripTime form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <Distance form={form} value={value} />
+              </Col>
+            </Row>
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                <Tarrif form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <Contact form={form} value={value} />
+              </Col>
+            </Row>
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                <Phone form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <Profile form={form} value={value} />
+              </Col>
+            </Row>
           </TabPane>
           <TabPane tab={t('tabColumns.linkToCustomers')} disabled={IS_CREATING} key="2">
             <Row gutter={[8, 8]}>
