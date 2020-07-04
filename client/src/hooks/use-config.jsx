@@ -64,7 +64,17 @@ const useConfig = () => {
     showLSI: false,
     showSeals: false,
     externalBlendAllowed: false,
+    offset: null,
+    id: null,
     loading: true,
+    precisionAPI: 2,
+    precisionTemperature: 2,
+    precisionDensity: 3,
+    precisionLevel: 0,
+    precisionVolume: 0,
+    precisionMass: 0,
+    precisionAdditive: 3,
+    precisionSG: 6,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -182,7 +192,18 @@ const useConfig = () => {
         userAutoDelete: configurationObject?.URBAC_USER_AUTO_DELETE,
         userAutoLock: configurationObject?.URBAC_USER_AUTO_LOCK,
         externalBlendAllowed: configurationObject?.SITE_EXTERNAL_BLENDING_ALLOWED,
+        dateTimeFormat: configurationObject?.SITE_DATETIME_FORMAT || 'DD/MM/YYYY HH:mm:ss',
+        offset: configurationObject?.SERVER_TIME_OFFSET || '+00:00',
+        id: configurationObject?.SITE_IDENTIFIER,
         loading: false,
+        precisionAPI: configurationObject?.SITE_DEFAULT_PRECISION_API || 2,
+        precisionTemperature: configurationObject?.SITE_DEFAULT_PRECISION_TEMPERATURE || 2,
+        precisionDensity: configurationObject?.SITE_DEFAULT_PRECISION_DENSITY || 3,
+        precisionLevel: configurationObject?.SITE_DEFAULT_PRECISION_LEVEL || 0,
+        precisionVolume: configurationObject?.SITE_DEFAULT_PRECISION_VOLUME || 0,
+        precisionMass: configurationObject?.SITE_DEFAULT_PRECISION_MASS || 0,
+        precisionAdditive: configurationObject?.SITE_DEFAULT_PRECISION_ADDITIVE || 3,
+        precisionSG: configurationObject?.SITE_DEFAULT_PRECISION_SG || 6,
       });
     }
     // eslint-disable-next-line

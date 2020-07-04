@@ -22,15 +22,15 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        //tank_15_density: value?.tank_15_density,
-        //tank_density: value?.tank_density,
-        //tank_api: value?.tank_api,
-        //tank_prod_lvl: value?.tank_prod_lvl,
-        //tank_prod_c_of_e: value?.tank_prod_c_of_e,
+        // tank_15_density: value?.tank_15_density,
+        // tank_density: value?.tank_density,
+        // tank_api: value?.tank_api,
+        // tank_prod_lvl: value?.tank_prod_lvl,
+        // tank_prod_c_of_e: value?.tank_prod_c_of_e,
         tank_temp: value?.tank_temp,
-        tank_amb_vol: value?.tank_amb_vol,
-        tank_cor_vol: value?.tank_cor_vol,
-        tank_liquid_kg: value?.tank_liquid_kg,
+        // tank_amb_vol: value?.tank_amb_vol,
+        // tank_cor_vol: value?.tank_cor_vol,
+        // tank_liquid_kg: value?.tank_liquid_kg,
       });
 
       // initialize the density source for calculation
@@ -94,7 +94,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
       return Promise.reject(`${t('validate.wrongType')} ─ ${t('validate.mustBeNumber')}`);
     }
 
-    if (precision > 2) {
+    if (precision > config.precisionTemperature) {
       return Promise.reject(`${t('validate.outOfRange')} ─ ${t('validate.decimalPlacesExceeded')}`);
     }
 
@@ -161,7 +161,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
             min={value?.tank_base_dens_lo}
             max={value?.tank_base_dens_hi}
             style={{ width: '100%' }}
-            precision={3}
+            precision={config.precisionDensity}
             onChange={handleStdDensFieldChange}
           />
           /* <Form.Item
@@ -176,8 +176,10 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
               min={value?.tank_base_dens_lo}
               max={value?.tank_base_dens_hi}
               style={{ width: '100%' }}
-              precision={1}
+              precision={config.precisionDensity}
               onChange={handleStdDensFieldChange}
+              // formatter={value => value}
+              // parser={value => value}
             />
           </Form.Item> */
         )}
@@ -192,7 +194,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         min={value?.tank_base_dens_lo}
         max={value?.tank_base_dens_hi}
         style={{ width: '100%' }}
-        precision={3}
+        precision={config.precisionDensity}
         onChange={handleCorDensFieldChange}
       />
       {/* <Form.Item
@@ -205,7 +207,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
           min={value?.tank_base_dens_lo}
           max={value?.tank_base_dens_hi}
           style={{ width: '100%' }}
-          precision={1}
+          precision={config.precisionDensity}
           onChange={handleCorDensFieldChange}
         />
       </Form.Item> */}
@@ -219,7 +221,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
           min={range?.low || 0}
           max={range?.high || 85}
           style={{ width: '100%' }}
-          precision={2}
+          precision={config.precisionAPI}
           onChange={handleApiDensFieldChange}
         />
         /* <Form.Item
@@ -230,7 +232,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
             min={range?.low || 0}
             max={range?.high || 85}
             style={{ width: '100%' }}
-            precision={1}
+            precision={config.precisionAPI}
             onChange={handleApiDensFieldChange}
           />
         </Form.Item> */
@@ -280,7 +282,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         min={0}
         max={999999999}
         style={{ width: '100%' }}
-        precision={value?.tank_base_class==='6' ? 3 : 0}
+        precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionVolume}
         onChange={handleAmbVolFieldChange}
       />
       {/* <Form.Item name="tank_amb_vol" label={`${t('fields.ambientVolume')} (Litres)`}>
@@ -288,7 +290,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
           min={0}
           max={999999999}
           style={{ width: '100%' }}
-          precision={1}
+          precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionVolume}
           onChange={handleAmbVolFieldChange}
         />
       </Form.Item> */}
@@ -301,7 +303,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         min={0}
         max={999999999}
         style={{ width: '100%' }}
-        precision={value?.tank_base_class==='6' ? 3 : 0}
+        precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionVolume}
         onChange={handleCorVolFieldChange}
       />
       {/* <Form.Item name="tank_cor_vol" label={`${t('fields.standardVolume')} (Litres)`}>
@@ -309,7 +311,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
           min={0}
           max={999999999}
           style={{ width: '100%' }}
-          precision={value?.tank_base_class==='6' ? 3 : 0}
+          precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionVolume}
           onChange={handleCorVolFieldChange}
         />
       </Form.Item> */}
@@ -322,7 +324,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         min={0}
         max={999999999}
         style={{ width: '100%' }}
-        precision={value?.tank_base_class==='6' ? 3 : 0}
+        precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionMass}
         onChange={handleMassQtyFieldChange}
       />
       {/* <Form.Item name="tank_liquid_kg" label={`${t('fields.liquidMass')} (Kg)`}>
@@ -330,7 +332,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
           min={0}
           max={999999999}
           style={{ width: '100%' }}
-          precision={value?.tank_base_class==='6' ? 3 : 0}
+          precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionMass}
           onChange={handleMassQtyFieldChange}
         />
       </Form.Item> */}

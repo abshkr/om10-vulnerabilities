@@ -180,8 +180,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       const start = VCFManager.api(high);
 
       return {
-        low: _.round(start, 2),
-        high: _.round(end, 2),
+        low: _.round(start, config.precisionAPI),
+        high: _.round(end, config.precisionAPI),
       };
     } else {
       return {
@@ -227,20 +227,20 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             const api = VCFManager.api(densityAt60F);
 
             form.setFieldsValue({
-              tank_density: densityAtXC.toFixed(3),
-              tank_api: api.toFixed(3),
+              tank_density: densityAtXC.toFixed(config.precisionDensity),
+              tank_api: api.toFixed(config.precisionAPI),
             });
           }
 
           if (payload.type === 'D30C') {
-            const density15C = VCFManager.density15CFromXC(payload.value, payload.reference, 3);
+            const density15C = VCFManager.density15CFromXC(payload.value, payload.reference, config.precisionDensity);
             const densityAt60F = VCFManager.densityAt60F(density15C);
             const api = VCFManager.api(densityAt60F);
             // console.log('D30C', density15C, densityAt60F, api);
 
             form.setFieldsValue({
-              tank_15_density: density15C.toFixed(3),
-              tank_api: api.toFixed(3),
+              tank_15_density: density15C.toFixed(config.precisionDensity),
+              tank_api: api.toFixed(config.precisionAPI),
             });
           }
 
@@ -249,8 +249,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             const densityAtXC = VCFManager.densityAtXC(densityAt15C, payload.reference);
 
             form.setFieldsValue({
-              tank_density: densityAtXC.toFixed(3),
-              tank_15_density: densityAt15C.toFixed(3),
+              tank_density: densityAtXC.toFixed(config.precisionDensity),
+              tank_15_density: densityAt15C.toFixed(config.precisionDensity),
             });
           }
         } else {
@@ -260,8 +260,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             const api = VCFManager.api(densityAt60F);
 
             form.setFieldsValue({
-              tank_density: density.toFixed(3),
-              tank_api: api.toFixed(3),
+              tank_density: density.toFixed(config.precisionDensity),
+              tank_api: api.toFixed(config.precisionAPI),
             });
           }
 
@@ -271,8 +271,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             const api = VCFManager.api(densityAt60F);
 
             form.setFieldsValue({
-              tank_15_density: density.toFixed(3),
-              tank_api: api.toFixed(3),
+              tank_15_density: density.toFixed(config.precisionDensity),
+              tank_api: api.toFixed(config.precisionAPI),
             });
           }
 
@@ -280,7 +280,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             const density = VCFManager.densityAt60F(payload.value);
 
             form.setFieldsValue({
-              tank_15_density: density.toFixed(3),
+              tank_15_density: density.toFixed(config.precisionDensity),
             });
           }
         }
@@ -304,6 +304,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       tank_prod_lvl: payload?.tank_prod_lvl,
     };
 
+    const isAdtv = value?.tank_base_class === '6';
+
     Modal.confirm({
       title: t('prompts.calculate'),
       okText: t('operations.calculate'),
@@ -324,9 +326,9 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             }
             else {
               setFieldsValue({
-                tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
-                tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
-                tank_liquid_kg: _.round(response?.data?.REAL_KG, 2),
+                tank_amb_vol: _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume),
+                tank_cor_vol: _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionVolume),
+                tank_liquid_kg: _.round(response?.data?.REAL_KG, isAdtv ? config.precisionAdditive : config.precisionMass),
               });
               notification.success({
                 message: t('messages.calculateSuccess'),
@@ -356,6 +358,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       'tank_cor_vol',
       'tank_liquid_kg',
     ]);
+
+    const isAdtv = value?.tank_base_class === '6';
 
     Modal.confirm({
       title: t('prompts.calculate') + ' (' + t('descriptions.lastFieldChanged') + ': ' + quantitySource?.title + ')',
@@ -420,9 +424,9 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             }
             else {
               setFieldsValue({
-                tank_amb_vol: _.round(response?.data?.REAL_LITRE, 2),
-                tank_cor_vol: _.round(response?.data?.REAL_LITRE15, 2),
-                tank_liquid_kg: _.round(response?.data?.REAL_KG, 2),
+                tank_amb_vol: _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume),
+                tank_cor_vol: _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionVolume),
+                tank_liquid_kg: _.round(response?.data?.REAL_KG, isAdtv ? config.precisionAdditive : config.precisionMass),
               });
               notification.success({
                 message: t('messages.calculateSuccess'),

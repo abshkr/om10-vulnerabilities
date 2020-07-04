@@ -22,14 +22,14 @@ const InputNumber = ({
 }) => {
   const { t } = useTranslation();
 
-  const { setFieldsValue } = form;
+  // const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
     const number = _.toNumber(input);
     const invalid = _.isNaN(number);
 
     const decimals = _.toString(number).split('.')[1]?.length || 0;
-    // console.log('Custom InputNumber Validation', decimals, precision);
+    console.log('Custom InputNumber Validation', decimals, precision, input);
 
     if ((required && input === '') || (required && !input)) {
       return Promise.reject(`${t('validate.set')} ─ ${label}`);
@@ -47,11 +47,11 @@ const InputNumber = ({
       return Promise.reject(`${t('validate.decimalPlacesExceeded')} ${precision} ─ ${t('descriptions.invalidDecimals')}`);
     }
 
-    if (max !== undefined && !invalid && number > max) {
+    if (max !== undefined && input !== '' && !invalid && number > max) {
       return Promise.reject(`${t('validate.outOfRangeMax')} ${max} ─ ${t('descriptions.maxNumber')}`);
     }
 
-    if (min !== undefined && !invalid && number < min) {
+    if (min !== undefined && input !== '' && !invalid && number < min) {
       return Promise.reject(`${t('validate.outOfRangeMin')} ${min} ─ ${t('descriptions.minNumber')}`);
     }
 
@@ -59,7 +59,9 @@ const InputNumber = ({
   };
 
   useEffect(() => {
-    if (value && setFieldsValue) {
+    console.log('handleValueChange in InputNumber', value);
+//    if (value && setFieldsValue) {
+    if (value) {
       let index = value;
       if (_.isObject(value) && value.hasOwnProperty(name)) {
         index = value[name];
@@ -70,17 +72,18 @@ const InputNumber = ({
 
       if (!invalid) {
         console.log('need rounding', precision);
-        if (precision !== undefined) {
+        if (precision !== undefined && parsed !== '') {
           console.log('before rounding', parsed);
           parsed = _.round(parsed, precision);
           console.log('after rounding', parsed);
         }
-        setFieldsValue({
+        form.setFieldsValue({
           [name]: parsed,
         });
       }
     }
-  }, [value, setFieldsValue]);
+  }, [value]);
+//  }, [value, setFieldsValue]);
 
   const handleValueChange = (event) => {
     //console.log('handleValueChange in InputNumber', event?.target?.value);
