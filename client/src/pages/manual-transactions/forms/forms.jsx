@@ -118,7 +118,7 @@ const Forms = ({
   const handleTripSelect = async (trip) => {
     const results = await getTripBasicsByTrip(trip);
 
-    const value = results?.records[0];
+    const value = results?.records?.[0];
 
     const tankerResults = await getTankersByCarrier(value?.carrier);
 
@@ -126,7 +126,7 @@ const Forms = ({
 
     const sealResults = await getTripSealByTrip(trip);
 
-    setLoadType(typeResults?.records[0].schd_type);
+    setLoadType(typeResults?.records?.[0]?.schd_type);
     setLoadNumber(trip);
 
     setTankers(tankerResults);
@@ -136,15 +136,15 @@ const Forms = ({
     setFieldsValue({
       tanker: value?.tnkr_code,
       carrier: value?.carrier,
-      driver: !value?.driver ? drivers?.records[0].per_code : value?.driver,
-      seal_range: sealResults?.records[0].shls_seal_no,
+      driver: !value?.driver ? drivers?.records?.[0]?.per_code : value?.driver,
+      seal_range: sealResults?.records?.[0]?.shls_seal_no,
     });
   };
 
   const handleOrderSelect = async (order) => {
     const results = await getOrderBasicsByOrder(order);
 
-    const value = results?.records[0];
+    const value = results?.records?.[0];
 
     const tankerResults = await getTankersByCarrier(value?.order_carrier);
 
@@ -156,7 +156,7 @@ const Forms = ({
 
     setFieldsValue({
       carrier: value?.order_carrier,
-      driver: drivers?.records[0].per_code,
+      driver: drivers?.records?.[0]?.per_code,
       mt_cust_code: value?.customer_code,
       mt_delv_loc: value?.delivery_location,
     });
@@ -254,7 +254,7 @@ const Forms = ({
     const sealResults = await getTripSealByTrip(selectedTrip);
 
     setFieldsValue({
-      seal_range: sealResults?.records[0].shls_seal_no,
+      seal_range: sealResults?.records?.[0]?.shls_seal_no,
     });
 
   }
@@ -454,21 +454,22 @@ const Forms = ({
         </Col>
 
         <Col span={8}>
-          <Form.Item name="tanker" label={t('fields.tanker')} rules={[{ required: true }]}>
+          <Form.Item name="carrier" label={t('fields.carrier')} rules={[{ required: true }]}>
             <Select
               allowClear
               showSearch
               disabled={sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'}
-              onChange={handleTankerSelect}
+              loading={carriersLoading}
+              onChange={handleCarrierSelect}
               optionFilterProp="children"
-              placeholder={t('placeholder.selectTanker')}
+              placeholder={t('placeholder.selectCarriers')}
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
             >
-              {tankers?.records?.map((item, index) => (
-                <Select.Option key={index} value={item.tnkr_code}>
-                  {item.tnkr_code + (!item.tnkr_name ? '' : ' - ' + item.tnkr_name)}
+              {carriers?.records?.map((item, index) => (
+                <Select.Option key={index} value={item.cmpy_code}>
+                  {item.cmpy_code + ' - ' + item.cmpy_name}
                 </Select.Option>
               ))}
             </Select>
@@ -507,22 +508,21 @@ const Forms = ({
         </Col>
 
         <Col span={8}>
-          <Form.Item name="carrier" label={t('fields.carrier')} rules={[{ required: true }]}>
+          <Form.Item name="tanker" label={t('fields.tanker')} rules={[{ required: true }]}>
             <Select
               allowClear
               showSearch
               disabled={sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'}
-              loading={carriersLoading}
-              onChange={handleCarrierSelect}
+              onChange={handleTankerSelect}
               optionFilterProp="children"
-              placeholder={t('placeholder.selectCarriers')}
+              placeholder={t('placeholder.selectTanker')}
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
             >
-              {carriers?.records?.map((item, index) => (
-                <Select.Option key={index} value={item.cmpy_code}>
-                  {item.cmpy_code + ' - ' + item.cmpy_name}
+              {tankers?.records?.map((item, index) => (
+                <Select.Option key={index} value={item.tnkr_code}>
+                  {item.tnkr_code + (!item.tnkr_name ? '' : ' - ' + item.tnkr_name)}
                 </Select.Option>
               ))}
             </Select>
