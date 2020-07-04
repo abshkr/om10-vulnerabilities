@@ -433,7 +433,8 @@ class Utilities
                         $base_item[$lower_key] = null;
                     }
                 } else {
-                    $base_item[$lower_key] = $value;
+                    // $base_item[$lower_key] = $value;
+                    $base_item[$lower_key] = htmlspecialchars_decode($value);
                 }
             }
 
