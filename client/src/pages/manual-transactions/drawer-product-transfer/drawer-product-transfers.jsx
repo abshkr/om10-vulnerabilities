@@ -94,6 +94,7 @@ const DrawerProductTransfers = ({
   const [tableAPI, setTableAPI] = useState(null);
   const [tableBaseTransfersAPI, setTableBaseTransfersAPI] = useState(null);
   const [canCalc, setCanCalc] = useState(false);
+  const [canRestore, setCanRestore] = useState(false);
 
   const onDelete = () => {
     const filtered = _.reject(payload, ['trsf_cmpt_no', clicked?.trsf_cmpt_no]);
@@ -309,6 +310,23 @@ const DrawerProductTransfers = ({
     }
   }
 
+  const toggleRestoreButton = () => {
+    console.log('DrawerProductTransfers: toggle button Get Tank Densities ', canRestore);
+    const payload = form.getFieldValue('transfers');
+    console.log('DrawerProductTransfers: toggle button Get Tank Densities ', payload);
+
+    if (payload) {
+      const item = _.find(payload, (o) => (o?.trsf_density));
+      if (item) {
+        setCanRestore(true);
+      } else {
+        setCanRestore(false);
+      }
+    } else {
+      setCanRestore(false);
+    }
+  }
+
   const onCellUpdate = (value) => {
     console.log('DrawerProductTransfers: onCellUpdate', value);
     console.log('DrawerProductTransfers: onCellUpdate2', value?.colDef?.field, value?.colDef?.headerName, value?.value, value?.newValue, value?.data.trsf_cmpt_capacit);
@@ -330,6 +348,7 @@ const DrawerProductTransfers = ({
     });
 
     toggleCalcButton();
+    toggleRestoreButton();
   };
 
   const adjustProduct = (cmpt, bases) => {
@@ -463,6 +482,9 @@ const DrawerProductTransfers = ({
         transfers: payload,
       });
       setDataRendered(true);
+
+      toggleCalcButton();
+      toggleRestoreButton();
     }
   }, [payload]);
 
@@ -521,7 +543,7 @@ const DrawerProductTransfers = ({
         icon={<UndoOutlined />} 
         onClick={onRestore}
         style={{ marginRight: 5 }} 
-        disabled={!selected}>
+        disabled={!canRestore}>
         {t('operations.getTankDensities')}
       </Button>
     </>
