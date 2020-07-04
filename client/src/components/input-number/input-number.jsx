@@ -61,7 +61,7 @@ const InputNumber = ({
   useEffect(() => {
     console.log('handleValueChange in InputNumber', value);
 //    if (value && setFieldsValue) {
-    if (value) {
+    if (value || value === 0) {
       let index = value;
       if (_.isObject(value) && value.hasOwnProperty(name)) {
         index = value[name];

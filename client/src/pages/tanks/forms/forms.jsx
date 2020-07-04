@@ -293,6 +293,49 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
     const payload = getFieldsValue(['tank_amb_vol', 'tank_temp', 'tank_density', 'tank_15_density', 'tank_prod_lvl']);
 
+    if (payload?.tank_prod_lvl === '') {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.productLevel'),
+      });
+      return;
+    }
+    if (_.toNumber(payload?.tank_prod_lvl) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: t('fields.productLevel'),
+      });
+      return;
+    }
+    if (payload?.tank_temp === '') {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.observedTemperature'),
+      });
+      return;
+    }
+    if (_.toNumber(payload?.tank_temp) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: t('fields.observedTemperature'),
+      });
+      return;
+    }
+    if (payload?.tank_density === '') {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.density'),
+      });
+      return;
+    }
+    if (_.toNumber(payload?.tank_density) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: t('fields.density'),
+      });
+      return;
+    }
+
     const values = {
       tank_code: value?.tank_code,
       tank_base: value?.tank_base,
@@ -358,6 +401,57 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       'tank_cor_vol',
       'tank_liquid_kg',
     ]);
+
+    if (payload?.tank_amb_vol === '' && payload?.tank_cor_vol === '' && payload?.tank_liquid_kg === '') {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.ambientVolume')+' or '+t('fields.standardVolume')+' or '+t('fields.liquidMass'),
+      });
+      return;
+    }
+
+    if (quantitySource?.qty === '') {
+      notification.error({
+        message: t('validate.set'),
+        description: quantitySource?.title,
+      });
+      return;
+    }
+    if (_.toNumber(quantitySource?.qty) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: quantitySource?.title,
+      });
+      return;
+    }
+    if (payload?.tank_temp === '') {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.observedTemperature'),
+      });
+      return;
+    }
+    if (_.toNumber(payload?.tank_temp) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: t('fields.observedTemperature'),
+      });
+      return;
+    }
+    if (payload?.tank_density === '') {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.density'),
+      });
+      return;
+    }
+    if (_.toNumber(payload?.tank_density) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: t('fields.density'),
+      });
+      return;
+    }
 
     const isAdtv = value?.tank_base_class === '6';
 

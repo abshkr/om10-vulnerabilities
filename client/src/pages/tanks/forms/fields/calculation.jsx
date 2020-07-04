@@ -245,6 +245,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         label={`${t('fields.productLevel')} (mm)`}
         min={0} 
         max={999999999} 
+        precision={config.precisionLevel}
         style={{ width: '100%' }} 
       />
       {/* <Form.Item name="tank_prod_lvl" label={`${t('fields.productLevel')} (mm)`}>
