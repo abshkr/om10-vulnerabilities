@@ -29,6 +29,10 @@ const Supplier = ({ form, value, onChange }) => {
       });
 
       onChange(value.cust_supp_code);
+    } else {
+      /* setFieldsValue({
+        cust_supp_code: null,
+      }); */
     }
   }, [value, setFieldsValue, onChange]);
 

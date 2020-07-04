@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 
@@ -58,12 +58,14 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   };
 
   const onFormClosed = () => {
+    resetFields();
     handleFormState(false, null);
     setDrawerWidth('60vw');
     setMainTabOn(true);
   };
 
   const onComplete = () => {
+    resetFields();
     handleFormState(false, null);
     mutate(CUSTOMERS.READ);
   };
@@ -132,11 +134,11 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     });
   };
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (!value) {
       resetFields();
     }
-  }, [resetFields, value]);
+  }, [resetFields, value]); */
 
   const layout = IS_CREATING ? {layout:"vertical"} : {
     labelCol: {
@@ -163,7 +165,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={() => onFormClosed()}
           >
             {t('operations.cancel')}
           </Button>
@@ -193,10 +195,10 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       }
     >
       <Form
-        // layout="vertical"
-        {...layout}
+        layout="vertical"
+        // {...layout}
         form={form}
-        // scrollToFirstError
+        scrollToFirstError
         // initialValues={{
         //   cust_account: '',
         //   cust_supp_code: null,
@@ -218,22 +220,70 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       >
         <Tabs onChange={doTabChanges}>
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Account form={form} value={value} />
-            <Supplier form={form} value={value} onChange={setSupplier} />
-            <Customer form={form} value={value} supplier={supplier} />
-            <Address form={form} value={value} reload={mainTabOn} />
-            {!IS_CREATING && <Category form={form} value={value} reload={mainTabOn} />}
-            {!IS_CREATING && <Location form={form} value={value} reload={mainTabOn} />}
-            {!IS_CREATING && <Contact form={form} value={value} />}
-            {!IS_CREATING && <Phone form={form} value={value} />}
-            {!IS_CREATING && <PriceType form={form} value={value} />}
-            {!IS_CREATING && <InvoiceType form={form} value={value} />}
-            {!IS_CREATING && <SaleType form={form} value={value} />}
-            {!IS_CREATING && <TermsType form={form} value={value} />}
-            {!IS_CREATING && <OrderDays form={form} value={value} />}
-            {!IS_CREATING && <CreditDays form={form} value={value} />}
-            {!IS_CREATING && <AccountBalance form={form} value={value} />}
-            {!IS_CREATING && <CreditLimit form={form} value={value} />}
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                <Account form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <Supplier form={form} value={value} onChange={setSupplier} />
+              </Col>
+            </Row>
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                <Customer form={form} value={value} supplier={supplier} />
+              </Col>
+              <Col span={12}>
+                <Address form={form} value={value} reload={mainTabOn} />
+              </Col>
+            </Row>
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                {!IS_CREATING && <Category form={form} value={value} reload={mainTabOn} />}
+              </Col>
+              <Col span={12}>
+                {!IS_CREATING && <Location form={form} value={value} reload={mainTabOn} />}
+              </Col>
+            </Row>
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                {!IS_CREATING && <Contact form={form} value={value} />}
+              </Col>
+              <Col span={12}>
+                {!IS_CREATING && <Phone form={form} value={value} />}
+              </Col>
+            </Row>
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                {!IS_CREATING && <PriceType form={form} value={value} />}
+              </Col>
+              <Col span={12}>
+                {!IS_CREATING && <InvoiceType form={form} value={value} />}
+              </Col>
+            </Row>
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                {!IS_CREATING && <SaleType form={form} value={value} />}
+              </Col>
+              <Col span={12}>
+                {!IS_CREATING && <TermsType form={form} value={value} />}
+              </Col>
+            </Row>
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                {!IS_CREATING && <OrderDays form={form} value={value} />}
+              </Col>
+              <Col span={12}>
+                {!IS_CREATING && <CreditDays form={form} value={value} />}
+              </Col>
+            </Row>
+            <Row gutter={[8, 2]}>
+              <Col span={12}>
+                {!IS_CREATING && <AccountBalance form={form} value={value} />}
+              </Col>
+              <Col span={12}>
+                {!IS_CREATING && <CreditLimit form={form} value={value} />}
+              </Col>
+            </Row>
           </TabPane>
           <TabPane tab={t('tabColumns.addresses')} key="2">
             <AddressesPopup popup={true} />
