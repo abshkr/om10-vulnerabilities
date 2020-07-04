@@ -7,3 +7,4 @@ include_once './config/database.php';
 include_once './objects/personnel.php';
 
 Utilities::exec('Personnel', "update_password", $filter = true);
+// Utilities::exec('Personnel', "update_password", $filter = true, $params = null, $auth_check = false);

@@ -56,8 +56,9 @@ https://10.1.10.66/api/login.php
 https://10.1.10.66/api/activate_login.php
 {
     "per_code": "DKI",
-    "old_password": "12345",
-    "password": "23456"
+    "old_password": "5a3e18a1e9e1dc1742366d34076116bcd96d9bbd4157fabb6d07b15ba2400e09",
+    "password": "5a3e18a1e9e1dc1742366d34076116bcd96d9bbd4157fabb6d07b15ba2400e09",
+	"refresh_token": true
 }
 
 

@@ -392,8 +392,119 @@ class Personnel extends CommonClass
         }
     }
 
+    // public function activate_login()
+    // {
+    //     $query = "SELECT CONFIG_VALUE VAL 
+    //         FROM SITE_CONFIG
+    //         WHERE CONFIG_KEY = 'URBAC_PWD_REUSE'";
+    //     $stmt = oci_parse($this->conn, $query);
+    //     if (!oci_execute($stmt, $this->commit_mode)) {
+    //         $e = oci_error($stmt);
+    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("database storage error:%s", $e['message'])));
+    //         echo json_encode($error, JSON_PRETTY_PRINT);
+    //         return;
+    //     }
+
+    //     $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+    //     $reuse = $row['VAL'];
+
+    //     $query = "SELECT PWDTRACE_PWD
+    //         FROM URBAC_PWD_TRACES, URBAC_USERS
+    //         WHERE PWDTRACE_USERID = USER_ID AND USER_CODE = :per_code
+    //         ORDER BY PWDTRACE_LAST_CHG DESC";
+    //     $stmt = oci_parse($this->conn, $query);
+    //     oci_bind_by_name($stmt, ':per_code', $this->per_code);
+    //     if (!oci_execute($stmt, $this->commit_mode)) {
+    //         $e = oci_error($stmt);
+    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("database storage error:%s", $e['message'])));
+    //         echo json_encode($error, JSON_PRETTY_PRINT);
+    //         return;
+    //     }
+
+    //     $encrypted = $this->ecrypt_password($this->password);
+    //     while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+    //         if ($reuse <= 0) {
+    //             break;
+    //         }
+
+    //         $password_hist = $row['PWDTRACE_PWD'];
+    //         if ($encrypted === $password_hist) {
+    //             write_log("Cannot change to this password because it is recently used", __FILE__, __LINE__, LogLevel::ERROR);
+    //             $error = new EchoSchema(500, response("__PWD_RECENTLY_USED__"));
+    //             echo json_encode($error, JSON_PRETTY_PRINT);
+    //             return;
+    //         }
+
+    //         $reuse -= 1;
+    //     }
+
+    //     $query = "SELECT USER_PASSWORD
+    //         FROM URBAC_USERS
+    //         WHERE USER_CODE = :per_code";
+    //     $stmt = oci_parse($this->conn, $query);
+    //     oci_bind_by_name($stmt, ':per_code', $this->per_code);
+    //     if (!oci_execute($stmt, $this->commit_mode)) {
+    //         $e = oci_error($stmt);
+    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+    //         $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("database storage error:%s", $e['message'])));
+    //         echo json_encode($error, JSON_PRETTY_PRINT);
+    //         return;
+    //     }
+
+    //     $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+    //     $old_db_password = $row['VAL'];
+    //     $old_encryped = $this->ecrypt_password($this->old_password);
+    //     if ($old_db_password !== $old_encryped) {
+    //         write_log("Incorrect old password", __FILE__, __LINE__, LogLevel::ERROR);
+    //         $error = new EchoSchema(500, response("__INVALID_PASSWORD__"));
+    //         echo json_encode($error, JSON_PRETTY_PRINT);
+    //         return;
+    //     }
+
+    //     $query = "
+    //         UPDATE URBAC_USERS 
+    //         SET USER_PASSWORD = :encrpted, USER_STATUS_FLAG = 1
+    //         WHERE USER_CODE = :per_code";
+    //     $stmt = oci_parse($this->conn, $query);
+    //     oci_bind_by_name($stmt, ':encrpted', $encrypted);
+    //     oci_bind_by_name($stmt, ':per_code', $this->per_code);
+    //     if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+    //         $e = oci_error($stmt);
+    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            
+    //         $error = new EchoSchema(500, response("__UPDATE_FAILED__"));
+    //         echo json_encode($error, JSON_PRETTY_PRINT);
+    //         return;
+    //     }
+
+    //     $query = "
+    //         UPDATE PERSONNEL 
+    //         SET PER_PASSWD_2 = :encrpted, PER_PASSWD = :encrpted
+    //         WHERE PER_CODE = :per_code";
+    //     $stmt = oci_parse($this->conn, $query);
+    //     oci_bind_by_name($stmt, ':encrpted', $encrypted);
+    //     oci_bind_by_name($stmt, ':per_code', $this->per_code);
+    //     if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+    //         $e = oci_error($stmt);
+    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            
+    //         $error = new EchoSchema(500, response("__UPDATE_FAILED__"));
+    //         echo json_encode($error, JSON_PRETTY_PRINT);
+    //         return;
+    //     }
+
+    //     $error = new EchoSchema(200, response("__PWD_UPDATED__", 
+    //         sprintf("Password of user %s has been updated", $this->per_code)));
+    //     echo json_encode($error, JSON_PRETTY_PRINT);
+    //     return;
+    // }
+
     public function update_password()
     {
+        write_log(json_encode($this), __FILE__, __LINE__);
+
         $query = "SELECT CONFIG_VALUE VAL 
             FROM SITE_CONFIG
             WHERE CONFIG_KEY = 'URBAC_PWD_REUSE'";
@@ -453,21 +564,71 @@ class Personnel extends CommonClass
             return;
         }
 
-        // write_log(json_encode($cgi_response), __FILE__, __LINE__);
+        write_log(json_encode($cgi_response), __FILE__, __LINE__);
         $cgi_ret = Utilities::get_cgi_xml_value($cgi_response, 'MSG_CODE');
         $cgi_desc = Utilities::get_cgi_xml_value($cgi_response, 'MSG_DESC');
 
         $result = array();
         $result["records"] = array();
-        if ($cgi_ret == 0) {
-            $error = new EchoSchema(200, response("__PWD_UPDATED__", 
-                sprintf("Password of user %s has been updated", $this->per_code)));
-            echo json_encode($error, JSON_PRETTY_PRINT);
-        } else {
+        if ($cgi_ret != 0) {
+            // write_log($cgi_ret, __FILE__, __LINE__);
+            write_log(sprintf("Failed to update password of user %s. err: %s", $this->per_code, $cgi_desc), __FILE__, __LINE__);
             $error = new EchoSchema(500, response("__PWD_UPDATE_FAILED__", 
                 sprintf("Failed to update password of user %s. err: %s", $this->per_code, $cgi_desc)));
             echo json_encode($error, JSON_PRETTY_PRINT);
+
+            return;
         }
+
+        if ($this->refresh_token) {
+            $result = array();
+            $result[0] = new stdClass();
+            $result[0]->code = $code;
+            $result[0]->type = $type;
+            $result[0]->message = $msg;
+
+            $sess_id = null;
+            $pay_load = null;
+            if (JWT_AUTH) {
+                try {
+                    $token = get_http_token();
+                    $pay_load = check_token($token);
+                    if ($pay_load) {
+                        $sess_id = $pay_load->sess_id;
+                    } else {
+                        write_log("Failed to check token", __FILE__, __LINE__, LogLevel::ERROR);
+                    }
+                } catch (Exception $e) {
+                    write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
+                }
+            }
+
+            $rotated = substr($sess_id, 1) . substr($str, 0, 1);
+            $query = "UPDATE HTTP_SESSION_TRACE SET SESS_ID = :rotated WHERE SESS_ID = :sess_id";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':sess_id', $sess_id);
+            oci_bind_by_name($stmt, ':rotated', $rotated);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                
+                // $error = new EchoSchema(500, response("__UPDATE_FAILED__"));
+                // echo json_encode($error, JSON_PRETTY_PRINT);
+                // return;
+            } else {
+                $sess_id = $rotated;
+            }
+
+            $result[0]->token = get_token($pay_load->per_code, $sess_id, $pay_load->site_code, $pay_load->site_name, $pay_load->lang);
+
+            echo json_encode($result, JSON_PRETTY_PRINT);
+        } else {
+            $error = new EchoSchema(200, response("__PWD_UPDATED__", 
+                sprintf("Password of user %s has been updated", $this->per_code)));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+        }
+        
+        return;
     }
 
     public function update_dep()
