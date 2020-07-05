@@ -135,7 +135,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       'mlitm_dens_cor',
     ]);
 
-    if (payload?.mlitm_qty_amb === '' && payload?.mlitm_qty_cor === '' && payload?.mlitm_qty_kg === '') {
+    if (String(payload?.mlitm_qty_amb).trim().length === 0 && 
+      String(payload?.mlitm_qty_cor).trim().length === 0 && 
+      String(payload?.mlitm_qty_kg).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
         description: t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'),
@@ -144,7 +146,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
     }
 
 
-    if (!quantitySource || quantitySource?.qty === '') {
+    if (!quantitySource || String(quantitySource?.qty).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
         description: !quantitySource 
@@ -160,7 +162,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       });
       return;
     }
-    if ((!payload?.mlitm_temp_amb && payload?.mlitm_temp_amb !== 0) || payload?.mlitm_temp_amb === '') {
+    if ((!payload?.mlitm_temp_amb && payload?.mlitm_temp_amb !== 0) || String(payload?.mlitm_temp_amb).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
         description: t('fields.observedTemperature'),
@@ -174,7 +176,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       });
       return;
     } */
-    if (!payload?.mlitm_dens_cor || payload?.mlitm_dens_cor === '') {
+    if (!payload?.mlitm_dens_cor || String(payload?.mlitm_dens_cor).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
         description: t('fields.standardDensity'),
