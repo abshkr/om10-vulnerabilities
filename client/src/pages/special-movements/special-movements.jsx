@@ -11,10 +11,11 @@ import api, { SPECIAL_MOVEMENTS } from '../../api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
 import auth from '../../auth';
-import { useAuth } from 'hooks';
+import { useAuth, useConfig } from 'hooks';
 import Forms from './forms';
 
 const SpecialMovements = () => {
+  const config = useConfig();
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -130,6 +131,7 @@ const SpecialMovements = () => {
         access={access} 
         url={url} 
         locateSpecialMv={locateSpecialMv}
+        config={config}
       />
     </Page>
   );

@@ -24,7 +24,7 @@ import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, url, locateSpecialMv }) => {
+const FormModal = ({ value, visible, handleFormState, access, url, locateSpecialMv, config }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -32,6 +32,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   const [type, setType] = useState(null);
   const [tab, setTab] = useState('1');
   const [tank, setTank] = useState(undefined);
+  const [quantitySource, setQuantitySource] = useState(null);
 
   const changeToTank = (tank) => {
     if (type !== '2') {
@@ -124,21 +125,92 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   };
 
   const onCalculate = () => {
+    const { getFieldsValue } = form;
+
+    const payload = getFieldsValue([
+      'mlitm_qty_amb',
+      'mlitm_qty_cor',
+      'mlitm_qty_kg',
+      'mlitm_temp_amb',
+      'mlitm_dens_cor',
+    ]);
+
+    if (payload?.mlitm_qty_amb === '' && payload?.mlitm_qty_cor === '' && payload?.mlitm_qty_kg === '') {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'),
+      });
+      return;
+    }
+
+
+    if (!quantitySource || quantitySource?.qty === '') {
+      notification.error({
+        message: t('validate.set'),
+        description: !quantitySource 
+          ? (t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'))
+          : quantitySource?.title,
+      });
+      return;
+    }
+    if (_.toNumber(quantitySource?.qty) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: quantitySource?.title,
+      });
+      return;
+    }
+    if ((!payload?.mlitm_temp_amb && payload?.mlitm_temp_amb !== 0) || payload?.mlitm_temp_amb === '') {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.observedTemperature'),
+      });
+      return;
+    }
+    /* if (_.toNumber(payload?.mlitm_temp_amb) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: t('fields.observedTemperature'),
+      });
+      return;
+    } */
+    if (!payload?.mlitm_dens_cor || payload?.mlitm_dens_cor === '') {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.standardDensity'),
+      });
+      return;
+    }
+    if (_.toNumber(payload?.mlitm_dens_cor) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: t('fields.standardDensity'),
+      });
+      return;
+    }
+
     Modal.confirm({
-      title: t('prompts.calculate'),
-      okText: t('operations.yes'),
+      title:
+        t('prompts.calculate') +
+        ' (' +
+        t('descriptions.lastFieldChanged') +
+        ': ' +
+        quantitySource?.title +
+        ')',
+      okText: t('operations.calculate'),
       okType: 'primary',
       cancelText: t('operations.no'),
       icon: <QuestionCircleOutlined />,
+      width: '30vw',
       centered: true,
       onOk: async () => {
         try {
           const values = await form.validateFields();
           await api
             .post(SPECIAL_MOVEMENTS.CALCULATE, {
-              frm_baseCd: values.mlitm_prodcode_to,
-              frm_which_type: 'LT',
-              frm_real_amount: values.mlitm_qty_amb,
+              frm_baseCd: TO.includes(type) ? values.mlitm_prodcode_to : values.mlitm_prodcode,
+              frm_which_type: quantitySource?.type,
+              frm_real_amount: quantitySource?.qty,
               frm_real_temp: values.mlitm_temp_amb,
               frm_real_dens: values.mlitm_dens_cor,
             })
@@ -342,7 +414,15 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
 
             <Divider>{t('divider.calculation')}</Divider>
 
-            <Calculate form={form} value={value} type={type} disabled={DISABLED} tank={tank} />
+            <Calculate
+              form={form}
+              value={value}
+              type={type}
+              disabled={DISABLED}
+              tank={tank}
+              config={config}
+              pinQuantity={setQuantitySource}
+            />
           </TabPane>
         </Tabs>
       </Form>

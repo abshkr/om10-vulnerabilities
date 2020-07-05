@@ -46,8 +46,10 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         pinQuantity({ qty: value?.tank_amb_vol, type: 'LT', title: t('fields.ambientVolume') });
       } else if (value?.tank_cor_vol) {
         pinQuantity({ qty: value?.tank_cor_vol, type: 'L15', title: t('fields.standardVolume') });
-      } else {
+      } else if (value?.tank_liquid_kg) {
         pinQuantity({ qty: value?.tank_liquid_kg, type: 'KG', title: t('fields.liquidMass') });
+      } else {
+        pinQuantity({ qty: '', type: 'NA', title: t('fields.ambientVolume') });
       }
     }
   }, [value, setFieldsValue]);

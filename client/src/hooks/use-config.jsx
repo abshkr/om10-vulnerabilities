@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import _ from 'lodash';
 
 import useSWR from 'swr';
 
@@ -196,14 +197,14 @@ const useConfig = () => {
         offset: configurationObject?.SERVER_TIME_OFFSET || '+00:00',
         id: configurationObject?.SITE_IDENTIFIER,
         loading: false,
-        precisionAPI: configurationObject?.SITE_DEFAULT_PRECISION_API || 2,
-        precisionTemperature: configurationObject?.SITE_DEFAULT_PRECISION_TEMPERATURE || 2,
-        precisionDensity: configurationObject?.SITE_DEFAULT_PRECISION_DENSITY || 3,
-        precisionLevel: configurationObject?.SITE_DEFAULT_PRECISION_LEVEL || 0,
-        precisionVolume: configurationObject?.SITE_DEFAULT_PRECISION_VOLUME || 0,
-        precisionMass: configurationObject?.SITE_DEFAULT_PRECISION_MASS || 0,
-        precisionAdditive: configurationObject?.SITE_DEFAULT_PRECISION_ADDITIVE || 3,
-        precisionSG: configurationObject?.SITE_DEFAULT_PRECISION_SG || 6,
+        precisionAPI: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_API) || 2,
+        precisionTemperature: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_TEMPERATURE) || 2,
+        precisionDensity: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_DENSITY) || 3,
+        precisionLevel: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_LEVEL) || 0,
+        precisionVolume: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_VOLUME) || 0,
+        precisionMass: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_MASS) || 0,
+        precisionAdditive: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_ADDITIVE) || 3,
+        precisionSG: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_SG) || 6,
       });
     }
     // eslint-disable-next-line

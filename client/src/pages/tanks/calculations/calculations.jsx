@@ -264,7 +264,7 @@ const Calculations = ({ selected, access, isLoading, config }) => {
       'tank_prod_lvl',
     ]);
 
-    if (payload?.tank_prod_lvl === '') {
+    if (!payload?.tank_prod_lvl || String(payload?.tank_prod_lvl).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
         description: t('fields.productLevel'),
@@ -278,21 +278,21 @@ const Calculations = ({ selected, access, isLoading, config }) => {
       });
       return;
     }
-    if (payload?.tank_temp === '') {
+    if ((!payload?.tank_temp && payload?.tank_temp !== 0) || String(payload?.tank_temp).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
         description: t('fields.observedTemperature'),
       });
       return;
     }
-    if (_.toNumber(payload?.tank_temp) < 0) {
+    /* if (_.toNumber(payload?.tank_temp) < 0) {
       notification.error({
         message: t('descriptions.CannotBeNegative'),
         description: t('fields.observedTemperature'),
       });
       return;
-    }
-    if (payload?.tank_density === '') {
+    } */
+    if (!payload?.tank_density || String(payload?.tank_density).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
         description: t('fields.density'),
@@ -372,7 +372,9 @@ const Calculations = ({ selected, access, isLoading, config }) => {
       'tank_liquid_kg',
     ]);
 
-    if (payload?.tank_amb_vol === '' && payload?.tank_cor_vol === '' && payload?.tank_liquid_kg === '') {
+    if (String(payload?.tank_amb_vol).trim().length === 0 && 
+      String(payload?.tank_cor_vol).trim().length === 0 && 
+      String(payload?.tank_liquid_kg).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
         description: t('fields.ambientVolume')+' or '+t('fields.standardVolume')+' or '+t('fields.liquidMass'),
@@ -380,10 +382,12 @@ const Calculations = ({ selected, access, isLoading, config }) => {
       return;
     }
 
-    if (quantitySource?.qty === '') {
+    if (!quantitySource || String(quantitySource?.qty).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
-        description: quantitySource?.title,
+        description: !quantitySource 
+          ? (t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'))
+          : quantitySource?.title,
       });
       return;
     }
@@ -394,21 +398,21 @@ const Calculations = ({ selected, access, isLoading, config }) => {
       });
       return;
     }
-    if (payload?.tank_temp === '') {
+    if ((!payload?.tank_temp && payload?.tank_temp !== 0) || String(payload?.tank_temp).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
         description: t('fields.observedTemperature'),
       });
       return;
     }
-    if (_.toNumber(payload?.tank_temp) < 0) {
+    /* if (_.toNumber(payload?.tank_temp) < 0) {
       notification.error({
         message: t('descriptions.CannotBeNegative'),
         description: t('fields.observedTemperature'),
       });
       return;
-    }
-    if (payload?.tank_density === '') {
+    } */
+    if (!payload?.tank_density || String(payload?.tank_density).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
         description: t('fields.density'),
