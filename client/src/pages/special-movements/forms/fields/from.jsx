@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Select } from 'antd';
+import { Form, Select, Row, Col } from 'antd';
 import api from 'api';
 
 import { SPECIAL_MOVEMENTS } from 'api';
@@ -122,70 +122,76 @@ const From = ({ onChange, form, value, disabled }) => {
   }, [getSuppliers]);
 
   return (
-    <div style={{ display: 'flex' }}>
-      <Form.Item
-        name="mlitm_prodcmpy"
-        label={t('fields.fromPlantSupplier')}
-        style={{ width: '100%', marginRight: 5 }}
-      >
-        <Select
-          showSearch
-          loading={isLoading}
-          onChange={onSupplierChange}
-          disabled={IS_DISABLED}
-          optionFilterProp="children"
-          placeholder={t('placeholder.selectFromPlantSupplier')}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {suppliers.map((item, index) => (
-            <Select.Option key={index} value={item.cmpy_code}>
-              {item.cmpy_code} - {item.cmpy_name}
-            </Select.Option>
-          ))}
-        </Select>
-      </Form.Item>
-
-      <Form.Item name="mlitm_tankcode" label={t('fields.fromTank')} style={{ width: '100%', marginRight: 5 }}>
-        <Select
-          showSearch
-          loading={isLoading}
-          onChange={onTankChange}
-          disabled={IS_DISABLED || !supplier}
-          optionFilterProp="children"
-          placeholder={t('placeholder.selectFromTank')}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {tanks.map((item, index) => (
-            <Select.Option key={index} value={item.tank_code}>
-              {item.tank_code} - {item.tank_name}
-            </Select.Option>
-          ))}
-        </Select>
-      </Form.Item>
-
-      <Form.Item name="mlitm_prodcode" label={t('fields.fromProduct')} style={{ width: '100%' }}>
-        <Select
-          showSearch
-          loading={isLoading}
-          disabled={IS_DISABLED || !tank}
-          optionFilterProp="children"
-          placeholder={t('placeholder.selectFromProduct')}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {products.map((item, index) => (
-            <Select.Option key={index} value={item.tank_base}>
-              {item.tank_base}
-            </Select.Option>
-          ))}
-        </Select>
-      </Form.Item>
-    </div>
+    <>
+      <Row gutter={[8, 8]}>
+        <Col span={6}>
+          <Form.Item
+            name="mlitm_prodcmpy"
+            label={t('fields.fromPlantSupplier')}
+            style={{ width: '100%', marginRight: 5 }}
+          >
+            <Select
+              showSearch
+              loading={isLoading}
+              onChange={onSupplierChange}
+              disabled={IS_DISABLED}
+              optionFilterProp="children"
+              placeholder={t('placeholder.selectFromPlantSupplier')}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {suppliers.map((item, index) => (
+                <Select.Option key={index} value={item.cmpy_code}>
+                  {item.cmpy_code} - {item.cmpy_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={9}>
+          <Form.Item name="mlitm_tankcode" label={t('fields.fromTank')} style={{ width: '100%', marginRight: 5 }}>
+            <Select
+              showSearch
+              loading={isLoading}
+              onChange={onTankChange}
+              disabled={IS_DISABLED || !supplier}
+              optionFilterProp="children"
+              placeholder={t('placeholder.selectFromTank')}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {tanks.map((item, index) => (
+                <Select.Option key={index} value={item.tank_code}>
+                  {item.tank_code} - {item.tank_name} [{item.base_code} - {item.prod_code} - {item.prod_name}]
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={9}>
+          <Form.Item name="mlitm_prodcode" label={t('fields.fromProduct')} style={{ width: '100%' }}>
+            <Select
+              showSearch
+              loading={isLoading}
+              disabled={IS_DISABLED || !tank}
+              optionFilterProp="children"
+              placeholder={t('placeholder.selectFromProduct')}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {products.map((item, index) => (
+                <Select.Option key={index} value={item.tank_base}>
+                  {item.tank_base} - {item.tank_base_name} [{item.tank_bclass_name}]
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+      </Row>
+    </>
   );
 };
 

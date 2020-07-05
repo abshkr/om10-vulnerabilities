@@ -69,8 +69,6 @@ class Database
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
-        $this->setSessionData();
-   
         // write_log(sprintf("%s::%s() END", __CLASS__, __FUNCTION__),
         //     __FILE__, __LINE__);
         
@@ -90,7 +88,8 @@ class Database
         // write_log(__METHOD__ . " START", __FILE__, __LINE__);
         // write_log(json_encode($_SERVER, JSON_PRETTY_PRINT), __FILE__, __LINE__);
         $this->getConn();
-
+        $this->setSessionData();
+   
         /**
          * Check AUTH by default, unless
          * 1# Client is using Postman

@@ -22,6 +22,10 @@ const Account = ({ form, value }) => {
       setFieldsValue({
         cust_account: value.cust_account,
       });
+    } else {
+      /* setFieldsValue({
+        cust_account: '',
+      }); */
     }
   }, [value, setFieldsValue]);
 

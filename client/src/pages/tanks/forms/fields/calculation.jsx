@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, InputNumber, Input, Select } from 'antd';
+import { Form, Input, InputNumber, Select } from 'antd';
 import _ from 'lodash';
 import { VCFManager } from '../../../../utils';
+import { InputNumber as OmegaInputNumber } from '../../../../components';
 import CheckboxGroup from 'antd/es/checkbox/Group';
 
 const { Option } = Select;
@@ -21,15 +22,15 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tank_15_density: value?.tank_15_density,
-        tank_density: value?.tank_density,
-        tank_api: value?.tank_api,
-        tank_prod_lvl: value?.tank_prod_lvl,
-        tank_prod_c_of_e: value?.tank_prod_c_of_e,
+        // tank_15_density: value?.tank_15_density,
+        // tank_density: value?.tank_density,
+        // tank_api: value?.tank_api,
+        // tank_prod_lvl: value?.tank_prod_lvl,
+        // tank_prod_c_of_e: value?.tank_prod_c_of_e,
         tank_temp: value?.tank_temp,
-        tank_amb_vol: value?.tank_amb_vol,
-        tank_cor_vol: value?.tank_cor_vol,
-        tank_liquid_kg: value?.tank_liquid_kg,
+        // tank_amb_vol: value?.tank_amb_vol,
+        // tank_cor_vol: value?.tank_cor_vol,
+        // tank_liquid_kg: value?.tank_liquid_kg,
       });
 
       // initialize the density source for calculation
@@ -45,8 +46,10 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         pinQuantity({ qty: value?.tank_amb_vol, type: 'LT', title: t('fields.ambientVolume') });
       } else if (value?.tank_cor_vol) {
         pinQuantity({ qty: value?.tank_cor_vol, type: 'L15', title: t('fields.standardVolume') });
-      } else {
+      } else if (value?.tank_liquid_kg) {
         pinQuantity({ qty: value?.tank_liquid_kg, type: 'KG', title: t('fields.liquidMass') });
+      } else {
+        pinQuantity({ qty: '', type: 'NA', title: t('fields.ambientVolume') });
       }
     }
   }, [value, setFieldsValue]);
@@ -93,7 +96,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
       return Promise.reject(`${t('validate.wrongType')} ─ ${t('validate.mustBeNumber')}`);
     }
 
-    if (precision > 2) {
+    if (precision > config.precisionTemperature) {
       return Promise.reject(`${t('validate.outOfRange')} ─ ${t('validate.decimalPlacesExceeded')}`);
     }
 
@@ -125,6 +128,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
   };
 
   const handleStdDensFieldChange = (value) => {
+    //console.log('handleStdDensFieldChange', value);
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
       pinDensity({ dens: value, type: 'D15C', title: t('fields.standardDensity') });
     }
@@ -147,7 +151,22 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
       {config?.temperatureUnit === 'degC' &&
         config?.referenceTemperature === '15' &&
         config?.vsmCompensation === '30' && (
-          <Form.Item
+          <OmegaInputNumber
+            form={form}
+            value={value?.tank_15_density}
+            name="tank_15_density"
+            label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
+              value?.tank_base_dens_hi
+            }) ${`@${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
+              config?.referenceTemperature
+            )}ºF`}`}
+            min={value?.tank_base_dens_lo}
+            max={value?.tank_base_dens_hi}
+            style={{ width: '100%' }}
+            precision={config.precisionDensity}
+            onChange={handleStdDensFieldChange}
+          />
+          /* <Form.Item
             name="tank_15_density"
             label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
               value?.tank_base_dens_hi
@@ -159,13 +178,28 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
               min={value?.tank_base_dens_lo}
               max={value?.tank_base_dens_hi}
               style={{ width: '100%' }}
-              precision={1}
+              precision={config.precisionDensity}
               onChange={handleStdDensFieldChange}
+              // formatter={value => value}
+              // parser={value => value}
             />
-          </Form.Item>
+          </Form.Item> */
         )}
 
-      <Form.Item
+      <OmegaInputNumber
+        form={form}
+        value={value?.tank_density}
+        name="tank_density"
+        label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@${
+          config?.vsmCompensation || config?.referenceTemperature
+        }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
+        min={value?.tank_base_dens_lo}
+        max={value?.tank_base_dens_hi}
+        style={{ width: '100%' }}
+        precision={config.precisionDensity}
+        onChange={handleCorDensFieldChange}
+      />
+      {/* <Form.Item
         name="tank_density"
         label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@${
           config?.vsmCompensation || config?.referenceTemperature
@@ -175,13 +209,24 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
           min={value?.tank_base_dens_lo}
           max={value?.tank_base_dens_hi}
           style={{ width: '100%' }}
-          precision={1}
+          precision={config.precisionDensity}
           onChange={handleCorDensFieldChange}
         />
-      </Form.Item>
+      </Form.Item> */}
 
       {config?.manageAPI && (
-        <Form.Item
+        <OmegaInputNumber
+          form={form}
+          value={value?.tank_api}
+          name="tank_api"
+          label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 85}) @60ºF`}
+          min={range?.low || 0}
+          max={range?.high || 85}
+          style={{ width: '100%' }}
+          precision={config.precisionAPI}
+          onChange={handleApiDensFieldChange}
+        />
+        /* <Form.Item
           name="tank_api"
           label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 85}) @60ºF`}
         >
@@ -189,19 +234,38 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
             min={range?.low || 0}
             max={range?.high || 85}
             style={{ width: '100%' }}
-            precision={1}
+            precision={config.precisionAPI}
             onChange={handleApiDensFieldChange}
           />
-        </Form.Item>
+        </Form.Item> */
       )}
 
-      <Form.Item name="tank_prod_lvl" label={`${t('fields.productLevel')} (mm)`}>
+      <OmegaInputNumber 
+        form={form}
+        value={value?.tank_prod_lvl}
+        name="tank_prod_lvl"
+        label={`${t('fields.productLevel')} (mm)`}
+        min={0} 
+        max={999999999} 
+        precision={config.precisionLevel}
+        style={{ width: '100%' }} 
+      />
+      {/* <Form.Item name="tank_prod_lvl" label={`${t('fields.productLevel')} (mm)`}>
         <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
-      </Form.Item>
+      </Form.Item> */}
 
-      <Form.Item name="tank_prod_c_of_e" label={`${t('fields.expCoeff')} (0.000414 - 0.001674)`}>
+      <OmegaInputNumber 
+        form={form}
+        value={value?.tank_prod_c_of_e}
+        name="tank_prod_c_of_e" 
+        label={`${t('fields.expCoeff')} (0.000414 - 0.001674)`}
+        min={0.000414} 
+        max={0.001674} 
+        style={{ width: '100%' }} 
+      />
+      {/* <Form.Item name="tank_prod_c_of_e" label={`${t('fields.expCoeff')} (0.000414 - 0.001674)`}>
         <InputNumber min={0.000414} step={0.0001} max={0.001674} style={{ width: '100%' }} />
-      </Form.Item>
+      </Form.Item> */}
 
       <Form.Item
         name="tank_temp"
@@ -213,35 +277,68 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         <Input style={{ width: '100%' }} addonAfter={temperaturePostfix} type="number" />
       </Form.Item>
 
-      <Form.Item name="tank_amb_vol" label={`${t('fields.ambientVolume')} (Litres)`}>
+      <OmegaInputNumber 
+        form={form}
+        value={value?.tank_amb_vol}
+        name="tank_amb_vol" 
+        label={`${t('fields.ambientVolume')} (Litres)`}
+        min={0}
+        max={999999999}
+        style={{ width: '100%' }}
+        precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionVolume}
+        onChange={handleAmbVolFieldChange}
+      />
+      {/* <Form.Item name="tank_amb_vol" label={`${t('fields.ambientVolume')} (Litres)`}>
         <InputNumber
           min={0}
           max={999999999}
           style={{ width: '100%' }}
-          precision={1}
+          precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionVolume}
           onChange={handleAmbVolFieldChange}
         />
-      </Form.Item>
+      </Form.Item> */}
 
-      <Form.Item name="tank_cor_vol" label={`${t('fields.standardVolume')} (Litres)`}>
+      <OmegaInputNumber 
+        form={form}
+        value={value?.tank_cor_vol}
+        name="tank_cor_vol"
+        label={`${t('fields.standardVolume')} (Litres)`}
+        min={0}
+        max={999999999}
+        style={{ width: '100%' }}
+        precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionVolume}
+        onChange={handleCorVolFieldChange}
+      />
+      {/* <Form.Item name="tank_cor_vol" label={`${t('fields.standardVolume')} (Litres)`}>
         <InputNumber
           min={0}
           max={999999999}
           style={{ width: '100%' }}
-          precision={1}
+          precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionVolume}
           onChange={handleCorVolFieldChange}
         />
-      </Form.Item>
+      </Form.Item> */}
 
-      <Form.Item name="tank_liquid_kg" label={`${t('fields.liquidMass')} (Kg)`}>
+      <OmegaInputNumber 
+        form={form}
+        value={value?.tank_liquid_kg}
+        name="tank_liquid_kg"
+        label={`${t('fields.liquidMass')} (Kg)`}
+        min={0}
+        max={999999999}
+        style={{ width: '100%' }}
+        precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionMass}
+        onChange={handleMassQtyFieldChange}
+      />
+      {/* <Form.Item name="tank_liquid_kg" label={`${t('fields.liquidMass')} (Kg)`}>
         <InputNumber
           min={0}
           max={999999999}
           style={{ width: '100%' }}
-          precision={1}
+          precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionMass}
           onChange={handleMassQtyFieldChange}
         />
-      </Form.Item>
+      </Form.Item> */}
     </>
   );
 };

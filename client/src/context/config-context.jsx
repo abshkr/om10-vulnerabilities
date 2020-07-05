@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import useSWR from 'swr';
+import _ from 'lodash';
 import { AUTH, SITE_CONFIGURATION } from 'api';
 import ConfigStore from 'stores/config-store';
 
@@ -46,6 +47,7 @@ const ConfigProvider = ({ children }) => {
     journalDateRange: false,
     scheduleDateRange: false,
     transactionsDateRange: false,
+    nominationDateRange: false,
     defaultEquipmentExpiry: false,
     defaultTankerExpiry: false,
     canEditDOR: false,
@@ -54,6 +56,8 @@ const ConfigProvider = ({ children }) => {
     maxSealsPerCompartment: false,
     maxTags: false,
     accessOpenOrderFromSchdules: false,
+    filterOpenOrderByExpiry: false,
+    filterNominationByExpiry: false,
     openOrderCloseAllLoads: false,
     openOrderResetOrder: false,
     partnershipEnabled: false,
@@ -64,9 +68,18 @@ const ConfigProvider = ({ children }) => {
     safefillCheckByHighTemp: false,
     showLSI: false,
     showSeals: false,
+    externalBlendAllowed: false,
     offset: null,
     id: null,
     loading: true,
+    precisionAPI: 2,
+    precisionTemperature: 2,
+    precisionDensity: 3,
+    precisionLevel: 0,
+    precisionVolume: 0,
+    precisionMass: 0,
+    precisionAdditive: 3,
+    precisionSG: 6,
   });
 
   const { data: configuration, revalidate: revalidateConfiguration } = useSWR(SITE_CONFIGURATION.READ, {
@@ -157,6 +170,7 @@ const ConfigProvider = ({ children }) => {
         showDOR: configurationObject?.SITE_DOR_HISTORY_AVAILABLE,
         manageADHOC: configurationObject?.ID_ADHOC_FLAG_ENABLED,
         sealNumSource: configurationObject?.SEALNUM_SOURCE,
+        sealPreFix: configurationObject?.SEAL_PREFIX,
         sealPostFix: configurationObject?.SEAL_POSTFIX,
         manage2FA: configurationObject?.SITE_2FA_ENABLED,
         manageAuditingScreen: configurationObject?.SITE_AUDIT_SCREEN_ENABLED,
@@ -167,6 +181,7 @@ const ConfigProvider = ({ children }) => {
         journalDateRange: configurationObject?.SITE_DEFAULT_DATERANGE_JOURNAL,
         scheduleDateRange: configurationObject?.SITE_DEFAULT_DATERANGE_SCHEDULE,
         transactionsDateRange: configurationObject?.SITE_DEFAULT_DATERANGE_TRANSACTION,
+        nominationDateRange: configurationObject?.SITE_DEFAULT_DATERANGE_NOMINATION,
         defaultEquipmentExpiry: configurationObject?.SITE_DEFAULT_EQPT_EXPIRY,
         defaultTankerExpiry: configurationObject?.SITE_DEFAULT_TNKR_EXPIRY,
         canEditDOR: configurationObject?.SITE_DOR_NUMBER_EDITABLE,
@@ -175,6 +190,8 @@ const ConfigProvider = ({ children }) => {
         maxSealsPerCompartment: configurationObject?.SITE_MAX_SEALS_PER_CMPT,
         maxTags: configurationObject?.SITE_MAX_TAGS,
         accessOpenOrderFromSchdules: configurationObject?.SITE_OO_ASSN_FROM_SCHD_CMPT,
+        filterOpenOrderByExpiry: configurationObject?.SITE_OO_FILTER_BY_EXPIRY,
+        filterNominationByExpiry: configurationObject?.SITE_NOM_FILTER_BY_EXPIRY,
         openOrderCloseAllLoads: configurationObject?.SITE_ORDER_LISTING_CLOSE_ALL_LOADS_VISIBLE,
         openOrderResetOrder: configurationObject?.SITE_ORDER_LISTING_RESET_ORDER_VISIBLE,
         partnershipEnabled: configurationObject?.SITE_PARTNERSHIP_ENABLED,
@@ -196,10 +213,19 @@ const ConfigProvider = ({ children }) => {
         sessionPerUser: configurationObject?.URBAC_SESSION_PER_USER,
         userAutoDelete: configurationObject?.URBAC_USER_AUTO_DELETE,
         userAutoLock: configurationObject?.URBAC_USER_AUTO_LOCK,
+        externalBlendAllowed: configurationObject?.SITE_EXTERNAL_BLENDING_ALLOWED,
         dateTimeFormat: configurationObject?.SITE_DATETIME_FORMAT || 'DD/MM/YYYY HH:mm:ss',
         offset: configurationObject?.SERVER_TIME_OFFSET || '+00:00',
         id: configurationObject?.SITE_IDENTIFIER,
         loading: false,
+        precisionAPI: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_API) || 2,
+        precisionTemperature: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_TEMPERATURE) || 2,
+        precisionDensity: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_DENSITY) || 3,
+        precisionLevel: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_LEVEL) || 0,
+        precisionVolume: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_VOLUME) || 0,
+        precisionMass: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_MASS) || 0,
+        precisionAdditive: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_ADDITIVE) || 3,
+        precisionSG: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_SG) || 6,
         revalidate: () => onRevalidate(),
       });
     }

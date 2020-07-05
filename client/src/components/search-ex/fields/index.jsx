@@ -17,6 +17,9 @@ import NominationStatus from './nomination-status';
 import NominationSource from './nomination-source';
 import NominationTerminal from './nomination-terminal';
 import NominationNumber from './nomination-number';
+import JournalSearch from './journal-msg';
+import JournalEvent from './journal_event';
+import JournalCategory from './journal_categories';
 
 export { 
   DateRange, 
@@ -38,5 +41,8 @@ export {
   NominationSource,
   NominationTerminal,
   NominationNumber,
+  JournalSearch,
+  JournalEvent,
+  JournalCategory,
 };
 

@@ -25,7 +25,6 @@ const HostMessages = ({handleClick}) => {
 		urlprefix = '';
 	}
 	const url = urlprefix + '/hmi/host_message';
-	//const url = '/hmi/host_message';
 	//console.log('host url:'+url);
 
 	const getData = async () => {
@@ -68,7 +67,6 @@ const HostMessages = ({handleClick}) => {
 		getData();
   }, [start, end]);
 
-	const exportToCSV = () => { };	
 
   const extras = (
     <>

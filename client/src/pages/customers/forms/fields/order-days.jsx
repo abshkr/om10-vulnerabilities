@@ -35,7 +35,7 @@ const OrderDays = ({ form, value }) => {
       label={t('fields.custOrdDays')} 
       rules={[{ required: false, validator: validate }]}
     >
-      <InputNumber min={0} max={9999} defaultValue={0} style={{ width: '100%' }} />
+      <InputNumber min={0} max={9999} style={{ width: '100%' }} />
     </Form.Item>
   );
 };

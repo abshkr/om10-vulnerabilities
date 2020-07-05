@@ -41,6 +41,10 @@ class OMJournal extends CommonClass
 
     public function types()
     {
+        if (!isset($this->region_code)) {
+            $this->region_code = Utilities::getCurrLang();
+        }
+
         $query = "
             SELECT ENUM_TMM, MSG_LOOKUP.MESSAGE
             FROM ENUMITEM
@@ -49,7 +53,35 @@ class OMJournal extends CommonClass
             WHERE ENUMITEM.ENUMTYPENAME='JNL_EVENT'
                 AND ENUMITEM.ENUM_NO!=0
                 AND (MSG_LOOKUP.LANG_ID=SYS_CONTEXT('CONN_CONTEXT','LANG') OR (SYS_CONTEXT('CONN_CONTEXT', 'LANG') IS NULL
-                AND MSG_LOOKUP.LANG_ID = :region_code))";
+                AND MSG_LOOKUP.LANG_ID = :region_code))
+            ORDER BY MSG_LOOKUP.MESSAGE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':region_code', $this->region_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function categories()
+    {
+        if (!isset($this->region_code)) {
+            $this->region_code = Utilities::getCurrLang();
+        }
+
+        $query = "
+            SELECT ENUM_TMM, MSG_LOOKUP.MESSAGE
+            FROM ENUMITEM
+            JOIN MSG_LOOKUP
+            ON (ENUMITEM.ENUM_TMM=MSG_LOOKUP.MSG_ID)
+            WHERE ENUMITEM.ENUMTYPENAME='JNL_CLASS'
+                AND ENUMITEM.ENUM_NO!=0
+                AND (MSG_LOOKUP.LANG_ID=SYS_CONTEXT('CONN_CONTEXT','LANG') OR (SYS_CONTEXT('CONN_CONTEXT', 'LANG') IS NULL
+                AND MSG_LOOKUP.LANG_ID = :region_code))
+            ORDER BY MSG_LOOKUP.MESSAGE";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':region_code', $this->region_code);
         if (oci_execute($stmt, $this->commit_mode)) {
@@ -69,10 +101,6 @@ class OMJournal extends CommonClass
             $this->lang = Utilities::getCurrLang();
         }
 
-        if ($this->lang === "" || !isset($this->lang)) {
-            $this->lang = "ENG";
-        }
-        
         if (!isset($this->start_date) || !isset($this->end_date)) {
             //get journal in 30 min
             $query = "
@@ -92,20 +120,6 @@ class OMJournal extends CommonClass
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':lang', $this->lang);
         } else {
-            if (isset($this->types)) {
-                $tmp_arr = explode(':', $this->types);
-
-                $types_str = null;
-                foreach ($tmp_arr as $type) {
-                    if (isset($types_str)) {
-                        $types_str = $types_str . ", '" . $type . "'";
-                    } else {
-                        $types_str = "'" . $type . "'";
-                    }
-
-                }
-            }
-
             $query = "
             SELECT GEN_DATE,
                 REGION_CODE,
@@ -119,18 +133,8 @@ class OMJournal extends CommonClass
             FROM GUI_SITE_JOURNAL
             WHERE REGION_CODE = :lang
                 AND GEN_DATE >= TO_DATE(:start_date, 'yyyy-mm-dd hh24:mi:ss')
-                AND GEN_DATE <= TO_DATE(:end_date, 'yyyy-mm-dd hh24:mi:ss')";
-            if (isset($types_str)) {
-                $query .= " AND MSG_EVENT IN (" . $types_str . ")";
-            }
-            if (isset($this->region_code)) {
-                $query .= " AND REGION_CODE = :region_code ";
-            }
-            if (isset($this->target_str)) {
-                $query .= " AND MESSAGE LIKE :target_str ";
-            }
-
-            $query .= "ORDER BY GEN_DATE DESC";
+                AND GEN_DATE <= TO_DATE(:end_date, 'yyyy-mm-dd hh24:mi:ss')
+            ORDER BY GEN_DATE DESC";
             // write_log(json_encode($query), __FILE__, __LINE__);
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':start_date', $this->start_date);
@@ -138,10 +142,6 @@ class OMJournal extends CommonClass
             oci_bind_by_name($stmt, ':lang', $this->lang);
             if (isset($this->region_code)) {
                 oci_bind_by_name($stmt, ':region_code', $this->region_code);
-            }
-            if (isset($this->target_str)) {
-                $percent_str = '%' . $this->target_str . '%';
-                oci_bind_by_name($stmt, ':target_str', $percent_str);
             }
         }
 
@@ -200,7 +200,58 @@ class OMJournal extends CommonClass
 
     public function search()
     {
-        return $this->read();
+        if (!isset($this->lang)) {
+            $this->lang = Utilities::getCurrLang();
+        }
+
+        $query = "
+            SELECT GEN_DATE,
+                REGION_CODE,
+                PRINT_DATE,
+                COMPANY_CODE,
+                MSG_EVENT,
+                MSG_CLASS,
+                MESSAGE,
+                SEQ,
+                JNL_CAT
+            FROM GUI_SITE_JOURNAL
+            WHERE REGION_CODE = :lang
+                AND GEN_DATE >= :start_date
+                AND GEN_DATE <= :end_date ";
+        if (isset($this->msg_event)) {
+            $query .= " AND MSG_EVENT = :msg_event ";
+        }
+        if (isset($this->msg_class)) {
+            $query .= " AND MSG_CLASS = :msg_class ";
+        }
+        if (isset($this->target_str)) {
+            $query .= " AND UPPER(MESSAGE) LIKE UPPER(:target_str) ";
+        }
+        
+        $query .= "ORDER BY GEN_DATE DESC";
+        write_log(json_encode($query), __FILE__, __LINE__);
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':start_date', $this->start_date);
+        oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        oci_bind_by_name($stmt, ':lang', $this->lang);
+        if (isset($this->msg_event)) {
+            oci_bind_by_name($stmt, ':msg_event', $this->msg_event);
+        }
+        if (isset($this->msg_class)) {
+            oci_bind_by_name($stmt, ':msg_class', $this->msg_class);
+        }
+        if (isset($this->target_str)) {
+            $percent_str = '%' . $this->target_str . '%';
+            oci_bind_by_name($stmt, ':target_str', $percent_str);
+        }
+        
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
     }
 
     // public function alarms()

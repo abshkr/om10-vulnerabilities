@@ -55,35 +55,19 @@ const ImageDisplay = ({onImageClick, refresh = "" }) => {
                 height: 65,
                 width: 50,
               }} 
-              />
+              ><a value={item.name} onClick={onSelect} style={{
+                display: 'block',
+                height: '100%',
+                width: '100%',
+                textDecoration: 'none',
+              }}></a>
+              </div>
               <div style={{ height: 25, textAlign: 'center'}}>
                 <a value={item.name} onClick={onSelect} >{item.name}</a>
               </div>
             </div>
           }
         </div>
-        // <div key={index} style={{
-        //   display: 'flex', 
-        //   flexDirection: "column", 
-        //   alignItems: "center",
-        //   width: 140}}
-        // >
-        //   <div style={{
-        //     background: `url('${item.icon}') no-repeat center center/cover`,
-        //     height: 65,
-        //     width: 50,
-        //   }} 
-        //   />
-        //   {item.name === selected? 
-        //     <div style={{ height: 25, textAlign: 'center', border: "1px solid lightblue" }}>
-        //       <a value={item.name} onClick={onSelect} >{item.name}</a>
-        //     </div> 
-        //     :
-        //     <div style={{ height: 25, textAlign: 'center'}}>
-        //       <a value={item.name} onClick={onSelect} >{item.name}</a>
-        //     </div>
-        //   }
-        // </div>
       ))}
     </div>
   );

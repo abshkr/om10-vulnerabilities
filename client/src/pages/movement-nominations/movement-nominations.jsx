@@ -22,13 +22,16 @@ const MovementNominations = () => {
   const [rangeEnd, setRangeEnd] = useState(0);
 
   const config = useConfig();
-  const ranges = getDateRangeOffset(config.openOrderDateRange, '30');
+  const rangeSetting = config.nominationDateRange;
+  const ranges = getDateRangeOffset(config.nominationDateRange, '30');
   //const ranges = getDateRangeOffset(false, '30');
   //const ranges = getDateRangeOffset("7~~0", '30');
+  const filterByExpiry = config.filterNominationByExpiry;
+  console.log('filterByExpiry', filterByExpiry);
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [timeOption, setTimeOption] = useState('MV_DTIM_EFFECT');
+  const [timeOption, setTimeOption] = useState(filterByExpiry?'MV_DTIM_EXPIRY':'MV_DTIM_EFFECT');
   const [data, setData] = useState(null);
 
   const { t } = useTranslation();
@@ -83,14 +86,26 @@ const MovementNominations = () => {
   };
 
   const setRange = (start, end) => {
-    setStart(start);
-    setEnd(end);
+    // setStart(start);
+    // setEnd(end);
+    if (rangeSetting !== '-1~~-1') {
+      setStart(start);
+      setEnd(end);
+    } else {
+      setStart('-1');
+      setEnd('-1');
+    }
   };
 
   const onRefresh = () => {
-    setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    //revalidate();
+    if (rangeSetting !== '-1~~-1') {
+      setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    } else {
+      setStart('-1');
+      setEnd('-1');
+      revalidate();
+    }
   };
 
   const locateNomination = (value) => {
@@ -128,32 +143,43 @@ const MovementNominations = () => {
       });
   };
 
-  /* useEffect(() => {
-    if (!start && ranges?.beforeToday) {
-      setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    }
-
-    if (!end && ranges?.afterToday) {
-      setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    }
-  }, [ranges, start, end]); */
-
   useEffect(() => {
     console.log('I am here: rangeStart, start', start, rangeStart);
-    setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    if (rangeSetting !== '-1~~-1') {
+      setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    } else {
+      setStart('-1');
+    }
   }, [rangeStart]);
 
   useEffect(() => {
     console.log('I am here: rangeEnd, end', end, rangeEnd);
-    setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    if (rangeSetting !== '-1~~-1') {
+      setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    } else {
+      setEnd('-1');
+    }
   }, [rangeEnd]);
 
   useEffect(() => {
     if (ranges) {
-      setRangeStart(ranges?.beforeToday);
-      setRangeEnd(ranges?.afterToday);
+      if (rangeSetting !== '-1~~-1') {
+        setRangeStart(ranges?.beforeToday);
+        setRangeEnd(ranges?.afterToday);
+      } else {
+        setRangeStart(-1);
+        setRangeEnd(-1);
+      }
     }
   }, [ranges]);
+
+  useEffect(() => {
+    if (filterByExpiry) {
+      setTimeOption('MV_DTIM_EXPIRY');
+    }else {
+      setTimeOption('MV_DTIM_EFFECT');
+    }
+  }, [filterByExpiry]);
 
   useEffect(() => {
     if (payload) {
@@ -164,27 +190,31 @@ const MovementNominations = () => {
 
   const modifiers = (
     <>
-      <div style={{ float: 'left' }}>
-        <Select
-          defaultValue="MV_DTIM_EFFECT"
-          onChange={setTimeOption}
-          optionFilterProp="children"
-          placeholder={null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {timeOptions.map((item, index) => (
-            <Select.Option key={index} value={item.code}>
-              {item.name}
-            </Select.Option>
-          ))}
-        </Select>
-      </div>
+      {rangeSetting !== '-1~~-1' && (
+        <div style={{ float: 'left' }}>
+          <Select
+            defaultValue={filterByExpiry?'MV_DTIM_EXPIRY':'MV_DTIM_EFFECT'}
+            onChange={setTimeOption}
+            optionFilterProp="children"
+            placeholder={null}
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {timeOptions.map((item, index) => (
+              <Select.Option key={index} value={item.code}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
+      )}
 
-      <div style={{ float: 'left', width: '420px' }}>
-        <Calendar handleChange={setRange} start={start} end={end} />
-      </div>
+      {rangeSetting !== '-1~~-1' && (
+        <div style={{ float: 'left', width: '420px' }}>
+          <Calendar handleChange={setRange} start={start} end={end} />
+        </div>
+      )}
 
       <Button icon={<SyncOutlined />} onClick={onRefresh} loading={isLoading}>
         {t('operations.refresh')}

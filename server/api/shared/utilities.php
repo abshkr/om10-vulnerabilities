@@ -433,7 +433,8 @@ class Utilities
                         $base_item[$lower_key] = null;
                     }
                 } else {
-                    $base_item[$lower_key] = $value;
+                    // $base_item[$lower_key] = $value;
+                    $base_item[$lower_key] = htmlspecialchars_decode($value);
                 }
             }
 
@@ -955,8 +956,10 @@ class Utilities
             try {
                 $token = get_http_token();
                 $pay_load = check_token($token);
+                // write_log(json_encode($pay_load), __FILE__, __LINE__);
+
                 if ($pay_load) {
-                    return $pay_load->lang;
+                    return $pay_load->lang ? $pay_load->lang : 'ENG';
                 } else {
                     write_log("Failed to check token", __FILE__, __LINE__, LogLevel::ERROR);
                 }
